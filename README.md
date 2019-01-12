@@ -115,6 +115,10 @@ Notice that if multiple highlighters are valid for the element `(i,j)`, then the
 applied style will be equal to the first match considering the order in the
 Tuple `highlighters`.
 
+There are a set of pre-defined highlighters (with names `hl_*`) to make the
+usage simpler. For more information, see the file
+`./src/predefined_highlighters.jl`.
+
 ## Formats
 
 The following table formats are available:

@@ -1,6 +1,7 @@
 module PrettyTables
 
 using Parameters
+using Printf
 
 export Highlighter, PrettyTableFormat
 
@@ -78,6 +79,7 @@ end
 ################################################################################
 
 include("predefined_formats.jl")
+include("predefined_highlighters.jl")
 include("print.jl")
 
 end # module
