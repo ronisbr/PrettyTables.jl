@@ -89,6 +89,10 @@ then the formatter should look like:
 If the key `0` is present, then the corresponding function will be applied to
 all columns that does not have a specific key.
 
+There are a set of pre-defined formatters (with names `ft_*`) to make the
+usage simpler. For more information, see the file
+`./src/predefined_formatter.jl`.
+
 ## Highlighters
 
 A set of highlighters can be passed as a `Tuple` to the `highlighter` keyword.

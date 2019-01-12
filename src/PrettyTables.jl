@@ -80,6 +80,7 @@ end
 
 include("predefined_formats.jl")
 include("predefined_highlighters.jl")
+include("predefined_formatters.jl")
 include("print.jl")
 
 end # module
