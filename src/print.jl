@@ -136,10 +136,10 @@ applied style will be equal to the first match considering the order in the
 Tuple `highlighters`.
 
 """
-pretty_table(data::Matrix{Any}, tf::PrettyTableFormat = unicode; kwargs...) =
+pretty_table(data::Matrix{T}, tf::PrettyTableFormat = unicode; kwargs...) where T =
     pretty_table(stdout, data, tf; kwargs...)
 
-function pretty_table(io, data::Matrix{Any}, tf::PrettyTableFormat = unicode;
+function pretty_table(io, data::Matrix{T}, tf::PrettyTableFormat = unicode;
                       alignment::Union{Symbol,Vector{Symbol}} = :r,
                       border_bold::Bool = false,
                       border_color::Symbol = :normal,
@@ -148,7 +148,7 @@ function pretty_table(io, data::Matrix{Any}, tf::PrettyTableFormat = unicode;
                       header_color::Symbol = :normal,
                       highlighters::Tuple = (),
                       same_column_size::Bool = false,
-                      show_row_number::Bool = false)
+                      show_row_number::Bool = false) where T
 
     # Get information about the table we have to print.
     num_rows, num_cols = size(data)
