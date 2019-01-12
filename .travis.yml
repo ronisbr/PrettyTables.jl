@@ -1,0 +1,22 @@
+language: julia
+
+os:
+    - linux
+    - osx
+
+julia:
+    - 1.0
+    - nightly
+
+matrix:
+    allow_failures:
+        - julia: nightly
+
+notifications:
+    email: false
+
+after_success:
+    # Push coverage results to Coveralls.
+    - julia -e 'import Pkg; cd(Pkg.dir("PrettyTables")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())';
+    # Push coverage results to Codecov.
+    - julia -e 'import Pkg; cd(Pkg.dir("PrettyTables")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())';
