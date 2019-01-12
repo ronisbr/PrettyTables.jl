@@ -2,7 +2,7 @@ module PrettyTables
 
 using Parameters
 
-export PrettyTableFormat
+export Highlighter, PrettyTableFormat
 
 ################################################################################
 #                                    Types
@@ -50,6 +50,27 @@ The following pre-defined formats are available: `unicode` (**default**),
     row::Char                 = '─'
     top_line::Bool            = true
     bottom_line::Bool         = true
+end
+
+"""
+    struct Highlighter
+
+Defines the highlighter of a table.
+
+# Fileds
+
+* `f`: Function with the signature `f(data,i,j)` in which should return `true`
+       if the element `(i,j)` in `data` must be highlighter, or `false`
+       otherwise.
+* `bold`: If `true`, then the highlight style should be **bold**.
+* `color`: A symbol with the color of the highlight style using the same
+           convention as in the function `printstyled`.
+
+"""
+@with_kw struct Highlighter
+    f::Function
+    bold::Bool
+    color::Symbol
 end
 
 ################################################################################
