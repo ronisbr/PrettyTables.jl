@@ -30,7 +30,7 @@ data = ["Col. 1" "Col. 2" "Col. 3" "Col. 4";
     @test result == expected
 end
 
-# Aligments
+# Alignments
 # ==============================================================================
 
 @testset "Alignments" begin

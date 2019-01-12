@@ -117,7 +117,7 @@ pretty_table(data::Matrix{Any}, tf::PrettyTableFormat = unicode;
              header_color::Symbol = :normal,
              same_column_size::Bool = false,
              show_row_number::Bool = false) =
-    pretty_table(stdout, data, tf; 
+    pretty_table(stdout, data, tf;
                  alignment        = alignment,
                  border_bold      = border_bold,
                  border_color     = border_color,
@@ -145,7 +145,7 @@ function pretty_table(io, data::Matrix{Any}, tf::PrettyTableFormat = unicode;
     if typeof(alignment) == Symbol
         alignment = [alignment for i = 1:num_cols]
     else
-        length(alignment) != num_cols && error("The lenght of `aligment` must be the same as the number of rows.")
+        length(alignment) != num_cols && error("The length of `alignment` must be the same as the number of rows.")
     end
 
     # We must concatenate a row on the left if the user wants to print the row
@@ -165,13 +165,13 @@ function pretty_table(io, data::Matrix{Any}, tf::PrettyTableFormat = unicode;
             fi = nothing
         elseif show_row_number
             ir = show_row_number ? i - 1 : i
-            fi = haskey(formatter, ir) ? formatter[ir] : 
+            fi = haskey(formatter, ir) ? formatter[ir] :
                        (haskey(formatter, 0) ? formatter[0] : nothing)
         else
-            fi = haskey(formatter, i) ? formatter[i] : 
+            fi = haskey(formatter, i) ? formatter[i] :
                        (haskey(formatter, 0) ? formatter[0] : nothing)
         end
-        
+
         for j = 1:num_rows
             data_ij = (j != 1 && fi != nothing) ? fi(data[j,i], j) : data[j,i]
             data_str[j,i] = sprint(print, data_ij)
@@ -242,7 +242,7 @@ function pretty_table(io, data::Matrix{Any}, tf::PrettyTableFormat = unicode;
 
     # Data
     # ==========================================================================
-    
+
     @inbounds @views for i = 2:num_rows
         printstyled(io, tf.column * " ";
                     bold = border_bold, color = border_color)

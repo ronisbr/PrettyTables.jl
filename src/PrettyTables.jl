@@ -32,7 +32,7 @@ export PrettyTableFormat
 
 # Pre-defined formats
 
-The following pre-defined formats are availabel: `unicode` (**default**),
+The following pre-defined formats are available: `unicode` (**default**),
 `mysql`, `compact`, `markdown`, `simple`, `ascii_rounded`, and `ascii_dots`.
 
 """
