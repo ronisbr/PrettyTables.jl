@@ -2,7 +2,7 @@ Pretty Tables
 =============
 
 [![Build Status](https://travis-ci.org/ronisbr/PrettyTables.jl.svg?branch=master)](https://travis-ci.org/ronisbr/PrettyTables.jl)
-[![Build status](https://ci.appveyor.com/api/projects/status/x7ogyjfx1x5yj78j/branch/master?svg=true)](https://ci.appveyor.com/project/ronisbr/satellitetoolbox-jl/branch/master)
+[![Build status](https://ci.appveyor.com/api/projects/status/r06s51ispe3cgmqp?svg=true)](https://ci.appveyor.com/project/ronisbr/prettytables-jl)
 [![codecov](https://codecov.io/gh/ronisbr/PrettyTables.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/ronisbr/PrettyTables.jl)
 [![Coverage Status](https://coveralls.io/repos/github/ronisbr/PrettyTables.jl/badge.svg?branch=master)](https://coveralls.io/github/ronisbr/PrettyTables.jl?branch=master)
 
@@ -89,7 +89,7 @@ all columns that does not have a specific key.
 
 ## Formats
 
-The folowing table formats are available:
+The following table formats are available:
 
 `unicode` (**Default**)
 
