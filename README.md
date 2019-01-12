@@ -206,3 +206,24 @@ julia> open("output.txt", "w") do f
        end
 ```
 
+It is also possible to define you own custom table by creating a new instance of
+the structure `PrettyTableFormat`. For example, let's say that you want a table
+like `simple` that does not print the bottom line:
+
+```julia-repl
+julia> tf = PrettyTableFormat(simple, bottom_line = false);
+
+julia> pretty_table(data, tf)
+========= ======== ======== =========
+  Col. 1   Col. 2   Col. 3   Col. 4
+========= ======== ======== =========
+       1    false      1.0        1
+       2     true      2.0        2
+       3    false      3.0        3
+       4     true      4.0        4
+       5    false      5.0        5
+       6     true      6.0        6
+```
+
+For more information, see the documentation of the structure
+`PrettyTableFormat`.
