@@ -24,15 +24,36 @@ julia> Pkg.add("PrettyTables")
 
 ## Usage
 
-The following function can be used to print data stored inside a `Matrix{Any}`:
+The following functions can be used to print data.
 
 ```julia
-function pretty_table(data, format = unicode; ...)
+function pretty_table(data::AbstractMatrix{T1}, header::AbstractVector{T2}; kwargs...) where {T1,T2}
 ```
 
-in which `data` is the matrix that will be printed and `format` is the selected
-format (see [Formats](#formats)). The following keywords are available to modify
-the behavior:
+Print to `io` the matrix `data` with header `header` using the format `tf` (see
+[Formats](#formats)). If `io` is omitted, then it defaults to `stdout`. If
+`header` is empty, then it will be automatically filled with `"Col. i"` for the
+*i*-th column.
+
+
+``` julia
+function pretty_table([io,] data::AbstractMatrix{T}, tf::PrettyTableFormat = unicode; ...) where T
+```
+
+Print to `io` the matrix `data` using the format `tf` (see [Formats](#formats)).
+The header is considered to be the first row of `data`. If `io` is omitted, then
+it defaults to `stdout`.
+
+```
+function pretty_table([io,] table, tf::PrettyTableFormat = unicode; ...)
+```
+
+Print to `io` the table `table` using the format `tf` (see [Formats](#formats)).
+The header is considered to be the first row of `data`. In this case, `table`
+must comply with the API of **Tables.jl**. If `io` is omitted, then it defaults
+to `stdout`.
+
+In all cases, the following keywords are available:
 
 * `alignment`: Select the alignment of the columns (see the section
                [Alignment](#alignment)).
@@ -237,7 +258,12 @@ julia> data = ["Col. 1" "Col. 2" "Col. 3" "Col. 4";
 The following example indicates how `highlighters` can be used to highlight the
 lowest and highest element in the data considering the columns 1, 3, and 5:
 
-![fig000006](./figs/fig00006.png)
+![fig00006](./figs/fig00006.png)
+
+Since this package has support to the API defined by **Tables.jl**, then many
+formats, *e.g* DataFrames.jl, can be pretty printed:
+
+![fig00007](./figs/fig00007.png)
 
 If you want to save the printed table to a file, you can do:
 

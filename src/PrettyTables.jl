@@ -2,6 +2,7 @@ module PrettyTables
 
 using Parameters
 using Printf
+using Tables
 
 export Highlighter, PrettyTableFormat
 

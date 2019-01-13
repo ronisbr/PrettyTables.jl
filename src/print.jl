@@ -48,10 +48,25 @@ end
 ################################################################################
 
 """
-    function pretty_table(data::Matrix{Any}, tf::PrettyTableFormat = unicode; ...)
+    function pretty_table(data::AbstractMatrix{T1}, header::AbstractVector{T2}; kwargs...) where {T1,T2}
 
-Print the matrix `data` using the format `tf` (see `PrettyTableFormat`). The
-header is considered to be the first row in `data`.
+Print to `io` the matrix `data` with header `header` using the format `tf` (see
+`PrettyTableFormat`). If `io` is omitted, then it defaults to `stdout`. If
+`header` is empty, then it will be automatically filled with `"Col. i"` for the
+*i*-th column.
+
+    function pretty_table([io,] data::AbstractMatrix{T}, tf::PrettyTableFormat = unicode; ...) where T
+
+Print to `io` the matrix `data` using the format `tf` (see `PrettyTableFormat`).
+The header is considered to be the first row of `data`. If `io` is omitted, then
+it defaults to `stdout`.
+
+    function pretty_table([io,] table, tf::PrettyTableFormat = unicode; ...)
+
+Print to `io` the table `table` using the format `tf` (see `PrettyTableFormat`).
+The header is considered to be the first row of `data`. In this case, `table`
+must comply with the API of **Tables.jl**. If `io` is omitted, then it defaults
+to `stdout`.
 
 # Keywords
 
@@ -136,10 +151,50 @@ applied style will be equal to the first match considering the order in the
 Tuple `highlighters`.
 
 """
-pretty_table(data::Matrix{T}, tf::PrettyTableFormat = unicode; kwargs...) where T =
+pretty_table(data::AbstractMatrix{T1}, header::AbstractVector{T2}; kwargs...) where {T1,T2} =
+    pretty_table(stdout, data, header; kwargs...)
+
+function pretty_table(io, data::AbstractMatrix{T1}, header::AbstractVector{T2}; kwargs...) where {T1,T2}
+    isempty(header) && ( header = ["Col. " * string(i) for i = 1:size(data,2)] )
+    _pretty_table(io, data, header; kwargs...)
+end
+
+pretty_table(data::AbstractMatrix{T}, tf::PrettyTableFormat = unicode; kwargs...) where T =
     pretty_table(stdout, data, tf; kwargs...)
 
-function pretty_table(io, data::Matrix{T}, tf::PrettyTableFormat = unicode;
+pretty_table(io, data::AbstractMatrix{T}, tf::PrettyTableFormat = unicode; kwargs...) where T =
+    _pretty_table(io, @view(data[2:end,:]), @view(data[1,:]), tf; kwargs...)
+
+pretty_table(table, tf::PrettyTableFormat = unicode; kwargs...) =
+    pretty_table(stdout, table, tf; kwargs...)
+
+function pretty_table(io, table, tf::PrettyTableFormat = unicode; kwargs...)
+    !Tables.istable(table) && error("table must be compliant with the Table.jl.")
+
+    # Get the data.
+    data = Tables.columns(table)
+
+    # Get the table schema to obtain the columns names.
+    sch = Tables.schema(table)
+
+    if sch == nothing
+        num_cols, num_rows = size(data)
+        header = ["Col. " * string(i) for i = 1:num_cols]
+    else
+        header = sch.names
+    end
+
+    _pretty_table(io, data, header, tf; kwargs...)
+end
+
+################################################################################
+#                              Private Functions
+################################################################################
+
+# This is the low level function that prints the table. In this case, `data`
+# must be accessed by `[i,j]` and the size of the `header` must be equal to the
+# number of columns in `data`.
+function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
                       alignment::Union{Symbol,Vector{Symbol}} = :r,
                       border_bold::Bool = false,
                       border_color::Symbol = :normal,
@@ -148,12 +203,15 @@ function pretty_table(io, data::Matrix{T}, tf::PrettyTableFormat = unicode;
                       header_color::Symbol = :normal,
                       highlighters::Tuple = (),
                       same_column_size::Bool = false,
-                      show_row_number::Bool = false) where T
+                      show_row_number::Bool = false)
 
     # Get information about the table we have to print.
     num_rows, num_cols = size(data)
 
-    num_rows < 2 && error("The table must contain at least 2 rows.")
+    num_rows < 1 && error("The table must contain at least 1 row.")
+
+    num_cols != length(header) &&
+    error("The header length must be equal to the number of columns.")
 
     if typeof(alignment) == Symbol
         alignment = [alignment for i = 1:num_cols]
@@ -161,38 +219,29 @@ function pretty_table(io, data::Matrix{T}, tf::PrettyTableFormat = unicode;
         length(alignment) != num_cols && error("The length of `alignment` must be the same as the number of rows.")
     end
 
-    # We must concatenate a row on the left if the user wants to print the row
-    # number.
-    if show_row_number
-        data = hcat([ "Row"; [i for i = 1:num_rows-1] ], data)
-        alignment = vcat(:r, alignment)
-        num_cols += 1
-    end
-
     # Get the string which is printed when `print` is called in each element of
     # the matrix.
-    data_str = Matrix{String}(undef, num_rows, num_cols)
+    header_str = Vector{String}(undef, num_cols)
+    data_str   = Matrix{String}(undef, num_rows, num_cols)
 
     @inbounds @views for i = 1:num_cols
-        if show_row_number && i == 1
-            fi = nothing
-        elseif show_row_number
-            ir = show_row_number ? i - 1 : i
-            fi = haskey(formatter, ir) ? formatter[ir] :
-                       (haskey(formatter, 0) ? formatter[0] : nothing)
-        else
-            fi = haskey(formatter, i) ? formatter[i] :
-                       (haskey(formatter, 0) ? formatter[0] : nothing)
-        end
+        fi = haskey(formatter, i) ? formatter[i] :
+                (haskey(formatter, 0) ? formatter[0] : nothing)
+
+        header_str[i] = sprint(print, header[i])
 
         for j = 1:num_rows
-            data_ij = (j != 1 && fi != nothing) ? fi(data[j,i], j) : data[j,i]
+            data_ij = fi != nothing ? fi(data[j,i], j) : data[j,i]
             data_str[j,i] = sprint(print, data_ij)
         end
     end
 
     # Now, we need to obtain the maximum number of characters in each column.
-    cols_width = [maximum(length.(@view(data_str[:,i]))) for i = 1:num_cols]
+    cols_width = [maximum(vcat(length.(header_str[i]), length.(@view(data_str[:,i])))) for i = 1:num_cols]
+
+    # The row number width depends on how many digits the total number of rows
+    # has and the length of the header "Row".
+    row_number_width = max(3,floor(Int, log10(num_rows)) + 1)
 
     # If the user wants all the columns with the same size, then select the
     # larger.
@@ -206,6 +255,13 @@ function pretty_table(io, data::Matrix{T}, tf::PrettyTableFormat = unicode;
     if tf.top_line
         printstyled(io, tf.up_left_corner;
                     bold = border_bold, color = border_color)
+
+        if show_row_number
+            printstyled(io, tf.row^(row_number_width+2);
+                        bold = border_bold, color = border_color)
+            printstyled(io, tf.up_intersection;
+                        bold  = border_bold, color = border_color)
+        end
 
         @inbounds for i = 1:num_cols
             # Check the alignment and print.
@@ -226,11 +282,18 @@ function pretty_table(io, data::Matrix{T}, tf::PrettyTableFormat = unicode;
     printstyled(io, tf.column * " ";
                 bold = border_bold, color = border_color)
 
+    if show_row_number
+        header_row_i_str = @_str_aligned("Row", :r, row_number_width) * " "
+        printstyled(io, header_row_i_str; bold = header_bold, color = header_color)
+        printstyled(io, tf.column;        bold = border_bold, color = border_color)
+        print(io, " ")
+    end
+
     @inbounds @views for i = 1:num_cols
-        header_i_str = @_str_aligned(data_str[1,i], alignment[i], cols_width[i]) * " "
+        header_i_str = @_str_aligned(header_str[i], alignment[i], cols_width[i]) * " "
 
         printstyled(io, header_i_str; bold = header_bold, color = header_color)
-        printstyled(io, tf.column; bold = border_bold, color = border_color)
+        printstyled(io, tf.column;    bold = border_bold, color = border_color)
 
         i != num_cols && print(io, " ")
     end
@@ -240,6 +303,14 @@ function pretty_table(io, data::Matrix{T}, tf::PrettyTableFormat = unicode;
     # Bottom header line.
     printstyled(io, tf.left_intersection;
                 bold = border_bold, color = border_color)
+
+    if show_row_number
+        printstyled(io, tf.row^(row_number_width+2);
+                    bold = border_bold, color = border_color)
+
+        printstyled(io, tf.middle_intersection;
+                    bold = border_bold, color = border_color)
+    end
 
     @inbounds @views for i = 1:num_cols
         printstyled(io, tf.row^(cols_width[i]+2);
@@ -256,14 +327,21 @@ function pretty_table(io, data::Matrix{T}, tf::PrettyTableFormat = unicode;
     # Data
     # ==========================================================================
 
-    @inbounds @views for i = 2:num_rows
+    @inbounds @views for i = 1:num_rows
         printstyled(io, tf.column * " ";
                     bold = border_bold, color = border_color)
+
+        if show_row_number
+            row_number_i_str = @_str_aligned(string(i), :r, row_number_width)
+            print(io, row_number_i_str * " ")
+            printstyled(io, tf.column; bold = border_bold, color = border_color)
+            print(io, " ")
+        end
 
         for j = 1:num_cols
             data_ij_str = @_str_aligned(data_str[i,j], alignment[j], cols_width[j]) * " "
 
-            # If we have higlighters defined, then we need to verify if this
+            # If we have highlighters defined, then we need to verify if this
             # data should be highlight.
             printed = false
 
@@ -292,6 +370,13 @@ function pretty_table(io, data::Matrix{T}, tf::PrettyTableFormat = unicode;
         printstyled(io, tf.bottom_left_corner;
                     bold = border_bold, color = border_color)
 
+        if show_row_number
+            printstyled(io, tf.row^(row_number_width+2);
+                        bold = border_bold, color = border_color)
+            printstyled(io, tf.bottom_intersection;
+                        bold  = border_bold, color = border_color)
+        end
+
         @inbounds @views for i = 1:num_cols
             printstyled(io, tf.row^(cols_width[i]+2);
                         bold = border_bold, color = border_color)
@@ -308,3 +393,4 @@ function pretty_table(io, data::Matrix{T}, tf::PrettyTableFormat = unicode;
 
     nothing
 end
+
