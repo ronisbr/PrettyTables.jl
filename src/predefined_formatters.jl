@@ -52,9 +52,9 @@ end
 Round the elements in the columns `columns` to the number of digits in `digits`.
 
 If `digits` is a `Vector`, then `columns` must be also be a `Vector` with the
-same number of elements. If `digits` is a `String`, and `columns` is not
-specified (or is empty), then the format will be applied to the entire table.
-Otherwise, if `digits` is a `String` and `columns` is a `Vector`, then the
+same number of elements. If `digits` is a `Number`, and `columns` is not
+specified (or is empty), then the rounding will be applied to the entire table.
+Otherwise, if `digits` is a `Number` and `columns` is a `Vector`, then the
 elements in the columns `columns` will be rounded to the number of digits
 `digits`.
 
