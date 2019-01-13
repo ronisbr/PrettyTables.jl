@@ -32,7 +32,7 @@ function pretty_table(data::AbstractMatrix{T1}, header::AbstractVector{T2}; kwar
 
 Print to `io` the matrix `data` with header `header` using the format `tf` (see
 [Formats](#formats)). If `io` is omitted, then it defaults to `stdout`. If
-`header` is empty, then it will be automatically filled with `"Col. i"` for the
+`header` is empty, then it will be automatically filled with "Col. i" for the
 *i*-th column.
 
 
@@ -40,9 +40,9 @@ Print to `io` the matrix `data` with header `header` using the format `tf` (see
 function pretty_table([io,] data::AbstractMatrix{T}, tf::PrettyTableFormat = unicode; ...) where T
 ```
 
-Print to `io` the matrix `data` using the format `tf` (see [Formats](#formats)).
-The header is considered to be the first row of `data`. If `io` is omitted, then
-it defaults to `stdout`.
+Print to `io` the matrix `data` using the format `tf` (see `PrettyTableFormat`).
+If `io` is omitted, then it defaults to `stdout`. The header will be
+automatically filled with "Col. i" for the *i*-th column.
 
 ```julia
 function pretty_table([io,] table, tf::PrettyTableFormat = unicode; ...)

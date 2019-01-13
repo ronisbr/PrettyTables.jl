@@ -1,13 +1,12 @@
 using Test
 using PrettyTables
 
-data = ["Col. 1" "Col. 2" "Col. 3" "Col. 4";
-              1    false      1.0     0x01 ;
-              2     true      2.0     0x02 ;
-              3    false      3.0     0x03 ;
-              4     true      4.0     0x04 ;
-              5    false      5.0     0x05 ;
-              6     true      6.0     0x06 ;]
+data = Any[1    false      1.0     0x01 ;
+           2     true      2.0     0x02 ;
+           3    false      3.0     0x03 ;
+           4     true      4.0     0x04 ;
+           5    false      5.0     0x05 ;
+           6     true      6.0     0x06 ;]
 
 # Default
 # ==============================================================================

@@ -52,14 +52,14 @@ end
 
 Print to `io` the matrix `data` with header `header` using the format `tf` (see
 `PrettyTableFormat`). If `io` is omitted, then it defaults to `stdout`. If
-`header` is empty, then it will be automatically filled with `"Col. i"` for the
+`header` is empty, then it will be automatically filled with "Col. i" for the
 *i*-th column.
 
     function pretty_table([io,] data::AbstractMatrix{T}, tf::PrettyTableFormat = unicode; ...) where T
 
 Print to `io` the matrix `data` using the format `tf` (see `PrettyTableFormat`).
-The header is considered to be the first row of `data`. If `io` is omitted, then
-it defaults to `stdout`.
+If `io` is omitted, then it defaults to `stdout`. The header will be
+automatically filled with "Col. i" for the *i*-th column.
 
     function pretty_table([io,] table, tf::PrettyTableFormat = unicode; ...)
 
@@ -150,19 +150,21 @@ applied style will be equal to the first match considering the order in the
 Tuple `highlighters`.
 
 """
-pretty_table(data::AbstractMatrix{T1}, header::AbstractVector{T2}; kwargs...) where {T1,T2} =
-    pretty_table(stdout, data, header; kwargs...)
+pretty_table(data::AbstractMatrix{T1}, header::AbstractVector{T2},
+             tf::PrettyTableFormat = unicode; kwargs...) where {T1,T2} =
+    pretty_table(stdout, data, header, tf; kwargs...)
 
-function pretty_table(io, data::AbstractMatrix{T1}, header::AbstractVector{T2}; kwargs...) where {T1,T2}
+function pretty_table(io, data::AbstractMatrix{T1}, header::AbstractVector{T2},
+                      tf::PrettyTableFormat = unicode; kwargs...) where {T1,T2}
     isempty(header) && ( header = ["Col. " * string(i) for i = 1:size(data,2)] )
-    _pretty_table(io, data, header; kwargs...)
+    _pretty_table(io, data, header, tf; kwargs...)
 end
 
 pretty_table(data::AbstractMatrix{T}, tf::PrettyTableFormat = unicode; kwargs...) where T =
     pretty_table(stdout, data, tf; kwargs...)
 
 pretty_table(io, data::AbstractMatrix{T}, tf::PrettyTableFormat = unicode; kwargs...) where T =
-    _pretty_table(io, @view(data[2:end,:]), @view(data[1,:]), tf; kwargs...)
+    pretty_table(io, data, [], tf; kwargs...)
 
 pretty_table(table, tf::PrettyTableFormat = unicode; kwargs...) =
     pretty_table(stdout, table, tf; kwargs...)
