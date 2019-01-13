@@ -336,3 +336,42 @@ end
                     data)
     @test result == expected
 end
+
+# Sub-headers
+# ==============================================================================
+
+@testset "Sub-headers" begin
+    expected = """
+┌───┬───────┬─────┬───┐
+│ 1 │     2 │   3 │ 4 │
+├───┼───────┼─────┼───┤
+│ 1 │ false │ 1.0 │ 1 │
+│ 2 │  true │ 2.0 │ 2 │
+│ 3 │ false │ 3.0 │ 3 │
+│ 4 │  true │ 4.0 │ 4 │
+│ 5 │ false │ 5.0 │ 5 │
+│ 6 │  true │ 6.0 │ 6 │
+└───┴───────┴─────┴───┘
+"""
+    result = sprint(pretty_table, data, [1;2;3;4])
+    @test result == expected
+
+    result = sprint(pretty_table, data, [1 2 3 4])
+    @test result == expected
+
+    expected = """
+┌───┬───────┬─────┬───┐
+│ 1 │     2 │   3 │ 4 │
+│ 5 │     6 │   7 │ 8 │
+├───┼───────┼─────┼───┤
+│ 1 │ false │ 1.0 │ 1 │
+│ 2 │  true │ 2.0 │ 2 │
+│ 3 │ false │ 3.0 │ 3 │
+│ 4 │  true │ 4.0 │ 4 │
+│ 5 │ false │ 5.0 │ 5 │
+│ 6 │  true │ 6.0 │ 6 │
+└───┴───────┴─────┴───┘
+"""
+    result = sprint(pretty_table, data, [1 2 3 4; 5 6 7 8])
+    @test result == expected
+end

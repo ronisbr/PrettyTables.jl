@@ -48,12 +48,16 @@ end
 ################################################################################
 
 """
-    function pretty_table(data::AbstractMatrix{T1}, header::AbstractVector{T2}; kwargs...) where {T1,T2}
+    function pretty_table(data::AbstractMatrix{T1}, header::AbstractVecOrMat{T2}; kwargs...) where {T1,T2}
 
 Print to `io` the matrix `data` with header `header` using the format `tf` (see
 `PrettyTableFormat`). If `io` is omitted, then it defaults to `stdout`. If
 `header` is empty, then it will be automatically filled with "Col. i" for the
 *i*-th column.
+
+The header can be a `Vector` or a `Matrix`. If it is a `Matrix`, then each row
+will be a header line. The first line is called *header* and the others are
+called *sub-headers* .
 
     function pretty_table([io,] data::AbstractMatrix{T}, tf::PrettyTableFormat = unicode; ...) where T
 
@@ -87,6 +91,11 @@ omitted, then it defaults to `stdout`.
                       (**Default** = `false`)
 * `show_row_number`: If `true`, then a new column will be printed showing the
                      row number. (**Default** = `false`.)
+* `subheader_bold`: If `true`, then the sub-headers will be printed in **bold**
+                    (**Default** = `false`).
+* `subheader_color`: The color in which the sub-headers will be printed using
+                     the same convention as in the function `printstyled`.
+                     (**Default** = `:light_black`)
 
 # Alignment
 
@@ -150,12 +159,14 @@ applied style will be equal to the first match considering the order in the
 Tuple `highlighters`.
 
 """
-pretty_table(data::AbstractMatrix{T1}, header::AbstractVector{T2},
+pretty_table(data::AbstractMatrix{T1}, header::AbstractVecOrMat{T2},
              tf::PrettyTableFormat = unicode; kwargs...) where {T1,T2} =
     pretty_table(stdout, data, header, tf; kwargs...)
 
-function pretty_table(io, data::AbstractMatrix{T1}, header::AbstractVector{T2},
+function pretty_table(io::IO, data::AbstractMatrix{T1},
+                      header::AbstractVecOrMat{T2},
                       tf::PrettyTableFormat = unicode; kwargs...) where {T1,T2}
+
     isempty(header) && ( header = ["Col. " * string(i) for i = 1:size(data,2)] )
     _pretty_table(io, data, header, tf; kwargs...)
 end
@@ -163,13 +174,13 @@ end
 pretty_table(data::AbstractMatrix{T}, tf::PrettyTableFormat = unicode; kwargs...) where T =
     pretty_table(stdout, data, tf; kwargs...)
 
-pretty_table(io, data::AbstractMatrix{T}, tf::PrettyTableFormat = unicode; kwargs...) where T =
+pretty_table(io::IO, data::AbstractMatrix{T}, tf::PrettyTableFormat = unicode; kwargs...) where T =
     pretty_table(io, data, [], tf; kwargs...)
 
 pretty_table(table, tf::PrettyTableFormat = unicode; kwargs...) =
     pretty_table(stdout, table, tf; kwargs...)
 
-function pretty_table(io, table, tf::PrettyTableFormat = unicode; kwargs...)
+function pretty_table(io::IO, table, tf::PrettyTableFormat = unicode; kwargs...)
     !Tables.istable(table) && error("table must be compliant with the Table.jl.")
 
     # Get the data.
@@ -182,7 +193,8 @@ function pretty_table(io, table, tf::PrettyTableFormat = unicode; kwargs...)
         num_cols, num_rows = size(data)
         header = ["Col. " * string(i) for i = 1:num_cols]
     else
-        header = sch.names
+        header = [ reshape( [sch.names...], (1,:) ); 
+                   reshape( [sch.types...], (1,:) )]
     end
 
     _pretty_table(io, data, header, tf; kwargs...)
@@ -202,6 +214,8 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
                       formatter::Dict = Dict(),
                       header_bold::Bool = true,
                       header_color::Symbol = :normal,
+                      subheaders_bold::Bool = false,
+                      subheaders_color::Symbol = :light_black,
                       highlighters::Tuple = (),
                       same_column_size::Bool = false,
                       show_row_number::Bool = false)
@@ -211,7 +225,19 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
 
     num_rows < 1 && error("The table must contain at least 1 row.")
 
-    num_cols != length(header) &&
+    header_size = size(header)
+
+    # The way we get the number of columns of the header depends on its
+    # dimension, because the header can be a vector or a matrix.
+
+    if length(header_size) == 2
+        header_num_rows, header_num_cols = size(header)
+    else
+        header_num_rows = 1
+        header_num_cols = length(header)
+    end
+
+    num_cols != header_num_cols &&
     error("The header length must be equal to the number of columns.")
 
     if typeof(alignment) == Symbol
@@ -222,14 +248,16 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
 
     # Get the string which is printed when `print` is called in each element of
     # the matrix.
-    header_str = Vector{String}(undef, num_cols)
+    header_str = Matrix{String}(undef, header_num_rows, num_cols)
     data_str   = Matrix{String}(undef, num_rows, num_cols)
 
     @inbounds @views for i = 1:num_cols
         fi = haskey(formatter, i) ? formatter[i] :
                 (haskey(formatter, 0) ? formatter[0] : nothing)
 
-        header_str[i] = sprint(print, header[i])
+        for j = 1:header_num_rows
+            header_str[j,i] = sprint(print, header[(i-1)*header_num_rows + j])
+        end
 
         for j = 1:num_rows
             data_ij = fi != nothing ? fi(data[j,i], j) : data[j,i]
@@ -238,7 +266,7 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
     end
 
     # Now, we need to obtain the maximum number of characters in each column.
-    cols_width = [maximum(vcat(length.(header_str[i]), length.(@view(data_str[:,i])))) for i = 1:num_cols]
+    cols_width = [maximum(vcat(length.(header_str[:,i]), length.(@view(data_str[:,i])))) for i = 1:num_cols]
 
     # The row number width depends on how many digits the total number of rows
     # has and the length of the header "Row".
@@ -251,7 +279,8 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
     # Header
     # ==========================================================================
 
-    # Up header line.
+    # Up header line
+    # --------------------------------------------------------------------------
 
     if tf.top_line
         printstyled(io, tf.up_left_corner;
@@ -279,29 +308,56 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
         println(io)
     end
 
-    # Header text.
-    printstyled(io, tf.column * " ";
-                bold = border_bold, color = border_color)
+    # Header and sub-header texts
+    # --------------------------------------------------------------------------
 
-    if show_row_number
-        header_row_i_str = @_str_aligned("Row", :r, row_number_width) * " "
-        printstyled(io, header_row_i_str; bold = header_bold, color = header_color)
-        printstyled(io, tf.column;        bold = border_bold, color = border_color)
-        print(io, " ")
-    end
+    @inbounds @views for i = 1:header_num_rows
+        printstyled(io, tf.column * " ";
+                    bold = border_bold, color = border_color)
 
-    @inbounds @views for i = 1:num_cols
-        header_i_str = @_str_aligned(header_str[i], alignment[i], cols_width[i]) * " "
+        if show_row_number
+            # The text "Row" must appear only on the first line.
 
-        printstyled(io, header_i_str; bold = header_bold, color = header_color)
-        printstyled(io, tf.column;    bold = border_bold, color = border_color)
+            if i == 1
+                header_row_i_str = @_str_aligned("Row", :r, row_number_width) * " "
+                printstyled(io, header_row_i_str;
+                            bold = header_bold, color = header_color)
+            else
+                print(" "^(row_number_width+1))
+            end
 
-        i != num_cols && print(io, " ")
+            printstyled(io, tf.column; bold = border_bold, color = border_color)
+            print(io, " ")
+        end
+
+        for j = 1:num_cols
+            header_i_str = @_str_aligned(header_str[i,j], alignment[j], cols_width[j]) * " "
+
+            # Check if we are printing the header or the sub-headers and select
+            # the styling accordingly.
+            if i == 1
+                hb = header_bold
+                hc = header_color
+            else
+                hb = subheaders_bold
+                hc = subheaders_color
+            end
+
+            printstyled(io, header_i_str; bold = hb, color = hc)
+            printstyled(io, tf.column;
+                        bold = border_bold, color = border_color)
+
+            j != num_cols && print(io, " ")
+        end
+
+        i != header_num_rows && println(io)
     end
 
     println(io)
 
-    # Bottom header line.
+    # Bottom header line
+    # --------------------------------------------------------------------------
+
     printstyled(io, tf.left_intersection;
                 bold = border_bold, color = border_color)
 
