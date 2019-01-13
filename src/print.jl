@@ -64,9 +64,8 @@ it defaults to `stdout`.
     function pretty_table([io,] table, tf::PrettyTableFormat = unicode; ...)
 
 Print to `io` the table `table` using the format `tf` (see `PrettyTableFormat`).
-The header is considered to be the first row of `data`. In this case, `table`
-must comply with the API of **Tables.jl**. If `io` is omitted, then it defaults
-to `stdout`.
+In this case, `table` must comply with the API of **Tables.jl**. If `io` is
+omitted, then it defaults to `stdout`.
 
 # Keywords
 
