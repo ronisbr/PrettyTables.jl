@@ -44,7 +44,7 @@ Print to `io` the matrix `data` using the format `tf` (see [Formats](#formats)).
 The header is considered to be the first row of `data`. If `io` is omitted, then
 it defaults to `stdout`.
 
-```
+```julia
 function pretty_table([io,] table, tf::PrettyTableFormat = unicode; ...)
 ```
 
