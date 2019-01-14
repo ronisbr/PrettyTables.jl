@@ -238,6 +238,23 @@ end
 """
     result = sprint(pretty_table, data, simple)
     @test result == expected
+
+    # unicode_rounded
+    # ==========================================================================
+    expected = """
+╭────────┬────────┬────────┬────────╮
+│ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
+├────────┼────────┼────────┼────────┤
+│      1 │  false │    1.0 │      1 │
+│      2 │   true │    2.0 │      2 │
+│      3 │  false │    3.0 │      3 │
+│      4 │   true │    4.0 │      4 │
+│      5 │  false │    5.0 │      5 │
+│      6 │   true │    6.0 │      6 │
+╰────────┴────────┴────────┴────────╯
+"""
+    result = sprint(pretty_table, data, unicode_rounded)
+    @test result == expected
 end
 
 # Pre-defined formatters

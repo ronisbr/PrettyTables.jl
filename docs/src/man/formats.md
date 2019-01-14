@@ -92,6 +92,23 @@ The following table formats are available:
 ========= ======== ======== =========
 ```
 
+`unicode_rounded`
+
+```
+╭────────┬────────┬────────┬────────╮
+│ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
+├────────┼────────┼────────┼────────┤
+│      1 │  false │    1.0 │      1 │
+│      2 │   true │    2.0 │      2 │
+│      3 │  false │    3.0 │      3 │
+╰────────┴────────┴────────┴────────╯
+```
+
+!!! note
+
+    The format `unicode_rounded` should look awful on your browser, but it
+    should be printed fine on your terminal.
+
 ```jldoctest
 julia> data = Any[ f(a) for a = 0:15:90, f in (sind,cosd,tand)];
 
