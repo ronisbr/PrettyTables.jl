@@ -13,6 +13,48 @@ export pretty_table
 ################################################################################
 
 """
+    macro _draw_line(io, left, intersection, right, row, border_bold, border_color, num_cols, cols_width, show_row_number, row_number_width)
+
+This macro draws a vertical table line. The `left`, `intersection`, `right`, and
+`row` are the characters that will be used to draw the table line.
+
+"""
+macro _draw_line(io, left, intersection, right, row, border_bold, border_color,
+                 num_cols, cols_width, show_row_number, row_number_width)
+
+    return quote
+        local io               = $(esc(io))
+        local left             = $(esc(left))
+        local intersection     = $(esc(intersection))
+        local right            = $(esc(right))
+        local row              = $(esc(row))
+        local border_bold      = $(esc(border_bold))
+        local border_color     = $(esc(border_color))
+        local num_cols         = $(esc(num_cols))
+        local cols_width       = $(esc(cols_width))
+        local show_row_number  = $(esc(show_row_number))
+        local row_number_width = $(esc(row_number_width))
+
+        @_ps(io, left, border_bold, border_color)
+
+        if show_row_number
+            @_ps(io, row^(row_number_width+2), border_bold, border_color)
+            @_ps(io, intersection,             border_bold, border_color)
+        end
+
+        @inbounds for i = 1:num_cols
+            # Check the alignment and print.
+            @_ps(io, row^(cols_width[i]+2), border_bold, border_color)
+
+            i != num_cols && @_ps(io, intersection, border_bold, border_color)
+        end
+
+        @_ps(io, right, border_bold, border_color)
+        println(io)
+    end
+end
+
+"""
     macro _str_aligned(data, alignment, field_size)
 
 This macro returns a string of `data` with alignment `alignment` in a field with
@@ -219,17 +261,17 @@ end
 # must be accessed by `[i,j]` and the size of the `header` must be equal to the
 # number of columns in `data`.
 function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
-                      alignment::Union{Symbol,Vector{Symbol}} = :r,
-                      border_bold::Bool = false,
-                      border_color::Symbol = :normal,
-                      formatter::Dict = Dict(),
-                      header_bold::Bool = true,
-                      header_color::Symbol = :normal,
-                      subheaders_bold::Bool = false,
-                      subheaders_color::Symbol = :light_black,
-                      highlighters::Tuple = (),
-                      same_column_size::Bool = false,
-                      show_row_number::Bool = false)
+                       alignment::Union{Symbol,Vector{Symbol}} = :r,
+                       border_bold::Bool = false,
+                       border_color::Symbol = :normal,
+                       formatter::Dict = Dict(),
+                       header_bold::Bool = true,
+                       header_color::Symbol = :normal,
+                       subheaders_bold::Bool = false,
+                       subheaders_color::Symbol = :light_black,
+                       highlighters::Tuple = (),
+                       same_column_size::Bool = false,
+                       show_row_number::Bool = false)
 
     # Get information about the table we have to print.
     num_rows, num_cols = size(data)
@@ -293,24 +335,10 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
     # Up header line
     # --------------------------------------------------------------------------
 
-    if tf.top_line
-        @_ps(io, tf.up_left_corner, border_bold, border_color)
-
-        if show_row_number
-            @_ps(io, tf.row^(row_number_width+2), border_bold, border_color)
-            @_ps(io, tf.up_intersection,          border_bold, border_color)
-        end
-
-        @inbounds for i = 1:num_cols
-            # Check the alignment and print.
-            @_ps(io, tf.row^(cols_width[i]+2), border_bold, border_color)
-
-            i != num_cols && @_ps(io, tf.up_intersection, border_bold, border_color)
-        end
-
-        @_ps(io, tf.up_right_corner, border_bold, border_color)
-        println(io)
-    end
+    tf.top_line && @_draw_line(io, tf.up_left_corner, tf.up_intersection,
+                               tf.up_right_corner, tf.row, border_bold,
+                               border_color, num_cols, cols_width,
+                               show_row_number, row_number_width)
 
     # Header and sub-header texts
     # --------------------------------------------------------------------------
@@ -359,21 +387,9 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
     # Bottom header line
     # --------------------------------------------------------------------------
 
-    @_ps(io, tf.left_intersection, border_bold, border_color)
-
-    if show_row_number
-        @_ps(io, tf.row^(row_number_width+2), border_bold, border_color)
-        @_ps(io, tf.middle_intersection,      border_bold, border_color)
-    end
-
-    @inbounds @views for i = 1:num_cols
-        @_ps(io, tf.row^(cols_width[i]+2), border_bold, border_color)
-
-        i != num_cols && @_ps(io, tf.middle_intersection, border_bold, border_color)
-    end
-
-    @_ps(io, tf.right_intersection, border_bold, border_color)
-    println(io)
+    @_draw_line(io, tf.left_intersection, tf.middle_intersection,
+                tf.right_intersection, tf.row, border_bold, border_color,
+                num_cols, cols_width, show_row_number, row_number_width)
 
     # Data
     # ==========================================================================
@@ -417,23 +433,11 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
     # Bottom table line
     # ==========================================================================
 
-    if tf.bottom_line
-        @_ps(io, tf.bottom_left_corner, border_bold, border_color)
-
-        if show_row_number
-            @_ps(io, tf.row^(row_number_width+2), border_bold, border_color)
-            @_ps(io, tf.bottom_intersection,      border_bold, border_color)
-        end
-
-        @inbounds @views for i = 1:num_cols
-            @_ps(io, tf.row^(cols_width[i]+2), border_bold, border_color)
-
-            i != num_cols && @_ps(io, tf.bottom_intersection, border_bold, border_color)
-        end
-
-        @_ps(io, tf.bottom_right_corner, border_bold, border_color)
-        println(io)
-    end
+    tf.bottom_line && @_draw_line(io, tf.bottom_left_corner,
+                                  tf.bottom_intersection,
+                                  tf.bottom_right_corner, tf.row, border_bold,
+                                  border_color, num_cols, cols_width,
+                                  show_row_number, row_number_width)
 
     nothing
 end
