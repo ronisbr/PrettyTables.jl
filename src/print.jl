@@ -140,6 +140,10 @@ omitted, then it defaults to `stdout`.
                   `:normal`)
 * `highlighters`: A tuple with a list of highlighters (see the section
                   `Highlighters`).
+* `hlines`: A vector of `Int` indicating row numbers in which an additional
+            horizontal line should be drawn after the row. Notice that numbers
+            lower than 1 and equal or higher than the number of rows will be
+            neglected.
 * `same_column_size`: If `true`, then all the columns will have the same size.
                       (**Default** = `false`)
 * `show_row_number`: If `true`, then a new column will be printed showing the
@@ -267,9 +271,10 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
                        formatter::Dict = Dict(),
                        header_bold::Bool = true,
                        header_color::Symbol = :normal,
+                       highlighters::Tuple = (),
+                       hlines::Vector{Int} = Int[],
                        subheaders_bold::Bool = false,
                        subheaders_color::Symbol = :light_black,
-                       highlighters::Tuple = (),
                        same_column_size::Bool = false,
                        show_row_number::Bool = false)
 
@@ -428,6 +433,13 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
         end
 
         println(io)
+
+        # Check if we must draw a horizontal line here.
+        i != num_rows && i in hlines &&
+        @_draw_line(io, tf.left_intersection, tf.middle_intersection,
+                    tf.right_intersection, tf.row, border_bold, border_color,
+                    num_cols, cols_width, show_row_number, row_number_width)
+
     end
 
     # Bottom table line

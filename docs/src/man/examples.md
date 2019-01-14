@@ -42,6 +42,10 @@ printed:
 
 ![](../assets/ex_00007.png)
 
+You can use `hlines` keyword to divide the table into interesting parts:
+
+![](../assets/ex_00008.png)
+
 If you want to save the printed table to a file, you can do:
 
 ```julia-repl

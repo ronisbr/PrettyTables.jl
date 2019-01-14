@@ -90,6 +90,10 @@ In all cases, the following keywords are available:
                   `:normal`)
 * `highlighters`: A tuple with a list of highlighters (see the section
                   [Highlighters](@ref)).
+* `hlines`: A vector of `Int` indicating row numbers in which an additional
+            horizontal line should be drawn after the row. Notice that numbers
+            lower than 1 and equal or higher than the number of rows will be
+            neglected.
 * `same_column_size`: If `true`, then all the columns will have the same size.
                       (**Default** = `false`)
 * `show_row_number`: If `true`, then a new column will be printed showing the
