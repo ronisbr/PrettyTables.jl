@@ -43,6 +43,17 @@ macro _str_aligned(data, alignment, field_size)
     end
 end
 
+"""
+    macro _ps(io, str, bold, color)
+
+Call `printstyled(io, str; bold = bold, color = color)`.
+
+"""
+macro _ps(io, str, bold, color)
+    return :(printstyled($(esc(io)), $(esc(str));
+                         bold = $(esc(bold)), color = $(esc(color))))
+end
+
 ################################################################################
 #                               Public Functions
 ################################################################################
@@ -283,28 +294,21 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
     # --------------------------------------------------------------------------
 
     if tf.top_line
-        printstyled(io, tf.up_left_corner;
-                    bold = border_bold, color = border_color)
+        @_ps(io, tf.up_left_corner, border_bold, border_color)
 
         if show_row_number
-            printstyled(io, tf.row^(row_number_width+2);
-                        bold = border_bold, color = border_color)
-            printstyled(io, tf.up_intersection;
-                        bold  = border_bold, color = border_color)
+            @_ps(io, tf.row^(row_number_width+2), border_bold, border_color)
+            @_ps(io, tf.up_intersection,          border_bold, border_color)
         end
 
         @inbounds for i = 1:num_cols
             # Check the alignment and print.
-            printstyled(io, tf.row^(cols_width[i]+2);
-                        bold = border_bold, color = border_color)
+            @_ps(io, tf.row^(cols_width[i]+2), border_bold, border_color)
 
-            i != num_cols && printstyled(io, tf.up_intersection;
-                                         bold  = border_bold,
-                                         color = border_color)
+            i != num_cols && @_ps(io, tf.up_intersection, border_bold, border_color)
         end
 
-        printstyled(io, tf.up_right_corner;
-                    bold = border_bold, color = border_color)
+        @_ps(io, tf.up_right_corner, border_bold, border_color)
         println(io)
     end
 
@@ -312,21 +316,19 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
     # --------------------------------------------------------------------------
 
     @inbounds @views for i = 1:header_num_rows
-        printstyled(io, tf.column * " ";
-                    bold = border_bold, color = border_color)
+        @_ps(io, tf.column * " ", border_bold, border_color)
 
         if show_row_number
             # The text "Row" must appear only on the first line.
 
             if i == 1
                 header_row_i_str = @_str_aligned("Row", :r, row_number_width) * " "
-                printstyled(io, header_row_i_str;
-                            bold = header_bold, color = header_color)
+                @_ps(io, header_row_i_str, header_bold, header_color)
             else
                 print(" "^(row_number_width+1))
             end
 
-            printstyled(io, tf.column; bold = border_bold, color = border_color)
+            @_ps(io, tf.column, border_bold, border_color)
             print(io, " ")
         end
 
@@ -343,9 +345,8 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
                 hc = subheaders_color
             end
 
-            printstyled(io, header_i_str; bold = hb, color = hc)
-            printstyled(io, tf.column;
-                        bold = border_bold, color = border_color)
+            @_ps(io, header_i_str, hb, hc)
+            @_ps(io, tf.column, border_bold, border_color)
 
             j != num_cols && print(io, " ")
         end
@@ -358,27 +359,20 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
     # Bottom header line
     # --------------------------------------------------------------------------
 
-    printstyled(io, tf.left_intersection;
-                bold = border_bold, color = border_color)
+    @_ps(io, tf.left_intersection, border_bold, border_color)
 
     if show_row_number
-        printstyled(io, tf.row^(row_number_width+2);
-                    bold = border_bold, color = border_color)
-
-        printstyled(io, tf.middle_intersection;
-                    bold = border_bold, color = border_color)
+        @_ps(io, tf.row^(row_number_width+2), border_bold, border_color)
+        @_ps(io, tf.middle_intersection,      border_bold, border_color)
     end
 
     @inbounds @views for i = 1:num_cols
-        printstyled(io, tf.row^(cols_width[i]+2);
-                    bold = border_bold, color = border_color)
+        @_ps(io, tf.row^(cols_width[i]+2), border_bold, border_color)
 
-        i != num_cols && printstyled(io, tf.middle_intersection;
-                                     bold = border_bold, color = border_color)
+        i != num_cols && @_ps(io, tf.middle_intersection, border_bold, border_color)
     end
 
-    printstyled(io, tf.right_intersection;
-                bold = border_bold, color = border_color)
+    @_ps(io, tf.right_intersection, border_bold, border_color)
     println(io)
 
     # Data
@@ -391,7 +385,7 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
         if show_row_number
             row_number_i_str = @_str_aligned(string(i), :r, row_number_width)
             print(io, row_number_i_str * " ")
-            printstyled(io, tf.column; bold = border_bold, color = border_color)
+            @_ps(io, tf.column, border_bold, border_color)
             print(io, " ")
         end
 
@@ -404,7 +398,7 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
 
             for h in highlighters
                 if h.f(data, i, j)
-                    printstyled(io, data_ij_str; bold = h.bold, color = h.color)
+                    @_ps(io, data_ij_str, h.bold, h.color)
                     printed = true
                     break
                 end
@@ -412,7 +406,7 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
 
             !printed && print(io, data_ij_str)
 
-            printstyled(io, tf.column; bold = border_bold, color = border_color)
+            @_ps(io, tf.column, border_bold, border_color)
 
             j != num_cols && print(io, " ")
         end
@@ -424,27 +418,20 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
     # ==========================================================================
 
     if tf.bottom_line
-        printstyled(io, tf.bottom_left_corner;
-                    bold = border_bold, color = border_color)
+        @_ps(io, tf.bottom_left_corner, border_bold, border_color)
 
         if show_row_number
-            printstyled(io, tf.row^(row_number_width+2);
-                        bold = border_bold, color = border_color)
-            printstyled(io, tf.bottom_intersection;
-                        bold  = border_bold, color = border_color)
+            @_ps(io, tf.row^(row_number_width+2), border_bold, border_color)
+            @_ps(io, tf.bottom_intersection,      border_bold, border_color)
         end
 
         @inbounds @views for i = 1:num_cols
-            printstyled(io, tf.row^(cols_width[i]+2);
-                        bold = border_bold, color = border_color)
+            @_ps(io, tf.row^(cols_width[i]+2), border_bold, border_color)
 
-            i != num_cols && printstyled(io, tf.bottom_intersection;
-                                         bold = border_bold,
-                                         color = border_color)
+            i != num_cols && @_ps(io, tf.bottom_intersection, border_bold, border_color)
         end
 
-        printstyled(io, tf.bottom_right_corner;
-                    bold = border_bold, color = border_color)
+        @_ps(io, tf.bottom_right_corner, border_bold, border_color)
         println(io)
     end
 
