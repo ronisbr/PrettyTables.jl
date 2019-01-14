@@ -39,7 +39,13 @@
        1    false      1.0        1
        2     true      2.0        2
        3    false      3.0        3
-========= ======== ======== =========</code></pre><pre><code class="language-julia-repl">julia&gt; data = Any[ f(a) for a = 0:15:90, f in (sind,cosd,tand)];
+========= ======== ======== =========</code></pre><p><code>unicode_rounded</code></p><pre><code class="language-none">╭────────┬────────┬────────┬────────╮
+│ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
+├────────┼────────┼────────┼────────┤
+│      1 │  false │    1.0 │      1 │
+│      2 │   true │    2.0 │      2 │
+│      3 │  false │    3.0 │      3 │
+╰────────┴────────┴────────┴────────╯</code></pre><div class="admonition note"><div class="admonition-title">Note</div><div class="admonition-text"><p>The format <code>unicode_rounded</code> should look awful on your browser, but it should be printed fine on your terminal.</p></div></div><pre><code class="language-julia-repl">julia&gt; data = Any[ f(a) for a = 0:15:90, f in (sind,cosd,tand)];
 
 julia&gt; pretty_table(data, ascii_dots)
 ..................................................................
