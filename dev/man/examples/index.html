@@ -5,5 +5,5 @@
                    4     true      4.0     0x04 ;
                    5    false      5.0     0x05 ;
                    6     true      6.0     0x06 ;]</code></pre><p><img src="../../assets/ex_00001.png" alt/></p><p><img src="../../assets/ex_00002.png" alt/></p><p><img src="../../assets/ex_00003.png" alt/></p><p><img src="../../assets/ex_00004.png" alt/></p><p><img src="../../assets/ex_00005.png" alt/></p><p>The following example indicates how <code>highlighters</code> can be used to highlight the lowest and highest element in the data considering the columns 1, 3, and 5:</p><p><img src="../../assets/ex_00006.png" alt/></p><p>Since this package has support to the API defined by <a href="https://github.com/JuliaData/Tables.jl">Tables.jl</a>, then many formats, <em>e.g</em> <a href="https://github.com/JuliaData/DataFrames.jl">DataFrames.jl</a>, can be pretty printed:</p><p><img src="../../assets/ex_00007.png" alt/></p><p>If you want to save the printed table to a file, you can do:</p><pre><code class="language-julia-repl">julia&gt; open(&quot;output.txt&quot;, &quot;w&quot;) do f
-pretty_table(f,data)
+            pretty_table(f,data)
        end</code></pre><footer><hr/><a class="previous" href="../highlighters/"><span class="direction">Previous</span><span class="title">Highlighters</span></a></footer></article></body></html>
