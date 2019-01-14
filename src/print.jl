@@ -55,17 +55,17 @@ Print to `io` the matrix `data` with header `header` using the format `tf` (see
 `header` is empty, then it will be automatically filled with "Col. i" for the
 *i*-th column.
 
-The header can be a `Vector` or a `Matrix`. If it is a `Matrix`, then each row
+The `header` can be a `Vector` or a `Matrix`. If it is a `Matrix`, then each row
 will be a header line. The first line is called *header* and the others are
 called *sub-headers* .
 
-    function pretty_table([io,] data::AbstractMatrix{T}, tf::PrettyTableFormat = unicode; ...) where T
+    function pretty_table([io::IO,] data::AbstractMatrix{T}, tf::PrettyTableFormat = unicode; ...) where T
 
 Print to `io` the matrix `data` using the format `tf` (see `PrettyTableFormat`).
 If `io` is omitted, then it defaults to `stdout`. The header will be
 automatically filled with "Col. i" for the *i*-th column.
 
-    function pretty_table([io,] table, tf::PrettyTableFormat = unicode; ...)
+    function pretty_table([io::IO,] table, tf::PrettyTableFormat = unicode; ...)
 
 Print to `io` the table `table` using the format `tf` (see `PrettyTableFormat`).
 In this case, `table` must comply with the API of **Tables.jl**. If `io` is
@@ -74,14 +74,14 @@ omitted, then it defaults to `stdout`.
 # Keywords
 
 * `alignment`: Select the alignment of the columns (see the section `Alignment`).
-* `border_bold`: If `true`, then the border will be printed in **bold**
-                 (**Default** = `false`).
+* `border_bold`: If `true`, then the border will be printed in **bold**.
+                 (**Default** = `false`)
 * `border_color`: The color in which the border will be printed using the same
                   convention as in the function `printstyled`. (**Default** =
                   `:normal`)
 * `formatter`: See the section `Formatter`.
-* `header_bold`: If `true`, then the header will be printed in **bold**
-                 (**Default** = `false`).
+* `header_bold`: If `true`, then the header will be printed in **bold**.
+                 (**Default** = `true`)
 * `header_color`: The color in which the header will be printed using the same
                   convention as in the function `printstyled`. (**Default** =
                   `:normal`)
@@ -90,12 +90,12 @@ omitted, then it defaults to `stdout`.
 * `same_column_size`: If `true`, then all the columns will have the same size.
                       (**Default** = `false`)
 * `show_row_number`: If `true`, then a new column will be printed showing the
-                     row number. (**Default** = `false`.)
-* `subheader_bold`: If `true`, then the sub-headers will be printed in **bold**
-                    (**Default** = `false`).
-* `subheader_color`: The color in which the sub-headers will be printed using
-                     the same convention as in the function `printstyled`.
-                     (**Default** = `:light_black`)
+                     row number. (**Default** = `false`)
+* `subheaders_bold`: If `true`, then the sub-headers will be printed in
+                     **bold**. (**Default** = `false`)
+* `subheaders_color`: The color in which the sub-headers will be printed using
+                      the same convention as in the function `printstyled`.
+                      (**Default** = `:light_black`)
 
 # Alignment
 

@@ -11,7 +11,7 @@ end
 The following functions can be used to print data.
 
 ```julia
-function pretty_table(data::AbstractMatrix{T1}, header::AbstractVector{T2}; kwargs...) where {T1,T2}
+function pretty_table(data::AbstractMatrix{T1}, header::AbstractVecOrMat{T2}; kwargs...) where {T1,T2}
 ```
 
 Print to `io` the matrix `data` with header `header` using the format `tf` (see
@@ -19,12 +19,25 @@ Print to `io` the matrix `data` with header `header` using the format `tf` (see
 is empty, then it will be automatically filled with "Col. i" for the *i*-th
 column.
 
+The `header` can be a `Vector` or a `Matrix`. If it is a `Matrix`, then each row
+will be a header line. The first line is called *header* and the others are
+called *sub-headers* .
+
 ```jldoctest
 julia> data = [1 2 3; 4 5 6];
 
 julia> pretty_table(data, ["Column 1", "Column 2", "Column 3"])
 ┌──────────┬──────────┬──────────┐
 │ Column 1 │ Column 2 │ Column 3 │
+├──────────┼──────────┼──────────┤
+│        1 │        2 │        3 │
+│        4 │        5 │        6 │
+└──────────┴──────────┴──────────┘
+
+julia> pretty_table(data, ["Column 1" "Column 2" "Column 3"; "A" "B" "C"])
+┌──────────┬──────────┬──────────┐
+│ Column 1 │ Column 2 │ Column 3 │
+│        A │        B │        C │
 ├──────────┼──────────┼──────────┤
 │        1 │        2 │        3 │
 │        4 │        5 │        6 │
@@ -64,14 +77,14 @@ In all cases, the following keywords are available:
 
 * `alignment`: Select the alignment of the columns (see the section
                [Alignment](@ref)).
-* `border_bold`: If `true`, then the border will be printed in **bold**
-                 (**Default** = `false`).
+* `border_bold`: If `true`, then the border will be printed in **bold**.
+                 (**Default** = `false`)
 * `border_color`: The color in which the border will be printed using the same
                   convention as in the function `printstyled`. (**Default** =
                   `:normal`)
 * `formatter`: See the section [Formatter](@ref).
-* `header_bold`: If `true`, then the header will be printed in **bold**
-                 (**Default** = `false`).
+* `header_bold`: If `true`, then the header will be printed in **bold**.
+                 (**Default** = `false`)
 * `header_color`: The color in which the header will be printed using the same
                   convention as in the function `printstyled`. (**Default** =
                   `:normal`)
@@ -80,4 +93,9 @@ In all cases, the following keywords are available:
 * `same_column_size`: If `true`, then all the columns will have the same size.
                       (**Default** = `false`)
 * `show_row_number`: If `true`, then a new column will be printed showing the
-                     row number. (**Default** = `false`.)
+                     row number. (**Default** = `false`)
+* `subheaders_bold`: If `true`, then the sub-headers will be printed in
+                     **bold**. (**Default** = `false`)
+* `subheaders_color`: The color in which the sub-headers will be printed using
+                      the same convention as in the function `printstyled`.
+                      (**Default** = `:light_black`)

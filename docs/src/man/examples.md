@@ -46,6 +46,6 @@ If you want to save the printed table to a file, you can do:
 
 ```julia-repl
 julia> open("output.txt", "w") do f
-pretty_table(f,data)
+            pretty_table(f,data)
        end
 ```
