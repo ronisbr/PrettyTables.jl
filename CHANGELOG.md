@@ -1,6 +1,12 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 0.2.1
+-------------
+
+- ![Bugfix][badge-bugfix] The version of the package was not updated on
+  `Project.toml` in the last release.
+
 Version 0.2.0
 -------------
 

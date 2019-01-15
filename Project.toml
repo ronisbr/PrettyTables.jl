@@ -3,7 +3,7 @@ uuid = "bf2635c2-15c2-11e9-0b27-5fb50ccc2906"
 license = "MIT"
 desc = "Print data in formatted tables"
 authors = ["Ronan Arraes Jardim Chagas <ronisbr@gmail.com>"]
-version = "0.1.0"
+version = "0.2.1"
 
 [deps]
 Parameters = "d96e819e-fc66-5662-9728-84c9c7592b0a"
