@@ -367,13 +367,18 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
     # larger.
     same_column_size && (cols_width = [maximum(cols_width) for i = 1:num_cols])
 
+    # Let's create a `IOBuffer` to write everything and then transfer to `io`.
+    io_has_color = get(io, :color, false)
+    buf_io       = IOBuffer()
+    buf          = IOContext(buf_io, :color => io_has_color)
+
     # Header
     # ==========================================================================
 
     # Up header line
     # --------------------------------------------------------------------------
 
-    tf.top_line && @_draw_line(io, tf.up_left_corner, tf.up_intersection,
+    tf.top_line && @_draw_line(buf, tf.up_left_corner, tf.up_intersection,
                                tf.up_right_corner, tf.row, border_crayon,
                                num_cols, cols_width, show_row_number,
                                row_number_width)
@@ -382,19 +387,19 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
     # --------------------------------------------------------------------------
 
     @inbounds @views for i = 1:header_num_rows
-        @_ps(io, border_crayon, tf.column)
+        @_ps(buf, border_crayon, tf.column)
 
         if show_row_number
             # The text "Row" must appear only on the first line.
 
             if i == 1
                 header_row_i_str = " " * @_str_aligned("Row", :r, row_number_width) * " "
-                @_ps(io, rownum_header_crayon, header_row_i_str)
+                @_ps(buf, rownum_header_crayon, header_row_i_str)
             else
-                @_ps(io, rownum_header_crayon, " "^(row_number_width+1))
+                @_ps(buf, rownum_header_crayon, " "^(row_number_width+1))
             end
 
-            @_ps(io, border_crayon, tf.column)
+            @_ps(buf, border_crayon, tf.column)
         end
 
         for j = 1:num_cols
@@ -404,19 +409,19 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
             # the styling accordingly.
             crayon = (i == 1) ? header_crayon[j] : subheader_crayon[j]
 
-            @_ps(io, crayon,        header_i_str)
-            @_ps(io, border_crayon, tf.column)
+            @_ps(buf, crayon,        header_i_str)
+            @_ps(buf, border_crayon, tf.column)
         end
 
-        i != header_num_rows && println(io)
+        i != header_num_rows && println(buf)
     end
 
-    println(io)
+    println(buf)
 
     # Bottom header line
     # --------------------------------------------------------------------------
 
-    @_draw_line(io, tf.left_intersection, tf.middle_intersection,
+    @_draw_line(buf, tf.left_intersection, tf.middle_intersection,
                 tf.right_intersection, tf.row, border_crayon, num_cols,
                 cols_width, show_row_number, row_number_width)
 
@@ -424,12 +429,12 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
     # ==========================================================================
 
     @inbounds @views for i = 1:num_rows
-        @_ps(io, border_crayon, tf.column)
+        @_ps(buf, border_crayon, tf.column)
 
         if show_row_number
             row_number_i_str = " " * @_str_aligned(string(i), :r, row_number_width) * " "
-            @_ps(io, text_crayon,   row_number_i_str)
-            @_ps(io, border_crayon, tf.column)
+            @_ps(buf, text_crayon,   row_number_i_str)
+            @_ps(buf, border_crayon, tf.column)
         end
 
         for j = 1:num_cols
@@ -443,22 +448,22 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
             for h in highlighters
                 if h.f(data, i, j)
                     crayon = h.crayon
-                    @_ps(io, crayon, data_ij_str)
+                    @_ps(buf, crayon, data_ij_str)
                     printed = true
                     break
                 end
             end
 
-            !printed && @_ps(io, text_crayon, data_ij_str)
+            !printed && @_ps(buf, text_crayon, data_ij_str)
 
-            @_ps(io, border_crayon, tf.column)
+            @_ps(buf, border_crayon, tf.column)
         end
 
-        println(io)
+        println(buf)
 
         # Check if we must draw a horizontal line here.
         i != num_rows && i in hlines &&
-        @_draw_line(io, tf.left_intersection, tf.middle_intersection,
+        @_draw_line(buf, tf.left_intersection, tf.middle_intersection,
                     tf.right_intersection, tf.row, border_crayon, num_cols,
                     cols_width, show_row_number, row_number_width)
 
@@ -467,11 +472,15 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
     # Bottom table line
     # ==========================================================================
 
-    tf.bottom_line && @_draw_line(io, tf.bottom_left_corner,
+    tf.bottom_line && @_draw_line(buf, tf.bottom_left_corner,
                                   tf.bottom_intersection,
                                   tf.bottom_right_corner, tf.row, border_crayon,
                                   num_cols, cols_width, show_row_number,
                                   row_number_width)
+
+    # Print the buffer
+    # ==========================================================================
+    print(io, String(take!(buf_io)))
 
     nothing
 end
