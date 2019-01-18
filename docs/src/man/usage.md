@@ -75,19 +75,15 @@ defaults to `stdout`.
 
 In all cases, the following keywords are available:
 
+* `border_crayon`: Crayon to print the border.
+* `header_crayon`: Crayon to print the header.
+* `subheaders_crayon`: Crayon to print sub-headers.
+* `rownum_header_crayon`: Crayon for the header of the column with the row
+                          numbers.
+* `text_crayon`: Crayon to print default text.
 * `alignment`: Select the alignment of the columns (see the section
                [Alignment](@ref)).
-* `border_bold`: If `true`, then the border will be printed in **bold**.
-                 (**Default** = `false`)
-* `border_color`: The color in which the border will be printed using the same
-                  convention as in the function `printstyled`. (**Default** =
-                  `:normal`)
 * `formatter`: See the section [Formatter](@ref).
-* `header_bold`: If `true`, then the header will be printed in **bold**.
-                 (**Default** = `false`)
-* `header_color`: The color in which the header will be printed using the same
-                  convention as in the function `printstyled`. (**Default** =
-                  `:normal`)
 * `highlighters`: A tuple with a list of highlighters (see the section
                   [Highlighters](@ref)).
 * `hlines`: A vector of `Int` indicating row numbers in which an additional
@@ -98,8 +94,32 @@ In all cases, the following keywords are available:
                       (**Default** = `false`)
 * `show_row_number`: If `true`, then a new column will be printed showing the
                      row number. (**Default** = `false`)
-* `subheaders_bold`: If `true`, then the sub-headers will be printed in
-                     **bold**. (**Default** = `false`)
-* `subheaders_color`: The color in which the sub-headers will be printed using
-                      the same convention as in the function `printstyled`.
-                      (**Default** = `:light_black`)
+
+The keywords `header_crayon` and `subheaders_crayon` can be a `Crayon` or a
+`Vector{Crayon}`. In the first case, the `Crayon` will be applied to all the
+elements. In the second, each element can have its own crayon, but the length of
+the vector must be equal to the number of columns in the data.
+
+## Crayons
+
+A `Crayon` is an object that handles a style for text printed on terminals. It
+is defined in the package
+[Crayons.jl](https://github.com/KristofferC/Crayons.jl). There are many options
+available to customize the style, such as foreground color, background color,
+bold text, etc.
+
+A `Crayon` can be created in two different ways:
+
+```julia-repl
+julia> Crayon(foreground = :blue, background = :black, bold = :true)
+
+julia> crayon"blue bg:black bold"
+```
+
+For more information, see the [Crayon.jl
+documentation](https://github.com/KristofferC/Crayons.jl/blob/master/README.md).
+
+!!! Info
+
+    The Crayon.jl package is re-exported by PrettyTables.jl. Hence, you do not
+    need `using Crayons` to create a `Crayon`.

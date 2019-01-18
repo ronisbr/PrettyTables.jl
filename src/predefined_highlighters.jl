@@ -22,9 +22,8 @@ hl_lt(n::Number) = Highlighter(
             return false
         end
     end,
-
-    bold  = true,
-    color = :red
+    crayon = Crayon(bold       = true,
+                    foreground = :red)
 )
 
 """
@@ -41,9 +40,8 @@ hl_leq(n::Number) = Highlighter(
             return false
         end
     end,
-
-    bold  = true,
-    color = :red
+    crayon = Crayon(bold       = true,
+                    foreground = :red)
 )
 
 """
@@ -60,9 +58,8 @@ hl_gt(n::Number) = Highlighter(
             return false
         end
     end,
-
-    bold  = true,
-    color = :blue
+    crayon = Crayon(bold       = true,
+                    foreground = :blue)
 )
 
 """
@@ -79,9 +76,8 @@ hl_geq(n::Number) = Highlighter(
             return false
         end
     end,
-
-    bold  = true,
-    color = :blue
+    crayon = Crayon(bold       = true,
+                    foreground = :blue)
 )
 
 """
@@ -92,6 +88,6 @@ Highlight all the values that matches `data[i,j] == v`.
 """
 hl_value(v) = Highlighter(
     f = (data,i,j)->data[i,j] == v,
-    bold  = true,
-    color = :yellow
+    crayon = Crayon(bold       = true,
+                    foreground = :yellow)
 )

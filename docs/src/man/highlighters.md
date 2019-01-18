@@ -15,9 +15,7 @@ The structure contains three fields:
 * `f`: Function with the signature `f(data,i,j)` in which should return `true`
        if the element `(i,j)` in `data` must be highlighted, or `false`
        otherwise.
-* `bold`: If `true`, then the highlight style should be **bold**.
-* `color`: A symbol with the color of the highlight style using the same
-           convention as in the function `printstyled`.
+* `crayon`: Crayon with the style of a highlighted element.
 
 The function `f` must have the following signature:
 
@@ -35,6 +33,8 @@ Tuple `highlighters`.
 
 ![](../assets/ex_highlighters_00001.png)
 
+![](../assets/ex_highlighters_00002.png)
+
 !!! note
 
     If the highlighters are used together with [Formatter](@ref), then the
@@ -44,3 +44,23 @@ Tuple `highlighters`.
 
 There are a set of pre-defined highlighters (with names `hl_*`) to make the
 usage simpler. They are defined in the file `./src/predefined_highlighters.jl`.
+
+To make the syntax less cumbersome, the following helper function is available:
+
+```julia
+    function Highlighter(f; kwargs...)
+```
+
+It creates a `Highlighter` with the function `f` and pass all the keyword
+arguments `kwargs` to the `Crayon`. Hence, the following code:
+
+```julia-repl
+julia> Highlighter((data,i,j)->isodd(i), Crayon(bold = true, background = :dark_gray))
+```
+
+can be replaced by:
+
+```julia-repl
+julia> Highlighter((data,i,j)->isodd(i); bold = true, background = :dark_gray)
+```
+

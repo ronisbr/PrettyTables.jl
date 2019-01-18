@@ -2,7 +2,10 @@ module PrettyTables
 
 using Parameters
 using Printf
+using Reexport
 using Tables
+
+@reexport using Crayons
 
 export Highlighter, PrettyTableFormat
 
@@ -64,16 +67,29 @@ Defines the highlighter of a table.
 * `f`: Function with the signature `f(data,i,j)` in which should return `true`
        if the element `(i,j)` in `data` must be highlighter, or `false`
        otherwise.
-* `bold`: If `true`, then the highlight style should be **bold**.
-* `color`: A symbol with the color of the highlight style using the same
-           convention as in the function `printstyled`.
+* `crayon`: Crayon with the style of a highlighted element.
 
 """
 @with_kw struct Highlighter
     f::Function
-    bold::Bool
-    color::Symbol
+    crayon::Crayon
 end
+
+"""
+    function Highlighter(f; kwargs...)
+
+Construct a `Highlighter` with activation function `f` and pass all the keyword
+arguments `kwargs` to `Crayon`.
+
+"""
+Highlighter(f; kwargs...) = Highlighter(f = f, crayon = Crayon(;kwargs...))
+
+################################################################################
+#                                  Constants
+################################################################################
+
+# Crayon used to reset all the styling.
+const _reset_crayon = Crayon(reset = true)
 
 ################################################################################
 #                                  Includes

@@ -13,14 +13,14 @@ export pretty_table
 ################################################################################
 
 """
-    macro _draw_line(io, left, intersection, right, row, border_bold, border_color, num_cols, cols_width, show_row_number, row_number_width)
+    macro _draw_line(io, left, intersection, right, row, border_crayon, num_cols, cols_width, show_row_number, row_number_width)
 
 This macro draws a vertical table line. The `left`, `intersection`, `right`, and
 `row` are the characters that will be used to draw the table line.
 
 """
-macro _draw_line(io, left, intersection, right, row, border_bold, border_color,
-                 num_cols, cols_width, show_row_number, row_number_width)
+macro _draw_line(io, left, intersection, right, row, border_crayon, num_cols,
+                 cols_width, show_row_number, row_number_width)
 
     return quote
         local io               = $(esc(io))
@@ -28,28 +28,27 @@ macro _draw_line(io, left, intersection, right, row, border_bold, border_color,
         local intersection     = $(esc(intersection))
         local right            = $(esc(right))
         local row              = $(esc(row))
-        local border_bold      = $(esc(border_bold))
-        local border_color     = $(esc(border_color))
+        local border_crayon    = $(esc(border_crayon))
         local num_cols         = $(esc(num_cols))
         local cols_width       = $(esc(cols_width))
         local show_row_number  = $(esc(show_row_number))
         local row_number_width = $(esc(row_number_width))
 
-        @_ps(io, left, border_bold, border_color)
+        @_ps(io, border_crayon, left)
 
         if show_row_number
-            @_ps(io, row^(row_number_width+2), border_bold, border_color)
-            @_ps(io, intersection,             border_bold, border_color)
+            print(io, border_crayon, row^(row_number_width+2))
+            print(io, border_crayon, intersection)
         end
 
         @inbounds for i = 1:num_cols
             # Check the alignment and print.
-            @_ps(io, row^(cols_width[i]+2), border_bold, border_color)
+            @_ps(io, border_crayon, row^(cols_width[i]+2))
 
-            i != num_cols && @_ps(io, intersection, border_bold, border_color)
+            i != num_cols && @_ps(io, border_crayon, intersection)
         end
 
-        @_ps(io, right, border_bold, border_color)
+        @_ps(io, border_crayon, right)
         println(io)
     end
 end
@@ -86,14 +85,22 @@ macro _str_aligned(data, alignment, field_size)
 end
 
 """
-    macro _ps(io, str, bold, color)
+    macro _ps(io, crayon, str)
 
-Call `printstyled(io, str; bold = bold, color = color)`.
+Print `str` to `io` using `crayon` and reset the style at the end. Notice that
+if `io` does not support colors, then no escape sequence will be printed.
 
 """
-macro _ps(io, str, bold, color)
-    return :(printstyled($(esc(io)), $(esc(str));
-                         bold = $(esc(bold)), color = $(esc(color))))
+macro _ps(io, crayon, str)
+    return quote
+        io_has_color = get($(esc(io)), :color, false)
+
+        if io_has_color
+            print($(esc(io)), $(esc(crayon)), $(esc(str)), $(esc(_reset_crayon)))
+        else
+            print($(esc(io)), $(esc(str)))
+        end
+    end
 end
 
 ################################################################################
@@ -126,18 +133,14 @@ omitted, then it defaults to `stdout`.
 
 # Keywords
 
+* `border_crayon`: Crayon to print the border.
+* `header_crayon`: Crayon to print the header.
+* `subheaders_crayon`: Crayon to print sub-headers.
+* `rownum_header_crayon`: Crayon for the header of the column with the row
+                          numbers.
+* `text_crayon`: Crayon to print default text.
 * `alignment`: Select the alignment of the columns (see the section `Alignment`).
-* `border_bold`: If `true`, then the border will be printed in **bold**.
-                 (**Default** = `false`)
-* `border_color`: The color in which the border will be printed using the same
-                  convention as in the function `printstyled`. (**Default** =
-                  `:normal`)
 * `formatter`: See the section `Formatter`.
-* `header_bold`: If `true`, then the header will be printed in **bold**.
-                 (**Default** = `true`)
-* `header_color`: The color in which the header will be printed using the same
-                  convention as in the function `printstyled`. (**Default** =
-                  `:normal`)
 * `highlighters`: A tuple with a list of highlighters (see the section
                   `Highlighters`).
 * `hlines`: A vector of `Int` indicating row numbers in which an additional
@@ -148,11 +151,29 @@ omitted, then it defaults to `stdout`.
                       (**Default** = `false`)
 * `show_row_number`: If `true`, then a new column will be printed showing the
                      row number. (**Default** = `false`)
-* `subheaders_bold`: If `true`, then the sub-headers will be printed in
-                     **bold**. (**Default** = `false`)
-* `subheaders_color`: The color in which the sub-headers will be printed using
-                      the same convention as in the function `printstyled`.
-                      (**Default** = `:light_black`)
+
+The keywords `header_crayon` and `subheaders_crayon` can be a `Crayon` or a
+`Vector{Crayon}`. In the first case, the `Crayon` will be applied to all the
+elements. In the second, each element can have its own crayon, but the length of
+the vector must be equal to the number of columns in the data.
+
+# Crayons
+
+A `Crayon` is an object that handles a style for text printed on terminals. It
+is defined in the package
+[Crayons.jl](https://github.com/KristofferC/Crayons.jl). There are many options
+available to customize the style, such as foreground color, background color,
+bold text, etc.
+
+A `Crayon` can be created in two different ways:
+
+```julia-repl
+julia> Crayon(foreground = :blue, background = :black, bold = :true)
+
+julia> crayon"blue bg:black bold"
+```
+
+For more information, see the package documentation.
 
 # Alignment
 
@@ -198,9 +219,7 @@ three fields:
 * `f`: Function with the signature `f(data,i,j)` in which should return `true`
        if the element `(i,j)` in `data` must be highlighted, or `false`
        otherwise.
-* `bold`: If `true`, then the highlight style should be **bold**.
-* `color`: A symbol with the color of the highlight style using the same
-           convention as in the function `printstyled`.
+* `crayon`: Crayon with the style of a highlighted element.
 
 The function `f` has the following signature:
 
@@ -265,16 +284,15 @@ end
 # must be accessed by `[i,j]` and the size of the `header` must be equal to the
 # number of columns in `data`.
 function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
+                       border_crayon::Crayon = Crayon(),
+                       header_crayon::Union{Crayon,Vector{Crayon}} = Crayon(bold = true),
+                       subheader_crayon::Union{Crayon,Vector{Crayon}} = Crayon(foreground = :dark_gray),
+                       rownum_header_crayon::Crayon = Crayon(bold = true),
+                       text_crayon::Crayon = Crayon(),
                        alignment::Union{Symbol,Vector{Symbol}} = :r,
-                       border_bold::Bool = false,
-                       border_color::Symbol = :normal,
                        formatter::Dict = Dict(),
-                       header_bold::Bool = true,
-                       header_color::Symbol = :normal,
                        highlighters::Tuple = (),
                        hlines::Vector{Int} = Int[],
-                       subheaders_bold::Bool = false,
-                       subheaders_color::Symbol = :light_black,
                        same_column_size::Bool = false,
                        show_row_number::Bool = false)
 
@@ -297,6 +315,21 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
 
     num_cols != header_num_cols &&
     error("The header length must be equal to the number of columns.")
+
+    # Transform some keywords that are single elements to vectors.
+    if typeof(header_crayon) == Crayon
+        header_crayon = [header_crayon for i = 1:num_cols]
+    else
+        length(header_crayon) != num_cols &&
+        error("The length of `header_crayon` must be the same as the number of columns.")
+    end
+
+    if typeof(subheader_crayon) == Crayon
+        subheader_crayon = [subheader_crayon for i = 1:num_cols]
+    else
+        length(subheader_crayon) != num_cols &&
+        error("The length of `subheader_crayon` must be the same as the number of columns.")
+    end
 
     if typeof(alignment) == Symbol
         alignment = [alignment for i = 1:num_cols]
@@ -341,47 +374,38 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
     # --------------------------------------------------------------------------
 
     tf.top_line && @_draw_line(io, tf.up_left_corner, tf.up_intersection,
-                               tf.up_right_corner, tf.row, border_bold,
-                               border_color, num_cols, cols_width,
-                               show_row_number, row_number_width)
+                               tf.up_right_corner, tf.row, border_crayon,
+                               num_cols, cols_width, show_row_number,
+                               row_number_width)
 
     # Header and sub-header texts
     # --------------------------------------------------------------------------
 
     @inbounds @views for i = 1:header_num_rows
-        @_ps(io, tf.column * " ", border_bold, border_color)
+        @_ps(io, border_crayon, tf.column)
 
         if show_row_number
             # The text "Row" must appear only on the first line.
 
             if i == 1
-                header_row_i_str = @_str_aligned("Row", :r, row_number_width) * " "
-                @_ps(io, header_row_i_str, header_bold, header_color)
+                header_row_i_str = " " * @_str_aligned("Row", :r, row_number_width) * " "
+                @_ps(io, rownum_header_crayon, header_row_i_str)
             else
-                print(" "^(row_number_width+1))
+                @_ps(io, rownum_header_crayon, " "^(row_number_width+1))
             end
 
-            @_ps(io, tf.column, border_bold, border_color)
-            print(io, " ")
+            @_ps(io, border_crayon, tf.column)
         end
 
         for j = 1:num_cols
-            header_i_str = @_str_aligned(header_str[i,j], alignment[j], cols_width[j]) * " "
+            header_i_str = " " * @_str_aligned(header_str[i,j], alignment[j], cols_width[j]) * " "
 
             # Check if we are printing the header or the sub-headers and select
             # the styling accordingly.
-            if i == 1
-                hb = header_bold
-                hc = header_color
-            else
-                hb = subheaders_bold
-                hc = subheaders_color
-            end
+            crayon = (i == 1) ? header_crayon[j] : subheader_crayon[j]
 
-            @_ps(io, header_i_str, hb, hc)
-            @_ps(io, tf.column, border_bold, border_color)
-
-            j != num_cols && print(io, " ")
+            @_ps(io, crayon,        header_i_str)
+            @_ps(io, border_crayon, tf.column)
         end
 
         i != header_num_rows && println(io)
@@ -393,43 +417,41 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
     # --------------------------------------------------------------------------
 
     @_draw_line(io, tf.left_intersection, tf.middle_intersection,
-                tf.right_intersection, tf.row, border_bold, border_color,
-                num_cols, cols_width, show_row_number, row_number_width)
+                tf.right_intersection, tf.row, border_crayon, num_cols,
+                cols_width, show_row_number, row_number_width)
 
     # Data
     # ==========================================================================
 
     @inbounds @views for i = 1:num_rows
-        printstyled(io, tf.column * " ";
-                    bold = border_bold, color = border_color)
+        @_ps(io, border_crayon, tf.column)
 
         if show_row_number
-            row_number_i_str = @_str_aligned(string(i), :r, row_number_width)
-            print(io, row_number_i_str * " ")
-            @_ps(io, tf.column, border_bold, border_color)
-            print(io, " ")
+            row_number_i_str = " " * @_str_aligned(string(i), :r, row_number_width) * " "
+            @_ps(io, text_crayon,   row_number_i_str)
+            @_ps(io, border_crayon, tf.column)
         end
 
         for j = 1:num_cols
-            data_ij_str = @_str_aligned(data_str[i,j], alignment[j], cols_width[j]) * " "
+            data_ij_str = " " * @_str_aligned(data_str[i,j], alignment[j], cols_width[j]) * " "
 
             # If we have highlighters defined, then we need to verify if this
             # data should be highlight.
             printed = false
+            crayon  = text_crayon
 
             for h in highlighters
                 if h.f(data, i, j)
-                    @_ps(io, data_ij_str, h.bold, h.color)
+                    crayon = h.crayon
+                    @_ps(io, crayon, data_ij_str)
                     printed = true
                     break
                 end
             end
 
-            !printed && print(io, data_ij_str)
+            !printed && @_ps(io, text_crayon, data_ij_str)
 
-            @_ps(io, tf.column, border_bold, border_color)
-
-            j != num_cols && print(io, " ")
+            @_ps(io, border_crayon, tf.column)
         end
 
         println(io)
@@ -437,8 +459,8 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
         # Check if we must draw a horizontal line here.
         i != num_rows && i in hlines &&
         @_draw_line(io, tf.left_intersection, tf.middle_intersection,
-                    tf.right_intersection, tf.row, border_bold, border_color,
-                    num_cols, cols_width, show_row_number, row_number_width)
+                    tf.right_intersection, tf.row, border_crayon, num_cols,
+                    cols_width, show_row_number, row_number_width)
 
     end
 
@@ -447,9 +469,9 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
 
     tf.bottom_line && @_draw_line(io, tf.bottom_left_corner,
                                   tf.bottom_intersection,
-                                  tf.bottom_right_corner, tf.row, border_bold,
-                                  border_color, num_cols, cols_width,
-                                  show_row_number, row_number_width)
+                                  tf.bottom_right_corner, tf.row, border_crayon,
+                                  num_cols, cols_width, show_row_number,
+                                  row_number_width)
 
     nothing
 end
