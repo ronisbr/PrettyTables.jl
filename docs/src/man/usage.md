@@ -90,6 +90,8 @@ In all cases, the following keywords are available:
             horizontal line should be drawn after the row. Notice that numbers
             lower than 1 and equal or higher than the number of rows will be
             neglected.
+* `linebreaks`: If `true`, then `\n` will break the line inside the cells.
+                (**Default** = `false`)
 * `same_column_size`: If `true`, then all the columns will have the same size.
                       (**Default** = `false`)
 * `show_row_number`: If `true`, then a new column will be printed showing the

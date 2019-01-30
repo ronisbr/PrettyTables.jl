@@ -147,6 +147,8 @@ omitted, then it defaults to `stdout`.
             horizontal line should be drawn after the row. Notice that numbers
             lower than 1 and equal or higher than the number of rows will be
             neglected.
+* `linebreaks`: If `true`, then `\n` will break the line inside the cells.
+                (**Default** = `false`)
 * `same_column_size`: If `true`, then all the columns will have the same size.
                       (**Default** = `false`)
 * `show_row_number`: If `true`, then a new column will be printed showing the
@@ -269,7 +271,7 @@ function pretty_table(io::IO, table, tf::PrettyTableFormat = unicode; kwargs...)
         num_cols, num_rows = size(data)
         header = ["Col. " * string(i) for i = 1:num_cols]
     else
-        header = [ reshape( [sch.names...], (1,:) ); 
+        header = [ reshape( [sch.names...], (1,:) );
                    reshape( [sch.types...], (1,:) )]
     end
 
@@ -293,6 +295,7 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
                        formatter::Dict = Dict(),
                        highlighters::Tuple = (),
                        hlines::Vector{Int} = Int[],
+                       linebreaks::Bool = false,
                        same_column_size::Bool = false,
                        show_row_number::Bool = false)
 
@@ -339,8 +342,10 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
 
     # Get the string which is printed when `print` is called in each element of
     # the matrix.
-    header_str = Matrix{String}(undef, header_num_rows, num_cols)
-    data_str   = Matrix{String}(undef, num_rows, num_cols)
+    header_str       = Matrix{String}(undef, header_num_rows, num_cols)
+    data_str         = Matrix{Vector{AbstractString}}(undef, num_rows, num_cols)
+    num_lines_in_row = ones(Int, num_rows)
+    cols_width       = zeros(Int, num_cols)
 
     @inbounds @views for i = 1:num_cols
         fi = haskey(formatter, i) ? formatter[i] :
@@ -348,16 +353,42 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
 
         for j = 1:header_num_rows
             header_str[j,i] = sprint(print, header[(i-1)*header_num_rows + j])
+
+            # Get the tokens for each line.
+            tokens = split(header_str[j,i], '\n')
+
+            # Compute the maximum length to compute the column size.
+            cell_width = maximum(length.(tokens))
+
+            # Check if we need to increase the columns size.
+            cols_width[i] < cell_width && (cols_width[i] = cell_width)
         end
 
         for j = 1:num_rows
             data_ij = fi != nothing ? fi(data[j,i], j) : data[j,i]
-            data_str[j,i] = sprint(print, data_ij)
+            data_str_ij = sprint(print, data_ij)
+
+            if linebreaks
+                # Get the tokens for each line.
+                tokens        = escape_string.(split(data_str_ij, '\n'))
+                data_str[j,i] = tokens
+                num_lines_ij  = length(tokens)
+
+                # Check if we must update the number of lines in this row.
+                num_lines_in_row[j] < num_lines_ij && (num_lines_in_row[j] = num_lines_ij)
+
+                # Compute the maximum length to compute the column size.
+                cell_width = maximum(length.(tokens))
+            else
+                data_str_ij_esc = escape_string(data_str_ij)
+                data_str[j,i]   = [data_str_ij_esc]
+                cell_width      = length(data_str_ij_esc)
+            end
+
+            # Check if we need to increase the columns size.
+            cols_width[i] < cell_width && (cols_width[i] = cell_width)
         end
     end
-
-    # Now, we need to obtain the maximum number of characters in each column.
-    cols_width = [maximum(vcat(length.(header_str[:,i]), length.(@view(data_str[:,i])))) for i = 1:num_cols]
 
     # The row number width depends on how many digits the total number of rows
     # has and the length of the header "Row".
@@ -429,37 +460,48 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
     # ==========================================================================
 
     @inbounds @views for i = 1:num_rows
-        @_ps(buf, border_crayon, tf.column)
-
-        if show_row_number
-            row_number_i_str = " " * @_str_aligned(string(i), :r, row_number_width) * " "
-            @_ps(buf, text_crayon,   row_number_i_str)
+        for l = 1:num_lines_in_row[i]
             @_ps(buf, border_crayon, tf.column)
-        end
 
-        for j = 1:num_cols
-            data_ij_str = " " * @_str_aligned(data_str[i,j], alignment[j], cols_width[j]) * " "
-
-            # If we have highlighters defined, then we need to verify if this
-            # data should be highlight.
-            printed = false
-            crayon  = text_crayon
-
-            for h in highlighters
-                if h.f(data, i, j)
-                    crayon = h.crayon
-                    @_ps(buf, crayon, data_ij_str)
-                    printed = true
-                    break
+            if show_row_number
+                if l == 1
+                    row_number_i_str = " " * @_str_aligned(string(i), :r, row_number_width) * " "
+                else
+                    row_number_i_str = " " * @_str_aligned("", :r, row_number_width) * " "
                 end
+
+                @_ps(buf, text_crayon,   row_number_i_str)
+                @_ps(buf, border_crayon, tf.column)
             end
 
-            !printed && @_ps(buf, text_crayon, data_ij_str)
+            for j = 1:num_cols
+                if length(data_str[i,j]) >= l
+                    data_ij_str = " " * @_str_aligned(data_str[i,j][l], alignment[j], cols_width[j]) * " "
+                else
+                    data_ij_str = " " * @_str_aligned("", alignment[j], cols_width[j]) * " "
+                end
 
-            @_ps(buf, border_crayon, tf.column)
+                # If we have highlighters defined, then we need to verify if this
+                # data should be highlight.
+                printed = false
+                crayon  = text_crayon
+
+                for h in highlighters
+                    if h.f(data, i, j)
+                        crayon = h.crayon
+                        @_ps(buf, crayon, data_ij_str)
+                        printed = true
+                        break
+                    end
+                end
+
+                !printed && @_ps(buf, text_crayon, data_ij_str)
+
+                @_ps(buf, border_crayon, tf.column)
+            end
+
+            println(buf)
         end
-
-        println(buf)
 
         # Check if we must draw a horizontal line here.
         i != num_rows && i in hlines &&

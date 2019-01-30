@@ -431,3 +431,85 @@ end
                     data)
     @test result == expected
 end
+
+# Line breaks inside cells
+# ==============================================================================
+
+@testset "Line breaks inside cells" begin
+    data = ["This line contains\nthe velocity [m/s]" 10.0;
+            "This line contains\nthe acceleration [m/s^2]" 1.0;
+            "This line contains\nthe time from the\nbeginning of the simulation" 10;]
+
+    header = ["Information", "Value"]
+
+    expected = """
+┌─────────────────────────────┬───────┐
+│                 Information │ Value │
+├─────────────────────────────┼───────┤
+│          This line contains │  10.0 │
+│          the velocity [m/s] │       │
+│          This line contains │   1.0 │
+│    the acceleration [m/s^2] │       │
+│          This line contains │    10 │
+│           the time from the │       │
+│ beginning of the simulation │       │
+└─────────────────────────────┴───────┘
+"""
+
+    result = sprint((io,data)->pretty_table(io,data,header; linebreaks = true),
+                    data)
+    @test result == expected
+
+    expected = """
+┌─────────────────────────────┬───────┐
+│         Information         │ Value │
+├─────────────────────────────┼───────┤
+│     This line contains      │ 10.0  │
+│     the velocity [m/s]      │       │
+│     This line contains      │  1.0  │
+│  the acceleration [m/s^2]   │       │
+│     This line contains      │  10   │
+│      the time from the      │       │
+│ beginning of the simulation │       │
+└─────────────────────────────┴───────┘
+"""
+
+    result = sprint((io,data)->pretty_table(io,data,header;
+                                            alignment = :c,
+                                            linebreaks = true),
+                    data)
+    @test result == expected
+
+    expected = """
+┌─────────────────────────────┬───────┐
+│ Information                 │ Value │
+├─────────────────────────────┼───────┤
+│ This line contains          │ 10.0  │
+│ the velocity [m/s]          │       │
+│ This line contains          │ 1.0   │
+│ the acceleration [m/s^2]    │       │
+│ This line contains          │ 10    │
+│ the time from the           │       │
+│ beginning of the simulation │       │
+└─────────────────────────────┴───────┘
+"""
+
+    result = sprint((io,data)->pretty_table(io,data,header;
+                                            alignment = :l,
+                                            linebreaks = true),
+                    data)
+    @test result == expected
+
+    expected = """
+┌────────────────────────────────────────────────────────────────────┬───────┐
+│                                                        Information │ Value │
+├────────────────────────────────────────────────────────────────────┼───────┤
+│                             This line contains\\nthe velocity [m/s] │  10.0 │
+│                       This line contains\\nthe acceleration [m/s^2] │   1.0 │
+│ This line contains\\nthe time from the\\nbeginning of the simulation │    10 │
+└────────────────────────────────────────────────────────────────────┴───────┘
+"""
+
+    result = sprint(pretty_table, data, header)
+    @test result == expected
+end

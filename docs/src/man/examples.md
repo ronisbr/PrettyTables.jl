@@ -46,6 +46,12 @@ You can use `hlines` keyword to divide the table into interesting parts:
 
 ![](../assets/ex_00008.png)
 
+If you want to break lines inside the cells, then you can set the keyword
+`linebreaks` to `true`. Hence, the characters `\n` will cause a line break
+inside the cell.
+
+![](../assets/ex_00009.png)
+
 If you want to save the printed table to a file, you can do:
 
 ```julia-repl
