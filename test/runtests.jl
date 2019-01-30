@@ -551,3 +551,25 @@ end
                                              noheader = true), data)
     @test result == expected
 end
+
+# Issue #4
+# ==============================================================================
+
+@testset "Issue #4 - Header with escape sequences" begin
+
+    expected = """
+┌───┬───────┬─────┬───┐
+│ 1 │   2\\n │   3 │ 4 │
+├───┼───────┼─────┼───┤
+│ 1 │ false │ 1.0 │ 1 │
+│ 2 │  true │ 2.0 │ 2 │
+│ 3 │ false │ 3.0 │ 3 │
+│ 4 │  true │ 4.0 │ 4 │
+│ 5 │ false │ 5.0 │ 5 │
+│ 6 │  true │ 6.0 │ 6 │
+└───┴───────┴─────┴───┘
+"""
+
+    result = sprint(pretty_table, data, ["1" "2\n" "3" "4"])
+    @test result == expected
+end

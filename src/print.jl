@@ -359,13 +359,10 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
 
         if !noheader
             for j = 1:header_num_rows
-                header_str[j,i] = sprint(print, header[(i-1)*header_num_rows + j])
+                header_str[j,i] = escape_string(sprint(print, header[(i-1)*header_num_rows + j]))
 
-                # Get the tokens for each line.
-                tokens = split(header_str[j,i], '\n')
-
-                # Compute the maximum length to compute the column size.
-                cell_width = maximum(length.(tokens))
+                # Compute the minimum column size to print this string.
+                cell_width = length(header_str[j,i])
 
                 # Check if we need to increase the columns size.
                 cols_width[i] < cell_width && (cols_width[i] = cell_width)
