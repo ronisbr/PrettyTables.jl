@@ -149,6 +149,9 @@ omitted, then it defaults to `stdout`.
             neglected.
 * `linebreaks`: If `true`, then `\n` will break the line inside the cells.
                 (**Default** = `false`)
+* `noheader`: If `true`, then the header will not be printed. Notice that all
+              keywords and parameters related to the header and sub-headers will
+              be ignored. (**Default** = `false`)
 * `same_column_size`: If `true`, then all the columns will have the same size.
                       (**Default** = `false`)
 * `show_row_number`: If `true`, then a new column will be printed showing the
@@ -296,6 +299,7 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
                        highlighters::Tuple = (),
                        hlines::Vector{Int} = Int[],
                        linebreaks::Bool = false,
+                       noheader::Bool = false,
                        same_column_size::Bool = false,
                        show_row_number::Bool = false)
 
@@ -316,22 +320,24 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
         header_num_cols = length(header)
     end
 
-    num_cols != header_num_cols &&
+    !noheader && num_cols != header_num_cols &&
     error("The header length must be equal to the number of columns.")
 
     # Transform some keywords that are single elements to vectors.
-    if typeof(header_crayon) == Crayon
-        header_crayon = [header_crayon for i = 1:num_cols]
-    else
-        length(header_crayon) != num_cols &&
-        error("The length of `header_crayon` must be the same as the number of columns.")
-    end
+    if !noheader
+        if typeof(header_crayon) == Crayon
+            header_crayon = [header_crayon for i = 1:num_cols]
+        else
+            length(header_crayon) != num_cols &&
+            error("The length of `header_crayon` must be the same as the number of columns.")
+        end
 
-    if typeof(subheader_crayon) == Crayon
-        subheader_crayon = [subheader_crayon for i = 1:num_cols]
-    else
-        length(subheader_crayon) != num_cols &&
-        error("The length of `subheader_crayon` must be the same as the number of columns.")
+        if typeof(subheader_crayon) == Crayon
+            subheader_crayon = [subheader_crayon for i = 1:num_cols]
+        else
+            length(subheader_crayon) != num_cols &&
+            error("The length of `subheader_crayon` must be the same as the number of columns.")
+        end
     end
 
     if typeof(alignment) == Symbol
@@ -351,17 +357,19 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
         fi = haskey(formatter, i) ? formatter[i] :
                 (haskey(formatter, 0) ? formatter[0] : nothing)
 
-        for j = 1:header_num_rows
-            header_str[j,i] = sprint(print, header[(i-1)*header_num_rows + j])
+        if !noheader
+            for j = 1:header_num_rows
+                header_str[j,i] = sprint(print, header[(i-1)*header_num_rows + j])
 
-            # Get the tokens for each line.
-            tokens = split(header_str[j,i], '\n')
+                # Get the tokens for each line.
+                tokens = split(header_str[j,i], '\n')
 
-            # Compute the maximum length to compute the column size.
-            cell_width = maximum(length.(tokens))
+                # Compute the maximum length to compute the column size.
+                cell_width = maximum(length.(tokens))
 
-            # Check if we need to increase the columns size.
-            cols_width[i] < cell_width && (cols_width[i] = cell_width)
+                # Check if we need to increase the columns size.
+                cols_width[i] < cell_width && (cols_width[i] = cell_width)
+            end
         end
 
         for j = 1:num_rows
@@ -403,58 +411,61 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
     buf_io       = IOBuffer()
     buf          = IOContext(buf_io, :color => io_has_color)
 
-    # Header
-    # ==========================================================================
 
-    # Up header line
-    # --------------------------------------------------------------------------
+    # Top table line
+    # ==========================================================================
 
     tf.top_line && @_draw_line(buf, tf.up_left_corner, tf.up_intersection,
                                tf.up_right_corner, tf.row, border_crayon,
                                num_cols, cols_width, show_row_number,
                                row_number_width)
 
+    # Header
+    # ==========================================================================
+
     # Header and sub-header texts
     # --------------------------------------------------------------------------
 
-    @inbounds @views for i = 1:header_num_rows
-        @_ps(buf, border_crayon, tf.column)
+    if !noheader
+        @inbounds @views for i = 1:header_num_rows
+            @_ps(buf, border_crayon, tf.column)
 
-        if show_row_number
-            # The text "Row" must appear only on the first line.
+            if show_row_number
+                # The text "Row" must appear only on the first line.
 
-            if i == 1
-                header_row_i_str = " " * @_str_aligned("Row", :r, row_number_width) * " "
-                @_ps(buf, rownum_header_crayon, header_row_i_str)
-            else
-                @_ps(buf, rownum_header_crayon, " "^(row_number_width+1))
+                if i == 1
+                    header_row_i_str = " " * @_str_aligned("Row", :r, row_number_width) * " "
+                    @_ps(buf, rownum_header_crayon, header_row_i_str)
+                else
+                    @_ps(buf, rownum_header_crayon, " "^(row_number_width+1))
+                end
+
+                @_ps(buf, border_crayon, tf.column)
             end
 
-            @_ps(buf, border_crayon, tf.column)
+            for j = 1:num_cols
+                header_i_str = " " * @_str_aligned(header_str[i,j], alignment[j], cols_width[j]) * " "
+
+                # Check if we are printing the header or the sub-headers and select
+                # the styling accordingly.
+                crayon = (i == 1) ? header_crayon[j] : subheader_crayon[j]
+
+                @_ps(buf, crayon,        header_i_str)
+                @_ps(buf, border_crayon, tf.column)
+            end
+
+            i != header_num_rows && println(buf)
         end
 
-        for j = 1:num_cols
-            header_i_str = " " * @_str_aligned(header_str[i,j], alignment[j], cols_width[j]) * " "
+        println(buf)
 
-            # Check if we are printing the header or the sub-headers and select
-            # the styling accordingly.
-            crayon = (i == 1) ? header_crayon[j] : subheader_crayon[j]
+        # Bottom header line
+        #-----------------------------------------------------------------------
 
-            @_ps(buf, crayon,        header_i_str)
-            @_ps(buf, border_crayon, tf.column)
-        end
-
-        i != header_num_rows && println(buf)
+        @_draw_line(buf, tf.left_intersection, tf.middle_intersection,
+                    tf.right_intersection, tf.row, border_crayon, num_cols,
+                    cols_width, show_row_number, row_number_width)
     end
-
-    println(buf)
-
-    # Bottom header line
-    # --------------------------------------------------------------------------
-
-    @_draw_line(buf, tf.left_intersection, tf.middle_intersection,
-                tf.right_intersection, tf.row, border_crayon, num_cols,
-                cols_width, show_row_number, row_number_width)
 
     # Data
     # ==========================================================================

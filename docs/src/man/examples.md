@@ -52,6 +52,11 @@ inside the cell.
 
 ![](../assets/ex_00009.png)
 
+The keyword `noheader` can be used to suppres the header, which leads to a very
+simplistic, compact format.
+
+![](../assets/ex_00010.png)
+
 If you want to save the printed table to a file, you can do:
 
 ```julia-repl

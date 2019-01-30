@@ -513,3 +513,41 @@ end
     result = sprint(pretty_table, data, header)
     @test result == expected
 end
+
+# Line breaks inside cells
+# ==============================================================================
+
+@testset "Hide header" begin
+
+    expected = """
+┌───┬───────┬─────┬───┐
+│ 1 │ false │ 1.0 │ 1 │
+│ 2 │  true │ 2.0 │ 2 │
+│ 3 │ false │ 3.0 │ 3 │
+│ 4 │  true │ 4.0 │ 4 │
+│ 5 │ false │ 5.0 │ 5 │
+│ 6 │  true │ 6.0 │ 6 │
+└───┴───────┴─────┴───┘
+"""
+
+    result = sprint((io, data)->pretty_table(io, data; noheader = true), data)
+    @test result == expected
+
+    result = sprint((io, data)->pretty_table(io, data, [1 2]; noheader = true),
+                    data)
+    @test result == expected
+
+    expected = """
+┌───┬───────┬─────┬───┐
+│ 1 │ false │ 1.0 │ 1 │
+│ 2 │ true  │ 2.0 │ 2 │
+│ 3 │ false │ 3.0 │ 3 │
+│ 4 │ true  │ 4.0 │ 4 │
+│ 5 │ false │ 5.0 │ 5 │
+│ 6 │ true  │ 6.0 │ 6 │
+└───┴───────┴─────┴───┘
+"""
+    result = sprint((io, data)->pretty_table(io, data, [1 2]; alignment = :l,
+                                             noheader = true), data)
+    @test result == expected
+end

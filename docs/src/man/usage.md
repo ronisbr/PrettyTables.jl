@@ -92,6 +92,9 @@ In all cases, the following keywords are available:
             neglected.
 * `linebreaks`: If `true`, then `\n` will break the line inside the cells.
                 (**Default** = `false`)
+* `noheader`: If `true`, then the header will not be printed. Notice that all
+              keywords and parameters related to the header and sub-headers will
+              be ignored. (**Default** = `false`)
 * `same_column_size`: If `true`, then all the columns will have the same size.
                       (**Default** = `false`)
 * `show_row_number`: If `true`, then a new column will be printed showing the
