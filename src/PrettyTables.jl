@@ -1,7 +1,7 @@
 module PrettyTables
 
+using Formatting
 using Parameters
-using Printf
 using Reexport
 using Tables
 

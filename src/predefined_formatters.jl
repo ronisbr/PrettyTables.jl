@@ -10,8 +10,8 @@ export ft_printf, ft_round
 """
     function ft_printf(ftv_str, [columns])
 
-Apply the formats `ftv_str` (see `@sprintf`) to the elements in the columns
-`columns`.
+Apply the formats `ftv_str` (see the function `sprintf1` of the package
+**Formatting.jl**) to the elements in the columns `columns`.
 
 If `ftv_str` is a `Vector`, then `columns` must be also be a `Vector` with the
 same number of elements. If `ftv_str` is a `String`, and `columns` is not
@@ -33,13 +33,17 @@ function ft_printf(ftv_str::Vector{String}, columns::Vector{Int} = Int[])
     lc > 0 && (length(ftv_str) != lc) &&
     error("The vector columns must have the same number of elements of the vector ftv_str.")
 
+    # By using the function `sprintf1` from the package Formatting.jl, it was
+    # possible to reduce the time to print a 100x5 table of `Float64`s from 25s
+    # to 0.04s. Thanks to @RalphAS for the tip!
+
     if lc == 0
-        return Dict{Int,Function}(0 => (v,i) -> @eval @sprintf($(ftv_str[1]), $v))
+        return Dict{Int,Function}(0 => (v,i) -> sprintf1(ftv_str[1], v))
     else
         ft = Dict{Int,Function}()
 
         for i = 1:length(columns)
-            push!(ft, columns[i] => (v,j) -> @eval @sprintf($(ftv_str[i]), $v))
+            push!(ft, columns[i] => (v,j) -> sprintf1(ftv_str[i], v))
         end
 
         return ft
