@@ -5,7 +5,8 @@ Pretty Tables
 [![Build status](https://ci.appveyor.com/api/projects/status/r06s51ispe3cgmqp?svg=true)](https://ci.appveyor.com/project/ronisbr/prettytables-jl)
 [![codecov](https://codecov.io/gh/ronisbr/PrettyTables.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/ronisbr/PrettyTables.jl)
 [![Coverage Status](https://coveralls.io/repos/github/ronisbr/PrettyTables.jl/badge.svg?branch=master)](https://coveralls.io/github/ronisbr/PrettyTables.jl?branch=master)
-[![](https://img.shields.io/badge/docs-latest-blue.svg)][docs-latest-url]
+[![](https://img.shields.io/badge/docs-stable-blue.svg)][docs-stable-url]
+[![](https://img.shields.io/badge/docs-dev-blue.svg)][docs-dev-url]
 
 This package has the purpose to print data in matrices in a human-readable
 format. It was inspired in the functionality provided by
@@ -30,7 +31,7 @@ julia> Pkg.add("PrettyTables")
 
 ## Usage
 
-See the [documentation][docs-latest-url].
+See the [documentation][docs-stable-url].
 
-[docs-latest-url]: https://ronisbr.github.io/PrettyTables.jl/latest
+[docs-dev-url]: https://ronisbr.github.io/PrettyTables.jl/dev
 [docs-stable-url]: https://ronisbr.github.io/PrettyTables.jl/stable
