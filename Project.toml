@@ -1,5 +1,5 @@
 name = "PrettyTables"
-uuid = "bf2635c2-15c2-11e9-0b27-5fb50ccc2906"
+uuid = "08abe8d2-0d0c-5749-adfa-8a2ac140af0d"
 license = "MIT"
 desc = "Print data in formatted tables"
 authors = ["Ronan Arraes Jardim Chagas <ronisbr@gmail.com>"]
