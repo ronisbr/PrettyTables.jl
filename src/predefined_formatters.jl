@@ -21,10 +21,10 @@ format will be applied only to the columns in `columns`.
 
 """
 ft_printf(ftv_str::String) = ft_printf([ftv_str])
-ft_printf(ftv_str::String, columns::Vector{Int}) =
+ft_printf(ftv_str::String, columns::AbstractVector{Int}) =
     ft_printf([ftv_str for i = 1:length(columns)], columns)
 
-function ft_printf(ftv_str::Vector{String}, columns::Vector{Int} = Int[])
+function ft_printf(ftv_str::Vector{String}, columns::AbstractVector{Int} = Int[])
     lc = length(columns)
 
     lc == 0 && (length(ftv_str) != 1) &&
@@ -64,10 +64,10 @@ elements in the columns `columns` will be rounded to the number of digits
 
 """
 ft_round(digits::Int) = ft_round([digits])
-ft_round(digits::Int, columns::Vector{Int}) =
+ft_round(digits::Int, columns::AbstractVector{Int}) =
     ft_round([digits for i = 1:length(columns)], columns)
 
-function ft_round(digits::Vector{Int}, columns::Vector{Int} = Int[])
+function ft_round(digits::AbstractVector{Int}, columns::AbstractVector{Int} = Int[])
     lc = length(columns)
 
     lc == 0 && (length(digits) != 1) &&
