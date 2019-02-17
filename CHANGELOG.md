@@ -1,6 +1,14 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 0.3.1
+-------------
+
+- ![Enhancement][badge-enhancement] `Vector` was replaced by `AbstractVector` in
+  predefined formatters. Hence, it is now possible to use range notation. Thus,
+  for example `ft_printf("%4.2f", [2,3,4,5,6,7,8,9,10])` can now be rewritten as
+  `ft_printf("%4.2f", 2:10)`. (PR [#8][gh-pr-8])
+
 Version 0.3.0
 -------------
 
@@ -60,3 +68,4 @@ Version 0.1.0
 [gh-issue-7]: https://github.com/ronisbr/PrettyTables.jl/issues/7
 
 [gh-pr-5]: https://github.com/ronisbr/PrettyTables.jl/pull/5
+[gh-pr-8]: https://github.com/ronisbr/PrettyTables.jl/pull/8
