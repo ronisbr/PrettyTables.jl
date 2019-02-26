@@ -649,3 +649,28 @@ end
     result = sprint(pretty_table, data, ["1" "2\n" "3" "4"])
     @test result == expected
 end
+
+# Issue #9
+# ==============================================================================
+
+@testset "Issue #9 - Printing table with row number column and sub-headers" begin
+    expected = """
+┌─────┬───┬───────┬─────┬────┐
+│ Row │ 1 │     2 │   3 │  4 │
+│     │ 5 │     6 │   7 │  8 │
+│     │ 9 │    10 │  11 │ 12 │
+├─────┼───┼───────┼─────┼────┤
+│   1 │ 1 │ false │ 1.0 │  1 │
+│   2 │ 2 │  true │ 2.0 │  2 │
+│   3 │ 3 │ false │ 3.0 │  3 │
+│   4 │ 4 │  true │ 4.0 │  4 │
+│   5 │ 5 │ false │ 5.0 │  5 │
+│   6 │ 6 │  true │ 6.0 │  6 │
+└─────┴───┴───────┴─────┴────┘
+"""
+    result = sprint((io, data)->pretty_table(io, data, [1  2  3  4;
+                                                        5  6  7  8;
+                                                        9 10 11 12];
+                                            show_row_number = true), data)
+    @test result == expected
+end

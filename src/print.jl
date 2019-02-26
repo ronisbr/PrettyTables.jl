@@ -466,7 +466,7 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
                     header_row_i_str = " " * @_str_aligned("Row", :r, row_number_width) * " "
                     @_ps(buf, rownum_header_crayon, header_row_i_str)
                 else
-                    @_ps(buf, rownum_header_crayon, " "^(row_number_width+1))
+                    @_ps(buf, rownum_header_crayon, " "^(row_number_width+2))
                 end
 
                 @_ps(buf, border_crayon, tf.column)
