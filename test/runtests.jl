@@ -88,6 +88,46 @@ end
     @test result == expected
 end
 
+# Filters
+# ==============================================================================
+
+@testset "Filters" begin
+    expected = """
+┌─────┬────────┬────────┐
+│ Row │ Col. 1 │ Col. 3 │
+├─────┼────────┼────────┤
+│   2 │      2 │    2.0 │
+│   4 │      4 │    4.0 │
+│   6 │      6 │    6.0 │
+└─────┴────────┴────────┘
+"""
+
+    result = sprint((io,data)->pretty_table(io, data;
+                                            filters_row = ( (data,i) -> i%2 == 0,),
+                                            filters_col = ( (data,i) -> i%2 == 1,),
+                                            formatter = ft_printf("%.3",[3]),
+                                            show_row_number = true), data)
+    @test result == expected
+
+    expected = """
+┌─────┬────────┬────────┐
+│ Row │ Col. 1 │ Col. 3 │
+├─────┼────────┼────────┤
+│   2 │   2    │ 2.0    │
+│   4 │   4    │ 4.0    │
+│   6 │   6    │ 6.0    │
+└─────┴────────┴────────┘
+"""
+
+    result = sprint((io,data)->pretty_table(io, data;
+                                            filters_row = ( (data,i) -> i%2 == 0,),
+                                            filters_col = ( (data,i) -> i%2 == 1,),
+                                            formatter = ft_printf("%.3",[3]),
+                                            show_row_number = true,
+                                            alignment = [:c,:l,:l,:c]), data)
+    @test result == expected
+end
+
 # Formatter
 # ==============================================================================
 

@@ -89,6 +89,8 @@ In all cases, the following keywords are available:
 * `text_crayon`: Crayon to print default text.
 * `alignment`: Select the alignment of the columns (see the section
                [Alignment](@ref)).
+* `filters_row`: Filters for the rows (see the section [Filters](@ref)).
+* `filters_col`: Filters for the columns (see the section [Filters](@ref)).
 * `formatter`: See the section [Formatter](@ref).
 * `highlighters`: A tuple with a list of highlighters (see the section
                   [Highlighters](@ref)).

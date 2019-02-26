@@ -13,6 +13,7 @@ makedocs(
         "Home"         => "index.md",
         "Usage"        => "man/usage.md",
         "Alignment"    => "man/alignment.md",
+        "Filters"      => "man/filters.md",
         "Formats"      => "man/formats.md",
         "Formatters"   => "man/formatter.md",
         "Highlighters" => "man/highlighters.md",

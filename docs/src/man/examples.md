@@ -57,6 +57,11 @@ simplistic, compact format.
 
 ![](../assets/ex_00010.png)
 
+In the following, it is shown how the filters can be used to print only the even
+rows and columns:
+
+![](../assets/ex_00011.png)
+
 If you want to save the printed table to a file, you can do:
 
 ```julia-repl

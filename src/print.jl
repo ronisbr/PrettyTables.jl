@@ -140,6 +140,8 @@ omitted, then it defaults to `stdout`.
                           numbers.
 * `text_crayon`: Crayon to print default text.
 * `alignment`: Select the alignment of the columns (see the section `Alignment`).
+* `filters_row`: Filters for the rows (see the section `Filters`).
+* `filters_col`: Filters for the columns (see the section `Filters`).
 * `formatter`: See the section `Formatter`.
 * `highlighters`: A tuple with a list of highlighters (see the section
                   `Highlighters`).
@@ -194,6 +196,39 @@ If it is a symbol, we have the following behavior:
 If it is a vector, then it must have the same number of symbols as the number of
 columns in `data`. The *i*-th symbol in the vector specify the alignment of the
 *i*-th column using the same symbols as described previously.
+
+# Filters
+
+It is possible to specify filters to filter the data that will be printed. There
+are two types of filters: the row filters, which are specified by the keyword
+`filters_row`, and the column filters, which are specified by the keyword
+`filters_col`.
+
+The filters are a tuple of functions that must have the following signature:
+
+```julia
+f(data,i)::Bool
+```
+
+in which `data` is a pointer to the matrix that is being printed and `i` is the
+i-th row in the case of the row filters or the i-th column in the case of column
+filters. If this function returns `true` for `i`, then the i-th row (in case of
+`filters_row`) or the i-th column (in case of `filters_col`) will be printed.
+Otherwise, it will be omitted.
+
+A set of filters can be passed inside of a tuple. Notice that, in this case,
+**all filters** for a specific row or column must be return `true` so that it
+can be printed, *i.e* the set of filters has an `AND` logic.
+
+If the keyword is set to `nothing`, which is the default, then no filtering will
+be applied to the data.
+
+!!! note
+
+    The filters do not change the row and column numbering for the others
+    modifiers such as formatters and highlighters. Thus, for example, if only
+    the 4-th row is printed, then it will also be referenced inside the
+    formatters and highlighters as 4 instead of 1.
 
 # Formatter
 
@@ -303,6 +338,8 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
                        rownum_header_crayon::Crayon = Crayon(bold = true),
                        text_crayon::Crayon = Crayon(),
                        alignment::Union{Symbol,Vector{Symbol}} = :r,
+                       filters_row::Union{Nothing,Tuple} = nothing,
+                       filters_col::Union{Nothing,Tuple} = nothing,
                        formatter::Dict = Dict(),
                        highlighters::Tuple = (),
                        hlines::AbstractVector{Int} = Int[],
@@ -378,20 +415,69 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
         length(alignment) != num_cols && error("The length of `alignment` must be the same as the number of rows.")
     end
 
-    # Get the string which is printed when `print` is called in each element of
-    # the matrix.
-    header_str       = Matrix{String}(undef, header_num_rows, num_cols)
-    data_str         = Matrix{Vector{AbstractString}}(undef, num_rows, num_cols)
-    num_lines_in_row = ones(Int, num_rows)
-    cols_width       = zeros(Int, num_cols)
+    # If the user wants to filter the data, then check which columns and rows
+    # must be printed. Notice that if a data is filtered, then it means that it
+    # passed the filter and must be printed.
+    filtered_rows = ones(Bool, num_rows)
+    filtered_cols = ones(Bool, num_cols)
 
-    @inbounds @views for i = 1:num_cols
+    if filters_row != nothing
+        @inbounds for i = 1:num_rows
+            filtered_i = true
+
+            for filter in filters_row
+                !filter(data,i) && (filtered_i = false) && break
+            end
+
+            filtered_rows[i] = filtered_i
+        end
+    end
+
+    if filters_col != nothing
+        @inbounds for i = 1:num_cols
+            filtered_i = true
+
+            for filter in filters_col
+                !filter(data,i) && (filtered_i = false) && break
+            end
+
+            filtered_cols[i] = filtered_i
+        end
+    end
+
+    # `id_cols` and `id_rows` contains the indices of the data array that will
+    # be printed.
+    id_cols          = findall(filtered_cols)
+    id_rows          = findall(filtered_rows)
+    num_printed_cols = length(id_cols)
+    num_printed_rows = length(id_rows)
+
+    # If there is no data to print, then print a blank line and exit.
+    if (num_printed_cols == 0) || (num_printed_rows == 0)
+        println(io, "")
+        return nothing
+    end
+
+    # Get the string which is printed when `print` is called in each element of
+    # the matrix. Notice that we must create only the matrix with the printed
+    # rows and columns.
+    header_str       = Matrix{String}(undef, header_num_rows, num_printed_cols)
+    data_str         = Matrix{Vector{AbstractString}}(undef,
+                                                      num_printed_rows,
+                                                      num_printed_cols)
+    num_lines_in_row = ones(Int, num_printed_rows)
+    cols_width       = zeros(Int, num_printed_cols)
+
+    @inbounds @views for i = 1:num_printed_cols
+        # Index of the i-th printed column in `data`.
+        ic = id_cols[i]
+
         fi = haskey(formatter, i) ? formatter[i] :
                 (haskey(formatter, 0) ? formatter[0] : nothing)
 
         if !noheader
             for j = 1:header_num_rows
-                header_str[j,i] = escape_string(sprint(print, header[(i-1)*header_num_rows + j]))
+                header_str[j,i] = escape_string(sprint(print, header[(ic-1)*header_num_rows + j]))
 
                 # Compute the minimum column size to print this string.
                 cell_width = length(header_str[j,i])
@@ -401,8 +487,11 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
             end
         end
 
-        for j = 1:num_rows
-            data_ij = fi != nothing ? fi(data[j,i], j) : data[j,i]
+        for j = 1:num_printed_rows
+            # Index of the j-th printed row in `data`.
+            jr = id_rows[j]
+
+            data_ij = fi != nothing ? fi(data[jr,ic], jr) : data[jr,ic]
             data_str_ij = sprint(print, data_ij)
 
             if linebreaks
@@ -434,7 +523,7 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
 
     # If the user wants all the columns with the same size, then select the
     # larger.
-    same_column_size && (cols_width = [maximum(cols_width) for i = 1:num_cols])
+    same_column_size && (cols_width = [maximum(cols_width) for i = 1:num_printed_cols])
 
     # Let's create a `IOBuffer` to write everything and then transfer to `io`.
     io_has_color = get(io, :color, false)
@@ -447,7 +536,7 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
 
     tf.top_line && @_draw_line(buf, tf.up_left_corner, tf.up_intersection,
                                tf.up_right_corner, tf.row, border_crayon,
-                               num_cols, cols_width, show_row_number,
+                               num_printed_cols, cols_width, show_row_number,
                                row_number_width)
 
     # Header
@@ -473,12 +562,15 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
                 @_ps(buf, border_crayon, tf.column)
             end
 
-            for j = 1:num_cols
-                header_i_str = " " * @_str_aligned(header_str[i,j], alignment[j], cols_width[j]) * " "
+            for j = 1:num_printed_cols
+                # Index of the j-th printed column in `data`.
+                jc = id_cols[j]
+
+                header_i_str = " " * @_str_aligned(header_str[i,j], alignment[jc], cols_width[j]) * " "
 
                 # Check if we are printing the header or the sub-headers and select
                 # the styling accordingly.
-                crayon = (i == 1) ? header_crayon[j] : subheader_crayon[j]
+                crayon = (i == 1) ? header_crayon[jc] : subheader_crayon[jc]
 
                 @_ps(buf, crayon,        header_i_str)
                 @_ps(buf, border_crayon, tf.column)
@@ -493,20 +585,23 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
         #-----------------------------------------------------------------------
 
         @_draw_line(buf, tf.left_intersection, tf.middle_intersection,
-                    tf.right_intersection, tf.row, border_crayon, num_cols,
-                    cols_width, show_row_number, row_number_width)
+                    tf.right_intersection, tf.row, border_crayon,
+                    num_printed_cols, cols_width, show_row_number,
+                    row_number_width)
     end
 
     # Data
     # ==========================================================================
 
-    @inbounds @views for i = 1:num_rows
+    @inbounds @views for i = 1:num_printed_rows
+        ir = id_rows[i]
+
         for l = 1:num_lines_in_row[i]
             @_ps(buf, border_crayon, tf.column)
 
             if show_row_number
                 if l == 1
-                    row_number_i_str = " " * @_str_aligned(string(i), :r, row_number_width) * " "
+                    row_number_i_str = " " * @_str_aligned(string(ir), :r, row_number_width) * " "
                 else
                     row_number_i_str = " " * @_str_aligned("", :r, row_number_width) * " "
                 end
@@ -515,11 +610,13 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
                 @_ps(buf, border_crayon, tf.column)
             end
 
-            for j = 1:num_cols
+            for j = 1:num_printed_cols
+                jc = id_cols[j]
+
                 if length(data_str[i,j]) >= l
-                    data_ij_str = " " * @_str_aligned(data_str[i,j][l], alignment[j], cols_width[j]) * " "
+                    data_ij_str = " " * @_str_aligned(data_str[i,j][l], alignment[jc], cols_width[j]) * " "
                 else
-                    data_ij_str = " " * @_str_aligned("", alignment[j], cols_width[j]) * " "
+                    data_ij_str = " " * @_str_aligned("", alignment[jc], cols_width[j]) * " "
                 end
 
                 # If we have highlighters defined, then we need to verify if this
@@ -528,7 +625,7 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
                 crayon  = text_crayon
 
                 for h in highlighters
-                    if h.f(data, i, j)
+                    if h.f(data, ir, jc)
                         crayon = h.crayon
                         @_ps(buf, crayon, data_ij_str)
                         printed = true
@@ -547,8 +644,9 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
         # Check if we must draw a horizontal line here.
         i != num_rows && i in hlines &&
         @_draw_line(buf, tf.left_intersection, tf.middle_intersection,
-                    tf.right_intersection, tf.row, border_crayon, num_cols,
-                    cols_width, show_row_number, row_number_width)
+                    tf.right_intersection, tf.row, border_crayon,
+                    num_printed_cols, cols_width, show_row_number,
+                    row_number_width)
 
     end
 
@@ -558,7 +656,7 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
     tf.bottom_line && @_draw_line(buf, tf.bottom_left_corner,
                                   tf.bottom_intersection,
                                   tf.bottom_right_corner, tf.row, border_crayon,
-                                  num_cols, cols_width, show_row_number,
+                                  num_printed_cols, cols_width, show_row_number,
                                   row_number_width)
 
     # Print the buffer
