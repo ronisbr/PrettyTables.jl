@@ -674,3 +674,26 @@ end
                                             show_row_number = true), data)
     @test result == expected
 end
+
+# Issue #10
+# ==============================================================================
+
+@testset "Issue #10 - Size of the row number column without header" begin
+    v = 0:1:6
+
+    expected = """
+┌───┬───┐
+│ 1 │ 0 │
+│ 2 │ 1 │
+│ 3 │ 2 │
+│ 4 │ 3 │
+│ 5 │ 4 │
+│ 6 │ 5 │
+│ 7 │ 6 │
+└───┴───┘
+"""
+
+    result = sprint((io, v)->pretty_table(io, v; noheader = true,
+                                          show_row_number = true), v)
+    @test result == expected
+end

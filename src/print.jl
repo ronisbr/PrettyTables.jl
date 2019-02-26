@@ -428,8 +428,9 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
     end
 
     # The row number width depends on how many digits the total number of rows
-    # has and the length of the header "Row".
-    row_number_width = max(3,floor(Int, log10(num_rows)) + 1)
+    # has and the length of the header "Row". Notice that if `noheader` is set
+    # to `true`, then we should not take the word "Row" into account.
+    row_number_width = max(noheader ? 0 : 3, floor(Int, log10(num_rows)) + 1)
 
     # If the user wants all the columns with the same size, then select the
     # larger.
