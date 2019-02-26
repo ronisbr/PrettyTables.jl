@@ -552,6 +552,82 @@ end
     @test result == expected
 end
 
+# Print vectors
+# ==============================================================================
+
+@testset "Print vectors" begin
+
+    vec = 0:1:10
+
+    expected = """
+┌────────┐
+│ Col. 1 │
+├────────┤
+│      0 │
+│      1 │
+│      2 │
+│      3 │
+│      4 │
+│      5 │
+│      6 │
+│      7 │
+│      8 │
+│      9 │
+│     10 │
+└────────┘
+"""
+
+    result = sprint(pretty_table, vec)
+    @test result == expected
+
+    expected = """
+┌─────┬────────┐
+│ Row │ Col. 1 │
+├─────┼────────┤
+│   1 │   0    │
+│   2 │   1    │
+│   3 │   2    │
+│   4 │   3    │
+│   5 │   4    │
+│   6 │   5    │
+│   7 │   6    │
+│   8 │   7    │
+│   9 │   8    │
+│  10 │   9    │
+│  11 │   10   │
+└─────┴────────┘
+"""
+
+    result = sprint((io, vec)->pretty_table(io, vec; alignment = :c,
+                                            show_row_number = true), vec)
+    @test result == expected
+
+    expected = """
+┌────────────┐
+│     Header │
+│ Sub-header │
+├────────────┤
+│          0 │
+│          1 │
+│          2 │
+│          3 │
+│          4 │
+│          5 │
+│          6 │
+│          7 │
+│          8 │
+│          9 │
+│         10 │
+└────────────┘
+"""
+
+    result = sprint((io, vec)->pretty_table(io, vec, ["Header", "Sub-header"]),
+                    vec)
+    @test result == expected
+
+    @test_throws Exception pretty_table(vec, ["1" "1"])
+end
+
 # Issue #4
 # ==============================================================================
 

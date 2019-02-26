@@ -240,11 +240,11 @@ applied style will be equal to the first match considering the order in the
 Tuple `highlighters`.
 
 """
-pretty_table(data::AbstractMatrix{T1}, header::AbstractVecOrMat{T2},
+pretty_table(data::AbstractVecOrMat{T1}, header::AbstractVecOrMat{T2},
              tf::PrettyTableFormat = unicode; kwargs...) where {T1,T2} =
     pretty_table(stdout, data, header, tf; kwargs...)
 
-function pretty_table(io::IO, data::AbstractMatrix{T1},
+function pretty_table(io::IO, data::AbstractVecOrMat{T1},
                       header::AbstractVecOrMat{T2},
                       tf::PrettyTableFormat = unicode; kwargs...) where {T1,T2}
 
@@ -252,10 +252,10 @@ function pretty_table(io::IO, data::AbstractMatrix{T1},
     _pretty_table(io, data, header, tf; kwargs...)
 end
 
-pretty_table(data::AbstractMatrix{T}, tf::PrettyTableFormat = unicode; kwargs...) where T =
+pretty_table(data::AbstractVecOrMat{T}, tf::PrettyTableFormat = unicode; kwargs...) where T =
     pretty_table(stdout, data, tf; kwargs...)
 
-pretty_table(io::IO, data::AbstractMatrix{T}, tf::PrettyTableFormat = unicode; kwargs...) where T =
+pretty_table(io::IO, data::AbstractVecOrMat{T}, tf::PrettyTableFormat = unicode; kwargs...) where T =
     pretty_table(io, data, [], tf; kwargs...)
 
 pretty_table(table, tf::PrettyTableFormat = unicode; kwargs...) =
@@ -274,8 +274,16 @@ function pretty_table(io::IO, table, tf::PrettyTableFormat = unicode; kwargs...)
         num_cols, num_rows = size(data)
         header = ["Col. " * string(i) for i = 1:num_cols]
     else
-        header = [ reshape( [sch.names...], (1,:) );
-                   reshape( [sch.types...], (1,:) )]
+        names = reshape( [sch.names...], (1,:) )
+        types = reshape( [sch.types...], (1,:) )
+
+        # Check if we have only one column. In this case, the header must be a
+        # `Vector`.
+        if length(names) == 1
+            header = [names[1]; types[1]]
+        else
+            header = [names; types]
+        end
     end
 
     _pretty_table(io, data, header, tf; kwargs...)
@@ -303,21 +311,45 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
                        same_column_size::Bool = false,
                        show_row_number::Bool = false)
 
-    # Get information about the table we have to print.
-    num_rows, num_cols = size(data)
+    # Get information about the table we have to print based on the format of
+    # `data`, which must be an `AbstractMatrix` or an `AbstractVector`.
+    dims     = size(data)
+    num_dims = length(dims)
+
+    if num_dims == 1
+        num_rows = dims[1]
+        num_cols = 1
+    elseif num_dims == 2
+        num_rows = dims[1]
+        num_cols = dims[2]
+    else
+        throw(ArgumentError("`data` must not have more than 2 dimensions."))
+    end
 
     num_rows < 1 && error("The table must contain at least 1 row.")
 
-    header_size = size(header)
-
     # The way we get the number of columns of the header depends on its
-    # dimension, because the header can be a vector or a matrix.
+    # dimension, because the header can be a vector or a matrix. It also depends
+    # on the dimension of the `data`. If `data` is a vector, then `header` must
+    # be a vector, in which the first elements if the header and the others are
+    # subheaders.
 
-    if length(header_size) == 2
-        header_num_rows, header_num_cols = size(header)
+    header_size     = size(header)
+    header_num_dims = length(header_size)
+
+    # Check if it is vector or a matrix with only one column.
+    if (num_dims == 1) || (num_dims == 2 && num_cols == 1)
+        header_num_dims != 1 &&
+        error("If the input data has only one column, then the header must be a vector.")
+
+        header_num_cols = 1
+        header_num_rows = header_size[1]
+    elseif length(header_size) == 2
+        header_num_rows = header_size[1]
+        header_num_cols = header_size[2]
     else
         header_num_rows = 1
-        header_num_cols = length(header)
+        header_num_cols = header_size[1]
     end
 
     !noheader && num_cols != header_num_cols &&

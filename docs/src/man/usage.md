@@ -11,13 +11,13 @@ end
 The following functions can be used to print data.
 
 ```julia
-function pretty_table(data::AbstractMatrix{T1}, header::AbstractVecOrMat{T2}; kwargs...) where {T1,T2}
+function pretty_table(data::AbstractVecOrMat{T1}, header::AbstractVecOrMat{T2}; kwargs...) where {T1,T2}
 ```
 
-Print to `io` the matrix `data` with header `header` using the format `tf` (see
-[Formats](@ref)). If `io` is omitted, then it defaults to `stdout`. If `header`
-is empty, then it will be automatically filled with "Col. i" for the *i*-th
-column.
+Print to `io` the vector or matrix `data` with header `header` using the format
+`tf` (see [Formats](@ref)). If `io` is omitted, then it defaults to `stdout`. If
+`header` is empty, then it will be automatically filled with "Col. i" for the
+*i*-th column.
 
 The `header` can be a `Vector` or a `Matrix`. If it is a `Matrix`, then each row
 will be a header line. The first line is called *header* and the others are
@@ -45,12 +45,12 @@ julia> pretty_table(data, ["Column 1" "Column 2" "Column 3"; "A" "B" "C"])
 ```
 
 ``` julia
-function pretty_table([io,] data::AbstractMatrix{T}, tf::PrettyTableFormat = unicode; ...) where T
+function pretty_table([io,] data::AbstractVecOrMat{T}, tf::PrettyTableFormat = unicode; ...) where T
 ```
 
-Print to `io` the matrix `data` using the format `tf` (see `PrettyTableFormat`).
-If `io` is omitted, then it defaults to `stdout`. The header will be
-automatically filled with "Col. i" for the *i*-th column.
+Print to `io` the vector or matrix `data` using the format `tf` (see
+`PrettyTableFormat`). If `io` is omitted, then it defaults to `stdout`. The
+header will be automatically filled with "Col. i" for the *i*-th column.
 
 ```jldoctest
 julia> data = Any[1 2 3; true false true];
@@ -63,6 +63,12 @@ julia> pretty_table(data)
 │   true │  false │   true │
 └────────┴────────┴────────┘
 ```
+
+!!! note
+
+    If `data` is a vector, then the `header` **must** be a vector. In this case,
+    the first element is considered the header and the others are the
+    sub-headers.
 
 ```julia
 function pretty_table([io,] table, tf::PrettyTableFormat = unicode; ...)
