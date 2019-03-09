@@ -9,49 +9,34 @@
 export pretty_table
 
 ################################################################################
-#                                    Macros
+#                                Private types
 ################################################################################
 
 """
-    macro _draw_line(io, left, intersection, right, row, border_crayon, num_cols, cols_width, show_row_number, row_number_width)
+    mutable struct Screen
 
-This macro draws a vertical table line. The `left`, `intersection`, `right`, and
-`row` are the characters that will be used to draw the table line.
+Store the information of the screen and the current cursor position. Notice that
+this is not the real cursor position with respect to the screen, but with
+respect to the point in which the table is printed.
+
+# Fields
+
+* `size`: Screen size.
+* `row`: Current row.
+* `col`: Current column.
+* `has_color`: Indicates if the screen has color support.
 
 """
-macro _draw_line(io, left, intersection, right, row, border_crayon, num_cols,
-                 cols_width, show_row_number, row_number_width)
-
-    return quote
-        local io               = $(esc(io))
-        local left             = $(esc(left))
-        local intersection     = $(esc(intersection))
-        local right            = $(esc(right))
-        local row              = $(esc(row))
-        local border_crayon    = $(esc(border_crayon))
-        local num_cols         = $(esc(num_cols))
-        local cols_width       = $(esc(cols_width))
-        local show_row_number  = $(esc(show_row_number))
-        local row_number_width = $(esc(row_number_width))
-
-        @_ps(io, border_crayon, left)
-
-        if show_row_number
-            print(io, border_crayon, row^(row_number_width+2))
-            print(io, border_crayon, intersection)
-        end
-
-        @inbounds for i = 1:num_cols
-            # Check the alignment and print.
-            @_ps(io, border_crayon, row^(cols_width[i]+2))
-
-            i != num_cols && @_ps(io, border_crayon, intersection)
-        end
-
-        @_ps(io, border_crayon, right)
-        println(io)
-    end
+@with_kw mutable struct Screen
+    size::Tuple{Int,Int} = (-1,-1)
+    row::Int             = 1
+    col::Int             = 0
+    has_color::Bool      = false
 end
+
+################################################################################
+#                                    Macros
+################################################################################
 
 """
     macro _str_aligned(data, alignment, field_size)
@@ -80,25 +65,6 @@ macro _str_aligned(data, alignment, field_size)
             " "^left * ldata * " "^right
         else
             " "^Δ * ldata
-        end
-    end
-end
-
-"""
-    macro _ps(io, crayon, str)
-
-Print `str` to `io` using `crayon` and reset the style at the end. Notice that
-if `io` does not support colors, then no escape sequence will be printed.
-
-"""
-macro _ps(io, crayon, str)
-    return quote
-        io_has_color = get($(esc(io)), :color, false)
-
-        if io_has_color
-            print($(esc(io)), $(esc(crayon)), $(esc(str)), $(esc(_reset_crayon)))
-        else
-            print($(esc(io)), $(esc(str)))
         end
     end
 end
@@ -140,6 +106,11 @@ omitted, then it defaults to `stdout`.
                           numbers.
 * `text_crayon`: Crayon to print default text.
 * `alignment`: Select the alignment of the columns (see the section `Alignment`).
+* `crop`: Select the printing behavior when the data is bigger than the
+          available screen size (see `screen_size`). It can be `:both` to crop
+          on vertical and horizontal direction, `:horizontal` to crop only on
+          horizontal direction, `:vertical` to crop only on vertical direction,
+          or `:none` to do not crop the data at all.
 * `filters_row`: Filters for the rows (see the section `Filters`).
 * `filters_col`: Filters for the columns (see the section `Filters`).
 * `formatter`: See the section `Formatter`.
@@ -156,6 +127,12 @@ omitted, then it defaults to `stdout`.
               be ignored. (**Default** = `false`)
 * `same_column_size`: If `true`, then all the columns will have the same size.
                       (**Default** = `false`)
+* `screen_size`: A tuple of two integers that defines the screen size (num. of
+                 rows, num. of columns) that is available to print the table. It
+                 is used to crop the data depending on the value of the keyword
+                 `crop`. If it is `nothing`, then the size will be obtained
+                 automatically. Notice that if a dimension is not positive, then
+                 it will be treated as unlimited. (**Default** = `nothing`)
 * `show_row_number`: If `true`, then a new column will be printed showing the
                      row number. (**Default** = `false`)
 
@@ -338,6 +315,7 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
                        rownum_header_crayon::Crayon = Crayon(bold = true),
                        text_crayon::Crayon = Crayon(),
                        alignment::Union{Symbol,Vector{Symbol}} = :r,
+                       crop::Symbol = :both,
                        filters_row::Union{Nothing,Tuple} = nothing,
                        filters_col::Union{Nothing,Tuple} = nothing,
                        formatter::Dict = Dict(),
@@ -346,6 +324,7 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
                        linebreaks::Bool = false,
                        noheader::Bool = false,
                        same_column_size::Bool = false,
+                       screen_size::Union{Nothing,Tuple{Int,Int}} = nothing,
                        show_row_number::Bool = false)
 
     # Get information about the table we have to print based on the format of
@@ -529,15 +508,39 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
     io_has_color = get(io, :color, false)
     buf_io       = IOBuffer()
     buf          = IOContext(buf_io, :color => io_has_color)
+    screen       = Screen(has_color = io_has_color)
 
+    # If the user did not specified the screen size, then get the current
+    # display size. However, if cropping is not desired, then just do nothing
+    # since the size is initialized with -1.
+    if crop != :none
+        if screen_size == nothing
+            # For files, the function `displaysize` returns the value of the
+            # environments variables "LINES" and "COLUMNS". Hence, here we set
+            # those to `-1`, so that we can use this information to avoid
+            # limiting the output.
+            withenv("LINES" => -1, "COLUMNS" => -1) do
+                screen.size = displaysize(io)
+            end
+        else
+            screen.size = screen_size
+        end
+
+        # If the user does not want to crop, then change the size to -1.
+        if crop == :vertical
+            screen.size = (screen.size[1],-1)
+        elseif crop == :horizontal
+            screen.size = (-1,screen.size[2])
+        end
+    end
 
     # Top table line
     # ==========================================================================
 
-    tf.top_line && @_draw_line(buf, tf.up_left_corner, tf.up_intersection,
-                               tf.up_right_corner, tf.row, border_crayon,
-                               num_printed_cols, cols_width, show_row_number,
-                               row_number_width)
+    tf.top_line && _draw_line!(screen, buf, tf.up_left_corner,
+                               tf.up_intersection, tf.up_right_corner, tf.row,
+                               border_crayon, num_printed_cols, cols_width,
+                               show_row_number, row_number_width)
 
     # Header
     # ==========================================================================
@@ -547,19 +550,18 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
 
     if !noheader
         @inbounds @views for i = 1:header_num_rows
-            @_ps(buf, border_crayon, tf.column)
+            _p!(screen, buf, border_crayon, tf.column)
 
             if show_row_number
                 # The text "Row" must appear only on the first line.
-
                 if i == 1
                     header_row_i_str = " " * @_str_aligned("Row", :r, row_number_width) * " "
-                    @_ps(buf, rownum_header_crayon, header_row_i_str)
+                    _p!(screen, buf, rownum_header_crayon, header_row_i_str)
                 else
-                    @_ps(buf, rownum_header_crayon, " "^(row_number_width+2))
+                    _p!(screen, buf, rownum_header_crayon, " "^(row_number_width+2))
                 end
 
-                @_ps(buf, border_crayon, tf.column)
+                _p!(screen, buf, border_crayon, tf.column)
             end
 
             for j = 1:num_printed_cols
@@ -572,19 +574,23 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
                 # the styling accordingly.
                 crayon = (i == 1) ? header_crayon[jc] : subheader_crayon[jc]
 
-                @_ps(buf, crayon,        header_i_str)
-                @_ps(buf, border_crayon, tf.column)
+                flp = j == num_printed_cols
+
+                _p!(screen, buf, crayon,        header_i_str)
+                _p!(screen, buf, border_crayon, tf.column, flp)
+
+                _eol(screen) && break
             end
 
-            i != header_num_rows && println(buf)
+            i != header_num_rows && _nl!(screen,buf)
         end
 
-        println(buf)
+        _nl!(screen,buf)
 
         # Bottom header line
         #-----------------------------------------------------------------------
 
-        @_draw_line(buf, tf.left_intersection, tf.middle_intersection,
+        _draw_line!(screen, buf, tf.left_intersection, tf.middle_intersection,
                     tf.right_intersection, tf.row, border_crayon,
                     num_printed_cols, cols_width, show_row_number,
                     row_number_width)
@@ -597,7 +603,7 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
         ir = id_rows[i]
 
         for l = 1:num_lines_in_row[i]
-            @_ps(buf, border_crayon, tf.column)
+            _p!(screen, buf, border_crayon, tf.column)
 
             if show_row_number
                 if l == 1
@@ -606,8 +612,8 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
                     row_number_i_str = " " * @_str_aligned("", :r, row_number_width) * " "
                 end
 
-                @_ps(buf, text_crayon,   row_number_i_str)
-                @_ps(buf, border_crayon, tf.column)
+                _p!(screen, buf, text_crayon,   row_number_i_str)
+                _p!(screen, buf, border_crayon, tf.column)
             end
 
             for j = 1:num_printed_cols
@@ -627,33 +633,47 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
                 for h in highlighters
                     if h.f(data, ir, jc)
                         crayon = h.crayon
-                        @_ps(buf, crayon, data_ij_str)
+                        _p!(screen, buf, crayon, data_ij_str)
                         printed = true
                         break
                     end
                 end
 
-                !printed && @_ps(buf, text_crayon, data_ij_str)
+                !printed && _p!(screen, buf, text_crayon, data_ij_str)
 
-                @_ps(buf, border_crayon, tf.column)
+                flp = j == num_printed_cols
+
+                _p!(screen, buf, border_crayon, tf.column, flp)
+
+                _eol(screen) && break
             end
 
-            println(buf)
+            _nl!(screen, buf)
+
         end
 
         # Check if we must draw a horizontal line here.
         i != num_rows && i in hlines &&
-        @_draw_line(buf, tf.left_intersection, tf.middle_intersection,
+        _draw_line!(screen, buf, tf.left_intersection, tf.middle_intersection,
                     tf.right_intersection, tf.row, border_crayon,
                     num_printed_cols, cols_width, show_row_number,
                     row_number_width)
 
+        # Here we must check if the vertical size of the screen has been
+        # reached. Notice that we must add 4 to account for the command line,
+        # the continuation line, the bottom table line, and the last blank line.
+        if (screen.size[1] > 0) && (screen.row + 4 >= screen.size[1])
+            _draw_continuation_row(screen, buf, tf, text_crayon, border_crayon,
+                                   num_printed_cols, cols_width,
+                                   show_row_number, row_number_width)
+            break
+        end
     end
 
     # Bottom table line
     # ==========================================================================
 
-    tf.bottom_line && @_draw_line(buf, tf.bottom_left_corner,
+    tf.bottom_line && _draw_line!(screen, buf, tf.bottom_left_corner,
                                   tf.bottom_intersection,
                                   tf.bottom_right_corner, tf.row, border_crayon,
                                   num_printed_cols, cols_width, show_row_number,
@@ -666,3 +686,185 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
     nothing
 end
 
+################################################################################
+#                              Printing Functions
+################################################################################
+
+"""
+    function _draw_continuation_row(screen, io, tf, text_crayon, border_crayon, num_printed_cols, cols_width, show_row_number, row_number_width)
+
+Draw the continuation row when the table has filled the vertical space
+available. This function prints in each column the character `⋮` centered.
+
+"""
+function _draw_continuation_row(screen, io, tf, text_crayon, border_crayon,
+                                num_printed_cols, cols_width, show_row_number,
+                                row_number_width)
+
+    _p!(screen, io, border_crayon, tf.column)
+
+    if show_row_number
+        row_number_i_str = @_str_aligned("⋮", :c, row_number_width + 2)
+        _p!(screen, io, text_crayon,   row_number_i_str)
+        _p!(screen, io, border_crayon, tf.column)
+    end
+
+    @inbounds for j = 1:num_printed_cols
+        data_ij_str = @_str_aligned("⋮", :c, cols_width[j] + 2)
+        _p!(screen, io, text_crayon, data_ij_str)
+
+        flp = j == num_printed_cols
+
+        _p!(screen, io, border_crayon, tf.column, flp)
+        _eol(screen) && break
+    end
+
+    _nl!(screen, io)
+
+    return nothing
+end
+
+"""
+    function _draw_line!(screen, io, left, intersection, right, row, border_crayon, num_cols, cols_width, show_row_number, row_number_width)
+
+Draw a vertical line in `io` using the information in `screen`.
+
+"""
+function _draw_line!(screen, io, left, intersection, right, row, border_crayon,
+                     num_cols, cols_width, show_row_number, row_number_width)
+
+    _p!(screen, io, border_crayon, left)
+
+    if show_row_number
+        _p!(screen, io, border_crayon, row^(row_number_width+2))
+        _p!(screen, io, border_crayon, intersection)
+    end
+
+    @inbounds for i = 1:num_cols
+        # Check the alignment and print.
+        _p!(screen, io, border_crayon, row^(cols_width[i]+2)) && break
+
+        i != num_cols && _p!(screen, io, border_crayon, intersection)
+    end
+
+    _p!(screen, io, border_crayon, right, true)
+    _nl!(screen, io)
+end
+
+"""
+    function _eol(screen)
+
+Return `true` if the cursor is at the end of line or `false` otherwise.
+
+"""
+_eol(screen) = (screen.size[2] > 0) && (screen.col >= screen.size[2])
+
+"""
+    function _nl!(screen, io)
+
+Add a new line into `io` using the screen information in `screen`.
+
+"""
+function _nl!(screen, io)
+    screen.row += 1
+    screen.col  = 0
+    println(io)
+end
+
+"""
+    function _p!(screen, io, crayon, str, final_line_print = false)
+
+Print `str` into `io` using the Crayon `crayon` with the screen information in
+`screen`. The parameter `final_line_print` must be set to `true` if this is the
+last string that will be printed in the line. This is necessary for the
+algorithm to select whether or not to include the continuation character.
+
+"""
+function _p!(screen, io, crayon, str, final_line_print = false)
+    # Get the size of the string.
+    #
+    # TODO: We might reduce the number of allocations by avoiding calling
+    # `length`, since we have the size of all fields.
+    lstr = length(str)
+
+    # `sapp` is a string to be appended to `str`. This is used to add `⋯` if the
+    # text must be wrapped. Notice that `lapp` is the length of `sapp`.
+    sapp = ""
+    lapp = 0
+
+    # When printing a line, we must verify if the screen has bounds. This is
+    # done by looking if the horizontal size is positive.
+    @inbounds if screen.size[2] > 0
+
+        # If we are at the end of the line, then just return.
+        _eol(screen) && return true
+
+        Δ = screen.size[2] - (lstr + screen.col)
+
+        # Check if we can print the entire string.
+        if Δ < 0
+            # If we cannot, then create a wrapped string considering how many
+            # columns are left.
+            if lstr + Δ - 2 > 0
+                # This code is necessary to handle UTF-8 characters. What we
+                # want is
+                #
+                #   str = str[1:lstr + Δ - 2]
+                #
+                # However, this will fail if `str` has UTF-8 characters as
+                # explained in:
+                #
+                #   https://docs.julialang.org/en/v1/manual/strings/index.html
+
+                str  = string(collect(str)[1:lstr + Δ - 2]...)
+                lstr = lstr + Δ - 2
+                sapp = " ⋯"
+                lapp = 2
+            elseif screen.size[2] - screen.col == 2
+                # If there are only 2 characters left, then we must only print
+                # " ⋯".
+                str  = ""
+                lstr = 0
+                sapp = " ⋯"
+                lapp = 2
+            elseif screen.size[2] - screen.col == 1
+                # If there are only 1 character left, then we must only print
+                # "⋯".
+                str  = ""
+                lstr = 0
+                sapp = "⋯"
+                lapp = 1
+            else
+                # This should never be reached.
+                @error("Internal error!")
+                return true
+            end
+        elseif !final_line_print
+            # Here we must verify if this is the final printing on this line. If
+            # it is, then we should just check if the entire string fits on the
+            # available size. Otherwise, we must see if, after printing the
+            # current string, we will have more than 1 space left. If not, then
+            # we just add the continuation character sequence.
+
+            if Δ == 1
+                str   = lstr > 1 ? str[1:end-1] : ""
+                lstr -= 1
+                sapp  = " ⋯"
+                lapp  = 2
+            end
+        end
+    end
+
+    # Print the with correct formating.
+    if screen.has_color
+        print(io, crayon, str, _reset_crayon, sapp)
+    else
+        print(io, str, sapp)
+    end
+
+    # Update the current columns.
+    screen.col += lstr + lapp
+
+    # Return if we reached the end of line.
+    return _eol(screen)
+end
