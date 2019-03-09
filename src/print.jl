@@ -91,6 +91,18 @@ Print to `io` the vector or matrix `data` using the format `tf` (see
 `PrettyTableFormat`). If `io` is omitted, then it defaults to `stdout`. The
 header will be automatically filled with "Col. i" for the *i*-th column.
 
+    function pretty_table([io::IO,] dict::Dict{K,V}, tf::PrettyTableFormat = unicode; sortkeys = true, ...) where {K,V}
+
+Print to `io` the dictionary `dict` in a matrix form (one column for the keys
+and other for the values), using the format `tf` (see `PrettyTableFormat`). If
+`io` is omitted, then it defaults to `stdout`.
+
+In this case, the keyword `sortkeys` can be used to select whether or not the
+user wants to print the dictionary with the keys sorted. If it is `false`, then
+the elements will be printed on the same order returned by the functions `keys`
+and `values`. Notice that this assumes that the keys are sortable, if they are
+not, then an error will be thrown.
+
     function pretty_table([io::IO,] table, tf::PrettyTableFormat = unicode; ...)
 
 Print to `io` the table `table` using the format `tf` (see `PrettyTableFormat`).
@@ -269,6 +281,28 @@ pretty_table(data::AbstractVecOrMat{T}, tf::PrettyTableFormat = unicode; kwargs.
 
 pretty_table(io::IO, data::AbstractVecOrMat{T}, tf::PrettyTableFormat = unicode; kwargs...) where T =
     pretty_table(io, data, [], tf; kwargs...)
+
+pretty_table(dict::Dict{K,V}, tf::PrettyTableFormat = unicode; kwargs...) where {K,V} =
+    pretty_table(stdout, dict, tf; kwargs...)
+
+function pretty_table(io::IO, dict::Dict{K,V}, tf::PrettyTableFormat = unicode; sortkeys = false, kwargs...) where {K,V}
+    header = ["Keys"     "Values";
+              string(K)  string(V)]
+
+    k = collect(keys(dict))
+    v = collect(values(dict))
+
+    if sortkeys
+        ind = sortperm(collect(keys(dict)))
+        vk  = @view k[ind]
+        vv  = @view v[ind]
+    else
+        vk = k
+        vv = v
+    end
+
+    pretty_table(io, [vk vv], header, tf; kwargs...)
+end
 
 pretty_table(table, tf::PrettyTableFormat = unicode; kwargs...) =
     pretty_table(stdout, table, tf; kwargs...)

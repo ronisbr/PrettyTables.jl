@@ -71,6 +71,51 @@ julia> pretty_table(data)
     sub-headers.
 
 ```julia
+function pretty_table([io::IO,] dict::Dict{K,V}, tf::PrettyTableFormat = unicode; sortkeys = true, ...) where {K,V}
+```
+
+Print to `io` the dictionary `dict` in a matrix form (one column for the keys
+and other for the values), using the format `tf` (see `PrettyTableFormat`). If
+`io` is omitted, then it defaults to `stdout`.
+
+In this case, the keyword `sortkeys` can be used to select whether or not the
+user wants to print the dictionary with the keys sorted. If it is `false`, then
+the elements will be printed on the same order returned by the functions `keys`
+and `values`. Notice that this assumes that the keys are sortable, if they are
+not, then an error will be thrown.
+
+```jldoctest
+julia> dict = Dict(1 => "Jan", 2 => "Feb", 3 => "Mar", 4 => "Apr", 5 => "May", 6 => "Jun");
+
+julia> pretty_table(dict)
+┌───────┬────────┐
+│  Keys │ Values │
+│ Int64 │ String │
+├───────┼────────┤
+│     4 │    Apr │
+│     2 │    Feb │
+│     3 │    Mar │
+│     5 │    May │
+│     6 │    Jun │
+│     1 │    Jan │
+└───────┴────────┘
+
+julia> pretty_table(dict, sortkeys = true)
+┌───────┬────────┐
+│  Keys │ Values │
+│ Int64 │ String │
+├───────┼────────┤
+│     1 │    Jan │
+│     2 │    Feb │
+│     3 │    Mar │
+│     4 │    Apr │
+│     5 │    May │
+│     6 │    Jun │
+└───────┴────────┘
+
+```
+
+```julia
 function pretty_table([io,] table, tf::PrettyTableFormat = unicode; ...)
 ```
 
