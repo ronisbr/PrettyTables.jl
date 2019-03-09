@@ -120,7 +120,7 @@ omitted, then it defaults to `stdout`.
             horizontal line should be drawn after the row. Notice that numbers
             lower than 1 and equal or higher than the number of rows will be
             neglected.
-* `linebreaks`: If `true`, then `\n` will break the line inside the cells.
+* `linebreaks`: If `true`, then `\\n` will break the line inside the cells.
                 (**Default** = `false`)
 * `noheader`: If `true`, then the header will not be printed. Notice that all
               keywords and parameters related to the header and sub-headers will
