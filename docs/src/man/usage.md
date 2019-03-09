@@ -11,7 +11,7 @@ end
 The following functions can be used to print data.
 
 ```julia
-function pretty_table(data::AbstractVecOrMat{T1}, header::AbstractVecOrMat{T2}; kwargs...) where {T1,T2}
+function pretty_table([io::IO,] data::AbstractVecOrMat{T1}, header::AbstractVecOrMat{T2}, tf::PrettyTableFormat = unicode; kwargs...) where {T1,T2}
 ```
 
 Print to `io` the vector or matrix `data` with header `header` using the format

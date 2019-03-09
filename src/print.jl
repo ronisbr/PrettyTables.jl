@@ -74,22 +74,22 @@ end
 ################################################################################
 
 """
-    function pretty_table(data::AbstractMatrix{T1}, header::AbstractVecOrMat{T2}; kwargs...) where {T1,T2}
+    function pretty_table([io::IO,] data::AbstractVecOrMat{T1}, header::AbstractVecOrMat{T2}, tf::PrettyTableFormat = unicode; kwargs...) where {T1,T2}
 
-Print to `io` the matrix `data` with header `header` using the format `tf` (see
-`PrettyTableFormat`). If `io` is omitted, then it defaults to `stdout`. If
-`header` is empty, then it will be automatically filled with "Col. i" for the
-*i*-th column.
+Print to `io` the vector or matrix `data` with header `header` using the format
+`tf` (see `PrettyTableFormat`). If `io` is omitted, then it defaults to
+`stdout`. If `header` is empty, then it will be automatically filled with "Col.
+i" for the *i*-th column.
 
 The `header` can be a `Vector` or a `Matrix`. If it is a `Matrix`, then each row
 will be a header line. The first line is called *header* and the others are
 called *sub-headers* .
 
-    function pretty_table([io::IO,] data::AbstractMatrix{T}, tf::PrettyTableFormat = unicode; ...) where T
+    function pretty_table([io::IO,] data::AbstractVecOrMat{T}, tf::PrettyTableFormat = unicode; ...) where T
 
-Print to `io` the matrix `data` using the format `tf` (see `PrettyTableFormat`).
-If `io` is omitted, then it defaults to `stdout`. The header will be
-automatically filled with "Col. i" for the *i*-th column.
+Print to `io` the vector or matrix `data` using the format `tf` (see
+`PrettyTableFormat`). If `io` is omitted, then it defaults to `stdout`. The
+header will be automatically filled with "Col. i" for the *i*-th column.
 
     function pretty_table([io::IO,] table, tf::PrettyTableFormat = unicode; ...)
 
