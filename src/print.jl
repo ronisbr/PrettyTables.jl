@@ -802,7 +802,7 @@ function _p!(screen, io, crayon, str, final_line_print = false)
         Δ = screen.size[2] - (lstr + screen.col)
 
         # Check if we can print the entire string.
-        if Δ < 0
+        if Δ <= 0
             # If we cannot, then create a wrapped string considering how many
             # columns are left.
             if lstr + Δ - 2 > 0
