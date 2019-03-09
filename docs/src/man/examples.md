@@ -62,6 +62,11 @@ rows and columns:
 
 ![](../assets/ex_00011.png)
 
+By default, if the data is larger than the screen, then it will be cropped to
+fit it. This can be changed by using the keywords `crop` and `screen_size`.
+
+![](../assets/ex_00012.png)
+
 If you want to save the printed table to a file, you can do:
 
 ```julia-repl

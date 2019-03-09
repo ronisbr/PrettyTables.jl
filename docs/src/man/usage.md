@@ -89,6 +89,11 @@ In all cases, the following keywords are available:
 * `text_crayon`: Crayon to print default text.
 * `alignment`: Select the alignment of the columns (see the section
                [Alignment](@ref)).
+* `crop`: Select the printing behavior when the data is bigger than the
+          available screen size (see `screen_size`). It can be `:both` to crop
+          on vertical and horizontal direction, `:horizontal` to crop only on
+          horizontal direction, `:vertical` to crop only on vertical direction,
+          or `:none` to do not crop the data at all.
 * `filters_row`: Filters for the rows (see the section [Filters](@ref)).
 * `filters_col`: Filters for the columns (see the section [Filters](@ref)).
 * `formatter`: See the section [Formatter](@ref).
@@ -105,6 +110,12 @@ In all cases, the following keywords are available:
               be ignored. (**Default** = `false`)
 * `same_column_size`: If `true`, then all the columns will have the same size.
                       (**Default** = `false`)
+* `screen_size`: A tuple of two integers that defines the screen size (num. of
+                 rows, num. of columns) that is available to print the table. It
+                 is used to crop the data depending on the value of the keyword
+                 `crop`. If it is `nothing`, then the size will be obtained
+                 automatically. Notice that if a dimension is not positive, then
+                 it will be treated as unlimited. (**Default** = `nothing`)
 * `show_row_number`: If `true`, then a new column will be printed showing the
                      row number. (**Default** = `false`)
 
@@ -136,3 +147,51 @@ documentation](https://github.com/KristofferC/Crayons.jl/blob/master/README.md).
 
     The Crayon.jl package is re-exported by PrettyTables.jl. Hence, you do not
     need `using Crayons` to create a `Crayon`.
+
+## Cropping
+
+By default, the data will be cropped to fit the screen. This behavior can be
+changed by using the keyword `crop`.
+
+```jldoctest
+julia> data = Any[1    false      1.0     0x01 ;
+                  2     true      2.0     0x02 ;
+                  3    false      3.0     0x03 ;
+                  4     true      4.0     0x04 ;
+                  5    false      5.0     0x05 ;
+                  6     true      6.0     0x06 ;];
+
+julia> pretty_table(data, screen_size = (10,30))
+┌────────┬────────┬────────┬ ⋯
+│ Col. 1 │ Col. 2 │ Col. 3 │ ⋯
+├────────┼────────┼────────┼ ⋯
+│      1 │  false │    1.0 │ ⋯
+│      2 │   true │    2.0 │ ⋯
+│   ⋮    │   ⋮    │   ⋮    │ ⋯
+└────────┴────────┴────────┴ ⋯
+
+julia> pretty_table(data, screen_size = (10,30), crop = :none)
+┌────────┬────────┬────────┬────────┐
+│ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
+├────────┼────────┼────────┼────────┤
+│      1 │  false │    1.0 │      1 │
+│      2 │   true │    2.0 │      2 │
+│      3 │  false │    3.0 │      3 │
+│      4 │   true │    4.0 │      4 │
+│      5 │  false │    5.0 │      5 │
+│      6 │   true │    6.0 │      6 │
+└────────┴────────┴────────┴────────┘
+```
+
+If the keyword `screen_size` is not specified (or is `nothing`), then the screen
+size will be obtained automatically. For files, `screen_size = (-1,-1)`, meaning
+that no limit exits in both vertical and horizontal direction.
+
+!!! note
+
+    In vertical cropping, the header and the first table row is **always**
+    printed.    
+
+!!! note
+
+    The highlighters will work even in partially printed data.
