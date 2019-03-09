@@ -754,24 +754,8 @@ end
 # ==============================================================================
 
 @testset "Dictionaries" begin
-    dict = Dict(1 => "Jan", 2 => "Feb", 3 => "Mar", 4 => "Apr", 5 => "May", 6 => "Jun")
-
-    expected = """
-┌───────┬────────┐
-│  Keys │ Values │
-│ Int64 │ String │
-├───────┼────────┤
-│     4 │    Apr │
-│     2 │    Feb │
-│     3 │    Mar │
-│     5 │    May │
-│     6 │    Jun │
-│     1 │    Jan │
-└───────┴────────┘
-"""
-
-    result = sprint(pretty_table, dict)
-    @test result == expected
+    dict = Dict{Int64,String}(1 => "Jan", 2 => "Feb", 3 => "Mar", 4 => "Apr",
+                              5 => "May", 6 => "Jun")
 
     expected = """
 ┌───────┬────────┐
