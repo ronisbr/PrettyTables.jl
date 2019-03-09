@@ -668,6 +668,88 @@ end
     @test_throws Exception pretty_table(vec, ["1" "1"])
 end
 
+# Cropping
+# ==============================================================================
+
+@testset "Cropping" begin
+    expected = """
+┌────────┬────────┬────────┬────────┐
+│ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
+├────────┼────────┼────────┼────────┤
+│      1 │  false │    1.0 │      1 │
+│      2 │   true │    2.0 │      2 │
+│      3 │  false │    3.0 │      3 │
+│      4 │   true │    4.0 │      4 │
+│      5 │  false │    5.0 │      5 │
+│      6 │   true │    6.0 │      6 │
+└────────┴────────┴────────┴────────┘
+"""
+
+    result = sprint((io,data)->pretty_table(io, data, screen_size = (10,10), crop = :none),
+                    data)
+    @test result == expected
+
+    result = sprint((io,data)->pretty_table(io, data, screen_size = (-1,-1), crop = :both),
+                    data)
+    @test result == expected
+
+    expected = """
+┌────────┬────────┬────────┬ ⋯
+│ Col. 1 │ Col. 2 │ Col. 3 │ ⋯
+├────────┼────────┼────────┼ ⋯
+│      1 │  false │    1.0 │ ⋯
+│      2 │   true │    2.0 │ ⋯
+│   ⋮    │   ⋮    │   ⋮    │ ⋯
+└────────┴────────┴────────┴ ⋯
+"""
+
+    result = sprint((io,data)->pretty_table(io, data, screen_size = (10,30), crop = :both),
+                    data)
+    @test result == expected
+
+    result = sprint((io,data)->pretty_table(io, data, screen_size = (10,30)), data)
+    @test result == expected
+
+    expected = """
+┌────────┬────────┬────────┬ ⋯
+│ Col. 1 │ Col. 2 │ Col. 3 │ ⋯
+├────────┼────────┼────────┼ ⋯
+│      1 │  false │    1.0 │ ⋯
+│      2 │   true │    2.0 │ ⋯
+│      3 │  false │    3.0 │ ⋯
+│      4 │   true │    4.0 │ ⋯
+│      5 │  false │    5.0 │ ⋯
+│      6 │   true │    6.0 │ ⋯
+└────────┴────────┴────────┴ ⋯
+"""
+
+    result = sprint((io,data)->pretty_table(io, data, screen_size = (10,30), crop = :horizontal),
+                    data)
+    @test result == expected
+
+    result = sprint((io,data)->pretty_table(io, data, screen_size = (-1,30), crop = :both),
+                    data)
+    @test result == expected
+
+    expected = """
+┌────────┬────────┬────────┬────────┐
+│ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
+├────────┼────────┼────────┼────────┤
+│      1 │  false │    1.0 │      1 │
+│      2 │   true │    2.0 │      2 │
+│   ⋮    │   ⋮    │   ⋮    │   ⋮    │
+└────────┴────────┴────────┴────────┘
+"""
+
+    result = sprint((io,data)->pretty_table(io, data, screen_size = (10,30), crop = :vertical),
+                    data)
+    @test result == expected
+
+    result = sprint((io,data)->pretty_table(io, data, screen_size = (10,-1), crop = :both),
+                    data)
+    @test result == expected
+end
+
 # Issue #4
 # ==============================================================================
 
