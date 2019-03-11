@@ -84,7 +84,7 @@ the elements will be printed on the same order returned by the functions `keys`
 and `values`. Notice that this assumes that the keys are sortable, if they are
 not, then an error will be thrown.
 
-```jldoctest
+```julia
 julia> dict = Dict(1 => "Jan", 2 => "Feb", 3 => "Mar", 4 => "Apr", 5 => "May", 6 => "Jun");
 
 julia> pretty_table(dict)
@@ -188,7 +188,7 @@ julia> crayon"blue bg:black bold"
 For more information, see the [Crayon.jl
 documentation](https://github.com/KristofferC/Crayons.jl/blob/master/README.md).
 
-!!! Info
+!!! info
 
     The Crayon.jl package is re-exported by PrettyTables.jl. Hence, you do not
     need `using Crayons` to create a `Crayon`.
