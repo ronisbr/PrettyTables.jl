@@ -1,6 +1,25 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 0.4.0
+-------------
+
+- ![BREAKING][badge-breaking]![Feature][badge-feature] The text can now be
+  horizontally and / or vertically cropped to fit the available screen size.
+  Notice that, by default, the screen size is obtained and the text is cropped,
+  which is a breaking change compared to the previous version. This behavior can
+  be modified by the keywords `crop` and `screen_size`.
+- ![Feature][badge-feature] `Vector` can now be printed natively.
+- ![Feature][badge-feature] The user can now specify filters for the data using
+  the keywords `filters_col` and `filters_row`, so that only a partial subset of
+  the input is printed.
+- ![Feature][badge-feature] `Dict` can now be printed natively. (Issue
+  [#6][gh-issue-6])
+- ![Bugfix][badge-bugfix] The formatting was wrong when printing a table with
+  sub-headers and the row number column. (Issue [#9][gh-issue-9])
+- ![Bugfix][badge-bugfix] The row number column size is now correctly computed
+  when the header is omitted. (Issue [#10][gh-issue-10])
+
 Version 0.3.1
 -------------
 
@@ -65,7 +84,10 @@ Version 0.1.0
 
 [gh-issue-3]: https://github.com/ronisbr/PrettyTables.jl/issues/3
 [gh-issue-4]: https://github.com/ronisbr/PrettyTables.jl/issues/4
+[gh-issue-6]: https://github.com/ronisbr/PrettyTables.jl/issues/6
 [gh-issue-7]: https://github.com/ronisbr/PrettyTables.jl/issues/7
+[gh-issue-9]: https://github.com/ronisbr/PrettyTables.jl/issues/9
+[gh-issue-10]: https://github.com/ronisbr/PrettyTables.jl/issues/10
 
 [gh-pr-5]: https://github.com/ronisbr/PrettyTables.jl/pull/5
 [gh-pr-8]: https://github.com/ronisbr/PrettyTables.jl/pull/8
