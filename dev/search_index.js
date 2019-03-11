@@ -69,7 +69,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Usage",
     "title": "Crayons",
     "category": "section",
-    "text": "A Crayon is an object that handles a style for text printed on terminals. It is defined in the package Crayons.jl. There are many options available to customize the style, such as foreground color, background color, bold text, etc.A Crayon can be created in two different ways:julia> Crayon(foreground = :blue, background = :black, bold = :true)\n\njulia> crayon\"blue bg:black bold\"For more information, see the Crayon.jl documentation.!!! InfoThe Crayon.jl package is re-exported by PrettyTables.jl. Hence, you do not\nneed `using Crayons` to create a `Crayon`."
+    "text": "A Crayon is an object that handles a style for text printed on terminals. It is defined in the package Crayons.jl. There are many options available to customize the style, such as foreground color, background color, bold text, etc.A Crayon can be created in two different ways:julia> Crayon(foreground = :blue, background = :black, bold = :true)\n\njulia> crayon\"blue bg:black bold\"For more information, see the Crayon.jl documentation.info: Info\nThe Crayon.jl package is re-exported by PrettyTables.jl. Hence, you do not need using Crayons to create a Crayon."
 },
 
 {
