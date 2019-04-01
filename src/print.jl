@@ -361,6 +361,36 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
                        screen_size::Union{Nothing,Tuple{Int,Int}} = nothing,
                        show_row_number::Bool = false)
 
+    # Let's create a `IOBuffer` to write everything and then transfer to `io`.
+    io_has_color = get(io, :color, false)
+    buf_io       = IOBuffer()
+    buf          = IOContext(buf_io, :color => io_has_color)
+    screen       = Screen(has_color = io_has_color)
+
+    # If the user did not specified the screen size, then get the current
+    # display size. However, if cropping is not desired, then just do nothing
+    # since the size is initialized with -1.
+    if crop != :none
+        if screen_size == nothing
+            # For files, the function `displaysize` returns the value of the
+            # environments variables "LINES" and "COLUMNS". Hence, here we set
+            # those to `-1`, so that we can use this information to avoid
+            # limiting the output.
+            withenv("LINES" => -1, "COLUMNS" => -1) do
+                screen.size = displaysize(io)
+            end
+        else
+            screen.size = screen_size
+        end
+
+        # If the user does not want to crop, then change the size to -1.
+        if crop == :vertical
+            screen.size = (screen.size[1],-1)
+        elseif crop == :horizontal
+            screen.size = (-1,screen.size[2])
+        end
+    end
+
     # Get information about the table we have to print based on the format of
     # `data`, which must be an `AbstractMatrix` or an `AbstractVector`.
     dims     = size(data)
@@ -471,6 +501,21 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
         return nothing
     end
 
+    # If the user wants to horizontally crop the printing, then it is not
+    # necessary to process all the lines. We will to process, at most, the
+    # number of lines in the screen.
+    if screen.size[1] > 0
+        num_printed_rows = min(num_printed_rows, screen.size[1])
+    end
+
+    # If the user wants to vertically crop the printing, then it is not
+    # necessary to process all the columns. However, we cannot know at this
+    # stage the size of each column. Thus, this initial algorithm uses the fact
+    # that each column printed will have at least 4 spaces.
+    if screen.size[2] > 0
+        num_printed_cols = min(num_printed_cols, ceil(Int, screen.size[2]/4))
+    end
+
     # Get the string which is printed when `print` is called in each element of
     # the matrix. Notice that we must create only the matrix with the printed
     # rows and columns.
@@ -480,6 +525,11 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
                                                       num_printed_cols)
     num_lines_in_row = ones(Int, num_printed_rows)
     cols_width       = zeros(Int, num_printed_cols)
+
+    # This variable stores the predicted table width. If the user wants
+    # horizontal cropping, then it can be use to avoid unnecessary processing of
+    # columns that will not be displayed.
+    pred_tab_width   = 0
 
     @inbounds @views for i = 1:num_printed_cols
         # Index of the i-th printed column in `data`.
@@ -527,6 +577,19 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
             # Check if we need to increase the columns size.
             cols_width[i] < cell_width && (cols_width[i] = cell_width)
         end
+
+        # If the user horizontal cropping, then check if we need to process
+        # another column.
+        #
+        # TODO: Should we take into account the dividers?
+        if screen.size[2] > 0
+            pred_tab_width += cols_width[i]
+
+            if pred_tab_width > screen.size[2]
+                num_printed_cols = i
+                break
+            end
+        end
     end
 
     # The row number width depends on how many digits the total number of rows
@@ -537,36 +600,6 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
     # If the user wants all the columns with the same size, then select the
     # larger.
     same_column_size && (cols_width = [maximum(cols_width) for i = 1:num_printed_cols])
-
-    # Let's create a `IOBuffer` to write everything and then transfer to `io`.
-    io_has_color = get(io, :color, false)
-    buf_io       = IOBuffer()
-    buf          = IOContext(buf_io, :color => io_has_color)
-    screen       = Screen(has_color = io_has_color)
-
-    # If the user did not specified the screen size, then get the current
-    # display size. However, if cropping is not desired, then just do nothing
-    # since the size is initialized with -1.
-    if crop != :none
-        if screen_size == nothing
-            # For files, the function `displaysize` returns the value of the
-            # environments variables "LINES" and "COLUMNS". Hence, here we set
-            # those to `-1`, so that we can use this information to avoid
-            # limiting the output.
-            withenv("LINES" => -1, "COLUMNS" => -1) do
-                screen.size = displaysize(io)
-            end
-        else
-            screen.size = screen_size
-        end
-
-        # If the user does not want to crop, then change the size to -1.
-        if crop == :vertical
-            screen.size = (screen.size[1],-1)
-        elseif crop == :horizontal
-            screen.size = (-1,screen.size[2])
-        end
-    end
 
     # Top table line
     # ==========================================================================
