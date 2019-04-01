@@ -555,7 +555,15 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
             jr = id_rows[j]
 
             data_ij = fi != nothing ? fi(data[jr,ic], jr) : data[jr,ic]
-            data_str_ij = sprint(print, data_ij)
+
+            # Handle `nothing` and `missing`.
+            if ismissing(data_ij)
+                data_str_ij = "missing"
+            elseif data_ij == nothing
+                data_str_ij = "nothing"
+            else
+                data_str_ij = sprint(print, data_ij)
+            end
 
             if linebreaks
                 # Get the tokens for each line.

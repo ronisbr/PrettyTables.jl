@@ -775,6 +775,26 @@ end
     @test result == expected
 end
 
+# Test if we can print `missing` and `nothing`
+# ==============================================================================
+
+@testset "Print missing and nothing" begin
+    matrix = [missing missing; nothing nothing; missing nothing]
+
+    expected = """
+┌─────────┬─────────┐
+│  Col. 1 │  Col. 2 │
+├─────────┼─────────┤
+│ missing │ missing │
+│ nothing │ nothing │
+│ missing │ nothing │
+└─────────┴─────────┘
+"""
+
+    result = sprint(pretty_table, matrix)
+    @test result == expected
+end
+
 # Issue #4
 # ==============================================================================
 
