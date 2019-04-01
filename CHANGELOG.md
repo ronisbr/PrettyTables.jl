@@ -1,6 +1,16 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 0.4.1
+-------------
+
+- ![Enhancement][badge-enhancement] If the user wants to crop the output, then
+  the printing function does not need to process the entire matrix. Thus, now it
+  will only process the columns and rows that will be actually printed, which
+  yielded a huge performance gain when big matrices are printed with crop on.
+- ![Bugfix][badge-bugfix] Matrices with `nothing` and `missing` are now
+  correctly printed.
+
 Version 0.4.0
 -------------
 
