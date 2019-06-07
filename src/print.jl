@@ -308,9 +308,10 @@ pretty_table(table, tf::PrettyTableFormat = unicode; kwargs...) =
     pretty_table(stdout, table, tf; kwargs...)
 
 function pretty_table(io::IO, table, tf::PrettyTableFormat = unicode; kwargs...)
-    !Tables.istable(table) && error("table must be compliant with the Table.jl.")
 
     # Get the data.
+    #
+    # If `table` is not compatible with Tables.jl, then an error will be thrown.
     data = Tables.columns(table)
 
     # Get the table schema to obtain the columns names.
