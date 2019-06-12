@@ -81,6 +81,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "man/usage/#Helpers-1",
+    "page": "Usage",
+    "title": "Helpers",
+    "category": "section",
+    "text": "The macro @pt was created to make it easier to pretty print tables to stdout. Its signature is:macro pt(expr...)where the expression list expr must be:[<Set of configurations> table]*in which the set of configurations are expressions like key = value. The keys can be:header: Select a header for the table.\ntf: Select a table format.\nAny other possible keyword that can be used in the function pretty_table.Notice that multiple tables can be printed. Furthermore, the configurations persist for multiple printing except for the header. Hence, for example:@pt header = header1 highlighters = hl1 formatter = ft1 table1 highlighters = hl2 table2will print table1 using the header header1 and the configuration highlighters = hl1 formatter = ft1 and will print table2 without header and using highlighters = hl2 formatter = ft1.julia> data = [1 2 3; 4 5 6];\n\njulia> @pt data\n┌──────────┬──────────┬──────────┐\n│ Column 1 │ Column 2 │ Column 3 │\n├──────────┼──────────┼──────────┤\n│        1 │        2 │        3 │\n│        4 │        5 │        6 │\n└──────────┴──────────┴──────────┘\n\njulia> @pt header = [\"Column 1\", \"Column 2\", \"Column 3\"] data header = [\"Column 1\" \"Column 2\" \"Column 3\"; \"A\" \"B\" \"C\"] data\n┌──────────┬──────────┬──────────┐\n│ Column 1 │ Column 2 │ Column 3 │\n├──────────┼──────────┼──────────┤\n│        1 │        2 │        3 │\n│        4 │        5 │        6 │\n└──────────┴──────────┴──────────┘\n┌──────────┬──────────┬──────────┐\n│ Column 1 │ Column 2 │ Column 3 │\n│        A │        B │        C │\n├──────────┼──────────┼──────────┤\n│        1 │        2 │        3 │\n│        4 │        5 │        6 │\n└──────────┴──────────┴──────────┘info: Info\nWhen more than one table is passed to this macro, then multiple calls to pretty_table will occur. Hence, the cropping algorithm will behave exactly the same as printing the tables separately."
+},
+
+{
     "location": "man/alignment/#",
     "page": "Alignment",
     "title": "Alignment",
