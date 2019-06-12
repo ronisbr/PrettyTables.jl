@@ -795,6 +795,77 @@ end
     @test result == expected
 end
 
+# Helpers
+# ==============================================================================
+
+@testset "@pt" begin
+    # To get the output of the macro @pt, we must redirect the stdout.
+    old_stdout = stdout
+    in, out    = redirect_stdout()
+
+    # Test 1
+    # --------------------------------------------------------------------------
+
+    expected = """
+.......................
+: 1 :     2 :   3 : 4 :
+:...:.......:.....:...:
+: 1 : false : 1.0 : 1 :
+: 2 :  true : 2.0 : 2 :
+: 3 : false : 3.0 : 3 :
+: 4 :  true : 4.0 : 4 :
+: 5 : false : 5.0 : 5 :
+: 6 :  true : 6.0 : 6 :
+:...:.......:.....:...:
+╭────────┬────────┬────────┬────────╮
+│ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
+├────────┼────────┼────────┼────────┤
+│      1 │  false │    1.0 │      1 │
+│      2 │   true │    2.0 │      2 │
+│      3 │  false │    3.0 │      3 │
+│      4 │   true │    4.0 │      4 │
+│      5 │  false │    5.0 │      5 │
+│      6 │   true │    6.0 │      6 │
+╰────────┴────────┴────────┴────────╯
+"""
+
+    @pt header = ["1","2","3","4"] tf = ascii_dots data tf = unicode_rounded data
+    result = String(readavailable(in))
+    @test result == expected
+
+    # Test 2
+    # --------------------------------------------------------------------------
+
+    expected = """
+.......................
+: 1 :     2 :   3 : 4 :
+:...:.......:.....:...:
+: 1 : false : 1.0 : 1 :
+: 2 :  true : 2.0 : 2 :
+: 3 : false : 3.0 : 3 :
+: 4 :  true : 4.0 : 4 :
+: 5 : false : 5.0 : 5 :
+: 6 :  true : 6.0 : 6 :
+:...:.......:.....:...:
+.--------.--------.
+| Col. 1 | Col. 2 |
+:--------+--------:
+|      1 |      2 |
+|      3 |      4 |
+|      5 |      6 |
+'--------'--------'
+"""
+
+    @pt header = ["1","2","3","4"] tf = ascii_dots data tf = ascii_rounded [1 2; 3 4; 5 6]
+    result = String(readavailable(in))
+    @test result == expected
+
+    # Restore the original stdout.
+    close(in)
+    close(out)
+    redirect_stdout(old_stdout)
+end
+
 # Issue #4
 # ==============================================================================
 
