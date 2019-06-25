@@ -841,19 +841,11 @@ end
 : 5 : false : 5.0 : 5 :
 : 6 :  true : 6.0 : 6 :
 :...:.......:.....:...:
-╭────────┬────────┬────────┬────────╮
-│ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
-├────────┼────────┼────────┼────────┤
-│      1 │  false │    1.0 │      1 │
-│      2 │   true │    2.0 │      2 │
-│      3 │  false │    3.0 │      3 │
-│      4 │   true │    4.0 │      4 │
-│      5 │  false │    5.0 │      5 │
-│      6 │   true │    6.0 │      6 │
-╰────────┴────────┴────────┴────────╯
 """
 
-    @pt header = ["1","2","3","4"] tf = ascii_dots data tf = unicode_rounded data
+    @ptconf tf = ascii_dots
+    @pt :header = ["1","2","3","4"] data
+
     result = String(readavailable(in))
     @test result == expected
 
@@ -861,26 +853,45 @@ end
     # --------------------------------------------------------------------------
 
     expected = """
-.......................
-: 1 :     2 :   3 : 4 :
-:...:.......:.....:...:
-: 1 : false : 1.0 : 1 :
-: 2 :  true : 2.0 : 2 :
-: 3 : false : 3.0 : 3 :
-: 4 :  true : 4.0 : 4 :
-: 5 : false : 5.0 : 5 :
-: 6 :  true : 6.0 : 6 :
-:...:.......:.....:...:
-.--------.--------.
-| Col. 1 | Col. 2 |
-:--------+--------:
-|      1 |      2 |
-|      3 |      4 |
-|      5 |      6 |
-'--------'--------'
+╭────────┬────────┬────────┬────────╮
+│ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
+├────────┼────────┼────────┼────────┤
+│   1    │ false  │  1.0   │   1    │
+│   2    │  true  │  2.0   │   2    │
+│   3    │ false  │  3.0   │   3    │
+│   4    │  true  │  4.0   │   4    │
+│   5    │ false  │  5.0   │   5    │
+│   6    │  true  │  6.0   │   6    │
+╰────────┴────────┴────────┴────────╯
 """
 
-    @pt header = ["1","2","3","4"] tf = ascii_dots data tf = ascii_rounded [1 2; 3 4; 5 6]
+    @ptconf tf = unicode_rounded
+    @ptconf alignment = :c
+    @pt data
+
+    result = String(readavailable(in))
+    @test result == expected
+
+    # Test 2
+    # --------------------------------------------------------------------------
+
+    expected = """
+.----------.----------.
+| Column 1 | Column 2 |
+|   Sub. 1 |   Sub. 2 |
+:----------+----------:
+|        1 |        2 |
+|        3 |        4 |
+|        5 |        6 |
+'----------'----------'
+"""
+
+    header = ["Column 1" "Column 2"; "Sub. 1" "Sub. 2"]
+
+    @ptconfclean
+    @ptconf tf = ascii_rounded
+    @pt :header = header [1 2; 3 4; 5 6]
+
     result = String(readavailable(in))
     @test result == expected
 

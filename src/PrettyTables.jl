@@ -95,10 +95,10 @@ const _reset_crayon = Crayon(reset = true)
 #                                  Includes
 ################################################################################
 
-include("helpers.jl")
 include("predefined_formats.jl")
 include("predefined_highlighters.jl")
 include("predefined_formatters.jl")
+include("helpers.jl")
 include("print.jl")
 
 end # module
