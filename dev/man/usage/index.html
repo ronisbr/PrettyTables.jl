@@ -79,17 +79,17 @@ julia&gt; pretty_table(data, screen_size = (10,30), crop = :none)
 │      4 │   true │    4.0 │      4 │
 │      5 │  false │    5.0 │      5 │
 │      6 │   true │    6.0 │      6 │
-└────────┴────────┴────────┴────────┘</code></pre><p>If the keyword <code>screen_size</code> is not specified (or is <code>nothing</code>), then the screen size will be obtained automatically. For files, <code>screen_size = (-1,-1)</code>, meaning that no limit exits in both vertical and horizontal direction.</p><div class="admonition note"><div class="admonition-title">Note</div><div class="admonition-text"><p>In vertical cropping, the header and the first table row is <strong>always</strong> printed.    </p></div></div><div class="admonition note"><div class="admonition-title">Note</div><div class="admonition-text"><p>The highlighters will work even in partially printed data.</p></div></div><h2><a class="nav-anchor" id="Helpers-1" href="#Helpers-1">Helpers</a></h2><p>The macro <code>@pt</code> was created to make it easier to pretty print tables to <code>stdout</code>. Its signature is:</p><pre><code class="language-julia">macro pt(expr...)</code></pre><p>where the expression list <code>expr</code> must be:</p><pre><code class="language-none">[&lt;Set of configurations&gt; table]*</code></pre><p>in which the set of configurations are expressions like <code>key = value</code>. The keys can be:</p><ul><li><code>header</code>: Select a header for the table.</li><li><code>tf</code>: Select a table format.</li><li>Any other possible keyword that can be used in the function <code>pretty_table</code>.</li></ul><p>Notice that multiple tables can be printed. Furthermore, the configurations persist for multiple printing <strong>except for the header</strong>. Hence, for example:</p><pre><code class="language-julia">@pt header = header1 highlighters = hl1 formatter = ft1 table1 highlighters = hl2 table2</code></pre><p>will print <code>table1</code> using the header <code>header1</code> and the configuration <code>highlighters = hl1 formatter = ft1</code> and will print <code>table2</code> without header and using <code>highlighters = hl2 formatter = ft1</code>.</p><pre><code class="language-julia-repl">julia&gt; data = [1 2 3; 4 5 6];
+└────────┴────────┴────────┴────────┘</code></pre><p>If the keyword <code>screen_size</code> is not specified (or is <code>nothing</code>), then the screen size will be obtained automatically. For files, <code>screen_size = (-1,-1)</code>, meaning that no limit exits in both vertical and horizontal direction.</p><div class="admonition note"><div class="admonition-title">Note</div><div class="admonition-text"><p>In vertical cropping, the header and the first table row is <strong>always</strong> printed.    </p></div></div><div class="admonition note"><div class="admonition-title">Note</div><div class="admonition-text"><p>The highlighters will work even in partially printed data.</p></div></div><h2><a class="nav-anchor" id="Helpers-1" href="#Helpers-1">Helpers</a></h2><p>The macro <code>@pt</code> was created to make it easier to pretty print tables to <code>stdout</code>. Its signature is:</p><pre><code class="language-julia">macro pt(expr...)</code></pre><p>where the expression list <code>expr</code> contains the tables that should be printed like:</p><pre><code class="language-julia">@pt table1 table2 table3</code></pre><p>The user can select the table header by passing the expression:</p><pre><code class="language-none">:header = [&lt;Vector with the header&gt;]</code></pre><p>Notice that the header is valid only for the next printed table. Hence:</p><pre><code class="language-julia">    @pt :header = header1 table1 :header = header2 table2 table3</code></pre><p>will print <code>table1</code> using <code>header1</code>, <code>table2</code> using <code>header2</code>, and <code>table3</code> using the default header.</p><p>The global configurations used to print tables with the macro <code>@pt</code> can be selected by:</p><pre><code class="language-julia">macro ptconf(expr...)</code></pre><p>where <code>expr</code> format must be:</p><pre><code class="language-none">keyword1 = value1 keyword2 = value2 ...</code></pre><p>The keywords can be:</p><ul><li><code>tf</code>: Select a table format.</li><li>Any other possible keyword that can be used in the function <code>pretty_table</code>.</li></ul><p>All the configurations can be reseted by calling <code>@ptconfclean</code>.</p><div class="admonition warning"><div class="admonition-title">Warning</div><div class="admonition-text"><p>If a keyword is not supported by the function <code>pretty_table</code>, then no error message is printed when calling <code>@ptconf</code>. However, an error will be thrown when <code>@pt</code> is called.</p></div></div><div class="admonition info"><div class="admonition-title">Info</div><div class="admonition-text"><p>When more than one table is passed to the macro <code>@pt</code>, then multiple calls to <code>pretty_table</code> will occur. Hence, the cropping algorithm will behave exactly the same as printing the tables separately.</p></div></div><pre><code class="language-julia-repl">julia&gt; data = [1 2 3; 4 5 6];
 
 julia&gt; @pt data
-┌──────────┬──────────┬──────────┐
-│ Column 1 │ Column 2 │ Column 3 │
-├──────────┼──────────┼──────────┤
-│        1 │        2 │        3 │
-│        4 │        5 │        6 │
-└──────────┴──────────┴──────────┘
+┌────────┬────────┬────────┐
+│ Col. 1 │ Col. 2 │ Col. 3 │
+├────────┼────────┼────────┤
+│      1 │      2 │      3 │
+│      4 │      5 │      6 │
+└────────┴────────┴────────┘
 
-julia&gt; @pt header = [&quot;Column 1&quot;, &quot;Column 2&quot;, &quot;Column 3&quot;] data header = [&quot;Column 1&quot; &quot;Column 2&quot; &quot;Column 3&quot;; &quot;A&quot; &quot;B&quot; &quot;C&quot;] data
+julia&gt; @pt :header = [&quot;Column 1&quot;, &quot;Column 2&quot;, &quot;Column 3&quot;] data :header = [&quot;Column 1&quot; &quot;Column 2&quot; &quot;Column 3&quot;; &quot;A&quot; &quot;B&quot; &quot;C&quot;] data
 ┌──────────┬──────────┬──────────┐
 │ Column 1 │ Column 2 │ Column 3 │
 ├──────────┼──────────┼──────────┤
@@ -102,4 +102,24 @@ julia&gt; @pt header = [&quot;Column 1&quot;, &quot;Column 2&quot;, &quot;Column
 ├──────────┼──────────┼──────────┤
 │        1 │        2 │        3 │
 │        4 │        5 │        6 │
-└──────────┴──────────┴──────────┘</code></pre><div class="admonition info"><div class="admonition-title">Info</div><div class="admonition-text"><p>When more than one table is passed to this macro, then multiple calls to <code>pretty_table</code> will occur. Hence, the cropping algorithm will behave exactly the same as printing the tables separately.</p></div></div><footer><hr/><a class="previous" href="../../"><span class="direction">Previous</span><span class="title">Home</span></a><a class="next" href="../alignment/"><span class="direction">Next</span><span class="title">Alignment</span></a></footer></article></body></html>
+└──────────┴──────────┴──────────┘
+
+julia&gt; @ptconf tf = ascii_dots alignment = :c
+
+julia&gt; @pt data
+............................
+: Col. 1 : Col. 2 : Col. 3 :
+:........:........:........:
+:   1    :   2    :   3    :
+:   4    :   5    :   6    :
+:........:........:........:
+
+julia&gt; @ptconfclean
+
+julia&gt; @pt data
+┌────────┬────────┬────────┐
+│ Col. 1 │ Col. 2 │ Col. 3 │
+├────────┼────────┼────────┤
+│      1 │      2 │      3 │
+│      4 │      5 │      6 │
+└────────┴────────┴────────┘</code></pre><footer><hr/><a class="previous" href="../../"><span class="direction">Previous</span><span class="title">Home</span></a><a class="next" href="../alignment/"><span class="direction">Next</span><span class="title">Alignment</span></a></footer></article></body></html>
