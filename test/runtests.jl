@@ -554,10 +554,13 @@ end
     @test result == expected
 end
 
-# Line breaks inside cells
+# Hiding header and sub-header
 # ==============================================================================
 
-@testset "Hide header" begin
+@testset "Hide header and sub-header" begin
+
+    # Header
+    # --------------------------------------------------------------------------
 
     expected = """
 ┌───┬───────┬─────┬───┐
@@ -589,6 +592,27 @@ end
 """
     result = sprint((io, data)->pretty_table(io, data, [1 2]; alignment = :l,
                                              noheader = true), data)
+    @test result == expected
+
+    # Sub-header
+    # --------------------------------------------------------------------------
+
+    expected = """
+┌───┬───────┬─────┬───┐
+│ 1 │     2 │   3 │ 4 │
+├───┼───────┼─────┼───┤
+│ 1 │ false │ 1.0 │ 1 │
+│ 2 │  true │ 2.0 │ 2 │
+│ 3 │ false │ 3.0 │ 3 │
+│ 4 │  true │ 4.0 │ 4 │
+│ 5 │ false │ 5.0 │ 5 │
+│ 6 │  true │ 6.0 │ 6 │
+└───┴───────┴─────┴───┘
+"""
+
+    header = [1 2 3 4; "this is" "a very very" "big" "sub-header"]
+    result = sprint((io, data)->pretty_table(io, data, header; nosubheader = true),
+                    data)
     @test result == expected
 end
 
