@@ -153,6 +153,9 @@ In all cases, the following keywords are available:
 * `noheader`: If `true`, then the header will not be printed. Notice that all
               keywords and parameters related to the header and sub-headers will
               be ignored. (**Default** = `false`)
+* `nosubheader`: If `true`, then the sub-header will not be printed, *i.e.* the
+                 header will contain only one line. Notice that this option has
+                 no effect if `noheader = true`. (**Default** = `false`)
 * `same_column_size`: If `true`, then all the columns will have the same size.
                       (**Default** = `false`)
 * `screen_size`: A tuple of two integers that defines the screen size (num. of

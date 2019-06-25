@@ -137,6 +137,9 @@ omitted, then it defaults to `stdout`.
 * `noheader`: If `true`, then the header will not be printed. Notice that all
               keywords and parameters related to the header and sub-headers will
               be ignored. (**Default** = `false`)
+* `nosubheader`: If `true`, then the sub-header will not be printed, *i.e.* the
+                 header will contain only one line. Notice that this option has
+                 no effect if `noheader = true`. (**Default** = `false`)
 * `same_column_size`: If `true`, then all the columns will have the same size.
                       (**Default** = `false`)
 * `screen_size`: A tuple of two integers that defines the screen size (num. of
@@ -358,6 +361,7 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
                        hlines::AbstractVector{Int} = Int[],
                        linebreaks::Bool = false,
                        noheader::Bool = false,
+                       nosubheader::Bool = false,
                        same_column_size::Bool = false,
                        screen_size::Union{Nothing,Tuple{Int,Int}} = nothing,
                        show_row_number::Bool = false)
@@ -413,7 +417,7 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
     # dimension, because the header can be a vector or a matrix. It also depends
     # on the dimension of the `data`. If `data` is a vector, then `header` must
     # be a vector, in which the first elements if the header and the others are
-    # subheaders.
+    # sub-headers.
 
     header_size     = size(header)
     header_num_dims = length(header_size)
@@ -436,8 +440,18 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
     !noheader && num_cols != header_num_cols &&
     error("The header length must be equal to the number of columns.")
 
-    # Transform some keywords that are single elements to vectors.
+    # Additional processing necessary if the user wants to print the header.
     if !noheader
+        # If the user do not want to print the sub-header but wants to print the
+        # header, then just force the number of rows in header to be 1.
+        if nosubheader
+            # Now, `header` will be a view of the first line of the matrix that
+            # has the header.
+            header = @view header[1:header_num_rows:end]
+            header_num_rows = 1
+        end
+
+        # Transform some keywords that are single elements to vectors.
         if typeof(header_crayon) == Crayon
             header_crayon = [header_crayon for i = 1:num_cols]
         else
