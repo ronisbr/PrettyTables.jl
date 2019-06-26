@@ -1,6 +1,23 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 0.5.0
+-------------
+
+- ![Feature][badge-feature] The macro `@pt` can be used to print tables with
+  global configurations. Those configurations can be set by the macro `@ptconf`.
+- ![Feature][badge-feature] There is now the option `nosubheader` to suppress
+  printing sub-headers. This can be useful when printing `DataFrame` or `Dict`
+  and it is desired to hide the types of the columns. (Issue [#14][gh-issue-14])
+- ![Enhancement][badge-enhancement] PrettyTables.jl is now compatible with
+  Tables.jl 0.2. It means that if an elements that is passed to `pretty_table`
+  is not one of those natively supported, then it will call `Tables.columns` to
+  automatically convert it. If it fails, than Tables.jl will throw an error
+  instead of PrettyTables.jl. (Issue [#13][gh-issue-13])
+- ![Enhancement][badge-enhancement] If only one highlighter is wanted, then an
+  instance of `Highlighter` can now be directly passed to the keyword
+  `highlighters`, *i.e.* it does not must be a `Tuple` anymore.
+
 Version 0.4.2
 -------------
 
@@ -104,6 +121,8 @@ Version 0.1.0
 [gh-issue-7]: https://github.com/ronisbr/PrettyTables.jl/issues/7
 [gh-issue-9]: https://github.com/ronisbr/PrettyTables.jl/issues/9
 [gh-issue-10]: https://github.com/ronisbr/PrettyTables.jl/issues/10
+[gh-issue-13]: https://github.com/ronisbr/PrettyTables.jl/issues/13
+[gh-issue-14]: https://github.com/ronisbr/PrettyTables.jl/issues/14
 
 [gh-pr-5]: https://github.com/ronisbr/PrettyTables.jl/pull/5
 [gh-pr-8]: https://github.com/ronisbr/PrettyTables.jl/pull/8
