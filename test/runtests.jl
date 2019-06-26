@@ -827,6 +827,10 @@ end
     old_stdout = stdout
     in, out    = redirect_stdout()
 
+    # The configurations must not interfere with the printings of any type
+    # except for the `Dict`.
+    @ptconf sortkeys = true
+
     # Test 1
     # --------------------------------------------------------------------------
 
@@ -872,7 +876,7 @@ end
     result = String(readavailable(in))
     @test result == expected
 
-    # Test 2
+    # Test 3
     # --------------------------------------------------------------------------
 
     expected = """
@@ -895,10 +899,40 @@ end
     result = String(readavailable(in))
     @test result == expected
 
+    # Test 4
+    # --------------------------------------------------------------------------
+
+    expected = """
+.-------.---------------------.
+| Keys  | Values              |
+| Int64 | String              |
+:-------+---------------------:
+| 1     | São José dos Campos |
+| 2     | SP                  |
+| 3     | Brasil              |
+'-------'---------------------'
+"""
+
+    @ptconf sortkeys = true
+    @ptconf alignment = :l
+    @pt d = Dict(Int64(1) => "São José dos Campos",
+                 Int64(2) => "SP",
+                 Int64(3) => "Brasil")
+
+    result = String(readavailable(in))
+    @test result == expected
+
     # Restore the original stdout.
     close(in)
     close(out)
     redirect_stdout(old_stdout)
+
+    # The expression after `@pt` must be evaluated. Hence, `d` must be a dict
+    # with the defined elements.
+    @test d isa Dict
+    @test d[1] == "São José dos Campos"
+    @test d[2] == "SP"
+    @test d[3] == "Brasil"
 end
 
 # Issue #4

@@ -364,7 +364,8 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
                        nosubheader::Bool = false,
                        same_column_size::Bool = false,
                        screen_size::Union{Nothing,Tuple{Int,Int}} = nothing,
-                       show_row_number::Bool = false)
+                       show_row_number::Bool = false,
+                       sortkeys::Bool = false)
 
     # Let's create a `IOBuffer` to write everything and then transfer to `io`.
     io_has_color = get(io, :color, false)
