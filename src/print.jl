@@ -126,8 +126,8 @@ omitted, then it defaults to `stdout`.
 * `filters_row`: Filters for the rows (see the section `Filters`).
 * `filters_col`: Filters for the columns (see the section `Filters`).
 * `formatter`: See the section `Formatter`.
-* `highlighters`: A tuple with a list of highlighters (see the section
-                  `Highlighters`).
+* `highlighters`: An instance of `Highlighter` or a tuple with a list of
+                  highlighters (see the section `Highlighters`).
 * `hlines`: A vector of `Int` indicating row numbers in which an additional
             horizontal line should be drawn after the row. Notice that numbers
             lower than 1 and equal or higher than the number of rows will be
@@ -266,6 +266,9 @@ Notice that if multiple highlighters are valid for the element `(i,j)`, then the
 applied style will be equal to the first match considering the order in the
 Tuple `highlighters`.
 
+If only a single highlighter is wanted, then it can be passed directly to the
+keyword `highlighter` without being inside a `Tuple`.
+
 """
 pretty_table(data::AbstractVecOrMat{T1}, header::AbstractVecOrMat{T2},
              tf::PrettyTableFormat = unicode; kwargs...) where {T1,T2} =
@@ -357,7 +360,7 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
                        filters_row::Union{Nothing,Tuple} = nothing,
                        filters_col::Union{Nothing,Tuple} = nothing,
                        formatter::Dict = Dict(),
-                       highlighters::Tuple = (),
+                       highlighters::Union{Highlighter,Tuple} = (),
                        hlines::AbstractVector{Int} = Int[],
                        linebreaks::Bool = false,
                        noheader::Bool = false,
@@ -473,6 +476,9 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
     else
         length(alignment) != num_cols && error("The length of `alignment` must be the same as the number of rows.")
     end
+
+    # Make sure that `highlighters` is always a tuple.
+    !(highlighters isa Tuple) && (highlighters = (highlighters,))
 
     # If the user wants to filter the data, then check which columns and rows
     # must be printed. Notice that if a data is filtered, then it means that it
@@ -716,8 +722,8 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
                     data_ij_str = " " * @_str_aligned("", alignment[jc], cols_width[j]) * " "
                 end
 
-                # If we have highlighters defined, then we need to verify if this
-                # data should be highlight.
+                # If we have highlighters defined, then we need to verify if
+                # this data should be highlight.
                 printed = false
                 crayon  = text_crayon
 

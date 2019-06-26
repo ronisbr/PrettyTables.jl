@@ -142,8 +142,8 @@ In all cases, the following keywords are available:
 * `filters_row`: Filters for the rows (see the section [Filters](@ref)).
 * `filters_col`: Filters for the columns (see the section [Filters](@ref)).
 * `formatter`: See the section [Formatter](@ref).
-* `highlighters`: A tuple with a list of highlighters (see the section
-                  [Highlighters](@ref)).
+* `highlighters`: An instance of `Highlighter` or a tuple with a list of
+                  highlighters (see the section `Highlighters`).
 * `hlines`: A vector of `Int` indicating row numbers in which an additional
             horizontal line should be drawn after the row. Notice that numbers
             lower than 1 and equal or higher than the number of rows will be

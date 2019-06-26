@@ -33,6 +33,9 @@ Tuple `highlighters`.
 
 ![](../assets/ex_highlighters_00001.png)
 
+If only a single highlighter is wanted, then it can be passed directly to the
+keyword `highlighter` of `pretty_table` without being inside a `Tuple`.
+
 ![](../assets/ex_highlighters_00002.png)
 
 !!! note
@@ -48,7 +51,7 @@ usage simpler. They are defined in the file `./src/predefined_highlighters.jl`.
 To make the syntax less cumbersome, the following helper function is available:
 
 ```julia
-    function Highlighter(f; kwargs...)
+function Highlighter(f; kwargs...)
 ```
 
 It creates a `Highlighter` with the function `f` and pass all the keyword
@@ -63,4 +66,3 @@ can be replaced by:
 ```julia-repl
 julia> Highlighter((data,i,j)->isodd(i); bold = true, background = :dark_gray)
 ```
-
