@@ -62,4 +62,4 @@ f_c(data,i) = i in (5,6)
 f_r(data,i) = (data[i,5] >= 0) && (data[i,6] >= 0)
 ```
 
-and set `filters_col = (f_c,)` and `filters_row = (f_c,)`.
+and set `filters_col = (f_c,)` and `filters_row = (f_r,)`.

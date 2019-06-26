@@ -16,7 +16,7 @@ https://ozh.github.io/ascii-tables/
 
 * Julia >= 1.0
 * Parameters >= 0.10.3
-* Tables >= 0.1.14
+* Tables >= 0.2
 
 ## Installation
 
