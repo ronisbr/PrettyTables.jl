@@ -125,7 +125,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Filters",
     "title": "Example",
     "category": "section",
-    "text": "Given a matrix data, let\'s suppose that is desired to print:only the 5-th and 6-th column; and\nonly the rows in which the 5-th and 6-th columns are positive.Then we can use one of the following approaches:f_c(data,i)  = i in (5,6)\nf_r1(data,i) = data[i,5] >= 0\nf_r2(data,i) = data[i,6] >= 0and set filters_col = (f_c,) and filters_row = (f_r1,f_r2), orf_c(data,i) = i in (5,6)\nf_r(data,i) = (data[i,5] >= 0) && (data[i,6] >= 0)and set filters_col = (f_c,) and filters_row = (f_c,)."
+    "text": "Given a matrix data, let\'s suppose that is desired to print:only the 5-th and 6-th column; and\nonly the rows in which the 5-th and 6-th columns are positive.Then we can use one of the following approaches:f_c(data,i)  = i in (5,6)\nf_r1(data,i) = data[i,5] >= 0\nf_r2(data,i) = data[i,6] >= 0and set filters_col = (f_c,) and filters_row = (f_r1,f_r2), orf_c(data,i) = i in (5,6)\nf_r(data,i) = (data[i,5] >= 0) && (data[i,6] >= 0)and set filters_col = (f_c,) and filters_row = (f_r,)."
 },
 
 {
