@@ -553,7 +553,7 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
     # columns that will not be displayed.
     pred_tab_width   = 0
 
-    @inbounds @views for i = 1:num_printed_cols
+    @inbounds for i = 1:num_printed_cols
         # Index of the i-th printed column in `data`.
         ic = id_cols[i]
 
