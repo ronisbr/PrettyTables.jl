@@ -1,5 +1,6 @@
 using Test
 using PrettyTables
+using DataFrames
 
 data = Any[1    false      1.0     0x01 ;
            2     true      2.0     0x02 ;
@@ -242,7 +243,7 @@ end
        6     true      6.0        6  
  -------- -------- -------- -------- 
 """
-    result = sprint(pretty_table, data, compact)
+    result = sprint(pretty_table, data, PrettyTables.compact)
     @test result == expected
 
     # markdown
@@ -1002,5 +1003,26 @@ end
 
     result = sprint((io, v)->pretty_table(io, v; noheader = true,
                                           show_row_number = true), v)
+    @test result == expected
+end
+
+# Issue #16
+# ==============================================================================
+
+@testset "Issue #16 - Printing DataFrames that contains strings" begin
+    df = DataFrame(:a => Int64[1, 2], :b => ["A", "B"]);
+
+    expected = """
+┌───────┬────────┐
+│     a │      b │
+│ Int64 │ String │
+├───────┼────────┤
+│     1 │      A │
+│     2 │      B │
+└───────┴────────┘
+"""
+
+    result = sprint(pretty_table, df)
+
     @test result == expected
 end
