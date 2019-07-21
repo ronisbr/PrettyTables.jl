@@ -1,6 +1,12 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 0.5.1
+-------------
+
+- ![Bugfix][badge-bugfix] DataFrames with strings were being printed surrounded
+  by quotes, which were leading to a wrong escaping. (Issue [#16][gh-issue-16])
+
 Version 0.5.0
 -------------
 
@@ -123,6 +129,7 @@ Version 0.1.0
 [gh-issue-10]: https://github.com/ronisbr/PrettyTables.jl/issues/10
 [gh-issue-13]: https://github.com/ronisbr/PrettyTables.jl/issues/13
 [gh-issue-14]: https://github.com/ronisbr/PrettyTables.jl/issues/14
+[gh-issue-16]: https://github.com/ronisbr/PrettyTables.jl/issues/16
 
 [gh-pr-5]: https://github.com/ronisbr/PrettyTables.jl/pull/5
 [gh-pr-8]: https://github.com/ronisbr/PrettyTables.jl/pull/8
