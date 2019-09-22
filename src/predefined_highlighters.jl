@@ -6,7 +6,31 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ==#
 
-export hl_lt, hl_leq, hl_gt, hl_geq, hl_value
+export hl_cell, hl_lt, hl_leq, hl_gt, hl_geq, hl_value
+
+"""
+    function hl_cell(i::Number, j::Number, crayon::Crayon)
+
+Highlight the cell `(i,j)` with the crayon `crayon`.
+
+    function hl_cell(cells::AbstractVector{NTuple(2,Int)}, crayon::Crayon)
+
+Highlights all the cells in `cells` with the crayon `crayon`.
+
+"""
+hl_cell(i::Number, j::Number, crayon::Crayon) = Highlighter(
+    f = (data,x,y)->begin
+        return (x == i) && (y == j)
+    end,
+    crayon = crayon
+)
+
+hl_cell(cells::AbstractVector{NTuple{2,Int}}, crayon::Crayon) = Highlighter(
+    f = (data,x,y)->begin
+        return (x,y) ∈ cells
+    end,
+    crayon = crayon
+)
 
 """
     function hl_lt(n::Number)
