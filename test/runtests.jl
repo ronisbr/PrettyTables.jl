@@ -133,7 +133,7 @@ end
     result = sprint((io,data)->pretty_table(io, data;
                                             filters_row = ( (data,i) -> i%2 == 0,),
                                             filters_col = ( (data,i) -> i%2 == 1,),
-                                            formatter = ft_printf("%.3",[3]),
+                                            formatter = ft_printf("%.3",3),
                                             show_row_number = true), data)
     @test result == expected
 
@@ -150,7 +150,7 @@ end
     result = sprint((io,data)->pretty_table(io, data;
                                             filters_row = ( (data,i) -> i%2 == 0,),
                                             filters_col = ( (data,i) -> i%2 == 1,),
-                                            formatter = ft_printf("%.3",[3]),
+                                            formatter = ft_printf("%.3",3),
                                             show_row_number = true,
                                             alignment = [:c,:l,:l,:c]), data)
     @test result == expected

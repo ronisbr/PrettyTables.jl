@@ -25,6 +25,7 @@ This formatter will be applied only to the cells that are of type `Number`.
 
 """
 ft_printf(ftv_str::String) = ft_printf([ftv_str])
+ft_printf(ftv_str::String, column::Int) = ft_printf(ftv_str, [column])
 ft_printf(ftv_str::String, columns::AbstractVector{Int}) =
     ft_printf([ftv_str for i = 1:length(columns)], columns)
 
