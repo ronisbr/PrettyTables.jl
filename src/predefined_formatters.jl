@@ -19,6 +19,10 @@ specified (or is empty), then the format will be applied to the entire table.
 Otherwise, if `ftv_str` is a `String` and `columns` is a `Vector`, then the
 format will be applied only to the columns in `columns`.
 
+# Remarks
+
+This formatter will be applied only to the cells that are of type `Number`.
+
 """
 ft_printf(ftv_str::String) = ft_printf([ftv_str])
 ft_printf(ftv_str::String, columns::AbstractVector{Int}) =
@@ -38,12 +42,16 @@ function ft_printf(ftv_str::Vector{String}, columns::AbstractVector{Int} = Int[]
     # to 0.04s. Thanks to @RalphAS for the tip!
 
     if lc == 0
-        return Dict{Int,Function}(0 => (v,i) -> sprintf1(ftv_str[1], v))
+        return Dict{Int,Function}(0 => (v,i) -> begin
+            return typeof(v) <: Number ? sprintf1(ftv_str[1], v) : v
+        end)
     else
         ft = Dict{Int,Function}()
 
         for i = 1:length(columns)
-            push!(ft, columns[i] => (v,j) -> sprintf1(ftv_str[i], v))
+            push!(ft, columns[i] => (v,j) -> begin
+                return typeof(v) <: Number ? sprintf1(ftv_str[i], v) : v
+            end)
         end
 
         return ft

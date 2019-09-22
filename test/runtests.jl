@@ -1107,3 +1107,32 @@ end
 
     @test result == expected
 end
+
+# Issue #19
+# ==============================================================================
+
+@testset "Issue #19 - ft_printf with cells that are not numbers" begin
+    matrix = [1 1; 2 2; 3 3; "teste" "teste"; 4 4; 5 5; true true; :s :s]
+
+    expected = """
+┌────────────┬────────┐
+│     Col. 1 │ Col. 2 │
+├────────────┼────────┤
+│       1.00 │      1 │
+│       2.00 │      2 │
+│       3.00 │      3 │
+│      teste │  teste │
+│       4.00 │      4 │
+│       5.00 │      5 │
+│       1.00 │   true │
+│          s │      s │
+└────────────┴────────┘
+"""
+
+    result = sprint((io,data)->pretty_table(io, matrix;
+                                            formatter = ft_printf("%10.2f",[1])),
+                    data)
+
+    @test result == expected
+
+end

@@ -58,6 +58,11 @@ specified (or is empty), then the format will be applied to the entire table.
 Otherwise, if `ftv_str` is a `String` and `columns` is a `Vector`, then the
 format will be applied only to the columns in `columns`.
 
+!!! note
+
+    This formatter will be applied only to the cells that are of type `Number`.
+    The other types of cells will be left untouched.
+
 ```jldoctest
 julia> data = Any[ f(a) for a = 0:30:90, f in (sind,cosd,tand)];
 
