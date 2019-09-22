@@ -35,41 +35,6 @@ respect to the point in which the table is printed.
 end
 
 ################################################################################
-#                                    Macros
-################################################################################
-
-"""
-    macro _str_aligned(data, alignment, field_size)
-
-This macro returns a string of `data` with alignment `alignment` in a field with
-size `field_size`. `alignment` can be `:l` or `:L` for left alignment, `:c` or
-`:C` for center alignment, or `:r` or `:R` for right alignment. It defaults to
-`:r` if `alignment` is any other symbol.
-
-"""
-macro _str_aligned(data, alignment, field_size)
-    quote
-        ldata = $(esc(data))
-        la = $(esc(alignment))
-        lfs = $(esc(field_size))
-        ds  = length(ldata)
-        Δ = lfs - ds
-
-        Δ < 0 && error("The field size must be bigger than the data size.")
-
-        if la == :l || la == :L
-            ldata * " "^Δ
-        elseif la == :c || la == :C
-            left  = div(Δ,2)
-            right = Δ-left
-            " "^left * ldata * " "^right
-        else
-            " "^Δ * ldata
-        end
-    end
-end
-
-################################################################################
 #                               Public Functions
 ################################################################################
 
@@ -652,7 +617,7 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
             if show_row_number
                 # The text "Row" must appear only on the first line.
                 if i == 1
-                    header_row_i_str = " " * @_str_aligned("Row", :r, row_number_width) * " "
+                    header_row_i_str = " " * _str_aligned("Row", :r, row_number_width) * " "
                     _p!(screen, buf, rownum_header_crayon, header_row_i_str)
                 else
                     _p!(screen, buf, rownum_header_crayon, " "^(row_number_width+2))
@@ -665,7 +630,7 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
                 # Index of the j-th printed column in `data`.
                 jc = id_cols[j]
 
-                header_i_str = " " * @_str_aligned(header_str[i,j], alignment[jc], cols_width[j]) * " "
+                header_i_str = " " * _str_aligned(header_str[i,j], alignment[jc], cols_width[j]) * " "
 
                 # Check if we are printing the header or the sub-headers and select
                 # the styling accordingly.
@@ -704,9 +669,9 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
 
             if show_row_number
                 if l == 1
-                    row_number_i_str = " " * @_str_aligned(string(ir), :r, row_number_width) * " "
+                    row_number_i_str = " " * _str_aligned(string(ir), :r, row_number_width) * " "
                 else
-                    row_number_i_str = " " * @_str_aligned("", :r, row_number_width) * " "
+                    row_number_i_str = " " * _str_aligned("", :r, row_number_width) * " "
                 end
 
                 _p!(screen, buf, text_crayon,   row_number_i_str)
@@ -717,9 +682,9 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
                 jc = id_cols[j]
 
                 if length(data_str[i,j]) >= l
-                    data_ij_str = " " * @_str_aligned(data_str[i,j][l], alignment[jc], cols_width[j]) * " "
+                    data_ij_str = " " * _str_aligned(data_str[i,j][l], alignment[jc], cols_width[j]) * " "
                 else
-                    data_ij_str = " " * @_str_aligned("", alignment[jc], cols_width[j]) * " "
+                    data_ij_str = " " * _str_aligned("", alignment[jc], cols_width[j]) * " "
                 end
 
                 # If we have highlighters defined, then we need to verify if
@@ -784,6 +749,36 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
 end
 
 ################################################################################
+#                             Auxiliary functions
+################################################################################
+
+"""
+    function _str_aligned(data::AbstractString, alignment::Symbol, field_size::Integer)
+
+This function returns the string `data` with alignment `alignment` in a field
+with size `field_size`. `alignment` can be `:l` or `:L` for left alignment, `:c`
+or `:C` for center alignment, or `:r` or `:R` for right alignment. It defaults
+to `:r` if `alignment` is any other symbol.
+
+"""
+function _str_aligned(data::AbstractString, alignment::Symbol,
+                      field_size::Integer)
+
+    Δ  = field_size - length(data)
+    Δ < 0 && error("The field size must be bigger than the data size.")
+
+    if alignment == :l || alignment == :L
+        return data * " "^Δ
+    elseif alignment == :c || alignment == :C
+        left  = div(Δ,2)
+        right = Δ-left
+        return " "^left * data * " "^right
+    else
+        return " "^Δ * data
+    end
+end
+
+################################################################################
 #                              Printing Functions
 ################################################################################
 
@@ -801,13 +796,13 @@ function _draw_continuation_row(screen, io, tf, text_crayon, border_crayon,
     _p!(screen, io, border_crayon, tf.column)
 
     if show_row_number
-        row_number_i_str = @_str_aligned("⋮", :c, row_number_width + 2)
+        row_number_i_str = _str_aligned("⋮", :c, row_number_width + 2)
         _p!(screen, io, text_crayon,   row_number_i_str)
         _p!(screen, io, border_crayon, tf.column)
     end
 
     @inbounds for j = 1:num_printed_cols
-        data_ij_str = @_str_aligned("⋮", :c, cols_width[j] + 2)
+        data_ij_str = _str_aligned("⋮", :c, cols_width[j] + 2)
         _p!(screen, io, text_crayon, data_ij_str)
 
         flp = j == num_printed_cols
