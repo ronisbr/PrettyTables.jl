@@ -74,3 +74,31 @@ julia> open("output.txt", "w") do f
             pretty_table(f,data)
        end
 ```
+
+This package can also be used to create data reports in text format:
+
+```julia-repl
+julia> data = ["Torques" "" "" "";
+               "Atmospheric drag" "."^10 10 "10⁻⁵ Nm";
+               "Gravity gradient" "."^10 3 "10⁻⁵ Nm";
+               "Solar radiation pressure" "."^10 0.1 "10⁻⁵ Nm";
+               "Total" "."^10 13.1 "10⁻⁵ Nm";
+               "" "" "" ""
+               "Angular momentum" "" "" "";
+               "Atmospheric drag" "."^10 6.5 "Nms";
+               "Gravity gradient" "."^10 3.0 "Nms";
+               "Solar radiation pressure" "."^10 1.0 "Nms";
+               "Total" "."^10 10.5 "Nms"]
+
+julia> pretty_table(data, borderless;
+                    noheader = true,
+                    cell_alignment = Dict( (1,1) => :l, (7,1) => :l ),
+                    formatter = ft_printf("%10.1f", 2),
+                    highlighters = (hl_cell( [(1,1);(7,1)], crayon"bold"),
+                                    hl_col(2, crayon"dark_gray"),
+                                    hl_row([5,11], crayon"bold yellow")),
+                    hlines = [1,7],
+                    hlines_format = Tuple('─' for _ = 1:4) )
+```
+
+![](../assets/ex_00013.png)
