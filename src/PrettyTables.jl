@@ -33,6 +33,8 @@ export Highlighter, PrettyTableFormat
 * `column`: Character in a vertical line.
 * `row`: Character in a horizontal line.
 * `top_line`: If `true`, then the top table line will be drawn.
+* `header_line`: If `true`, then the line between the header and the data will
+                 be drawn.
 * `bottom_line`: If `true`, then the bottom table line will be drawn.
 
 # Pre-defined formats
@@ -54,6 +56,7 @@ The following pre-defined formats are available: `unicode` (**default**),
     column::Char              = '│'
     row::Char                 = '─'
     top_line::Bool            = true
+    header_line::Bool         = true
     bottom_line::Bool         = true
 end
 

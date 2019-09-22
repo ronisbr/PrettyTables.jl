@@ -173,5 +173,25 @@ julia> pretty_table(data, tf)
 
 ```
 
+or that does not print the header line:
+
+```julia-repl
+julia> data = Any[ f(a) for a = 0:15:90, f in (sind,cosd,tand)];
+
+julia> tf = PrettyTableFormat(simple, header_line = false);
+
+julia> pretty_table(data, tf)
+====================== ===================== =====================
+               Col. 1                Col. 2               Col. 3
+                  0.0                   1.0                  0.0
+  0.25881904510252074    0.9659258262890683   0.2679491924311227
+                  0.5    0.8660254037844386   0.5773502691896258
+   0.7071067811865476    0.7071067811865476                  1.0
+   0.8660254037844386                   0.5   1.7320508075688772
+   0.9659258262890683   0.25881904510252074   3.7320508075688776
+                  1.0                   0.0                  Inf
+====================== ===================== =====================
+```
+
 For more information, see the documentation of the structure
 [`PrettyTableFormat`](@ref).

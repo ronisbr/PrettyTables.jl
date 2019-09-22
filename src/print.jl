@@ -670,10 +670,12 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
         # Bottom header line
         #-----------------------------------------------------------------------
 
-        _draw_line!(screen, buf, tf.left_intersection, tf.middle_intersection,
-                    tf.right_intersection, tf.row, border_crayon,
-                    num_printed_cols, cols_width, show_row_number,
-                    row_number_width)
+        tf.header_line && _draw_line!(screen, buf, tf.left_intersection,
+                                      tf.middle_intersection,
+                                      tf.right_intersection, tf.row,
+                                      border_crayon, num_printed_cols,
+                                      cols_width, show_row_number,
+                                      row_number_width)
     end
 
     # Data
