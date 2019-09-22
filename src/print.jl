@@ -97,6 +97,12 @@ omitted, then it defaults to `stdout`.
             horizontal line should be drawn after the row. Notice that numbers
             lower than 1 and equal or higher than the number of rows will be
             neglected.
+* `hlines_format`: A tuple of 4 characters specifying the format of the
+                   horizontal lines. The characters must be the left
+                   intersection, the middle intersection, the right
+                   intersection, and the row. If it is `nothing`, then it will
+                   use the same format specified in `tf`.
+                   (**Default** = `nothing`)
 * `linebreaks`: If `true`, then `\\n` will break the line inside the cells.
                 (**Default** = `false`)
 * `noheader`: If `true`, then the header will not be printed. Notice that all
@@ -327,6 +333,7 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
                        formatter::Dict = Dict(),
                        highlighters::Union{Highlighter,Tuple} = (),
                        hlines::AbstractVector{Int} = Int[],
+                       hlines_format::Union{Nothing,NTuple{4,Char}} = nothing,
                        linebreaks::Bool = false,
                        noheader::Bool = false,
                        nosubheader::Bool = false,
@@ -596,6 +603,12 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
     # larger.
     same_column_size && (cols_width = [maximum(cols_width) for i = 1:num_printed_cols])
 
+    # Create the format of the horizontal lines.
+    if hlines_format == nothing
+        hlines_format = (tf.left_intersection, tf.middle_intersection,
+                         tf.right_intersection, tf.row)
+    end
+
     # Top table line
     # ==========================================================================
 
@@ -716,8 +729,7 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
 
         # Check if we must draw a horizontal line here.
         i != num_rows && i in hlines &&
-        _draw_line!(screen, buf, tf.left_intersection, tf.middle_intersection,
-                    tf.right_intersection, tf.row, border_crayon,
+        _draw_line!(screen, buf, hlines_format..., border_crayon,
                     num_printed_cols, cols_width, show_row_number,
                     row_number_width)
 

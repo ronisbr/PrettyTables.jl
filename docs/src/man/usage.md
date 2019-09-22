@@ -148,6 +148,12 @@ In all cases, the following keywords are available:
             horizontal line should be drawn after the row. Notice that numbers
             lower than 1 and equal or higher than the number of rows will be
             neglected.
+* `hlines_format`: A tuple of 4 characters specifying the format of the
+                   horizontal lines. The characters must be the left
+                   intersection, the middle intersection, the right
+                   intersection, and the row. If it is `nothing`, then it will
+                   use the same format specified in `tf`.
+                   (**Default** = `nothing`)
 * `linebreaks`: If `true`, then `\n` will break the line inside the cells.
                 (**Default** = `false`)
 * `noheader`: If `true`, then the header will not be printed. Notice that all
