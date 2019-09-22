@@ -83,6 +83,10 @@ omitted, then it defaults to `stdout`.
                           numbers.
 * `text_crayon`: Crayon to print default text.
 * `alignment`: Select the alignment of the columns (see the section `Alignment`).
+* `cell_alignment`: A dictionary of type `(i,j) => a` that overrides that
+                    alignment of the cell `(i,j)` to `a` regardless of the
+                    columns alignment selected. `a` must be a symbol like
+                    specified in the section `Alignment`.
 * `crop`: Select the printing behavior when the data is bigger than the
           available screen size (see `screen_size`). It can be `:both` to crop
           on vertical and horizontal direction, `:horizontal` to crop only on
@@ -327,6 +331,7 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
                        rownum_header_crayon::Crayon = Crayon(bold = true),
                        text_crayon::Crayon = Crayon(),
                        alignment::Union{Symbol,Vector{Symbol}} = :r,
+                       cell_alignment::Dict{Tuple{Int,Int},Symbol} = Dict{Tuple{Int,Int},Symbol}(),
                        crop::Symbol = :both,
                        filters_row::Union{Nothing,Tuple} = nothing,
                        filters_col::Union{Nothing,Tuple} = nothing,
@@ -694,10 +699,17 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
             for j = 1:num_printed_cols
                 jc = id_cols[j]
 
-                if length(data_str[i,j]) >= l
-                    data_ij_str = " " * _str_aligned(data_str[i,j][l], alignment[jc], cols_width[j]) * " "
+                # Check the alignment of this cell.
+                if haskey(cell_alignment, (i,j))
+                    alignment_ij = cell_alignment[(i,j)]
                 else
-                    data_ij_str = " " * _str_aligned("", alignment[jc], cols_width[j]) * " "
+                    alignment_ij = alignment[jc]
+                end
+
+                if length(data_str[i,j]) >= l
+                    data_ij_str = " " * _str_aligned(data_str[i,j][l], alignment_ij, cols_width[j]) * " "
+                else
+                    data_ij_str = " " * _str_aligned("", alignment_ij, cols_width[j]) * " "
                 end
 
                 # If we have highlighters defined, then we need to verify if

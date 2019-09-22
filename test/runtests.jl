@@ -83,8 +83,35 @@ end
 │ 6      │   true │  6.0   │      6 │
 └────────┴────────┴────────┴────────┘
 """
-    result = sprint((io, data)->pretty_table(io, data; 
+    result = sprint((io, data)->pretty_table(io, data;
                                              alignment = [:l,:r,:c,:r]),
+                    data)
+    @test result == expected
+
+    # Cell override
+    # ==========================================================================
+
+    expected = """
+┌────────┬────────┬────────┬────────┐
+│ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
+├────────┼────────┼────────┼────────┤
+│ 1      │  false │  1.0   │ 1      │
+│ 2      │   true │  2.0   │      2 │
+│      3 │ false  │  3.0   │   3    │
+│ 4      │   true │  4.0   │   4    │
+│ 5      │  false │  5.0   │      5 │
+│ 6      │   true │  6.0   │ 6      │
+└────────┴────────┴────────┴────────┘
+"""
+    result = sprint((io, data)->pretty_table(io, data;
+                                             alignment = [:l,:r,:c,:r],
+                                             cell_alignment =
+                                                Dict( (3,1) => :r,
+                                                      (3,2) => :l,
+                                                      (1,4) => :l,
+                                                      (3,4) => :c,
+                                                      (4,4) => :c,
+                                                      (6,4) => :l )),
                     data)
     @test result == expected
 end

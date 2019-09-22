@@ -134,6 +134,10 @@ In all cases, the following keywords are available:
 * `text_crayon`: Crayon to print default text.
 * `alignment`: Select the alignment of the columns (see the section
                [Alignment](@ref)).
+* `cell_alignment`: A dictionary of type `(i,j) => a` that overrides that
+                    alignment of the cell `(i,j)` to `a` regardless of the
+                    columns alignment selected. `a` must be a symbol like
+                    specified in the section [Alignment](@ref).
 * `crop`: Select the printing behavior when the data is bigger than the
           available screen size (see `screen_size`). It can be `:both` to crop
           on vertical and horizontal direction, `:horizontal` to crop only on
