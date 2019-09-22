@@ -1,6 +1,28 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 0.6.0
+-------------
+
+- ![Feature][badge-feature] The format of the horizontal line in the table,
+  which are drawn using the option `hlines`, can now be selected using the
+  keyword `hlines_format`.
+- ![Feature][badge-feature] The alignment of a single cell can now be changed
+  regardless of the column alignment. This can be achieve by the keyword
+  `cell_alignment`.
+- ![Feature][badge-feature] The line between the header and the data can now be
+  hide using the variable `header_line` of the structure `PrettyTableFormat`.
+  (Issue [#15][gh-issue-15])
+- ![Feature][badge-feature] New predefined highlighters: `hl_cell`, `hl_col`,
+  `hl_row`, which can be used to apply highlights to single cells or to entire
+  columns or rows, respectively.
+- ![Bugfix][badge-bugfix] The formatter `ft_printf` is now only applied to cells
+  that are of type `Number`. (Issue [#19][gh-issue-19])
+- ![Enhancement][badge-enhancement] The formatter `ft_printf` can now receive
+  one integer if the user wants to format only a single column.
+- ![Info][badge-info] End of support of Julia 1.1. The supported versions are
+  1.0 and 1.2.
+
 Version 0.5.1
 -------------
 
@@ -129,7 +151,9 @@ Version 0.1.0
 [gh-issue-10]: https://github.com/ronisbr/PrettyTables.jl/issues/10
 [gh-issue-13]: https://github.com/ronisbr/PrettyTables.jl/issues/13
 [gh-issue-14]: https://github.com/ronisbr/PrettyTables.jl/issues/14
+[gh-issue-15]: https://github.com/ronisbr/PrettyTables.jl/issues/15
 [gh-issue-16]: https://github.com/ronisbr/PrettyTables.jl/issues/16
+[gh-issue-19]: https://github.com/ronisbr/PrettyTables.jl/issues/19
 
 [gh-pr-5]: https://github.com/ronisbr/PrettyTables.jl/pull/5
 [gh-pr-8]: https://github.com/ronisbr/PrettyTables.jl/pull/8
