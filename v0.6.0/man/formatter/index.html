@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Formatters · Pretty Tables</title><link rel="canonical" href="https://ronisbr.github.io/PrettyTables.jl/stable/man/formatter/index.html"/><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link href="../../assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><a href="../../index.html"><img class="logo" src="../../assets/logo.png" alt="Pretty Tables logo"/></a><h1>Pretty Tables</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="../../search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="../../">Home</a></li><li><a class="toctext" href="../usage/">Usage</a></li><li><a class="toctext" href="../alignment/">Alignment</a></li><li><a class="toctext" href="../filters/">Filters</a></li><li><a class="toctext" href="../formats/">Formats</a></li><li class="current"><a class="toctext" href>Formatters</a><ul class="internal"></ul></li><li><a class="toctext" href="../highlighters/">Highlighters</a></li><li><a class="toctext" href="../examples/">Examples</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Formatters</a></li></ul><a class="edit-page" href="https://github.com/ronisbr/PrettyTables.jl/blob/master/docs/src/man/formatter.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Formatters</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Formatter-1" href="#Formatter-1">Formatter</a></h1><p>The keyword <code>formatter</code> can be used to pass functions to format the values in the columns. It must be a <code>Dict{Number,Function}()</code>. The key indicates the column number in which its elements will be converted by the function in the value of the dictionary. The function must have the following signature:</p><pre><code class="language-none">f(value, i)</code></pre><p>in which <code>value</code> is the data and <code>i</code> is the row number. It must return the formatted value.</p><p>For example, if we want to multiply all values in odd rows of the column 2 by π, then the formatter should look like:</p><pre><code class="language-none">Dict(2 =&gt; (v,i)-&gt;isodd(i) ? v*π : v)</code></pre><p>If the key <code>0</code> is present, then the corresponding function will be applied to all columns that does not have a specific key.</p><pre><code class="language-julia-repl">julia&gt; data = Any[ f(a) for a = 0:30:90, f in (sind,cosd,tand)];
+
+julia&gt; formatter = Dict(0 =&gt; (v,i) -&gt; round(v,digits=3));
+
+julia&gt; pretty_table(data; formatter=formatter)
+┌────────┬────────┬────────┐
+│ Col. 1 │ Col. 2 │ Col. 3 │
+├────────┼────────┼────────┤
+│    0.0 │    1.0 │    0.0 │
+│    0.5 │  0.866 │  0.577 │
+│  0.866 │    0.5 │  1.732 │
+│    1.0 │    0.0 │    Inf │
+└────────┴────────┴────────┘</code></pre><p>There are a set of pre-defined formatters (with names <code>ft_*</code>) to make the usage simpler. They are defined in the file <code>./src/predefined_formatter.jl</code>.</p><pre><code class="language-julia">function ft_printf(ftv_str, [columns])</code></pre><p>Apply the formats <code>ftv_str</code> (see <code>@sprintf</code>) to the elements in the columns <code>columns</code>.</p><p>If <code>ftv_str</code> is a <code>Vector</code>, then <code>columns</code> must be also be a <code>Vector</code> with the same number of elements. If <code>ftv_str</code> is a <code>String</code>, and <code>columns</code> is not specified (or is empty), then the format will be applied to the entire table. Otherwise, if <code>ftv_str</code> is a <code>String</code> and <code>columns</code> is a <code>Vector</code>, then the format will be applied only to the columns in <code>columns</code>.</p><div class="admonition note"><div class="admonition-title">Note</div><div class="admonition-text"><p>This formatter will be applied only to the cells that are of type <code>Number</code>. The other types of cells will be left untouched.</p></div></div><pre><code class="language-julia-repl">julia&gt; data = Any[ f(a) for a = 0:30:90, f in (sind,cosd,tand)];
+
+julia&gt; pretty_table(data; formatter=ft_printf(&quot;%5.3f&quot;))
+┌────────┬────────┬────────┐
+│ Col. 1 │ Col. 2 │ Col. 3 │
+├────────┼────────┼────────┤
+│  0.000 │  1.000 │  0.000 │
+│  0.500 │  0.866 │  0.577 │
+│  0.866 │  0.500 │  1.732 │
+│  1.000 │  0.000 │    Inf │
+└────────┴────────┴────────┘
+
+julia&gt; pretty_table(data; formatter=ft_printf(&quot;%5.3f&quot;, [1,3]))
+┌────────┬────────────────────┬────────┐
+│ Col. 1 │             Col. 2 │ Col. 3 │
+├────────┼────────────────────┼────────┤
+│  0.000 │                1.0 │  0.000 │
+│  0.500 │ 0.8660254037844386 │  0.577 │
+│  0.866 │                0.5 │  1.732 │
+│  1.000 │                0.0 │    Inf │
+└────────┴────────────────────┴────────┘</code></pre><div class="admonition note"><div class="admonition-title">Note</div><div class="admonition-text"><p>Now, this formatter uses the function <code>sprintf1</code> from the package <a href="https://github.com/JuliaIO/Formatting.jl">Formatting.jl</a> that drastically improved the performance compared to the case with the macro <code>@sprintf</code>. Thanks to @RalphAS for the information!</p></div></div><pre><code class="language-none">function ft_round(digits, [columns])</code></pre><p>Round the elements in the columns <code>columns</code> to the number of digits in <code>digits</code>.</p><p>If <code>digits</code> is a <code>Vector</code>, then <code>columns</code> must be also be a <code>Vector</code> with the same number of elements. If <code>digits</code> is a <code>Number</code>, and <code>columns</code> is not specified (or is empty), then the rounding will be applied to the entire table. Otherwise, if <code>digits</code> is a <code>Number</code> and <code>columns</code> is a <code>Vector</code>, then the elements in the columns <code>columns</code> will be rounded to the number of digits <code>digits</code>.</p><pre><code class="language-julia-repl">julia&gt; data = Any[ f(a) for a = 0:30:90, f in (sind,cosd,tand)];
+
+julia&gt; pretty_table(data; formatter=ft_round(1))
+┌────────┬────────┬────────┐
+│ Col. 1 │ Col. 2 │ Col. 3 │
+├────────┼────────┼────────┤
+│    0.0 │    1.0 │    0.0 │
+│    0.5 │    0.9 │    0.6 │
+│    0.9 │    0.5 │    1.7 │
+│    1.0 │    0.0 │    Inf │
+└────────┴────────┴────────┘
+
+julia&gt; pretty_table(data; formatter=ft_round(1,[1,3]))
+┌────────┬────────────────────┬────────┐
+│ Col. 1 │             Col. 2 │ Col. 3 │
+├────────┼────────────────────┼────────┤
+│    0.0 │                1.0 │    0.0 │
+│    0.5 │ 0.8660254037844386 │    0.6 │
+│    0.9 │                0.5 │    1.7 │
+│    1.0 │                0.0 │    Inf │
+└────────┴────────────────────┴────────┘</code></pre><footer><hr/><a class="previous" href="../formats/"><span class="direction">Previous</span><span class="title">Formats</span></a><a class="next" href="../highlighters/"><span class="direction">Next</span><span class="title">Highlighters</span></a></footer></article></body></html>
