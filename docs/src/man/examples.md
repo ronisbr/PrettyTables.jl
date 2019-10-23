@@ -67,6 +67,11 @@ fit it. This can be changed by using the keywords `crop` and `screen_size`.
 
 ![](../assets/ex_00012.png)
 
+You can use the keyword `columns_width` to select the width of each column, so
+that the data is cropped to fit the available space.
+
+![](../assets/ex_00014.png)
+
 If you want to save the printed table to a file, you can do:
 
 ```julia-repl

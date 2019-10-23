@@ -87,6 +87,11 @@ omitted, then it defaults to `stdout`.
                     alignment of the cell `(i,j)` to `a` regardless of the
                     columns alignment selected. `a` must be a symbol like
                     specified in the section `Alignment`.
+* `columns_width`: A set of integers specifying the width of each column. If the
+                   width is equal or lower than 0, then it will be automatically
+                   computed to fit the large cell in the column. If it is
+                   `nothing`, then all the columns will have their size
+                   automatically computed. (**Default** = `nothing`)
 * `crop`: Select the printing behavior when the data is bigger than the
           available screen size (see `screen_size`). It can be `:both` to crop
           on vertical and horizontal direction, `:horizontal` to crop only on
@@ -193,9 +198,9 @@ be applied to the data.
 !!! note
 
     The filters do not change the row and column numbering for the others
-    modifiers such as formatters and highlighters. Thus, for example, if only
-    the 4-th row is printed, then it will also be referenced inside the
-    formatters and highlighters as 4 instead of 1.
+    modifiers such as column width specification, formatters, and highlighters.
+    Thus, for example, if only the 4-th row is printed, then it will also be
+    referenced inside the formatters and highlighters as 4 instead of 1.
 
 # Formatter
 
@@ -333,6 +338,7 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
                        alignment::Union{Symbol,Vector{Symbol}} = :r,
                        cell_alignment::Dict{Tuple{Int,Int},Symbol} = Dict{Tuple{Int,Int},Symbol}(),
                        crop::Symbol = :both,
+                       columns_width::Union{Nothing,AbstractVector{Int}} = nothing,
                        filters_row::Union{Nothing,Tuple} = nothing,
                        filters_col::Union{Nothing,Tuple} = nothing,
                        formatter::Dict = Dict(),
@@ -523,12 +529,23 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
                                                       num_printed_rows,
                                                       num_printed_cols)
     num_lines_in_row = ones(Int, num_printed_rows)
-    cols_width       = zeros(Int, num_printed_cols)
+
+    # Check which columns must have fixed sizes.
+    columns_width == nothing && (columns_width = zeros(Int, num_cols))
+    length(columns_width) != num_cols && error("The length of `columns_width` must be the same as the number of columns.")
+    fixed_col_width = map(w->w > 0, columns_width)
+
+    # The variable `columns_width` is the specification of the user for the
+    # columns width. The variable `cols_width` contains the actual size of each
+    # column. This is necessary because if the user asks for a width equal or
+    # lower than 0 in a column, then the width will be automatically computed to
+    # fit the longest field.
+    cols_width = [ columns_width[id_cols[i]] for i = 1:num_printed_cols ]
 
     # This variable stores the predicted table width. If the user wants
     # horizontal cropping, then it can be use to avoid unnecessary processing of
     # columns that will not be displayed.
-    pred_tab_width   = 0
+    pred_tab_width = 0
 
     @inbounds for i = 1:num_printed_cols
         # Index of the i-th printed column in `data`.
@@ -544,8 +561,16 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
                 # Compute the minimum column size to print this string.
                 cell_width = length(header_str[j,i])
 
-                # Check if we need to increase the columns size.
-                cols_width[i] < cell_width && (cols_width[i] = cell_width)
+                # If the user wants a fixed column width, then we must verify if
+                # the text must be cropped.
+                if fixed_col_width[ic]
+                    if cell_width > cols_width[i]
+                        header_str[j,i] = header_str[j,i][1:cols_width[i] - 1] * "…"
+                    end
+                else
+                    # Check if we need to increase the columns size.
+                    cols_width[i] < cell_width && (cols_width[i] = cell_width)
+                end
             end
         end
 
@@ -581,8 +606,18 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
                 cell_width      = length(data_str_ij_esc)
             end
 
-            # Check if we need to increase the columns size.
-            cols_width[i] < cell_width && (cols_width[i] = cell_width)
+            # If the user wants a fixed columns width, then we must verify if
+            # the text must be cropped.
+            if fixed_col_width[ic]
+                for k = 1:length(data_str[j,i])
+                    if length(data_str[j,i][k]) > cols_width[i]
+                        data_str[j,i][k] = data_str[j,i][k][1:cols_width[i] - 1] * "…"
+                    end
+                end
+            else
+                # Check if we need to increase the columns size.
+                cols_width[i] < cell_width && (cols_width[i] = cell_width)
+            end
         end
 
         # If the user horizontal cropping, then check if we need to process

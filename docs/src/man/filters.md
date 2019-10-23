@@ -35,9 +35,9 @@ be applied to the row and/or column.
 !!! note
 
     The filters do not change the row and column numbering for the others
-    modifiers such as formatters and highlighters. Thus, for example, if only
-    the 4-th row is printed, then it will also be referenced inside the
-    formatters and highlighters as 4 instead of 1.
+    modifiers such as column width specification, formatters, and highlighters.
+    Thus, for example, if only the 4-th row is printed, then it will also be
+    referenced inside the formatters and highlighters as 4 instead of 1.
 
 ## Example
 

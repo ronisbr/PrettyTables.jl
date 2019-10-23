@@ -138,6 +138,11 @@ In all cases, the following keywords are available:
                     alignment of the cell `(i,j)` to `a` regardless of the
                     columns alignment selected. `a` must be a symbol like
                     specified in the section [Alignment](@ref).
+* `columns_width`: A set of integers specifying the width of each column. If the
+                   width is equal or lower than 0, then it will be automatically
+                   computed to fit the large cell in the column. If it is
+                   `nothing`, then all the columns will have their size
+                   automatically computed. (**Default** = `nothing`)
 * `crop`: Select the printing behavior when the data is bigger than the
           available screen size (see `screen_size`). It can be `:both` to crop
           on vertical and horizontal direction, `:horizontal` to crop only on
