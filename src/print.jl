@@ -90,8 +90,8 @@ omitted, then it defaults to `stdout`.
 * `columns_width`: A set of integers specifying the width of each column. If the
                    width is equal or lower than 0, then it will be automatically
                    computed to fit the large cell in the column. If it is
-                   `nothing`, then all the columns will have their size
-                   automatically computed. (**Default** = `nothing`)
+                   a single integer, then this number will be used as the size
+                   of all columns. (**Default** = 0)
 * `crop`: Select the printing behavior when the data is bigger than the
           available screen size (see `screen_size`). It can be `:both` to crop
           on vertical and horizontal direction, `:horizontal` to crop only on
@@ -338,7 +338,7 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
                        alignment::Union{Symbol,Vector{Symbol}} = :r,
                        cell_alignment::Dict{Tuple{Int,Int},Symbol} = Dict{Tuple{Int,Int},Symbol}(),
                        crop::Symbol = :both,
-                       columns_width::Union{Nothing,AbstractVector{Int}} = nothing,
+                       columns_width::Union{Integer,AbstractVector{Int}} = 0,
                        filters_row::Union{Nothing,Tuple} = nothing,
                        filters_col::Union{Nothing,Tuple} = nothing,
                        formatter::Dict = Dict(),
@@ -531,7 +531,7 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
     num_lines_in_row = ones(Int, num_printed_rows)
 
     # Check which columns must have fixed sizes.
-    columns_width == nothing && (columns_width = zeros(Int, num_cols))
+    typeof(columns_width) <: Integer && (columns_width = ones(Int, num_cols)*columns_width)
     length(columns_width) != num_cols && error("The length of `columns_width` must be the same as the number of columns.")
     fixed_col_width = map(w->w > 0, columns_width)
 

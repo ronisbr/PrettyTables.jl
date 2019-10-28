@@ -141,8 +141,8 @@ In all cases, the following keywords are available:
 * `columns_width`: A set of integers specifying the width of each column. If the
                    width is equal or lower than 0, then it will be automatically
                    computed to fit the large cell in the column. If it is
-                   `nothing`, then all the columns will have their size
-                   automatically computed. (**Default** = `nothing`)
+                   a single integer, then this number will be used as the size
+                   of all columns. (**Default** = 0)
 * `crop`: Select the printing behavior when the data is bigger than the
           available screen size (see `screen_size`). It can be `:both` to crop
           on vertical and horizontal direction, `:horizontal` to crop only on
