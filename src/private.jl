@@ -68,17 +68,25 @@ function _str_line_breaks(str::AbstractString, autowrap::Bool = false, width::In
                 k₁ = k₀ + width - 1
 
                 while k₀ <= length_tok
-                    # If we have a space, then we crop in this space.
-                    aux = findlast(" ", token[k₀:k₁])
 
-                    if aux == nothing
+                    # Check if the remaining string fit in the available space.
+                    if k₁ == length_tok
                         push!(sub_tokens, token[k₀:k₁])
-                    else
-                        k₁ = k₀ + aux[1] - 1
 
-                        # Here, we subtract 1 because we want to remove the
-                        # space.
-                        push!(sub_tokens, token[k₀:k₁-1])
+                    else
+                        # If the remaining string does not fit into the
+                        # available space, then we search for spaces to crop.
+                        aux = findlast(" ", token[k₀:k₁])
+
+                        if aux == nothing
+                            push!(sub_tokens, token[k₀:k₁])
+                        else
+                            k₁ = k₀ + aux[1] - 1
+
+                            # Here, we subtract 1 because we want to remove the
+                            # space.
+                            push!(sub_tokens, token[k₀:k₁-1])
+                        end
                     end
 
                     k₀ = k₁+1
