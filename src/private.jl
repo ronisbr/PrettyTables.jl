@@ -36,6 +36,66 @@ function _str_aligned(data::AbstractString, alignment::Symbol,
     end
 end
 
+"""
+    function _str_line_breaks(str::AbstractString, autowrap::Bool = false, width::Int = 0)
+
+Split the string `str` into substring, each one meaning one new line. If
+`autowrap` is `true`, then the text will be wrapped so that it fits the column
+with the width `width`.
+
+"""
+function _str_line_breaks(str::AbstractString, autowrap::Bool = false, width::Int = 0)
+    # Check for errors.
+    autowrap && (width <= 0) &&
+    error("If `autowrap` is true, then the width must not be positive.")
+
+    # Get the tokens for each line.
+    tokens_raw = escape_string.(split(str, '\n'))
+
+    # If the user wants to auto wrap the text, then we must check if
+    # the tokens must be modified.
+    if autowrap
+        tokens = String[]
+
+        for token in tokens_raw
+            sub_tokens = String[]
+            length_tok = length(token)
+
+            if length_tok > width
+                # First, let's analyze from the beginning of the token up to the
+                # field width.
+                k₀ = 1
+                k₁ = k₀ + width - 1
+
+                while k₀ <= length_tok
+                    # If we have a space, then we crop in this space.
+                    aux = findlast(" ", token[k₀:k₁])
+
+                    if aux == nothing
+                        push!(sub_tokens, token[k₀:k₁])
+                    else
+                        k₁ = k₀ + aux[1] - 1
+
+                        # Here, we subtract 1 because we want to remove the
+                        # space.
+                        push!(sub_tokens, token[k₀:k₁-1])
+                    end
+
+                    k₀ = k₁+1
+                    k₁ = clamp(k₀ + width - 1, 0, length_tok)
+                end
+                push!(tokens, sub_tokens...)
+            else
+                push!(tokens, token)
+            end
+        end
+
+        return tokens
+    else
+        return tokens_raw
+    end
+end
+
 ################################################################################
 #                              Printing Functions
 ################################################################################

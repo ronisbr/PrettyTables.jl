@@ -57,6 +57,9 @@ omitted, then it defaults to `stdout`.
                           numbers.
 * `text_crayon`: Crayon to print default text.
 * `alignment`: Select the alignment of the columns (see the section `Alignment`).
+* `autowrap`: If `true`, then the text will be wrapped on spaces to fit the
+              column. Notice that this function requires `linebreaks = true` and
+              the column must have a fixed size (see `columns_width`).
 * `cell_alignment`: A dictionary of type `(i,j) => a` that overrides that
                     alignment of the cell `(i,j)` to `a` regardless of the
                     columns alignment selected. `a` must be a symbol like
@@ -310,6 +313,7 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
                        rownum_header_crayon::Crayon = Crayon(bold = true),
                        text_crayon::Crayon = Crayon(),
                        alignment::Union{Symbol,Vector{Symbol}} = :r,
+                       autowrap::Bool = false,
                        cell_alignment::Dict{Tuple{Int,Int},Symbol} = Dict{Tuple{Int,Int},Symbol}(),
                        crop::Symbol = :both,
                        columns_width::Union{Integer,AbstractVector{Int}} = 0,
@@ -564,8 +568,9 @@ function _pretty_table(io, data, header, tf::PrettyTableFormat = unicode;
             end
 
             if linebreaks
-                # Get the tokens for each line.
-                tokens        = escape_string.(split(data_str_ij, '\n'))
+                tokens = _str_line_breaks(data_str_ij,
+                                          autowrap && fixed_col_width[ic],
+                                          columns_width[i])
                 data_str[j,i] = tokens
                 num_lines_ij  = length(tokens)
 
