@@ -1,5 +1,5 @@
-Formats
-=======
+Text table formats
+==================
 
 ```@meta
 CurrentModule = PrettyTables
@@ -8,7 +8,7 @@ DocTestSetup = quote
 end
 ```
 
-The following table formats are available:
+The following table formats are available when using the text back-end:
 
 `unicode` (**Default**)
 
@@ -122,7 +122,7 @@ The following table formats are available:
 ```jldoctest
 julia> data = Any[ f(a) for a = 0:15:90, f in (sind,cosd,tand)];
 
-julia> pretty_table(data, ascii_dots)
+julia> pretty_table(data, tf = ascii_dots)
 ..................................................................
 :              Col. 1 :              Col. 2 :             Col. 3 :
 :.....................:.....................:....................:
@@ -135,7 +135,7 @@ julia> pretty_table(data, ascii_dots)
 :                 1.0 :                 0.0 :                Inf :
 :.....................:.....................:....................:
 
-julia> pretty_table(data, compact)
+julia> pretty_table(data, tf = compact)
  --------------------- --------------------- --------------------
                Col. 1                Col. 2               Col. 3
  --------------------- --------------------- --------------------
@@ -151,15 +151,15 @@ julia> pretty_table(data, compact)
 ```
 
 It is also possible to define you own custom table by creating a new instance of
-the structure [`PrettyTableFormat`](@ref). For example, let's say that you want
-a table like `simple` that does not print the bottom line:
+the structure [`TextFormat`](@ref). For example, let's say that you want a table
+like `simple` that does not print the bottom line:
 
 ```julia-repl
 julia> data = Any[ f(a) for a = 0:15:90, f in (sind,cosd,tand)];
 
-julia> tf = PrettyTableFormat(simple, bottom_line = false);
+julia> tf = TextFormat(simple, bottom_line = false);
 
-julia> pretty_table(data, tf)
+julia> pretty_table(data, tf = tf)
 ====================== ===================== =====================
                Col. 1                Col. 2               Col. 3
 ====================== ===================== =====================
@@ -178,9 +178,9 @@ or that does not print the header line:
 ```julia-repl
 julia> data = Any[ f(a) for a = 0:15:90, f in (sind,cosd,tand)];
 
-julia> tf = PrettyTableFormat(simple, header_line = false);
+julia> tf = TextFormat(simple, header_line = false);
 
-julia> pretty_table(data, tf)
+julia> pretty_table(data, tf = tf)
 ====================== ===================== =====================
                Col. 1                Col. 2               Col. 3
                   0.0                   1.0                  0.0
@@ -194,4 +194,4 @@ julia> pretty_table(data, tf)
 ```
 
 For more information, see the documentation of the structure
-[`PrettyTableFormat`](@ref).
+[`TextFormat`](@ref).
