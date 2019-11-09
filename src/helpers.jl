@@ -9,7 +9,6 @@
 export @ptconfclean, @ptconf, @pt
 
 const _pt_conf = Expr[]
-const _pt_tf   = Expr[]
 
 """
     macro @ptconfclean()
@@ -19,7 +18,6 @@ Clean all global configurations to pretty print tables using the macro `@pt`.
 """
 macro ptconfclean()
     empty!(_pt_conf)
-    empty!(_pt_tf)
 
     return nothing
 end
@@ -33,10 +31,8 @@ The expression format must be:
 
     keyword1 = value1 keyword2 = value2 ...
 
-in which the keywords can be:
-
-* `tf`: Select a table format.
-* Any other possible keyword that can be used in the function `pretty_table`.
+in which the keywords can be any other possible keyword that can be used in the
+function `pretty_table`.
 
 !!! warning
 
@@ -50,19 +46,10 @@ macro ptconf(expr...)
         # If the head is :(=), then it must be a configuration. Notice that we
         # will ignore everything that is not an expression like `a = b`.
         if (ex isa Expr) && (ex.head == :(=))
-            # If the argument is `tf`, then we must set the table format.
-            if ex.args[1] == :tf
-                if length(_pt_tf) > 0
-                    _pt_tf[1] = esc(ex.args[2])
-                else
-                    push!(_pt_tf, esc(ex.args[2]))
-                end
-            else
-                # If the configuration already exits, then drop it.
-                ind = findall(x -> x.args[1] == ex.args[1], _pt_conf)
-                deleteat!(_pt_conf,ind)
-                push!(_pt_conf, ex)
-            end
+            # If the configuration already exits, then drop it.
+            ind = findall(x -> x.args[1] == ex.args[1], _pt_conf)
+            deleteat!(_pt_conf,ind)
+            push!(_pt_conf, ex)
         end
     end
 end
@@ -154,7 +141,6 @@ macro pt(expr...)
             # Assemble the arguments.
             args = Expr[]
             header != nothing  && push!(args, header)
-            length(_pt_tf) > 0 && push!(args, _pt_tf[1])
 
             # Add the other configurations escaping them.
             econf = [esc(c) for c in _pt_conf]

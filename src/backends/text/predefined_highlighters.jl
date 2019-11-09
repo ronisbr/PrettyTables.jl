@@ -1,10 +1,10 @@
-#== # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
 #
-#   Pre-defined highlighters.
+#   Pre-defined highlighters for the text backend.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ==#
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 export hl_cell, hl_col, hl_row, hl_lt, hl_leq, hl_gt, hl_geq, hl_value
 
@@ -17,15 +17,19 @@ Highlight the cell `(i,j)` with the crayon `crayon`.
 
 Highlights all the cells in `cells` with the crayon `crayon`.
 
+# Remarks
+
+Those functions return a `TextHighlighter` to be used with the text backend.
+
 """
-hl_cell(i::Number, j::Number, crayon::Crayon) = Highlighter(
+hl_cell(i::Number, j::Number, crayon::Crayon) = TextHighlighter(
     f = (data,x,y)->begin
         return (x == i) && (y == j)
     end,
     crayon = crayon
 )
 
-hl_cell(cells::AbstractVector{NTuple{2,Int}}, crayon::Crayon) = Highlighter(
+hl_cell(cells::AbstractVector{NTuple{2,Int}}, crayon::Crayon) = TextHighlighter(
     f = (data,x,y)->begin
         return (x,y) ∈ cells
     end,
@@ -41,15 +45,19 @@ Highlight the entire column `i` with the crayon `crayon`.
 
 Highlights all the columns in `cols` with the crayon `crayon`.
 
+# Remarks
+
+Those functions return a `TextHighlighter` to be used with the text backend.
+
 """
-hl_col(j::Number, crayon::Crayon) = Highlighter(
+hl_col(j::Number, crayon::Crayon) = TextHighlighter(
     f = (data,x,y)->begin
         return y == j
     end,
     crayon = crayon
 )
 
-hl_col(cols::AbstractVector{Int}, crayon::Crayon) = Highlighter(
+hl_col(cols::AbstractVector{Int}, crayon::Crayon) = TextHighlighter(
     f = (data,x,y)->begin
         return y ∈ cols
     end,
@@ -65,15 +73,19 @@ Highlight the entire row `i` with the crayon `crayon`.
 
 Highlights all the rows in `rows` with the crayon `crayon`.
 
+# Remarks
+
+Those functions return a `TextHighlighter` to be used with the text backend.
+
 """
-hl_row(i::Number, crayon::Crayon) = Highlighter(
+hl_row(i::Number, crayon::Crayon) = TextHighlighter(
     f = (data,x,y)->begin
         return x == i
     end,
     crayon = crayon
 )
 
-hl_row(rows::AbstractVector{Int}, crayon::Crayon) = Highlighter(
+hl_row(rows::AbstractVector{Int}, crayon::Crayon) = TextHighlighter(
     f = (data,x,y)->begin
         return x ∈ rows
     end,
@@ -85,8 +97,12 @@ hl_row(rows::AbstractVector{Int}, crayon::Crayon) = Highlighter(
 
 Highlight all elements that < `n`.
 
+# Remarks
+
+Those functions return a `TextHighlighter` to be used with the text backend.
+
 """
-hl_lt(n::Number) = Highlighter(
+hl_lt(n::Number) = TextHighlighter(
     f = (data,i,j)->begin
         if applicable(<,data[i,j],n) && data[i,j] < n
             return true
@@ -103,8 +119,12 @@ hl_lt(n::Number) = Highlighter(
 
 Highlight all elements that ≤ `n`.
 
+# Remarks
+
+Those functions return a `TextHighlighter` to be used with the text backend.
+
 """
-hl_leq(n::Number) = Highlighter(
+hl_leq(n::Number) = TextHighlighter(
     f = (data,i,j)->begin
         if applicable(≤,data[i,j],n) && data[i,j] ≤ n
             return true
@@ -121,8 +141,12 @@ hl_leq(n::Number) = Highlighter(
 
 Highlight all elements that > `n`.
 
+# Remarks
+
+Those functions return a `TextHighlighter` to be used with the text backend.
+
 """
-hl_gt(n::Number) = Highlighter(
+hl_gt(n::Number) = TextHighlighter(
     f = (data,i,j)->begin
         if applicable(>,data[i,j],n) && data[i,j] > n
             return true
@@ -139,8 +163,12 @@ hl_gt(n::Number) = Highlighter(
 
 Highlight all elements that ≥ `n`.
 
+# Remarks
+
+Those functions return a `TextHighlighter` to be used with the text backend.
+
 """
-hl_geq(n::Number) = Highlighter(
+hl_geq(n::Number) = TextHighlighter(
     f = (data,i,j)->begin
         if applicable(≥,data[i,j],n) && data[i,j] ≥ n
             return true
@@ -157,8 +185,12 @@ hl_geq(n::Number) = Highlighter(
 
 Highlight all the values that matches `data[i,j] == v`.
 
+# Remarks
+
+Those functions return a `TextHighlighter` to be used with the text backend.
+
 """
-hl_value(v) = Highlighter(
+hl_value(v) = TextHighlighter(
     f = (data,i,j)->data[i,j] == v,
     crayon = Crayon(bold       = true,
                     foreground = :yellow)

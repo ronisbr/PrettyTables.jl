@@ -7,30 +7,28 @@ using Tables
 
 @reexport using Crayons
 
-export Highlighter, PrettyTableFormat
-
 ################################################################################
 #                                    Types
 ################################################################################
 
 include("types.jl")
-
-################################################################################
-#                                  Constants
-################################################################################
-
-# Crayon used to reset all the styling.
-const _reset_crayon = Crayon(reset = true)
+include("backends/text/types.jl")
 
 ################################################################################
 #                                  Includes
 ################################################################################
 
-include("predefined_formats.jl")
-include("predefined_highlighters.jl")
-include("predefined_formatters.jl")
 include("helpers.jl")
+include("predefined_formatters.jl")
 include("print.jl")
-include("private.jl")
+
+# Backends
+# ========
+
+# Text backend
+include("backends/text/predefined_formats.jl")
+include("backends/text/predefined_highlighters.jl")
+include("backends/text/print.jl")
+include("backends/text/private.jl")
 
 end # module

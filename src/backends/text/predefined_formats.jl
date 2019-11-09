@@ -9,9 +9,9 @@
 export unicode, ascii_dots, ascii_rounded, borderless, compact, markdown, mysql,
        simple, unicode_rounded
 
-const unicode = PrettyTableFormat()
+const unicode = TextFormat()
 
-const ascii_dots = PrettyTableFormat(
+const ascii_dots = TextFormat(
     up_right_corner     = '.',
     up_left_corner      = '.',
     bottom_left_corner  = ':',
@@ -25,7 +25,7 @@ const ascii_dots = PrettyTableFormat(
     row                 = '.'
 )
 
-const ascii_rounded = PrettyTableFormat(
+const ascii_rounded = TextFormat(
     up_right_corner     = '.',
     up_left_corner      = '.',
     bottom_left_corner  = '\'',
@@ -39,7 +39,7 @@ const ascii_rounded = PrettyTableFormat(
     row                 = '-'
 )
 
-const borderless = PrettyTableFormat(
+const borderless = TextFormat(
     up_right_corner     = ' ',
     up_left_corner      = ' ',
     bottom_left_corner  = ' ',
@@ -55,7 +55,7 @@ const borderless = PrettyTableFormat(
     bottom_line         = false
 )
 
-const compact = PrettyTableFormat(
+const compact = TextFormat(
     up_right_corner     = ' ',
     up_left_corner      = ' ',
     bottom_left_corner  = ' ',
@@ -69,7 +69,7 @@ const compact = PrettyTableFormat(
     row                 = '-'
    )
 
-const markdown = PrettyTableFormat(
+const markdown = TextFormat(
     left_intersection   = '|',
     right_intersection  = '|',
     middle_intersection = '|',
@@ -79,7 +79,7 @@ const markdown = PrettyTableFormat(
     bottom_line         = false,
 )
 
-const mysql = PrettyTableFormat(
+const mysql = TextFormat(
     up_right_corner     = '+',
     up_left_corner      = '+',
     bottom_left_corner  = '+',
@@ -93,7 +93,7 @@ const mysql = PrettyTableFormat(
     row                 = '-'
    )
 
-const simple = PrettyTableFormat(
+const simple = TextFormat(
     up_right_corner     = '=',
     up_left_corner      = '=',
     bottom_left_corner  = '=',
@@ -107,7 +107,7 @@ const simple = PrettyTableFormat(
     row                 = '='
 )
 
-const unicode_rounded = PrettyTableFormat(
+const unicode_rounded = TextFormat(
     up_right_corner     = '╮',
     up_left_corner      = '╭',
     bottom_left_corner  = '╰',
