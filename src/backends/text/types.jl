@@ -6,6 +6,8 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
+export TextFormat, TextHighlighter
+
 """
     struct TextFormat
 

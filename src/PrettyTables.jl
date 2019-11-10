@@ -7,12 +7,15 @@ using Tables
 
 @reexport using Crayons
 
+import Base: Dict
+
 ################################################################################
 #                                    Types
 ################################################################################
 
 include("types.jl")
 include("backends/text/types.jl")
+include("backends/html/types.jl")
 
 ################################################################################
 #                                  Includes
@@ -30,5 +33,10 @@ include("backends/text/predefined_formats.jl")
 include("backends/text/predefined_highlighters.jl")
 include("backends/text/print.jl")
 include("backends/text/private.jl")
+
+# HTML backend
+include("backends/html/predefined_highlighters.jl")
+include("backends/html/print.jl")
+include("backends/html/private.jl")
 
 end # module

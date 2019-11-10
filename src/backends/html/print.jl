@@ -1,0 +1,223 @@
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#
+# Description
+#
+#   Print function of the html backend.
+#
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+# Low-level function to print the table using the text backend.
+function _pt_html(io, pinfo;
+                  table_format::HTMLTableFormat = HTMLTableFormat(),
+                  cell_alignment::Dict{Tuple{Int,Int},Symbol} = Dict{Tuple{Int,Int},Symbol}(),
+                  formatter::Dict = Dict(),
+                  highlighters::Union{HTMLHighlighter,Tuple} = (),
+                  linebreaks::Bool = false,
+                  noheader::Bool = false,
+                  nosubheader::Bool = false,
+                  show_row_number::Bool = false)
+
+    @unpack_PrintInfo pinfo
+    @unpack_HTMLTableFormat table_format
+
+    # Let's create a `IOBuffer` to write everything and then transfer to `io`.
+    buf_io = IOBuffer()
+    buf    = IOContext(buf_io)
+
+    !noheader && num_cols != header_num_cols &&
+    error("The header length must be equal to the number of columns.")
+
+    # Additional processing necessary if the user wants to print the header.
+    if !noheader
+        # If the user do not want to print the sub-header but wants to print the
+        # header, then just force the number of rows in header to be 1.
+        if nosubheader
+            # Now, `header` will be a view of the first line of the matrix that
+            # has the header.
+            header = @view header[1:header_num_rows:end]
+            header_num_rows = 1
+        end
+    end
+
+    # Make sure that `highlighters` is always a tuple.
+    !(highlighters isa Tuple) && (highlighters = (highlighters,))
+
+    # Get the string which is printed when `print` is called in each element of
+    # the matrix. Notice that we must create only the matrix with the printed
+    # rows and columns.
+    header_str = Matrix{String}(undef, header_num_rows, num_printed_cols)
+    data_str   = Matrix{AbstractString}(undef, num_printed_rows, num_printed_cols)
+
+    @inbounds for i = 1:num_printed_cols
+        # Index of the i-th printed column in `data`.
+        ic = id_cols[i]
+
+        fi = haskey(formatter, i) ? formatter[i] :
+                (haskey(formatter, 0) ? formatter[0] : nothing)
+
+        if !noheader
+            for j = 1:header_num_rows
+                header_str[j,i] = escape_string(sprint(print, header[(ic-1)*header_num_rows + j]))
+            end
+        end
+
+        for j = 1:num_printed_rows
+            # Index of the j-th printed row in `data`.
+            jr = id_rows[j]
+
+            data_ij = fi != nothing ? fi(data[jr,ic], jr) : data[jr,ic]
+
+            # Handle `nothing` and `missing`.
+            if ismissing(data_ij)
+                data_str_ij = "missing"
+            elseif data_ij == nothing
+                data_str_ij = "nothing"
+            else
+                data_str_ij = sprint(print, data_ij)
+            end
+
+            # If `linebreaks` is true, then replace `\n` to `<BR>`.
+            if linebreaks
+                data_str_ij = replace(data_str_ij, "\n" => "<BR>")
+            end
+
+            data_str_ij_esc = escape_string(data_str_ij)
+            data_str[j,i]   = data_str_ij_esc
+        end
+    end
+
+    # Print HTML header
+    # ==========================================================================
+
+    println(buf, """
+    <!DOCTYPE html>
+    <html>
+    <meta charset=\"UTF-8\">
+    <style>""")
+
+    !isempty(table_width) && println(buf, """
+    table {
+        width: $table_width
+    }""")
+
+    println(buf, """
+    table, td, th {
+        border-collapse: collapse
+    }
+
+    td, th {
+        border: $border_size $border_color;
+        padding: 6px
+    }
+    $css
+    </style>
+    <body>
+    <table>
+    """)
+
+    # Data header
+    # ==========================================================================
+
+    # Header and sub-header texts
+    # --------------------------------------------------------------------------
+
+    if !noheader
+        @inbounds @views for i = 1:header_num_rows
+            print(buf, "<tr>")
+
+            # The text "Row" must appear only on the first line.
+            if show_row_number
+                if i == 1
+                    style = Dict{String,String}("text-align" => "left",
+                                                Dict(header_decoration)...)
+                    println(buf, _styled_html("th", "Row", style))
+                else
+                    style = Dict{String,String}("text-align" => "left",
+                                                Dict(subheader_decoration)...)
+                    println(buf, _styled_html("th", "", style))
+                end
+            end
+
+            for j = 1:num_printed_cols
+                # Index of the j-th printed column in `data`.
+                jc = id_cols[j]
+
+                # Alignment of this cell.
+                style = Dict{String,String}("text-align" => _html_alignment[alignment[j]])
+
+                if i == 1
+                    merge!(style, Dict(header_decoration))
+
+                    if header_num_rows != 1
+                        style["border-bottom"] = "0"
+                    end
+                else
+                    merge!(style, Dict(subheader_decoration))
+
+                    style["border-bottom"] = "0"
+                    style["border-top"]    = "0"
+                end
+
+                println(buf, _styled_html("th", header_str[i,j], style))
+            end
+
+            println(buf, "</tr>")
+        end
+    end
+
+    # Data
+    # ==========================================================================
+
+    @inbounds @views for i = 1:num_printed_rows
+        ir = id_rows[i]
+
+        println(buf, "<tr>")
+
+        if show_row_number
+            println(buf, "<td style=\"text-align: left\">", string(ir), "</th>")
+        end
+
+        for j = 1:num_printed_cols
+            jc = id_cols[j]
+
+            # Check the alignment of this cell.
+            if haskey(cell_alignment, (i,j))
+                alignment_ij = cell_alignment[(i,j)]
+            else
+                alignment_ij = alignment[jc]
+            end
+
+            # Alignment of this cell.
+            style = Dict{String,String}("text-align" => _html_alignment[alignment_ij])
+
+            # If we have highlighters defined, then we need to verify if this
+            # data should be highlight.
+            for h in highlighters
+                if h.f(data, ir, jc)
+                    merge!(style, Dict(h.decoration))
+                    break
+                end
+            end
+
+            println(buf, _styled_html("td", data_str[i,j], style))
+        end
+
+        println(buf, "</tr>")
+    end
+
+    # Print HTML footer
+    # ==========================================================================
+
+    println(buf, "</table></body></html>")
+
+    # Print the buffer into the io.
+    # ==========================================================================
+
+    if io == stdout
+        display("text/html", HTML(String(take!(buf_io))))
+    else
+        print(io, String(take!(buf_io)))
+    end
+
+    return nothing
+end

@@ -45,15 +45,10 @@ not, then an error will be thrown.
 Print to `io` the table `table`. In this case, `table` must comply with the API
 of **Tables.jl**. If `io` is omitted, then it defaults to `stdout`.
 
-                       alignment::Union{Symbol,Vector{Symbol}} = :r,
-                       backend::Symbol = :text,
-                       filters_row::Union{Nothing,Tuple} = nothing,
-                       filters_col::Union{Nothing,Tuple} = nothing,
-
 # Keywords
 
 * `alignment`: Select the alignment of the columns (see the section `Alignment`).
-* `backend`: Select which backend will be used to print the table (see the
+* `backend`: Select which back-end will be used to print the table (see the
              section `Backend`). Notice that the additional configuration in
              `kwargs...` depends on the selected backend. (see the section
              `Backend`).
@@ -107,6 +102,202 @@ be applied to the data.
     modifiers such as column width specification, formatters, and highlighters.
     Thus, for example, if only the 4-th row is printed, then it will also be
     referenced inside the formatters and highlighters as 4 instead of 1.
+
+---
+
+# Pretty table text back-end
+
+This back-end produces text tables. This back-end can be used by selecting
+`back-end = :text`.
+
+# Keywords
+
+* `border_crayon`: Crayon to print the border.
+* `header_crayon`: Crayon to print the header.
+* `subheaders_crayon`: Crayon to print sub-headers.
+* `rownum_header_crayon`: Crayon for the header of the column with the row
+                          numbers.
+* `text_crayon`: Crayon to print default text.
+* `autowrap`: If `true`, then the text will be wrapped on spaces to fit the
+              column. Notice that this function requires `linebreaks = true` and
+              the column must have a fixed size (see `columns_width`).
+* `cell_alignment`: A dictionary of type `(i,j) => a` that overrides that
+                    alignment of the cell `(i,j)` to `a` regardless of the
+                    columns alignment selected. `a` must be a symbol like
+                    specified in the section `Alignment`.
+* `columns_width`: A set of integers specifying the width of each column. If the
+                   width is equal or lower than 0, then it will be automatically
+                   computed to fit the large cell in the column. If it is
+                   a single integer, then this number will be used as the size
+                   of all columns. (**Default** = 0)
+* `crop`: Select the printing behavior when the data is bigger than the
+          available screen size (see `screen_size`). It can be `:both` to crop
+          on vertical and horizontal direction, `:horizontal` to crop only on
+          horizontal direction, `:vertical` to crop only on vertical direction,
+          or `:none` to do not crop the data at all.
+* `formatter`: See the section `Formatter`.
+* `highlighters`: An instance of `TextHighlighter` or a tuple with a list of
+                  text highlighters (see the section `Text highlighters`).
+* `hlines`: A vector of `Int` indicating row numbers in which an additional
+            horizontal line should be drawn after the row. Notice that numbers
+            lower than 1 and equal or higher than the number of rows will be
+            neglected.
+* `hlines_format`: A tuple of 4 characters specifying the format of the
+                   horizontal lines. The characters must be the left
+                   intersection, the middle intersection, the right
+                   intersection, and the row. If it is `nothing`, then it will
+                   use the same format specified in `tf`.
+                   (**Default** = `nothing`)
+* `linebreaks`: If `true`, then `\\n` will break the line inside the cells.
+                (**Default** = `false`)
+* `noheader`: If `true`, then the header will not be printed. Notice that all
+              keywords and parameters related to the header and sub-headers will
+              be ignored. (**Default** = `false`)
+* `nosubheader`: If `true`, then the sub-header will not be printed, *i.e.* the
+                 header will contain only one line. Notice that this option has
+                 no effect if `noheader = true`. (**Default** = `false`)
+* `same_column_size`: If `true`, then all the columns will have the same size.
+                      (**Default** = `false`)
+* `screen_size`: A tuple of two integers that defines the screen size (num. of
+                 rows, num. of columns) that is available to print the table. It
+                 is used to crop the data depending on the value of the keyword
+                 `crop`. If it is `nothing`, then the size will be obtained
+                 automatically. Notice that if a dimension is not positive, then
+                 it will be treated as unlimited. (**Default** = `nothing`)
+* `show_row_number`: If `true`, then a new column will be printed showing the
+                     row number. (**Default** = `false`)
+* `tf`: Table format used to print the table (see `TextFormat`).
+        (**Default** = `unicode`)
+
+The keywords `header_crayon` and `subheaders_crayon` can be a `Crayon` or a
+`Vector{Crayon}`. In the first case, the `Crayon` will be applied to all the
+elements. In the second, each element can have its own crayon, but the length of
+the vector must be equal to the number of columns in the data.
+
+## Crayons
+
+A `Crayon` is an object that handles a style for text printed on terminals. It
+is defined in the package
+[Crayons.jl](https://github.com/KristofferC/Crayons.jl). There are many options
+available to customize the style, such as foreground color, background color,
+bold text, etc.
+
+A `Crayon` can be created in two different ways:
+
+```julia-repl
+julia> Crayon(foreground = :blue, background = :black, bold = :true)
+
+julia> crayon"blue bg:black bold"
+```
+
+For more information, see the package documentation.
+
+## Text highlighters
+
+A set of highlighters can be passed as a `Tuple` to the `highlighter` keyword.
+Each highlighter is an instance of the structure `TextHighlighter` that contains
+two fields:
+
+* `f`: Function with the signature `f(data,i,j)` in which should return `true`
+       if the element `(i,j)` in `data` must be highlighted, or `false`
+       otherwise.
+* `crayon`: Crayon with the style of a highlighted element.
+
+The function `f` has the following signature:
+
+    f(data, i, j)
+
+in which `data` is a reference to the data that is being printed, `i` and `j`
+are the element coordinates that are being tested. If this function returns
+`true`, then the highlight style will be applied to the `(i,j)` element.
+Otherwise, the default style will be used.
+
+Notice that if multiple highlighters are valid for the element `(i,j)`, then the
+applied style will be equal to the first match considering the order in the
+Tuple `highlighters`.
+
+If only a single highlighter is wanted, then it can be passed directly to the
+keyword `highlighter` without being inside a `Tuple`.
+
+---
+
+# Pretty table HTML backend
+
+This backend produces HTML tables. This backend can be used by selecting
+`backend = :html`.
+
+# Keywords
+
+* `table_format`: An instance of the structure `HTMLTableFormat` that defines
+                  the general format of the HTML table.
+* `cell_alignment`: A dictionary of type `(i,j) => a` that overrides that
+                    alignment of the cell `(i,j)` to `a` regardless of the
+                    columns alignment selected. `a` must be a symbol like
+                    specified in the section `Alignment`.
+* `formatter`: See the section `Formatter`.
+* `highlighters`: An instance of `HTMLHighlighter` or a tuple with a list of
+                  HTML highlighters (see the section `HTML highlighters`).
+* `linebreaks`: If `true`, then `\\n` will be replaced by `<br>`.
+                (**Default** = `false`)
+* `noheader`: If `true`, then the header will not be printed. Notice that all
+              keywords and parameters related to the header and sub-headers will
+              be ignored. (**Default** = `false`)
+* `nosubheader`: If `true`, then the sub-header will not be printed, *i.e.* the
+                 header will contain only one line. Notice that this option has
+                 no effect if `noheader = true`. (**Default** = `false`)
+* `show_row_number`: If `true`, then a new column will be printed showing the
+                     row number. (**Default** = `false`)
+
+## HTML highlighters
+
+A set of highlighters can be passed as a `Tuple` to the `highlighter` keyword.
+Each highlighter is an instance of the structure `HTMLHighlighter` that contains
+two fields:
+
+* `f`: Function with the signature `f(data,i,j)` in which should return `true`
+       if the element `(i,j)` in `data` must be highlighted, or `false`
+       otherwise.
+* `decoration`: An instance of the structure `HTMLDecoration` that defined the
+                decoration of the highlighted cell.
+
+The function `f` has the following signature:
+
+    f(data, i, j)
+
+in which `data` is a reference to the data that is being printed, `i` and `j`
+are the element coordinates that are being tested. If this function returns
+`true`, then the highlight style will be applied to the `(i,j)` element.
+Otherwise, the default style will be used.
+
+Notice that if multiple highlighters are valid for the element `(i,j)`, then the
+applied style will be equal to the first match considering the order in the
+Tuple `highlighters`.
+
+If only a single highlighter is wanted, then it can be passed directly to the
+keyword `highlighter` without being inside a `Tuple`.
+
+---
+
+# Formatter
+
+The keyword `formatter` can be used to pass functions to format the values in
+the columns. It must be a `Dict{Number,Function}()`. The key indicates the
+column number in which its elements will be converted by the function in the
+value of the dictionary. The function must have the following signature:
+
+    f(value, i)
+
+in which `value` is the data and `i` is the row number. It must return the
+formatted value.
+
+For example, if we want to multiply all values in odd rows of the column 2 by π,
+then the formatter should look like:
+
+    Dict(2 => (v,i)->isodd(i) ? v*π : v)
+
+If the key `0` is present, then the corresponding function will be applied to
+all columns that does not have a specific key.
+
 
 """
 pretty_table(data::AbstractVecOrMat{T1}, header::AbstractVecOrMat{T2};
@@ -290,6 +481,8 @@ function _pretty_table(io, data, header;
 
     if backend == :text
         _pt_text(io, pinfo; kwargs...)
+    elseif backend == :html
+        _pt_html(io, pinfo; kwargs...)
     else
         error("Unknown backend `$backend`.")
     end
