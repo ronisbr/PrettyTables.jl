@@ -65,6 +65,10 @@ compatible with the corresponding HTML property.
     tr:nth-child(odd) {
         background: #eee;
     }
+
+    tr:nth-child(even) {
+        background: #fff;
+    }
     """
     header_decoration::HTMLDecoration    = HTMLDecoration(color = "white", background = "navy")
     subheader_decoration::HTMLDecoration = HTMLDecoration(color = "black", background = "lightgray")
@@ -78,7 +82,7 @@ end
 """
     abstract type AbstractHTMLHighlighter
 
-All HTLM highlighters must be a sub-type of `AbstractHTMLHighlighter`. They API
+All HTLM highlighters must be a subtype of `AbstractHTMLHighlighter`. They API
 dictates that they must implement two functions:
 
 * `f`: Function with the signature `f(data,i,j)` in which should return `true`
@@ -116,7 +120,7 @@ This structure can be constructed using two helpers:
     HTMLHighlighter(f::Function, fd::Function)
 
 The first will apply a fixed decoration to the highlighted cell specified in
-`decoration` whereas the second let the use to select the desired decoration by
+`decoration` whereas the second let the user select the desired decoration by
 specifying the function `fd`.
 
 """
