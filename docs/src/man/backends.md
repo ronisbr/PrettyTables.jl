@@ -21,6 +21,9 @@ passed as keywords when calling the function `pretty_table`:
 * `text_crayon`: Crayon to print default text.
 * `alignment`: Select the alignment of the columns (see the section
                [Alignment](@ref)).
+* `autowrap`: If `true`, then the text will be wrapped on spaces to fit the
+              column. Notice that this function requires `linebreaks = true` and
+              the column must have a fixed size (see `columns_width`).
 * `cell_alignment`: A dictionary of type `(i,j) => a` that overrides that
                     alignment of the cell `(i,j)` to `a` regardless of the
                     columns alignment selected. `a` must be a symbol like
@@ -147,6 +150,30 @@ that no limit exits in both vertical and horizontal direction.
 !!! note
 
     The highlighters will work even in partially printed data.
+
+If the user selects a fixed size for the columns (using the keyword
+`columns_width`), enables line breaks (using the keyword `linebreaks`), and sets
+`autowrap = true`, then the algorithm wraps the text on spaces to automatically
+fit the space.
+
+```jldoctest
+julia> data = ["One very very very big long long line"; "Another very very very big big long long line"];
+
+julia> pretty_table(data, columns_width = 10, autowrap = true, linebreaks = true, show_row_number = true)
+┌─────┬────────────┐
+│ Row │     Col. 1 │
+├─────┼────────────┤
+│   1 │   One very │
+│     │  very very │
+│     │   big long │
+│     │  long line │
+│   2 │    Another │
+│     │  very very │
+│     │   very big │
+│     │   big long │
+│     │  long line │
+└─────┴────────────┘
+```
 
 # HTML backend
 
