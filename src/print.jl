@@ -251,14 +251,16 @@ This backend produces HTML tables. This backend can be used by selecting
 ## HTML highlighters
 
 A set of highlighters can be passed as a `Tuple` to the `highlighter` keyword.
-Each highlighter is an instance of the structure `HTMLHighlighter` that contains
-two fields:
+Each highlighter is an instance of a structure that is a subtype of
+`AbstractHTMLHighlighter`. It also must also contain at least the following two
+fields to comply with the API:
 
 * `f`: Function with the signature `f(data,i,j)` in which should return `true`
-       if the element `(i,j)` in `data` must be highlighted, or `false`
+       if the element `(i,j)` in `data` must be highlighter, or `false`
        otherwise.
-* `decoration`: An instance of the structure `HTMLDecoration` that defined the
-                decoration of the highlighted cell.
+* `fd`: Function with the signature `f(h,data,i,j)` in which `h` is the
+        highlighter. This function must return the `HTMLDecoration` to be
+        applied to the cell that must be highlighted.
 
 The function `f` has the following signature:
 
@@ -272,6 +274,10 @@ Otherwise, the default style will be used.
 Notice that if multiple highlighters are valid for the element `(i,j)`, then the
 applied style will be equal to the first match considering the order in the
 Tuple `highlighters`.
+
+If the function `f` returns true, then the function `fd(h,data,i,j)` will be
+called and must return an element of type `HTMLDecoration` that contains the
+decoration to be applied to the cell.
 
 If only a single highlighter is wanted, then it can be passed directly to the
 keyword `highlighter` without being inside a `Tuple`.
