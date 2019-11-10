@@ -68,9 +68,17 @@ function _str_line_breaks(str::AbstractString, autowrap::Bool = false, width::In
             sub_tokens = String[]
             length_tok = length(token)
 
+            # Get the list of valid indices to handle UTF-8 strings. In this
+            # case, the n-th character of the string can be accessed by
+            # `token[tok_ids[n]]`.
+            tok_ids = collect(eachindex(token))
+
             if length_tok > width
                 # First, let's analyze from the beginning of the token up to the
                 # field width.
+                #
+                # k₀ is the character that will start the sub-token.
+                # k₁ is the character that will end the sub-token.
                 k₀ = 1
                 k₁ = k₀ + width - 1
 
@@ -78,24 +86,28 @@ function _str_line_breaks(str::AbstractString, autowrap::Bool = false, width::In
 
                     # Check if the remaining string fit in the available space.
                     if k₁ == length_tok
-                        push!(sub_tokens, token[k₀:k₁])
+                        push!(sub_tokens, token[tok_ids[k₀:k₁]])
 
                     else
                         # If the remaining string does not fit into the
                         # available space, then we search for spaces to crop.
-                        aux = findlast(" ", token[k₀:k₁])
+                        Δ = 0
+                        for k = k₁:-1:k₀
+                            if token[tok_ids[k]] == ' '
+                                # If a space is found, then select `k₁` as this
+                                # character and use `Δ` to remove it when
+                                # printing, so that we hide the space.
+                                k₁ = k
+                                Δ  = 1
 
-                        if aux == nothing
-                            push!(sub_tokens, token[k₀:k₁])
-                        else
-                            k₁ = k₀ + aux[1] - 1
-
-                            # Here, we subtract 1 because we want to remove the
-                            # space.
-                            push!(sub_tokens, token[k₀:k₁-1])
+                                break
+                            end
                         end
+
+                        push!(sub_tokens, token[tok_ids[k₀:k₁-Δ]])
                     end
 
+                    # Move to the next analysis window.
                     k₀ = k₁+1
                     k₁ = clamp(k₀ + width - 1, 0, length_tok)
                 end

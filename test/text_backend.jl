@@ -904,6 +904,26 @@ end
     @test result == expected
 end
 
+# Auto wrapping
+# ==============================================================================
+
+@testset "Auto wrapping" begin
+    table = [1 """Ouviram do Ipiranga as margens plácidas
+                  De um povo heróico o brado retumbante,
+                  E o sol da Liberdade, em raios fúlgidos,
+                  Brilhou no céu da Pátria nesse instante.""";
+             2 """Se o penhor dessa igualdade
+                  Conseguimos conquistar com braço forte,
+                  Em teu seio, ó Liberdade,
+                  Desafia o nosso peito a própria morte!""";
+             3 """Ó Pátria amada, Idolatrada, Salve! Salve!
+                  Brasil, um sonho intenso, um raio vívido
+                  De amor e de esperança à terra desce,
+                  Se em teu formoso céu, risonho e límpido,"""]
+
+    header = ["Verse number", "Verse"]
+end
+
 # Dictionaries
 # ==============================================================================
 
