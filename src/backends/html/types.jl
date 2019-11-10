@@ -71,21 +71,67 @@ compatible with the corresponding HTML property.
     table_width::String = ""
 end
 
+#                                 Highlighters
+# ==============================================================================
+
+# Abstract type for all highlighters.
 """
-    struct HTMLHighlighter
+    abstract type AbstractHTMLHighlighter
 
-Defines the highlighter of a table when using the html backend.
-
-# Fileds
+All HTLM highlighters must be a sub-type of `AbstractHTMLHighlighter`. They API
+dictates that they must implement two functions:
 
 * `f`: Function with the signature `f(data,i,j)` in which should return `true`
        if the element `(i,j)` in `data` must be highlighter, or `false`
        otherwise.
-* `foreground`: Color of the foreground.
-* `background`: Color of the background.
+* `fd`: Function with the signature `f(h,data,i,j)` in which `h` is the
+        highlighter. This function must return the `HTMLDecoration` to be
+        applied to the cell that must be highlighted.
 
 """
-@with_kw struct HTMLHighlighter
+abstract type AbstractHTMLHighlighter end
+
+"""
+    struct HTMLHighlighter
+
+Defines the default highlighter of a table when using the html backend.
+
+# Fields
+
+* `f`: Function with the signature `f(data,i,j)` in which should return `true`
+       if the element `(i,j)` in `data` must be highlighter, or `false`
+       otherwise.
+* `fd`: Function with the signature `f(h,data,i,j)` in which `h` is the
+        highlighter. This function must return the `HTMLDecoration` to be
+        applied to the cell that must be highlighted.
+* `decoration`: The `HTMLDecoration` to be applied to the highlighted cell if
+                the default `fd` is used.
+
+# Remarks
+
+This structure can be constructed using two helpers:
+
+    HTMLHighlighter(f::Function, decoration::HTMLDecoration)
+
+    HTMLHighlighter(f::Function, fd::Function)
+
+The first will apply a fixed decoration to the highlighted cell specified in
+`decoration` whereas the second let the use to select the desired decoration by
+specifying the function `fd`.
+
+"""
+@with_kw struct HTMLHighlighter <: AbstractHTMLHighlighter
+    # API
     f::Function
-    decoration::HTMLDecoration
+    fd::Function = (h,data,i,j)->h.decoration
+
+    # Private
+    decoration::HTMLDecoration = HTMLDecoration()
 end
+
+# Helper function to construct HTMLHighlighter.
+HTMLHighlighter(f::Function, decoration::HTMLDecoration) =
+    HTMLHighlighter(f = f, decoration = decoration)
+
+HTMLHighlighter(f::Function, fd::Function) =
+    HTMLHighlighter(f = f, fd = fd)

@@ -194,7 +194,7 @@ function _pt_html(io, pinfo;
             # data should be highlight.
             for h in highlighters
                 if h.f(data, ir, jc)
-                    merge!(style, Dict(h.decoration))
+                    merge!(style, Dict(h.fd(h,data,i,j)))
                     break
                 end
             end
