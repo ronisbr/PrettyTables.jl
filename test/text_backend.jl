@@ -922,6 +922,119 @@ end
                   Se em teu formoso céu, risonho e límpido,"""]
 
     header = ["Verse number", "Verse"]
+
+    expected = """
+┌──────────────┬────────────────────────────────┐
+│ Verse number │                          Verse │
+├──────────────┼────────────────────────────────┤
+│            1 │         Ouviram do Ipiranga as │
+│              │               margens plácidas │
+│              │     De um povo heróico o brado │
+│              │                    retumbante, │
+│              │       E o sol da Liberdade, em │
+│              │                raios fúlgidos, │
+│              │       Brilhou no céu da Pátria │
+│              │                nesse instante. │
+├──────────────┼────────────────────────────────┤
+│            2 │    Se o penhor dessa igualdade │
+│              │     Conseguimos conquistar com │
+│              │                   braço forte, │
+│              │      Em teu seio, ó Liberdade, │
+│              │        Desafia o nosso peito a │
+│              │                 própria morte! │
+├──────────────┼────────────────────────────────┤
+│            3 │    Ó Pátria amada, Idolatrada, │
+│              │                  Salve! Salve! │
+│              │   Brasil, um sonho intenso, um │
+│              │                    raio vívido │
+│              │       De amor e de esperança à │
+│              │                   terra desce, │
+│              │         Se em teu formoso céu, │
+│              │             risonho e límpido, │
+└──────────────┴────────────────────────────────┘
+"""
+
+    result = sprint((io,data)->pretty_table(io, data, header, autowrap = true,
+                                            linebreaks = true, hlines = 1:4,
+                                            columns_width = [-1,30]), table)
+
+    @test result == expected
+
+    expected = """
+┌──────────────┬────────────────────────────────┐
+│ Verse number │             Verse              │
+├──────────────┼────────────────────────────────┤
+│      1       │     Ouviram do Ipiranga as     │
+│              │        margens plácidas        │
+│              │   De um povo heróico o brado   │
+│              │          retumbante,           │
+│              │    E o sol da Liberdade, em    │
+│              │        raios fúlgidos,         │
+│              │    Brilhou no céu da Pátria    │
+│              │        nesse instante.         │
+├──────────────┼────────────────────────────────┤
+│      2       │  Se o penhor dessa igualdade   │
+│              │   Conseguimos conquistar com   │
+│              │          braço forte,          │
+│              │   Em teu seio, ó Liberdade,    │
+│              │    Desafia o nosso peito a     │
+│              │         própria morte!         │
+├──────────────┼────────────────────────────────┤
+│      3       │  Ó Pátria amada, Idolatrada,   │
+│              │         Salve! Salve!          │
+│              │  Brasil, um sonho intenso, um  │
+│              │          raio vívido           │
+│              │    De amor e de esperança à    │
+│              │          terra desce,          │
+│              │     Se em teu formoso céu,     │
+│              │       risonho e límpido,       │
+└──────────────┴────────────────────────────────┘
+"""
+
+    result = sprint((io,data)->pretty_table(io, data, header, alignment = :c,
+                                            autowrap = true, linebreaks = true,
+                                            hlines = 1:4, columns_width = [-1,30]),
+                    table)
+
+    @test result == expected
+
+    expected = """
+┌──────────────┬────────────────────────────────┐
+│ Verse number │ Verse                          │
+├──────────────┼────────────────────────────────┤
+│ 1            │ Ouviram do Ipiranga as         │
+│              │ margens plácidas               │
+│              │ De um povo heróico o brado     │
+│              │ retumbante,                    │
+│              │ E o sol da Liberdade, em       │
+│              │ raios fúlgidos,                │
+│              │ Brilhou no céu da Pátria       │
+│              │ nesse instante.                │
+├──────────────┼────────────────────────────────┤
+│ 2            │ Se o penhor dessa igualdade    │
+│              │ Conseguimos conquistar com     │
+│              │ braço forte,                   │
+│              │ Em teu seio, ó Liberdade,      │
+│              │ Desafia o nosso peito a        │
+│              │ própria morte!                 │
+├──────────────┼────────────────────────────────┤
+│ 3            │ Ó Pátria amada, Idolatrada,    │
+│              │ Salve! Salve!                  │
+│              │ Brasil, um sonho intenso, um   │
+│              │ raio vívido                    │
+│              │ De amor e de esperança à       │
+│              │ terra desce,                   │
+│              │ Se em teu formoso céu,         │
+│              │ risonho e límpido,             │
+└──────────────┴────────────────────────────────┘
+"""
+
+    result = sprint((io,data)->pretty_table(io, data, header, alignment = :l,
+                                            autowrap = true, linebreaks = true,
+                                            hlines = 1:4, columns_width = [-1,30]),
+                    table)
+
+    @test result == expected
 end
 
 # Dictionaries
