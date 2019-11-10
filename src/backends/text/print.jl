@@ -18,7 +18,7 @@ function _pt_text(io, pinfo;
                   crop::Symbol = :both,
                   columns_width::Union{Integer,AbstractVector{Int}} = 0,
                   formatter::Dict = Dict(),
-                  highlighters::Union{TextHighlighter,Tuple} = (),
+                  highlighters::Union{Highlighter,Tuple} = (),
                   hlines::AbstractVector{Int} = Int[],
                   hlines_format::Union{Nothing,NTuple{4,Char}} = nothing,
                   linebreaks::Bool = false,

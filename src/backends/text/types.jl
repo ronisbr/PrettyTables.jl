@@ -6,7 +6,7 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-export TextFormat, TextHighlighter
+export TextFormat, Highlighter
 
 """
     struct TextFormat
@@ -56,7 +56,7 @@ The following pre-defined formats are available: `unicode` (**default**),
 end
 
 """
-    struct TextHighlighter
+    struct Highlighter
 
 Defines the highlighter of a table when using the text backend.
 
@@ -68,19 +68,19 @@ Defines the highlighter of a table when using the text backend.
 * `crayon`: Crayon with the style of a highlighted element.
 
 """
-@with_kw struct TextHighlighter
+@with_kw struct Highlighter
     f::Function
     crayon::Crayon
 end
 
 """
-    function TextHighlighter(f; kwargs...)
+    function Highlighter(f; kwargs...)
 
-Construct a `TextHighlighter` with activation function `f` and pass all the keyword
+Construct a `Highlighter` with activation function `f` and pass all the keyword
 arguments `kwargs` to `Crayon`.
 
 """
-TextHighlighter(f; kwargs...) = TextHighlighter(f = f, crayon = Crayon(;kwargs...))
+Highlighter(f; kwargs...) = Highlighter(f = f, crayon = Crayon(;kwargs...))
 
 """
     mutable struct Screen

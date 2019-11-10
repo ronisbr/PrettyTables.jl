@@ -136,7 +136,7 @@ This back-end produces text tables. This back-end can be used by selecting
           horizontal direction, `:vertical` to crop only on vertical direction,
           or `:none` to do not crop the data at all.
 * `formatter`: See the section `Formatter`.
-* `highlighters`: An instance of `TextHighlighter` or a tuple with a list of
+* `highlighters`: An instance of `Highlighter` or a tuple with a list of
                   text highlighters (see the section `Text highlighters`).
 * `hlines`: A vector of `Int` indicating row numbers in which an additional
             horizontal line should be drawn after the row. Notice that numbers
@@ -195,8 +195,8 @@ For more information, see the package documentation.
 ## Text highlighters
 
 A set of highlighters can be passed as a `Tuple` to the `highlighter` keyword.
-Each highlighter is an instance of the structure `TextHighlighter` that contains
-two fields:
+Each highlighter is an instance of the structure `Highlighter` that contains two
+fields:
 
 * `f`: Function with the signature `f(data,i,j)` in which should return `true`
        if the element `(i,j)` in `data` must be highlighted, or `false`

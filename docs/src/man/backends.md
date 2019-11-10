@@ -38,7 +38,7 @@ passed as keywords when calling the function `pretty_table`:
 * `filters_row`: Filters for the rows (see the section [Filters](@ref)).
 * `filters_col`: Filters for the columns (see the section [Filters](@ref)).
 * `formatter`: See the section [Formatter](@ref).
-* `highlighters`: An instance of `TextHighlighter` or a tuple with a list of
+* `highlighters`: An instance of `Highlighter` or a tuple with a list of
                   highlighters (see the section `Highlighters`).
 * `hlines`: A vector of `Int` indicating row numbers in which an additional
             horizontal line should be drawn after the row. Notice that numbers

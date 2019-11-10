@@ -14,9 +14,9 @@ table. The definition depends on the back-end.
 # Text highlighters
 
 A highlighter of the text backend is an instance of the structure
-[`TextHighlighter`](@ref) that contains information about which elements a
-highlight style should be applied when using the text backend. The structure
-contains three fields:
+[`Highlighter`](@ref) that contains information about which elements a highlight
+style should be applied when using the text backend. The structure contains
+three fields:
 
 * `f`: Function with the signature `f(data,i,j)` in which should return `true`
        if the element `(i,j)` in `data` must be highlighted, or `false`
@@ -58,20 +58,20 @@ usage simpler. They are defined in the file
 To make the syntax less cumbersome, the following helper function is available:
 
 ```julia
-function TextHighlighter(f; kwargs...)
+function Highlighter(f; kwargs...)
 ```
 
-It creates a `TextHighlighter` with the function `f` and pass all the keyword
+It creates a `Highlighter` with the function `f` and pass all the keyword
 arguments `kwargs` to the `Crayon`. Hence, the following code:
 
 ```julia-repl
-julia> TextHighlighter((data,i,j)->isodd(i), Crayon(bold = true, background = :dark_gray))
+julia> Highlighter((data,i,j)->isodd(i), Crayon(bold = true, background = :dark_gray))
 ```
 
 can be replaced by:
 
 ```julia-repl
-julia> TextHighlighter((data,i,j)->isodd(i); bold = true, background = :dark_gray)
+julia> Highlighter((data,i,j)->isodd(i); bold = true, background = :dark_gray)
 ```
 
 # HTML highlighters
