@@ -1,5 +1,5 @@
-Examples
-========
+Text back-end examples
+======================
 
 ```@meta
 CurrentModule = PrettyTables
@@ -9,9 +9,7 @@ end
 ```
 
 In the following, it is presented how the following matrix can be printed using
-this package.
-
-# Text back-end
+the text back-end.
 
 ```julia-repl
 julia> data = Any[ 1    false      1.0     0x01 ;
@@ -109,7 +107,3 @@ julia> pretty_table(data, borderless;
 ```
 
 ![](../assets/ex_00013.png)
-
-# HTML back-end
-
-Coming soon...

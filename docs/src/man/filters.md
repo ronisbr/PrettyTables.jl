@@ -63,3 +63,7 @@ f_r(data,i) = (data[i,5] >= 0) && (data[i,6] >= 0)
 ```
 
 and set `filters_col = (f_c,)` and `filters_row = (f_r,)`.
+
+!!! note
+
+    The keywords related to the filters are supported in all back-ends.

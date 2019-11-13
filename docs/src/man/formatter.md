@@ -130,3 +130,7 @@ julia> pretty_table(data; formatter=ft_round(1,[1,3]))
 │    1.0 │                0.0 │    Inf │
 └────────┴────────────────────┴────────┘
 ```
+
+!!! note
+
+    The `formatter` keyword is supported in all back-ends.

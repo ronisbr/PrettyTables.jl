@@ -44,3 +44,7 @@ julia> pretty_table(data; alignment=[:l,:c,:r])
 │ 1.0                │        0.0         │                Inf │
 └────────────────────┴────────────────────┴────────────────────┘
 ```
+
+!!! note
+
+    The `alignment` keyword is supported in all back-ends.

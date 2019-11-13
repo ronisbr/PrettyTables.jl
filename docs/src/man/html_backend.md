@@ -1,5 +1,5 @@
-Highlighters
-============
+HTML back-end
+=============
 
 ```@meta
 CurrentModule = PrettyTables
@@ -8,78 +8,36 @@ DocTestSetup = quote
 end
 ```
 
-The highlighters are special structure used to highlight fields in the printed
-table. The definition depends on the back-end.
+The following options are available when the HTML backend is used. Those can be
+passed as keywords when calling the function [`pretty_table`](@ref):
 
-# Text highlighters
+* `table_format`: An instance of the structure [`HTMLTableFormat`](@ref) that
+                  defines the general format of the HTML table.
+* `cell_alignment`: A dictionary of type `(i,j) => a` that overrides that
+                    alignment of the cell `(i,j)` to `a` regardless of the
+                    columns alignment selected. `a` must be a symbol like
+                    specified in the section `Alignment`.
+* `formatter`: See the section [Formatter](@ref).
+* `highlighters`: An instance of [`HTMLHighlighter`](@ref) or a tuple with a
+                  list of HTML highlighters (see the section `HTML
+                  highlighters`).
+* `linebreaks`: If `true`, then `\\n` will be replaced by `<br>`.
+                (**Default** = `false`)
+* `noheader`: If `true`, then the header will not be printed. Notice that all
+              keywords and parameters related to the header and sub-headers will
+              be ignored. (**Default** = `false`)
+* `nosubheader`: If `true`, then the sub-header will not be printed, *i.e.* the
+                 header will contain only one line. Notice that this option has
+                 no effect if `noheader = true`. (**Default** = `false`)
+* `show_row_number`: If `true`, then a new column will be printed showing the
+                     row number. (**Default** = `false`)
 
-A highlighter of the text backend is an instance of the structure
-[`Highlighter`](@ref) that contains information about which elements a highlight
-style should be applied when using the text backend. The structure contains
-three fields:
-
-* `f`: Function with the signature `f(data,i,j)` in which should return `true`
-       if the element `(i,j)` in `data` must be highlighted, or `false`
-       otherwise.
-* `crayon`: Crayon with the style of a highlighted element.
-
-The function `f` must have the following signature:
-
-    f(data, i, j)
-
-in which `data` is a reference to the data that is being printed, `i` and `j`
-are the element coordinates that are being tested. If this function returns
-`true`, then the highlight style will be applied to the `(i,j)` element.
-Otherwise, the default style will be used.
-
-A set of highlighters can be passed as a `Tuple` to the `highlighter` keyword.
-Notice that if multiple highlighters are valid for the element `(i,j)`, then the
-applied style will be equal to the first match considering the order in the
-Tuple `highlighters`.
-
-![](../assets/ex_highlighters_00001.png)
-
-If only a single highlighter is wanted, then it can be passed directly to the
-keyword `highlighter` of `pretty_table` without being inside a `Tuple`.
-
-![](../assets/ex_highlighters_00002.png)
-
-!!! note
-
-    If the highlighters are used together with [Formatter](@ref), then the
-    change in the format **will not** affect that parameter `data` passed to the
-    highlighter function `f`. It will always receive the original, unformatted
-    value.
-
-There are a set of pre-defined highlighters (with names `hl_*`) to make the
-usage simpler. They are defined in the file
-`./src/backends/text/predefined_highlighters.jl`.
-
-To make the syntax less cumbersome, the following helper function is available:
-
-```julia
-function Highlighter(f; kwargs...)
-```
-
-It creates a `Highlighter` with the function `f` and pass all the keyword
-arguments `kwargs` to the `Crayon`. Hence, the following code:
-
-```julia-repl
-julia> Highlighter((data,i,j)->isodd(i), Crayon(bold = true, background = :dark_gray))
-```
-
-can be replaced by:
-
-```julia-repl
-julia> Highlighter((data,i,j)->isodd(i); bold = true, background = :dark_gray)
-```
-
-# HTML highlighters
+## HTML highlighters
 
 A set of highlighters can be passed as a `Tuple` to the `highlighter` keyword.
 Each highlighter is an instance of a structure that is a subtype of
-`AbstractHTMLHighlighter`. It also must also contain at least the following two
-fields to comply with the API:
+[`AbstractHTMLHighlighter`](@ref). It also must also contain at least the
+following two fields to comply with the API:
 
 * `f`: Function with the signature `f(data,i,j)` in which should return `true`
        if the element `(i,j)` in `data` must be highlighter, or `false`
@@ -102,14 +60,14 @@ applied style will be equal to the first match considering the order in the
 Tuple `highlighters`.
 
 If the function `f` returns true, then the function `fd(h,data,i,j)` will be
-called and must return an element of type `HTMLDecoration` that contains the
-decoration to be applied to the cell.
+called and must return an element of type [`HTMLDecoration`](@ref) that contains
+the decoration to be applied to the cell.
 
 If only a single highlighter is wanted, then it can be passed directly to the
 keyword `highlighter` without being inside a `Tuple`.
 
-A default HTML highlighter `HTMLHighlighter` is available. It can be constructed
-using the following functions:
+A default HTML highlighter [`HTMLHighlighter`](@ref) is available. It can be
+constructed using the following functions:
 
 ```
 HTMLHighlighter(f::Function, decoration::HTMLDecoration)

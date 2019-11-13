@@ -12,13 +12,17 @@ makedocs(
     pages = [
         "Home"               => "index.md",
         "Usage"              => "man/usage.md",
-        "Back-ends"          => "man/backends.md",
+        "Back-ends"          => Any[
+            "Text"           => "man/text_backend.md",
+            "HTML"           => "man/html_backend.md",
+        ],
         "Alignment"          => "man/alignment.md",
         "Filters"            => "man/filters.md",
         "Formatters"         => "man/formatter.md",
-        "Highlighters"       => "man/highlighters.md",
-        "Examples"           => "man/examples.md",
-        "Text table formats" => "man/formats.md",
+        "Examples"           => Any[
+            "Text back-end"  => "man/text_examples.md",
+            "HTML back-end"  => "man/html_examples.md",
+        ],
     ],
 )
 
