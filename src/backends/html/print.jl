@@ -57,7 +57,7 @@ function _pt_html(io, pinfo;
 
         if !noheader
             for j = 1:header_num_rows
-                header_str[j,i] = escape_string(sprint(print, header[(ic-1)*header_num_rows + j]))
+                header_str[j,i] = _str_escaped(sprint(print, header[(ic-1)*header_num_rows + j]))
             end
         end
 
@@ -81,7 +81,7 @@ function _pt_html(io, pinfo;
                 data_str_ij = replace(data_str_ij, "\n" => "<BR>")
             end
 
-            data_str_ij_esc = escape_string(data_str_ij)
+            data_str_ij_esc = _str_escaped(data_str_ij)
             data_str[j,i]   = data_str_ij_esc
         end
     end

@@ -1317,3 +1317,60 @@ end
     @test result == expected
 
 end
+
+# Issue #22
+# ==============================================================================
+
+@testset "Issue #22 - Strings with quotes" begin
+    # Without linebreaks.
+    matrix = [1 "teste\"teste"
+              2 "teste\"\"teste"]
+
+    expected = """
+┌────────┬──────────────┐
+│ Col. 1 │       Col. 2 │
+├────────┼──────────────┤
+│      1 │  teste"teste │
+│      2 │ teste""teste │
+└────────┴──────────────┘
+"""
+
+    result = sprint(pretty_table, matrix)
+    @test result == expected
+
+    # With linebreaks.
+    matrix = [ 1 """
+    function str(str = "one string")
+        return str
+    end"""
+    2 """
+    function str(str = "")
+        if isempty(str)
+            return "one string"
+        else
+            return str
+        end
+    end"""]
+
+    expected = """
+┌────────┬──────────────────────────────────┐
+│ Col. 1 │ Col. 2                           │
+├────────┼──────────────────────────────────┤
+│ 1      │ function str(str = "one string") │
+│        │     return str                   │
+│        │ end                              │
+│ 2      │ function str(str = "")           │
+│        │     if isempty(str)              │
+│        │         return "one string"      │
+│        │     else                         │
+│        │         return str               │
+│        │     end                          │
+│        │ end                              │
+└────────┴──────────────────────────────────┘
+"""
+
+    result = sprint((io,data)->pretty_table(io, matrix; alignment = :l,
+                                            linebreaks = true), data)
+
+    @test result == expected
+end

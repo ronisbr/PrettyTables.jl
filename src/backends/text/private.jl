@@ -57,7 +57,7 @@ function _str_line_breaks(str::AbstractString, autowrap::Bool = false, width::In
     error("If `autowrap` is true, then the width must not be positive.")
 
     # Get the tokens for each line.
-    tokens_raw = escape_string.(split(str, '\n'))
+    tokens_raw = _str_escaped.(split(str, '\n'))
 
     # If the user wants to auto wrap the text, then we must check if
     # the tokens must be modified.
