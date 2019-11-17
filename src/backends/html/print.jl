@@ -123,16 +123,16 @@ function _pt_html(io, pinfo;
 
     if !noheader
         @inbounds @views for i = 1:header_num_rows
-            print(buf, "<tr>")
+            println(buf, "<tr>")
 
             # The text "Row" must appear only on the first line.
             if show_row_number
                 if i == 1
-                    style = Dict{String,String}("text-align" => "left",
+                    style = Dict{String,String}("text-align" => "right",
                                                 Dict(header_decoration)...)
                     println(buf, _styled_html("th", "Row", style))
                 else
-                    style = Dict{String,String}("text-align" => "left",
+                    style = Dict{String,String}("text-align" => "right",
                                                 Dict(subheader_decoration)...)
                     println(buf, _styled_html("th", "", style))
                 end
@@ -174,7 +174,8 @@ function _pt_html(io, pinfo;
         println(buf, "<tr>")
 
         if show_row_number
-            println(buf, "<td style=\"text-align: left\">", string(ir), "</th>")
+            style = Dict{String,String}("text-align" => "right")
+            println(buf, _styled_html("td", string(ir), style))
         end
 
         for j = 1:num_printed_cols
