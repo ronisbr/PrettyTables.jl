@@ -48,10 +48,10 @@ tr:nth-child(even) {
 <table>
 
 <tr>
-<th style = "color: white; text-align: right; background: navy; ">Col. 1</th>
-<th style = "color: white; text-align: right; background: navy; ">Col. 2</th>
-<th style = "color: white; text-align: right; background: navy; ">Col. 3</th>
-<th style = "color: white; text-align: right; background: navy; ">Col. 4</th>
+<th style = "background: navy; color: white; text-align: right; ">Col. 1</th>
+<th style = "background: navy; color: white; text-align: right; ">Col. 2</th>
+<th style = "background: navy; color: white; text-align: right; ">Col. 3</th>
+<th style = "background: navy; color: white; text-align: right; ">Col. 4</th>
 </tr>
 <tr>
 <td style = "text-align: right; ">1</td>
@@ -131,10 +131,10 @@ tr:nth-child(even) {
 <table>
 
 <tr>
-<th style = "color: white; text-align: left; background: navy; ">Col. 1</th>
-<th style = "color: white; text-align: left; background: navy; ">Col. 2</th>
-<th style = "color: white; text-align: left; background: navy; ">Col. 3</th>
-<th style = "color: white; text-align: left; background: navy; ">Col. 4</th>
+<th style = "background: navy; color: white; text-align: left; ">Col. 1</th>
+<th style = "background: navy; color: white; text-align: left; ">Col. 2</th>
+<th style = "background: navy; color: white; text-align: left; ">Col. 3</th>
+<th style = "background: navy; color: white; text-align: left; ">Col. 4</th>
 </tr>
 <tr>
 <td style = "text-align: left; ">1</td>
@@ -210,10 +210,10 @@ tr:nth-child(even) {
 <table>
 
 <tr>
-<th style = "color: white; text-align: center; background: navy; ">Col. 1</th>
-<th style = "color: white; text-align: center; background: navy; ">Col. 2</th>
-<th style = "color: white; text-align: center; background: navy; ">Col. 3</th>
-<th style = "color: white; text-align: center; background: navy; ">Col. 4</th>
+<th style = "background: navy; color: white; text-align: center; ">Col. 1</th>
+<th style = "background: navy; color: white; text-align: center; ">Col. 2</th>
+<th style = "background: navy; color: white; text-align: center; ">Col. 3</th>
+<th style = "background: navy; color: white; text-align: center; ">Col. 4</th>
 </tr>
 <tr>
 <td style = "text-align: center; ">1</td>
@@ -290,10 +290,10 @@ tr:nth-child(even) {
 <table>
 
 <tr>
-<th style = "color: white; text-align: left; background: navy; ">Col. 1</th>
-<th style = "color: white; text-align: right; background: navy; ">Col. 2</th>
-<th style = "color: white; text-align: center; background: navy; ">Col. 3</th>
-<th style = "color: white; text-align: right; background: navy; ">Col. 4</th>
+<th style = "background: navy; color: white; text-align: left; ">Col. 1</th>
+<th style = "background: navy; color: white; text-align: right; ">Col. 2</th>
+<th style = "background: navy; color: white; text-align: center; ">Col. 3</th>
+<th style = "background: navy; color: white; text-align: right; ">Col. 4</th>
 </tr>
 <tr>
 <td style = "text-align: left; ">1</td>
@@ -371,10 +371,10 @@ tr:nth-child(even) {
 <table>
 
 <tr>
-<th style = "color: white; text-align: left; background: navy; ">Col. 1</th>
-<th style = "color: white; text-align: right; background: navy; ">Col. 2</th>
-<th style = "color: white; text-align: center; background: navy; ">Col. 3</th>
-<th style = "color: white; text-align: right; background: navy; ">Col. 4</th>
+<th style = "background: navy; color: white; text-align: left; ">Col. 1</th>
+<th style = "background: navy; color: white; text-align: right; ">Col. 2</th>
+<th style = "background: navy; color: white; text-align: center; ">Col. 3</th>
+<th style = "background: navy; color: white; text-align: right; ">Col. 4</th>
 </tr>
 <tr>
 <td style = "text-align: left; ">1</td>
@@ -461,9 +461,9 @@ tr:nth-child(even) {
 <table>
 
 <tr>
-<th style = "color: white; text-align: right; background: navy; ">Row</th>
-<th style = "color: white; text-align: right; background: navy; ">Col. 1</th>
-<th style = "color: white; text-align: right; background: navy; ">Col. 3</th>
+<th style = "background: navy; color: white; text-align: right; ">Row</th>
+<th style = "background: navy; color: white; text-align: right; ">Col. 1</th>
+<th style = "background: navy; color: white; text-align: right; ">Col. 3</th>
 </tr>
 <tr>
 <td style = "text-align: right; ">2</td>
@@ -521,9 +521,9 @@ tr:nth-child(even) {
 <table>
 
 <tr>
-<th style = "color: white; text-align: right; background: navy; ">Row</th>
-<th style = "color: white; text-align: center; background: navy; ">Col. 1</th>
-<th style = "color: white; text-align: left; background: navy; ">Col. 3</th>
+<th style = "background: navy; color: white; text-align: right; ">Row</th>
+<th style = "background: navy; color: white; text-align: center; ">Col. 1</th>
+<th style = "background: navy; color: white; text-align: left; ">Col. 3</th>
 </tr>
 <tr>
 <td style = "text-align: right; ">2</td>
@@ -587,10 +587,10 @@ tr:nth-child(even) {
 <table>
 
 <tr>
-<th style = "color: white; text-align: right; background: navy; ">Col. 1</th>
-<th style = "color: white; text-align: right; background: navy; ">Col. 2</th>
-<th style = "color: white; text-align: right; background: navy; ">Col. 3</th>
-<th style = "color: white; text-align: right; background: navy; ">Col. 4</th>
+<th style = "background: navy; color: white; text-align: right; ">Col. 1</th>
+<th style = "background: navy; color: white; text-align: right; ">Col. 2</th>
+<th style = "background: navy; color: white; text-align: right; ">Col. 3</th>
+<th style = "background: navy; color: white; text-align: right; ">Col. 4</th>
 </tr>
 <tr>
 <td style = "text-align: right; ">1</td>
@@ -671,11 +671,11 @@ tr:nth-child(even) {
 <table>
 
 <tr>
-<th style = "color: white; text-align: right; background: navy; ">Row</th>
-<th style = "color: white; text-align: left; background: navy; ">Col. 1</th>
-<th style = "color: white; text-align: right; background: navy; ">Col. 2</th>
-<th style = "color: white; text-align: center; background: navy; ">Col. 3</th>
-<th style = "color: white; text-align: right; background: navy; ">Col. 4</th>
+<th style = "background: navy; color: white; text-align: right; ">Row</th>
+<th style = "background: navy; color: white; text-align: left; ">Col. 1</th>
+<th style = "background: navy; color: white; text-align: right; ">Col. 2</th>
+<th style = "background: navy; color: white; text-align: center; ">Col. 3</th>
+<th style = "background: navy; color: white; text-align: right; ">Col. 4</th>
 </tr>
 <tr>
 <td style = "text-align: right; ">1</td>
@@ -771,7 +771,7 @@ tr:nth-child(even) {
 <table>
 
 <tr>
-<th style = "color: white; text-align: right; background: navy; ">Col. 1</th>
+<th style = "background: navy; color: white; text-align: right; ">Col. 1</th>
 </tr>
 <tr>
 <td style = "text-align: right; ">0</td>
@@ -842,8 +842,8 @@ tr:nth-child(even) {
 <table>
 
 <tr>
-<th style = "color: white; text-align: right; background: navy; ">Row</th>
-<th style = "color: white; text-align: center; background: navy; ">Col. 1</th>
+<th style = "background: navy; color: white; text-align: right; ">Row</th>
+<th style = "background: navy; color: white; text-align: center; ">Col. 1</th>
 </tr>
 <tr>
 <td style = "text-align: right; ">1</td>
