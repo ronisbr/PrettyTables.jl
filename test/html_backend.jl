@@ -24,15 +24,13 @@ data = Any[1    false      1.0     0x01 ;
 <meta charset="UTF-8">
 <style>
 table, td, th {
-    border-collapse: collapse
+    border-collapse: collapse;
+    font-family: sans-serif;
 }
 
 td, th {
-    border:  ;
-    padding: 6px
-}
-table {
-    font-family: sans-serif;
+    border-bottom: 0;
+    padding: 4px
 }
 
 tr:nth-child(odd) {
@@ -43,15 +41,30 @@ tr:nth-child(even) {
     background: #fff;
 }
 
+tr.header {
+    background: navy;
+    color: white;
+    font-weight: bold;
+}
+
+tr.subheader, tr.subheaderLastRow {
+    background: lightgray;
+    color: black;
+}
+
+th.rowNumber, td.rowNumber {
+    text-align: right;
+}
+
 </style>
 <body>
 <table>
 
-<tr>
-<th style = "background: navy; color: white; text-align: right; ">Col. 1</th>
-<th style = "background: navy; color: white; text-align: right; ">Col. 2</th>
-<th style = "background: navy; color: white; text-align: right; ">Col. 3</th>
-<th style = "background: navy; color: white; text-align: right; ">Col. 4</th>
+<tr class = header>
+<th style = "text-align: right; ">Col. 1</th>
+<th style = "text-align: right; ">Col. 2</th>
+<th style = "text-align: right; ">Col. 3</th>
+<th style = "text-align: right; ">Col. 4</th>
 </tr>
 <tr>
 <td style = "text-align: right; ">1</td>
@@ -107,15 +120,13 @@ end
 <meta charset="UTF-8">
 <style>
 table, td, th {
-    border-collapse: collapse
+    border-collapse: collapse;
+    font-family: sans-serif;
 }
 
 td, th {
-    border:  ;
-    padding: 6px
-}
-table {
-    font-family: sans-serif;
+    border-bottom: 0;
+    padding: 4px
 }
 
 tr:nth-child(odd) {
@@ -126,15 +137,30 @@ tr:nth-child(even) {
     background: #fff;
 }
 
+tr.header {
+    background: navy;
+    color: white;
+    font-weight: bold;
+}
+
+tr.subheader, tr.subheaderLastRow {
+    background: lightgray;
+    color: black;
+}
+
+th.rowNumber, td.rowNumber {
+    text-align: right;
+}
+
 </style>
 <body>
 <table>
 
-<tr>
-<th style = "background: navy; color: white; text-align: left; ">Col. 1</th>
-<th style = "background: navy; color: white; text-align: left; ">Col. 2</th>
-<th style = "background: navy; color: white; text-align: left; ">Col. 3</th>
-<th style = "background: navy; color: white; text-align: left; ">Col. 4</th>
+<tr class = header>
+<th style = "text-align: left; ">Col. 1</th>
+<th style = "text-align: left; ">Col. 2</th>
+<th style = "text-align: left; ">Col. 3</th>
+<th style = "text-align: left; ">Col. 4</th>
 </tr>
 <tr>
 <td style = "text-align: left; ">1</td>
@@ -186,15 +212,13 @@ tr:nth-child(even) {
 <meta charset="UTF-8">
 <style>
 table, td, th {
-    border-collapse: collapse
+    border-collapse: collapse;
+    font-family: sans-serif;
 }
 
 td, th {
-    border:  ;
-    padding: 6px
-}
-table {
-    font-family: sans-serif;
+    border-bottom: 0;
+    padding: 4px
 }
 
 tr:nth-child(odd) {
@@ -205,15 +229,30 @@ tr:nth-child(even) {
     background: #fff;
 }
 
+tr.header {
+    background: navy;
+    color: white;
+    font-weight: bold;
+}
+
+tr.subheader, tr.subheaderLastRow {
+    background: lightgray;
+    color: black;
+}
+
+th.rowNumber, td.rowNumber {
+    text-align: right;
+}
+
 </style>
 <body>
 <table>
 
-<tr>
-<th style = "background: navy; color: white; text-align: center; ">Col. 1</th>
-<th style = "background: navy; color: white; text-align: center; ">Col. 2</th>
-<th style = "background: navy; color: white; text-align: center; ">Col. 3</th>
-<th style = "background: navy; color: white; text-align: center; ">Col. 4</th>
+<tr class = header>
+<th style = "text-align: center; ">Col. 1</th>
+<th style = "text-align: center; ">Col. 2</th>
+<th style = "text-align: center; ">Col. 3</th>
+<th style = "text-align: center; ">Col. 4</th>
 </tr>
 <tr>
 <td style = "text-align: center; ">1</td>
@@ -266,15 +305,13 @@ tr:nth-child(even) {
 <meta charset="UTF-8">
 <style>
 table, td, th {
-    border-collapse: collapse
+    border-collapse: collapse;
+    font-family: sans-serif;
 }
 
 td, th {
-    border:  ;
-    padding: 6px
-}
-table {
-    font-family: sans-serif;
+    border-bottom: 0;
+    padding: 4px
 }
 
 tr:nth-child(odd) {
@@ -285,15 +322,30 @@ tr:nth-child(even) {
     background: #fff;
 }
 
+tr.header {
+    background: navy;
+    color: white;
+    font-weight: bold;
+}
+
+tr.subheader, tr.subheaderLastRow {
+    background: lightgray;
+    color: black;
+}
+
+th.rowNumber, td.rowNumber {
+    text-align: right;
+}
+
 </style>
 <body>
 <table>
 
-<tr>
-<th style = "background: navy; color: white; text-align: left; ">Col. 1</th>
-<th style = "background: navy; color: white; text-align: right; ">Col. 2</th>
-<th style = "background: navy; color: white; text-align: center; ">Col. 3</th>
-<th style = "background: navy; color: white; text-align: right; ">Col. 4</th>
+<tr class = header>
+<th style = "text-align: left; ">Col. 1</th>
+<th style = "text-align: right; ">Col. 2</th>
+<th style = "text-align: center; ">Col. 3</th>
+<th style = "text-align: right; ">Col. 4</th>
 </tr>
 <tr>
 <td style = "text-align: left; ">1</td>
@@ -347,15 +399,13 @@ tr:nth-child(even) {
 <meta charset="UTF-8">
 <style>
 table, td, th {
-    border-collapse: collapse
+    border-collapse: collapse;
+    font-family: sans-serif;
 }
 
 td, th {
-    border:  ;
-    padding: 6px
-}
-table {
-    font-family: sans-serif;
+    border-bottom: 0;
+    padding: 4px
 }
 
 tr:nth-child(odd) {
@@ -366,15 +416,30 @@ tr:nth-child(even) {
     background: #fff;
 }
 
+tr.header {
+    background: navy;
+    color: white;
+    font-weight: bold;
+}
+
+tr.subheader, tr.subheaderLastRow {
+    background: lightgray;
+    color: black;
+}
+
+th.rowNumber, td.rowNumber {
+    text-align: right;
+}
+
 </style>
 <body>
 <table>
 
-<tr>
-<th style = "background: navy; color: white; text-align: left; ">Col. 1</th>
-<th style = "background: navy; color: white; text-align: right; ">Col. 2</th>
-<th style = "background: navy; color: white; text-align: center; ">Col. 3</th>
-<th style = "background: navy; color: white; text-align: right; ">Col. 4</th>
+<tr class = header>
+<th style = "text-align: left; ">Col. 1</th>
+<th style = "text-align: right; ">Col. 2</th>
+<th style = "text-align: center; ">Col. 3</th>
+<th style = "text-align: right; ">Col. 4</th>
 </tr>
 <tr>
 <td style = "text-align: left; ">1</td>
@@ -437,15 +502,13 @@ end
 <meta charset="UTF-8">
 <style>
 table, td, th {
-    border-collapse: collapse
+    border-collapse: collapse;
+    font-family: sans-serif;
 }
 
 td, th {
-    border:  ;
-    padding: 6px
-}
-table {
-    font-family: sans-serif;
+    border-bottom: 0;
+    padding: 4px
 }
 
 tr:nth-child(odd) {
@@ -456,27 +519,42 @@ tr:nth-child(even) {
     background: #fff;
 }
 
+tr.header {
+    background: navy;
+    color: white;
+    font-weight: bold;
+}
+
+tr.subheader, tr.subheaderLastRow {
+    background: lightgray;
+    color: black;
+}
+
+th.rowNumber, td.rowNumber {
+    text-align: right;
+}
+
 </style>
 <body>
 <table>
 
-<tr>
-<th style = "background: navy; color: white; text-align: right; ">Row</th>
-<th style = "background: navy; color: white; text-align: right; ">Col. 1</th>
-<th style = "background: navy; color: white; text-align: right; ">Col. 3</th>
+<tr class = header>
+<th class = rowNumber>Row</th>
+<th style = "text-align: right; ">Col. 1</th>
+<th style = "text-align: right; ">Col. 3</th>
 </tr>
 <tr>
-<td style = "text-align: right; ">2</td>
+<td class = rowNumber>2</td>
 <td style = "text-align: right; ">2</td>
 <td style = "text-align: right; ">2.0</td>
 </tr>
 <tr>
-<td style = "text-align: right; ">4</td>
+<td class = rowNumber>4</td>
 <td style = "text-align: right; ">4</td>
 <td style = "text-align: right; ">4.0</td>
 </tr>
 <tr>
-<td style = "text-align: right; ">6</td>
+<td class = rowNumber>6</td>
 <td style = "text-align: right; ">6</td>
 <td style = "text-align: right; ">6.0</td>
 </tr>
@@ -497,15 +575,13 @@ tr:nth-child(even) {
 <meta charset="UTF-8">
 <style>
 table, td, th {
-    border-collapse: collapse
+    border-collapse: collapse;
+    font-family: sans-serif;
 }
 
 td, th {
-    border:  ;
-    padding: 6px
-}
-table {
-    font-family: sans-serif;
+    border-bottom: 0;
+    padding: 4px
 }
 
 tr:nth-child(odd) {
@@ -516,27 +592,42 @@ tr:nth-child(even) {
     background: #fff;
 }
 
+tr.header {
+    background: navy;
+    color: white;
+    font-weight: bold;
+}
+
+tr.subheader, tr.subheaderLastRow {
+    background: lightgray;
+    color: black;
+}
+
+th.rowNumber, td.rowNumber {
+    text-align: right;
+}
+
 </style>
 <body>
 <table>
 
-<tr>
-<th style = "background: navy; color: white; text-align: right; ">Row</th>
-<th style = "background: navy; color: white; text-align: center; ">Col. 1</th>
-<th style = "background: navy; color: white; text-align: left; ">Col. 3</th>
+<tr class = header>
+<th class = rowNumber>Row</th>
+<th style = "text-align: center; ">Col. 1</th>
+<th style = "text-align: left; ">Col. 3</th>
 </tr>
 <tr>
-<td style = "text-align: right; ">2</td>
+<td class = rowNumber>2</td>
 <td style = "text-align: center; ">2</td>
 <td style = "text-align: left; ">2.0</td>
 </tr>
 <tr>
-<td style = "text-align: right; ">4</td>
+<td class = rowNumber>4</td>
 <td style = "text-align: center; ">4</td>
 <td style = "text-align: left; ">4.0</td>
 </tr>
 <tr>
-<td style = "text-align: right; ">6</td>
+<td class = rowNumber>6</td>
 <td style = "text-align: center; ">6</td>
 <td style = "text-align: left; ">6.0</td>
 </tr>
@@ -563,15 +654,13 @@ end
 <meta charset="UTF-8">
 <style>
 table, td, th {
-    border-collapse: collapse
+    border-collapse: collapse;
+    font-family: sans-serif;
 }
 
 td, th {
-    border:  ;
-    padding: 6px
-}
-table {
-    font-family: sans-serif;
+    border-bottom: 0;
+    padding: 4px
 }
 
 tr:nth-child(odd) {
@@ -582,15 +671,30 @@ tr:nth-child(even) {
     background: #fff;
 }
 
+tr.header {
+    background: navy;
+    color: white;
+    font-weight: bold;
+}
+
+tr.subheader, tr.subheaderLastRow {
+    background: lightgray;
+    color: black;
+}
+
+th.rowNumber, td.rowNumber {
+    text-align: right;
+}
+
 </style>
 <body>
 <table>
 
-<tr>
-<th style = "background: navy; color: white; text-align: right; ">Col. 1</th>
-<th style = "background: navy; color: white; text-align: right; ">Col. 2</th>
-<th style = "background: navy; color: white; text-align: right; ">Col. 3</th>
-<th style = "background: navy; color: white; text-align: right; ">Col. 4</th>
+<tr class = header>
+<th style = "text-align: right; ">Col. 1</th>
+<th style = "text-align: right; ">Col. 2</th>
+<th style = "text-align: right; ">Col. 3</th>
+<th style = "text-align: right; ">Col. 4</th>
 </tr>
 <tr>
 <td style = "text-align: right; ">1</td>
@@ -647,15 +751,13 @@ end
 <meta charset="UTF-8">
 <style>
 table, td, th {
-    border-collapse: collapse
+    border-collapse: collapse;
+    font-family: sans-serif;
 }
 
 td, th {
-    border:  ;
-    padding: 6px
-}
-table {
-    font-family: sans-serif;
+    border-bottom: 0;
+    padding: 4px
 }
 
 tr:nth-child(odd) {
@@ -666,54 +768,69 @@ tr:nth-child(even) {
     background: #fff;
 }
 
+tr.header {
+    background: navy;
+    color: white;
+    font-weight: bold;
+}
+
+tr.subheader, tr.subheaderLastRow {
+    background: lightgray;
+    color: black;
+}
+
+th.rowNumber, td.rowNumber {
+    text-align: right;
+}
+
 </style>
 <body>
 <table>
 
-<tr>
-<th style = "background: navy; color: white; text-align: right; ">Row</th>
-<th style = "background: navy; color: white; text-align: left; ">Col. 1</th>
-<th style = "background: navy; color: white; text-align: right; ">Col. 2</th>
-<th style = "background: navy; color: white; text-align: center; ">Col. 3</th>
-<th style = "background: navy; color: white; text-align: right; ">Col. 4</th>
+<tr class = header>
+<th class = rowNumber>Row</th>
+<th style = "text-align: left; ">Col. 1</th>
+<th style = "text-align: right; ">Col. 2</th>
+<th style = "text-align: center; ">Col. 3</th>
+<th style = "text-align: right; ">Col. 4</th>
 </tr>
 <tr>
-<td style = "text-align: right; ">1</td>
+<td class = rowNumber>1</td>
 <td style = "text-align: left; ">1</td>
 <td style = "text-align: right; ">false</td>
 <td style = "text-align: center; ">1.0</td>
 <td style = "text-align: right; ">1</td>
 </tr>
 <tr>
-<td style = "text-align: right; ">2</td>
+<td class = rowNumber>2</td>
 <td style = "text-align: left; ">2</td>
 <td style = "text-align: right; ">true</td>
 <td style = "text-align: center; ">2.0</td>
 <td style = "text-align: right; ">2</td>
 </tr>
 <tr>
-<td style = "text-align: right; ">3</td>
+<td class = rowNumber>3</td>
 <td style = "text-align: left; ">3</td>
 <td style = "text-align: right; ">false</td>
 <td style = "text-align: center; ">3.0</td>
 <td style = "text-align: right; ">3</td>
 </tr>
 <tr>
-<td style = "text-align: right; ">4</td>
+<td class = rowNumber>4</td>
 <td style = "text-align: left; ">4</td>
 <td style = "text-align: right; ">true</td>
 <td style = "text-align: center; ">4.0</td>
 <td style = "text-align: right; ">4</td>
 </tr>
 <tr>
-<td style = "text-align: right; ">5</td>
+<td class = rowNumber>5</td>
 <td style = "text-align: left; ">5</td>
 <td style = "text-align: right; ">false</td>
 <td style = "text-align: center; ">5.0</td>
 <td style = "text-align: right; ">5</td>
 </tr>
 <tr>
-<td style = "text-align: right; ">6</td>
+<td class = rowNumber>6</td>
 <td style = "text-align: left; ">6</td>
 <td style = "text-align: right; ">true</td>
 <td style = "text-align: center; ">6.0</td>
@@ -747,15 +864,13 @@ end
 <meta charset="UTF-8">
 <style>
 table, td, th {
-    border-collapse: collapse
+    border-collapse: collapse;
+    font-family: sans-serif;
 }
 
 td, th {
-    border:  ;
-    padding: 6px
-}
-table {
-    font-family: sans-serif;
+    border-bottom: 0;
+    padding: 4px
 }
 
 tr:nth-child(odd) {
@@ -766,12 +881,27 @@ tr:nth-child(even) {
     background: #fff;
 }
 
+tr.header {
+    background: navy;
+    color: white;
+    font-weight: bold;
+}
+
+tr.subheader, tr.subheaderLastRow {
+    background: lightgray;
+    color: black;
+}
+
+th.rowNumber, td.rowNumber {
+    text-align: right;
+}
+
 </style>
 <body>
 <table>
 
-<tr>
-<th style = "background: navy; color: white; text-align: right; ">Col. 1</th>
+<tr class = header>
+<th style = "text-align: right; ">Col. 1</th>
 </tr>
 <tr>
 <td style = "text-align: right; ">0</td>
@@ -818,15 +948,13 @@ tr:nth-child(even) {
 <meta charset="UTF-8">
 <style>
 table, td, th {
-    border-collapse: collapse
+    border-collapse: collapse;
+    font-family: sans-serif;
 }
 
 td, th {
-    border:  ;
-    padding: 6px
-}
-table {
-    font-family: sans-serif;
+    border-bottom: 0;
+    padding: 4px
 }
 
 tr:nth-child(odd) {
@@ -837,56 +965,71 @@ tr:nth-child(even) {
     background: #fff;
 }
 
+tr.header {
+    background: navy;
+    color: white;
+    font-weight: bold;
+}
+
+tr.subheader, tr.subheaderLastRow {
+    background: lightgray;
+    color: black;
+}
+
+th.rowNumber, td.rowNumber {
+    text-align: right;
+}
+
 </style>
 <body>
 <table>
 
-<tr>
-<th style = "background: navy; color: white; text-align: right; ">Row</th>
-<th style = "background: navy; color: white; text-align: center; ">Col. 1</th>
+<tr class = header>
+<th class = rowNumber>Row</th>
+<th style = "text-align: center; ">Col. 1</th>
 </tr>
 <tr>
-<td style = "text-align: right; ">1</td>
+<td class = rowNumber>1</td>
 <td style = "text-align: center; ">0</td>
 </tr>
 <tr>
-<td style = "text-align: right; ">2</td>
+<td class = rowNumber>2</td>
 <td style = "text-align: center; ">1</td>
 </tr>
 <tr>
-<td style = "text-align: right; ">3</td>
+<td class = rowNumber>3</td>
 <td style = "text-align: center; ">2</td>
 </tr>
 <tr>
-<td style = "text-align: right; ">4</td>
+<td class = rowNumber>4</td>
 <td style = "text-align: center; ">3</td>
 </tr>
 <tr>
-<td style = "text-align: right; ">5</td>
+<td class = rowNumber>5</td>
 <td style = "text-align: center; ">4</td>
 </tr>
 <tr>
-<td style = "text-align: right; ">6</td>
+<td class = rowNumber>6</td>
 <td style = "text-align: center; ">5</td>
 </tr>
 <tr>
-<td style = "text-align: right; ">7</td>
+<td class = rowNumber>7</td>
 <td style = "text-align: center; ">6</td>
 </tr>
 <tr>
-<td style = "text-align: right; ">8</td>
+<td class = rowNumber>8</td>
 <td style = "text-align: center; ">7</td>
 </tr>
 <tr>
-<td style = "text-align: right; ">9</td>
+<td class = rowNumber>9</td>
 <td style = "text-align: center; ">8</td>
 </tr>
 <tr>
-<td style = "text-align: right; ">10</td>
+<td class = rowNumber>10</td>
 <td style = "text-align: center; ">9</td>
 </tr>
 <tr>
-<td style = "text-align: right; ">11</td>
+<td class = rowNumber>11</td>
 <td style = "text-align: center; ">10</td>
 </tr>
 </table></body></html>

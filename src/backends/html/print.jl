@@ -97,18 +97,11 @@ function _pt_html(io, pinfo;
 
     !isempty(table_width) && println(buf, """
     table {
-        width: $table_width
-    }""")
+        width: $table_width;
+    }
+    """)
 
     println(buf, """
-    table, td, th {
-        border-collapse: collapse
-    }
-
-    td, th {
-        border: $border_size $border_color;
-        padding: 6px
-    }
     $css
     </style>
     <body>
@@ -123,18 +116,20 @@ function _pt_html(io, pinfo;
 
     if !noheader
         @inbounds @views for i = 1:header_num_rows
-            println(buf, "<tr>")
+            if i == 1
+                println(buf, "<tr class = header>")
+            elseif i == header_num_rows
+                println(buf, "<tr class = subheaderLastRow>")
+            else
+                println(buf, "<tr class = subheader>")
+            end
 
             # The text "Row" must appear only on the first line.
             if show_row_number
                 if i == 1
-                    style = Dict{String,String}("text-align" => "right",
-                                                Dict(header_decoration)...)
-                    println(buf, _styled_html("th", "Row", style))
+                    println(buf, "<th class = rowNumber>Row</th>")
                 else
-                    style = Dict{String,String}("text-align" => "right",
-                                                Dict(subheader_decoration)...)
-                    println(buf, _styled_html("th", "", style))
+                    println(buf, "<th></th>")
                 end
             end
 
@@ -144,19 +139,6 @@ function _pt_html(io, pinfo;
 
                 # Alignment of this cell.
                 style = Dict{String,String}("text-align" => _html_alignment[alignment[j]])
-
-                if i == 1
-                    merge!(style, Dict(header_decoration))
-
-                    if header_num_rows != 1
-                        style["border-bottom"] = "0"
-                    end
-                else
-                    merge!(style, Dict(subheader_decoration))
-
-                    style["border-bottom"] = "0"
-                    style["border-top"]    = "0"
-                end
 
                 println(buf, _styled_html("th", header_str[i,j], style))
             end
@@ -174,8 +156,7 @@ function _pt_html(io, pinfo;
         println(buf, "<tr>")
 
         if show_row_number
-            style = Dict{String,String}("text-align" => "right")
-            println(buf, _styled_html("td", string(ir), style))
+            println(buf, "<td class = rowNumber>" * string(ir) * "</td>")
         end
 
         for j = 1:num_printed_cols

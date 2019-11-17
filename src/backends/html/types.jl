@@ -44,8 +44,6 @@ compatible with the corresponding HTML property.
 
 # Fields
 
-* `border_color`: Color and type of the table border.
-* `border_size`: Size of the table border.
 * `css`: CSS to be injected at the end of the `<style>` section.
 * `header_colors`: A tuple with the foreground and background colors of the
                    header.
@@ -55,11 +53,15 @@ compatible with the corresponding HTML property.
 
 """
 @with_kw struct HTMLTableFormat
-    border_color::String = ""
-    border_size::String = ""
     css::String = """
-    table {
+    table, td, th {
+        border-collapse: collapse;
         font-family: sans-serif;
+    }
+
+    td, th {
+        border-bottom: 0;
+        padding: 4px
     }
 
     tr:nth-child(odd) {
@@ -69,9 +71,22 @@ compatible with the corresponding HTML property.
     tr:nth-child(even) {
         background: #fff;
     }
+
+    tr.header {
+        background: navy;
+        color: white;
+        font-weight: bold;
+    }
+
+    tr.subheader, tr.subheaderLastRow {
+        background: lightgray;
+        color: black;
+    }
+
+    th.rowNumber, td.rowNumber {
+        text-align: right;
+    }
     """
-    header_decoration::HTMLDecoration    = HTMLDecoration(color = "white", background = "navy")
-    subheader_decoration::HTMLDecoration = HTMLDecoration(color = "black", background = "lightgray")
     table_width::String = ""
 end
 
