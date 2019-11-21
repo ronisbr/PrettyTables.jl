@@ -1,6 +1,25 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 0.7.0
+-------------
+
+- ![Feature][badge-feature] The keyword `columns_width` can be used to select
+  the desired width for each column.
+- ![Feature][badge-feature] Add the possibility to automatically wrap the table
+  cells when using the text back-end and the column size is fixed. This can be
+  triggered by the keyword `autowrap`. (Issue [#21][gh-issue-21])
+- ![Feature][badge-feature] Initial version of HTML back-end. Notice that this
+  is the first version with a minimal set of features. This implementation
+  should be considered beta.
+- ![Bugfix][badge-bugfix] The character `"` is not escaped anymore when printing
+  cells of type `AbstractString`. (Issue [#22][gh-issue-22])
+- ![Deprecation][badge-deprecation] When using the text back-end, passing the
+  table format as an option to `pretty_table` function is now deprecated. The
+  table format in all back-ends must be passed using the keyword `tf`. Thus, for
+  example, `pretty_table(data, unicode_rounded)` must be converted to
+  `pretty_table(data, tf = unicode_rounded)`.
+
 Version 0.6.0
 -------------
 
@@ -154,6 +173,8 @@ Version 0.1.0
 [gh-issue-15]: https://github.com/ronisbr/PrettyTables.jl/issues/15
 [gh-issue-16]: https://github.com/ronisbr/PrettyTables.jl/issues/16
 [gh-issue-19]: https://github.com/ronisbr/PrettyTables.jl/issues/19
+[gh-issue-21]: https://github.com/ronisbr/PrettyTables.jl/issues/21
+[gh-issue-22]: https://github.com/ronisbr/PrettyTables.jl/issues/22
 
 [gh-pr-5]: https://github.com/ronisbr/PrettyTables.jl/pull/5
 [gh-pr-8]: https://github.com/ronisbr/PrettyTables.jl/pull/8
