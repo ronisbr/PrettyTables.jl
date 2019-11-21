@@ -37,6 +37,7 @@ include("backends/text/print.jl")
 include("backends/text/private.jl")
 
 # HTML backend
+include("backends/html/predefined_formats.jl")
 include("backends/html/predefined_highlighters.jl")
 include("backends/html/print.jl")
 include("backends/html/private.jl")

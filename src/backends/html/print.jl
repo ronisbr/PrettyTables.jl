@@ -8,7 +8,7 @@
 
 # Low-level function to print the table using the text backend.
 function _pt_html(io, pinfo;
-                  table_format::HTMLTableFormat = HTMLTableFormat(),
+                  table_format::HTMLTableFormat = html_default,
                   cell_alignment::Dict{Tuple{Int,Int},Symbol} = Dict{Tuple{Int,Int},Symbol}(),
                   formatter::Dict = Dict(),
                   highlighters::Union{HTMLHighlighter,Tuple} = (),
