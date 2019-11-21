@@ -37,15 +37,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Home",
     "title": "Manual outline",
     "category": "section",
-    "text": "Pages = [\n    \"man/usage.md\"\n    \"man/text_backend.md\"\n    \"man/html_backend.md\"\n    \"man/alignment.md\"\n    \"man/filters.md\"\n    \"man/formatter.md\"\n    \"man/text_examples.md\"\n    \"man/html_examples.md\"\n]\nDepth = 2"
-},
-
-{
-    "location": "#Library-documentation-1",
-    "page": "Home",
-    "title": "Library documentation",
-    "category": "section",
-    "text": "Pages = [\"lib/library.md\"]"
+    "text": "Pages = [\n    \"man/usage.md\"\n    \"man/text_backend.md\"\n    \"man/html_backend.md\"\n    \"man/alignment.md\"\n    \"man/filters.md\"\n    \"man/formatter.md\"\n    \"man/text_examples.md\"\n    \"man/html_examples.md\"\n    \"lib/library.md\"\n]\nDepth = 2"
 },
 
 {
@@ -246,6 +238,334 @@ var documenterSearchIndex = {"docs": [
     "title": "HTML back-end examples",
     "category": "section",
     "text": "CurrentModule = PrettyTables\nDocTestSetup = quote\n    using PrettyTables\nendComing soon..."
+},
+
+{
+    "location": "lib/library/#",
+    "page": "Library",
+    "title": "Library",
+    "category": "page",
+    "text": ""
+},
+
+{
+    "location": "lib/library/#PrettyTables.HTMLDecoration",
+    "page": "Library",
+    "title": "PrettyTables.HTMLDecoration",
+    "category": "type",
+    "text": "struct HTMLDecoration\n\nStructure that defines parameters to decorate a table cell.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables.HTMLHighlighter",
+    "page": "Library",
+    "title": "PrettyTables.HTMLHighlighter",
+    "category": "type",
+    "text": "struct HTMLHighlighter\n\nDefines the default highlighter of a table when using the html backend.\n\nFields\n\nf: Function with the signature f(data,i,j) in which should return true      if the element (i,j) in data must be highlighter, or false      otherwise.\nfd: Function with the signature f(h,data,i,j) in which h is the       highlighter. This function must return the HTMLDecoration to be       applied to the cell that must be highlighted.\ndecoration: The HTMLDecoration to be applied to the highlighted cell if               the default fd is used.\n\nRemarks\n\nThis structure can be constructed using two helpers:\n\nHTMLHighlighter(f::Function, decoration::HTMLDecoration)\n\nHTMLHighlighter(f::Function, fd::Function)\n\nThe first will apply a fixed decoration to the highlighted cell specified in decoration whereas the second let the user select the desired decoration by specifying the function fd.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables.HTMLTableFormat",
+    "page": "Library",
+    "title": "PrettyTables.HTMLTableFormat",
+    "category": "type",
+    "text": "struct HTMLTableFormat\n\nFormat that will be used to print the HTML table. All parameters are strings compatible with the corresponding HTML property.\n\nFields\n\ncss: CSS to be injected at the end of the <style> section.\ntable_width: Table width.\n\nRemarks\n\nBesides the usual HTML tags related to the tables (table, td,th,tr, etc.), there are three important classes that can be used to format tables using the variablecss`.\n\nheader: This is the class of the header (first line).\nsubheader: This is the class of the sub-headers (all the rest of the lines              in the header section).\nheaderLastRow: The last row of the header section has additionally this                  class.\nrowNumber: All the cells related to the row number has this class. Thus, the              row number header can be styled using th.rowNumber and the row              numbers cells can be styled using td.rowNumber.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables.Highlighter",
+    "page": "Library",
+    "title": "PrettyTables.Highlighter",
+    "category": "type",
+    "text": "struct Highlighter\n\nDefines the highlighter of a table when using the text backend.\n\nFileds\n\nf: Function with the signature f(data,i,j) in which should return true      if the element (i,j) in data must be highlighter, or false      otherwise.\ncrayon: Crayon with the style of a highlighted element.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables.Highlighter-Tuple{Any}",
+    "page": "Library",
+    "title": "PrettyTables.Highlighter",
+    "category": "method",
+    "text": "function Highlighter(f; kwargs...)\n\nConstruct a Highlighter with activation function f and pass all the keyword arguments kwargs to Crayon.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables.TextFormat",
+    "page": "Library",
+    "title": "PrettyTables.TextFormat",
+    "category": "type",
+    "text": "struct TextFormat\n\nFields\n\nup_right_corner: Character in the up right corner.\nup_left_corner: Character in the up left corner.\nbottom_left_corner: Character in the bottom left corner.\nbottom_right_corner: Character in the bottom right corner.\nup_intersection: Character in the intersection of lines in the up part.\nleft_intersection: Character in the intersection of lines in the left part.\nright_intersection: Character in the intersection of lines in the right                       part.\nmiddle_intersection: Character in the intersection of lines in the middle of                        the table.\nbottom_intersection: Character in the intersection of the lines in the                        bottom part.\ncolumn: Character in a vertical line.\nrow: Character in a horizontal line.\ntop_line: If true, then the top table line will be drawn.\nheader_line: If true, then the line between the header and the data will                be drawn.\nbottom_line: If true, then the bottom table line will be drawn.\n\nPre-defined formats\n\nThe following pre-defined formats are available: unicode (default), mysql, compact, markdown, simple, ascii_rounded, and ascii_dots.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables.ft_printf-Tuple{String}",
+    "page": "Library",
+    "title": "PrettyTables.ft_printf",
+    "category": "method",
+    "text": "function ft_printf(ftv_str, [columns])\n\nApply the formats ftv_str (see the function sprintf1 of the package Formatting.jl) to the elements in the columns columns.\n\nIf ftv_str is a Vector, then columns must be also be a Vector with the same number of elements. If ftv_str is a String, and columns is not specified (or is empty), then the format will be applied to the entire table. Otherwise, if ftv_str is a String and columns is a Vector, then the format will be applied only to the columns in columns.\n\nRemarks\n\nThis formatter will be applied only to the cells that are of type Number.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables.ft_round-Tuple{Int64}",
+    "page": "Library",
+    "title": "PrettyTables.ft_round",
+    "category": "method",
+    "text": "function ft_round(digits, [columns])\n\nRound the elements in the columns columns to the number of digits in digits.\n\nIf digits is a Vector, then columns must be also be a Vector with the same number of elements. If digits is a Number, and columns is not specified (or is empty), then the rounding will be applied to the entire table. Otherwise, if digits is a Number and columns is a Vector, then the elements in the columns columns will be rounded to the number of digits digits.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables.hl_cell-Tuple{Number,Number,Crayon}",
+    "page": "Library",
+    "title": "PrettyTables.hl_cell",
+    "category": "method",
+    "text": "function hl_cell(i::Number, j::Number, crayon::Crayon)\n\nHighlight the cell (i,j) with the crayon crayon.\n\nfunction hl_cell(cells::AbstractVector{NTuple(2,Int)}, crayon::Crayon)\n\nHighlights all the cells in cells with the crayon crayon.\n\nRemarks\n\nThose functions return a Highlighter to be used with the text backend.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables.hl_cell-Tuple{Number,Number,HTMLDecoration}",
+    "page": "Library",
+    "title": "PrettyTables.hl_cell",
+    "category": "method",
+    "text": "hl_cell(i::Number, j::Number, decoration::HTMLDecoration)\n\nHighlight the cell (i,j) with the decoration decoration (see HTMLDecoration).\n\nfunction hl_cell(cells::AbstractVector{NTuple(2,Int)}, decoration::HTMLDecoration)\n\nHighlights all the cells in cells with the decoration decoration (see HTMLDecoration).\n\nRemarks\n\nThose functions return a HTMLHighlighter to be used with the HTML backend.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables.hl_col-Tuple{Number,Crayon}",
+    "page": "Library",
+    "title": "PrettyTables.hl_col",
+    "category": "method",
+    "text": "function hl_col(i::Number, crayon::Crayon)\n\nHighlight the entire column i with the crayon crayon.\n\nfunction hl_col(cols::AbstractVector{Int}, crayon::Crayon)\n\nHighlights all the columns in cols with the crayon crayon.\n\nRemarks\n\nThose functions return a Highlighter to be used with the text backend.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables.hl_col-Tuple{Number,HTMLDecoration}",
+    "page": "Library",
+    "title": "PrettyTables.hl_col",
+    "category": "method",
+    "text": "function hl_col(i::Number, decoration::HTMLDecoration)\n\nHighlight the entire column i with the decoration decoration.\n\nfunction hl_col(cols::AbstractVector{Int}, decoration::HTMLDecoration)\n\nHighlights all the columns in cols with the decoration decoration.\n\nRemarks\n\nThose functions return a HTMLHighlighter to be used with the HTML backend.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables.hl_geq-Tuple{Number,HTMLDecoration}",
+    "page": "Library",
+    "title": "PrettyTables.hl_geq",
+    "category": "method",
+    "text": "function hl_geq(n::Number, decoration::HTMLDecoration)\n\nHighlight all elements that ≥ n using the decoration decoration.\n\nRemarks\n\nThose functions return a HTMLHighlighter to be used with the text backend.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables.hl_geq-Tuple{Number}",
+    "page": "Library",
+    "title": "PrettyTables.hl_geq",
+    "category": "method",
+    "text": "function hl_geq(n::Number)\n\nHighlight all elements that ≥ n.\n\nRemarks\n\nThose functions return a Highlighter to be used with the text backend.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables.hl_gt-Tuple{Number,HTMLDecoration}",
+    "page": "Library",
+    "title": "PrettyTables.hl_gt",
+    "category": "method",
+    "text": "hl_gt(n::Number, decoration::HTMLDecoration)\n\nHighlight all elements that > n using the decoration decoration.\n\nRemarks\n\nThose functions return a HTMLHighlighter to be used with the text backend.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables.hl_gt-Tuple{Number}",
+    "page": "Library",
+    "title": "PrettyTables.hl_gt",
+    "category": "method",
+    "text": "function hl_gt(n::Number)\n\nHighlight all elements that > n.\n\nRemarks\n\nThose functions return a Highlighter to be used with the text backend.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables.hl_leq-Tuple{Number,HTMLDecoration}",
+    "page": "Library",
+    "title": "PrettyTables.hl_leq",
+    "category": "method",
+    "text": "hl_leq(n::Number, decoration::HTMLDecoration)\n\nHighlight all elements that ≤ n using the decoration decoration.\n\nRemarks\n\nThose functions return a HTMLHighlighter to be used with the text backend.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables.hl_leq-Tuple{Number}",
+    "page": "Library",
+    "title": "PrettyTables.hl_leq",
+    "category": "method",
+    "text": "function hl_leq(n::Number)\n\nHighlight all elements that ≤ n.\n\nRemarks\n\nThose functions return a Highlighter to be used with the text backend.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables.hl_lt-Tuple{Number,HTMLDecoration}",
+    "page": "Library",
+    "title": "PrettyTables.hl_lt",
+    "category": "method",
+    "text": "hl_lt(n::Number, decoration::HTMLDecoration)\n\nHighlight all elements that < n using the decoration decoration.\n\nRemarks\n\nThose functions return a HTMLHighlighter to be used with the text backend.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables.hl_lt-Tuple{Number}",
+    "page": "Library",
+    "title": "PrettyTables.hl_lt",
+    "category": "method",
+    "text": "function hl_lt(n::Number)\n\nHighlight all elements that < n.\n\nRemarks\n\nThose functions return a Highlighter to be used with the text backend.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables.hl_row-Tuple{Number,Crayon}",
+    "page": "Library",
+    "title": "PrettyTables.hl_row",
+    "category": "method",
+    "text": "function hl_row(i::Number, crayon::Crayon)\n\nHighlight the entire row i with the crayon crayon.\n\nfunction hl_row(rows::AbstractVector{Int}, crayon::Crayon)\n\nHighlights all the rows in rows with the crayon crayon.\n\nRemarks\n\nThose functions return a Highlighter to be used with the text backend.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables.hl_row-Tuple{Number,HTMLDecoration}",
+    "page": "Library",
+    "title": "PrettyTables.hl_row",
+    "category": "method",
+    "text": "function hl_row(i::Number, decoration::HTMLDecoration)\n\nHighlight the entire row i with the decoration decoration.\n\nfunction hl_row(rows::AbstractVector{Int}, decoration::HTMLDecoration)\n\nHighlights all the rows in rows with the decoration decoration.\n\nRemarks\n\nThose functions return a HTMLHighlighter to be used with the HTML backend.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables.hl_value-Tuple{Any,HTMLDecoration}",
+    "page": "Library",
+    "title": "PrettyTables.hl_value",
+    "category": "method",
+    "text": "function hl_value(v::Any, decoration::HTMLDecoration)\n\nHighlight all the values that matches data[i,j] == v using the decoration decoration.\n\nRemarks\n\nThose functions return a HTMLHighlighter to be used with the text backend.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables.hl_value-Tuple{Any}",
+    "page": "Library",
+    "title": "PrettyTables.hl_value",
+    "category": "method",
+    "text": "function hl_value(v::Any)\n\nHighlight all the values that matches data[i,j] == v.\n\nRemarks\n\nThose functions return a Highlighter to be used with the text backend.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables.pretty_table-Union{Tuple{T2}, Tuple{T1}, Tuple{Union{AbstractArray{T1,1}, AbstractArray{T1,2}},Union{AbstractArray{T2,1}, AbstractArray{T2,2}}}} where T2 where T1",
+    "page": "Library",
+    "title": "PrettyTables.pretty_table",
+    "category": "method",
+    "text": "function pretty_table([io::IO,] data::AbstractVecOrMat{T1}, header::AbstractVecOrMat{T2};  kwargs...) where {T1,T2}\n\nPrint to io the vector or matrix data with header header. If io is omitted, then it defaults to stdout. If header is empty, then it will be automatically filled with \"Col.  i\" for the i-th column.\n\nThe header can be a Vector or a Matrix. If it is a Matrix, then each row will be a header line. The first line is called header and the others are called sub-headers .\n\nfunction pretty_table([io::IO,] data::AbstractVecOrMat{T}; ...) where T\n\nPrint to io the vector or matrix data. If io is omitted, then it defaults to stdout. The header will be automatically filled with \"Col. i\" for the i-th column.\n\nfunction pretty_table([io::IO,] dict::Dict{K,V}; sortkeys = true, ...) where {K,V}\n\nPrint to io the dictionary dict in a matrix form (one column for the keys and other for the values). If io is omitted, then it defaults to stdout.\n\nIn this case, the keyword sortkeys can be used to select whether or not the user wants to print the dictionary with the keys sorted. If it is false, then the elements will be printed on the same order returned by the functions keys and values. Notice that this assumes that the keys are sortable, if they are not, then an error will be thrown.\n\nfunction pretty_table([io::IO,] table; ...)\n\nPrint to io the table table. In this case, table must comply with the API of Tables.jl. If io is omitted, then it defaults to stdout.\n\nKeywords\n\nalignment: Select the alignment of the columns (see the section Alignment).\nbackend: Select which back-end will be used to print the table (see the            section Backend). Notice that the additional configuration in            kwargs... depends on the selected backend. (see the section            Backend).\nfilters_row: Filters for the rows (see the section Filters).\nfilters_col: Filters for the columns (see the section Filters).\n\nAlignment\n\nThe keyword alignment can be a Symbol or a vector of Symbol.\n\nIf it is a symbol, we have the following behavior:\n\n:l or :L: the text of all columns will be left-aligned;\n:c or :C: the text of all columns will be center-aligned;\n:r or :R: the text of all columns will be right-aligned;\nOtherwise it defaults to :r.\n\nIf it is a vector, then it must have the same number of symbols as the number of columns in data. The i-th symbol in the vector specify the alignment of the i-th column using the same symbols as described previously.\n\nFilters\n\nIt is possible to specify filters to filter the data that will be printed. There are two types of filters: the row filters, which are specified by the keyword filters_row, and the column filters, which are specified by the keyword filters_col.\n\nThe filters are a tuple of functions that must have the following signature:\n\nf(data,i)::Bool\n\nin which data is a pointer to the matrix that is being printed and i is the i-th row in the case of the row filters or the i-th column in the case of column filters. If this function returns true for i, then the i-th row (in case of filters_row) or the i-th column (in case of filters_col) will be printed. Otherwise, it will be omitted.\n\nA set of filters can be passed inside of a tuple. Notice that, in this case, all filters for a specific row or column must be return true so that it can be printed, i.e the set of filters has an AND logic.\n\nIf the keyword is set to nothing, which is the default, then no filtering will be applied to the data.\n\nnote: Note\nThe filters do not change the row and column numbering for the others modifiers such as column width specification, formatters, and highlighters. Thus, for example, if only the 4-th row is printed, then it will also be referenced inside the formatters and highlighters as 4 instead of 1.\n\n\n\nPretty table text back-end\n\nThis back-end produces text tables. This back-end can be used by selecting back-end = :text.\n\nKeywords\n\nborder_crayon: Crayon to print the border.\nheader_crayon: Crayon to print the header.\nsubheaders_crayon: Crayon to print sub-headers.\nrownum_header_crayon: Crayon for the header of the column with the row                         numbers.\ntext_crayon: Crayon to print default text.\nautowrap: If true, then the text will be wrapped on spaces to fit the             column. Notice that this function requires linebreaks = true and             the column must have a fixed size (see columns_width).\ncell_alignment: A dictionary of type (i,j) => a that overrides that                   alignment of the cell (i,j) to a regardless of the                   columns alignment selected. a must be a symbol like                   specified in the section Alignment.\ncolumns_width: A set of integers specifying the width of each column. If the                  width is equal or lower than 0, then it will be automatically                  computed to fit the large cell in the column. If it is                  a single integer, then this number will be used as the size                  of all columns. (Default = 0)\ncrop: Select the printing behavior when the data is bigger than the         available screen size (see screen_size). It can be :both to crop         on vertical and horizontal direction, :horizontal to crop only on         horizontal direction, :vertical to crop only on vertical direction,         or :none to do not crop the data at all.\nformatter: See the section Formatter.\nhighlighters: An instance of Highlighter or a tuple with a list of                 text highlighters (see the section Text highlighters).\nhlines: A vector of Int indicating row numbers in which an additional           horizontal line should be drawn after the row. Notice that numbers           lower than 1 and equal or higher than the number of rows will be           neglected.\nhlines_format: A tuple of 4 characters specifying the format of the                  horizontal lines. The characters must be the left                  intersection, the middle intersection, the right                  intersection, and the row. If it is nothing, then it will                  use the same format specified in tf.                  (Default = nothing)\nlinebreaks: If true, then \\n will break the line inside the cells.               (Default = false)\nnoheader: If true, then the header will not be printed. Notice that all             keywords and parameters related to the header and sub-headers will             be ignored. (Default = false)\nnosubheader: If true, then the sub-header will not be printed, i.e. the                header will contain only one line. Notice that this option has                no effect if noheader = true. (Default = false)\nsame_column_size: If true, then all the columns will have the same size.                     (Default = false)\nscreen_size: A tuple of two integers that defines the screen size (num. of                rows, num. of columns) that is available to print the table. It                is used to crop the data depending on the value of the keyword                crop. If it is nothing, then the size will be obtained                automatically. Notice that if a dimension is not positive, then                it will be treated as unlimited. (Default = nothing)\nshow_row_number: If true, then a new column will be printed showing the                    row number. (Default = false)\ntf: Table format used to print the table (see TextFormat).       (Default = unicode)\n\nThe keywords header_crayon and subheaders_crayon can be a Crayon or a Vector{Crayon}. In the first case, the Crayon will be applied to all the elements. In the second, each element can have its own crayon, but the length of the vector must be equal to the number of columns in the data.\n\nCrayons\n\nA Crayon is an object that handles a style for text printed on terminals. It is defined in the package Crayons.jl. There are many options available to customize the style, such as foreground color, background color, bold text, etc.\n\nA Crayon can be created in two different ways:\n\njulia> Crayon(foreground = :blue, background = :black, bold = :true)\n\njulia> crayon\"blue bg:black bold\"\n\nFor more information, see the package documentation.\n\nText highlighters\n\nA set of highlighters can be passed as a Tuple to the highlighter keyword. Each highlighter is an instance of the structure Highlighter that contains two fields:\n\nf: Function with the signature f(data,i,j) in which should return true      if the element (i,j) in data must be highlighted, or false      otherwise.\ncrayon: Crayon with the style of a highlighted element.\n\nThe function f has the following signature:\n\nf(data, i, j)\n\nin which data is a reference to the data that is being printed, i and j are the element coordinates that are being tested. If this function returns true, then the highlight style will be applied to the (i,j) element. Otherwise, the default style will be used.\n\nNotice that if multiple highlighters are valid for the element (i,j), then the applied style will be equal to the first match considering the order in the Tuple highlighters.\n\nIf only a single highlighter is wanted, then it can be passed directly to the keyword highlighter without being inside a Tuple.\n\n\n\nPretty table HTML backend\n\nThis backend produces HTML tables. This backend can be used by selecting backend = :html.\n\nKeywords\n\ncell_alignment: A dictionary of type (i,j) => a that overrides that                   alignment of the cell (i,j) to a regardless of the                   columns alignment selected. a must be a symbol like                   specified in the section Alignment.\nformatter: See the section Formatter.\nhighlighters: An instance of HTMLHighlighter or a tuple with a list of                 HTML highlighters (see the section HTML highlighters).\nlinebreaks: If true, then \\n will be replaced by <br>.               (Default = false)\nnoheader: If true, then the header will not be printed. Notice that all             keywords and parameters related to the header and sub-headers will             be ignored. (Default = false)\nnosubheader: If true, then the sub-header will not be printed, i.e. the                header will contain only one line. Notice that this option has                no effect if noheader = true. (Default = false)\nshow_row_number: If true, then a new column will be printed showing the                    row number. (Default = false)\ntf: An instance of the structure HTMLTableFormat that defines the general       format of the HTML table.\n\nHTML highlighters\n\nA set of highlighters can be passed as a Tuple to the highlighter keyword. Each highlighter is an instance of a structure that is a subtype of AbstractHTMLHighlighter. It also must also contain at least the following two fields to comply with the API:\n\nf: Function with the signature f(data,i,j) in which should return true      if the element (i,j) in data must be highlighter, or false      otherwise.\nfd: Function with the signature f(h,data,i,j) in which h is the       highlighter. This function must return the HTMLDecoration to be       applied to the cell that must be highlighted.\n\nThe function f has the following signature:\n\nf(data, i, j)\n\nin which data is a reference to the data that is being printed, i and j are the element coordinates that are being tested. If this function returns true, then the highlight style will be applied to the (i,j) element. Otherwise, the default style will be used.\n\nNotice that if multiple highlighters are valid for the element (i,j), then the applied style will be equal to the first match considering the order in the Tuple highlighters.\n\nIf the function f returns true, then the function fd(h,data,i,j) will be called and must return an element of type HTMLDecoration that contains the decoration to be applied to the cell.\n\nIf only a single highlighter is wanted, then it can be passed directly to the keyword highlighter without being inside a Tuple.\n\n\n\nFormatter\n\nThe keyword formatter can be used to pass functions to format the values in the columns. It must be a Dict{Number,Function}(). The key indicates the column number in which its elements will be converted by the function in the value of the dictionary. The function must have the following signature:\n\nf(value, i)\n\nin which value is the data and i is the row number. It must return the formatted value.\n\nFor example, if we want to multiply all values in odd rows of the column 2 by π, then the formatter should look like:\n\nDict(2 => (v,i)->isodd(i) ? v*π : v)\n\nIf the key 0 is present, then the corresponding function will be applied to all columns that does not have a specific key.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables.@pt-Tuple",
+    "page": "Library",
+    "title": "PrettyTables.@pt",
+    "category": "macro",
+    "text": "macro pt(expr...)\n\nPretty print tables in expr to stdout using the global configurations selected with the macro @ptconf.\n\nMultiple tables can be printed by passing multiple expressions like:\n\n@pt table1 table2 table3\n\nThe user can select the table header by passing the expression:\n\n:header = [<Vector with the header>]\n\nNotice that the header is valid only for the next printed table. Hence:\n\n@pt :header = header1 table1 :header = header2 table2 table3\n\nwill print table1 using header1, table2 using header2, and table3 using the default header.\n\nExamples\n\njulia> @ptconf tf = simple\n\njulia> @pt :header = [\"Time\",\"Velocity\"] [1:1:10 ones(10)] :header = [\"Time\",\"Position\"] [1:1:10 1:1:10]\n======= ===========\n  Time   Velocity\n======= ===========\n   1.0        1.0\n   2.0        1.0\n   3.0        1.0\n   4.0        1.0\n   5.0        1.0\n   6.0        1.0\n   7.0        1.0\n   8.0        1.0\n   9.0        1.0\n  10.0        1.0\n======= ===========\n======= ===========\n  Time   Position\n======= ===========\n     1          1\n     2          2\n     3          3\n     4          4\n     5          5\n     6          6\n     7          7\n     8          8\n     9          9\n    10         10\n======= ===========\n\njulia> @pt ones(3,3) + I + [1 2 3; 4 5 6; 7 8 9]\n========= ======== =========\n  Col. 1   Col. 2   Col. 3\n========= ======== =========\n     3.0      3.0      4.0\n     5.0      7.0      7.0\n     8.0      9.0     11.0\n========= ======== =========\n\nRemarks\n\nWhen more than one table is passed to this macro, then multiple calls to pretty_table will occur. Hence, the cropping algorithm will behave exactly the same as printing the tables separately.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables.@ptconf-Tuple",
+    "page": "Library",
+    "title": "PrettyTables.@ptconf",
+    "category": "macro",
+    "text": "macro ptconf(expr...)\n\nAdd configurations in expr to be used with the macro @pt.\n\nThe expression format must be:\n\nkeyword1 = value1 keyword2 = value2 ...\n\nin which the keywords can be any other possible keyword that can be used in the function pretty_table.\n\nwarning: Warning\nIf a keyword is not supported by the function pretty_table, then no error message is printed when calling @ptconf. However, an error will be thrown when @pt is called.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables.@ptconfclean-Tuple{}",
+    "page": "Library",
+    "title": "PrettyTables.@ptconfclean",
+    "category": "macro",
+    "text": "macro @ptconfclean()\n\nClean all global configurations to pretty print tables using the macro @pt.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables.AbstractHTMLHighlighter",
+    "page": "Library",
+    "title": "PrettyTables.AbstractHTMLHighlighter",
+    "category": "type",
+    "text": "abstract type AbstractHTMLHighlighter\n\nAll HTLM highlighters must be a subtype of AbstractHTMLHighlighter. They API dictates that they must implement two functions:\n\nf: Function with the signature f(data,i,j) in which should return true      if the element (i,j) in data must be highlighter, or false      otherwise.\nfd: Function with the signature f(h,data,i,j) in which h is the       highlighter. This function must return the HTMLDecoration to be       applied to the cell that must be highlighted.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables.PrintInfo",
+    "page": "Library",
+    "title": "PrettyTables.PrintInfo",
+    "category": "type",
+    "text": "struct PrintInfo{Td,Th}\n\nThis structure stores the information required so that the backends can print the tables.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables.Screen",
+    "page": "Library",
+    "title": "PrettyTables.Screen",
+    "category": "type",
+    "text": "mutable struct Screen\n\nStore the information of the screen and the current cursor position. Notice that this is not the real cursor position with respect to the screen, but with respect to the point in which the table is printed.\n\nFields\n\nsize: Screen size.\nrow: Current row.\ncol: Current column.\nhas_color: Indicates if the screen has color support.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables._draw_continuation_row-NTuple{9,Any}",
+    "page": "Library",
+    "title": "PrettyTables._draw_continuation_row",
+    "category": "method",
+    "text": "function _draw_continuation_row(screen, io, tf, text_crayon, border_crayon, num_printed_cols, cols_width, show_row_number, row_number_width)\n\nDraw the continuation row when the table has filled the vertical space available. This function prints in each column the character ⋮ centered.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables._draw_line!-NTuple{11,Any}",
+    "page": "Library",
+    "title": "PrettyTables._draw_line!",
+    "category": "method",
+    "text": "function _draw_line!(screen, io, left, intersection, right, row, border_crayon, num_cols, cols_width, show_row_number, row_number_width)\n\nDraw a vertical line in io using the information in screen.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables._eol-Tuple{Any}",
+    "page": "Library",
+    "title": "PrettyTables._eol",
+    "category": "method",
+    "text": "function _eol(screen)\n\nReturn true if the cursor is at the end of line or false otherwise.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables._nl!-Tuple{Any,Any}",
+    "page": "Library",
+    "title": "PrettyTables._nl!",
+    "category": "method",
+    "text": "function _nl!(screen, io)\n\nAdd a new line into io using the screen information in screen.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables._p!",
+    "page": "Library",
+    "title": "PrettyTables._p!",
+    "category": "function",
+    "text": "function _p!(screen, io, crayon, str, final_line_print = false)\n\nPrint str into io using the Crayon crayon with the screen information in screen. The parameter final_line_print must be set to true if this is the last string that will be printed in the line. This is necessary for the algorithm to select whether or not to include the continuation character.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables._str_aligned-Tuple{AbstractString,Symbol,Integer}",
+    "page": "Library",
+    "title": "PrettyTables._str_aligned",
+    "category": "method",
+    "text": "function _str_aligned(data::AbstractString, alignment::Symbol, field_size::Integer)\n\nThis function returns the string data with alignment alignment in a field with size field_size. alignment can be :l or :L for left alignment, :c or :C for center alignment, or :r or :R for right alignment. It defaults to :r if alignment is any other symbol.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables._str_escaped-Tuple{AbstractString}",
+    "page": "Library",
+    "title": "PrettyTables._str_escaped",
+    "category": "method",
+    "text": "function _str_escaped(str::AbstractString)\n\nReturn the escaped string representation of str.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables._str_line_breaks",
+    "page": "Library",
+    "title": "PrettyTables._str_line_breaks",
+    "category": "function",
+    "text": "function _str_line_breaks(str::AbstractString, autowrap::Bool = false, width::Int = 0)\n\nSplit the string str into substring, each one meaning one new line. If autowrap is true, then the text will be wrapped so that it fits the column with the width width.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#Library-1",
+    "page": "Library",
+    "title": "Library",
+    "category": "section",
+    "text": "Documentation for PrettyTables.jl.Modules = [PrettyTables]"
 },
 
 ]}
