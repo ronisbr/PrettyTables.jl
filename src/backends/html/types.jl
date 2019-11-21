@@ -58,9 +58,9 @@ the variable `css`.
                in the header section).
 * `headerLastRow`: The last row of the header section has additionally this
                    class.
-* `rowNumber`: All the cells related to the row number has this class. Thus, the
-               row number header can be styled using `th.rowNumber` and the row
-               numbers cells can be styled using `td.rowNumber`.
+* `rowNumber`: All the cells related to the row number have this class. Thus,
+               the row number header can be styled using `th.rowNumber` and the
+               row numbers cells can be styled using `td.rowNumber`.
 
 """
 @with_kw struct HTMLTableFormat
