@@ -228,8 +228,6 @@ This backend produces HTML tables. This backend can be used by selecting
 
 # Keywords
 
-* `table_format`: An instance of the structure `HTMLTableFormat` that defines
-                  the general format of the HTML table.
 * `cell_alignment`: A dictionary of type `(i,j) => a` that overrides that
                     alignment of the cell `(i,j)` to `a` regardless of the
                     columns alignment selected. `a` must be a symbol like
@@ -247,6 +245,8 @@ This backend produces HTML tables. This backend can be used by selecting
                  no effect if `noheader = true`. (**Default** = `false`)
 * `show_row_number`: If `true`, then a new column will be printed showing the
                      row number. (**Default** = `false`)
+* `tf`: An instance of the structure `HTMLTableFormat` that defines the general
+        format of the HTML table.
 
 ## HTML highlighters
 

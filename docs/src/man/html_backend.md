@@ -11,8 +11,6 @@ end
 The following options are available when the HTML backend is used. Those can be
 passed as keywords when calling the function [`pretty_table`](@ref):
 
-* `table_format`: An instance of the structure [`HTMLTableFormat`](@ref) that
-                  defines the general format of the HTML table.
 * `cell_alignment`: A dictionary of type `(i,j) => a` that overrides that
                     alignment of the cell `(i,j)` to `a` regardless of the
                     columns alignment selected. `a` must be a symbol like
@@ -31,6 +29,8 @@ passed as keywords when calling the function [`pretty_table`](@ref):
                  no effect if `noheader = true`. (**Default** = `false`)
 * `show_row_number`: If `true`, then a new column will be printed showing the
                      row number. (**Default** = `false`)
+* `tf`: An instance of the structure [`HTMLTableFormat`](@ref) that defines the
+        general format of the HTML table.
 
 ## HTML highlighters
 

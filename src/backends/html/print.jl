@@ -8,7 +8,7 @@
 
 # Low-level function to print the table using the text backend.
 function _pt_html(io, pinfo;
-                  table_format::HTMLTableFormat = html_default,
+                  tf::HTMLTableFormat = html_default,
                   cell_alignment::Dict{Tuple{Int,Int},Symbol} = Dict{Tuple{Int,Int},Symbol}(),
                   formatter::Dict = Dict(),
                   highlighters::Union{HTMLHighlighter,Tuple} = (),
@@ -18,7 +18,7 @@ function _pt_html(io, pinfo;
                   show_row_number::Bool = false)
 
     @unpack_PrintInfo pinfo
-    @unpack_HTMLTableFormat table_format
+    @unpack_HTMLTableFormat tf
 
     # Let's create a `IOBuffer` to write everything and then transfer to `io`.
     buf_io = IOBuffer()
