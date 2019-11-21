@@ -23,7 +23,8 @@ makedocs(
             "Text back-end"  => "man/text_examples.md",
             "HTML back-end"  => "man/html_examples.md",
         ],
-    ],
+        "Library"            => "lib/library.md",
+    ]
 )
 
 deploydocs(

@@ -39,12 +39,7 @@ Pages = [
     "man/formatter.md"
     "man/text_examples.md"
     "man/html_examples.md"
+    "lib/library.md"
 ]
 Depth = 2
-```
-
-## Library documentation
-
-```@index
-Pages = ["lib/library.md"]
 ```
