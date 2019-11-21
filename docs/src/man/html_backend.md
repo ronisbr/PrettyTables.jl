@@ -8,6 +8,16 @@ DocTestSetup = quote
 end
 ```
 
+```@raw html
+<script language="javascript" type="text/javascript">
+ function resizeIframe(obj)
+ {
+   obj.style.height = obj.contentWindow.document.body.scrollHeight + 10 + 'px';
+   obj.style.width = obj.contentWindow.document.body.scrollWidth + 100 + 'px';
+ }
+</script>
+```
+
 The following options are available when the HTML backend is used. Those can be
 passed as keywords when calling the function [`pretty_table`](@ref):
 
@@ -100,167 +110,50 @@ julia> header = ["Time" "Acceleration" "Velocity" "Distance";
 julia> hl_v = HTMLHighlighter( (data,i,j)->(j == 3) && data[i,3] > 9, HTMLDecoration(color = "blue", font_weight = "bold"));
 
 julia> hl_p = HTMLHighlighter( (data,i,j)->(j == 4) && data[i,4] > 10, HTMLDecoration(color = "red"));
+
+julia> hl_e = HTMLHighlighter( (data,i,j)->data[i,1] == 10, HTMLDecoration(background = "black", color = "white"))
+
+julia> pretty_table(data, header, backend = :html, highlighters = (hl_e, hl_p, hl_v))
 ```
 
 ```@raw html
-<!DOCTYPE html>
-<html>
-<meta charset="UTF-8">
-<style>
-table, td, th {
-    border-collapse: collapse
-}
+<iframe src="html_highlighters_example.html" frameborder="0" scrolling="no" onload="javascript:resizeIframe(this)">
+  <p>Your browser does not support iframes. Click <a href="html_highlighters_example.html>here</a> to see the table.</p>
+</iframe>
+```
 
-td, th {
-    border:  ;
-    padding: 6px
-}
-table {
-    font-family: sans-serif;
-}
+## HTML table formats
 
-tr:nth-child(odd) {
-    background: #eee;
-}
+The following table formats are available when using the html back-end:
 
-tr:nth-child(even) {
-    background: #fff;
-}
+`html_default` (**Default**)
 
-</style>
-<body>
-<table>
+```@raw html
+<iframe src="html_format_default.html" frameborder="0" scrolling="no" onload="javascript:resizeIframe(this)">
+  <p>Your browser does not support iframes. Click <a href="html_format_default.html>here</a> to see the table.</p>
+</iframe>
+```
 
-<tr><th style = "color: white; text-align: right; background: navy; ">Col. 1</th>
-<th style = "color: white; text-align: right; background: navy; ">Col. 2</th>
-<th style = "color: white; text-align: right; background: navy; ">Col. 3</th>
-<th style = "color: white; text-align: right; background: navy; ">Col. 4</th>
-</tr>
-<tr>
-<td style = "text-align: right; ">0.0</td>
-<td style = "text-align: right; ">1.0</td>
-<td style = "text-align: right; ">0.0</td>
-<td style = "text-align: right; ">0.0</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">1.0</td>
-<td style = "text-align: right; ">1.0</td>
-<td style = "text-align: right; ">1.0</td>
-<td style = "text-align: right; ">0.5</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">2.0</td>
-<td style = "text-align: right; ">1.0</td>
-<td style = "text-align: right; ">2.0</td>
-<td style = "text-align: right; ">2.0</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">3.0</td>
-<td style = "text-align: right; ">1.0</td>
-<td style = "text-align: right; ">3.0</td>
-<td style = "text-align: right; ">4.5</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">4.0</td>
-<td style = "text-align: right; ">1.0</td>
-<td style = "text-align: right; ">4.0</td>
-<td style = "text-align: right; ">8.0</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">5.0</td>
-<td style = "text-align: right; ">1.0</td>
-<td style = "text-align: right; ">5.0</td>
-<td style = "color: red; text-align: right; ">12.5</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">6.0</td>
-<td style = "text-align: right; ">1.0</td>
-<td style = "text-align: right; ">6.0</td>
-<td style = "color: red; text-align: right; ">18.0</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">7.0</td>
-<td style = "text-align: right; ">1.0</td>
-<td style = "text-align: right; ">7.0</td>
-<td style = "color: red; text-align: right; ">24.5</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">8.0</td>
-<td style = "text-align: right; ">1.0</td>
-<td style = "text-align: right; ">8.0</td>
-<td style = "color: red; text-align: right; ">32.0</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">9.0</td>
-<td style = "text-align: right; ">1.0</td>
-<td style = "text-align: right; ">9.0</td>
-<td style = "color: red; text-align: right; ">40.5</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">10.0</td>
-<td style = "text-align: right; ">1.0</td>
-<td style = "font-weight: bold; color: blue; text-align: right; ">10.0</td>
-<td style = "color: red; text-align: right; ">50.0</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">11.0</td>
-<td style = "text-align: right; ">1.0</td>
-<td style = "font-weight: bold; color: blue; text-align: right; ">11.0</td>
-<td style = "color: red; text-align: right; ">60.5</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">12.0</td>
-<td style = "text-align: right; ">1.0</td>
-<td style = "font-weight: bold; color: blue; text-align: right; ">12.0</td>
-<td style = "color: red; text-align: right; ">72.0</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">13.0</td>
-<td style = "text-align: right; ">1.0</td>
-<td style = "font-weight: bold; color: blue; text-align: right; ">13.0</td>
-<td style = "color: red; text-align: right; ">84.5</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">14.0</td>
-<td style = "text-align: right; ">1.0</td>
-<td style = "font-weight: bold; color: blue; text-align: right; ">14.0</td>
-<td style = "color: red; text-align: right; ">98.0</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">15.0</td>
-<td style = "text-align: right; ">1.0</td>
-<td style = "font-weight: bold; color: blue; text-align: right; ">15.0</td>
-<td style = "color: red; text-align: right; ">112.5</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">16.0</td>
-<td style = "text-align: right; ">1.0</td>
-<td style = "font-weight: bold; color: blue; text-align: right; ">16.0</td>
-<td style = "color: red; text-align: right; ">128.0</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">17.0</td>
-<td style = "text-align: right; ">1.0</td>
-<td style = "font-weight: bold; color: blue; text-align: right; ">17.0</td>
-<td style = "color: red; text-align: right; ">144.5</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">18.0</td>
-<td style = "text-align: right; ">1.0</td>
-<td style = "font-weight: bold; color: blue; text-align: right; ">18.0</td>
-<td style = "color: red; text-align: right; ">162.0</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">19.0</td>
-<td style = "text-align: right; ">1.0</td>
-<td style = "font-weight: bold; color: blue; text-align: right; ">19.0</td>
-<td style = "color: red; text-align: right; ">180.5</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">20.0</td>
-<td style = "text-align: right; ">1.0</td>
-<td style = "font-weight: bold; color: blue; text-align: right; ">20.0</td>
-<td style = "color: red; text-align: right; ">200.0</td>
-</tr>
-</table></body></html>
+`html_dark`
+
+```@raw html
+<iframe src="html_format_dark.html" frameborder="0" scrolling="no" onload="javascript:resizeIframe(this)">
+  <p>Your browser does not support iframes. Click <a href="html_format_dark.html>here</a> to see the table.</p>
+</iframe>
+```
+
+`html_minimalist`
+
+```@raw html
+<iframe src="html_format_minimalist.html" frameborder="0" scrolling="no" onload="javascript:resizeIframe(this)">
+  <p>Your browser does not support iframes. Click <a href="html_format_minimalist.html>here</a> to see the table.</p>
+</iframe>
+```
+
+`html_simple`
+
+```@raw html
+<iframe src="html_format_simple.html" frameborder="0" scrolling="no" onload="javascript:resizeIframe(this)">
+  <p>Your browser does not support iframes. Click <a href="html_format_simple.html>here</a> to see the table.</p>
+</iframe>
 ```

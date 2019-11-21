@@ -32,11 +32,13 @@ julia> Pkg.add("PrettyTables")
 ```@contents
 Pages = [
     "man/usage.md"
-    "man/formats.md"
+    "man/text_backend.md"
+    "man/html_backend.md"
     "man/alignment.md"
+    "man/filters.md"
     "man/formatter.md"
-    "man/highlighters.md"
-    "man/examples.md"
+    "man/text_examples.md"
+    "man/html_examples.md"
 ]
 Depth = 2
 ```
