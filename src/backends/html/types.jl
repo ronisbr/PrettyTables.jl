@@ -73,14 +73,18 @@ compatible with the corresponding HTML property.
     }
 
     tr.header {
-        background: navy;
+        background: navy !important;
         color: white;
         font-weight: bold;
     }
 
-    tr.subheader, tr.subheaderLastRow {
-        background: lightgray;
+    tr.subheader {
+        background: lightgray !important;
         color: black;
+    }
+
+    tr.headerLastRow {
+        border-bottom: 2px solid black;
     }
 
     th.rowNumber, td.rowNumber {

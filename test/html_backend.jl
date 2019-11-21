@@ -42,14 +42,18 @@ tr:nth-child(even) {
 }
 
 tr.header {
-    background: navy;
+    background: navy !important;
     color: white;
     font-weight: bold;
 }
 
-tr.subheader, tr.subheaderLastRow {
-    background: lightgray;
+tr.subheader {
+    background: lightgray !important;
     color: black;
+}
+
+tr.headerLastRow {
+    border-bottom: 2px solid black;
 }
 
 th.rowNumber, td.rowNumber {
@@ -60,7 +64,7 @@ th.rowNumber, td.rowNumber {
 <body>
 <table>
 
-<tr class = header>
+<tr class = "header headerLastRow">
 <th style = "text-align: right; ">Col. 1</th>
 <th style = "text-align: right; ">Col. 2</th>
 <th style = "text-align: right; ">Col. 3</th>
@@ -138,14 +142,18 @@ tr:nth-child(even) {
 }
 
 tr.header {
-    background: navy;
+    background: navy !important;
     color: white;
     font-weight: bold;
 }
 
-tr.subheader, tr.subheaderLastRow {
-    background: lightgray;
+tr.subheader {
+    background: lightgray !important;
     color: black;
+}
+
+tr.headerLastRow {
+    border-bottom: 2px solid black;
 }
 
 th.rowNumber, td.rowNumber {
@@ -156,7 +164,7 @@ th.rowNumber, td.rowNumber {
 <body>
 <table>
 
-<tr class = header>
+<tr class = "header headerLastRow">
 <th style = "text-align: left; ">Col. 1</th>
 <th style = "text-align: left; ">Col. 2</th>
 <th style = "text-align: left; ">Col. 3</th>
@@ -230,14 +238,18 @@ tr:nth-child(even) {
 }
 
 tr.header {
-    background: navy;
+    background: navy !important;
     color: white;
     font-weight: bold;
 }
 
-tr.subheader, tr.subheaderLastRow {
-    background: lightgray;
+tr.subheader {
+    background: lightgray !important;
     color: black;
+}
+
+tr.headerLastRow {
+    border-bottom: 2px solid black;
 }
 
 th.rowNumber, td.rowNumber {
@@ -248,7 +260,7 @@ th.rowNumber, td.rowNumber {
 <body>
 <table>
 
-<tr class = header>
+<tr class = "header headerLastRow">
 <th style = "text-align: center; ">Col. 1</th>
 <th style = "text-align: center; ">Col. 2</th>
 <th style = "text-align: center; ">Col. 3</th>
@@ -323,14 +335,18 @@ tr:nth-child(even) {
 }
 
 tr.header {
-    background: navy;
+    background: navy !important;
     color: white;
     font-weight: bold;
 }
 
-tr.subheader, tr.subheaderLastRow {
-    background: lightgray;
+tr.subheader {
+    background: lightgray !important;
     color: black;
+}
+
+tr.headerLastRow {
+    border-bottom: 2px solid black;
 }
 
 th.rowNumber, td.rowNumber {
@@ -341,7 +357,7 @@ th.rowNumber, td.rowNumber {
 <body>
 <table>
 
-<tr class = header>
+<tr class = "header headerLastRow">
 <th style = "text-align: left; ">Col. 1</th>
 <th style = "text-align: right; ">Col. 2</th>
 <th style = "text-align: center; ">Col. 3</th>
@@ -417,14 +433,18 @@ tr:nth-child(even) {
 }
 
 tr.header {
-    background: navy;
+    background: navy !important;
     color: white;
     font-weight: bold;
 }
 
-tr.subheader, tr.subheaderLastRow {
-    background: lightgray;
+tr.subheader {
+    background: lightgray !important;
     color: black;
+}
+
+tr.headerLastRow {
+    border-bottom: 2px solid black;
 }
 
 th.rowNumber, td.rowNumber {
@@ -435,7 +455,7 @@ th.rowNumber, td.rowNumber {
 <body>
 <table>
 
-<tr class = header>
+<tr class = "header headerLastRow">
 <th style = "text-align: left; ">Col. 1</th>
 <th style = "text-align: right; ">Col. 2</th>
 <th style = "text-align: center; ">Col. 3</th>
@@ -520,14 +540,18 @@ tr:nth-child(even) {
 }
 
 tr.header {
-    background: navy;
+    background: navy !important;
     color: white;
     font-weight: bold;
 }
 
-tr.subheader, tr.subheaderLastRow {
-    background: lightgray;
+tr.subheader {
+    background: lightgray !important;
     color: black;
+}
+
+tr.headerLastRow {
+    border-bottom: 2px solid black;
 }
 
 th.rowNumber, td.rowNumber {
@@ -538,7 +562,7 @@ th.rowNumber, td.rowNumber {
 <body>
 <table>
 
-<tr class = header>
+<tr class = "header headerLastRow">
 <th class = rowNumber>Row</th>
 <th style = "text-align: right; ">Col. 1</th>
 <th style = "text-align: right; ">Col. 3</th>
@@ -593,14 +617,18 @@ tr:nth-child(even) {
 }
 
 tr.header {
-    background: navy;
+    background: navy !important;
     color: white;
     font-weight: bold;
 }
 
-tr.subheader, tr.subheaderLastRow {
-    background: lightgray;
+tr.subheader {
+    background: lightgray !important;
     color: black;
+}
+
+tr.headerLastRow {
+    border-bottom: 2px solid black;
 }
 
 th.rowNumber, td.rowNumber {
@@ -611,7 +639,7 @@ th.rowNumber, td.rowNumber {
 <body>
 <table>
 
-<tr class = header>
+<tr class = "header headerLastRow">
 <th class = rowNumber>Row</th>
 <th style = "text-align: center; ">Col. 1</th>
 <th style = "text-align: left; ">Col. 3</th>
@@ -672,14 +700,18 @@ tr:nth-child(even) {
 }
 
 tr.header {
-    background: navy;
+    background: navy !important;
     color: white;
     font-weight: bold;
 }
 
-tr.subheader, tr.subheaderLastRow {
-    background: lightgray;
+tr.subheader {
+    background: lightgray !important;
     color: black;
+}
+
+tr.headerLastRow {
+    border-bottom: 2px solid black;
 }
 
 th.rowNumber, td.rowNumber {
@@ -690,7 +722,7 @@ th.rowNumber, td.rowNumber {
 <body>
 <table>
 
-<tr class = header>
+<tr class = "header headerLastRow">
 <th style = "text-align: right; ">Col. 1</th>
 <th style = "text-align: right; ">Col. 2</th>
 <th style = "text-align: right; ">Col. 3</th>
@@ -769,14 +801,18 @@ tr:nth-child(even) {
 }
 
 tr.header {
-    background: navy;
+    background: navy !important;
     color: white;
     font-weight: bold;
 }
 
-tr.subheader, tr.subheaderLastRow {
-    background: lightgray;
+tr.subheader {
+    background: lightgray !important;
     color: black;
+}
+
+tr.headerLastRow {
+    border-bottom: 2px solid black;
 }
 
 th.rowNumber, td.rowNumber {
@@ -787,7 +823,7 @@ th.rowNumber, td.rowNumber {
 <body>
 <table>
 
-<tr class = header>
+<tr class = "header headerLastRow">
 <th class = rowNumber>Row</th>
 <th style = "text-align: left; ">Col. 1</th>
 <th style = "text-align: right; ">Col. 2</th>
@@ -882,14 +918,18 @@ tr:nth-child(even) {
 }
 
 tr.header {
-    background: navy;
+    background: navy !important;
     color: white;
     font-weight: bold;
 }
 
-tr.subheader, tr.subheaderLastRow {
-    background: lightgray;
+tr.subheader {
+    background: lightgray !important;
     color: black;
+}
+
+tr.headerLastRow {
+    border-bottom: 2px solid black;
 }
 
 th.rowNumber, td.rowNumber {
@@ -900,7 +940,7 @@ th.rowNumber, td.rowNumber {
 <body>
 <table>
 
-<tr class = header>
+<tr class = "header headerLastRow">
 <th style = "text-align: right; ">Col. 1</th>
 </tr>
 <tr>
@@ -966,14 +1006,18 @@ tr:nth-child(even) {
 }
 
 tr.header {
-    background: navy;
+    background: navy !important;
     color: white;
     font-weight: bold;
 }
 
-tr.subheader, tr.subheaderLastRow {
-    background: lightgray;
+tr.subheader {
+    background: lightgray !important;
     color: black;
+}
+
+tr.headerLastRow {
+    border-bottom: 2px solid black;
 }
 
 th.rowNumber, td.rowNumber {
@@ -984,7 +1028,7 @@ th.rowNumber, td.rowNumber {
 <body>
 <table>
 
-<tr class = header>
+<tr class = "header headerLastRow">
 <th class = rowNumber>Row</th>
 <th style = "text-align: center; ">Col. 1</th>
 </tr>

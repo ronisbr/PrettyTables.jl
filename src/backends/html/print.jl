@@ -116,10 +116,12 @@ function _pt_html(io, pinfo;
 
     if !noheader
         @inbounds @views for i = 1:header_num_rows
-            if i == 1
+            if (i == 1) && (header_num_rows == 1)
+                println(buf, "<tr class = \"header headerLastRow\">")
+            elseif i == 1
                 println(buf, "<tr class = header>")
             elseif i == header_num_rows
-                println(buf, "<tr class = subheaderLastRow>")
+                println(buf, "<tr class = \"subheader headerLastRow\">")
             else
                 println(buf, "<tr class = subheader>")
             end
