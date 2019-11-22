@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Text · Pretty Tables</title><link rel="canonical" href="https://ronisbr.github.io/PrettyTables.jl/stable/man/text_backend/index.html"/><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link href="../../assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><a href="../../index.html"><img class="logo" src="../../assets/logo.png" alt="Pretty Tables logo"/></a><h1>Pretty Tables</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="../../search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="../../">Home</a></li><li><a class="toctext" href="../usage/">Usage</a></li><li><span class="toctext">Back-ends</span><ul><li class="current"><a class="toctext" href>Text</a><ul class="internal"><li><a class="toctext" href="#Crayons-1">Crayons</a></li><li><a class="toctext" href="#Cropping-1">Cropping</a></li><li><a class="toctext" href="#Text-highlighters-1">Text highlighters</a></li><li><a class="toctext" href="#Text-table-formats-1">Text table formats</a></li></ul></li><li><a class="toctext" href="../html_backend/">HTML</a></li></ul></li><li><a class="toctext" href="../alignment/">Alignment</a></li><li><a class="toctext" href="../filters/">Filters</a></li><li><a class="toctext" href="../formatter/">Formatters</a></li><li><span class="toctext">Examples</span><ul><li><a class="toctext" href="../text_examples/">Text back-end</a></li><li><a class="toctext" href="../html_examples/">HTML back-end</a></li></ul></li><li><a class="toctext" href="../../lib/library/">Library</a></li></ul></nav><article id="docs"><header><nav><ul><li>Back-ends</li><li><a href>Text</a></li></ul><a class="edit-page" href="https://github.com/ronisbr/PrettyTables.jl/blob/master/docs/src/man/text_backend.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Text</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Text-back-end-1" href="#Text-back-end-1">Text back-end</a></h1><p>The following options are available when the text backend is used. Those can be passed as keywords when calling the function <code>pretty_table</code>:</p><ul><li><code>border_crayon</code>: Crayon to print the border.</li><li><code>header_crayon</code>: Crayon to print the header.</li><li><code>subheaders_crayon</code>: Crayon to print sub-headers.</li><li><code>rownum_header_crayon</code>: Crayon for the header of the column with the row                         numbers.</li><li><code>text_crayon</code>: Crayon to print default text.</li><li><code>alignment</code>: Select the alignment of the columns (see the section              <a href="../alignment/#Alignment-1">Alignment</a>).</li><li><code>autowrap</code>: If <code>true</code>, then the text will be wrapped on spaces to fit the             column. Notice that this function requires <code>linebreaks = true</code> and             the column must have a fixed size (see <code>columns_width</code>).</li><li><code>cell_alignment</code>: A dictionary of type <code>(i,j) =&gt; a</code> that overrides that                   alignment of the cell <code>(i,j)</code> to <code>a</code> regardless of the                   columns alignment selected. <code>a</code> must be a symbol like                   specified in the section <a href="../alignment/#Alignment-1">Alignment</a>.</li><li><code>columns_width</code>: A set of integers specifying the width of each column. If the                  width is equal or lower than 0, then it will be automatically                  computed to fit the large cell in the column. If it is                  a single integer, then this number will be used as the size                  of all columns. (<strong>Default</strong> = 0)</li><li><code>crop</code>: Select the printing behavior when the data is bigger than the         available screen size (see <code>screen_size</code>). It can be <code>:both</code> to crop         on vertical and horizontal direction, <code>:horizontal</code> to crop only on         horizontal direction, <code>:vertical</code> to crop only on vertical direction,         or <code>:none</code> to do not crop the data at all.</li><li><code>filters_row</code>: Filters for the rows (see the section <a href="../filters/#Filters-1">Filters</a>).</li><li><code>filters_col</code>: Filters for the columns (see the section <a href="../filters/#Filters-1">Filters</a>).</li><li><code>formatter</code>: See the section <a href="../formatter/#Formatter-1">Formatter</a>.</li><li><code>highlighters</code>: An instance of <code>Highlighter</code> or a tuple with a list of                 highlighters (see the section <a href="#Text-highlighters-1">Text highlighters</a>).</li><li><code>hlines</code>: A vector of <code>Int</code> indicating row numbers in which an additional           horizontal line should be drawn after the row. Notice that numbers           lower than 1 and equal or higher than the number of rows will be           neglected.</li><li><code>hlines_format</code>: A tuple of 4 characters specifying the format of the                  horizontal lines. The characters must be the left                  intersection, the middle intersection, the right                  intersection, and the row. If it is <code>nothing</code>, then it will                  use the same format specified in <code>tf</code>.                  (<strong>Default</strong> = <code>nothing</code>)</li><li><code>linebreaks</code>: If <code>true</code>, then <code>\n</code> will break the line inside the cells.               (<strong>Default</strong> = <code>false</code>)</li><li><code>noheader</code>: If <code>true</code>, then the header will not be printed. Notice that all             keywords and parameters related to the header and sub-headers will             be ignored. (<strong>Default</strong> = <code>false</code>)</li><li><code>nosubheader</code>: If <code>true</code>, then the sub-header will not be printed, <em>i.e.</em> the                header will contain only one line. Notice that this option has                no effect if <code>noheader = true</code>. (<strong>Default</strong> = <code>false</code>)</li><li><code>same_column_size</code>: If <code>true</code>, then all the columns will have the same size.                     (<strong>Default</strong> = <code>false</code>)</li><li><code>screen_size</code>: A tuple of two integers that defines the screen size (num. of                rows, num. of columns) that is available to print the table. It                is used to crop the data depending on the value of the keyword                <code>crop</code>. If it is <code>nothing</code>, then the size will be obtained                automatically. Notice that if a dimension is not positive, then                it will be treated as unlimited. (<strong>Default</strong> = <code>nothing</code>)</li><li><code>show_row_number</code>: If <code>true</code>, then a new column will be printed showing the                    row number. (<strong>Default</strong> = <code>false</code>)</li><li><code>tf</code>: Table format used to print the table (see the section       <a href="#Text-table-formats-1">Text table formats</a>). (<strong>Default</strong> = <code>unicode</code>)</li></ul><p>The keywords <code>header_crayon</code> and <code>subheaders_crayon</code> can be a <code>Crayon</code> or a <code>Vector{Crayon}</code>. In the first case, the <code>Crayon</code> will be applied to all the elements. In the second, each element can have its own crayon, but the length of the vector must be equal to the number of columns in the data.</p><h2><a class="nav-anchor" id="Crayons-1" href="#Crayons-1">Crayons</a></h2><p>A <code>Crayon</code> is an object that handles a style for text printed on terminals. It is defined in the package <a href="https://github.com/KristofferC/Crayons.jl">Crayons.jl</a>. There are many options available to customize the style, such as foreground color, background color, bold text, etc.</p><p>A <code>Crayon</code> can be created in two different ways:</p><pre><code class="language-julia-repl">julia&gt; Crayon(foreground = :blue, background = :black, bold = :true)
+
+julia&gt; crayon&quot;blue bg:black bold&quot;</code></pre><p>For more information, see the <a href="https://github.com/KristofferC/Crayons.jl/blob/master/README.md">Crayon.jl documentation</a>.</p><div class="admonition info"><div class="admonition-title">Info</div><div class="admonition-text"><p>The Crayon.jl package is re-exported by PrettyTables.jl. Hence, you do not need <code>using Crayons</code> to create a <code>Crayon</code>.</p></div></div><h2><a class="nav-anchor" id="Cropping-1" href="#Cropping-1">Cropping</a></h2><p>By default, the data will be cropped to fit the screen. This behavior can be changed by using the keyword <code>crop</code>.</p><pre><code class="language-julia-repl">julia&gt; data = Any[1    false      1.0     0x01 ;
+                  2     true      2.0     0x02 ;
+                  3    false      3.0     0x03 ;
+                  4     true      4.0     0x04 ;
+                  5    false      5.0     0x05 ;
+                  6     true      6.0     0x06 ;];
+
+julia&gt; pretty_table(data, screen_size = (10,30))
+┌────────┬────────┬────────┬ ⋯
+│ Col. 1 │ Col. 2 │ Col. 3 │ ⋯
+├────────┼────────┼────────┼ ⋯
+│      1 │  false │    1.0 │ ⋯
+│      2 │   true │    2.0 │ ⋯
+│   ⋮    │   ⋮    │   ⋮    │ ⋯
+└────────┴────────┴────────┴ ⋯
+
+julia&gt; pretty_table(data, screen_size = (10,30), crop = :none)
+┌────────┬────────┬────────┬────────┐
+│ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
+├────────┼────────┼────────┼────────┤
+│      1 │  false │    1.0 │      1 │
+│      2 │   true │    2.0 │      2 │
+│      3 │  false │    3.0 │      3 │
+│      4 │   true │    4.0 │      4 │
+│      5 │  false │    5.0 │      5 │
+│      6 │   true │    6.0 │      6 │
+└────────┴────────┴────────┴────────┘</code></pre><p>If the keyword <code>screen_size</code> is not specified (or is <code>nothing</code>), then the screen size will be obtained automatically. For files, <code>screen_size = (-1,-1)</code>, meaning that no limit exits in both vertical and horizontal direction.</p><div class="admonition note"><div class="admonition-title">Note</div><div class="admonition-text"><p>In vertical cropping, the header and the first table row is <strong>always</strong> printed.    </p></div></div><div class="admonition note"><div class="admonition-title">Note</div><div class="admonition-text"><p>The highlighters will work even in partially printed data.</p></div></div><p>If the user selects a fixed size for the columns (using the keyword <code>columns_width</code>), enables line breaks (using the keyword <code>linebreaks</code>), and sets <code>autowrap = true</code>, then the algorithm wraps the text on spaces to automatically fit the space.</p><pre><code class="language-julia-repl">julia&gt; data = [&quot;One very very very big long long line&quot;; &quot;Another very very very big big long long line&quot;];
+
+julia&gt; pretty_table(data, columns_width = 10, autowrap = true, linebreaks = true, show_row_number = true)
+┌─────┬────────────┐
+│ Row │     Col. 1 │
+├─────┼────────────┤
+│   1 │   One very │
+│     │  very very │
+│     │   big long │
+│     │  long line │
+│   2 │    Another │
+│     │  very very │
+│     │   very big │
+│     │   big long │
+│     │  long line │
+└─────┴────────────┘</code></pre><h2><a class="nav-anchor" id="Text-highlighters-1" href="#Text-highlighters-1">Text highlighters</a></h2><p>A highlighter of the text backend is an instance of the structure <a href="../../lib/library/#PrettyTables.Highlighter"><code>Highlighter</code></a> that contains information about which elements a highlight style should be applied when using the text backend. The structure contains three fields:</p><ul><li><code>f</code>: Function with the signature <code>f(data,i,j)</code> in which should return <code>true</code>      if the element <code>(i,j)</code> in <code>data</code> must be highlighted, or <code>false</code>      otherwise.</li><li><code>crayon</code>: Crayon with the style of a highlighted element.</li></ul><p>The function <code>f</code> must have the following signature:</p><pre><code class="language-none">f(data, i, j)</code></pre><p>in which <code>data</code> is a reference to the data that is being printed, <code>i</code> and <code>j</code> are the element coordinates that are being tested. If this function returns <code>true</code>, then the highlight style will be applied to the <code>(i,j)</code> element. Otherwise, the default style will be used.</p><p>A set of highlighters can be passed as a <code>Tuple</code> to the <code>highlighter</code> keyword. Notice that if multiple highlighters are valid for the element <code>(i,j)</code>, then the applied style will be equal to the first match considering the order in the Tuple <code>highlighters</code>.</p><p><img src="../../assets/ex_highlighters_00001.png" alt/></p><p>If only a single highlighter is wanted, then it can be passed directly to the keyword <code>highlighter</code> of <code>pretty_table</code> without being inside a <code>Tuple</code>.</p><p><img src="../../assets/ex_highlighters_00002.png" alt/></p><div class="admonition note"><div class="admonition-title">Note</div><div class="admonition-text"><p>If the highlighters are used together with <a href="../formatter/#Formatter-1">Formatter</a>, then the change in the format <strong>will not</strong> affect that parameter <code>data</code> passed to the highlighter function <code>f</code>. It will always receive the original, unformatted value.</p></div></div><p>There are a set of pre-defined highlighters (with names <code>hl_*</code>) to make the usage simpler. They are defined in the file <code>./src/backends/text/predefined_highlighters.jl</code>.</p><p>To make the syntax less cumbersome, the following helper function is available:</p><pre><code class="language-julia">function Highlighter(f; kwargs...)</code></pre><p>It creates a <code>Highlighter</code> with the function <code>f</code> and pass all the keyword arguments <code>kwargs</code> to the <code>Crayon</code>. Hence, the following code:</p><pre><code class="language-julia-repl">julia&gt; Highlighter((data,i,j)-&gt;isodd(i), Crayon(bold = true, background = :dark_gray))</code></pre><p>can be replaced by:</p><pre><code class="language-julia-repl">julia&gt; Highlighter((data,i,j)-&gt;isodd(i); bold = true, background = :dark_gray)</code></pre><h2><a class="nav-anchor" id="Text-table-formats-1" href="#Text-table-formats-1">Text table formats</a></h2><p>The following table formats are available when using the text back-end:</p><p><code>unicode</code> (<strong>Default</strong>)</p><pre><code class="language-none">┌────────┬────────┬────────┬────────┐
+│ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
+├────────┼────────┼────────┼────────┤
+│      1 │  false │    1.0 │      1 │
+│      2 │   true │    2.0 │      2 │
+│      3 │  false │    3.0 │      3 │
+└────────┴────────┴────────┴────────┘</code></pre><p><code>ascii_dots</code></p><pre><code class="language-none">.....................................
+: Col. 1 : Col. 2 : Col. 3 : Col. 4 :
+:........:........:........:........:
+:      1 :  false :    1.0 :      1 :
+:      2 :   true :    2.0 :      2 :
+:      3 :  false :    3.0 :      3 :
+:........:........:........:........:</code></pre><p><code>ascii_rounded</code></p><pre><code class="language-none">.--------.--------.--------.--------.
+| Col. 1 | Col. 2 | Col. 3 | Col. 4 |
+:--------+--------+--------+--------:
+|      1 |  false |    1.0 |      1 |
+|      2 |   true |    2.0 |      2 |
+|      3 |  false |    3.0 |      3 |
+&#39;--------&#39;--------&#39;--------&#39;--------&#39;</code></pre><p><code>borderless</code></p><pre><code class="language-none">  Col. 1   Col. 2   Col. 3   Col. 4
+
+       1    false      1.0        1
+       2     true      2.0        2
+       3    false      3.0        3</code></pre><p><code>compact</code></p><pre><code class="language-none"> -------- -------- -------- --------
+  Col. 1   Col. 2   Col. 3   Col. 4
+ -------- -------- -------- --------
+       1    false      1.0        1
+       2     true      2.0        2
+       3    false      3.0        3
+ -------- -------- -------- --------</code></pre><p><code>markdown</code></p><pre><code class="language-none">| Col. 1 | Col. 2 | Col. 3 | Col. 4 |
+|--------|--------|--------|--------|
+|      1 |  false |    1.0 |      1 |
+|      2 |   true |    2.0 |      2 |
+|      3 |  false |    3.0 |      3 |</code></pre><p><code>mysql</code></p><pre><code class="language-none">+--------+--------+--------+--------+
+| Col. 1 | Col. 2 | Col. 3 | Col. 4 |
++--------+--------+--------+--------+
+|      1 |  false |    1.0 |      1 |
+|      2 |   true |    2.0 |      2 |
+|      3 |  false |    3.0 |      3 |
++--------+--------+--------+--------+</code></pre><p><code>simple</code></p><pre><code class="language-none">========= ======== ======== =========
+  Col. 1   Col. 2   Col. 3   Col. 4
+========= ======== ======== =========
+       1    false      1.0        1
+       2     true      2.0        2
+       3    false      3.0        3
+========= ======== ======== =========</code></pre><p><code>unicode_rounded</code></p><pre><code class="language-none">╭────────┬────────┬────────┬────────╮
+│ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
+├────────┼────────┼────────┼────────┤
+│      1 │  false │    1.0 │      1 │
+│      2 │   true │    2.0 │      2 │
+│      3 │  false │    3.0 │      3 │
+╰────────┴────────┴────────┴────────╯</code></pre><div class="admonition note"><div class="admonition-title">Note</div><div class="admonition-text"><p>The format <code>unicode_rounded</code> should look awful on your browser, but it should be printed fine on your terminal.</p></div></div><pre><code class="language-julia-repl">julia&gt; data = Any[ f(a) for a = 0:15:90, f in (sind,cosd,tand)];
+
+julia&gt; pretty_table(data, tf = ascii_dots)
+..................................................................
+:              Col. 1 :              Col. 2 :             Col. 3 :
+:.....................:.....................:....................:
+:                 0.0 :                 1.0 :                0.0 :
+: 0.25881904510252074 :  0.9659258262890683 : 0.2679491924311227 :
+:                 0.5 :  0.8660254037844386 : 0.5773502691896258 :
+:  0.7071067811865476 :  0.7071067811865476 :                1.0 :
+:  0.8660254037844386 :                 0.5 : 1.7320508075688772 :
+:  0.9659258262890683 : 0.25881904510252074 : 3.7320508075688776 :
+:                 1.0 :                 0.0 :                Inf :
+:.....................:.....................:....................:
+
+julia&gt; pretty_table(data, tf = compact)
+ --------------------- --------------------- --------------------
+               Col. 1                Col. 2               Col. 3
+ --------------------- --------------------- --------------------
+                  0.0                   1.0                  0.0
+  0.25881904510252074    0.9659258262890683   0.2679491924311227
+                  0.5    0.8660254037844386   0.5773502691896258
+   0.7071067811865476    0.7071067811865476                  1.0
+   0.8660254037844386                   0.5   1.7320508075688772
+   0.9659258262890683   0.25881904510252074   3.7320508075688776
+                  1.0                   0.0                  Inf
+ --------------------- --------------------- --------------------
+</code></pre><p>It is also possible to define you own custom table by creating a new instance of the structure <a href="../../lib/library/#PrettyTables.TextFormat"><code>TextFormat</code></a>. For example, let&#39;s say that you want a table like <code>simple</code> that does not print the bottom line:</p><pre><code class="language-julia-repl">julia&gt; data = Any[ f(a) for a = 0:15:90, f in (sind,cosd,tand)];
+
+julia&gt; tf = TextFormat(simple, bottom_line = false);
+
+julia&gt; pretty_table(data, tf = tf)
+====================== ===================== =====================
+               Col. 1                Col. 2               Col. 3
+====================== ===================== =====================
+                  0.0                   1.0                  0.0
+  0.25881904510252074    0.9659258262890683   0.2679491924311227
+                  0.5    0.8660254037844386   0.5773502691896258
+   0.7071067811865476    0.7071067811865476                  1.0
+   0.8660254037844386                   0.5   1.7320508075688772
+   0.9659258262890683   0.25881904510252074   3.7320508075688776
+                  1.0                   0.0                  Inf
+</code></pre><p>or that does not print the header line:</p><pre><code class="language-julia-repl">julia&gt; data = Any[ f(a) for a = 0:15:90, f in (sind,cosd,tand)];
+
+julia&gt; tf = TextFormat(simple, header_line = false);
+
+julia&gt; pretty_table(data, tf = tf)
+====================== ===================== =====================
+               Col. 1                Col. 2               Col. 3
+                  0.0                   1.0                  0.0
+  0.25881904510252074    0.9659258262890683   0.2679491924311227
+                  0.5    0.8660254037844386   0.5773502691896258
+   0.7071067811865476    0.7071067811865476                  1.0
+   0.8660254037844386                   0.5   1.7320508075688772
+   0.9659258262890683   0.25881904510252074   3.7320508075688776
+                  1.0                   0.0                  Inf
+====================== ===================== =====================</code></pre><p>For more information, see the documentation of the structure <a href="../../lib/library/#PrettyTables.TextFormat"><code>TextFormat</code></a>.</p><footer><hr/><a class="previous" href="../usage/"><span class="direction">Previous</span><span class="title">Usage</span></a><a class="next" href="../html_backend/"><span class="direction">Next</span><span class="title">HTML</span></a></footer></article></body></html>
