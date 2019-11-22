@@ -7,6 +7,10 @@ version = "0.6.0"
 
 [compat]
 julia = "1"
+Crayons = "4.0"
+Formatting = "0.4"
+Parameters = "0.12"
+Reexport = "0.2"
 Tables = "0.2"
 
 [deps]
