@@ -18,14 +18,14 @@
 
               This is another line.
 
-              <PrettyTables Table 1> This should be deleted.
+              % <PrettyTables Table 1> This should be deleted.
               This should be deleted.
               This should be deleted.
               This should be deleted.
               This should be deleted.
 
 
-              </PrettyTables>
+              % </PrettyTables>
 
               <PrettyTables Table 2></PrettyTables>
 
@@ -54,14 +54,14 @@
 
     This is another line.
 
-    <PrettyTables Table 1>
+    % <PrettyTables Table 1>
     ┌─────┬────────┬────────┬────────┐
     │ Row │ Col. 1 │ Col. 2 │ Col. 3 │
     ├─────┼────────┼────────┼────────┤
     │   1 │   1    │   2    │   3    │
     │   2 │   4    │   5    │   6    │
     └─────┴────────┴────────┴────────┘
-    </PrettyTables>
+    % </PrettyTables>
 
     <PrettyTables Table 2>
     +--------+--------+--------+
