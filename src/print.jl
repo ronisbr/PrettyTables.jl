@@ -489,6 +489,8 @@ function _pretty_table(io, data, header;
         _pt_text(io, pinfo; kwargs...)
     elseif backend == :html
         _pt_html(io, pinfo; kwargs...)
+    elseif backend == :latex
+        _pt_latex(io, pinfo; kwargs...)
     else
         error("Unknown backend `$backend`.")
     end

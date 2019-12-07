@@ -5,7 +5,7 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ==#
 
-export ft_printf, ft_round
+export ft_printf, ft_round, ft_latex_sn
 
 """
     function ft_printf(ftv_str, [columns])
@@ -104,6 +104,86 @@ function ft_round(digits::AbstractVector{Int}, columns::AbstractVector{Int} = In
                           return v
                       end
                   end)
+        end
+
+        return ft
+    end
+end
+
+"""
+    function ft_latex_sn(m_digits, [columns])
+
+Format the numbers of the elements in the columns `columns` to a scientific
+notation using LaTeX. The number is first printed using `sprintf1` functions
+with the `g` modifier and then converted to the LaTeX format. The number of
+digits in the mantissa can be selected by the argument `m_digits`.
+
+If `m_digits` is a `Vector`, then `columns` must be also be a `Vector` with the
+same number of elements. If `m_digits` is a `Integer`, and `columns` is not
+specified (or is empty), then the format will be applied to the entire table.
+Otherwise, if `m_digits` is a `String` and `columns` is a `Vector`, then the
+format will be applied only to the columns in `columns`.
+
+# Remarks
+
+This formatter will be applied only to the cells that are of type `Number`.
+
+"""
+ft_latex_sn(m_digits::Int) = ft_latex_sn([m_digits])
+ft_latex_sn(m_digits::Int, columns::AbstractVector{Int}) =
+    ft_latex_sn([m_digits for i = 1:length(columns)], columns)
+
+function ft_latex_sn(m_digits::AbstractVector{Int}, columns::AbstractVector{Int} = Int[])
+    lc = length(columns)
+
+    lc == 0 && (length(m_digits) != 1) &&
+    error("If columns is empty, then `m_digits` must have only one element.")
+
+    lc > 0 && (length(m_digits) != lc) &&
+    error("The vector columns must have the same number of elements of the vector `m_digits`.")
+
+    if lc == 0
+        return Dict{Int,Function}(0 => (v,i) -> begin
+            str::String = ""
+            if typeof(v) <: Number
+                str = sprintf1("%." * string(m_digits[1]) * "g", v)
+
+                # Check if we have scientific notation.
+                aux = match(r"e[+,-][0-9]+", str)
+                if aux != nothing
+                    exp_str = " \\cdot 10^{" * string(parse(Int,aux.match[2:end])) * "}"
+                    str = replace(str, r"e.*" => exp_str)
+                    str = "\$" * str * "\$"
+                end
+            else
+                str = sprint(print, v)
+            end
+
+            return str
+        end)
+    else
+        ft = Dict{Int,Function}()
+
+        for i = 1:length(columns)
+            push!(ft, columns[i] => (v,j) -> begin
+                str::String = ""
+
+                if typeof(v) <: Number
+                    str = sprintf1("%." * string(m_digits[i]) * "g", v)
+
+                    # Check if we have scientific notation.
+                    aux = match(r"e[+,-][0-9]+", str)
+                    if aux != nothing
+                        exp_str = " \\cdot 10^{" * string(parse(Int,aux.match[2:end])) * "}"
+                        str = replace(str, r"e.*" => exp_str)
+                        str = "\$" * str * "\$"
+                    end
+                else
+                    str = sprint(print, v)
+                end
+
+                return str
+            end)
         end
 
         return ft
