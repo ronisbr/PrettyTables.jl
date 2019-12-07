@@ -441,6 +441,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "lib/library/#PrettyTables.include_pt_in_file-Tuple{AbstractString,AbstractString,Vararg{Any,N} where N}",
+    "page": "Library",
+    "title": "PrettyTables.include_pt_in_file",
+    "category": "method",
+    "text": "function include_pt_in_file(filename::AbstractString, mark::AbstractString, args...; kwargs...)\n\nInclude a table in the file filename using the mark mark.\n\nThis function will print a table using the arguments args and keywords kwargs in the function pretty_table. Then, it will search the file filename for the following section:\n\n<PrettyTables mark>\n...\n</PrettyTables>\n\nand will replace everything between the marks with the printed table.\n\n\n\n\n\n"
+},
+
+{
     "location": "lib/library/#PrettyTables.pretty_table-Union{Tuple{T2}, Tuple{T1}, Tuple{Union{AbstractArray{T1,1}, AbstractArray{T1,2}},Union{AbstractArray{T2,1}, AbstractArray{T2,2}}}} where T2 where T1",
     "page": "Library",
     "title": "PrettyTables.pretty_table",
