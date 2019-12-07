@@ -16,7 +16,7 @@
         write(f,"""
               This is one line.
 
-              This is another line.
+              This is "another" line.
 
               % <PrettyTables Table 1> This should be deleted.
               This should be deleted.
@@ -52,7 +52,7 @@
     expected = """
     This is one line.
 
-    This is another line.
+    This is "another" line.
 
     % <PrettyTables Table 1>
     ┌─────┬────────┬────────┬────────┐

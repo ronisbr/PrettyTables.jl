@@ -37,11 +37,14 @@ function include_pt_in_file(filename::AbstractString, mark::AbstractString,
     pretty_table(io, args...; kwargs...)
     str = String(take!(io))
 
-    open(filename, "w") do f
-        r = Regex("(?<=<PrettyTables $mark>)(?:.|\n)*?(?=.*</PrettyTables>)")
-        s = SubstitutionString("\n$str")
-        write(f, replace(orig, r => s))
-    end
+    # Write the output to a temporary file.
+    (path,io) = mktemp()
+    r = Regex("(?<=<PrettyTables $mark>)(?:.|\n)*?(?=.*</PrettyTables>)")
+    write(io, replace(orig, r => "\n$str"))
+    close(io)
+
+    # Move the temporary file to `filename`.
+    mv(path, filename; force = true)
 
     return nothing
 end
