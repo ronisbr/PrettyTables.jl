@@ -22,6 +22,7 @@ include("backends/html/types.jl")
 ################################################################################
 
 include("deprecations.jl")
+include("files.jl")
 include("helpers.jl")
 include("misc.jl")
 include("predefined_formatters.jl")
