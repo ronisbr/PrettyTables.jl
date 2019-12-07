@@ -445,7 +445,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "PrettyTables.include_pt_in_file",
     "category": "method",
-    "text": "function include_pt_in_file(filename::AbstractString, mark::AbstractString, args...; kwargs...)\n\nInclude a table in the file filename using the mark mark.\n\nThis function will print a table using the arguments args and keywords kwargs in the function pretty_table. Then, it will search the file filename for the following section:\n\n<PrettyTables mark>\n...\n</PrettyTables>\n\nand will replace everything between the marks with the printed table.\n\n\n\n\n\n"
+    "text": "function include_pt_in_file(filename::AbstractString, mark::AbstractString, args...; kwargs...)\n\nInclude a table in the file filename using the mark mark.\n\nThis function will print a table using the arguments args and keywords kwargs in the function pretty_table (the IO must not be passed to args here). Then, it will search inside the file filename for the following section:\n\n<PrettyTables mark>\n...\n</PrettyTables>\n\nand will replace everything between the marks with the printed table. If the closing tag is in a separate line, then all characters before it will be kept. This is important to add comment tags.\n\n\n\n\n\n"
 },
 
 {
