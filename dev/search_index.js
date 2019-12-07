@@ -289,11 +289,35 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "lib/library/#PrettyTables.LatexHighlighter",
+    "page": "Library",
+    "title": "PrettyTables.LatexHighlighter",
+    "category": "type",
+    "text": "struct LatexHighlighter\n\nDefines the default highlighter of a table when using the LaTeX backend.\n\nFields\n\nf: Function with the signature f(data,i,j) in which should return true      if the element (i,j) in data must be highlighter, or false      otherwise.\nfd: A function with the signature f(data,i,j,str)::String in which       data is the matrix, (i,j) is the element position in the table, and       str is the data converted to string. This function must return a       string that will be placed in the cell.\n\nRemarks\n\nThis structure can be constructed using two helpers:\n\nLatexHighlighter(f::Function, envs::Union{String,Vector{String}})\n\nLatexHighlighter(f::Function, fd::Function)\n\nThe first will apply recursively all the LaTeX environments in envs to the highlighted text whereas the second let the user select the desired decoration by specifying the function fd.\n\nThus, for example:\n\nLatexHighlighter((data,i,j)->true, [\"textbf\", \"small\"])\n\nwill wrap all the cells in the table in the following environment:\n\n\\textbf{\\small{<Cell text>}}\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables.LatexTableFormat",
+    "page": "Library",
+    "title": "PrettyTables.LatexTableFormat",
+    "category": "type",
+    "text": "struct LatexTableFormat\n\nThis structure defines the format of the LaTeX table.\n\nFields\n\ntop_line: Top line of the table.\nheader_line: Line that separate the header from the table body.\nmid_line: Line printed in the middle of the table.\nbottom_line: Bottom line of the table.\nleft_vline: Left vertical line of the table.\nmid_vline: Vertical line in the middle of the table.\nright_vline: Right vertical line of the table.\nheader_envs: LaTeX environments that will be used in each header cell.\nsubheader_envs: LaTeX environments that will be used in each sub-header                   cell.\n\n\n\n\n\n"
+},
+
+{
     "location": "lib/library/#PrettyTables.TextFormat",
     "page": "Library",
     "title": "PrettyTables.TextFormat",
     "category": "type",
     "text": "struct TextFormat\n\nFields\n\nup_right_corner: Character in the up right corner.\nup_left_corner: Character in the up left corner.\nbottom_left_corner: Character in the bottom left corner.\nbottom_right_corner: Character in the bottom right corner.\nup_intersection: Character in the intersection of lines in the up part.\nleft_intersection: Character in the intersection of lines in the left part.\nright_intersection: Character in the intersection of lines in the right                       part.\nmiddle_intersection: Character in the intersection of lines in the middle of                        the table.\nbottom_intersection: Character in the intersection of the lines in the                        bottom part.\ncolumn: Character in a vertical line.\nrow: Character in a horizontal line.\ntop_line: If true, then the top table line will be drawn.\nheader_line: If true, then the line between the header and the data will                be drawn.\nbottom_line: If true, then the bottom table line will be drawn.\n\nPre-defined formats\n\nThe following pre-defined formats are available: unicode (default), mysql, compact, markdown, simple, ascii_rounded, and ascii_dots.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables.ft_latex_sn-Tuple{Int64}",
+    "page": "Library",
+    "title": "PrettyTables.ft_latex_sn",
+    "category": "method",
+    "text": "function ft_latex_sn(m_digits, [columns])\n\nFormat the numbers of the elements in the columns columns to a scientific notation using LaTeX. The number is first printed using sprintf1 functions with the g modifier and then converted to the LaTeX format. The number of digits in the mantissa can be selected by the argument m_digits.\n\nIf m_digits is a Vector, then columns must be also be a Vector with the same number of elements. If m_digits is a Integer, and columns is not specified (or is empty), then the format will be applied to the entire table. Otherwise, if m_digits is a String and columns is a Vector, then the format will be applied only to the columns in columns.\n\nRemarks\n\nThis formatter will be applied only to the cells that are of type Number.\n\n\n\n\n\n"
 },
 
 {
