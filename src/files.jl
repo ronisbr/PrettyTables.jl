@@ -36,6 +36,8 @@ function include_pt_in_file(filename::AbstractString, mark::AbstractString,
         orig = read(f, String)
     end
 
+    GC.gc()
+
     # First, print the a string.
     io = IOBuffer()
     pretty_table(io, args...; kwargs...)
@@ -47,18 +49,16 @@ function include_pt_in_file(filename::AbstractString, mark::AbstractString,
     write(io, replace(orig, r => "\n$str"))
     close(io)
 
-    # Call garbage colector to remove any references to opened files. This
-    # tries to avoid a problem in Windows as shown here:
-    #
-    #   https://discourse.julialang.org/t/find-what-has-locked-held-a-file/23278
-    orig = ""
-    GC.gc()
-
     # Backup the original file if required.
     backup_file && mv(filename, filename * "_backup"; force = true)
 
-    # Move the temporary file to `filename`.
-    mv(path, filename; force = true)
+    # Copy the temporary file to `filename`.
+    #
+    # If we user `mv`, then we get some problems related to `libuv` in
+    # Windows. This seems related to this issue:
+    #
+    #   https://discourse.julialang.org/t/find-what-has-locked-held-a-file/23278
+    cp(path, filename; force = true)
 
     return nothing
 end
