@@ -41,11 +41,12 @@
     data_table_2 = [7 8 9
                     1 2 3]
 
-    include_pt_in_file(path, "Table 2", data_table_2, tf = mysql, hlines = [1])
+    include_pt_in_file(path, "Table 2", data_table_2, tf = mysql, hlines = [1],
+                       backup_file = false)
     include_pt_in_file(path, "Table 1", data_table_1, alignment = :c,
-                       show_row_number = true)
+                       show_row_number = true, backup_file = false)
     include_pt_in_file(path, "Table 3", data_table_2, alignment = :c,
-                       show_row_number = true)
+                       show_row_number = true, backup_file = false)
 
     result = read(path, String)
 

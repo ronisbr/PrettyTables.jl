@@ -28,9 +28,13 @@ This is important to add comment tags.
 
 """
 function include_pt_in_file(filename::AbstractString, mark::AbstractString,
-                            args...; kwargs...)
+                            args...; backup_file = true, kwargs...)
 
-    orig = read(filename, String)
+    orig = ""
+
+    open(filename, "r") do f
+        orig = read(f, String)
+    end
 
     # First, print the a string.
     io = IOBuffer()
@@ -42,6 +46,16 @@ function include_pt_in_file(filename::AbstractString, mark::AbstractString,
     r = Regex("(?<=<PrettyTables $mark>)(?:.|\n)*?(?=.*</PrettyTables>)")
     write(io, replace(orig, r => "\n$str"))
     close(io)
+
+    # Call garbage colector to remove any references to opened files. This
+    # tries to avoid a problem in Windows as shown here:
+    #
+    #   https://discourse.julialang.org/t/find-what-has-locked-held-a-file/23278
+    orig = ""
+    GC.gc()
+
+    # Backup the original file if required.
+    backup_file && mv(filename, filename * "_backup"; force = true)
 
     # Move the temporary file to `filename`.
     mv(path, filename; force = true)
