@@ -781,10 +781,10 @@ th.rowNumber, td.rowNumber {
     @test result == expected
 end
 
-# Minimal printing
+# Not standalone printing
 # ==============================================================================
 
-@testset "Minimal printing" begin
+@testset "Not standalone printing" begin
     expected = """
     <table>
     <tr class = "header headerLastRow">
@@ -833,7 +833,7 @@ end
     """
 
     result = sprint((io,data)->pretty_table(io, data, backend = :html,
-                                            minimal = true), data)
+                                            standalone = false), data)
     @test result == expected
 end
 

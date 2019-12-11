@@ -117,7 +117,7 @@
                     4 5 6]
 
     include_pt_in_file(path, "Table 1", data_table_1, backend = :html,
-                       minimal = true, tag_append = " -->")
+                       standalone = false, tag_append = " -->")
 
     result = read(path, String)
     backup = read(path * "_backup", String)

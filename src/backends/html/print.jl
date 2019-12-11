@@ -13,10 +13,10 @@ function _pt_html(io, pinfo;
                   formatter::Dict = Dict(),
                   highlighters::Union{HTMLHighlighter,Tuple} = (),
                   linebreaks::Bool = false,
-                  minimal::Bool = false,
                   noheader::Bool = false,
                   nosubheader::Bool = false,
-                  show_row_number::Bool = false)
+                  show_row_number::Bool = false,
+                  standalone::Bool = true)
 
     @unpack_PrintInfo pinfo
     @unpack_HTMLTableFormat tf
@@ -90,7 +90,7 @@ function _pt_html(io, pinfo;
     # Print HTML header
     # ==========================================================================
 
-    if !minimal
+    if standalone
         println(buf, """
                 <!DOCTYPE html>
                 <html>
@@ -196,7 +196,7 @@ function _pt_html(io, pinfo;
     # ==========================================================================
 
     println(buf, "</table>")
-    if !minimal
+    if standalone
         println(buf, """
                 </body>
                 </html>""")

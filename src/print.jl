@@ -237,9 +237,6 @@ This backend produces HTML tables. This backend can be used by selecting
                   HTML highlighters (see the section `HTML highlighters`).
 * `linebreaks`: If `true`, then `\\n` will be replaced by `<br>`.
                 (**Default** = `false`)
-* `minimal`: If `true`, then all HTML headers will be omitted, *i.e.* only the
-             code between `<table>` and `</table>` will be printed.
-             (**Default** = `false`)
 * `noheader`: If `true`, then the header will not be printed. Notice that all
               keywords and parameters related to the header and sub-headers will
               be ignored. (**Default** = `false`)
@@ -248,6 +245,10 @@ This backend produces HTML tables. This backend can be used by selecting
                  no effect if `noheader = true`. (**Default** = `false`)
 * `show_row_number`: If `true`, then a new column will be printed showing the
                      row number. (**Default** = `false`)
+* `standalone`: If `true`, then a complete HTML page will be generated.
+                Otherwise, only the content between the tags `<table>` and
+                `</table>` will be printed (with the tags included).
+                (**Default** = `true`)
 * `tf`: An instance of the structure `HTMLTableFormat` that defines the general
         format of the HTML table.
 
