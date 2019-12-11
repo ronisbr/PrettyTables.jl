@@ -11,6 +11,9 @@
 
 @testset "Include Pretty Table to file" begin
 
+    # Text
+    # ==========================================================================
+
     path = "test.txt"
 
     orig = """
@@ -81,6 +84,73 @@
     This should not be deleted.
     This should not be deleted.
     This should not be deleted."""
+
+    @test backup == orig
+    @test result == expected
+
+    # HTML
+    # ==========================================================================
+
+    data_table_1 = [1 2 3
+                    4 5 6]
+
+    path = "test.html"
+
+    orig = """
+    <html>
+    <body>
+
+    <p>This is a table:</p>
+
+    <!-- <PrettyTables Table 1> -->
+    <!-- </PrettyTables> -->
+
+    </body>
+    </html>
+    """
+
+    open(path,"w") do f
+        write(f, orig)
+    end
+
+    data_table_1 = [1 2 3
+                    4 5 6]
+
+    include_pt_in_file(path, "Table 1", data_table_1, backend = :html,
+                       minimal = true, tag_append = " -->")
+
+    result = read(path, String)
+    backup = read(path * "_backup", String)
+
+    expected = """
+    <html>
+    <body>
+
+    <p>This is a table:</p>
+
+    <!-- <PrettyTables Table 1> -->
+    <table>
+    <tr class = "header headerLastRow">
+    <th style = "text-align: right; ">Col. 1</th>
+    <th style = "text-align: right; ">Col. 2</th>
+    <th style = "text-align: right; ">Col. 3</th>
+    </tr>
+    <tr>
+    <td style = "text-align: right; ">1</td>
+    <td style = "text-align: right; ">2</td>
+    <td style = "text-align: right; ">3</td>
+    </tr>
+    <tr>
+    <td style = "text-align: right; ">4</td>
+    <td style = "text-align: right; ">5</td>
+    <td style = "text-align: right; ">6</td>
+    </tr>
+    </table>
+    <!-- </PrettyTables> -->
+
+    </body>
+    </html>
+    """
 
     @test backup == orig
     @test result == expected
