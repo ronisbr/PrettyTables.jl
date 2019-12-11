@@ -13,6 +13,7 @@ function _pt_html(io, pinfo;
                   formatter::Dict = Dict(),
                   highlighters::Union{HTMLHighlighter,Tuple} = (),
                   linebreaks::Bool = false,
+                  minimal::Bool = false,
                   noheader::Bool = false,
                   nosubheader::Bool = false,
                   show_row_number::Bool = false)
@@ -89,24 +90,26 @@ function _pt_html(io, pinfo;
     # Print HTML header
     # ==========================================================================
 
-    println(buf, """
-    <!DOCTYPE html>
-    <html>
-    <meta charset=\"UTF-8\">
-    <style>""")
+    if !minimal
+        println(buf, """
+                <!DOCTYPE html>
+                <html>
+                <meta charset=\"UTF-8\">
+                <style>""")
 
-    !isempty(table_width) && println(buf, """
-    table {
-        width: $table_width;
-    }
-    """)
+        !isempty(table_width) && println(buf, """
+                table {
+                    width: $table_width;
+                }
+                """)
 
-    println(buf, """
-    $css
-    </style>
-    <body>
-    <table>
-    """)
+        println(buf, """
+                $css
+                </style>
+                <body>""")
+    end
+
+    println(buf, "<table>")
 
     # Data header
     # ==========================================================================
@@ -192,7 +195,12 @@ function _pt_html(io, pinfo;
     # Print HTML footer
     # ==========================================================================
 
-    println(buf, "</table></body></html>")
+    println(buf, "</table>")
+    if !minimal
+        println(buf, """
+                </body>
+                </html>""")
+    end
 
     # Print the buffer into the io.
     # ==========================================================================

@@ -63,7 +63,6 @@ th.rowNumber, td.rowNumber {
 </style>
 <body>
 <table>
-
 <tr class = "header headerLastRow">
 <th style = "text-align: right; ">Col. 1</th>
 <th style = "text-align: right; ">Col. 2</th>
@@ -106,7 +105,9 @@ th.rowNumber, td.rowNumber {
 <td style = "text-align: right; ">6.0</td>
 <td style = "text-align: right; ">6</td>
 </tr>
-</table></body></html>
+</table>
+</body>
+</html>
 """
     result = sprint((io,data)->pretty_table(io,data,backend = :html), data)
     @test result == expected
@@ -163,7 +164,6 @@ th.rowNumber, td.rowNumber {
 </style>
 <body>
 <table>
-
 <tr class = "header headerLastRow">
 <th style = "text-align: left; ">Col. 1</th>
 <th style = "text-align: left; ">Col. 2</th>
@@ -206,7 +206,9 @@ th.rowNumber, td.rowNumber {
 <td style = "text-align: left; ">6.0</td>
 <td style = "text-align: left; ">6</td>
 </tr>
-</table></body></html>
+</table>
+</body>
+</html>
 """
     result = sprint((io, data)->pretty_table(io, data; alignment = :l,
                                              backend = :html), data)
@@ -259,7 +261,6 @@ th.rowNumber, td.rowNumber {
 </style>
 <body>
 <table>
-
 <tr class = "header headerLastRow">
 <th style = "text-align: center; ">Col. 1</th>
 <th style = "text-align: center; ">Col. 2</th>
@@ -302,7 +303,9 @@ th.rowNumber, td.rowNumber {
 <td style = "text-align: center; ">6.0</td>
 <td style = "text-align: center; ">6</td>
 </tr>
-</table></body></html>
+</table>
+</body>
+</html>
 """
     result = sprint((io, data)->pretty_table(io, data; alignment = :c,
                                              backend = :html), data)
@@ -356,7 +359,6 @@ th.rowNumber, td.rowNumber {
 </style>
 <body>
 <table>
-
 <tr class = "header headerLastRow">
 <th style = "text-align: left; ">Col. 1</th>
 <th style = "text-align: right; ">Col. 2</th>
@@ -399,7 +401,9 @@ th.rowNumber, td.rowNumber {
 <td style = "text-align: center; ">6.0</td>
 <td style = "text-align: right; ">6</td>
 </tr>
-</table></body></html>
+</table>
+</body>
+</html>
 """
     result = sprint((io, data)->pretty_table(io, data;
                                              alignment = [:l,:r,:c,:r],
@@ -454,7 +458,6 @@ th.rowNumber, td.rowNumber {
 </style>
 <body>
 <table>
-
 <tr class = "header headerLastRow">
 <th style = "text-align: left; ">Col. 1</th>
 <th style = "text-align: right; ">Col. 2</th>
@@ -497,7 +500,9 @@ th.rowNumber, td.rowNumber {
 <td style = "text-align: center; ">6.0</td>
 <td style = "text-align: left; ">6</td>
 </tr>
-</table></body></html>
+</table>
+</body>
+</html>
 """
     result = sprint((io, data)->pretty_table(io, data;
                                              alignment = [:l,:r,:c,:r],
@@ -561,7 +566,6 @@ th.rowNumber, td.rowNumber {
 </style>
 <body>
 <table>
-
 <tr class = "header headerLastRow">
 <th class = rowNumber>Row</th>
 <th style = "text-align: right; ">Col. 1</th>
@@ -582,7 +586,9 @@ th.rowNumber, td.rowNumber {
 <td style = "text-align: right; ">6</td>
 <td style = "text-align: right; ">6.0</td>
 </tr>
-</table></body></html>
+</table>
+</body>
+</html>
 """
 
     result = sprint((io,data)->pretty_table(io, data;
@@ -638,7 +644,6 @@ th.rowNumber, td.rowNumber {
 </style>
 <body>
 <table>
-
 <tr class = "header headerLastRow">
 <th class = rowNumber>Row</th>
 <th style = "text-align: center; ">Col. 1</th>
@@ -659,7 +664,9 @@ th.rowNumber, td.rowNumber {
 <td style = "text-align: center; ">6</td>
 <td style = "text-align: left; ">6.0</td>
 </tr>
-</table></body></html>
+</table>
+</body>
+</html>
 """
 
     result = sprint((io,data)->pretty_table(io, data;
@@ -721,7 +728,6 @@ th.rowNumber, td.rowNumber {
 </style>
 <body>
 <table>
-
 <tr class = "header headerLastRow">
 <th style = "text-align: right; ">Col. 1</th>
 <th style = "text-align: right; ">Col. 2</th>
@@ -764,12 +770,70 @@ th.rowNumber, td.rowNumber {
 <td style = "text-align: right; ">0</td>
 <td style = "text-align: right; ">0</td>
 </tr>
-</table></body></html>
+</table>
+</body>
+</html>
 """
     formatter = Dict(0 => (v,i) -> isodd(i) ? i : 0,
                      2 => (v,i) -> v)
     result = sprint((io, data)->pretty_table(io, data; backend = :html,
                                              formatter = formatter), data)
+    @test result == expected
+end
+
+# Minimal printing
+# ==============================================================================
+
+@testset "Minimal printing" begin
+    expected = """
+    <table>
+    <tr class = "header headerLastRow">
+    <th style = "text-align: right; ">Col. 1</th>
+    <th style = "text-align: right; ">Col. 2</th>
+    <th style = "text-align: right; ">Col. 3</th>
+    <th style = "text-align: right; ">Col. 4</th>
+    </tr>
+    <tr>
+    <td style = "text-align: right; ">1</td>
+    <td style = "text-align: right; ">false</td>
+    <td style = "text-align: right; ">1.0</td>
+    <td style = "text-align: right; ">1</td>
+    </tr>
+    <tr>
+    <td style = "text-align: right; ">2</td>
+    <td style = "text-align: right; ">true</td>
+    <td style = "text-align: right; ">2.0</td>
+    <td style = "text-align: right; ">2</td>
+    </tr>
+    <tr>
+    <td style = "text-align: right; ">3</td>
+    <td style = "text-align: right; ">false</td>
+    <td style = "text-align: right; ">3.0</td>
+    <td style = "text-align: right; ">3</td>
+    </tr>
+    <tr>
+    <td style = "text-align: right; ">4</td>
+    <td style = "text-align: right; ">true</td>
+    <td style = "text-align: right; ">4.0</td>
+    <td style = "text-align: right; ">4</td>
+    </tr>
+    <tr>
+    <td style = "text-align: right; ">5</td>
+    <td style = "text-align: right; ">false</td>
+    <td style = "text-align: right; ">5.0</td>
+    <td style = "text-align: right; ">5</td>
+    </tr>
+    <tr>
+    <td style = "text-align: right; ">6</td>
+    <td style = "text-align: right; ">true</td>
+    <td style = "text-align: right; ">6.0</td>
+    <td style = "text-align: right; ">6</td>
+    </tr>
+    </table>
+    """
+
+    result = sprint((io,data)->pretty_table(io, data, backend = :html,
+                                            minimal = true), data)
     @test result == expected
 end
 
@@ -822,7 +886,6 @@ th.rowNumber, td.rowNumber {
 </style>
 <body>
 <table>
-
 <tr class = "header headerLastRow">
 <th class = rowNumber>Row</th>
 <th style = "text-align: left; ">Col. 1</th>
@@ -872,7 +935,9 @@ th.rowNumber, td.rowNumber {
 <td style = "text-align: center; ">6.0</td>
 <td style = "text-align: right; ">6</td>
 </tr>
-</table></body></html>
+</table>
+</body>
+</html>
 """
     result = sprint((io, data)->pretty_table(io, data;
                                              alignment       = [:l,:r,:c,:r],
@@ -939,7 +1004,6 @@ th.rowNumber, td.rowNumber {
 </style>
 <body>
 <table>
-
 <tr class = "header headerLastRow">
 <th style = "text-align: right; ">Col. 1</th>
 </tr>
@@ -976,7 +1040,9 @@ th.rowNumber, td.rowNumber {
 <tr>
 <td style = "text-align: right; ">10</td>
 </tr>
-</table></body></html>
+</table>
+</body>
+</html>
 """
 
     result = sprint((io,data)->pretty_table(io, data, backend = :html), vec)
@@ -1027,7 +1093,6 @@ th.rowNumber, td.rowNumber {
 </style>
 <body>
 <table>
-
 <tr class = "header headerLastRow">
 <th class = rowNumber>Row</th>
 <th style = "text-align: center; ">Col. 1</th>
@@ -1076,7 +1141,9 @@ th.rowNumber, td.rowNumber {
 <td class = rowNumber>11</td>
 <td style = "text-align: center; ">10</td>
 </tr>
-</table></body></html>
+</table>
+</body>
+</html>
 """
 
     result = sprint((io, vec)->pretty_table(io, vec; alignment = :c,

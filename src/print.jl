@@ -237,6 +237,9 @@ This backend produces HTML tables. This backend can be used by selecting
                   HTML highlighters (see the section `HTML highlighters`).
 * `linebreaks`: If `true`, then `\\n` will be replaced by `<br>`.
                 (**Default** = `false`)
+* `minimal`: If `true`, then all HTML headers will be omitted, *i.e.* only the
+             code between `<table>` and `</table>` will be printed.
+             (**Default** = `false`)
 * `noheader`: If `true`, then the header will not be printed. Notice that all
               keywords and parameters related to the header and sub-headers will
               be ignored. (**Default** = `false`)
