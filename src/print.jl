@@ -373,7 +373,7 @@ function pretty_table(io::IO, table; kwargs...)
         end
     end
 
-    _pretty_table(io, data, header; kwargs...)
+    _pretty_table(io, Tables.matrix(data), header; kwargs...)
 end
 
 ################################################################################
