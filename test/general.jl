@@ -88,7 +88,7 @@
     @test backup == orig
     @test result == expected
 
-    # HTML
+    # HTML (`tag_append` option)
     # ==========================================================================
 
     data_table_1 = [1 2 3
@@ -150,6 +150,55 @@
 
     </body>
     </html>
+    """
+
+    @test backup == orig
+    @test result == expected
+
+    # Markdown (`remove_tags` option)
+    # ==========================================================================
+
+    data_table_1 = [1 2 3
+                    4 5 6]
+
+    path = "test.md"
+
+    orig = """
+    # Markdown
+
+    This is a markdown table.
+
+    <PrettyTables Table 1> This should be removed.
+    This should be removed.
+    This should be removed.
+    This should be removed.
+    This should be removed.
+    </PrettyTables>
+    """
+
+    open(path,"w") do f
+        write(f, orig)
+    end
+
+    data_table_1 = [1 2 3
+                    4 5 6]
+
+    include_pt_in_file(path, "Table 1", data_table_1, tf = markdown,
+                       remove_tags = true)
+
+    result = read(path, String)
+    backup = read(path * "_backup", String)
+
+    expected = """
+    # Markdown
+
+    This is a markdown table.
+
+    | Col. 1 | Col. 2 | Col. 3 |
+    |--------|--------|--------|
+    |      1 |      2 |      3 |
+    |      4 |      5 |      6 |
+
     """
 
     @test backup == orig

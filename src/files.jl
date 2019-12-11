@@ -26,6 +26,9 @@ and will **replace everything between the marks** with the printed table. If the
 closing tag is in a separate line, then all characters before it will be kept.
 This is important to add comment tags.
 
+If the user wants to also remove the opening and ending tags, then pass the
+keyword `remove_tags = true`.
+
 The keyword `tag_append` can be used to pass a string that can be used to add a
 text after the opening tag. This is important for HTML where the comments have
 openning and closing tags. Thus, if `tag_append = " -->"`, then the following
@@ -37,7 +40,7 @@ can be used to add a table into HTML files:
 
 """
 function include_pt_in_file(filename::AbstractString, mark::AbstractString,
-                            args...; backup_file = true,
+                            args...; backup_file = true, remove_tags = false,
                             tag_append::String = "", kwargs...)
 
     orig = ""
@@ -55,8 +58,14 @@ function include_pt_in_file(filename::AbstractString, mark::AbstractString,
 
     # Write the output to a temporary file.
     (path,io) = mktemp()
-    r = Regex("(?<=<PrettyTables $mark>$tag_append)(?:.|\n)*?(?=.*</PrettyTables>)")
-    write(io, replace(orig, r => "\n$str"))
+
+    if !remove_tags
+        r = Regex("(?<=<PrettyTables $mark>$tag_append)(?:.|\n)*?(?=.*</PrettyTables>)")
+        write(io, replace(orig, r => "\n$str"))
+    else
+        r = Regex("<PrettyTables $mark>$tag_append(?:.|\n)*?</PrettyTables>")
+        write(io, replace(orig, r => "$str"))
+    end
     close(io)
 
     # Backup the original file if required.
