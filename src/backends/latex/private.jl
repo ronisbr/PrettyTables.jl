@@ -19,6 +19,7 @@ function _latex_alignment(s::Symbol)
     end
 end
 
+# Get the LaTeX table description (alignment and vertical columns).
 function _latex_table_desc(alignment::Vector{Symbol},
                            vlines::AbstractVector{Int},
                            left_vline::AbstractString,
@@ -45,6 +46,7 @@ function _latex_table_desc(alignment::Vector{Symbol},
     return str
 end
 
+# Wrap the `text` into LaTeX environment(s).
 _latex_envs(text::AbstractString, env::String) = _latex_envs(text, [env])
 function _latex_envs(text::AbstractString, envs::Vector{String})
     str = ""
