@@ -9,6 +9,7 @@
 # Low-level function to print the table using the LaTeX backend.
 function _pt_latex(io, pinfo;
                    tf::LatexTableFormat = latex_default,
+                   cell_alignment::Dict{Tuple{Int,Int},Symbol} = Dict{Tuple{Int,Int},Symbol}(),
                    formatter::Dict = Dict(),
                    highlighters::Union{LatexHighlighter,Tuple} = (),
                    hlines::AbstractVector{Int} = Int[],
@@ -172,6 +173,31 @@ function _pt_latex(io, pinfo;
                 if h.f(data, ir, jc)
                     data_str_ij = h.fd(data, i, j, data_str[i,j])
                 end
+            end
+
+            # Check the alignment of this cell.
+            if haskey(cell_alignment, (i,j))
+                a = _latex_alignment(cell_alignment[(i,j)])
+
+                # Since we are using the `multicolumn`, we need to verify if the
+                # column has vertical lines.
+                aux_j = show_row_number ? jc + 1 : jc
+
+                # We only need to add left vertical line if it is the first
+                # column.
+                lvline = (0 ∈ vlines) && (aux_j-1 == 0) ? left_vline : ""
+
+                # For the right vertical line, we must check if it is a mid line
+                # or right line.
+                if aux_j ∈ vlines
+                    rvline = (j == num_printed_cols) ? right_vline : mid_vline
+                else
+                    rvline = ""
+                end
+
+                # Wrap the data into the multicolumn environment.
+                data_str_ij = _latex_envs(data_str_ij,
+                                          "multicolumn{1}{$(lvline)$(a)$(rvline)}")
             end
 
             print(buf, data_str_ij)

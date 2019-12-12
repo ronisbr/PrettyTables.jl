@@ -6,6 +6,19 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
+# Convert the alignment symbol into a LaTeX alignment string.
+function _latex_alignment(s::Symbol)
+    if s == :l
+        return "l"
+    elseif s == :c
+        return "c"
+    elseif s == :r
+        return "r"
+    else
+        error("Invalid LaTeX alignment symbol: $s.")
+    end
+end
+
 function _latex_table_desc(alignment::Vector{Symbol},
                            vlines::AbstractVector{Int},
                            left_vline::AbstractString,
@@ -16,17 +29,7 @@ function _latex_table_desc(alignment::Vector{Symbol},
     0 ∈ vlines && (str *= left_vline)
 
     for i = 1:length(alignment)
-        s = alignment[i]
-
-        if s == :l
-            str *= "l"
-        elseif s == :c
-            str *= "c"
-        elseif s == :r
-            str *= "r"
-        else
-            error("Invalid LaTeX alignment symbol: $s.")
-        end
+        str *= _latex_alignment(alignment[i])
 
         if i ∈ vlines
             if i != length(alignment)
