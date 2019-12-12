@@ -352,9 +352,7 @@ function pretty_table(io::IO, table; kwargs...)
     # Get the data.
     #
     # If `table` is not compatible with Tables.jl, then an error will be thrown.
-    if !Tables.istable(table)
-      error("Argument `table` does not conform to Tables interface.")
-    end   
+    Tables.columns(t)  
     # Get the table schema to obtain the columns names.
     sch = Tables.schema(table)
     data = Tables.matrix(table)
