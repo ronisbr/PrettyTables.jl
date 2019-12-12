@@ -47,19 +47,16 @@ function _latex_table_desc(alignment::Vector{Symbol},
 end
 
 # Wrap the `text` into LaTeX environment(s).
-_latex_envs(text::AbstractString, env::String) = _latex_envs(text, [env])
-function _latex_envs(text::AbstractString, envs::Vector{String})
-    str = ""
+_latex_envs(text::AbstractString, envs::Vector{String}) = _latex_envs(text, envs, length(envs))
+_latex_envs(text::AbstractString, env::String) = "\\" * string(env) * "{" * text * "}"
 
-    num_envs = length(envs)
-
-    for env in envs
-        str *= "\\" * string(env) * "{"
+function _latex_envs(text::AbstractString, envs::Vector{String}, i::Int)
+    @inbounds if i > 0
+        str = _latex_envs(text, envs[i])
+        return _latex_envs(str, envs, i -= 1)
     end
 
-    str *= text * repeat("}", num_envs)
-
-    return str
+    return text
 end
 
 # This was adapted from Julia `escape_string` function. In case of LaTeX, we
