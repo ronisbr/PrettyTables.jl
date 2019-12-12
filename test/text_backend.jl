@@ -1377,9 +1377,10 @@ end
 
 # Issue #24
 # ==============================================================================
-@testset "Issue #24 - Tables compatability" begin
-    # Named tuple of vectors (satisfies Tables interface)
-    ctable = (x = [1, 2, 3, 4], y = ["a", "b", "c", "d"])
+
+@testset "Issue #24 - Tables compatibility" begin
+    # Named tuple of vectors (satisfies Tables interface).
+    ctable = (x = Int64[1, 2, 3, 4], y = ["a", "b", "c", "d"])
 
     cresult = sprint(pretty_table, ctable)
 
@@ -1394,6 +1395,6 @@ end
 │     4 │      d │
 └───────┴────────┘
 """
-  
+
   @test cresult == expected
 end
