@@ -28,13 +28,13 @@ This structure defines the format of the LaTeX table.
 
 """
 @with_kw struct LatexTableFormat
-    top_line::String               = "\\noalign{\\hrule height 2pt}"
-    header_line::String            = "\\noalign{\\hrule height 2pt}"
-    mid_line::String               = "\\noalign{\\hrule height 1pt}"
-    bottom_line::String            = "\\noalign{\\hrule height 2pt}"
-    left_vline::String             = "@{\\vrule width 2pt\\hspace{2pt}}"
-    mid_vline::String              = "@{\\hspace{2pt}\\vrule width 2pt\\hspace{2pt}}"
-    right_vline::String            = "@{\\hspace{2pt}\\vrule width 2pt}"
+    top_line::String               = "\\hline\\hline"
+    header_line::String            = "\\hline"
+    mid_line::String               = "\\hline"
+    bottom_line::String            = "\\hline\\hline"
+    left_vline::String             = "|"
+    mid_vline::String              = "|"
+    right_vline::String            = "|"
     header_envs::Vector{String}    = ["textbf"]
     subheader_envs::Vector{String} = ["texttt"]
 end
