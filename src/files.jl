@@ -38,6 +38,10 @@ can be used to add a table into HTML files:
     ...
     <!-- </PrettyTables> -->
 
+By default, this function will copy the original file to `filename_backup`. If
+this is not desired, then pass the keyword `backup_file = false` to the
+function.
+
 """
 function include_pt_in_file(filename::AbstractString, mark::AbstractString,
                             args...; backup_file = true, remove_tags = false,
@@ -51,7 +55,7 @@ function include_pt_in_file(filename::AbstractString, mark::AbstractString,
 
     GC.gc()
 
-    # First, print the a string.
+    # First, print the table into a string.
     io = IOBuffer()
     pretty_table(io, args...; kwargs...)
     str = String(take!(io))
