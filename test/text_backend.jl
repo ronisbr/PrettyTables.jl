@@ -1374,3 +1374,26 @@ end
 
     @test result == expected
 end
+
+# Issue #24
+# ==============================================================================
+@testset "Issue #24 - Tables compatability" begin
+    # Named tuple of vectors (satisfies Tables interface)
+    ctable = (x = [1, 2, 3, 4], y = ["a", "b", "c", "d"])
+
+    cresult = sprint(pretty_table, ctable)
+
+    expected = """
+┌───────┬────────┐
+│     x │      y │
+│ Int64 │ String │
+├───────┼────────┤
+│     1 │      a │
+│     2 │      b │
+│     3 │      c │
+│     4 │      d │
+└───────┴────────┘
+"""
+  
+  @test cresult == expected
+end
