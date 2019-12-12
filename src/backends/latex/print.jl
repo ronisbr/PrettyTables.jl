@@ -13,6 +13,7 @@ function _pt_latex(io, pinfo;
                    formatter::Dict = Dict(),
                    highlighters::Union{LatexHighlighter,Tuple} = (),
                    hlines::AbstractVector{Int} = Int[],
+                   longtable_footer::Union{Nothing,AbstractString} = nothing,
                    noheader::Bool = false,
                    nosubheader::Bool = false,
                    row_number_vline::Bool = false,
@@ -148,8 +149,27 @@ function _pt_latex(io, pinfo;
                 println(buf, " \\\\" * header_line)
             end
         end
+    end
 
-        table_type == :longtable && println(buf, "\\endhead")
+    # If we are using `longtable`, then we must mark the end of header and also
+    # create the footer.
+    if table_type == :longtable
+        println(buf, "\\endhead")
+        println(buf, bottom_line)
+
+        # Check if the user wants a text on the footer.
+        if longtable_footer != nothing
+            lvline =            0 ∈ vlines ? left_vline : ""
+            rvline = id_cols[end] ∈ vlines ? right_vline : ""
+
+            env = "multicolumn{" * string(num_printed_cols) * "}" * "{r}"
+
+            println(buf, _latex_envs(longtable_footer, env) * "\\\\")
+            println(buf, bottom_line)
+        end
+
+        println(buf, "\\endfoot")
+        println(buf, "\\endlastfoot")
     end
 
     # Data
