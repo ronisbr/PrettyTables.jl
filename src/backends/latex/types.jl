@@ -47,7 +47,7 @@ Defines the default highlighter of a table when using the LaTeX backend.
 # Fields
 
 * `f`: Function with the signature `f(data,i,j)` in which should return `true`
-       if the element `(i,j)` in `data` must be highlighter, or `false`
+       if the element `(i,j)` in `data` must be highlighted, or `false`
        otherwise.
 * `fd`: A function with the signature `f(data,i,j,str)::String` in which
         `data` is the matrix, `(i,j)` is the element position in the table, and
