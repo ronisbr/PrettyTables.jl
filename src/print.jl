@@ -260,7 +260,7 @@ Each highlighter is an instance of a structure that is a subtype of
 fields to comply with the API:
 
 * `f`: Function with the signature `f(data,i,j)` in which should return `true`
-       if the element `(i,j)` in `data` must be highlighter, or `false`
+       if the element `(i,j)` in `data` must be highlighted, or `false`
        otherwise.
 * `fd`: Function with the signature `f(h,data,i,j)` in which `h` is the
         highlighter. This function must return the `HTMLDecoration` to be
