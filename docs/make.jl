@@ -15,6 +15,7 @@ makedocs(
         "Back-ends"          => Any[
             "Text"           => "man/text_backend.md",
             "HTML"           => "man/html_backend.md",
+            "LaTeX"          => "man/latex_backend.md",
         ],
         "Alignment"          => "man/alignment.md",
         "Filters"            => "man/filters.md",
