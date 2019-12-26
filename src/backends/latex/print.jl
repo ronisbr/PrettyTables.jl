@@ -192,6 +192,7 @@ function _pt_latex(io, pinfo;
             for h in highlighters
                 if h.f(data, ir, jc)
                     data_str_ij = h.fd(data, i, j, data_str[i,j])
+                    break
                 end
             end
 
