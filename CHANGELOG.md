@@ -1,6 +1,23 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 0.8.0
+-------------
+
+- ![Feature][badge-feature] The keyword `standalone = false` can be used with
+  HTML back-end to print only the table.
+- ![Feature][badge-feature] An experimental version of a LaTeX back-end is now
+  available. Notice that it still lacks tests and many bugs are expected.
+- ![Feature][badge-feature] A table can now be added to a text file using the
+  function `include_pt_to_file`. You can define marks that will be used to place
+  the table in the file. It works with all back-ends.
+- ![Bugfix][badge-bugfix] The support for
+  [Tables.jl](https://github.com/JuliaData/Tables.jl) API were fixed for cases
+  in which `Tables.columns` did not return a matrix. Thanks @pdeffebach for the
+  PR! (Issue [#24][gh-issue-24]) (PR [#25][gh-pr-25])
+- ![Info][badge-info] End of support of Julia 1.2. The supported versions are
+  1.0 and 1.3.
+
 Version 0.7.0
 -------------
 
@@ -175,6 +192,8 @@ Version 0.1.0
 [gh-issue-19]: https://github.com/ronisbr/PrettyTables.jl/issues/19
 [gh-issue-21]: https://github.com/ronisbr/PrettyTables.jl/issues/21
 [gh-issue-22]: https://github.com/ronisbr/PrettyTables.jl/issues/22
+[gh-issue-24]: https://github.com/ronisbr/PrettyTables.jl/issues/24
 
 [gh-pr-5]: https://github.com/ronisbr/PrettyTables.jl/pull/5
 [gh-pr-8]: https://github.com/ronisbr/PrettyTables.jl/pull/8
+[gh-pr-25]: https://github.com/ronisbr/PrettyTables.jl/pull/25
