@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Usage · Pretty Tables</title><link rel="canonical" href="https://ronisbr.github.io/PrettyTables.jl/stable/man/usage/index.html"/><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link href="../../assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><a href="../../index.html"><img class="logo" src="../../assets/logo.png" alt="Pretty Tables logo"/></a><h1>Pretty Tables</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="../../search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="../../">Home</a></li><li class="current"><a class="toctext" href>Usage</a><ul class="internal"><li class="toplevel"><a class="toctext" href="#Examples-1">Examples</a></li><li><a class="toctext" href="#Helpers-1">Helpers</a></li></ul></li><li><span class="toctext">Back-ends</span><ul><li><a class="toctext" href="../text_backend/">Text</a></li><li><a class="toctext" href="../html_backend/">HTML</a></li><li><a class="toctext" href="../latex_backend/">LaTeX</a></li></ul></li><li><a class="toctext" href="../alignment/">Alignment</a></li><li><a class="toctext" href="../filters/">Filters</a></li><li><a class="toctext" href="../formatter/">Formatters</a></li><li><span class="toctext">Examples</span><ul><li><a class="toctext" href="../text_examples/">Text back-end</a></li><li><a class="toctext" href="../html_examples/">HTML back-end</a></li></ul></li><li><a class="toctext" href="../../lib/library/">Library</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Usage</a></li></ul><a class="edit-page" href="https://github.com/ronisbr/PrettyTables.jl/blob/master/docs/src/man/usage.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Usage</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Usage-1" href="#Usage-1">Usage</a></h1><p>The following functions can be used to print data.</p><pre><code class="language-julia">function pretty_table([io::IO,] data[, header]; kwargs...) where {T1,T2}</code></pre><p>Print to <code>io</code> the data <code>data</code> with header <code>header</code>. If <code>io</code> is omitted, then it defaults to <code>stdout</code>. If <code>header</code> is empty, then it will be automatically filled with &quot;Col. i&quot; for the <em>i</em>-th column.</p><p>The <code>header</code> can be a <code>Vector</code> or a <code>Matrix</code>. If it is a <code>Matrix</code>, then each row will be a header line. The first line is called <em>header</em> and the others are called <em>sub-headers</em> .</p><p>The following types of <code>data</code> are currently supported:</p><ol><li><code>AbstractVector</code>: any vector can be printed. In this case, the <code>header</code> <strong>must</strong> be a vector, where the first element is considered the header and the others are the sub-headers.</li><li><code>AbstractMatrix</code>: any matrix can be printed.</li><li><code>Table</code>: any object that complies with the API of <a href="https://github.com/JuliaData/Tables.jl">Tables.jl</a> is also supported and can be printed.</li><li><code>Dict</code>: any <code>Dict</code> can be printed. In this case, the special keyword <code>sortkeys</code> can be used to select whether or not the user wants to print the dictionary with the keys sorted. If it is <code>false</code>, then the elements will be printed on the same order returned by the functions <code>keys</code> and <code>values</code>. Notice that this assumes that the keys are sortable, if they are not, then an error will be thrown.</li></ol><p>The user can select which back-end will be used to print the tables using the keyword argument <code>backend</code>. Currently, the following back-ends are supported:</p><ol><li><strong>Text</strong> (<code>backend = :text</code>): prints the table in text mode. This is the default selection if the keyword <code>backend</code> is absent.</li><li><strong>HTML</strong> (<code>backend = :html</code>): prints the table in HTML.</li></ol><p>Each back-end defines its own configuration keywords that can be passed using <code>kwargs</code>. However, the following keywords are valid for all back-ends:</p><ul><li><code>alignment</code>: Select the alignment of the columns (see the section <code>Alignment</code>).</li><li><code>backend</code>: Select which back-end will be used to print the table. Notice that            the additional configuration in <code>kwargs...</code> depends on the selected            backend.</li><li><code>filters_row</code>: Filters for the rows (see the section <code>Filters</code>).</li><li><code>filters_col</code>: Filters for the columns (see the section <code>Filters</code>).</li></ul><h1><a class="nav-anchor" id="Examples-1" href="#Examples-1">Examples</a></h1><p>In the following, it is possible to see some examples for a quick start using the text back-end.</p><pre><code class="language-julia-repl">julia&gt; data = [1 2 3; 4 5 6];
+
+julia&gt; pretty_table(data, [&quot;Column 1&quot;, &quot;Column 2&quot;, &quot;Column 3&quot;])
+┌──────────┬──────────┬──────────┐
+│ Column 1 │ Column 2 │ Column 3 │
+├──────────┼──────────┼──────────┤
+│        1 │        2 │        3 │
+│        4 │        5 │        6 │
+└──────────┴──────────┴──────────┘
+
+julia&gt; pretty_table(data, [&quot;Column 1&quot; &quot;Column 2&quot; &quot;Column 3&quot;; &quot;A&quot; &quot;B&quot; &quot;C&quot;])
+┌──────────┬──────────┬──────────┐
+│ Column 1 │ Column 2 │ Column 3 │
+│        A │        B │        C │
+├──────────┼──────────┼──────────┤
+│        1 │        2 │        3 │
+│        4 │        5 │        6 │
+└──────────┴──────────┴──────────┘</code></pre><pre><code class="language-julia">julia&gt; dict = Dict(1 =&gt; &quot;Jan&quot;, 2 =&gt; &quot;Feb&quot;, 3 =&gt; &quot;Mar&quot;, 4 =&gt; &quot;Apr&quot;, 5 =&gt; &quot;May&quot;, 6 =&gt; &quot;Jun&quot;);
+
+julia&gt; pretty_table(dict)
+┌───────┬────────┐
+│  Keys │ Values │
+│ Int64 │ String │
+├───────┼────────┤
+│     4 │    Apr │
+│     2 │    Feb │
+│     3 │    Mar │
+│     5 │    May │
+│     6 │    Jun │
+│     1 │    Jan │
+└───────┴────────┘
+
+julia&gt; pretty_table(dict, sortkeys = true)
+┌───────┬────────┐
+│  Keys │ Values │
+│ Int64 │ String │
+├───────┼────────┤
+│     1 │    Jan │
+│     2 │    Feb │
+│     3 │    Mar │
+│     4 │    Apr │
+│     5 │    May │
+│     6 │    Jun │
+└───────┴────────┘
+</code></pre><h2><a class="nav-anchor" id="Helpers-1" href="#Helpers-1">Helpers</a></h2><p>The macro <code>@pt</code> was created to make it easier to pretty print tables to <code>stdout</code>. Its signature is:</p><pre><code class="language-julia">macro pt(expr...)</code></pre><p>where the expression list <code>expr</code> contains the tables that should be printed like:</p><pre><code class="language-julia">@pt table1 table2 table3</code></pre><p>The user can select the table header by passing the expression:</p><pre><code class="language-none">:header = [&lt;Vector with the header&gt;]</code></pre><p>Notice that the header is valid only for the next printed table. Hence:</p><pre><code class="language-julia">    @pt :header = header1 table1 :header = header2 table2 table3</code></pre><p>will print <code>table1</code> using <code>header1</code>, <code>table2</code> using <code>header2</code>, and <code>table3</code> using the default header.</p><p>The global configurations used to print tables with the macro <code>@pt</code> can be selected by:</p><pre><code class="language-julia">macro ptconf(expr...)</code></pre><p>where <code>expr</code> format must be:</p><pre><code class="language-none">keyword1 = value1 keyword2 = value2 ...</code></pre><p>The keywords can be any possible keyword that can be used in the function <code>pretty_table</code>.</p><p>All the configurations can be reseted by calling <code>@ptconfclean</code>.</p><div class="admonition warning"><div class="admonition-title">Warning</div><div class="admonition-text"><p>If a keyword is not supported by the function <code>pretty_table</code>, then no error message is printed when calling <code>@ptconf</code>. However, an error will be thrown when <code>@pt</code> is called.</p></div></div><div class="admonition info"><div class="admonition-title">Info</div><div class="admonition-text"><p>When more than one table is passed to the macro <code>@pt</code>, then multiple calls to <code>pretty_table</code> will occur. Hence, the cropping algorithm will behave exactly the same as printing the tables separately.</p></div></div><pre><code class="language-julia-repl">julia&gt; data = [1 2 3; 4 5 6];
+
+julia&gt; @pt data
+┌────────┬────────┬────────┐
+│ Col. 1 │ Col. 2 │ Col. 3 │
+├────────┼────────┼────────┤
+│      1 │      2 │      3 │
+│      4 │      5 │      6 │
+└────────┴────────┴────────┘
+
+julia&gt; @pt :header = [&quot;Column 1&quot;, &quot;Column 2&quot;, &quot;Column 3&quot;] data :header = [&quot;Column 1&quot; &quot;Column 2&quot; &quot;Column 3&quot;; &quot;A&quot; &quot;B&quot; &quot;C&quot;] data
+┌──────────┬──────────┬──────────┐
+│ Column 1 │ Column 2 │ Column 3 │
+├──────────┼──────────┼──────────┤
+│        1 │        2 │        3 │
+│        4 │        5 │        6 │
+└──────────┴──────────┴──────────┘
+┌──────────┬──────────┬──────────┐
+│ Column 1 │ Column 2 │ Column 3 │
+│        A │        B │        C │
+├──────────┼──────────┼──────────┤
+│        1 │        2 │        3 │
+│        4 │        5 │        6 │
+└──────────┴──────────┴──────────┘
+
+julia&gt; @ptconf tf = ascii_dots alignment = :c
+
+julia&gt; @pt data
+............................
+: Col. 1 : Col. 2 : Col. 3 :
+:........:........:........:
+:   1    :   2    :   3    :
+:   4    :   5    :   6    :
+:........:........:........:
+
+julia&gt; @ptconfclean
+
+julia&gt; @pt data
+┌────────┬────────┬────────┐
+│ Col. 1 │ Col. 2 │ Col. 3 │
+├────────┼────────┼────────┤
+│      1 │      2 │      3 │
+│      4 │      5 │      6 │
+└────────┴────────┴────────┘</code></pre><footer><hr/><a class="previous" href="../../"><span class="direction">Previous</span><span class="title">Home</span></a><a class="next" href="../text_backend/"><span class="direction">Next</span><span class="title">Text</span></a></footer></article></body></html>
