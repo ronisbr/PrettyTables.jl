@@ -1398,3 +1398,29 @@ end
 
   @test cresult == expected
 end
+
+# Issue #28
+# ==============================================================================
+
+@testset "Issue #28 - Tables.api must have priority when printing" begin
+    # A DataFrame is compliant with Tables.jl API.
+    df = DataFrame(x=1:3, y='a':'c', z=["String 1";"String 2";"String 3"]);
+
+    # Thus, the following 3 calls must provide the same results.
+    result_1 = sprint(pretty_table, df)
+    result_2 = sprint(pretty_table, Tables.rowtable(df))
+    result_3 = sprint(pretty_table, Tables.columns(df))
+
+    expected = """
+┌───────┬──────┬──────────┐
+│     x │    y │        z │
+│ Int64 │ Char │   String │
+├───────┼──────┼──────────┤
+│     1 │    a │ String 1 │
+│     2 │    b │ String 2 │
+│     3 │    c │ String 3 │
+└───────┴──────┴──────────┘
+"""
+
+    @test result_1 == result_2 == result_3 == expected
+end

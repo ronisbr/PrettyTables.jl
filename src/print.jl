@@ -13,37 +13,30 @@ export pretty_table
 ################################################################################
 
 """
-    function pretty_table([io::IO,] data::AbstractVecOrMat{T1}, header::AbstractVecOrMat{T2};  kwargs...) where {T1,T2}
+    function pretty_table([io::IO,] table[, header::AbstractVecOrMat];  kwargs...)
 
-Print to `io` the vector or matrix `data` with header `header`. If `io` is
-omitted, then it defaults to `stdout`. If `header` is empty, then it will be
+Print to `io` the table `table` with header `header`. If `io` is omitted, then
+it defaults to `stdout`. If `header` is empty or missing, then it will be
 automatically filled with "Col.  i" for the *i*-th column.
 
 The `header` can be a `Vector` or a `Matrix`. If it is a `Matrix`, then each row
 will be a header line. The first line is called *header* and the others are
 called *sub-headers* .
 
-    function pretty_table([io::IO,] data::AbstractVecOrMat{T}; ...) where T
+When printing, it will be verified if `table` complies with **Tables.jl** API.
+If it is is compliant, then this interface will be used to print the table. If
+it is not compliant, then only the following types are supported:
 
-Print to `io` the vector or matrix `data`. If `io` is omitted, then it defaults
-to `stdout`. The header will be automatically filled with "Col. i" for the
-*i*-th column.
-
-    function pretty_table([io::IO,] dict::Dict{K,V}; sortkeys = true, ...) where {K,V}
-
-Print to `io` the dictionary `dict` in a matrix form (one column for the keys
-and other for the values). If `io` is omitted, then it defaults to `stdout`.
-
-In this case, the keyword `sortkeys` can be used to select whether or not the
-user wants to print the dictionary with the keys sorted. If it is `false`, then
-the elements will be printed on the same order returned by the functions `keys`
-and `values`. Notice that this assumes that the keys are sortable, if they are
-not, then an error will be thrown.
-
-    function pretty_table([io::IO,] table; ...)
-
-Print to `io` the table `table`. In this case, `table` must comply with the API
-of **Tables.jl**. If `io` is omitted, then it defaults to `stdout`.
+1. `AbstractVector`: any vector can be printed. In this case, the `header`
+   **must** be a vector, where the first element is considered the header and
+   the others are the sub-headers.
+2. `AbstractMatrix`: any matrix can be printed.
+3. `Dict`: any `Dict` can be printed. In this case, the special keyword
+   `sortkeys` can be used to select whether or not the user wants to print the
+   dictionary with the keys sorted. If it is `false`, then the elements will be
+   printed on the same order returned by the functions `keys` and `values`.
+   Notice that this assumes that the keys are sortable, if they are not, then an
+   error will be thrown.
 
 # Keywords
 
@@ -402,27 +395,77 @@ all columns that does not have a specific key.
 
 
 """
-pretty_table(data::AbstractVecOrMat{T1}, header::AbstractVecOrMat{T2};
-             kwargs...) where {T1,T2} =
+pretty_table(data; kwargs...) = pretty_table(stdout, data, []; kwargs...)
+
+pretty_table(data, header::AbstractVecOrMat; kwargs...) =
     pretty_table(stdout, data, header; kwargs...)
 
-function pretty_table(io::IO, data::AbstractVecOrMat{T1},
-                      header::AbstractVecOrMat{T2}; kwargs...) where {T1,T2}
+# This definition is required to avoid ambiguities.
+pretty_table(data::AbstractVecOrMat, header::AbstractVecOrMat; kwargs...) =
+    pretty_table(stdout, data, header; kwargs...)
 
-    isempty(header) && ( header = ["Col. " * string(i) for i = 1:size(data,2)] )
+# This definition is required to avoid ambiguities.
+pretty_table(io::IO, data::AbstractVecOrMat; kwargs...) =
+    pretty_table(io, data, []; kwargs...)
+
+pretty_table(io::IO, data; kwargs...) = pretty_table(io, data, []; kwargs...)
+
+function pretty_table(io::IO, data, header::AbstractVecOrMat; kwargs...)
+    if Tables.istable(data)
+        _pretty_table_Tables(io, data, header; kwargs...)
+    elseif typeof(data) <: AbstractVecOrMat
+        _pretty_table_VecOrMat(io, data, header; kwargs...)
+    elseif typeof(data) <: Dict
+        _pretty_table_Dict(io, data; kwargs...)
+    else
+        error("The type $(typeof(data)) is not supported.")
+    end
+end
+
+################################################################################
+#                              Private Functions
+################################################################################
+
+# Function to print data that complies with Tables.jl API.
+function _pretty_table_Tables(io::IO, table, header; kwargs...)
+    # Get the table schema to obtain the columns names.
+    sch = Tables.schema(table)
+
+    # Get the data.
+    data = Tables.matrix(table)
+
+    if sch == nothing
+        if isempty(header)
+            num_cols, num_rows = size(data)
+            header = ["Col. " * string(i) for i = 1:num_cols]
+        end
+    else
+        names = reshape( [sch.names...], (1,:) )
+        types = reshape( [sch.types...], (1,:) )
+
+        # Check if we have only one column. In this case, the header must be a
+        # `Vector`.
+        if length(names) == 1
+            header = [names[1]; types[1]]
+        else
+            header = [names; types]
+        end
+    end
+
     _pretty_table(io, data, header; kwargs...)
 end
 
-pretty_table(data::AbstractVecOrMat{T}, kwargs...) where T =
-    pretty_table(stdout, data; kwargs...)
+# Function to print vectors or matrices.
+function _pretty_table_VecOrMat(io, matrix, header; kwargs...)
+    if isempty(header)
+        header = ["Col. " * string(i) for i = 1:size(matrix,2)]
+    end
 
-pretty_table(io::IO, data::AbstractVecOrMat{T}; kwargs...) where T =
-    pretty_table(io, data, []; kwargs...)
+    _pretty_table(io, matrix, header; kwargs...)
+end
 
-pretty_table(dict::Dict{K,V}; kwargs...) where {K,V} =
-    pretty_table(stdout, dict; kwargs...)
-
-function pretty_table(io::IO, dict::Dict{K,V}; sortkeys = false, kwargs...) where {K,V}
+# Function to print dictionaries.
+function _pretty_table_Dict(io, dict::Dict{K,V}; sortkeys = false, kwargs...) where {K,V}
     header = ["Keys"     "Values";
               string(K)  string(V)]
 
@@ -440,38 +483,6 @@ function pretty_table(io::IO, dict::Dict{K,V}; sortkeys = false, kwargs...) wher
 
     pretty_table(io, [vk vv], header; kwargs...)
 end
-
-pretty_table(table; kwargs...) = pretty_table(stdout, table; kwargs...)
-
-function pretty_table(io::IO, table; kwargs...)
-
-    # Get the table schema to obtain the columns names.
-    sch = Tables.schema(table)
-    # Get the data.
-    data = Tables.matrix(table)
-
-    if sch == nothing
-        num_cols, num_rows = size(data)
-        header = ["Col. " * string(i) for i = 1:num_cols]
-    else
-        names = reshape( [sch.names...], (1,:) )
-        types = reshape( [sch.types...], (1,:) )
-
-        # Check if we have only one column. In this case, the header must be a
-        # `Vector`.
-        if length(names) == 1
-            header = [names[1]; types[1]]
-        else
-            header = [names; types]
-        end
-    end
-
-    _pretty_table(io, data, header; kwargs...)
-end
-
-################################################################################
-#                              Private Functions
-################################################################################
 
 # This is the low level function that prints the table. In this case, `data`
 # must be accessed by `[i,j]` and the size of the `header` must be equal to the

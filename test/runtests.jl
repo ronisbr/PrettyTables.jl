@@ -1,6 +1,7 @@
 using Test
 using PrettyTables
 using DataFrames
+using Tables
 
 println("Text backend")
 println("============")

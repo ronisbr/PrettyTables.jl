@@ -8,30 +8,30 @@ DocTestSetup = quote
 end
 ```
 
-The following functions can be used to print data.
+The following function can be used to print data.
 
 ```julia
-function pretty_table([io::IO,] data[, header]; kwargs...) where {T1,T2}
+function pretty_table([io::IO,] table[, header::AbstractVecOrMat];  kwargs...)
 ```
 
-Print to `io` the data `data` with header `header`. If `io` is omitted, then it
-defaults to `stdout`. If `header` is empty, then it will be automatically filled
-with "Col. i" for the *i*-th column.
+Print to `io` the table `table` with header `header`. If `io` is omitted, then
+it defaults to `stdout`. If `header` is empty or missing, then it will be
+automatically filled with "Col.  i" for the *i*-th column.
 
 The `header` can be a `Vector` or a `Matrix`. If it is a `Matrix`, then each row
 will be a header line. The first line is called *header* and the others are
 called *sub-headers* .
 
-The following types of `data` are currently supported:
+When printing, it will be verified if `table` complies with
+[**Tables.jl**](https://github.com/JuliaData/Tables.jl) API.  If it is is
+compliant, then this interface will be used to print the table. If it is not
+compliant, then only the following types are supported:
 
 1. `AbstractVector`: any vector can be printed. In this case, the `header`
    **must** be a vector, where the first element is considered the header and
    the others are the sub-headers.
 2. `AbstractMatrix`: any matrix can be printed.
-3. `Table`: any object that complies with the API of
-   [Tables.jl](https://github.com/JuliaData/Tables.jl) is also supported and can
-   be printed.
-4. `Dict`: any `Dict` can be printed. In this case, the special keyword
+3. `Dict`: any `Dict` can be printed. In this case, the special keyword
    `sortkeys` can be used to select whether or not the user wants to print the
    dictionary with the keys sorted. If it is `false`, then the elements will be
    printed on the same order returned by the functions `keys` and `values`.
