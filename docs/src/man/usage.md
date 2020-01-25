@@ -44,6 +44,7 @@ keyword argument `backend`. Currently, the following back-ends are supported:
 1. **Text** (`backend = :text`): prints the table in text mode. This is the
    default selection if the keyword `backend` is absent.
 2. **HTML** (`backend = :html`): prints the table in HTML.
+3. **LaTeX** (`backend = :latex`): prints the table in LaTeX format.
 
 Each back-end defines its own configuration keywords that can be passed using
 `kwargs`. However, the following keywords are valid for all back-ends:
