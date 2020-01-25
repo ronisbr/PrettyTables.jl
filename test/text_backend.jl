@@ -1404,7 +1404,9 @@ end
 
 @testset "Issue #28 - Tables.api must have priority when printing" begin
     # A DataFrame is compliant with Tables.jl API.
-    df = DataFrame(x=1:3, y='a':'c', z=["String 1";"String 2";"String 3"]);
+    df = DataFrame(x = Int64(1):Int64(3),
+                   y = 'a':'c',
+                   z = ["String 1";"String 2";"String 3"]);
 
     # Thus, the following 3 calls must provide the same results.
     result_1 = sprint(pretty_table, df)
