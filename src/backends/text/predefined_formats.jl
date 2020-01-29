@@ -118,5 +118,15 @@ const unicode_rounded = TextFormat(
     middle_intersection = '┼',
     bottom_intersection = '┴',
     column              = '│',
-    row                 = '─',
+    row                 = '─'
+)
+
+const unicode_matrix = TextFormat(
+    up_intersection     = ' ',
+    left_intersection   = '|',
+    right_intersection  = '|',
+    middle_intersection = ' ',
+    bottom_intersection = ' ',
+    column              = ' ',
+    row                 = ' '
 )
