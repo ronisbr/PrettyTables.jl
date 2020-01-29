@@ -6,7 +6,7 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-export html_default, html_dark, html_minimalist, html_simple
+export html_default, html_dark, html_minimalist, html_simple, html_matrix
 
 const html_default = HTMLTableFormat()
 
@@ -122,6 +122,38 @@ const html_simple = HTMLTableFormat(
 
     th.rowNumber, td.rowNumber {
         text-align: right;
+    }
+    """
+)
+const html_matrix = HTMLTableFormat(
+    css = """
+    table {
+        position: relative;
+    }
+
+    table::before,
+    table::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        border: 1px solid #000;
+        width: 6px;
+        height: 100%;
+    }
+
+    table::before {
+        left: -6px;
+        border-right: 0px;
+    }
+
+    table::after {
+        right: -6px;
+        border-left: 0px;
+    }
+
+    td {
+        padding: 5px;
+        text-align: center;
     }
     """
 )
