@@ -51,8 +51,8 @@ The following pre-defined formats are available: `unicode` (**default**),
     middle_intersection::Char = '┼'
     bottom_intersection::Char = '┴'
     column::Char              = '│'
-    border_left::Char         = '│'
-    border_right::Char        = '│'
+    left_border::Char         = '│'
+    right_border::Char        = '│'
     row::Char                 = '─'
     top_line::Bool            = true
     header_line::Bool         = true
