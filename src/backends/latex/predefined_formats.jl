@@ -6,7 +6,7 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-export latex_default, latex_simple, latex_matrix
+export latex_default, latex_simple
 
 const latex_default = LatexTableFormat()
 
