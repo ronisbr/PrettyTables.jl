@@ -127,6 +127,6 @@ const unicode_matrix = TextFormat(
     right_intersection  = '|',
     middle_intersection = ' ',
     bottom_intersection = ' ',
-    column              = ' ',
+    column              = '|',
     row                 = ' '
 )
