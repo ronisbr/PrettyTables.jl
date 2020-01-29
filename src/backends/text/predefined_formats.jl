@@ -132,19 +132,30 @@ const unicode_rounded = TextFormat(
     middle_intersection = '┼',
     bottom_intersection = '┴',
     column              = '│',
-    left_border         = '|',
-    right_border        = '|',
+    left_border         = '│',
+    right_border        = '│',
     row                 = '─'
 )
 
-const unicode_matrix = TextFormat(
+const ascii_matrix = TextFormat(
     up_intersection     = ' ',
-    left_intersection   = '|',
+    left_intersection   = '│',
     right_intersection  = '|',
     middle_intersection = ' ',
     bottom_intersection = ' ',
     left_border         = '|',
     right_border        = '|',
+    column              = ' ',
+    row                 = ' '
+)
+const unicode_matrix = TextFormat(
+    up_intersection     = ' ',
+    left_intersection   = '│',
+    right_intersection  = '│',
+    middle_intersection = ' ',
+    bottom_intersection = ' ',
+    left_border         = '│',
+    right_border        = '│',
     column              = ' ',
     row                 = ' '
 )
