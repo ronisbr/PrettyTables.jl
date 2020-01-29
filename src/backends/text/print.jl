@@ -313,7 +313,7 @@ function _pt_text(io, pinfo;
         ir = id_rows[i]
 
         for l = 1:num_lines_in_row[i]
-            _p!(screen, buf, border_crayon, tf.border_left)
+            _p!(screen, buf, border_crayon, tf.left_border)
 
             if show_row_number
                 if l == 1
