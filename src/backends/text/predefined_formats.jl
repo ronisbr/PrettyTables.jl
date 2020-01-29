@@ -20,8 +20,10 @@ const ascii_dots = TextFormat(
     left_intersection   = ':',
     right_intersection  = ':',
     middle_intersection = ':',
-    bottom_intersection  = ':',
+    bottom_intersection = ':',
     column              = ':',
+    left_border         = ':',
+    right_border        = ':',
     row                 = '.'
 )
 
@@ -36,6 +38,8 @@ const ascii_rounded = TextFormat(
     middle_intersection = '+',
     bottom_intersection = ''',
     column              = '|',
+    left_border         = '|',
+    right_border        = '|',
     row                 = '-'
 )
 
@@ -50,6 +54,8 @@ const borderless = TextFormat(
     middle_intersection = ' ',
     bottom_intersection = ' ',
     column              = ' ',
+    left_border         = ' ',
+    right_border        = ' ',
     row                 = ' ',
     top_line            = false,
     bottom_line         = false
@@ -66,6 +72,8 @@ const compact = TextFormat(
     middle_intersection = ' ',
     bottom_intersection  = ' ',
     column              = ' ',
+    left_border         = ' ',
+    right_border        = ' ',
     row                 = '-'
    )
 
@@ -74,6 +82,8 @@ const markdown = TextFormat(
     right_intersection  = '|',
     middle_intersection = '|',
     column              = '|',
+    left_border         = '|',
+    right_border        = '|',
     row                 = '-',
     top_line            = false,
     bottom_line         = false,
@@ -90,6 +100,8 @@ const mysql = TextFormat(
     middle_intersection = '+',
     bottom_intersection = '+',
     column              = '|',
+    left_border         = '|',
+    right_border        = '|',
     row                 = '-'
    )
 
@@ -104,6 +116,8 @@ const simple = TextFormat(
     middle_intersection = ' ',
     bottom_intersection  = ' ',
     column              = ' ',
+    left_border         = ' ',
+    right_border        = ' ',
     row                 = '='
 )
 
@@ -118,6 +132,8 @@ const unicode_rounded = TextFormat(
     middle_intersection = '┼',
     bottom_intersection = '┴',
     column              = '│',
+    left_border         = '|',
+    right_border        = '|',
     row                 = '─'
 )
 
@@ -127,6 +143,8 @@ const unicode_matrix = TextFormat(
     right_intersection  = '|',
     middle_intersection = ' ',
     bottom_intersection = ' ',
-    column              = '|',
+    left_border         = '|',
+    right_border        = '|',
+    column              = ' ',
     row                 = ' '
 )
