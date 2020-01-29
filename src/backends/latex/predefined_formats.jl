@@ -21,13 +21,3 @@ const latex_simple = LatexTableFormat(
     header_envs    = ["textbf"],
     subheader_envs = ["texttt"]
    )
-
-const latex_matrix = LatexTableFormat(
-    top_line       = " ",
-    header_line    = " ",
-    mid_line       = " ",
-    bottom_line    = " ",
-    left_vline     = "|",
-    mid_vline      = " ",
-    right_vline    = "|"
-   )
