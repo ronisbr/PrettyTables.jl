@@ -7,7 +7,7 @@ using Tables
 
 @reexport using Crayons
 
-import Base: Dict
+import Base: Dict, ismalformed, isoverlong
 
 ################################################################################
 #                                    Types

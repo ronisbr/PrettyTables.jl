@@ -15,6 +15,12 @@ println()
 include("./html_backend.jl")
 println()
 
+println("LaTeX backend")
+println("=============")
+println()
+include("./latex_backend.jl")
+println()
+
 println("General")
 println("=======")
 println()
