@@ -25,8 +25,10 @@ export TextFormat, Highlighter
                          the table.
 * `bottom_intersection`: Character in the intersection of the lines in the
                          bottom part.
-* `column`: Character in a vertical line.
-* `row`: Character in a horizontal line.
+* `column`: Character in a vertical line inside the table.
+* `left_border`: Character used as the left border.
+* `right_border`: Character used as the right border.
+* `row`: Character in a horizontal line inside the table.
 * `top_line`: If `true`, then the top table line will be drawn.
 * `header_line`: If `true`, then the line between the header and the data will
                  be drawn.
@@ -49,6 +51,8 @@ The following pre-defined formats are available: `unicode` (**default**),
     middle_intersection::Char = '┼'
     bottom_intersection::Char = '┴'
     column::Char              = '│'
+    left_border::Char         = '│'
+    right_border::Char        = '│'
     row::Char                 = '─'
     top_line::Bool            = true
     header_line::Bool         = true
