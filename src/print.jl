@@ -484,16 +484,25 @@ function _pretty_table_Dict(io, dict::Dict{K,V}; sortkeys = false, kwargs...) wh
     pretty_table(io, [vk vv], header; kwargs...)
 end
 
+# Dict to hold Format->Backend
+_type_backend_dict = Dict{DataType, Symbol}(TextFormat=>:text,  HTMLTableFormat=>:html, LatexTableFormat=>:latex)
+
 # This is the low level function that prints the table. In this case, `data`
 # must be accessed by `[i,j]` and the size of the `header` must be equal to the
 # number of columns in `data`.
 function _pretty_table(io, data, header;
                        alignment::Union{Symbol,Vector{Symbol}} = :r,
-                       backend::Symbol = :text,
+                       backend::Union{Nothing,Symbol} = nothing,
                        filters_row::Union{Nothing,Tuple} = nothing,
                        filters_col::Union{Nothing,Tuple} = nothing,
                        kwargs...)
-
+    if backend == nothing
+        try
+            backend = _type_backend_dict[typeof(kwargs[:tf])]
+        catch
+            backend = :text
+        end
+    end
     # Get information about the table we have to print based on the format of
     # `data`, which must be an `AbstractMatrix` or an `AbstractVector`.
     dims     = size(data)
@@ -601,4 +610,3 @@ function _pretty_table(io, data, header;
 
     return nothing
 end
-
