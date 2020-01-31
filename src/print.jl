@@ -497,7 +497,11 @@ function _pretty_table(io, data, header;
                        filters_col::Union{Nothing,Tuple} = nothing,
                        kwargs...)
     if backend == nothing
-        backend = _type_backend_dict[typeof(kwargs[:tf])]
+        try
+            backend = _type_backend_dict[typeof(kwargs[:tf])]
+        catch
+            backend = :text
+        end
     end
     # Get information about the table we have to print based on the format of
     # `data`, which must be an `AbstractMatrix` or an `AbstractVector`.
