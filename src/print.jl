@@ -499,13 +499,19 @@ function _pretty_table(io, data, header;
                        filters_row::Union{Nothing,Tuple} = nothing,
                        filters_col::Union{Nothing,Tuple} = nothing,
                        kwargs...)
+
+    # Try to automatically infer the backend based on the table format type.
     if backend == nothing
-        try
+        # In this case, if we do not have the `tf` keyword, then we just
+        # fallback to the text backend. Otherwise, check if the type is
+        # listed in the directionary `_type_backend_dict`.
+        if haskey(kwargs,:tf) && haskey(_type_backend_dict, typeof(kwargs[:tf]))
             backend = _type_backend_dict[typeof(kwargs[:tf])]
-        catch
+        else
             backend = :text
         end
     end
+
     # Get information about the table we have to print based on the format of
     # `data`, which must be an `AbstractMatrix` or an `AbstractVector`.
     dims     = size(data)
