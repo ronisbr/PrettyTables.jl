@@ -6,6 +6,48 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
+# Backend inference
+# ==============================================================================
+
+@testset "Back-end inference" begin
+    data = rand(3,3)
+
+    # Text
+    # ==========================================================================
+
+    auto   = sprint((io,data)->pretty_table(io, data, tf = unicode),
+                    data)
+    manual = sprint((io,data)->pretty_table(io, data, tf = unicode,
+                                             backend = :text), data)
+
+    @test auto == manual
+
+    # HTML
+    # ==========================================================================
+
+    auto   = sprint((io,data)->pretty_table(io, data, tf = html_simple),
+                    data)
+    manual = sprint((io,data)->pretty_table(io, data, tf = html_simple,
+                                             backend = :html), data)
+
+    @test auto == manual
+
+    # LaTeX
+    # ==========================================================================
+
+    auto   = sprint((io,data)->pretty_table(io, data, tf = latex_default),
+                    data)
+    manual = sprint((io,data)->pretty_table(io, data, tf = latex_default,
+                                             backend = :latex), data)
+
+    @test auto == manual
+
+    # Error
+    # ==========================================================================
+
+    @test_throws TypeError pretty_table(data, tf = [])
+end
+
 # Include table in file
 # ==============================================================================
 
