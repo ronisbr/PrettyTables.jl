@@ -495,10 +495,9 @@ function _pretty_table(io, data, header;
                        backend::Union{Nothing,Symbol} = nothing,
                        filters_row::Union{Nothing,Tuple} = nothing,
                        filters_col::Union{Nothing,Tuple} = nothing,
-                       tf::Union{TextFormat, HTMLTableFormat, LatexTableFormat} = unicode,
                        kwargs...)
     if backend == nothing
-        backend = _type_backend_dict[typeof(tf)]
+        backend = _type_backend_dict[typeof(kwargs[:tf])]
     end
     # Get information about the table we have to print based on the format of
     # `data`, which must be an `AbstractMatrix` or an `AbstractVector`.
@@ -607,4 +606,3 @@ function _pretty_table(io, data, header;
 
     return nothing
 end
-
