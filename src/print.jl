@@ -484,8 +484,11 @@ function _pretty_table_Dict(io, dict::Dict{K,V}; sortkeys = false, kwargs...) wh
     pretty_table(io, [vk vv], header; kwargs...)
 end
 
-# Dict to hold Format->Backend
-_type_backend_dict = Dict{DataType, Symbol}(TextFormat=>:text,  HTMLTableFormat=>:html, LatexTableFormat=>:latex)
+# Dictionary to hold the information between the table format type and the
+# backend.
+_type_backend_dict = Dict{DataType, Symbol}(TextFormat       => :text,
+                                            HTMLTableFormat  => :html,
+                                            LatexTableFormat => :latex)
 
 # This is the low level function that prints the table. In this case, `data`
 # must be accessed by `[i,j]` and the size of the `header` must be equal to the
