@@ -49,8 +49,9 @@ hl_p = LatexHighlighter( (data,i,j)->(j == 4) && data[i,4] > 10, ["color{red}", 
 hl_e = LatexHighlighter( (data,i,j)->(i == 10), ["cellcolor{black}", "color{white}", "textbf"])
 
 run(`cp example.tex latex_highlighter.tex`)
-include_pt_in_file("latex_highlighter.tex", "Table 1", data, backend = :latex,
-                   backup_file = false, highlighters = (hl_e, hl_p, hl_v))
+include_pt_in_file("latex_highlighter.tex", "Table 1", data, header,
+                   backend = :latex, backup_file = false,
+                   highlighters = (hl_e, hl_p, hl_v))
 run(`pdflatex latex_highlighter.tex`)
 run(`pdflatex latex_highlighter.tex`)
 run(`convert -density 150 -trim -strip latex_highlighter.pdf latex_highlighter.png`)
