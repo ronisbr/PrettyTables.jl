@@ -12,8 +12,6 @@ julia:
 codecov: true
 coveralls: true
 
-matrix:
-
 notifications:
     email: false
 
