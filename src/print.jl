@@ -48,6 +48,14 @@ it is not compliant, then only the following types are supported:
 * `filters_row`: Filters for the rows (see the section `Filters`).
 * `filters_col`: Filters for the columns (see the section `Filters`).
 
+!!! note
+
+    Notice that all back-ends have the keyword `tf` to specify the table
+    printing format. Thus, if the keyword `backend` is not present or if it is
+    `nothing`, then the back-end will be automatically inferred from the type of
+    the keyword `tf`. In this case, if `tf` is also not present, then it just
+    fall-back to the text back-end.
+
 # Alignment
 
 The keyword `alignment` can be a `Symbol` or a vector of `Symbol`.
