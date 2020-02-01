@@ -1,6 +1,20 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 0.8.1
+-------------
+
+- ![Feature][badge-feature] The back-end is now automatically inferred from the
+  table type keyword (`tf`). Thanks @DhruvaSambrani. (PRs [#41][gh-pr-41] and
+  [#42][gh-pr-42], Issue [#40][gh-issue-40])
+- ![Bugfix][badge-bugfix] LaTeX back-end was failing when printing a table with
+  an UTF-8 character on it. (Issue [#38][gh-issue-38])
+- ![Enhancement][badge-enhancement]
+  [Tables.jl](https://github.com/JuliaData/Tables.jl) API is now the priority
+  when printing tables. This means that if an object complies with this API,
+  then it will be used, even if the object is also derived from a supported type
+  like `AbstractVecOrMat`. (Issue [#28][gh-issue-28])
+
 Version 0.8.0
 -------------
 
@@ -193,7 +207,12 @@ Version 0.1.0
 [gh-issue-21]: https://github.com/ronisbr/PrettyTables.jl/issues/21
 [gh-issue-22]: https://github.com/ronisbr/PrettyTables.jl/issues/22
 [gh-issue-24]: https://github.com/ronisbr/PrettyTables.jl/issues/24
+[gh-issue-28]: https://github.com/ronisbr/PrettyTables.jl/issues/28
+[gh-issue-38]: https://github.com/ronisbr/PrettyTables.jl/issues/38
+[gh-issue-42]: https://github.com/ronisbr/PrettyTables.jl/issues/42
 
 [gh-pr-5]: https://github.com/ronisbr/PrettyTables.jl/pull/5
 [gh-pr-8]: https://github.com/ronisbr/PrettyTables.jl/pull/8
 [gh-pr-25]: https://github.com/ronisbr/PrettyTables.jl/pull/25
+[gh-pr-41]: https://github.com/ronisbr/PrettyTables.jl/pull/41
+[gh-pr-42]: https://github.com/ronisbr/PrettyTables.jl/pull/42
