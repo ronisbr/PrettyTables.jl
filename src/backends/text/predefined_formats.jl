@@ -137,18 +137,7 @@ const unicode_rounded = TextFormat(
     row                 = '─'
 )
 
-const ascii_matrix = TextFormat(
-    up_intersection     = ' ',
-    left_intersection   = '│',
-    right_intersection  = '|',
-    middle_intersection = ' ',
-    bottom_intersection = ' ',
-    left_border         = '|',
-    right_border        = '|',
-    column              = ' ',
-    row                 = ' '
-)
-const unicode_matrix = TextFormat(
+const matrix = TextFormat(
     up_intersection     = ' ',
     left_intersection   = '│',
     right_intersection  = '│',
