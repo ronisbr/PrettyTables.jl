@@ -255,7 +255,7 @@ function _pt_text(io, pinfo;
 
     if !noheader
         @inbounds @views for i = 1:header_num_rows
-            _p!(screen, buf, border_crayon, tf.column)
+            _p!(screen, buf, border_crayon, tf.left_border)
 
             if show_row_number
                 # The text "Row" must appear only on the first line.
@@ -282,8 +282,11 @@ function _pt_text(io, pinfo;
                 flp = j == num_printed_cols
 
                 _p!(screen, buf, crayon,        header_i_str)
-                _p!(screen, buf, border_crayon, tf.column, flp)
-
+                if j != num_printed_cols
+                    _p!(screen, buf, border_crayon, tf.column, flp)
+                else
+                    _p!(screen, buf, border_crayon, tf.right_border, flp)
+                end
                 _eol(screen) && break
             end
 
@@ -310,7 +313,7 @@ function _pt_text(io, pinfo;
         ir = id_rows[i]
 
         for l = 1:num_lines_in_row[i]
-            _p!(screen, buf, border_crayon, tf.column)
+            _p!(screen, buf, border_crayon, tf.left_border)
 
             if show_row_number
                 if l == 1
@@ -356,9 +359,12 @@ function _pt_text(io, pinfo;
                 !printed && _p!(screen, buf, text_crayon, data_ij_str)
 
                 flp = j == num_printed_cols
-
-                _p!(screen, buf, border_crayon, tf.column, flp)
-
+                
+                if j != num_printed_cols
+                    _p!(screen, buf, border_crayon, tf.column, flp)
+                else
+                    _p!(screen, buf, border_crayon, tf.right_border, flp)
+                end
                 _eol(screen) && break
             end
 
