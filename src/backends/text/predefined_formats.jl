@@ -6,8 +6,7 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ==#
 
-export unicode, ascii_dots, ascii_rounded, borderless, compact, markdown, mysql,
-       simple, unicode_rounded, unicode_matrix, ascii_matrix
+export unicode, ascii_dots, ascii_rounded, borderless, compact, markdown, mysql, simple, unicode_rounded, matrix
 
 const unicode = TextFormat()
 
