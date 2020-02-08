@@ -18,4 +18,6 @@ for (filename, format) in
     end
 end
 
-
+open("./html_format_matrix.html", "w") do f
+    pretty_table(f, data, tf = html_matrix, noheader = true)
+end

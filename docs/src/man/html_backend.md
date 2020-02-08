@@ -154,6 +154,19 @@ The following table formats are available when using the html back-end:
 </iframe>
 ```
 
+`html_matrix`
+
+```@raw html
+<iframe src="html_format_matrix.html" frameborder="0" scrolling="no" onload="javascript:resizeIframe(this)">
+  <p>Your browser does not support iframes. Click <a href="html_format_matrix.html>here</a> to see the table.</p>
+</iframe>
+```
+
+!!! info
+
+    In this case, the table format `html_matrix` was printed with the option
+    `noheader = true`.
+
 `html_simple`
 
 ```@raw html

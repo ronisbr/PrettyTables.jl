@@ -308,6 +308,21 @@ The following table formats are available when using the text back-end:
 |      3 |  false |    3.0 |      3 |
 ```
 
+`matrix`
+
+```
+┌                     ┐
+│ 1   false   1.0   1 │
+│ 2    true   2.0   2 │
+│ 3   false   3.0   3 │
+└                     ┘
+```
+
+!!! info
+
+    In this case, the table format `matrix` was printed with the option
+    `noheader = true`.
+
 `mysql`
 
 ```

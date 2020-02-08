@@ -2,50 +2,38 @@
 <html>
 <meta charset="UTF-8">
 <style>
-table, td, th {
-    border-collapse: collapse;
-    font-family: sans-serif;
+table {
+    position: relative;
 }
 
-td, th {
-    border-bottom: 0;
-    background: #fff !important;
-    padding: 4px
+table::before,
+table::after {
+    border: 1px solid #000;
+    content: "";
+    height: 100%;
+    position: absolute;
+    top: 0;
+    width: 6px;
 }
 
-tr.header {
-    background: #fff !important;
-    font-weight: bold;
+table::before {
+    border-right: 0px;
+    left: -6px;
 }
 
-tr.subheader {
-    background: #fff !important;
-    color: dimgray;
+table::after {
+    border-left: 0px;
+    right: -6px;
 }
 
-tr.headerLastRow {
-    border-bottom: 2px solid black;
-}
-
-th.rowNumber, td.rowNumber {
-    text-align: right;
+td {
+    padding: 5px;
+    text-align: center;
 }
 
 </style>
 <body>
 <table>
-<tr class = header>
-<th style = "text-align: right; ">Header 1</th>
-<th style = "text-align: right; ">Header 2</th>
-<th style = "text-align: right; ">Header 3</th>
-<th style = "text-align: right; ">Header 4</th>
-</tr>
-<tr class = "subheader headerLastRow">
-<th style = "text-align: right; ">Sub 1</th>
-<th style = "text-align: right; ">Sub 2</th>
-<th style = "text-align: right; ">Sub 3</th>
-<th style = "text-align: right; ">Sub 4</th>
-</tr>
 <tr>
 <td style = "text-align: right; ">true</td>
 <td style = "text-align: right; ">100.0</td>
