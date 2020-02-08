@@ -1,6 +1,13 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 0.8.2
+-------------
+
+- ![Feature][badge-feature] The table format `matrix` was added to the text and
+  HTML back-ends. Thanks @DhruvaSambrani. (PR [#39][gh-pr-39], Issue
+  [#33][gh-issue-33])
+
 Version 0.8.1
 -------------
 
@@ -208,11 +215,13 @@ Version 0.1.0
 [gh-issue-22]: https://github.com/ronisbr/PrettyTables.jl/issues/22
 [gh-issue-24]: https://github.com/ronisbr/PrettyTables.jl/issues/24
 [gh-issue-28]: https://github.com/ronisbr/PrettyTables.jl/issues/28
+[gh-issue-33]: https://github.com/ronisbr/PrettyTables.jl/issues/33
 [gh-issue-38]: https://github.com/ronisbr/PrettyTables.jl/issues/38
-[gh-issue-42]: https://github.com/ronisbr/PrettyTables.jl/issues/42
+[gh-issue-40]: https://github.com/ronisbr/PrettyTables.jl/issues/40
 
 [gh-pr-5]: https://github.com/ronisbr/PrettyTables.jl/pull/5
 [gh-pr-8]: https://github.com/ronisbr/PrettyTables.jl/pull/8
 [gh-pr-25]: https://github.com/ronisbr/PrettyTables.jl/pull/25
+[gh-pr-39]: https://github.com/ronisbr/PrettyTables.jl/pull/39
 [gh-pr-41]: https://github.com/ronisbr/PrettyTables.jl/pull/41
 [gh-pr-42]: https://github.com/ronisbr/PrettyTables.jl/pull/42
