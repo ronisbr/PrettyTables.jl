@@ -125,6 +125,7 @@ const html_simple = HTMLTableFormat(
     }
     """
 )
+
 const html_matrix = HTMLTableFormat(
     css = """
     table {
@@ -133,22 +134,22 @@ const html_matrix = HTMLTableFormat(
 
     table::before,
     table::after {
+        border: 1px solid #000;
         content: "";
+        height: 100%;
         position: absolute;
         top: 0;
-        border: 1px solid #000;
         width: 6px;
-        height: 100%;
     }
 
     table::before {
-        left: -6px;
         border-right: 0px;
+        left: -6px;
     }
 
     table::after {
-        right: -6px;
         border-left: 0px;
+        right: -6px;
     }
 
     td {
