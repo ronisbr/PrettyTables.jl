@@ -292,6 +292,23 @@ end
     result = sprint((io,data)->pretty_table(io, data, tf = markdown), data)
     @test result == expected
 
+    # matrix
+    # ==========================================================================
+
+    expected = """
+┌                     ┐
+│ 1   false   1.0   1 │
+│ 2    true   2.0   2 │
+│ 3   false   3.0   3 │
+│ 4    true   4.0   4 │
+│ 5   false   5.0   5 │
+│ 6    true   6.0   6 │
+└                     ┘
+"""
+    result = sprint((io,data)->pretty_table(io, data, tf = matrix,
+                                            noheader = true), data)
+    @test result == expected
+
     # mysql
     # ==========================================================================
     expected = """
