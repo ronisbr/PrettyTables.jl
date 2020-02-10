@@ -1,6 +1,13 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 0.8.3
+-------------
+
+- ![Feature][badge-feature] The method `pretty_table(String, ...)` can be used
+  to return the printed table as a string. Furthermore, all the tests were
+  modified to use this function instead of `sprint`. (Issue [#29][gh-issue-29])
+
 Version 0.8.2
 -------------
 
@@ -215,6 +222,7 @@ Version 0.1.0
 [gh-issue-22]: https://github.com/ronisbr/PrettyTables.jl/issues/22
 [gh-issue-24]: https://github.com/ronisbr/PrettyTables.jl/issues/24
 [gh-issue-28]: https://github.com/ronisbr/PrettyTables.jl/issues/28
+[gh-issue-29]: https://github.com/ronisbr/PrettyTables.jl/issues/29
 [gh-issue-33]: https://github.com/ronisbr/PrettyTables.jl/issues/33
 [gh-issue-38]: https://github.com/ronisbr/PrettyTables.jl/issues/38
 [gh-issue-40]: https://github.com/ronisbr/PrettyTables.jl/issues/40
