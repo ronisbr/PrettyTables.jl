@@ -13,15 +13,16 @@ export pretty_table
 ################################################################################
 
 """
-    function pretty_table([io::IO,] table[, header::AbstractVecOrMat];  kwargs...)
+    function pretty_table([io::IO | String,] table[, header::AbstractVecOrMat];  kwargs...)
 
 Print to `io` the table `table` with header `header`. If `io` is omitted, then
-it defaults to `stdout`. If `header` is empty or missing, then it will be
-automatically filled with "Col.  i" for the *i*-th column.
+it defaults to `stdout`. If `String` is passed in the place of `io`, then a
+`String` with the printed table will be returned by the function.
 
 The `header` can be a `Vector` or a `Matrix`. If it is a `Matrix`, then each row
 will be a header line. The first line is called *header* and the others are
-called *sub-headers* .
+called *sub-headers* . If `header` is empty or missing, then it will be
+automatically filled with "Col.  i" for the *i*-th column.
 
 When printing, it will be verified if `table` complies with **Tables.jl** API.
 If it is is compliant, then this interface will be used to print the table. If
@@ -428,6 +429,19 @@ function pretty_table(io::IO, data, header::AbstractVecOrMat; kwargs...)
     else
         error("The type $(typeof(data)) is not supported.")
     end
+end
+
+# This definition is required to avoid ambiguities.
+pretty_table(::Type{String}, data::AbstractVecOrMat; kwargs...) =
+    pretty_table(String, data, []; kwargs...)
+
+pretty_table(::Type{String}, data; kwargs...) =
+    pretty_table(String, data, []; kwargs...)
+
+function pretty_table(::Type{String}, data, header::AbstractVecOrMat; kwargs...)
+    io = IOBuffer()
+    pretty_table(io, data, header; kwargs...)
+    return String(take!(io))
 end
 
 ################################################################################

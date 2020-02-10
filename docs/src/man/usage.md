@@ -11,16 +11,17 @@ end
 The following function can be used to print data.
 
 ```julia
-function pretty_table([io::IO,] table[, header::AbstractVecOrMat];  kwargs...)
+function pretty_table([io::IO | String,] table[, header::AbstractVecOrMat];  kwargs...)
 ```
 
 Print to `io` the table `table` with header `header`. If `io` is omitted, then
-it defaults to `stdout`. If `header` is empty or missing, then it will be
-automatically filled with "Col.  i" for the *i*-th column.
+it defaults to `stdout`. If `String` is passed in the place of `io`, then a
+`String` with the printed table will be returned by the function.
 
 The `header` can be a `Vector` or a `Matrix`. If it is a `Matrix`, then each row
 will be a header line. The first line is called *header* and the others are
-called *sub-headers* .
+called *sub-headers* . If `header` is empty or missing, then it will be
+automatically filled with "Col.  i" for the *i*-th column.
 
 When printing, it will be verified if `table` complies with
 [**Tables.jl**](https://github.com/JuliaData/Tables.jl) API.  If it is is
@@ -84,6 +85,16 @@ julia> pretty_table(data, ["Column 1" "Column 2" "Column 3"; "A" "B" "C"])
 ┌──────────┬──────────┬──────────┐
 │ Column 1 │ Column 2 │ Column 3 │
 │        A │        B │        C │
+├──────────┼──────────┼──────────┤
+│        1 │        2 │        3 │
+│        4 │        5 │        6 │
+└──────────┴──────────┴──────────┘
+
+julia> str = pretty_table(String, data, ["Column 1", "Column 2", "Column 3"]);
+
+julia> print(str)
+┌──────────┬──────────┬──────────┐
+│ Column 1 │ Column 2 │ Column 3 │
 ├──────────┼──────────┼──────────┤
 │        1 │        2 │        3 │
 │        4 │        5 │        6 │

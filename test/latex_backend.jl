@@ -20,7 +20,7 @@
 \\end{tabular}
 """
 
-    result = sprint((io,data)->pretty_table(io, data, backend = :latex), data)
+    result = pretty_table(String, data, backend = :latex)
     @test result == expected
 end
 

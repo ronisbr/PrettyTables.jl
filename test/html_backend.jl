@@ -109,7 +109,7 @@ th.rowNumber, td.rowNumber {
 </body>
 </html>
 """
-    result = sprint((io,data)->pretty_table(io,data,backend = :html), data)
+    result = pretty_table(String, data, backend = :html)
     @test result == expected
 end
 
@@ -210,8 +210,7 @@ th.rowNumber, td.rowNumber {
 </body>
 </html>
 """
-    result = sprint((io, data)->pretty_table(io, data; alignment = :l,
-                                             backend = :html), data)
+    result = pretty_table(String, data; alignment = :l, backend = :html)
     @test result == expected
 
     # Center
@@ -307,8 +306,7 @@ th.rowNumber, td.rowNumber {
 </body>
 </html>
 """
-    result = sprint((io, data)->pretty_table(io, data; alignment = :c,
-                                             backend = :html), data)
+    result = pretty_table(String, data; alignment = :c, backend = :html)
     @test result == expected
 
     # Per column configuration
@@ -405,9 +403,9 @@ th.rowNumber, td.rowNumber {
 </body>
 </html>
 """
-    result = sprint((io, data)->pretty_table(io, data;
-                                             alignment = [:l,:r,:c,:r],
-                                             backend = :html), data)
+    result = pretty_table(String, data;
+                          alignment = [:l,:r,:c,:r],
+                          backend   = :html)
     @test result == expected
 
     # Cell override
@@ -504,16 +502,15 @@ th.rowNumber, td.rowNumber {
 </body>
 </html>
 """
-    result = sprint((io, data)->pretty_table(io, data;
-                                             alignment = [:l,:r,:c,:r],
-                                             backend = :html,
-                                             cell_alignment =
-                                                Dict( (3,1) => :r,
-                                                      (3,2) => :l,
-                                                      (1,4) => :l,
-                                                      (3,4) => :c,
-                                                      (4,4) => :c,
-                                                      (6,4) => :l )), data)
+    result = pretty_table(String, data;
+                          alignment = [:l,:r,:c,:r],
+                          backend = :html,
+                          cell_alignment = Dict((3,1) => :r,
+                                                (3,2) => :l,
+                                                (1,4) => :l,
+                                                (3,4) => :c,
+                                                (4,4) => :c,
+                                                (6,4) => :l ))
     @test result == expected
 end
 
@@ -591,12 +588,12 @@ th.rowNumber, td.rowNumber {
 </html>
 """
 
-    result = sprint((io,data)->pretty_table(io, data;
-                                            backend = :html,
-                                            filters_row = ( (data,i) -> i%2 == 0,),
-                                            filters_col = ( (data,i) -> i%2 == 1,),
-                                            formatter = ft_printf("%.3",3),
-                                            show_row_number = true), data)
+    result = pretty_table(String, data;
+                          backend         = :html,
+                          filters_row     = ((data,i) -> i%2 == 0,),
+                          filters_col     = ((data,i) -> i%2 == 1,),
+                          formatter       = ft_printf("%.3",3),
+                          show_row_number = true)
     @test result == expected
 
     expected = """
@@ -669,13 +666,13 @@ th.rowNumber, td.rowNumber {
 </html>
 """
 
-    result = sprint((io,data)->pretty_table(io, data;
-                                            backend = :html,
-                                            filters_row = ( (data,i) -> i%2 == 0,),
-                                            filters_col = ( (data,i) -> i%2 == 1,),
-                                            formatter = ft_printf("%.3",3),
-                                            show_row_number = true,
-                                            alignment = [:c,:l,:l,:c]), data)
+    result = pretty_table(String, data;
+                          backend         = :html,
+                          filters_row     = ((data,i) -> i%2 == 0,),
+                          filters_col     = ((data,i) -> i%2 == 1,),
+                          formatter       = ft_printf("%.3",3),
+                          show_row_number = true,
+                          alignment       = [:c,:l,:l,:c])
     @test result == expected
 end
 
@@ -776,8 +773,7 @@ th.rowNumber, td.rowNumber {
 """
     formatter = Dict(0 => (v,i) -> isodd(i) ? i : 0,
                      2 => (v,i) -> v)
-    result = sprint((io, data)->pretty_table(io, data; backend = :html,
-                                             formatter = formatter), data)
+    result = pretty_table(String, data; backend = :html, formatter = formatter)
     @test result == expected
 end
 
@@ -832,8 +828,7 @@ end
     </table>
     """
 
-    result = sprint((io,data)->pretty_table(io, data, backend = :html,
-                                            standalone = false), data)
+    result = pretty_table(String, data, backend = :html, standalone = false)
     @test result == expected
 end
 
@@ -939,10 +934,10 @@ th.rowNumber, td.rowNumber {
 </body>
 </html>
 """
-    result = sprint((io, data)->pretty_table(io, data;
-                                             alignment       = [:l,:r,:c,:r],
-                                             backend         = :html,
-                                             show_row_number = true), data)
+    result = pretty_table(String, data;
+                          alignment       = [:l,:r,:c,:r],
+                          backend         = :html,
+                          show_row_number = true)
     @test result == expected
 end
 
@@ -1045,7 +1040,7 @@ th.rowNumber, td.rowNumber {
 </html>
 """
 
-    result = sprint((io,data)->pretty_table(io, data, backend = :html), vec)
+    result = pretty_table(String, vec, backend = :html)
     @test result == expected
 
     expected = """
@@ -1146,9 +1141,10 @@ th.rowNumber, td.rowNumber {
 </html>
 """
 
-    result = sprint((io, vec)->pretty_table(io, vec; alignment = :c,
-                                            backend = :html,
-                                            show_row_number = true), vec)
+    result = pretty_table(String, vec;
+                          alignment       = :c,
+                          backend         = :html,
+                          show_row_number = true)
     @test result == expected
 
     # TODO: test sub-headers.

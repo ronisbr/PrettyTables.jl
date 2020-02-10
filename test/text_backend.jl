@@ -30,7 +30,7 @@ data = Any[1    false      1.0     0x01 ;
 │      6 │   true │    6.0 │      6 │
 └────────┴────────┴────────┴────────┘
 """
-    result = sprint(pretty_table, data)
+    result = pretty_table(String, data)
     @test result == expected
 end
 
@@ -52,7 +52,7 @@ end
 │ 6      │ true   │ 6.0    │ 6      │
 └────────┴────────┴────────┴────────┘
 """
-    result = sprint((io, data)->pretty_table(io, data; alignment = :l), data)
+    result = pretty_table(String, data; alignment = :l)
     @test result == expected
 
     # Center
@@ -69,7 +69,7 @@ end
 │   6    │  true  │  6.0   │   6    │
 └────────┴────────┴────────┴────────┘
 """
-    result = sprint((io, data)->pretty_table(io, data; alignment = :c), data)
+    result = pretty_table(String, data; alignment = :c)
     @test result == expected
 
     # Per column configuration
@@ -87,9 +87,7 @@ end
 │ 6      │   true │  6.0   │      6 │
 └────────┴────────┴────────┴────────┘
 """
-    result = sprint((io, data)->pretty_table(io, data;
-                                             alignment = [:l,:r,:c,:r]),
-                    data)
+    result = pretty_table(String, data; alignment = [:l,:r,:c,:r])
     @test result == expected
 
     # Cell override
@@ -107,16 +105,14 @@ end
 │ 6      │   true │  6.0   │ 6      │
 └────────┴────────┴────────┴────────┘
 """
-    result = sprint((io, data)->pretty_table(io, data;
-                                             alignment = [:l,:r,:c,:r],
-                                             cell_alignment =
-                                                Dict( (3,1) => :r,
-                                                      (3,2) => :l,
-                                                      (1,4) => :l,
-                                                      (3,4) => :c,
-                                                      (4,4) => :c,
-                                                      (6,4) => :l )),
-                    data)
+    result = pretty_table(String, data;
+                          alignment = [:l,:r,:c,:r],
+                          cell_alignment = Dict( (3,1) => :r,
+                                                 (3,2) => :l,
+                                                 (1,4) => :l,
+                                                 (3,4) => :c,
+                                                 (4,4) => :c,
+                                                 (6,4) => :l ))
     @test result == expected
 end
 
@@ -134,11 +130,11 @@ end
 └─────┴────────┴────────┘
 """
 
-    result = sprint((io,data)->pretty_table(io, data;
-                                            filters_row = ( (data,i) -> i%2 == 0,),
-                                            filters_col = ( (data,i) -> i%2 == 1,),
-                                            formatter = ft_printf("%.3",3),
-                                            show_row_number = true), data)
+    result = pretty_table(String, data;
+                          filters_row     = ( (data,i) -> i%2 == 0,),
+                          filters_col     = ( (data,i) -> i%2 == 1,),
+                          formatter       = ft_printf("%.3",3),
+                          show_row_number = true)
     @test result == expected
 
     expected = """
@@ -151,12 +147,12 @@ end
 └─────┴────────┴────────┘
 """
 
-    result = sprint((io,data)->pretty_table(io, data;
-                                            filters_row = ( (data,i) -> i%2 == 0,),
-                                            filters_col = ( (data,i) -> i%2 == 1,),
-                                            formatter = ft_printf("%.3",3),
-                                            show_row_number = true,
-                                            alignment = [:c,:l,:l,:c]), data)
+    result = pretty_table(String, data;
+                          filters_row     = ( (data,i) -> i%2 == 0,),
+                          filters_col     = ( (data,i) -> i%2 == 1,),
+                          formatter       = ft_printf("%.3",3),
+                          show_row_number = true,
+                          alignment       = [:c,:l,:l,:c])
     @test result == expected
 end
 
@@ -178,8 +174,7 @@ end
 """
     formatter = Dict(0 => (v,i) -> isodd(i) ? i : 0,
                      2 => (v,i) -> v)
-    result = sprint((io, data)->pretty_table(io, data;
-                                             formatter = formatter), data)
+    result = pretty_table(String, data; formatter = formatter)
     @test result == expected
 end
 
@@ -199,10 +194,9 @@ end
 │   6 │ 6      │   true │  6.0   │      6 │
 └─────┴────────┴────────┴────────┴────────┘
 """
-    result = sprint((io, data)->pretty_table(io, data;
-                                             alignment       = [:l,:r,:c,:r],
-                                             show_row_number = true),
-                    data)
+    result = pretty_table(String, data;
+                          alignment       = [:l,:r,:c,:r],
+                          show_row_number = true)
     @test result == expected
 end
 
@@ -225,7 +219,7 @@ end
 :      6 :   true :    6.0 :      6 :
 :........:........:........:........:
 """
-    result = sprint((io,data)->pretty_table(io, data, tf = ascii_dots), data)
+    result = pretty_table(String, data, tf = ascii_dots)
     @test result == expected
 
     # ascii_rounded
@@ -242,7 +236,7 @@ end
 |      6 |   true |    6.0 |      6 |
 '--------'--------'--------'--------'
 """
-    result = sprint((io,data)->pretty_table(io, data, tf = ascii_rounded), data)
+    result = pretty_table(String, data, tf = ascii_rounded)
     @test result == expected
 
     # borderless
@@ -257,7 +251,7 @@ end
        5    false      5.0        5  
        6     true      6.0        6  
 """
-    result = sprint((io,data)->pretty_table(io, data, tf = borderless), data)
+    result = pretty_table(String, data, tf = borderless)
     @test result == expected
 
     # compact
@@ -274,7 +268,7 @@ end
        6     true      6.0        6  
  -------- -------- -------- -------- 
 """
-    result = sprint((io,data)->pretty_table(io, data, tf = PrettyTables.compact), data)
+    result = pretty_table(String, data, tf = PrettyTables.compact)
     @test result == expected
 
     # markdown
@@ -289,7 +283,7 @@ end
 |      5 |  false |    5.0 |      5 |
 |      6 |   true |    6.0 |      6 |
 """
-    result = sprint((io,data)->pretty_table(io, data, tf = markdown), data)
+    result = pretty_table(String, data, tf = markdown)
     @test result == expected
 
     # matrix
@@ -305,8 +299,7 @@ end
 │ 6    true   6.0   6 │
 └                     ┘
 """
-    result = sprint((io,data)->pretty_table(io, data, tf = matrix,
-                                            noheader = true), data)
+    result = pretty_table(String, data, tf = matrix, noheader = true)
     @test result == expected
 
     # mysql
@@ -323,7 +316,7 @@ end
 |      6 |   true |    6.0 |      6 |
 +--------+--------+--------+--------+
 """
-    result = sprint((io,data)->pretty_table(io, data, tf = mysql), data)
+    result = pretty_table(String, data, tf = mysql)
     @test result == expected
 
     # simple
@@ -340,7 +333,7 @@ end
        6     true      6.0        6  
 ========= ======== ======== =========
 """
-    result = sprint((io,data)->pretty_table(io, data, tf = simple), data)
+    result = pretty_table(String, data, tf = simple)
     @test result == expected
 
     # unicode_rounded
@@ -357,7 +350,7 @@ end
 │      6 │   true │    6.0 │      6 │
 ╰────────┴────────┴────────┴────────╯
 """
-    result = sprint((io,data)->pretty_table(io, data, tf = unicode_rounded), data)
+    result = pretty_table(String, data, tf = unicode_rounded)
     @test result == expected
 
     # Custom formats
@@ -375,7 +368,7 @@ end
 """
 
     tf = PrettyTables.TextFormat(unicode, top_line = false, bottom_line = false)
-    result = sprint((io,data)->pretty_table(io, data, tf = tf), data)
+    result = pretty_table(String, data, tf = tf)
     @test result == expected
 
     expected = """
@@ -391,7 +384,7 @@ end
 """
 
     tf = PrettyTables.TextFormat(unicode, header_line = false)
-    result = sprint((io,data)->pretty_table(io, data, tf = tf), data)
+    result = pretty_table(String, data, tf = tf)
     @test result == expected
 end
 
@@ -414,9 +407,7 @@ end
 │    6.0 │    1.0 │    6.0 │    6.0 │
 └────────┴────────┴────────┴────────┘
 """
-    result = sprint((io,data)->pretty_table(io,data;
-                                            formatter = ft_round(1)),
-                    data)
+    result = pretty_table(String, data; formatter = ft_round(1))
     @test result == expected
 
     expected = """
@@ -431,9 +422,7 @@ end
 │    6.0 │   true │    6.0 │      6 │
 └────────┴────────┴────────┴────────┘
 """
-    result = sprint((io,data)->pretty_table(io,data;
-                                            formatter = ft_round(1,[3,1])),
-                    data)
+    result = pretty_table(String, data; formatter = ft_round(1,[3,1]))
     @test result == expected
 
     # ft_printf
@@ -451,9 +440,7 @@ end
 │    6.000 │    1.000 │    6.000 │    6.000 │
 └──────────┴──────────┴──────────┴──────────┘
 """
-    result = sprint((io,data)->pretty_table(io,data;
-                                            formatter = ft_printf("%8.3f")),
-                    data)
+    result = pretty_table(String,data; formatter = ft_printf("%8.3f"))
     @test result == expected
 
     expected = """
@@ -468,9 +455,7 @@ end
 │    6.000 │   true │    6.0 │    6.000 │
 └──────────┴────────┴────────┴──────────┘
 """
-    result = sprint((io,data)->
-                    pretty_table(io,data; formatter = ft_printf("%8.3f",[1,4])),
-                    data)
+    result = pretty_table(String,data; formatter = ft_printf("%8.3f",[1,4]))
     @test result == expected
 
     expected = """
@@ -485,10 +470,8 @@ end
 │     6.00 │   true │    6.0 │   6.0000 │
 └──────────┴────────┴────────┴──────────┘
 """
-    result = sprint((io,data)->
-                    pretty_table(io,data;
-                                 formatter = ft_printf(["%8.2f","%8.4f"],[1,4])),
-                    data)
+    result = pretty_table(String, data;
+                          formatter = ft_printf(["%8.2f","%8.4f"],[1,4]))
     @test result == expected
 end
 
@@ -508,10 +491,10 @@ end
 │ 6 │  true │ 6.0 │ 6 │
 └───┴───────┴─────┴───┘
 """
-    result = sprint(pretty_table, data, [1;2;3;4])
+    result = pretty_table(String, data, [1;2;3;4])
     @test result == expected
 
-    result = sprint(pretty_table, data, [1 2 3 4])
+    result = pretty_table(String, data, [1 2 3 4])
     @test result == expected
 
     expected = """
@@ -527,7 +510,7 @@ end
 │ 6 │  true │ 6.0 │ 6 │
 └───┴───────┴─────┴───┘
 """
-    result = sprint(pretty_table, data, [1 2 3 4; 5 6 7 8])
+    result = pretty_table(String, data, [1 2 3 4; 5 6 7 8])
     @test result == expected
 end
 
@@ -549,9 +532,7 @@ end
 │      6 │   true │    6.0 │      6 │
 └────────┴────────┴────────┴────────┘
 """
-    result = sprint((io,data)->
-                    pretty_table(io,data; hlines = findall(x->x == true, data[:,2])),
-                    data)
+    result = pretty_table(String, data; hlines = findall(x->x == true, data[:,2]))
     @test result == expected
 
     expected = """
@@ -568,10 +549,9 @@ end
 │      6 │   true │    6.0 │      6 │
 └────────┴────────┴────────┴────────┘
 """
-    result = sprint((io,data)->
-                    pretty_table(io,data;
-                                 hlines = findall(x->x == true, data[:,2]),
-                                 hlines_format = ('├','+','┤','.')), data)
+    result = pretty_table(String, data;
+                          hlines = findall(x->x == true, data[:,2]),
+                          hlines_format = ('├','+','┤','.'))
     @test result == expected
 end
 
@@ -599,8 +579,7 @@ end
 └─────────────────────────────┴───────┘
 """
 
-    result = sprint((io,data)->pretty_table(io,data,header; linebreaks = true),
-                    data)
+    result = pretty_table(String, data, header; linebreaks = true)
     @test result == expected
 
     expected = """
@@ -617,10 +596,7 @@ end
 └─────────────────────────────┴───────┘
 """
 
-    result = sprint((io,data)->pretty_table(io,data,header;
-                                            alignment = :c,
-                                            linebreaks = true),
-                    data)
+    result = pretty_table(String, data, header; alignment = :c, linebreaks = true)
     @test result == expected
 
     expected = """
@@ -637,10 +613,7 @@ end
 └─────────────────────────────┴───────┘
 """
 
-    result = sprint((io,data)->pretty_table(io,data,header;
-                                            alignment = :l,
-                                            linebreaks = true),
-                    data)
+    result = pretty_table(String, data, header; alignment = :l, linebreaks = true)
     @test result == expected
 
     expected = """
@@ -653,7 +626,7 @@ end
 └────────────────────────────────────────────────────────────────────┴───────┘
 """
 
-    result = sprint(pretty_table, data, header)
+    result = pretty_table(String, data, header)
     @test result == expected
 end
 
@@ -676,11 +649,10 @@ end
 └───┴───────┴─────┴───┘
 """
 
-    result = sprint((io, data)->pretty_table(io, data; noheader = true), data)
+    result = pretty_table(String, data; noheader = true)
     @test result == expected
 
-    result = sprint((io, data)->pretty_table(io, data, [1 2]; noheader = true),
-                    data)
+    result = pretty_table(String, data, [1 2]; noheader = true)
     @test result == expected
 
     expected = """
@@ -693,8 +665,7 @@ end
 │ 6 │ true  │ 6.0 │ 6 │
 └───┴───────┴─────┴───┘
 """
-    result = sprint((io, data)->pretty_table(io, data, [1 2]; alignment = :l,
-                                             noheader = true), data)
+    result = pretty_table(String, data, [1 2]; alignment = :l, noheader = true)
     @test result == expected
 
     # Sub-header
@@ -714,8 +685,7 @@ end
 """
 
     header = [1 2 3 4; "this is" "a very very" "big" "sub-header"]
-    result = sprint((io, data)->pretty_table(io, data, header; nosubheader = true),
-                    data)
+    result = pretty_table(String, data, header; nosubheader = true)
     @test result == expected
 end
 
@@ -744,7 +714,7 @@ end
 └────────┘
 """
 
-    result = sprint(pretty_table, vec)
+    result = pretty_table(String, vec)
     @test result == expected
 
     expected = """
@@ -765,8 +735,7 @@ end
 └─────┴────────┘
 """
 
-    result = sprint((io, vec)->pretty_table(io, vec; alignment = :c,
-                                            show_row_number = true), vec)
+    result = pretty_table(String, vec; alignment = :c, show_row_number = true)
     @test result == expected
 
     expected = """
@@ -788,8 +757,7 @@ end
 └────────────┘
 """
 
-    result = sprint((io, vec)->pretty_table(io, vec, ["Header", "Sub-header"]),
-                    vec)
+    result = pretty_table(String, vec, ["Header", "Sub-header"])
     @test result == expected
 
     @test_throws Exception pretty_table(vec, ["1" "1"])
@@ -812,12 +780,10 @@ end
 └────────┴────────┴────────┴────────┘
 """
 
-    result = sprint((io,data)->pretty_table(io, data, screen_size = (10,10), crop = :none),
-                    data)
+    result = pretty_table(String, data, screen_size = (10,10), crop = :none)
     @test result == expected
 
-    result = sprint((io,data)->pretty_table(io, data, screen_size = (-1,-1), crop = :both),
-                    data)
+    result = pretty_table(String, data, screen_size = (-1,-1), crop = :both)
     @test result == expected
 
     expected = """
@@ -830,11 +796,10 @@ end
 └────────┴────────┴────────┴ ⋯
 """
 
-    result = sprint((io,data)->pretty_table(io, data, screen_size = (10,30), crop = :both),
-                    data)
+    result = pretty_table(String, data, screen_size = (10,30), crop = :both)
     @test result == expected
 
-    result = sprint((io,data)->pretty_table(io, data, screen_size = (10,30)), data)
+    result = pretty_table(String, data, screen_size = (10,30))
     @test result == expected
 
     expected = """
@@ -850,12 +815,10 @@ end
 └────────┴────────┴────────┴ ⋯
 """
 
-    result = sprint((io,data)->pretty_table(io, data, screen_size = (10,30), crop = :horizontal),
-                    data)
+    result = pretty_table(String, data, screen_size = (10,30), crop = :horizontal)
     @test result == expected
 
-    result = sprint((io,data)->pretty_table(io, data, screen_size = (-1,30), crop = :both),
-                    data)
+    result = pretty_table(String, data, screen_size = (-1,30), crop = :both)
     @test result == expected
 
     expected = """
@@ -868,12 +831,10 @@ end
 └────────┴────────┴────────┴────────┘
 """
 
-    result = sprint((io,data)->pretty_table(io, data, screen_size = (10,30), crop = :vertical),
-                    data)
+    result = pretty_table(String, data, screen_size = (10,30), crop = :vertical)
     @test result == expected
 
-    result = sprint((io,data)->pretty_table(io, data, screen_size = (10,-1), crop = :both),
-                    data)
+    result = pretty_table(String, data, screen_size = (10,-1), crop = :both)
     @test result == expected
 
     model = [1.123456789 for i = 1:8, j = 1:10]
@@ -893,10 +854,9 @@ end
 └───┴─────────────┴────┴─────┴──────┴───────┴────────┴─────────┴──────────┴───────────┘
 """
 
-    result = sprint((io,data)->pretty_table(io, data,
-                                            columns_width = [1, 0, 2, 3, 4, 5, 6, 7, 8, 9],
-                                            alignment = [:l, :l, :r, :c, :r, :c, :l, :l, :c, :r]),
-                    model)
+    result = pretty_table(String, model,
+                          columns_width = [1, 0, 2, 3, 4, 5, 6, 7, 8, 9],
+                          alignment = [:l, :l, :r, :c, :r, :c, :l, :l, :c, :r])
 
     expected = """
 ┌────────┬────────┬────────┬────────┬────────┬────────┬────────┬────────┬────────┬────────┐
@@ -913,10 +873,9 @@ end
 └────────┴────────┴────────┴────────┴────────┴────────┴────────┴────────┴────────┴────────┘
 """
 
-    result = sprint((io,data)->pretty_table(io, data,
-                                            columns_width = 6,
-                                            alignment = [:l, :l, :r, :c, :r, :c, :l, :l, :c, :r]),
-                    model)
+    result = pretty_table(String, model,
+                          columns_width = 6,
+                          alignment = [:l, :l, :r, :c, :r, :c, :l, :l, :c, :r])
 
     @test result == expected
 end
@@ -971,9 +930,11 @@ end
 └──────────────┴────────────────────────────────┘
 """
 
-    result = sprint((io,data)->pretty_table(io, data, header, autowrap = true,
-                                            linebreaks = true, hlines = 1:4,
-                                            columns_width = [-1,30]), table)
+    result = pretty_table(String, table, header,
+                          autowrap      = true,
+                          linebreaks    = true,
+                          hlines        = 1:4,
+                          columns_width = [-1,30])
 
     @test result == expected
 
@@ -1008,10 +969,12 @@ end
 └──────────────┴────────────────────────────────┘
 """
 
-    result = sprint((io,data)->pretty_table(io, data, header, alignment = :c,
-                                            autowrap = true, linebreaks = true,
-                                            hlines = 1:4, columns_width = [-1,30]),
-                    table)
+    result = pretty_table(String, table, header,
+                          alignment     = :c,
+                          autowrap      = true,
+                          linebreaks    = true,
+                          hlines        = 1:4,
+                          columns_width = [-1,30])
 
     @test result == expected
 
@@ -1046,10 +1009,12 @@ end
 └──────────────┴────────────────────────────────┘
 """
 
-    result = sprint((io,data)->pretty_table(io, data, header, alignment = :l,
-                                            autowrap = true, linebreaks = true,
-                                            hlines = 1:4, columns_width = [-1,30]),
-                    table)
+    result = pretty_table(String, table, header,
+                          alignment     = :l,
+                          autowrap      = true,
+                          linebreaks    = true,
+                          hlines        = 1:4,
+                          columns_width = [-1,30])
 
     @test result == expected
 end
@@ -1075,7 +1040,7 @@ end
 └───────┴────────┘
 """
 
-    result = sprint((io,dict)->pretty_table(io, dict, sortkeys = true), dict)
+    result = pretty_table(String, dict, sortkeys = true)
     @test result == expected
 end
 
@@ -1095,7 +1060,7 @@ end
 └─────────┴─────────┘
 """
 
-    result = sprint(pretty_table, matrix)
+    result = pretty_table(String, matrix)
     @test result == expected
 end
 
@@ -1233,7 +1198,7 @@ end
 └───┴───────┴─────┴───┘
 """
 
-    result = sprint(pretty_table, data, ["1" "2\n" "3" "4"])
+    result = pretty_table(String, data, ["1" "2\n" "3" "4"])
     @test result == expected
 end
 
@@ -1255,10 +1220,10 @@ end
 │   6 │ 6 │  true │ 6.0 │  6 │
 └─────┴───┴───────┴─────┴────┘
 """
-    result = sprint((io, data)->pretty_table(io, data, [1  2  3  4;
-                                                        5  6  7  8;
-                                                        9 10 11 12];
-                                            show_row_number = true), data)
+    result = pretty_table(String, data, [1  2  3  4;
+                                         5  6  7  8;
+                                         9 10 11 12];
+                          show_row_number = true)
     @test result == expected
 end
 
@@ -1280,8 +1245,7 @@ end
 └───┴───┘
 """
 
-    result = sprint((io, v)->pretty_table(io, v; noheader = true,
-                                          show_row_number = true), v)
+    result = pretty_table(String, v; noheader = true, show_row_number = true)
     @test result == expected
 end
 
@@ -1301,8 +1265,7 @@ end
 └───────┴────────┘
 """
 
-    result = sprint(pretty_table, df)
-
+    result = pretty_table(String, df)
     @test result == expected
 end
 
@@ -1327,10 +1290,7 @@ end
 └────────────┴────────┘
 """
 
-    result = sprint((io,data)->pretty_table(io, matrix;
-                                            formatter = ft_printf("%10.2f",[1])),
-                    data)
-
+    result = pretty_table(String, matrix; formatter = ft_printf("%10.2f",[1]))
     @test result == expected
 
 end
@@ -1352,7 +1312,7 @@ end
 └────────┴──────────────┘
 """
 
-    result = sprint(pretty_table, matrix)
+    result = pretty_table(String, matrix)
     @test result == expected
 
     # With linebreaks.
@@ -1386,8 +1346,7 @@ end
 └────────┴──────────────────────────────────┘
 """
 
-    result = sprint((io,data)->pretty_table(io, matrix; alignment = :l,
-                                            linebreaks = true), data)
+    result = pretty_table(String, matrix; alignment = :l, linebreaks = true)
 
     @test result == expected
 end
@@ -1426,9 +1385,9 @@ end
                    z = ["String 1";"String 2";"String 3"]);
 
     # Thus, the following 3 calls must provide the same results.
-    result_1 = sprint(pretty_table, df)
-    result_2 = sprint(pretty_table, Tables.rowtable(df))
-    result_3 = sprint(pretty_table, Tables.columns(df))
+    result_1 = pretty_table(String, df)
+    result_2 = pretty_table(String, Tables.rowtable(df))
+    result_3 = pretty_table(String, Tables.columns(df))
 
     expected = """
 ┌───────┬──────┬──────────┐
