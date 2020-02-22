@@ -1,6 +1,12 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 0.8.4
+-------------
+
+- ![Enhancement][badge-enhancement] Improvements in the documentation of
+  functions and macros.
+
 Version 0.8.3
 -------------
 
