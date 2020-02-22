@@ -13,7 +13,7 @@ export pretty_table
 ################################################################################
 
 """
-    function pretty_table([io::IO | String,] table[, header::AbstractVecOrMat];  kwargs...)
+    pretty_table([io::IO | String,] table[, header::AbstractVecOrMat];  kwargs...)
 
 Print to `io` the table `table` with header `header`. If `io` is omitted, then
 it defaults to `stdout`. If `String` is passed in the place of `io`, then a

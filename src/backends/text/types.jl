@@ -9,7 +9,7 @@
 export TextFormat, Highlighter
 
 """
-    struct TextFormat
+    TextFormat
 
 # Fields
 
@@ -60,7 +60,7 @@ The following pre-defined formats are available: `unicode` (**default**),
 end
 
 """
-    struct Highlighter
+    Highlighter
 
 Defines the highlighter of a table when using the text backend.
 
@@ -78,7 +78,7 @@ Defines the highlighter of a table when using the text backend.
 end
 
 """
-    function Highlighter(f; kwargs...)
+    Highlighter(f; kwargs...)
 
 Construct a `Highlighter` with activation function `f` and pass all the keyword
 arguments `kwargs` to `Crayon`.
@@ -87,7 +87,7 @@ arguments `kwargs` to `Crayon`.
 Highlighter(f; kwargs...) = Highlighter(f = f, crayon = Crayon(;kwargs...))
 
 """
-    mutable struct Screen
+    Screen
 
 Store the information of the screen and the current cursor position. Notice that
 this is not the real cursor position with respect to the screen, but with

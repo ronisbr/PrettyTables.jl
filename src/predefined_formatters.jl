@@ -8,7 +8,7 @@
 export ft_printf, ft_round, ft_latex_sn
 
 """
-    function ft_printf(ftv_str, [columns])
+    ft_printf(ftv_str, [columns])
 
 Apply the formats `ftv_str` (see the function `sprintf1` of the package
 **Formatting.jl**) to the elements in the columns `columns`.
@@ -60,7 +60,7 @@ function ft_printf(ftv_str::Vector{String}, columns::AbstractVector{Int} = Int[]
 end
 
 """
-    function ft_round(digits, [columns])
+    ft_round(digits, [columns])
 
 Round the elements in the columns `columns` to the number of digits in `digits`.
 
@@ -111,7 +111,7 @@ function ft_round(digits::AbstractVector{Int}, columns::AbstractVector{Int} = In
 end
 
 """
-    function ft_latex_sn(m_digits, [columns])
+    ft_latex_sn(m_digits, [columns])
 
 Format the numbers of the elements in the columns `columns` to a scientific
 notation using LaTeX. The number is first printed using `sprintf1` functions

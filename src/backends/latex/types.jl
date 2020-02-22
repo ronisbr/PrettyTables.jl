@@ -9,7 +9,7 @@
 export LatexTableFormat, LatexHighlighter
 
 """
-    struct LatexTableFormat
+    LatexTableFormat
 
 This structure defines the format of the LaTeX table.
 
@@ -40,7 +40,7 @@ This structure defines the format of the LaTeX table.
 end
 
 """
-    struct LatexHighlighter
+    LatexHighlighter
 
 Defines the default highlighter of a table when using the LaTeX backend.
 

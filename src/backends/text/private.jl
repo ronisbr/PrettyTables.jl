@@ -18,7 +18,7 @@ const _reset_crayon = Crayon(reset = true)
 ################################################################################
 
 """
-    function _str_aligned(data::AbstractString, alignment::Symbol, field_size::Integer)
+    _str_aligned(data::AbstractString, alignment::Symbol, field_size::Integer)
 
 This function returns the string `data` with alignment `alignment` in a field
 with size `field_size`. `alignment` can be `:l` or `:L` for left alignment, `:c`
@@ -44,7 +44,7 @@ function _str_aligned(data::AbstractString, alignment::Symbol,
 end
 
 """
-    function _str_line_breaks(str::AbstractString, autowrap::Bool = false, width::Int = 0)
+    _str_line_breaks(str::AbstractString, autowrap::Bool = false, width::Int = 0)
 
 Split the string `str` into substring, each one meaning one new line. If
 `autowrap` is `true`, then the text will be wrapped so that it fits the column
@@ -128,7 +128,7 @@ end
 ################################################################################
 
 """
-    function _draw_continuation_row(screen, io, tf, text_crayon, border_crayon, num_printed_cols, cols_width, show_row_number, row_number_width)
+    _draw_continuation_row(screen, io, tf, text_crayon, border_crayon, num_printed_cols, cols_width, show_row_number, row_number_width)
 
 Draw the continuation row when the table has filled the vertical space
 available. This function prints in each column the character `⋮` centered.
@@ -162,7 +162,7 @@ function _draw_continuation_row(screen, io, tf, text_crayon, border_crayon,
 end
 
 """
-    function _draw_line!(screen, io, left, intersection, right, row, border_crayon, num_cols, cols_width, show_row_number, row_number_width)
+    _draw_line!(screen, io, left, intersection, right, row, border_crayon, num_cols, cols_width, show_row_number, row_number_width)
 
 Draw a vertical line in `io` using the information in `screen`.
 
@@ -189,7 +189,7 @@ function _draw_line!(screen, io, left, intersection, right, row, border_crayon,
 end
 
 """
-    function _eol(screen)
+    _eol(screen)
 
 Return `true` if the cursor is at the end of line or `false` otherwise.
 
@@ -197,7 +197,7 @@ Return `true` if the cursor is at the end of line or `false` otherwise.
 _eol(screen) = (screen.size[2] > 0) && (screen.col >= screen.size[2])
 
 """
-    function _nl!(screen, io)
+    _nl!(screen, io)
 
 Add a new line into `io` using the screen information in `screen`.
 
@@ -209,7 +209,7 @@ function _nl!(screen, io)
 end
 
 """
-    function _p!(screen, io, crayon, str, final_line_print = false)
+    _p!(screen, io, crayon, str, final_line_print = false)
 
 Print `str` into `io` using the Crayon `crayon` with the screen information in
 `screen`. The parameter `final_line_print` must be set to `true` if this is the

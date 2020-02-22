@@ -14,7 +14,7 @@ export hl_cell
 Highlight the cell `(i,j)` with the decoration `decoration` (see
 `HTMLDecoration`).
 
-    function hl_cell(cells::AbstractVector{NTuple(2,Int)}, decoration::HTMLDecoration)
+    hl_cell(cells::AbstractVector{NTuple(2,Int)}, decoration::HTMLDecoration)
 
 Highlights all the cells in `cells` with the decoration `decoration` (see
 `HTMLDecoration`).
@@ -39,11 +39,11 @@ hl_cell(cells::AbstractVector{NTuple{2,Int}}, decoration::HTMLDecoration) = HTML
 )
 
 """
-    function hl_col(i::Number, decoration::HTMLDecoration)
+    hl_col(i::Number, decoration::HTMLDecoration)
 
 Highlight the entire column `i` with the decoration `decoration`.
 
-    function hl_col(cols::AbstractVector{Int}, decoration::HTMLDecoration)
+    hl_col(cols::AbstractVector{Int}, decoration::HTMLDecoration)
 
 Highlights all the columns in `cols` with the decoration `decoration`.
 
@@ -67,11 +67,11 @@ hl_col(cols::AbstractVector{Int}, decoration::HTMLDecoration) = HTMLHighlighter(
 )
 
 """
-    function hl_row(i::Number, decoration::HTMLDecoration)
+    hl_row(i::Number, decoration::HTMLDecoration)
 
 Highlight the entire row `i` with the decoration `decoration`.
 
-    function hl_row(rows::AbstractVector{Int}, decoration::HTMLDecoration)
+    hl_row(rows::AbstractVector{Int}, decoration::HTMLDecoration)
 
 Highlights all the rows in `rows` with the decoration `decoration`.
 
@@ -158,7 +158,7 @@ hl_gt(n::Number, decoration::HTMLDecoration) = HTMLHighlighter(
 )
 
 """
-    function hl_geq(n::Number, decoration::HTMLDecoration)
+    hl_geq(n::Number, decoration::HTMLDecoration)
 
 Highlight all elements that ≥ `n` using the decoration `decoration`.
 
@@ -179,7 +179,7 @@ hl_geq(n::Number, decoration::HTMLDecoration) = HTMLHighlighter(
 )
 
 """
-    function hl_value(v::Any, decoration::HTMLDecoration)
+    hl_value(v::Any, decoration::HTMLDecoration)
 
 Highlight all the values that matches `data[i,j] == v` using the decoration
 `decoration`.

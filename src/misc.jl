@@ -6,7 +6,7 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 """
-    function _str_escaped(str::AbstractString)
+    _str_escaped(str::AbstractString)
 
 Return the escaped string representation of `str`.
 

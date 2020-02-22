@@ -9,11 +9,11 @@
 export hl_cell, hl_col, hl_row, hl_lt, hl_leq, hl_gt, hl_geq, hl_value
 
 """
-    function hl_cell(i::Number, j::Number, crayon::Crayon)
+    hl_cell(i::Number, j::Number, crayon::Crayon)
 
 Highlight the cell `(i,j)` with the crayon `crayon`.
 
-    function hl_cell(cells::AbstractVector{NTuple(2,Int)}, crayon::Crayon)
+    hl_cell(cells::AbstractVector{NTuple(2,Int)}, crayon::Crayon)
 
 Highlights all the cells in `cells` with the crayon `crayon`.
 
@@ -37,11 +37,11 @@ hl_cell(cells::AbstractVector{NTuple{2,Int}}, crayon::Crayon) = Highlighter(
 )
 
 """
-    function hl_col(i::Number, crayon::Crayon)
+    hl_col(i::Number, crayon::Crayon)
 
 Highlight the entire column `i` with the crayon `crayon`.
 
-    function hl_col(cols::AbstractVector{Int}, crayon::Crayon)
+    hl_col(cols::AbstractVector{Int}, crayon::Crayon)
 
 Highlights all the columns in `cols` with the crayon `crayon`.
 
@@ -65,11 +65,11 @@ hl_col(cols::AbstractVector{Int}, crayon::Crayon) = Highlighter(
 )
 
 """
-    function hl_row(i::Number, crayon::Crayon)
+    hl_row(i::Number, crayon::Crayon)
 
 Highlight the entire row `i` with the crayon `crayon`.
 
-    function hl_row(rows::AbstractVector{Int}, crayon::Crayon)
+    hl_row(rows::AbstractVector{Int}, crayon::Crayon)
 
 Highlights all the rows in `rows` with the crayon `crayon`.
 
@@ -93,7 +93,7 @@ hl_row(rows::AbstractVector{Int}, crayon::Crayon) = Highlighter(
 )
 
 """
-    function hl_lt(n::Number)
+    hl_lt(n::Number)
 
 Highlight all elements that < `n`.
 
@@ -115,7 +115,7 @@ hl_lt(n::Number) = Highlighter(
 )
 
 """
-    function hl_leq(n::Number)
+    hl_leq(n::Number)
 
 Highlight all elements that ≤ `n`.
 
@@ -137,7 +137,7 @@ hl_leq(n::Number) = Highlighter(
 )
 
 """
-    function hl_gt(n::Number)
+    hl_gt(n::Number)
 
 Highlight all elements that > `n`.
 
@@ -159,7 +159,7 @@ hl_gt(n::Number) = Highlighter(
 )
 
 """
-    function hl_geq(n::Number)
+    hl_geq(n::Number)
 
 Highlight all elements that ≥ `n`.
 
@@ -181,7 +181,7 @@ hl_geq(n::Number) = Highlighter(
 )
 
 """
-    function hl_value(v::Any)
+    hl_value(v::Any)
 
 Highlight all the values that matches `data[i,j] == v`.
 

@@ -9,7 +9,7 @@
 export HTMLDecoration, HTMLHighlighter, HTMLTableFormat
 
 """
-    struct HTMLDecoration
+    HTMLDecoration
 
 Structure that defines parameters to decorate a table cell.
 
@@ -37,7 +37,7 @@ function Dict(d::HTMLDecoration)
 end
 
 """
-    struct HTMLTableFormat
+    HTMLTableFormat
 
 Format that will be used to print the HTML table. All parameters are strings
 compatible with the corresponding HTML property.
@@ -110,7 +110,7 @@ end
 
 # Abstract type for all highlighters.
 """
-    abstract type AbstractHTMLHighlighter
+    AbstractHTMLHighlighter
 
 All HTML highlighters must be a subtype of `AbstractHTMLHighlighter`. They API
 dictates that they must implement two functions:
@@ -126,7 +126,7 @@ dictates that they must implement two functions:
 abstract type AbstractHTMLHighlighter end
 
 """
-    struct HTMLHighlighter
+    HTMLHighlighter
 
 Defines the default highlighter of a table when using the html backend.
 

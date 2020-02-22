@@ -7,7 +7,7 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 """
-    struct PrintInfo{Td,Th}
+    PrintInfo{Td,Th}
 
 This structure stores the information required so that the backends can print
 the tables.

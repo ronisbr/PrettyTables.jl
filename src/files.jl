@@ -9,7 +9,7 @@
 export include_pt_in_file
 
 """
-    function include_pt_in_file(filename::AbstractString, mark::AbstractString, args...; kwargs...)
+    include_pt_in_file(filename::AbstractString, mark::AbstractString, args...; kwargs...)
 
 Include a table in the file `filename` using the mark `mark`.
 

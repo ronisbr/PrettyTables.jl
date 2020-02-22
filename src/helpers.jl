@@ -11,7 +11,7 @@ export @ptconfclean, @ptconf, @pt
 const _pt_conf = Expr[]
 
 """
-    macro @ptconfclean()
+    @ptconfclean()
 
 Clean all global configurations to pretty print tables using the macro `@pt`.
 
@@ -23,7 +23,7 @@ macro ptconfclean()
 end
 
 """
-    macro ptconf(expr...)
+    @ptconf(expr...)
 
 Add configurations in `expr` to be used with the macro `@pt`.
 
@@ -55,7 +55,7 @@ macro ptconf(expr...)
 end
 
 """
-    macro pt(expr...)
+    @pt(expr...)
 
 Pretty print tables in `expr` to `stdout` using the global configurations
 selected with the macro `@ptconf`.
