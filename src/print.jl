@@ -48,6 +48,15 @@ it is not compliant, then only the following types are supported:
              `Backend`).
 * `filters_row`: Filters for the rows (see the section `Filters`).
 * `filters_col`: Filters for the columns (see the section `Filters`).
+* `row_names`: A vector containing the row names that will be appended to the
+               left of the table. If it is `nothing`, then the column with the
+               row names will not be shown. Notice that the size of this vector
+               must match the number of rows in the table.
+               (**Default** = `nothing`)
+* `row_name_alignment`: Alignment of the column with the rows name (see the
+                        section `Alignment`).
+* `row_name_column_title`: Title of the column with the row names.
+                           (**Default** = "")
 
 !!! note
 
@@ -520,6 +529,9 @@ function _pretty_table(io, data, header;
                        backend::Union{Nothing,Symbol} = nothing,
                        filters_row::Union{Nothing,Tuple} = nothing,
                        filters_col::Union{Nothing,Tuple} = nothing,
+                       row_names::Union{Nothing,AbstractVector} = nothing,
+                       row_name_alignment::Symbol = :r,
+                       row_name_column_title::AbstractString = "",
                        kwargs...)
 
     # Try to automatically infer the backend based on the table format type.
@@ -581,6 +593,16 @@ function _pretty_table(io, data, header;
         length(alignment) != num_cols && error("The length of `alignment` must be the same as the number of rows.")
     end
 
+    # If there is a vector of row names, then it must have the same size of the
+    # number of rows.
+    if row_names != nothing
+        length(row_names) != num_rows &&
+        error("The number of lines in `row_names` must match the number of lines in the matrix.")
+        show_row_names = true
+    else
+        show_row_names = false
+    end
+
     # If the user wants to filter the data, then check which columns and rows
     # must be printed. Notice that if a data is filtered, then it means that it
     # passed the filter and must be printed.
@@ -627,7 +649,8 @@ function _pretty_table(io, data, header;
     # Create the structure that stores the print information.
     pinfo = PrintInfo(data, header, id_cols, id_rows, num_rows, num_cols,
                       num_printed_cols, num_printed_rows, header_num_rows,
-                      header_num_cols, alignment)
+                      header_num_cols, show_row_names, row_names,
+                      row_name_alignment, row_name_column_title, alignment)
 
     if backend == :text
         _pt_text(io, pinfo; kwargs...)

@@ -128,7 +128,7 @@ end
 ################################################################################
 
 """
-    _draw_continuation_row(screen, io, tf, text_crayon, border_crayon, num_printed_cols, cols_width, show_row_number, row_number_width)
+    _draw_continuation_row(screen, io, tf, text_crayon, border_crayon, num_printed_cols, cols_width, show_row_number, row_number_width, show_row_names, row_name_width)
 
 Draw the continuation row when the table has filled the vertical space
 available. This function prints in each column the character `⋮` centered.
@@ -136,13 +136,20 @@ available. This function prints in each column the character `⋮` centered.
 """
 function _draw_continuation_row(screen, io, tf, text_crayon, border_crayon,
                                 num_printed_cols, cols_width, show_row_number,
-                                row_number_width)
+                                row_number_width, show_row_names,
+                                row_name_width)
 
     _p!(screen, io, border_crayon, tf.column)
 
     if show_row_number
         row_number_i_str = _str_aligned("⋮", :c, row_number_width + 2)
         _p!(screen, io, text_crayon,   row_number_i_str)
+        _p!(screen, io, border_crayon, tf.column)
+    end
+
+    if show_row_names
+        row_names_i_str = _str_aligned("⋮", :c, row_name_width + 2)
+        _p!(screen, io, text_crayon,   row_names_i_str)
         _p!(screen, io, border_crayon, tf.column)
     end
 
@@ -162,18 +169,24 @@ function _draw_continuation_row(screen, io, tf, text_crayon, border_crayon,
 end
 
 """
-    _draw_line!(screen, io, left, intersection, right, row, border_crayon, num_cols, cols_width, show_row_number, row_number_width)
+    _draw_line!(screen, io, left, intersection, right, row, border_crayon, num_cols, cols_width, show_row_number, row_number_width, show_row_names, row_name_width)
 
 Draw a vertical line in `io` using the information in `screen`.
 
 """
 function _draw_line!(screen, io, left, intersection, right, row, border_crayon,
-                     num_cols, cols_width, show_row_number, row_number_width)
+                     num_cols, cols_width, show_row_number, row_number_width,
+                     show_row_names, row_name_width)
 
     _p!(screen, io, border_crayon, left)
 
     if show_row_number
         _p!(screen, io, border_crayon, row^(row_number_width+2))
+        _p!(screen, io, border_crayon, intersection)
+    end
+
+    if show_row_names
+        _p!(screen, io, border_crayon, row^(row_name_width+2))
         _p!(screen, io, border_crayon, intersection)
     end
 

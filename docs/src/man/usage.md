@@ -56,6 +56,15 @@ Each back-end defines its own configuration keywords that can be passed using
              backend.
 * `filters_row`: Filters for the rows (see the section `Filters`).
 * `filters_col`: Filters for the columns (see the section `Filters`).
+* `row_names`: A vector containing the row names that will be appended to the
+               left of the table. If it is `nothing`, then the column with the
+               row names will not be shown. Notice that the size of this vector
+               must match the number of rows in the table.
+               (**Default** = `nothing`)
+* `row_name_alignment`: Alignment of the column with the rows name (see the
+                        section `Alignment`).
+* `row_name_column_title`: Title of the column with the row names.
+                           (**Default** = "")
 
 !!! note
 
