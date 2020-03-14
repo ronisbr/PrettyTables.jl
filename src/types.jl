@@ -7,6 +7,32 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 """
+    struct ColumnTable{T}
+
+This structure helps to access elements that comply with the column access
+specification of Tables.jl.
+
+"""
+struct ColumnTable{T}
+    table::T
+    column_names::Vector{Symbol}
+    size::Tuple{Int,Int}
+end
+
+"""
+    struct RowTable{T}
+
+This structure helps to access elements that comply with the row access
+specification of Tables.jl.
+
+"""
+struct RowTable{T}
+    table::T
+    column_names::Vector{Symbol}
+    size::Tuple{Int,Int}
+end
+
+"""
     PrintInfo{Td,Th,Trn}
 
 This structure stores the information required so that the backends can print

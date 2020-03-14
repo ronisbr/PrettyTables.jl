@@ -459,28 +459,64 @@ end
 
 # Function to print data that complies with Tables.jl API.
 function _pretty_table_Tables(io::IO, table, header; kwargs...)
-    # Get the table schema to obtain the columns names.
-    sch = Tables.schema(table)
+    # First we need to check which type of table we have.
+    if Tables.columnaccess(table)
+        # Access the table using the columns.
+        cols = Tables.columns(table)
 
-    # Get the data.
-    data = Tables.matrix(table)
+        # Get the column names.
+        names = collect(Symbol, Tables.columnnames(cols))
 
-    if sch == nothing
-        if isempty(header)
-            num_cols, num_rows = size(data)
-            header = ["Col. " * string(i) for i = 1:num_cols]
-        end
+        # Compute the table size and get the column types.
+        size_j = length(names)
+        size_i = Tables.rowcount(cols)
+
+        data = ColumnTable(cols, names, (size_i, size_j))
+
+    elseif Tables.rowaccess(table)
+        # Access the table using the rows.
+        rows = Tables.rows(table)
+
+        # We need to fetch the first row to get information about the columns.
+        row₁,~ = iterate(rows, 1)
+
+        # Get the column names.
+        names = collect(Symbol, Tables.columnnames(row₁))
+
+        # Compute the table size.
+        size_i = length(rows)
+        size_j = length(names)
+
+        data = RowTable(rows, names, (size_i, size_j))
     else
-        names = reshape( [sch.names...], (1,:) )
-        types = reshape( [sch.types...], (1,:) )
+        error("The object does not have a valid Tables.jl implementation.")
+    end
 
-        # Check if we have only one column. In this case, the header must be a
-        # `Vector`.
-        if length(names) == 1
-            header = [names[1]; types[1]]
+    # For the header, we have the following priority:
+    #
+    #     1. If the user passed a vector `header`, then use it.
+    #     2. Otherwise, check if the table defines a schema to create the
+    #        header.
+    #     3. If the table does not have a schema, then build a default header
+    #        based on the column name and type.
+    if isempty(header)
+        sch = Tables.schema(table)
+
+        if sch != nothing
+            names = reshape( [sch.names...], (1,:) )
+            types = reshape( [sch.types...], (1,:) )
+
+            # Check if we have only one column. In this case, the header must be
+            # a `Vector`.
+            if length(names) == 1
+                header = [names[1]; types[1]]
+            else
+                header = [names; types]
+            end
         else
-            header = [names; types]
+            header = data.column_names
         end
+
     end
 
     _pretty_table(io, data, header; kwargs...)
