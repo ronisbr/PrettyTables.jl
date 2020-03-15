@@ -545,11 +545,27 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "lib/library/#PrettyTables.ColumnTable",
+    "page": "Library",
+    "title": "PrettyTables.ColumnTable",
+    "category": "type",
+    "text": "struct ColumnTable{T}\n\nThis structure helps to access elements that comply with the column access specification of Tables.jl.\n\n\n\n\n\n"
+},
+
+{
     "location": "lib/library/#PrettyTables.PrintInfo",
     "page": "Library",
     "title": "PrettyTables.PrintInfo",
     "category": "type",
     "text": "PrintInfo{Td,Th,Trn}\n\nThis structure stores the information required so that the backends can print the tables.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables.RowTable",
+    "page": "Library",
+    "title": "PrettyTables.RowTable",
+    "category": "type",
+    "text": "struct RowTable{T}\n\nThis structure helps to access elements that comply with the row access specification of Tables.jl.\n\n\n\n\n\n"
 },
 
 {
