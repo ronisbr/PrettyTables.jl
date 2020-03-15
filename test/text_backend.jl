@@ -1601,7 +1601,7 @@ end
 # Issue #28
 # ==============================================================================
 
-@testset "Issue #28 - Tables.api must have priority when printing" begin
+@testset "Issue #28 - Tables.jl API must have priority when printing" begin
     # A DataFrame is compliant with Tables.jl API.
     df = DataFrame(x = Int64(1):Int64(3),
                    y = 'a':'c',
