@@ -6,6 +6,25 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
+# These structures must not be defined inside a @testset. Otherwise, the test
+# will fail for Julia 1.0.
+struct MyColumnTable{T <: AbstractMatrix}
+    names::Vector{Symbol}
+    lookup::Dict{Symbol, Int}
+    matrix::T
+end
+
+struct MyRowTable{T <: AbstractMatrix}
+    names::Vector{Symbol}
+    lookup::Dict{Symbol, Int}
+    matrix::T
+end
+
+struct MyMatrixRow{T} <: Tables.AbstractRow
+    row::Int
+    source::MyRowTable{T}
+end
+
 data = Any[1    false      1.0     0x01 ;
            2     true      2.0     0x02 ;
            3    false      3.0     0x03 ;
@@ -1331,12 +1350,6 @@ end
     # Column table
     # --------------------------------------------------------------------------
 
-    struct MyColumnTable{T <: AbstractMatrix}
-        names::Vector{Symbol}
-        lookup::Dict{Symbol, Int}
-        matrix::T
-    end
-
     Tables.istable(::Type{<:MyColumnTable}) = true
     names(m::MyColumnTable) = getfield(m, :names)
     mat(m::MyColumnTable) = getfield(m, :matrix)
@@ -1364,12 +1377,6 @@ end
     # First, we need to create a object that complies with Tables.jl and that
     # does not have a schema. This is based on Tables.jl documentation.
 
-    struct MyRowTable{T <: AbstractMatrix}
-        names::Vector{Symbol}
-        lookup::Dict{Symbol, Int}
-        matrix::T
-    end
-
     Tables.istable(::Type{<:MyRowTable}) = true
     names(m::MyRowTable) = getfield(m, :names)
     mat(m::MyRowTable) = getfield(m, :matrix)
@@ -1380,11 +1387,6 @@ end
     Base.eltype(m::MyRowTable{T}) where {T} = MyMatrixRow{T}
     Base.length(m::MyRowTable) = size(mat(m), 1)
     Base.iterate(m::MyRowTable, st=1) = st > length(m) ? nothing : (MyMatrixRow(st, m), st + 1)
-
-    struct MyMatrixRow{T} <: Tables.AbstractRow
-        row::Int
-        source::MyRowTable{T}
-    end
 
     Tables.getcolumn(m::MyMatrixRow, ::Type, col::Int, nm::Symbol) =
         getfield(getfield(m, :source), :matrix)[getfield(m, :row), col]
