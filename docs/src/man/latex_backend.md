@@ -43,6 +43,18 @@ passed as keywords when calling the function [`pretty_table`](@ref):
                 `:longtable` for `longtable`. (**Default** = `:tabular`)
 * `tf`: An instance of the structure [`LatexTableFormat`](@ref) that defines the
         general format of the LaTeX table.
+* `vlines`: This variable controls where the vertical lines will be drawn. It
+            can be `:all`, `:none` or a vector of integers. In the first case
+            (the default behavior), all vertical lines will be drawn. In the
+            second case, no vertical line will be drawn. In the third case,
+            the vertical lines will be drawn only after the columns in the
+            vector. Notice that the left border will be drawn if `0` is in
+            `vlines`. Furthermore, it is important to mention that the column
+            number in this variable is related to the **printed columns**. Thus,
+            it is affected by filters, and by the columns added using the
+            variable `show_row_number`. Finally, for convenience, the left and
+            right border can be drawn by adding the symbols `:begin` and `:end`
+            to this vector, respectively. (**Default** = `:none`)
 
 ## LaTeX highlighters
 

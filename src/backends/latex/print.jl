@@ -16,10 +16,9 @@ function _pt_latex(io, pinfo;
                    longtable_footer::Union{Nothing,AbstractString} = nothing,
                    noheader::Bool = false,
                    nosubheader::Bool = false,
-                   row_number_vline::Bool = false,
                    show_row_number::Bool = false,
                    table_type::Symbol = :tabular,
-                   vlines::AbstractVector{Int} = Int[])
+                   vlines::Union{Symbol,AbstractVector} = :none)
 
     @unpack_PrintInfo pinfo
     @unpack_LatexTableFormat tf
@@ -91,12 +90,23 @@ function _pt_latex(io, pinfo;
         end
     end
 
-    # Adjustments required if the user wants to print the row number.
-    if show_row_number
-        alignment = pushfirst!(alignment, :l)
-        vlines[vlines .!= 0] .+= 1
-        row_number_vline && push!(vlines, 1)
+    # Process `vlines`.
+    if vlines == :all
+        vlines = collect(0:1:(num_printed_cols + show_row_number))
+    elseif vlines == :none
+        vlines = Int[]
+    elseif !(typeof(vlines) <: AbstractVector)
+        error("`vlines` must be `:all`, `:none`, or a vector of integers.")
     end
+
+    # The symbol `:begin` is replaced by 0 and the symbol `:end` is replaced by
+    # the last column.
+    vlines = replace(vlines, :begin => 0,
+                             :end   => num_printed_cols + show_row_number)
+
+    # If the user wants to show the row number, then we must add it to the
+    # `alignment` vector.
+    show_row_number && (alignment = pushfirst!(alignment, :l))
 
     # Print LaTeX header
     # ==========================================================================

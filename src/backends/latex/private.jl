@@ -21,7 +21,7 @@ end
 
 # Get the LaTeX table description (alignment and vertical columns).
 function _latex_table_desc(alignment::Vector{Symbol},
-                           vlines::AbstractVector{Int},
+                           vlines::AbstractVector,
                            left_vline::AbstractString,
                            mid_vline::AbstractString,
                            right_vline::AbstractString)
