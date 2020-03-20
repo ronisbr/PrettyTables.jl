@@ -128,18 +128,18 @@ end
 ################################################################################
 
 """
-    _draw_continuation_row(screen, io, tf, text_crayon, border_crayon, num_printed_cols, cols_width, show_row_number, row_number_width, show_row_names, row_name_width)
+    _draw_continuation_row(screen, io, tf, text_crayon, border_crayon, cols_width, vlines)
 
 Draw the continuation row when the table has filled the vertical space
 available. This function prints in each column the character `⋮` centered.
 
 """
 function _draw_continuation_row(screen, io, tf, text_crayon, border_crayon,
-                                cols_width)
+                                cols_width, vlines)
 
     num_cols = length(cols_width)
 
-    _p!(screen, io, border_crayon, tf.column)
+    0 ∈ vlines && _p!(screen, io, border_crayon, tf.column)
 
     @inbounds for j = 1:num_cols
         data_ij_str = _str_aligned("⋮", :c, cols_width[j] + 2)
@@ -147,7 +147,7 @@ function _draw_continuation_row(screen, io, tf, text_crayon, border_crayon,
 
         flp = j == num_cols
 
-        _p!(screen, io, border_crayon, tf.column, flp)
+        _pc!(j ∈ vlines, screen, io, border_crayon, tf.column, " ", flp)
         _eol(screen) && break
     end
 
@@ -163,20 +163,21 @@ Draw a vertical line in `io` using the information in `screen`.
 
 """
 function _draw_line!(screen, io, left, intersection, right, row, border_crayon,
-                     cols_width)
+                     cols_width, vlines)
 
     num_cols = length(cols_width)
 
-    _p!(screen, io, border_crayon, left)
+    0 ∈ vlines && _p!(screen, io, border_crayon, left)
 
     @inbounds for i = 1:num_cols
         # Check the alignment and print.
         _p!(screen, io, border_crayon, row^(cols_width[i]+2)) && break
 
-        i != num_cols && _p!(screen, io, border_crayon, intersection)
+        i != num_cols &&
+            _pc!(i ∈ vlines, screen, io, border_crayon, intersection, row)
     end
 
-    _p!(screen, io, border_crayon, right, true)
+    _pc!(num_cols ∈ vlines, screen, io, border_crayon, right, row, true)
     _nl!(screen, io)
 end
 
@@ -296,4 +297,24 @@ function _p!(screen, io, crayon, str, final_line_print = false)
 
     # Return if we reached the end of line.
     return _eol(screen)
+end
+
+"""
+    _pc!(cond, screen, io, crayon, str_true, str_false, final_line_print = false)
+
+If `cond == true` then print `str_true`. Otherwise, print `str_false`. Those
+strings will be printed into `io` using the Crayon `crayon` with the screen
+information in `screen`. The parameter `final_line_print` must be set to `true`
+if this is the last string that will be printed in the line. This is necessary
+for the algorithm to select whether or not to include the continuation
+character.
+
+"""
+function _pc!(cond, screen, io, crayon, str_true, str_false,
+              final_line_print = false)
+    if cond
+        return _p!(screen, io, crayon, str_true, final_line_print)
+    else
+        return _p!(screen, io, crayon, str_false, final_line_print)
+    end
 end

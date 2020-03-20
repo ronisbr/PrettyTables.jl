@@ -30,7 +30,8 @@ function _pt_text(io, pinfo;
                   screen_size::Union{Nothing,Tuple{Int,Int}} = nothing,
                   show_row_number::Bool = false,
                   sortkeys::Bool = false,
-                  tf::TextFormat = unicode)
+                  tf::TextFormat = unicode,
+                  vlines::Union{Symbol,AbstractVector} = :all)
 
     @unpack_PrintInfo pinfo
 
@@ -264,12 +265,38 @@ function _pt_text(io, pinfo;
     show_row_names  && (all_cols_width = vcat(row_name_width, all_cols_width))
     show_row_number && (all_cols_width = vcat(row_number_width, all_cols_width))
 
+    # Process `vlines`.
+    if vlines == :all
+        vlines = collect(0:1:length(all_cols_width))
+    elseif !(typeof(vlines) <: AbstractVector)
+        error("`vlines` must be `:all` or an vector of integers.")
+    end
+
+    # The symbol `:end` is replaced by the last column.
+    vlines = replace(vlines, :end => length(all_cols_width))
+
+    # Auxiliary variables to verify if the vertical line must be drawn in the
+    # row number and row name.
+    row_number_vline = 1 ∈ vlines
+    row_name_vline   = false
+
+    if show_row_names
+        if show_row_number
+            row_name_vline = 2 ∈ vlines
+        else
+            row_name_vline = 1 ∈ vlines
+        end
+    end
+
+    # `Δc` store the number of rows that the user added before that data.
+    Δc = Int(show_row_number + show_row_names)
+
     # Top table line
     # ==========================================================================
 
     tf.top_line && _draw_line!(screen, buf, tf.up_left_corner,
                                tf.up_intersection, tf.up_right_corner, tf.row,
-                               border_crayon, all_cols_width)
+                               border_crayon, all_cols_width, vlines)
 
     # Header
     # ==========================================================================
@@ -279,7 +306,7 @@ function _pt_text(io, pinfo;
 
     if !noheader
         @inbounds @views for i = 1:header_num_rows
-            _p!(screen, buf, border_crayon, tf.left_border)
+            0 ∈ vlines && _p!(screen, buf, border_crayon, tf.left_border)
 
             if show_row_number
                 # The text "Row" must appear only on the first line.
@@ -290,7 +317,7 @@ function _pt_text(io, pinfo;
                     _p!(screen, buf, rownum_header_crayon, " "^(row_number_width+2))
                 end
 
-                _p!(screen, buf, border_crayon, tf.column)
+                _pc!(row_number_vline, screen, buf, border_crayon, tf.column, " ")
             end
 
             # If we have row name column, then print in the first line the
@@ -306,7 +333,7 @@ function _pt_text(io, pinfo;
                     _p!(screen, buf, text_crayon, " "^(row_name_width+2))
                 end
 
-                _p!(screen, buf, border_crayon, tf.column)
+                _pc!(row_name_vline, screen, buf, border_crayon, tf.column, " ")
             end
 
             for j = 1:num_printed_cols
@@ -322,11 +349,15 @@ function _pt_text(io, pinfo;
                 flp = j == num_printed_cols
 
                 _p!(screen, buf, crayon,        header_i_str)
+
                 if j != num_printed_cols
-                    _p!(screen, buf, border_crayon, tf.column, flp)
+                    _pc!(j + Δc ∈ vlines, screen, buf, border_crayon, tf.column,
+                         " " , flp)
                 else
-                    _p!(screen, buf, border_crayon, tf.right_border, flp)
+                    _pc!(j + Δc ∈ vlines, screen, buf, border_crayon,
+                         tf.right_border, " " , flp)
                 end
+
                 _eol(screen) && break
             end
 
@@ -341,7 +372,7 @@ function _pt_text(io, pinfo;
         tf.header_line && _draw_line!(screen, buf, tf.left_intersection,
                                       tf.middle_intersection,
                                       tf.right_intersection, tf.row,
-                                      border_crayon, all_cols_width)
+                                      border_crayon, all_cols_width, vlines)
     end
 
     # Data
@@ -351,7 +382,7 @@ function _pt_text(io, pinfo;
         ir = id_rows[i]
 
         for l = 1:num_lines_in_row[i]
-            _p!(screen, buf, border_crayon, tf.left_border)
+            0 ∈ vlines && _p!(screen, buf, border_crayon, tf.left_border)
 
             if show_row_number
                 if l == 1
@@ -361,7 +392,7 @@ function _pt_text(io, pinfo;
                 end
 
                 _p!(screen, buf, text_crayon,   row_number_i_str)
-                _p!(screen, buf, border_crayon, tf.column)
+                _pc!(row_number_vline, screen, buf, border_crayon, tf.column, " ")
             end
 
             if show_row_names
@@ -369,7 +400,7 @@ function _pt_text(io, pinfo;
                                                      row_name_alignment,
                                                      row_name_width) * " "
                 _p!(screen, buf, row_name_crayon, row_names_i_str)
-                _p!(screen, buf, border_crayon, tf.column)
+                _pc!(row_name_vline, screen, buf, border_crayon, tf.column, " ")
             end
 
             for j = 1:num_printed_cols
@@ -407,10 +438,13 @@ function _pt_text(io, pinfo;
                 flp = j == num_printed_cols
 
                 if j != num_printed_cols
-                    _p!(screen, buf, border_crayon, tf.column, flp)
+                    _pc!(j + Δc ∈ vlines, screen, buf, border_crayon, tf.column,
+                         " " , flp)
                 else
-                    _p!(screen, buf, border_crayon, tf.right_border, flp)
+                    _pc!(j + Δc ∈ vlines, screen, buf, border_crayon,
+                         tf.right_border, " " , flp)
                 end
+
                 _eol(screen) && break
             end
 
@@ -420,14 +454,15 @@ function _pt_text(io, pinfo;
 
         # Check if we must draw a horizontal line here.
         i != num_rows && i in hlines &&
-        _draw_line!(screen, buf, hlines_format..., border_crayon, all_cols_width)
+            _draw_line!(screen, buf, hlines_format..., border_crayon,
+                        all_cols_width, vlines)
 
         # Here we must check if the vertical size of the screen has been
         # reached. Notice that we must add 4 to account for the command line,
         # the continuation line, the bottom table line, and the last blank line.
         if (screen.size[1] > 0) && (screen.row + 4 >= screen.size[1])
             _draw_continuation_row(screen, buf, tf, text_crayon, border_crayon,
-                                   all_cols_width)
+                                   all_cols_width, vlines)
             break
         end
     end
@@ -438,7 +473,7 @@ function _pt_text(io, pinfo;
     tf.bottom_line && _draw_line!(screen, buf, tf.bottom_left_corner,
                                   tf.bottom_intersection,
                                   tf.bottom_right_corner, tf.row, border_crayon,
-                                  all_cols_width)
+                                  all_cols_width, vlines)
 
     # Print the buffer
     # ==========================================================================

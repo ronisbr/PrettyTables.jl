@@ -71,6 +71,18 @@ passed as keywords when calling the function `pretty_table`:
                      row number. (**Default** = `false`)
 * `tf`: Table format used to print the table (see the section
         [Text table formats](@ref)). (**Default** = `unicode`)
+* `vlines`: This variable controls where the vertical lines will be drawn. It
+            can be `:all` or a vector of integers. In the first case (the
+            default behavior), all vertical lines will be drawn. In the second
+            case, the vertical lines will be drawn only after the columns in the
+            vector. Notice that the left border will be drawn if `0` is in
+            `vlines`. Furthermore, it is important to mention that the column
+            number in this variable is related to the **printed columns**. Thus,
+            it is affected by filters, and by the columns added using the
+            variables `show_row_number` and `row_names`. Finally, for
+            convenience, the right border can be drawn by adding the symbol
+            `:end` to this vector, which will be replaced by the number of the
+            last printed column. (**Default** = `:all`)
 
 The keywords `header_crayon` and `subheaders_crayon` can be a `Crayon` or a
 `Vector{Crayon}`. In the first case, the `Crayon` will be applied to all the
