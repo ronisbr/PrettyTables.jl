@@ -135,29 +135,17 @@ available. This function prints in each column the character `⋮` centered.
 
 """
 function _draw_continuation_row(screen, io, tf, text_crayon, border_crayon,
-                                num_printed_cols, cols_width, show_row_number,
-                                row_number_width, show_row_names,
-                                row_name_width)
+                                cols_width)
+
+    num_cols = length(cols_width)
 
     _p!(screen, io, border_crayon, tf.column)
 
-    if show_row_number
-        row_number_i_str = _str_aligned("⋮", :c, row_number_width + 2)
-        _p!(screen, io, text_crayon,   row_number_i_str)
-        _p!(screen, io, border_crayon, tf.column)
-    end
-
-    if show_row_names
-        row_names_i_str = _str_aligned("⋮", :c, row_name_width + 2)
-        _p!(screen, io, text_crayon,   row_names_i_str)
-        _p!(screen, io, border_crayon, tf.column)
-    end
-
-    @inbounds for j = 1:num_printed_cols
+    @inbounds for j = 1:num_cols
         data_ij_str = _str_aligned("⋮", :c, cols_width[j] + 2)
         _p!(screen, io, text_crayon, data_ij_str)
 
-        flp = j == num_printed_cols
+        flp = j == num_cols
 
         _p!(screen, io, border_crayon, tf.column, flp)
         _eol(screen) && break
@@ -169,26 +157,17 @@ function _draw_continuation_row(screen, io, tf, text_crayon, border_crayon,
 end
 
 """
-    _draw_line!(screen, io, left, intersection, right, row, border_crayon, num_cols, cols_width, show_row_number, row_number_width, show_row_names, row_name_width)
+    _draw_line!(screen, io, left, intersection, right, row, border_crayon, cols_width)
 
 Draw a vertical line in `io` using the information in `screen`.
 
 """
 function _draw_line!(screen, io, left, intersection, right, row, border_crayon,
-                     num_cols, cols_width, show_row_number, row_number_width,
-                     show_row_names, row_name_width)
+                     cols_width)
+
+    num_cols = length(cols_width)
 
     _p!(screen, io, border_crayon, left)
-
-    if show_row_number
-        _p!(screen, io, border_crayon, row^(row_number_width+2))
-        _p!(screen, io, border_crayon, intersection)
-    end
-
-    if show_row_names
-        _p!(screen, io, border_crayon, row^(row_name_width+2))
-        _p!(screen, io, border_crayon, intersection)
-    end
 
     @inbounds for i = 1:num_cols
         # Check the alignment and print.

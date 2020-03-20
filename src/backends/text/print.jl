@@ -256,14 +256,20 @@ function _pt_text(io, pinfo;
                          tf.right_intersection, tf.row)
     end
 
+    # The variable `all_cols_width` contains the width of all printed columns,
+    # including the row number and row name if the user requested. This is used
+    # when drawing lines.
+    all_cols_width = copy(cols_width)
+
+    show_row_names  && (all_cols_width = vcat(row_name_width, all_cols_width))
+    show_row_number && (all_cols_width = vcat(row_number_width, all_cols_width))
+
     # Top table line
     # ==========================================================================
 
     tf.top_line && _draw_line!(screen, buf, tf.up_left_corner,
                                tf.up_intersection, tf.up_right_corner, tf.row,
-                               border_crayon, num_printed_cols, cols_width,
-                               show_row_number, row_number_width,
-                               show_row_names, row_name_width)
+                               border_crayon, all_cols_width)
 
     # Header
     # ==========================================================================
@@ -335,10 +341,7 @@ function _pt_text(io, pinfo;
         tf.header_line && _draw_line!(screen, buf, tf.left_intersection,
                                       tf.middle_intersection,
                                       tf.right_intersection, tf.row,
-                                      border_crayon, num_printed_cols,
-                                      cols_width, show_row_number,
-                                      row_number_width, show_row_names,
-                                      row_name_width)
+                                      border_crayon, all_cols_width)
     end
 
     # Data
@@ -417,18 +420,14 @@ function _pt_text(io, pinfo;
 
         # Check if we must draw a horizontal line here.
         i != num_rows && i in hlines &&
-        _draw_line!(screen, buf, hlines_format..., border_crayon,
-                    num_printed_cols, cols_width, show_row_number,
-                    row_number_width, show_row_names, row_name_width)
+        _draw_line!(screen, buf, hlines_format..., border_crayon, all_cols_width)
 
         # Here we must check if the vertical size of the screen has been
         # reached. Notice that we must add 4 to account for the command line,
         # the continuation line, the bottom table line, and the last blank line.
         if (screen.size[1] > 0) && (screen.row + 4 >= screen.size[1])
             _draw_continuation_row(screen, buf, tf, text_crayon, border_crayon,
-                                   num_printed_cols, cols_width,
-                                   show_row_number, row_number_width,
-                                   show_row_names, row_name_width)
+                                   all_cols_width)
             break
         end
     end
@@ -439,9 +438,7 @@ function _pt_text(io, pinfo;
     tf.bottom_line && _draw_line!(screen, buf, tf.bottom_left_corner,
                                   tf.bottom_intersection,
                                   tf.bottom_right_corner, tf.row, border_crayon,
-                                  num_printed_cols, cols_width, show_row_number,
-                                  row_number_width, show_row_names,
-                                  row_name_width)
+                                  all_cols_width)
 
     # Print the buffer
     # ==========================================================================
