@@ -271,7 +271,7 @@ function _pt_text(io, pinfo;
     elseif vlines == :none
         vlines = Int[]
     elseif !(typeof(vlines) <: AbstractVector)
-        error("`vlines` must be `:all` or an vector of integers.")
+        error("`vlines` must be `:all`, `:none`, or a vector of integers.")
     end
 
     # The symbol `:end` is replaced by the last column.
