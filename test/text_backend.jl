@@ -386,7 +386,7 @@ end
 │      6 │   true │    6.0 │      6 │
 """
 
-    tf = PrettyTables.TextFormat(unicode, top_line = false, bottom_line = false)
+    tf = PrettyTables.TextFormat(unicode, hlines = [:header])
     result = pretty_table(String, data, tf = tf)
     @test result == expected
 
@@ -402,7 +402,7 @@ end
 └────────┴────────┴────────┴────────┘
 """
 
-    tf = PrettyTables.TextFormat(unicode, header_line = false)
+    tf = PrettyTables.TextFormat(unicode, hlines = [:begin,:end])
     result = pretty_table(String, data, tf = tf)
     @test result == expected
 end
@@ -551,7 +551,9 @@ end
 │      6 │   true │    6.0 │      6 │
 └────────┴────────┴────────┴────────┘
 """
-    result = pretty_table(String, data; hlines = findall(x->x == true, data[:,2]))
+    result = pretty_table(String, data;
+                          hlines = vcat(findall(x->x == true, data[:,2]) .+ 1,
+                                        :begin,:header,:end))
     @test result == expected
 
     expected = """
@@ -569,8 +571,27 @@ end
 └────────┴────────┴────────┴────────┘
 """
     result = pretty_table(String, data;
-                          hlines = findall(x->x == true, data[:,2]),
+                          hlines = vcat(findall(x->x == true, data[:,2]) .+ 1,
+                                        :begin,:header,:end),
                           hlines_format = ('├','+','┤','.'))
+    @test result == expected
+
+    expected = """
+┌───┬───────┬─────┬───┐
+│ 1 │ false │ 1.0 │ 1 │
+│ 2 │  true │ 2.0 │ 2 │
+├───┼───────┼─────┼───┤
+│ 3 │ false │ 3.0 │ 3 │
+│ 4 │  true │ 4.0 │ 4 │
+├───┼───────┼─────┼───┤
+│ 5 │ false │ 5.0 │ 5 │
+│ 6 │  true │ 6.0 │ 6 │
+└───┴───────┴─────┴───┘
+"""
+    result = pretty_table(String, data;
+                          noheader = true,
+                          hlines = vcat(findall(x->x == true, data[:,2]),
+                                        :begin,:header,:end))
     @test result == expected
 end
 
@@ -952,7 +973,7 @@ end
     result = pretty_table(String, table, header,
                           autowrap      = true,
                           linebreaks    = true,
-                          hlines        = 1:4,
+                          hlines        = 0:1:4,
                           columns_width = [-1,30])
 
     @test result == expected
@@ -992,7 +1013,7 @@ end
                           alignment     = :c,
                           autowrap      = true,
                           linebreaks    = true,
-                          hlines        = 1:4,
+                          hlines        = 0:1:4,
                           columns_width = [-1,30])
 
     @test result == expected
@@ -1032,7 +1053,7 @@ end
                           alignment     = :l,
                           autowrap      = true,
                           linebreaks    = true,
-                          hlines        = 1:4,
+                          hlines        = 0:1:4,
                           columns_width = [-1,30])
 
     @test result == expected

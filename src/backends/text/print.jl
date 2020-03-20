@@ -19,7 +19,7 @@ function _pt_text(io, pinfo;
                   columns_width::Union{Integer,AbstractVector{Int}} = 0,
                   formatter::Dict = Dict(),
                   highlighters::Union{Highlighter,Tuple} = (),
-                  hlines::AbstractVector{Int} = Int[],
+                  hlines::Union{Nothing,Symbol,AbstractVector} = nothing,
                   hlines_format::Union{Nothing,NTuple{4,Char}} = nothing,
                   linebreaks::Bool = false,
                   noheader::Bool = false,
@@ -265,6 +265,26 @@ function _pt_text(io, pinfo;
     show_row_names  && (all_cols_width = vcat(row_name_width, all_cols_width))
     show_row_number && (all_cols_width = vcat(row_number_width, all_cols_width))
 
+    # Number of printed rows including the header.
+    num_all_rows = num_printed_rows + (!noheader)
+
+    # Process `hlines`.
+    if hlines == nothing
+        hlines = tf.hlines
+    elseif hlines == :all
+        hlines = collect(0:1:num_all_rows)
+    elseif hlines == :none
+        hlines = Int[]
+    elseif !(typeof(hlines) <: AbstractVector)
+        error("`hlines` must be `:all`, `:none`, or a vector of integers.")
+    end
+
+    # The symbol `:begin` is replaced by 0, the symbol `:header` by the line
+    # after the header, and the symbol `:end` is replaced by the last row.
+    hlines = replace(hlines, :begin  => 0,
+                             :header => noheader ? -1 : 1,
+                             :end    => num_all_rows)
+
     # Process `vlines`.
     if vlines == :all
         vlines = collect(0:1:length(all_cols_width))
@@ -298,9 +318,9 @@ function _pt_text(io, pinfo;
     # Top table line
     # ==========================================================================
 
-    tf.top_line && _draw_line!(screen, buf, tf.up_left_corner,
-                               tf.up_intersection, tf.up_right_corner, tf.row,
-                               border_crayon, all_cols_width, vlines)
+    0 ∈ hlines && _draw_line!(screen, buf, tf.up_left_corner,
+                              tf.up_intersection, tf.up_right_corner, tf.row,
+                              border_crayon, all_cols_width, vlines)
 
     # Header
     # ==========================================================================
@@ -373,10 +393,10 @@ function _pt_text(io, pinfo;
         # Bottom header line
         #-----------------------------------------------------------------------
 
-        tf.header_line && _draw_line!(screen, buf, tf.left_intersection,
-                                      tf.middle_intersection,
-                                      tf.right_intersection, tf.row,
-                                      border_crayon, all_cols_width, vlines)
+        1 ∈ hlines && _draw_line!(screen, buf, tf.left_intersection,
+                                  tf.middle_intersection,
+                                  tf.right_intersection, tf.row,
+                                  border_crayon, all_cols_width, vlines)
     end
 
     # Data
@@ -457,7 +477,7 @@ function _pt_text(io, pinfo;
         end
 
         # Check if we must draw a horizontal line here.
-        i != num_rows && i in hlines &&
+        i != num_printed_rows && (i+!noheader) in hlines &&
             _draw_line!(screen, buf, hlines_format..., border_crayon,
                         all_cols_width, vlines)
 
@@ -474,10 +494,12 @@ function _pt_text(io, pinfo;
     # Bottom table line
     # ==========================================================================
 
-    tf.bottom_line && _draw_line!(screen, buf, tf.bottom_left_corner,
-                                  tf.bottom_intersection,
-                                  tf.bottom_right_corner, tf.row, border_crayon,
-                                  all_cols_width, vlines)
+    num_all_rows ∈ hlines && _draw_line!(screen, buf,
+                                         tf.bottom_left_corner,
+                                         tf.bottom_intersection,
+                                         tf.bottom_right_corner, tf.row,
+                                         border_crayon,
+                                         all_cols_width, vlines)
 
     # Print the buffer
     # ==========================================================================

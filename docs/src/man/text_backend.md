@@ -1,4 +1,4 @@
-Text back-end
+/Text back-end
 =============
 
 ```@meta
@@ -41,16 +41,31 @@ passed as keywords when calling the function `pretty_table`:
 * `formatter`: See the section [Formatter](@ref).
 * `highlighters`: An instance of `Highlighter` or a tuple with a list of
                   highlighters (see the section [Text highlighters](@ref)).
-* `hlines`: A vector of `Int` indicating row numbers in which an additional
-            horizontal line should be drawn after the row. Notice that numbers
-            lower than 1 and equal or higher than the number of rows will be
-            neglected.
+* `hlines`: This variable controls where the horizontal lines will be drawn. It
+            can be `nothing`, `:all`, `:none` or a vector of integers.
+    - If it is `nothing`, which is the default, then the configuration will be
+      obtained from the table format in the variable `tf` (see
+      [`TextFormat`](@ref)).
+    - If it is `:all`, then all horizontal lines will be drawn.
+    - If it is `:none`, then no horizontal line will be drawn.
+    - If it is a vector of integers, then the horizontal lines will be drawn
+      only after the rows in the vector. Notice that the top line will be drawn
+      if `0` is in `hlines`, and the header and subheaders are considered as
+      only 1 row. Furthermore, it is important to mention that the row number in
+      this variable is related to the **printed rows**. Thus, it is affected by
+      filters, and by the option to suppress the header `noheader`. Finally, for
+      convenience, the top and bottom lines can be drawn by adding the symbols
+      `:begin` and `:end` to this vector, respectively, and the line after the
+      header can be drawn by adding the symbol `:header`.
+  (**Default** = `nothing`)
 * `hlines_format`: A tuple of 4 characters specifying the format of the
                    horizontal lines. The characters must be the left
                    intersection, the middle intersection, the right
                    intersection, and the row. If it is `nothing`, then it will
-                   use the same format specified in `tf`.
-                   (**Default** = `nothing`)
+                   use the same format specified in `tf`. Notice that this
+                   formatting does not apply to the top line, the header line,
+                   and the bottom line, which must be changed in the `tf`
+                   variable. (**Default** = `nothing`)
 * `linebreaks`: If `true`, then `\n` will break the line inside the cells.
                 (**Default** = `false`)
 * `noheader`: If `true`, then the header will not be printed. Notice that all

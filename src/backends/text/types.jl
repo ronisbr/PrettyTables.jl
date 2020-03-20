@@ -29,10 +29,7 @@ export TextFormat, Highlighter
 * `left_border`: Character used as the left border.
 * `right_border`: Character used as the right border.
 * `row`: Character in a horizontal line inside the table.
-* `top_line`: If `true`, then the top table line will be drawn.
-* `header_line`: If `true`, then the line between the header and the data will
-                 be drawn.
-* `bottom_line`: If `true`, then the bottom table line will be drawn.
+* `hlines`: Horizontal lines that must be drawn by default.
 
 # Pre-defined formats
 
@@ -54,9 +51,7 @@ The following pre-defined formats are available: `unicode` (**default**),
     left_border::Char         = '│'
     right_border::Char        = '│'
     row::Char                 = '─'
-    top_line::Bool            = true
-    header_line::Bool         = true
-    bottom_line::Bool         = true
+    hlines::Vector{Symbol}    = [:begin,:header,:end]
 end
 
 """

@@ -56,8 +56,7 @@ const borderless = TextFormat(
     left_border         = ' ',
     right_border        = ' ',
     row                 = ' ',
-    top_line            = false,
-    bottom_line         = false
+    hlines              = [:header]
 )
 
 const compact = TextFormat(
@@ -84,8 +83,7 @@ const markdown = TextFormat(
     left_border         = '|',
     right_border        = '|',
     row                 = '-',
-    top_line            = false,
-    bottom_line         = false,
+    hlines              = [:header]
 )
 
 const mysql = TextFormat(
