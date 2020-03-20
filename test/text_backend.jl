@@ -1168,10 +1168,14 @@ end
 ────────────────────────────
 """
 
-    result = pretty_table(String, data,
-                          ["C1" "C2" "C3" "C4"; "Int" "Bool" "Float" "Hex"],
-                          vlines = [])
-    @test result == expected
+    result1 = pretty_table(String, data,
+                           ["C1" "C2" "C3" "C4"; "Int" "Bool" "Float" "Hex"],
+                           vlines = [])
+    result2 = pretty_table(String, data,
+                           ["C1" "C2" "C3" "C4"; "Int" "Bool" "Float" "Hex"],
+                           vlines = :none)
+    @test result1 == expected
+    @test result2 == expected
 
     expected = """
 ┌───────────────────────────┐
@@ -1187,10 +1191,14 @@ end
 └───────────────────────────┘
 """
 
-    result = pretty_table(String, data,
-                          ["C1" "C2" "C3" "C4"; "Int" "Bool" "Float" "Hex"],
-                          vlines = [0,:end])
-    @test result == expected
+    result1 = pretty_table(String, data,
+                           ["C1" "C2" "C3" "C4"; "Int" "Bool" "Float" "Hex"],
+                           vlines = [:begin,:end])
+    result2 = pretty_table(String, data,
+                           ["C1" "C2" "C3" "C4"; "Int" "Bool" "Float" "Hex"],
+                           vlines = [0,4])
+    @test result1 == expected
+    @test result2 == expected
 
     expected = """
 ┌─────┬───────────────────────────┐
@@ -1208,7 +1216,7 @@ end
 
     result = pretty_table(String, data,
                           ["C1" "C2" "C3" "C4"; "Int" "Bool" "Float" "Hex"],
-                          vlines = [0,1,:end],
+                          vlines = [:begin,1,:end],
                           show_row_number = true)
     @test result == expected
 
@@ -1228,7 +1236,7 @@ end
 
     result = pretty_table(String, data,
                           ["C1" "C2" "C3" "C4"; "Int" "Bool" "Float" "Hex"],
-                          vlines = [0,1,2,:end],
+                          vlines = [:begin,1,2,:end],
                           show_row_number = true,
                           row_names = ["Row $i" for i = 1:6],
                           row_name_column_title = "Row names",
@@ -1248,7 +1256,7 @@ end
 
     result = pretty_table(String, data,
                           ["C1" "C2" "C3" "C4"; "Int" "Bool" "Float" "Hex"],
-                          vlines = [0,1,2,4,:end],
+                          vlines = [:begin,1,2,4,:end],
                           show_row_number = true,
                           row_names = ["Row $i" for i = 1:6],
                           row_name_column_title = "Row names",

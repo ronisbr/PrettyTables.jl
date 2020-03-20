@@ -268,12 +268,15 @@ function _pt_text(io, pinfo;
     # Process `vlines`.
     if vlines == :all
         vlines = collect(0:1:length(all_cols_width))
+    elseif vlines == :none
+        vlines = Int[]
     elseif !(typeof(vlines) <: AbstractVector)
         error("`vlines` must be `:all` or an vector of integers.")
     end
 
     # The symbol `:end` is replaced by the last column.
-    vlines = replace(vlines, :end => length(all_cols_width))
+    vlines = replace(vlines, :begin => 0,
+                             :end   => length(all_cols_width))
 
     # Auxiliary variables to verify if the vertical line must be drawn in the
     # row number and row name.
