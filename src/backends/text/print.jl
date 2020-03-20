@@ -274,7 +274,8 @@ function _pt_text(io, pinfo;
         error("`vlines` must be `:all`, `:none`, or a vector of integers.")
     end
 
-    # The symbol `:end` is replaced by the last column.
+    # The symbol `:begin` is replaced by 0 and the symbol `:end` is replaced by
+    # the last column.
     vlines = replace(vlines, :begin => 0,
                              :end   => length(all_cols_width))
 
