@@ -644,6 +644,21 @@ function _pretty_table(io, data, header;
         end
     end
 
+    # Breaking change introduced in PrettyTable.jl v0.9.
+    if haskey(kwargs, :formatter)
+        error("""
+              The API of formatters has changed in PrettyTables v0.9.
+              The keyword is now called `formatters` instead of `formatter` and it is a tuple
+              of functions instead of a dictionary.
+
+              If you are using a predefined formatter, then you only need to replace the
+              keyword `formatter` by `formatters`. Otherwise, you will need to rewrite your
+              formmaters.
+
+              For more information, see the documentation.
+              """)
+    end
+
     # Get information about the table we have to print based on the format of
     # `data`, which must be an `AbstractMatrix` or an `AbstractVector`.
     dims     = size(data)
