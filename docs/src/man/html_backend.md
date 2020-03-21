@@ -21,11 +21,6 @@ end
 The following options are available when the HTML backend is used. Those can be
 passed as keywords when calling the function [`pretty_table`](@ref):
 
-* `cell_alignment`: A dictionary of type `(i,j) => a` that overrides that
-                    alignment of the cell `(i,j)` to `a` regardless of the
-                    columns alignment selected. `a` must be a symbol like
-                    specified in the section `Alignment`.
-* `formatters`: See the section [Formatters](@ref).
 * `highlighters`: An instance of [`HTMLHighlighter`](@ref) or a tuple with a
                   list of HTML highlighters (see the section `HTML
                   highlighters`).

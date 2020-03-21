@@ -50,19 +50,40 @@ keyword argument `backend`. Currently, the following back-ends are supported:
 Each back-end defines its own configuration keywords that can be passed using
 `kwargs`. However, the following keywords are valid for all back-ends:
 
-* `alignment`: Select the alignment of the columns (see the section `Alignment`).
+* `alignment`: Select the alignment of the columns (see the section
+               [Alignment](@ref).
 * `backend`: Select which back-end will be used to print the table. Notice that
              the additional configuration in `kwargs...` depends on the selected
-             backend.
-* `filters_row`: Filters for the rows (see the section `Filters`).
-* `filters_col`: Filters for the columns (see the section `Filters`).
+             back-end.
+* `cell_alignment`: A tuple of functions with the signature `f(data,i,j)` that
+                    overrides the alignment of the cell `(i,j)` to the value
+                    returned by `f`. It can also be a single function, when it
+                    is assumed that only one alignment function is required, or
+                    `nothing`, when no cell alignment modification will be
+                    performed. If the function `f` does not return a valid
+                    alignment symbol as shown in section [Alignment](@ref), then
+                    it will be discarded. For convenience, it can also be a
+                    dictionary of type `(i,j) => a` that overrides the
+                    alignment of the cell `(i,j)` to `a`. `a` must be a symbol
+                    like specified in the section [Alignment](@ref).
+  !!! note
+
+      If more than one alignment function is passed to `cell_alignment`, then
+      the functions will be evaluated in the same order of the tuple. The
+      first one that returns a valid alignment symbol for each cell is applied,
+      and the rest is discarded.
+
+  (**Default** = `nothing`)
+* `filters_row`: Filters for the rows (see the section [Filters](@ref)).
+* `filters_col`: Filters for the columns (see the section [Filters](@ref)).
+* `formatters`: See the section [Formatters](@ref).
 * `row_names`: A vector containing the row names that will be appended to the
                left of the table. If it is `nothing`, then the column with the
                row names will not be shown. Notice that the size of this vector
                must match the number of rows in the table.
                (**Default** = `nothing`)
 * `row_name_alignment`: Alignment of the column with the rows name (see the
-                        section `Alignment`).
+                        section [Alignment](@ref)).
 * `row_name_column_title`: Title of the column with the row names.
                            (**Default** = "")
 

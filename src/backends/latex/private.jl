@@ -8,11 +8,11 @@
 
 # Convert the alignment symbol into a LaTeX alignment string.
 function _latex_alignment(s::Symbol)
-    if s == :l
+    if (s == :l) || (s == :L)
         return "l"
-    elseif s == :c
+    elseif (s == :c) || (s == :C)
         return "c"
-    elseif s == :r
+    elseif (s == :r) || (s == :R)
         return "r"
     else
         error("Invalid LaTeX alignment symbol: $s.")

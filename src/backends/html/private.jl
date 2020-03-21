@@ -7,8 +7,11 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 const _html_alignment = Dict(:l => "left",
+                             :L => "left",
                              :c => "center",
-                             :r => "right")
+                             :C => "center",
+                             :r => "right",
+                             :R => "right")
 
 function _styled_html(tag::String, text::String,
                       style::Dict{String,String} = Dict{String,String}();

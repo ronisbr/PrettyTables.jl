@@ -9,7 +9,6 @@
 # Low-level function to print the table using the text backend.
 function _pt_html(io, pinfo;
                   tf::HTMLTableFormat = html_default,
-                  cell_alignment::Dict{Tuple{Int,Int},Symbol} = Dict{Tuple{Int,Int},Symbol}(),
                   highlighters::Union{HTMLHighlighter,Tuple} = (),
                   linebreaks::Bool = false,
                   noheader::Bool = false,
@@ -169,10 +168,15 @@ function _pt_html(io, pinfo;
             jc = id_cols[j]
 
             # Check the alignment of this cell.
-            if haskey(cell_alignment, (i,j))
-                alignment_ij = cell_alignment[(i,j)]
-            else
-                alignment_ij = alignment[jc]
+            alignment_ij = alignment[jc]
+
+            for f in cell_alignment
+                aux = f(data, ir, jc)
+
+                if aux ∈ [:l, :c, :r, :L, :C, :R]
+                    alignment_ij = aux
+                    break
+                end
             end
 
             # Alignment of this cell.

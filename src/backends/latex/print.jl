@@ -208,8 +208,21 @@ function _pt_latex(io, pinfo;
             end
 
             # Check the alignment of this cell.
-            if haskey(cell_alignment, (i,j))
-                a = _latex_alignment(cell_alignment[(i,j)])
+            alignment_override = false
+            alignment_ij = alignment[jc]
+
+            for f in cell_alignment
+                aux = f(data, ir, jc)
+
+                if aux ∈ [:l, :c, :r, :L, :C, :R]
+                    alignment_override = true
+                    alignment_ij = aux
+                    break
+                end
+            end
+
+            if alignment_override
+                a = _latex_alignment(alignment_ij)
 
                 # Since we are using the `multicolumn`, we need to verify if the
                 # column has vertical lines.

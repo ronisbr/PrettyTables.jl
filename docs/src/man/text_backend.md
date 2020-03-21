@@ -52,7 +52,6 @@ passed as keywords when calling the function `pretty_table`:
           or `:none` to do not crop the data at all.
 * `filters_row`: Filters for the rows (see the section [Filters](@ref)).
 * `filters_col`: Filters for the columns (see the section [Filters](@ref)).
-* `formatters`: See the section [Formatters](@ref).
 * `highlighters`: An instance of `Highlighter` or a tuple with a list of
                   highlighters (see the section [Text highlighters](@ref)).
 * `hlines`: This variable controls where the horizontal lines will be drawn. It

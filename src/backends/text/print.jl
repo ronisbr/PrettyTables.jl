@@ -16,7 +16,6 @@ function _pt_text(io, pinfo;
                   autowrap::Bool = false,
                   body_hlines::Vector{Int} = Int[],
                   body_hlines_format::Union{Nothing,NTuple{4,Char}} = nothing,
-                  cell_alignment::Dict{Tuple{Int,Int},Symbol} = Dict{Tuple{Int,Int},Symbol}(),
                   crop::Symbol = :both,
                   columns_width::Union{Integer,AbstractVector{Int}} = 0,
                   highlighters::Union{Highlighter,Tuple} = (),
@@ -443,10 +442,15 @@ function _pt_text(io, pinfo;
                 jc = id_cols[j]
 
                 # Check the alignment of this cell.
-                if haskey(cell_alignment, (i,j))
-                    alignment_ij = cell_alignment[(i,j)]
-                else
-                    alignment_ij = alignment[jc]
+                alignment_ij = alignment[jc]
+
+                for f in cell_alignment
+                    aux = f(data, ir, jc)
+
+                    if aux ∈ [:l, :c, :r, :L, :C, :R]
+                        alignment_ij = aux
+                        break
+                    end
                 end
 
                 if length(data_str[i,j]) >= l

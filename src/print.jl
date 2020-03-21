@@ -46,8 +46,28 @@ it is not compliant, then only the following types are supported:
              section `Backend`). Notice that the additional configuration in
              `kwargs...` depends on the selected backend. (see the section
              `Backend`).
+* `cell_alignment`: A tuple of functions with the signature `f(data,i,j)` that
+                    overrides the alignment of the cell `(i,j)` to the value
+                    returned by `f`. It can also be a single function, when it
+                    is assumed that only one alignment function is required, or
+                    `nothing`, when no cell alignment modification will be
+                    performed. If the function `f` does not return a valid
+                    alignment symbol as shown in section `Alignment`, then it
+                    will be discarded. For convenience, it can also be a
+                    dictionary of type `(i,j) => a` that overrides the
+                    alignment of the cell `(i,j)` to `a`. `a` must be a symbol
+                    like specified in the section `Alignment`.
+  !!! note
+
+      If more than one alignment function is passed to `cell_alignment`, then
+      the functions will be evaluated in the same order of the tuple. The
+      first one that returns a valid alignment symbol for each cell is applied,
+      and the rest is discarded.
+
+  (**Default** = `nothing`)
 * `filters_row`: Filters for the rows (see the section `Filters`).
 * `filters_col`: Filters for the columns (see the section `Filters`).
+* `formatters`: See the section `Formatters`.
 * `row_names`: A vector containing the row names that will be appended to the
                left of the table. If it is `nothing`, then the column with the
                row names will not be shown. Notice that the size of this vector
@@ -146,10 +166,6 @@ This back-end produces text tables. This back-end can be used by selecting
                         intersection, the right intersection, and the row. If it
                         is `nothing`, then it will use the same format specified
                         in `tf`. (**Default** = `nothing`)
-* `cell_alignment`: A dictionary of type `(i,j) => a` that overrides that
-                    alignment of the cell `(i,j)` to `a` regardless of the
-                    columns alignment selected. `a` must be a symbol like
-                    specified in the section `Alignment`.
 * `columns_width`: A set of integers specifying the width of each column. If the
                    width is equal or lower than 0, then it will be automatically
                    computed to fit the large cell in the column. If it is
@@ -160,7 +176,6 @@ This back-end produces text tables. This back-end can be used by selecting
           on vertical and horizontal direction, `:horizontal` to crop only on
           horizontal direction, `:vertical` to crop only on vertical direction,
           or `:none` to do not crop the data at all.
-* `formatters`: See the section `Formatters`.
 * `highlighters`: An instance of `Highlighter` or a tuple with a list of
                   text highlighters (see the section `Text highlighters`).
 * `hlines`: This variable controls where the horizontal lines will be drawn. It
@@ -277,11 +292,6 @@ This backend produces HTML tables. This backend can be used by selecting
 
 # Keywords
 
-* `cell_alignment`: A dictionary of type `(i,j) => a` that overrides that
-                    alignment of the cell `(i,j)` to `a` regardless of the
-                    columns alignment selected. `a` must be a symbol like
-                    specified in the section `Alignment`.
-* `formatter`: See the section `Formatters`.
 * `highlighters`: An instance of `HTMLHighlighter` or a tuple with a list of
                   HTML highlighters (see the section `HTML highlighters`).
 * `linebreaks`: If `true`, then `\\n` will be replaced by `<br>`.
@@ -344,11 +354,6 @@ This backend produces LaTeX tables. This backend can be used by selecting
 
 # Keywords
 
-* `cell_alignment`: A dictionary of type `(i,j) => a` that overrides that
-                    alignment of the cell `(i,j)` to `a` regardless of the
-                    columns alignment selected. `a` must be a symbol like
-                    specified in the section `Alignment`.
-* `formatter`: See the section `Formatters`.
 * `highlighters`: An instance of `LatexHighlighter` or a tuple with a list of
                   LaTeX highlighters (see the section `LaTeX highlighters`).
 * `hlines`: A vector of `Int` indicating row numbers in which an additional
@@ -624,6 +629,10 @@ _type_backend_dict = Dict{DataType, Symbol}(TextFormat       => :text,
 function _pretty_table(io, data, header;
                        alignment::Union{Symbol,Vector{Symbol}} = :r,
                        backend::Union{Nothing,Symbol} = nothing,
+                       cell_alignment::Union{Nothing,
+                                             Dict{Tuple{Int,Int},Symbol},
+                                             Function,
+                                             Tuple} = nothing,
                        filters_row::Union{Nothing,Tuple} = nothing,
                        filters_col::Union{Nothing,Tuple} = nothing,
                        formatters::Union{Nothing,Function,Tuple} = nothing,
@@ -759,6 +768,25 @@ function _pretty_table(io, data, header;
         return nothing
     end
 
+    # Make sure that `cell_alignment` is a tuple.
+    if cell_alignment == nothing
+        cell_alignment = ()
+    elseif typeof(cell_alignment) <: Dict
+        # If it is a `Dict`, then `cell_alignment[(i,j)]` contains the desired
+        # alignment for the cell `(i,j)`. Thus, we need to create a wrapper
+        # function.
+        cell_alignment_dict = copy(cell_alignment)
+        cell_alignment = ((data,i,j) -> begin
+            if haskey(cell_alignment_dict, (i,j))
+                return cell_alignment_dict[(i,j)]
+            else
+                return nothing
+            end
+        end,)
+    elseif typeof(cell_alignment) <: Function
+        cell_alignment = (cell_alignment,)
+    end
+
     # Make sure that `formatters` is a tuple.
     formatters == nothing  && (formatters = ())
     typeof(formatters) <: Function && (formatters = (formatters,))
@@ -768,7 +796,7 @@ function _pretty_table(io, data, header;
                       num_printed_cols, num_printed_rows, header_num_rows,
                       header_num_cols, show_row_names, row_names,
                       row_name_alignment, row_name_column_title, alignment,
-                      formatters)
+                      cell_alignment, formatters)
 
     if backend == :text
         _pt_text(io, pinfo; kwargs...)
