@@ -181,7 +181,7 @@ that no limit exits in both vertical and horizontal direction.
 !!! note
 
     In vertical cropping, the header and the first table row is **always**
-    printed.    
+    printed.
 
 !!! note
 
@@ -237,10 +237,33 @@ Notice that if multiple highlighters are valid for the element `(i,j)`, then the
 applied style will be equal to the first match considering the order in the
 Tuple `highlighters`.
 
+```julia-repl
+julia> h1 = Highlighter( f      = (data,i,j) -> (data[i,j] < 0.5),
+                         crayon = crayon"red bold" )
+
+julia> h2 = Highlighter( (data,i,j) -> (data[i,j] > 0.5),
+                         bold       = true,
+                         foreground = :blue )
+
+julia> h3 = Highlighter( f          = (data,i,j) -> (data[i,j] == 0.5),
+                         crayon     = Crayon(bold = true, foreground = :yellow) )
+
+julia> pretty_table(data, highlighters = (h1, h2, h3))
+```
+
 ![](../assets/ex_highlighters_00001.png)
 
 If only a single highlighter is wanted, then it can be passed directly to the
 keyword `highlighter` of `pretty_table` without being inside a `Tuple`.
+
+```julia-repl
+julia> data = Any[ f(a) for a = 0:15:90, f in (sind,cosd,tand) ]
+
+julia> hl_odd = Highlighter( f      = (data,i,j) -> i % 2 == 0,
+                             crayon = Crayon(background = :light_blue))
+
+julia> pretty_table(data, highlighters = hl_odd, formatter = ft_printf("%10.5f"))
+```
 
 ![](../assets/ex_highlighters_00002.png)
 
