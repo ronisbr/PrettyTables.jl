@@ -14,13 +14,14 @@ function _pt_text(io, pinfo;
                   rownum_header_crayon::Crayon = Crayon(bold = true),
                   text_crayon::Crayon = Crayon(),
                   autowrap::Bool = false,
+                  body_hlines::Vector{Int} = Int[],
+                  body_hlines_format::Union{Nothing,NTuple{4,Char}} = nothing,
                   cell_alignment::Dict{Tuple{Int,Int},Symbol} = Dict{Tuple{Int,Int},Symbol}(),
                   crop::Symbol = :both,
                   columns_width::Union{Integer,AbstractVector{Int}} = 0,
                   formatter::Dict = Dict(),
                   highlighters::Union{Highlighter,Tuple} = (),
                   hlines::Union{Nothing,Symbol,AbstractVector} = nothing,
-                  hlines_format::Union{Nothing,NTuple{4,Char}} = nothing,
                   linebreaks::Bool = false,
                   noheader::Bool = false,
                   nosubheader::Bool = false,
@@ -252,9 +253,9 @@ function _pt_text(io, pinfo;
     same_column_size && (cols_width = [maximum(cols_width) for i = 1:num_printed_cols])
 
     # Create the format of the horizontal lines.
-    if hlines_format == nothing
-        hlines_format = (tf.left_intersection, tf.middle_intersection,
-                         tf.right_intersection, tf.row)
+    if body_hlines_format == nothing
+        body_hlines_format = (tf.left_intersection, tf.middle_intersection,
+                              tf.right_intersection, tf.row)
     end
 
     # The variable `all_cols_width` contains the width of all printed columns,
@@ -284,6 +285,16 @@ function _pt_text(io, pinfo;
     hlines = replace(hlines, :begin  => 0,
                              :header => noheader ? -1 : 1,
                              :end    => num_all_rows)
+
+    # All numbers less than 1 and higher than the number of printed rows must be
+    # removed from `body_hlines`.
+    body_hlines = filter(x -> (x ≥ 1) && (x ≤ num_printed_rows), body_hlines)
+
+    # Merge `hlines` with `body_hlines`.
+    hlines = unique(vcat(hlines, body_hlines .+ !noheader))
+    #                                               ^
+    #                                               |
+    # If we have header, then the index in `body_hlines` must be incremented.
 
     # Process `vlines`.
     if vlines == :all
@@ -478,7 +489,7 @@ function _pt_text(io, pinfo;
 
         # Check if we must draw a horizontal line here.
         i != num_printed_rows && (i+!noheader) in hlines &&
-            _draw_line!(screen, buf, hlines_format..., border_crayon,
+            _draw_line!(screen, buf, body_hlines_format..., border_crayon,
                         all_cols_width, vlines)
 
         # Here we must check if the vertical size of the screen has been

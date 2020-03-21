@@ -132,6 +132,20 @@ This back-end produces text tables. This back-end can be used by selecting
 * `autowrap`: If `true`, then the text will be wrapped on spaces to fit the
               column. Notice that this function requires `linebreaks = true` and
               the column must have a fixed size (see `columns_width`).
+* `body_hlines`: A vector of `Int` indicating row numbers in which an additional
+                 horizontal line should be drawn after the row. Notice that
+                 numbers lower than 1 and equal or higher than the number of
+                 printed rows will be neglected. This vector will be appended to
+                 the one in `hlines`, but the indices here are related to the
+                 printed rows of the body. Thus, if `1` is added to
+                 `body_hlines`, then a horizontal line will be drawn after the
+                 first data row. (**Default** = `Int[]`)
+* `body_hlines_format`: A tuple of 4 characters specifying the format of the
+                        horizontal lines that will be drawn by `body_hlines`.
+                        The characters must be the left intersection, the middle
+                        intersection, the right intersection, and the row. If it
+                        is `nothing`, then it will use the same format specified
+                        in `tf`. (**Default** = `nothing`)
 * `cell_alignment`: A dictionary of type `(i,j) => a` that overrides that
                     alignment of the cell `(i,j)` to `a` regardless of the
                     columns alignment selected. `a` must be a symbol like
@@ -164,15 +178,12 @@ This back-end produces text tables. This back-end can be used by selecting
       convenience, the top and bottom lines can be drawn by adding the symbols
       `:begin` and `:end` to this vector, respectively, and the line after the
       header can be drawn by adding the symbol `:header`.
+  !!! info
+
+      The values of `body_hlines` will be appended to this vector. Thus,
+      horizontal lines can be drawn even if `hlines` is `:none`.
+
   (**Default** = `nothing`)
-* `hlines_format`: A tuple of 4 characters specifying the format of the
-                   horizontal lines. The characters must be the left
-                   intersection, the middle intersection, the right
-                   intersection, and the row. If it is `nothing`, then it will
-                   use the same format specified in `tf`. Notice that this
-                   formatting does not apply to the top line, the header line,
-                   and the bottom line, which must be changed in the `tf`
-                   variable. (**Default** = `nothing`)
 * `linebreaks`: If `true`, then `\\n` will break the line inside the cells.
                 (**Default** = `false`)
 * `noheader`: If `true`, then the header will not be printed. Notice that all

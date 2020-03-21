@@ -552,8 +552,7 @@ end
 └────────┴────────┴────────┴────────┘
 """
     result = pretty_table(String, data;
-                          hlines = vcat(findall(x->x == true, data[:,2]) .+ 1,
-                                        :begin,:header,:end))
+                          body_hlines = vcat(findall(x->x == true, data[:,2])))
     @test result == expected
 
     expected = """
@@ -571,9 +570,8 @@ end
 └────────┴────────┴────────┴────────┘
 """
     result = pretty_table(String, data;
-                          hlines = vcat(findall(x->x == true, data[:,2]) .+ 1,
-                                        :begin,:header,:end),
-                          hlines_format = ('├','+','┤','.'))
+                          body_hlines = vcat(findall(x->x == true, data[:,2])),
+                          body_hlines_format = ('├','+','┤','.'))
     @test result == expected
 
     expected = """
@@ -590,8 +588,7 @@ end
 """
     result = pretty_table(String, data;
                           noheader = true,
-                          hlines = vcat(findall(x->x == true, data[:,2]),
-                                        :begin,:header,:end))
+                          body_hlines = vcat(findall(x->x == true, data[:,2])))
     @test result == expected
 end
 
@@ -973,7 +970,7 @@ end
     result = pretty_table(String, table, header,
                           autowrap      = true,
                           linebreaks    = true,
-                          hlines        = 0:1:4,
+                          body_hlines   = [1,2],
                           columns_width = [-1,30])
 
     @test result == expected
@@ -1013,7 +1010,7 @@ end
                           alignment     = :c,
                           autowrap      = true,
                           linebreaks    = true,
-                          hlines        = 0:1:4,
+                          body_hlines   = [1,2],
                           columns_width = [-1,30])
 
     @test result == expected
@@ -1053,7 +1050,7 @@ end
                           alignment     = :l,
                           autowrap      = true,
                           linebreaks    = true,
-                          hlines        = 0:1:4,
+                          body_hlines   = [1,2],
                           columns_width = [-1,30])
 
     @test result == expected
