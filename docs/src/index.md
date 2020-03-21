@@ -37,7 +37,7 @@ Pages = [
     "man/latex_backend.md"
     "man/alignment.md"
     "man/filters.md"
-    "man/formatter.md"
+    "man/formatters.md"
     "man/text_examples.md"
     "man/html_examples.md"
     "lib/library.md"

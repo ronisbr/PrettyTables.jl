@@ -1,4 +1,4 @@
-/Text back-end
+Text back-end
 =============
 
 ```@meta
@@ -52,7 +52,7 @@ passed as keywords when calling the function `pretty_table`:
           or `:none` to do not crop the data at all.
 * `filters_row`: Filters for the rows (see the section [Filters](@ref)).
 * `filters_col`: Filters for the columns (see the section [Filters](@ref)).
-* `formatter`: See the section [Formatter](@ref).
+* `formatters`: See the section [Formatters](@ref).
 * `highlighters`: An instance of `Highlighter` or a tuple with a list of
                   highlighters (see the section [Text highlighters](@ref)).
 * `hlines`: This variable controls where the horizontal lines will be drawn. It
@@ -262,14 +262,14 @@ julia> data = Any[ f(a) for a = 0:15:90, f in (sind,cosd,tand) ]
 julia> hl_odd = Highlighter( f      = (data,i,j) -> i % 2 == 0,
                              crayon = Crayon(background = :light_blue))
 
-julia> pretty_table(data, highlighters = hl_odd, formatter = ft_printf("%10.5f"))
+julia> pretty_table(data, highlighters = hl_odd, formatters = ft_printf("%10.5f"))
 ```
 
 ![](../assets/ex_highlighters_00002.png)
 
 !!! note
 
-    If the highlighters are used together with [Formatter](@ref), then the
+    If the highlighters are used together with [Formatters](@ref), then the
     change in the format **will not** affect that parameter `data` passed to the
     highlighter function `f`. It will always receive the original, unformatted
     value.

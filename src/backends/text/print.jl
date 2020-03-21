@@ -19,7 +19,6 @@ function _pt_text(io, pinfo;
                   cell_alignment::Dict{Tuple{Int,Int},Symbol} = Dict{Tuple{Int,Int},Symbol}(),
                   crop::Symbol = :both,
                   columns_width::Union{Integer,AbstractVector{Int}} = 0,
-                  formatter::Dict = Dict(),
                   highlighters::Union{Highlighter,Tuple} = (),
                   hlines::Union{Nothing,Symbol,AbstractVector} = nothing,
                   linebreaks::Bool = false,
@@ -159,9 +158,6 @@ function _pt_text(io, pinfo;
         # Index of the i-th printed column in `data`.
         ic = id_cols[i]
 
-        fi = haskey(formatter, i) ? formatter[i] :
-                (haskey(formatter, 0) ? formatter[0] : nothing)
-
         if !noheader
             for j = 1:header_num_rows
                 header_str[j,i] = _str_escaped(sprint(print, header[(ic-1)*header_num_rows + j]))
@@ -186,7 +182,12 @@ function _pt_text(io, pinfo;
             # Index of the j-th printed row in `data`.
             jr = id_rows[j]
 
-            data_ij = fi != nothing ? fi(data[jr,ic], jr) : data[jr,ic]
+            # Apply the formatters.
+            data_ij = data[jr,ic]
+
+            for f in formatters
+                data_ij = f(data_ij, jr, ic)
+            end
 
             # Handle `nothing` and `missing`.
             if ismissing(data_ij)

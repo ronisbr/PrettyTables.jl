@@ -48,10 +48,15 @@ The following example shows how `formatters` can be used to change how elements
 are printed.
 
 ```julia-repl
-julia> formatter = Dict(0 => (v,i) -> isodd(i) ? i : 0,
-                        2 => (v,i) -> v)
+julia> formatter = (v,i,j) -> begin
+           if j != 2
+               return isodd(i) ? i : 0
+           else
+               return v
+           end
+       end
 
-julia> pretty_table(data, tf = ascii_rounded, formatter = formatter)
+julia> pretty_table(data, tf = ascii_rounded, formatters = formatter)
 ```
 
 ![](../assets/ex_00005.png)
@@ -83,7 +88,7 @@ julia> using DataFrames
 
 julia> df = DataFrame(A = 1:2:20, B = rand(10), C = rand(10))
 
-julia> pretty_table(df, formatter = ft_printf("%.3f", [2,3]), highlighters = (hl_lt(0.2), hl_gt(0.8)))
+julia> pretty_table(df, formatters = ft_printf("%.3f", [2,3]), highlighters = (hl_lt(0.2), hl_gt(0.8)))
 ```
 
 ![](../assets/ex_00007.png)
@@ -180,7 +185,7 @@ julia> data = ["Torques" "" "" "";
 julia> pretty_table(data, tf = borderless,
                     noheader = true,
                     cell_alignment = Dict( (1,1) => :l, (7,1) => :l ),
-                    formatter = ft_printf("%10.1f", 2),
+                    formatters = ft_printf("%10.1f", 2),
                     highlighters = (hl_cell( [(1,1);(7,1)], crayon"bold"),
                                     hl_col(2, crayon"dark_gray"),
                                     hl_row([5,11], crayon"bold yellow")),

@@ -592,7 +592,7 @@ th.rowNumber, td.rowNumber {
                           backend         = :html,
                           filters_row     = ((data,i) -> i%2 == 0,),
                           filters_col     = ((data,i) -> i%2 == 1,),
-                          formatter       = ft_printf("%.3",3),
+                          formatters      = ft_printf("%.1f",3),
                           show_row_number = true)
     @test result == expected
 
@@ -670,16 +670,16 @@ th.rowNumber, td.rowNumber {
                           backend         = :html,
                           filters_row     = ((data,i) -> i%2 == 0,),
                           filters_col     = ((data,i) -> i%2 == 1,),
-                          formatter       = ft_printf("%.3",3),
+                          formatters      = ft_printf("%.1f",3),
                           show_row_number = true,
                           alignment       = [:c,:l,:l,:c])
     @test result == expected
 end
 
-# Formatter
+# Formatters
 # ==============================================================================
 
-@testset "Formatter" begin
+@testset "Formatters" begin
     expected = """
 <!DOCTYPE html>
 <html>
@@ -771,9 +771,14 @@ th.rowNumber, td.rowNumber {
 </body>
 </html>
 """
-    formatter = Dict(0 => (v,i) -> isodd(i) ? i : 0,
-                     2 => (v,i) -> v)
-    result = pretty_table(String, data; backend = :html, formatter = formatter)
+    formatter = (data,i,j) -> begin
+        if j != 2
+            return isodd(i) ? i : 0
+        else
+            return data
+        end
+    end
+    result = pretty_table(String, data; backend = :html, formatters = formatter)
     @test result == expected
 end
 

@@ -160,7 +160,7 @@ This back-end produces text tables. This back-end can be used by selecting
           on vertical and horizontal direction, `:horizontal` to crop only on
           horizontal direction, `:vertical` to crop only on vertical direction,
           or `:none` to do not crop the data at all.
-* `formatter`: See the section `Formatter`.
+* `formatters`: See the section `Formatters`.
 * `highlighters`: An instance of `Highlighter` or a tuple with a list of
                   text highlighters (see the section `Text highlighters`).
 * `hlines`: This variable controls where the horizontal lines will be drawn. It
@@ -256,10 +256,10 @@ The function `f` has the following signature:
 
     f(data, i, j)
 
-in which `data` is a reference to the data that is being printed, `i` and `j`
-are the element coordinates that are being tested. If this function returns
-`true`, then the highlight style will be applied to the `(i,j)` element.
-Otherwise, the default style will be used.
+where `data` is a reference to the data that is being printed, `i` and `j` are
+the element coordinates that are being tested. If this function returns `true`,
+then the highlight style will be applied to the `(i,j)` element. Otherwise, the
+default style will be used.
 
 Notice that if multiple highlighters are valid for the element `(i,j)`, then the
 applied style will be equal to the first match considering the order in the
@@ -281,7 +281,7 @@ This backend produces HTML tables. This backend can be used by selecting
                     alignment of the cell `(i,j)` to `a` regardless of the
                     columns alignment selected. `a` must be a symbol like
                     specified in the section `Alignment`.
-* `formatter`: See the section `Formatter`.
+* `formatter`: See the section `Formatters`.
 * `highlighters`: An instance of `HTMLHighlighter` or a tuple with a list of
                   HTML highlighters (see the section `HTML highlighters`).
 * `linebreaks`: If `true`, then `\\n` will be replaced by `<br>`.
@@ -348,7 +348,7 @@ This backend produces LaTeX tables. This backend can be used by selecting
                     alignment of the cell `(i,j)` to `a` regardless of the
                     columns alignment selected. `a` must be a symbol like
                     specified in the section `Alignment`.
-* `formatter`: See the section `Formatter`.
+* `formatter`: See the section `Formatters`.
 * `highlighters`: An instance of `LatexHighlighter` or a tuple with a list of
                   LaTeX highlighters (see the section `LaTeX highlighters`).
 * `hlines`: A vector of `Int` indicating row numbers in which an additional
@@ -438,26 +438,40 @@ will wrap all the cells in the table in the following environment:
 
 ---
 
-# Formatter
+# Formatters
 
-The keyword `formatter` can be used to pass functions to format the values in
-the columns. It must be a `Dict{Number,Function}()`. The key indicates the
-column number in which its elements will be converted by the function in the
-value of the dictionary. The function must have the following signature:
+The keyword `formatters` can be used to pass functions to format the values in
+the columns. It must be a tuple of functions in which each function has the
+following signature:
 
-    f(value, i)
+    f(v, i, j)
 
-in which `value` is the data and `i` is the row number. It must return the
-formatted value.
+where `v` is the value in the cell, `i` is the row number, and `j` is the column
+number. Thus, it must return the formatted value of the cell `(i,j)` that has
+the value `v`. Notice that the returned value will be converted to string after
+using the function `sprint`.
+
+This keyword can also be a single function, meaning that only one formatter is
+available, or `nothing`, meaning that no formatter will be used.
 
 For example, if we want to multiply all values in odd rows of the column 2 by π,
 then the formatter should look like:
 
-    Dict(2 => (v,i)->isodd(i) ? v*π : v)
+    formatters = (v,i,j) -> (j == 2 && isodd(i)) ? v*π : v
 
-If the key `0` is present, then the corresponding function will be applied to
-all columns that does not have a specific key.
+If multiple formatters are available, then they will be applied in the same
+order as they are located in the tuple. Thus, for the following `formatters`:
 
+    formatters = (f1, f2, f3)
+
+each element `v` in the table (i-th row and j-th column) will be formatted by:
+
+    v = f1(v,i,j)
+    v = f2(v,i,j)
+    v = f3(v,i,j)
+
+Thus, the user must be ensure that the type of `v` between the calls are
+compatible.
 
 """
 pretty_table(data; kwargs...) = pretty_table(stdout, data, []; kwargs...)
@@ -612,6 +626,7 @@ function _pretty_table(io, data, header;
                        backend::Union{Nothing,Symbol} = nothing,
                        filters_row::Union{Nothing,Tuple} = nothing,
                        filters_col::Union{Nothing,Tuple} = nothing,
+                       formatters::Union{Nothing,Function,Tuple} = nothing,
                        row_names::Union{Nothing,AbstractVector} = nothing,
                        row_name_alignment::Symbol = :r,
                        row_name_column_title::AbstractString = "",
@@ -729,11 +744,16 @@ function _pretty_table(io, data, header;
         return nothing
     end
 
+    # Make sure that `formatters` is a tuple.
+    formatters == nothing  && (formatters = ())
+    typeof(formatters) <: Function && (formatters = (formatters,))
+
     # Create the structure that stores the print information.
     pinfo = PrintInfo(data, header, id_cols, id_rows, num_rows, num_cols,
                       num_printed_cols, num_printed_rows, header_num_rows,
                       header_num_cols, show_row_names, row_names,
-                      row_name_alignment, row_name_column_title, alignment)
+                      row_name_alignment, row_name_column_title, alignment,
+                      formatters)
 
     if backend == :text
         _pt_text(io, pinfo; kwargs...)

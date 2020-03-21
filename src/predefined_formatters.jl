@@ -43,19 +43,19 @@ function ft_printf(ftv_str::Vector{String}, columns::AbstractVector{Int} = Int[]
     # to 0.04s. Thanks to @RalphAS for the tip!
 
     if lc == 0
-        return Dict{Int,Function}(0 => (v,i) -> begin
+        return (v,i,j) -> begin
             return typeof(v) <: Number ? sprintf1(ftv_str[1], v) : v
-        end)
-    else
-        ft = Dict{Int,Function}()
-
-        for i = 1:length(columns)
-            push!(ft, columns[i] => (v,j) -> begin
-                return typeof(v) <: Number ? sprintf1(ftv_str[i], v) : v
-            end)
         end
+    else
+        return (v,i,j) -> begin
+            @inbounds for k = 1:length(columns)
+                if j == columns[k]
+                    return typeof(v) <: Number ? sprintf1(ftv_str[k], v) : v
+                end
+            end
 
-        return ft
+            return v
+        end
     end
 end
 
@@ -86,27 +86,27 @@ function ft_round(digits::AbstractVector{Int}, columns::AbstractVector{Int} = In
     error("The vector columns must have the same number of elements of the vector digits.")
 
     if lc == 0
-        return Dict{Int,Function}(0 => (v,i) -> begin
-                                      if applicable(round,v)
-                                          return round(v; digits = digits[1])
-                                      else
-                                          return v
-                                      end
-                                  end)
-    else
-        ft = Dict{Int,Function}()
-
-        for i = 1:length(columns)
-            push!(ft, columns[i] => (v,j) -> begin
-                      if applicable(round,v)
-                          return round(v; digits = digits[i])
-                      else
-                          return v
-                      end
-                  end)
+        return (v,i,j) -> begin
+            if applicable(round, v)
+                return round(v, digits = digits[1])
+            else
+                return v
+            end
         end
+    else
+        return (v,i,j) -> begin
+            @inbounds for k = 1:length(columns)
+                if j == columns[k]
+                    if applicable(round, v)
+                        return round(v, digits = digits[k])
+                    else
+                        return v
+                    end
+                end
+            end
 
-        return ft
+            return v
+        end
     end
 end
 
@@ -143,8 +143,9 @@ function ft_latex_sn(m_digits::AbstractVector{Int}, columns::AbstractVector{Int}
     error("The vector columns must have the same number of elements of the vector `m_digits`.")
 
     if lc == 0
-        return Dict{Int,Function}(0 => (v,i) -> begin
+        return (v,i,j) -> begin
             str::String = ""
+
             if typeof(v) <: Number
                 str = sprintf1("%." * string(m_digits[1]) * "g", v)
 
@@ -160,32 +161,32 @@ function ft_latex_sn(m_digits::AbstractVector{Int}, columns::AbstractVector{Int}
             end
 
             return str
-        end)
-    else
-        ft = Dict{Int,Function}()
-
-        for i = 1:length(columns)
-            push!(ft, columns[i] => (v,j) -> begin
-                str::String = ""
-
-                if typeof(v) <: Number
-                    str = sprintf1("%." * string(m_digits[i]) * "g", v)
-
-                    # Check if we have scientific notation.
-                    aux = match(r"e[+,-][0-9]+", str)
-                    if aux != nothing
-                        exp_str = " \\cdot 10^{" * string(parse(Int,aux.match[2:end])) * "}"
-                        str = replace(str, r"e.*" => exp_str)
-                        str = "\$" * str * "\$"
-                    end
-                else
-                    str = sprint(print, v)
-                end
-
-                return str
-            end)
         end
+    else
+        return (v,i,j) -> begin
+            @inbounds for k = 1:length(columns)
+                if j == columns[k]
+                    str::String = ""
 
-        return ft
+                    if typeof(v) <: Number
+                        str = sprintf1("%." * string(m_digits[k]) * "g", v)
+
+                        # Check if we have scientific notation.
+                        aux = match(r"e[+,-][0-9]+", str)
+                        if aux != nothing
+                            exp_str = " \\cdot 10^{" * string(parse(Int,aux.match[2:end])) * "}"
+                            str = replace(str, r"e.*" => exp_str)
+                            str = "\$" * str * "\$"
+                        end
+                    else
+                        str = sprint(print, v)
+                    end
+
+                    return str
+                end
+            end
+
+            return v
+        end
     end
 end

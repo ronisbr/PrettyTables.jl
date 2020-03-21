@@ -10,7 +10,6 @@
 function _pt_html(io, pinfo;
                   tf::HTMLTableFormat = html_default,
                   cell_alignment::Dict{Tuple{Int,Int},Symbol} = Dict{Tuple{Int,Int},Symbol}(),
-                  formatter::Dict = Dict(),
                   highlighters::Union{HTMLHighlighter,Tuple} = (),
                   linebreaks::Bool = false,
                   noheader::Bool = false,
@@ -53,9 +52,6 @@ function _pt_html(io, pinfo;
         # Index of the i-th printed column in `data`.
         ic = id_cols[i]
 
-        fi = haskey(formatter, i) ? formatter[i] :
-                (haskey(formatter, 0) ? formatter[0] : nothing)
-
         if !noheader
             for j = 1:header_num_rows
                 header_str[j,i] = _str_escaped(sprint(print, header[(ic-1)*header_num_rows + j]))
@@ -66,7 +62,12 @@ function _pt_html(io, pinfo;
             # Index of the j-th printed row in `data`.
             jr = id_rows[j]
 
-            data_ij = fi != nothing ? fi(data[jr,ic], jr) : data[jr,ic]
+            # Apply the formatters.
+            data_ij = data[jr,ic]
+
+            for f in formatters
+                data_ij = f(data_ij, jr, ic)
+            end
 
             # Handle `nothing` and `missing`.
             if ismissing(data_ij)

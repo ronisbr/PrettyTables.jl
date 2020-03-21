@@ -19,7 +19,7 @@ makedocs(
         ],
         "Alignment"          => "man/alignment.md",
         "Filters"            => "man/filters.md",
-        "Formatters"         => "man/formatter.md",
+        "Formatters"         => "man/formatters.md",
         "Examples"           => Any[
             "Text back-end"  => "man/text_examples.md",
             "HTML back-end"  => "man/html_examples.md",

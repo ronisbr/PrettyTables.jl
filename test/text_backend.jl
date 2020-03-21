@@ -152,7 +152,7 @@ end
     result = pretty_table(String, data;
                           filters_row     = ( (data,i) -> i%2 == 0,),
                           filters_col     = ( (data,i) -> i%2 == 1,),
-                          formatter       = ft_printf("%.3",3),
+                          formatters      = ft_printf("%.1f",3),
                           show_row_number = true)
     @test result == expected
 
@@ -169,16 +169,16 @@ end
     result = pretty_table(String, data;
                           filters_row     = ( (data,i) -> i%2 == 0,),
                           filters_col     = ( (data,i) -> i%2 == 1,),
-                          formatter       = ft_printf("%.3",3),
+                          formatters      = ft_printf("%.1f",3),
                           show_row_number = true,
                           alignment       = [:c,:l,:l,:c])
     @test result == expected
 end
 
-# Formatter
+# Formatters
 # ==============================================================================
 
-@testset "Formatter" begin
+@testset "Formatters" begin
     expected = """
 ┌────────┬────────┬────────┬────────┐
 │ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
@@ -191,9 +191,46 @@ end
 │      0 │   true │      0 │      0 │
 └────────┴────────┴────────┴────────┘
 """
-    formatter = Dict(0 => (v,i) -> isodd(i) ? i : 0,
-                     2 => (v,i) -> v)
-    result = pretty_table(String, data; formatter = formatter)
+
+    # Single formatter.
+    formatter = (data,i,j) -> begin
+        if j != 2
+            return isodd(i) ? i : 0
+        else
+            return data
+        end
+    end
+    result = pretty_table(String, data; formatters = formatter)
+    @test result == expected
+
+    # Two formatters.
+    expected = """
+┌────────┬────────┬────────┬────────┐
+│ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
+├────────┼────────┼────────┼────────┤
+│      1 │  false │      1 │      1 │
+│     -1 │   true │     -1 │     -1 │
+│      3 │  false │      3 │      3 │
+│     -1 │   true │     -1 │     -1 │
+│      5 │  false │      5 │      5 │
+│     -1 │   true │     -1 │     -1 │
+└────────┴────────┴────────┴────────┘
+"""
+
+    f1 = (data,i,j) -> begin
+        if j != 2
+            return isodd(i) ? i : 0
+        else
+            return data
+        end
+    end
+
+    f2 = (data,i,j) -> begin
+        j != 2 && return data == 0 ? -1 : data
+        return data
+    end
+
+    result = pretty_table(String, data; formatters = (f1,f2))
     @test result == expected
 end
 
@@ -426,7 +463,7 @@ end
 │    6.0 │    1.0 │    6.0 │    6.0 │
 └────────┴────────┴────────┴────────┘
 """
-    result = pretty_table(String, data; formatter = ft_round(1))
+    result = pretty_table(String, data, formatters = ft_round(1))
     @test result == expected
 
     expected = """
@@ -441,7 +478,7 @@ end
 │    6.0 │   true │    6.0 │      6 │
 └────────┴────────┴────────┴────────┘
 """
-    result = pretty_table(String, data; formatter = ft_round(1,[3,1]))
+    result = pretty_table(String, data, formatters = ft_round(1,[3,1]))
     @test result == expected
 
     # ft_printf
@@ -459,7 +496,7 @@ end
 │    6.000 │    1.000 │    6.000 │    6.000 │
 └──────────┴──────────┴──────────┴──────────┘
 """
-    result = pretty_table(String,data; formatter = ft_printf("%8.3f"))
+    result = pretty_table(String, data, formatters = ft_printf("%8.3f"))
     @test result == expected
 
     expected = """
@@ -474,7 +511,7 @@ end
 │    6.000 │   true │    6.0 │    6.000 │
 └──────────┴────────┴────────┴──────────┘
 """
-    result = pretty_table(String,data; formatter = ft_printf("%8.3f",[1,4]))
+    result = pretty_table(String, data, formatters = ft_printf("%8.3f",[1,4]))
     @test result == expected
 
     expected = """
@@ -489,8 +526,8 @@ end
 │     6.00 │   true │    6.0 │   6.0000 │
 └──────────┴────────┴────────┴──────────┘
 """
-    result = pretty_table(String, data;
-                          formatter = ft_printf(["%8.2f","%8.4f"],[1,4]))
+    result = pretty_table(String, data,
+                          formatters = ft_printf(["%8.2f","%8.4f"],[1,4]))
     @test result == expected
 end
 
@@ -1648,7 +1685,7 @@ end
 └────────────┴────────┘
 """
 
-    result = pretty_table(String, matrix; formatter = ft_printf("%10.2f",[1]))
+    result = pretty_table(String, matrix; formatters = ft_printf("%10.2f",[1]))
     @test result == expected
 
 end

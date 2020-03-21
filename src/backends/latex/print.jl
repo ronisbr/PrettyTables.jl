@@ -10,7 +10,6 @@
 function _pt_latex(io, pinfo;
                    tf::LatexTableFormat = latex_default,
                    cell_alignment::Dict{Tuple{Int,Int},Symbol} = Dict{Tuple{Int,Int},Symbol}(),
-                   formatter::Dict = Dict(),
                    highlighters::Union{LatexHighlighter,Tuple} = (),
                    hlines::AbstractVector{Int} = Int[],
                    longtable_footer::Union{Nothing,AbstractString} = nothing,
@@ -60,9 +59,6 @@ function _pt_latex(io, pinfo;
         # Index of the i-th printed column in `data`.
         ic = id_cols[i]
 
-        fi = haskey(formatter, i) ? formatter[i] :
-                (haskey(formatter, 0) ? formatter[0] : nothing)
-
         if !noheader
             for j = 1:header_num_rows
                 header_str[j,i] =
@@ -74,7 +70,12 @@ function _pt_latex(io, pinfo;
             # Index of the j-th printed row in `data`.
             jr = id_rows[j]
 
-            data_ij = fi != nothing ? fi(data[jr,ic], jr) : data[jr,ic]
+            # Apply the formatters.
+            data_ij = data[jr,ic]
+
+            for f in formatters
+                data_ij = f(data_ij, jr, ic)
+            end
 
             # Handle `nothing` and `missing`.
             if ismissing(data_ij)

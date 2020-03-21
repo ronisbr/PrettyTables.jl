@@ -39,7 +39,7 @@ This structure stores the information required so that the backends can print
 the tables.
 
 """
-@with_kw struct PrintInfo{Td,Th,Trn}
+@with_kw struct PrintInfo{Td,Th,Trn,Tf <: Tuple}
     data::Td
     header::Th
     id_cols::Vector{Int}
@@ -55,4 +55,5 @@ the tables.
     row_name_alignment::Symbol
     row_name_column_title::String
     alignment::Vector{Symbol}
+    formatters::Tf
 end

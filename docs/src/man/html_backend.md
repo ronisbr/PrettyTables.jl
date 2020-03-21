@@ -25,7 +25,7 @@ passed as keywords when calling the function [`pretty_table`](@ref):
                     alignment of the cell `(i,j)` to `a` regardless of the
                     columns alignment selected. `a` must be a symbol like
                     specified in the section `Alignment`.
-* `formatter`: See the section [Formatter](@ref).
+* `formatters`: See the section [Formatters](@ref).
 * `highlighters`: An instance of [`HTMLHighlighter`](@ref) or a tuple with a
                   list of HTML highlighters (see the section `HTML
                   highlighters`).
@@ -94,7 +94,7 @@ specifying the function `fd`.
 
 !!! note
 
-    If the highlighters are used together with [Formatter](@ref), then the
+    If the highlighters are used together with [Formatters](@ref), then the
     change in the format **will not** affect that parameter `data` passed to the
     highlighter function `f`. It will always receive the original, unformatted
     value.
