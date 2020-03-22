@@ -212,29 +212,69 @@ julia> pretty_table(data, columns_width = 10, autowrap = true, linebreaks = true
 
 ## Text highlighters
 
-A highlighter of the text backend is an instance of the structure
-[`Highlighter`](@ref) that contains information about which elements a highlight
-style should be applied when using the text backend. The structure contains
+A set of highlighters can be passed as a `Tuple` to the `highlighters` keyword.
+Each highlighter is an instance of the structure `Highlighter` that contains
 three fields:
 
 * `f`: Function with the signature `f(data,i,j)` in which should return `true`
-       if the element `(i,j)` in `data` must be highlighted, or `false`
+       if the element `(i,j)` in `data` must be highlighter, or `false`
        otherwise.
-* `crayon`: Crayon with the style of a highlighted element.
+* `fd`: Function with the signature `f(h,data,i,j)` in which `h` is the
+        highlighter. This function must return the `Crayon` to be applied to the
+        cell that must be highlighted.
+* `crayon`: The `Crayon` to be applied to the highlighted cell if the default
+            `fd` is used.
 
-The function `f` must have the following signature:
+The function `f` has the following signature:
 
     f(data, i, j)
 
-in which `data` is a reference to the data that is being printed, `i` and `j`
-are the element coordinates that are being tested. If this function returns
-`true`, then the highlight style will be applied to the `(i,j)` element.
-Otherwise, the default style will be used.
+in which `data` is a reference to the data that is being printed, and `i` and
+`j` are the element coordinates that are being tested. If this function returns
+`true`, then the cell `(i,j)` will be highlighted.
 
-A set of highlighters can be passed as a `Tuple` to the `highlighter` keyword.
-Notice that if multiple highlighters are valid for the element `(i,j)`, then the
-applied style will be equal to the first match considering the order in the
-Tuple `highlighters`.
+If the function `f` returns true, then the function `fd(h,data,i,j)` will be
+called and must return a `Crayon` that will be applied to the cell.
+
+A highlighter can be constructed using three helpers:
+
+```julia
+Highlighter(f::Function; kwargs...)
+```
+
+where it will construct a `Crayon` using the keywords in `kwargs` and apply it
+to the highlighted cell,
+
+```julia
+Highlighter(f::Function, crayon::Crayon)
+```
+
+where it will apply the `crayon` to the highlighted cell, and
+
+```julia
+Highlighter(f::Function, fd::Function)
+```
+
+where it will apply the `Crayon` returned by the function `fd` to the
+highlighted cell.
+
+!!! info
+
+    If only a single highlighter is wanted, then it can be passed directly to
+    the keyword `highlighter` without being inside a `Tuple`.
+
+!!! note
+
+    If multiple highlighters are valid for the element `(i,j)`, then the applied
+    style will be equal to the first match considering the order in the tuple
+    `highlighters`.
+
+!!! note
+
+    If the highlighters are used together with [Formatters](@ref), then the
+    change in the format **will not** affect the parameter `data` passed to the
+    highlighter function `f`. It will always receive the original, unformatted
+    value.
 
 ```julia-repl
 julia> h1 = Highlighter( f      = (data,i,j) -> (data[i,j] < 0.5),
@@ -244,16 +284,13 @@ julia> h2 = Highlighter( (data,i,j) -> (data[i,j] > 0.5),
                          bold       = true,
                          foreground = :blue )
 
-julia> h3 = Highlighter( f          = (data,i,j) -> (data[i,j] == 0.5),
-                         crayon     = Crayon(bold = true, foreground = :yellow) )
+julia> h3 = Highlighter( f      = (data,i,j) -> (data[i,j] == 0.5),
+                         crayon = Crayon(bold = true, foreground = :yellow) )
 
 julia> pretty_table(data, highlighters = (h1, h2, h3))
 ```
 
 ![](../assets/ex_highlighters_00001.png)
-
-If only a single highlighter is wanted, then it can be passed directly to the
-keyword `highlighter` of `pretty_table` without being inside a `Tuple`.
 
 ```julia-repl
 julia> data = Any[ f(a) for a = 0:15:90, f in (sind,cosd,tand) ]
@@ -266,35 +303,9 @@ julia> pretty_table(data, highlighters = hl_odd, formatters = ft_printf("%10.5f"
 
 ![](../assets/ex_highlighters_00002.png)
 
-!!! note
-
-    If the highlighters are used together with [Formatters](@ref), then the
-    change in the format **will not** affect that parameter `data` passed to the
-    highlighter function `f`. It will always receive the original, unformatted
-    value.
-
 There are a set of pre-defined highlighters (with names `hl_*`) to make the
 usage simpler. They are defined in the file
 `./src/backends/text/predefined_highlighters.jl`.
-
-To make the syntax less cumbersome, the following helper function is available:
-
-```julia
-function Highlighter(f; kwargs...)
-```
-
-It creates a `Highlighter` with the function `f` and pass all the keyword
-arguments `kwargs` to the `Crayon`. Hence, the following code:
-
-```julia-repl
-julia> Highlighter((data,i,j)->isodd(i), Crayon(bold = true, background = :dark_gray))
-```
-
-can be replaced by:
-
-```julia-repl
-julia> Highlighter((data,i,j)->isodd(i); bold = true, background = :dark_gray)
-```
 
 ## Text table formats
 

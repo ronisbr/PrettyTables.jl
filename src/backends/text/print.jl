@@ -466,7 +466,7 @@ function _pt_text(io, pinfo;
 
                 for h in highlighters
                     if h.f(data, ir, jc)
-                        crayon = h.crayon
+                        crayon = h.fd(h, data, ir, jc)
                         _p!(screen, buf, crayon, data_ij_str)
                         printed = true
                         break

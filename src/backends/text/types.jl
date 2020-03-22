@@ -57,29 +57,49 @@ end
 """
     Highlighter
 
-Defines the highlighter of a table when using the text backend.
+Defines the default highlighter of a table when using the text backend.
 
-# Fileds
+# Fields
 
 * `f`: Function with the signature `f(data,i,j)` in which should return `true`
        if the element `(i,j)` in `data` must be highlighter, or `false`
        otherwise.
-* `crayon`: Crayon with the style of a highlighted element.
+* `fd`: Function with the signature `f(h,data,i,j)` in which `h` is the
+        highlighter. This function must return the `Crayon` to be applied to the
+        cell that must be highlighted.
+* `crayon`: The `Crayon` to be applied to the highlighted cell if the default
+            `fd` is used.
+
+# Remarks
+
+This structure can be constructed using three helpers:
+
+    Highlighter(f::Function; kwargs...)
+
+where it will construct a `Crayon` using the keywords in `kwargs` and apply it
+to the highlighted cell,
+
+    Highlighter(f::Function, crayon::Crayon)
+
+where it will apply the `crayon` to the highlighted cell, and
+
+    Highlighter(f::Function, fd::Function)
+
+where it will apply the `Crayon` returned by the function `fd` to the
+highlighted cell.
 
 """
 @with_kw struct Highlighter
     f::Function
-    crayon::Crayon
+    fd::Function = (h,data,i,j)->h.crayon
+
+    # Private
+    crayon::Crayon = Crayon()
 end
 
-"""
-    Highlighter(f; kwargs...)
-
-Construct a `Highlighter` with activation function `f` and pass all the keyword
-arguments `kwargs` to `Crayon`.
-
-"""
 Highlighter(f; kwargs...) = Highlighter(f = f, crayon = Crayon(;kwargs...))
+Highlighter(f, crayon::Crayon) = Highlighter(f = f, crayon = crayon)
+Highlighter(f::Function, fd::Function) = Highlighter(f = f, fd = fd)
 
 """
     Screen

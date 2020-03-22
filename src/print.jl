@@ -258,30 +258,63 @@ For more information, see the package documentation.
 
 ## Text highlighters
 
-A set of highlighters can be passed as a `Tuple` to the `highlighter` keyword.
-Each highlighter is an instance of the structure `Highlighter` that contains two
-fields:
+A set of highlighters can be passed as a `Tuple` to the `highlighters` keyword.
+Each highlighter is an instance of the structure `Highlighter` that contains
+three fields:
 
 * `f`: Function with the signature `f(data,i,j)` in which should return `true`
-       if the element `(i,j)` in `data` must be highlighted, or `false`
+       if the element `(i,j)` in `data` must be highlighter, or `false`
        otherwise.
-* `crayon`: Crayon with the style of a highlighted element.
+* `fd`: Function with the signature `f(h,data,i,j)` in which `h` is the
+        highlighter. This function must return the `Crayon` to be applied to the
+        cell that must be highlighted.
+* `crayon`: The `Crayon` to be applied to the highlighted cell if the default
+            `fd` is used.
 
 The function `f` has the following signature:
 
     f(data, i, j)
 
-where `data` is a reference to the data that is being printed, `i` and `j` are
-the element coordinates that are being tested. If this function returns `true`,
-then the highlight style will be applied to the `(i,j)` element. Otherwise, the
-default style will be used.
+in which `data` is a reference to the data that is being printed, and `i` and
+`j` are the element coordinates that are being tested. If this function returns
+`true`, then the cell `(i,j)` will be highlighted.
 
-Notice that if multiple highlighters are valid for the element `(i,j)`, then the
-applied style will be equal to the first match considering the order in the
-Tuple `highlighters`.
+If the function `f` returns true, then the function `fd(h,data,i,j)` will be
+called and must return a `Crayon` that will be applied to the cell.
 
-If only a single highlighter is wanted, then it can be passed directly to the
-keyword `highlighter` without being inside a `Tuple`.
+A highlighter can be constructed using three helpers:
+
+    Highlighter(f::Function; kwargs...)
+
+where it will construct a `Crayon` using the keywords in `kwargs` and apply it
+to the highlighted cell,
+
+    Highlighter(f::Function, crayon::Crayon)
+
+where it will apply the `crayon` to the highlighted cell, and
+
+    Highlighter(f::Function, fd::Function)
+
+where it will apply the `Crayon` returned by the function `fd` to the
+highlighted cell.
+
+!!! info
+
+    If only a single highlighter is wanted, then it can be passed directly to
+    the keyword `highlighter` without being inside a `Tuple`.
+
+!!! note
+
+    If multiple highlighters are valid for the element `(i,j)`, then the applied
+    style will be equal to the first match considering the order in the tuple
+    `highlighters`.
+
+!!! note
+
+    If the highlighters are used together with [Formatters](@ref), then the
+    change in the format **will not** affect the parameter `data` passed to the
+    highlighter function `f`. It will always receive the original, unformatted
+    value.
 
 ---
 
@@ -313,7 +346,7 @@ This backend produces HTML tables. This backend can be used by selecting
 
 ## HTML highlighters
 
-A set of highlighters can be passed as a `Tuple` to the `highlighter` keyword.
+A set of highlighters can be passed as a `Tuple` to the `highlighters` keyword.
 Each highlighter is an instance of a structure that is a subtype of
 `AbstractHTMLHighlighter`. It also must also contain at least the following two
 fields to comply with the API:
@@ -329,21 +362,42 @@ The function `f` has the following signature:
 
     f(data, i, j)
 
-in which `data` is a reference to the data that is being printed, `i` and `j`
-are the element coordinates that are being tested. If this function returns
+in which `data` is a reference to the data that is being printed, and `i` and
+`j` are the element coordinates that are being tested. If this function returns
 `true`, then the highlight style will be applied to the `(i,j)` element.
 Otherwise, the default style will be used.
-
-Notice that if multiple highlighters are valid for the element `(i,j)`, then the
-applied style will be equal to the first match considering the order in the
-Tuple `highlighters`.
 
 If the function `f` returns true, then the function `fd(h,data,i,j)` will be
 called and must return an element of type `HTMLDecoration` that contains the
 decoration to be applied to the cell.
 
-If only a single highlighter is wanted, then it can be passed directly to the
-keyword `highlighter` without being inside a `Tuple`.
+A HTML highlighter can be constructed using two helpers:
+
+    HTMLHighlighter(f::Function, decoration::HTMLDecoration)
+
+    HTMLHighlighter(f::Function, fd::Function)
+
+The first will apply a fixed decoration to the highlighted cell specified in
+`decoration` whereas the second let the user select the desired decoration by
+specifying the function `fd`.
+
+!!! info
+
+    If only a single highlighter is wanted, then it can be passed directly to
+    the keyword `highlighter` without being inside a `Tuple`.
+
+!!! note
+
+    If multiple highlighters are valid for the element `(i,j)`, then the applied
+    style will be equal to the first match considering the order in the tuple
+    `highlighters`.
+
+!!! note
+
+    If the highlighters are used together with [Formatters](@ref), then the
+    change in the format **will not** affect the parameter `data` passed to the
+    highlighter function `f`. It will always receive the original, unformatted
+    value.
 
 ---
 
@@ -392,7 +446,7 @@ This backend produces LaTeX tables. This backend can be used by selecting
 
 ## LaTeX highlighters
 
-A set of highlighters can be passed as a `Tuple` to the `highlighter` keyword.
+A set of highlighters can be passed as a `Tuple` to the `highlighters` keyword.
 Each highlighter is an instance of the structure `LatexHighlighter`. It contains
 the following two fields:
 
@@ -413,15 +467,8 @@ are the element coordinates that are being tested. If this function returns
 `true`, then the highlight style will be applied to the `(i,j)` element.
 Otherwise, the default style will be used.
 
-Notice that if multiple highlighters are valid for the element `(i,j)`, then the
-applied style will be equal to the first match considering the order in the
-Tuple `highlighters`.
-
 If the function `f` returns true, then the function `fd(data,i,j,str)` will be
 called and must return the LaTeX string that will be placed in the cell.
-
-If only a single highlighter is wanted, then it can be passed directly to the
-keyword `highlighter` without being inside a `Tuple`.
 
 There are two helpers that can be used to create LaTeX highlighters:
 
@@ -440,6 +487,24 @@ Thus, for example:
 will wrap all the cells in the table in the following environment:
 
     \\textbf{\\small{<Cell text>}}
+
+!!! info
+
+    If only a single highlighter is wanted, then it can be passed directly to
+    the keyword `highlighter` without being inside a `Tuple`.
+
+!!! note
+
+    If multiple highlighters are valid for the element `(i,j)`, then the applied
+    style will be equal to the first match considering the order in the tuple
+    `highlighters`.
+
+!!! note
+
+    If the highlighters are used together with [Formatters](@ref), then the
+    change in the format **will not** affect the parameter `data` passed to the
+    highlighter function `f`. It will always receive the original, unformatted
+    value.
 
 ---
 

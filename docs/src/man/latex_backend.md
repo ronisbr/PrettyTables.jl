@@ -53,7 +53,7 @@ passed as keywords when calling the function [`pretty_table`](@ref):
 
 ## LaTeX highlighters
 
-A set of highlighters can be passed as a `Tuple` to the `highlighter` keyword.
+A set of highlighters can be passed as a `Tuple` to the `highlighters` keyword.
 Each highlighter is an instance of the structure [`LatexHighlighter`](@ref). It
 contains the following two fields:
 
@@ -86,9 +86,10 @@ keyword `highlighter` without being inside a `Tuple`.
 
 There are two helpers that can be used to create LaTeX highlighters:
 
-    LatexHighlighter(f::Function, envs::Union{String,Vector{String}})
-
-    LatexHighlighter(f::Function, fd::Function)
+```julia
+LatexHighlighter(f::Function, envs::Union{String,Vector{String}})
+LatexHighlighter(f::Function, fd::Function)
+```
 
 The first will apply recursively all the LaTeX environments in `envs` to the
 highlighted text whereas the second let the user select the desired decoration
@@ -102,10 +103,21 @@ will wrap all the cells in the table in the following environment:
 
     \textbf{\small{<Cell text>}}
 
+!!! info
+
+    If only a single highlighter is wanted, then it can be passed directly to
+    the keyword `highlighter` without being inside a `Tuple`.
+
+!!! note
+
+    If multiple highlighters are valid for the element `(i,j)`, then the applied
+    style will be equal to the first match considering the order in the tuple
+    `highlighters`.
+
 !!! note
 
     If the highlighters are used together with [Formatters](@ref), then the
-    change in the format **will not** affect that parameter `data` passed to the
+    change in the format **will not** affect the parameter `data` passed to the
     highlighter function `f`. It will always receive the original, unformatted
     value.
 
