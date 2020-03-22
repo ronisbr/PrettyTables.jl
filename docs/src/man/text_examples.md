@@ -194,3 +194,30 @@ julia> pretty_table(data, tf = borderless,
 ```
 
 ![](../assets/ex_00013.png)
+
+The highlighters API can be used to dynamically highlight cells. In the next
+example, it is shown how the package
+[ColorSchemes.jl](https://github.com/JuliaGraphics/ColorSchemes.jl) can be
+integrated to build a table with a color map (the following example will be
+displayed better in a terminal that supports 24-bit color):
+
+```julia-repl
+julia> using ColorSchemes
+
+julia> data = [ sind(x)*cosd(y) for x in 0:10:180, y in 0:10:180 ]
+
+julia> hl = Highlighter((data,i,j)->true,
+                        (h,data,i,j)->begin
+                             color = get(colorschemes[:coolwarm], data[i,j], (-1,1))
+                             return Crayon(foreground = (round(Int,color.r*255),
+                                                         round(Int,color.g*255),
+                                                         round(Int,color.b*255)))
+                         end)
+
+julia> pretty_table(data, ["x = $(x)°" for x = 0:10:180],
+                    row_names = ["y = $(y)°" for y = 0:10:180],
+                    highlighters = hl,
+                    formatters = ft_printf("%.2f"))
+```
+
+![](../assets/ex_00015.png)
