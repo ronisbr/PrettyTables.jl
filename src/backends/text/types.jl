@@ -30,6 +30,7 @@ export TextFormat, Highlighter
 * `right_border`: Character used as the right border.
 * `row`: Character in a horizontal line inside the table.
 * `hlines`: Horizontal lines that must be drawn by default.
+* `vlines`: Vertical lines that must be drawn by default.
 
 # Pre-defined formats
 
@@ -38,20 +39,19 @@ The following pre-defined formats are available: `unicode` (**default**),
 
 """
 @with_kw struct TextFormat
-    up_right_corner::Char     = '┐'
-    up_left_corner::Char      = '┌'
-    bottom_left_corner::Char  = '└'
-    bottom_right_corner::Char = '┘'
-    up_intersection::Char     = '┬'
-    left_intersection::Char   = '├'
-    right_intersection::Char  = '┤'
-    middle_intersection::Char = '┼'
-    bottom_intersection::Char = '┴'
-    column::Char              = '│'
-    left_border::Char         = '│'
-    right_border::Char        = '│'
-    row::Char                 = '─'
-    hlines::Vector{Symbol}    = [:begin,:header,:end]
+    up_right_corner::Char                 = '┐'
+    up_left_corner::Char                  = '┌'
+    bottom_left_corner::Char              = '└'
+    bottom_right_corner::Char             = '┘'
+    up_intersection::Char                 = '┬'
+    left_intersection::Char               = '├'
+    right_intersection::Char              = '┤'
+    middle_intersection::Char             = '┼'
+    bottom_intersection::Char             = '┴'
+    column::Char                          = '│'
+    row::Char                             = '─'
+    hlines::Vector{Symbol}                = [:begin,:header,:end]
+    vlines::Union{Symbol,Vector{Symbol}}  = :all
 end
 
 """

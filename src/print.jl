@@ -220,18 +220,22 @@ This back-end produces text tables. This back-end can be used by selecting
 * `tf`: Table format used to print the table (see `TextFormat`).
         (**Default** = `unicode`)
 * `vlines`: This variable controls where the vertical lines will be drawn. It
-            can be `:all`, `:none` or a vector of integers. In the first case
-            (the default behavior), all vertical lines will be drawn. In the
-            second case, no vertical line will be drawn. In the third case,
-            the vertical lines will be drawn only after the columns in the
-            vector. Notice that the left border will be drawn if `0` is in
-            `vlines`. Furthermore, it is important to mention that the column
-            number in this variable is related to the **printed columns**. Thus,
-            it is affected by filters, and by the columns added using the
-            variables `show_row_number` and `row_names`. Finally, for
-            convenience, the left and right border can be drawn by adding the
-            symbols `:begin` and `:end` to this vector, respectively.
-            (**Default** = `:all`)
+            can be `nothing`, `:all`, `:none` or a vector of integers.
+    - If it is `nothing`, which is the default, then the configuration will be
+      obtained from the table format in the variable `tf` (see `TextFormat`).
+    - If it is `:all`, then all vertical lines will be drawn.
+    - If it is `:none`, then no vertical line will be drawn.
+    - If it is a vector of integers, then the vertical lines will be drawn only
+      after the columns in the vector. Notice that the top line will be drawn if
+      `0` is in `vlines`. Furthermore, it is important to mention that the
+      column number in this variable is related to the **printed column**. Thus,
+      it is affected by filters, and by the options `row_names` and
+      `show_row_number`. Finally, for convenience, the left and right vertical
+      lines can be drawn by adding the symbols `:begin` and `:end` to this
+      vector, respectively, and the line after the header can be drawn by adding
+      the symbol `:header`.
+
+  (**Default** = `nothing`)
 
 The keywords `header_crayon` and `subheaders_crayon` can be a `Crayon` or a
 `Vector{Crayon}`. In the first case, the `Crayon` will be applied to all the

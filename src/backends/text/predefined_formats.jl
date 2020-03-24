@@ -21,8 +21,6 @@ const ascii_dots = TextFormat(
     middle_intersection = ':',
     bottom_intersection = ':',
     column              = ':',
-    left_border         = ':',
-    right_border        = ':',
     row                 = '.'
 )
 
@@ -37,8 +35,6 @@ const ascii_rounded = TextFormat(
     middle_intersection = '+',
     bottom_intersection = ''',
     column              = '|',
-    left_border         = '|',
-    right_border        = '|',
     row                 = '-'
 )
 
@@ -53,8 +49,6 @@ const borderless = TextFormat(
     middle_intersection = ' ',
     bottom_intersection = ' ',
     column              = ' ',
-    left_border         = ' ',
-    right_border        = ' ',
     row                 = ' ',
     hlines              = [:header]
 )
@@ -70,8 +64,6 @@ const compact = TextFormat(
     middle_intersection = ' ',
     bottom_intersection  = ' ',
     column              = ' ',
-    left_border         = ' ',
-    right_border        = ' ',
     row                 = '-'
    )
 
@@ -80,8 +72,6 @@ const markdown = TextFormat(
     right_intersection  = '|',
     middle_intersection = '|',
     column              = '|',
-    left_border         = '|',
-    right_border        = '|',
     row                 = '-',
     hlines              = [:header]
 )
@@ -97,8 +87,6 @@ const mysql = TextFormat(
     middle_intersection = '+',
     bottom_intersection = '+',
     column              = '|',
-    left_border         = '|',
-    right_border        = '|',
     row                 = '-'
    )
 
@@ -113,8 +101,6 @@ const simple = TextFormat(
     middle_intersection = ' ',
     bottom_intersection  = ' ',
     column              = ' ',
-    left_border         = ' ',
-    right_border        = ' ',
     row                 = '='
 )
 
@@ -129,19 +115,13 @@ const unicode_rounded = TextFormat(
     middle_intersection = '┼',
     bottom_intersection = '┴',
     column              = '│',
-    left_border         = '│',
-    right_border        = '│',
     row                 = '─'
 )
 
 const matrix = TextFormat(
-    up_intersection     = ' ',
     left_intersection   = '│',
     right_intersection  = '│',
-    middle_intersection = ' ',
-    bottom_intersection = ' ',
-    left_border         = '│',
-    right_border        = '│',
-    column              = ' ',
-    row                 = ' '
+    row                 = ' ',
+    vlines              = [:begin,:end],
+    hlines              = [:begin,:end]
 )

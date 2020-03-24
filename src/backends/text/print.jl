@@ -30,7 +30,7 @@ function _pt_text(io, pinfo;
                   show_row_number::Bool = false,
                   sortkeys::Bool = false,
                   tf::TextFormat = unicode,
-                  vlines::Union{Symbol,AbstractVector} = :all)
+                  vlines::Union{Nothing,Symbol,AbstractVector} = nothing)
 
     @unpack_PrintInfo pinfo
 
@@ -297,6 +297,8 @@ function _pt_text(io, pinfo;
     # If we have header, then the index in `body_hlines` must be incremented.
 
     # Process `vlines`.
+    vlines == nothing && (vlines = tf.vlines)
+
     if vlines == :all
         vlines = collect(0:1:length(all_cols_width))
     elseif vlines == :none
@@ -341,7 +343,7 @@ function _pt_text(io, pinfo;
 
     if !noheader
         @inbounds @views for i = 1:header_num_rows
-            0 ∈ vlines && _p!(screen, buf, border_crayon, tf.left_border)
+            0 ∈ vlines && _p!(screen, buf, border_crayon, tf.column)
 
             if show_row_number
                 # The text "Row" must appear only on the first line.
@@ -390,7 +392,7 @@ function _pt_text(io, pinfo;
                          " " , flp)
                 else
                     _pc!(j + Δc ∈ vlines, screen, buf, border_crayon,
-                         tf.right_border, " " , flp)
+                         tf.column, " " , flp)
                 end
 
                 _eol(screen) && break
@@ -417,7 +419,7 @@ function _pt_text(io, pinfo;
         ir = id_rows[i]
 
         for l = 1:num_lines_in_row[i]
-            0 ∈ vlines && _p!(screen, buf, border_crayon, tf.left_border)
+            0 ∈ vlines && _p!(screen, buf, border_crayon, tf.column)
 
             if show_row_number
                 if l == 1
@@ -482,7 +484,7 @@ function _pt_text(io, pinfo;
                          " " , flp)
                 else
                     _pc!(j + Δc ∈ vlines, screen, buf, border_crayon,
-                         tf.right_border, " " , flp)
+                         tf.column, " " , flp)
                 end
 
                 _eol(screen) && break
