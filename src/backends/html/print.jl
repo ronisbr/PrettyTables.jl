@@ -14,7 +14,9 @@ function _pt_html(io, pinfo;
                   noheader::Bool = false,
                   nosubheader::Bool = false,
                   show_row_number::Bool = false,
-                  standalone::Bool = true)
+                  standalone::Bool = true,
+                   # Deprecated
+                   formatter = nothing)
 
     @unpack_PrintInfo pinfo
     @unpack_HTMLTableFormat tf

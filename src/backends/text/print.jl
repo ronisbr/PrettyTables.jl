@@ -30,7 +30,9 @@ function _pt_text(io, pinfo;
                   show_row_number::Bool = false,
                   sortkeys::Bool = false,
                   tf::TextFormat = unicode,
-                  vlines::Union{Nothing,Symbol,AbstractVector} = nothing)
+                  vlines::Union{Nothing,Symbol,AbstractVector} = nothing,
+                  # Deprecated
+                  formatter = nothing)
 
     @unpack_PrintInfo pinfo
 

@@ -17,7 +17,9 @@ function _pt_latex(io, pinfo;
                    nosubheader::Bool = false,
                    show_row_number::Bool = false,
                    table_type::Symbol = :tabular,
-                   vlines::Union{Symbol,AbstractVector} = :none)
+                   vlines::Union{Symbol,AbstractVector} = :none,
+                   # Deprecated
+                   formatter = nothing)
 
     @unpack_PrintInfo pinfo
     @unpack_LatexTableFormat tf
