@@ -36,6 +36,9 @@ function _pt_text(io, pinfo;
 
     @unpack_PrintInfo pinfo
 
+    # Input variables verification and initial setup
+    # ==========================================================================
+
     # Let's create a `IOBuffer` to write everything and then transfer to `io`.
     io_has_color = get(io, :color, false)
     buf_io       = IOBuffer()
@@ -96,23 +99,18 @@ function _pt_text(io, pinfo;
         end
     end
 
-    # If the user wants to show the row names, then convert to string.
-    if show_row_names
-        # Escape the row name column title.
-        row_name_column_title_str = _str_escaped(row_name_column_title)
-
-        # Convert the row names to string.
-        row_names_str = _str_escaped.(sprint.(print, row_names))
-
-        # Obtain the size of the row name column.
-        row_name_width = max(length(row_name_column_title_str),
-                                    maximum(length.(row_names_str)))
-    else
-        row_name_width = 0
-    end
-
     # Make sure that `highlighters` is always a tuple.
     !(highlighters isa Tuple) && (highlighters = (highlighters,))
+
+    # Check which columns must have fixed sizes.
+    typeof(columns_width) <: Integer && (columns_width = ones(Int, num_cols)*columns_width)
+    length(columns_width) != num_cols && error("The length of `columns_width` must be the same as the number of columns.")
+    fixed_col_width = map(w->w > 0, columns_width)
+
+    # Increase the number of printed columns if the user wants to show
+    # additional columns.
+    Δc = show_row_names + show_row_number
+    num_printed_cols += Δc
 
     # If the user wants to horizontally crop the printing, then it is not
     # necessary to process all the lines. We will to process, at most, the
@@ -129,35 +127,96 @@ function _pt_text(io, pinfo;
         num_printed_cols = min(num_printed_cols, ceil(Int, screen.size[2]/4))
     end
 
+    # Create the string matrices that will be printed
+    # ==========================================================================
+
     # Get the string which is printed when `print` is called in each element of
     # the matrix. Notice that we must create only the matrix with the printed
     # rows and columns.
-    header_str       = Matrix{String}(undef, header_num_rows, num_printed_cols)
-    data_str         = Matrix{Vector{AbstractString}}(undef,
-                                                      num_printed_rows,
-                                                      num_printed_cols)
+    header_str = Matrix{String}(undef, header_num_rows, num_printed_cols)
+    data_str   = Matrix{Vector{AbstractString}}(undef,
+                                                num_printed_rows,
+                                                num_printed_cols)
     num_lines_in_row = ones(Int, num_printed_rows)
-
-    # Check which columns must have fixed sizes.
-    typeof(columns_width) <: Integer && (columns_width = ones(Int, num_cols)*columns_width)
-    length(columns_width) != num_cols && error("The length of `columns_width` must be the same as the number of columns.")
-    fixed_col_width = map(w->w > 0, columns_width)
 
     # The variable `columns_width` is the specification of the user for the
     # columns width. The variable `cols_width` contains the actual size of each
     # column. This is necessary because if the user asks for a width equal or
     # lower than 0 in a column, then the width will be automatically computed to
     # fit the longest field.
-    cols_width = [ columns_width[id_cols[i]] for i = 1:num_printed_cols ]
+    #
+    # By default, if the user wants to show the row number of the row names,
+    # those columns will have the size computed automatically.
+    cols_width = Vector{Int}(undef, num_printed_cols)
+
+    for i = (Δc+1):num_printed_cols
+        cols_width[i] = columns_width[id_cols[i-Δc]]
+    end
 
     # This variable stores the predicted table width. If the user wants
     # horizontal cropping, then it can be use to avoid unnecessary processing of
     # columns that will not be displayed.
     pred_tab_width = 0
 
-    @inbounds for i = 1:num_printed_cols
+    # Auxiliary variables to adjust `alignment` based on the new columns added
+    # to the table.
+    alignment_add = Symbol[]
+
+    # Row numbers
+    # --------------------------------------------------------------------------
+
+    @inbounds if show_row_number
+        # Set the header of the row column.
+        header_str[1,1]      = "Row"
+        header_str[2:end,1] .= ""
+
+        # Set the data of the row column.
+        for i = 1:num_printed_rows
+            data_str[i,1] = [string(id_rows[i])]
+        end
+
+        # The row number width depends on how many digits the total number of
+        # rows # has and the length of the header "Row". Notice that if
+        # `noheader` is set to `true`, then we should not take the word "Row"
+        # into account.
+        cols_width[1] = max(noheader ? 0 : 3, floor(Int, log10(num_rows)) + 1)
+
+        # Add information about the row number column to the variables.
+        push!(alignment_add, :r)
+    end
+
+    # Row names
+    # --------------------------------------------------------------------------
+
+    @inbounds @views if show_row_names
+        # Escape the row name column title.
+        header_str[1,Δc]      = _str_escaped(row_name_column_title)
+        header_str[2:end,Δc] .= ""
+
+        # Convert the row names to string.
+        max_size = 0
+        for i = 1:num_printed_rows
+            data_str[i,Δc] = [_str_escaped(sprint(print, row_names[i]))]
+
+            len_i = length(data_str[i,Δc][1])
+            len_i > max_size && (max_size = len_i)
+        end
+
+        # Obtain the size of the row name column.
+        cols_width[Δc] = max(length(header_str[1,Δc]), max_size)
+
+        # Add information about the row name column to the variables.
+        push!(alignment_add, row_name_alignment)
+    end
+
+    !isempty(alignment_add) && (alignment = vcat(alignment_add, alignment))
+
+    # Table data
+    # --------------------------------------------------------------------------
+
+    @inbounds for i = (1+Δc):num_printed_cols
         # Index of the i-th printed column in `data`.
-        ic = id_cols[i]
+        ic = id_cols[i-Δc]
 
         if !noheader
             for j = 1:header_num_rows
@@ -245,14 +304,12 @@ function _pt_text(io, pinfo;
         end
     end
 
-    # The row number width depends on how many digits the total number of rows
-    # has and the length of the header "Row". Notice that if `noheader` is set
-    # to `true`, then we should not take the word "Row" into account.
-    row_number_width = max(noheader ? 0 : 3, floor(Int, log10(num_rows)) + 1)
-
     # If the user wants all the columns with the same size, then select the
     # larger.
     same_column_size && (cols_width = [maximum(cols_width) for i = 1:num_printed_cols])
+
+    # Compute where the horizontal and vertical lines must be drawn
+    # --------------------------------------------------------------------------
 
     # Create the format of the horizontal lines.
     if body_hlines_format == nothing
@@ -260,22 +317,11 @@ function _pt_text(io, pinfo;
                               tf.right_intersection, tf.row)
     end
 
-    # The variable `all_cols_width` contains the width of all printed columns,
-    # including the row number and row name if the user requested. This is used
-    # when drawing lines.
-    all_cols_width = copy(cols_width)
-
-    show_row_names  && (all_cols_width = vcat(row_name_width, all_cols_width))
-    show_row_number && (all_cols_width = vcat(row_number_width, all_cols_width))
-
-    # Number of printed rows including the header.
-    num_all_rows = num_printed_rows + (!noheader)
-
     # Process `hlines`.
     if hlines == nothing
         hlines = tf.hlines
     elseif hlines == :all
-        hlines = collect(0:1:num_all_rows)
+        hlines = collect(0:1:num_printed_rows + !noheader)
     elseif hlines == :none
         hlines = Int[]
     elseif !(typeof(hlines) <: AbstractVector)
@@ -286,11 +332,11 @@ function _pt_text(io, pinfo;
     # after the header, and the symbol `:end` is replaced by the last row.
     hlines = replace(hlines, :begin  => 0,
                              :header => noheader ? -1 : 1,
-                             :end    => num_all_rows)
+                             :end    => num_printed_rows + !noheader)
 
-    # All numbers less than 1 and higher than the number of printed rows must be
-    # removed from `body_hlines`.
-    body_hlines = filter(x -> (x ≥ 1) && (x ≤ num_printed_rows), body_hlines)
+    # All numbers less than 1 and higher or equal the number of printed rows
+    # must be # removed from `body_hlines`.
+    body_hlines = filter(x -> (x ≥ 1) && (x < num_printed_rows), body_hlines)
 
     # Merge `hlines` with `body_hlines`.
     hlines = unique(vcat(hlines, body_hlines .+ !noheader))
@@ -302,7 +348,7 @@ function _pt_text(io, pinfo;
     vlines == nothing && (vlines = tf.vlines)
 
     if vlines == :all
-        vlines = collect(0:1:length(all_cols_width))
+        vlines = collect(0:1:num_printed_cols)
     elseif vlines == :none
         vlines = Int[]
     elseif !(typeof(vlines) <: AbstractVector)
@@ -312,30 +358,17 @@ function _pt_text(io, pinfo;
     # The symbol `:begin` is replaced by 0 and the symbol `:end` is replaced by
     # the last column.
     vlines = replace(vlines, :begin => 0,
-                             :end   => length(all_cols_width))
+                             :end   => num_printed_cols)
 
-    # Auxiliary variables to verify if the vertical line must be drawn in the
-    # row number and row name.
-    row_number_vline = 1 ∈ vlines
-    row_name_vline   = false
-
-    if show_row_names
-        if show_row_number
-            row_name_vline = 2 ∈ vlines
-        else
-            row_name_vline = 1 ∈ vlines
-        end
-    end
-
-    # `Δc` store the number of rows that the user added before that data.
-    Δc = Int(show_row_number + show_row_names)
+    #                           Print the table
+    # ==========================================================================
 
     # Top table line
     # ==========================================================================
 
     0 ∈ hlines && _draw_line!(screen, buf, tf.up_left_corner,
                               tf.up_intersection, tf.up_right_corner, tf.row,
-                              border_crayon, all_cols_width, vlines)
+                              border_crayon, cols_width, vlines)
 
     # Header
     # ==========================================================================
@@ -347,55 +380,34 @@ function _pt_text(io, pinfo;
         @inbounds @views for i = 1:header_num_rows
             0 ∈ vlines && _p!(screen, buf, border_crayon, tf.column)
 
-            if show_row_number
-                # The text "Row" must appear only on the first line.
-                if i == 1
-                    header_row_i_str = " " * _str_aligned("Row", :r, row_number_width) * " "
-                    _p!(screen, buf, rownum_header_crayon, header_row_i_str)
-                else
-                    _p!(screen, buf, rownum_header_crayon, " "^(row_number_width+2))
-                end
-
-                _pc!(row_number_vline, screen, buf, border_crayon, tf.column, " ")
-            end
-
-            # If we have row name column, then print in the first line the
-            # column title.
-            if show_row_names
-                if i == 1
-                    header_row_name = " " *
-                                      _str_aligned(row_name_column_title_str,
-                                                   row_name_alignment,
-                                                   row_name_width) * " "
-                    _p!(screen, buf, row_name_header_crayon, header_row_name)
-                else
-                    _p!(screen, buf, text_crayon, " "^(row_name_width+2))
-                end
-
-                _pc!(row_name_vline, screen, buf, border_crayon, tf.column, " ")
-            end
-
             for j = 1:num_printed_cols
-                # Index of the j-th printed column in `data`.
-                jc = id_cols[j]
+                # Get the information about the alignment and the crayon.
+                if j ≤ Δc
+                    if show_row_number && (j == 1)
+                        crayon_ij    = rownum_header_crayon
+                        alignment_ij = alignment[1]
+                    elseif show_row_names
+                        crayon_ij    = row_name_crayon
+                        alignment_ij = alignment[Δc]
+                    end
+                else
+                    jc = id_cols[j-Δc]
+                    crayon_ij    = (i == 1) ? header_crayon[jc] : subheader_crayon[jc]
+                    alignment_ij = alignment[jc+Δc]
+                end
 
-                header_i_str = " " * _str_aligned(header_str[i,j], alignment[jc], cols_width[j]) * " "
-
-                # Check if we are printing the header or the sub-headers and select
-                # the styling accordingly.
-                crayon = (i == 1) ? header_crayon[jc] : subheader_crayon[jc]
+                # Prepare the text to be printed.
+                header_i_str = " " * _str_aligned(header_str[i,j],
+                                                  alignment_ij,
+                                                  cols_width[j]) * " "
 
                 flp = j == num_printed_cols
 
-                _p!(screen, buf, crayon,        header_i_str)
+                # Print the text.
+                _p!(screen, buf, crayon_ij, header_i_str)
 
-                if j != num_printed_cols
-                    _pc!(j + Δc ∈ vlines, screen, buf, border_crayon, tf.column,
-                         " " , flp)
-                else
-                    _pc!(j + Δc ∈ vlines, screen, buf, border_crayon,
-                         tf.column, " " , flp)
-                end
+                # Check if we need to draw a vertical line here.
+                _pc!(j ∈ vlines, screen, buf, border_crayon, tf.column, " " , flp)
 
                 _eol(screen) && break
             end
@@ -411,7 +423,7 @@ function _pt_text(io, pinfo;
         1 ∈ hlines && _draw_line!(screen, buf, tf.left_intersection,
                                   tf.middle_intersection,
                                   tf.right_intersection, tf.row,
-                                  border_crayon, all_cols_width, vlines)
+                                  border_crayon, cols_width, vlines)
     end
 
     # Data
@@ -423,71 +435,54 @@ function _pt_text(io, pinfo;
         for l = 1:num_lines_in_row[i]
             0 ∈ vlines && _p!(screen, buf, border_crayon, tf.column)
 
-            if show_row_number
-                if l == 1
-                    row_number_i_str = " " * _str_aligned(string(ir), :r, row_number_width) * " "
-                else
-                    row_number_i_str = " " * _str_aligned("", :r, row_number_width) * " "
-                end
-
-                _p!(screen, buf, text_crayon,   row_number_i_str)
-                _pc!(row_number_vline, screen, buf, border_crayon, tf.column, " ")
-            end
-
-            if show_row_names
-                row_names_i_str = " " * _str_aligned(row_names_str[i],
-                                                     row_name_alignment,
-                                                     row_name_width) * " "
-                _p!(screen, buf, row_name_crayon, row_names_i_str)
-                _pc!(row_name_vline, screen, buf, border_crayon, tf.column, " ")
-            end
-
             for j = 1:num_printed_cols
-                jc = id_cols[j]
+                # Get the information about the alignment and the crayon.
+                if j ≤ Δc
+                    if show_row_number && (j == 1)
+                        crayon_ij    = text_crayon
+                        alignment_ij = alignment[1]
+                    elseif show_row_names
+                        crayon_ij    = text_crayon
+                        alignment_ij = alignment[Δc]
+                    end
+                else
+                    jc = id_cols[j-Δc]
+                    crayon_ij    = text_crayon
+                    alignment_ij = alignment[jc+Δc]
 
-                # Check the alignment of this cell.
-                alignment_ij = alignment[jc]
+                    # Check for highlighters.
+                    for h in highlighters
+                        if h.f(data, ir, jc)
+                            crayon_ij = h.fd(h, data, ir, jc)
+                            break
+                        end
+                    end
 
-                for f in cell_alignment
-                    aux = f(data, ir, jc)
+                    # Check for cell alignment override.
+                    for f in cell_alignment
+                        aux = f(data, ir, jc)
 
-                    if aux ∈ [:l, :c, :r, :L, :C, :R]
-                        alignment_ij = aux
-                        break
+                        if aux ∈ [:l, :c, :r, :L, :C, :R]
+                            alignment_ij = aux
+                            break
+                        end
                     end
                 end
 
+                # Align the string to be printed.
                 if length(data_str[i,j]) >= l
                     data_ij_str = " " * _str_aligned(data_str[i,j][l], alignment_ij, cols_width[j]) * " "
                 else
                     data_ij_str = " " * _str_aligned("", alignment_ij, cols_width[j]) * " "
                 end
 
-                # If we have highlighters defined, then we need to verify if
-                # this data should be highlight.
-                printed = false
-                crayon  = text_crayon
-
-                for h in highlighters
-                    if h.f(data, ir, jc)
-                        crayon = h.fd(h, data, ir, jc)
-                        _p!(screen, buf, crayon, data_ij_str)
-                        printed = true
-                        break
-                    end
-                end
-
-                !printed && _p!(screen, buf, text_crayon, data_ij_str)
+                # Print.
+                _p!(screen, buf, crayon_ij, data_ij_str)
 
                 flp = j == num_printed_cols
 
-                if j != num_printed_cols
-                    _pc!(j + Δc ∈ vlines, screen, buf, border_crayon, tf.column,
-                         " " , flp)
-                else
-                    _pc!(j + Δc ∈ vlines, screen, buf, border_crayon,
-                         tf.column, " " , flp)
-                end
+                # Check if we need to draw a vertical line here.
+                _pc!(j ∈ vlines, screen, buf, border_crayon, tf.column, " " , flp)
 
                 _eol(screen) && break
             end
@@ -499,14 +494,14 @@ function _pt_text(io, pinfo;
         # Check if we must draw a horizontal line here.
         i != num_printed_rows && (i+!noheader) in hlines &&
             _draw_line!(screen, buf, body_hlines_format..., border_crayon,
-                        all_cols_width, vlines)
+                        cols_width, vlines)
 
         # Here we must check if the vertical size of the screen has been
         # reached. Notice that we must add 4 to account for the command line,
         # the continuation line, the bottom table line, and the last blank line.
         if (screen.size[1] > 0) && (screen.row + 4 >= screen.size[1])
             _draw_continuation_row(screen, buf, tf, text_crayon, border_crayon,
-                                   all_cols_width, vlines)
+                                   cols_width, vlines)
             break
         end
     end
@@ -514,12 +509,10 @@ function _pt_text(io, pinfo;
     # Bottom table line
     # ==========================================================================
 
-    num_all_rows ∈ hlines && _draw_line!(screen, buf,
-                                         tf.bottom_left_corner,
-                                         tf.bottom_intersection,
-                                         tf.bottom_right_corner, tf.row,
-                                         border_crayon,
-                                         all_cols_width, vlines)
+    (num_printed_rows + !noheader) ∈ hlines &&
+        _draw_line!(screen, buf, tf.bottom_left_corner, tf.bottom_intersection,
+                    tf.bottom_right_corner, tf.row, border_crayon, cols_width,
+                    vlines)
 
     # Print the buffer
     # ==========================================================================
