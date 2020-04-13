@@ -1,6 +1,58 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 0.9.0
+-------------
+
+- ![BREAKING][badge-breaking]![Feature][badge-feature] The table format of the
+  text back-end now has the variable `vlines` which defines the vertical lines
+  that should be drawn by default. In this case, the variables `left_border` and
+  `right_border` were removed because they were not necessary anymore.
+- ![BREAKING][badge-breaking]![Feature][badge-feature] The compatibility with
+  [Tables.jl](https://github.com/JuliaData/Tables.jl) API was improved. Now,
+  tables without a schema can be printed. Furthermore, if a table has a schema
+  but the user pass a header, then the user's header will be used instead. Thus,
+  this can be breaking. (Issue [#45][gh-issue-45])
+- ![BREAKING][badge-breaking]![Enhancement][badge-enhancement] The behavior of
+  the keyword `hlines` was modified in text back-end. Now, it can be used to
+  draw **any** horizontal line, including the bottom, header, and top lines. A
+  variable also named `hlines` was added to the structure `TextFormat` to
+  defined which horizontal lines should be drawn by default. Thus, the variables
+  `top_line`, `header_line`, and `bottom_line` of the same structure were
+  removed since they were not necessary anymore. Furthermore, the old behavior
+  of `hlines` and `hlines_format` can be replicated in this version using
+  `body_hlines` and `body_hlines_format`, respectively.
+- ![BREAKING][badge-breaking]![Enhancement][badge-enhancement] The vertical
+  lines behavior in LaTeX back-end was modified to match the behavior selected
+  for the text back-end. Thus, the keyword `row_number_vline` was removed, since
+  it was not necessary anymore.
+- ![Deprecation][badge-deprecation]![Enhancement][badge-enhancement] The API of
+  formatters was drastically change to improve the consistency of the package.
+  Now, as we have in `highlighters`, the formatters are composed of a function
+  or a tuple of functions with the signature `f(value,i,j)`, where `value` is
+  the cell value that must be formatted, `i` is the row number, and `j` is the
+  column number. These function must return the formatted value for the cell
+  `(i,j)`. Since it is now possible to define multiple formatters, the keyword
+  name was changed from `formatter` to `formatters`. The old API still works,
+  but it marked as deprecated.
+- ![Feature][badge-feature] The vertical lines in text back-end can now be
+  controlled by the keyword `vlines`. (Issue [#46][gh-issue-46])
+- ![Feature][badge-feature] The option `row_names` can be used to append a
+  column to the left of the table with the names of the columns.
+- ![Enhancement][badge-enhancement] The `highlighters` format of text back-end
+  was improved. The user can now create highlighters that will dynamically apply
+  `crayons` depending on the data value and the cell coordinate, as it was
+  possible with the LaTeX and HTML back-ends.
+- ![Enhancement][badge-enhancement] The API of `cell_alignment` was changed to
+  improve the consistency of the package. Now, as we have in `highlighters`, the
+  `cell_alignment` must be a function or a tuple of functions with the signature
+  `f(data,i,j)`, where `data` is the matrix that is being printed, `i` is the
+  row number, and `j` is the column number. These function must return the
+  alignment symbol for the cell `(i,j)`. For convenience, the old API using
+  dictionaries is still available for the simple cases.
+- ![Info][badge-info] End of support of Julia 1.3. The supported versions are
+  1.0 and 1.4.
+
 Version 0.8.4
 -------------
 
@@ -232,6 +284,8 @@ Version 0.1.0
 [gh-issue-33]: https://github.com/ronisbr/PrettyTables.jl/issues/33
 [gh-issue-38]: https://github.com/ronisbr/PrettyTables.jl/issues/38
 [gh-issue-40]: https://github.com/ronisbr/PrettyTables.jl/issues/40
+[gh-issue-45]: https://github.com/ronisbr/PrettyTables.jl/issues/45
+[gh-issue-46]: https://github.com/ronisbr/PrettyTables.jl/issues/46
 
 [gh-pr-5]: https://github.com/ronisbr/PrettyTables.jl/pull/5
 [gh-pr-8]: https://github.com/ronisbr/PrettyTables.jl/pull/8
