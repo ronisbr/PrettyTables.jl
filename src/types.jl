@@ -13,9 +13,9 @@ This structure helps to access elements that comply with the column access
 specification of Tables.jl.
 
 """
-struct ColumnTable{T}
+struct ColumnTable{T,V<:AbstractVector{Symbol}}
     table::T
-    column_names::Vector{Symbol}
+    column_names::V
     size::Tuple{Int,Int}
 end
 
@@ -26,9 +26,9 @@ This structure helps to access elements that comply with the row access
 specification of Tables.jl.
 
 """
-struct RowTable{T}
+struct RowTable{T,V<:AbstractVector{Symbol}}
     table::T
-    column_names::Vector{Symbol}
+    column_names::V
     size::Tuple{Int,Int}
 end
 
