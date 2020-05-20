@@ -29,9 +29,6 @@ Tables.columnnames(x::MinimalTable) = getfield(x, :colnames)
 Tables.columns(x::MinimalTable) = x
 Base.getindex(x::MinimalTable, i1, i2) = getindex(getfield(x, :data), i1, i2)
 Base.getproperty(x::MinimalTable, s::Symbol) = getindex(x, :, findfirst(==(s), Tables.columnnames(x)))
-
-table = MinimalTable([1 2; 3 4], TestVec([:a, :b]))
-
 Base.convert(::Type{<:TestVec}, x::Array) = TestVec(x)
 
 @testset "Back-end inference" begin
@@ -300,8 +297,3 @@ end
     result   = pretty_table(String, data)
     @test result == expected
 end
-
-
-
-
-
