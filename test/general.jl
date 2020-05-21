@@ -9,32 +9,58 @@
 # Backend inference
 # ==============================================================================
 
+# minimal other table interface
+struct TestVec{T} <: AbstractArray{T,1}
+    data::Array{T,1}
+end
+Base.IndexStyle(::Type{A}) where {A<:TestVec} = Base.IndexCartesian()
+Base.size(A::TestVec) = size(getfield(A, :data))
+Base.getindex(A::TestVec, index::Int) = getindex(getfield(A, :data), index)
+Base.collect(::Type{T}, itr::TestVec) where {T} = TestVec(collect(T, getfield(itr, :data)))
+
+struct MinimalTable
+    data::Matrix
+    colnames::TestVec
+end
+
+Tables.istable(x::MinimalTable) = true
+Tables.columnaccess(::MinimalTable) = true
+Tables.columnnames(x::MinimalTable) = getfield(x, :colnames)
+Tables.columns(x::MinimalTable) = x
+Base.getindex(x::MinimalTable, i1, i2) = getindex(getfield(x, :data), i1, i2)
+Base.getproperty(x::MinimalTable, s::Symbol) = getindex(x, :, findfirst(==(s), Tables.columnnames(x)))
+Base.convert(::Type{<:TestVec}, x::Array) = TestVec(x)
+
 @testset "Back-end inference" begin
     data = rand(3,3)
+    mt = MinimalTable(data, [Symbol("Col. 1"), Symbol("Col. 2"), Symbol("Col. 3")])
 
     # Text
     # ==========================================================================
 
     auto   = pretty_table(String, data, tf = unicode)
     manual = pretty_table(String, data, tf = unicode, backend = :text)
+    mintable = pretty_table(String, mt, tf = unicode, backend = :text)
 
-    @test auto == manual
+    @test auto == manual == mintable
 
     # HTML
     # ==========================================================================
 
     auto   = pretty_table(String, data, tf = html_simple)
     manual = pretty_table(String, data, tf = html_simple, backend = :html)
+    mintable = pretty_table(String, mt, tf = html_simple, backend = :html)
 
-    @test auto == manual
+    @test auto == manual == mintable
 
     # LaTeX
     # ==========================================================================
 
     auto   = pretty_table(String, data, tf = latex_default)
     manual = pretty_table(String, data, tf = latex_default, backend = :latex)
+    mintable = pretty_table(String, mt, tf = latex_default, backend = :latex)
 
-    @test auto == manual
+    @test auto == manual == mintable
 
     # Error
     # ==========================================================================
