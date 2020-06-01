@@ -1456,6 +1456,25 @@ end
     @test d[3] == "Brasil"
 end
 
+# Overwrite
+# ==============================================================================
+
+@testset "Overwrite" begin
+    result = pretty_table(String, data, ["A" "B" "C" "D"; "E" "F" "G" "H"],
+                          body_hlines = collect(1:1:6))
+
+    num_lines = length(findall(x->x == '\n', result))
+
+    io = IOBuffer()
+    pretty_table(io, data, ["A" "B" "C" "D"; "E" "F" "G" "H"],
+                 body_hlines = collect(1:1:6),
+                 overwrite = true)
+
+    io_result = String(take!(io))
+
+    @test io_result == ("\e[1F\e[2K"^(num_lines) * result)
+end
+
 # Table.jl compatibility
 # ==============================================================================
 
