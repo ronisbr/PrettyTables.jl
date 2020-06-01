@@ -514,13 +514,11 @@ function _pt_text(io, pinfo;
         _draw_line!(screen, buf, tf.bottom_left_corner, tf.bottom_intersection,
                     tf.bottom_right_corner, tf.row, border_crayon, cols_width,
                     vlines)
-    
-    tablestring = String(take!(buf_io))
                   
     # Optional overwrite - Should be used the 2nd use onwards, assumes the previous table had the same number of rows
     # ========================================================================== 
     if overwrite  
-        for _ in 1:length(findall("\n",tablestring))
+        for _ in 1:screen.row - 1
             print("\e[1F") # move cursor up one row
             print("\e[2K") # clear whole line
         end
@@ -528,7 +526,7 @@ function _pt_text(io, pinfo;
     
     # Print the buffer
     # ==========================================================================
-    print(io, tablestring)
+    print(io, String(take!(buf_io)))
 
     return nothing
 end
