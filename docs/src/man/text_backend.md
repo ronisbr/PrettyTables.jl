@@ -83,6 +83,9 @@ passed as keywords when calling the function `pretty_table`:
 * `nosubheader`: If `true`, then the sub-header will not be printed, *i.e.* the
                  header will contain only one line. Notice that this option has
                  no effect if `noheader = true`. (**Default** = `false`)
+* `overwrite`: If `true`, then the same number of lines in the printed table
+               will be deleted from the output `io`. This can be used to update
+               the table in the screen continuously. (**Default** = `false`)
 * `same_column_size`: If `true`, then all the columns will have the same size.
                       (**Default** = `false`)
 * `screen_size`: A tuple of two integers that defines the screen size (num. of
