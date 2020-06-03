@@ -521,11 +521,11 @@ function _pt_text(io, pinfo;
     # If `overwrite` is `true`, then delete the exact number of lines of the
     # table. This can be used to replace the table in the screen continuously.
 
-    overwrite && print(io, "\e[1F\e[2K"^(screen.row - 1))
+    str_overwrite = overwrite ? "\e[1F\e[2K"^(screen.row - 1) : ""
 
     # Print the buffer
     # ==========================================================================
-    print(io, String(take!(buf_io)))
+    print(io, str_overwrite * String(take!(buf_io)))
 
     return nothing
 end
