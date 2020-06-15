@@ -1,6 +1,17 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 0.9.1
+-------------
+
+- ![Feature][badge-feature] The option `overwrite` was added to the text
+  back-end. It deletes the same amount of lines that will be printed. This can
+  be used to provide a way to display a table that updates with time. (PR
+  [#56][gh-pr-56])
+- ![Enhancement][badge-enhancement] The object that complies with Table.jl API
+  can now return any `AbstractVector` as column or row names. (PR
+  [#53][gh-pr-53] and [#54][gh-pr-54])
+
 Version 0.9.0
 -------------
 
@@ -293,3 +304,6 @@ Version 0.1.0
 [gh-pr-39]: https://github.com/ronisbr/PrettyTables.jl/pull/39
 [gh-pr-41]: https://github.com/ronisbr/PrettyTables.jl/pull/41
 [gh-pr-42]: https://github.com/ronisbr/PrettyTables.jl/pull/42
+[gh-pr-53]: https://github.com/ronisbr/PrettyTables.jl/pull/53
+[gh-pr-54]: https://github.com/ronisbr/PrettyTables.jl/pull/54
+[gh-pr-56]: https://github.com/ronisbr/PrettyTables.jl/pull/56
