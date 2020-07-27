@@ -50,6 +50,11 @@ passed as keywords when calling the function `pretty_table`:
           on vertical and horizontal direction, `:horizontal` to crop only on
           horizontal direction, `:vertical` to crop only on vertical direction,
           or `:none` to do not crop the data at all.
+* `crop_subheader`: If `true`, then the sub-header size will not be taken into
+                    account when computing the column size. Hence, the print
+                    algorithm can crop it to save space. This has no effect if
+                    the user selects a fixed column width.
+                    (**Default** = `false`)
 * `filters_row`: Filters for the rows (see the section [Filters](@ref)).
 * `filters_col`: Filters for the columns (see the section [Filters](@ref)).
 * `highlighters`: An instance of `Highlighter` or a tuple with a list of

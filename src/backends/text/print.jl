@@ -17,6 +17,7 @@ function _pt_text(io, pinfo;
                   body_hlines::Vector{Int} = Int[],
                   body_hlines_format::Union{Nothing,NTuple{4,Char}} = nothing,
                   crop::Symbol = :both,
+                  crop_subheader::Bool = false,
                   columns_width::Union{Integer,AbstractVector{Int}} = 0,
                   highlighters::Union{Highlighter,Tuple} = (),
                   hlines::Union{Nothing,Symbol,AbstractVector} = nothing,
@@ -229,8 +230,12 @@ function _pt_text(io, pinfo;
                 # If the user does not want a fixed column width, then we must
                 # store the information to automatically compute the field size.
                 if !fixed_col_width[ic]
-                    # Check if we need to increase the columns size.
-                    cols_width[i] < cell_width && (cols_width[i] = cell_width)
+                    # Check if we should consider the sub-header size when
+                    # computing the column width.
+                    if (j == 1) || (!crop_subheader)
+                        # Check if we need to increase the columns size.
+                        cols_width[i] < cell_width && (cols_width[i] = cell_width)
+                    end
                 end
             end
         end
