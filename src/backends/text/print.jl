@@ -226,13 +226,9 @@ function _pt_text(io, pinfo;
                 # Compute the minimum column size to print this string.
                 cell_width = textwidth(header_str[j,i])
 
-                # If the user wants a fixed column width, then we must verify if
-                # the text must be cropped.
-                if fixed_col_width[ic]
-                    if cell_width > cols_width[i]
-                        header_str[j,i] = header_str[j,i][1:cols_width[i] - 1] * "…"
-                    end
-                else
+                # If the user does not want a fixed column width, then we must
+                # store the information to automatically compute the field size.
+                if !fixed_col_width[ic]
                     # Check if we need to increase the columns size.
                     cols_width[i] < cell_width && (cols_width[i] = cell_width)
                 end
@@ -277,15 +273,9 @@ function _pt_text(io, pinfo;
                 cell_width      = textwidth(data_str_ij_esc)
             end
 
-            # If the user wants a fixed columns width, then we must verify if
-            # the text must be cropped.
-            if fixed_col_width[ic]
-                for k = 1:length(data_str[j,i])
-                    if length(data_str[j,i][k]) > cols_width[i]
-                        data_str[j,i][k] = data_str[j,i][k][1:cols_width[i] - 1] * "…"
-                    end
-                end
-            else
+            # If the user does not want a fixed column width, then we must store
+            # the information to automatically compute the field size.
+            if !fixed_col_width[ic]
                 # Check if we need to increase the columns size.
                 cols_width[i] < cell_width && (cols_width[i] = cell_width)
             end

@@ -61,12 +61,26 @@ with size `field_size`. `alignment` can be `:l` or `:L` for left alignment, `:c`
 or `:C` for center alignment, or `:r` or `:R` for right alignment. It defaults
 to `:r` if `alignment` is any other symbol.
 
+If the string is larger than `field_size`, then it will be cropped and `⋯` will
+be added as the last character.
+
 """
 function _str_aligned(data::AbstractString, alignment::Symbol,
                       field_size::Integer)
 
-    Δ  = field_size - textwidth(data)
-    Δ < 0 && error("The field size must be bigger than the data size.")
+    lstr = textwidth(data)
+    Δ    = field_size - lstr
+
+    # If the length is larger than the field, then we will crop the string.
+    if Δ < 0
+        data  = _crop_str(data, lstr + Δ - 1)
+        data *= "…"
+
+        # In this case, the string has the same size of the field.
+        Δ = 0
+    end
+
+    # TODO: If Δ is 0, can we just return the string?
 
     if alignment == :l || alignment == :L
         return data * " "^Δ
