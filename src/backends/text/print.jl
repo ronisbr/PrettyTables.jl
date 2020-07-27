@@ -199,7 +199,7 @@ function _pt_text(io, pinfo;
         for i = 1:num_printed_rows
             data_str[i,Δc] = [_str_escaped(sprint(print, row_names[i]))]
 
-            len_i = length(data_str[i,Δc][1])
+            len_i = textwidth(data_str[i,Δc][1])
             len_i > max_size && (max_size = len_i)
         end
 
@@ -224,7 +224,7 @@ function _pt_text(io, pinfo;
                 header_str[j,i] = _str_escaped(sprint(print, header[(ic-1)*header_num_rows + j]))
 
                 # Compute the minimum column size to print this string.
-                cell_width = length(header_str[j,i])
+                cell_width = textwidth(header_str[j,i])
 
                 # If the user wants a fixed column width, then we must verify if
                 # the text must be cropped.
@@ -270,11 +270,11 @@ function _pt_text(io, pinfo;
                 num_lines_in_row[j] < num_lines_ij && (num_lines_in_row[j] = num_lines_ij)
 
                 # Compute the maximum length to compute the column size.
-                cell_width = maximum(length.(tokens))
+                cell_width = maximum(textwidth.(tokens))
             else
                 data_str_ij_esc = _str_escaped(data_str_ij)
                 data_str[j,i]   = [data_str_ij_esc]
-                cell_width      = length(data_str_ij_esc)
+                cell_width      = textwidth(data_str_ij_esc)
             end
 
             # If the user wants a fixed columns width, then we must verify if

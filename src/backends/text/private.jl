@@ -18,6 +18,42 @@ const _reset_crayon = Crayon(reset = true)
 ################################################################################
 
 """
+    _crop_str(str, crop_size)
+
+Return a cropped string of `str` with size `crop_size`. Notice that if the last
+characted before the crop does not fit due to its width, then blank spaces are
+added.
+
+"""
+function _crop_str(str, crop_size)
+    # If the crop_size is large than the screen size, then just return the
+    # current string.
+    crop_size ≥ textwidth(str) && return str
+
+    # Process every character of the string.
+    cstr  = ""
+    lcstr = 0
+
+    for c in str
+        sc = textwidth(c)
+
+        # Check if we can add the character without passing the crop size.
+        if lcstr + sc ≤ crop_size
+            cstr  *= c
+            lcstr += sc
+
+        # Fill the remaining spaces with blank characters.
+        else
+            Δ      = crop_size - lcstr
+            cstr  *= " "^Δ
+            break
+        end
+    end
+
+    return cstr
+end
+
+"""
     _str_aligned(data::AbstractString, alignment::Symbol, field_size::Integer)
 
 This function returns the string `data` with alignment `alignment` in a field
@@ -29,7 +65,7 @@ to `:r` if `alignment` is any other symbol.
 function _str_aligned(data::AbstractString, alignment::Symbol,
                       field_size::Integer)
 
-    Δ  = field_size - length(data)
+    Δ  = field_size - textwidth(data)
     Δ < 0 && error("The field size must be bigger than the data size.")
 
     if alignment == :l || alignment == :L
@@ -214,8 +250,8 @@ function _p!(screen, io, crayon, str, final_line_print = false)
     # Get the size of the string.
     #
     # TODO: We might reduce the number of allocations by avoiding calling
-    # `length`, since we have the size of all fields.
-    lstr = length(str)
+    # `textwidth`, since we have the size of all fields.
+    lstr = textwidth(str)
 
     # `sapp` is a string to be appended to `str`. This is used to add `⋯` if the
     # text must be wrapped. Notice that `lapp` is the length of `sapp`.
@@ -236,17 +272,9 @@ function _p!(screen, io, crayon, str, final_line_print = false)
             # If we cannot, then create a wrapped string considering how many
             # columns are left.
             if lstr + Δ - 2 > 0
-                # This code is necessary to handle UTF-8 characters. What we
-                # want is
-                #
-                #   str = str[1:lstr + Δ - 2]
-                #
-                # However, this will fail if `str` has UTF-8 characters as
-                # explained in:
-                #
-                #   https://docs.julialang.org/en/v1/manual/strings/index.html
-
-                str  = string(collect(str)[1:lstr + Δ - 2]...)
+                # Here we crop the string considering the available space
+                # reserving 2 characters for the line continuation indicator.
+                str  = _crop_str(str, lstr + Δ - 2)
                 lstr = lstr + Δ - 2
                 sapp = " ⋯"
                 lapp = 2
@@ -277,7 +305,7 @@ function _p!(screen, io, crayon, str, final_line_print = false)
             # we just add the continuation character sequence.
 
             if Δ == 1
-                str   = lstr > 1 ? str[1:end-1] : ""
+                str   = lstr > 1 ? _crop_str(str, lstr - 1) : ""
                 lstr -= 1
                 sapp  = " ⋯"
                 lapp  = 2
@@ -318,3 +346,4 @@ function _pc!(cond, screen, io, crayon, str_true, str_false,
         return _p!(screen, io, crayon, str_false, final_line_print)
     end
 end
+
