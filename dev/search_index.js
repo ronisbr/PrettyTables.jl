@@ -569,6 +569,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "lib/library/#PrettyTables._crop_str-Tuple{Any,Any}",
+    "page": "Library",
+    "title": "PrettyTables._crop_str",
+    "category": "method",
+    "text": "_crop_str(str, crop_size)\n\nReturn a cropped string of str with size crop_size. Notice that if the last characted before the crop does not fit due to its width, then blank spaces are added.\n\n\n\n\n\n"
+},
+
+{
     "location": "lib/library/#PrettyTables._draw_continuation_row-NTuple{7,Any}",
     "page": "Library",
     "title": "PrettyTables._draw_continuation_row",
