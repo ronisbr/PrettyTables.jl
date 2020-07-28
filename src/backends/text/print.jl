@@ -277,7 +277,7 @@ function _pt_text(io, pinfo;
             if linebreaks
                 tokens = _str_line_breaks(data_str_ij,
                                           autowrap && fixed_col_width[ic],
-                                          columns_width[i])
+                                          columns_width[ic])
                 data_str[j,i] = tokens
                 num_lines_ij  = length(tokens)
 

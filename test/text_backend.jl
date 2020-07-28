@@ -1197,6 +1197,52 @@ end
                           columns_width = [-1,30])
 
     @test result == expected
+
+    # Test with additional rows
+    # --------------------------------------------------------------------------
+
+    expected = """
+┌─────┬──────────┬──────────────┬────────────────────────────────┐
+│ Row │    Verso │ Verse number │ Verse                          │
+├─────┼──────────┼──────────────┼────────────────────────────────┤
+│   1 │ Primeiro │ 1            │ Ouviram do Ipiranga as         │
+│     │          │              │ margens plácidas               │
+│     │          │              │ De um povo heróico o brado     │
+│     │          │              │ retumbante,                    │
+│     │          │              │ E o sol da Liberdade, em       │
+│     │          │              │ raios fúlgidos,                │
+│     │          │              │ Brilhou no céu da Pátria       │
+│     │          │              │ nesse instante.                │
+├─────┼──────────┼──────────────┼────────────────────────────────┤
+│   2 │  Segundo │ 2            │ Se o penhor dessa igualdade    │
+│     │          │              │ Conseguimos conquistar com     │
+│     │          │              │ braço forte,                   │
+│     │          │              │ Em teu seio, ó Liberdade,      │
+│     │          │              │ Desafia o nosso peito a        │
+│     │          │              │ própria morte!                 │
+├─────┼──────────┼──────────────┼────────────────────────────────┤
+│   3 │ Terceiro │ 3            │ Ó Pátria amada, Idolatrada,    │
+│     │          │              │ Salve! Salve!                  │
+│     │          │              │ Brasil, um sonho intenso, um   │
+│     │          │              │ raio vívido                    │
+│     │          │              │ De amor e de esperança à       │
+│     │          │              │ terra desce,                   │
+│     │          │              │ Se em teu formoso céu,         │
+│     │          │              │ risonho e límpido,             │
+└─────┴──────────┴──────────────┴────────────────────────────────┘
+"""
+
+    result = pretty_table(String, table, header,
+                          alignment             = :l,
+                          autowrap              = true,
+                          linebreaks            = true,
+                          body_hlines           = [1,2],
+                          columns_width         = [-1,30],
+                          show_row_number       = true,
+                          row_names             = ["Primeiro","Segundo","Terceiro"],
+                          row_name_column_title = "Verso")
+
+    @test result == expected
 end
 
 # Dictionaries
