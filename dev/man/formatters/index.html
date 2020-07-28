@@ -26,14 +26,14 @@ julia&gt; pretty_table(data; formatters = ft_printf(&quot;%5.3f&quot;))
 └────────┴────────┴────────┘
 
 julia&gt; pretty_table(data; formatters = ft_printf(&quot;%5.3f&quot;, [1,3]))
-┌────────┬────────────────────┬────────┐
-│ Col. 1 │             Col. 2 │ Col. 3 │
-├────────┼────────────────────┼────────┤
-│  0.000 │                1.0 │  0.000 │
-│  0.500 │ 0.8660254037844386 │  0.577 │
-│  0.866 │                0.5 │  1.732 │
-│  1.000 │                0.0 │    Inf │
-└────────┴────────────────────┴────────┘</code></pre><div class="admonition note"><div class="admonition-title">Note</div><div class="admonition-text"><p>Now, this formatter uses the function <code>sprintf1</code> from the package <a href="https://github.com/JuliaIO/Formatting.jl">Formatting.jl</a> that drastically improved the performance compared to the case with the macro <code>@sprintf</code>. Thanks to @RalphAS for the information!</p></div></div><pre><code class="language-none">function ft_round(digits, [columns])</code></pre><p>Round the elements in the columns <code>columns</code> to the number of digits in <code>digits</code>.</p><p>If <code>digits</code> is a <code>Vector</code>, then <code>columns</code> must be also be a <code>Vector</code> with the same number of elements. If <code>digits</code> is a <code>Number</code>, and <code>columns</code> is not specified (or is empty), then the rounding will be applied to the entire table. Otherwise, if <code>digits</code> is a <code>Number</code> and <code>columns</code> is a <code>Vector</code>, then the elements in the columns <code>columns</code> will be rounded to the number of digits <code>digits</code>.</p><pre><code class="language-julia-repl">julia&gt; data = Any[ f(a) for a = 0:30:90, f in (sind,cosd,tand)];
+┌────────┬──────────┬────────┐
+│ Col. 1 │   Col. 2 │ Col. 3 │
+├────────┼──────────┼────────┤
+│  0.000 │      1.0 │  0.000 │
+│  0.500 │ 0.866025 │  0.577 │
+│  0.866 │      0.5 │  1.732 │
+│  1.000 │      0.0 │    Inf │
+└────────┴──────────┴────────┘</code></pre><div class="admonition note"><div class="admonition-title">Note</div><div class="admonition-text"><p>Now, this formatter uses the function <code>sprintf1</code> from the package <a href="https://github.com/JuliaIO/Formatting.jl">Formatting.jl</a> that drastically improved the performance compared to the case with the macro <code>@sprintf</code>. Thanks to @RalphAS for the information!</p></div></div><pre><code class="language-none">function ft_round(digits, [columns])</code></pre><p>Round the elements in the columns <code>columns</code> to the number of digits in <code>digits</code>.</p><p>If <code>digits</code> is a <code>Vector</code>, then <code>columns</code> must be also be a <code>Vector</code> with the same number of elements. If <code>digits</code> is a <code>Number</code>, and <code>columns</code> is not specified (or is empty), then the rounding will be applied to the entire table. Otherwise, if <code>digits</code> is a <code>Number</code> and <code>columns</code> is a <code>Vector</code>, then the elements in the columns <code>columns</code> will be rounded to the number of digits <code>digits</code>.</p><pre><code class="language-julia-repl">julia&gt; data = Any[ f(a) for a = 0:30:90, f in (sind,cosd,tand)];
 
 julia&gt; pretty_table(data; formatters = ft_round(1))
 ┌────────┬────────┬────────┐
@@ -46,11 +46,11 @@ julia&gt; pretty_table(data; formatters = ft_round(1))
 └────────┴────────┴────────┘
 
 julia&gt; pretty_table(data; formatters = ft_round(1,[1,3]))
-┌────────┬────────────────────┬────────┐
-│ Col. 1 │             Col. 2 │ Col. 3 │
-├────────┼────────────────────┼────────┤
-│    0.0 │                1.0 │    0.0 │
-│    0.5 │ 0.8660254037844386 │    0.6 │
-│    0.9 │                0.5 │    1.7 │
-│    1.0 │                0.0 │    Inf │
-└────────┴────────────────────┴────────┘</code></pre><div class="admonition note"><div class="admonition-title">Note</div><div class="admonition-text"><p>The <code>formatters</code> keyword is supported in all back-ends.</p></div></div><footer><hr/><a class="previous" href="../filters/"><span class="direction">Previous</span><span class="title">Filters</span></a><a class="next" href="../text_examples/"><span class="direction">Next</span><span class="title">Text back-end</span></a></footer></article></body></html>
+┌────────┬──────────┬────────┐
+│ Col. 1 │   Col. 2 │ Col. 3 │
+├────────┼──────────┼────────┤
+│    0.0 │      1.0 │    0.0 │
+│    0.5 │ 0.866025 │    0.6 │
+│    0.9 │      0.5 │    1.7 │
+│    1.0 │      0.0 │    Inf │
+└────────┴──────────┴────────┘</code></pre><div class="admonition note"><div class="admonition-title">Note</div><div class="admonition-text"><p>The <code>formatters</code> keyword is supported in all back-ends.</p></div></div><footer><hr/><a class="previous" href="../filters/"><span class="direction">Previous</span><span class="title">Filters</span></a><a class="next" href="../text_examples/"><span class="direction">Next</span><span class="title">Text back-end</span></a></footer></article></body></html>
