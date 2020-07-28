@@ -181,6 +181,8 @@ This back-end produces text tables. This back-end can be used by selecting
                     algorithm can crop it to save space. This has no effect if
                     the user selects a fixed column width.
                     (**Default** = `false`)
+* `equal_columns_width`: If `true`, then all the columns will have the same
+                         width. (**Default** = `false`)
 * `highlighters`: An instance of `Highlighter` or a tuple with a list of
                   text highlighters (see the section `Text highlighters`).
 * `hlines`: This variable controls where the horizontal lines will be drawn. It
@@ -215,8 +217,6 @@ This back-end produces text tables. This back-end can be used by selecting
 * `overwrite`: If `true`, then the same number of lines in the printed table
                will be deleted from the output `io`. This can be used to update
                the table in the screen continuously. (**Default** = `false`)
-* `same_column_size`: If `true`, then all the columns will have the same size.
-                      (**Default** = `false`)
 * `screen_size`: A tuple of two integers that defines the screen size (num. of
                  rows, num. of columns) that is available to print the table. It
                  is used to crop the data depending on the value of the keyword
@@ -764,6 +764,15 @@ function _pretty_table(io, data, header;
                (typeof(kwargs[:formatter]) <: Function)
             formatters = kwargs[:formatter]
         end
+    end
+
+    # Deprecation introduced in PrettyTables.jl v0.9.
+    if haskey(kwargs, :same_column_size)
+        @warn("The keyword `same_column_size` was replaced by `equal_columns_width`.")
+
+        vkwargs = filter(x->x.first ≠ :same_column_size, collect(kwargs))
+        push!(vkwargs, :equal_columns_width => kwargs[:same_column_size])
+        kwargs = vkwargs
     end
 
     # Get information about the table we have to print based on the format of

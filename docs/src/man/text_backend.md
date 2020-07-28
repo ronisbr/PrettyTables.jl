@@ -55,6 +55,8 @@ passed as keywords when calling the function `pretty_table`:
                     algorithm can crop it to save space. This has no effect if
                     the user selects a fixed column width.
                     (**Default** = `false`)
+* `equal_columns_width`: If `true`, then all the columns will have the same
+                         width. (**Default** = `false`)
 * `filters_row`: Filters for the rows (see the section [Filters](@ref)).
 * `filters_col`: Filters for the columns (see the section [Filters](@ref)).
 * `highlighters`: An instance of `Highlighter` or a tuple with a list of
@@ -91,8 +93,6 @@ passed as keywords when calling the function `pretty_table`:
 * `overwrite`: If `true`, then the same number of lines in the printed table
                will be deleted from the output `io`. This can be used to update
                the table in the screen continuously. (**Default** = `false`)
-* `same_column_size`: If `true`, then all the columns will have the same size.
-                      (**Default** = `false`)
 * `screen_size`: A tuple of two integers that defines the screen size (num. of
                  rows, num. of columns) that is available to print the table. It
                  is used to crop the data depending on the value of the keyword

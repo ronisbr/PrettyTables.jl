@@ -19,22 +19,24 @@ function _pt_text(io, pinfo;
                   crop::Symbol = :both,
                   crop_subheader::Bool = false,
                   columns_width::Union{Integer,AbstractVector{Int}} = 0,
+                  equal_columns_width::Bool = false,
                   highlighters::Union{Highlighter,Tuple} = (),
                   hlines::Union{Nothing,Symbol,AbstractVector} = nothing,
                   linebreaks::Bool = false,
+                  minimum_columns_width::Union{Integer,AbstractVector{Int}} = 0,
                   overwrite::Bool = false,
                   noheader::Bool = false,
                   nosubheader::Bool = false,
                   row_name_crayon::Crayon = Crayon(bold = true),
                   row_name_header_crayon::Crayon = Crayon(bold = true),
-                  same_column_size::Bool = false,
                   screen_size::Union{Nothing,Tuple{Int,Int}} = nothing,
                   show_row_number::Bool = false,
                   sortkeys::Bool = false,
                   tf::TextFormat = unicode,
                   vlines::Union{Nothing,Symbol,AbstractVector} = nothing,
                   # Deprecated
-                  formatter = nothing)
+                  formatter = nothing,
+                  same_column_size = nothing)
 
     @unpack_PrintInfo pinfo
 
@@ -302,7 +304,7 @@ function _pt_text(io, pinfo;
 
     # If the user wants all the columns with the same size, then select the
     # larger.
-    same_column_size && (cols_width = [maximum(cols_width) for i = 1:num_printed_cols])
+    equal_columns_width && (cols_width = [maximum(cols_width) for i = 1:num_printed_cols])
 
     # Compute where the horizontal and vertical lines must be drawn
     # --------------------------------------------------------------------------
