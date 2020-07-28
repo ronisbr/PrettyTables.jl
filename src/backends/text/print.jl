@@ -106,10 +106,19 @@ function _pt_text(io, pinfo;
     # Make sure that `highlighters` is always a tuple.
     !(highlighters isa Tuple) && (highlighters = (highlighters,))
 
+    # Make sure that `minimum_columns_width` is always a vector.
+    typeof(minimum_columns_width) <: Integer &&
+        (minimum_columns_width = ones(Int, num_cols)*minimum_columns_width)
+
     # Check which columns must have fixed sizes.
     typeof(columns_width) <: Integer && (columns_width = ones(Int, num_cols)*columns_width)
     length(columns_width) != num_cols && error("The length of `columns_width` must be the same as the number of columns.")
     fixed_col_width = map(w->w > 0, columns_width)
+
+    # Assign the minimum size to those columns that does not have a fixed size.
+    for i = 1:num_cols
+        !fixed_col_width[i] && (columns_width[i] = minimum_columns_width[i])
+    end
 
     # Increase the number of printed columns if the user wants to show
     # additional columns.

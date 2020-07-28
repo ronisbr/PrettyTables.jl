@@ -978,6 +978,88 @@ end
     @test result == expected
 end
 
+# Minimum column size
+# ==============================================================================
+
+@testset "Minimum column size" begin
+    header = ["A" "B" "C" "D"]
+
+    expected = """
+┌──────┬───────┬──────┬──────┐
+│    A │     B │    C │    D │
+├──────┼───────┼──────┼──────┤
+│    1 │ false │  1.0 │    1 │
+│    2 │  true │  2.0 │    2 │
+│    3 │ false │  3.0 │    3 │
+│    4 │  true │  4.0 │    4 │
+│    5 │ false │  5.0 │    5 │
+│    6 │  true │  6.0 │    6 │
+└──────┴───────┴──────┴──────┘
+"""
+
+    result = pretty_table(String, data, header, minimum_columns_width = 4)
+    @test result == expected
+
+    # Precedence of `columns_width`.
+
+    expected = """
+┌────┬────┬────┬────┐
+│  A │  B │  C │  D │
+├────┼────┼────┼────┤
+│  1 │ f… │ 1… │  1 │
+│  2 │ t… │ 2… │  2 │
+│  3 │ f… │ 3… │  3 │
+│  4 │ t… │ 4… │  4 │
+│  5 │ f… │ 5… │  5 │
+│  6 │ t… │ 6… │  6 │
+└────┴────┴────┴────┘
+"""
+
+    result = pretty_table(String, data, header,
+                          columns_width = 2,
+                          minimum_columns_width = 4)
+    @test result == expected
+
+    # Test with a vector in `minimum_column_width`.
+
+    expected = """
+┌────┬───────┬────────┬──────────┐
+│  A │     B │      C │        D │
+├────┼───────┼────────┼──────────┤
+│  1 │ false │    1.0 │        1 │
+│  2 │  true │    2.0 │        2 │
+│  3 │ false │    3.0 │        3 │
+│  4 │  true │    4.0 │        4 │
+│  5 │ false │    5.0 │        5 │
+│  6 │  true │    6.0 │        6 │
+└────┴───────┴────────┴──────────┘
+"""
+
+    result = pretty_table(String, data, header,
+                          minimum_columns_width = [2,4,6,8])
+    @test result == expected
+
+    # Test with the option `equal_columns_width``.
+
+    expected = """
+┌──────────┬──────────┬──────────┬──────────┐
+│        A │        B │        C │        D │
+├──────────┼──────────┼──────────┼──────────┤
+│        1 │    false │      1.0 │        1 │
+│        2 │     true │      2.0 │        2 │
+│        3 │    false │      3.0 │        3 │
+│        4 │     true │      4.0 │        4 │
+│        5 │    false │      5.0 │        5 │
+│        6 │     true │      6.0 │        6 │
+└──────────┴──────────┴──────────┴──────────┘
+"""
+
+    result = pretty_table(String, data, header,
+                          minimum_columns_width = [2,4,6,8],
+                          equal_columns_width = true)
+    @test result == expected
+end
+
 # Auto wrapping
 # ==============================================================================
 

@@ -84,6 +84,13 @@ passed as keywords when calling the function `pretty_table`:
   (**Default** = `nothing`)
 * `linebreaks`: If `true`, then `\n` will break the line inside the cells.
                 (**Default** = `false`)
+* `minimum_columns_width`: A set of integers specifying the minimum width of
+                           each column. If the width is equal or lower than 0,
+                           then it will be ignored. If it is a single integer,
+                           then this number will be used as the minimum width
+                           of all columns. Notice that the parameter
+                           `columns_width` has precedence over this one.
+                           (**Default** = 0)
 * `noheader`: If `true`, then the header will not be printed. Notice that all
               keywords and parameters related to the header and sub-headers will
               be ignored. (**Default** = `false`)
