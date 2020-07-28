@@ -65,6 +65,8 @@ it is not compliant, then only the following types are supported:
       and the rest is discarded.
 
   (**Default** = `nothing`)
+* `compact_printing`: Select if the option `:compact` will be used when printing
+                      the data. (**Default** = `true`)
 * `filters_row`: Filters for the rows (see the section `Filters`).
 * `filters_col`: Filters for the columns (see the section `Filters`).
 * `formatters`: See the section `Formatters`.
@@ -717,6 +719,7 @@ function _pretty_table(io, data, header;
                                              Dict{Tuple{Int,Int},Symbol},
                                              Function,
                                              Tuple} = nothing,
+                       compact_printing::Bool = true,
                        filters_row::Union{Nothing,Tuple} = nothing,
                        filters_col::Union{Nothing,Tuple} = nothing,
                        formatters::Union{Nothing,Function,Tuple} = nothing,
@@ -910,7 +913,7 @@ function _pretty_table(io, data, header;
                       num_printed_cols, num_printed_rows, header_num_rows,
                       header_num_cols, show_row_names, row_names,
                       row_name_alignment, row_name_column_title, alignment,
-                      cell_alignment, formatters)
+                      cell_alignment, formatters, compact_printing)
 
     if backend == :text
         _pt_text(io, pinfo; kwargs...)

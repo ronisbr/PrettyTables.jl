@@ -57,4 +57,5 @@ the tables.
     alignment::Vector{Symbol}
     cell_alignment::Tc
     formatters::Tf
+    compact_printing::Bool
 end

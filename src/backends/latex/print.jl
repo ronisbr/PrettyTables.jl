@@ -64,7 +64,8 @@ function _pt_latex(io, pinfo;
         if !noheader
             for j = 1:header_num_rows
                 header_str[j,i] =
-                    _str_latex_escaped(sprint(print, header[(ic-1)*header_num_rows + j]))
+                    _str_latex_escaped(sprint(print, header[(ic-1)*header_num_rows + j];
+                                              context = :compact => compact_printing))
             end
         end
 
@@ -85,7 +86,8 @@ function _pt_latex(io, pinfo;
             elseif data_ij == nothing
                 data_str_ij = "nothing"
             else
-                data_str_ij = sprint(print, data_ij)
+                data_str_ij = sprint(print, data_ij;
+                                     context = :compact => compact_printing)
             end
 
             data_str_ij_esc = _str_latex_escaped(data_str_ij)

@@ -209,7 +209,8 @@ function _pt_text(io, pinfo;
         # Convert the row names to string.
         max_size = 0
         for i = 1:num_printed_rows
-            data_str[i,Δc] = [_str_escaped(sprint(print, row_names[i]))]
+            data_str[i,Δc] = [_str_escaped(sprint(print, row_names[i];
+                                                  context = :compact => compact_printing))]
 
             len_i = textwidth(data_str[i,Δc][1])
             len_i > max_size && (max_size = len_i)
@@ -233,7 +234,8 @@ function _pt_text(io, pinfo;
 
         if !noheader
             for j = 1:header_num_rows
-                header_str[j,i] = _str_escaped(sprint(print, header[(ic-1)*header_num_rows + j]))
+                header_str[j,i] = _str_escaped(sprint(print, header[(ic-1)*header_num_rows + j];
+                                                      context = :compact => compact_printing))
 
                 # Compute the minimum column size to print this string.
                 cell_width = textwidth(header_str[j,i])
@@ -268,7 +270,8 @@ function _pt_text(io, pinfo;
             elseif data_ij == nothing
                 data_str_ij = "nothing"
             else
-                data_str_ij = sprint(print, data_ij)
+                data_str_ij = sprint(print, data_ij;
+                                     context = :compact => compact_printing)
             end
 
             if linebreaks

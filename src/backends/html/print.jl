@@ -55,7 +55,8 @@ function _pt_html(io, pinfo;
 
         if !noheader
             for j = 1:header_num_rows
-                header_str[j,i] = _str_escaped(sprint(print, header[(ic-1)*header_num_rows + j]))
+                header_str[j,i] = _str_escaped(sprint(print, header[(ic-1)*header_num_rows + j];
+                                                      context = :compact => compact_printing))
             end
         end
 
@@ -76,7 +77,8 @@ function _pt_html(io, pinfo;
             elseif data_ij == nothing
                 data_str_ij = "nothing"
             else
-                data_str_ij = sprint(print, data_ij)
+                data_str_ij = sprint(print, data_ij;
+                                     context = :compact => compact_printing)
             end
 
             # If `linebreaks` is true, then replace `\n` to `<BR>`.

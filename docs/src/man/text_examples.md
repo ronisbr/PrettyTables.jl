@@ -154,7 +154,10 @@ that the data is cropped to fit the available space.
 ```julia-repl
 julia> mat = rand(100,4)
 
-julia> pretty_table(mat, highlighters = hl_gt(0.5), columns_width = [7,-1,7,8])
+julia> pretty_table(mat,
+                    highlighters = hl_gt(0.5),
+                    columns_width = [7,-1,7,8],
+                    compact_printing = false)
 ```
 
 ![](../assets/ex_00014.png)

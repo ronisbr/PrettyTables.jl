@@ -74,6 +74,8 @@ Each back-end defines its own configuration keywords that can be passed using
       and the rest is discarded.
 
   (**Default** = `nothing`)
+* `compact_printing`: Select if the option `:compact` will be used when printing
+                      the data. (**Default** = `true`)
 * `filters_row`: Filters for the rows (see the section [Filters](@ref)).
 * `filters_col`: Filters for the columns (see the section [Filters](@ref)).
 * `formatters`: See the section [Formatters](@ref).
