@@ -74,17 +74,19 @@ function _pt_latex(io, pinfo;
             jr = id_rows[j]
 
             # Apply the formatters.
-            data_ij = data[jr,ic]
+            data_ij = isassigned(data,jr,ic) ? data[jr,ic] : undef
 
             for f in formatters
                 data_ij = f(data_ij, jr, ic)
             end
 
-            # Handle `nothing` and `missing`.
+            # Handle `nothing`, `missing`, and `undef`.
             if ismissing(data_ij)
                 data_str_ij = "missing"
             elseif data_ij == nothing
                 data_str_ij = "nothing"
+            elseif data_ij == undef
+                data_str_ij = "\\#undef"
             else
                 data_str_ij = sprint(print, data_ij;
                                      context = :compact => compact_printing)

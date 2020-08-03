@@ -1532,20 +1532,25 @@ end
     @test result == expected
 end
 
-# Test if we can print `missing` and `nothing`
+# Test if we can print `missing`, `nothing`, and `#undef`
 # ==============================================================================
 
-@testset "Print missing and nothing" begin
-    matrix = [missing missing; nothing nothing; missing nothing]
+@testset "Print missing, nothing, and #undef" begin
+
+    matrix = Matrix{Any}(undef,3,3)
+    matrix[1,1:2] .= missing
+    matrix[2,1:2] .= nothing
+    matrix[3,1]   = missing
+    matrix[3,2]   = nothing
 
     expected = """
-┌─────────┬─────────┐
-│  Col. 1 │  Col. 2 │
-├─────────┼─────────┤
-│ missing │ missing │
-│ nothing │ nothing │
-│ missing │ nothing │
-└─────────┴─────────┘
+┌─────────┬─────────┬────────┐
+│  Col. 1 │  Col. 2 │ Col. 3 │
+├─────────┼─────────┼────────┤
+│ missing │ missing │ #undef │
+│ nothing │ nothing │ #undef │
+│ missing │ nothing │ #undef │
+└─────────┴─────────┴────────┘
 """
 
     result = pretty_table(String, matrix)

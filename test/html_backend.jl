@@ -1160,3 +1160,43 @@ end
 
 # Helpers
 # ==============================================================================
+
+# Test if we can print `missing`, `nothing`, and `#undef`
+# ==============================================================================
+
+@testset "Print missing, nothing, and #undef" begin
+
+    matrix = Matrix{Any}(undef,3,3)
+    matrix[1,1:2] .= missing
+    matrix[2,1:2] .= nothing
+    matrix[3,1]   = missing
+    matrix[3,2]   = nothing
+
+    expected = """
+<table>
+<tr class = "header headerLastRow">
+<th style = "text-align: right; ">Col. 1</th>
+<th style = "text-align: right; ">Col. 2</th>
+<th style = "text-align: right; ">Col. 3</th>
+</tr>
+<tr>
+<td style = "text-align: right; ">missing</td>
+<td style = "text-align: right; ">missing</td>
+<td style = "text-align: right; ">#undef</td>
+</tr>
+<tr>
+<td style = "text-align: right; ">nothing</td>
+<td style = "text-align: right; ">nothing</td>
+<td style = "text-align: right; ">#undef</td>
+</tr>
+<tr>
+<td style = "text-align: right; ">missing</td>
+<td style = "text-align: right; ">nothing</td>
+<td style = "text-align: right; ">#undef</td>
+</tr>
+</table>
+"""
+
+    result = pretty_table(String, matrix, tf = html_default, standalone = false)
+    @test result == expected
+end
