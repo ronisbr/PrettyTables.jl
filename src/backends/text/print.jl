@@ -270,12 +270,10 @@ function _pt_text(io, pinfo;
             elseif data_ij == nothing
                 data_str_ij = "nothing"
             elseif data_ij isa Markdown.MD
-                data_str_ij = sprint(print, data_ij;
-                                     context = :compact => compact_printing)
-                p = findfirst(c->c=='\n', data_str_ij)
-                if !isnothing(p)
-                    data_str_ij=data_str_ij[1:p-1]
-                end
+                r = repr(data_ij)
+                #len = min(something(findfirst(c->c=='\n', r), length(r) + 1) - 1, 50)
+                len = max(0, min(length(r), 50)-1)
+                data_str_ij = len < length(r) - 1 ? first(r, len)*"…" : first(r, len)
             else
                 data_str_ij = sprint(print, data_ij;
                                      context = :compact => compact_printing)
