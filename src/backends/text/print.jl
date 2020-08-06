@@ -271,8 +271,8 @@ function _pt_text(io, pinfo;
                 data_str_ij = "nothing"
             elseif data_ij isa Markdown.MD
                 r = repr(data_ij)
-                #len = min(something(findfirst(c->c=='\n', r), length(r) + 1) - 1, 50)
-                len = max(0, min(length(r), 50)-1)
+                #len = min(length(r, 1, something(findfirst(c->c=='\n', r), lastindex(r)+1)-1), 50)
+                len = max(0, min(length(r), 32)-1)
                 data_str_ij = len < length(r) - 1 ? first(r, len)*"…" : first(r, len)
             else
                 data_str_ij = sprint(print, data_ij;

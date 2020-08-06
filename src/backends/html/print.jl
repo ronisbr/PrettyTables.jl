@@ -88,7 +88,7 @@ function _pt_html(io, pinfo;
                 data_str_ij = replace(data_str_ij, "\n" => "<BR>")
             end
 
-            data_str_ij_esc = _str_escaped(data_str_ij)
+            data_str_ij_esc = data_ij isa Markdown.MD ? data_str_ij : _str_escaped(data_str_ij)
             data_str[j,i]   = data_str_ij_esc
         end
     end
