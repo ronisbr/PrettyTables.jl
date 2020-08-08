@@ -705,9 +705,9 @@ end
 
 # Dictionary to hold the information between the table format type and the
 # backend.
-_type_backend_dict = Dict{DataType, Symbol}(TextFormat       => :text,
-                                            HTMLTableFormat  => :html,
-                                            LatexTableFormat => :latex)
+const _type_backend_dict = Dict{DataType, Symbol}(TextFormat       => :text,
+                                                  HTMLTableFormat  => :html,
+                                                  LatexTableFormat => :latex)
 
 # This is the low level function that prints the table. In this case, `data`
 # must be accessed by `[i,j]` and the size of the `header` must be equal to the
