@@ -207,8 +207,8 @@ function _pt_latex(io, pinfo;
             data_str_ij = data_str[i,j]
 
             for h in highlighters
-                if h.f(data, ir, jc)
-                    data_str_ij = h.fd(data, i, j, data_str[i,j])
+                if h.f(_getdata(data), ir, jc)
+                    data_str_ij = h.fd(_getdata(data), i, j, data_str[i,j])
                     break
                 end
             end
@@ -218,7 +218,7 @@ function _pt_latex(io, pinfo;
             alignment_ij = alignment[jc]
 
             for f in cell_alignment
-                aux = f(data, ir, jc)
+                aux = f(_getdata(data), ir, jc)
 
                 if aux ∈ [:l, :c, :r, :L, :C, :R]
                     alignment_override = true

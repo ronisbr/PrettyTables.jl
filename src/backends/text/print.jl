@@ -464,15 +464,15 @@ function _pt_text(io, pinfo;
 
                     # Check for highlighters.
                     for h in highlighters
-                        if h.f(data, ir, jc)
-                            crayon_ij = h.fd(h, data, ir, jc)
+                        if h.f(_getdata(data), ir, jc)
+                            crayon_ij = h.fd(h, _getdata(data), ir, jc)
                             break
                         end
                     end
 
                     # Check for cell alignment override.
                     for f in cell_alignment
-                        aux = f(data, ir, jc)
+                        aux = f(_getdata(data), ir, jc)
 
                         if aux ∈ [:l, :c, :r, :L, :C, :R]
                             alignment_ij = aux

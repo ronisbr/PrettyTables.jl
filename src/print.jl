@@ -610,36 +610,36 @@ end
 ################################################################################
 
 # Function to print data that complies with Tables.jl API.
-function _pretty_table_Tables(io::IO, table, header; kwargs...)
+function _pretty_table_Tables(io::IO, data, header; kwargs...)
     # First we need to check which type of table we have.
-    if Tables.columnaccess(table)
+    if Tables.columnaccess(data)
         # Access the table using the columns.
-        cols = Tables.columns(table)
+        table = Tables.columns(data)
 
         # Get the column names.
-        names = collect(Symbol, Tables.columnnames(cols))
+        names = collect(Symbol, Tables.columnnames(table))
 
         # Compute the table size and get the column types.
         size_j = length(names)
-        size_i = Tables.rowcount(cols)
+        size_i = Tables.rowcount(table)
 
-        data = ColumnTable(cols, names, (size_i, size_j))
+        ndata = ColumnTable(data, table, names, (size_i, size_j))
 
-    elseif Tables.rowaccess(table)
+    elseif Tables.rowaccess(data)
         # Access the table using the rows.
-        rows = Tables.rows(table)
+        table = Tables.rows(data)
 
         # We need to fetch the first row to get information about the columns.
-        row₁,~ = iterate(rows, 1)
+        row₁,~ = iterate(table, 1)
 
         # Get the column names.
         names = collect(Symbol, Tables.columnnames(row₁))
 
         # Compute the table size.
-        size_i = length(rows)
+        size_i = length(table)
         size_j = length(names)
 
-        data = RowTable(rows, names, (size_i, size_j))
+        ndata = RowTable(data, table, names, (size_i, size_j))
     else
         error("The object does not have a valid Tables.jl implementation.")
     end
@@ -652,7 +652,7 @@ function _pretty_table_Tables(io::IO, table, header; kwargs...)
     #     3. If the table does not have a schema, then build a default header
     #        based on the column name and type.
     if isempty(header)
-        sch = Tables.schema(table)
+        sch = Tables.schema(data)
 
         if sch != nothing
             names = reshape( [sch.names...], (1,:) )
@@ -666,12 +666,12 @@ function _pretty_table_Tables(io::IO, table, header; kwargs...)
                 header = [names; types]
             end
         else
-            header = data.column_names
+            header = ndata.column_names
         end
 
     end
 
-    _pretty_table(io, data, header; kwargs...)
+    _pretty_table(io, ndata, header; kwargs...)
 end
 
 # Function to print vectors or matrices.
@@ -853,7 +853,7 @@ function _pretty_table(io, data, header;
             filtered_i = true
 
             for filter in filters_row
-                !filter(data,i) && (filtered_i = false) && break
+                !filter(_getdata(data),i) && (filtered_i = false) && break
             end
 
             filtered_rows[i] = filtered_i
@@ -865,7 +865,7 @@ function _pretty_table(io, data, header;
             filtered_i = true
 
             for filter in filters_col
-                !filter(data,i) && (filtered_i = false) && break
+                !filter(_getdata(data),i) && (filtered_i = false) && break
             end
 
             filtered_cols[i] = filtered_i

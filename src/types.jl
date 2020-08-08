@@ -13,10 +13,11 @@ This structure helps to access elements that comply with the column access
 specification of Tables.jl.
 
 """
-struct ColumnTable{T,V<:AbstractVector{Symbol}}
-    table::T
-    column_names::V
-    size::Tuple{Int,Int}
+struct ColumnTable{Td,Tt,V<:AbstractVector{Symbol}}
+    data::Td             # ...................................... Original table
+    table::Tt            # ............... Table converted using `Tables.column`
+    column_names::V      # ........................................ Column names
+    size::Tuple{Int,Int} # ................................... Size of the table
 end
 
 """
@@ -26,10 +27,11 @@ This structure helps to access elements that comply with the row access
 specification of Tables.jl.
 
 """
-struct RowTable{T,V<:AbstractVector{Symbol}}
-    table::T
-    column_names::V
-    size::Tuple{Int,Int}
+struct RowTable{Td,Tt,V<:AbstractVector{Symbol}}
+    data::Td             # ...................................... Original table
+    table::Tt            # ................. Table converted using `Tables.rows`
+    column_names::V      # ........................................ Column names
+    size::Tuple{Int,Int} # ................................... Size of the table
 end
 
 """

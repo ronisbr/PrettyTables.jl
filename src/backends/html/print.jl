@@ -177,7 +177,7 @@ function _pt_html(io, pinfo;
             alignment_ij = alignment[jc]
 
             for f in cell_alignment
-                aux = f(data, ir, jc)
+                aux = f(_getdata(data), ir, jc)
 
                 if aux ∈ [:l, :c, :r, :L, :C, :R]
                     alignment_ij = aux
@@ -191,8 +191,8 @@ function _pt_html(io, pinfo;
             # If we have highlighters defined, then we need to verify if this
             # data should be highlight.
             for h in highlighters
-                if h.f(data, ir, jc)
-                    merge!(style, Dict(h.fd(h,data,i,j)))
+                if h.f(_getdata(data), ir, jc)
+                    merge!(style, Dict(h.fd(h,_getdata(data),i,j)))
                     break
                 end
             end

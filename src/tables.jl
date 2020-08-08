@@ -49,6 +49,8 @@ length(ctable::ColumnTable) = ctable.size[1] * ctable.size[2]
 
 size(ctable::ColumnTable) = ctable.size
 
+_getdata(ctable::ColumnTable) = ctable.data
+
 #                         Fuctions related to RowTable
 # ==============================================================================
 
@@ -104,3 +106,15 @@ end
 length(rtable::RowTable) = rtable.size[1] * rtable.size[2]
 
 size(rtable::RowTable) = rtable.size
+
+_getdata(rtable::RowTable) = rtable.data
+
+#                               Other overloads
+# ==============================================================================
+
+# `_getdata` is a function that returns the original matrix passed to
+# `pretty_table` function. This is required because when printing something
+# compliant with Tables.jl, we modify its type to be `ColumnTable` or
+# `RowTable`. In this case, functions like filters and highlighters must receive
+# the original data, not the transformed one.
+_getdata(data) = data
