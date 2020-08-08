@@ -549,7 +549,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "PrettyTables.ColumnTable",
     "category": "type",
-    "text": "struct ColumnTable{T}\n\nThis structure helps to access elements that comply with the column access specification of Tables.jl.\n\n\n\n\n\n"
+    "text": "struct ColumnTable\n\nThis structure helps to access elements that comply with the column access specification of Tables.jl.\n\n\n\n\n\n"
 },
 
 {
@@ -565,7 +565,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "PrettyTables.RowTable",
     "category": "type",
-    "text": "struct RowTable{T}\n\nThis structure helps to access elements that comply with the row access specification of Tables.jl.\n\n\n\n\n\n"
+    "text": "struct RowTable\n\nThis structure helps to access elements that comply with the row access specification of Tables.jl.\n\n\n\n\n\n"
 },
 
 {
