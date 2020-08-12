@@ -60,4 +60,6 @@ the tables.
     cell_alignment
     formatters
     compact_printing::Bool
+    title::String
+    title_alignment::Symbol
 end

@@ -118,15 +118,23 @@ function _pt_latex(io, pinfo;
     # Print LaTeX header
     # ==========================================================================
 
-    table_type == :tabular && println(buf, "\\begin{table}")
+    if table_type == :tabular
+        println(buf, "\\begin{table}")
+        length(title) > 0 && println(buf, "\\caption{$title}")
+    end
 
     println(buf,"""
             \\begin{$table_env}$(_latex_table_desc(alignment,
                                                    vlines,
                                                    left_vline,
                                                    mid_vline,
-                                                   right_vline))
-            """ * top_line)
+                                                   right_vline))""")
+
+    if table_type == :longtable
+        length(title) > 0 && println(buf, "\\caption{$title}\\\\")
+    end
+
+    println(buf, top_line)
 
     # Data header
     # ==========================================================================

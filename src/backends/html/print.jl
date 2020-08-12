@@ -117,6 +117,14 @@ function _pt_html(io, pinfo;
 
     println(buf, "<table>")
 
+    # Table title
+    # ==========================================================================
+
+    if length(title) > 0
+        style = Dict{String,String}("text-align" => _html_alignment[title_alignment])
+        println(buf, _styled_html("caption", title, style))
+    end
+
     # Data header
     # ==========================================================================
 

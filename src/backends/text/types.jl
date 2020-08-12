@@ -114,6 +114,7 @@ respect to the point in which the table is printed.
 * `row`: Current row.
 * `col`: Current column.
 * `has_color`: Indicates if the screen has color support.
+* `max_col`: Store the largest column that was printed.
 
 """
 @with_kw mutable struct Screen
@@ -121,4 +122,5 @@ respect to the point in which the table is printed.
     row::Int             = 1
     col::Int             = 0
     has_color::Bool      = false
+    max_col::Int         = 0
 end

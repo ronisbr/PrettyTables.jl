@@ -88,6 +88,11 @@ Each back-end defines its own configuration keywords that can be passed using
                         section [Alignment](@ref)).
 * `row_name_column_title`: Title of the column with the row names.
                            (**Default** = "")
+* `title`: The title of the table. If it is empty, then no title will be
+           printed. (**Default** = "")
+* `title_alignment`: Alignment of the title, which must be a symbol as explained
+                     in the section [`Alignment`](@ref). This argument is
+                     ignored in the LaTeX backend. (**Default** = :l)
 
 !!! note
 

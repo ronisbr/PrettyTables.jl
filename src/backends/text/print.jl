@@ -34,6 +34,9 @@ function _pt_text(io, pinfo;
                   show_row_number::Bool = false,
                   sortkeys::Bool = false,
                   tf::TextFormat = unicode,
+                  title_autowrap::Bool = false,
+                  title_crayon::Crayon = Crayon(bold = true),
+                  title_same_width_as_table::Bool = false,
                   vlines::Union{Nothing,Symbol,AbstractVector} = nothing,
                   # Deprecated
                   formatter = nothing,
@@ -549,6 +552,29 @@ function _pt_text(io, pinfo;
     # table. This can be used to replace the table in the screen continuously.
 
     str_overwrite = overwrite ? "\e[1F\e[2K"^(screen.row - 1) : ""
+
+    # Title
+    # ==========================================================================
+
+    if length(title) > 0
+        title_width = title_same_width_as_table ? screen.max_col : screen.size[2]
+
+        print(io, title_crayon)
+
+        # If the title width is not higher than 0, then we should only print the
+        # title.
+        if title_width ≤ 0
+            println(io,title)
+        # Otherwise, we must check for the alignments.
+        else
+            title_tokens = _str_line_breaks(title, title_autowrap, title_width)
+            for token in title_tokens
+                println(io, _str_aligned(token, title_alignment, title_width))
+            end
+        end
+
+        print(io, text_crayon)
+    end
 
     # Print the buffer
     # ==========================================================================

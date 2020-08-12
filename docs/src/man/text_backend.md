@@ -115,6 +115,14 @@ passed as keywords when calling the function `pretty_table`:
                  it will be treated as unlimited. (**Default** = `nothing`)
 * `show_row_number`: If `true`, then a new column will be printed showing the
                      row number. (**Default** = `false`)
+* `title_autowrap`: If `true`, then the title text will be wrapped considering
+                    the title size. Otherwise, lines larger than the title size
+                    will be cropped. (**Default** = `false`)
+* `title_crayon`: Crayon to print the title.
+* `title_same_width_as_table`: If `true`, then the title width will match that
+                               of the table. Otherwise, the title size will be
+                               equal to the screen width.
+                               (**Default** = `false`)
 * `tf`: Table format used to print the table (see the section
         [Text table formats](@ref)). (**Default** = `unicode`)
 * `vlines`: This variable controls where the vertical lines will be drawn. It

@@ -79,6 +79,11 @@ it is not compliant, then only the following types are supported:
                         section `Alignment`).
 * `row_name_column_title`: Title of the column with the row names.
                            (**Default** = "")
+* `title`: The title of the table. If it is empty, then no title will be
+           printed. (**Default** = "")
+* `title_alignment`: Alignment of the title, which must be a symbol as explained
+                     in the section `Alignment`. This argument is ignored in the
+                     LaTeX backend. (**Default** = :l)
 
 !!! note
 
@@ -243,6 +248,14 @@ This back-end produces text tables. This back-end can be used by selecting
                      row number. (**Default** = `false`)
 * `tf`: Table format used to print the table (see `TextFormat`).
         (**Default** = `unicode`)
+* `title_autowrap`: If `true`, then the title text will be wrapped considering
+                    the title size. Otherwise, lines larger than the title size
+                    will be cropped. (**Default** = `false`)
+* `title_crayon`: Crayon to print the title.
+* `title_same_width_as_table`: If `true`, then the title width will match that
+                               of the table. Otherwise, the title size will be
+                               equal to the screen width.
+                               (**Default** = `false`)
 * `vlines`: This variable controls where the vertical lines will be drawn. It
             can be `nothing`, `:all`, `:none` or a vector of integers.
     - If it is `nothing`, which is the default, then the configuration will be
@@ -733,6 +746,8 @@ function _pretty_table(io, data, header;
                        row_names::Union{Nothing,AbstractVector} = nothing,
                        row_name_alignment::Symbol = :r,
                        row_name_column_title::AbstractString = "",
+                       title::AbstractString = "",
+                       title_alignment::Symbol = :l,
                        kwargs...)
 
     # Try to automatically infer the backend based on the table format type.
@@ -920,7 +935,8 @@ function _pretty_table(io, data, header;
                       num_printed_cols, num_printed_rows, header_num_rows,
                       header_num_cols, show_row_names, row_names,
                       row_name_alignment, row_name_column_title, alignment,
-                      cell_alignment, formatters, compact_printing)
+                      cell_alignment, formatters, compact_printing, title,
+                      title_alignment)
 
     if backend == :text
         _pt_text(io, pinfo; kwargs...)
