@@ -978,10 +978,10 @@ end
     @test result == expected
 end
 
-# Minimum column size
+# Minimum column width
 # ==============================================================================
 
-@testset "Minimum column size" begin
+@testset "Minimum column width" begin
     header = ["A" "B" "C" "D"]
 
     expected = """
