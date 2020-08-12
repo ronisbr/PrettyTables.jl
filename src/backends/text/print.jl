@@ -23,6 +23,7 @@ function _pt_text(io, pinfo;
                   highlighters::Union{Highlighter,Tuple} = (),
                   hlines::Union{Nothing,Symbol,AbstractVector} = nothing,
                   linebreaks::Bool = false,
+                  maximum_columns_width::Union{Integer,AbstractVector{Int}} = 0,
                   minimum_columns_width::Union{Integer,AbstractVector{Int}} = 0,
                   overwrite::Bool = false,
                   noheader::Bool = false,
@@ -105,6 +106,10 @@ function _pt_text(io, pinfo;
 
     # Make sure that `highlighters` is always a tuple.
     !(highlighters isa Tuple) && (highlighters = (highlighters,))
+
+    # Make sure that `maximum_columns_width` is always a vector.
+    typeof(maximum_columns_width) <: Integer &&
+        (maximum_columns_width = ones(Int, num_cols)*maximum_columns_width)
 
     # Make sure that `minimum_columns_width` is always a vector.
     typeof(minimum_columns_width) <: Integer &&
@@ -248,6 +253,12 @@ function _pt_text(io, pinfo;
                     if (j == 1) || (!crop_subheader)
                         # Check if we need to increase the columns size.
                         cols_width[i] < cell_width && (cols_width[i] = cell_width)
+
+                        # Make sure that the maximum column width is respected.
+                        if maximum_columns_width[ic] > 0 &&
+                           maximum_columns_width[ic] < cols_width[i]
+                            cols_width[i] = maximum_columns_width[ic]
+                        end
                     end
                 end
             end
@@ -299,6 +310,11 @@ function _pt_text(io, pinfo;
             if !fixed_col_width[ic]
                 # Check if we need to increase the columns size.
                 cols_width[i] < cell_width && (cols_width[i] = cell_width)
+
+                # Make sure that the maximum column width is respected.
+                if maximum_columns_width[ic] > 0 && maximum_columns_width[ic] < cols_width[i]
+                    cols_width[i] = maximum_columns_width[ic]
+                end
             end
         end
 

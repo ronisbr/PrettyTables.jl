@@ -210,6 +210,13 @@ This back-end produces text tables. This back-end can be used by selecting
   (**Default** = `nothing`)
 * `linebreaks`: If `true`, then `\\n` will break the line inside the cells.
                 (**Default** = `false`)
+* `maximum_columns_width`: A set of integers specifying the maximum width of
+                           each column. If the width is equal or lower than 0,
+                           then it will be ignored. If it is a single integer,
+                           then this number will be used as the maximum width
+                           of all columns. Notice that the parameter
+                           `columns_width` has precedence over this one.
+                           (**Default** = 0)
 * `minimum_columns_width`: A set of integers specifying the minimum width of
                            each column. If the width is equal or lower than 0,
                            then it will be ignored. If it is a single integer,
