@@ -118,6 +118,8 @@ function _pt_latex(io, pinfo;
     # Print LaTeX header
     # ==========================================================================
 
+    table_type == :tabular && println(buf, "\\begin{table}")
+
     println(buf,"""
             \\begin{$table_env}$(_latex_table_desc(alignment,
                                                    vlines,
@@ -269,6 +271,8 @@ function _pt_latex(io, pinfo;
     # ==========================================================================
 
     println(buf, "\\end{$table_env}")
+
+    table_type == :tabular && println(buf, "\\end{table}")
 
     # Print the buffer into the io.
     # ==========================================================================
