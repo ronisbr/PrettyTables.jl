@@ -111,10 +111,6 @@ function _pt_latex(io, pinfo;
     vlines = replace(vlines, :begin => 0,
                              :end   => num_printed_cols + show_row_number)
 
-    # If the user wants to show the row number, then we must add it to the
-    # `alignment` vector.
-    show_row_number && (alignment = pushfirst!(alignment, :l))
-
     # Print LaTeX header
     # ==========================================================================
 
@@ -124,7 +120,9 @@ function _pt_latex(io, pinfo;
     end
 
     println(buf,"""
-            \\begin{$table_env}$(_latex_table_desc(alignment,
+            \\begin{$table_env}$(_latex_table_desc(id_cols,
+                                                   alignment,
+                                                   show_row_number,
                                                    vlines,
                                                    left_vline,
                                                    mid_vline,

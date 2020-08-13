@@ -44,20 +44,34 @@ function _latex_alignment(s::Symbol)
 end
 
 # Get the LaTeX table description (alignment and vertical columns).
-function _latex_table_desc(alignment::Vector{Symbol},
+function _latex_table_desc(id_cols::AbstractVector,
+                           alignment::Vector{Symbol},
+                           show_row_number::Bool,
                            vlines::AbstractVector,
                            left_vline::AbstractString,
                            mid_vline::AbstractString,
                            right_vline::AbstractString)
+
+    Δc = show_row_number ? 1 : 0
+
     str = "{"
 
     0 ∈ vlines && (str *= left_vline)
 
-    for i = 1:length(alignment)
-        str *= _latex_alignment(alignment[i])
+    # Add the alignment information of the row number column if required.
+    Δc = 0
+    if show_row_number
+        Δc = 1
+        str *= "l"
+        1 ∈ vlines && (str *= mid_vline)
+    end
 
-        if i ∈ vlines
-            if i != length(alignment)
+    # Process the alignment of all the other columns.
+    for i = 1:length(id_cols)
+        str *= _latex_alignment(alignment[id_cols[i]])
+
+        if i+Δc ∈ vlines
+            if i != length(id_cols)
                 str *= mid_vline
             else
                 str *= right_vline
