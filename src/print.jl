@@ -70,6 +70,25 @@ it is not compliant, then only the following types are supported:
 * `filters_row`: Filters for the rows (see the section `Filters`).
 * `filters_col`: Filters for the columns (see the section `Filters`).
 * `formatters`: See the section `Formatters`.
+* `header_alignment`: Select the alignment of the header columns (see the
+                      section `Alignment`). If the symbol that specifies the
+                      alignment is `:s` for a specific column, then the same
+                      alignment in the keyword `alignment` for that column will
+                      be used. (**Default** = `:s`)
+* `header_cell_alignment`: This keyword has the same structure of
+                           `cell_alignment` but in this case it operates in the
+                           header. Thus, `(i,j)` will be a cell in the header
+                           matrix that contains the header and sub-headers. This
+                           means that the `data` field in the functions will be
+                           the same value passed in the keyword `header`.
+  !!! note
+
+      If more than one alignment function is passed to `header_cell_alignment`,
+      then the functions will be evaluated in the same order of the tuple. The
+      first one that returns a valid alignment symbol for each cell is applied,
+      and the rest is discarded.
+
+  (**Default** = `nothing`)
 * `row_names`: A vector containing the row names that will be appended to the
                left of the table. If it is `nothing`, then the column with the
                row names will not be shown. Notice that the size of this vector
@@ -743,6 +762,11 @@ function _pretty_table(io, data, header;
                        filters_row::Union{Nothing,Tuple} = nothing,
                        filters_col::Union{Nothing,Tuple} = nothing,
                        formatters::Union{Nothing,Function,Tuple} = nothing,
+                       header_alignment::Union{Symbol,Vector{Symbol}} = :s,
+                       header_cell_alignment::Union{Nothing,
+                                                    Dict{Tuple{Int,Int},Symbol},
+                                                    Function,
+                                                    Tuple} = nothing,
                        row_names::Union{Nothing,AbstractVector} = nothing,
                        row_name_alignment::Symbol = :r,
                        row_name_column_title::AbstractString = "",
@@ -854,6 +878,12 @@ function _pretty_table(io, data, header;
         length(alignment) != num_cols && error("The length of `alignment` must be the same as the number of rows.")
     end
 
+    if typeof(header_alignment) == Symbol
+        header_alignment = [header_alignment for i = 1:num_cols]
+    else
+        length(header_alignment) != num_cols && error("The length of `header_alignment` must be the same as the number of rows.")
+    end
+
     # If there is a vector of row names, then it must have the same size of the
     # number of rows.
     if row_names != nothing
@@ -926,6 +956,25 @@ function _pretty_table(io, data, header;
         cell_alignment = (cell_alignment,)
     end
 
+    # Make sure that `header_cell_alignment` is a tuple.
+    if header_cell_alignment == nothing
+        header_cell_alignment = ()
+    elseif typeof(header_cell_alignment) <: Dict
+        # If it is a `Dict`, then `header_cell_alignment[(i,j)]` contains the
+        # desired alignment for the cell `(i,j)`. Thus, we need to create a
+        # wrapper function.
+        header_cell_alignment_dict = copy(header_cell_alignment)
+        header_cell_alignment = ((data,i,j) -> begin
+            if haskey(header_cell_alignment_dict, (i,j))
+                return header_cell_alignment_dict[(i,j)]
+            else
+                return nothing
+            end
+        end,)
+    elseif typeof(header_cell_alignment) <: Function
+        header_cell_alignment = (header_cell_alignment,)
+    end
+
     # Make sure that `formatters` is a tuple.
     formatters == nothing  && (formatters = ())
     typeof(formatters) <: Function && (formatters = (formatters,))
@@ -936,7 +985,7 @@ function _pretty_table(io, data, header;
                       header_num_cols, show_row_names, row_names,
                       row_name_alignment, row_name_column_title, alignment,
                       cell_alignment, formatters, compact_printing, title,
-                      title_alignment)
+                      title_alignment, header_alignment, header_cell_alignment)
 
     if backend == :text
         _pt_text(io, pinfo; kwargs...)

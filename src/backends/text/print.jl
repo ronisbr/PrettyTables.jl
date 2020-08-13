@@ -424,7 +424,21 @@ function _pt_text(io, pinfo;
                 else
                     jc = id_cols[j-Δc]
                     crayon_ij    = (i == 1) ? header_crayon[jc] : subheader_crayon[jc]
-                    alignment_ij = alignment[jc+Δc]
+                    alignment_ij = header_alignment[jc]
+
+                    # Check for cell alignment override.
+                    for f in header_cell_alignment
+                        aux = f(header, i, jc)
+
+                        if aux ∈ (:l, :c, :r, :L, :C, :R, :s, :S)
+                            alignment_ij = aux
+                            break
+                        end
+                    end
+
+                    # If alignment is `:s`, then we must use the column
+                    # alignment.
+                    alignment_ij ∈ (:s,:S) && (alignment_ij = alignment[jc+Δc])
                 end
 
                 # Prepare the text to be printed.

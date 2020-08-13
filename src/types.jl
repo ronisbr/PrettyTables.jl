@@ -62,4 +62,6 @@ the tables.
     compact_printing::Bool
     title::String
     title_alignment::Symbol
+    header_alignment::Vector{Symbol}
+    header_cell_alignment
 end

@@ -6,6 +6,30 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
+# Apply an alignment to a LaTeX table cell.
+function _latex_apply_cell_alignment(str, alignment, j, num_printed_cols,
+                                     show_row_number, vlines, left_vline,
+                                     mid_vline, right_vline)
+
+    a = _latex_alignment(alignment)
+    aux_j = show_row_number ? j+1 : j
+
+    # We only need to add left vertical line if it is the first
+    # column.
+    lvline = (0 ∈ vlines) && (aux_j-1 == 0) ? left_vline : ""
+
+    # For the right vertical line, we must check if it is a mid line
+    # or right line.
+    if aux_j ∈ vlines
+        rvline = (j == num_printed_cols) ? right_vline : mid_vline
+    else
+        rvline = ""
+    end
+
+    # Wrap the data into the multicolumn environment.
+    return _latex_envs(str, "multicolumn{1}{$(lvline)$(a)$(rvline)}")
+end
+
 # Convert the alignment symbol into a LaTeX alignment string.
 function _latex_alignment(s::Symbol)
     if (s == :l) || (s == :L)

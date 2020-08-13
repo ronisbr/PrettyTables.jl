@@ -165,7 +165,36 @@ function _pt_latex(io, pinfo;
                     envs = subheader_envs
                 end
 
-                print(buf, _latex_envs(header_str[i,j], envs))
+                header_str_ij = _latex_envs(header_str[i,j], envs)
+
+                # Check the alignment of this cell.
+                alignment_ij = header_alignment[jc]
+
+                for f in header_cell_alignment
+                    aux = f(header, i, jc)
+
+                    if aux ∈ (:l, :c, :r, :L, :C, :R, :s, :S)
+                        alignment_ij = aux
+                        break
+                    end
+                end
+
+                # If alignment is `:s`, then we must use the column alignment.
+                alignment_ij ∈ (:s,:S) && (alignment_ij = alignment[jc])
+
+                # Check if the alignment of the cell must be overridden.
+                if alignment_ij != alignment[jc]
+                    header_str_ij = _latex_apply_cell_alignment(header_str_ij,
+                                                                alignment_ij, j,
+                                                                num_printed_cols,
+                                                                show_row_number,
+                                                                vlines,
+                                                                left_vline,
+                                                                mid_vline,
+                                                                right_vline)
+                end
+
+                print(buf, header_str_ij)
 
                 j != num_printed_cols && print(buf, " & ")
             end
@@ -224,41 +253,26 @@ function _pt_latex(io, pinfo;
             end
 
             # Check the alignment of this cell.
-            alignment_override = false
             alignment_ij = alignment[jc]
 
             for f in cell_alignment
                 aux = f(_getdata(data), ir, jc)
 
                 if aux ∈ [:l, :c, :r, :L, :C, :R]
-                    alignment_override = true
                     alignment_ij = aux
                     break
                 end
             end
 
-            if alignment_override
-                a = _latex_alignment(alignment_ij)
-
-                # Since we are using the `multicolumn`, we need to verify if the
-                # column has vertical lines.
-                aux_j = show_row_number ? jc + 1 : jc
-
-                # We only need to add left vertical line if it is the first
-                # column.
-                lvline = (0 ∈ vlines) && (aux_j-1 == 0) ? left_vline : ""
-
-                # For the right vertical line, we must check if it is a mid line
-                # or right line.
-                if aux_j ∈ vlines
-                    rvline = (j == num_printed_cols) ? right_vline : mid_vline
-                else
-                    rvline = ""
-                end
-
-                # Wrap the data into the multicolumn environment.
-                data_str_ij = _latex_envs(data_str_ij,
-                                          "multicolumn{1}{$(lvline)$(a)$(rvline)}")
+            # Check if the alignment of the cell must be overridden.
+            if alignment_ij != alignment[jc]
+                data_str_ij = _latex_apply_cell_alignment(data_str_ij,
+                                                          alignment_ij, j,
+                                                          num_printed_cols,
+                                                          show_row_number,
+                                                          vlines, left_vline,
+                                                          mid_vline,
+                                                          right_vline)
             end
 
             print(buf, data_str_ij)

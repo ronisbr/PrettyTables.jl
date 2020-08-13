@@ -156,8 +156,23 @@ function _pt_html(io, pinfo;
                 # Index of the j-th printed column in `data`.
                 jc = id_cols[j]
 
+                # Check the alignment of this cell.
+                alignment_ij = header_alignment[jc]
+
+                for f in header_cell_alignment
+                    aux = f(header, i, jc)
+
+                    if aux ∈ (:l, :c, :r, :L, :C, :R, :s, :S)
+                        alignment_ij = aux
+                        break
+                    end
+                end
+
+                # If alignment is `:s`, then we must use the column alignment.
+                alignment_ij ∈ (:s,:S) && (alignment_ij = alignment[jc])
+
                 # Alignment of this cell.
-                style = Dict{String,String}("text-align" => _html_alignment[alignment[j]])
+                style = Dict{String,String}("text-align" => _html_alignment[alignment_ij])
 
                 println(buf, _styled_html("th", header_str[i,j], style))
             end
