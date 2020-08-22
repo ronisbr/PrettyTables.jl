@@ -6,7 +6,8 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ==#
 
-export unicode, ascii_dots, ascii_rounded, borderless, compact, markdown, mysql, simple, unicode_rounded, matrix
+export unicode, ascii_dots, ascii_rounded, borderless, compact, dataframe,
+       markdown, mysql, simple, unicode_rounded, matrix
 
 const unicode = TextFormat()
 
@@ -65,6 +66,10 @@ const compact = TextFormat(
     bottom_intersection  = ' ',
     column              = ' ',
     row                 = '-'
+   )
+
+const dataframe = TextFormat(
+    hlines = [:header]
    )
 
 const markdown = TextFormat(

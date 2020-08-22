@@ -468,12 +468,38 @@ This backend produces LaTeX tables. This backend can be used by selecting
 
 # Keywords
 
+* `body_hlines`: A vector of `Int` indicating row numbers in which an additional
+                 horizontal line should be drawn after the row. Notice that
+                 numbers lower than 1 and equal or higher than the number of
+                 printed rows will be neglected. This vector will be appended to
+                 the one in `hlines`, but the indices here are related to the
+                 printed rows of the body. Thus, if `1` is added to
+                 `body_hlines`, then a horizontal line will be drawn after the
+                 first data row. (**Default** = `Int[]`)
 * `highlighters`: An instance of `LatexHighlighter` or a tuple with a list of
                   LaTeX highlighters (see the section `LaTeX highlighters`).
-* `hlines`: A vector of `Int` indicating row numbers in which an additional
-            horizontal line should be drawn after the row. Notice that numbers
-            lower than 1 and equal or higher than the number of rows will be
-            neglected.
+* `hlines`: This variable controls where the horizontal lines will be drawn. It
+            can be `nothing`, `:all`, `:none` or a vector of integers.
+    - If it is `nothing`, which is the default, then the configuration will be
+      obtained from the table format in the variable `tf` (see
+      `LatexTableFormat`).
+    - If it is `:all`, then all horizontal lines will be drawn.
+    - If it is `:none`, then no horizontal line will be drawn.
+    - If it is a vector of integers, then the horizontal lines will be drawn
+      only after the rows in the vector. Notice that the top line will be drawn
+      if `0` is in `hlines`, and the header and subheaders are considered as
+      only 1 row. Furthermore, it is important to mention that the row number in
+      this variable is related to the **printed rows**. Thus, it is affected by
+      filters, and by the option to suppress the header `noheader`. Finally, for
+      convenience, the top and bottom lines can be drawn by adding the symbols
+      `:begin` and `:end` to this vector, respectively, and the line after the
+      header can be drawn by adding the symbol `:header`.
+  !!! info
+
+      The values of `body_hlines` will be appended to this vector. Thus,
+      horizontal lines can be drawn even if `hlines` is `:none`.
+
+  (**Default** = `nothing`)
 * `longtable_footer`: The string that will be drawn in the footer of the tables
                       before a page break. This only works if `table_type` is
                       `:longtable`. If it is `nothing`, then no footer will be

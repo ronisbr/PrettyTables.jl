@@ -9,20 +9,32 @@
 # Low-level function to print the table using the LaTeX backend.
 function _pt_latex(io, pinfo;
                    tf::LatexTableFormat = latex_default,
+                   body_hlines::Vector{Int} = Int[],
                    cell_alignment::Dict{Tuple{Int,Int},Symbol} = Dict{Tuple{Int,Int},Symbol}(),
                    highlighters::Union{LatexHighlighter,Tuple} = (),
-                   hlines::AbstractVector{Int} = Int[],
+                   hlines::Union{Nothing,Symbol,AbstractVector} = nothing,
                    longtable_footer::Union{Nothing,AbstractString} = nothing,
                    noheader::Bool = false,
                    nosubheader::Bool = false,
                    show_row_number::Bool = false,
                    table_type::Symbol = :tabular,
-                   vlines::Union{Symbol,AbstractVector} = :none,
+                   vlines::Union{Nothing,Symbol,AbstractVector} = nothing,
                    # Deprecated
                    formatter = nothing)
 
     @unpack_PrintInfo pinfo
-    @unpack_LatexTableFormat tf
+
+    # We cannot use `@unpack_` here because it will overwrite `hlines` and
+    # `vlines.`
+    top_line       = tf.top_line
+    header_line    = tf.header_line
+    mid_line       = tf.mid_line
+    bottom_line    = tf.bottom_line
+    left_vline     = tf.left_vline
+    mid_vline      = tf.mid_vline
+    right_vline    = tf.right_vline
+    header_envs    = tf.header_envs
+    subheader_envs = tf.subheader_envs
 
     # Let's create a `IOBuffer` to write everything and then transfer to `io`.
     buf_io = IOBuffer()
@@ -97,7 +109,15 @@ function _pt_latex(io, pinfo;
         end
     end
 
+    # Compute where the horizontal and vertical lines must be drawn
+    # --------------------------------------------------------------------------
+
+    hlines == nothing && (hlines = tf.hlines)
+    hlines = _process_hlines(hlines, body_hlines, num_printed_rows, noheader)
+
     # Process `vlines`.
+    vlines == nothing && (vlines = tf.vlines)
+
     if vlines == :all
         vlines = collect(0:1:(num_printed_cols + show_row_number))
     elseif vlines == :none
@@ -132,7 +152,7 @@ function _pt_latex(io, pinfo;
         length(title) > 0 && println(buf, "\\caption{$title}\\\\")
     end
 
-    println(buf, top_line)
+    0 ∈ hlines && println(buf, top_line)
 
     # Data header
     # ==========================================================================
@@ -197,11 +217,11 @@ function _pt_latex(io, pinfo;
                 j != num_printed_cols && print(buf, " & ")
             end
 
-            if i != header_num_rows
-                println(buf, " \\\\")
-            else
-                println(buf, " \\\\" * header_line)
+            print(buf, " \\\\")
+            if (i == header_num_rows) && (1 ∈ hlines)
+                print(buf, header_line)
             end
+            println(buf, "")
         end
     end
 
@@ -277,14 +297,18 @@ function _pt_latex(io, pinfo;
             j != num_printed_cols && print(buf, " & ")
         end
 
-        if (i != num_printed_rows) && (i in hlines)
-            # Check if we must draw a horizontal line here.
-            println(buf, " \\\\" * mid_line)
-        elseif (i != num_printed_rows)
-            println(buf, " \\\\")
-        else
-            println(buf, " \\\\" * bottom_line)
+        print(buf, " \\\\")
+
+        # Check if the user wants a horizontal line here.
+        if (i+!noheader) ∈ hlines
+            if i != num_printed_rows
+                # Check if we must draw a horizontal line here.
+                print(buf, mid_line)
+            else
+                print(buf, bottom_line)
+            end
         end
+        println(buf, "")
     end
 
     # Print LaTeX footer
