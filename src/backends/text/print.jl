@@ -353,19 +353,7 @@ function _pt_text(io, pinfo;
 
     # Process `vlines`.
     vlines == nothing && (vlines = tf.vlines)
-
-    if vlines == :all
-        vlines = collect(0:1:num_printed_cols)
-    elseif vlines == :none
-        vlines = Int[]
-    elseif !(typeof(vlines) <: AbstractVector)
-        error("`vlines` must be `:all`, `:none`, or a vector of integers.")
-    end
-
-    # The symbol `:begin` is replaced by 0 and the symbol `:end` is replaced by
-    # the last column.
-    vlines = replace(vlines, :begin => 0,
-                             :end   => num_printed_cols)
+    vlines = _process_vlines(vlines, num_printed_cols)
 
     #                           Print the table
     # ==========================================================================

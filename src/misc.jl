@@ -44,6 +44,33 @@ function _process_hlines(hlines, body_hlines, num_printed_rows, noheader)
 end
 
 """
+    _process_vlines(vlines, num_printed_cols)
+
+Process the vertical lines `vlines` considerering the number of printed columns
+`num_printed_cols`.
+
+It returns a vector of `Int` stating where the vertical lines must be drawn.
+
+"""
+function _process_vlines(vlines, num_printed_cols)
+    # Process `vlines`.
+    if vlines == :all
+        vlines = collect(0:1:num_printed_cols)
+    elseif vlines == :none
+        vlines = Int[]
+    elseif !(typeof(vlines) <: AbstractVector)
+        error("`vlines` must be `:all`, `:none`, or a vector of integers.")
+    end
+
+    # The symbol `:begin` is replaced by 0 and the symbol `:end` is replaced by
+    # the last column.
+    vlines = replace(vlines, :begin => 0,
+                             :end   => num_printed_cols)
+
+    return vlines
+end
+
+"""
     _str_escaped(str::AbstractString)
 
 Return the escaped string representation of `str`.

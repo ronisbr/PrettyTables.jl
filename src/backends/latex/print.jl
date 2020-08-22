@@ -116,20 +116,10 @@ function _pt_latex(io, pinfo;
     hlines = _process_hlines(hlines, body_hlines, num_printed_rows, noheader)
 
     # Process `vlines`.
+    #
+    # TODO: `num_printed_cols` must consider the row number.
     vlines == nothing && (vlines = tf.vlines)
-
-    if vlines == :all
-        vlines = collect(0:1:(num_printed_cols + show_row_number))
-    elseif vlines == :none
-        vlines = Int[]
-    elseif !(typeof(vlines) <: AbstractVector)
-        error("`vlines` must be `:all`, `:none`, or a vector of integers.")
-    end
-
-    # The symbol `:begin` is replaced by 0 and the symbol `:end` is replaced by
-    # the last column.
-    vlines = replace(vlines, :begin => 0,
-                             :end   => num_printed_cols + show_row_number)
+    vlines = _process_vlines(vlines, num_printed_cols + show_row_number)
 
     # Print LaTeX header
     # ==========================================================================
