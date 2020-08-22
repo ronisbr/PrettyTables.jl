@@ -8,8 +8,9 @@
 """
     _process_hlines(hlines, body_hlines, num_printed_rows, noheader)
 
-Process the `hlines` and `body_hlines` considerering the number of printed rows
-`num_printed_rows` and if the header is present (`noheader`).
+Process the horizontal lines in `hlines` and `body_hlines` considering the
+number of printed rows `num_printed_rows` and if the header is present
+(`noheader`).
 
 It returns a vector of `Int` stating where the horizontal lines must be drawn.
 
