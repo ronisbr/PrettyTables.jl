@@ -269,6 +269,8 @@ function _pt_text(io, pinfo;
                 data_str_ij = "missing"
             elseif data_ij == nothing
                 data_str_ij = "nothing"
+            elseif data_ij == undef
+                data_str_ij = "#undef"    
             elseif data_ij isa Markdown.MD
                 r = repr(data_ij)
                 #len = min(length(r, 1, something(findfirst(c->c=='\n', r), lastindex(r)+1)-1), 50)

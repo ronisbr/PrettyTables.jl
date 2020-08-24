@@ -76,6 +76,8 @@ function _pt_html(io, pinfo;
                 data_str_ij = "missing"
             elseif data_ij == nothing
                 data_str_ij = "nothing"
+            elseif data_ij == undef
+                data_str_ij = "#undef"
             elseif data_ij isa Markdown.MD
                 data_str_ij = replace(sprint(show, "text/html", data_ij),"\n"=>"")
             else
