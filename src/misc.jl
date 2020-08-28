@@ -6,26 +6,61 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 """
-    _aprint(buf, v, indentation = 0, nspace = 2)
+    _aprint(buf, [v,] indentation = 0, nspace = 2)
 
 Print the variable `v` to the buffer `buf` at the indentation level
 `indentation`. Each level has `nspaces` spaces.
 
+If `v` is not present, then only the indentation spaces will be printed.
+
 """
-@inline function _aprint(buf, v, indentation = 0, nspaces = 2)
-    print(buf, " "^(indentation*nspaces))
-    print(buf, v)
+@inline function _aprint(buf, v::String, indentation::Int = 0, nspaces::Int = 2)
+    tokens  = split(v, '\n')
+    padding = " "^(indentation*nspaces)
+    ntokens = length(tokens)
+
+    @inbounds for i = 1:ntokens
+        # If the token is empty, then we do nothing to avoid unnecessary white
+        # spaces.
+        if length(tokens[i]) != 0
+            print(buf, padding)
+            print(buf, tokens[i])
+        end
+        i != ntokens && println(buf)
+    end
+end
+
+@inline function _aprint(buf, indentation::Int = 0, nspaces::Int = 2)
+    padding = " "^(indentation*nspaces)
+    print(buf, padding)
 end
 
 """
-    _aprintln(buf, v, indentation = 0, nspaces = 2)
+    _aprintln(buf, [v,] indentation = 0, nspaces = 2)
 
 Same as `_aprint`, but a new line will be added at the end.
 
 """
-@inline function _aprintln(buf, v, indentation = 0, nspaces = 2)
-    print(buf, " "^(indentation*nspaces))
-    println(buf, v)
+@inline function _aprintln(buf, v::String, indentation::Int = 0, nspaces::Int = 2)
+    tokens  = split(v, '\n')
+    padding = " "^(indentation*nspaces)
+    ntokens = length(tokens)
+
+    @inbounds for i = 1:ntokens
+        # If the token is empty, then we do nothing to avoid unnecessary white
+        # spaces.
+        if length(tokens[i]) != 0
+            print(buf, padding)
+            println(buf, tokens[i])
+        else
+            println(buf)
+        end
+    end
+end
+
+@inline function _aprintln(buf, indentation::Int = 0, nspaces::Int = 2)
+    padding = " "^(indentation*nspaces)
+    println(buf, padding)
 end
 
 """

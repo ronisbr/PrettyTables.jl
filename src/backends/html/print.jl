@@ -93,36 +93,45 @@ function _pt_html(io, pinfo;
         end
     end
 
+    # Variables to store information about indentation
+    # ==========================================================================
+
+    il = 0 # ......................................... Current indentation level
+    ns = 2 # ........................ Number of spaces in each indentation level
+
     # Print HTML header
     # ==========================================================================
 
     if standalone
-        println(buf, """
-                <!DOCTYPE html>
-                <html>
-                <meta charset=\"UTF-8\">
-                <style>""")
+        _aprintln(buf, """
+                  <!DOCTYPE html>
+                  <html>
+                  <meta charset=\"UTF-8\">
+                  <style>""", il, ns)
+        il += 1
 
-        !isempty(table_width) && println(buf, """
+        !isempty(table_width) && _aprintln(buf, """
                 table {
                     width: $table_width;
                 }
-                """)
+                """, il, ns)
 
-        println(buf, """
-                $css
-                </style>
-                <body>""")
+        _aprintln(buf, css, il, ns)
+        il -= 1
+        _aprintln(buf, """
+                  </style>
+                  <body>""")
     end
 
-    println(buf, "<table>")
+    _aprintln(buf, "<table>", il, ns)
+    il += 1
 
     # Table title
     # ==========================================================================
 
     if length(title) > 0
         style = Dict{String,String}("text-align" => _html_alignment[title_alignment])
-        println(buf, _styled_html("caption", title, style))
+        _aprintln(buf, _styled_html("caption", title, style), il, ns)
     end
 
     # Data header
@@ -134,21 +143,22 @@ function _pt_html(io, pinfo;
     if !noheader
         @inbounds @views for i = 1:header_num_rows
             if (i == 1) && (header_num_rows == 1)
-                println(buf, "<tr class = \"header headerLastRow\">")
+                _aprintln(buf, "<tr class = \"header headerLastRow\">", il, ns)
             elseif i == 1
-                println(buf, "<tr class = header>")
+                _aprintln(buf, "<tr class = header>", il, ns)
             elseif i == header_num_rows
-                println(buf, "<tr class = \"subheader headerLastRow\">")
+                _aprintln(buf, "<tr class = \"subheader headerLastRow\">", il, ns)
             else
-                println(buf, "<tr class = subheader>")
+                _aprintln(buf, "<tr class = subheader>", il, ns)
             end
+            il += 1
 
             # The text "Row" must appear only on the first line.
             if show_row_number
                 if i == 1
-                    println(buf, "<th class = rowNumber>Row</th>")
+                    _aprintln(buf, "<th class = rowNumber>Row</th>", il, ns)
                 else
-                    println(buf, "<th></th>")
+                    _aprintln(buf, "<th></th>", il, ns)
                 end
             end
 
@@ -174,10 +184,10 @@ function _pt_html(io, pinfo;
                 # Alignment of this cell.
                 style = Dict{String,String}("text-align" => _html_alignment[alignment_ij])
 
-                println(buf, _styled_html("th", header_str[i,j], style))
+                _aprintln(buf, _styled_html("th", header_str[i,j], style), il, ns)
             end
-
-            println(buf, "</tr>")
+            il -= 1
+            _aprintln(buf, "</tr>", il, ns)
         end
     end
 
@@ -187,10 +197,11 @@ function _pt_html(io, pinfo;
     @inbounds @views for i = 1:num_printed_rows
         ir = id_rows[i]
 
-        println(buf, "<tr>")
+        _aprintln(buf, "<tr>", il, ns)
+        il += 1
 
         if show_row_number
-            println(buf, "<td class = rowNumber>" * string(ir) * "</td>")
+            _aprintln(buf, "<td class = rowNumber>" * string(ir) * "</td>", il, ns)
         end
 
         for j = 1:num_printed_cols
@@ -220,20 +231,22 @@ function _pt_html(io, pinfo;
                 end
             end
 
-            println(buf, _styled_html("td", data_str[i,j], style))
+            _aprintln(buf, _styled_html("td", data_str[i,j], style), il, ns)
         end
 
-        println(buf, "</tr>")
+        il -= 1
+        _aprintln(buf, "</tr>", il, ns)
     end
 
     # Print HTML footer
     # ==========================================================================
 
-    println(buf, "</table>")
+    il -= 1
+    _aprintln(buf, "</table>", il, ns)
     if standalone
-        println(buf, """
-                </body>
-                </html>""")
+        _aprintln(buf, """
+                  </body>
+                  </html>""", il, ns)
     end
 
     # Print the buffer into the io.

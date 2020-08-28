@@ -163,7 +163,7 @@ function _pt_latex(io, pinfo;
         @inbounds @views for i = 1:header_num_rows
             # The text "Row" must appear only on the first line.
             if show_row_number
-                _aprint(buf, "", il, ns)
+                _aprint(buf, il, ns)
 
                 if i == 1
                     print(buf, _latex_envs("Row", header_envs))
@@ -174,7 +174,7 @@ function _pt_latex(io, pinfo;
 
             for j = 1:num_printed_cols
                 # Apply the alignment to this row.
-                (!show_row_number && j == 1) && _aprint(buf, "", il, ns)
+                (!show_row_number && j == 1) && _aprint(buf, il, ns)
 
                 # Index of the j-th printed column in `data`.
                 jc = id_cols[j]
@@ -262,7 +262,7 @@ function _pt_latex(io, pinfo;
 
         for j = 1:num_printed_cols
             # Apply the alignment to this row.
-            (!show_row_number && j == 1) && _aprint(buf, "", il, ns)
+            (!show_row_number && j == 1) && _aprint(buf, il, ns)
 
             jc = id_cols[j]
 

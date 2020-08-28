@@ -23,88 +23,88 @@ data = Any[1    false      1.0     0x01 ;
 <html>
 <meta charset="UTF-8">
 <style>
-table, td, th {
-    border-collapse: collapse;
-    font-family: sans-serif;
-}
+  table, td, th {
+      border-collapse: collapse;
+      font-family: sans-serif;
+  }
 
-td, th {
-    border-bottom: 0;
-    padding: 4px
-}
+  td, th {
+      border-bottom: 0;
+      padding: 4px
+  }
 
-tr:nth-child(odd) {
-    background: #eee;
-}
+  tr:nth-child(odd) {
+      background: #eee;
+  }
 
-tr:nth-child(even) {
-    background: #fff;
-}
+  tr:nth-child(even) {
+      background: #fff;
+  }
 
-tr.header {
-    background: navy !important;
-    color: white;
-    font-weight: bold;
-}
+  tr.header {
+      background: navy !important;
+      color: white;
+      font-weight: bold;
+  }
 
-tr.subheader {
-    background: lightgray !important;
-    color: black;
-}
+  tr.subheader {
+      background: lightgray !important;
+      color: black;
+  }
 
-tr.headerLastRow {
-    border-bottom: 2px solid black;
-}
+  tr.headerLastRow {
+      border-bottom: 2px solid black;
+  }
 
-th.rowNumber, td.rowNumber {
-    text-align: right;
-}
+  th.rowNumber, td.rowNumber {
+      text-align: right;
+  }
 
 </style>
 <body>
 <table>
-<tr class = "header headerLastRow">
-<th style = "text-align: right; ">Col. 1</th>
-<th style = "text-align: right; ">Col. 2</th>
-<th style = "text-align: right; ">Col. 3</th>
-<th style = "text-align: right; ">Col. 4</th>
-</tr>
-<tr>
-<td style = "text-align: right; ">1</td>
-<td style = "text-align: right; ">false</td>
-<td style = "text-align: right; ">1.0</td>
-<td style = "text-align: right; ">1</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">2</td>
-<td style = "text-align: right; ">true</td>
-<td style = "text-align: right; ">2.0</td>
-<td style = "text-align: right; ">2</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">3</td>
-<td style = "text-align: right; ">false</td>
-<td style = "text-align: right; ">3.0</td>
-<td style = "text-align: right; ">3</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">4</td>
-<td style = "text-align: right; ">true</td>
-<td style = "text-align: right; ">4.0</td>
-<td style = "text-align: right; ">4</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">5</td>
-<td style = "text-align: right; ">false</td>
-<td style = "text-align: right; ">5.0</td>
-<td style = "text-align: right; ">5</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">6</td>
-<td style = "text-align: right; ">true</td>
-<td style = "text-align: right; ">6.0</td>
-<td style = "text-align: right; ">6</td>
-</tr>
+  <tr class = "header headerLastRow">
+    <th style = "text-align: right; ">Col. 1</th>
+    <th style = "text-align: right; ">Col. 2</th>
+    <th style = "text-align: right; ">Col. 3</th>
+    <th style = "text-align: right; ">Col. 4</th>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">1</td>
+    <td style = "text-align: right; ">false</td>
+    <td style = "text-align: right; ">1.0</td>
+    <td style = "text-align: right; ">1</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">2</td>
+    <td style = "text-align: right; ">true</td>
+    <td style = "text-align: right; ">2.0</td>
+    <td style = "text-align: right; ">2</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">3</td>
+    <td style = "text-align: right; ">false</td>
+    <td style = "text-align: right; ">3.0</td>
+    <td style = "text-align: right; ">3</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">4</td>
+    <td style = "text-align: right; ">true</td>
+    <td style = "text-align: right; ">4.0</td>
+    <td style = "text-align: right; ">4</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">5</td>
+    <td style = "text-align: right; ">false</td>
+    <td style = "text-align: right; ">5.0</td>
+    <td style = "text-align: right; ">5</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">6</td>
+    <td style = "text-align: right; ">true</td>
+    <td style = "text-align: right; ">6.0</td>
+    <td style = "text-align: right; ">6</td>
+  </tr>
 </table>
 </body>
 </html>
@@ -124,88 +124,88 @@ end
 <html>
 <meta charset="UTF-8">
 <style>
-table, td, th {
-    border-collapse: collapse;
-    font-family: sans-serif;
-}
+  table, td, th {
+      border-collapse: collapse;
+      font-family: sans-serif;
+  }
 
-td, th {
-    border-bottom: 0;
-    padding: 4px
-}
+  td, th {
+      border-bottom: 0;
+      padding: 4px
+  }
 
-tr:nth-child(odd) {
-    background: #eee;
-}
+  tr:nth-child(odd) {
+      background: #eee;
+  }
 
-tr:nth-child(even) {
-    background: #fff;
-}
+  tr:nth-child(even) {
+      background: #fff;
+  }
 
-tr.header {
-    background: navy !important;
-    color: white;
-    font-weight: bold;
-}
+  tr.header {
+      background: navy !important;
+      color: white;
+      font-weight: bold;
+  }
 
-tr.subheader {
-    background: lightgray !important;
-    color: black;
-}
+  tr.subheader {
+      background: lightgray !important;
+      color: black;
+  }
 
-tr.headerLastRow {
-    border-bottom: 2px solid black;
-}
+  tr.headerLastRow {
+      border-bottom: 2px solid black;
+  }
 
-th.rowNumber, td.rowNumber {
-    text-align: right;
-}
+  th.rowNumber, td.rowNumber {
+      text-align: right;
+  }
 
 </style>
 <body>
 <table>
-<tr class = "header headerLastRow">
-<th style = "text-align: left; ">Col. 1</th>
-<th style = "text-align: left; ">Col. 2</th>
-<th style = "text-align: left; ">Col. 3</th>
-<th style = "text-align: left; ">Col. 4</th>
-</tr>
-<tr>
-<td style = "text-align: left; ">1</td>
-<td style = "text-align: left; ">false</td>
-<td style = "text-align: left; ">1.0</td>
-<td style = "text-align: left; ">1</td>
-</tr>
-<tr>
-<td style = "text-align: left; ">2</td>
-<td style = "text-align: left; ">true</td>
-<td style = "text-align: left; ">2.0</td>
-<td style = "text-align: left; ">2</td>
-</tr>
-<tr>
-<td style = "text-align: left; ">3</td>
-<td style = "text-align: left; ">false</td>
-<td style = "text-align: left; ">3.0</td>
-<td style = "text-align: left; ">3</td>
-</tr>
-<tr>
-<td style = "text-align: left; ">4</td>
-<td style = "text-align: left; ">true</td>
-<td style = "text-align: left; ">4.0</td>
-<td style = "text-align: left; ">4</td>
-</tr>
-<tr>
-<td style = "text-align: left; ">5</td>
-<td style = "text-align: left; ">false</td>
-<td style = "text-align: left; ">5.0</td>
-<td style = "text-align: left; ">5</td>
-</tr>
-<tr>
-<td style = "text-align: left; ">6</td>
-<td style = "text-align: left; ">true</td>
-<td style = "text-align: left; ">6.0</td>
-<td style = "text-align: left; ">6</td>
-</tr>
+  <tr class = "header headerLastRow">
+    <th style = "text-align: left; ">Col. 1</th>
+    <th style = "text-align: left; ">Col. 2</th>
+    <th style = "text-align: left; ">Col. 3</th>
+    <th style = "text-align: left; ">Col. 4</th>
+  </tr>
+  <tr>
+    <td style = "text-align: left; ">1</td>
+    <td style = "text-align: left; ">false</td>
+    <td style = "text-align: left; ">1.0</td>
+    <td style = "text-align: left; ">1</td>
+  </tr>
+  <tr>
+    <td style = "text-align: left; ">2</td>
+    <td style = "text-align: left; ">true</td>
+    <td style = "text-align: left; ">2.0</td>
+    <td style = "text-align: left; ">2</td>
+  </tr>
+  <tr>
+    <td style = "text-align: left; ">3</td>
+    <td style = "text-align: left; ">false</td>
+    <td style = "text-align: left; ">3.0</td>
+    <td style = "text-align: left; ">3</td>
+  </tr>
+  <tr>
+    <td style = "text-align: left; ">4</td>
+    <td style = "text-align: left; ">true</td>
+    <td style = "text-align: left; ">4.0</td>
+    <td style = "text-align: left; ">4</td>
+  </tr>
+  <tr>
+    <td style = "text-align: left; ">5</td>
+    <td style = "text-align: left; ">false</td>
+    <td style = "text-align: left; ">5.0</td>
+    <td style = "text-align: left; ">5</td>
+  </tr>
+  <tr>
+    <td style = "text-align: left; ">6</td>
+    <td style = "text-align: left; ">true</td>
+    <td style = "text-align: left; ">6.0</td>
+    <td style = "text-align: left; ">6</td>
+  </tr>
 </table>
 </body>
 </html>
@@ -220,88 +220,88 @@ th.rowNumber, td.rowNumber {
 <html>
 <meta charset="UTF-8">
 <style>
-table, td, th {
-    border-collapse: collapse;
-    font-family: sans-serif;
-}
+  table, td, th {
+      border-collapse: collapse;
+      font-family: sans-serif;
+  }
 
-td, th {
-    border-bottom: 0;
-    padding: 4px
-}
+  td, th {
+      border-bottom: 0;
+      padding: 4px
+  }
 
-tr:nth-child(odd) {
-    background: #eee;
-}
+  tr:nth-child(odd) {
+      background: #eee;
+  }
 
-tr:nth-child(even) {
-    background: #fff;
-}
+  tr:nth-child(even) {
+      background: #fff;
+  }
 
-tr.header {
-    background: navy !important;
-    color: white;
-    font-weight: bold;
-}
+  tr.header {
+      background: navy !important;
+      color: white;
+      font-weight: bold;
+  }
 
-tr.subheader {
-    background: lightgray !important;
-    color: black;
-}
+  tr.subheader {
+      background: lightgray !important;
+      color: black;
+  }
 
-tr.headerLastRow {
-    border-bottom: 2px solid black;
-}
+  tr.headerLastRow {
+      border-bottom: 2px solid black;
+  }
 
-th.rowNumber, td.rowNumber {
-    text-align: right;
-}
+  th.rowNumber, td.rowNumber {
+      text-align: right;
+  }
 
 </style>
 <body>
 <table>
-<tr class = "header headerLastRow">
-<th style = "text-align: center; ">Col. 1</th>
-<th style = "text-align: center; ">Col. 2</th>
-<th style = "text-align: center; ">Col. 3</th>
-<th style = "text-align: center; ">Col. 4</th>
-</tr>
-<tr>
-<td style = "text-align: center; ">1</td>
-<td style = "text-align: center; ">false</td>
-<td style = "text-align: center; ">1.0</td>
-<td style = "text-align: center; ">1</td>
-</tr>
-<tr>
-<td style = "text-align: center; ">2</td>
-<td style = "text-align: center; ">true</td>
-<td style = "text-align: center; ">2.0</td>
-<td style = "text-align: center; ">2</td>
-</tr>
-<tr>
-<td style = "text-align: center; ">3</td>
-<td style = "text-align: center; ">false</td>
-<td style = "text-align: center; ">3.0</td>
-<td style = "text-align: center; ">3</td>
-</tr>
-<tr>
-<td style = "text-align: center; ">4</td>
-<td style = "text-align: center; ">true</td>
-<td style = "text-align: center; ">4.0</td>
-<td style = "text-align: center; ">4</td>
-</tr>
-<tr>
-<td style = "text-align: center; ">5</td>
-<td style = "text-align: center; ">false</td>
-<td style = "text-align: center; ">5.0</td>
-<td style = "text-align: center; ">5</td>
-</tr>
-<tr>
-<td style = "text-align: center; ">6</td>
-<td style = "text-align: center; ">true</td>
-<td style = "text-align: center; ">6.0</td>
-<td style = "text-align: center; ">6</td>
-</tr>
+  <tr class = "header headerLastRow">
+    <th style = "text-align: center; ">Col. 1</th>
+    <th style = "text-align: center; ">Col. 2</th>
+    <th style = "text-align: center; ">Col. 3</th>
+    <th style = "text-align: center; ">Col. 4</th>
+  </tr>
+  <tr>
+    <td style = "text-align: center; ">1</td>
+    <td style = "text-align: center; ">false</td>
+    <td style = "text-align: center; ">1.0</td>
+    <td style = "text-align: center; ">1</td>
+  </tr>
+  <tr>
+    <td style = "text-align: center; ">2</td>
+    <td style = "text-align: center; ">true</td>
+    <td style = "text-align: center; ">2.0</td>
+    <td style = "text-align: center; ">2</td>
+  </tr>
+  <tr>
+    <td style = "text-align: center; ">3</td>
+    <td style = "text-align: center; ">false</td>
+    <td style = "text-align: center; ">3.0</td>
+    <td style = "text-align: center; ">3</td>
+  </tr>
+  <tr>
+    <td style = "text-align: center; ">4</td>
+    <td style = "text-align: center; ">true</td>
+    <td style = "text-align: center; ">4.0</td>
+    <td style = "text-align: center; ">4</td>
+  </tr>
+  <tr>
+    <td style = "text-align: center; ">5</td>
+    <td style = "text-align: center; ">false</td>
+    <td style = "text-align: center; ">5.0</td>
+    <td style = "text-align: center; ">5</td>
+  </tr>
+  <tr>
+    <td style = "text-align: center; ">6</td>
+    <td style = "text-align: center; ">true</td>
+    <td style = "text-align: center; ">6.0</td>
+    <td style = "text-align: center; ">6</td>
+  </tr>
 </table>
 </body>
 </html>
@@ -317,88 +317,88 @@ th.rowNumber, td.rowNumber {
 <html>
 <meta charset="UTF-8">
 <style>
-table, td, th {
-    border-collapse: collapse;
-    font-family: sans-serif;
-}
+  table, td, th {
+      border-collapse: collapse;
+      font-family: sans-serif;
+  }
 
-td, th {
-    border-bottom: 0;
-    padding: 4px
-}
+  td, th {
+      border-bottom: 0;
+      padding: 4px
+  }
 
-tr:nth-child(odd) {
-    background: #eee;
-}
+  tr:nth-child(odd) {
+      background: #eee;
+  }
 
-tr:nth-child(even) {
-    background: #fff;
-}
+  tr:nth-child(even) {
+      background: #fff;
+  }
 
-tr.header {
-    background: navy !important;
-    color: white;
-    font-weight: bold;
-}
+  tr.header {
+      background: navy !important;
+      color: white;
+      font-weight: bold;
+  }
 
-tr.subheader {
-    background: lightgray !important;
-    color: black;
-}
+  tr.subheader {
+      background: lightgray !important;
+      color: black;
+  }
 
-tr.headerLastRow {
-    border-bottom: 2px solid black;
-}
+  tr.headerLastRow {
+      border-bottom: 2px solid black;
+  }
 
-th.rowNumber, td.rowNumber {
-    text-align: right;
-}
+  th.rowNumber, td.rowNumber {
+      text-align: right;
+  }
 
 </style>
 <body>
 <table>
-<tr class = "header headerLastRow">
-<th style = "text-align: left; ">Col. 1</th>
-<th style = "text-align: right; ">Col. 2</th>
-<th style = "text-align: center; ">Col. 3</th>
-<th style = "text-align: right; ">Col. 4</th>
-</tr>
-<tr>
-<td style = "text-align: left; ">1</td>
-<td style = "text-align: right; ">false</td>
-<td style = "text-align: center; ">1.0</td>
-<td style = "text-align: right; ">1</td>
-</tr>
-<tr>
-<td style = "text-align: left; ">2</td>
-<td style = "text-align: right; ">true</td>
-<td style = "text-align: center; ">2.0</td>
-<td style = "text-align: right; ">2</td>
-</tr>
-<tr>
-<td style = "text-align: left; ">3</td>
-<td style = "text-align: right; ">false</td>
-<td style = "text-align: center; ">3.0</td>
-<td style = "text-align: right; ">3</td>
-</tr>
-<tr>
-<td style = "text-align: left; ">4</td>
-<td style = "text-align: right; ">true</td>
-<td style = "text-align: center; ">4.0</td>
-<td style = "text-align: right; ">4</td>
-</tr>
-<tr>
-<td style = "text-align: left; ">5</td>
-<td style = "text-align: right; ">false</td>
-<td style = "text-align: center; ">5.0</td>
-<td style = "text-align: right; ">5</td>
-</tr>
-<tr>
-<td style = "text-align: left; ">6</td>
-<td style = "text-align: right; ">true</td>
-<td style = "text-align: center; ">6.0</td>
-<td style = "text-align: right; ">6</td>
-</tr>
+  <tr class = "header headerLastRow">
+    <th style = "text-align: left; ">Col. 1</th>
+    <th style = "text-align: right; ">Col. 2</th>
+    <th style = "text-align: center; ">Col. 3</th>
+    <th style = "text-align: right; ">Col. 4</th>
+  </tr>
+  <tr>
+    <td style = "text-align: left; ">1</td>
+    <td style = "text-align: right; ">false</td>
+    <td style = "text-align: center; ">1.0</td>
+    <td style = "text-align: right; ">1</td>
+  </tr>
+  <tr>
+    <td style = "text-align: left; ">2</td>
+    <td style = "text-align: right; ">true</td>
+    <td style = "text-align: center; ">2.0</td>
+    <td style = "text-align: right; ">2</td>
+  </tr>
+  <tr>
+    <td style = "text-align: left; ">3</td>
+    <td style = "text-align: right; ">false</td>
+    <td style = "text-align: center; ">3.0</td>
+    <td style = "text-align: right; ">3</td>
+  </tr>
+  <tr>
+    <td style = "text-align: left; ">4</td>
+    <td style = "text-align: right; ">true</td>
+    <td style = "text-align: center; ">4.0</td>
+    <td style = "text-align: right; ">4</td>
+  </tr>
+  <tr>
+    <td style = "text-align: left; ">5</td>
+    <td style = "text-align: right; ">false</td>
+    <td style = "text-align: center; ">5.0</td>
+    <td style = "text-align: right; ">5</td>
+  </tr>
+  <tr>
+    <td style = "text-align: left; ">6</td>
+    <td style = "text-align: right; ">true</td>
+    <td style = "text-align: center; ">6.0</td>
+    <td style = "text-align: right; ">6</td>
+  </tr>
 </table>
 </body>
 </html>
@@ -416,88 +416,88 @@ th.rowNumber, td.rowNumber {
 <html>
 <meta charset="UTF-8">
 <style>
-table, td, th {
-    border-collapse: collapse;
-    font-family: sans-serif;
-}
+  table, td, th {
+      border-collapse: collapse;
+      font-family: sans-serif;
+  }
 
-td, th {
-    border-bottom: 0;
-    padding: 4px
-}
+  td, th {
+      border-bottom: 0;
+      padding: 4px
+  }
 
-tr:nth-child(odd) {
-    background: #eee;
-}
+  tr:nth-child(odd) {
+      background: #eee;
+  }
 
-tr:nth-child(even) {
-    background: #fff;
-}
+  tr:nth-child(even) {
+      background: #fff;
+  }
 
-tr.header {
-    background: navy !important;
-    color: white;
-    font-weight: bold;
-}
+  tr.header {
+      background: navy !important;
+      color: white;
+      font-weight: bold;
+  }
 
-tr.subheader {
-    background: lightgray !important;
-    color: black;
-}
+  tr.subheader {
+      background: lightgray !important;
+      color: black;
+  }
 
-tr.headerLastRow {
-    border-bottom: 2px solid black;
-}
+  tr.headerLastRow {
+      border-bottom: 2px solid black;
+  }
 
-th.rowNumber, td.rowNumber {
-    text-align: right;
-}
+  th.rowNumber, td.rowNumber {
+      text-align: right;
+  }
 
 </style>
 <body>
 <table>
-<tr class = "header headerLastRow">
-<th style = "text-align: left; ">Col. 1</th>
-<th style = "text-align: right; ">Col. 2</th>
-<th style = "text-align: center; ">Col. 3</th>
-<th style = "text-align: right; ">Col. 4</th>
-</tr>
-<tr>
-<td style = "text-align: left; ">1</td>
-<td style = "text-align: right; ">false</td>
-<td style = "text-align: center; ">1.0</td>
-<td style = "text-align: left; ">1</td>
-</tr>
-<tr>
-<td style = "text-align: left; ">2</td>
-<td style = "text-align: right; ">true</td>
-<td style = "text-align: center; ">2.0</td>
-<td style = "text-align: right; ">2</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">3</td>
-<td style = "text-align: left; ">false</td>
-<td style = "text-align: center; ">3.0</td>
-<td style = "text-align: center; ">3</td>
-</tr>
-<tr>
-<td style = "text-align: left; ">4</td>
-<td style = "text-align: right; ">true</td>
-<td style = "text-align: center; ">4.0</td>
-<td style = "text-align: center; ">4</td>
-</tr>
-<tr>
-<td style = "text-align: left; ">5</td>
-<td style = "text-align: right; ">false</td>
-<td style = "text-align: center; ">5.0</td>
-<td style = "text-align: right; ">5</td>
-</tr>
-<tr>
-<td style = "text-align: left; ">6</td>
-<td style = "text-align: right; ">true</td>
-<td style = "text-align: center; ">6.0</td>
-<td style = "text-align: left; ">6</td>
-</tr>
+  <tr class = "header headerLastRow">
+    <th style = "text-align: left; ">Col. 1</th>
+    <th style = "text-align: right; ">Col. 2</th>
+    <th style = "text-align: center; ">Col. 3</th>
+    <th style = "text-align: right; ">Col. 4</th>
+  </tr>
+  <tr>
+    <td style = "text-align: left; ">1</td>
+    <td style = "text-align: right; ">false</td>
+    <td style = "text-align: center; ">1.0</td>
+    <td style = "text-align: left; ">1</td>
+  </tr>
+  <tr>
+    <td style = "text-align: left; ">2</td>
+    <td style = "text-align: right; ">true</td>
+    <td style = "text-align: center; ">2.0</td>
+    <td style = "text-align: right; ">2</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">3</td>
+    <td style = "text-align: left; ">false</td>
+    <td style = "text-align: center; ">3.0</td>
+    <td style = "text-align: center; ">3</td>
+  </tr>
+  <tr>
+    <td style = "text-align: left; ">4</td>
+    <td style = "text-align: right; ">true</td>
+    <td style = "text-align: center; ">4.0</td>
+    <td style = "text-align: center; ">4</td>
+  </tr>
+  <tr>
+    <td style = "text-align: left; ">5</td>
+    <td style = "text-align: right; ">false</td>
+    <td style = "text-align: center; ">5.0</td>
+    <td style = "text-align: right; ">5</td>
+  </tr>
+  <tr>
+    <td style = "text-align: left; ">6</td>
+    <td style = "text-align: right; ">true</td>
+    <td style = "text-align: center; ">6.0</td>
+    <td style = "text-align: left; ">6</td>
+  </tr>
 </table>
 </body>
 </html>
@@ -521,54 +521,54 @@ th.rowNumber, td.rowNumber {
 
     expected = """
 <table>
-<tr class = header>
-<th style = "text-align: left; ">A</th>
-<th style = "text-align: center; ">B</th>
-<th style = "text-align: right; ">C</th>
-<th style = "text-align: right; ">D</th>
-</tr>
-<tr class = "subheader headerLastRow">
-<th style = "text-align: left; ">a</th>
-<th style = "text-align: center; ">b</th>
-<th style = "text-align: right; ">c</th>
-<th style = "text-align: right; ">d</th>
-</tr>
-<tr>
-<td style = "text-align: left; ">1</td>
-<td style = "text-align: right; ">false</td>
-<td style = "text-align: center; ">1.0</td>
-<td style = "text-align: left; ">1</td>
-</tr>
-<tr>
-<td style = "text-align: left; ">2</td>
-<td style = "text-align: right; ">true</td>
-<td style = "text-align: center; ">2.0</td>
-<td style = "text-align: right; ">2</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">3</td>
-<td style = "text-align: left; ">false</td>
-<td style = "text-align: center; ">3.0</td>
-<td style = "text-align: center; ">3</td>
-</tr>
-<tr>
-<td style = "text-align: left; ">4</td>
-<td style = "text-align: right; ">true</td>
-<td style = "text-align: center; ">4.0</td>
-<td style = "text-align: center; ">4</td>
-</tr>
-<tr>
-<td style = "text-align: left; ">5</td>
-<td style = "text-align: right; ">false</td>
-<td style = "text-align: center; ">5.0</td>
-<td style = "text-align: right; ">5</td>
-</tr>
-<tr>
-<td style = "text-align: left; ">6</td>
-<td style = "text-align: right; ">true</td>
-<td style = "text-align: center; ">6.0</td>
-<td style = "text-align: left; ">6</td>
-</tr>
+  <tr class = header>
+    <th style = "text-align: left; ">A</th>
+    <th style = "text-align: center; ">B</th>
+    <th style = "text-align: right; ">C</th>
+    <th style = "text-align: right; ">D</th>
+  </tr>
+  <tr class = "subheader headerLastRow">
+    <th style = "text-align: left; ">a</th>
+    <th style = "text-align: center; ">b</th>
+    <th style = "text-align: right; ">c</th>
+    <th style = "text-align: right; ">d</th>
+  </tr>
+  <tr>
+    <td style = "text-align: left; ">1</td>
+    <td style = "text-align: right; ">false</td>
+    <td style = "text-align: center; ">1.0</td>
+    <td style = "text-align: left; ">1</td>
+  </tr>
+  <tr>
+    <td style = "text-align: left; ">2</td>
+    <td style = "text-align: right; ">true</td>
+    <td style = "text-align: center; ">2.0</td>
+    <td style = "text-align: right; ">2</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">3</td>
+    <td style = "text-align: left; ">false</td>
+    <td style = "text-align: center; ">3.0</td>
+    <td style = "text-align: center; ">3</td>
+  </tr>
+  <tr>
+    <td style = "text-align: left; ">4</td>
+    <td style = "text-align: right; ">true</td>
+    <td style = "text-align: center; ">4.0</td>
+    <td style = "text-align: center; ">4</td>
+  </tr>
+  <tr>
+    <td style = "text-align: left; ">5</td>
+    <td style = "text-align: right; ">false</td>
+    <td style = "text-align: center; ">5.0</td>
+    <td style = "text-align: right; ">5</td>
+  </tr>
+  <tr>
+    <td style = "text-align: left; ">6</td>
+    <td style = "text-align: right; ">true</td>
+    <td style = "text-align: center; ">6.0</td>
+    <td style = "text-align: left; ">6</td>
+  </tr>
 </table>
 """
 
@@ -587,54 +587,54 @@ th.rowNumber, td.rowNumber {
 
     expected = """
 <table>
-<tr class = header>
-<th style = "text-align: right; ">A</th>
-<th style = "text-align: center; ">B</th>
-<th style = "text-align: right; ">C</th>
-<th style = "text-align: right; ">D</th>
-</tr>
-<tr class = "subheader headerLastRow">
-<th style = "text-align: left; ">a</th>
-<th style = "text-align: left; ">b</th>
-<th style = "text-align: right; ">c</th>
-<th style = "text-align: center; ">d</th>
-</tr>
-<tr>
-<td style = "text-align: left; ">1</td>
-<td style = "text-align: right; ">false</td>
-<td style = "text-align: center; ">1.0</td>
-<td style = "text-align: left; ">1</td>
-</tr>
-<tr>
-<td style = "text-align: left; ">2</td>
-<td style = "text-align: right; ">true</td>
-<td style = "text-align: center; ">2.0</td>
-<td style = "text-align: right; ">2</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">3</td>
-<td style = "text-align: left; ">false</td>
-<td style = "text-align: center; ">3.0</td>
-<td style = "text-align: center; ">3</td>
-</tr>
-<tr>
-<td style = "text-align: left; ">4</td>
-<td style = "text-align: right; ">true</td>
-<td style = "text-align: center; ">4.0</td>
-<td style = "text-align: center; ">4</td>
-</tr>
-<tr>
-<td style = "text-align: left; ">5</td>
-<td style = "text-align: right; ">false</td>
-<td style = "text-align: center; ">5.0</td>
-<td style = "text-align: right; ">5</td>
-</tr>
-<tr>
-<td style = "text-align: left; ">6</td>
-<td style = "text-align: right; ">true</td>
-<td style = "text-align: center; ">6.0</td>
-<td style = "text-align: left; ">6</td>
-</tr>
+  <tr class = header>
+    <th style = "text-align: right; ">A</th>
+    <th style = "text-align: center; ">B</th>
+    <th style = "text-align: right; ">C</th>
+    <th style = "text-align: right; ">D</th>
+  </tr>
+  <tr class = "subheader headerLastRow">
+    <th style = "text-align: left; ">a</th>
+    <th style = "text-align: left; ">b</th>
+    <th style = "text-align: right; ">c</th>
+    <th style = "text-align: center; ">d</th>
+  </tr>
+  <tr>
+    <td style = "text-align: left; ">1</td>
+    <td style = "text-align: right; ">false</td>
+    <td style = "text-align: center; ">1.0</td>
+    <td style = "text-align: left; ">1</td>
+  </tr>
+  <tr>
+    <td style = "text-align: left; ">2</td>
+    <td style = "text-align: right; ">true</td>
+    <td style = "text-align: center; ">2.0</td>
+    <td style = "text-align: right; ">2</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">3</td>
+    <td style = "text-align: left; ">false</td>
+    <td style = "text-align: center; ">3.0</td>
+    <td style = "text-align: center; ">3</td>
+  </tr>
+  <tr>
+    <td style = "text-align: left; ">4</td>
+    <td style = "text-align: right; ">true</td>
+    <td style = "text-align: center; ">4.0</td>
+    <td style = "text-align: center; ">4</td>
+  </tr>
+  <tr>
+    <td style = "text-align: left; ">5</td>
+    <td style = "text-align: right; ">false</td>
+    <td style = "text-align: center; ">5.0</td>
+    <td style = "text-align: right; ">5</td>
+  </tr>
+  <tr>
+    <td style = "text-align: left; ">6</td>
+    <td style = "text-align: right; ">true</td>
+    <td style = "text-align: center; ">6.0</td>
+    <td style = "text-align: left; ">6</td>
+  </tr>
 </table>
 """
 
@@ -664,66 +664,66 @@ end
 <html>
 <meta charset="UTF-8">
 <style>
-table, td, th {
-    border-collapse: collapse;
-    font-family: sans-serif;
-}
+  table, td, th {
+      border-collapse: collapse;
+      font-family: sans-serif;
+  }
 
-td, th {
-    border-bottom: 0;
-    padding: 4px
-}
+  td, th {
+      border-bottom: 0;
+      padding: 4px
+  }
 
-tr:nth-child(odd) {
-    background: #eee;
-}
+  tr:nth-child(odd) {
+      background: #eee;
+  }
 
-tr:nth-child(even) {
-    background: #fff;
-}
+  tr:nth-child(even) {
+      background: #fff;
+  }
 
-tr.header {
-    background: navy !important;
-    color: white;
-    font-weight: bold;
-}
+  tr.header {
+      background: navy !important;
+      color: white;
+      font-weight: bold;
+  }
 
-tr.subheader {
-    background: lightgray !important;
-    color: black;
-}
+  tr.subheader {
+      background: lightgray !important;
+      color: black;
+  }
 
-tr.headerLastRow {
-    border-bottom: 2px solid black;
-}
+  tr.headerLastRow {
+      border-bottom: 2px solid black;
+  }
 
-th.rowNumber, td.rowNumber {
-    text-align: right;
-}
+  th.rowNumber, td.rowNumber {
+      text-align: right;
+  }
 
 </style>
 <body>
 <table>
-<tr class = "header headerLastRow">
-<th class = rowNumber>Row</th>
-<th style = "text-align: right; ">Col. 1</th>
-<th style = "text-align: right; ">Col. 3</th>
-</tr>
-<tr>
-<td class = rowNumber>2</td>
-<td style = "text-align: right; ">2</td>
-<td style = "text-align: right; ">2.0</td>
-</tr>
-<tr>
-<td class = rowNumber>4</td>
-<td style = "text-align: right; ">4</td>
-<td style = "text-align: right; ">4.0</td>
-</tr>
-<tr>
-<td class = rowNumber>6</td>
-<td style = "text-align: right; ">6</td>
-<td style = "text-align: right; ">6.0</td>
-</tr>
+  <tr class = "header headerLastRow">
+    <th class = rowNumber>Row</th>
+    <th style = "text-align: right; ">Col. 1</th>
+    <th style = "text-align: right; ">Col. 3</th>
+  </tr>
+  <tr>
+    <td class = rowNumber>2</td>
+    <td style = "text-align: right; ">2</td>
+    <td style = "text-align: right; ">2.0</td>
+  </tr>
+  <tr>
+    <td class = rowNumber>4</td>
+    <td style = "text-align: right; ">4</td>
+    <td style = "text-align: right; ">4.0</td>
+  </tr>
+  <tr>
+    <td class = rowNumber>6</td>
+    <td style = "text-align: right; ">6</td>
+    <td style = "text-align: right; ">6.0</td>
+  </tr>
 </table>
 </body>
 </html>
@@ -742,66 +742,66 @@ th.rowNumber, td.rowNumber {
 <html>
 <meta charset="UTF-8">
 <style>
-table, td, th {
-    border-collapse: collapse;
-    font-family: sans-serif;
-}
+  table, td, th {
+      border-collapse: collapse;
+      font-family: sans-serif;
+  }
 
-td, th {
-    border-bottom: 0;
-    padding: 4px
-}
+  td, th {
+      border-bottom: 0;
+      padding: 4px
+  }
 
-tr:nth-child(odd) {
-    background: #eee;
-}
+  tr:nth-child(odd) {
+      background: #eee;
+  }
 
-tr:nth-child(even) {
-    background: #fff;
-}
+  tr:nth-child(even) {
+      background: #fff;
+  }
 
-tr.header {
-    background: navy !important;
-    color: white;
-    font-weight: bold;
-}
+  tr.header {
+      background: navy !important;
+      color: white;
+      font-weight: bold;
+  }
 
-tr.subheader {
-    background: lightgray !important;
-    color: black;
-}
+  tr.subheader {
+      background: lightgray !important;
+      color: black;
+  }
 
-tr.headerLastRow {
-    border-bottom: 2px solid black;
-}
+  tr.headerLastRow {
+      border-bottom: 2px solid black;
+  }
 
-th.rowNumber, td.rowNumber {
-    text-align: right;
-}
+  th.rowNumber, td.rowNumber {
+      text-align: right;
+  }
 
 </style>
 <body>
 <table>
-<tr class = "header headerLastRow">
-<th class = rowNumber>Row</th>
-<th style = "text-align: center; ">Col. 1</th>
-<th style = "text-align: left; ">Col. 3</th>
-</tr>
-<tr>
-<td class = rowNumber>2</td>
-<td style = "text-align: center; ">2</td>
-<td style = "text-align: left; ">2.0</td>
-</tr>
-<tr>
-<td class = rowNumber>4</td>
-<td style = "text-align: center; ">4</td>
-<td style = "text-align: left; ">4.0</td>
-</tr>
-<tr>
-<td class = rowNumber>6</td>
-<td style = "text-align: center; ">6</td>
-<td style = "text-align: left; ">6.0</td>
-</tr>
+  <tr class = "header headerLastRow">
+    <th class = rowNumber>Row</th>
+    <th style = "text-align: center; ">Col. 1</th>
+    <th style = "text-align: left; ">Col. 3</th>
+  </tr>
+  <tr>
+    <td class = rowNumber>2</td>
+    <td style = "text-align: center; ">2</td>
+    <td style = "text-align: left; ">2.0</td>
+  </tr>
+  <tr>
+    <td class = rowNumber>4</td>
+    <td style = "text-align: center; ">4</td>
+    <td style = "text-align: left; ">4.0</td>
+  </tr>
+  <tr>
+    <td class = rowNumber>6</td>
+    <td style = "text-align: center; ">6</td>
+    <td style = "text-align: left; ">6.0</td>
+  </tr>
 </table>
 </body>
 </html>
@@ -826,88 +826,88 @@ end
 <html>
 <meta charset="UTF-8">
 <style>
-table, td, th {
-    border-collapse: collapse;
-    font-family: sans-serif;
-}
+  table, td, th {
+      border-collapse: collapse;
+      font-family: sans-serif;
+  }
 
-td, th {
-    border-bottom: 0;
-    padding: 4px
-}
+  td, th {
+      border-bottom: 0;
+      padding: 4px
+  }
 
-tr:nth-child(odd) {
-    background: #eee;
-}
+  tr:nth-child(odd) {
+      background: #eee;
+  }
 
-tr:nth-child(even) {
-    background: #fff;
-}
+  tr:nth-child(even) {
+      background: #fff;
+  }
 
-tr.header {
-    background: navy !important;
-    color: white;
-    font-weight: bold;
-}
+  tr.header {
+      background: navy !important;
+      color: white;
+      font-weight: bold;
+  }
 
-tr.subheader {
-    background: lightgray !important;
-    color: black;
-}
+  tr.subheader {
+      background: lightgray !important;
+      color: black;
+  }
 
-tr.headerLastRow {
-    border-bottom: 2px solid black;
-}
+  tr.headerLastRow {
+      border-bottom: 2px solid black;
+  }
 
-th.rowNumber, td.rowNumber {
-    text-align: right;
-}
+  th.rowNumber, td.rowNumber {
+      text-align: right;
+  }
 
 </style>
 <body>
 <table>
-<tr class = "header headerLastRow">
-<th style = "text-align: right; ">Col. 1</th>
-<th style = "text-align: right; ">Col. 2</th>
-<th style = "text-align: right; ">Col. 3</th>
-<th style = "text-align: right; ">Col. 4</th>
-</tr>
-<tr>
-<td style = "text-align: right; ">1</td>
-<td style = "text-align: right; ">false</td>
-<td style = "text-align: right; ">1</td>
-<td style = "text-align: right; ">1</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">0</td>
-<td style = "text-align: right; ">true</td>
-<td style = "text-align: right; ">0</td>
-<td style = "text-align: right; ">0</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">3</td>
-<td style = "text-align: right; ">false</td>
-<td style = "text-align: right; ">3</td>
-<td style = "text-align: right; ">3</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">0</td>
-<td style = "text-align: right; ">true</td>
-<td style = "text-align: right; ">0</td>
-<td style = "text-align: right; ">0</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">5</td>
-<td style = "text-align: right; ">false</td>
-<td style = "text-align: right; ">5</td>
-<td style = "text-align: right; ">5</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">0</td>
-<td style = "text-align: right; ">true</td>
-<td style = "text-align: right; ">0</td>
-<td style = "text-align: right; ">0</td>
-</tr>
+  <tr class = "header headerLastRow">
+    <th style = "text-align: right; ">Col. 1</th>
+    <th style = "text-align: right; ">Col. 2</th>
+    <th style = "text-align: right; ">Col. 3</th>
+    <th style = "text-align: right; ">Col. 4</th>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">1</td>
+    <td style = "text-align: right; ">false</td>
+    <td style = "text-align: right; ">1</td>
+    <td style = "text-align: right; ">1</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">0</td>
+    <td style = "text-align: right; ">true</td>
+    <td style = "text-align: right; ">0</td>
+    <td style = "text-align: right; ">0</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">3</td>
+    <td style = "text-align: right; ">false</td>
+    <td style = "text-align: right; ">3</td>
+    <td style = "text-align: right; ">3</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">0</td>
+    <td style = "text-align: right; ">true</td>
+    <td style = "text-align: right; ">0</td>
+    <td style = "text-align: right; ">0</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">5</td>
+    <td style = "text-align: right; ">false</td>
+    <td style = "text-align: right; ">5</td>
+    <td style = "text-align: right; ">5</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">0</td>
+    <td style = "text-align: right; ">true</td>
+    <td style = "text-align: right; ">0</td>
+    <td style = "text-align: right; ">0</td>
+  </tr>
 </table>
 </body>
 </html>
@@ -928,51 +928,51 @@ end
 
 @testset "Not standalone printing" begin
     expected = """
-    <table>
-    <tr class = "header headerLastRow">
+<table>
+  <tr class = "header headerLastRow">
     <th style = "text-align: right; ">Col. 1</th>
     <th style = "text-align: right; ">Col. 2</th>
     <th style = "text-align: right; ">Col. 3</th>
     <th style = "text-align: right; ">Col. 4</th>
-    </tr>
-    <tr>
+  </tr>
+  <tr>
     <td style = "text-align: right; ">1</td>
     <td style = "text-align: right; ">false</td>
     <td style = "text-align: right; ">1.0</td>
     <td style = "text-align: right; ">1</td>
-    </tr>
-    <tr>
+  </tr>
+  <tr>
     <td style = "text-align: right; ">2</td>
     <td style = "text-align: right; ">true</td>
     <td style = "text-align: right; ">2.0</td>
     <td style = "text-align: right; ">2</td>
-    </tr>
-    <tr>
+  </tr>
+  <tr>
     <td style = "text-align: right; ">3</td>
     <td style = "text-align: right; ">false</td>
     <td style = "text-align: right; ">3.0</td>
     <td style = "text-align: right; ">3</td>
-    </tr>
-    <tr>
+  </tr>
+  <tr>
     <td style = "text-align: right; ">4</td>
     <td style = "text-align: right; ">true</td>
     <td style = "text-align: right; ">4.0</td>
     <td style = "text-align: right; ">4</td>
-    </tr>
-    <tr>
+  </tr>
+  <tr>
     <td style = "text-align: right; ">5</td>
     <td style = "text-align: right; ">false</td>
     <td style = "text-align: right; ">5.0</td>
     <td style = "text-align: right; ">5</td>
-    </tr>
-    <tr>
+  </tr>
+  <tr>
     <td style = "text-align: right; ">6</td>
     <td style = "text-align: right; ">true</td>
     <td style = "text-align: right; ">6.0</td>
     <td style = "text-align: right; ">6</td>
-    </tr>
-    </table>
-    """
+  </tr>
+</table>
+"""
 
     result = pretty_table(String, data, backend = :html, standalone = false)
     @test result == expected
@@ -987,95 +987,95 @@ end
 <html>
 <meta charset="UTF-8">
 <style>
-table, td, th {
-    border-collapse: collapse;
-    font-family: sans-serif;
-}
+  table, td, th {
+      border-collapse: collapse;
+      font-family: sans-serif;
+  }
 
-td, th {
-    border-bottom: 0;
-    padding: 4px
-}
+  td, th {
+      border-bottom: 0;
+      padding: 4px
+  }
 
-tr:nth-child(odd) {
-    background: #eee;
-}
+  tr:nth-child(odd) {
+      background: #eee;
+  }
 
-tr:nth-child(even) {
-    background: #fff;
-}
+  tr:nth-child(even) {
+      background: #fff;
+  }
 
-tr.header {
-    background: navy !important;
-    color: white;
-    font-weight: bold;
-}
+  tr.header {
+      background: navy !important;
+      color: white;
+      font-weight: bold;
+  }
 
-tr.subheader {
-    background: lightgray !important;
-    color: black;
-}
+  tr.subheader {
+      background: lightgray !important;
+      color: black;
+  }
 
-tr.headerLastRow {
-    border-bottom: 2px solid black;
-}
+  tr.headerLastRow {
+      border-bottom: 2px solid black;
+  }
 
-th.rowNumber, td.rowNumber {
-    text-align: right;
-}
+  th.rowNumber, td.rowNumber {
+      text-align: right;
+  }
 
 </style>
 <body>
 <table>
-<tr class = "header headerLastRow">
-<th class = rowNumber>Row</th>
-<th style = "text-align: left; ">Col. 1</th>
-<th style = "text-align: right; ">Col. 2</th>
-<th style = "text-align: center; ">Col. 3</th>
-<th style = "text-align: right; ">Col. 4</th>
-</tr>
-<tr>
-<td class = rowNumber>1</td>
-<td style = "text-align: left; ">1</td>
-<td style = "text-align: right; ">false</td>
-<td style = "text-align: center; ">1.0</td>
-<td style = "text-align: right; ">1</td>
-</tr>
-<tr>
-<td class = rowNumber>2</td>
-<td style = "text-align: left; ">2</td>
-<td style = "text-align: right; ">true</td>
-<td style = "text-align: center; ">2.0</td>
-<td style = "text-align: right; ">2</td>
-</tr>
-<tr>
-<td class = rowNumber>3</td>
-<td style = "text-align: left; ">3</td>
-<td style = "text-align: right; ">false</td>
-<td style = "text-align: center; ">3.0</td>
-<td style = "text-align: right; ">3</td>
-</tr>
-<tr>
-<td class = rowNumber>4</td>
-<td style = "text-align: left; ">4</td>
-<td style = "text-align: right; ">true</td>
-<td style = "text-align: center; ">4.0</td>
-<td style = "text-align: right; ">4</td>
-</tr>
-<tr>
-<td class = rowNumber>5</td>
-<td style = "text-align: left; ">5</td>
-<td style = "text-align: right; ">false</td>
-<td style = "text-align: center; ">5.0</td>
-<td style = "text-align: right; ">5</td>
-</tr>
-<tr>
-<td class = rowNumber>6</td>
-<td style = "text-align: left; ">6</td>
-<td style = "text-align: right; ">true</td>
-<td style = "text-align: center; ">6.0</td>
-<td style = "text-align: right; ">6</td>
-</tr>
+  <tr class = "header headerLastRow">
+    <th class = rowNumber>Row</th>
+    <th style = "text-align: left; ">Col. 1</th>
+    <th style = "text-align: right; ">Col. 2</th>
+    <th style = "text-align: center; ">Col. 3</th>
+    <th style = "text-align: right; ">Col. 4</th>
+  </tr>
+  <tr>
+    <td class = rowNumber>1</td>
+    <td style = "text-align: left; ">1</td>
+    <td style = "text-align: right; ">false</td>
+    <td style = "text-align: center; ">1.0</td>
+    <td style = "text-align: right; ">1</td>
+  </tr>
+  <tr>
+    <td class = rowNumber>2</td>
+    <td style = "text-align: left; ">2</td>
+    <td style = "text-align: right; ">true</td>
+    <td style = "text-align: center; ">2.0</td>
+    <td style = "text-align: right; ">2</td>
+  </tr>
+  <tr>
+    <td class = rowNumber>3</td>
+    <td style = "text-align: left; ">3</td>
+    <td style = "text-align: right; ">false</td>
+    <td style = "text-align: center; ">3.0</td>
+    <td style = "text-align: right; ">3</td>
+  </tr>
+  <tr>
+    <td class = rowNumber>4</td>
+    <td style = "text-align: left; ">4</td>
+    <td style = "text-align: right; ">true</td>
+    <td style = "text-align: center; ">4.0</td>
+    <td style = "text-align: right; ">4</td>
+  </tr>
+  <tr>
+    <td class = rowNumber>5</td>
+    <td style = "text-align: left; ">5</td>
+    <td style = "text-align: right; ">false</td>
+    <td style = "text-align: center; ">5.0</td>
+    <td style = "text-align: right; ">5</td>
+  </tr>
+  <tr>
+    <td class = rowNumber>6</td>
+    <td style = "text-align: left; ">6</td>
+    <td style = "text-align: right; ">true</td>
+    <td style = "text-align: center; ">6.0</td>
+    <td style = "text-align: right; ">6</td>
+  </tr>
 </table>
 </body>
 </html>
@@ -1105,82 +1105,82 @@ end
 <html>
 <meta charset="UTF-8">
 <style>
-table, td, th {
-    border-collapse: collapse;
-    font-family: sans-serif;
-}
+  table, td, th {
+      border-collapse: collapse;
+      font-family: sans-serif;
+  }
 
-td, th {
-    border-bottom: 0;
-    padding: 4px
-}
+  td, th {
+      border-bottom: 0;
+      padding: 4px
+  }
 
-tr:nth-child(odd) {
-    background: #eee;
-}
+  tr:nth-child(odd) {
+      background: #eee;
+  }
 
-tr:nth-child(even) {
-    background: #fff;
-}
+  tr:nth-child(even) {
+      background: #fff;
+  }
 
-tr.header {
-    background: navy !important;
-    color: white;
-    font-weight: bold;
-}
+  tr.header {
+      background: navy !important;
+      color: white;
+      font-weight: bold;
+  }
 
-tr.subheader {
-    background: lightgray !important;
-    color: black;
-}
+  tr.subheader {
+      background: lightgray !important;
+      color: black;
+  }
 
-tr.headerLastRow {
-    border-bottom: 2px solid black;
-}
+  tr.headerLastRow {
+      border-bottom: 2px solid black;
+  }
 
-th.rowNumber, td.rowNumber {
-    text-align: right;
-}
+  th.rowNumber, td.rowNumber {
+      text-align: right;
+  }
 
 </style>
 <body>
 <table>
-<tr class = "header headerLastRow">
-<th style = "text-align: right; ">Col. 1</th>
-</tr>
-<tr>
-<td style = "text-align: right; ">0</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">1</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">2</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">3</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">4</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">5</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">6</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">7</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">8</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">9</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">10</td>
-</tr>
+  <tr class = "header headerLastRow">
+    <th style = "text-align: right; ">Col. 1</th>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">0</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">1</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">2</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">3</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">4</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">5</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">6</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">7</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">8</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">9</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">10</td>
+  </tr>
 </table>
 </body>
 </html>
@@ -1194,94 +1194,94 @@ th.rowNumber, td.rowNumber {
 <html>
 <meta charset="UTF-8">
 <style>
-table, td, th {
-    border-collapse: collapse;
-    font-family: sans-serif;
-}
+  table, td, th {
+      border-collapse: collapse;
+      font-family: sans-serif;
+  }
 
-td, th {
-    border-bottom: 0;
-    padding: 4px
-}
+  td, th {
+      border-bottom: 0;
+      padding: 4px
+  }
 
-tr:nth-child(odd) {
-    background: #eee;
-}
+  tr:nth-child(odd) {
+      background: #eee;
+  }
 
-tr:nth-child(even) {
-    background: #fff;
-}
+  tr:nth-child(even) {
+      background: #fff;
+  }
 
-tr.header {
-    background: navy !important;
-    color: white;
-    font-weight: bold;
-}
+  tr.header {
+      background: navy !important;
+      color: white;
+      font-weight: bold;
+  }
 
-tr.subheader {
-    background: lightgray !important;
-    color: black;
-}
+  tr.subheader {
+      background: lightgray !important;
+      color: black;
+  }
 
-tr.headerLastRow {
-    border-bottom: 2px solid black;
-}
+  tr.headerLastRow {
+      border-bottom: 2px solid black;
+  }
 
-th.rowNumber, td.rowNumber {
-    text-align: right;
-}
+  th.rowNumber, td.rowNumber {
+      text-align: right;
+  }
 
 </style>
 <body>
 <table>
-<tr class = "header headerLastRow">
-<th class = rowNumber>Row</th>
-<th style = "text-align: center; ">Col. 1</th>
-</tr>
-<tr>
-<td class = rowNumber>1</td>
-<td style = "text-align: center; ">0</td>
-</tr>
-<tr>
-<td class = rowNumber>2</td>
-<td style = "text-align: center; ">1</td>
-</tr>
-<tr>
-<td class = rowNumber>3</td>
-<td style = "text-align: center; ">2</td>
-</tr>
-<tr>
-<td class = rowNumber>4</td>
-<td style = "text-align: center; ">3</td>
-</tr>
-<tr>
-<td class = rowNumber>5</td>
-<td style = "text-align: center; ">4</td>
-</tr>
-<tr>
-<td class = rowNumber>6</td>
-<td style = "text-align: center; ">5</td>
-</tr>
-<tr>
-<td class = rowNumber>7</td>
-<td style = "text-align: center; ">6</td>
-</tr>
-<tr>
-<td class = rowNumber>8</td>
-<td style = "text-align: center; ">7</td>
-</tr>
-<tr>
-<td class = rowNumber>9</td>
-<td style = "text-align: center; ">8</td>
-</tr>
-<tr>
-<td class = rowNumber>10</td>
-<td style = "text-align: center; ">9</td>
-</tr>
-<tr>
-<td class = rowNumber>11</td>
-<td style = "text-align: center; ">10</td>
-</tr>
+  <tr class = "header headerLastRow">
+    <th class = rowNumber>Row</th>
+    <th style = "text-align: center; ">Col. 1</th>
+  </tr>
+  <tr>
+    <td class = rowNumber>1</td>
+    <td style = "text-align: center; ">0</td>
+  </tr>
+  <tr>
+    <td class = rowNumber>2</td>
+    <td style = "text-align: center; ">1</td>
+  </tr>
+  <tr>
+    <td class = rowNumber>3</td>
+    <td style = "text-align: center; ">2</td>
+  </tr>
+  <tr>
+    <td class = rowNumber>4</td>
+    <td style = "text-align: center; ">3</td>
+  </tr>
+  <tr>
+    <td class = rowNumber>5</td>
+    <td style = "text-align: center; ">4</td>
+  </tr>
+  <tr>
+    <td class = rowNumber>6</td>
+    <td style = "text-align: center; ">5</td>
+  </tr>
+  <tr>
+    <td class = rowNumber>7</td>
+    <td style = "text-align: center; ">6</td>
+  </tr>
+  <tr>
+    <td class = rowNumber>8</td>
+    <td style = "text-align: center; ">7</td>
+  </tr>
+  <tr>
+    <td class = rowNumber>9</td>
+    <td style = "text-align: center; ">8</td>
+  </tr>
+  <tr>
+    <td class = rowNumber>10</td>
+    <td style = "text-align: center; ">9</td>
+  </tr>
+  <tr>
+    <td class = rowNumber>11</td>
+    <td style = "text-align: center; ">10</td>
+  </tr>
 </table>
 </body>
 </html>
@@ -1315,26 +1315,26 @@ end
 
     expected = """
 <table>
-<tr class = "header headerLastRow">
-<th style = "text-align: right; ">Col. 1</th>
-<th style = "text-align: right; ">Col. 2</th>
-<th style = "text-align: right; ">Col. 3</th>
-</tr>
-<tr>
-<td style = "text-align: right; ">missing</td>
-<td style = "text-align: right; ">missing</td>
-<td style = "text-align: right; ">#undef</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">nothing</td>
-<td style = "text-align: right; ">nothing</td>
-<td style = "text-align: right; ">#undef</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">missing</td>
-<td style = "text-align: right; ">nothing</td>
-<td style = "text-align: right; ">#undef</td>
-</tr>
+  <tr class = "header headerLastRow">
+    <th style = "text-align: right; ">Col. 1</th>
+    <th style = "text-align: right; ">Col. 2</th>
+    <th style = "text-align: right; ">Col. 3</th>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">missing</td>
+    <td style = "text-align: right; ">missing</td>
+    <td style = "text-align: right; ">#undef</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">nothing</td>
+    <td style = "text-align: right; ">nothing</td>
+    <td style = "text-align: right; ">#undef</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">missing</td>
+    <td style = "text-align: right; ">nothing</td>
+    <td style = "text-align: right; ">#undef</td>
+  </tr>
 </table>
 """
 
@@ -1350,49 +1350,49 @@ end
 
     expected = """
 <table>
-<caption style = "text-align: left; ">This is a very very long title that will be displayed above the table.</caption>
-<tr class = "header headerLastRow">
-<th style = "text-align: right; ">Col. 1</th>
-<th style = "text-align: right; ">Col. 2</th>
-<th style = "text-align: right; ">Col. 3</th>
-<th style = "text-align: right; ">Col. 4</th>
-</tr>
-<tr>
-<td style = "text-align: right; ">1</td>
-<td style = "text-align: right; ">false</td>
-<td style = "text-align: right; ">1.0</td>
-<td style = "text-align: right; ">1</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">2</td>
-<td style = "text-align: right; ">true</td>
-<td style = "text-align: right; ">2.0</td>
-<td style = "text-align: right; ">2</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">3</td>
-<td style = "text-align: right; ">false</td>
-<td style = "text-align: right; ">3.0</td>
-<td style = "text-align: right; ">3</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">4</td>
-<td style = "text-align: right; ">true</td>
-<td style = "text-align: right; ">4.0</td>
-<td style = "text-align: right; ">4</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">5</td>
-<td style = "text-align: right; ">false</td>
-<td style = "text-align: right; ">5.0</td>
-<td style = "text-align: right; ">5</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">6</td>
-<td style = "text-align: right; ">true</td>
-<td style = "text-align: right; ">6.0</td>
-<td style = "text-align: right; ">6</td>
-</tr>
+  <caption style = "text-align: left; ">This is a very very long title that will be displayed above the table.</caption>
+  <tr class = "header headerLastRow">
+    <th style = "text-align: right; ">Col. 1</th>
+    <th style = "text-align: right; ">Col. 2</th>
+    <th style = "text-align: right; ">Col. 3</th>
+    <th style = "text-align: right; ">Col. 4</th>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">1</td>
+    <td style = "text-align: right; ">false</td>
+    <td style = "text-align: right; ">1.0</td>
+    <td style = "text-align: right; ">1</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">2</td>
+    <td style = "text-align: right; ">true</td>
+    <td style = "text-align: right; ">2.0</td>
+    <td style = "text-align: right; ">2</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">3</td>
+    <td style = "text-align: right; ">false</td>
+    <td style = "text-align: right; ">3.0</td>
+    <td style = "text-align: right; ">3</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">4</td>
+    <td style = "text-align: right; ">true</td>
+    <td style = "text-align: right; ">4.0</td>
+    <td style = "text-align: right; ">4</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">5</td>
+    <td style = "text-align: right; ">false</td>
+    <td style = "text-align: right; ">5.0</td>
+    <td style = "text-align: right; ">5</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">6</td>
+    <td style = "text-align: right; ">true</td>
+    <td style = "text-align: right; ">6.0</td>
+    <td style = "text-align: right; ">6</td>
+  </tr>
 </table>
 """
 
@@ -1402,49 +1402,49 @@ end
 
     expected = """
 <table>
-<caption style = "text-align: center; ">This is a very very long title that will be displayed above the table.</caption>
-<tr class = "header headerLastRow">
-<th style = "text-align: right; ">Col. 1</th>
-<th style = "text-align: right; ">Col. 2</th>
-<th style = "text-align: right; ">Col. 3</th>
-<th style = "text-align: right; ">Col. 4</th>
-</tr>
-<tr>
-<td style = "text-align: right; ">1</td>
-<td style = "text-align: right; ">false</td>
-<td style = "text-align: right; ">1.0</td>
-<td style = "text-align: right; ">1</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">2</td>
-<td style = "text-align: right; ">true</td>
-<td style = "text-align: right; ">2.0</td>
-<td style = "text-align: right; ">2</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">3</td>
-<td style = "text-align: right; ">false</td>
-<td style = "text-align: right; ">3.0</td>
-<td style = "text-align: right; ">3</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">4</td>
-<td style = "text-align: right; ">true</td>
-<td style = "text-align: right; ">4.0</td>
-<td style = "text-align: right; ">4</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">5</td>
-<td style = "text-align: right; ">false</td>
-<td style = "text-align: right; ">5.0</td>
-<td style = "text-align: right; ">5</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">6</td>
-<td style = "text-align: right; ">true</td>
-<td style = "text-align: right; ">6.0</td>
-<td style = "text-align: right; ">6</td>
-</tr>
+  <caption style = "text-align: center; ">This is a very very long title that will be displayed above the table.</caption>
+  <tr class = "header headerLastRow">
+    <th style = "text-align: right; ">Col. 1</th>
+    <th style = "text-align: right; ">Col. 2</th>
+    <th style = "text-align: right; ">Col. 3</th>
+    <th style = "text-align: right; ">Col. 4</th>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">1</td>
+    <td style = "text-align: right; ">false</td>
+    <td style = "text-align: right; ">1.0</td>
+    <td style = "text-align: right; ">1</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">2</td>
+    <td style = "text-align: right; ">true</td>
+    <td style = "text-align: right; ">2.0</td>
+    <td style = "text-align: right; ">2</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">3</td>
+    <td style = "text-align: right; ">false</td>
+    <td style = "text-align: right; ">3.0</td>
+    <td style = "text-align: right; ">3</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">4</td>
+    <td style = "text-align: right; ">true</td>
+    <td style = "text-align: right; ">4.0</td>
+    <td style = "text-align: right; ">4</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">5</td>
+    <td style = "text-align: right; ">false</td>
+    <td style = "text-align: right; ">5.0</td>
+    <td style = "text-align: right; ">5</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">6</td>
+    <td style = "text-align: right; ">true</td>
+    <td style = "text-align: right; ">6.0</td>
+    <td style = "text-align: right; ">6</td>
+  </tr>
 </table>
 """
 
@@ -1455,49 +1455,49 @@ end
 
     expected = """
 <table>
-<caption style = "text-align: right; ">This is a very very long title that will be displayed above the table.</caption>
-<tr class = "header headerLastRow">
-<th style = "text-align: right; ">Col. 1</th>
-<th style = "text-align: right; ">Col. 2</th>
-<th style = "text-align: right; ">Col. 3</th>
-<th style = "text-align: right; ">Col. 4</th>
-</tr>
-<tr>
-<td style = "text-align: right; ">1</td>
-<td style = "text-align: right; ">false</td>
-<td style = "text-align: right; ">1.0</td>
-<td style = "text-align: right; ">1</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">2</td>
-<td style = "text-align: right; ">true</td>
-<td style = "text-align: right; ">2.0</td>
-<td style = "text-align: right; ">2</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">3</td>
-<td style = "text-align: right; ">false</td>
-<td style = "text-align: right; ">3.0</td>
-<td style = "text-align: right; ">3</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">4</td>
-<td style = "text-align: right; ">true</td>
-<td style = "text-align: right; ">4.0</td>
-<td style = "text-align: right; ">4</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">5</td>
-<td style = "text-align: right; ">false</td>
-<td style = "text-align: right; ">5.0</td>
-<td style = "text-align: right; ">5</td>
-</tr>
-<tr>
-<td style = "text-align: right; ">6</td>
-<td style = "text-align: right; ">true</td>
-<td style = "text-align: right; ">6.0</td>
-<td style = "text-align: right; ">6</td>
-</tr>
+  <caption style = "text-align: right; ">This is a very very long title that will be displayed above the table.</caption>
+  <tr class = "header headerLastRow">
+    <th style = "text-align: right; ">Col. 1</th>
+    <th style = "text-align: right; ">Col. 2</th>
+    <th style = "text-align: right; ">Col. 3</th>
+    <th style = "text-align: right; ">Col. 4</th>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">1</td>
+    <td style = "text-align: right; ">false</td>
+    <td style = "text-align: right; ">1.0</td>
+    <td style = "text-align: right; ">1</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">2</td>
+    <td style = "text-align: right; ">true</td>
+    <td style = "text-align: right; ">2.0</td>
+    <td style = "text-align: right; ">2</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">3</td>
+    <td style = "text-align: right; ">false</td>
+    <td style = "text-align: right; ">3.0</td>
+    <td style = "text-align: right; ">3</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">4</td>
+    <td style = "text-align: right; ">true</td>
+    <td style = "text-align: right; ">4.0</td>
+    <td style = "text-align: right; ">4</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">5</td>
+    <td style = "text-align: right; ">false</td>
+    <td style = "text-align: right; ">5.0</td>
+    <td style = "text-align: right; ">5</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right; ">6</td>
+    <td style = "text-align: right; ">true</td>
+    <td style = "text-align: right; ">6.0</td>
+    <td style = "text-align: right; ">6</td>
+  </tr>
 </table>
 """
 
