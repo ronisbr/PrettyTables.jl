@@ -121,28 +121,37 @@ function _pt_latex(io, pinfo;
     vlines == nothing && (vlines = tf.vlines)
     vlines = _process_vlines(vlines, num_printed_cols + show_row_number)
 
+    # Variables to store information about indentation
+    # ==========================================================================
+
+    il = 0 # ......................................... Current indentation level
+    ns = 2 # ........................ Number of spaces in each indentation level
+
     # Print LaTeX header
     # ==========================================================================
 
     if table_type == :tabular
-        println(buf, "\\begin{table}")
-        length(title) > 0 && println(buf, "\\caption{$title}")
+        _aprintln(buf, "\\begin{table}", il, ns)
+        il += 1
+        length(title) > 0 && _aprintln(buf, "\\caption{$title}", il, ns)
     end
 
-    println(buf,"""
-            \\begin{$table_env}$(_latex_table_desc(id_cols,
-                                                   alignment,
-                                                   show_row_number,
-                                                   vlines,
-                                                   left_vline,
-                                                   mid_vline,
-                                                   right_vline))""")
+    _aprintln(buf,"""
+              \\begin{$table_env}$(_latex_table_desc(id_cols,
+                                                     alignment,
+                                                     show_row_number,
+                                                     vlines,
+                                                     left_vline,
+                                                     mid_vline,
+                                                     right_vline))""",
+              il, ns)
+    il += 1
 
     if table_type == :longtable
-        length(title) > 0 && println(buf, "\\caption{$title}\\\\")
+        length(title) > 0 && _aprintln(buf, "\\caption{$title}\\\\", il, ns)
     end
 
-    0 ∈ hlines && println(buf, top_line)
+    0 ∈ hlines && _aprintln(buf, top_line, il, ns)
 
     # Data header
     # ==========================================================================
@@ -154,6 +163,8 @@ function _pt_latex(io, pinfo;
         @inbounds @views for i = 1:header_num_rows
             # The text "Row" must appear only on the first line.
             if show_row_number
+                _aprint(buf, "", il, ns)
+
                 if i == 1
                     print(buf, _latex_envs("Row", header_envs))
                 end
@@ -162,6 +173,9 @@ function _pt_latex(io, pinfo;
             end
 
             for j = 1:num_printed_cols
+                # Apply the alignment to this row.
+                (!show_row_number && j == 1) && _aprint(buf, "", il, ns)
+
                 # Index of the j-th printed column in `data`.
                 jc = id_cols[j]
 
@@ -218,8 +232,8 @@ function _pt_latex(io, pinfo;
     # If we are using `longtable`, then we must mark the end of header and also
     # create the footer.
     if table_type == :longtable
-        println(buf, "\\endhead")
-        println(buf, bottom_line)
+        _aprintln(buf, "\\endhead", il, ns)
+        _aprintln(buf, bottom_line, il, ns)
 
         # Check if the user wants a text on the footer.
         if longtable_footer != nothing
@@ -228,12 +242,12 @@ function _pt_latex(io, pinfo;
 
             env = "multicolumn{" * string(num_printed_cols) * "}" * "{r}"
 
-            println(buf, _latex_envs(longtable_footer, env) * "\\\\")
-            println(buf, bottom_line)
+            _aprintln(buf, _latex_envs(longtable_footer, env) * "\\\\", il, ns)
+            _aprintln(buf, bottom_line, il, ns)
         end
 
-        println(buf, "\\endfoot")
-        println(buf, "\\endlastfoot")
+        _aprintln(buf, "\\endfoot", il, ns)
+        _aprintln(buf, "\\endlastfoot", il, ns)
     end
 
     # Data
@@ -243,10 +257,13 @@ function _pt_latex(io, pinfo;
         ir = id_rows[i]
 
         if show_row_number
-            print(buf, string(ir) * " & ")
+            _aprint(buf, string(ir) * " & ", il, ns)
         end
 
         for j = 1:num_printed_cols
+            # Apply the alignment to this row.
+            (!show_row_number && j == 1) && _aprint(buf, "", il, ns)
+
             jc = id_cols[j]
 
             # If we have highlighters defined, then we need to verify if this
@@ -304,9 +321,13 @@ function _pt_latex(io, pinfo;
     # Print LaTeX footer
     # ==========================================================================
 
-    println(buf, "\\end{$table_env}")
+    il -= 1
+    _aprintln(buf, "\\end{$table_env}", il, ns)
 
-    table_type == :tabular && println(buf, "\\end{table}")
+    if table_type == :tabular
+        il -= 1
+        _aprintln(buf, "\\end{table}", il, ns)
+    end
 
     # Print the buffer into the io.
     # ==========================================================================

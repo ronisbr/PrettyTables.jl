@@ -6,6 +6,29 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 """
+    _aprint(buf, v, indentation = 0, nspace = 2)
+
+Print the variable `v` to the buffer `buf` at the indentation level
+`indentation`. Each level has `nspaces` spaces.
+
+"""
+@inline function _aprint(buf, v, indentation = 0, nspaces = 2)
+    print(buf, " "^(indentation*nspaces))
+    print(buf, v)
+end
+
+"""
+    _aprintln(buf, v, indentation = 0, nspaces = 2)
+
+Same as `_aprint`, but a new line will be added at the end.
+
+"""
+@inline function _aprintln(buf, v, indentation = 0, nspaces = 2)
+    print(buf, " "^(indentation*nspaces))
+    println(buf, v)
+end
+
+"""
     _process_hlines(hlines, body_hlines, num_printed_rows, noheader)
 
 Process the horizontal lines in `hlines` and `body_hlines` considering the

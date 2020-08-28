@@ -14,11 +14,11 @@
 
     expected = """
 \\begin{table}
-\\begin{tabular}{rr}
-\\hline\\hline
-\\textbf{Col. 1} & \\textbf{Col. 2} \\\\\\hline
-2.0 ± 1 & 3.0 ± 1 \\\\\\hline\\hline
-\\end{tabular}
+  \\begin{tabular}{rr}
+    \\hline\\hline
+    \\textbf{Col. 1} & \\textbf{Col. 2} \\\\\\hline
+    2.0 ± 1 & 3.0 ± 1 \\\\\\hline\\hline
+  \\end{tabular}
 \\end{table}
 """
 
