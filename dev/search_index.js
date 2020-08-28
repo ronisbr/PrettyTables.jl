@@ -577,6 +577,22 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "lib/library/#PrettyTables._aprint",
+    "page": "Library",
+    "title": "PrettyTables._aprint",
+    "category": "function",
+    "text": "_aprint(buf, [v,] indentation = 0, nspace = 2)\n\nPrint the variable v to the buffer buf at the indentation level indentation. Each level has nspaces spaces.\n\nIf v is not present, then only the indentation spaces will be printed.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables._aprintln",
+    "page": "Library",
+    "title": "PrettyTables._aprintln",
+    "category": "function",
+    "text": "_aprintln(buf, [v,] indentation = 0, nspaces = 2)\n\nSame as _aprint, but a new line will be added at the end.\n\n\n\n\n\n"
+},
+
+{
     "location": "lib/library/#PrettyTables._crop_str-Tuple{Any,Any}",
     "page": "Library",
     "title": "PrettyTables._crop_str",
