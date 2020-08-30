@@ -83,8 +83,11 @@ function _pt_html(io, pinfo;
                                      context = :compact => compact_printing)
             end
 
+            # Check if the user wants to display only the first line.
+            if cell_first_line_only
+                data_str_ij = split(data_str_ij, '\n')[1]
             # If `linebreaks` is true, then replace `\n` to `<BR>`.
-            if linebreaks
+            elseif linebreaks
                 data_str_ij = replace(data_str_ij, "\n" => "<BR>")
             end
 

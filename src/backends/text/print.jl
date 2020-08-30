@@ -290,7 +290,13 @@ function _pt_text(io, pinfo;
                                      context = :compact => compact_printing)
             end
 
-            if linebreaks
+            if cell_first_line_only
+                tokens = _str_line_breaks(data_str_ij,
+                                          autowrap && fixed_col_width[ic],
+                                          columns_width[ic])
+                data_str[j,i] = [tokens[1]]
+                cell_width    = textwidth(data_str[j,i][1])
+            elseif linebreaks
                 tokens = _str_line_breaks(data_str_ij,
                                           autowrap && fixed_col_width[ic],
                                           columns_width[ic])

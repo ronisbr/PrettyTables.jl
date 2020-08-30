@@ -104,6 +104,9 @@ function _pt_latex(io, pinfo;
                                      context = :compact => compact_printing)
             end
 
+            # Check if the user wants to show only the first line.
+            cell_first_line_only && (data_str_ij = split(data_str_ij, '\n')[1])
+
             data_str_ij_esc = _str_latex_escaped(data_str_ij)
             data_str[j,i]   = data_str_ij_esc
         end

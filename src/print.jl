@@ -65,6 +65,8 @@ it is not compliant, then only the following types are supported:
       and the rest is discarded.
 
   (**Default** = `nothing`)
+* `cell_first_line_only`: If `true`, then only the first line of each cell will
+  be printed. (**Default** = `false`)
 * `compact_printing`: Select if the option `:compact` will be used when printing
                       the data. (**Default** = `true`)
 * `filters_row`: Filters for the rows (see the section `Filters`).
@@ -784,6 +786,7 @@ function _pretty_table(io, data, header;
                                              Dict{Tuple{Int,Int},Symbol},
                                              Function,
                                              Tuple} = nothing,
+                       cell_first_line_only::Bool = false,
                        compact_printing::Bool = true,
                        filters_row::Union{Nothing,Tuple} = nothing,
                        filters_col::Union{Nothing,Tuple} = nothing,
@@ -1011,7 +1014,8 @@ function _pretty_table(io, data, header;
                       header_num_cols, show_row_names, row_names,
                       row_name_alignment, row_name_column_title, alignment,
                       cell_alignment, formatters, compact_printing, title,
-                      title_alignment, header_alignment, header_cell_alignment)
+                      title_alignment, header_alignment, header_cell_alignment,
+                      cell_first_line_only)
 
     if backend == :text
         _pt_text(io, pinfo; kwargs...)

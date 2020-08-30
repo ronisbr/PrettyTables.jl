@@ -74,6 +74,8 @@ Each back-end defines its own configuration keywords that can be passed using
       and the rest is discarded.
 
   (**Default** = `nothing`)
+* `cell_first_line_only`: If `true`, then only the first line of each cell will
+  be printed. (**Default** = `false`)
 * `compact_printing`: Select if the option `:compact` will be used when printing
                       the data. (**Default** = `true`)
 * `filters_row`: Filters for the rows (see the section [Filters](@ref)).

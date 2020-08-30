@@ -778,6 +778,22 @@ end
 
     result = pretty_table(String, data, header)
     @test result == expected
+
+    # Show only the first line
+    # --------------------------------------------------------------------------
+
+    expected = """
+┌────────────────────┬───────┐
+│        Information │ Value │
+├────────────────────┼───────┤
+│ This line contains │  10.0 │
+│ This line contains │   1.0 │
+│ This line contains │    10 │
+└────────────────────┴───────┘
+"""
+
+    result = pretty_table(String, data, header, cell_first_line_only = true)
+    @test result == expected
 end
 
 # Hiding header and sub-header

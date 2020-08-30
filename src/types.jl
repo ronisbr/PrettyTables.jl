@@ -64,4 +64,5 @@ the tables.
     title_alignment::Symbol
     header_alignment::Vector{Symbol}
     header_cell_alignment
+    cell_first_line_only::Bool
 end
