@@ -305,7 +305,7 @@ end
     # Dictionary
     # --------------------------------------------------------------------------
 
-    data = Dict(:a => 1, missing => 2, :c => missing)
+    data = Dict(:a => Int64(1), missing => Int64(2), :c => missing)
 
     expected = """
 ┌─────────┬─────────┐
@@ -313,17 +313,18 @@ end
 │ Symbol? │  Int64? │
 ├─────────┼─────────┤
 │       a │       1 │
-│ missing │       2 │
 │       c │ missing │
+│ missing │       2 │
 └─────────┴─────────┘
 """
-    result = pretty_table(String, data)
+    result = pretty_table(String, data, sortkeys = true)
     @test result == expected
 
     # Tables.jl API
     # --------------------------------------------------------------------------
 
-    df = DataFrame(a=[missing,1,2,3],b=[nothing,1,missing,1])
+    df = DataFrame(a = [missing,Int64(1),Int64(2),Int64(3)],
+                   b = [nothing,Int64(1),missing,Int64(1)])
 
     expected = """
 ┌─────────┬────────────────────┐
