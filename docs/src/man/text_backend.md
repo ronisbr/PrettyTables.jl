@@ -405,6 +405,16 @@ The following table formats are available when using the text back-end:
  -------- -------- -------- --------
 ```
 
+`dataframe`
+
+```
+│ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
+├────────┼────────┼────────┼────────┤
+│      1 │  false │    1.0 │      1 │
+│      2 │   true │    2.0 │      2 │
+│      3 │  false │    3.0 │      3 │
+```
+
 `markdown`
 
 ```
