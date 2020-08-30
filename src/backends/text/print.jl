@@ -382,7 +382,7 @@ function _pt_text(io, pinfo;
                         crayon_ij    = rownum_header_crayon
                         alignment_ij = alignment[1]
                     elseif show_row_names
-                        crayon_ij    = row_name_crayon
+                        crayon_ij    = row_name_header_crayon
                         alignment_ij = alignment[Δc]
                     end
                 else
@@ -451,7 +451,7 @@ function _pt_text(io, pinfo;
                         crayon_ij    = text_crayon
                         alignment_ij = alignment[1]
                     elseif show_row_names
-                        crayon_ij    = text_crayon
+                            crayon_ij    = row_name_crayon
                         alignment_ij = alignment[Δc]
                     end
                 else
