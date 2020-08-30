@@ -892,8 +892,9 @@ function _pretty_table(io, data, header;
 
     # Check if it is vector or a matrix with only one column.
     if (num_dims == 1) || (num_dims == 2 && num_cols == 1)
-        header_num_dims != 1 &&
-        error("If the input data has only one column, then the header must be a vector.")
+        if (header_num_dims != 1) && (header_size[2] != 1)
+            error("If the input data has only one column, then the header must be a vector.")
+        end
 
         header_num_cols = 1
         header_num_rows = header_size[1]
