@@ -721,7 +721,7 @@ function _pretty_table_Tables(io::IO, data, header; kwargs...)
 
         if sch != nothing
             names = reshape( [sch.names...], (1,:) )
-            types = reshape( [sch.types...], (1,:) )
+            types = compact_type_str.(reshape( [sch.types...], (1,:) ))
 
             # Check if we have only one column. In this case, the header must be
             # a `Vector`.
@@ -750,8 +750,8 @@ end
 
 # Function to print dictionaries.
 function _pretty_table_Dict(io, dict::Dict{K,V}; sortkeys = false, kwargs...) where {K,V}
-    header = ["Keys"     "Values";
-              string(K)  string(V)]
+    header = ["Keys"              "Values";
+              compact_type_str(K) compact_type_str(V)]
 
     k = collect(keys(dict))
     v = collect(values(dict))

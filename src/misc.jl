@@ -5,6 +5,26 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
+export compact_type_str
+
+"""
+    compact_type_str(T)
+
+Return a string with a compact representation of type `T`.
+
+"""
+compact_type_str(T) = string(T)
+
+function compact_type_str(T::Union)
+    str = T >: Missing ? string(nonmissingtype(T)) * "?" : string(T)
+    str = replace(str, "Union" => "U")
+    return str
+end
+
+################################################################################
+#                              Private functions
+################################################################################
+
 """
     _aprint(buf, [v,] indentation = 0, nspace = 2)
 

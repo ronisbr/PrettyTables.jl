@@ -298,6 +298,48 @@ end
     @test result == expected
 end
 
+# Compact types
+# ==============================================================================
+
+@testset "Compact types" begin
+    # Dictionary
+    # --------------------------------------------------------------------------
+
+    data = Dict(:a => 1, missing => 2, :c => missing)
+
+    expected = """
+┌─────────┬─────────┐
+│    Keys │  Values │
+│ Symbol? │  Int64? │
+├─────────┼─────────┤
+│       a │       1 │
+│ missing │       2 │
+│       c │ missing │
+└─────────┴─────────┘
+"""
+    result = pretty_table(String, data)
+    @test result == expected
+
+    # Tables.jl API
+    # --------------------------------------------------------------------------
+
+    df = DataFrame(a=[missing,1,2,3],b=[nothing,1,missing,1])
+
+    expected = """
+┌─────────┬────────────────────┐
+│       a │                  b │
+│  Int64? │ U{Nothing, Int64}? │
+├─────────┼────────────────────┤
+│ missing │            nothing │
+│       1 │                  1 │
+│       2 │            missing │
+│       3 │                  1 │
+└─────────┴────────────────────┘
+"""
+    result = pretty_table(String, df)
+    @test result == expected
+end
+
 # Issue #65
 # ==============================================================================
 
