@@ -47,6 +47,7 @@ end
 function _latex_table_desc(id_cols::AbstractVector,
                            alignment::Vector{Symbol},
                            show_row_number::Bool,
+                           row_number_alignment::Symbol,
                            vlines::AbstractVector,
                            left_vline::AbstractString,
                            mid_vline::AbstractString,
@@ -62,7 +63,7 @@ function _latex_table_desc(id_cols::AbstractVector,
     Δc = 0
     if show_row_number
         Δc = 1
-        str *= "l"
+        str *= _latex_alignment(row_number_alignment)
         1 ∈ vlines && (str *= mid_vline)
     end
 

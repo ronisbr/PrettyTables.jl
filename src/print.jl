@@ -259,6 +259,8 @@ This back-end produces text tables. This back-end can be used by selecting
 * `overwrite`: If `true`, then the same number of lines in the printed table
                will be deleted from the output `io`. This can be used to update
                the table in the screen continuously. (**Default** = `false`)
+* `row_number_alignment`: Select the alignment of the row number column (see the
+                          section `Alignment`). (**Default** = `:r`)
 * `screen_size`: A tuple of two integers that defines the screen size (num. of
                  rows, num. of columns) that is available to print the table. It
                  is used to crop the data depending on the value of the keyword
@@ -512,6 +514,8 @@ This backend produces LaTeX tables. This backend can be used by selecting
 * `nosubheader`: If `true`, then the sub-header will not be printed, *i.e.* the
                  header will contain only one line. Notice that this option has
                  no effect if `noheader = true`. (**Default** = `false`)
+* `row_number_alignment`: Select the alignment of the row number column (see the
+                          section `Alignment`). (**Default** = `:r`)
 * `show_row_number`: If `true`, then a new column will be printed showing the
                      row number. (**Default** = `false`)
 * `table_type`: Select which LaTeX environment will be used to print the table.

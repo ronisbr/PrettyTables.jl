@@ -107,6 +107,8 @@ passed as keywords when calling the function `pretty_table`:
 * `overwrite`: If `true`, then the same number of lines in the printed table
                will be deleted from the output `io`. This can be used to update
                the table in the screen continuously. (**Default** = `false`)
+* `row_number_alignment`: Select the alignment of the row number column (see the
+                          section [Alignment](@ref)). (**Default** = `:r`)
 * `screen_size`: A tuple of two integers that defines the screen size (num. of
                  rows, num. of columns) that is available to print the table. It
                  is used to crop the data depending on the value of the keyword
