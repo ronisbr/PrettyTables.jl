@@ -100,6 +100,8 @@ function _pt_latex(io, pinfo;
                 data_str_ij = "nothing"
             elseif data_ij == undef
                 data_str_ij = "\\#undef"
+            elseif data_ij isa Markdown.MD
+                data_str_ij = replace(sprint(show, MIME("text/latex"), data_ij),"\n"=>"")
             else
                 data_str_ij = sprint(print, data_ij;
                                      context = :compact => compact_printing)

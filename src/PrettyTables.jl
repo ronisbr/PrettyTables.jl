@@ -4,6 +4,7 @@ using Formatting
 using Parameters
 using Reexport
 using Tables
+using Markdown
 
 @reexport using Crayons
 

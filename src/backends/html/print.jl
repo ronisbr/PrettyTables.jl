@@ -78,6 +78,8 @@ function _pt_html(io, pinfo;
                 data_str_ij = "nothing"
             elseif data_ij == undef
                 data_str_ij = "#undef"
+            elseif data_ij isa Markdown.MD
+                data_str_ij = replace(sprint(show, "text/html", data_ij),"\n"=>"")
             else
                 data_str_ij = sprint(print, data_ij;
                                      context = :compact => compact_printing)
@@ -91,7 +93,7 @@ function _pt_html(io, pinfo;
                 data_str_ij = replace(data_str_ij, "\n" => "<BR>")
             end
 
-            data_str_ij_esc = _str_escaped(data_str_ij)
+            data_str_ij_esc = data_ij isa Markdown.MD ? data_str_ij : _str_escaped(data_str_ij)
             data_str[j,i]   = data_str_ij_esc
         end
     end
