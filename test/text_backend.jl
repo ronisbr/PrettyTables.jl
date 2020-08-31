@@ -133,6 +133,67 @@ end
                                                  (4,4) => :c,
                                                  (6,4) => :l ))
     @test result == expected
+
+    # Headers
+    # ==========================================================================
+
+    header = ["A" "B" "C" "D"
+              "a" "b" "c" "d"]
+
+    expected = """
+┌───────────┬───────────┬───────────┬───────────┐
+│ A         │     B     │         C │         D │
+│ a         │     b     │         c │         d │
+├───────────┼───────────┼───────────┼───────────┤
+│ 1         │     false │    1.0    │ 1         │
+│ 2         │      true │    2.0    │         2 │
+│         3 │ false     │    3.0    │     3     │
+│ 4         │      true │    4.0    │     4     │
+│ 5         │     false │    5.0    │         5 │
+│ 6         │      true │    6.0    │ 6         │
+└───────────┴───────────┴───────────┴───────────┘
+"""
+
+    result = pretty_table(String, data, header;
+                          alignment = [:l,:r,:c,:r],
+                          cell_alignment = Dict( (3,1) => :r,
+                                                 (3,2) => :l,
+                                                 (1,4) => :l,
+                                                 (3,4) => :c,
+                                                 (4,4) => :c,
+                                                 (6,4) => :l ),
+                          columns_width = 9,
+                          header_alignment = [:l,:c,:r,:r])
+    @test result == expected
+
+    expected = """
+┌───────────┬───────────┬───────────┬───────────┐
+│         A │     B     │         C │         D │
+│ a         │ b         │         c │     d     │
+├───────────┼───────────┼───────────┼───────────┤
+│ 1         │     false │    1.0    │ 1         │
+│ 2         │      true │    2.0    │         2 │
+│         3 │ false     │    3.0    │     3     │
+│ 4         │      true │    4.0    │     4     │
+│ 5         │     false │    5.0    │         5 │
+│ 6         │      true │    6.0    │ 6         │
+└───────────┴───────────┴───────────┴───────────┘
+"""
+
+    result = pretty_table(String, data, header;
+                          alignment = [:l,:r,:c,:r],
+                          cell_alignment = Dict( (3,1) => :r,
+                                                 (3,2) => :l,
+                                                 (1,4) => :l,
+                                                 (3,4) => :c,
+                                                 (4,4) => :c,
+                                                 (6,4) => :l ),
+                          columns_width = 9,
+                          header_alignment = [:l,:c,:r,:r],
+                          header_cell_alignment = Dict( (1,1) => :r,
+                                                        (2,2) => :l,
+                                                        (2,4) => :c))
+    @test result == expected
 end
 
 # Filters
@@ -254,6 +315,25 @@ end
                           alignment       = [:l,:r,:c,:r],
                           show_row_number = true)
     @test result == expected
+
+    expected = """
+┌─────┬────────┬────────┬────────┬────────┐
+│ Row │ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
+├─────┼────────┼────────┼────────┼────────┤
+│  1  │ 1      │  false │  1.0   │      1 │
+│  2  │ 2      │   true │  2.0   │      2 │
+│  3  │ 3      │  false │  3.0   │      3 │
+│  4  │ 4      │   true │  4.0   │      4 │
+│  5  │ 5      │  false │  5.0   │      5 │
+│  6  │ 6      │   true │  6.0   │      6 │
+└─────┴────────┴────────┴────────┴────────┘
+"""
+
+    result = pretty_table(String, data;
+                          alignment = [:l,:r,:c,:r],
+                          row_number_alignment = :c,
+                          show_row_number = true)
+    @test result == expected
 end
 
 # Pre-defined formats
@@ -325,6 +405,21 @@ end
  -------- -------- -------- -------- 
 """
     result = pretty_table(String, data, tf = PrettyTables.compact)
+    @test result == expected
+
+    # dataframe
+    # ==========================================================================
+    expected = """
+│ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
+├────────┼────────┼────────┼────────┤
+│      1 │  false │    1.0 │      1 │
+│      2 │   true │    2.0 │      2 │
+│      3 │  false │    3.0 │      3 │
+│      4 │   true │    4.0 │      4 │
+│      5 │  false │    5.0 │      5 │
+│      6 │   true │    6.0 │      6 │
+"""
+    result = pretty_table(String, data, tf = dataframe)
     @test result == expected
 
     # markdown
@@ -702,6 +797,22 @@ end
 
     result = pretty_table(String, data, header)
     @test result == expected
+
+    # Show only the first line
+    # --------------------------------------------------------------------------
+
+    expected = """
+┌────────────────────┬───────┐
+│        Information │ Value │
+├────────────────────┼───────┤
+│ This line contains │  10.0 │
+│ This line contains │   1.0 │
+│ This line contains │    10 │
+└────────────────────┴───────┘
+"""
+
+    result = pretty_table(String, data, header, cell_first_line_only = true)
+    @test result == expected
 end
 
 # Hiding header and sub-header
@@ -978,11 +1089,14 @@ end
     @test result == expected
 end
 
-# Minimum column size
+# Minimum and maximum column width
 # ==============================================================================
 
-@testset "Minimum column size" begin
+@testset "Minimum and maximum column width" begin
     header = ["A" "B" "C" "D"]
+
+    # Minimum column width
+    # ==========================================================================
 
     expected = """
 ┌──────┬───────┬──────┬──────┐
@@ -1057,6 +1171,85 @@ end
     result = pretty_table(String, data, header,
                           minimum_columns_width = [2,4,6,8],
                           equal_columns_width = true)
+    @test result == expected
+
+    # Maximum column width
+    # ==========================================================================
+
+    expected = """
+┌───┬─────┬─────┬───┐
+│ A │   B │   C │ D │
+├───┼─────┼─────┼───┤
+│ 1 │ fa… │ 1.0 │ 1 │
+│ 2 │ tr… │ 2.0 │ 2 │
+│ 3 │ fa… │ 3.0 │ 3 │
+│ 4 │ tr… │ 4.0 │ 4 │
+│ 5 │ fa… │ 5.0 │ 5 │
+│ 6 │ tr… │ 6.0 │ 6 │
+└───┴─────┴─────┴───┘
+"""
+
+    result = pretty_table(String, data, header,
+                          maximum_columns_width = 3)
+    @test result == expected
+
+    # Precedence of `columns_width`.
+
+    expected = """
+┌───┬────┬─────┬──────┐
+│ A │  B │   C │    D │
+├───┼────┼─────┼──────┤
+│ 1 │ f… │ 1.0 │    1 │
+│ 2 │ t… │ 2.0 │    2 │
+│ 3 │ f… │ 3.0 │    3 │
+│ 4 │ t… │ 4.0 │    4 │
+│ 5 │ f… │ 5.0 │    5 │
+│ 6 │ t… │ 6.0 │    6 │
+└───┴────┴─────┴──────┘
+"""
+
+    result = pretty_table(String, data, header,
+                          columns_width = [1,2,3,4],
+                          maximum_columns_width = 3)
+    @test result == expected
+
+    # Test with a vector in `maximum_column_width`.
+
+    expected = """
+┌───┬─────┬────┬───┐
+│ A │   B │  C │ D │
+├───┼─────┼────┼───┤
+│ 1 │ fa… │ 1… │ 1 │
+│ 2 │ tr… │ 2… │ 2 │
+│ 3 │ fa… │ 3… │ 3 │
+│ 4 │ tr… │ 4… │ 4 │
+│ 5 │ fa… │ 5… │ 5 │
+│ 6 │ tr… │ 6… │ 6 │
+└───┴─────┴────┴───┘
+"""
+
+    result = pretty_table(String, data, header,
+                          maximum_columns_width = [20,3,2,5])
+    @test result == expected
+
+    # Test with the option `equal_columns_width``.
+
+    expected = """
+┌─────┬─────┬─────┬─────┐
+│   A │   B │   C │   D │
+├─────┼─────┼─────┼─────┤
+│   1 │ fa… │ 1.0 │   1 │
+│   2 │ tr… │ 2.0 │   2 │
+│   3 │ fa… │ 3.0 │   3 │
+│   4 │ tr… │ 4.0 │   4 │
+│   5 │ fa… │ 5.0 │   5 │
+│   6 │ tr… │ 6.0 │   6 │
+└─────┴─────┴─────┴─────┘
+"""
+
+    result = pretty_table(String, data, header,
+                          equal_columns_width = true,
+                          maximum_columns_width = [20,3,2,5])
     @test result == expected
 end
 
@@ -1532,23 +1725,137 @@ end
     @test result == expected
 end
 
-# Test if we can print `missing` and `nothing`
+# Test if we can print `missing`, `nothing`, and `#undef`
 # ==============================================================================
 
-@testset "Print missing and nothing" begin
-    matrix = [missing missing; nothing nothing; missing nothing]
+@testset "Print missing, nothing, and #undef" begin
+
+    matrix = Matrix{Any}(undef,3,3)
+    matrix[1,1:2] .= missing
+    matrix[2,1:2] .= nothing
+    matrix[3,1]   = missing
+    matrix[3,2]   = nothing
 
     expected = """
-┌─────────┬─────────┐
-│  Col. 1 │  Col. 2 │
-├─────────┼─────────┤
-│ missing │ missing │
-│ nothing │ nothing │
-│ missing │ nothing │
-└─────────┴─────────┘
+┌─────────┬─────────┬────────┐
+│  Col. 1 │  Col. 2 │ Col. 3 │
+├─────────┼─────────┼────────┤
+│ missing │ missing │ #undef │
+│ nothing │ nothing │ #undef │
+│ missing │ nothing │ #undef │
+└─────────┴─────────┴────────┘
 """
 
     result = pretty_table(String, matrix)
+    @test result == expected
+end
+
+# Titles
+# ==============================================================================
+
+@testset "Titles" begin
+    title = "This is a very very long title that will be displayed above the table."
+
+    expected = """
+This is a very very long title that will be displayed above the table.
+┌────────┬────────┬────────┬────────┐
+│ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
+├────────┼────────┼────────┼────────┤
+│      1 │  false │    1.0 │      1 │
+│      2 │   true │    2.0 │      2 │
+│      3 │  false │    3.0 │      3 │
+│      4 │   true │    4.0 │      4 │
+│      5 │  false │    5.0 │      5 │
+│      6 │   true │    6.0 │      6 │
+└────────┴────────┴────────┴────────┘
+"""
+    result = pretty_table(String, data,
+                          title = title,
+                          title_crayon = Crayon())
+    @test result == expected
+
+    expected = """
+This is a very very long title that …
+┌────────┬────────┬────────┬────────┐
+│ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
+├────────┼────────┼────────┼────────┤
+│      1 │  false │    1.0 │      1 │
+│      2 │   true │    2.0 │      2 │
+│      3 │  false │    3.0 │      3 │
+│      4 │   true │    4.0 │      4 │
+│      5 │  false │    5.0 │      5 │
+│      6 │   true │    6.0 │      6 │
+└────────┴────────┴────────┴────────┘
+"""
+    result = pretty_table(String, data,
+                          title = title,
+                          title_crayon = Crayon(),
+                          title_same_width_as_table = true)
+    @test result == expected
+
+    expected = """
+This is a very very long title that  
+will be displayed above the table.   
+┌────────┬────────┬────────┬────────┐
+│ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
+├────────┼────────┼────────┼────────┤
+│      1 │  false │    1.0 │      1 │
+│      2 │   true │    2.0 │      2 │
+│      3 │  false │    3.0 │      3 │
+│      4 │   true │    4.0 │      4 │
+│      5 │  false │    5.0 │      5 │
+│      6 │   true │    6.0 │      6 │
+└────────┴────────┴────────┴────────┘
+"""
+    result = pretty_table(String, data,
+                          title = title,
+                          title_autowrap = true,
+                          title_crayon = Crayon(),
+                          title_same_width_as_table = true)
+    @test result == expected
+
+    expected = """
+ This is a very very long title that 
+ will be displayed above the table.  
+┌────────┬────────┬────────┬────────┐
+│ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
+├────────┼────────┼────────┼────────┤
+│      1 │  false │    1.0 │      1 │
+│      2 │   true │    2.0 │      2 │
+│      3 │  false │    3.0 │      3 │
+│      4 │   true │    4.0 │      4 │
+│      5 │  false │    5.0 │      5 │
+│      6 │   true │    6.0 │      6 │
+└────────┴────────┴────────┴────────┘
+"""
+    result = pretty_table(String, data,
+                          title = title,
+                          title_alignment = :c,
+                          title_autowrap = true,
+                          title_crayon = Crayon(),
+                          title_same_width_as_table = true)
+    @test result == expected
+
+    expected = """
+  This is a very very long title that
+   will be displayed above the table.
+┌────────┬────────┬────────┬────────┐
+│ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
+├────────┼────────┼────────┼────────┤
+│      1 │  false │    1.0 │      1 │
+│      2 │   true │    2.0 │      2 │
+│      3 │  false │    3.0 │      3 │
+│      4 │   true │    4.0 │      4 │
+│      5 │  false │    5.0 │      5 │
+│      6 │   true │    6.0 │      6 │
+└────────┴────────┴────────┴────────┘
+"""
+    result = pretty_table(String, data,
+                          title = title,
+                          title_alignment = :r,
+                          title_autowrap = true,
+                          title_crayon = Crayon(),
+                          title_same_width_as_table = true)
     @test result == expected
 end
 
