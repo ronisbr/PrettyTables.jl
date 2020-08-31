@@ -65,11 +65,32 @@ it is not compliant, then only the following types are supported:
       and the rest is discarded.
 
   (**Default** = `nothing`)
+* `cell_first_line_only`: If `true`, then only the first line of each cell will
+  be printed. (**Default** = `false`)
 * `compact_printing`: Select if the option `:compact` will be used when printing
                       the data. (**Default** = `true`)
 * `filters_row`: Filters for the rows (see the section `Filters`).
 * `filters_col`: Filters for the columns (see the section `Filters`).
 * `formatters`: See the section `Formatters`.
+* `header_alignment`: Select the alignment of the header columns (see the
+                      section `Alignment`). If the symbol that specifies the
+                      alignment is `:s` for a specific column, then the same
+                      alignment in the keyword `alignment` for that column will
+                      be used. (**Default** = `:s`)
+* `header_cell_alignment`: This keyword has the same structure of
+                           `cell_alignment` but in this case it operates in the
+                           header. Thus, `(i,j)` will be a cell in the header
+                           matrix that contains the header and sub-headers. This
+                           means that the `data` field in the functions will be
+                           the same value passed in the keyword `header`.
+  !!! note
+
+      If more than one alignment function is passed to `header_cell_alignment`,
+      then the functions will be evaluated in the same order of the tuple. The
+      first one that returns a valid alignment symbol for each cell is applied,
+      and the rest is discarded.
+
+  (**Default** = `nothing`)
 * `row_names`: A vector containing the row names that will be appended to the
                left of the table. If it is `nothing`, then the column with the
                row names will not be shown. Notice that the size of this vector
@@ -79,6 +100,11 @@ it is not compliant, then only the following types are supported:
                         section `Alignment`).
 * `row_name_column_title`: Title of the column with the row names.
                            (**Default** = "")
+* `title`: The title of the table. If it is empty, then no title will be
+           printed. (**Default** = "")
+* `title_alignment`: Alignment of the title, which must be a symbol as explained
+                     in the section `Alignment`. This argument is ignored in the
+                     LaTeX backend. (**Default** = :l)
 
 !!! note
 
@@ -210,6 +236,13 @@ This back-end produces text tables. This back-end can be used by selecting
   (**Default** = `nothing`)
 * `linebreaks`: If `true`, then `\\n` will break the line inside the cells.
                 (**Default** = `false`)
+* `maximum_columns_width`: A set of integers specifying the maximum width of
+                           each column. If the width is equal or lower than 0,
+                           then it will be ignored. If it is a single integer,
+                           then this number will be used as the maximum width
+                           of all columns. Notice that the parameter
+                           `columns_width` has precedence over this one.
+                           (**Default** = 0)
 * `minimum_columns_width`: A set of integers specifying the minimum width of
                            each column. If the width is equal or lower than 0,
                            then it will be ignored. If it is a single integer,
@@ -226,6 +259,8 @@ This back-end produces text tables. This back-end can be used by selecting
 * `overwrite`: If `true`, then the same number of lines in the printed table
                will be deleted from the output `io`. This can be used to update
                the table in the screen continuously. (**Default** = `false`)
+* `row_number_alignment`: Select the alignment of the row number column (see the
+                          section `Alignment`). (**Default** = `:r`)
 * `screen_size`: A tuple of two integers that defines the screen size (num. of
                  rows, num. of columns) that is available to print the table. It
                  is used to crop the data depending on the value of the keyword
@@ -236,6 +271,14 @@ This back-end produces text tables. This back-end can be used by selecting
                      row number. (**Default** = `false`)
 * `tf`: Table format used to print the table (see `TextFormat`).
         (**Default** = `unicode`)
+* `title_autowrap`: If `true`, then the title text will be wrapped considering
+                    the title size. Otherwise, lines larger than the title size
+                    will be cropped. (**Default** = `false`)
+* `title_crayon`: Crayon to print the title.
+* `title_same_width_as_table`: If `true`, then the title width will match that
+                               of the table. Otherwise, the title size will be
+                               equal to the screen width.
+                               (**Default** = `false`)
 * `vlines`: This variable controls where the vertical lines will be drawn. It
             can be `nothing`, `:all`, `:none` or a vector of integers.
     - If it is `nothing`, which is the default, then the configuration will be
@@ -429,12 +472,38 @@ This backend produces LaTeX tables. This backend can be used by selecting
 
 # Keywords
 
+* `body_hlines`: A vector of `Int` indicating row numbers in which an additional
+                 horizontal line should be drawn after the row. Notice that
+                 numbers lower than 1 and equal or higher than the number of
+                 printed rows will be neglected. This vector will be appended to
+                 the one in `hlines`, but the indices here are related to the
+                 printed rows of the body. Thus, if `1` is added to
+                 `body_hlines`, then a horizontal line will be drawn after the
+                 first data row. (**Default** = `Int[]`)
 * `highlighters`: An instance of `LatexHighlighter` or a tuple with a list of
                   LaTeX highlighters (see the section `LaTeX highlighters`).
-* `hlines`: A vector of `Int` indicating row numbers in which an additional
-            horizontal line should be drawn after the row. Notice that numbers
-            lower than 1 and equal or higher than the number of rows will be
-            neglected.
+* `hlines`: This variable controls where the horizontal lines will be drawn. It
+            can be `nothing`, `:all`, `:none` or a vector of integers.
+    - If it is `nothing`, which is the default, then the configuration will be
+      obtained from the table format in the variable `tf` (see
+      `LatexTableFormat`).
+    - If it is `:all`, then all horizontal lines will be drawn.
+    - If it is `:none`, then no horizontal line will be drawn.
+    - If it is a vector of integers, then the horizontal lines will be drawn
+      only after the rows in the vector. Notice that the top line will be drawn
+      if `0` is in `hlines`, and the header and subheaders are considered as
+      only 1 row. Furthermore, it is important to mention that the row number in
+      this variable is related to the **printed rows**. Thus, it is affected by
+      filters, and by the option to suppress the header `noheader`. Finally, for
+      convenience, the top and bottom lines can be drawn by adding the symbols
+      `:begin` and `:end` to this vector, respectively, and the line after the
+      header can be drawn by adding the symbol `:header`.
+  !!! info
+
+      The values of `body_hlines` will be appended to this vector. Thus,
+      horizontal lines can be drawn even if `hlines` is `:none`.
+
+  (**Default** = `nothing`)
 * `longtable_footer`: The string that will be drawn in the footer of the tables
                       before a page break. This only works if `table_type` is
                       `:longtable`. If it is `nothing`, then no footer will be
@@ -445,6 +514,8 @@ This backend produces LaTeX tables. This backend can be used by selecting
 * `nosubheader`: If `true`, then the sub-header will not be printed, *i.e.* the
                  header will contain only one line. Notice that this option has
                  no effect if `noheader = true`. (**Default** = `false`)
+* `row_number_alignment`: Select the alignment of the row number column (see the
+                          section `Alignment`). (**Default** = `:r`)
 * `show_row_number`: If `true`, then a new column will be printed showing the
                      row number. (**Default** = `false`)
 * `table_type`: Select which LaTeX environment will be used to print the table.
@@ -610,36 +681,36 @@ end
 ################################################################################
 
 # Function to print data that complies with Tables.jl API.
-function _pretty_table_Tables(io::IO, table, header; kwargs...)
+function _pretty_table_Tables(io::IO, data, header; kwargs...)
     # First we need to check which type of table we have.
-    if Tables.columnaccess(table)
+    if Tables.columnaccess(data)
         # Access the table using the columns.
-        cols = Tables.columns(table)
+        table = Tables.columns(data)
 
         # Get the column names.
-        names = collect(Symbol, Tables.columnnames(cols))
+        names = collect(Symbol, Tables.columnnames(table))
 
         # Compute the table size and get the column types.
         size_j = length(names)
-        size_i = Tables.rowcount(cols)
+        size_i = Tables.rowcount(table)
 
-        data = ColumnTable(cols, names, (size_i, size_j))
+        ndata = ColumnTable(data, table, names, (size_i, size_j))
 
-    elseif Tables.rowaccess(table)
+    elseif Tables.rowaccess(data)
         # Access the table using the rows.
-        rows = Tables.rows(table)
+        table = Tables.rows(data)
 
         # We need to fetch the first row to get information about the columns.
-        row₁,~ = iterate(rows, 1)
+        row₁,~ = iterate(table, 1)
 
         # Get the column names.
         names = collect(Symbol, Tables.columnnames(row₁))
 
         # Compute the table size.
-        size_i = length(rows)
+        size_i = length(table)
         size_j = length(names)
 
-        data = RowTable(rows, names, (size_i, size_j))
+        ndata = RowTable(data, table, names, (size_i, size_j))
     else
         error("The object does not have a valid Tables.jl implementation.")
     end
@@ -652,11 +723,11 @@ function _pretty_table_Tables(io::IO, table, header; kwargs...)
     #     3. If the table does not have a schema, then build a default header
     #        based on the column name and type.
     if isempty(header)
-        sch = Tables.schema(table)
+        sch = Tables.schema(data)
 
         if sch != nothing
             names = reshape( [sch.names...], (1,:) )
-            types = reshape( [sch.types...], (1,:) )
+            types = compact_type_str.(reshape( [sch.types...], (1,:) ))
 
             # Check if we have only one column. In this case, the header must be
             # a `Vector`.
@@ -666,12 +737,12 @@ function _pretty_table_Tables(io::IO, table, header; kwargs...)
                 header = [names; types]
             end
         else
-            header = data.column_names
+            header = ndata.column_names
         end
 
     end
 
-    _pretty_table(io, data, header; kwargs...)
+    _pretty_table(io, ndata, header; kwargs...)
 end
 
 # Function to print vectors or matrices.
@@ -685,8 +756,8 @@ end
 
 # Function to print dictionaries.
 function _pretty_table_Dict(io, dict::Dict{K,V}; sortkeys = false, kwargs...) where {K,V}
-    header = ["Keys"     "Values";
-              string(K)  string(V)]
+    header = ["Keys"              "Values";
+              compact_type_str(K) compact_type_str(V)]
 
     k = collect(keys(dict))
     v = collect(values(dict))
@@ -705,9 +776,9 @@ end
 
 # Dictionary to hold the information between the table format type and the
 # backend.
-_type_backend_dict = Dict{DataType, Symbol}(TextFormat       => :text,
-                                            HTMLTableFormat  => :html,
-                                            LatexTableFormat => :latex)
+const _type_backend_dict = Dict{DataType, Symbol}(TextFormat       => :text,
+                                                  HTMLTableFormat  => :html,
+                                                  LatexTableFormat => :latex)
 
 # This is the low level function that prints the table. In this case, `data`
 # must be accessed by `[i,j]` and the size of the `header` must be equal to the
@@ -719,13 +790,21 @@ function _pretty_table(io, data, header;
                                              Dict{Tuple{Int,Int},Symbol},
                                              Function,
                                              Tuple} = nothing,
+                       cell_first_line_only::Bool = false,
                        compact_printing::Bool = true,
                        filters_row::Union{Nothing,Tuple} = nothing,
                        filters_col::Union{Nothing,Tuple} = nothing,
                        formatters::Union{Nothing,Function,Tuple} = nothing,
+                       header_alignment::Union{Symbol,Vector{Symbol}} = :s,
+                       header_cell_alignment::Union{Nothing,
+                                                    Dict{Tuple{Int,Int},Symbol},
+                                                    Function,
+                                                    Tuple} = nothing,
                        row_names::Union{Nothing,AbstractVector} = nothing,
                        row_name_alignment::Symbol = :r,
                        row_name_column_title::AbstractString = "",
+                       title::AbstractString = "",
+                       title_alignment::Symbol = :l,
                        kwargs...)
 
     # Try to automatically infer the backend based on the table format type.
@@ -813,8 +892,9 @@ function _pretty_table(io, data, header;
 
     # Check if it is vector or a matrix with only one column.
     if (num_dims == 1) || (num_dims == 2 && num_cols == 1)
-        header_num_dims != 1 &&
-        error("If the input data has only one column, then the header must be a vector.")
+        if (header_num_dims != 1) && (header_size[2] != 1)
+            error("If the input data has only one column, then the header must be a vector.")
+        end
 
         header_num_cols = 1
         header_num_rows = header_size[1]
@@ -830,6 +910,12 @@ function _pretty_table(io, data, header;
         alignment = [alignment for i = 1:num_cols]
     else
         length(alignment) != num_cols && error("The length of `alignment` must be the same as the number of rows.")
+    end
+
+    if typeof(header_alignment) == Symbol
+        header_alignment = [header_alignment for i = 1:num_cols]
+    else
+        length(header_alignment) != num_cols && error("The length of `header_alignment` must be the same as the number of rows.")
     end
 
     # If there is a vector of row names, then it must have the same size of the
@@ -853,7 +939,7 @@ function _pretty_table(io, data, header;
             filtered_i = true
 
             for filter in filters_row
-                !filter(data,i) && (filtered_i = false) && break
+                !filter(_getdata(data),i) && (filtered_i = false) && break
             end
 
             filtered_rows[i] = filtered_i
@@ -865,7 +951,7 @@ function _pretty_table(io, data, header;
             filtered_i = true
 
             for filter in filters_col
-                !filter(data,i) && (filtered_i = false) && break
+                !filter(_getdata(data),i) && (filtered_i = false) && break
             end
 
             filtered_cols[i] = filtered_i
@@ -904,6 +990,25 @@ function _pretty_table(io, data, header;
         cell_alignment = (cell_alignment,)
     end
 
+    # Make sure that `header_cell_alignment` is a tuple.
+    if header_cell_alignment == nothing
+        header_cell_alignment = ()
+    elseif typeof(header_cell_alignment) <: Dict
+        # If it is a `Dict`, then `header_cell_alignment[(i,j)]` contains the
+        # desired alignment for the cell `(i,j)`. Thus, we need to create a
+        # wrapper function.
+        header_cell_alignment_dict = copy(header_cell_alignment)
+        header_cell_alignment = ((data,i,j) -> begin
+            if haskey(header_cell_alignment_dict, (i,j))
+                return header_cell_alignment_dict[(i,j)]
+            else
+                return nothing
+            end
+        end,)
+    elseif typeof(header_cell_alignment) <: Function
+        header_cell_alignment = (header_cell_alignment,)
+    end
+
     # Make sure that `formatters` is a tuple.
     formatters == nothing  && (formatters = ())
     typeof(formatters) <: Function && (formatters = (formatters,))
@@ -913,7 +1018,9 @@ function _pretty_table(io, data, header;
                       num_printed_cols, num_printed_rows, header_num_rows,
                       header_num_cols, show_row_names, row_names,
                       row_name_alignment, row_name_column_title, alignment,
-                      cell_alignment, formatters, compact_printing)
+                      cell_alignment, formatters, compact_printing, title,
+                      title_alignment, header_alignment, header_cell_alignment,
+                      cell_first_line_only)
 
     if backend == :text
         _pt_text(io, pinfo; kwargs...)

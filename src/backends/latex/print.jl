@@ -9,20 +9,33 @@
 # Low-level function to print the table using the LaTeX backend.
 function _pt_latex(io, pinfo;
                    tf::LatexTableFormat = latex_default,
+                   body_hlines::Vector{Int} = Int[],
                    cell_alignment::Dict{Tuple{Int,Int},Symbol} = Dict{Tuple{Int,Int},Symbol}(),
                    highlighters::Union{LatexHighlighter,Tuple} = (),
-                   hlines::AbstractVector{Int} = Int[],
+                   hlines::Union{Nothing,Symbol,AbstractVector} = nothing,
                    longtable_footer::Union{Nothing,AbstractString} = nothing,
                    noheader::Bool = false,
                    nosubheader::Bool = false,
+                   row_number_alignment::Symbol = :r,
                    show_row_number::Bool = false,
                    table_type::Symbol = :tabular,
-                   vlines::Union{Symbol,AbstractVector} = :none,
+                   vlines::Union{Nothing,Symbol,AbstractVector} = nothing,
                    # Deprecated
                    formatter = nothing)
 
     @unpack_PrintInfo pinfo
-    @unpack_LatexTableFormat tf
+
+    # We cannot use `@unpack_` here because it will overwrite `hlines` and
+    # `vlines.`
+    top_line       = tf.top_line
+    header_line    = tf.header_line
+    mid_line       = tf.mid_line
+    bottom_line    = tf.bottom_line
+    left_vline     = tf.left_vline
+    mid_vline      = tf.mid_vline
+    right_vline    = tf.right_vline
+    header_envs    = tf.header_envs
+    subheader_envs = tf.subheader_envs
 
     # Let's create a `IOBuffer` to write everything and then transfer to `io`.
     buf_io = IOBuffer()
@@ -74,17 +87,19 @@ function _pt_latex(io, pinfo;
             jr = id_rows[j]
 
             # Apply the formatters.
-            data_ij = data[jr,ic]
+            data_ij = isassigned(data,jr,ic) ? data[jr,ic] : undef
 
             for f in formatters
                 data_ij = f(data_ij, jr, ic)
             end
 
-            # Handle `nothing` and `missing`.
+            # Handle `nothing`, `missing`, and `undef`.
             if ismissing(data_ij)
                 data_str_ij = "missing"
             elseif data_ij == nothing
                 data_str_ij = "nothing"
+            elseif data_ij == undef
+                data_str_ij = "\\#undef"
             elseif data_ij isa Markdown.MD
                 data_str_ij = replace(sprint(show, MIME("text/latex"), data_ij),"\n"=>"")
             else
@@ -92,39 +107,58 @@ function _pt_latex(io, pinfo;
                                      context = :compact => compact_printing)
             end
 
+            # Check if the user wants to show only the first line.
+            cell_first_line_only && (data_str_ij = split(data_str_ij, '\n')[1])
+
             data_str_ij_esc = _str_latex_escaped(data_str_ij)
             data_str[j,i]   = data_str_ij_esc
         end
     end
 
+    # Compute where the horizontal and vertical lines must be drawn
+    # --------------------------------------------------------------------------
+
+    hlines == nothing && (hlines = tf.hlines)
+    hlines = _process_hlines(hlines, body_hlines, num_printed_rows, noheader)
+
     # Process `vlines`.
-    if vlines == :all
-        vlines = collect(0:1:(num_printed_cols + show_row_number))
-    elseif vlines == :none
-        vlines = Int[]
-    elseif !(typeof(vlines) <: AbstractVector)
-        error("`vlines` must be `:all`, `:none`, or a vector of integers.")
-    end
+    #
+    # TODO: `num_printed_cols` must consider the row number.
+    vlines == nothing && (vlines = tf.vlines)
+    vlines = _process_vlines(vlines, num_printed_cols + show_row_number)
 
-    # The symbol `:begin` is replaced by 0 and the symbol `:end` is replaced by
-    # the last column.
-    vlines = replace(vlines, :begin => 0,
-                             :end   => num_printed_cols + show_row_number)
+    # Variables to store information about indentation
+    # ==========================================================================
 
-    # If the user wants to show the row number, then we must add it to the
-    # `alignment` vector.
-    show_row_number && (alignment = pushfirst!(alignment, :l))
+    il = 0 # ......................................... Current indentation level
+    ns = 2 # ........................ Number of spaces in each indentation level
 
     # Print LaTeX header
     # ==========================================================================
 
-    println(buf,"""
-            \\begin{$table_env}$(_latex_table_desc(alignment,
-                                                   vlines,
-                                                   left_vline,
-                                                   mid_vline,
-                                                   right_vline))
-            """ * top_line)
+    if table_type == :tabular
+        _aprintln(buf, "\\begin{table}", il, ns)
+        il += 1
+        length(title) > 0 && _aprintln(buf, "\\caption{$title}", il, ns)
+    end
+
+    _aprintln(buf,"""
+              \\begin{$table_env}$(_latex_table_desc(id_cols,
+                                                     alignment,
+                                                     show_row_number,
+                                                     row_number_alignment,
+                                                     vlines,
+                                                     left_vline,
+                                                     mid_vline,
+                                                     right_vline))""",
+              il, ns)
+    il += 1
+
+    if table_type == :longtable
+        length(title) > 0 && _aprintln(buf, "\\caption{$title}\\\\", il, ns)
+    end
+
+    0 ∈ hlines && _aprintln(buf, top_line, il, ns)
 
     # Data header
     # ==========================================================================
@@ -136,6 +170,8 @@ function _pt_latex(io, pinfo;
         @inbounds @views for i = 1:header_num_rows
             # The text "Row" must appear only on the first line.
             if show_row_number
+                _aprint(buf, il, ns)
+
                 if i == 1
                     print(buf, _latex_envs("Row", header_envs))
                 end
@@ -144,6 +180,9 @@ function _pt_latex(io, pinfo;
             end
 
             for j = 1:num_printed_cols
+                # Apply the alignment to this row.
+                (!show_row_number && j == 1) && _aprint(buf, il, ns)
+
                 # Index of the j-th printed column in `data`.
                 jc = id_cols[j]
 
@@ -155,24 +194,53 @@ function _pt_latex(io, pinfo;
                     envs = subheader_envs
                 end
 
-                print(buf, _latex_envs(header_str[i,j], envs))
+                header_str_ij = _latex_envs(header_str[i,j], envs)
+
+                # Check the alignment of this cell.
+                alignment_ij = header_alignment[jc]
+
+                for f in header_cell_alignment
+                    aux = f(header, i, jc)
+
+                    if aux ∈ (:l, :c, :r, :L, :C, :R, :s, :S)
+                        alignment_ij = aux
+                        break
+                    end
+                end
+
+                # If alignment is `:s`, then we must use the column alignment.
+                alignment_ij ∈ (:s,:S) && (alignment_ij = alignment[jc])
+
+                # Check if the alignment of the cell must be overridden.
+                if alignment_ij != alignment[jc]
+                    header_str_ij = _latex_apply_cell_alignment(header_str_ij,
+                                                                alignment_ij, j,
+                                                                num_printed_cols,
+                                                                show_row_number,
+                                                                vlines,
+                                                                left_vline,
+                                                                mid_vline,
+                                                                right_vline)
+                end
+
+                print(buf, header_str_ij)
 
                 j != num_printed_cols && print(buf, " & ")
             end
 
-            if i != header_num_rows
-                println(buf, " \\\\")
-            else
-                println(buf, " \\\\" * header_line)
+            print(buf, " \\\\")
+            if (i == header_num_rows) && (1 ∈ hlines)
+                print(buf, header_line)
             end
+            println(buf, "")
         end
     end
 
     # If we are using `longtable`, then we must mark the end of header and also
     # create the footer.
     if table_type == :longtable
-        println(buf, "\\endhead")
-        println(buf, bottom_line)
+        _aprintln(buf, "\\endhead", il, ns)
+        _aprintln(buf, bottom_line, il, ns)
 
         # Check if the user wants a text on the footer.
         if longtable_footer != nothing
@@ -181,12 +249,12 @@ function _pt_latex(io, pinfo;
 
             env = "multicolumn{" * string(num_printed_cols) * "}" * "{r}"
 
-            println(buf, _latex_envs(longtable_footer, env) * "\\\\")
-            println(buf, bottom_line)
+            _aprintln(buf, _latex_envs(longtable_footer, env) * "\\\\", il, ns)
+            _aprintln(buf, bottom_line, il, ns)
         end
 
-        println(buf, "\\endfoot")
-        println(buf, "\\endlastfoot")
+        _aprintln(buf, "\\endfoot", il, ns)
+        _aprintln(buf, "\\endlastfoot", il, ns)
     end
 
     # Data
@@ -196,10 +264,13 @@ function _pt_latex(io, pinfo;
         ir = id_rows[i]
 
         if show_row_number
-            print(buf, string(ir) * " & ")
+            _aprint(buf, string(ir) * " & ", il, ns)
         end
 
         for j = 1:num_printed_cols
+            # Apply the alignment to this row.
+            (!show_row_number && j == 1) && _aprint(buf, il, ns)
+
             jc = id_cols[j]
 
             # If we have highlighters defined, then we need to verify if this
@@ -207,68 +278,63 @@ function _pt_latex(io, pinfo;
             data_str_ij = data_str[i,j]
 
             for h in highlighters
-                if h.f(data, ir, jc)
-                    data_str_ij = h.fd(data, i, j, data_str[i,j])
+                if h.f(_getdata(data), ir, jc)
+                    data_str_ij = h.fd(_getdata(data), i, j, data_str[i,j])
                     break
                 end
             end
 
             # Check the alignment of this cell.
-            alignment_override = false
             alignment_ij = alignment[jc]
 
             for f in cell_alignment
-                aux = f(data, ir, jc)
+                aux = f(_getdata(data), ir, jc)
 
                 if aux ∈ [:l, :c, :r, :L, :C, :R]
-                    alignment_override = true
                     alignment_ij = aux
                     break
                 end
             end
 
-            if alignment_override
-                a = _latex_alignment(alignment_ij)
-
-                # Since we are using the `multicolumn`, we need to verify if the
-                # column has vertical lines.
-                aux_j = show_row_number ? jc + 1 : jc
-
-                # We only need to add left vertical line if it is the first
-                # column.
-                lvline = (0 ∈ vlines) && (aux_j-1 == 0) ? left_vline : ""
-
-                # For the right vertical line, we must check if it is a mid line
-                # or right line.
-                if aux_j ∈ vlines
-                    rvline = (j == num_printed_cols) ? right_vline : mid_vline
-                else
-                    rvline = ""
-                end
-
-                # Wrap the data into the multicolumn environment.
-                data_str_ij = _latex_envs(data_str_ij,
-                                          "multicolumn{1}{$(lvline)$(a)$(rvline)}")
+            # Check if the alignment of the cell must be overridden.
+            if alignment_ij != alignment[jc]
+                data_str_ij = _latex_apply_cell_alignment(data_str_ij,
+                                                          alignment_ij, j,
+                                                          num_printed_cols,
+                                                          show_row_number,
+                                                          vlines, left_vline,
+                                                          mid_vline,
+                                                          right_vline)
             end
 
             print(buf, data_str_ij)
             j != num_printed_cols && print(buf, " & ")
         end
 
-        if (i != num_printed_rows) && (i in hlines)
-            # Check if we must draw a horizontal line here.
-            println(buf, " \\\\" * mid_line)
-        elseif (i != num_printed_rows)
-            println(buf, " \\\\")
-        else
-            println(buf, " \\\\" * bottom_line)
+        print(buf, " \\\\")
+
+        # Check if the user wants a horizontal line here.
+        if (i+!noheader) ∈ hlines
+            if i != num_printed_rows
+                # Check if we must draw a horizontal line here.
+                print(buf, mid_line)
+            else
+                print(buf, bottom_line)
+            end
         end
+        println(buf, "")
     end
 
     # Print LaTeX footer
     # ==========================================================================
 
-    println(buf, "\\end{$table_env}")
+    il -= 1
+    _aprintln(buf, "\\end{$table_env}", il, ns)
+
+    if table_type == :tabular
+        il -= 1
+        _aprintln(buf, "\\end{table}", il, ns)
+    end
 
     # Print the buffer into the io.
     # ==========================================================================

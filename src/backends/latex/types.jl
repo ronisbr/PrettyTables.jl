@@ -25,18 +25,22 @@ This structure defines the format of the LaTeX table.
 * `header_envs`: LaTeX environments that will be used in each header cell.
 * `subheader_envs`: LaTeX environments that will be used in each sub-header
                     cell.
+* `hlines`: Horizontal lines that must be drawn by default.
+* `vlines`: Vertical lines that must be drawn by default.
 
 """
 @with_kw struct LatexTableFormat
-    top_line::String               = "\\hline\\hline"
-    header_line::String            = "\\hline"
-    mid_line::String               = "\\hline"
-    bottom_line::String            = "\\hline\\hline"
-    left_vline::String             = "|"
-    mid_vline::String              = "|"
-    right_vline::String            = "|"
-    header_envs::Vector{String}    = ["textbf"]
-    subheader_envs::Vector{String} = ["texttt"]
+    top_line::String                     = "\\hline\\hline"
+    header_line::String                  = "\\hline"
+    mid_line::String                     = "\\hline"
+    bottom_line::String                  = "\\hline\\hline"
+    left_vline::String                   = "|"
+    mid_vline::String                    = "|"
+    right_vline::String                  = "|"
+    header_envs::Vector{String}          = ["textbf"]
+    subheader_envs::Vector{String}       = ["texttt"]
+    hlines::Vector{Symbol}               = [:begin,:header,:end]
+    vlines::Union{Symbol,Vector{Symbol}} = :none
 end
 
 """

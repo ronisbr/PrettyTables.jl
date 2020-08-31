@@ -57,7 +57,14 @@ julia> pretty_table(data; formatters = formatter)
 └────────┴────────┴────────┘
 ```
 
-There are a set of pre-defined formatters (with names `ft_*`) to make the
+!!! note
+
+    The user can check if a value is undefined (`#undef`) inside a formatter by
+    using the comparison `v == undef`.
+
+## Predefined formatters
+
+There are a set of predefined formatters (with names `ft_*`) to make the
 usage simpler. They are defined in the file `./src/predefined_formatter.jl`.
 
 ```julia

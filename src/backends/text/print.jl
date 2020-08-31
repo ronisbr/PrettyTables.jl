@@ -23,16 +23,21 @@ function _pt_text(io, pinfo;
                   highlighters::Union{Highlighter,Tuple} = (),
                   hlines::Union{Nothing,Symbol,AbstractVector} = nothing,
                   linebreaks::Bool = false,
+                  maximum_columns_width::Union{Integer,AbstractVector{Int}} = 0,
                   minimum_columns_width::Union{Integer,AbstractVector{Int}} = 0,
                   overwrite::Bool = false,
                   noheader::Bool = false,
                   nosubheader::Bool = false,
                   row_name_crayon::Crayon = Crayon(bold = true),
                   row_name_header_crayon::Crayon = Crayon(bold = true),
+                  row_number_alignment::Symbol = :r,
                   screen_size::Union{Nothing,Tuple{Int,Int}} = nothing,
                   show_row_number::Bool = false,
                   sortkeys::Bool = false,
                   tf::TextFormat = unicode,
+                  title_autowrap::Bool = false,
+                  title_crayon::Crayon = Crayon(bold = true),
+                  title_same_width_as_table::Bool = false,
                   vlines::Union{Nothing,Symbol,AbstractVector} = nothing,
                   # Deprecated
                   formatter = nothing,
@@ -105,6 +110,10 @@ function _pt_text(io, pinfo;
 
     # Make sure that `highlighters` is always a tuple.
     !(highlighters isa Tuple) && (highlighters = (highlighters,))
+
+    # Make sure that `maximum_columns_width` is always a vector.
+    typeof(maximum_columns_width) <: Integer &&
+        (maximum_columns_width = ones(Int, num_cols)*maximum_columns_width)
 
     # Make sure that `minimum_columns_width` is always a vector.
     typeof(minimum_columns_width) <: Integer &&
@@ -195,7 +204,7 @@ function _pt_text(io, pinfo;
         cols_width[1] = max(noheader ? 0 : 3, floor(Int, log10(num_rows)) + 1)
 
         # Add information about the row number column to the variables.
-        push!(alignment_add, :r)
+        push!(alignment_add, row_number_alignment)
     end
 
     # Row names
@@ -248,6 +257,12 @@ function _pt_text(io, pinfo;
                     if (j == 1) || (!crop_subheader)
                         # Check if we need to increase the columns size.
                         cols_width[i] < cell_width && (cols_width[i] = cell_width)
+
+                        # Make sure that the maximum column width is respected.
+                        if maximum_columns_width[ic] > 0 &&
+                           maximum_columns_width[ic] < cols_width[i]
+                            cols_width[i] = maximum_columns_width[ic]
+                        end
                     end
                 end
             end
@@ -258,20 +273,21 @@ function _pt_text(io, pinfo;
             jr = id_rows[j]
 
             # Apply the formatters.
-            data_ij = data[jr,ic]
+            data_ij = isassigned(data,jr,ic) ? data[jr,ic] : undef
 
             for f in formatters
                 data_ij = f(data_ij, jr, ic)
             end
 
-            # Handle `nothing` and `missing`.
+            # Handle `nothing`, `missing`, and `undef`.
             if ismissing(data_ij)
                 data_str_ij = "missing"
             elseif data_ij == nothing
                 data_str_ij = "nothing"
+            elseif data_ij == undef
+                data_str_ij = "#undef"
             elseif data_ij isa Markdown.MD
                 r = repr(data_ij)
-                #len = min(length(r, 1, something(findfirst(c->c=='\n', r), lastindex(r)+1)-1), 50)
                 len = max(0, min(length(r), 32)-1)
                 data_str_ij = len < length(r) - 1 ? first(r, len)*"…" : first(r, len)
             else
@@ -279,7 +295,13 @@ function _pt_text(io, pinfo;
                                      context = :compact => compact_printing)
             end
 
-            if linebreaks
+            if cell_first_line_only
+                tokens = _str_line_breaks(data_str_ij,
+                                          autowrap && fixed_col_width[ic],
+                                          columns_width[ic])
+                data_str[j,i] = [tokens[1]]
+                cell_width    = textwidth(data_str[j,i][1])
+            elseif linebreaks
                 tokens = _str_line_breaks(data_str_ij,
                                           autowrap && fixed_col_width[ic],
                                           columns_width[ic])
@@ -302,6 +324,11 @@ function _pt_text(io, pinfo;
             if !fixed_col_width[ic]
                 # Check if we need to increase the columns size.
                 cols_width[i] < cell_width && (cols_width[i] = cell_width)
+
+                # Make sure that the maximum column width is respected.
+                if maximum_columns_width[ic] > 0 && maximum_columns_width[ic] < cols_width[i]
+                    cols_width[i] = maximum_columns_width[ic]
+                end
             end
         end
 
@@ -332,48 +359,12 @@ function _pt_text(io, pinfo;
                               tf.right_intersection, tf.row)
     end
 
-    # Process `hlines`.
-    if hlines == nothing
-        hlines = tf.hlines
-    elseif hlines == :all
-        hlines = collect(0:1:num_printed_rows + !noheader)
-    elseif hlines == :none
-        hlines = Int[]
-    elseif !(typeof(hlines) <: AbstractVector)
-        error("`hlines` must be `:all`, `:none`, or a vector of integers.")
-    end
-
-    # The symbol `:begin` is replaced by 0, the symbol `:header` by the line
-    # after the header, and the symbol `:end` is replaced by the last row.
-    hlines = replace(hlines, :begin  => 0,
-                             :header => noheader ? -1 : 1,
-                             :end    => num_printed_rows + !noheader)
-
-    # All numbers less than 1 and higher or equal the number of printed rows
-    # must be # removed from `body_hlines`.
-    body_hlines = filter(x -> (x ≥ 1) && (x < num_printed_rows), body_hlines)
-
-    # Merge `hlines` with `body_hlines`.
-    hlines = unique(vcat(hlines, body_hlines .+ !noheader))
-    #                                               ^
-    #                                               |
-    # If we have header, then the index in `body_hlines` must be incremented.
+    hlines == nothing && (hlines = tf.hlines)
+    hlines = _process_hlines(hlines, body_hlines, num_printed_rows, noheader)
 
     # Process `vlines`.
     vlines == nothing && (vlines = tf.vlines)
-
-    if vlines == :all
-        vlines = collect(0:1:num_printed_cols)
-    elseif vlines == :none
-        vlines = Int[]
-    elseif !(typeof(vlines) <: AbstractVector)
-        error("`vlines` must be `:all`, `:none`, or a vector of integers.")
-    end
-
-    # The symbol `:begin` is replaced by 0 and the symbol `:end` is replaced by
-    # the last column.
-    vlines = replace(vlines, :begin => 0,
-                             :end   => num_printed_cols)
+    vlines = _process_vlines(vlines, num_printed_cols)
 
     #                           Print the table
     # ==========================================================================
@@ -402,13 +393,27 @@ function _pt_text(io, pinfo;
                         crayon_ij    = rownum_header_crayon
                         alignment_ij = alignment[1]
                     elseif show_row_names
-                        crayon_ij    = row_name_crayon
+                        crayon_ij    = row_name_header_crayon
                         alignment_ij = alignment[Δc]
                     end
                 else
                     jc = id_cols[j-Δc]
                     crayon_ij    = (i == 1) ? header_crayon[jc] : subheader_crayon[jc]
-                    alignment_ij = alignment[jc+Δc]
+                    alignment_ij = header_alignment[jc]
+
+                    # Check for cell alignment override.
+                    for f in header_cell_alignment
+                        aux = f(header, i, jc)
+
+                        if aux ∈ (:l, :c, :r, :L, :C, :R, :s, :S)
+                            alignment_ij = aux
+                            break
+                        end
+                    end
+
+                    # If alignment is `:s`, then we must use the column
+                    # alignment.
+                    alignment_ij ∈ (:s,:S) && (alignment_ij = alignment[jc+Δc])
                 end
 
                 # Prepare the text to be printed.
@@ -457,7 +462,7 @@ function _pt_text(io, pinfo;
                         crayon_ij    = text_crayon
                         alignment_ij = alignment[1]
                     elseif show_row_names
-                        crayon_ij    = text_crayon
+                            crayon_ij    = row_name_crayon
                         alignment_ij = alignment[Δc]
                     end
                 else
@@ -467,15 +472,15 @@ function _pt_text(io, pinfo;
 
                     # Check for highlighters.
                     for h in highlighters
-                        if h.f(data, ir, jc)
-                            crayon_ij = h.fd(h, data, ir, jc)
+                        if h.f(_getdata(data), ir, jc)
+                            crayon_ij = h.fd(h, _getdata(data), ir, jc)
                             break
                         end
                     end
 
                     # Check for cell alignment override.
                     for f in cell_alignment
-                        aux = f(data, ir, jc)
+                        aux = f(_getdata(data), ir, jc)
 
                         if aux ∈ [:l, :c, :r, :L, :C, :R]
                             alignment_ij = aux
@@ -536,6 +541,29 @@ function _pt_text(io, pinfo;
     # table. This can be used to replace the table in the screen continuously.
 
     str_overwrite = overwrite ? "\e[1F\e[2K"^(screen.row - 1) : ""
+
+    # Title
+    # ==========================================================================
+
+    if length(title) > 0
+        title_width = title_same_width_as_table ? screen.max_col : screen.size[2]
+
+        print(io, title_crayon)
+
+        # If the title width is not higher than 0, then we should only print the
+        # title.
+        if title_width ≤ 0
+            println(io,title)
+        # Otherwise, we must check for the alignments.
+        else
+            title_tokens = _str_line_breaks(title, title_autowrap, title_width)
+            for token in title_tokens
+                println(io, _str_aligned(token, title_alignment, title_width))
+            end
+        end
+
+        print(io, text_crayon)
+    end
 
     # Print the buffer
     # ==========================================================================

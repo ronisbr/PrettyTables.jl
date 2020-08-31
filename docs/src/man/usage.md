@@ -74,11 +74,32 @@ Each back-end defines its own configuration keywords that can be passed using
       and the rest is discarded.
 
   (**Default** = `nothing`)
+* `cell_first_line_only`: If `true`, then only the first line of each cell will
+  be printed. (**Default** = `false`)
 * `compact_printing`: Select if the option `:compact` will be used when printing
                       the data. (**Default** = `true`)
 * `filters_row`: Filters for the rows (see the section [Filters](@ref)).
 * `filters_col`: Filters for the columns (see the section [Filters](@ref)).
 * `formatters`: See the section [Formatters](@ref).
+* `header_alignment`: Select the alignment of the header columns (see the
+                      section [Alignment](@ref). If the symbol that specifies
+                      the alignment is `:s` for a specific column, then the same
+                      alignment in the keyword `alignment` for that column will
+                      be used. (**Default** = `:s`)
+* `header_cell_alignment`: This keyword has the same structure of
+                           `cell_alignment` but in this case it operates in the
+                           header. Thus, `(i,j)` will be a cell in the header
+                           matrix that contains the header and sub-headers. This
+                           means that the `data` field in the functions will be
+                           the same value passed in the keyword `header`.
+  !!! note
+
+      If more than one alignment function is passed to `header_cell_alignment`,
+      then the functions will be evaluated in the same order of the tuple. The
+      first one that returns a valid alignment symbol for each cell is applied,
+      and the rest is discarded.
+
+  (**Default** = `nothing`)
 * `row_names`: A vector containing the row names that will be appended to the
                left of the table. If it is `nothing`, then the column with the
                row names will not be shown. Notice that the size of this vector
@@ -88,6 +109,11 @@ Each back-end defines its own configuration keywords that can be passed using
                         section [Alignment](@ref)).
 * `row_name_column_title`: Title of the column with the row names.
                            (**Default** = "")
+* `title`: The title of the table. If it is empty, then no title will be
+           printed. (**Default** = "")
+* `title_alignment`: Alignment of the title, which must be a symbol as explained
+                     in the section [Alignment](@ref). This argument is
+                     ignored in the LaTeX backend. (**Default** = :l)
 
 !!! note
 

@@ -246,6 +246,8 @@ Add a new line into `io` using the screen information in `screen`.
 
 """
 function _nl!(screen, io)
+    # Store the largest column that was printed.
+    screen.max_col < screen.col && (screen.max_col = screen.col)
     screen.row += 1
     screen.col  = 0
     println(io)

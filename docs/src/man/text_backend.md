@@ -84,6 +84,13 @@ passed as keywords when calling the function `pretty_table`:
   (**Default** = `nothing`)
 * `linebreaks`: If `true`, then `\n` will break the line inside the cells.
                 (**Default** = `false`)
+* `maximum_columns_width`: A set of integers specifying the maximum width of
+                           each column. If the width is equal or lower than 0,
+                           then it will be ignored. If it is a single integer,
+                           then this number will be used as the maximum width
+                           of all columns. Notice that the parameter
+                           `columns_width` has precedence over this one.
+                           (**Default** = 0)
 * `minimum_columns_width`: A set of integers specifying the minimum width of
                            each column. If the width is equal or lower than 0,
                            then it will be ignored. If it is a single integer,
@@ -100,6 +107,8 @@ passed as keywords when calling the function `pretty_table`:
 * `overwrite`: If `true`, then the same number of lines in the printed table
                will be deleted from the output `io`. This can be used to update
                the table in the screen continuously. (**Default** = `false`)
+* `row_number_alignment`: Select the alignment of the row number column (see the
+                          section [Alignment](@ref)). (**Default** = `:r`)
 * `screen_size`: A tuple of two integers that defines the screen size (num. of
                  rows, num. of columns) that is available to print the table. It
                  is used to crop the data depending on the value of the keyword
@@ -108,6 +117,14 @@ passed as keywords when calling the function `pretty_table`:
                  it will be treated as unlimited. (**Default** = `nothing`)
 * `show_row_number`: If `true`, then a new column will be printed showing the
                      row number. (**Default** = `false`)
+* `title_autowrap`: If `true`, then the title text will be wrapped considering
+                    the title size. Otherwise, lines larger than the title size
+                    will be cropped. (**Default** = `false`)
+* `title_crayon`: Crayon to print the title.
+* `title_same_width_as_table`: If `true`, then the title width will match that
+                               of the table. Otherwise, the title size will be
+                               equal to the screen width.
+                               (**Default** = `false`)
 * `tf`: Table format used to print the table (see the section
         [Text table formats](@ref)). (**Default** = `unicode`)
 * `vlines`: This variable controls where the vertical lines will be drawn. It
@@ -388,6 +405,16 @@ The following table formats are available when using the text back-end:
        2     true      2.0        2
        3    false      3.0        3
  -------- -------- -------- --------
+```
+
+`dataframe`
+
+```
+│ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
+├────────┼────────┼────────┼────────┤
+│      1 │  false │    1.0 │      1 │
+│      2 │   true │    2.0 │      2 │
+│      3 │  false │    3.0 │      3 │
 ```
 
 `markdown`

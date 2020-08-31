@@ -193,21 +193,21 @@ end
 
     <!-- <PrettyTables Table 1> -->
     <table>
-    <tr class = "header headerLastRow">
-    <th style = "text-align: right; ">Col. 1</th>
-    <th style = "text-align: right; ">Col. 2</th>
-    <th style = "text-align: right; ">Col. 3</th>
-    </tr>
-    <tr>
-    <td style = "text-align: right; ">1</td>
-    <td style = "text-align: right; ">2</td>
-    <td style = "text-align: right; ">3</td>
-    </tr>
-    <tr>
-    <td style = "text-align: right; ">4</td>
-    <td style = "text-align: right; ">5</td>
-    <td style = "text-align: right; ">6</td>
-    </tr>
+      <tr class = "header headerLastRow">
+        <th style = "text-align: right; ">Col. 1</th>
+        <th style = "text-align: right; ">Col. 2</th>
+        <th style = "text-align: right; ">Col. 3</th>
+      </tr>
+      <tr>
+        <td style = "text-align: right; ">1</td>
+        <td style = "text-align: right; ">2</td>
+        <td style = "text-align: right; ">3</td>
+      </tr>
+      <tr>
+        <td style = "text-align: right; ">4</td>
+        <td style = "text-align: right; ">5</td>
+        <td style = "text-align: right; ">6</td>
+      </tr>
     </table>
     <!-- </PrettyTables> -->
 
@@ -296,4 +296,98 @@ end
     expected = sprint(pretty_table, data)
     result   = pretty_table(String, data)
     @test result == expected
+end
+
+# Compact types
+# ==============================================================================
+
+@testset "Compact types" begin
+    # Dictionary
+    # --------------------------------------------------------------------------
+
+    data = Dict(:a => Int64(1), missing => Int64(2), :c => missing)
+
+    expected = """
+┌─────────┬─────────┐
+│    Keys │  Values │
+│ Symbol? │  Int64? │
+├─────────┼─────────┤
+│       a │       1 │
+│       c │ missing │
+│ missing │       2 │
+└─────────┴─────────┘
+"""
+    result = pretty_table(String, data, sortkeys = true)
+    @test result == expected
+
+    # Tables.jl API
+    # --------------------------------------------------------------------------
+
+    df = DataFrame(a = [missing,Int64(1),Int64(2),Int64(3)],
+                   b = [nothing,Int64(1),missing,Int64(1)])
+
+    expected = """
+┌─────────┬────────────────────┐
+│       a │                  b │
+│  Int64? │ U{Nothing, Int64}? │
+├─────────┼────────────────────┤
+│ missing │            nothing │
+│       1 │                  1 │
+│       2 │            missing │
+│       3 │                  1 │
+└─────────┴────────────────────┘
+"""
+    result = pretty_table(String, df)
+    @test result == expected
+end
+
+# Issue #65
+# ==============================================================================
+
+@testset "Issue #65 - Data type in filters with Tables.jl" begin
+    df = DataFrame(A = Int64.(1:20), B = Float64.(1:20))
+    rowfilter(data,i) = i <= div(size(data,1),2)
+
+    result1 = pretty_table(String, df,                 filters_row = (rowfilter,))
+    result2 = pretty_table(String, Tables.columns(df), filters_row = (rowfilter,))
+    result3 = pretty_table(String, Tables.rows(df),    filters_row = (rowfilter,))
+
+    expected = """
+┌───────┬─────────┐
+│     A │       B │
+│ Int64 │ Float64 │
+├───────┼─────────┤
+│     1 │     1.0 │
+│     2 │     2.0 │
+│     3 │     3.0 │
+│     4 │     4.0 │
+│     5 │     5.0 │
+│     6 │     6.0 │
+│     7 │     7.0 │
+│     8 │     8.0 │
+│     9 │     9.0 │
+│    10 │    10.0 │
+└───────┴─────────┘
+"""
+
+    @test result1 == expected
+    @test result2 == expected
+    @test result3 == expected
+
+    df = DataFrame(A = Int64.(1:10),
+                   B = Float64.(1:10),
+                   C = Int64.(1:10),
+                   D = Float64.(1:10))
+    colfilter1(data,j) = j <= div(size(data,2),2)
+
+    # `size` applied to `Tables.rows(df)` returns only the number of rows.
+    colfilter2(data,j) = j <= div(size(data[1],1),2)
+
+    result1 = pretty_table(String, df,                 filters_col = (colfilter1,))
+    result2 = pretty_table(String, Tables.columns(df), filters_col = (colfilter1,))
+    result3 = pretty_table(String, Tables.rows(df),    filters_col = (colfilter2,))
+
+    @test result1 == expected
+    @test result2 == expected
+    @test result3 == expected
 end
