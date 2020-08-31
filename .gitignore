@@ -1,0 +1,5 @@
+Manifest.toml
+test/test.html*
+test/test.md*
+test/test.txt*
+docs/build/*
