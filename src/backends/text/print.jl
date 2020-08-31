@@ -288,8 +288,10 @@ function _pt_text(io, pinfo;
                 data_str_ij = "#undef"
             elseif data_ij isa Markdown.MD
                 r = repr(data_ij)
-                len = max(0, min(length(r), 32)-1)
-                data_str_ij = len < length(r) - 1 ? first(r, len)*"…" : first(r, len)
+
+                # `repr` adds a new line at the end, which is not necessary.
+                len = length(r)-1
+                data_str_ij = first(r, len)
             else
                 data_str_ij = sprint(print, data_ij;
                                      context = :compact => compact_printing)
