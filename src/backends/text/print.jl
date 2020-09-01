@@ -233,13 +233,19 @@ function _pt_text(io, pinfo;
         # Convert the row names to string.
         max_size = 0
         for i = 1:num_printed_rows
-            data_str[i,Δc] = [_str_escaped(sprint(print, row_names[i];
-                                                  context = :compact => compact_printing))]
+            row_names_i = isassigned(row_names,i) ? row_names[i] : undef
+            row_name_str, row_name_lstr, cell_width =
+                _parse_cell(row_names_i;
+                            autowrap = false,
+                            cell_first_line_only = false,
+                            column_width = -1,
+                            compact_printing = compact_printing,
+                            linebreaks = false)
 
-            len_i = textwidth(data_str[i,Δc][1])
-            len_i > max_size && (max_size = len_i)
+            data_str[i,Δc] = row_name_str
+            data_len[i,Δc] = row_name_lstr
 
-            data_len[i,Δc] = [len_i]
+            cell_width > max_size && (max_size = cell_width)
         end
 
         # Obtain the size of the row name column.
@@ -260,12 +266,19 @@ function _pt_text(io, pinfo;
 
         if !noheader
             for j = 1:header_num_rows
-                header_str[j,i] = _str_escaped(sprint(print, header[(ic-1)*header_num_rows + j];
-                                                      context = :compact => compact_printing))
-                header_len[j,i] = textwidth(header_str[j,i])
+                id = (ic-1)*header_num_rows + j
+                header_ij = isassigned(header,id) ? header[id] : undef
 
-                # Compute the minimum column size to print this string.
-                cell_width = header_len[j,i]
+                hstr, hlstr, cell_width =
+                    _parse_cell(header_ij;
+                                autowrap = false,
+                                cell_first_line_only = false,
+                                column_width = -1,
+                                compact_printing = compact_printing,
+                                linebreaks = false)
+
+                header_str[j,i] = first(hstr)
+                header_len[j,i] = first(hlstr)
 
                 # If the user does not want a fixed column width, then we must
                 # store the information to automatically compute the field size.
