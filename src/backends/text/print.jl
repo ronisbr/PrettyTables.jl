@@ -297,51 +297,18 @@ function _pt_text(io, pinfo;
                 data_ij = f(data_ij, jr, ic)
             end
 
-            # Handle `nothing`, `missing`, and `undef`.
-            if ismissing(data_ij)
-                data_str_ij = "missing"
-            elseif data_ij == nothing
-                data_str_ij = "nothing"
-            elseif data_ij == undef
-                data_str_ij = "#undef"
-            elseif data_ij isa Markdown.MD
-                r = repr(data_ij)
+            # Parse the cell.
+            data_str[j,i], data_len[j,i], cell_width =
+                _parse_cell(data_ij;
+                            autowrap = autowrap && fixed_col_width[ic],
+                            cell_first_line_only = cell_first_line_only,
+                            column_width = columns_width[ic],
+                            compact_printing = compact_printing,
+                            linebreaks = linebreaks)
 
-                # `repr` adds a new line at the end, which is not necessary.
-                len = length(r)-1
-                data_str_ij = first(r, len)
-            else
-                data_str_ij = sprint(print, data_ij;
-                                     context = :compact => compact_printing)
-            end
-
-            if cell_first_line_only
-                tokens = _str_line_breaks(data_str_ij,
-                                          autowrap && fixed_col_width[ic],
-                                          columns_width[ic])
-                data_str[j,i] = [tokens[1]]
-                data_len[j,i] = [textwidth(data_str[j,i][1])]
-
-                cell_width    = data_len[j,i][1]
-            elseif linebreaks
-                tokens = _str_line_breaks(data_str_ij,
-                                          autowrap && fixed_col_width[ic],
-                                          columns_width[ic])
-                data_str[j,i] = tokens
-                data_len[j,i] = textwidth.(tokens)
-                num_lines_ij  = length(tokens)
-
-                # Check if we must update the number of lines in this row.
-                num_lines_in_row[j] < num_lines_ij && (num_lines_in_row[j] = num_lines_ij)
-
-                # Compute the maximum length to compute the column size.
-                cell_width = maximum(data_len[j,i])
-            else
-                data_str_ij_esc = _str_escaped(data_str_ij)
-                data_str[j,i]   = [data_str_ij_esc]
-                data_len[j,i]   = [textwidth(data_str_ij_esc)]
-                cell_width      = data_len[j,i][1]
-            end
+            # Check if we must update the number of lines in this row.
+            num_lines_ij = length(data_str[j,i])
+            num_lines_in_row[j] < num_lines_ij && (num_lines_in_row[j] = num_lines_ij)
 
             # If the user does not want a fixed column width, then we must store
             # the information to automatically compute the field size.

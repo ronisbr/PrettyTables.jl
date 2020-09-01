@@ -35,6 +35,7 @@ include("tables.jl")
 # ========
 
 # Text backend
+include("backends/text/cell_parse.jl")
 include("backends/text/predefined_formats.jl")
 include("backends/text/predefined_highlighters.jl")
 include("backends/text/print.jl")
