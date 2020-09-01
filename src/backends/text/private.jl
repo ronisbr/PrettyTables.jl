@@ -18,17 +18,22 @@ const _reset_crayon = Crayon(reset = true)
 ################################################################################
 
 """
-    _crop_str(str, crop_size)
+    _crop_str(str, crop_size, lstr = -1)
 
 Return a cropped string of `str` with size `crop_size`. Notice that if the last
-characted before the crop does not fit due to its width, then blank spaces are
+character before the crop does not fit due to its width, then blank spaces are
 added.
 
+The size of the string can be passed to `lstr` to save computational burden. If
+`lstr = -1`, then the string length will be computed inside the function.
+
 """
-function _crop_str(str, crop_size)
+function _crop_str(str, crop_size, lstr = -1)
+    lstr < 0 && (lstr = textwidth(str))
+
     # If the crop_size is large than the screen size, then just return the
     # current string.
-    crop_size ≥ textwidth(str) && return str
+    crop_size ≥ lstr && return str
 
     # Process every character of the string.
     cstr  = ""
@@ -54,22 +59,27 @@ function _crop_str(str, crop_size)
 end
 
 """
-    _str_aligned(data::AbstractString, alignment::Symbol, field_size::Integer)
+    _str_aligned(data::AbstractString, alignment::Symbol, field_size::Integer, lstr::Integer = -1)
 
 This function returns the string `data` with alignment `alignment` in a field
 with size `field_size`. `alignment` can be `:l` or `:L` for left alignment, `:c`
 or `:C` for center alignment, or `:r` or `:R` for right alignment. It defaults
 to `:r` if `alignment` is any other symbol.
 
+This function also returns the new size of the aligned string.
+
 If the string is larger than `field_size`, then it will be cropped and `⋯` will
 be added as the last character.
 
+The size of the string can be passed to `lstr` to save computational burden. If
+`lstr = -1`, then the string length will be computed inside the function.
+
 """
 function _str_aligned(data::AbstractString, alignment::Symbol,
-                      field_size::Integer)
+                      field_size::Integer, lstr::Integer = -1)
 
-    lstr = textwidth(data)
-    Δ    = field_size - lstr
+    lstr < 0 && (lstr = textwidth(data))
+    Δ = field_size - lstr
 
     # If the length is larger than the field, then we will crop the string.
     if Δ < 0
@@ -77,19 +87,20 @@ function _str_aligned(data::AbstractString, alignment::Symbol,
         data *= "…"
 
         # In this case, the string has the same size of the field.
+        lstr = lstr + Δ - 1
         Δ = 0
     end
 
     # TODO: If Δ is 0, can we just return the string?
 
     if alignment == :l || alignment == :L
-        return data * " "^Δ
+        return data * " "^Δ, lstr + Δ
     elseif alignment == :c || alignment == :C
         left  = div(Δ,2)
         right = Δ-left
-        return " "^left * data * " "^right
+        return " "^left * data * " "^right, lstr + Δ
     else
-        return " "^Δ * data
+        return " "^Δ * data, lstr + Δ
     end
 end
 
@@ -192,12 +203,12 @@ function _draw_continuation_row(screen, io, tf, text_crayon, border_crayon,
     0 ∈ vlines && _p!(screen, io, border_crayon, tf.column)
 
     @inbounds for j = 1:num_cols
-        data_ij_str = _str_aligned("⋮", :c, cols_width[j] + 2)
-        _p!(screen, io, text_crayon, data_ij_str)
+        data_ij_str, data_ij_len = _str_aligned("⋮", :c, cols_width[j] + 2)
+        _p!(screen, io, text_crayon, data_ij_str, false, data_ij_len)
 
         flp = j == num_cols
 
-        _pc!(j ∈ vlines, screen, io, border_crayon, tf.column, " ", flp)
+        _pc!(j ∈ vlines, screen, io, border_crayon, tf.column, " ", flp, 1, 1)
         _eol(screen) && break
     end
 
@@ -254,20 +265,20 @@ function _nl!(screen, io)
 end
 
 """
-    _p!(screen, io, crayon, str, final_line_print = false)
+    _p!(screen, io, crayon, str, final_line_print = false, lstr = -1)
 
 Print `str` into `io` using the Crayon `crayon` with the screen information in
 `screen`. The parameter `final_line_print` must be set to `true` if this is the
 last string that will be printed in the line. This is necessary for the
 algorithm to select whether or not to include the continuation character.
 
+The size of the string can be passed to `lstr` to save computational burden. If
+`lstr = -1`, then the string length will be computed inside the function.
+
 """
-function _p!(screen, io, crayon, str, final_line_print = false)
-    # Get the size of the string.
-    #
-    # TODO: We might reduce the number of allocations by avoiding calling
-    # `textwidth`, since we have the size of all fields.
-    lstr = textwidth(str)
+function _p!(screen, io, crayon, str, final_line_print = false, lstr = -1)
+    # Get the size of the string if required.
+    lstr < 0 && (lstr = textwidth(str))
 
     # `sapp` is a string to be appended to `str`. This is used to add `⋯` if the
     # text must be wrapped. Notice that `lapp` is the length of `sapp`.
@@ -353,13 +364,16 @@ if this is the last string that will be printed in the line. This is necessary
 for the algorithm to select whether or not to include the continuation
 character.
 
+The size of the strings can be passed to `lstr_true` and `lstr_false` to save
+computational burden. If they are `-1`, then the string lengths will be computed
+inside the function.
+
 """
 function _pc!(cond, screen, io, crayon, str_true, str_false,
-              final_line_print = false)
+              final_line_print = false, lstr_true = -1, lstr_false = -1)
     if cond
-        return _p!(screen, io, crayon, str_true, final_line_print)
+        return _p!(screen, io, crayon, str_true, final_line_print, lstr_true)
     else
-        return _p!(screen, io, crayon, str_false, final_line_print)
+        return _p!(screen, io, crayon, str_false, final_line_print, lstr_false)
     end
 end
-

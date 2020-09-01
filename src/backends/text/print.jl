@@ -156,9 +156,15 @@ function _pt_text(io, pinfo;
     # the matrix. Notice that we must create only the matrix with the printed
     # rows and columns.
     header_str = Matrix{String}(undef, header_num_rows, num_printed_cols)
+    header_len = zeros(Int,header_num_rows, num_printed_cols)
+
     data_str   = Matrix{Vector{AbstractString}}(undef,
                                                 num_printed_rows,
                                                 num_printed_cols)
+    data_len   = Matrix{Vector{Int}}(undef,
+                                     num_printed_rows,
+                                     num_printed_cols)
+
     num_lines_in_row = ones(Int, num_printed_rows)
 
     # The variable `columns_width` is the specification of the user for the
@@ -191,10 +197,15 @@ function _pt_text(io, pinfo;
         # Set the header of the row column.
         header_str[1,1]      = "Row"
         header_str[2:end,1] .= ""
+        header_len[1,1]      = 3
 
         # Set the data of the row column.
         for i = 1:num_printed_rows
             data_str[i,1] = [string(id_rows[i])]
+
+            # Here we can use `length` because there will be no UTF-8 character
+            # in this cell.
+            data_len[i,1] = [length(data_str[i,1][1])]
         end
 
         # The row number width depends on how many digits the total number of
@@ -215,6 +226,10 @@ function _pt_text(io, pinfo;
         header_str[1,Δc]      = _str_escaped(row_name_column_title)
         header_str[2:end,Δc] .= ""
 
+        # Compute the length of the row name column title.
+        str_len = textwidth(header_str[1,Δc])
+        header_len[1,Δc] = str_len
+
         # Convert the row names to string.
         max_size = 0
         for i = 1:num_printed_rows
@@ -223,10 +238,12 @@ function _pt_text(io, pinfo;
 
             len_i = textwidth(data_str[i,Δc][1])
             len_i > max_size && (max_size = len_i)
+
+            data_len[i,Δc] = [len_i]
         end
 
         # Obtain the size of the row name column.
-        cols_width[Δc] = max(length(header_str[1,Δc]), max_size)
+        cols_width[Δc] = max(str_len, max_size)
 
         # Add information about the row name column to the variables.
         push!(alignment_add, row_name_alignment)
@@ -245,9 +262,10 @@ function _pt_text(io, pinfo;
             for j = 1:header_num_rows
                 header_str[j,i] = _str_escaped(sprint(print, header[(ic-1)*header_num_rows + j];
                                                       context = :compact => compact_printing))
+                header_len[j,i] = textwidth(header_str[j,i])
 
                 # Compute the minimum column size to print this string.
-                cell_width = textwidth(header_str[j,i])
+                cell_width = header_len[j,i]
 
                 # If the user does not want a fixed column width, then we must
                 # store the information to automatically compute the field size.
@@ -302,23 +320,27 @@ function _pt_text(io, pinfo;
                                           autowrap && fixed_col_width[ic],
                                           columns_width[ic])
                 data_str[j,i] = [tokens[1]]
-                cell_width    = textwidth(data_str[j,i][1])
+                data_len[j,i] = [textwidth(data_str[j,i][1])]
+
+                cell_width    = data_len[j,i][1]
             elseif linebreaks
                 tokens = _str_line_breaks(data_str_ij,
                                           autowrap && fixed_col_width[ic],
                                           columns_width[ic])
                 data_str[j,i] = tokens
+                data_len[j,i] = textwidth.(tokens)
                 num_lines_ij  = length(tokens)
 
                 # Check if we must update the number of lines in this row.
                 num_lines_in_row[j] < num_lines_ij && (num_lines_in_row[j] = num_lines_ij)
 
                 # Compute the maximum length to compute the column size.
-                cell_width = maximum(textwidth.(tokens))
+                cell_width = maximum(data_len[j,i])
             else
                 data_str_ij_esc = _str_escaped(data_str_ij)
                 data_str[j,i]   = [data_str_ij_esc]
-                cell_width      = textwidth(data_str_ij_esc)
+                data_len[j,i]   = [textwidth(data_str_ij_esc)]
+                cell_width      = data_len[j,i][1]
             end
 
             # If the user does not want a fixed column width, then we must store
@@ -386,7 +408,7 @@ function _pt_text(io, pinfo;
 
     if !noheader
         @inbounds @views for i = 1:header_num_rows
-            0 ∈ vlines && _p!(screen, buf, border_crayon, tf.column)
+            0 ∈ vlines && _p!(screen, buf, border_crayon, tf.column, false, 1)
 
             for j = 1:num_printed_cols
                 # Get the information about the alignment and the crayon.
@@ -419,17 +441,21 @@ function _pt_text(io, pinfo;
                 end
 
                 # Prepare the text to be printed.
-                header_i_str = " " * _str_aligned(header_str[i,j],
-                                                  alignment_ij,
-                                                  cols_width[j]) * " "
+                header_ij_str, header_ij_len = _str_aligned(header_str[i,j],
+                                                            alignment_ij,
+                                                            cols_width[j],
+                                                            header_len[i,j])
+                header_ij_str  = " " * header_ij_str * " "
+                header_ij_len += 2
 
                 flp = j == num_printed_cols
 
                 # Print the text.
-                _p!(screen, buf, crayon_ij, header_i_str)
+                _p!(screen, buf, crayon_ij, header_ij_str, false, header_ij_len)
 
                 # Check if we need to draw a vertical line here.
-                _pc!(j ∈ vlines, screen, buf, border_crayon, tf.column, " " , flp)
+                _pc!(j ∈ vlines, screen, buf, border_crayon, tf.column, " ",
+                     flp, 1, 1)
 
                 _eol(screen) && break
             end
@@ -455,7 +481,7 @@ function _pt_text(io, pinfo;
         ir = id_rows[i]
 
         for l = 1:num_lines_in_row[i]
-            0 ∈ vlines && _p!(screen, buf, border_crayon, tf.column)
+            0 ∈ vlines && _p!(screen, buf, border_crayon, tf.column, false, 1)
 
             for j = 1:num_printed_cols
                 # Get the information about the alignment and the crayon.
@@ -493,18 +519,26 @@ function _pt_text(io, pinfo;
 
                 # Align the string to be printed.
                 if length(data_str[i,j]) >= l
-                    data_ij_str = " " * _str_aligned(data_str[i,j][l], alignment_ij, cols_width[j]) * " "
+                    data_ij_str, data_ij_len = _str_aligned(data_str[i,j][l],
+                                                            alignment_ij,
+                                                            cols_width[j],
+                                                            data_len[i,j][l])
                 else
-                    data_ij_str = " " * _str_aligned("", alignment_ij, cols_width[j]) * " "
+                    data_ij_str, data_ij_len = _str_aligned("",
+                                                            alignment_ij,
+                                                            cols_width[j])
                 end
 
                 # Print.
-                _p!(screen, buf, crayon_ij, data_ij_str)
+                data_ij_str  = " " * data_ij_str * " "
+                data_ij_len += 2
+                _p!(screen, buf, crayon_ij, data_ij_str, false, data_ij_len)
 
                 flp = j == num_printed_cols
 
                 # Check if we need to draw a vertical line here.
-                _pc!(j ∈ vlines, screen, buf, border_crayon, tf.column, " " , flp)
+                _pc!(j ∈ vlines, screen, buf, border_crayon, tf.column, " " ,
+                     flp, 1, 1)
 
                 _eol(screen) && break
             end
@@ -560,7 +594,7 @@ function _pt_text(io, pinfo;
         else
             title_tokens = _str_line_breaks(title, title_autowrap, title_width)
             for token in title_tokens
-                println(io, _str_aligned(token, title_alignment, title_width))
+                println(io, _str_aligned(token, title_alignment, title_width)[1])
             end
         end
 
