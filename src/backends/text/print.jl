@@ -18,6 +18,7 @@ function _pt_text(io, pinfo;
                   body_hlines_format::Union{Nothing,NTuple{4,Char}} = nothing,
                   crop::Symbol = :both,
                   crop_subheader::Bool = false,
+                  crop_num_lines_at_beginning::Int = 0,
                   columns_width::Union{Integer,AbstractVector{Int}} = 0,
                   equal_columns_width::Bool = false,
                   highlighters::Union{Highlighter,Tuple} = (),
@@ -77,6 +78,8 @@ function _pt_text(io, pinfo;
             screen.size = (-1,screen.size[2])
         end
     end
+
+    crop_num_lines_at_beginning < 0 && (crop_num_lines_at_beginning = 0)
 
     !noheader && num_cols != header_num_cols &&
     error("The header length must be equal to the number of columns.")
@@ -388,12 +391,48 @@ function _pt_text(io, pinfo;
     #                           Print the table
     # ==========================================================================
 
+    # Title
+    # ==========================================================================
+
+    if length(title) > 0
+        # Compute the table width.
+        table_width = sum(cols_width) + 2length(cols_width) + length(vlines)
+
+        screen.size[2] > 0 && table_width > screen.size[2] &&
+            (table_width = screen.size[2])
+
+        # Compute the title width.
+        title_width = title_same_width_as_table ? table_width : screen.size[2]
+
+        print(buf, title_crayon)
+
+        # If the title width is not higher than 0, then we should only print the
+        # title.
+        if title_width ≤ 0
+            println(buf, title)
+
+        # Otherwise, we must check for the alignments.
+        else
+            title_tokens = _str_line_breaks(title, title_autowrap, title_width)
+            for token in title_tokens
+                println(buf, _str_aligned(token, title_alignment, title_width)[1])
+            end
+
+            # Sum the number of lines in the title to the number of lines that
+            # must be available at the beginning of the table.
+            crop_num_lines_at_beginning += length(title_tokens)
+        end
+
+        print(buf, text_crayon)
+    end
+
     # Top table line
     # ==========================================================================
 
     0 ∈ hlines && _draw_line!(screen, buf, tf.up_left_corner,
                               tf.up_intersection, tf.up_right_corner, tf.row,
                               border_crayon, cols_width, vlines)
+
 
     # Header
     # ==========================================================================
@@ -550,7 +589,7 @@ function _pt_text(io, pinfo;
             _nl!(screen, buf)
 
             # Check if the screen is over.
-            if _eos(screen, 2 + draw_last_hline)
+            if _eos(screen, 2 + draw_last_hline + crop_num_lines_at_beginning)
                 # If we have only one line left, then we do not need to print
                 # the continuation line.
                 if (i+1 < num_printed_rows) ||
@@ -592,29 +631,6 @@ function _pt_text(io, pinfo;
     # table. This can be used to replace the table in the screen continuously.
 
     str_overwrite = overwrite ? "\e[1F\e[2K"^(screen.row - 1) : ""
-
-    # Title
-    # ==========================================================================
-
-    if length(title) > 0
-        title_width = title_same_width_as_table ? screen.max_col : screen.size[2]
-
-        print(io, title_crayon)
-
-        # If the title width is not higher than 0, then we should only print the
-        # title.
-        if title_width ≤ 0
-            println(io,title)
-        # Otherwise, we must check for the alignments.
-        else
-            title_tokens = _str_line_breaks(title, title_autowrap, title_width)
-            for token in title_tokens
-                println(io, _str_aligned(token, title_alignment, title_width)[1])
-            end
-        end
-
-        print(io, text_crayon)
-    end
 
     # Print the buffer
     # ==========================================================================

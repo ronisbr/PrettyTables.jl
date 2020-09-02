@@ -204,6 +204,11 @@ This back-end produces text tables. This back-end can be used by selecting
           on vertical and horizontal direction, `:horizontal` to crop only on
           horizontal direction, `:vertical` to crop only on vertical direction,
           or `:none` to do not crop the data at all.
+* `crop_num_lines_at_beginning`: Number of lines to be left at the beginning of
+                                 the printing when vertically cropping the
+                                 output. Notice that the lines required to show
+                                 the title are automatically computed.
+                                 (**Default** = 0)
 * `crop_subheader`: If `true`, then the sub-header size will not be taken into
                     account when computing the column size. Hence, the print
                     algorithm can crop it to save space. This has no effect if

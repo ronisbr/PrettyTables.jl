@@ -1954,6 +1954,46 @@ will be displayed above the table.
                           title_crayon = Crayon(),
                           title_same_width_as_table = true)
     @test result == expected
+
+    # Cropping
+    # --------------------------------------------------------------------------
+
+    expected = """
+This is a long long long long long…
+That has two lines.                
+┌────────┬────────┬────────┬───── ⋯
+│ Col. 1 │ Col. 2 │ Col. 3 │ Col. ⋯
+├────────┼────────┼────────┼───── ⋯
+│      1 │  false │    1.0 │      ⋯
+│      2 │   true │    2.0 │      ⋯
+│      3 │  false │    3.0 │      ⋯
+│   ⋮    │   ⋮    │   ⋮    │   ⋮  ⋯
+└────────┴────────┴────────┴───── ⋯
+"""
+    result = pretty_table(String, data,
+                          screen_size = (12,35),
+                          title = "This is a long long long long long long title\nThat has two lines.",
+                          title_crayon = Crayon())
+    @test result == expected
+
+    expected = """
+This is a long long long long long 
+long title                         
+That has two lines.                
+┌────────┬────────┬────────┬───── ⋯
+│ Col. 1 │ Col. 2 │ Col. 3 │ Col. ⋯
+├────────┼────────┼────────┼───── ⋯
+│      1 │  false │    1.0 │      ⋯
+│      2 │   true │    2.0 │      ⋯
+│   ⋮    │   ⋮    │   ⋮    │   ⋮  ⋯
+└────────┴────────┴────────┴───── ⋯
+"""
+    result = pretty_table(String, data,
+                          screen_size = (12,35),
+                          title = "This is a long long long long long long title\nThat has two lines.",
+                          title_autowrap = true,
+                          title_crayon = Crayon())
+    @test result == expected
 end
 
 # Helpers
