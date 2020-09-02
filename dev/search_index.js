@@ -633,6 +633,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "lib/library/#PrettyTables._eos-Tuple{Any,Any}",
+    "page": "Library",
+    "title": "PrettyTables._eos",
+    "category": "method",
+    "text": "_eos(screen, Δ)\n\nReturn true if the cursor is Δ lines before the end of screen or false otherwise.\n\n\n\n\n\n"
+},
+
+{
     "location": "lib/library/#PrettyTables._get_composed_ansi_format-Tuple{Any}",
     "page": "Library",
     "title": "PrettyTables._get_composed_ansi_format",
