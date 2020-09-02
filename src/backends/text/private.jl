@@ -39,20 +39,37 @@ function _crop_str(str, crop_size, lstr = -1)
     cstr  = ""
     lcstr = 0
 
-    for c in str
-        sc = textwidth(c)
+    # Find all ANSI escape sequences and split string there.
+    #
+    # The regex was obtained from here:
+    #
+    #     https://stackoverflow.com/questions/14693701/how-can-i-remove-the-ansi-escape-sequences-from-a-string-in-python
+    #
+    ansi   = collect(eachmatch(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])", str))
+    tokens = split(str, r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])")
+    crop_finished = false
 
-        # Check if we can add the character without passing the crop size.
-        if lcstr + sc ≤ crop_size
-            cstr  *= c
-            lcstr += sc
+    for i = 1:length(tokens)
+        for c in tokens[i]
+            sc = textwidth(c)
 
-        # Fill the remaining spaces with blank characters.
-        else
-            Δ      = crop_size - lcstr
-            cstr  *= " "^Δ
-            break
+            # Check if we can add the character without passing the crop size.
+            if lcstr + sc ≤ crop_size
+                cstr  *= c
+                lcstr += sc
+
+                # Fill the remaining spaces with blank characters.
+            else
+                Δ      = crop_size - lcstr
+                cstr  *= " "^Δ
+                crop_finished = true
+                break
+            end
         end
+
+        crop_finished && break
+
+        cstr *= ansi[i].match
     end
 
     return cstr
@@ -182,6 +199,99 @@ function _str_line_breaks(str::AbstractString, autowrap::Bool = false, width::In
     else
         return tokens_raw
     end
+end
+
+################################################################################
+#                             ANSI Escape Sequence
+################################################################################
+
+"""
+    _get_composed_ansi_format(ansi)
+
+Given a vector with a set of ANSI escape sequences, return a composed escape
+sequence that leads to the same formatting.
+
+!!! warning
+
+    This function only works with the minimal set used by `Markdown` in
+    `stdlib`.
+
+"""
+function _get_composed_ansi_format(ansi)
+    bold = false
+    underline = false
+    color = 39
+
+    for a in ansi
+        length(a) ≤ 3  && continue
+        a[1]   != '\e' && continue
+        a[2]   != '['  && continue
+        a[end] != 'm'  && continue
+
+        code = parse(Int, a[3:end-1])
+
+        if code == 0
+            color = 39
+            bold = false
+            underline = false
+        elseif code == 1
+            bold = true
+        elseif code == 4
+            underline = true
+        elseif code == 22
+            bold  = false
+            color = 39
+        elseif code == 24
+            underline = false
+        elseif 30 ≤ code ≤ 37
+            color = code
+        elseif code == 39
+            color = 39
+        end
+    end
+
+    composed_ansi = ""
+
+    bold        && (composed_ansi *= "\e[1m")
+    underline   && (composed_ansi *= "\e[4m")
+    color != 39 && (composed_ansi *= "\e[" * string(color) * "m")
+
+    return composed_ansi
+end
+
+"""
+    _reapply_ansi_format!(lines)
+
+For each line in `lines`, reapply the ANSI format left by the previous line.
+
+"""
+function _reapply_ansi_format!(lines)
+    length(lines) ≤ 1 && return nothing
+
+    aux  = collect(eachmatch(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])", lines[1]))
+    ansi = map(x->x.match, aux)
+
+    lines[1] *= "\e[0m"
+
+    @inbounds @views for i = 2:length(lines)
+        composed_ansi = _get_composed_ansi_format(ansi)
+
+        # Find the first non-blank character.
+        id = findfirst(x->x ≠ ' ', lines[i])
+
+        if (id == nothing) || (id == 1)
+            lines[i] = composed_ansi * lines[i]
+        else
+            lines[i] = lines[i][1:id-1] * composed_ansi * lines[i][id:end]
+        end
+
+        aux  = collect(eachmatch(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])", lines[i]))
+        ansi = map(x->x.match, aux)
+
+        lines[i] *= "\e[0m"
+    end
+
+    return nothing
 end
 
 ################################################################################

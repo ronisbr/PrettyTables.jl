@@ -495,6 +495,13 @@ function _pt_text(io, pinfo;
                             break
                         end
                     end
+
+                    # For Markdown cells, we will overwrite alignment and
+                    # highlighters.
+                    if isassigned(data,ir,jc) && (data[ir,jc] isa Markdown.MD)
+                        alignment_ij = :l
+                        crayon_ij = ""
+                    end
                 end
 
                 # Align the string to be printed.

@@ -23,14 +23,47 @@ Parse the table cell `cell` of type `T`. This function must return:
     return _parse_cell(cell_str; kwargs...)
 end
 
-@inline function _parse_cell(cell::Markdown.MD; kwargs...)
-    r = repr(cell)
+@inline function _parse_cell(cell::Markdown.MD;
+                             column_width::Integer = -1,
+                             linebreaks::Bool = false,
+                             kwargs...)
 
-    # `repr` adds a new line at the end, which is not necessary.
-    len = length(r)-1
-    cell_str = first(r, len)
+    # The maximum size for Markdowns cells is 80.
+    column_width ≤ 0 && (column_width = 80)
 
-    return _parse_cell(cell_str; kwargs...)
+    # Render Markdown
+    # ==========================================================================
+
+    # First, we need to render the Markdown with all the colors.
+    str = sprint(Markdown.term, cell, column_width; context = :color => true)
+
+    # Now, we need to remove all ANSI escapa sequences to count the printable
+    # characters.
+    #
+    # This regex was obtained at:
+    #
+    #     https://stackoverflow.com/questions/14693701/how-can-i-remove-the-ansi-escape-sequences-from-a-string-in-python
+    #
+    str_nc = replace(str, r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])" => "")
+
+    if !linebreaks
+        str_nc     = replace(str_nc, "\n" => "\\n")
+        str        = replace(str,    "\n" => "\\n")
+        cell_width = textwidth(str_nc)
+
+        return [str], [cell_width], cell_width
+    else
+        # Obtain the number of lines and the maximum number of used columns.
+        tokens_nc = split(str_nc, '\n')
+        lines     = length(tokens_nc)
+        max_cols  = maximum(textwidth.(tokens_nc))
+        num_chars = textwidth.(tokens_nc)
+        tokens    = split(str, '\n')
+
+        _reapply_ansi_format!(tokens)
+
+        return tokens, num_chars, max_cols
+    end
 end
 
 @inline function _parse_cell(cell::AbstractString;
