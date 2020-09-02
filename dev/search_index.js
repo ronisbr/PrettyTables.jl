@@ -601,11 +601,11 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "lib/library/#PrettyTables._crop_str-Tuple{Any,Any}",
+    "location": "lib/library/#PrettyTables._crop_str",
     "page": "Library",
     "title": "PrettyTables._crop_str",
-    "category": "method",
-    "text": "_crop_str(str, crop_size)\n\nReturn a cropped string of str with size crop_size. Notice that if the last characted before the crop does not fit due to its width, then blank spaces are added.\n\n\n\n\n\n"
+    "category": "function",
+    "text": "_crop_str(str, crop_size, lstr = -1)\n\nReturn a cropped string of str with size crop_size. Notice that if the last character before the crop does not fit due to its width, then blank spaces are added.\n\nThe size of the string can be passed to lstr to save computational burden. If lstr = -1, then the string length will be computed inside the function.\n\n\n\n\n\n"
 },
 
 {
@@ -633,6 +633,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "lib/library/#PrettyTables._get_composed_ansi_format-Tuple{Any}",
+    "page": "Library",
+    "title": "PrettyTables._get_composed_ansi_format",
+    "category": "method",
+    "text": "_get_composed_ansi_format(ansi)\n\nGiven a vector with a set of ANSI escape sequences, return a composed escape sequence that leads to the same formatting.\n\nwarning: Warning\nThis function only works with the minimal set used by Markdown in stdlib.\n\n\n\n\n\n"
+},
+
+{
     "location": "lib/library/#PrettyTables._nl!-Tuple{Any,Any}",
     "page": "Library",
     "title": "PrettyTables._nl!",
@@ -645,7 +653,15 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "PrettyTables._p!",
     "category": "function",
-    "text": "_p!(screen, io, crayon, str, final_line_print = false)\n\nPrint str into io using the Crayon crayon with the screen information in screen. The parameter final_line_print must be set to true if this is the last string that will be printed in the line. This is necessary for the algorithm to select whether or not to include the continuation character.\n\n\n\n\n\n"
+    "text": "_p!(screen, io, crayon, str, final_line_print = false, lstr = -1)\n\nPrint str into io using the Crayon crayon with the screen information in screen. The parameter final_line_print must be set to true if this is the last string that will be printed in the line. This is necessary for the algorithm to select whether or not to include the continuation character.\n\nThe size of the string can be passed to lstr to save computational burden. If lstr = -1, then the string length will be computed inside the function.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables._parse_cell-Tuple{Any}",
+    "page": "Library",
+    "title": "PrettyTables._parse_cell",
+    "category": "method",
+    "text": "_parse_cell(cell::T; kwargs...)\n\nParse the table cell cell of type T. This function must return:\n\nA vector of String with the parsed cell text, one component per line.\nA vector with the length of each parsed line.\nThe necessary width for the cell.\n\n\n\n\n\n"
 },
 
 {
@@ -653,7 +669,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "PrettyTables._pc!",
     "category": "function",
-    "text": "_pc!(cond, screen, io, crayon, str_true, str_false, final_line_print = false)\n\nIf cond == true then print str_true. Otherwise, print str_false. Those strings will be printed into io using the Crayon crayon with the screen information in screen. The parameter final_line_print must be set to true if this is the last string that will be printed in the line. This is necessary for the algorithm to select whether or not to include the continuation character.\n\n\n\n\n\n"
+    "text": "_pc!(cond, screen, io, crayon, str_true, str_false, final_line_print = false)\n\nIf cond == true then print str_true. Otherwise, print str_false. Those strings will be printed into io using the Crayon crayon with the screen information in screen. The parameter final_line_print must be set to true if this is the last string that will be printed in the line. This is necessary for the algorithm to select whether or not to include the continuation character.\n\nThe size of the strings can be passed to lstr_true and lstr_false to save computational burden. If they are -1, then the string lengths will be computed inside the function.\n\n\n\n\n\n"
 },
 
 {
@@ -673,11 +689,19 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "lib/library/#PrettyTables._str_aligned-Tuple{AbstractString,Symbol,Integer}",
+    "location": "lib/library/#PrettyTables._reapply_ansi_format!-Tuple{Any}",
+    "page": "Library",
+    "title": "PrettyTables._reapply_ansi_format!",
+    "category": "method",
+    "text": "_reapply_ansi_format!(lines)\n\nFor each line in lines, reapply the ANSI format left by the previous line.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables._str_aligned",
     "page": "Library",
     "title": "PrettyTables._str_aligned",
-    "category": "method",
-    "text": "_str_aligned(data::AbstractString, alignment::Symbol, field_size::Integer)\n\nThis function returns the string data with alignment alignment in a field with size field_size. alignment can be :l or :L for left alignment, :c or :C for center alignment, or :r or :R for right alignment. It defaults to :r if alignment is any other symbol.\n\nIf the string is larger than field_size, then it will be cropped and ⋯ will be added as the last character.\n\n\n\n\n\n"
+    "category": "function",
+    "text": "_str_aligned(data::AbstractString, alignment::Symbol, field_size::Integer, lstr::Integer = -1)\n\nThis function returns the string data with alignment alignment in a field with size field_size. alignment can be :l or :L for left alignment, :c or :C for center alignment, or :r or :R for right alignment. It defaults to :r if alignment is any other symbol.\n\nThis function also returns the new size of the aligned string.\n\nIf the string is larger than field_size, then it will be cropped and ⋯ will be added as the last character.\n\nThe size of the string can be passed to lstr to save computational burden. If lstr = -1, then the string length will be computed inside the function.\n\n\n\n\n\n"
 },
 
 {
