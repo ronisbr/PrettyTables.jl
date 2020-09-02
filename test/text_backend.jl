@@ -977,6 +977,7 @@ end
 ├────────┼────────┼────────┼ ⋯
 │      1 │  false │    1.0 │ ⋯
 │      2 │   true │    2.0 │ ⋯
+│      3 │  false │    3.0 │ ⋯
 │   ⋮    │   ⋮    │   ⋮    │ ⋯
 └────────┴────────┴────────┴ ⋯
 """
@@ -1012,6 +1013,7 @@ end
 ├────────┼────────┼────────┼────────┤
 │      1 │  false │    1.0 │      1 │
 │      2 │   true │    2.0 │      2 │
+│      3 │  false │    3.0 │      3 │
 │   ⋮    │   ⋮    │   ⋮    │   ⋮    │
 └────────┴────────┴────────┴────────┘
 """
@@ -1020,6 +1022,24 @@ end
     @test result == expected
 
     result = pretty_table(String, data, screen_size = (10,-1), crop = :both)
+    @test result == expected
+
+    expected = """
+│ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
+├────────┼────────┼────────┼────────┤
+│      1 │  false │    1.0 │      1 │
+│      2 │   true │    2.0 │      2 │
+│      3 │  false │    3.0 │      3 │
+│      4 │   true │    4.0 │      4 │
+│   ⋮    │   ⋮    │   ⋮    │   ⋮    │
+"""
+
+    result = pretty_table(String, data, screen_size = (9,30), crop = :vertical,
+                          tf = dataframe)
+    @test result == expected
+
+    result = pretty_table(String, data, screen_size = (9,-1), crop = :both,
+                          tf = dataframe)
     @test result == expected
 
     model = [1.123456789 for i = 1:8, j = 1:10]
@@ -1062,6 +1082,81 @@ end
                           columns_width = 6,
                           alignment = [:l, :l, :r, :c, :r, :c, :l, :l, :c, :r])
 
+    @test result == expected
+
+    # Limits
+    # --------------------------------------------------------------------------
+
+    expected = """
+┌────────┬────────┬────────┬────────┐
+│ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
+├────────┼────────┼────────┼────────┤
+│      1 │  false │    1.0 │      1 │
+│      2 │   true │    2.0 │      2 │
+│      3 │  false │    3.0 │      3 │
+│      4 │   true │    4.0 │      4 │
+│      5 │  false │    5.0 │      5 │
+│      6 │   true │    6.0 │      6 │
+└────────┴────────┴────────┴────────┘
+"""
+
+    result = pretty_table(String, data, screen_size = (12,-1))
+    @test result == expected
+
+    expected = """
+│ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
+├────────┼────────┼────────┼────────┤
+│      1 │  false │    1.0 │      1 │
+│      2 │   true │    2.0 │      2 │
+│      3 │  false │    3.0 │      3 │
+│      4 │   true │    4.0 │      4 │
+│      5 │  false │    5.0 │      5 │
+│      6 │   true │    6.0 │      6 │
+"""
+
+    result = pretty_table(String, data, screen_size = (10,-1), tf = dataframe)
+    @test result == expected
+
+    data_text = Any[1    false            1.0     0x01 ;
+                    2     true            2.0     0x02 ;
+                    3    false            3.0     0x03 ;
+                    4     true            4.0     0x04 ;
+                    5    false            5.0     0x05 ;
+                    6    "teste\nteste"   6.0     0x06 ;]
+
+    expected = """
+┌────────┬────────┬────────┬────────┐
+│ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
+├────────┼────────┼────────┼────────┤
+│      1 │  false │    1.0 │      1 │
+│      2 │   true │    2.0 │      2 │
+│      3 │  false │    3.0 │      3 │
+│      4 │   true │    4.0 │      4 │
+│      5 │  false │    5.0 │      5 │
+│   ⋮    │   ⋮    │   ⋮    │   ⋮    │
+└────────┴────────┴────────┴────────┘
+"""
+
+    result = pretty_table(String, data_text,
+                          linebreaks = true,
+                          screen_size = (12,-1))
+    @test result == expected
+
+    expected = """
+│ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
+├────────┼────────┼────────┼────────┤
+│      1 │  false │    1.0 │      1 │
+│      2 │   true │    2.0 │      2 │
+│      3 │  false │    3.0 │      3 │
+│      4 │   true │    4.0 │      4 │
+│      5 │  false │    5.0 │      5 │
+│   ⋮    │   ⋮    │   ⋮    │   ⋮    │
+"""
+
+    result = pretty_table(String, data_text,
+                          linebreaks = true,
+                          screen_size = (10,-1),
+                          tf = dataframe)
     @test result == expected
 
     # Sub-header cropping
@@ -1537,6 +1632,7 @@ end
 ├───────────┼─────┼───────┼───────┼─── ⋯
 │   Row 1   │   1 │ false │   1.0 │    ⋯
 │   Row 2   │   2 │  true │   2.0 │    ⋯
+│   Row 3   │   3 │ false │   3.0 │    ⋯
 │     ⋮     │  ⋮  │   ⋮   │   ⋮   │  ⋮ ⋯
 └───────────┴─────┴───────┴───────┴─── ⋯
 """
@@ -1650,6 +1746,7 @@ end
 ├─────┼───────────┼─────────────┼ ⋯
 │   1 │   Row 1   │   1   false │ ⋯
 │   2 │   Row 2   │   2    true │ ⋯
+│   3 │   Row 3   │   3   false │ ⋯
 │  ⋮  │     ⋮     │  ⋮      ⋮   │ ⋯
 └─────┴───────────┴─────────────┴ ⋯
 """

@@ -361,6 +361,15 @@ Return `true` if the cursor is at the end of line or `false` otherwise.
 _eol(screen) = (screen.size[2] > 0) && (screen.col >= screen.size[2])
 
 """
+    _eos(screen, Δ)
+
+Return `true` if the cursor is `Δ` lines before the end of screen or `false`
+otherwise.
+
+"""
+_eos(screen, Δ) = (screen.size[1] > 0) && (screen.row+Δ >= screen.size[1])
+
+"""
     _nl!(screen, io)
 
 Add a new line into `io` using the screen information in `screen`.

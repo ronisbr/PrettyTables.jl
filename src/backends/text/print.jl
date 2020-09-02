@@ -261,6 +261,11 @@ function _pt_text(io, pinfo;
     # --------------------------------------------------------------------------
 
     @inbounds for i = (1+Δc):num_printed_cols
+        # Here we store the number of processed rows. This is used to save
+        # processing if the user wants to crop the output and has cells with
+        # multiple lines.
+        num_processed_rows = 0
+
         # Index of the i-th printed column in `data`.
         ic = id_cols[i-Δc]
 
@@ -279,6 +284,8 @@ function _pt_text(io, pinfo;
 
                 header_str[j,i] = first(hstr)
                 header_len[j,i] = first(hlstr)
+
+                num_processed_rows += 1
 
                 # If the user does not want a fixed column width, then we must
                 # store the information to automatically compute the field size.
@@ -323,6 +330,8 @@ function _pt_text(io, pinfo;
             num_lines_ij = length(data_str[j,i])
             num_lines_in_row[j] < num_lines_ij && (num_lines_in_row[j] = num_lines_ij)
 
+            num_processed_rows += num_lines_ij
+
             # If the user does not want a fixed column width, then we must store
             # the information to automatically compute the field size.
             if !fixed_col_width[ic]
@@ -334,6 +343,8 @@ function _pt_text(io, pinfo;
                     cols_width[i] = maximum_columns_width[ic]
                 end
             end
+
+            (screen.size[1] > 0) && (num_processed_rows ≥ screen.size[1]) && break
         end
 
         # If the user horizontal cropping, then check if we need to process
@@ -365,6 +376,10 @@ function _pt_text(io, pinfo;
 
     hlines == nothing && (hlines = tf.hlines)
     hlines = _process_hlines(hlines, body_hlines, num_printed_rows, noheader)
+
+    # Check if the last horizontal line must be drawn. This is required when
+    # computing the moment that the screen will be cropped.
+    draw_last_hline = (num_printed_rows + !noheader) ∈ hlines
 
     # Process `vlines`.
     vlines == nothing && (vlines = tf.vlines)
@@ -457,6 +472,8 @@ function _pt_text(io, pinfo;
     # Data
     # ==========================================================================
 
+    draw_continuation_line = false
+
     @inbounds @views for i = 1:num_printed_rows
         ir = id_rows[i]
 
@@ -532,6 +549,17 @@ function _pt_text(io, pinfo;
 
             _nl!(screen, buf)
 
+            # Check if the screen is over.
+            if _eos(screen, 2 + draw_last_hline)
+                # If we have only one line left, then we do not need to print
+                # the continuation line.
+                if (i+1 < num_printed_rows) ||
+                    ( (i+1 == num_printed_rows) && (num_lines_in_row[i+1] > 1) ) ||
+                    ( (i   == num_printed_rows) && (num_lines_in_row[i]   > l) )
+                    draw_continuation_line = true
+                    break
+                end
+            end
         end
 
         # Check if we must draw a horizontal line here.
@@ -542,7 +570,7 @@ function _pt_text(io, pinfo;
         # Here we must check if the vertical size of the screen has been
         # reached. Notice that we must add 4 to account for the command line,
         # the continuation line, the bottom table line, and the last blank line.
-        if (screen.size[1] > 0) && (screen.row + 4 >= screen.size[1])
+        if draw_continuation_line
             _draw_continuation_row(screen, buf, tf, text_crayon, border_crayon,
                                    cols_width, vlines)
             break
@@ -552,7 +580,7 @@ function _pt_text(io, pinfo;
     # Bottom table line
     # ==========================================================================
 
-    (num_printed_rows + !noheader) ∈ hlines &&
+    draw_last_hline &&
         _draw_line!(screen, buf, tf.bottom_left_corner, tf.bottom_intersection,
                     tf.bottom_right_corner, tf.row, border_crayon, cols_width,
                     vlines)
