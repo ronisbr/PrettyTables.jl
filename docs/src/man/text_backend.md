@@ -103,6 +103,8 @@ passed as keywords when calling the function `pretty_table`:
                            of all columns. Notice that the parameter
                            `columns_width` has precedence over this one.
                            (**Default** = 0)
+* `newline_at_end`: If `false`, then the table will not end with a newline
+                    character. (**Default** = `true`)
 * `noheader`: If `true`, then the header will not be printed. Notice that all
               keywords and parameters related to the header and sub-headers will
               be ignored. (**Default** = `false`)

@@ -26,6 +26,7 @@ function _pt_text(io, pinfo;
                   linebreaks::Bool = false,
                   maximum_columns_width::Union{Integer,AbstractVector{Int}} = 0,
                   minimum_columns_width::Union{Integer,AbstractVector{Int}} = 0,
+                  newline_at_end::Bool = true,
                   overwrite::Bool = false,
                   noheader::Bool = false,
                   nosubheader::Bool = false,
@@ -634,7 +635,14 @@ function _pt_text(io, pinfo;
 
     # Print the buffer
     # ==========================================================================
-    print(io, str_overwrite * String(take!(buf_io)))
+    output_str = String(take!(buf_io))
+
+    # Check if the user does not want a newline at end.
+    if !newline_at_end && (output_str[end] == '\n')
+        output_str = first(output_str, length(output_str)-1)
+    end
+
+    print(io, str_overwrite * output_str)
 
     return nothing
 end

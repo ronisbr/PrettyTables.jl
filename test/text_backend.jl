@@ -51,6 +51,22 @@ data = Any[1    false      1.0     0x01 ;
 """
     result = pretty_table(String, data)
     @test result == expected
+
+    # Without a newline at end.
+    expected = """
+┌────────┬────────┬────────┬────────┐
+│ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
+├────────┼────────┼────────┼────────┤
+│      1 │  false │    1.0 │      1 │
+│      2 │   true │    2.0 │      2 │
+│      3 │  false │    3.0 │      3 │
+│      4 │   true │    4.0 │      4 │
+│      5 │  false │    5.0 │      5 │
+│      6 │   true │    6.0 │      6 │
+└────────┴────────┴────────┴────────┘"""
+
+    result = pretty_table(String, data, newline_at_end = false)
+    @test result == expected
 end
 
 # Alignments
