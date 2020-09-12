@@ -214,6 +214,10 @@ This back-end produces text tables. This back-end can be used by selecting
                     algorithm can crop it to save space. This has no effect if
                     the user selects a fixed column width.
                     (**Default** = `false`)
+* `continuation_row_alignment`: A symbol that defines the alignment of the cells
+                                in the continuation row. This row is printed if
+                                the table is vertically cropped.
+                                (**Default** = `:c`)
 * `equal_columns_width`: If `true`, then all the columns will have the same
                          width. (**Default** = `false`)
 * `highlighters`: An instance of `Highlighter` or a tuple with a list of

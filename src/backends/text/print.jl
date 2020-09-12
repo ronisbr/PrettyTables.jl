@@ -16,6 +16,7 @@ function _pt_text(io, pinfo;
                   autowrap::Bool = false,
                   body_hlines::Vector{Int} = Int[],
                   body_hlines_format::Union{Nothing,NTuple{4,Char}} = nothing,
+                  continuation_row_alignment::Symbol = :c,
                   crop::Symbol = :both,
                   crop_subheader::Bool = false,
                   crop_num_lines_at_beginning::Int = 0,
@@ -612,7 +613,8 @@ function _pt_text(io, pinfo;
         # the continuation line, the bottom table line, and the last blank line.
         if draw_continuation_line
             _draw_continuation_row(screen, buf, tf, text_crayon, border_crayon,
-                                   cols_width, vlines)
+                                   cols_width, vlines,
+                                   continuation_row_alignment)
             break
         end
     end

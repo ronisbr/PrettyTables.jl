@@ -299,22 +299,23 @@ end
 ################################################################################
 
 """
-    _draw_continuation_row(screen, io, tf, text_crayon, border_crayon, cols_width, vlines)
+    _draw_continuation_row(screen, io, tf, text_crayon, border_crayon, cols_width, vlines, alignment)
 
 Draw the continuation row when the table has filled the vertical space
-available. This function prints in each column the character `⋮` centered.
+available. This function prints in each column the character `⋮` with the
+alignment in `alignment`.
 
 """
 function _draw_continuation_row(screen, io, tf, text_crayon, border_crayon,
-                                cols_width, vlines)
+                                cols_width, vlines, alignment)
 
     num_cols = length(cols_width)
 
     0 ∈ vlines && _p!(screen, io, border_crayon, tf.column)
 
     @inbounds for j = 1:num_cols
-        data_ij_str, data_ij_len = _str_aligned("⋮", :c, cols_width[j] + 2)
-        _p!(screen, io, text_crayon, data_ij_str, false, data_ij_len)
+        data_ij_str, data_ij_len = _str_aligned("⋮", alignment, cols_width[j])
+        _p!(screen, io, text_crayon, " " * data_ij_str * " ", false, data_ij_len+2)
 
         flp = j == num_cols
 

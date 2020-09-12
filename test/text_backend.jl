@@ -1198,6 +1198,41 @@ end
     result = pretty_table(String, data, header, crop_subheader = true)
 
     @test result == expected
+
+    # Continuation row alignment
+    # --------------------------------------------------------------------------
+
+    expected = """
+┌────────┬────────┬────────┬ ⋯
+│ Col. 1 │ Col. 2 │ Col. 3 │ ⋯
+├────────┼────────┼────────┼ ⋯
+│      1 │  false │    1.0 │ ⋯
+│      2 │   true │    2.0 │ ⋯
+│      3 │  false │    3.0 │ ⋯
+│ ⋮      │ ⋮      │ ⋮      │ ⋯
+└────────┴────────┴────────┴ ⋯
+"""
+
+    result = pretty_table(String, data,
+                          continuation_row_alignment = :l,
+                          screen_size = (10,30))
+    @test result == expected
+
+    expected = """
+┌────────┬────────┬────────┬ ⋯
+│ Col. 1 │ Col. 2 │ Col. 3 │ ⋯
+├────────┼────────┼────────┼ ⋯
+│      1 │  false │    1.0 │ ⋯
+│      2 │   true │    2.0 │ ⋯
+│      3 │  false │    3.0 │ ⋯
+│      ⋮ │      ⋮ │      ⋮ │ ⋯
+└────────┴────────┴────────┴ ⋯
+"""
+
+    result = pretty_table(String, data,
+                          continuation_row_alignment = :r,
+                          screen_size = (10,30))
+    @test result == expected
 end
 
 # Minimum and maximum column width

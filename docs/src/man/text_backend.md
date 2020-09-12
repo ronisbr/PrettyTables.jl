@@ -45,6 +45,10 @@ passed as keywords when calling the function `pretty_table`:
                    computed to fit the large cell in the column. If it is
                    a single integer, then this number will be used as the size
                    of all columns. (**Default** = 0)
+* `continuation_row_alignment`: A symbol that defines the alignment of the cells
+                                in the continuation row. This row is printed if
+                                the table is vertically cropped.
+                                (**Default** = `:c`)
 * `crop`: Select the printing behavior when the data is bigger than the
           available screen size (see `screen_size`). It can be `:both` to crop
           on vertical and horizontal direction, `:horizontal` to crop only on
