@@ -590,7 +590,7 @@ function _pt_text(io, pinfo;
             _nl!(screen, buf)
 
             # Check if the screen is over.
-            if _eos(screen, 2 + draw_last_hline + crop_num_lines_at_beginning)
+            if _eos(screen, 1 + newline_at_end + draw_last_hline + crop_num_lines_at_beginning)
                 # If we have only one line left, then we do not need to print
                 # the continuation line.
                 if (i+1 < num_printed_rows) ||
