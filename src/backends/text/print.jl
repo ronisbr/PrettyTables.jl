@@ -40,10 +40,7 @@ function _pt_text(io, pinfo;
                   title_autowrap::Bool = false,
                   title_crayon::Crayon = Crayon(bold = true),
                   title_same_width_as_table::Bool = false,
-                  vlines::Union{Nothing,Symbol,AbstractVector} = nothing,
-                  # Deprecated
-                  formatter = nothing,
-                  same_column_size = nothing)
+                  vlines::Union{Nothing,Symbol,AbstractVector} = nothing)
 
     @unpack_PrintInfo pinfo
 

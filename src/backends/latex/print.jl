@@ -18,9 +18,7 @@ function _pt_latex(io, pinfo;
                    nosubheader::Bool = false,
                    row_number_alignment::Symbol = :r,
                    table_type::Symbol = :tabular,
-                   vlines::Union{Nothing,Symbol,AbstractVector} = nothing,
-                   # Deprecated
-                   formatter = nothing)
+                   vlines::Union{Nothing,Symbol,AbstractVector} = nothing)
 
     @unpack_PrintInfo pinfo
 

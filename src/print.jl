@@ -830,51 +830,6 @@ function _pretty_table(io, data, header;
         end
     end
 
-    # Breaking change introduced in PrettyTable.jl v0.9.
-    if haskey(kwargs, :formatter)
-        @warn("""
-              The API of formatters has changed in PrettyTables v0.9.
-              The keyword is now called `formatters` instead of `formatter` and it is a tuple
-              of functions instead of a dictionary.
-
-              If you are using a predefined formatter, then you only need to replace the
-              keyword `formatter` by `formatters`. Otherwise, you will need to rewrite your
-              formmaters.
-
-              For now, the old API is wrapped in a function that converts it to
-              the new one.
-
-              For more information, see the documentation.
-              """)
-
-        # If `formatter` is a `Dict`, then the user is using the old API, which
-        # needs to be wrapped in a function to convert it to the new API.
-        if typeof(kwargs[:formatter]) <: Dict
-            formatter = kwargs[:formatter]
-            formatters = (v, i, j)->begin
-                if haskey(formatter, 0)
-                    return formatter[0](v,i)
-                elseif haskey(formatter, j)
-                    return formatter[j](v,i)
-                else
-                    return v
-                end
-            end
-        elseif (typeof(kwargs[:formatter]) <: Tuple) ||
-               (typeof(kwargs[:formatter]) <: Function)
-            formatters = kwargs[:formatter]
-        end
-    end
-
-    # Deprecation introduced in PrettyTables.jl v0.9.
-    if haskey(kwargs, :same_column_size)
-        @warn("The keyword `same_column_size` was replaced by `equal_columns_width`.")
-
-        vkwargs = filter(x->x.first ≠ :same_column_size, collect(kwargs))
-        push!(vkwargs, :equal_columns_width => kwargs[:same_column_size])
-        kwargs = vkwargs
-    end
-
     # Get information about the table we have to print based on the format of
     # `data`, which must be an `AbstractMatrix` or an `AbstractVector`.
     dims     = size(data)

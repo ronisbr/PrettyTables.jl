@@ -13,9 +13,7 @@ function _pt_html(io, pinfo;
                   linebreaks::Bool = false,
                   noheader::Bool = false,
                   nosubheader::Bool = false,
-                  standalone::Bool = true,
-                   # Deprecated
-                   formatter = nothing)
+                  standalone::Bool = true)
 
     @unpack_PrintInfo pinfo
     @unpack_HTMLTableFormat tf
