@@ -126,8 +126,6 @@ passed as keywords when calling the function `pretty_table`:
                  `crop`. If it is `nothing`, then the size will be obtained
                  automatically. Notice that if a dimension is not positive, then
                  it will be treated as unlimited. (**Default** = `nothing`)
-* `show_row_number`: If `true`, then a new column will be printed showing the
-                     row number. (**Default** = `false`)
 * `title_autowrap`: If `true`, then the title text will be wrapped considering
                     the title size. Otherwise, lines larger than the title size
                     will be cropped. (**Default** = `false`)
