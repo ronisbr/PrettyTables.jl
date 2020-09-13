@@ -199,9 +199,9 @@ function _pt_text(io, pinfo;
 
     @inbounds if show_row_number
         # Set the header of the row column.
-        header_str[1,1]      = "Row"
+        header_str[1,1]      = row_number_column_title
         header_str[2:end,1] .= ""
-        header_len[1,1]      = 3
+        header_len[1,1]      = textwidth(row_number_column_title)
 
         # Set the data of the row column.
         for i = 1:num_printed_rows
@@ -213,10 +213,10 @@ function _pt_text(io, pinfo;
         end
 
         # The row number width depends on how many digits the total number of
-        # rows # has and the length of the header "Row". Notice that if
-        # `noheader` is set to `true`, then we should not take the word "Row"
-        # into account.
-        cols_width[1] = max(noheader ? 0 : 3, floor(Int, log10(num_rows)) + 1)
+        # rows has and the length of the header. Notice that if `noheader` is
+        # set to `true`, then we should not take the word "Row" into account.
+        cols_width[1] = max(noheader ? 0 : header_len[1,1],
+                            floor(Int, log10(num_rows)) + 1)
 
         # Add information about the row number column to the variables.
         push!(alignment_add, row_number_alignment)

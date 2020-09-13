@@ -160,7 +160,9 @@ function _pt_html(io, pinfo;
             # The text "Row" must appear only on the first line.
             if show_row_number
                 if i == 1
-                    _aprintln(buf, "<th class = rowNumber>Row</th>", il, ns)
+                    _aprintln(buf, "<th class = rowNumber>" *
+                              row_number_column_title *
+                              "</th>", il, ns)
                 else
                     _aprintln(buf, "<th></th>", il, ns)
                 end

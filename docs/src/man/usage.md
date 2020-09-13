@@ -109,6 +109,8 @@ Each back-end defines its own configuration keywords that can be passed using
                         section [Alignment](@ref)).
 * `row_name_column_title`: Title of the column with the row names.
                            (**Default** = "")
+* `row_number_column_title`: The title of the column that shows the row numbers.
+                             (**Default** = "Row")
 * `show_row_number`: If `true`, then a new column will be printed showing the
                      row number. (**Default** = `false`)
 * `title`: The title of the table. If it is empty, then no title will be

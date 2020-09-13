@@ -278,6 +278,8 @@ This back-end produces text tables. This back-end can be used by selecting
                  `crop`. If it is `nothing`, then the size will be obtained
                  automatically. Notice that if a dimension is not positive, then
                  it will be treated as unlimited. (**Default** = `nothing`)
+* `row_number_column_title`: The title of the column that shows the row numbers.
+                             (**Default** = "Row")
 * `show_row_number`: If `true`, then a new column will be printed showing the
                      row number. (**Default** = `false`)
 * `tf`: Table format used to print the table (see `TextFormat`).
@@ -410,8 +412,6 @@ This backend produces HTML tables. This backend can be used by selecting
 * `nosubheader`: If `true`, then the sub-header will not be printed, *i.e.* the
                  header will contain only one line. Notice that this option has
                  no effect if `noheader = true`. (**Default** = `false`)
-* `show_row_number`: If `true`, then a new column will be printed showing the
-                     row number. (**Default** = `false`)
 * `standalone`: If `true`, then a complete HTML page will be generated.
                 Otherwise, only the content between the tags `<table>` and
                 `</table>` will be printed (with the tags included).
@@ -527,8 +527,6 @@ This backend produces LaTeX tables. This backend can be used by selecting
                  no effect if `noheader = true`. (**Default** = `false`)
 * `row_number_alignment`: Select the alignment of the row number column (see the
                           section `Alignment`). (**Default** = `:r`)
-* `show_row_number`: If `true`, then a new column will be printed showing the
-                     row number. (**Default** = `false`)
 * `table_type`: Select which LaTeX environment will be used to print the table.
                 Currently supported options are `:tabular` for `tabular` or
                 `:longtable` for `longtable`. (**Default** = `:tabular`)
@@ -814,6 +812,7 @@ function _pretty_table(io, data, header;
                        row_names::Union{Nothing,AbstractVector} = nothing,
                        row_name_alignment::Symbol = :r,
                        row_name_column_title::AbstractString = "",
+                       row_number_column_title::AbstractString = "Row",
                        show_row_number::Bool = false,
                        title::AbstractString = "",
                        title_alignment::Symbol = :l,
@@ -1028,11 +1027,12 @@ function _pretty_table(io, data, header;
     # Create the structure that stores the print information.
     pinfo = PrintInfo(data, header, id_cols, id_rows, num_rows, num_cols,
                       num_printed_cols, num_printed_rows, header_num_rows,
-                      header_num_cols, show_row_number, show_row_names,
-                      row_names, row_name_alignment, row_name_column_title,
-                      alignment, cell_alignment, formatters, compact_printing,
-                      title, title_alignment, header_alignment,
-                      header_cell_alignment, cell_first_line_only)
+                      header_num_cols, show_row_number, row_number_column_title,
+                      show_row_names, row_names, row_name_alignment,
+                      row_name_column_title, alignment, cell_alignment,
+                      formatters, compact_printing, title, title_alignment,
+                      header_alignment, header_cell_alignment,
+                      cell_first_line_only)
 
     if backend == :text
         _pt_text(io, pinfo; kwargs...)

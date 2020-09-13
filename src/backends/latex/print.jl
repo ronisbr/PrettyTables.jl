@@ -172,7 +172,7 @@ function _pt_latex(io, pinfo;
                 _aprint(buf, il, ns)
 
                 if i == 1
-                    print(buf, _latex_envs("Row", header_envs))
+                    print(buf, _latex_envs(row_number_column_title, header_envs))
                 end
 
                 print(buf, " & ")
