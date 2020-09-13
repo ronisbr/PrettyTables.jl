@@ -319,7 +319,7 @@ function _draw_continuation_row(screen, io, tf, text_crayon, border_crayon,
 
         flp = j == num_cols
 
-        _pc!(j ∈ vlines, screen, io, border_crayon, tf.column, " ", flp, 1, 1)
+        _pc!(j ∈ vlines, screen, io, border_crayon, tf.column, "", flp, 1, 0)
         _eol(screen) && break
     end
 
@@ -346,10 +346,10 @@ function _draw_line!(screen, io, left, intersection, right, row, border_crayon,
         _p!(screen, io, border_crayon, row^(cols_width[i]+2)) && break
 
         i != num_cols &&
-            _pc!(i ∈ vlines, screen, io, border_crayon, intersection, row)
+            _pc!(i ∈ vlines, screen, io, border_crayon, intersection, "")
     end
 
-    _pc!(num_cols ∈ vlines, screen, io, border_crayon, right, row, true)
+    _pc!(num_cols ∈ vlines, screen, io, border_crayon, right, "", true)
     _nl!(screen, io)
 end
 

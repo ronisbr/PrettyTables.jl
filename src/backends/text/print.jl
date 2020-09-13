@@ -489,8 +489,8 @@ function _pt_text(io, pinfo;
                 _p!(screen, buf, crayon_ij, header_ij_str, false, header_ij_len)
 
                 # Check if we need to draw a vertical line here.
-                _pc!(j ∈ vlines, screen, buf, border_crayon, tf.column, " ",
-                     flp, 1, 1)
+                _pc!(j ∈ vlines, screen, buf, border_crayon, tf.column, "",
+                     flp, 1, 0)
 
                 _eol(screen) && break
             end
@@ -581,8 +581,8 @@ function _pt_text(io, pinfo;
                 flp = j == num_printed_cols
 
                 # Check if we need to draw a vertical line here.
-                _pc!(j ∈ vlines, screen, buf, border_crayon, tf.column, " " ,
-                     flp, 1, 1)
+                _pc!(j ∈ vlines, screen, buf, border_crayon, tf.column, "" ,
+                     flp, 1, 0)
 
                 _eol(screen) && break
             end
