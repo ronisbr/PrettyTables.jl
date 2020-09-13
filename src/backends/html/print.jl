@@ -13,7 +13,6 @@ function _pt_html(io, pinfo;
                   linebreaks::Bool = false,
                   noheader::Bool = false,
                   nosubheader::Bool = false,
-                  show_row_number::Bool = false,
                   standalone::Bool = true,
                    # Deprecated
                    formatter = nothing)

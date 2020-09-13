@@ -52,6 +52,7 @@ the tables.
     num_printed_rows::Int
     header_num_rows::Int
     header_num_cols::Int
+    show_row_number::Bool
     show_row_names::Bool
     row_names
     row_name_alignment::Symbol

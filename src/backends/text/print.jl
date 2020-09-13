@@ -35,7 +35,6 @@ function _pt_text(io, pinfo;
                   row_name_header_crayon::Crayon = Crayon(bold = true),
                   row_number_alignment::Symbol = :r,
                   screen_size::Union{Nothing,Tuple{Int,Int}} = nothing,
-                  show_row_number::Bool = false,
                   sortkeys::Bool = false,
                   tf::TextFormat = unicode,
                   title_autowrap::Bool = false,

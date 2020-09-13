@@ -814,6 +814,7 @@ function _pretty_table(io, data, header;
                        row_names::Union{Nothing,AbstractVector} = nothing,
                        row_name_alignment::Symbol = :r,
                        row_name_column_title::AbstractString = "",
+                       show_row_number::Bool = false,
                        title::AbstractString = "",
                        title_alignment::Symbol = :l,
                        kwargs...)
@@ -1027,11 +1028,11 @@ function _pretty_table(io, data, header;
     # Create the structure that stores the print information.
     pinfo = PrintInfo(data, header, id_cols, id_rows, num_rows, num_cols,
                       num_printed_cols, num_printed_rows, header_num_rows,
-                      header_num_cols, show_row_names, row_names,
-                      row_name_alignment, row_name_column_title, alignment,
-                      cell_alignment, formatters, compact_printing, title,
-                      title_alignment, header_alignment, header_cell_alignment,
-                      cell_first_line_only)
+                      header_num_cols, show_row_number, show_row_names,
+                      row_names, row_name_alignment, row_name_column_title,
+                      alignment, cell_alignment, formatters, compact_printing,
+                      title, title_alignment, header_alignment,
+                      header_cell_alignment, cell_first_line_only)
 
     if backend == :text
         _pt_text(io, pinfo; kwargs...)

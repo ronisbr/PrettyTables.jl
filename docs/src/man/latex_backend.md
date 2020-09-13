@@ -56,8 +56,6 @@ passed as keywords when calling the function [`pretty_table`](@ref):
                  no effect if `noheader = true`. (**Default** = `false`)
 * `row_number_alignment`: Select the alignment of the row number column (see the
                           section [Alignment](@ref)). (**Default** = `:r`)
-* `show_row_number`: If `true`, then a new column will be printed showing the
-                     row number. (**Default** = `false`)
 * `table_type`: Select which LaTeX environment will be used to print the table.
                 Currently supported options are `:tabular` for `tabular` or
                 `:longtable` for `longtable`. (**Default** = `:tabular`)
