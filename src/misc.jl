@@ -108,7 +108,7 @@ It returns a vector of `Int` stating where the horizontal lines must be drawn.
         error("`hlines` must be `:all`, `:none`, or a vector of integers.")
     end
 
-    return _process_hlines(vlines, body_hlines, num_printed_rows, noheader)
+    return _process_hlines(vhlines, body_hlines, num_printed_rows, noheader)
 end
 
 function _process_hlines(hlines::AbstractVector, body_hlines::AbstractVector,

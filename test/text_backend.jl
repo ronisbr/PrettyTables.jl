@@ -758,6 +758,45 @@ end
                           noheader = true,
                           body_hlines = vcat(findall(x->x == true, data[:,2])))
     @test result == expected
+
+    # Test the case when `hlines` is a symbol
+    # --------------------------------------------------------------------------
+
+    expected = """
+┌────────┬────────┬────────┬────────┐
+│ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
+├────────┼────────┼────────┼────────┤
+│      1 │  false │    1.0 │      1 │
+├────────┼────────┼────────┼────────┤
+│      2 │   true │    2.0 │      2 │
+├────────┼────────┼────────┼────────┤
+│      3 │  false │    3.0 │      3 │
+├────────┼────────┼────────┼────────┤
+│      4 │   true │    4.0 │      4 │
+├────────┼────────┼────────┼────────┤
+│      5 │  false │    5.0 │      5 │
+├────────┼────────┼────────┼────────┤
+│      6 │   true │    6.0 │      6 │
+└────────┴────────┴────────┴────────┘
+"""
+
+    result = pretty_table(String, data;
+                          hlines = :all)
+    @test result == expected
+
+    expected = """
+│ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
+│      1 │  false │    1.0 │      1 │
+│      2 │   true │    2.0 │      2 │
+│      3 │  false │    3.0 │      3 │
+│      4 │   true │    4.0 │      4 │
+│      5 │  false │    5.0 │      5 │
+│      6 │   true │    6.0 │      6 │
+"""
+
+    result = pretty_table(String, data;
+                          hlines = :none)
+    @test result == expected
 end
 
 # Line breaks inside cells
