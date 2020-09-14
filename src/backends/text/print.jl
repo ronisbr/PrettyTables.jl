@@ -7,7 +7,7 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # Low-level function to print the table using the text backend.
-function _pt_text(io, pinfo;
+function _pt_text(io::IO, pinfo::PrintInfo;
                   border_crayon::Crayon = Crayon(),
                   header_crayon::Union{Crayon,Vector{Crayon}} = Crayon(bold = true),
                   subheader_crayon::Union{Crayon,Vector{Crayon}} = Crayon(foreground = :dark_gray),
@@ -20,13 +20,13 @@ function _pt_text(io, pinfo;
                   crop::Symbol = :both,
                   crop_subheader::Bool = false,
                   crop_num_lines_at_beginning::Int = 0,
-                  columns_width::Union{Integer,AbstractVector{Int}} = 0,
+                  columns_width::Union{Int,AbstractVector{Int}} = 0,
                   equal_columns_width::Bool = false,
                   highlighters::Union{Highlighter,Tuple} = (),
                   hlines::Union{Nothing,Symbol,AbstractVector} = nothing,
                   linebreaks::Bool = false,
-                  maximum_columns_width::Union{Integer,AbstractVector{Int}} = 0,
-                  minimum_columns_width::Union{Integer,AbstractVector{Int}} = 0,
+                  maximum_columns_width::Union{Int,AbstractVector{Int}} = 0,
+                  minimum_columns_width::Union{Int,AbstractVector{Int}} = 0,
                   newline_at_end::Bool = true,
                   overwrite::Bool = false,
                   noheader::Bool = false,

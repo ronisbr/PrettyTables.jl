@@ -690,7 +690,7 @@ end
 ################################################################################
 
 # Function to print data that complies with Tables.jl API.
-function _pretty_table_Tables(io::IO, data, header; kwargs...)
+function _pretty_table_Tables(io::IO, data, header::AbstractVecOrMat; kwargs...)
     # First we need to check which type of table we have.
     if Tables.columnaccess(data)
         # Access the table using the columns.
@@ -755,7 +755,8 @@ function _pretty_table_Tables(io::IO, data, header; kwargs...)
 end
 
 # Function to print vectors or matrices.
-function _pretty_table_VecOrMat(io, matrix, header; kwargs...)
+function _pretty_table_VecOrMat(io::IO, matrix::AbstractVecOrMat,
+                                header::AbstractVecOrMat; kwargs...)
     if isempty(header)
         header = ["Col. " * string(i) for i = 1:size(matrix,2)]
     end
@@ -764,7 +765,9 @@ function _pretty_table_VecOrMat(io, matrix, header; kwargs...)
 end
 
 # Function to print dictionaries.
-function _pretty_table_Dict(io, dict::Dict{K,V}; sortkeys = false, kwargs...) where {K,V}
+function _pretty_table_Dict(io::IO, dict::Dict{K,V}; sortkeys::Bool = false,
+                            kwargs...) where {K,V}
+
     header = ["Keys"              "Values";
               compact_type_str(K) compact_type_str(V)]
 
@@ -792,7 +795,7 @@ const _type_backend_dict = Dict{DataType, Symbol}(TextFormat       => :text,
 # This is the low level function that prints the table. In this case, `data`
 # must be accessed by `[i,j]` and the size of the `header` must be equal to the
 # number of columns in `data`.
-function _pretty_table(io, data, header;
+function _pretty_table(io::IO, data, header::AbstractVecOrMat;
                        alignment::Union{Symbol,Vector{Symbol}} = :r,
                        backend::Union{Nothing,Symbol} = nothing,
                        cell_alignment::Union{Nothing,

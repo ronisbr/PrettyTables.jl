@@ -28,7 +28,7 @@ The size of the string can be passed to `lstr` to save computational burden. If
 `lstr = -1`, then the string length will be computed inside the function.
 
 """
-function _crop_str(str, crop_size, lstr = -1)
+function _crop_str(str::String, crop_size::Int, lstr::Int = -1)
     lstr < 0 && (lstr = textwidth(str))
 
     # If the crop_size is large than the screen size, then just return the
@@ -76,7 +76,7 @@ function _crop_str(str, crop_size, lstr = -1)
 end
 
 """
-    _str_aligned(data::AbstractString, alignment::Symbol, field_size::Integer, lstr::Integer = -1)
+    _str_aligned(data::String, alignment::Symbol, field_size::Integer, lstr::Integer = -1)
 
 This function returns the string `data` with alignment `alignment` in a field
 with size `field_size`. `alignment` can be `:l` or `:L` for left alignment, `:c`
@@ -92,8 +92,8 @@ The size of the string can be passed to `lstr` to save computational burden. If
 `lstr = -1`, then the string length will be computed inside the function.
 
 """
-function _str_aligned(data::AbstractString, alignment::Symbol,
-                      field_size::Integer, lstr::Integer = -1)
+function _str_aligned(data::String, alignment::Symbol, field_size::Integer,
+                      lstr::Integer = -1)
 
     lstr < 0 && (lstr = textwidth(data))
     Δ = field_size - lstr
@@ -122,14 +122,14 @@ function _str_aligned(data::AbstractString, alignment::Symbol,
 end
 
 """
-    _str_line_breaks(str::AbstractString, autowrap::Bool = false, width::Int = 0)
+    _str_line_breaks(str::String, autowrap::Bool = false, width::Int = 0)
 
 Split the string `str` into substring, each one meaning one new line. If
 `autowrap` is `true`, then the text will be wrapped so that it fits the column
 with the width `width`.
 
 """
-function _str_line_breaks(str::AbstractString, autowrap::Bool = false, width::Int = 0)
+function _str_line_breaks(str::String, autowrap::Bool = false, width::Int = 0)
     # Check for errors.
     autowrap && (width <= 0) &&
     error("If `autowrap` is true, then the width must not be positive.")
@@ -206,7 +206,7 @@ end
 ################################################################################
 
 """
-    _get_composed_ansi_format(ansi)
+    _get_composed_ansi_format(ansi::String)
 
 Given a vector with a set of ANSI escape sequences, return a composed escape
 sequence that leads to the same formatting.
@@ -217,7 +217,7 @@ sequence that leads to the same formatting.
     `stdlib`.
 
 """
-function _get_composed_ansi_format(ansi)
+function _get_composed_ansi_format(ansi::String)
     bold = false
     underline = false
     color = 39
@@ -260,12 +260,12 @@ function _get_composed_ansi_format(ansi)
 end
 
 """
-    _reapply_ansi_format!(lines)
+    _reapply_ansi_format!(lines::Vector{String})
 
 For each line in `lines`, reapply the ANSI format left by the previous line.
 
 """
-function _reapply_ansi_format!(lines)
+function _reapply_ansi_format!(lines::Vector{String})
     length(lines) ≤ 1 && return nothing
 
     aux  = collect(eachmatch(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])", lines[1]))
@@ -299,15 +299,17 @@ end
 ################################################################################
 
 """
-    _draw_continuation_row(screen, io, tf, text_crayon, border_crayon, cols_width, vlines, alignment)
+    _draw_continuation_row(screen::Screen, io::IO, tf::TextFormat, text_crayon::Crayon, border_crayon::Crayon, cols_width::Vector{Int}, vlines::Vector{Int}, alignment::Symbol)
 
 Draw the continuation row when the table has filled the vertical space
 available. This function prints in each column the character `⋮` with the
 alignment in `alignment`.
 
 """
-function _draw_continuation_row(screen, io, tf, text_crayon, border_crayon,
-                                cols_width, vlines, alignment)
+function _draw_continuation_row(screen::Screen, io::IO, tf::TextFormat,
+                                text_crayon::Crayon, border_crayon::Crayon,
+                                cols_width::Vector{Int}, vlines::Vector{Int},
+                                alignment::Symbol)
 
     num_cols = length(cols_width)
 
@@ -329,13 +331,14 @@ function _draw_continuation_row(screen, io, tf, text_crayon, border_crayon,
 end
 
 """
-    _draw_line!(screen, io, left, intersection, right, row, border_crayon, cols_width)
+    _draw_line!(screen::Screen, io::IO, left::Char, intersection::Char, right::Char, row::Char, border_crayon::Crayon, cols_width::Vector{Int}, vlines::Vector{Int})
 
 Draw a vertical line in `io` using the information in `screen`.
 
 """
-function _draw_line!(screen, io, left, intersection, right, row, border_crayon,
-                     cols_width, vlines)
+function _draw_line!(screen::Screen, io::IO, left::Char, intersection::Char,
+                     right::Char, row::Char, border_crayon::Crayon,
+                     cols_width::Vector{Int}, vlines::Vector{Int})
 
     num_cols = length(cols_width)
 
@@ -354,29 +357,29 @@ function _draw_line!(screen, io, left, intersection, right, row, border_crayon,
 end
 
 """
-    _eol(screen)
+    _eol(screen::Screen)
 
 Return `true` if the cursor is at the end of line or `false` otherwise.
 
 """
-_eol(screen) = (screen.size[2] > 0) && (screen.col >= screen.size[2])
+_eol(screen::Screen) = (screen.size[2] > 0) && (screen.col >= screen.size[2])
 
 """
-    _eos(screen, Δ)
+    _eos(screen::Screen, Δ::Int)
 
 Return `true` if the cursor is `Δ` lines before the end of screen or `false`
 otherwise.
 
 """
-_eos(screen, Δ) = (screen.size[1] > 0) && (screen.row+Δ >= screen.size[1])
+_eos(screen::Screen, Δ::Int) = (screen.size[1] > 0) && (screen.row+Δ >= screen.size[1])
 
 """
-    _nl!(screen, io)
+    _nl!(screen::Screen, io::IO)
 
 Add a new line into `io` using the screen information in `screen`.
 
 """
-function _nl!(screen, io)
+function _nl!(screen::Screen, io::IO)
     # Store the largest column that was printed.
     screen.max_col < screen.col && (screen.max_col = screen.col)
     screen.row += 1
@@ -385,7 +388,8 @@ function _nl!(screen, io)
 end
 
 """
-    _p!(screen, io, crayon, str, final_line_print = false, lstr = -1)
+    _p!(screen::Screen, io::IO, crayon::Crayon, str::Char, final_line_print::Bool = false, lstr::Int = -1)
+    _p!(screen::Screen, io::IO, crayon::Crayon, str::String, final_line_print::Bool = false, lstr::Int = -1)
 
 Print `str` into `io` using the Crayon `crayon` with the screen information in
 `screen`. The parameter `final_line_print` must be set to `true` if this is the
@@ -396,7 +400,13 @@ The size of the string can be passed to `lstr` to save computational burden. If
 `lstr = -1`, then the string length will be computed inside the function.
 
 """
-function _p!(screen, io, crayon, str, final_line_print = false, lstr = -1)
+_p!(screen::Screen, io::IO, crayon::Crayon, str::Char,
+    final_line_print::Bool = false, lstr::Int = -1) =
+        _p!(screen, io, crayon, string(str), final_line_print, lstr)
+
+function _p!(screen::Screen, io::IO, crayon::Crayon, str::String,
+             final_line_print::Bool = false, lstr::Int = -1)
+
     # Get the size of the string if required.
     lstr < 0 && (lstr = textwidth(str))
 
@@ -475,7 +485,7 @@ function _p!(screen, io, crayon, str, final_line_print = false, lstr = -1)
 end
 
 """
-    _pc!(cond, screen, io, crayon, str_true, str_false, final_line_print = false)
+    _pc!(cond::Bool, screen::Screen, io::IO, crayon::Crayon, str_true::Union{Char,String}, str_false::Union{Char,String}, final_line_print::Bool = false, lstr_true::Int = -1, lstr_false::Int = -1)
 
 If `cond == true` then print `str_true`. Otherwise, print `str_false`. Those
 strings will be printed into `io` using the Crayon `crayon` with the screen
@@ -489,8 +499,10 @@ computational burden. If they are `-1`, then the string lengths will be computed
 inside the function.
 
 """
-function _pc!(cond, screen, io, crayon, str_true, str_false,
-              final_line_print = false, lstr_true = -1, lstr_false = -1)
+function _pc!(cond::Bool, screen::Screen, io::IO, crayon::Crayon,
+              str_true::Union{Char,String}, str_false::Union{Char,String},
+              final_line_print::Bool = false, lstr_true::Int = -1,
+              lstr_false::Int = -1)
     if cond
         return _p!(screen, io, crayon, str_true, final_line_print, lstr_true)
     else

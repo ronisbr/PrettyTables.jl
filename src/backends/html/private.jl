@@ -15,7 +15,7 @@ const _html_alignment = Dict(:l => "left",
 
 function _styled_html(tag::String, text::String,
                       style::Dict{String,String} = Dict{String,String}();
-                      class = "")
+                      class::String = "")
 
     str_class = isempty(class) ? "" : " class = " * class
 
@@ -23,7 +23,7 @@ function _styled_html(tag::String, text::String,
     if isempty(style)
         return "<" * tag * str_class * ">" * text * "</" * tag * ">"
     else
-        # Create the sytle string.
+        # Create the style string.
         style_str = ""
 
         # We must sort the keys so that we can provide stable outputs.

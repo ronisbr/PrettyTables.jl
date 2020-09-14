@@ -89,7 +89,7 @@ end
 end
 
 """
-    _process_hlines(hlines, body_hlines, num_printed_rows, noheader)
+    _process_hlines(hlines::Union{Symbol,AbstractVector}, body_hlines::AbstractVector, num_printed_rows::Int, noheader::Bool)
 
 Process the horizontal lines in `hlines` and `body_hlines` considering the
 number of printed rows `num_printed_rows` and if the header is present
@@ -98,14 +98,21 @@ number of printed rows `num_printed_rows` and if the header is present
 It returns a vector of `Int` stating where the horizontal lines must be drawn.
 
 """
-function _process_hlines(hlines, body_hlines, num_printed_rows, noheader)
+@inline function _process_hlines(hlines::Symbol, body_hlines::AbstractVector,
+                         num_printed_rows::Int, noheader::Bool)
     if hlines == :all
-        hlines = collect(0:1:num_printed_rows + !noheader)
+        vhlines = collect(0:1:num_printed_rows + !noheader)
     elseif hlines == :none
-        hlines = Int[]
-    elseif !(typeof(hlines) <: AbstractVector)
+        vhlines = Int[]
+    else
         error("`hlines` must be `:all`, `:none`, or a vector of integers.")
     end
+
+    return _process_hlines(vlines, body_hlines, num_printed_rows, noheader)
+end
+
+function _process_hlines(hlines::AbstractVector, body_hlines::AbstractVector,
+                         num_printed_rows::Int, noheader::Bool)
 
     # The symbol `:begin` is replaced by 0, the symbol `:header` by the line
     # after the header, and the symbol `:end` is replaced by the last row.
@@ -123,11 +130,15 @@ function _process_hlines(hlines, body_hlines, num_printed_rows, noheader)
     #                                               |
     # If we have header, then the index in `body_hlines` must be incremented.
 
-    return hlines
+    # Make sure that the compiler knows that this function always returns a
+    # vector of `Int`s.
+    ret::Vector{Int} = Vector{Int}(hlines)
+
+    return ret
 end
 
 """
-    _process_vlines(vlines, num_printed_cols)
+    _process_vlines(vlines::AbstractVector, num_printed_cols::Int)
 
 Process the vertical lines `vlines` considerering the number of printed columns
 `num_printed_cols`.
@@ -135,7 +146,20 @@ Process the vertical lines `vlines` considerering the number of printed columns
 It returns a vector of `Int` stating where the vertical lines must be drawn.
 
 """
-function _process_vlines(vlines, num_printed_cols)
+@inline function _process_vlines(vlines::Symbol, num_printed_cols::Int)
+    # Process `vlines`.
+    if vlines == :all
+        vvlines = collect(0:1:num_printed_cols)
+    elseif vlines == :none
+        vvlines = Int[]
+    else
+        error("`vlines` must be `:all`, `:none`, or a vector of integers.")
+    end
+
+    return _process_vlines(vvlines, num_printed_cols)
+end
+
+function _process_vlines(vlines::AbstractVector, num_printed_cols::Int)
     # Process `vlines`.
     if vlines == :all
         vlines = collect(0:1:num_printed_cols)
@@ -150,7 +174,7 @@ function _process_vlines(vlines, num_printed_cols)
     vlines = replace(vlines, :begin => 0,
                              :end   => num_printed_cols)
 
-    return vlines
+    return Vector{Int}(vlines)
 end
 
 """

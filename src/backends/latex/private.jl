@@ -7,9 +7,11 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # Apply an alignment to a LaTeX table cell.
-function _latex_apply_cell_alignment(str, alignment, j, num_printed_cols,
-                                     show_row_number, vlines, left_vline,
-                                     mid_vline, right_vline)
+function _latex_apply_cell_alignment(str::String, alignment::Symbol, j::Int,
+                                     num_printed_cols::Int,
+                                     show_row_number::Bool, vlines::Vector{Int},
+                                     left_vline::String, mid_vline::String,
+                                     right_vline::String)
 
     a = _latex_alignment(alignment)
     aux_j = show_row_number ? j+1 : j
@@ -101,7 +103,7 @@ end
 # This was adapted from Julia `escape_string` function. In case of LaTeX, we
 # should not escape the sequence `\\`, i.e. the backslash that is already
 # escaped.
-function _str_latex_escaped(io::IO, s::AbstractString, esc="")
+function _str_latex_escaped(io::IO, s::AbstractString, esc::String = "")
     a = Iterators.Stateful(s)
     for c in a
         if c in esc
@@ -128,5 +130,5 @@ function _str_latex_escaped(io::IO, s::AbstractString, esc="")
     end
 end
 
-_str_latex_escaped(s::AbstractString, esc="") =
+_str_latex_escaped(s::AbstractString, esc::String = "") =
     sprint(_str_latex_escaped, s, esc, sizehint=lastindex(s))

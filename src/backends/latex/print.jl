@@ -7,7 +7,7 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # Low-level function to print the table using the LaTeX backend.
-function _pt_latex(io, pinfo;
+function _pt_latex(io::IO, pinfo::PrintInfo;
                    tf::LatexTableFormat = latex_default,
                    body_hlines::Vector{Int} = Int[],
                    cell_alignment::Dict{Tuple{Int,Int},Symbol} = Dict{Tuple{Int,Int},Symbol}(),

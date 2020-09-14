@@ -7,7 +7,7 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # Low-level function to print the table using the text backend.
-function _pt_html(io, pinfo;
+function _pt_html(io::IO, pinfo::PrintInfo;
                   tf::HTMLTableFormat = html_default,
                   highlighters::Union{HTMLHighlighter,Tuple} = (),
                   linebreaks::Bool = false,
