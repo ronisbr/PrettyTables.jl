@@ -6,6 +6,8 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
+export PrettyTablesConf
+
 """
     struct ColumnTable
 
@@ -68,3 +70,16 @@ the tables.
     header_cell_alignment
     cell_first_line_only::Bool
 end
+
+"""
+    PrettyTablesConf
+
+Type of the object that holds a pre-defined set of configurations for
+PrettyTables.jl.
+
+"""
+struct PrettyTablesConf
+    confs::Dict{Symbol, Any}
+end
+
+PrettyTablesConf() = PrettyTablesConf(Dict{Symbol, Any}())

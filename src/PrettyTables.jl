@@ -30,6 +30,7 @@ include("backends/latex/types.jl")
 #                                  Includes
 ################################################################################
 
+include("configuration.jl")
 include("deprecations.jl")
 include("files.jl")
 include("helpers.jl")

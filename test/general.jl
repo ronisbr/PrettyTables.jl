@@ -341,6 +341,40 @@ end
     @test result == expected
 end
 
+# Configurations
+# ==============================================================================
+
+@testset "Configurations" begin
+    data = [1 2 3
+            4 5 6]
+
+    conf1 = set_pt_conf(tf = markdown)
+    conf2 = set_pt_conf(tf = ascii_dots, formatters = ft_printf("%5.3d"))
+    set_pt_conf!(conf2, hlines = :none)
+
+    expected = """
+| Col. 1 | Col. 2 | Col. 3 |
+|--------|--------|--------|
+|      1 |      2 |      3 |
+|      4 |      5 |      6 |
+"""
+
+    result = pretty_table(conf1, String, data)
+    @test result == expected
+
+    expected = """
+: Col. 1 : Col. 2 : Col. 3 :
+:    001 :    002 :    003 :
+:    004 :    005 :    006 :
+"""
+
+    clear_pt_conf!(conf2)
+    expected = pretty_table(String, data)
+    result = pretty_table(conf2, String, data)
+
+    @test result == expected
+end
+
 # Issue #65
 # ==============================================================================
 

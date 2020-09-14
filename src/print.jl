@@ -13,11 +13,13 @@ export pretty_table
 ################################################################################
 
 """
-    pretty_table([io::IO | String,] table[, header::AbstractVecOrMat];  kwargs...)
+    pretty_table([conf::PrettyTablesConf,] [io::IO | String,] table[, header::AbstractVecOrMat];  kwargs...)
 
-Print to `io` the table `table` with header `header`. If `io` is omitted, then
-it defaults to `stdout`. If `String` is passed in the place of `io`, then a
-`String` with the printed table will be returned by the function.
+Print to `io` the table `table` with header `header` using the default
+configurations in `conf`. If `conf` is omitted, then the default configuration
+will be used. If `io` is omitted, then it defaults to `stdout`. If
+`String` is passed in the place of `io`, then a `String` with the printed table
+will be returned by the function.
 
 The `header` can be a `Vector` or a `Matrix`. If it is a `Matrix`, then each row
 will be a header line. The first line is called *header* and the others are
@@ -38,6 +40,17 @@ it is not compliant, then only the following types are supported:
    printed on the same order returned by the functions `keys` and `values`.
    Notice that this assumes that the keys are sortable, if they are not, then an
    error will be thrown.
+
+# Configuration
+
+The configuration used when printing the table is defined by `conf`. This object
+can be created by the function `set_pt_conf` in which the keyword parameters can
+be any one supported as shown in the following sections.
+
+!!! note
+
+    The configurations in `conf` will be overridden by `kwargs...` in this
+    function.
 
 # Keywords
 
