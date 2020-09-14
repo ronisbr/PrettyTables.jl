@@ -27,8 +27,8 @@ called *sub-headers* . If `header` is empty or missing, then it will be
 automatically filled with "Col.  i" for the *i*-th column.
 
 When printing, it will be verified if `table` complies with **Tables.jl** API.
-If it is is compliant, then this interface will be used to print the table. If
-it is not compliant, then only the following types are supported:
+If it is compliant, then this interface will be used to print the table. If it
+is not compliant, then only the following types are supported:
 
 1. `AbstractVector`: any vector can be printed. In this case, the `header`
    **must** be a vector, where the first element is considered the header and
@@ -45,12 +45,12 @@ it is not compliant, then only the following types are supported:
 
 The configuration used when printing the table is defined by `conf`. This object
 can be created by the function `set_pt_conf` in which the keyword parameters can
-be any one supported as shown in the following sections.
+be any one supported by the function `pretty_table` as shown in the following.
 
 !!! note
 
-    The configurations in `conf` will be overridden by `kwargs...` in this
-    function.
+    The configurations in `conf` will be overridden by `kwargs...` in the
+    function `pretty_table`.
 
 # Keywords
 

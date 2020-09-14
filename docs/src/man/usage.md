@@ -200,7 +200,7 @@ julia> pretty_table(dict, sortkeys = true)
 
 The configuration used when printing the table is defined by `conf`. This object
 can be created by the function `set_pt_conf` in which the keyword parameters can
-be any one supported as shown in the following sections.
+be any one supported by the function `pretty_table`.
 
 !!! note
 
@@ -222,7 +222,7 @@ julia> pretty_table(conf, data, header)
 ```
 
 A configuration object can be modified by the function `set_pt_conf!` and
-cleaned by the function `clean_pt_conf!`.
+cleared by the function `clear_pt_conf!`.
 
 ## Helpers
 
