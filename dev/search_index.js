@@ -609,51 +609,51 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "lib/library/#PrettyTables._draw_continuation_row-NTuple{8,Any}",
+    "location": "lib/library/#PrettyTables._draw_continuation_row-Tuple{PrettyTables.Screen,IO,TextFormat,Crayon,Crayon,Array{Int64,1},Array{Int64,1},Symbol}",
     "page": "Library",
     "title": "PrettyTables._draw_continuation_row",
     "category": "method",
-    "text": "_draw_continuation_row(screen, io, tf, text_crayon, border_crayon, cols_width, vlines, alignment)\n\nDraw the continuation row when the table has filled the vertical space available. This function prints in each column the character ⋮ with the alignment in alignment.\n\n\n\n\n\n"
+    "text": "_draw_continuation_row(screen::Screen, io::IO, tf::TextFormat, text_crayon::Crayon, border_crayon::Crayon, cols_width::Vector{Int}, vlines::Vector{Int}, alignment::Symbol)\n\nDraw the continuation row when the table has filled the vertical space available. This function prints in each column the character ⋮ with the alignment in alignment.\n\n\n\n\n\n"
 },
 
 {
-    "location": "lib/library/#PrettyTables._draw_line!-NTuple{9,Any}",
+    "location": "lib/library/#PrettyTables._draw_line!-Tuple{PrettyTables.Screen,IO,Char,Char,Char,Char,Crayon,Array{Int64,1},Array{Int64,1}}",
     "page": "Library",
     "title": "PrettyTables._draw_line!",
     "category": "method",
-    "text": "_draw_line!(screen, io, left, intersection, right, row, border_crayon, cols_width)\n\nDraw a vertical line in io using the information in screen.\n\n\n\n\n\n"
+    "text": "_draw_line!(screen::Screen, io::IO, left::Char, intersection::Char, right::Char, row::Char, border_crayon::Crayon, cols_width::Vector{Int}, vlines::Vector{Int})\n\nDraw a vertical line in io using the information in screen.\n\n\n\n\n\n"
 },
 
 {
-    "location": "lib/library/#PrettyTables._eol-Tuple{Any}",
+    "location": "lib/library/#PrettyTables._eol-Tuple{PrettyTables.Screen}",
     "page": "Library",
     "title": "PrettyTables._eol",
     "category": "method",
-    "text": "_eol(screen)\n\nReturn true if the cursor is at the end of line or false otherwise.\n\n\n\n\n\n"
+    "text": "_eol(screen::Screen)\n\nReturn true if the cursor is at the end of line or false otherwise.\n\n\n\n\n\n"
 },
 
 {
-    "location": "lib/library/#PrettyTables._eos-Tuple{Any,Any}",
+    "location": "lib/library/#PrettyTables._eos-Tuple{PrettyTables.Screen,Int64}",
     "page": "Library",
     "title": "PrettyTables._eos",
     "category": "method",
-    "text": "_eos(screen, Δ)\n\nReturn true if the cursor is Δ lines before the end of screen or false otherwise.\n\n\n\n\n\n"
+    "text": "_eos(screen::Screen, Δ::Int)\n\nReturn true if the cursor is Δ lines before the end of screen or false otherwise.\n\n\n\n\n\n"
 },
 
 {
-    "location": "lib/library/#PrettyTables._get_composed_ansi_format-Tuple{Any}",
+    "location": "lib/library/#PrettyTables._get_composed_ansi_format-Tuple{String}",
     "page": "Library",
     "title": "PrettyTables._get_composed_ansi_format",
     "category": "method",
-    "text": "_get_composed_ansi_format(ansi)\n\nGiven a vector with a set of ANSI escape sequences, return a composed escape sequence that leads to the same formatting.\n\nwarning: Warning\nThis function only works with the minimal set used by Markdown in stdlib.\n\n\n\n\n\n"
+    "text": "_get_composed_ansi_format(ansi::String)\n\nGiven a vector with a set of ANSI escape sequences, return a composed escape sequence that leads to the same formatting.\n\nwarning: Warning\nThis function only works with the minimal set used by Markdown in stdlib.\n\n\n\n\n\n"
 },
 
 {
-    "location": "lib/library/#PrettyTables._nl!-Tuple{Any,Any}",
+    "location": "lib/library/#PrettyTables._nl!-Tuple{PrettyTables.Screen,IO}",
     "page": "Library",
     "title": "PrettyTables._nl!",
     "category": "method",
-    "text": "_nl!(screen, io)\n\nAdd a new line into io using the screen information in screen.\n\n\n\n\n\n"
+    "text": "_nl!(screen::Screen, io::IO)\n\nAdd a new line into io using the screen information in screen.\n\n\n\n\n\n"
 },
 
 {
@@ -661,7 +661,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "PrettyTables._p!",
     "category": "function",
-    "text": "_p!(screen, io, crayon, str, final_line_print = false, lstr = -1)\n\nPrint str into io using the Crayon crayon with the screen information in screen. The parameter final_line_print must be set to true if this is the last string that will be printed in the line. This is necessary for the algorithm to select whether or not to include the continuation character.\n\nThe size of the string can be passed to lstr to save computational burden. If lstr = -1, then the string length will be computed inside the function.\n\n\n\n\n\n"
+    "text": "_p!(screen::Screen, io::IO, crayon::Crayon, str::Char, final_line_print::Bool = false, lstr::Int = -1)\n_p!(screen::Screen, io::IO, crayon::Crayon, str::String, final_line_print::Bool = false, lstr::Int = -1)\n\nPrint str into io using the Crayon crayon with the screen information in screen. The parameter final_line_print must be set to true if this is the last string that will be printed in the line. This is necessary for the algorithm to select whether or not to include the continuation character.\n\nThe size of the string can be passed to lstr to save computational burden. If lstr = -1, then the string length will be computed inside the function.\n\n\n\n\n\n"
 },
 
 {
@@ -677,31 +677,31 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "PrettyTables._pc!",
     "category": "function",
-    "text": "_pc!(cond, screen, io, crayon, str_true, str_false, final_line_print = false)\n\nIf cond == true then print str_true. Otherwise, print str_false. Those strings will be printed into io using the Crayon crayon with the screen information in screen. The parameter final_line_print must be set to true if this is the last string that will be printed in the line. This is necessary for the algorithm to select whether or not to include the continuation character.\n\nThe size of the strings can be passed to lstr_true and lstr_false to save computational burden. If they are -1, then the string lengths will be computed inside the function.\n\n\n\n\n\n"
+    "text": "_pc!(cond::Bool, screen::Screen, io::IO, crayon::Crayon, str_true::Union{Char,String}, str_false::Union{Char,String}, final_line_print::Bool = false, lstr_true::Int = -1, lstr_false::Int = -1)\n\nIf cond == true then print str_true. Otherwise, print str_false. Those strings will be printed into io using the Crayon crayon with the screen information in screen. The parameter final_line_print must be set to true if this is the last string that will be printed in the line. This is necessary for the algorithm to select whether or not to include the continuation character.\n\nThe size of the strings can be passed to lstr_true and lstr_false to save computational burden. If they are -1, then the string lengths will be computed inside the function.\n\n\n\n\n\n"
 },
 
 {
-    "location": "lib/library/#PrettyTables._process_hlines-NTuple{4,Any}",
+    "location": "lib/library/#PrettyTables._process_hlines-Tuple{Symbol,AbstractArray{T,1} where T,Int64,Bool}",
     "page": "Library",
     "title": "PrettyTables._process_hlines",
     "category": "method",
-    "text": "_process_hlines(hlines, body_hlines, num_printed_rows, noheader)\n\nProcess the horizontal lines in hlines and body_hlines considering the number of printed rows num_printed_rows and if the header is present (noheader).\n\nIt returns a vector of Int stating where the horizontal lines must be drawn.\n\n\n\n\n\n"
+    "text": "_process_hlines(hlines::Union{Symbol,AbstractVector}, body_hlines::AbstractVector, num_printed_rows::Int, noheader::Bool)\n\nProcess the horizontal lines in hlines and body_hlines considering the number of printed rows num_printed_rows and if the header is present (noheader).\n\nIt returns a vector of Int stating where the horizontal lines must be drawn.\n\n\n\n\n\n"
 },
 
 {
-    "location": "lib/library/#PrettyTables._process_vlines-Tuple{Any,Any}",
+    "location": "lib/library/#PrettyTables._process_vlines-Tuple{Symbol,Int64}",
     "page": "Library",
     "title": "PrettyTables._process_vlines",
     "category": "method",
-    "text": "_process_vlines(vlines, num_printed_cols)\n\nProcess the vertical lines vlines considerering the number of printed columns num_printed_cols.\n\nIt returns a vector of Int stating where the vertical lines must be drawn.\n\n\n\n\n\n"
+    "text": "_process_vlines(vlines::AbstractVector, num_printed_cols::Int)\n\nProcess the vertical lines vlines considerering the number of printed columns num_printed_cols.\n\nIt returns a vector of Int stating where the vertical lines must be drawn.\n\n\n\n\n\n"
 },
 
 {
-    "location": "lib/library/#PrettyTables._reapply_ansi_format!-Tuple{Any}",
+    "location": "lib/library/#PrettyTables._reapply_ansi_format!-Tuple{Array{String,1}}",
     "page": "Library",
     "title": "PrettyTables._reapply_ansi_format!",
     "category": "method",
-    "text": "_reapply_ansi_format!(lines)\n\nFor each line in lines, reapply the ANSI format left by the previous line.\n\n\n\n\n\n"
+    "text": "_reapply_ansi_format!(lines::Vector{String})\n\nFor each line in lines, reapply the ANSI format left by the previous line.\n\n\n\n\n\n"
 },
 
 {
@@ -709,7 +709,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "PrettyTables._str_aligned",
     "category": "function",
-    "text": "_str_aligned(data::AbstractString, alignment::Symbol, field_size::Integer, lstr::Integer = -1)\n\nThis function returns the string data with alignment alignment in a field with size field_size. alignment can be :l or :L for left alignment, :c or :C for center alignment, or :r or :R for right alignment. It defaults to :r if alignment is any other symbol.\n\nThis function also returns the new size of the aligned string.\n\nIf the string is larger than field_size, then it will be cropped and ⋯ will be added as the last character.\n\nThe size of the string can be passed to lstr to save computational burden. If lstr = -1, then the string length will be computed inside the function.\n\n\n\n\n\n"
+    "text": "_str_aligned(data::String, alignment::Symbol, field_size::Integer, lstr::Integer = -1)\n\nThis function returns the string data with alignment alignment in a field with size field_size. alignment can be :l or :L for left alignment, :c or :C for center alignment, or :r or :R for right alignment. It defaults to :r if alignment is any other symbol.\n\nThis function also returns the new size of the aligned string.\n\nIf the string is larger than field_size, then it will be cropped and ⋯ will be added as the last character.\n\nThe size of the string can be passed to lstr to save computational burden. If lstr = -1, then the string length will be computed inside the function.\n\n\n\n\n\n"
 },
 
 {
@@ -725,7 +725,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "PrettyTables._str_line_breaks",
     "category": "function",
-    "text": "_str_line_breaks(str::AbstractString, autowrap::Bool = false, width::Int = 0)\n\nSplit the string str into substring, each one meaning one new line. If autowrap is true, then the text will be wrapped so that it fits the column with the width width.\n\n\n\n\n\n"
+    "text": "_str_line_breaks(str::String, autowrap::Bool = false, width::Int = 0)\n\nSplit the string str into substring, each one meaning one new line. If autowrap is true, then the text will be wrapped so that it fits the column with the width width.\n\n\n\n\n\n"
 },
 
 {
