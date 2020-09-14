@@ -402,7 +402,7 @@ function _pt_text(io::IO, pinfo::PrintInfo;
         # Compute the title width.
         title_width = title_same_width_as_table ? table_width : screen.size[2]
 
-        print(buf, title_crayon)
+        screen.has_color && print(buf, title_crayon)
 
         # If the title width is not higher than 0, then we should only print the
         # title.
@@ -421,7 +421,7 @@ function _pt_text(io::IO, pinfo::PrintInfo;
             crop_num_lines_at_beginning += length(title_tokens)
         end
 
-        print(buf, _reset_crayon)
+        screen.has_color && print(buf, _reset_crayon)
     end
 
     # Top table line

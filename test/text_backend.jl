@@ -1977,8 +1977,7 @@ This is a very very long title that will be displayed above the table.
 └────────┴────────┴────────┴────────┘
 """
     result = pretty_table(String, data,
-                          title = title,
-                          title_crayon = Crayon())
+                          title = title)
     @test result == expected
 
     expected = """
@@ -1996,7 +1995,6 @@ This is a very very long title that …
 """
     result = pretty_table(String, data,
                           title = title,
-                          title_crayon = Crayon(),
                           title_same_width_as_table = true)
     @test result == expected
 
@@ -2017,7 +2015,6 @@ will be displayed above the table.
     result = pretty_table(String, data,
                           title = title,
                           title_autowrap = true,
-                          title_crayon = Crayon(),
                           title_same_width_as_table = true)
     @test result == expected
 
@@ -2039,7 +2036,6 @@ will be displayed above the table.
                           title = title,
                           title_alignment = :c,
                           title_autowrap = true,
-                          title_crayon = Crayon(),
                           title_same_width_as_table = true)
     @test result == expected
 
@@ -2061,7 +2057,6 @@ will be displayed above the table.
                           title = title,
                           title_alignment = :r,
                           title_autowrap = true,
-                          title_crayon = Crayon(),
                           title_same_width_as_table = true)
     @test result == expected
 
@@ -2082,8 +2077,7 @@ That has two lines.
 """
     result = pretty_table(String, data,
                           screen_size = (12,35),
-                          title = "This is a long long long long long long title\nThat has two lines.",
-                          title_crayon = Crayon())
+                          title = "This is a long long long long long long title\nThat has two lines.")
     @test result == expected
 
     expected = """
@@ -2101,8 +2095,7 @@ That has two lines.
     result = pretty_table(String, data,
                           screen_size = (12,35),
                           title = "This is a long long long long long long title\nThat has two lines.",
-                          title_autowrap = true,
-                          title_crayon = Crayon())
+                          title_autowrap = true)
     @test result == expected
 end
 
