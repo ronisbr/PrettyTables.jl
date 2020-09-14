@@ -421,7 +421,7 @@ function _pt_text(io::IO, pinfo::PrintInfo;
             crop_num_lines_at_beginning += length(title_tokens)
         end
 
-        print(buf, text_crayon)
+        print(buf, _reset_crayon)
     end
 
     # Top table line

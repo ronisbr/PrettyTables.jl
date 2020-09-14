@@ -124,3 +124,10 @@ respect to the point in which the table is printed.
     has_color::Bool      = false
     max_col::Int         = 0
 end
+
+################################################################################
+#                                  Constants
+################################################################################
+
+# Crayon used to reset all the styling.
+const _reset_crayon = Crayon(reset = true)
