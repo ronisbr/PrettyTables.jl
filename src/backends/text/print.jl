@@ -281,6 +281,7 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                                 cell_first_line_only = false,
                                 column_width = -1,
                                 compact_printing = compact_printing,
+                                has_color = screen.has_color,
                                 linebreaks = false)
 
                 header_str[j,i] = first(hstr)
@@ -325,6 +326,7 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                             cell_first_line_only = cell_first_line_only,
                             column_width = columns_width[ic],
                             compact_printing = compact_printing,
+                            has_color = screen.has_color,
                             linebreaks = linebreaks)
 
             # Check if we must update the number of lines in this row.

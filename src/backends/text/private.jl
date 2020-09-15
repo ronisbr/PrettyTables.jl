@@ -69,7 +69,7 @@ function _crop_str(str::String, crop_size::Int, lstr::Int = -1)
 end
 
 """
-    _str_aligned(data::String, alignment::Symbol, field_size::Integer, lstr::Integer = -1)
+    _str_aligned(data::AbstractString, alignment::Symbol, field_size::Integer, lstr::Integer = -1)
 
 This function returns the string `data` with alignment `alignment` in a field
 with size `field_size`. `alignment` can be `:l` or `:L` for left alignment, `:c`
@@ -85,8 +85,8 @@ The size of the string can be passed to `lstr` to save computational burden. If
 `lstr = -1`, then the string length will be computed inside the function.
 
 """
-function _str_aligned(data::String, alignment::Symbol, field_size::Integer,
-                      lstr::Integer = -1)
+function _str_aligned(data::AbstractString, alignment::Symbol,
+                      field_size::Integer, lstr::Integer = -1)
 
     lstr < 0 && (lstr = textwidth(data))
     Δ = field_size - lstr
@@ -199,7 +199,7 @@ end
 ################################################################################
 
 """
-    _get_composed_ansi_format(ansi::String)
+    _get_composed_ansi_format(ansi::Vector{T}) where T<:AbstractString
 
 Given a vector with a set of ANSI escape sequences, return a composed escape
 sequence that leads to the same formatting.
@@ -210,7 +210,7 @@ sequence that leads to the same formatting.
     `stdlib`.
 
 """
-function _get_composed_ansi_format(ansi::String)
+function _get_composed_ansi_format(ansi::Vector{T}) where T<:AbstractString
     bold = false
     underline = false
     color = 39
@@ -253,12 +253,12 @@ function _get_composed_ansi_format(ansi::String)
 end
 
 """
-    _reapply_ansi_format!(lines::Vector{String})
+    _reapply_ansi_format!(lines::Vector{T}) where T<:AbstractString
 
 For each line in `lines`, reapply the ANSI format left by the previous line.
 
 """
-function _reapply_ansi_format!(lines::Vector{String})
+function _reapply_ansi_format!(lines::Vector{T}) where T<:AbstractString
     length(lines) ≤ 1 && return nothing
 
     aux  = collect(eachmatch(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])", lines[1]))

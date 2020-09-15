@@ -26,6 +26,7 @@ end
 @inline function _parse_cell(cell::Markdown.MD;
                              column_width::Integer = -1,
                              linebreaks::Bool = false,
+                             has_color::Bool = true,
                              kwargs...)
 
     # The maximum size for Markdowns cells is 80.
@@ -37,7 +38,7 @@ end
     # First, we need to render the Markdown with all the colors.
     str = sprint(Markdown.term, cell, column_width; context = :color => true)
 
-    # Now, we need to remove all ANSI escapa sequences to count the printable
+    # Now, we need to remove all ANSI escape sequences to count the printable
     # characters.
     #
     # This regex was obtained at:
@@ -48,21 +49,28 @@ end
 
     if !linebreaks
         str_nc     = replace(str_nc, "\n" => "\\n")
-        str        = replace(str,    "\n" => "\\n")
         cell_width = textwidth(str_nc)
 
-        return [str], [cell_width], cell_width
+        if !has_color
+            return [str_nc], [cell_width], cell_width
+        else
+            str = replace(str, "\n" => "\\n")
+            return [str], [cell_width], cell_width
+        end
     else
         # Obtain the number of lines and the maximum number of used columns.
         tokens_nc = split(str_nc, '\n')
         lines     = length(tokens_nc)
         max_cols  = maximum(textwidth.(tokens_nc))
         num_chars = textwidth.(tokens_nc)
-        tokens    = split(str, '\n')
 
-        _reapply_ansi_format!(tokens)
-
-        return tokens, num_chars, max_cols
+        if !has_color
+            return tokens_nc, num_chars, max_cols
+        else
+            tokens = split(str, '\n')
+            _reapply_ansi_format!(tokens)
+            return tokens, num_chars, max_cols
+        end
     end
 end
 

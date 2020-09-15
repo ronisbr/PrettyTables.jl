@@ -2,6 +2,7 @@ using Test
 using PrettyTables
 using DataFrames
 using Tables
+using Markdown
 
 println("Text backend")
 println("============")
