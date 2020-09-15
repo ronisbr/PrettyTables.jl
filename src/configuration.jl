@@ -27,7 +27,7 @@ shown in the following.
 """
 function pretty_table_with_conf(conf::PrettyTablesConf, args...; kwargs...)
 
-    # Copy the configuration so that the user object is not modfied.
+    # Copy the configuration so that the user object is not modified.
     _local_conf = deepcopy(conf)
 
     # Apply the new configurations to it.
