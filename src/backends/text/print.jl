@@ -554,7 +554,7 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                     # highlighters.
                     if isassigned(data,ir,jc) && (data[ir,jc] isa Markdown.MD)
                         alignment_ij = :l
-                        crayon_ij = ""
+                        crayon_ij = Crayon()
                     end
                 end
 
