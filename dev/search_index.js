@@ -689,11 +689,11 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "lib/library/#PrettyTables._get_composed_ansi_format-Tuple{String}",
+    "location": "lib/library/#PrettyTables._get_composed_ansi_format-Union{Tuple{Array{T,1}}, Tuple{T}} where T<:AbstractString",
     "page": "Library",
     "title": "PrettyTables._get_composed_ansi_format",
     "category": "method",
-    "text": "_get_composed_ansi_format(ansi::String)\n\nGiven a vector with a set of ANSI escape sequences, return a composed escape sequence that leads to the same formatting.\n\nwarning: Warning\nThis function only works with the minimal set used by Markdown in stdlib.\n\n\n\n\n\n"
+    "text": "_get_composed_ansi_format(ansi::Vector{T}) where T<:AbstractString\n\nGiven a vector with a set of ANSI escape sequences, return a composed escape sequence that leads to the same formatting.\n\nwarning: Warning\nThis function only works with the minimal set used by Markdown in stdlib.\n\n\n\n\n\n"
 },
 
 {
@@ -745,11 +745,11 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "lib/library/#PrettyTables._reapply_ansi_format!-Tuple{Array{String,1}}",
+    "location": "lib/library/#PrettyTables._reapply_ansi_format!-Union{Tuple{Array{T,1}}, Tuple{T}} where T<:AbstractString",
     "page": "Library",
     "title": "PrettyTables._reapply_ansi_format!",
     "category": "method",
-    "text": "_reapply_ansi_format!(lines::Vector{String})\n\nFor each line in lines, reapply the ANSI format left by the previous line.\n\n\n\n\n\n"
+    "text": "_reapply_ansi_format!(lines::Vector{T}) where T<:AbstractString\n\nFor each line in lines, reapply the ANSI format left by the previous line.\n\n\n\n\n\n"
 },
 
 {
@@ -757,7 +757,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "PrettyTables._str_aligned",
     "category": "function",
-    "text": "_str_aligned(data::String, alignment::Symbol, field_size::Integer, lstr::Integer = -1)\n\nThis function returns the string data with alignment alignment in a field with size field_size. alignment can be :l or :L for left alignment, :c or :C for center alignment, or :r or :R for right alignment. It defaults to :r if alignment is any other symbol.\n\nThis function also returns the new size of the aligned string.\n\nIf the string is larger than field_size, then it will be cropped and ⋯ will be added as the last character.\n\nThe size of the string can be passed to lstr to save computational burden. If lstr = -1, then the string length will be computed inside the function.\n\n\n\n\n\n"
+    "text": "_str_aligned(data::AbstractString, alignment::Symbol, field_size::Integer, lstr::Integer = -1)\n\nThis function returns the string data with alignment alignment in a field with size field_size. alignment can be :l or :L for left alignment, :c or :C for center alignment, or :r or :R for right alignment. It defaults to :r if alignment is any other symbol.\n\nThis function also returns the new size of the aligned string.\n\nIf the string is larger than field_size, then it will be cropped and ⋯ will be added as the last character.\n\nThe size of the string can be passed to lstr to save computational burden. If lstr = -1, then the string length will be computed inside the function.\n\n\n\n\n\n"
 },
 
 {
