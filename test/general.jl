@@ -359,7 +359,7 @@ end
 |      4 |      5 |      6 |
 """
 
-    result = pretty_table(conf1, String, data)
+    result = pretty_table_with_conf(conf1, String, data)
     @test result == expected
 
     expected = """
@@ -370,7 +370,7 @@ end
 
     clear_pt_conf!(conf2)
     expected = pretty_table(String, data)
-    result = pretty_table(conf2, String, data)
+    result = pretty_table_with_conf(conf2, String, data)
 
     @test result == expected
 end

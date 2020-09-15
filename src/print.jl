@@ -13,13 +13,12 @@ export pretty_table
 ################################################################################
 
 """
-    pretty_table([conf::PrettyTablesConf,] [io::IO | String,] table[, header::AbstractVecOrMat];  kwargs...)
+    pretty_table([io::IO | String,] table[, header::AbstractVecOrMat];  kwargs...)
 
-Print to `io` the table `table` with header `header` using the default
-configurations in `conf`. If `conf` is omitted, then the default configuration
-will be used. If `io` is omitted, then it defaults to `stdout`. If
-`String` is passed in the place of `io`, then a `String` with the printed table
-will be returned by the function.
+Print to `io` the table `table` with header `header`. If `conf` is omitted, then
+the default configuration will be used. If `io` is omitted, then it defaults to
+`stdout`. If `String` is passed in the place of `io`, then a `String` with the
+printed table will be returned by the function.
 
 The `header` can be a `Vector` or a `Matrix`. If it is a `Matrix`, then each row
 will be a header line. The first line is called *header* and the others are
@@ -40,17 +39,6 @@ is not compliant, then only the following types are supported:
    printed on the same order returned by the functions `keys` and `values`.
    Notice that this assumes that the keys are sortable, if they are not, then an
    error will be thrown.
-
-# Configuration
-
-The configuration used when printing the table is defined by `conf`. This object
-can be created by the function `set_pt_conf` in which the keyword parameters can
-be any one supported by the function `pretty_table` as shown in the following.
-
-!!! note
-
-    The configurations in `conf` will be overridden by `kwargs...` in the
-    function `pretty_table`.
 
 # Keywords
 
@@ -658,22 +646,45 @@ Thus, the user must be ensure that the type of `v` between the calls are
 compatible.
 
 """
-pretty_table(data; kwargs...) = pretty_table(stdout, data, []; kwargs...)
+pretty_table(data; kwargs...) =
+    _pretty_table_select(stdout, data, []; kwargs...)
 
 pretty_table(data, header::AbstractVecOrMat; kwargs...) =
-    pretty_table(stdout, data, header; kwargs...)
+    _pretty_table_select(stdout, data, header; kwargs...)
 
 # This definition is required to avoid ambiguities.
 pretty_table(data::AbstractVecOrMat, header::AbstractVecOrMat; kwargs...) =
-    pretty_table(stdout, data, header; kwargs...)
+    _pretty_table_select(stdout, data, header; kwargs...)
 
 # This definition is required to avoid ambiguities.
 pretty_table(io::IO, data::AbstractVecOrMat; kwargs...) =
-    pretty_table(io, data, []; kwargs...)
+    _pretty_table_select(io, data, String[]; kwargs...)
 
-pretty_table(io::IO, data; kwargs...) = pretty_table(io, data, []; kwargs...)
+pretty_table(io::IO, data; kwargs...) =
+    _pretty_table_select(io, data, String[]; kwargs...)
 
-function pretty_table(io::IO, data, header::AbstractVecOrMat; kwargs...)
+pretty_table(io::IO, data, header::AbstractVecOrMat; kwargs...) =
+    _pretty_table_select(io, data, header; kwargs...)
+
+# This definition is required to avoid ambiguities.
+pretty_table(::Type{String}, data::AbstractVecOrMat; kwargs...) =
+    pretty_table(String, data, String[]; kwargs...)
+
+pretty_table(::Type{String}, data; kwargs...) =
+    pretty_table(String, data, String[]; kwargs...)
+
+function pretty_table(::Type{String}, data, header::AbstractVecOrMat; kwargs...)
+    io = IOBuffer()
+    _pretty_table_select(io, data, header; kwargs...)
+    return String(take!(io))
+end
+
+################################################################################
+#                              Private Functions
+################################################################################
+
+# This is a midleware function to select how the data will be printed.
+function _pretty_table_select(io::IO, data, header::AbstractVecOrMat; kwargs...)
     if Tables.istable(data)
         _pretty_table_Tables(io, data, header; kwargs...)
     elseif typeof(data) <: AbstractVecOrMat
@@ -684,23 +695,6 @@ function pretty_table(io::IO, data, header::AbstractVecOrMat; kwargs...)
         error("The type $(typeof(data)) is not supported.")
     end
 end
-
-# This definition is required to avoid ambiguities.
-pretty_table(::Type{String}, data::AbstractVecOrMat; kwargs...) =
-    pretty_table(String, data, []; kwargs...)
-
-pretty_table(::Type{String}, data; kwargs...) =
-    pretty_table(String, data, []; kwargs...)
-
-function pretty_table(::Type{String}, data, header::AbstractVecOrMat; kwargs...)
-    io = IOBuffer()
-    pretty_table(io, data, header; kwargs...)
-    return String(take!(io))
-end
-
-################################################################################
-#                              Private Functions
-################################################################################
 
 # Function to print data that complies with Tables.jl API.
 function _pretty_table_Tables(io::IO, data, header::AbstractVecOrMat; kwargs...)
@@ -761,7 +755,6 @@ function _pretty_table_Tables(io::IO, data, header::AbstractVecOrMat; kwargs...)
         else
             header = ndata.column_names
         end
-
     end
 
     _pretty_table(io, ndata, header; kwargs...)
@@ -796,7 +789,7 @@ function _pretty_table_Dict(io::IO, dict::Dict{K,V}; sortkeys::Bool = false,
         vv = v
     end
 
-    pretty_table(io, [vk vv], header; kwargs...)
+    _pretty_table(io, [vk vv], header; kwargs...)
 end
 
 # Dictionary to hold the information between the table format type and the

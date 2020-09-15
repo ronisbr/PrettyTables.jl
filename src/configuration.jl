@@ -7,48 +7,25 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-export clear_pt_conf!, set_pt_conf, set_pt_conf!
+export pretty_table_with_conf, clear_pt_conf!, set_pt_conf, set_pt_conf!
 
 ################################################################################
 #                                   Printing
 ################################################################################
 
-pretty_table(conf::PrettyTablesConf, ::Type{String}, data; kwargs...) =
-    pretty_table(conf, String, data, []; kwargs...)
+"""
+    pretty_table_with_conf(conf::PrettyTablesConf, args...; kwargs...)
 
-function pretty_table(conf::PrettyTablesConf,
-                      ::Type{String},
-                      data,
-                      header::AbstractVecOrMat;
-                      kwargs...)
+Call `pretty_table` using the default configuration in `conf`. The `args...` and
+`kwargs...` can be the same as those passed to `pretty_tables`. Notice that all
+the configurations in `kwargs...` will overwrite the ones in `conf`.
 
-    # Copy the configuration so that the user object is not modfied.
-    _local_conf = deepcopy(conf)
+The object `conf` can be created by the function `set_pt_conf` in which the
+keyword parameters can be any one supported by the function `pretty_table` as
+shown in the following.
 
-    # Apply the new configurations to it.
-    set_pt_conf!(_local_conf; kwargs...)
-
-    # Get the named tuple with the configurations.
-    nt = _conf_to_nt(_local_conf)
-
-    # Print the table.
-    pretty_table(String, data, header; nt...)
-end
-
-pretty_table(conf::PrettyTablesConf, data; kwargs...) =
-    pretty_table(conf, stdout, data, []; kwargs...)
-
-pretty_table(conf::PrettyTablesConf, data, header::AbstractVecOrMat; kwargs...) =
-    pretty_table(conf, stdout, data, header; kwargs...)
-
-pretty_table(conf::PrettyTablesConf, io::IO, data; kwargs...) =
-    pretty_table(conf, io, data; kwargs...)
-
-function pretty_table(conf::PrettyTablesConf,
-                      io::IO,
-                      data,
-                      header::AbstractVecOrMat;
-                      kwargs...)
+"""
+function pretty_table_with_conf(conf::PrettyTablesConf, args...; kwargs...)
 
     # Copy the configuration so that the user object is not modfied.
     _local_conf = deepcopy(conf)
@@ -60,18 +37,8 @@ function pretty_table(conf::PrettyTablesConf,
     nt = _conf_to_nt(_local_conf)
 
     # Print the table.
-    pretty_table(io, data, header; nt...)
+    pretty_table(args...; nt...)
 end
-
-# Methods defined to avoid ambiguities.
-pretty_table(conf::PrettyTablesConf, ::Type{String}, data::AbstractVecOrMat; kwargs...) =
-    pretty_table(conf, String, data, []; kwargs...)
-
-pretty_table(conf::PrettyTablesConf, io::IO, data::AbstractVecOrMat; kwargs...) =
-    pretty_table(conf, io, data, []; kwargs...)
-
-pretty_table(conf::PrettyTablesConf, data::AbstractVecOrMat; kwargs...) =
-    pretty_table(conf, stdout, data, []; kwargs...)
 
 ################################################################################
 #                                Set and clear

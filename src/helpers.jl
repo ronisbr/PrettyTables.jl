@@ -143,9 +143,9 @@ macro pt(expr...)
             header != nothing  && push!(args, header)
 
             if isempty(args)
-                expr = :(pretty_table(_pt_conf, $(esc(ex)) ))
+                expr = :(pretty_table_with_conf(_pt_conf, $(esc(ex)) ))
             else
-                expr = :(pretty_table(_pt_conf, $(esc(ex)), $(args...)))
+                expr = :(pretty_table_with_conf(_pt_conf, $(esc(ex)), $(args...)))
             end
 
             push!(exprs, expr)

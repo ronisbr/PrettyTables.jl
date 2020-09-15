@@ -11,11 +11,10 @@ end
 The following function can be used to print data.
 
 ```julia
-function pretty_table([conf::PrettyTablesConf,] [io::IO | String,] table[, header::AbstractVecOrMat];  kwargs...)
+function pretty_table([io::IO | String,] table[, header::AbstractVecOrMat];  kwargs...)
 ```
 
-Print to `io` the table `table` with header `header` using the default
-configurations in `conf` (see [Configuration](@ref)). If `conf` is omitted, then
+Print to `io` the table `table` with header `header`. If `conf` is omitted, then
 the default configuration will be used. If `io` is omitted, then it defaults to
 `stdout`. If `String` is passed in the place of `io`, then a `String` with the
 printed table will be returned by the function.
@@ -198,14 +197,20 @@ julia> pretty_table(dict, sortkeys = true)
 
 # Configuration
 
-The configuration used when printing the table is defined by `conf`. This object
-can be created by the function `set_pt_conf` in which the keyword parameters can
-be any one supported by the function `pretty_table`.
+The following function can be used to print a table changing the default
+configurations of **PrettyTables.jl**:
 
-!!! note
+```julia
+pretty_table_with_conf(conf::PrettyTablesConf, args...; kwargs...)
+```
 
-    The configurations in `conf` will be overridden by `kwargs...` in the
-    function `pretty_table`.
+It calls `pretty_table` using the default configuration in `conf`. The `args...`
+and `kwargs...` can be the same as those passed to `pretty_tables`. Notice that
+all the configurations in `kwargs...` will overwrite the ones in `conf`.
+
+The object `conf` can be created by the function `set_pt_conf` in which the
+keyword parameters can be any one supported by the function `pretty_table` as
+shown in the following.
 
 ```jldoctest
 julia> conf = set_pt_conf(tf = markdown, alignment = :c);
@@ -214,7 +219,7 @@ julia> data = [1 2 3; 4 5 6];
 
 julia> header = ["Column 1" "Column 2" "Column 3"];
 
-julia> pretty_table(conf, data, header)
+julia> pretty_table_with_conf(conf, data, header)
 | Column 1 | Column 2 | Column 3 |
 |----------|----------|----------|
 |    1     |    2     |    3     |
