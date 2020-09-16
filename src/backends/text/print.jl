@@ -160,9 +160,9 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     header_str = Matrix{String}(undef, header_num_rows, num_printed_cols)
     header_len = zeros(Int,header_num_rows, num_printed_cols)
 
-    data_str   = Matrix{Vector{AbstractString}}(undef,
-                                                num_printed_rows,
-                                                num_printed_cols)
+    data_str   = Matrix{Vector{String}}(undef,
+                                        num_printed_rows,
+                                        num_printed_cols)
     data_len   = Matrix{Vector{Int}}(undef,
                                      num_printed_rows,
                                      num_printed_cols)

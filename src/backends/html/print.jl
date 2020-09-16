@@ -45,7 +45,7 @@ function _pt_html(io::IO, pinfo::PrintInfo;
     # the matrix. Notice that we must create only the matrix with the printed
     # rows and columns.
     header_str = Matrix{String}(undef, header_num_rows, num_printed_cols)
-    data_str   = Matrix{AbstractString}(undef, num_printed_rows, num_printed_cols)
+    data_str   = Matrix{String}(undef, num_printed_rows, num_printed_cols)
 
     @inbounds for i = 1:num_printed_cols
         # Index of the i-th printed column in `data`.
