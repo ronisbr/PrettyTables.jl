@@ -13,7 +13,8 @@ function _pt_html(io::IO, pinfo::PrintInfo;
                   linebreaks::Bool = false,
                   noheader::Bool = false,
                   nosubheader::Bool = false,
-                  standalone::Bool = true)
+                  standalone::Bool = true,
+                  kwargs...)
 
     @unpack_PrintInfo pinfo
     @unpack_HTMLTableFormat tf

@@ -40,7 +40,8 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                   title_autowrap::Bool = false,
                   title_crayon::Crayon = Crayon(bold = true),
                   title_same_width_as_table::Bool = false,
-                  vlines::Union{Nothing,Symbol,AbstractVector} = nothing)
+                  vlines::Union{Nothing,Symbol,AbstractVector} = nothing,
+                  kwargs...)
 
     @unpack_PrintInfo pinfo
 

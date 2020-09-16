@@ -37,6 +37,7 @@ include("helpers.jl")
 include("misc.jl")
 include("predefined_formatters.jl")
 include("print.jl")
+include("private.jl")
 include("tables.jl")
 
 # Backends
