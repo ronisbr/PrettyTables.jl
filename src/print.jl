@@ -647,7 +647,7 @@ compatible.
 
 """
 pretty_table(data; kwargs...) =
-    _pretty_table(stdout, data, []; kwargs...)
+    _pretty_table(stdout, data, String[]; kwargs...)
 
 pretty_table(data, header::AbstractVecOrMat; kwargs...) =
     _pretty_table(stdout, data, header; kwargs...)
