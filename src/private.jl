@@ -163,8 +163,7 @@ function _print_info(data, header::AbstractVecOrMat;
                      row_number_column_title::AbstractString = "Row",
                      show_row_number::Bool = false,
                      title::AbstractString = "",
-                     title_alignment::Symbol = :l,
-                     kwargs...)
+                     title_alignment::Symbol = :l)
 
     # Get information about the table we have to print based on the format of
     # `data`, which must be an `AbstractMatrix` or an `AbstractVector`.
@@ -365,15 +364,36 @@ end
 # This is the low level function that prints the table. In this case, `data`
 # must be accessed by `[i,j]` and the size of the `header` must be equal to the
 # number of columns in `data`.
-function _pt(io::IO, data, header::AbstractVecOrMat; kwargs...)
-
-    backend = get(kwargs, :backend, nothing)
+function _pt(io::IO, data, header::AbstractVecOrMat;
+             alignment::Union{Symbol,Vector{Symbol}} = :r,
+             backend::Union{Nothing,Symbol} = nothing,
+             cell_alignment::Union{Nothing,
+                                   Dict{Tuple{Int,Int},Symbol},
+                                   Function,
+                                   Tuple} = nothing,
+             cell_first_line_only::Bool = false,
+             compact_printing::Bool = true,
+             filters_row::Union{Nothing,Tuple} = nothing,
+             filters_col::Union{Nothing,Tuple} = nothing,
+             formatters::Union{Nothing,Function,Tuple} = nothing,
+             header_alignment::Union{Symbol,Vector{Symbol}} = :s,
+             header_cell_alignment::Union{Nothing,
+                                          Dict{Tuple{Int,Int},Symbol},
+                                          Function,
+                                          Tuple} = nothing,
+             row_names::Union{Nothing,AbstractVector} = nothing,
+             row_name_alignment::Symbol = :r,
+             row_name_column_title::AbstractString = "",
+             row_number_column_title::AbstractString = "Row",
+             show_row_number::Bool = false,
+             title::AbstractString = "",
+             title_alignment::Symbol = :l,
+             kwargs...)
 
     if backend == nothing
         # In this case, if we do not have the `tf` keyword, then we just
         # fallback to the text backend. Otherwise, check if the type is
         # listed in the dictionary `_type_backend_dict`.
-        tf = get(kwargs, :tf, nothing)
         if haskey(kwargs, :tf) && haskey(_type_backend_dict, typeof(kwargs[:tf]))
             backend = _type_backend_dict[typeof(kwargs[:tf])]
         else
@@ -382,7 +402,24 @@ function _pt(io::IO, data, header::AbstractVecOrMat; kwargs...)
     end
 
     # Create the structure that stores the print information.
-    pinfo = _print_info(data, header; kwargs...)
+    pinfo = _print_info(data, header;
+                        alignment               = alignment,
+                        backend                 = backend,
+                        cell_alignment          = cell_alignment,
+                        cell_first_line_only    = cell_first_line_only,
+                        compact_printing        = compact_printing,
+                        filters_row             = filters_row,
+                        filters_col             = filters_col,
+                        formatters              = formatters,
+                        header_alignment        = header_alignment,
+                        header_cell_alignment   = header_cell_alignment,
+                        row_names               = row_names,
+                        row_name_alignment      = row_name_alignment,
+                        row_name_column_title   = row_name_column_title,
+                        row_number_column_title = row_number_column_title,
+                        show_row_number         = show_row_number,
+                        title                   = title,
+                        title_alignment         = title_alignment)
 
     # Select the appropriate backend.
     if backend == :text
