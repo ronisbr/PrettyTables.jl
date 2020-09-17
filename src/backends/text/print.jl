@@ -182,11 +182,6 @@ function _pt_text(io::IO, pinfo::PrintInfo;
         cols_width[i] = columns_width[id_cols[i-Δc]]
     end
 
-    # This variable stores the predicted table width. If the user wants
-    # horizontal cropping, then it can be use to avoid unnecessary processing of
-    # columns that will not be displayed.
-    pred_tab_width = 0
-
     # Auxiliary variables to adjust `alignment` based on the new columns added
     # to the table.
     alignment_add = Symbol[]
@@ -194,26 +189,11 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     # Row numbers
     # --------------------------------------------------------------------------
 
-    @inbounds if show_row_number
-        # Set the header of the row column.
-        header_str[1,1]      = row_number_column_title
-        header_str[2:end,1] .= ""
-        header_len[1,1]      = textwidth(row_number_column_title)
-
-        # Set the data of the row column.
-        for i = 1:num_printed_rows
-            data_str[i,1] = [string(id_rows[i])]
-
-            # Here we can use `length` because there will be no UTF-8 character
-            # in this cell.
-            data_len[i,1] = [length(data_str[i,1][1])]
-        end
-
-        # The row number width depends on how many digits the total number of
-        # rows has and the length of the header. Notice that if `noheader` is
-        # set to `true`, then we should not take the word "Row" into account.
-        cols_width[1] = max(noheader ? 0 : header_len[1,1],
-                            floor(Int, log10(num_rows)) + 1)
+    if show_row_number
+        @inbounds _fill_row_number_column!(header_str, header_len, data_str,
+                                           data_len, cols_width, id_rows,
+                                           noheader, num_rows,
+                                           row_number_column_title)
 
         # Add information about the row number column to the variables.
         push!(alignment_add, row_number_alignment)
@@ -222,35 +202,11 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     # Row names
     # --------------------------------------------------------------------------
 
-    @inbounds @views if show_row_names
-        # Escape the row name column title.
-        header_str[1,Δc]      = _str_escaped(row_name_column_title)
-        header_str[2:end,Δc] .= ""
-
-        # Compute the length of the row name column title.
-        str_len = textwidth(header_str[1,Δc])
-        header_len[1,Δc] = str_len
-
-        # Convert the row names to string.
-        max_size = 0
-        for i = 1:num_printed_rows
-            row_names_i = isassigned(row_names,i) ? row_names[i] : undef
-            row_name_str, row_name_lstr, cell_width =
-                _parse_cell(row_names_i;
-                            autowrap = false,
-                            cell_first_line_only = false,
-                            column_width = -1,
-                            compact_printing = compact_printing,
-                            linebreaks = false)
-
-            data_str[i,Δc] = row_name_str
-            data_len[i,Δc] = row_name_lstr
-
-            cell_width > max_size && (max_size = cell_width)
-        end
-
-        # Obtain the size of the row name column.
-        cols_width[Δc] = max(str_len, max_size)
+    if show_row_names
+        @inbounds _fill_row_name_column!(header_str, header_len, data_str,
+                                         data_len, cols_width, row_names, Δc,
+                                         compact_printing,
+                                         row_name_column_title)
 
         # Add information about the row name column to the variables.
         push!(alignment_add, row_name_alignment)
@@ -261,108 +217,29 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     # Table data
     # --------------------------------------------------------------------------
 
-    @inbounds for i = (1+Δc):num_printed_cols
-        # Here we store the number of processed rows. This is used to save
-        # processing if the user wants to crop the output and has cells with
-        # multiple lines.
-        num_processed_rows = 0
-
-        # Index of the i-th printed column in `data`.
-        ic = id_cols[i-Δc]
-
-        if !noheader
-            for j = 1:header_num_rows
-                id = (ic-1)*header_num_rows + j
-                header_ij = isassigned(header,id) ? header[id] : undef
-
-                hstr, hlstr, cell_width =
-                    _parse_cell(header_ij;
-                                autowrap = false,
-                                cell_first_line_only = false,
-                                column_width = -1,
-                                compact_printing = compact_printing,
-                                has_color = screen.has_color,
-                                linebreaks = false)
-
-                header_str[j,i] = first(hstr)
-                header_len[j,i] = first(hlstr)
-
-                num_processed_rows += 1
-
-                # If the user does not want a fixed column width, then we must
-                # store the information to automatically compute the field size.
-                if !fixed_col_width[ic]
-                    # Check if we should consider the sub-header size when
-                    # computing the column width.
-                    if (j == 1) || (!crop_subheader)
-                        # Check if we need to increase the columns size.
-                        cols_width[i] < cell_width && (cols_width[i] = cell_width)
-
-                        # Make sure that the maximum column width is respected.
-                        if maximum_columns_width[ic] > 0 &&
-                           maximum_columns_width[ic] < cols_width[i]
-                            cols_width[i] = maximum_columns_width[ic]
-                        end
-                    end
-                end
-            end
-        end
-
-        for j = 1:num_printed_rows
-            # Index of the j-th printed row in `data`.
-            jr = id_rows[j]
-
-            # Apply the formatters.
-            data_ij = isassigned(data,jr,ic) ? data[jr,ic] : undef
-
-            for f in formatters
-                data_ij = f(data_ij, jr, ic)
-            end
-
-            # Parse the cell.
-            data_str[j,i], data_len[j,i], cell_width =
-                _parse_cell(data_ij;
-                            autowrap = autowrap && fixed_col_width[ic],
-                            cell_first_line_only = cell_first_line_only,
-                            column_width = columns_width[ic],
-                            compact_printing = compact_printing,
-                            has_color = screen.has_color,
-                            linebreaks = linebreaks)
-
-            # Check if we must update the number of lines in this row.
-            num_lines_ij = length(data_str[j,i])
-            num_lines_in_row[j] < num_lines_ij && (num_lines_in_row[j] = num_lines_ij)
-
-            num_processed_rows += num_lines_ij
-
-            # If the user does not want a fixed column width, then we must store
-            # the information to automatically compute the field size.
-            if !fixed_col_width[ic]
-                # Check if we need to increase the columns size.
-                cols_width[i] < cell_width && (cols_width[i] = cell_width)
-
-                # Make sure that the maximum column width is respected.
-                if maximum_columns_width[ic] > 0 && maximum_columns_width[ic] < cols_width[i]
-                    cols_width[i] = maximum_columns_width[ic]
-                end
-            end
-
-            (screen.size[1] > 0) && (num_processed_rows ≥ screen.size[1]) && break
-        end
-
-        # If the user horizontal cropping, then check if we need to process
-        # another column.
-        #
-        # TODO: Should we take into account the dividers?
-        if screen.size[2] > 0
-            pred_tab_width += cols_width[i]
-
-            if pred_tab_width > screen.size[2]
-                num_printed_cols = i
-                break
-            end
-        end
-    end
+    num_printed_cols = @inbounds _fill_matrix_data!(header_str,
+                                                    header_len,
+                                                    data_str,
+                                                    data_len,
+                                                    cols_width,
+                                                    id_cols,
+                                                    id_rows,
+                                                    num_lines_in_row,
+                                                    Δc,
+                                                    columns_width,
+                                                    data,
+                                                    header,
+                                                    formatters,
+                                                    screen,
+                                                    # Configuration options.
+                                                    autowrap,
+                                                    cell_first_line_only,
+                                                    compact_printing,
+                                                    crop_subheader,
+                                                    fixed_col_width,
+                                                    linebreaks,
+                                                    maximum_columns_width,
+                                                    noheader)
 
     # If the user wants all the columns with the same size, then select the
     # larger.
@@ -441,63 +318,30 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     # --------------------------------------------------------------------------
 
     if !noheader
-        @inbounds @views for i = 1:header_num_rows
-            0 ∈ vlines && _p!(screen, buf, border_crayon, tf.column, false, 1)
-
-            for j = 1:num_printed_cols
-                # Get the information about the alignment and the crayon.
-                if j ≤ Δc
-                    if show_row_number && (j == 1)
-                        crayon_ij    = rownum_header_crayon
-                        alignment_ij = alignment[1]
-                    elseif show_row_names
-                        crayon_ij    = row_name_header_crayon
-                        alignment_ij = alignment[Δc]
-                    end
-                else
-                    jc = id_cols[j-Δc]
-                    crayon_ij    = (i == 1) ? header_crayon[jc] : subheader_crayon[jc]
-                    alignment_ij = header_alignment[jc]
-
-                    # Check for cell alignment override.
-                    for f in header_cell_alignment
-                        aux = f(header, i, jc)
-
-                        if aux ∈ (:l, :c, :r, :L, :C, :R, :s, :S)
-                            alignment_ij = aux
-                            break
-                        end
-                    end
-
-                    # If alignment is `:s`, then we must use the column
-                    # alignment.
-                    alignment_ij ∈ (:s,:S) && (alignment_ij = alignment[jc+Δc])
-                end
-
-                # Prepare the text to be printed.
-                header_ij_str, header_ij_len = _str_aligned(header_str[i,j],
-                                                            alignment_ij,
-                                                            cols_width[j],
-                                                            header_len[i,j])
-                header_ij_str  = " " * header_ij_str * " "
-                header_ij_len += 2
-
-                flp = j == num_printed_cols
-
-                # Print the text.
-                _p!(screen, buf, crayon_ij, header_ij_str, false, header_ij_len)
-
-                # Check if we need to draw a vertical line here.
-                _pc!(j ∈ vlines, screen, buf, border_crayon, tf.column, "",
-                     flp, 1, 0)
-
-                _eol(screen) && break
-            end
-
-            i != header_num_rows && _nl!(screen,buf)
-        end
-
-        _nl!(screen,buf)
+        _print_table_header!(buf,
+                             screen,
+                             header,
+                             header_str,
+                             header_len,
+                             id_cols,
+                             id_rows,
+                             num_printed_cols,
+                             Δc,
+                             cols_width,
+                             vlines,
+                              # Configurations.
+                             alignment,
+                             header_alignment,
+                             header_cell_alignment,
+                             show_row_names,
+                             show_row_number,
+                             tf,
+                             # Crayons.
+                             border_crayon,
+                             header_crayon,
+                             subheader_crayon,
+                             rownum_header_crayon,
+                             row_name_header_crayon)
 
         # Bottom header line
         #-----------------------------------------------------------------------
@@ -511,111 +355,38 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     # Data
     # ==========================================================================
 
-    draw_continuation_line = false
+    # Number of additional lines that must be consider to crop the screen
+    # vertically.
+    Δscreen_lines = 1 + newline_at_end + draw_last_hline + crop_num_lines_at_beginning
 
-    @inbounds @views for i = 1:num_printed_rows
-        ir = id_rows[i]
-
-        for l = 1:num_lines_in_row[i]
-            0 ∈ vlines && _p!(screen, buf, border_crayon, tf.column, false, 1)
-
-            for j = 1:num_printed_cols
-                # Get the information about the alignment and the crayon.
-                if j ≤ Δc
-                    if show_row_number && (j == 1)
-                        crayon_ij    = text_crayon
-                        alignment_ij = alignment[1]
-                    elseif show_row_names
-                            crayon_ij    = row_name_crayon
-                        alignment_ij = alignment[Δc]
-                    end
-                else
-                    jc = id_cols[j-Δc]
-                    crayon_ij    = text_crayon
-                    alignment_ij = alignment[jc+Δc]
-
-                    # Check for highlighters.
-                    for h in highlighters
-                        if h.f(_getdata(data), ir, jc)
-                            crayon_ij = h.fd(h, _getdata(data), ir, jc)
-                            break
-                        end
-                    end
-
-                    # Check for cell alignment override.
-                    for f in cell_alignment
-                        aux = f(_getdata(data), ir, jc)
-
-                        if aux ∈ [:l, :c, :r, :L, :C, :R]
-                            alignment_ij = aux
-                            break
-                        end
-                    end
-
-                    # For Markdown cells, we will overwrite alignment and
-                    # highlighters.
-                    if isassigned(data,ir,jc) && (data[ir,jc] isa Markdown.MD)
-                        alignment_ij = :l
-                        crayon_ij = Crayon()
-                    end
-                end
-
-                # Align the string to be printed.
-                if length(data_str[i,j]) >= l
-                    data_ij_str, data_ij_len = _str_aligned(data_str[i,j][l],
-                                                            alignment_ij,
-                                                            cols_width[j],
-                                                            data_len[i,j][l])
-                else
-                    data_ij_str, data_ij_len = _str_aligned("",
-                                                            alignment_ij,
-                                                            cols_width[j])
-                end
-
-                # Print.
-                data_ij_str  = " " * data_ij_str * " "
-                data_ij_len += 2
-                _p!(screen, buf, crayon_ij, data_ij_str, false, data_ij_len)
-
-                flp = j == num_printed_cols
-
-                # Check if we need to draw a vertical line here.
-                _pc!(j ∈ vlines, screen, buf, border_crayon, tf.column, "" ,
-                     flp, 1, 0)
-
-                _eol(screen) && break
-            end
-
-            _nl!(screen, buf)
-
-            # Check if the screen is over.
-            if _eos(screen, 1 + newline_at_end + draw_last_hline + crop_num_lines_at_beginning)
-                # If we have only one line left, then we do not need to print
-                # the continuation line.
-                if (i+1 < num_printed_rows) ||
-                    ( (i+1 == num_printed_rows) && (num_lines_in_row[i+1] > 1) ) ||
-                    ( (i   == num_printed_rows) && (num_lines_in_row[i]   > l) )
-                    draw_continuation_line = true
-                    break
-                end
-            end
-        end
-
-        # Check if we must draw a horizontal line here.
-        i != num_printed_rows && (i+!noheader) in hlines &&
-            _draw_line!(screen, buf, body_hlines_format..., border_crayon,
-                        cols_width, vlines)
-
-        # Here we must check if the vertical size of the screen has been
-        # reached. Notice that we must add 4 to account for the command line,
-        # the continuation line, the bottom table line, and the last blank line.
-        if draw_continuation_line
-            _draw_continuation_row(screen, buf, tf, text_crayon, border_crayon,
-                                   cols_width, vlines,
-                                   continuation_row_alignment)
-            break
-        end
-    end
+    @inbounds _print_table_data(buf,
+                                screen,
+                                data,
+                                data_str,
+                                data_len,
+                                id_cols,
+                                id_rows,
+                                num_lines_in_row,
+                                num_printed_cols,
+                                Δc,
+                                cols_width,
+                                hlines,
+                                vlines,
+                                # Configurations.
+                                alignment,
+                                body_hlines_format,
+                                cell_alignment,
+                                continuation_row_alignment,
+                                highlighters,
+                                noheader,
+                                show_row_names,
+                                show_row_number,
+                                tf,
+                                Δscreen_lines,
+                                # Crayons.
+                                border_crayon,
+                                row_name_crayon,
+                                text_crayon)
 
     # Bottom table line
     # ==========================================================================
