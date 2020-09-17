@@ -142,7 +142,6 @@ end
 # This function creates the structure that holds the global print information.
 function _print_info(data, header::AbstractVecOrMat;
                      alignment::Union{Symbol,Vector{Symbol}} = :r,
-                     backend::Union{Nothing,Symbol} = nothing,
                      cell_alignment::Union{Nothing,
                                            Dict{Tuple{Int,Int},Symbol},
                                            Function,
@@ -404,7 +403,6 @@ function _pt(io::IO, data, header::AbstractVecOrMat;
     # Create the structure that stores the print information.
     pinfo = _print_info(data, header;
                         alignment               = alignment,
-                        backend                 = backend,
                         cell_alignment          = cell_alignment,
                         cell_first_line_only    = cell_first_line_only,
                         compact_printing        = compact_printing,
