@@ -112,20 +112,22 @@ function _str_aligned(data::AbstractString, alignment::Symbol,
 end
 
 """
-    _str_line_breaks(str::String, autowrap::Bool = false, width::Int = 0)
+    _str_line_breaks(str::String, autowrap::Bool = false, width::Int = 0, esc::String = "")
 
 Split the string `str` into substring, each one meaning one new line. If
 `autowrap` is `true`, then the text will be wrapped so that it fits the column
-with the width `width`.
+with the width `width`. `esc` is a set of additional characters that will be
+escaped.
 
 """
-function _str_line_breaks(str::String, autowrap::Bool = false, width::Int = 0)
+function _str_line_breaks(str::String, autowrap::Bool = false, width::Int = 0,
+                          esc::String = "")
     # Check for errors.
     autowrap && (width <= 0) &&
     error("If `autowrap` is true, then the width must not be positive.")
 
     # Get the tokens for each line.
-    tokens_raw = _str_escaped.(split(str, '\n'))
+    tokens_raw = _str_escaped.(split(str, '\n'), esc)
 
     # If the user wants to auto wrap the text, then we must check if
     # the tokens must be modified.

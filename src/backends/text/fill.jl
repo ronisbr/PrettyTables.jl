@@ -27,6 +27,7 @@ function _fill_matrix_data!(header_str::Matrix{String},
                             cell_first_line_only::Bool,
                             compact_printing::Bool,
                             crop_subheader::Bool,
+                            escape_quotes::Bool,
                             fixed_col_width::Vector{Bool},
                             linebreaks::Bool,
                             maximum_columns_width::Vector{Int},
@@ -60,6 +61,7 @@ function _fill_matrix_data!(header_str::Matrix{String},
                                 cell_first_line_only = false,
                                 column_width = -1,
                                 compact_printing = compact_printing,
+                                escape_quotes = escape_quotes,
                                 has_color = screen.has_color,
                                 linebreaks = false)
 
@@ -105,6 +107,7 @@ function _fill_matrix_data!(header_str::Matrix{String},
                             cell_first_line_only = cell_first_line_only,
                             column_width = columns_width[ic],
                             compact_printing = compact_printing,
+                            escape_quotes = escape_quotes,
                             has_color = screen.has_color,
                             linebreaks = linebreaks)
 
@@ -153,6 +156,7 @@ function _fill_row_number_column!(header_str::Matrix{String},
                                   data_len::Matrix{Vector{Int}},
                                   cols_width::Vector{Int},
                                   id_rows::Vector{Int},
+                                  escape_quotes::Bool,
                                   noheader::Bool,
                                   num_rows::Int,
                                   row_number_column_title::String)
@@ -160,9 +164,11 @@ function _fill_row_number_column!(header_str::Matrix{String},
     num_printed_rows = size(data_str)[1]
 
     # Set the header of the row column.
-    header_str[1,1]      = row_number_column_title
+    esc = escape_quotes ? "\"" : ""
+
+    header_str[1,1]      = _str_escaped(row_number_column_title, esc)
+    header_len[1,1]      = textwidth(header_str[1,1])
     header_str[2:end,1] .= ""
-    header_len[1,1]      = textwidth(row_number_column_title)
 
     # Set the data of the row column.
     for i = 1:num_printed_rows
@@ -191,17 +197,16 @@ function _fill_row_name_column!(header_str::Matrix{String},
                                 row_names::AbstractVector,
                                 Δc::Int,
                                 compact_printing::Bool,
+                                escape_quotes::Bool,
                                 row_name_column_title::String)
 
     num_printed_rows = size(data_str)[1]
 
     # Escape the row name column title.
-    header_str[1,Δc]      = _str_escaped(row_name_column_title)
+    esc = escape_quotes ? "\"" : ""
+    header_str[1,Δc]      = _str_escaped(row_name_column_title, esc)
+    header_len[1,Δc]      = textwidth(header_str[1,Δc])
     header_str[2:end,Δc] .= ""
-
-    # Compute the length of the row name column title.
-    str_len = textwidth(header_str[1,Δc])
-    header_len[1,Δc] = str_len
 
     # Convert the row names to string.
     max_size = 0
@@ -213,6 +218,7 @@ function _fill_row_name_column!(header_str::Matrix{String},
                         cell_first_line_only = false,
                         column_width = -1,
                         compact_printing = compact_printing,
+                        escape_quotes = escape_quotes,
                         linebreaks = false)
 
         data_str[i,Δc] = row_name_str
@@ -222,7 +228,7 @@ function _fill_row_name_column!(header_str::Matrix{String},
     end
 
     # Obtain the size of the row name column.
-    cols_width[Δc] = max(str_len, max_size)
+    cols_width[Δc] = max(header_len[1,Δc], max_size)
 
     return nothing
 end

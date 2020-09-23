@@ -219,6 +219,8 @@ This back-end produces text tables. This back-end can be used by selecting
                                 in the continuation row. This row is printed if
                                 the table is vertically cropped.
                                 (**Default** = `:c`)
+* `escape_quotes`: If `true`, then quotes inside strings will be escaped.
+                   (**Default** = `false`)
 * `equal_columns_width`: If `true`, then all the columns will have the same
                          width. (**Default** = `false`)
 * `highlighters`: An instance of `Highlighter` or a tuple with a list of
