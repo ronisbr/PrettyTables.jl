@@ -64,8 +64,6 @@ passed as keywords when calling the function `pretty_table`:
                     algorithm can crop it to save space. This has no effect if
                     the user selects a fixed column width.
                     (**Default** = `false`)
-* `escape_quotes`: If `true`, then quotes inside strings will be escaped.
-                   (**Default** = `false`)
 * `equal_columns_width`: If `true`, then all the columns will have the same
                          width. (**Default** = `false`)
 * `filters_row`: Filters for the rows (see the section [Filters](@ref)).

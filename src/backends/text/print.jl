@@ -22,7 +22,6 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                   crop_num_lines_at_beginning::Int = 0,
                   columns_width::Union{Int,AbstractVector{Int}} = 0,
                   equal_columns_width::Bool = false,
-                  escape_quotes::Bool = false,
                   highlighters::Union{Highlighter,Tuple} = (),
                   hlines::Union{Nothing,Symbol,AbstractVector} = nothing,
                   linebreaks::Bool = false,
@@ -193,7 +192,7 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     if show_row_number
         @inbounds _fill_row_number_column!(header_str, header_len, data_str,
                                            data_len, cols_width, id_rows,
-                                           escape_quotes, noheader, num_rows,
+                                           noheader, num_rows,
                                            row_number_column_title)
 
         # Add information about the row number column to the variables.
@@ -206,7 +205,7 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     if show_row_names
         @inbounds _fill_row_name_column!(header_str, header_len, data_str,
                                          data_len, cols_width, row_names, Δc,
-                                         compact_printing, escape_quotes,
+                                         compact_printing,
                                          row_name_column_title)
 
         # Add information about the row name column to the variables.
@@ -237,7 +236,6 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                                                     cell_first_line_only,
                                                     compact_printing,
                                                     crop_subheader,
-                                                    escape_quotes,
                                                     fixed_col_width,
                                                     linebreaks,
                                                     maximum_columns_width,

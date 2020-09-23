@@ -78,23 +78,19 @@ end
                              autowrap::Bool = true,
                              cell_first_line_only::Bool = false,
                              column_width::Integer = -1,
-                             escape_quotes::Bool = false,
                              linebreaks::Bool = false,
                              kwargs...)
 
-    # Get the additional characters that must be escaped.
-    esc = escape_quotes ? "\"" : ""
-
     if cell_first_line_only
-        cell_vstr  = [first(_str_line_breaks(cell, autowrap, column_width, esc))]
+        cell_vstr  = [first(_str_line_breaks(cell, autowrap, column_width))]
         cell_lstr  = [textwidth(first(cell_vstr))]
         cell_width = first(cell_lstr)
     elseif linebreaks
-        cell_vstr  = _str_line_breaks(cell, autowrap, column_width, esc)
+        cell_vstr  = _str_line_breaks(cell, autowrap, column_width)
         cell_lstr  = textwidth.(cell_vstr)
         cell_width = maximum(cell_lstr)
     else
-        cell_str_esc = _str_escaped(cell, esc)
+        cell_str_esc = _str_escaped(cell)
         cell_vstr    = [cell_str_esc]
         cell_lstr    = [textwidth(cell_str_esc)]
         cell_width   = first(cell_lstr)

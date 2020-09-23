@@ -178,13 +178,12 @@ function _process_vlines(vlines::AbstractVector, num_printed_cols::Int)
 end
 
 """
-    _str_escaped(str::AbstractString, esc::String = "")
+    _str_escaped(str::AbstractString)
 
-Return the escaped string representation of `str`. `esc` contains additional
-characters that must be also escaped.
+Return the escaped string representation of `str`.
 
 """
-_str_escaped(str::AbstractString, esc::String = "") =
+_str_escaped(str::AbstractString) =
     # NOTE: Here we cannot use `escape_string(str)` because it also adds the
     # character `"` to the list of characters to be escaped.
-    sprint(escape_string, str, esc, sizehint = lastindex(str))
+    sprint(escape_string, str, "", sizehint = lastindex(str))

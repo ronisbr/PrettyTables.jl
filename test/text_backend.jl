@@ -2276,65 +2276,6 @@ end
     @test result == expected
 end
 
-# Escape quotes
-# ==============================================================================
-
-@testset "Escape quotes" begin
-    data      = ["\"Teste\""        "\"Teste\""
-                 "\"Teste\nTeste\"" "\"Teste\nTeste\""]
-    header    = ["\"Teste\"", "\"Teste\""]
-    row_names = ["\"Teste\"", "\"Teste\""]
-
-    row_name_column_title = "\"Teste\nTeste\""
-    row_number_column_title ="\"Teste\nTeste\""
-
-    expected = """
-┌────────────────┬────────────────┬─────────┬─────────┐
-│ "Teste\\nTeste" │ "Teste\\nTeste" │ "Teste" │ "Teste" │
-├────────────────┼────────────────┼─────────┼─────────┤
-│ 1              │ "Teste"        │ "Teste" │ "Teste" │
-│ 2              │ "Teste"        │ "Teste  │ "Teste  │
-│                │                │ Teste"  │ Teste"  │
-└────────────────┴────────────────┴─────────┴─────────┘
-"""
-
-    result = pretty_table(String, data, header;
-                          alignment = :l,
-                          linebreaks = true,
-                          row_names = row_names,
-                          row_name_alignment = :l,
-                          row_name_column_title = row_name_column_title,
-                          row_number_alignment = :l,
-                          row_number_column_title = row_number_column_title,
-                          show_row_number = true)
-
-    @test result == expected
-
-    expected = """
-┌──────────────────┬──────────────────┬───────────┬───────────┐
-│ \\"Teste\\nTeste\\" │ \\"Teste\\nTeste\\" │ \\"Teste\\" │ \\"Teste\\" │
-├──────────────────┼──────────────────┼───────────┼───────────┤
-│ 1                │ \\"Teste\\"        │ \\"Teste\\" │ \\"Teste\\" │
-│ 2                │ \\"Teste\\"        │ \\"Teste   │ \\"Teste   │
-│                  │                  │ Teste\\"   │ Teste\\"   │
-└──────────────────┴──────────────────┴───────────┴───────────┘
-"""
-
-    result = pretty_table(String, data, header;
-                          alignment = :l,
-                          linebreaks = true,
-                          row_names = row_names,
-                          row_name_alignment = :l,
-                          row_name_column_title = row_name_column_title,
-                          row_number_alignment = :l,
-                          row_number_column_title = row_number_column_title,
-                          show_row_number = true,
-                          escape_quotes = true)
-
-    @test result == expected
-end
-
-
 # Table.jl compatibility
 # ==============================================================================
 
