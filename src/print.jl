@@ -92,6 +92,12 @@ is not compliant, then only the following types are supported:
       and the rest is discarded.
 
   (**Default** = `nothing`)
+* `renderer`: A symbol that indicates which function should be used to convert
+              an object to a string. It can be `:print` to use the function
+              `print` or `:show` to use the function `show`. Notice that this
+              selection is applicable only to the table data. Headers,
+              sub-headers, and row name column are always rendered with print.
+              (**Default** = `:print`)
 * `row_names`: A vector containing the row names that will be appended to the
                left of the table. If it is `nothing`, then the column with the
                row names will not be shown. Notice that the size of this vector

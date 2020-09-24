@@ -156,6 +156,7 @@ function _print_info(data, header::AbstractVecOrMat;
                                                   Dict{Tuple{Int,Int},Symbol},
                                                   Function,
                                                   Tuple} = nothing,
+                     renderer::Symbol = :print,
                      row_names::Union{Nothing,AbstractVector} = nothing,
                      row_name_alignment::Symbol = :r,
                      row_name_column_title::AbstractString = "",
@@ -313,6 +314,9 @@ function _print_info(data, header::AbstractVecOrMat;
     formatters == nothing  && (formatters = ())
     typeof(formatters) <: Function && (formatters = (formatters,))
 
+    # Render.
+    renderer_val = renderer == :show ? Val(:show) : Val(:print)
+
     # Create the structure that stores the print information.
     pinfo = PrintInfo(data, header, id_cols, id_rows, num_rows, num_cols,
                       num_printed_cols, num_printed_rows, header_num_rows,
@@ -321,7 +325,7 @@ function _print_info(data, header::AbstractVecOrMat;
                       row_name_column_title, alignment, cell_alignment,
                       formatters, compact_printing, title, title_alignment,
                       header_alignment, header_cell_alignment,
-                      cell_first_line_only)
+                      cell_first_line_only, renderer_val)
 
     return pinfo
 end
@@ -380,6 +384,7 @@ function _pt(io::IO, data, header::AbstractVecOrMat;
                                           Dict{Tuple{Int,Int},Symbol},
                                           Function,
                                           Tuple} = nothing,
+             renderer::Symbol = :print,
              row_names::Union{Nothing,AbstractVector} = nothing,
              row_name_alignment::Symbol = :r,
              row_name_column_title::AbstractString = "",
@@ -411,6 +416,7 @@ function _pt(io::IO, data, header::AbstractVecOrMat;
                         formatters              = formatters,
                         header_alignment        = header_alignment,
                         header_cell_alignment   = header_cell_alignment,
+                        renderer                = renderer,
                         row_names               = row_names,
                         row_name_alignment      = row_name_alignment,
                         row_name_column_title   = row_name_column_title,

@@ -205,7 +205,7 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     if show_row_names
         @inbounds _fill_row_name_column!(header_str, header_len, data_str,
                                          data_len, cols_width, row_names, Δc,
-                                         compact_printing,
+                                         compact_printing, renderer,
                                          row_name_column_title)
 
         # Add information about the row name column to the variables.
@@ -239,7 +239,8 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                                                     fixed_col_width,
                                                     linebreaks,
                                                     maximum_columns_width,
-                                                    noheader)
+                                                    noheader,
+                                                    renderer)
 
     # If the user wants all the columns with the same size, then select the
     # larger.

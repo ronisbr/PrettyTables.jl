@@ -101,6 +101,11 @@ Each back-end defines its own configuration keywords that can be passed using
       and the rest is discarded.
 
   (**Default** = `nothing`)
+* `renderer`: A symbol that indicates which function should be used to convert
+              an object to a string. It can be `:print` to use the function
+              `print` or `:show` to use the function `show`. Notice that this
+              selection is not applicable to the headers and sub-headers. They
+              will always be converted using `print`. (**Default** = `:print`)
 * `row_names`: A vector containing the row names that will be appended to the
                left of the table. If it is `nothing`, then the column with the
                row names will not be shown. Notice that the size of this vector

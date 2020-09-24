@@ -30,7 +30,8 @@ function _fill_matrix_data!(header_str::Matrix{String},
                             fixed_col_width::Vector{Bool},
                             linebreaks::Bool,
                             maximum_columns_width::Vector{Int},
-                            noheader::Bool)
+                            noheader::Bool,
+                            renderer::Union{Val{:print}, Val{:show}})
 
     num_printed_rows, num_printed_cols = size(data_str)
     header_num_rows, ~ = size(header_len)
@@ -54,6 +55,8 @@ function _fill_matrix_data!(header_str::Matrix{String},
                 id = (ic-1)*header_num_rows + j
                 header_ij = isassigned(header,id) ? header[id] : undef
 
+                # NOTE: For headers, we always use `print` instead of `show` to
+                # avoid quotes.
                 hstr, hlstr, cell_width =
                     _parse_cell(header_ij;
                                 autowrap = false,
@@ -61,7 +64,8 @@ function _fill_matrix_data!(header_str::Matrix{String},
                                 column_width = -1,
                                 compact_printing = compact_printing,
                                 has_color = screen.has_color,
-                                linebreaks = false)
+                                linebreaks = false,
+                                renderer = Val(:print))
 
                 header_str[j,i] = first(hstr)
                 header_len[j,i] = first(hlstr)
@@ -106,7 +110,8 @@ function _fill_matrix_data!(header_str::Matrix{String},
                             column_width = columns_width[ic],
                             compact_printing = compact_printing,
                             has_color = screen.has_color,
-                            linebreaks = linebreaks)
+                            linebreaks = linebreaks,
+                            renderer = renderer)
 
             # Check if we must update the number of lines in this row.
             num_lines_ij = length(data_str[j,i])
@@ -191,12 +196,14 @@ function _fill_row_name_column!(header_str::Matrix{String},
                                 row_names::AbstractVector,
                                 Δc::Int,
                                 compact_printing::Bool,
+                                renderer::Union{Val{:print}, Val{:show}},
                                 row_name_column_title::String)
 
     num_printed_rows = size(data_str)[1]
 
     # Escape the row name column title.
-    header_str[1,Δc]      = _str_escaped(row_name_column_title)
+    header_str[1,Δc]      = _render_text(Val(:print), row_name_column_title,
+                                         compact_printing = compact_printing)
     header_str[2:end,Δc] .= ""
 
     # Compute the length of the row name column title.
@@ -213,7 +220,8 @@ function _fill_row_name_column!(header_str::Matrix{String},
                         cell_first_line_only = false,
                         column_width = -1,
                         compact_printing = compact_printing,
-                        linebreaks = false)
+                        linebreaks = false,
+                        renderer = Val(:print))
 
         data_str[i,Δc] = row_name_str
         data_len[i,Δc] = row_name_lstr

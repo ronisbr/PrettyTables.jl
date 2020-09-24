@@ -69,6 +69,7 @@ the tables.
     header_alignment::Vector{Symbol}
     header_cell_alignment
     cell_first_line_only::Bool
+    renderer::Union{Val{:print}, Val{:show}}
 end
 
 """

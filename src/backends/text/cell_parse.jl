@@ -17,10 +17,21 @@ Parse the table cell `cell` of type `T`. This function must return:
 * The necessary width for the cell.
 
 """
-@inline function _parse_cell(cell; compact_printing::Bool = true, kwargs...)
-    # Convert to string using `print`.
-    cell_str = sprint(print, cell; context = :compact => compact_printing)
-    return _parse_cell(cell_str; kwargs...)
+@inline function _parse_cell(cell;
+                             compact_printing::Bool = true,
+                             renderer::Union{Val{:print}, Val{:show}} = Val(:print),
+                             kwargs...)
+
+    # Convert to string using the desired renderer.
+    cell_str = _render_text(renderer, cell, compact_printing = compact_printing)
+
+    # In this case, since the input value is not a `String`, then we do not need
+    # to take into account things like line breaks.
+    cell_vstr    = [cell_str]
+    cell_lstr    = [textwidth(cell_str)]
+    cell_width   = first(cell_lstr)
+
+    return cell_vstr, cell_lstr, cell_width
 end
 
 @inline function _parse_cell(cell::Markdown.MD;
@@ -78,22 +89,33 @@ end
                              autowrap::Bool = true,
                              cell_first_line_only::Bool = false,
                              column_width::Integer = -1,
+                             compact_printing::Bool = true,
                              linebreaks::Bool = false,
+                             renderer::Union{Val{:print}, Val{:show}} = Val(:print),
                              kwargs...)
 
     if cell_first_line_only
-        cell_vstr  = [first(_str_line_breaks(cell, autowrap, column_width))]
+        cell_vstr  = [first(_str_line_breaks(cell,
+                                             autowrap,
+                                             column_width,
+                                             compact_printing,
+                                             renderer))]
         cell_lstr  = [textwidth(first(cell_vstr))]
         cell_width = first(cell_lstr)
     elseif linebreaks
-        cell_vstr  = _str_line_breaks(cell, autowrap, column_width)
+        cell_vstr  = _str_line_breaks(cell,
+                                      autowrap,
+                                      column_width,
+                                      compact_printing,
+                                      renderer)
         cell_lstr  = textwidth.(cell_vstr)
         cell_width = maximum(cell_lstr)
     else
-        cell_str_esc = _str_escaped(cell)
-        cell_vstr    = [cell_str_esc]
-        cell_lstr    = [textwidth(cell_str_esc)]
-        cell_width   = first(cell_lstr)
+        cell_str   = _render_text(renderer, cell,
+                                  compact_printing = compact_printing)
+        cell_vstr  = [cell_str]
+        cell_lstr  = [textwidth(cell_str)]
+        cell_width = first(cell_lstr)
     end
 
     return cell_vstr, cell_lstr, cell_width

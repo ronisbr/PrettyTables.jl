@@ -66,6 +66,34 @@ function _crop_str(str::String, crop_size::Int, lstr::Int = -1)
 end
 
 """
+    _render_text(T, v; compact_printing::Bool = true)
+
+Render the value `v` to a string using the rendered `T` to be displayed in the
+text back-end.
+
+`T` can be:
+
+* `Val(:print)`: the function `print` will be used.
+* `Val(:show)`: the function `show` will be used.
+
+"""
+@inline function _render_text(::Val{:print}, v; compact_printing::Bool = true)
+    str = sprint(print, v; context = :compact => compact_printing)
+    return _render_text(Val(:print), str)
+end
+
+_render_text(::Val{:print}, str::AbstractString; compact_printing::Bool = true) =
+    # NOTE: Here we cannot use `escape_string(str)` because it also adds the
+    # character `"` to the list of characters to be escaped.
+    sprint(escape_string, str, "", sizehint = lastindex(str))
+
+@inline function _render_text(::Val{:show}, v; compact_printing::Bool = true)
+    str = sprint(show, MIME("text/plain"), v;
+                 context = :compact => compact_printing)
+    return str
+end
+
+"""
     _str_aligned(data::AbstractString, alignment::Symbol, field_size::Integer, lstr::Integer = -1)
 
 This function returns the string `data` with alignment `alignment` in a field
@@ -112,20 +140,25 @@ function _str_aligned(data::AbstractString, alignment::Symbol,
 end
 
 """
-    _str_line_breaks(str::String, autowrap::Bool = false, width::Int = 0)
+    _str_line_breaks(str::String, autowrap::Bool = false, width::Int = 0, compact_printing::Bool = true, renderer::Union{Val{:print}, Val{:show}} = Val(:print))
 
 Split the string `str` into substring, each one meaning one new line. If
 `autowrap` is `true`, then the text will be wrapped so that it fits the column
 with the width `width`.
 
 """
-function _str_line_breaks(str::String, autowrap::Bool = false, width::Int = 0)
+function _str_line_breaks(str::String,
+                          autowrap::Bool = false,
+                          width::Int = 0,
+                          compact_printing::Bool = true,
+                          renderer::Union{Val{:print}, Val{:show}} = Val(:print))
     # Check for errors.
     autowrap && (width <= 0) &&
     error("If `autowrap` is true, then the width must not be positive.")
 
     # Get the tokens for each line.
-    tokens_raw = _str_escaped.(split(str, '\n'))
+    tokens_raw = _render_text.(renderer, split(str, '\n'),
+                               compact_printing = compact_printing)
 
     # If the user wants to auto wrap the text, then we must check if
     # the tokens must be modified.
