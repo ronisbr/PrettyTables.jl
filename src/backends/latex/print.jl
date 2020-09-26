@@ -75,7 +75,8 @@ function _pt_latex(io::IO, pinfo::PrintInfo;
             for j = 1:header_num_rows
                 header_str[j,i] =
                     _parse_cell_latex(header[(ic-1)*header_num_rows + j],
-                                      compact_printing = compact_printing)
+                                      compact_printing = compact_printing,
+                                      renderer = Val(:print))
             end
         end
 
@@ -92,7 +93,8 @@ function _pt_latex(io::IO, pinfo::PrintInfo;
 
             data_str[j,i] = _parse_cell_latex(data_ij;
                                               cell_first_line_only = cell_first_line_only,
-                                              compact_printing = compact_printing)
+                                              compact_printing = compact_printing,
+                                              renderer = renderer)
         end
     end
 

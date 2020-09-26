@@ -20,17 +20,27 @@ will be printed to the IO.
                                    kwargs...)
 
     # Convert to string using the desired renderer.
-    cell_str = sprint(print, cell; context = :compact => compact_printing)
+    if renderer === Val(:show)
+        if showable(MIME("text/latex"), cell)
+            cell_str = sprint(show, MIME("text/latex"), cell;
+                              context = :compact => compact_printing)
+        else
+            cell_str = sprint(show, cell;
+                              context = :compact => compact_printing)
+        end
+    else
+        cell_str = sprint(print, cell; context = :compact => compact_printing)
+    end
+
     return cell_str
 end
 
 @inline _parse_cell_latex(cell::Markdown.MD; kwargs...) =
-    replace(sprint(show, MIME("text/latex"), data_ij),"\n"=>"")
+    replace(sprint(show, MIME("text/latex"), cell),"\n"=>"")
 
 @inline function _parse_cell_latex(cell::AbstractString;
                                    cell_first_line_only::Bool = false,
                                    compact_printing::Bool = true,
-                                   renderer::Union{Val{:print}, Val{:show}} = Val(:print),
                                    kwargs...)
 
     if cell_first_line_only
