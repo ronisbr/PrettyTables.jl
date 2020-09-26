@@ -74,8 +74,8 @@ function _pt_latex(io::IO, pinfo::PrintInfo;
         if !noheader
             for j = 1:header_num_rows
                 header_str[j,i] =
-                    _str_latex_escaped(sprint(print, header[(ic-1)*header_num_rows + j];
-                                              context = :compact => compact_printing))
+                    _parse_cell_latex(header[(ic-1)*header_num_rows + j],
+                                      compact_printing = compact_printing)
             end
         end
 
@@ -90,25 +90,9 @@ function _pt_latex(io::IO, pinfo::PrintInfo;
                 data_ij = f(data_ij, jr, ic)
             end
 
-            # Handle `nothing`, `missing`, and `undef`.
-            if ismissing(data_ij)
-                data_str_ij = "missing"
-            elseif data_ij == nothing
-                data_str_ij = "nothing"
-            elseif data_ij == undef
-                data_str_ij = "\\#undef"
-            elseif data_ij isa Markdown.MD
-                data_str_ij = replace(sprint(show, MIME("text/latex"), data_ij),"\n"=>"")
-            else
-                data_str_ij = sprint(print, data_ij;
-                                     context = :compact => compact_printing)
-            end
-
-            # Check if the user wants to show only the first line.
-            cell_first_line_only && (data_str_ij = split(data_str_ij, '\n')[1])
-
-            data_str_ij_esc = _str_latex_escaped(data_str_ij)
-            data_str[j,i]   = data_str_ij_esc
+            data_str[j,i] = _parse_cell_latex(data_ij;
+                                              cell_first_line_only = cell_first_line_only,
+                                              compact_printing = compact_printing)
         end
     end
 

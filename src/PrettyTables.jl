@@ -60,8 +60,10 @@ include("backends/html/print.jl")
 include("backends/html/private.jl")
 
 # LaTeX backend
+include("backends/latex/cell_parse.jl")
 include("backends/latex/predefined_formats.jl")
 include("backends/latex/private.jl")
 include("backends/latex/print.jl")
+include("backends/latex/string.jl")
 
 end # module
