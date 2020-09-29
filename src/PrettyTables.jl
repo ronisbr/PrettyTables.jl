@@ -54,6 +54,7 @@ include("backends/text/screen.jl")
 include("backends/text/string.jl")
 
 # HTML backend
+include("backends/html/cell_parse.jl")
 include("backends/html/predefined_formats.jl")
 include("backends/html/predefined_highlighters.jl")
 include("backends/html/print.jl")

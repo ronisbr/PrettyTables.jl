@@ -52,8 +52,10 @@ function _pt_html(io::IO, pinfo::PrintInfo;
 
         if !noheader
             for j = 1:header_num_rows
-                header_str[j,i] = _str_escaped(sprint(print, header[(ic-1)*header_num_rows + j];
-                                                      context = :compact => compact_printing))
+                header_str[j,i] =
+                    _parse_cell_html(header[(ic-1)*header_num_rows + j],
+                                     compact_printing = compact_printing,
+                                     renderer = Val(:print))
             end
         end
 
@@ -68,30 +70,11 @@ function _pt_html(io::IO, pinfo::PrintInfo;
                 data_ij = f(data_ij, jr, ic)
             end
 
-            # Handle `nothing`, `missing`, and `undef`.
-            if ismissing(data_ij)
-                data_str_ij = "missing"
-            elseif data_ij == nothing
-                data_str_ij = "nothing"
-            elseif data_ij == undef
-                data_str_ij = "#undef"
-            elseif data_ij isa Markdown.MD
-                data_str_ij = replace(sprint(show, "text/html", data_ij),"\n"=>"")
-            else
-                data_str_ij = sprint(print, data_ij;
-                                     context = :compact => compact_printing)
-            end
-
-            # Check if the user wants to display only the first line.
-            if cell_first_line_only
-                data_str_ij = split(data_str_ij, '\n')[1]
-            # If `linebreaks` is true, then replace `\n` to `<BR>`.
-            elseif linebreaks
-                data_str_ij = replace(data_str_ij, "\n" => "<BR>")
-            end
-
-            data_str_ij_esc = data_ij isa Markdown.MD ? data_str_ij : _str_escaped(data_str_ij)
-            data_str[j,i]   = data_str_ij_esc
+            data_str[j,i] = _parse_cell_html(data_ij;
+                                             cell_first_line_only = cell_first_line_only,
+                                             compact_printing = compact_printing,
+                                             linebreaks = linebreaks,
+                                             renderer = renderer)
         end
     end
 
