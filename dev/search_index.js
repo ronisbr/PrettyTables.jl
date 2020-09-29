@@ -721,14 +721,6 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "lib/library/#PrettyTables._parse_cell-Tuple{Any}",
-    "page": "Library",
-    "title": "PrettyTables._parse_cell",
-    "category": "method",
-    "text": "_parse_cell(cell::T; kwargs...)\n\nParse the table cell cell of type T. This function must return:\n\nA vector of String with the parsed cell text, one component per line.\nA vector with the length of each parsed line.\nThe necessary width for the cell.\n\n\n\n\n\n"
-},
-
-{
     "location": "lib/library/#PrettyTables._parse_cell_html-Tuple{Any}",
     "page": "Library",
     "title": "PrettyTables._parse_cell_html",
@@ -742,6 +734,14 @@ var documenterSearchIndex = {"docs": [
     "title": "PrettyTables._parse_cell_latex",
     "category": "method",
     "text": "_parse_cell_latex(cell::T; kwargs...)\n\nParse the table cell cell of type T. This function must return a string that will be printed to the IO.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables._parse_cell_text-Tuple{Any}",
+    "page": "Library",
+    "title": "PrettyTables._parse_cell_text",
+    "category": "method",
+    "text": "_parse_cell_text(cell::T; kwargs...)\n\nParse the table cell cell of type T. This function must return:\n\nA vector of String with the parsed cell text, one component per line.\nA vector with the length of each parsed line.\nThe necessary width for the cell.\n\n\n\n\n\n"
 },
 
 {
