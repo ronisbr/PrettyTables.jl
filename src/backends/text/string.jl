@@ -66,7 +66,7 @@ function _crop_str(str::String, crop_size::Int, lstr::Int = -1)
 end
 
 """
-    _render_text(T, v; compact_printing::Bool = true)
+    _render_text(T, v; compact_printing::Bool = true, isstring::Bool = false)
 
 Render the value `v` to a string using the rendered `T` to be displayed in the
 text back-end.
@@ -76,19 +76,38 @@ text back-end.
 * `Val(:print)`: the function `print` will be used.
 * `Val(:show)`: the function `show` will be used.
 
+In case `show` is used, if `isstring` is `false`, then it means that the
+original data is not a string even if `v` is a string. Hence, the surrounding
+quotes added by `show` will be removed. This is required to correctly handle
+formatters.
+
 """
-@inline function _render_text(::Val{:print}, v; compact_printing::Bool = true)
+@inline function _render_text(::Val{:print}, v;
+                              compact_printing::Bool = true,
+                              isstring::Bool = false)
     str = sprint(print, v; context = :compact => compact_printing)
     return _render_text(Val(:print), str)
 end
 
-_render_text(::Val{:print}, str::AbstractString; compact_printing::Bool = true) =
+_render_text(::Val{:print}, str::AbstractString;
+             compact_printing::Bool = true,
+             isstring::Bool = false) =
     # NOTE: Here we cannot use `escape_string(str)` because it also adds the
     # character `"` to the list of characters to be escaped.
     sprint(escape_string, str, "", sizehint = lastindex(str))
 
-@inline function _render_text(::Val{:show}, v; compact_printing::Bool = true)
+@inline function _render_text(::Val{:show}, v;
+                              compact_printing::Bool = true,
+                              isstring::Bool = false)
     str = sprint(show, v; context = :compact => compact_printing)
+
+    # If `v` is a string but the original data is not, then remove the
+    # surrounding quotes.
+    if (v isa AbstractString) && (!isstring)
+        aux = first(str, length(str)-1)
+        str = last(aux, length(aux)-1)
+    end
+
     return str
 end
 
@@ -150,6 +169,7 @@ function _str_line_breaks(str::String,
                           autowrap::Bool = false,
                           width::Int = 0,
                           compact_printing::Bool = true,
+                          isstring::Bool = false,
                           renderer::Union{Val{:print}, Val{:show}} = Val(:print))
     # Check for errors.
     autowrap && (width <= 0) &&
@@ -157,7 +177,8 @@ function _str_line_breaks(str::String,
 
     # Get the tokens for each line.
     tokens_raw = _render_text.(renderer, split(str, '\n'),
-                               compact_printing = compact_printing)
+                               compact_printing = compact_printing,
+                               isstring = isstring)
 
     # If the user wants to auto wrap the text, then we must check if
     # the tokens must be modified.

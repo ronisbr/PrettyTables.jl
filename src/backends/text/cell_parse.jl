@@ -87,6 +87,7 @@ end
 
 @inline function _parse_cell_text(cell::AbstractString;
                                   autowrap::Bool = true,
+                                  cell_data_type::DataType = Nothing,
                                   cell_first_line_only::Bool = false,
                                   column_width::Integer = -1,
                                   compact_printing::Bool = true,
@@ -94,11 +95,14 @@ end
                                   renderer::Union{Val{:print}, Val{:show}} = Val(:print),
                                   kwargs...)
 
+    isstring = cell_data_type <: String
+
     if cell_first_line_only
         cell_vstr  = [first(_str_line_breaks(cell,
                                              autowrap,
                                              column_width,
                                              compact_printing,
+                                             isstring,
                                              renderer))]
         cell_lstr  = [textwidth(first(cell_vstr))]
         cell_width = first(cell_lstr)
@@ -107,12 +111,14 @@ end
                                       autowrap,
                                       column_width,
                                       compact_printing,
+                                      isstring,
                                       renderer)
         cell_lstr  = textwidth.(cell_vstr)
         cell_width = maximum(cell_lstr)
     else
         cell_str   = _render_text(renderer, cell,
-                                  compact_printing = compact_printing)
+                                  compact_printing = compact_printing,
+                                  isstring = isstring)
         cell_vstr  = [cell_str]
         cell_lstr  = [textwidth(cell_str)]
         cell_width = first(cell_lstr)

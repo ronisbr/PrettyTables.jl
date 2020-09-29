@@ -2388,6 +2388,35 @@ end
                           show_row_number = true)
 
     @test expected == result
+
+    # Test the behavior if a formatter returns a string but the original data is
+    # not a string. In this case, the renderer `show` must not add surrounding
+    # quotes.
+    matrix = ['1' "2" 3]
+
+    f = (v,i,j)->begin
+        if j == 1
+            return "😀😀😀"
+        elseif j == 2
+            return "😁😁"
+        elseif j == 3
+            return 'a'
+        end
+    end
+
+    expected = """
+┌────────┬────────┬────────┐
+│ Col. 1 │ Col. 2 │ Col. 3 │
+├────────┼────────┼────────┤
+│ 😀😀😀 │ "😁😁" │    'a' │
+└────────┴────────┴────────┘
+"""
+
+    result = pretty_table(String, matrix,
+                          formatters = f,
+                          renderer = :show)
+
+    @test result == expected
 end
 
 # Table.jl compatibility

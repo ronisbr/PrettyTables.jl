@@ -159,6 +159,13 @@ The keywords `header_crayon` and `subheaders_crayon` can be a `Crayon` or a
 elements. In the second, each element can have its own crayon, but the length of
 the vector must be equal to the number of columns in the data.
 
+!!! note
+
+    If the renderer `show` is used, then all strings will be printed with
+    surrounding quotes. However, if a formatter modifies a value and return a
+    string, then those surrounding quotes will be removed if the original value
+    is not a string.
+
 ## Crayons
 
 A `Crayon` is an object that handles a style for text printed on terminals. It

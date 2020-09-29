@@ -98,6 +98,8 @@ function _fill_matrix_data!(header_str::Matrix{String},
             # Apply the formatters.
             data_ij = isassigned(data,jr,ic) ? data[jr,ic] : undef
 
+            data_ij_type = typeof(data_ij)
+
             for f in formatters
                 data_ij = f(data_ij, jr, ic)
             end
@@ -106,6 +108,7 @@ function _fill_matrix_data!(header_str::Matrix{String},
             data_str[j,i], data_len[j,i], cell_width =
                 _parse_cell_text(data_ij;
                                  autowrap = autowrap && fixed_col_width[ic],
+                                 cell_data_type = data_ij_type,
                                  cell_first_line_only = cell_first_line_only,
                                  column_width = columns_width[ic],
                                  compact_printing = compact_printing,
