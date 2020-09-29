@@ -729,6 +729,22 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "lib/library/#PrettyTables._parse_cell_html-Tuple{Any}",
+    "page": "Library",
+    "title": "PrettyTables._parse_cell_html",
+    "category": "method",
+    "text": "_parse_cell_html(cell::T; kwargs...)\n\nParse the table cell cell of type T. This function must return a string that will be printed to the IO.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables._parse_cell_latex-Tuple{Any}",
+    "page": "Library",
+    "title": "PrettyTables._parse_cell_latex",
+    "category": "method",
+    "text": "_parse_cell_latex(cell::T; kwargs...)\n\nParse the table cell cell of type T. This function must return a string that will be printed to the IO.\n\n\n\n\n\n"
+},
+
+{
     "location": "lib/library/#PrettyTables._pc!",
     "page": "Library",
     "title": "PrettyTables._pc!",
