@@ -58,14 +58,14 @@ function _fill_matrix_data!(header_str::Matrix{String},
                 # NOTE: For headers, we always use `print` instead of `show` to
                 # avoid quotes.
                 hstr, hlstr, cell_width =
-                    _parse_cell(header_ij;
-                                autowrap = false,
-                                cell_first_line_only = false,
-                                column_width = -1,
-                                compact_printing = compact_printing,
-                                has_color = screen.has_color,
-                                linebreaks = false,
-                                renderer = Val(:print))
+                    _parse_cell_text(header_ij;
+                                     autowrap = false,
+                                     cell_first_line_only = false,
+                                     column_width = -1,
+                                     compact_printing = compact_printing,
+                                     has_color = screen.has_color,
+                                     linebreaks = false,
+                                     renderer = Val(:print))
 
                 header_str[j,i] = first(hstr)
                 header_len[j,i] = first(hlstr)
@@ -104,14 +104,14 @@ function _fill_matrix_data!(header_str::Matrix{String},
 
             # Parse the cell.
             data_str[j,i], data_len[j,i], cell_width =
-                _parse_cell(data_ij;
-                            autowrap = autowrap && fixed_col_width[ic],
-                            cell_first_line_only = cell_first_line_only,
-                            column_width = columns_width[ic],
-                            compact_printing = compact_printing,
-                            has_color = screen.has_color,
-                            linebreaks = linebreaks,
-                            renderer = renderer)
+                _parse_cell_text(data_ij;
+                                 autowrap = autowrap && fixed_col_width[ic],
+                                 cell_first_line_only = cell_first_line_only,
+                                 column_width = columns_width[ic],
+                                 compact_printing = compact_printing,
+                                 has_color = screen.has_color,
+                                 linebreaks = linebreaks,
+                                 renderer = renderer)
 
             # Check if we must update the number of lines in this row.
             num_lines_ij = length(data_str[j,i])
@@ -215,13 +215,13 @@ function _fill_row_name_column!(header_str::Matrix{String},
     for i = 1:num_printed_rows
         row_names_i = isassigned(row_names,i) ? row_names[i] : undef
         row_name_str, row_name_lstr, cell_width =
-            _parse_cell(row_names_i;
-                        autowrap = false,
-                        cell_first_line_only = false,
-                        column_width = -1,
-                        compact_printing = compact_printing,
-                        linebreaks = false,
-                        renderer = Val(:print))
+            _parse_cell_text(row_names_i;
+                             autowrap = false,
+                             cell_first_line_only = false,
+                             column_width = -1,
+                             compact_printing = compact_printing,
+                             linebreaks = false,
+                             renderer = Val(:print))
 
         data_str[i,Δc] = row_name_str
         data_len[i,Δc] = row_name_lstr

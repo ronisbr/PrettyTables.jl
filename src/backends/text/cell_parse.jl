@@ -8,7 +8,7 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 """
-    _parse_cell(cell::T; kwargs...)
+    _parse_cell_text(cell::T; kwargs...)
 
 Parse the table cell `cell` of type `T`. This function must return:
 
@@ -17,10 +17,10 @@ Parse the table cell `cell` of type `T`. This function must return:
 * The necessary width for the cell.
 
 """
-@inline function _parse_cell(cell;
-                             compact_printing::Bool = true,
-                             renderer::Union{Val{:print}, Val{:show}} = Val(:print),
-                             kwargs...)
+@inline function _parse_cell_text(cell;
+                                  compact_printing::Bool = true,
+                                  renderer::Union{Val{:print}, Val{:show}} = Val(:print),
+                                  kwargs...)
 
     # Convert to string using the desired renderer.
     cell_str = _render_text(renderer, cell, compact_printing = compact_printing)
@@ -34,11 +34,11 @@ Parse the table cell `cell` of type `T`. This function must return:
     return cell_vstr, cell_lstr, cell_width
 end
 
-@inline function _parse_cell(cell::Markdown.MD;
-                             column_width::Integer = -1,
-                             linebreaks::Bool = false,
-                             has_color::Bool = true,
-                             kwargs...)
+@inline function _parse_cell_text(cell::Markdown.MD;
+                                  column_width::Integer = -1,
+                                  linebreaks::Bool = false,
+                                  has_color::Bool = true,
+                                  kwargs...)
 
     # The maximum size for Markdowns cells is 80.
     column_width ≤ 0 && (column_width = 80)
@@ -85,14 +85,14 @@ end
     end
 end
 
-@inline function _parse_cell(cell::AbstractString;
-                             autowrap::Bool = true,
-                             cell_first_line_only::Bool = false,
-                             column_width::Integer = -1,
-                             compact_printing::Bool = true,
-                             linebreaks::Bool = false,
-                             renderer::Union{Val{:print}, Val{:show}} = Val(:print),
-                             kwargs...)
+@inline function _parse_cell_text(cell::AbstractString;
+                                  autowrap::Bool = true,
+                                  cell_first_line_only::Bool = false,
+                                  column_width::Integer = -1,
+                                  compact_printing::Bool = true,
+                                  linebreaks::Bool = false,
+                                  renderer::Union{Val{:print}, Val{:show}} = Val(:print),
+                                  kwargs...)
 
     if cell_first_line_only
         cell_vstr  = [first(_str_line_breaks(cell,
@@ -121,6 +121,6 @@ end
     return cell_vstr, cell_lstr, cell_width
 end
 
-@inline _parse_cell(cell::Missing; kwargs...) = ["missing"], [7], 7
-@inline _parse_cell(cell::Nothing; kwargs...) = ["nothing"], [7], 7
-@inline _parse_cell(cell::UndefInitializer; kwargs...) = ["#undef"], [6], 6
+@inline _parse_cell_text(cell::Missing; kwargs...) = ["missing"], [7], 7
+@inline _parse_cell_text(cell::Nothing; kwargs...) = ["nothing"], [7], 7
+@inline _parse_cell_text(cell::UndefInitializer; kwargs...) = ["#undef"], [6], 6

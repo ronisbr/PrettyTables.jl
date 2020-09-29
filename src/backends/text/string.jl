@@ -88,8 +88,7 @@ _render_text(::Val{:print}, str::AbstractString; compact_printing::Bool = true) 
     sprint(escape_string, str, "", sizehint = lastindex(str))
 
 @inline function _render_text(::Val{:show}, v; compact_printing::Bool = true)
-    str = sprint(show, MIME("text/plain"), v;
-                 context = :compact => compact_printing)
+    str = sprint(show, v; context = :compact => compact_printing)
     return str
 end
 
