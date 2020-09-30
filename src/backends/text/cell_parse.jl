@@ -95,7 +95,7 @@ end
                                   renderer::Union{Val{:print}, Val{:show}} = Val(:print),
                                   kwargs...)
 
-    isstring = cell_data_type <: String
+    isstring = cell_data_type <: AbstractString
 
     if cell_first_line_only
         cell_vstr  = [first(_str_line_breaks(cell,
