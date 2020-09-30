@@ -781,7 +781,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "PrettyTables._render_text",
     "category": "method",
-    "text": "_render_text(T, v; compact_printing::Bool = true, isstring::Bool = false)\n\nRender the value v to a string using the rendered T to be displayed in the text back-end.\n\nT can be:\n\nVal(:print): the function print will be used.\nVal(:show): the function show will be used.\n\nIn case show is used, if isstring is false, then it means that the original data is not a string even if v is a string. Hence, the surrounding quotes added by show will be removed. This is required to correctly handle formatters.\n\n\n\n\n\n"
+    "text": "_render_text(T, v; compact_printing::Bool = true, isstring::Bool = false, linebreaks::Bool = false)\n\nRender the value v to strings using the rendered T to be displayed in the text back-end.\n\nT can be:\n\nVal(:print): the function print will be used.\nVal(:show): the function show will be used.\n\nThis function must return a vector of strings in which each element is a line inside the rendered cell.\n\nIf linebreaks is true, then the rendered should split the created string into multiple tokens.\n\nIn case show is used, if isstring is false, then it means that the original data is not a string even if v is a string. Hence, the surrounding quotes added by show will be removed. This is required to correctly handle formatters.\n\n\n\n\n\n"
 },
 
 {
@@ -789,7 +789,15 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "PrettyTables._str_aligned",
     "category": "function",
-    "text": "_str_aligned(data::AbstractString, alignment::Symbol, field_size::Integer, lstr::Integer = -1)\n\nThis function returns the string data with alignment alignment in a field with size field_size. alignment can be :l or :L for left alignment, :c or :C for center alignment, or :r or :R for right alignment. It defaults to :r if alignment is any other symbol.\n\nThis function also returns the new size of the aligned string.\n\nIf the string is larger than field_size, then it will be cropped and ⋯ will be added as the last character.\n\nThe size of the string can be passed to lstr to save computational burden. If lstr = -1, then the string length will be computed inside the function.\n\n\n\n\n\n"
+    "text": "_str_aligned(data::String, alignment::Symbol, field_size::Integer, lstr::Integer = -1)\n\nThis function returns the string data with alignment alignment in a field with size field_size. alignment can be :l or :L for left alignment, :c or :C for center alignment, or :r or :R for right alignment. It defaults to :r if alignment is any other symbol.\n\nThis function also returns the new size of the aligned string.\n\nIf the string is larger than field_size, then it will be cropped and ⋯ will be added as the last character.\n\nThe size of the string can be passed to lstr to save computational burden. If lstr = -1, then the string length will be computed inside the function.\n\n\n\n\n\n"
+},
+
+{
+    "location": "lib/library/#PrettyTables._str_autowrap",
+    "page": "Library",
+    "title": "PrettyTables._str_autowrap",
+    "category": "function",
+    "text": "_str_autowrap(tokens_raw::Vector{String}, width::Int = 0)\n\nAutowrap the tokens in tokens_raw considering a field width of width. It returns a new vector with the new wrapped tokens.\n\n\n\n\n\n"
 },
 
 {
@@ -798,14 +806,6 @@ var documenterSearchIndex = {"docs": [
     "title": "PrettyTables._str_escaped",
     "category": "method",
     "text": "_str_escaped(str::AbstractString)\n\nReturn the escaped string representation of str.\n\n\n\n\n\n"
-},
-
-{
-    "location": "lib/library/#PrettyTables._str_line_breaks",
-    "page": "Library",
-    "title": "PrettyTables._str_line_breaks",
-    "category": "function",
-    "text": "_str_line_breaks(str::String, autowrap::Bool = false, width::Int = 0, compact_printing::Bool = true, renderer::Union{Val{:print}, Val{:show}} = Val(:print))\n\nSplit the string str into substring, each one meaning one new line. If autowrap is true, then the text will be wrapped so that it fits the column with the width width.\n\n\n\n\n\n"
 },
 
 {
