@@ -66,15 +66,21 @@ function _crop_str(str::String, crop_size::Int, lstr::Int = -1)
 end
 
 """
-    _render_text(T, v; compact_printing::Bool = true, isstring::Bool = false)
+    _render_text(T, v; compact_printing::Bool = true, isstring::Bool = false, linebreaks::Bool = false)
 
-Render the value `v` to a string using the rendered `T` to be displayed in the
+Render the value `v` to strings using the rendered `T` to be displayed in the
 text back-end.
 
 `T` can be:
 
 * `Val(:print)`: the function `print` will be used.
 * `Val(:show)`: the function `show` will be used.
+
+This function must return a vector of strings in which each element is a line
+inside the rendered cell.
+
+If `linebreaks` is `true`, then the rendered should split the created string
+into multiple tokens.
 
 In case `show` is used, if `isstring` is `false`, then it means that the
 original data is not a string even if `v` is a string. Hence, the surrounding
@@ -84,35 +90,58 @@ formatters.
 """
 @inline function _render_text(::Val{:print}, v;
                               compact_printing::Bool = true,
-                              isstring::Bool = false)
+                              isstring::Bool = false,
+                              linebreaks::Bool = false)
+
     str = sprint(print, v; context = :compact => compact_printing)
-    return _render_text(Val(:print), str)
+
+    return _render_text(Val(:print), str;
+                        compact_printing = compact_printing,
+                        isstring = isstring,
+                        linebreaks = linebreaks)
 end
 
-_render_text(::Val{:print}, str::AbstractString;
-             compact_printing::Bool = true,
-             isstring::Bool = false) =
+@inline function _render_text(::Val{:print}, str::AbstractString;
+                              compact_printing::Bool = true,
+                              isstring::Bool = false,
+                              linebreaks::Bool = false)
+
+    if linebreaks
+        vstr = string.(split(str, '\n'))
+    else
+        vstr = [str]
+    end
+
     # NOTE: Here we cannot use `escape_string(str)` because it also adds the
     # character `"` to the list of characters to be escaped.
-    sprint(escape_string, str, "", sizehint = lastindex(str))
+    return [sprint(escape_string, s, "", sizehint = lastindex(s)) for s in vstr]
+end
 
 @inline function _render_text(::Val{:show}, v;
                               compact_printing::Bool = true,
+                              linebreaks::Bool = false,
                               isstring::Bool = false)
-    str = sprint(show, v; context = :compact => compact_printing)
 
-    # If `v` is a string but the original data is not, then remove the
-    # surrounding quotes.
-    if (v isa AbstractString) && (!isstring)
-        aux = first(str, length(str)-1)
-        str = last(aux, length(aux)-1)
+    if v isa AbstractString
+        aux  = linebreaks ? string.(split(v, '\n')) : [v]
+        vstr = sprint.(show, aux; context = :compact => compact_printing)
+
+        if !isstring
+            for i = 1:length(vstr)
+                aux_i   = first(vstr[i], length(vstr[i])-1)
+                vstr[i] = last(aux_i, length(aux_i)-1)
+            end
+        end
+    else
+        str  = sprint(show, v; context = :compact => compact_printing)
+        vstr = linebreaks ? string.(split(str, '\n')) : [str]
     end
 
-    return str
+    return vstr
 end
 
 """
-    _str_aligned(data::AbstractString, alignment::Symbol, field_size::Integer, lstr::Integer = -1)
+    _str_aligned(data::String, alignment::Symbol, field_size::Integer, lstr::Integer = -1)
 
 This function returns the string `data` with alignment `alignment` in a field
 with size `field_size`. `alignment` can be `:l` or `:L` for left alignment, `:c`
@@ -128,7 +157,7 @@ The size of the string can be passed to `lstr` to save computational burden. If
 `lstr = -1`, then the string length will be computed inside the function.
 
 """
-function _str_aligned(data::AbstractString, alignment::Symbol,
+function _str_aligned(data::String, alignment::Symbol,
                       field_size::Integer, lstr::Integer = -1)
 
     lstr < 0 && (lstr = textwidth(data))
@@ -158,90 +187,72 @@ function _str_aligned(data::AbstractString, alignment::Symbol,
 end
 
 """
-    _str_line_breaks(str::String, autowrap::Bool = false, width::Int = 0, compact_printing::Bool = true, renderer::Union{Val{:print}, Val{:show}} = Val(:print))
+    _str_autowrap(tokens_raw::Vector{String}, width::Int = 0)
 
-Split the string `str` into substring, each one meaning one new line. If
-`autowrap` is `true`, then the text will be wrapped so that it fits the column
-with the width `width`.
+Autowrap the tokens in `tokens_raw` considering a field width of `width`. It
+returns a new vector with the new wrapped tokens.
 
 """
-function _str_line_breaks(str::String,
-                          autowrap::Bool = false,
-                          width::Int = 0,
-                          compact_printing::Bool = true,
-                          isstring::Bool = false,
-                          renderer::Union{Val{:print}, Val{:show}} = Val(:print))
+function _str_autowrap(tokens_raw::Vector{String}, width::Int = 0)
     # Check for errors.
-    autowrap && (width <= 0) &&
-    error("If `autowrap` is true, then the width must not be positive.")
+    (width <= 0) && error("If `autowrap` is true, then the width must not be positive.")
 
-    # Get the tokens for each line.
-    tokens_raw = _render_text.(renderer, split(str, '\n'),
-                               compact_printing = compact_printing,
-                               isstring = isstring)
+    tokens = String[]
 
-    # If the user wants to auto wrap the text, then we must check if
-    # the tokens must be modified.
-    if autowrap
-        tokens = String[]
+    for token in tokens_raw
+        sub_tokens = String[]
+        length_tok = length(token)
 
-        for token in tokens_raw
-            sub_tokens = String[]
-            length_tok = length(token)
+        # Get the list of valid indices to handle UTF-8 strings. In this
+        # case, the n-th character of the string can be accessed by
+        # `token[tok_ids[n]]`.
+        tok_ids = collect(eachindex(token))
 
-            # Get the list of valid indices to handle UTF-8 strings. In this
-            # case, the n-th character of the string can be accessed by
-            # `token[tok_ids[n]]`.
-            tok_ids = collect(eachindex(token))
+        if length_tok > width
+            # First, let's analyze from the beginning of the token up to the
+            # field width.
+            #
+            # k₀ is the character that will start the sub-token.
+            # k₁ is the character that will end the sub-token.
+            k₀ = 1
+            k₁ = k₀ + width - 1
 
-            if length_tok > width
-                # First, let's analyze from the beginning of the token up to the
-                # field width.
-                #
-                # k₀ is the character that will start the sub-token.
-                # k₁ is the character that will end the sub-token.
-                k₀ = 1
-                k₁ = k₀ + width - 1
+            while k₀ <= length_tok
 
-                while k₀ <= length_tok
+                # Check if the remaining string fit in the available space.
+                if k₁ == length_tok
+                    push!(sub_tokens, token[tok_ids[k₀:k₁]])
 
-                    # Check if the remaining string fit in the available space.
-                    if k₁ == length_tok
-                        push!(sub_tokens, token[tok_ids[k₀:k₁]])
+                else
+                    # If the remaining string does not fit into the
+                    # available space, then we search for spaces to crop.
+                    Δ = 0
+                    for k = k₁:-1:k₀
+                        if token[tok_ids[k]] == ' '
+                            # If a space is found, then select `k₁` as this
+                            # character and use `Δ` to remove it when
+                            # printing, so that we hide the space.
+                            k₁ = k
+                            Δ  = 1
 
-                    else
-                        # If the remaining string does not fit into the
-                        # available space, then we search for spaces to crop.
-                        Δ = 0
-                        for k = k₁:-1:k₀
-                            if token[tok_ids[k]] == ' '
-                                # If a space is found, then select `k₁` as this
-                                # character and use `Δ` to remove it when
-                                # printing, so that we hide the space.
-                                k₁ = k
-                                Δ  = 1
-
-                                break
-                            end
+                            break
                         end
-
-                        push!(sub_tokens, token[tok_ids[k₀:k₁-Δ]])
                     end
 
-                    # Move to the next analysis window.
-                    k₀ = k₁+1
-                    k₁ = clamp(k₀ + width - 1, 0, length_tok)
+                    push!(sub_tokens, token[tok_ids[k₀:k₁-Δ]])
                 end
-                push!(tokens, sub_tokens...)
-            else
-                push!(tokens, token)
-            end
-        end
 
-        return tokens
-    else
-        return tokens_raw
+                # Move to the next analysis window.
+                k₀ = k₁+1
+                k₁ = clamp(k₀ + width - 1, 0, length_tok)
+            end
+            push!(tokens, sub_tokens...)
+        else
+            push!(tokens, token)
+        end
     end
+
+    return tokens
 end
 
 ################################################################################

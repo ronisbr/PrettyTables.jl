@@ -291,7 +291,9 @@ function _pt_text(io::IO, pinfo::PrintInfo;
 
         # Otherwise, we must check for the alignments.
         else
-            title_tokens = _str_line_breaks(title, title_autowrap, title_width)
+            title_tokens = string.(split(title, '\n'))
+            title_autowrap && (title_tokens = _str_autowrap(title_tokens, title_width))
+
             for token in title_tokens
                 println(buf, _str_aligned(token, title_alignment, title_width)[1])
             end

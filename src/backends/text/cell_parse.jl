@@ -17,28 +17,44 @@ Parse the table cell `cell` of type `T`. This function must return:
 * The necessary width for the cell.
 
 """
-@inline function _parse_cell_text(cell;
-                                  compact_printing::Bool = true,
-                                  renderer::Union{Val{:print}, Val{:show}} = Val(:print),
-                                  kwargs...)
+function _parse_cell_text(cell;
+                          autowrap::Bool = true,
+                          cell_data_type::DataType = Nothing,
+                          cell_first_line_only::Bool = false,
+                          column_width::Integer = -1,
+                          compact_printing::Bool = true,
+                          linebreaks::Bool = false,
+                          renderer::Union{Val{:print}, Val{:show}} = Val(:print),
+                          kwargs...)
+
+    isstring = cell_data_type <: AbstractString
 
     # Convert to string using the desired renderer.
-    cell_str = _render_text(renderer, cell, compact_printing = compact_printing)
+    cell_vstr = _render_text(renderer, cell,
+                             compact_printing = compact_printing,
+                             isstring = isstring,
+                             linebreaks = linebreaks || cell_first_line_only)
 
-    # In this case, since the input value is not a `String`, then we do not need
-    # to take into account things like line breaks.
-    cell_vstr    = [cell_str]
-    cell_lstr    = [textwidth(cell_str)]
-    cell_width   = first(cell_lstr)
+    # Check if we must autowrap the text.
+    autowrap && (cell_vstr = _str_autowrap(cell_vstr, column_width))
+
+    if cell_first_line_only
+        cell_vstr  = [first(cell_vstr)]
+        cell_lstr  = [textwidth(first(cell_vstr))]
+        cell_width = first(cell_lstr)
+    else
+        cell_lstr  = textwidth.(cell_vstr)
+        cell_width = maximum(cell_lstr)
+    end
 
     return cell_vstr, cell_lstr, cell_width
 end
 
-@inline function _parse_cell_text(cell::Markdown.MD;
-                                  column_width::Integer = -1,
-                                  linebreaks::Bool = false,
-                                  has_color::Bool = true,
-                                  kwargs...)
+function _parse_cell_text(cell::Markdown.MD;
+                          column_width::Integer = -1,
+                          linebreaks::Bool = false,
+                          has_color::Bool = true,
+                          kwargs...)
 
     # The maximum size for Markdowns cells is 80.
     column_width ≤ 0 && (column_width = 80)
@@ -83,48 +99,6 @@ end
             return tokens, num_chars, max_cols
         end
     end
-end
-
-@inline function _parse_cell_text(cell::AbstractString;
-                                  autowrap::Bool = true,
-                                  cell_data_type::DataType = Nothing,
-                                  cell_first_line_only::Bool = false,
-                                  column_width::Integer = -1,
-                                  compact_printing::Bool = true,
-                                  linebreaks::Bool = false,
-                                  renderer::Union{Val{:print}, Val{:show}} = Val(:print),
-                                  kwargs...)
-
-    isstring = cell_data_type <: AbstractString
-
-    if cell_first_line_only
-        cell_vstr  = [first(_str_line_breaks(cell,
-                                             autowrap,
-                                             column_width,
-                                             compact_printing,
-                                             isstring,
-                                             renderer))]
-        cell_lstr  = [textwidth(first(cell_vstr))]
-        cell_width = first(cell_lstr)
-    elseif linebreaks
-        cell_vstr  = _str_line_breaks(cell,
-                                      autowrap,
-                                      column_width,
-                                      compact_printing,
-                                      isstring,
-                                      renderer)
-        cell_lstr  = textwidth.(cell_vstr)
-        cell_width = maximum(cell_lstr)
-    else
-        cell_str   = _render_text(renderer, cell,
-                                  compact_printing = compact_printing,
-                                  isstring = isstring)
-        cell_vstr  = [cell_str]
-        cell_lstr  = [textwidth(cell_str)]
-        cell_width = first(cell_lstr)
-    end
-
-    return cell_vstr, cell_lstr, cell_width
 end
 
 @inline _parse_cell_text(cell::Missing; kwargs...) = ["missing"], [7], 7

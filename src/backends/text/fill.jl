@@ -205,8 +205,10 @@ function _fill_row_name_column!(header_str::Matrix{String},
     num_printed_rows = size(data_str)[1]
 
     # Escape the row name column title.
-    header_str[1,Δc]      = _render_text(Val(:print), row_name_column_title,
-                                         compact_printing = compact_printing)
+    header_str[1,Δc]      = first(_render_text(Val(:print),
+                                               row_name_column_title,
+                                               compact_printing = compact_printing,
+                                               linebreaks = false))
     header_str[2:end,Δc] .= ""
 
     # Compute the length of the row name column title.
