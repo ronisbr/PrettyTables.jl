@@ -287,16 +287,23 @@ function _pt_text(io::IO, pinfo::PrintInfo;
         # If the title width is not higher than 0, then we should only print the
         # title.
         if title_width ≤ 0
-            println(buf, title)
+            print(buf, title)
 
         # Otherwise, we must check for the alignments.
         else
             title_tokens = string.(split(title, '\n'))
             title_autowrap && (title_tokens = _str_autowrap(title_tokens, title_width))
+            num_tokens = length(title_tokens)
 
-            for token in title_tokens
+            @inbounds for i = 1:num_tokens
+                token = title_tokens[i]
                 token_str = _str_aligned(token, title_alignment, title_width)[1]
-                println(buf, rstrip(token_str))
+                print(buf, rstrip(token_str))
+
+                # In the last line we must not add the new line character
+                # because we need to reset the crayon first if the screen
+                # supports colors.
+                i != num_tokens && println(buf)
             end
 
             # Sum the number of lines in the title to the number of lines that
@@ -305,6 +312,7 @@ function _pt_text(io::IO, pinfo::PrintInfo;
         end
 
         screen.has_color && print(buf, _reset_crayon)
+        println(buf)
     end
 
     # If there is no column or row to be printed, then just exit.
