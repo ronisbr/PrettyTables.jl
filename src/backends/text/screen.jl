@@ -26,10 +26,18 @@ function _draw_continuation_row(screen::Screen, io::IO, tf::TextFormat,
 
     @inbounds for j = 1:num_cols
         data_ij_str, data_ij_len = _str_aligned("⋮", alignment, cols_width[j])
-        _p!(screen, io, text_crayon, " " * data_ij_str * " ", false, data_ij_len+2)
+        data_ij_str  = " " * data_ij_str * " "
+        data_ij_len += 2
 
         flp = j == num_cols
 
+        # If we have nothing more to print, then remove trailing spaces.
+        if flp && (j ∉ vlines)
+            data_ij_str = string(rstrip(data_ij_str))
+            data_ij_len = textwidth(data_ij_str)
+        end
+
+        _p!(screen, io, text_crayon, data_ij_str, false, data_ij_len)
         _pc!(j ∈ vlines, screen, io, border_crayon, tf.column, "", flp, 1, 0)
         _eol(screen) && break
     end

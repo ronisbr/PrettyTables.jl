@@ -1292,6 +1292,28 @@ end
                           continuation_row_alignment = :r,
                           screen_size = (10,30))
     @test result == expected
+
+    # Trailing spaces at continuation line
+    # --------------------------------------------------------------------------
+
+    expected = """
+────────────────────────────────
+ Col. 1  Col. 2  Col. 3  Col. 4
+────────────────────────────────
+ 1       false   1.0     1
+ 2       true    2.0     2
+ 3       false   3.0     3
+ ⋮       ⋮       ⋮       ⋮
+────────────────────────────────
+"""
+
+    result = pretty_table(String, data,
+                          alignment = :l,
+                          continuation_row_alignment = :l,
+                          screen_size = (10,40),
+                          vlines = :none)
+
+    @test result == expected
 end
 
 # Minimum and maximum column width

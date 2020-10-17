@@ -81,7 +81,7 @@ function _print_table_header!(buf::IO,
             # If we have nothing more to print, then remove trailing spaces.
             if flp && (j ∉ vlines)
                 header_ij_str = string(rstrip(header_ij_str))
-                header_ij_len = textwidth(header_ij_str) + 1
+                header_ij_len = textwidth(header_ij_str)
             end
 
             # Print the text.
@@ -202,7 +202,7 @@ function _print_table_data(buf::IO,
                 # If we have nothing more to print, then remove trailing spaces.
                 if flp && (j ∉ vlines)
                     data_ij_str = string(rstrip(data_ij_str))
-                    data_ij_len = textwidth(data_ij_str) + 1
+                    data_ij_len = textwidth(data_ij_str)
                 end
 
                 _p!(screen, buf, crayon_ij, data_ij_str, false, data_ij_len)
