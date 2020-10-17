@@ -307,6 +307,11 @@ function _pt_text(io::IO, pinfo::PrintInfo;
         screen.has_color && print(buf, _reset_crayon)
     end
 
+    # If there is no column or row to be printed, then just exit.
+    if (num_printed_cols == 0) || (num_printed_rows == 0)
+        @goto print_to_output
+    end
+
     # Top table line
     # ==========================================================================
 
@@ -399,6 +404,8 @@ function _pt_text(io::IO, pinfo::PrintInfo;
         _draw_line!(screen, buf, tf.bottom_left_corner, tf.bottom_intersection,
                     tf.bottom_right_corner, tf.row, border_crayon, cols_width,
                     vlines)
+
+    @label print_to_output
 
     # Overwrite table
     # ==========================================================================

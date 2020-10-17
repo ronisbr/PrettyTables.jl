@@ -119,6 +119,11 @@ function _pt_html(io::IO, pinfo::PrintInfo;
         _aprintln(buf, _styled_html("caption", title, style), il, ns)
     end
 
+    # If there is no column or row to be printed, then just exit.
+    if (num_printed_cols == 0) || (num_printed_rows == 0)
+        @goto print_to_output
+    end
+
     # Data header
     # ==========================================================================
 
@@ -224,6 +229,8 @@ function _pt_html(io::IO, pinfo::PrintInfo;
         il -= 1
         _aprintln(buf, "</tr>", il, ns)
     end
+
+    @label print_to_output
 
     # Print HTML footer
     # ==========================================================================

@@ -141,6 +141,11 @@ function _pt_latex(io::IO, pinfo::PrintInfo;
         length(title) > 0 && _aprintln(buf, "\\caption{$title}\\\\", il, ns)
     end
 
+    # If there is no column or row to be printed, then just exit.
+    if (num_printed_cols == 0) || (num_printed_rows == 0)
+        @goto print_to_output
+    end
+
     0 ∈ hlines && _aprintln(buf, top_line, il, ns)
 
     # Data header
@@ -307,6 +312,8 @@ function _pt_latex(io::IO, pinfo::PrintInfo;
         end
         println(buf, "")
     end
+
+    @label print_to_output
 
     # Print LaTeX footer
     # ==========================================================================

@@ -180,8 +180,6 @@ function _print_info(data, header::AbstractVecOrMat;
         throw(ArgumentError("`data` must not have more than 2 dimensions."))
     end
 
-    num_rows < 1 && error("The table must contain at least 1 row.")
-
     # The way we get the number of columns of the header depends on its
     # dimension, because the header can be a vector or a matrix. It also depends
     # on the dimension of the `data`. If `data` is a vector, then `header` must
@@ -265,12 +263,6 @@ function _print_info(data, header::AbstractVecOrMat;
     id_rows          = findall(filtered_rows)
     num_printed_cols = length(id_cols)
     num_printed_rows = length(id_rows)
-
-    # If there is no data to print, then print a blank line and exit.
-    if (num_printed_cols == 0) || (num_printed_rows == 0)
-        println(io, "")
-        return nothing
-    end
 
     # Make sure that `cell_alignment` is a tuple.
     if cell_alignment == nothing
