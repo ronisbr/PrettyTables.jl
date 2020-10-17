@@ -1762,15 +1762,15 @@ end
 @testset "Vertical lines" begin
     expected = """
 ────────────────────────
-  C1     C2     C3   C4 
- Int   Bool  Float  Hex 
+  C1     C2     C3   C4
+ Int   Bool  Float  Hex
 ────────────────────────
-   1  false    1.0    1 
-   2   true    2.0    2 
-   3  false    3.0    3 
-   4   true    4.0    4 
-   5  false    5.0    5 
-   6   true    6.0    6 
+   1  false    1.0    1
+   2   true    2.0    2
+   3  false    3.0    3
+   4   true    4.0    4
+   5  false    5.0    5
+   6   true    6.0    6
 ────────────────────────
 """
 
@@ -1999,8 +1999,8 @@ This is a very very long title that …
     @test result == expected
 
     expected = """
-This is a very very long title that  
-will be displayed above the table.   
+This is a very very long title that
+will be displayed above the table.
 ┌────────┬────────┬────────┬────────┐
 │ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
 ├────────┼────────┼────────┼────────┤
@@ -2019,8 +2019,8 @@ will be displayed above the table.
     @test result == expected
 
     expected = """
- This is a very very long title that 
- will be displayed above the table.  
+ This is a very very long title that
+ will be displayed above the table.
 ┌────────┬────────┬────────┬────────┐
 │ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
 ├────────┼────────┼────────┼────────┤
@@ -2065,7 +2065,7 @@ will be displayed above the table.
 
     expected = """
 This is a long long long long long…
-That has two lines.                
+That has two lines.
 ┌────────┬────────┬────────┬───── ⋯
 │ Col. 1 │ Col. 2 │ Col. 3 │ Col. ⋯
 ├────────┼────────┼────────┼───── ⋯
@@ -2081,9 +2081,9 @@ That has two lines.
     @test result == expected
 
     expected = """
-This is a long long long long long 
-long title                         
-That has two lines.                
+This is a long long long long long
+long title
+That has two lines.
 ┌────────┬────────┬────────┬───── ⋯
 │ Col. 1 │ Col. 2 │ Col. 3 │ Col. ⋯
 ├────────┼────────┼────────┼───── ⋯
