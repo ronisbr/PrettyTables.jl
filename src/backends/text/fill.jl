@@ -167,6 +167,8 @@ function _fill_row_number_column!(header_str::Matrix{String},
 
     num_printed_rows = size(data_str)[1]
 
+    num_printed_rows == 0 && return nothing
+
     # Set the header of the row column.
     header_str[1,1]      = row_number_column_title
     header_str[2:end,1] .= ""
@@ -203,6 +205,8 @@ function _fill_row_name_column!(header_str::Matrix{String},
                                 row_name_column_title::String)
 
     num_printed_rows = size(data_str)[1]
+
+    num_printed_rows == 0 && return nothing
 
     # Escape the row name column title.
     header_str[1,Δc]      = first(_render_text(Val(:print),
