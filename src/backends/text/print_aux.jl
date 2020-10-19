@@ -119,6 +119,7 @@ function _print_table_data(buf::IO,
                            body_hlines_format::Tuple,
                            cell_alignment::Tuple,
                            continuation_row_alignment::Symbol,
+                           ellipsis_line_skip::Integer,
                            highlighters::Tuple,
                            noheader::Bool,
                            show_row_names::Bool,
@@ -134,10 +135,17 @@ function _print_table_data(buf::IO,
 
     draw_continuation_line = false
 
+    line_count = 0
+
     for i = 1:num_printed_rows
         ir = id_rows[i]
 
         for l = 1:num_lines_in_row[i]
+            # Check if we should print the ellipsis here.
+            screen.cont_char =
+                line_count % (ellipsis_line_skip + 1) == 0 ? '⋯' : ' '
+            line_count += 1
+
             0 ∈ vlines && _p!(screen, buf, border_crayon, tf.column, false, 1)
 
             for j = 1:num_printed_cols

@@ -123,6 +123,7 @@ respect to the point in which the table is printed.
     col::Int             = 0
     has_color::Bool      = false
     max_col::Int         = 0
+    cont_char::Char      = '⋯'
 end
 
 ################################################################################

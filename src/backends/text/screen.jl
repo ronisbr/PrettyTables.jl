@@ -20,6 +20,12 @@ function _draw_continuation_row(screen::Screen, io::IO, tf::TextFormat,
                                 cols_width::Vector{Int}, vlines::Vector{Int},
                                 alignment::Symbol)
 
+    # In case of a continuation row, we want the last character to indicate that
+    # the table continues both vertically and horizontally in case the text is
+    # cropped.
+    old_cont_char = screen.cont_char
+    screen.cont_char = '⋱'
+
     num_cols = length(cols_width)
 
     0 ∈ vlines && _p!(screen, io, border_crayon, tf.column)
@@ -31,10 +37,16 @@ function _draw_continuation_row(screen::Screen, io::IO, tf::TextFormat,
 
         flp = j == num_cols
 
-        # If we have nothing more to print, then remove trailing spaces.
-        if flp && (j ∉ vlines)
-            data_ij_str = string(rstrip(data_ij_str))
-            data_ij_len = textwidth(data_ij_str)
+        if flp
+            # In this case, we do not want to add ellipsis to the end, since
+            # there are not more columns to be printed.
+            screen.cont_char = ' '
+
+            # If we have nothing more to print, then remove trailing spaces.
+            if (j ∉ vlines)
+                data_ij_str = string(rstrip(data_ij_str))
+                data_ij_len = textwidth(data_ij_str)
+            end
         end
 
         _p!(screen, io, text_crayon, data_ij_str, false, data_ij_len)
@@ -43,6 +55,8 @@ function _draw_continuation_row(screen::Screen, io::IO, tf::TextFormat,
     end
 
     _nl!(screen, io)
+
+    screen.cont_char = old_cont_char
 
     return nothing
 end
@@ -56,6 +70,10 @@ Draw a vertical line in `io` using the information in `screen`.
 function _draw_line!(screen::Screen, io::IO, left::Char, intersection::Char,
                      right::Char, row::Char, border_crayon::Crayon,
                      cols_width::Vector{Int}, vlines::Vector{Int})
+
+    # We does not want to add ellipsis when drawing lines.
+    old_cont_char = screen.cont_char
+    screen.cont_char = ' '
 
     num_cols = length(cols_width)
 
@@ -71,6 +89,10 @@ function _draw_line!(screen::Screen, io::IO, left::Char, intersection::Char,
 
     _pc!(num_cols ∈ vlines, screen, io, border_crayon, right, "", true)
     _nl!(screen, io)
+
+    screen.cont_char = old_cont_char
+
+    return nothing
 end
 
 """
@@ -150,27 +172,33 @@ function _p!(screen::Screen, io::IO, crayon::Crayon, str::String,
                 # reserving 2 characters for the line continuation indicator.
                 str  = _crop_str(str, lstr + Δ - 2)
                 lstr = lstr + Δ - 2
-                sapp = " ⋯"
+                sapp = " " * screen.cont_char
                 lapp = 2
             elseif screen.size[2] - screen.col == 2
                 # If there are only 2 characters left, then we must only print
                 # " ⋯".
                 str  = ""
                 lstr = 0
-                sapp = " ⋯"
+                sapp = " " * screen.cont_char
                 lapp = 2
             elseif screen.size[2] - screen.col == 1
                 # If there are only 1 character left, then we must only print
                 # "⋯".
                 str  = ""
                 lstr = 0
-                sapp = "⋯"
+                sapp = string(screen.cont_char)
                 lapp = 1
             else
                 # This should never be reached.
                 @error("Internal error!")
                 return true
             end
+
+            # In this case, we reached the end of screen. Thus, remove any
+            # trailing spaces.
+            sapp = rstrip(sapp)
+            length(sapp) == 0 && (str = rstrip(str))
+
         elseif !final_line_print
             # Here we must verify if this is the final printing on this line. If
             # it is, then we should just check if the entire string fits on the
@@ -181,8 +209,13 @@ function _p!(screen::Screen, io::IO, crayon::Crayon, str::String,
             if Δ == 1
                 str   = lstr > 1 ? _crop_str(str, lstr - 1) : ""
                 lstr -= 1
-                sapp  = " ⋯"
+                sapp  = " " * screen.cont_char
                 lapp  = 2
+
+                # In this case, we reached the end of screen. Thus, remove any
+                # trailing spaces.
+                sapp = rstrip(sapp)
+                length(sapp) == 0 && (str = rstrip(str))
             end
         end
     end

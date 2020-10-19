@@ -22,6 +22,7 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                   crop_num_lines_at_beginning::Int = 0,
                   columns_width::Union{Int,AbstractVector{Int}} = 0,
                   equal_columns_width::Bool = false,
+                  ellipsis_line_skip::Integer = 0,
                   highlighters::Union{Highlighter,Tuple} = (),
                   hlines::Union{Nothing,Symbol,AbstractVector} = nothing,
                   linebreaks::Bool = false,
@@ -124,6 +125,10 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     typeof(columns_width) <: Integer && (columns_width = ones(Int, num_cols)*columns_width)
     length(columns_width) != num_cols && error("The length of `columns_width` must be the same as the number of columns.")
     fixed_col_width = map(w->w > 0, columns_width)
+
+    # The number of lines that must be skipped from printing ellipsis must be
+    # greater of equal 0.
+    (ellipsis_line_skip < 0) && (ellipsis_line_skip = 0)
 
     # Assign the minimum size to those columns that does not have a fixed size.
     for i = 1:num_cols
@@ -394,6 +399,7 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                                 body_hlines_format,
                                 cell_alignment,
                                 continuation_row_alignment,
+                                ellipsis_line_skip,
                                 highlighters,
                                 noheader,
                                 show_row_names,
