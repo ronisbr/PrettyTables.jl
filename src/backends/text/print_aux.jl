@@ -36,7 +36,7 @@ function _print_table_header!(buf::IO,
     header_num_rows, ~ = size(header_str)
 
     @inbounds @views for i = 1:header_num_rows
-        0 ∈ vlines && _p!(screen, buf, border_crayon, tf.column, false, 1)
+        0 ∈ vlines && _p!(screen, border_crayon, tf.column, false, 1)
 
         for j = 1:num_printed_cols
             # Get the information about the alignment and the crayon.
@@ -78,26 +78,19 @@ function _print_table_header!(buf::IO,
 
             flp = j == num_printed_cols
 
-            # If we have nothing more to print, then remove trailing spaces.
-            if flp && (j ∉ vlines)
-                header_ij_str = string(rstrip(header_ij_str))
-                header_ij_len = textwidth(header_ij_str)
-            end
-
             # Print the text.
-            _p!(screen, buf, crayon_ij, header_ij_str, false, header_ij_len)
+            _p!(screen, crayon_ij, header_ij_str, false, header_ij_len)
 
             # Check if we need to draw a vertical line here.
-            _pc!(j ∈ vlines, screen, buf, border_crayon, tf.column, "",
-                 flp, 1, 0)
+            _pc!(j ∈ vlines, screen, border_crayon, tf.column, "", flp, 1, 0)
 
             _eol(screen) && break
         end
 
-        i != header_num_rows && _nl!(screen,buf)
+        i != header_num_rows && _nl!(screen, buf)
     end
 
-    _nl!(screen,buf)
+    _nl!(screen, buf)
 end
 
 # Print the entire table data.
@@ -146,7 +139,7 @@ function _print_table_data(buf::IO,
                 line_count % (ellipsis_line_skip + 1) == 0 ? '⋯' : ' '
             line_count += 1
 
-            0 ∈ vlines && _p!(screen, buf, border_crayon, tf.column, false, 1)
+            0 ∈ vlines && _p!(screen, border_crayon, tf.column, false, 1)
 
             for j = 1:num_printed_cols
                 # Get the information about the alignment and the crayon.
@@ -207,17 +200,10 @@ function _print_table_data(buf::IO,
 
                 flp = j == num_printed_cols
 
-                # If we have nothing more to print, then remove trailing spaces.
-                if flp && (j ∉ vlines)
-                    data_ij_str = string(rstrip(data_ij_str))
-                    data_ij_len = textwidth(data_ij_str)
-                end
-
-                _p!(screen, buf, crayon_ij, data_ij_str, false, data_ij_len)
+                _p!(screen, crayon_ij, data_ij_str, false, data_ij_len)
 
                 # Check if we need to draw a vertical line here.
-                _pc!(j ∈ vlines, screen, buf, border_crayon, tf.column, "" ,
-                     flp, 1, 0)
+                _pc!(j ∈ vlines, screen, border_crayon, tf.column, "" , flp, 1, 0)
 
                 _eol(screen) && break
             end

@@ -124,6 +124,9 @@ respect to the point in which the table is printed.
     has_color::Bool      = false
     max_col::Int         = 0
     cont_char::Char      = '⋯'
+
+    # Buffer that will store the current line.
+    buf_line = IOBuffer()
 end
 
 ################################################################################
