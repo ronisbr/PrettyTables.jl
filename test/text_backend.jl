@@ -1309,6 +1309,108 @@ end
                           crop = :both,
                           ellipsis_line_skip = 3)
     @test result == expected
+
+    # Linebreaks
+    # --------------------------------------------------------------------------
+
+    matrix = ["1\n1\n1"; "2\n2\n2"; "3\n3\n3"]
+
+    expected = """
+┌────────┐
+│ Col. 1 │
+├────────┤
+│      1 │
+│      1 │
+│      1 │
+├────────┤
+│      2 │
+│      2 │
+│      2 │
+├────────┤
+│      3 │
+│      3 │
+│      3 │
+└────────┘
+"""
+
+    result = pretty_table(String, matrix,
+                          crop = :both,
+                          linebreaks = true,
+                          hlines = :all,
+                          screen_size = (17,-1))
+
+    @test result == expected
+
+    expected = """
+┌────────┐
+│ Col. 1 │
+├────────┤
+│      1 │
+│      1 │
+│      1 │
+├────────┤
+│      2 │
+│      2 │
+│      2 │
+├────────┤
+│      3 │
+│   ⋮    │
+└────────┘
+"""
+    result = pretty_table(String, matrix,
+                          crop = :both,
+                          linebreaks = true,
+                          hlines = :all,
+                          screen_size = (16,-1))
+
+    @test result == expected
+
+    expected = """
+┌────────┐
+│ Col. 1 │
+├────────┤
+│      1 │
+│      1 │
+│      1 │
+├────────┤
+│      2 │
+│      2 │
+│      2 │
+├────────┤
+│   ⋮    │
+└────────┘
+"""
+    result = pretty_table(String, matrix,
+                          crop = :both,
+                          linebreaks = true,
+                          hlines = :all,
+                          screen_size = (15,-1))
+
+    @test result == expected
+
+    expected = """
+┌────────┐
+│ Col. 1 │
+├────────┤
+│      1 │
+│      1 │
+│      1 │
+├────────┤
+│      2 │
+│      2 │
+│      2 │
+├────────┤
+│      3 │
+│      3 │
+│      3 │
+"""
+    result = pretty_table(String, matrix,
+                          crop = :both,
+                          linebreaks = true,
+                          hlines = [0,1,2,3],
+                          screen_size = (16,-1))
+
+    @test result == expected
 end
 
 # Minimum and maximum column width
