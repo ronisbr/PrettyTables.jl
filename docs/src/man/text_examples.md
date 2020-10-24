@@ -146,6 +146,10 @@ julia> pretty_table(A, filters_row = (f_r,), filters_col = (f_c,), show_row_numb
 By default, if the data is larger than the screen, then it will be cropped to
 fit it. This can be changed by using the keywords `crop` and `screen_size`.
 
+```julia
+julia> data = rand(100,10); pretty_table(data, highlighters = (hl_gt(0.5),))
+```
+
 ![](../assets/ex_00012.png)
 
 You can use the keyword `columns_width` to select the width of each column, so
