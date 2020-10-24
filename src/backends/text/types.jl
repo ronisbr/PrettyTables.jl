@@ -133,4 +133,5 @@ end
 ################################################################################
 
 # Crayon used to reset all the styling.
-const _reset_crayon = Crayon(reset = true)
+const _default_crayon = Crayon()
+const _reset_crayon   = Crayon(reset = true)

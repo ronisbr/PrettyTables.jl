@@ -214,7 +214,11 @@ function _p!(screen::Screen, crayon::Crayon, str::String,
     end
 
     # Print the with correct formating.
-    if screen.has_color
+    #
+    # Notice that all text printed with crayon is reset right after the string.
+    # Hence, if the crayon is empty (`_default_crayon`) or if it is a reset,
+    # then we can just print as if the terminal does not support color.
+    if (crayon != _default_crayon) && (crayon != _reset_crayon) && screen.has_color
         print(screen.buf_line, crayon, str, _reset_crayon, sapp)
     else
         print(screen.buf_line, str, sapp)
