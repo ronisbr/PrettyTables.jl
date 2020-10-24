@@ -13,6 +13,7 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                   subheader_crayon::Union{Crayon,Vector{Crayon}} = Crayon(foreground = :dark_gray),
                   rownum_header_crayon::Crayon = Crayon(bold = true),
                   text_crayon::Crayon = Crayon(),
+                  omitted_cell_summary_crayon::Crayon = Crayon(foreground = :red),
                   autowrap::Bool = false,
                   body_hlines::Vector{Int} = Int[],
                   body_hlines_format::Union{Nothing,NTuple{4,Char}} = nothing,
@@ -36,6 +37,7 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                   row_name_header_crayon::Crayon = Crayon(bold = true),
                   row_number_alignment::Symbol = :r,
                   screen_size::Union{Nothing,Tuple{Int,Int}} = nothing,
+                  show_omitted_cell_summary::Bool = true,
                   sortkeys::Bool = false,
                   tf::TextFormat = unicode,
                   title_autowrap::Bool = false,
@@ -76,6 +78,10 @@ function _pt_text(io::IO, pinfo::PrintInfo;
         elseif crop == :horizontal
             screen.size = (-1,screen.size[2])
         end
+    else
+        # If the table will not be cropped, then we should never show an omitted
+        # cell summary.
+        show_omitted_cell_summary = false
     end
 
     crop_num_lines_at_beginning < 0 && (crop_num_lines_at_beginning = 0)
@@ -155,6 +161,10 @@ function _pt_text(io::IO, pinfo::PrintInfo;
         num_printed_cols = min(num_printed_cols, ceil(Int, screen.size[2]/4))
     end
 
+    # We need to process at least the row number and row name columns to avoid
+    # errors.
+    num_printed_cols < Δc && (num_printed_cols = Δc)
+
     # Create the string matrices that will be printed
     # ==========================================================================
 
@@ -162,7 +172,7 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     # the matrix. Notice that we must create only the matrix with the printed
     # rows and columns.
     header_str = Matrix{String}(undef, header_num_rows, num_printed_cols)
-    header_len = zeros(Int,header_num_rows, num_printed_cols)
+    header_len = zeros(Int, header_num_rows, num_printed_cols)
 
     data_str   = Matrix{Vector{String}}(undef,
                                         num_printed_rows,
@@ -274,48 +284,54 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     #                           Print the table
     # ==========================================================================
 
+    # Compute the table width.
+    table_width = sum(cols_width) + 2length(cols_width) + length(vlines)
+    screen.size[2] > 0 && table_width > screen.size[2] && (table_width = screen.size[2])
+
     # Title
     # ==========================================================================
 
+    # Process the title separating the tokens.
+    title_tokens = String[]
+
     if length(title) > 0
-        # Compute the table width.
-        table_width = sum(cols_width) + 2length(cols_width) + length(vlines)
-
-        screen.size[2] > 0 && table_width > screen.size[2] &&
-            (table_width = screen.size[2])
-
         # Compute the title width.
         title_width = title_same_width_as_table ? table_width : screen.size[2]
-
-        screen.has_color && print(buf, title_crayon)
 
         # If the title width is not higher than 0, then we should only print the
         # title.
         if title_width ≤ 0
-            print(buf, title)
+            push!(title_tokens, title)
 
         # Otherwise, we must check for the alignments.
         else
-            title_tokens = string.(split(title, '\n'))
-            title_autowrap && (title_tokens = _str_autowrap(title_tokens, title_width))
-            num_tokens = length(title_tokens)
+            title_tokens_raw = string.(split(title, '\n'))
+            title_autowrap && (title_tokens_raw = _str_autowrap(title_tokens_raw, title_width))
+            num_tokens = length(title_tokens_raw)
 
             @inbounds for i = 1:num_tokens
-                token = title_tokens[i]
+                token = title_tokens_raw[i]
                 token_str = _str_aligned(token, title_alignment, title_width)[1]
-                print(buf, rstrip(token_str))
-
-                # In the last line we must not add the new line character
-                # because we need to reset the crayon first if the screen
-                # supports colors.
-                i != num_tokens && println(buf)
+                push!(title_tokens, token_str)
             end
 
             # Sum the number of lines in the title to the number of lines that
             # must be available at the beginning of the table.
-            crop_num_lines_at_beginning += length(title_tokens)
+            crop_num_lines_at_beginning += length(title_tokens_raw)
         end
 
+        # Print the title.
+        screen.has_color && print(buf, title_crayon)
+        num_tokens = length(title_tokens)
+
+        @inbounds for i = 1:num_tokens
+            print(buf, rstrip(title_tokens[i]))
+
+            # In the last line we must not add the new line character
+            # because we need to reset the crayon first if the screen
+            # supports colors.
+            i != num_tokens && println(buf)
+        end
         screen.has_color && print(buf, _reset_crayon)
         println(buf)
     end
@@ -323,6 +339,36 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     # If there is no column or row to be printed, then just exit.
     if (num_printed_cols == 0) || (num_printed_rows == 0)
         @goto print_to_output
+    end
+
+    # Number of additional lines that must be consider to crop the screen
+    # vertically.
+    Δscreen_lines = 1 + newline_at_end + draw_last_hline + crop_num_lines_at_beginning
+
+    # Now that we have the number of lines in title, we can compute how many
+    # rows and columns will be cropped when printing.
+    if show_omitted_cell_summary
+        num_omitted_cols, num_omitted_rows =
+            _compute_omitted_rows_and_cols(screen,
+                                           num_cols,
+                                           num_rows,
+                                           cols_width,
+                                           num_lines_in_row,
+                                           num_printed_cols,
+                                           num_printed_rows,
+                                           header_num_rows,
+                                           noheader,
+                                           vlines,
+                                           hlines,
+                                           Δc,
+                                           Δscreen_lines)
+
+        # If we have at least one row or column that will be omitted, then we
+        # need to add an additional line below the table to print the
+        # information.
+        if (num_omitted_cols > 0) || (num_omitted_rows > 0)
+            Δscreen_lines += 1
+        end
     end
 
     # Top table line
@@ -377,10 +423,6 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     # Data
     # ==========================================================================
 
-    # Number of additional lines that must be consider to crop the screen
-    # vertically.
-    Δscreen_lines = 1 + newline_at_end + draw_last_hline + crop_num_lines_at_beginning
-
     @inbounds _print_table_data(buf,
                                 screen,
                                 data,
@@ -418,6 +460,37 @@ function _pt_text(io::IO, pinfo::PrintInfo;
         _draw_line!(screen, buf, tf.bottom_left_corner, tf.bottom_intersection,
                     tf.bottom_right_corner, tf.row, border_crayon, cols_width,
                     vlines)
+
+    # Summary of the omitted cells
+    # ==========================================================================
+
+    if show_omitted_cell_summary && ((num_omitted_cols + num_omitted_rows) > 0)
+        cs_str_col = ""
+        cs_str_and = ""
+        cs_str_row = ""
+
+        if num_omitted_cols > 0
+            cs_str_col = string(num_omitted_cols)
+            cs_str_col *= num_omitted_cols > 1 ? " columns" : " column"
+        end
+
+        if num_omitted_rows > 0
+            cs_str_row = string(num_omitted_rows)
+            cs_str_row *= num_omitted_rows > 1 ? " rows" : " row"
+
+            num_omitted_cols > 0 && (cs_str_and = " and ")
+        end
+
+        cs_str = cs_str_col * cs_str_and * cs_str_row * " omitted"
+
+        textwidth(cs_str) < table_width &&
+            (cs_str = _str_aligned(cs_str, :r, table_width)[1])
+
+        screen.has_color && print(buf, omitted_cell_summary_crayon)
+        print(buf, cs_str)
+        screen.has_color && print(buf, _reset_crayon)
+        println(buf)
+    end
 
     @label print_to_output
 

@@ -1061,12 +1061,13 @@ end
 │      3 │  false │    3.0 │ ⋯
 │   ⋮    │   ⋮    │   ⋮    │ ⋱
 └────────┴────────┴────────┴──
+   1 column and 3 rows omitted
 """
 
-    result = pretty_table(String, data, screen_size = (10,30), crop = :both)
+    result = pretty_table(String, data, screen_size = (11,30), crop = :both)
     @test result == expected
 
-    result = pretty_table(String, data, screen_size = (10,30))
+    result = pretty_table(String, data, screen_size = (11,30))
     @test result == expected
 
     expected = """
@@ -1080,9 +1081,10 @@ end
 │      5 │  false │    5.0 │ ⋯
 │      6 │   true │    6.0 │ ⋯
 └────────┴────────┴────────┴──
+              1 column omitted
 """
 
-    result = pretty_table(String, data, screen_size = (10,30), crop = :horizontal)
+    result = pretty_table(String, data, screen_size = (11,30), crop = :horizontal)
     @test result == expected
 
     result = pretty_table(String, data, screen_size = (-1,30), crop = :both)
@@ -1097,12 +1099,13 @@ end
 │      3 │  false │    3.0 │      3 │
 │   ⋮    │   ⋮    │   ⋮    │   ⋮    │
 └────────┴────────┴────────┴────────┘
+                       3 rows omitted
 """
 
-    result = pretty_table(String, data, screen_size = (10,30), crop = :vertical)
+    result = pretty_table(String, data, screen_size = (11,30), crop = :vertical)
     @test result == expected
 
-    result = pretty_table(String, data, screen_size = (10,-1), crop = :both)
+    result = pretty_table(String, data, screen_size = (11,-1), crop = :both)
     @test result == expected
 
     expected = """
@@ -1114,9 +1117,10 @@ end
 │      3 │  false │     ⋯
 │   ⋮    │   ⋮    │   ⋮ ⋱
 └────────┴────────┴──────
+2 columns and 3 rows omitted
 """
 
-    result = pretty_table(String, data, screen_size = (10,25), crop = :both)
+    result = pretty_table(String, data, screen_size = (11,25), crop = :both)
     @test result == expected
 
     model = [1.123456789 for i = 1:8, j = 1:10]
@@ -1195,9 +1199,9 @@ end
 │      2 │   true │    2.0 │      2 │
 │      3 │  false │    3.0 │      3 │
 │      4 │   true │    4.0 │      4 │
-│      5 │  false │    5.0 │      5 │
 │   ⋮    │   ⋮    │   ⋮    │   ⋮    │
 └────────┴────────┴────────┴────────┘
+                       2 rows omitted
 """
 
     result = pretty_table(String, data_text,
@@ -1241,11 +1245,12 @@ end
 │      3 │  false │    3.0 │ ⋯
 │ ⋮      │ ⋮      │ ⋮      │ ⋱
 └────────┴────────┴────────┴──
+   1 column and 3 rows omitted
 """
 
     result = pretty_table(String, data,
                           continuation_row_alignment = :l,
-                          screen_size = (10,30))
+                          screen_size = (11,30))
     @test result == expected
 
     expected = """
@@ -1257,11 +1262,12 @@ end
 │      3 │  false │    3.0 │ ⋯
 │      ⋮ │      ⋮ │      ⋮ │ ⋱
 └────────┴────────┴────────┴──
+   1 column and 3 rows omitted
 """
 
     result = pretty_table(String, data,
                           continuation_row_alignment = :r,
-                          screen_size = (10,30))
+                          screen_size = (11,30))
     @test result == expected
 
     # Trailing spaces at continuation line
@@ -1276,12 +1282,13 @@ end
  3       false   3.0     3
  ⋮       ⋮       ⋮       ⋮
 ────────────────────────────────
+                  3 rows omitted
 """
 
     result = pretty_table(String, data,
                           alignment = :l,
                           continuation_row_alignment = :l,
-                          screen_size = (10,40),
+                          screen_size = (11,40),
                           vlines = :none)
 
     @test result == expected
@@ -1301,6 +1308,7 @@ end
 │      5 │  false │     ⋯
 │      6 │   true │
 └────────┴────────┴──────
+        2 columns omitted
 """
 
     result = pretty_table(String, data,
@@ -1353,9 +1361,9 @@ end
 │      2 │
 │      2 │
 ├────────┤
-│      3 │
 │   ⋮    │
 └────────┘
+1 row omitted
 """
     result = pretty_table(String, matrix,
                           crop = :both,
@@ -1376,9 +1384,9 @@ end
 │      2 │
 │      2 │
 │      2 │
-├────────┤
 │   ⋮    │
 └────────┘
+1 row omitted
 """
     result = pretty_table(String, matrix,
                           crop = :both,
@@ -1864,6 +1872,7 @@ end
 │   Row 3   │   3 │ false │   3.0 │    ⋯
 │     ⋮     │  ⋮  │   ⋮   │   ⋮   │  ⋮ ⋱
 └───────────┴─────┴───────┴───────┴─────
+             1 column and 3 rows omitted
 """
 
     result = pretty_table(String, data,
@@ -1871,7 +1880,7 @@ end
                           row_names = ["Row $i" for i = 1:6],
                           row_name_column_title = "Row names",
                           row_name_alignment = :c,
-                          screen_size = (11,40))
+                          screen_size = (12,40))
     @test result == expected
 end
 
@@ -1978,6 +1987,7 @@ end
 │   3 │   Row 3   │   3  false │  ⋯
 │  ⋮  │     ⋮     │  ⋮     ⋮   │  ⋱
 └─────┴───────────┴────────────┴───
+       2 columns and 3 rows omitted
 """
 
     result = pretty_table(String, data,
@@ -1987,7 +1997,7 @@ end
                           row_names = ["Row $i" for i = 1:6],
                           row_name_column_title = "Row names",
                           row_name_alignment = :c,
-                          screen_size = (11,35))
+                          screen_size = (12,35))
     @test result == expected
 end
 
@@ -2042,6 +2052,7 @@ end
 │ 🧐🧐🧐🧐🧐                     │      🥺🥺🥺🥺🥺      │                     😇😇😇😇  ⋯
 │ aaaaaaaaaa                     │      aaaaaaaaaa      │                     aaaaaaaaa ⋯
 └────────────────────────────────┴──────────────────────┴────────────────────────────────
+                                                                         1 column omitted
 """
 
     result = pretty_table(String, matrix, header,
@@ -2193,9 +2204,10 @@ That has two lines.
 │      3 │  false │    3.0 │      ⋯
 │   ⋮    │   ⋮    │   ⋮    │   ⋮  ⋱
 └────────┴────────┴────────┴───────
+        1 column and 3 rows omitted
 """
     result = pretty_table(String, data,
-                          screen_size = (12,35),
+                          screen_size = (13,35),
                           title = "This is a long long long long long long title\nThat has two lines.")
     @test result == expected
 
@@ -2210,9 +2222,10 @@ That has two lines.
 │      2 │   true │    2.0 │      ⋯
 │   ⋮    │   ⋮    │   ⋮    │   ⋮  ⋱
 └────────┴────────┴────────┴───────
+        1 column and 4 rows omitted
 """
     result = pretty_table(String, data,
-                          screen_size = (12,35),
+                          screen_size = (13,35),
                           title = "This is a long long long long long long title\nThat has two lines.",
                           title_autowrap = true)
     @test result == expected

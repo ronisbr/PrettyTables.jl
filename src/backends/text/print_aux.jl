@@ -213,12 +213,21 @@ function _print_table_data(buf::IO,
 
             # Check if the screen is over.
             if _eos(screen, Δscreen_lines)
-                # If we have only one line left, then we do not need to print
-                # the continuation line.
-                if (i < num_printed_rows) ||
-                    ( (i == num_printed_rows) && (num_lines_in_row[i] > l+1) )
-                    draw_continuation_line = true
-                    break
+                # If we have more lines to be printed in this cell, then we
+                # already need the continuation line. The only exception is if
+                # we are in the last line of the table. In this case, we only
+                # need the continuation line if we have more than 1 line to be
+                # printed.
+                if i != num_printed_rows
+                    if l < num_lines_in_row[i]
+                        draw_continuation_line = true
+                        break
+                    end
+                else
+                    if l+1 < num_lines_in_row[i]
+                        draw_continuation_line = true
+                        break
+                    end
                 end
             end
         end
@@ -240,9 +249,7 @@ function _print_table_data(buf::IO,
         # still have data to be printed.
         _eos(screen, Δscreen_lines) && cropping_needed && (draw_continuation_line = true)
 
-        # Here we must check if the vertical size of the screen has been
-        # reached. Notice that we must add 4 to account for the command line,
-        # the continuation line, the bottom table line, and the last blank line.
+        # Draw the continuation line if necessary and stop printing.
         if draw_continuation_line
             _draw_continuation_row(screen, buf, tf, text_crayon, border_crayon,
                                    cols_width, vlines,

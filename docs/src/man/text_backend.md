@@ -118,6 +118,7 @@ passed as keywords when calling the function `pretty_table`:
 * `nosubheader`: If `true`, then the sub-header will not be printed, *i.e.* the
                  header will contain only one line. Notice that this option has
                  no effect if `noheader = true`. (**Default** = `false`)
+* `omitted_cell_summary_crayon`: Crayon used to print the omitted cell summary.
 * `overwrite`: If `true`, then the same number of lines in the printed table
                will be deleted from the output `io`. This can be used to update
                the table in the screen continuously. (**Default** = `false`)
@@ -129,6 +130,9 @@ passed as keywords when calling the function `pretty_table`:
                  `crop`. If it is `nothing`, then the size will be obtained
                  automatically. Notice that if a dimension is not positive, then
                  it will be treated as unlimited. (**Default** = `nothing`)
+* `show_omitted_cell_summary`: If `true`, then a summary will be printed after
+                               the table with the number of columns and rows
+                               that were omitted. (**Default** = `true`)
 * `title_autowrap`: If `true`, then the title text will be wrapped considering
                     the title size. Otherwise, lines larger than the title size
                     will be cropped. (**Default** = `false`)
@@ -206,17 +210,18 @@ julia> data = Any[1    false      1.0     0x01 ;
                   5    false      5.0     0x05 ;
                   6     true      6.0     0x06 ;];
 
-julia> pretty_table(data, screen_size = (10,30))
-┌────────┬────────┬────────┬ ⋯
+julia> pretty_table(data, screen_size = (11,30))
+┌────────┬────────┬────────┬──
 │ Col. 1 │ Col. 2 │ Col. 3 │ ⋯
-├────────┼────────┼────────┼ ⋯
+├────────┼────────┼────────┼──
 │      1 │  false │    1.0 │ ⋯
 │      2 │   true │    2.0 │ ⋯
 │      3 │  false │    3.0 │ ⋯
-│   ⋮    │   ⋮    │   ⋮    │ ⋯
-└────────┴────────┴────────┴ ⋯
+│   ⋮    │   ⋮    │   ⋮    │ ⋱
+└────────┴────────┴────────┴──
+   1 column and 3 rows omitted
 
-julia> pretty_table(data, screen_size = (10,30), crop = :none)
+julia> pretty_table(data, screen_size = (11,30), crop = :none)
 ┌────────┬────────┬────────┬────────┐
 │ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
 ├────────┼────────┼────────┼────────┤
