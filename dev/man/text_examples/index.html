@@ -38,7 +38,7 @@ julia&gt; f_c(data,i) = i % 2 == 0
 
 julia&gt; f_r(data,i) = i % 2 == 0
 
-julia&gt; pretty_table(A, filters_row = (f_r,), filters_col = (f_c,), show_row_number = true)</code></pre><p><img src="../../assets/ex_00011.png" alt/></p><p>By default, if the data is larger than the screen, then it will be cropped to fit it. This can be changed by using the keywords <code>crop</code> and <code>screen_size</code>.</p><p><img src="../../assets/ex_00012.png" alt/></p><p>You can use the keyword <code>columns_width</code> to select the width of each column, so that the data is cropped to fit the available space.</p><pre><code class="language-julia-repl">julia&gt; mat = rand(100,4)
+julia&gt; pretty_table(A, filters_row = (f_r,), filters_col = (f_c,), show_row_number = true)</code></pre><p><img src="../../assets/ex_00011.png" alt/></p><p>By default, if the data is larger than the screen, then it will be cropped to fit it. This can be changed by using the keywords <code>crop</code> and <code>screen_size</code>.</p><pre><code class="language-julia">julia&gt; data = rand(100,10); pretty_table(data, highlighters = (hl_gt(0.5),))</code></pre><p><img src="../../assets/ex_00012.png" alt/></p><p>You can use the keyword <code>columns_width</code> to select the width of each column, so that the data is cropped to fit the available space.</p><pre><code class="language-julia-repl">julia&gt; mat = rand(100,4)
 
 julia&gt; pretty_table(mat,
                     highlighters = hl_gt(0.5),
