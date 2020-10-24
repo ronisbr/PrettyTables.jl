@@ -629,7 +629,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "PrettyTables.Screen",
     "category": "type",
-    "text": "Screen\n\nStore the information of the screen and the current cursor position. Notice that this is not the real cursor position with respect to the screen, but with respect to the point in which the table is printed.\n\nFields\n\nsize: Screen size.\nrow: Current row.\ncol: Current column.\nhas_color: Indicates if the screen has color support.\nmax_col: Store the largest column that was printed.\n\n\n\n\n\n"
+    "text": "Screen\n\nStore the information of the screen and the current cursor position. Notice that this is not the real cursor position with respect to the screen, but with respect to the point in which the table is printed.\n\nFields\n\nsize: Screen size.\nrow: Current row.\ncol: Current column.\nhas_color: Indicates if the screen has color support.\ncont_char: The character that indicates the line is cropped.\ncont_space_char: Space character to be printed before cont_char.\n\n\n\n\n\n"
 },
 
 {
@@ -677,7 +677,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "PrettyTables._draw_line!",
     "category": "method",
-    "text": "_draw_line!(screen::Screen, io::IO, left::Char, intersection::Char, right::Char, row::Char, border_crayon::Crayon, cols_width::Vector{Int}, vlines::Vector{Int})\n\nDraw a vertical line in io using the information in screen.\n\n\n\n\n\n"
+    "text": "_draw_line!(screen::Screen, io::IO, left::Char, intersection::Char, right::Char, row::Char, border_crayon::Crayon, cols_width::Vector{Int}, vlines::Vector{Int})\n\nDraw a vertical line in internal line buffer of screen and then flush to the io io.\n\n\n\n\n\n"
 },
 
 {
@@ -709,7 +709,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "PrettyTables._nl!",
     "category": "method",
-    "text": "_nl!(screen::Screen, io::IO)\n\nAdd a new line into io using the screen information in screen.\n\n\n\n\n\n"
+    "text": "_nl!(screen::Screen, io::IO)\n\nFlush the internal line buffer of screen into io.\n\n\n\n\n\n"
 },
 
 {
@@ -717,7 +717,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "PrettyTables._p!",
     "category": "function",
-    "text": "_p!(screen::Screen, io::IO, crayon::Crayon, str::Char, final_line_print::Bool = false, lstr::Int = -1)\n_p!(screen::Screen, io::IO, crayon::Crayon, str::String, final_line_print::Bool = false, lstr::Int = -1)\n\nPrint str into io using the Crayon crayon with the screen information in screen. The parameter final_line_print must be set to true if this is the last string that will be printed in the line. This is necessary for the algorithm to select whether or not to include the continuation character.\n\nThe size of the string can be passed to lstr to save computational burden. If lstr = -1, then the string length will be computed inside the function.\n\n\n\n\n\n"
+    "text": "_p!(screen::Screen, crayon::Crayon, str::Char, final_line_print::Bool = false, lstr::Int = -1)\n_p!(screen::Screen, crayon::Crayon, str::String, final_line_print::Bool = false, lstr::Int = -1)\n\nPrint str into the internal line buffer of screen using the Crayon crayon with the screen information in screen. The parameter final_line_print must be set to true if this is the last string that will be printed in the line. This is necessary for the algorithm to select whether or not to include the continuation character.\n\nThe size of the string can be passed to lstr to save computational burden. If lstr = -1, then the string length will be computed inside the function.\n\nThe line buffer can be flushed to an io using the function _nl!.\n\n\n\n\n\n"
 },
 
 {
@@ -749,7 +749,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Library",
     "title": "PrettyTables._pc!",
     "category": "function",
-    "text": "_pc!(cond::Bool, screen::Screen, io::IO, crayon::Crayon, str_true::Union{Char,String}, str_false::Union{Char,String}, final_line_print::Bool = false, lstr_true::Int = -1, lstr_false::Int = -1)\n\nIf cond == true then print str_true. Otherwise, print str_false. Those strings will be printed into io using the Crayon crayon with the screen information in screen. The parameter final_line_print must be set to true if this is the last string that will be printed in the line. This is necessary for the algorithm to select whether or not to include the continuation character.\n\nThe size of the strings can be passed to lstr_true and lstr_false to save computational burden. If they are -1, then the string lengths will be computed inside the function.\n\n\n\n\n\n"
+    "text": "_pc!(cond::Bool, screen::Screen, io::IO, crayon::Crayon, str_true::Union{Char,String}, str_false::Union{Char,String}, final_line_print::Bool = false, lstr_true::Int = -1, lstr_false::Int = -1)\n\nIf cond == true then print str_true. Otherwise, print str_false. Those strings will be printed into the internal line buffer of screen using the Crayon crayon with the screen information in screen. The parameter final_line_print must be set to true if this is the last string that will be printed in the line. This is necessary for the algorithm to select whether or not to include the continuation character.\n\nThe size of the strings can be passed to lstr_true and lstr_false to save computational burden. If they are -1, then the string lengths will be computed inside the function.\n\n\n\n\n\n"
 },
 
 {
