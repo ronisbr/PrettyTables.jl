@@ -115,14 +115,16 @@ respect to the point in which the table is printed.
 * `col`: Current column.
 * `has_color`: Indicates if the screen has color support.
 * `cont_char`: The character that indicates the line is cropped.
+* `cont_space_char`: Space character to be printed before `cont_char`.
 
 """
 @with_kw mutable struct Screen
-    size::Tuple{Int,Int} = (-1,-1)
-    row::Int             = 1
-    col::Int             = 0
-    has_color::Bool      = false
-    cont_char::Char      = '⋯'
+    size::Tuple{Int,Int}  = (-1,-1)
+    row::Int              = 1
+    col::Int              = 0
+    has_color::Bool       = false
+    cont_char::Char       = '⋯'
+    cont_space_char::Char = ' '
 
     # Buffer that will store the current line.
     buf_line = IOBuffer()

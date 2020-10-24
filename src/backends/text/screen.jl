@@ -61,8 +61,10 @@ function _draw_line!(screen::Screen, io::IO, left::Char, intersection::Char,
                      cols_width::Vector{Int}, vlines::Vector{Int})
 
     # We does not want to add ellipsis when drawing lines.
-    old_cont_char = screen.cont_char
-    screen.cont_char = ' '
+    old_cont_char          = screen.cont_char
+    old_cont_space_char    = screen.cont_space_char
+    screen.cont_char       = row
+    screen.cont_space_char = row
 
     num_cols = length(cols_width)
 
@@ -79,7 +81,8 @@ function _draw_line!(screen::Screen, io::IO, left::Char, intersection::Char,
     _pc!(num_cols ∈ vlines, screen, border_crayon, right, "", true)
     _nl!(screen, io)
 
-    screen.cont_char = old_cont_char
+    screen.cont_char       = old_cont_char
+    screen.cont_space_char = old_cont_space_char
 
     return nothing
 end
@@ -165,14 +168,14 @@ function _p!(screen::Screen, crayon::Crayon, str::String,
                 # reserving 2 characters for the line continuation indicator.
                 str  = _crop_str(str, lstr + Δ - 2)
                 lstr = lstr + Δ - 2
-                sapp = " " * screen.cont_char
+                sapp = screen.cont_space_char * screen.cont_char
                 lapp = 2
             elseif screen.size[2] - screen.col == 2
                 # If there are only 2 characters left, then we must only print
                 # " ⋯".
                 str  = ""
                 lstr = 0
-                sapp = " " * screen.cont_char
+                sapp = screen.cont_space_char * screen.cont_char
                 lapp = 2
             elseif screen.size[2] - screen.col == 1
                 # If there are only 1 character left, then we must only print
@@ -202,7 +205,7 @@ function _p!(screen::Screen, crayon::Crayon, str::String,
             if Δ == 1
                 str   = lstr > 1 ? _crop_str(str, lstr - 1) : ""
                 lstr -= 1
-                sapp  = " " * screen.cont_char
+                sapp  = screen.cont_space_char * screen.cont_char
                 lapp  = 2
 
                 # In this case, we reached the end of screen. Thus, remove any
