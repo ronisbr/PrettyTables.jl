@@ -114,7 +114,7 @@ respect to the point in which the table is printed.
 * `row`: Current row.
 * `col`: Current column.
 * `has_color`: Indicates if the screen has color support.
-* `max_col`: Store the largest column that was printed.
+* `cont_char`: The character that indicates the line is cropped.
 
 """
 @with_kw mutable struct Screen
@@ -122,7 +122,6 @@ respect to the point in which the table is printed.
     row::Int             = 1
     col::Int             = 0
     has_color::Bool      = false
-    max_col::Int         = 0
     cont_char::Char      = '⋯'
 
     # Buffer that will store the current line.

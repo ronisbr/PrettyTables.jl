@@ -108,8 +108,7 @@ Flush the internal line buffer of `screen` into `io`.
 
 """
 function _nl!(screen::Screen, io::IO)
-    # Store the largest column that was printed.
-    screen.max_col < screen.col && (screen.max_col = screen.col)
+    # Update the information about the current columns and row of the screen.
     screen.row += 1
     screen.col  = 0
 
