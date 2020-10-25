@@ -170,6 +170,10 @@ function _print_table_data(buf::IO,
 
                         # Get the information about the alignment and the
                         # crayon.
+                        #
+                        # NOTE: The variable `data_cell` is used to avoid
+                        # applying formatters and highlighters to the row number
+                        # and row name columns.
                         if j ≤ Δc
                             if show_row_number && (j == 1)
                                 crayon_ij    = text_crayon
@@ -178,52 +182,38 @@ function _print_table_data(buf::IO,
                                 crayon_ij    = row_name_crayon
                                 alignment_ij = alignment[Δc]
                             end
+                            jc = 0
+                            data_cell = false
                         else
                             jc = id_cols[j-Δc]
                             crayon_ij    = text_crayon
                             alignment_ij = alignment[jc+Δc]
-
-                            # Check for highlighters.
-                            for h in highlighters
-                                if h.f(_getdata(data), ir, jc)
-                                    crayon_ij = h.fd(h, _getdata(data), ir, jc)
-                                    break
-                                end
-                            end
-
-                            # Check for cell alignment override.
-                            for f in cell_alignment
-                                aux = f(_getdata(data), ir, jc)
-
-                                if aux ∈ [:l, :c, :r, :L, :C, :R]
-                                    alignment_ij = aux
-                                    break
-                                end
-                            end
-
-                            # For Markdown cells, we will overwrite alignment and
-                            # highlighters.
-                            if isassigned(data,ir,jc) && (data[ir,jc] isa Markdown.MD)
-                                alignment_ij = :l
-                                crayon_ij = Crayon()
-                            end
+                            data_cell    = true
                         end
 
-                        # Align the string to be printed.
+                        # String to be processed.
                         if length(data_str[i,j]) >= l
-                            data_ij_str, data_ij_len = _str_aligned(data_str[i,j][l],
-                                                                    alignment_ij,
-                                                                    cols_width[j],
-                                                                    data_len[i,j][l])
+                            data_ij_str = data_str[i,j][l]
+                            data_ij_len = data_len[i,j][l]
                         else
-                            data_ij_str, data_ij_len = _str_aligned("",
-                                                                    alignment_ij,
-                                                                    cols_width[j])
+                            data_ij_str = ""
+                            data_ij_len = 0
                         end
 
-                        # Print.
-                        data_ij_str  = " " * data_ij_str * " "
-                        data_ij_len += 2
+                        # Process the string with the correct alignment and also
+                        # apply the highlighters.
+                        data_ij_str, data_ij_len, crayon_ij =
+                            _process_cell_text(data,
+                                               ir,
+                                               jc,
+                                               data_cell,
+                                               data_ij_str,
+                                               data_ij_len,
+                                               cols_width[j],
+                                               crayon_ij,
+                                               alignment_ij,
+                                               cell_alignment,
+                                               highlighters)
 
                         _p!(screen, crayon_ij, data_ij_str, false, data_ij_len)
                     end

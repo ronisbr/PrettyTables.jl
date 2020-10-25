@@ -104,3 +104,59 @@ end
 @inline _parse_cell_text(cell::Missing; kwargs...) = ["missing"], [7], 7
 @inline _parse_cell_text(cell::Nothing; kwargs...) = ["nothing"], [7], 7
 @inline _parse_cell_text(cell::UndefInitializer; kwargs...) = ["#undef"], [6], 6
+
+"""
+    _process_cell_text(data::Any, i::Int, j::Int, data_cell::Bool, data_str::String, data_len::Int, col_width::Int, crayon::Crayon, alignment::Symbol, cell_alignment::Tuple, highlighters::Tuple)
+
+Process the cell by applying the right alignment and also verifying the
+highlighters.
+
+"""
+function _process_cell_text(data::Any,
+                            i::Int,
+                            j::Int,
+                            data_cell::Bool,
+                            data_str::String,
+                            data_len::Int,
+                            col_width::Int,
+                            crayon::Crayon,
+                            alignment::Symbol,
+                            cell_alignment::Tuple,
+                            highlighters::Tuple)
+
+    if data_cell
+        # Check for highlighters.
+        for h in highlighters
+            if h.f(_getdata(data), i, j)
+                crayon = h.fd(h, _getdata(data), i, j)
+                break
+            end
+        end
+
+        # Check for cell alignment override.
+        for f in cell_alignment
+            aux = f(_getdata(data), i, j)
+
+            if aux ∈ [:l, :c, :r, :L, :C, :R]
+                alignment = aux
+                break
+            end
+        end
+
+        # For Markdown cells, we will overwrite alignment and
+        # highlighters.
+        if isassigned(data,i,j) && (data[i,j] isa Markdown.MD)
+            alignment = :l
+            crayon = Crayon()
+        end
+    end
+
+    # Align the string to be printed.
+    data_str, data_len = _str_aligned(data_str, alignment, col_width, data_len)
+
+    # Add spacing.
+    data_str  = " " * data_str * " "
+    data_len += 2
+
+    return data_str, data_len, crayon
+end
