@@ -232,30 +232,31 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     # Table data
     # --------------------------------------------------------------------------
 
-    num_printed_cols = @inbounds _fill_matrix_data!(header_str,
-                                                    header_len,
-                                                    data_str,
-                                                    data_len,
-                                                    cols_width,
-                                                    id_cols,
-                                                    id_rows,
-                                                    num_lines_in_row,
-                                                    Δc,
-                                                    columns_width,
-                                                    data,
-                                                    header,
-                                                    formatters,
-                                                    screen,
-                                                    # Configuration options.
-                                                    autowrap,
-                                                    cell_first_line_only,
-                                                    compact_printing,
-                                                    crop_subheader,
-                                                    fixed_col_width,
-                                                    linebreaks,
-                                                    maximum_columns_width,
-                                                    noheader,
-                                                    renderer)
+    num_printed_cols, num_printed_rows =
+        @inbounds _fill_matrix_data!(header_str,
+                                     header_len,
+                                     data_str,
+                                     data_len,
+                                     cols_width,
+                                     id_cols,
+                                     id_rows,
+                                     num_lines_in_row,
+                                     Δc,
+                                     columns_width,
+                                     data,
+                                     header,
+                                     formatters,
+                                     screen,
+                                     # Configuration options.
+                                     autowrap,
+                                     cell_first_line_only,
+                                     compact_printing,
+                                     crop_subheader,
+                                     fixed_col_width,
+                                     linebreaks,
+                                     maximum_columns_width,
+                                     noheader,
+                                     renderer)
 
     # If the user wants all the columns with the same size, then select the
     # larger.
@@ -341,33 +342,53 @@ function _pt_text(io::IO, pinfo::PrintInfo;
         @goto print_to_output
     end
 
+    # Continuation line
+    # ==========================================================================
+
     # Number of additional lines that must be consider to crop the screen
     # vertically.
     Δscreen_lines = 1 + newline_at_end + draw_last_hline + crop_num_lines_at_beginning
 
     # Now that we have the number of lines in title, we can compute how many
     # rows and columns will be cropped when printing.
-    if show_omitted_cell_summary
-        num_omitted_cols, num_omitted_rows =
-            _compute_omitted_rows_and_cols(screen,
-                                           num_cols,
-                                           num_rows,
-                                           cols_width,
-                                           num_lines_in_row,
-                                           num_printed_cols,
-                                           num_printed_rows,
-                                           header_num_rows,
-                                           noheader,
-                                           vlines,
-                                           hlines,
-                                           Δc,
-                                           Δscreen_lines)
+    num_omitted_cols, num_omitted_rows =
+        _compute_omitted_rows_and_cols(screen,
+                                       num_cols,
+                                       num_rows,
+                                       cols_width,
+                                       num_lines_in_row,
+                                       num_printed_cols,
+                                       num_printed_rows,
+                                       header_num_rows,
+                                       noheader,
+                                       vlines,
+                                       hlines,
+                                       Δc,
+                                       Δscreen_lines)
 
-        # If we have at least one row or column that will be omitted, then we
-        # need to add an additional line below the table to print the
-        # information.
-        if (num_omitted_cols > 0) || (num_omitted_rows > 0)
-            Δscreen_lines += 1
+    # If we have at least one row or column that will be omitted, then we
+    # need to add an additional line below the table to print the
+    # information.
+    if (num_omitted_cols > 0) || (num_omitted_rows > 0)
+        Δscreen_lines += 1
+    end
+
+    # If we need to crop horizontally, then compute in which table line we will
+    # print the continuation line.
+    continuation_line_row = 0
+
+    if (crop == :both) || (crop == :vertical)
+        if num_omitted_rows > 0
+            continuation_line_row = screen.size[1] - Δscreen_lines
+
+            # The header and the first line must always be show.
+            lower_bound  = 0 ∈ hlines ? 1 : 0
+            lower_bound += !noheader ? header_num_rows : 0
+            lower_bound += 1 ∈ hlines ? 1 : 0
+            lower_bound += 1
+
+            continuation_line_row < lower_bound &&
+                (continuation_line_row = lower_bound)
         end
     end
 
@@ -436,6 +457,7 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                                 cols_width,
                                 hlines,
                                 vlines,
+                                continuation_line_row,
                                 # Configurations.
                                 alignment,
                                 body_hlines_format,

@@ -134,7 +134,10 @@ function _fill_matrix_data!(header_str::Matrix{String},
                 end
             end
 
-            (screen.size[1] > 0) && (num_processed_rows ≥ screen.size[1]) && break
+            if (screen.size[1] > 0) && (num_processed_rows ≥ screen.size[1])
+                num_printed_rows = j
+                break
+            end
         end
 
         # If the user horizontal cropping, then check if we need to process
@@ -151,7 +154,7 @@ function _fill_matrix_data!(header_str::Matrix{String},
         end
     end
 
-    return num_printed_cols
+    return num_printed_cols, num_printed_rows
 end
 
 # Fill the information related to the row number column.

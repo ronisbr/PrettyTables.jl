@@ -107,6 +107,7 @@ function _print_table_data(buf::IO,
                            cols_width::Vector{Int},
                            hlines::Vector{Int},
                            vlines::Vector{Int},
+                           continuation_line_row::Int,
                            # Configurations.
                            alignment::Vector{Symbol},
                            body_hlines_format::Tuple,
@@ -211,34 +212,12 @@ function _print_table_data(buf::IO,
 
             _nl!(screen, buf)
 
-            # Check if the screen is over.
-            if _eos(screen, Δscreen_lines)
-                # If we have more lines to be printed in this cell, then we
-                # already need the continuation line. The only exception is if
-                # we are in the last line of the table. In this case, we only
-                # need the continuation line if we have more than 1 line to be
-                # printed.
-                if i != num_printed_rows
-                    if l < num_lines_in_row[i]
-                        draw_continuation_line = true
-                        break
-                    end
-                else
-                    if l+1 < num_lines_in_row[i]
-                        draw_continuation_line = true
-                        break
-                    end
-                end
+            # Check if we must draw the continuation line.
+            if (continuation_line_row > 0) && (screen.row ≥ continuation_line_row)
+                draw_continuation_line = true
+                break
             end
         end
-
-        # If we have more than one line to print, the cropping is needed.
-        cropping_needed = (i+1 < num_printed_rows) ||
-            ( (i+1 == num_printed_rows) && (num_lines_in_row[i+1] > 1) )
-
-        # Check if the screen space is over after the horizontal line and we
-        # still have data to be printed.
-        _eos(screen, Δscreen_lines) && cropping_needed && (draw_continuation_line = true)
 
         # Check if we must draw a horizontal line here.
         !draw_continuation_line && (i != num_printed_rows) && ((i+!noheader) in hlines) &&
@@ -247,7 +226,9 @@ function _print_table_data(buf::IO,
 
         # Check if the screen space is over after the horizontal line and we
         # still have data to be printed.
-        _eos(screen, Δscreen_lines) && cropping_needed && (draw_continuation_line = true)
+        if (continuation_line_row > 0) && (screen.row ≥ continuation_line_row)
+            draw_continuation_line = true
+        end
 
         # Draw the continuation line if necessary and stop printing.
         if draw_continuation_line
