@@ -282,15 +282,14 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     vlines == nothing && (vlines = tf.vlines)
     vlines = _process_vlines(vlines, num_printed_cols)
 
-    #                           Print the table
-    # ==========================================================================
+    # Compute the table width
+    # --------------------------------------------------------------------------
 
-    # Compute the table width.
     table_width = sum(cols_width) + 2length(cols_width) + length(vlines)
     screen.size[2] > 0 && table_width > screen.size[2] && (table_width = screen.size[2])
 
-    # Title
-    # ==========================================================================
+    # Process the title
+    # --------------------------------------------------------------------------
 
     # Process the title separating the tokens.
     title_tokens = String[]
@@ -320,7 +319,39 @@ function _pt_text(io::IO, pinfo::PrintInfo;
             # must be available at the beginning of the table.
             crop_num_lines_at_beginning += length(title_tokens_raw)
         end
+    end
 
+    # Compute the table data printing recipe
+    # --------------------------------------------------------------------------
+
+    # Number of additional lines that must be consider to crop the screen
+    # vertically.
+    Δscreen_lines = 1 + newline_at_end + draw_last_hline + crop_num_lines_at_beginning
+
+    row_printing_recipe, col_printing_recipe, num_omitted_rows, num_omitted_cols =
+        _create_printing_recipe(screen,
+                                header_num_rows,
+                                num_printed_rows,
+                                num_printed_cols,
+                                num_lines_in_row,
+                                cols_width,
+                                hlines,
+                                vlines,
+                                Δscreen_lines,
+                                # Configurations
+                                crop,
+                                noheader,
+                                show_omitted_cell_summary)
+
+
+    #                           Print the table
+    # ==========================================================================
+
+    # Title
+    # ==========================================================================
+
+    # Process the title separating the tokens.
+    if length(title) > 0
         # Print the title.
         screen.has_color && print(buf, title_crayon)
         num_tokens = length(title_tokens)
@@ -340,56 +371,6 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     # If there is no column or row to be printed, then just exit.
     if (num_printed_cols == 0) || (num_printed_rows == 0)
         @goto print_to_output
-    end
-
-    # Continuation line
-    # ==========================================================================
-
-    # Number of additional lines that must be consider to crop the screen
-    # vertically.
-    Δscreen_lines = 1 + newline_at_end + draw_last_hline + crop_num_lines_at_beginning
-
-    # Now that we have the number of lines in title, we can compute how many
-    # rows and columns will be cropped when printing.
-    num_omitted_cols, num_omitted_rows =
-        _compute_omitted_rows_and_cols(screen,
-                                       num_cols,
-                                       num_rows,
-                                       cols_width,
-                                       num_lines_in_row,
-                                       num_printed_cols,
-                                       num_printed_rows,
-                                       header_num_rows,
-                                       noheader,
-                                       vlines,
-                                       hlines,
-                                       Δc,
-                                       Δscreen_lines)
-
-    # If we have at least one row or column that will be omitted, then we
-    # need to add an additional line below the table to print the
-    # information.
-    if (num_omitted_cols > 0) || (num_omitted_rows > 0)
-        Δscreen_lines += 1
-    end
-
-    # If we need to crop horizontally, then compute in which table line we will
-    # print the continuation line.
-    continuation_line_row = 0
-
-    if (crop == :both) || (crop == :vertical)
-        if num_omitted_rows > 0
-            continuation_line_row = screen.size[1] - Δscreen_lines
-
-            # The header and the first line must always be show.
-            lower_bound  = 0 ∈ hlines ? 1 : 0
-            lower_bound += !noheader ? header_num_rows : 0
-            lower_bound += 1 ∈ hlines ? 1 : 0
-            lower_bound += 1
-
-            continuation_line_row < lower_bound &&
-                (continuation_line_row = lower_bound)
-        end
     end
 
     # Top table line
@@ -451,13 +432,11 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                                 data_len,
                                 id_cols,
                                 id_rows,
-                                num_lines_in_row,
-                                num_printed_cols,
                                 Δc,
                                 cols_width,
-                                hlines,
                                 vlines,
-                                continuation_line_row,
+                                row_printing_recipe,
+                                col_printing_recipe,
                                 # Configurations.
                                 alignment,
                                 body_hlines_format,
@@ -469,7 +448,6 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                                 show_row_names,
                                 show_row_number,
                                 tf,
-                                Δscreen_lines,
                                 # Crayons.
                                 border_crayon,
                                 row_name_crayon,

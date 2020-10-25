@@ -7,82 +7,6 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-function _compute_omitted_rows_and_cols(screen::Screen,
-                                        num_cols::Int,
-                                        num_rows::Int,
-                                        cols_width::Vector{Int},
-                                        num_lines_in_row::Vector{Int},
-                                        num_printed_cols::Int,
-                                        num_printed_rows::Int,
-                                        header_num_rows::Int,
-                                        noheader::Bool,
-                                        vlines::Vector{Int},
-                                        hlines::Vector{Int},
-                                        Δc::Int,
-                                        Δscreen_lines::Int)
-    num_omitted_cols = 0
-    num_omitted_rows = 0
-
-    # Compute the number of omitted columns.
-    if screen.size[2] > 0
-        num_fully_printed_cols = 0
-        accum_size = 0 ∈ vlines ? 2 : 1
-
-        @inbounds for i = 1:num_printed_cols
-            accum_size += cols_width[i]
-            accum_size ≥ (screen.size[2] - 1) && break
-            num_fully_printed_cols += 1
-            accum_size += 2
-            i ∈ vlines && (accum_size += 1)
-        end
-
-        num_omitted_cols = clamp(num_cols - num_fully_printed_cols + Δc,
-                                 0, num_cols)
-    end
-
-    if screen.size[1] > 0
-        # Compute the number of omitted rows.
-        num_fully_printed_rows = 0
-        accum_size = 0 ∈ hlines ? 1 : 0
-
-        if !noheader
-            accum_size += header_num_rows
-            accum_size += 1 ∈ hlines ? 1 : 0
-        end
-
-        # Compute the limit of `accum_size` that leads to data cropping. Notice
-        # that we must subtract `2` to account for the continuation line and the
-        # summary line.
-        accum_size_limit = screen.size[1] - Δscreen_lines - 2
-
-        @inbounds for j = 1:num_printed_rows
-            accum_size += num_lines_in_row[j]
-
-            if accum_size > accum_size_limit
-                # If no omitted cells are printed, then we can have 2 additional
-                # spaces. Hence, if there are only 2 lines left to be printed
-                # and not column is omitted, then nothing will be cropped.
-                if (num_omitted_cols == 0)
-                    remaining_lines = j < num_printed_rows ?
-                        sum(num_lines_in_row[j+1:num_printed_rows]) : 0
-
-                    accum_size + remaining_lines ≤ accum_size_limit + 2 &&
-                        (num_fully_printed_rows = num_printed_rows)
-                end
-
-                break
-            end
-
-            num_fully_printed_rows += 1
-            (j+!noheader) ∈ hlines && (accum_size += 1)
-        end
-
-        num_omitted_rows = num_rows - num_fully_printed_rows
-    end
-
-    return num_omitted_cols, num_omitted_rows
-end
-
 """
     _draw_continuation_row(screen::Screen, io::IO, tf::TextFormat, text_crayon::Crayon, border_crayon::Crayon, cols_width::Vector{Int}, vlines::Vector{Int}, alignment::Symbol)
 
@@ -170,15 +94,6 @@ Return `true` if the cursor is at the end of line or `false` otherwise.
 
 """
 _eol(screen::Screen) = (screen.size[2] > 0) && (screen.col >= screen.size[2])
-
-"""
-    _eos(screen::Screen, Δ::Int)
-
-Return `true` if the cursor is `Δ` lines before the end of screen or `false`
-otherwise.
-
-"""
-_eos(screen::Screen, Δ::Int) = (screen.size[1] > 0) && (screen.row+Δ >= screen.size[1])
 
 """
     _nl!(screen::Screen, io::IO)

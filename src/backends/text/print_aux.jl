@@ -101,13 +101,11 @@ function _print_table_data(buf::IO,
                            data_len::Matrix{Vector{Int}},
                            id_cols::Vector{Int},
                            id_rows::Vector{Int},
-                           num_lines_in_row::Vector{Int},
-                           num_printed_cols::Int,
                            Δc::Int,
                            cols_width::Vector{Int},
-                           hlines::Vector{Int},
                            vlines::Vector{Int},
-                           continuation_line_row::Int,
+                           row_printing_recipe::Vector{Union{Tuple{Int,Int},Symbol}},
+                           col_printing_recipe::Vector{Union{Int,Symbol}},
                            # Configurations.
                            alignment::Vector{Symbol},
                            body_hlines_format::Tuple,
@@ -119,123 +117,119 @@ function _print_table_data(buf::IO,
                            show_row_names::Bool,
                            show_row_number::Bool,
                            tf::TextFormat,
-                           Δscreen_lines::Int,
                            # Crayons.
                            border_crayon::Crayon,
                            row_name_crayon::Crayon,
                            text_crayon::Crayon)
 
-    num_printed_rows, ~ = size(data_str)
-
-    draw_continuation_line = false
-    all_data_printed = false
-
     line_count = 0
 
-    for i = 1:num_printed_rows
-        ir = id_rows[i]
-
-        for l = 1:num_lines_in_row[i]
-            # Check if we should print the ellipsis here.
-            screen.cont_char =
-                line_count % (ellipsis_line_skip + 1) == 0 ? '⋯' : ' '
-            line_count += 1
-
-            0 ∈ vlines && _p!(screen, border_crayon, tf.column, false, 1)
-
-            for j = 1:num_printed_cols
-                # Get the information about the alignment and the crayon.
-                if j ≤ Δc
-                    if show_row_number && (j == 1)
-                        crayon_ij    = text_crayon
-                        alignment_ij = alignment[1]
-                    elseif show_row_names
-                        crayon_ij    = row_name_crayon
-                        alignment_ij = alignment[Δc]
-                    end
-                else
-                    jc = id_cols[j-Δc]
-                    crayon_ij    = text_crayon
-                    alignment_ij = alignment[jc+Δc]
-
-                    # Check for highlighters.
-                    for h in highlighters
-                        if h.f(_getdata(data), ir, jc)
-                            crayon_ij = h.fd(h, _getdata(data), ir, jc)
-                            break
-                        end
-                    end
-
-                    # Check for cell alignment override.
-                    for f in cell_alignment
-                        aux = f(_getdata(data), ir, jc)
-
-                        if aux ∈ [:l, :c, :r, :L, :C, :R]
-                            alignment_ij = aux
-                            break
-                        end
-                    end
-
-                    # For Markdown cells, we will overwrite alignment and
-                    # highlighters.
-                    if isassigned(data,ir,jc) && (data[ir,jc] isa Markdown.MD)
-                        alignment_ij = :l
-                        crayon_ij = Crayon()
-                    end
-                end
-
-                # Align the string to be printed.
-                if length(data_str[i,j]) >= l
-                    data_ij_str, data_ij_len = _str_aligned(data_str[i,j][l],
-                                                            alignment_ij,
-                                                            cols_width[j],
-                                                            data_len[i,j][l])
-                else
-                    data_ij_str, data_ij_len = _str_aligned("",
-                                                            alignment_ij,
-                                                            cols_width[j])
-                end
-
-                # Print.
-                data_ij_str  = " " * data_ij_str * " "
-                data_ij_len += 2
-
-                flp = j == num_printed_cols
-
-                _p!(screen, crayon_ij, data_ij_str, false, data_ij_len)
-
-                # Check if we need to draw a vertical line here.
-                _pc!(j ∈ vlines, screen, border_crayon, tf.column, "" , flp, 1, 0)
-
-                _eol(screen) && break
+    for r in row_printing_recipe
+        if r isa Symbol
+            if r == :row_line
+                _draw_line!(screen, buf, body_hlines_format..., border_crayon,
+                            cols_width, vlines)
+            elseif r == :continuation_line
+                _draw_continuation_row(screen, buf, tf, text_crayon,
+                                       border_crayon, cols_width, vlines,
+                                       continuation_row_alignment)
+            else
+                error("Internal error: wrong symbol in row printing recipe.")
             end
 
-            _nl!(screen, buf)
+        else
+            i, num_lines = r
+            ir = id_rows[i]
 
-            # Check if we must draw the continuation line.
-            if (continuation_line_row > 0) && (screen.row ≥ continuation_line_row)
-                draw_continuation_line = true
-                break
+            for l = 1:num_lines
+
+                # Check if we should print the ellipsis here.
+                screen.cont_char =
+                    line_count % (ellipsis_line_skip + 1) == 0 ? '⋯' : ' '
+                line_count += 1
+
+                num_col_recipes = length(col_printing_recipe)
+
+                for c_id = 1:num_col_recipes
+                    c = col_printing_recipe[c_id]
+
+                    flp = c_id == num_col_recipes
+
+                    if c isa Symbol
+                        if c == :left_line
+                            _p!(screen, border_crayon, tf.column, flp, 1)
+                        elseif c == :column_line
+                            _p!(screen, border_crayon, tf.column, flp, 1)
+                        elseif c == :right_line
+                            _p!(screen, border_crayon, tf.column, flp, 1)
+                        else
+                            error("Internal error: wrong symbol in column printing recipe.")
+                        end
+                    else
+                        j = c
+
+                        # Get the information about the alignment and the
+                        # crayon.
+                        if j ≤ Δc
+                            if show_row_number && (j == 1)
+                                crayon_ij    = text_crayon
+                                alignment_ij = alignment[1]
+                            elseif show_row_names
+                                crayon_ij    = row_name_crayon
+                                alignment_ij = alignment[Δc]
+                            end
+                        else
+                            jc = id_cols[j-Δc]
+                            crayon_ij    = text_crayon
+                            alignment_ij = alignment[jc+Δc]
+
+                            # Check for highlighters.
+                            for h in highlighters
+                                if h.f(_getdata(data), ir, jc)
+                                    crayon_ij = h.fd(h, _getdata(data), ir, jc)
+                                    break
+                                end
+                            end
+
+                            # Check for cell alignment override.
+                            for f in cell_alignment
+                                aux = f(_getdata(data), ir, jc)
+
+                                if aux ∈ [:l, :c, :r, :L, :C, :R]
+                                    alignment_ij = aux
+                                    break
+                                end
+                            end
+
+                            # For Markdown cells, we will overwrite alignment and
+                            # highlighters.
+                            if isassigned(data,ir,jc) && (data[ir,jc] isa Markdown.MD)
+                                alignment_ij = :l
+                                crayon_ij = Crayon()
+                            end
+                        end
+
+                        # Align the string to be printed.
+                        if length(data_str[i,j]) >= l
+                            data_ij_str, data_ij_len = _str_aligned(data_str[i,j][l],
+                                                                    alignment_ij,
+                                                                    cols_width[j],
+                                                                    data_len[i,j][l])
+                        else
+                            data_ij_str, data_ij_len = _str_aligned("",
+                                                                    alignment_ij,
+                                                                    cols_width[j])
+                        end
+
+                        # Print.
+                        data_ij_str  = " " * data_ij_str * " "
+                        data_ij_len += 2
+
+                        _p!(screen, crayon_ij, data_ij_str, false, data_ij_len)
+                    end
+                end
+                _nl!(screen, buf)
             end
-        end
-
-        # Check if we must draw a horizontal line here.
-        !draw_continuation_line && (i != num_printed_rows) && ((i+!noheader) in hlines) &&
-            _draw_line!(screen, buf, body_hlines_format..., border_crayon,
-                        cols_width, vlines)
-
-        # Check if the screen space is over after the horizontal line and we
-        # still have data to be printed.
-        if (continuation_line_row > 0) && (screen.row ≥ continuation_line_row)
-            draw_continuation_line = true
-        end
-
-        # Draw the continuation line if necessary and stop printing.
-        if draw_continuation_line
-            _draw_continuation_row(screen, buf, tf, text_crayon, border_crayon,
-                                   cols_width, vlines,
-                                   continuation_row_alignment)
-            break
         end
     end
 end
