@@ -86,13 +86,42 @@ function _create_printing_recipe(screen::Screen,
     row_printing_recipe = Vector{Union{Tuple{Int,Int},Symbol}}(undef, 0)
     data_vertical_limit = 0
     fully_printed_rows  = 0
-    crop_space          = show_omitted_cell_summary ? 2 : 1
 
-    # Verify if the output must be cropped.
-    if crop == :both || crop == :vertical
+    # Compute how many additional lines we need to print the cropping
+    # information.
+    crop_space = show_omitted_cell_summary ? 2 : 1
+
+    # Verify if the output must be vertically cropped.
+    data_vcropped = false
+
+    if (screen.size[1] > 0) && ( (crop == :both) || (crop == :vertical) )
+        # Compute the number of lines required to print the table. Notice that
+        # we need to omit the last line since it is always printed.
+        total_hlines = count(x->0 ≤ x < (!noheader + num_printed_rows), hlines)
+        total_table_lines  = !noheader ? header_num_rows : 0
+        total_table_lines += total_hlines + sum(num_lines_in_row)
+
+        # Check if we can print all the table lines in the available space.
         data_vertical_limit = screen.size[1] - Δscreen_lines - crop_space
+        Δ = data_vertical_limit - total_table_lines
+
+        # Given the additional space we have when printing the continuation
+        # line and possibly the summary information, we need to check if
+        # the remaining lines fit on it.
+        data_vcropped = true
+
+        if Δ > -crop_space
+            data_vcropped = false
+        else
+            if show_omitted_cell_summary && (num_omitted_cols == 0) && (Δ+2 ≥ 0)
+                data_vcropped = false
+            elseif (Δ+1 ≥ 0)
+                data_vcropped = false
+            end
+        end
     end
 
+    # Compute the required size for the header.
     header_length  = 0 ∈ hlines ? 1 : 0
 
     if !noheader
@@ -104,65 +133,42 @@ function _create_printing_recipe(screen::Screen,
     # print.
     printed_lines = header_length
 
+    fully_printed_rows = data_vcropped ? 0 : num_printed_rows
+
     @inbounds for i = 1:num_printed_rows
         num_lines_row_i = num_lines_in_row[i]
 
-        # This variable contains the number of available lines we have to print
-        # the data.
-        Δ = data_vertical_limit > 0 ?
-            data_vertical_limit - (num_lines_row_i + printed_lines) :
-            1
+        if !data_vcropped
+            push!(row_printing_recipe, (i, num_lines_row_i))
+            (i != num_printed_rows) && ((i+!noheader) ∈ hlines) &&
+                push!(row_printing_recipe, :row_line)
+        else
+            # This variable contains the number of available lines we have to
+            # print the data.
+            Δ = data_vertical_limit - (num_lines_row_i + printed_lines)
 
-        # Verify if the entire row can be printed.
-        if Δ < 0
-            # Compute the remaining lines to be printed.
-            remaining_lines = i < num_printed_rows ? sum(num_lines_in_row[i+1:end]) : 0
-
-            # Given the additional space we have when printing the continuation
-            # line and possibly the summary information, we need to check if
-            # the remaining lines fit on it.
-            if (-Δ ≤ crop_space)
-                if show_omitted_cell_summary && (num_omitted_cols == 0)
-
-                    if -Δ+1 > remaining_lines
-                        for j = i:num_printed_rows
-                            push!(row_printing_recipe, (j, num_lines_in_row[j]))
-                        end
-
-                        fully_printed_rows = num_printed_rows
-                        break
-                    end
-                end
-            end
-
-            # If there only one more line to be printed, check if this is the
-            # last information. In this case we can suppress the continuation
-            # line.
-            if (-Δ + remaining_lines == 1)
-                push!(row_printing_recipe, (i, num_lines_row_i))
-                fully_printed_rows += 1
-            else
+            # Verify if the entire row can be printed.
+            if Δ < 0
                 remaining_rows = data_vertical_limit - printed_lines
                 remaining_rows > 0 && push!(row_printing_recipe, (i, remaining_rows))
                 push!(row_printing_recipe, :continuation_line)
-            end
-
-            break
-        else
-            push!(row_printing_recipe, (i, num_lines_row_i))
-            printed_lines += num_lines_row_i
-            fully_printed_rows += 1
-
-            # Check if we have space for drawing the row line.
-            Δ = data_vertical_limit > 0 ? data_vertical_limit - printed_lines : 1
-
-            if (Δ < 0)
-                push!(row_printing_recipe, :continuation_line)
                 break
             else
-                if (Δ > 0) && (i != num_printed_rows) && ((i+!noheader) ∈ hlines)
-                    push!(row_printing_recipe, :row_line)
-                    printed_lines += 1
+                push!(row_printing_recipe, (i, num_lines_row_i))
+                printed_lines += num_lines_row_i
+                fully_printed_rows += 1
+
+                # Check if we have space for drawing the row line.
+                Δ = data_vertical_limit - printed_lines
+
+                if (Δ < 0)
+                    push!(row_printing_recipe, :continuation_line)
+                    break
+                else
+                    if (Δ > 0) && (i != num_printed_rows) && ((i+!noheader) ∈ hlines)
+                        push!(row_printing_recipe, :row_line)
+                        printed_lines += 1
+                    end
                 end
             end
         end
