@@ -15,7 +15,7 @@ function _compute_row_fill_vectors(id_rows::Vector{Int},
 
     # Compute the array separation if the vertical crop mode is `:middle`.
     num_rows = length(id_rows)
-    Δ₀ = div(num_printed_rows, 2, RoundUp)
+    Δ₀ = cld(num_printed_rows, 2)
 
     # Create the vector that will be used to fill the rows given the crop mode.
     jvec  = Vector{Int}(undef, num_printed_rows)

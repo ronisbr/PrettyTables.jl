@@ -196,8 +196,8 @@ function _create_printing_recipe(screen::Screen,
             # Compute the amount of space left to print the table data.
             table_data_space = data_vertical_limit - header_length
 
-            Δs = div(table_data_space, 2, RoundUp)
-            Δr = div(num_printed_rows, 2, RoundUp)
+            Δs = cld(table_data_space, 2)
+            Δr = cld(num_printed_rows, 2)
 
             printed_lines = 0
 
