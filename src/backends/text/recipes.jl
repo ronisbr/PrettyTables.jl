@@ -38,21 +38,25 @@ function _create_printing_recipe(screen::Screen,
 
     # The variable stores the current line length to check how many columns we
     # can print.
-    line_length = 1
+    line_length = 0
 
     if 0 ∈ vlines
-        line_length += 2
+        line_length += 1
         push!(col_printing_recipe, :left_line)
     end
 
     @inbounds for i = 1:num_printed_cols
+        # Space before the next row.
+        line_length += 1
+
+        # Width of the column.
         line_length += cols_width[i]
         push!(col_printing_recipe, i)
 
         Δ = data_horizontal_limit > 0 ?
             data_horizontal_limit - line_length :
             1
-        Δ < 0 && break
+        Δ ≤ 0 && break
 
         fully_printed_cols += 1
 
@@ -60,16 +64,12 @@ function _create_printing_recipe(screen::Screen,
         line_length += 1
 
         if i ∈ vlines
-            line_length += 1
-
             if i != num_printed_cols
                 push!(col_printing_recipe, :column_line)
-
-                # Consider the space after the column line.
-                line_length += 1
             else
                 push!(col_printing_recipe, :right_line)
             end
+            line_length += 1
         end
     end
 
