@@ -104,7 +104,7 @@ function _print_table_data(buf::IO,
                            Δc::Int,
                            cols_width::Vector{Int},
                            vlines::Vector{Int},
-                           row_printing_recipe::Vector{Union{Tuple{Int,Int},Symbol}},
+                           row_printing_recipe::Vector{Union{Tuple{Int,Int,Int},Symbol}},
                            col_printing_recipe::Vector{Union{Int,Symbol}},
                            # Configurations.
                            alignment::Vector{Symbol},
@@ -138,10 +138,10 @@ function _print_table_data(buf::IO,
             end
 
         else
-            i, num_lines = r
+            i, num_lines, l₀ = r
             ir = id_rows[i]
 
-            for l = 1:num_lines
+            for l = l₀:(l₀+num_lines-1)
 
                 # Check if we should print the ellipsis here.
                 screen.cont_char =

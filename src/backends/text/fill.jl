@@ -7,6 +7,59 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
+# Compute the vectors that will be used to fill the rows of the matrix that will
+# be printed. This is required due to the different crop modes available.
+function _compute_row_fill_vectors(id_rows::Vector{Int},
+                                   num_printed_rows::Int,
+                                   vcrop_mode::Symbol)
+
+    # Compute the array separation if the vertical crop mode is `:middle`.
+    num_rows = length(id_rows)
+    Δ₀ = div(num_printed_rows, 2, RoundUp)
+
+    # Create the vector that will be used to fill the rows given the crop mode.
+    jvec  = Vector{Int}(undef, num_printed_rows)
+    jrvec = Vector{Int}(undef, num_printed_rows)
+
+    if vcrop_mode == :bottom
+        for i = 1:num_printed_rows
+            jvec[i]  = i
+            jrvec[i] = id_rows[i]
+        end
+    elseif vcrop_mode == :middle
+        i  = 1
+        i₀ = 1
+        i₁ = 1
+
+        len₀ = Δ₀
+        len₁ = num_printed_rows - Δ₀
+
+        while (i₀ ≤ len₀) || (i₁ ≤ len₁)
+            if i₀ ≤ len₀
+                j        = i₀
+                jvec[i]  = j
+                jrvec[i] = id_rows[j]
+
+                i  += 1
+                i₀ += 1
+            end
+
+            if i₁ ≤ len₁
+                j = num_printed_rows - i₁ + 1
+                jvec[i]  = j
+                jrvec[i] = id_rows[num_rows - i₁ + 1]
+
+                i  += 1
+                i₁ += 1
+            end
+        end
+    else
+        error("Unknown vertical crop mode.")
+    end
+
+    return jvec, jrvec
+end
+
 # Fill the header and matrix data.
 function _fill_matrix_data!(header_str::Matrix{String},
                             header_len::Matrix{Int},
@@ -16,6 +69,8 @@ function _fill_matrix_data!(header_str::Matrix{String},
                             id_cols::Vector{Int},
                             id_rows::Vector{Int},
                             num_lines_in_row::Vector{Int},
+                            jvec::Vector{Int},
+                            jrvec::Vector{Int},
                             Δc::Int,
                             columns_width::Vector{Int},
                             data::Any,
@@ -31,7 +86,8 @@ function _fill_matrix_data!(header_str::Matrix{String},
                             linebreaks::Bool,
                             maximum_columns_width::Vector{Int},
                             noheader::Bool,
-                            renderer::Union{Val{:print}, Val{:show}})
+                            renderer::Union{Val{:print}, Val{:show}},
+                            vcrop_mode::Symbol)
 
     num_printed_rows, num_printed_cols = size(data_str)
     header_num_rows, ~ = size(header_len)
@@ -91,9 +147,9 @@ function _fill_matrix_data!(header_str::Matrix{String},
             end
         end
 
-        for j = 1:num_printed_rows
-            # Index of the j-th printed row in `data`.
-            jr = id_rows[j]
+        for k = 1:num_printed_rows
+            j  = jvec[k]
+            jr = jrvec[k]
 
             # Apply the formatters.
             data_ij = isassigned(data,jr,ic) ? data[jr,ic] : undef
@@ -134,8 +190,14 @@ function _fill_matrix_data!(header_str::Matrix{String},
                 end
             end
 
-            if (screen.size[1] > 0) && (num_processed_rows ≥ screen.size[1])
-                num_printed_rows = j
+            # If the crop mode if `:middle`, then we need to always process a
+            # row in the top and in another in the bottom before stopping due to
+            # screen size. This is required to avoid printing from a cell that
+            # is undefined. Notice that due to the printing order in `jvec` we
+            # just need to check if `k` is even.
+            if ( (vcrop_mode == :bottom) ||
+                 ( (vcrop_mode == :middle) && (k % 2 == 0) ) ) &&
+                (screen.size[1] > 0) && (num_processed_rows ≥ screen.size[1])
                 break
             end
         end
@@ -164,6 +226,8 @@ function _fill_row_number_column!(header_str::Matrix{String},
                                   data_len::Matrix{Vector{Int}},
                                   cols_width::Vector{Int},
                                   id_rows::Vector{Int},
+                                  jvec::Vector{Int},
+                                  jrvec::Vector{Int},
                                   noheader::Bool,
                                   num_rows::Int,
                                   row_number_column_title::String)
@@ -179,11 +243,14 @@ function _fill_row_number_column!(header_str::Matrix{String},
 
     # Set the data of the row column.
     for i = 1:num_printed_rows
-        data_str[i,1] = [string(id_rows[i])]
+        j  = jvec[i]
+        jr = jrvec[i]
+
+        data_str[j,1] = [string(jr)]
 
         # Here we can use `length` because there will be no UTF-8 character
         # in this cell.
-        data_len[i,1] = [length(data_str[i,1][1])]
+        data_len[j,1] = [length(data_str[j,1][1])]
     end
 
     # The row number width depends on how many digits the total number of
@@ -202,6 +269,8 @@ function _fill_row_name_column!(header_str::Matrix{String},
                                 data_len::Matrix{Vector{Int}},
                                 cols_width::Vector{Int},
                                 row_names::AbstractVector,
+                                jvec::Vector{Int},
+                                jrvec::Vector{Int},
                                 Δc::Int,
                                 compact_printing::Bool,
                                 renderer::Union{Val{:print}, Val{:show}},
@@ -225,9 +294,12 @@ function _fill_row_name_column!(header_str::Matrix{String},
     # Convert the row names to string.
     max_size = 0
     for i = 1:num_printed_rows
-        row_names_i = isassigned(row_names,i) ? row_names[i] : undef
+        j  = jvec[i]
+        jr = jrvec[i]
+
+        row_names_j = isassigned(row_names,jr) ? row_names[jr] : undef
         row_name_str, row_name_lstr, cell_width =
-            _parse_cell_text(row_names_i;
+            _parse_cell_text(row_names_j;
                              autowrap = false,
                              cell_first_line_only = false,
                              column_width = -1,
@@ -235,8 +307,8 @@ function _fill_row_name_column!(header_str::Matrix{String},
                              linebreaks = false,
                              renderer = Val(:print))
 
-        data_str[i,Δc] = row_name_str
-        data_len[i,Δc] = row_name_lstr
+        data_str[j,Δc] = row_name_str
+        data_len[j,Δc] = row_name_lstr
 
         cell_width > max_size && (max_size = cell_width)
     end

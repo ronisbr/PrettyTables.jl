@@ -143,6 +143,11 @@ passed as keywords when calling the function `pretty_table`:
                                (**Default** = `false`)
 * `tf`: Table format used to print the table (see the section
         [Text table formats](@ref)). (**Default** = `unicode`)
+* `vcrop_mode`: This variable defines the vertical crop behavior. If it is
+                `:bottom`, then the data, if required, will be cropped in the
+                bottom. On the other hand, if it is `:middle`, then the data
+                will be cropped in the middle if necessary.
+                (**Default** = `:bottom`)
 * `vlines`: This variable controls where the vertical lines will be drawn. It
             can be `nothing`, `:all`, `:none` or a vector of integers.
     - If it is `nothing`, which is the default, then the configuration will be

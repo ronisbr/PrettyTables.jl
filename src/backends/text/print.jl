@@ -43,6 +43,7 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                   title_autowrap::Bool = false,
                   title_crayon::Crayon = Crayon(bold = true),
                   title_same_width_as_table::Bool = false,
+                  vcrop_mode::Symbol = :bottom,
                   vlines::Union{Nothing,Symbol,AbstractVector} = nothing)
 
     @unpack_PrintInfo pinfo
@@ -78,6 +79,8 @@ function _pt_text(io::IO, pinfo::PrintInfo;
         elseif crop == :horizontal
             screen.size = (-1,screen.size[2])
         end
+
+        vcrop_mode ∉ [:bottom, :middle] && (vcrop_mode = :bottom)
     else
         # If the table will not be cropped, then we should never show an omitted
         # cell summary.
@@ -201,13 +204,29 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     # to the table.
     alignment_add = Symbol[]
 
+    # Vectors with the order that the rows must be filled
+    # --------------------------------------------------------------------------
+
+    # The vector `jvec` contains the indices in the printed matrix whereas the
+    # vector `jrvec` contains the indices in the data matrix.
+    jvec, jrvec = _compute_row_fill_vectors(id_rows,
+                                            num_printed_rows,
+                                            vcrop_mode)
+
     # Row numbers
     # --------------------------------------------------------------------------
 
     if show_row_number
-        @inbounds _fill_row_number_column!(header_str, header_len, data_str,
-                                           data_len, cols_width, id_rows,
-                                           noheader, num_rows,
+        @inbounds _fill_row_number_column!(header_str,
+                                           header_len,
+                                           data_str,
+                                           data_len,
+                                           cols_width,
+                                           id_rows,
+                                           jvec,
+                                           jrvec,
+                                           noheader,
+                                           num_rows,
                                            row_number_column_title)
 
         # Add information about the row number column to the variables.
@@ -218,9 +237,17 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     # --------------------------------------------------------------------------
 
     if show_row_names
-        @inbounds _fill_row_name_column!(header_str, header_len, data_str,
-                                         data_len, cols_width, row_names, Δc,
-                                         compact_printing, renderer,
+        @inbounds _fill_row_name_column!(header_str,
+                                         header_len,
+                                         data_str,
+                                         data_len,
+                                         cols_width,
+                                         row_names,
+                                         jvec,
+                                         jrvec,
+                                         Δc,
+                                         compact_printing,
+                                         renderer,
                                          row_name_column_title)
 
         # Add information about the row name column to the variables.
@@ -241,6 +268,8 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                                      id_cols,
                                      id_rows,
                                      num_lines_in_row,
+                                     jvec,
+                                     jrvec,
                                      Δc,
                                      columns_width,
                                      data,
@@ -256,7 +285,8 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                                      linebreaks,
                                      maximum_columns_width,
                                      noheader,
-                                     renderer)
+                                     renderer,
+                                     vcrop_mode)
 
     # If the user wants all the columns with the same size, then select the
     # larger.
@@ -341,7 +371,8 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                                 # Configurations
                                 crop,
                                 noheader,
-                                show_omitted_cell_summary)
+                                show_omitted_cell_summary,
+                                vcrop_mode)
 
 
     #                           Print the table
