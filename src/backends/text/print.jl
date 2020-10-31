@@ -371,6 +371,7 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                                 num_printed_cols,
                                 num_lines_in_row,
                                 cols_width,
+                                id_rows,
                                 hlines,
                                 vlines,
                                 Δscreen_lines,

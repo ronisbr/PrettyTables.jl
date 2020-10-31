@@ -17,6 +17,7 @@ function _create_printing_recipe(screen::Screen,
                                  num_printed_cols::Int,
                                  num_lines_in_row::Vector{Int},
                                  cols_width::Vector{Int},
+                                 id_rows::Vector{Int},
                                  hlines::Vector{Int},
                                  vlines::Vector{Int},
                                  Δscreen_lines::Int,
@@ -86,11 +87,12 @@ function _create_printing_recipe(screen::Screen,
     # The row printing recipe can be a symbol, which indicates a type of line
     # that must be drawn, or a tuple of three integers that describe:
     #
-    #     1. The index of the row number that must be printed.
-    #     2. How many lines must be printed.
-    #     3. The initial printing line.
+    #     1. The index of the row that must be printed in `data_str`.
+    #     2. The index of the row that must be printed in `data`.
+    #     3. How many lines must be printed.
+    #     4. The initial printing line.
 
-    row_printing_recipe = Vector{Union{Tuple{Int,Int,Int},Symbol}}(undef, 0)
+    row_printing_recipe = Vector{Union{Tuple{Int, Int, Int, Int}, Symbol}}(undef, 0)
     data_vertical_limit = 0
     fully_printed_rows  = 0
 
@@ -134,7 +136,11 @@ function _create_printing_recipe(screen::Screen,
         fully_printed_rows = num_printed_rows
 
         @inbounds for i = 1:num_printed_rows
-            push!(row_printing_recipe, (i, num_lines_in_row[i], 1))
+            # Index of this row in `data`.
+            ir = id_rows[i]
+
+            push!(row_printing_recipe, (i, ir, num_lines_in_row[i], 1))
+
             (i != num_printed_rows) && ((i+!noheader) ∈ hlines) &&
                 push!(row_printing_recipe, :row_line)
         end
@@ -157,6 +163,9 @@ function _create_printing_recipe(screen::Screen,
             @inbounds for i = 1:num_printed_rows
                 num_lines_row_i = num_lines_in_row[i]
 
+                # Index of this row in `data`.
+                ir = id_rows[i]
+
                 # This variable contains the number of available lines we have
                 # to print the data.
                 Δ = data_vertical_limit - (num_lines_row_i + printed_lines)
@@ -165,11 +174,11 @@ function _create_printing_recipe(screen::Screen,
                 if Δ < 0
                     remaining_rows = data_vertical_limit - printed_lines
                     remaining_rows > 0 &&
-                        push!(row_printing_recipe, (i, remaining_rows, 1))
+                        push!(row_printing_recipe, (i, ir, remaining_rows, 1))
                     push!(row_printing_recipe, :continuation_line)
                     break
                 else
-                    push!(row_printing_recipe, (i, num_lines_row_i, 1))
+                    push!(row_printing_recipe, (i, ir, num_lines_row_i, 1))
                     printed_lines += num_lines_row_i
                     fully_printed_rows += 1
 
@@ -195,7 +204,7 @@ function _create_printing_recipe(screen::Screen,
             # end to the beginning of the table. Hence, we create a temporary
             # vector of the recipe that will be reversed and merged into the
             # main one.
-            row_printing_recipe_end = Vector{Union{Tuple{Int,Int,Int},Symbol}}(undef, 0)
+            row_printing_recipe_end = Vector{Union{Tuple{Int, Int, Int, Int}, Symbol}}(undef, 0)
 
             # Compute the amount of space left to print the table data.
             table_data_space = data_vertical_limit - header_length
@@ -209,6 +218,9 @@ function _create_printing_recipe(screen::Screen,
             @inbounds for i = 1:Δr
                 num_lines_row_i = num_lines_in_row[i]
 
+                # Index of this row in `data`.
+                ir = id_rows[i]
+
                 # This variable contains the number of available lines we have
                 # to print the data.
                 Δ = Δs - (num_lines_row_i + printed_lines)
@@ -217,10 +229,10 @@ function _create_printing_recipe(screen::Screen,
                 if Δ < 0
                     remaining_rows = Δs - printed_lines
                     remaining_rows > 0 &&
-                        push!(row_printing_recipe, (i, remaining_rows, 1))
+                        push!(row_printing_recipe, (i, ir, remaining_rows, 1))
                     break
                 else
-                    push!(row_printing_recipe, (i, num_lines_row_i, 1))
+                    push!(row_printing_recipe, (i, ir, num_lines_row_i, 1))
                     printed_lines += num_lines_row_i
                     fully_printed_rows += 1
 
@@ -249,6 +261,9 @@ function _create_printing_recipe(screen::Screen,
             @inbounds for i = num_printed_rows:-1:Δr+1
                 num_lines_row_i = num_lines_in_row[i]
 
+                # Index of this row in `data`.
+                ir = id_rows[num_filtered_rows - (num_printed_rows - i)]
+
                 # This variable contains the number of available lines we have
                 # to print the data.
                 Δ = Δs - (num_lines_row_i + printed_lines)
@@ -261,10 +276,10 @@ function _create_printing_recipe(screen::Screen,
                     # we need to print the lower part of the row.
                     remaining_rows > 0 &&
                         push!(row_printing_recipe_end,
-                              (i, remaining_rows, num_lines_row_i - remaining_rows + 1))
+                              (i, ir, remaining_rows, num_lines_row_i - remaining_rows + 1))
                     break
                 else
-                    push!(row_printing_recipe_end, (i, num_lines_row_i, 1))
+                    push!(row_printing_recipe_end, (i, ir, num_lines_row_i, 1))
                     printed_lines += num_lines_row_i
                     fully_printed_rows += 1
 

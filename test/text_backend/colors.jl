@@ -161,3 +161,85 @@ end
 
     @test result == expected
 end
+
+@testset "Highlighters with table cropping and filters" begin
+    matrix = [1:1:100 1:1:100 1:1:100]
+
+    hl = Highlighter((data, i, j)-> i == 100 && j == 2,
+                        crayon"yellow")
+
+    expected = """
+┌────────┬────────┬────────┐
+│\e[1m Col. 1 \e[0m│\e[1m Col. 2 \e[0m│\e[1m Col. 3 \e[0m│
+├────────┼────────┼────────┤
+│      1 │      1 │      1 │
+│      2 │      2 │      2 │
+│      3 │      3 │      3 │
+│      4 │      4 │      4 │
+│   ⋮    │   ⋮    │   ⋮    │
+│     98 │     98 │     98 │
+│     99 │     99 │     99 │
+│    100 │\e[33m    100 \e[0m│    100 │
+└────────┴────────┴────────┘
+\e[31m             93 rows omitted\e[0m
+"""
+
+    result = sprint((io)->pretty_table(io, matrix,
+                                       highlighters = (hl,),
+                                       vcrop_mode = :middle,
+                                       screen_size = (15,-1)),
+                    context = :color => true)
+
+    @test result == expected
+
+    expected = """
+┌────────┬────────┬────────┐
+│\e[1m Col. 1 \e[0m│\e[1m Col. 2 \e[0m│\e[1m Col. 3 \e[0m│
+├────────┼────────┼────────┤
+│      2 │      2 │      2 │
+│      4 │      4 │      4 │
+│      6 │      6 │      6 │
+│      8 │      8 │      8 │
+│   ⋮    │   ⋮    │   ⋮    │
+│     96 │     96 │     96 │
+│     98 │     98 │     98 │
+│    100 │\e[33m    100 \e[0m│    100 │
+└────────┴────────┴────────┘
+\e[31m             43 rows omitted\e[0m
+"""
+
+    result = sprint((io)->pretty_table(io, matrix,
+                                       filters_row = ((data, i)->i % 2 == 0,),
+                                       highlighters = (hl,),
+                                       vcrop_mode = :middle,
+                                       screen_size = (15,-1)),
+                    context = :color => true)
+
+    @test result == expected
+
+    expected = """
+┌────────┬────────┐
+│\e[1m Col. 2 \e[0m│\e[1m Col. 3 \e[0m│
+├────────┼────────┤
+│      2 │      2 │
+│      4 │      4 │
+│      6 │      6 │
+│      8 │      8 │
+│   ⋮    │   ⋮    │
+│     96 │     96 │
+│     98 │     98 │
+│\e[33m    100 \e[0m│    100 │
+└────────┴────────┘
+\e[31m    43 rows omitted\e[0m
+"""
+
+    result = sprint((io)->pretty_table(io, matrix,
+                                       filters_col = ((data, i)->i != 1,),
+                                       filters_row = ((data, i)->i % 2 == 0,),
+                                       highlighters = (hl,),
+                                       vcrop_mode = :middle,
+                                       screen_size = (15,-1)),
+                    context = :color => true)
+
+    @test result == expected
+end

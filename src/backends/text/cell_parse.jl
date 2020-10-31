@@ -145,7 +145,7 @@ function _process_cell_text(data::Any,
 
         # For Markdown cells, we will overwrite alignment and
         # highlighters.
-        if isassigned(data,i,j) && (data[i,j] isa Markdown.MD)
+        if isassigned(data, i, j) && (data[i,j] isa Markdown.MD)
             alignment = :l
             crayon = Crayon()
         end
