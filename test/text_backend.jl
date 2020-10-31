@@ -25,6 +25,10 @@ end
     include("text_backend/column_width.jl")
 end
 
+@testset "Colors" begin
+    include("text_backend/colors.jl")
+end
+
 @testset "Cropping" begin
     include("text_backend/cropping.jl")
 end
