@@ -6,7 +6,7 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-@testset "Table cropping" begin
+@testset "Table cropping - bottom vertical cropping" begin
     expected = """
 ┌────────┬────────┬────────┬────────┐
 │ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
@@ -141,30 +141,6 @@
                           screen_size = (12,-1))
     @test result == expected
 
-    # Sub-header cropping
-    # --------------------------------------------------------------------------
-
-    header = ["A"            "B"             "C"            "D"
-              "First column" "Second column" "Third column" "Fourth column"]
-
-    expected = """
-┌───┬───────┬─────┬───┐
-│ A │     B │   C │ D │
-│ … │ Seco… │ Th… │ … │
-├───┼───────┼─────┼───┤
-│ 1 │ false │ 1.0 │ 1 │
-│ 2 │  true │ 2.0 │ 2 │
-│ 3 │ false │ 3.0 │ 3 │
-│ 4 │  true │ 4.0 │ 4 │
-│ 5 │ false │ 5.0 │ 5 │
-│ 6 │  true │ 6.0 │ 6 │
-└───┴───────┴─────┴───┘
-"""
-
-    result = pretty_table(String, data, header, crop_subheader = true)
-
-    @test result == expected
-
     # Linebreaks
     # --------------------------------------------------------------------------
 
@@ -268,6 +244,317 @@
     @test result == expected
 end
 
+@testset "Table cropping - middle vertical cropping" begin
+    expected = """
+┌────────┬────────┬────────┬────────┐
+│ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
+├────────┼────────┼────────┼────────┤
+│      1 │  false │    1.0 │      1 │
+│      2 │   true │    2.0 │      2 │
+│      3 │  false │    3.0 │      3 │
+│      4 │   true │    4.0 │      4 │
+│      5 │  false │    5.0 │      5 │
+│      6 │   true │    6.0 │      6 │
+└────────┴────────┴────────┴────────┘
+"""
+
+    result = pretty_table(String, data,
+                          screen_size = (10,10),
+                          crop = :none,
+                          vcrop_mode = :middle)
+
+    @test result == expected
+
+    result = pretty_table(String, data, screen_size = (-1,-1),
+                          crop = :both,
+                          vcrop_mode = :middle)
+
+    @test result == expected
+
+    expected = """
+┌────────┬────────┬────────┬──
+│ Col. 1 │ Col. 2 │ Col. 3 │ ⋯
+├────────┼────────┼────────┼──
+│      1 │  false │    1.0 │ ⋯
+│      2 │   true │    2.0 │ ⋯
+│   ⋮    │   ⋮    │   ⋮    │ ⋱
+│      6 │   true │    6.0 │ ⋯
+└────────┴────────┴────────┴──
+   1 column and 3 rows omitted
+"""
+
+    result = pretty_table(String, data,
+                          screen_size = (11,30),
+                          crop = :both,
+                          vcrop_mode = :middle)
+
+    @test result == expected
+
+    result = pretty_table(String, data,
+                          screen_size = (11,30),
+                          crop = :both,
+                          vcrop_mode = :middle)
+
+    @test result == expected
+
+    expected = """
+┌────────┬────────┬────────┬──
+│ Col. 1 │ Col. 2 │ Col. 3 │ ⋯
+├────────┼────────┼────────┼──
+│      1 │  false │    1.0 │ ⋯
+│      2 │   true │    2.0 │ ⋯
+│      3 │  false │    3.0 │ ⋯
+│      4 │   true │    4.0 │ ⋯
+│      5 │  false │    5.0 │ ⋯
+│      6 │   true │    6.0 │ ⋯
+└────────┴────────┴────────┴──
+              1 column omitted
+"""
+
+    result = pretty_table(String, data,
+                          screen_size = (11,30),
+                          crop = :horizontal,
+                          vcrop_mode = :middle)
+
+    @test result == expected
+
+    result = pretty_table(String, data,
+                          screen_size = (-1,30),
+                          crop = :both,
+                          vcrop_mode = :middle)
+
+    @test result == expected
+
+    expected = """
+┌────────┬────────┬────────┬────────┐
+│ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
+├────────┼────────┼────────┼────────┤
+│      1 │  false │    1.0 │      1 │
+│      2 │   true │    2.0 │      2 │
+│   ⋮    │   ⋮    │   ⋮    │   ⋮    │
+│      6 │   true │    6.0 │      6 │
+└────────┴────────┴────────┴────────┘
+                       3 rows omitted
+"""
+
+    result = pretty_table(String, data,
+                          screen_size = (11,30),
+                          crop = :vertical,
+                          vcrop_mode = :middle)
+
+    @test result == expected
+
+    result = pretty_table(String, data,
+                          screen_size = (11,-1),
+                          crop = :both,
+                          vcrop_mode = :middle)
+
+    @test result == expected
+
+    expected = """
+┌────────┬────────┬──────
+│ Col. 1 │ Col. 2 │ Col ⋯
+├────────┼────────┼──────
+│      1 │  false │     ⋯
+│      2 │   true │     ⋯
+│   ⋮    │   ⋮    │   ⋮ ⋱
+│      6 │   true │     ⋯
+└────────┴────────┴──────
+2 columns and 3 rows omitted
+"""
+
+    result = pretty_table(String, data,
+                          screen_size = (11,25),
+                          crop = :both,
+                          vcrop_mode = :middle)
+
+    @test result == expected
+
+    # Limits
+    # --------------------------------------------------------------------------
+
+    expected = """
+┌────────┬────────┬────────┬────────┐
+│ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
+├────────┼────────┼────────┼────────┤
+│      1 │  false │    1.0 │      1 │
+│      2 │   true │    2.0 │      2 │
+│      3 │  false │    3.0 │      3 │
+│      4 │   true │    4.0 │      4 │
+│      5 │  false │    5.0 │      5 │
+│      6 │   true │    6.0 │      6 │
+└────────┴────────┴────────┴────────┘
+"""
+
+    result = pretty_table(String, data,
+                          screen_size = (12,-1),
+                          vcrop_mode = :middle)
+
+    @test result == expected
+
+    data_text = Any[1    false            1.0     0x01 ;
+                    2     true            2.0     0x02 ;
+                    3    false            3.0     0x03 ;
+                    4     true            4.0     0x04 ;
+                    5    false            5.0     0x05 ;
+                    6    "teste\nteste"   6.0     0x06 ;]
+
+    expected = """
+┌────────┬────────┬────────┬────────┐
+│ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
+├────────┼────────┼────────┼────────┤
+│      1 │  false │    1.0 │      1 │
+│      2 │   true │    2.0 │      2 │
+│   ⋮    │   ⋮    │   ⋮    │   ⋮    │
+│      6 │  teste │    6.0 │      6 │
+│        │  teste │        │        │
+└────────┴────────┴────────┴────────┘
+                       3 rows omitted
+"""
+
+    result = pretty_table(String, data_text,
+                          linebreaks = true,
+                          screen_size = (12,-1),
+                          vcrop_mode = :middle)
+
+    @test result == expected
+
+    # Linebreaks
+    # --------------------------------------------------------------------------
+
+    matrix = ["1\n1\n1"; "2\n2\n2"; "3\n3\n3"]
+
+    expected = """
+┌────────┐
+│ Col. 1 │
+├────────┤
+│      1 │
+│      1 │
+│      1 │
+├────────┤
+│      2 │
+│      2 │
+│      2 │
+├────────┤
+│      3 │
+│      3 │
+│      3 │
+└────────┘
+"""
+
+    result = pretty_table(String, matrix,
+                          crop = :both,
+                          linebreaks = true,
+                          hlines = :all,
+                          screen_size = (17,-1),
+                          vcrop_mode = :middle)
+
+    @test result == expected
+
+    expected = """
+┌────────┐
+│ Col. 1 │
+├────────┤
+│      1 │
+│      1 │
+│      1 │
+├────────┤
+│   ⋮    │
+├────────┤
+│      3 │
+│      3 │
+│      3 │
+└────────┘
+1 row omitted
+"""
+    result = pretty_table(String, matrix,
+                          crop = :both,
+                          linebreaks = true,
+                          hlines = :all,
+                          screen_size = (16,-1),
+                          vcrop_mode = :middle)
+
+    @test result == expected
+
+    expected = """
+┌────────┐
+│ Col. 1 │
+├────────┤
+│      1 │
+│      1 │
+│      1 │
+├────────┤
+│   ⋮    │
+│      3 │
+│      3 │
+│      3 │
+└────────┘
+1 row omitted
+"""
+    result = pretty_table(String, matrix,
+                          crop = :both,
+                          linebreaks = true,
+                          hlines = :all,
+                          screen_size = (15,-1),
+                          vcrop_mode = :middle)
+
+    @test result == expected
+
+    expected = """
+┌────────┐
+│ Col. 1 │
+├────────┤
+│      1 │
+│      1 │
+│      1 │
+├────────┤
+│      2 │
+│      2 │
+│      2 │
+├────────┤
+│      3 │
+│      3 │
+│      3 │
+"""
+
+    result = pretty_table(String, matrix,
+                          crop = :both,
+                          linebreaks = true,
+                          hlines = [0,1,2,3],
+                          screen_size = (16,-1),
+                          vcrop_mode = :middle)
+
+    @test result == expected
+
+    matrix = ["1\n1\n1"; "1\n2\n3\n4\n5\n6\n7"]
+
+    expected = """
+┌────────┐
+│ Col. 1 │
+├────────┤
+│      1 │
+│      1 │
+│      1 │
+├────────┤
+│   ⋮    │
+│      4 │
+│      5 │
+│      6 │
+│      7 │
+└────────┘
+1 row omitted
+"""
+
+    result = pretty_table(String, matrix,
+                          crop = :both,
+                          hlines = :all,
+                          linebreaks = true,
+                          screen_size = (16,-1),
+                          vcrop_mode = :middle)
+
+    @test result == expected
+end
+
 @testset "Cell cropping" begin
 
     model = [1.123456789 for i = 1:8, j = 1:10]
@@ -309,6 +596,30 @@ end
     result = pretty_table(String, model,
                           columns_width = 6,
                           alignment = [:l, :l, :r, :c, :r, :c, :l, :l, :c, :r])
+
+    @test result == expected
+
+    # Sub-header cropping
+    # --------------------------------------------------------------------------
+
+    header = ["A"            "B"             "C"            "D"
+              "First column" "Second column" "Third column" "Fourth column"]
+
+    expected = """
+┌───┬───────┬─────┬───┐
+│ A │     B │   C │ D │
+│ … │ Seco… │ Th… │ … │
+├───┼───────┼─────┼───┤
+│ 1 │ false │ 1.0 │ 1 │
+│ 2 │  true │ 2.0 │ 2 │
+│ 3 │ false │ 3.0 │ 3 │
+│ 4 │  true │ 4.0 │ 4 │
+│ 5 │ false │ 5.0 │ 5 │
+│ 6 │  true │ 6.0 │ 6 │
+└───┴───────┴─────┴───┘
+"""
+
+    result = pretty_table(String, data, header, crop_subheader = true)
 
     @test result == expected
 end
