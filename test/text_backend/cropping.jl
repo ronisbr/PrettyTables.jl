@@ -242,6 +242,78 @@
                           screen_size = (16,-1))
 
     @test result == expected
+
+    # Additional columns
+    # --------------------------------------------------------------------------
+
+    expected = """
+┌─────┬──────────┬────────┬────────
+│ Row │ Row name │ Col. 1 │ Col.  ⋯
+├─────┼──────────┼────────┼────────
+│   1 │    Row 1 │      1 │  fals ⋯
+│   2 │    Row 2 │      2 │   tru ⋯
+│   3 │    Row 3 │      3 │  fals ⋯
+│   4 │    Row 4 │      4 │   tru ⋯
+│  ⋮  │    ⋮     │   ⋮    │   ⋮   ⋱
+└─────┴──────────┴────────┴────────
+       3 columns and 2 rows omitted
+"""
+
+    result = pretty_table(String, data,
+                          crop = :both,
+                          linebreaks = true,
+                          screen_size = (12,35),
+                          show_row_number = true,
+                          row_names = ["Row $i" for i = 1:6],
+                          row_name_column_title = "Row name")
+
+    @test result == expected
+
+    expected = """
+┌─────┬──────────┬───────
+│ Row │ Row name │ Col. ⋯
+├─────┼──────────┼───────
+│   1 │    Row 1 │      ⋯
+│   2 │    Row 2 │      ⋯
+│   3 │    Row 3 │      ⋯
+│   4 │    Row 4 │      ⋯
+│  ⋮  │    ⋮     │   ⋮  ⋱
+└─────┴──────────┴───────
+4 columns and 2 rows omitted
+"""
+
+    result = pretty_table(String, data,
+                          crop = :both,
+                          linebreaks = true,
+                          screen_size = (12,25),
+                          show_row_number = true,
+                          row_names = ["Row $i" for i = 1:6],
+                          row_name_column_title = "Row name")
+
+    @test result == expected
+
+    expected = """
+┌─────┬────────
+│ Row │ Row n ⋯
+├─────┼────────
+│   1 │    Ro ⋯
+│   2 │    Ro ⋯
+│   3 │    Ro ⋯
+│   4 │    Ro ⋯
+│  ⋮  │    ⋮  ⋱
+└─────┴────────
+4 columns and 2 rows omitted
+"""
+
+    result = pretty_table(String, data,
+                          crop = :both,
+                          linebreaks = true,
+                          screen_size = (12,15),
+                          show_row_number = true,
+                          row_names = ["Row $i" for i = 1:6],
+                          row_name_column_title = "Row name")
+
+    @test result == expected
 end
 
 @testset "Table cropping - middle vertical cropping" begin

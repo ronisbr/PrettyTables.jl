@@ -168,6 +168,10 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     # errors.
     num_printed_cols < Δc && (num_printed_cols = Δc)
 
+    # Number of rows and columns after filtering.
+    num_filtered_rows = length(id_rows)
+    num_filtered_cols = length(id_cols)
+
     # Create the string matrices that will be printed
     # ==========================================================================
 
@@ -361,6 +365,8 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     row_printing_recipe, col_printing_recipe, num_omitted_rows, num_omitted_cols =
         _create_printing_recipe(screen,
                                 header_num_rows,
+                                num_filtered_rows,
+                                num_filtered_cols,
                                 num_printed_rows,
                                 num_printed_cols,
                                 num_lines_in_row,
@@ -368,6 +374,7 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                                 hlines,
                                 vlines,
                                 Δscreen_lines,
+                                Δc,
                                 # Configurations
                                 crop,
                                 noheader,

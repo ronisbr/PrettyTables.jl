@@ -11,6 +11,8 @@
 # function also computed how many rows and columns are omitted in the printing.
 function _create_printing_recipe(screen::Screen,
                                  header_num_rows::Int,
+                                 num_filtered_rows::Int,
+                                 num_filtered_cols::Int,
                                  num_printed_rows::Int,
                                  num_printed_cols::Int,
                                  num_lines_in_row::Vector{Int},
@@ -18,6 +20,7 @@ function _create_printing_recipe(screen::Screen,
                                  hlines::Vector{Int},
                                  vlines::Vector{Int},
                                  Δscreen_lines::Int,
+                                 Δc::Int,
                                  # Configurations
                                  crop::Symbol,
                                  noheader::Bool,
@@ -74,7 +77,8 @@ function _create_printing_recipe(screen::Screen,
     end
 
     # Compute the number of omitted columns.
-    num_omitted_cols = num_printed_cols - fully_printed_cols
+    num_omitted_cols = clamp(num_filtered_cols - (fully_printed_cols - Δc),
+                             0, num_filtered_cols)
 
     # Row printing recipe
     # ==========================================================================
@@ -286,7 +290,7 @@ function _create_printing_recipe(screen::Screen,
         end
     end
 
-    num_omitted_rows = num_printed_rows - fully_printed_rows
+    num_omitted_rows = num_filtered_rows - fully_printed_rows
 
     return row_printing_recipe, col_printing_recipe, num_omitted_rows,
            num_omitted_cols
