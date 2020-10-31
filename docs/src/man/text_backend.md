@@ -276,6 +276,30 @@ julia> pretty_table(data, columns_width = 10, autowrap = true, linebreaks = true
 └─────┴────────────┘
 ```
 
+It is also possible to change the vertical cropping behavior to crop the table
+in the middle instead of the bottom. This can be accomplished by passing the
+option `vcrop_mode = :middle` to `pretty_table`:
+
+```jldoctest
+julia> data = Any[1    false      1.0     0x01 ;
+                  2     true      2.0     0x02 ;
+                  3    false      3.0     0x03 ;
+                  4     true      4.0     0x04 ;
+                  5    false      5.0     0x05 ;
+                  6     true      6.0     0x06 ;];
+
+julia> pretty_table(data, screen_size = (11,30), vcrop_mode = :middle)
+┌────────┬────────┬────────┬──
+│ Col. 1 │ Col. 2 │ Col. 3 │ ⋯
+├────────┼────────┼────────┼──
+│      1 │  false │    1.0 │ ⋯
+│      2 │   true │    2.0 │ ⋯
+│   ⋮    │   ⋮    │   ⋮    │ ⋱
+│      6 │   true │    6.0 │ ⋯
+└────────┴────────┴────────┴──
+   1 column and 3 rows omitted
+```
+
 ## Text highlighters
 
 A set of highlighters can be passed as a `Tuple` to the `highlighters` keyword.
