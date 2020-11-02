@@ -53,7 +53,7 @@ julia&gt; pretty_table(dict, sortkeys = true)
 │     5 │    May │
 │     6 │    Jun │
 └───────┴────────┘
-</code></pre><h1><a class="nav-anchor" id="Configuration-1" href="#Configuration-1">Configuration</a></h1><p>The following function can be used to print a table changing the default configurations of <strong>PrettyTables.jl</strong>:</p><pre><code class="language-julia">pretty_table_with_conf(conf::PrettyTablesConf, args...; kwargs...)</code></pre><p>It calls <code>pretty_table</code> using the default configuration in <code>conf</code>. The <code>args...</code> and <code>kwargs...</code> can be the same as those passed to <code>pretty_tables</code>. Notice that all the configurations in <code>kwargs...</code> will overwrite the ones in <code>conf</code>.</p><p>The object <code>conf</code> can be created by the function <code>set_pt_conf</code> in which the keyword parameters can be any one supported by the function <code>pretty_table</code> as shown in the following.</p><pre><code class="language-julia-repl">julia&gt; conf = set_pt_conf(tf = markdown, alignment = :c);
+</code></pre><h1><a class="nav-anchor" id="Configuration-1" href="#Configuration-1">Configuration</a></h1><p>The following function can be used to print a table changing the default configurations of <strong>PrettyTables.jl</strong>:</p><pre><code class="language-julia">pretty_table_with_conf(conf::PrettyTablesConf, args...; kwargs...)</code></pre><p>It calls <code>pretty_table</code> using the default configuration in <code>conf</code>. The <code>args...</code> and <code>kwargs...</code> can be the same as those passed to <code>pretty_tables</code>. Notice that all the configurations in <code>kwargs...</code> will overwrite the ones in <code>conf</code>.</p><p>The object <code>conf</code> can be created by the function <code>set_pt_conf</code> in which the keyword parameters can be any one supported by the function <code>pretty_table</code> as shown in the following.</p><pre><code class="language-julia-repl">julia&gt; conf = set_pt_conf(tf = tf_markdown, alignment = :c);
 
 julia&gt; data = [1 2 3; 4 5 6];
 
@@ -88,7 +88,7 @@ julia&gt; @pt :header = [&quot;Column 1&quot;, &quot;Column 2&quot;, &quot;Colum
 │        4 │        5 │        6 │
 └──────────┴──────────┴──────────┘
 
-julia&gt; @ptconf tf = ascii_dots alignment = :c
+julia&gt; @ptconf tf = tf_ascii_dots alignment = :c
 
 julia&gt; @pt data
 ............................
