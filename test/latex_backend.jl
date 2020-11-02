@@ -25,4 +25,3 @@
     result = pretty_table(String, data, backend = :latex)
     @test result == expected
 end
-

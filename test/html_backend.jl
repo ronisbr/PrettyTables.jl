@@ -1355,7 +1355,8 @@ end
 </table>
 """
 
-    result = pretty_table(String, matrix, tf = html_default, standalone = false)
+    result = pretty_table(String, matrix, tf = tf_html_default,
+                          standalone = false)
     @test result == expected
 end
 
@@ -1413,8 +1414,9 @@ end
 </table>
 """
 
-    result = pretty_table(String, data, tf = html_default, standalone = false,
-                          title = title)
+    result = pretty_table(String, data,
+                          tf = tf_html_default,
+                          standalone = false, title = title)
     @test result == expected
 
     expected = """
@@ -1465,7 +1467,9 @@ end
 </table>
 """
 
-    result = pretty_table(String, data, tf = html_default, standalone = false,
+    result = pretty_table(String, data,
+                          tf = tf_html_default,
+                          standalone = false,
                           title = title,
                           title_alignment = :c)
     @test result == expected
@@ -1518,7 +1522,9 @@ end
 </table>
 """
 
-    result = pretty_table(String, data, tf = html_default, standalone = false,
+    result = pretty_table(String, data,
+                          tf = tf_html_default,
+                          standalone = false,
                           title = title,
                           title_alignment = :r)
     @test result == expected

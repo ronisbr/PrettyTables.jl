@@ -39,7 +39,7 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                   screen_size::Union{Nothing,Tuple{Int,Int}} = nothing,
                   show_omitted_cell_summary::Bool = true,
                   sortkeys::Bool = false,
-                  tf::TextFormat = unicode,
+                  tf::TextFormat = tf_unicode,
                   title_autowrap::Bool = false,
                   title_crayon::Crayon = Crayon(bold = true),
                   title_same_width_as_table::Bool = false,

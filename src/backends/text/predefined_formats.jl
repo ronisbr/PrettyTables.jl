@@ -6,12 +6,12 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ==#
 
-export unicode, ascii_dots, ascii_rounded, borderless, compact, markdown, mysql,
-       simple, unicode_rounded, matrix
+export tf_unicode, tf_ascii_dots, tf_ascii_rounded, tf_borderless, tf_compact,
+       tf_markdown, tf_mysql, tf_simple, tf_unicode_rounded, tf_matrix
 
-const unicode = TextFormat()
+const tf_unicode = TextFormat()
 
-const ascii_dots = TextFormat(
+const tf_ascii_dots = TextFormat(
     up_right_corner     = '.',
     up_left_corner      = '.',
     bottom_left_corner  = ':',
@@ -25,7 +25,7 @@ const ascii_dots = TextFormat(
     row                 = '.'
 )
 
-const ascii_rounded = TextFormat(
+const tf_ascii_rounded = TextFormat(
     up_right_corner     = '.',
     up_left_corner      = '.',
     bottom_left_corner  = ''',
@@ -39,7 +39,7 @@ const ascii_rounded = TextFormat(
     row                 = '-'
 )
 
-const borderless = TextFormat(
+const tf_borderless = TextFormat(
     up_right_corner     = ' ',
     up_left_corner      = ' ',
     bottom_left_corner  = ' ',
@@ -54,7 +54,7 @@ const borderless = TextFormat(
     hlines              = [:header]
 )
 
-const compact = TextFormat(
+const tf_compact = TextFormat(
     up_right_corner     = ' ',
     up_left_corner      = ' ',
     bottom_left_corner  = ' ',
@@ -68,7 +68,7 @@ const compact = TextFormat(
     row                 = '-'
    )
 
-const markdown = TextFormat(
+const tf_markdown = TextFormat(
     left_intersection   = '|',
     right_intersection  = '|',
     middle_intersection = '|',
@@ -77,7 +77,7 @@ const markdown = TextFormat(
     hlines              = [:header]
 )
 
-const mysql = TextFormat(
+const tf_mysql = TextFormat(
     up_right_corner     = '+',
     up_left_corner      = '+',
     bottom_left_corner  = '+',
@@ -91,7 +91,7 @@ const mysql = TextFormat(
     row                 = '-'
    )
 
-const simple = TextFormat(
+const tf_simple = TextFormat(
     up_right_corner     = '=',
     up_left_corner      = '=',
     bottom_left_corner  = '=',
@@ -105,7 +105,7 @@ const simple = TextFormat(
     row                 = '='
 )
 
-const unicode_rounded = TextFormat(
+const tf_unicode_rounded = TextFormat(
     up_right_corner     = '╮',
     up_left_corner      = '╭',
     bottom_left_corner  = '╰',
@@ -119,7 +119,7 @@ const unicode_rounded = TextFormat(
     row                 = '─'
 )
 
-const matrix = TextFormat(
+const tf_matrix = TextFormat(
     left_intersection   = '│',
     right_intersection  = '│',
     row                 = ' ',

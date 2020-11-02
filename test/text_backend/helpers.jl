@@ -31,7 +31,7 @@
 :...:.......:.....:...:
 """
 
-    @ptconf tf = ascii_dots
+    @ptconf tf = tf_ascii_dots
     @pt :header = ["1","2","3","4"] data
 
     result = String(readavailable(in))
@@ -53,7 +53,7 @@
 ╰────────┴────────┴────────┴────────╯
 """
 
-    @ptconf tf = unicode_rounded
+    @ptconf tf = tf_unicode_rounded
     @ptconf alignment = :c
     @pt data
 
@@ -77,7 +77,7 @@
     header = ["Column 1" "Column 2"; "Sub. 1" "Sub. 2"]
 
     @ptconfclean
-    @ptconf tf = ascii_rounded
+    @ptconf tf = tf_ascii_rounded
     @pt :header = header [1 2; 3 4; 5 6]
 
     result = String(readavailable(in))

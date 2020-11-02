@@ -6,11 +6,11 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-export latex_default, latex_simple
+export tf_latex_default, tf_latex_simple
 
-const latex_default = LatexTableFormat()
+const tf_latex_default = LatexTableFormat()
 
-const latex_simple = LatexTableFormat(
+const tf_latex_simple = LatexTableFormat(
     top_line       = "\\hline",
     header_line    = "\\hline",
     mid_line       = "\\hline",

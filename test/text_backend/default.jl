@@ -56,7 +56,7 @@ end
 :      6 :   true :    6.0 :      6 :
 :........:........:........:........:
 """
-    result = pretty_table(String, data, tf = ascii_dots)
+    result = pretty_table(String, data, tf = tf_ascii_dots)
     @test result == expected
 
     # ascii_rounded
@@ -73,7 +73,7 @@ end
 |      6 |   true |    6.0 |      6 |
 '--------'--------'--------'--------'
 """
-    result = pretty_table(String, data, tf = ascii_rounded)
+    result = pretty_table(String, data, tf = tf_ascii_rounded)
     @test result == expected
 
     # borderless
@@ -88,7 +88,7 @@ end
        5    false      5.0        5
        6     true      6.0        6
 """
-    result = pretty_table(String, data, tf = borderless)
+    result = pretty_table(String, data, tf = tf_borderless)
     @test result == expected
 
     # compact
@@ -105,7 +105,7 @@ end
        6     true      6.0        6
  -------- -------- -------- --------
 """
-    result = pretty_table(String, data, tf = PrettyTables.compact)
+    result = pretty_table(String, data, tf = tf_compact)
     @test result == expected
 
     # markdown
@@ -120,7 +120,7 @@ end
 |      5 |  false |    5.0 |      5 |
 |      6 |   true |    6.0 |      6 |
 """
-    result = pretty_table(String, data, tf = markdown)
+    result = pretty_table(String, data, tf = tf_markdown)
     @test result == expected
 
     # matrix
@@ -136,7 +136,7 @@ end
 │ 6   true  6.0  6 │
 └                  ┘
 """
-    result = pretty_table(String, data, tf = matrix, noheader = true)
+    result = pretty_table(String, data, tf = tf_matrix, noheader = true)
     @test result == expected
 
     # mysql
@@ -153,7 +153,7 @@ end
 |      6 |   true |    6.0 |      6 |
 +--------+--------+--------+--------+
 """
-    result = pretty_table(String, data, tf = mysql)
+    result = pretty_table(String, data, tf = tf_mysql)
     @test result == expected
 
     # simple
@@ -170,7 +170,7 @@ end
        6     true      6.0        6
 ========= ======== ======== =========
 """
-    result = pretty_table(String, data, tf = simple)
+    result = pretty_table(String, data, tf = tf_simple)
     @test result == expected
 
     # unicode_rounded
@@ -187,7 +187,7 @@ end
 │      6 │   true │    6.0 │      6 │
 ╰────────┴────────┴────────┴────────╯
 """
-    result = pretty_table(String, data, tf = unicode_rounded)
+    result = pretty_table(String, data, tf = tf_unicode_rounded)
     @test result == expected
 
     # Custom formats

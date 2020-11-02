@@ -6,11 +6,12 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-export html_default, html_dark, html_minimalist, html_simple, html_matrix
+export tf_html_default, tf_html_dark, tf_html_minimalist, tf_html_simple,
+       tf_html_matrix
 
-const html_default = HTMLTableFormat()
+const tf_html_default = HTMLTableFormat()
 
-const html_dark = HTMLTableFormat(
+const tf_html_dark = HTMLTableFormat(
     css = """
     table, td, th {
         border-collapse: collapse;
@@ -53,7 +54,7 @@ const html_dark = HTMLTableFormat(
     """
 )
 
-const html_minimalist = HTMLTableFormat(
+const tf_html_minimalist = HTMLTableFormat(
     css = """
     table, td, th {
         border-collapse: collapse;
@@ -86,7 +87,7 @@ const html_minimalist = HTMLTableFormat(
     """
 )
 
-const html_simple = HTMLTableFormat(
+const tf_html_simple = HTMLTableFormat(
     css = """
     table, td, th {
         border-collapse: collapse;
@@ -126,7 +127,7 @@ const html_simple = HTMLTableFormat(
     """
 )
 
-const html_matrix = HTMLTableFormat(
+const tf_html_matrix = HTMLTableFormat(
     css = """
     table {
         position: relative;

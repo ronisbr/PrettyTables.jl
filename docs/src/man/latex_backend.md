@@ -172,10 +172,10 @@ julia> pretty_table(data, header, backend = :latex, highlighters = (hl_e, hl_p, 
 
 The following table formats are available when using the LaTeX back-end:
 
-`latex_default` (**Default**)
+`tf_latex_default` (**Default**)
 
 ![](./latex_backend/format_default.png)
 
-`latex_simple`
+`tf_latex_simple`
 
 ![](./latex_backend/format_simple.png)

@@ -142,7 +142,7 @@ passed as keywords when calling the function `pretty_table`:
                                equal to the screen width.
                                (**Default** = `false`)
 * `tf`: Table format used to print the table (see the section
-        [Text table formats](@ref)). (**Default** = `unicode`)
+        [Text table formats](@ref)). (**Default** = `tf_unicode`)
 * `vcrop_mode`: This variable defines the vertical crop behavior. If it is
                 `:bottom`, then the data, if required, will be cropped in the
                 bottom. On the other hand, if it is `:middle`, then the data
@@ -403,7 +403,7 @@ usage simpler. They are defined in the file
 
 The following table formats are available when using the text back-end:
 
-`unicode` (**Default**)
+`tf_unicode` (**Default**)
 
 ```
 ┌────────┬────────┬────────┬────────┐
@@ -415,7 +415,7 @@ The following table formats are available when using the text back-end:
 └────────┴────────┴────────┴────────┘
 ```
 
-`ascii_dots`
+`tf_ascii_dots`
 
 ```
 .....................................
@@ -427,7 +427,7 @@ The following table formats are available when using the text back-end:
 :........:........:........:........:
 ```
 
-`ascii_rounded`
+`tf_ascii_rounded`
 
 ```
 .--------.--------.--------.--------.
@@ -439,7 +439,7 @@ The following table formats are available when using the text back-end:
 '--------'--------'--------'--------'
 ```
 
-`borderless`
+`tf_borderless`
 
 ```
   Col. 1   Col. 2   Col. 3   Col. 4
@@ -449,7 +449,7 @@ The following table formats are available when using the text back-end:
        3    false      3.0        3
 ```
 
-`compact`
+`tf_compact`
 
 ```
  -------- -------- -------- --------
@@ -461,7 +461,7 @@ The following table formats are available when using the text back-end:
  -------- -------- -------- --------
 ```
 
-`dataframe`
+`tf_dataframe`
 
 ```
 │ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
@@ -471,7 +471,7 @@ The following table formats are available when using the text back-end:
 │      3 │  false │    3.0 │      3 │
 ```
 
-`markdown`
+`tf_markdown`
 
 ```
 | Col. 1 | Col. 2 | Col. 3 | Col. 4 |
@@ -481,7 +481,7 @@ The following table formats are available when using the text back-end:
 |      3 |  false |    3.0 |      3 |
 ```
 
-`matrix`
+`tf_matrix`
 
 ```
 ┌                     ┐
@@ -496,7 +496,7 @@ The following table formats are available when using the text back-end:
     In this case, the table format `matrix` was printed with the option
     `noheader = true`.
 
-`mysql`
+`tf_mysql`
 
 ```
 +--------+--------+--------+--------+
@@ -508,7 +508,7 @@ The following table formats are available when using the text back-end:
 +--------+--------+--------+--------+
 ```
 
-`simple`
+`tf_simple`
 
 ```
 ========= ======== ======== =========
@@ -520,7 +520,7 @@ The following table formats are available when using the text back-end:
 ========= ======== ======== =========
 ```
 
-`unicode_rounded`
+`tf_unicode_rounded`
 
 ```
 ╭────────┬────────┬────────┬────────╮
@@ -540,7 +540,7 @@ The following table formats are available when using the text back-end:
 ```jldoctest
 julia> data = Any[ f(a) for a = 0:15:90, f in (sind,cosd,tand)];
 
-julia> pretty_table(data, tf = ascii_dots)
+julia> pretty_table(data, tf = tf_ascii_dots)
 ..................................
 :   Col. 1 :   Col. 2 :   Col. 3 :
 :..........:..........:..........:
@@ -553,7 +553,7 @@ julia> pretty_table(data, tf = ascii_dots)
 :      1.0 :      0.0 :      Inf :
 :..........:..........:..........:
 
-julia> pretty_table(data, tf = compact)
+julia> pretty_table(data, tf = tf_compact)
  ---------- ---------- ----------
     Col. 1     Col. 2     Col. 3
  ---------- ---------- ----------

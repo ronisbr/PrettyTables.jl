@@ -38,27 +38,27 @@ Base.convert(::Type{<:TestVec}, x::Array) = TestVec(x)
     # Text
     # ==========================================================================
 
-    auto   = pretty_table(String, data, tf = unicode)
-    manual = pretty_table(String, data, tf = unicode, backend = :text)
-    mintable = pretty_table(String, mt, tf = unicode, backend = :text)
+    auto   = pretty_table(String, data, tf = tf_unicode)
+    manual = pretty_table(String, data, tf = tf_unicode, backend = :text)
+    mintable = pretty_table(String, mt, tf = tf_unicode, backend = :text)
 
     @test auto == manual == mintable
 
     # HTML
     # ==========================================================================
 
-    auto   = pretty_table(String, data, tf = html_simple)
-    manual = pretty_table(String, data, tf = html_simple, backend = :html)
-    mintable = pretty_table(String, mt, tf = html_simple, backend = :html)
+    auto   = pretty_table(String, data, tf = tf_html_simple)
+    manual = pretty_table(String, data, tf = tf_html_simple, backend = :html)
+    mintable = pretty_table(String, mt, tf = tf_html_simple, backend = :html)
 
     @test auto == manual == mintable
 
     # LaTeX
     # ==========================================================================
 
-    auto   = pretty_table(String, data, tf = latex_default)
-    manual = pretty_table(String, data, tf = latex_default, backend = :latex)
-    mintable = pretty_table(String, mt, tf = latex_default, backend = :latex)
+    auto   = pretty_table(String, data, tf = tf_latex_default)
+    manual = pretty_table(String, data, tf = tf_latex_default, backend = :latex)
+    mintable = pretty_table(String, mt, tf = tf_latex_default, backend = :latex)
 
     @test auto == manual == mintable
 
@@ -109,7 +109,7 @@ end
     data_table_2 = [7 8 9
                     1 2 3]
 
-    include_pt_in_file(path, "Table 2", data_table_2, tf = mysql,
+    include_pt_in_file(path, "Table 2", data_table_2, tf = tf_mysql,
                        body_hlines = [1])
     include_pt_in_file(path, "Table 1", data_table_1, alignment = :c,
                        show_row_number = true, backup_file = false)
@@ -246,9 +246,8 @@ end
     data_table_1 = [1 2 3
                     4 5 6]
 
-    include_pt_in_file(path, "Table 1", data_table_1, tf = markdown,
+    include_pt_in_file(path, "Table 1", data_table_1, tf = tf_markdown,
                        remove_tags = true)
-
     result = read(path, String)
     backup = read(path * "_backup", String)
 
@@ -348,9 +347,9 @@ end
     data = [1 2 3
             4 5 6]
 
-    conf1 = set_pt_conf(tf = markdown)
-    conf2 = set_pt_conf(tf = ascii_dots, formatters = ft_printf("%5.3d"))
-    set_pt_conf!(conf2, hlines = :none)
+    conf1 = set_pt_conf(tf = tf_markdown)
+    conf2 = set_pt_conf(tf = tf_ascii_dots, formatters = ft_printf("%5.3d"))
+    set_pt_conf!(conf2, hlinetf_s = :none)
 
     expected = """
 | Col. 1 | Col. 2 | Col. 3 |

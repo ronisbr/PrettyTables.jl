@@ -218,7 +218,7 @@ keyword parameters can be any one supported by the function `pretty_table` as
 shown in the following.
 
 ```jldoctest
-julia> conf = set_pt_conf(tf = markdown, alignment = :c);
+julia> conf = set_pt_conf(tf = tf_markdown, alignment = :c);
 
 julia> data = [1 2 3; 4 5 6];
 
@@ -321,7 +321,7 @@ julia> @pt :header = ["Column 1", "Column 2", "Column 3"] data :header = ["Colum
 │        4 │        5 │        6 │
 └──────────┴──────────┴──────────┘
 
-julia> @ptconf tf = ascii_dots alignment = :c
+julia> @ptconf tf = tf_ascii_dots alignment = :c
 
 julia> @pt data
 ............................

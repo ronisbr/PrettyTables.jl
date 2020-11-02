@@ -126,7 +126,7 @@ julia> pretty_table(data, header, backend = :html, highlighters = (hl_e, hl_p, h
 
 The following table formats are available when using the html back-end:
 
-`html_default` (**Default**)
+`tf_html_default` (**Default**)
 
 ```@raw html
 <iframe src="html_format_default.html" frameborder="0" scrolling="no" onload="javascript:resizeIframe(this)">
@@ -134,7 +134,7 @@ The following table formats are available when using the html back-end:
 </iframe>
 ```
 
-`html_dark`
+`tf_html_dark`
 
 ```@raw html
 <iframe src="html_format_dark.html" frameborder="0" scrolling="no" onload="javascript:resizeIframe(this)">
@@ -142,7 +142,7 @@ The following table formats are available when using the html back-end:
 </iframe>
 ```
 
-`html_minimalist`
+`tf_html_minimalist`
 
 ```@raw html
 <iframe src="html_format_minimalist.html" frameborder="0" scrolling="no" onload="javascript:resizeIframe(this)">
@@ -150,7 +150,7 @@ The following table formats are available when using the html back-end:
 </iframe>
 ```
 
-`html_matrix`
+`tf_html_matrix`
 
 ```@raw html
 <iframe src="html_format_matrix.html" frameborder="0" scrolling="no" onload="javascript:resizeIframe(this)">
@@ -163,7 +163,7 @@ The following table formats are available when using the html back-end:
     In this case, the table format `html_matrix` was printed with the option
     `noheader = true`.
 
-`html_simple`
+`tf_html_simple`
 
 ```@raw html
 <iframe src="html_format_simple.html" frameborder="0" scrolling="no" onload="javascript:resizeIframe(this)">

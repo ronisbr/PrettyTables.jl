@@ -33,13 +33,13 @@ julia> pretty_table(data, border_crayon = crayon"yellow")
 ![](../assets/ex_00002.png)
 
 ```julia-repl
-julia> pretty_table(data, tf = simple, border_crayon = crayon"bold yellow", header_crayon = crayon"bold green")
+julia> pretty_table(data, tf = tf_simple, border_crayon = crayon"bold yellow", header_crayon = crayon"bold green")
 ```
 
 ![](../assets/ex_00003.png)
 
 ```julia-repl
-julia> pretty_table(data, tf = markdown, show_row_number = true)
+julia> pretty_table(data, tf = tf_markdown, show_row_number = true)
 ```
 
 ![](../assets/ex_00004.png)
@@ -56,7 +56,7 @@ julia> formatter = (v,i,j) -> begin
            end
        end
 
-julia> pretty_table(data, tf = ascii_rounded, formatters = formatter)
+julia> pretty_table(data, tf = tf_ascii_rounded, formatters = formatter)
 ```
 
 ![](../assets/ex_00005.png)
@@ -119,7 +119,7 @@ The keyword `noheader` can be used to suppres the header, which leads to a very
 simplistic, compact format.
 
 ```julia-repl
-julia> pretty_table(data, tf = borderless, noheader = true)
+julia> pretty_table(data, tf = tf_borderless, noheader = true)
 ```
 
 ![](../assets/ex_00010.png)
@@ -189,7 +189,7 @@ julia> data = ["Torques" "" "" "";
                "Solar radiation pressure" "."^10 1.0 "Nms";
                "Total" "."^10 10.5 "Nms"]
 
-julia> pretty_table(data, tf = borderless,
+julia> pretty_table(data, tf = tf_borderless,
                     noheader = true,
                     cell_alignment = Dict( (1,1) => :l, (7,1) => :l ),
                     formatters = ft_printf("%10.1f", 2),

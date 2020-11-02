@@ -297,7 +297,7 @@ This back-end produces text tables. This back-end can be used by selecting
 * `show_row_number`: If `true`, then a new column will be printed showing the
                      row number. (**Default** = `false`)
 * `tf`: Table format used to print the table (see `TextFormat`).
-        (**Default** = `unicode`)
+        (**Default** = `tf_unicode`)
 * `title_autowrap`: If `true`, then the title text will be wrapped considering
                     the title size. Otherwise, lines larger than the title size
                     will be cropped. (**Default** = `false`)
