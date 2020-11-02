@@ -43,7 +43,7 @@ This structure stores the information required so that the backends can print
 the tables.
 
 """
-@with_kw struct PrintInfo
+struct PrintInfo
     data
     header
     id_cols::Vector{Int}

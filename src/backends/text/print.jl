@@ -46,7 +46,33 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                   vcrop_mode::Symbol = :bottom,
                   vlines::Union{Nothing,Symbol,AbstractVector} = nothing)
 
-    @unpack_PrintInfo pinfo
+    # Unpack fields of `pinfo`.
+    data                    = pinfo.data
+    header                  = pinfo.header
+    id_cols                 = pinfo.id_cols
+    id_rows                 = pinfo.id_rows
+    num_rows                = pinfo.num_rows
+    num_cols                = pinfo.num_cols
+    num_printed_cols        = pinfo.num_printed_cols
+    num_printed_rows        = pinfo.num_printed_rows
+    header_num_rows         = pinfo.header_num_rows
+    header_num_cols         = pinfo.header_num_cols
+    show_row_number         = pinfo.show_row_number
+    row_number_column_title = pinfo.row_number_column_title
+    show_row_names          = pinfo.show_row_names
+    row_names               = pinfo.row_names
+    row_name_alignment      = pinfo.row_name_alignment
+    row_name_column_title   = pinfo.row_name_column_title
+    alignment               = pinfo.alignment
+    cell_alignment          = pinfo.cell_alignment
+    formatters              = pinfo.formatters
+    compact_printing        = pinfo.compact_printing
+    title                   = pinfo.title
+    title_alignment         = pinfo.title_alignment
+    header_alignment        = pinfo.header_alignment
+    header_cell_alignment   = pinfo.header_cell_alignment
+    cell_first_line_only    = pinfo.cell_first_line_only
+    renderer                = pinfo.renderer
 
     # Input variables verification and initial setup
     # ==========================================================================

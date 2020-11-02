@@ -14,7 +14,7 @@ export HTMLDecoration, HTMLHighlighter, HTMLTableFormat
 Structure that defines parameters to decorate a table cell.
 
 """
-@with_kw struct HTMLDecoration
+@kwdef struct HTMLDecoration
     color::String           = ""
     background::String      = ""
     font_family::String     = ""
@@ -63,7 +63,7 @@ the variable `css`.
                row numbers cells can be styled using `td.rowNumber`.
 
 """
-@with_kw struct HTMLTableFormat
+@kwdef struct HTMLTableFormat
     css::String = """
     table, td, th {
         border-collapse: collapse;
@@ -154,7 +154,7 @@ The first will apply a fixed decoration to the highlighted cell specified in
 specifying the function `fd`.
 
 """
-@with_kw struct HTMLHighlighter <: AbstractHTMLHighlighter
+@kwdef struct HTMLHighlighter <: AbstractHTMLHighlighter
     # API
     f::Function
     fd::Function = (h,data,i,j)->h.decoration

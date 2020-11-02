@@ -574,7 +574,18 @@ like `simple` that does not print the bottom line:
 ```jldoctest
 julia> data = Any[ f(a) for a = 0:15:90, f in (sind,cosd,tand)];
 
-julia> tf = TextFormat(simple, hlines = [:begin,:header]);
+julia> tf = TextFormat(up_right_corner     = '=',
+                       up_left_corner      = '=',
+                       bottom_left_corner  = '=',
+                       bottom_right_corner = '=',
+                       up_intersection     = ' ',
+                       left_intersection   = '=',
+                       right_intersection  = '=',
+                       middle_intersection = ' ',
+                       bottom_intersection  = ' ',
+                       column              = ' ',
+                       row                 = '=',
+                       hlines              = [:begin,:header]);
 
 julia> pretty_table(data, tf = tf)
 =========== ========== ===========
@@ -595,7 +606,18 @@ or that does not print the header line:
 ```jldoctest
 julia> data = Any[ f(a) for a = 0:15:90, f in (sind,cosd,tand)];
 
-julia> tf = TextFormat(simple, hlines = [:begin,:end]);
+julia> tf = TextFormat(up_right_corner     = '=',
+                       up_left_corner      = '=',
+                       bottom_left_corner  = '=',
+                       bottom_right_corner = '=',
+                       up_intersection     = ' ',
+                       left_intersection   = '=',
+                       right_intersection  = '=',
+                       middle_intersection = ' ',
+                       bottom_intersection  = ' ',
+                       column              = ' ',
+                       row                 = '=',
+                       hlines              = [:begin,:end]);
 
 julia> pretty_table(data, tf = tf)
 =========== ========== ===========

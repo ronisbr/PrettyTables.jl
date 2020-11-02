@@ -204,7 +204,7 @@ end
 │      6 │   true │    6.0 │      6 │
 """
 
-    tf = PrettyTables.TextFormat(unicode, hlines = [:header])
+    tf = TextFormat(hlines = [:header])
     result = pretty_table(String, data, tf = tf)
     @test result == expected
 
@@ -220,7 +220,7 @@ end
 └────────┴────────┴────────┴────────┘
 """
 
-    tf = PrettyTables.TextFormat(unicode, hlines = [:begin,:end])
+    tf = TextFormat(hlines = [:begin,:end])
     result = pretty_table(String, data, tf = tf)
     @test result == expected
 end

@@ -38,7 +38,7 @@ The following pre-defined formats are available: `unicode` (**default**),
 `mysql`, `compact`, `markdown`, `simple`, `ascii_rounded`, and `ascii_dots`.
 
 """
-@with_kw struct TextFormat
+@kwdef struct TextFormat
     up_right_corner::Char                 = '┐'
     up_left_corner::Char                  = '┌'
     bottom_left_corner::Char              = '└'
@@ -89,7 +89,7 @@ where it will apply the `Crayon` returned by the function `fd` to the
 highlighted cell.
 
 """
-@with_kw struct Highlighter
+@kwdef struct Highlighter
     f::Function
     fd::Function = (h,data,i,j)->h.crayon
 
@@ -118,7 +118,7 @@ respect to the point in which the table is printed.
 * `cont_space_char`: Space character to be printed before `cont_char`.
 
 """
-@with_kw mutable struct Screen
+@kwdef mutable struct Screen
     size::Tuple{Int,Int}  = (-1,-1)
     row::Int              = 1
     col::Int              = 0

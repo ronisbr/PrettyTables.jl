@@ -29,7 +29,7 @@ This structure defines the format of the LaTeX table.
 * `vlines`: Vertical lines that must be drawn by default.
 
 """
-@with_kw struct LatexTableFormat
+@kwdef struct LatexTableFormat
     top_line::String                     = "\\hline\\hline"
     header_line::String                  = "\\hline"
     mid_line::String                     = "\\hline"
@@ -79,7 +79,7 @@ will wrap all the cells in the table in the following environment:
     \\textbf{\\small{<Cell text>}}
 
 """
-@with_kw struct LatexHighlighter
+@kwdef struct LatexHighlighter
     f::Function
     fd::Function
 end
