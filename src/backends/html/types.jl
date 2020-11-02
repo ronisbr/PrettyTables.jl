@@ -108,23 +108,6 @@ end
 #                                 Highlighters
 # ==============================================================================
 
-# Abstract type for all highlighters.
-"""
-    AbstractHTMLHighlighter
-
-All HTML highlighters must be a subtype of `AbstractHTMLHighlighter`. They API
-dictates that they must implement two functions:
-
-* `f`: Function with the signature `f(data,i,j)` in which should return `true`
-       if the element `(i,j)` in `data` must be highlighted, or `false`
-       otherwise.
-* `fd`: Function with the signature `f(h,data,i,j)` in which `h` is the
-        highlighter. This function must return the `HTMLDecoration` to be
-        applied to the cell that must be highlighted.
-
-"""
-abstract type AbstractHTMLHighlighter end
-
 """
     HTMLHighlighter
 
@@ -154,7 +137,7 @@ The first will apply a fixed decoration to the highlighted cell specified in
 specifying the function `fd`.
 
 """
-@kwdef struct HTMLHighlighter <: AbstractHTMLHighlighter
+@kwdef struct HTMLHighlighter
     # API
     f::Function
     fd::Function = (h,data,i,j)->h.decoration
