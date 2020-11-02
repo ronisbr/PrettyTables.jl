@@ -17,8 +17,10 @@ format. It was inspired in the functionality provided by
 ## Requirements
 
 * Julia >= 1.0
-* Parameters >= 0.10.3
-* Tables >= 0.1.14
+* Crayons >= 4.0
+* Formatting >= 0.4
+* Reexport >= 0.2
+* Tables >= 0.2
 
 ## Installation
 

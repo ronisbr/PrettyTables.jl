@@ -15,7 +15,9 @@ https://ozh.github.io/ascii-tables/
 ## Requirements
 
 * Julia >= 1.0
-* Parameters >= 0.10.3
+* Crayons >= 4.0
+* Formatting >= 0.4
+* Reexport >= 0.2
 * Tables >= 0.2
 
 ## Installation
