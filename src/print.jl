@@ -441,9 +441,8 @@ This backend produces HTML tables. This backend can be used by selecting
 ## HTML highlighters
 
 A set of highlighters can be passed as a `Tuple` to the `highlighters` keyword.
-Each highlighter is an instance of a structure that is a subtype of
-`AbstractHTMLHighlighter`. It also must also contain at least the following two
-fields to comply with the API:
+Each highlighter is an instance of the structure [`HTMLHighlighter`](@ref). It
+contains the following two public fields:
 
 * `f`: Function with the signature `f(data,i,j)` in which should return `true`
        if the element `(i,j)` in `data` must be highlighted, or `false`
