@@ -210,7 +210,9 @@ This back-end produces text tables. This back-end can be used by selecting
           available screen size (see `screen_size`). It can be `:both` to crop
           on vertical and horizontal direction, `:horizontal` to crop only on
           horizontal direction, `:vertical` to crop only on vertical direction,
-          or `:none` to do not crop the data at all.
+          or `:none` to do not crop the data at all. If the `io` has
+          `:limit => true`, then `crop` is set to `:both` by default.
+          Otherwise, it is set to `:none` by default.
 * `crop_num_lines_at_beginning`: Number of lines to be left at the beginning of
                                  the printing when vertically cropping the
                                  output. Notice that the lines required to show
@@ -286,9 +288,9 @@ This back-end produces text tables. This back-end can be used by selecting
 * `screen_size`: A tuple of two integers that defines the screen size (num. of
                  rows, num. of columns) that is available to print the table. It
                  is used to crop the data depending on the value of the keyword
-                 `crop`. If it is `nothing`, then the size will be obtained
-                 automatically. Notice that if a dimension is not positive, then
-                 it will be treated as unlimited. (**Default** = `nothing`)
+                 `crop`. Notice that if a dimension is not positive, then
+                 it will be treated as unlimited.
+                 (**Default** = `displaysize(io)`)
 * `row_number_column_title`: The title of the column that shows the row numbers.
                              (**Default** = "Row")
 * `show_omitted_cell_summary`: If `true`, then a summary will be printed after
@@ -663,15 +665,23 @@ Thus, the user must be ensure that the type of `v` between the calls are
 compatible.
 
 """
-pretty_table(data; kwargs...) =
-    _pretty_table(stdout, data, String[]; kwargs...)
+@inline function pretty_table(data; kwargs...)
+    io = IOContext(stdout, :limit => true)
+    _pretty_table(io, data, String[]; kwargs...)
+end
 
-pretty_table(data, header::AbstractVecOrMat; kwargs...) =
-    _pretty_table(stdout, data, header; kwargs...)
+@inline function pretty_table(data, header::AbstractVecOrMat; kwargs...)
+    io = IOContext(stdout, :limit => true)
+    _pretty_table(io, data, header; kwargs...)
+end
 
 # This definition is required to avoid ambiguities.
-pretty_table(data::AbstractVecOrMat, header::AbstractVecOrMat; kwargs...) =
-    _pretty_table(stdout, data, header; kwargs...)
+@inline function pretty_table(data::AbstractVecOrMat,
+                              header::AbstractVecOrMat;
+                              kwargs...)
+    io = IOContext(stdout, :limit => true)
+    _pretty_table(io, data, header; kwargs...)
+end
 
 # This definition is required to avoid ambiguities.
 pretty_table(io::IO, data::AbstractVecOrMat; kwargs...) =

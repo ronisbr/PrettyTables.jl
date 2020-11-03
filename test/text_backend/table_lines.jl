@@ -206,11 +206,12 @@ end
 
     result = pretty_table(String, data,
                           ["C1" "C2" "C3" "C4"; "Int" "Bool" "Float" "Hex"],
-                          vlines = [:begin,1,2,4,:end],
+                          crop = :both,
                           show_row_number = true,
                           row_names = ["Row $i" for i = 1:6],
                           row_name_column_title = "Row names",
                           row_name_alignment = :c,
-                          screen_size = (12,35))
+                          screen_size = (12,35),
+                          vlines = [:begin,1,2,4,:end])
     @test result == expected
 end

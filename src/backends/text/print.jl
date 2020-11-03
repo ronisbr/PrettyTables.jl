@@ -18,7 +18,7 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                   body_hlines::Vector{Int} = Int[],
                   body_hlines_format::Union{Nothing,NTuple{4,Char}} = nothing,
                   continuation_row_alignment::Symbol = :c,
-                  crop::Symbol = :both,
+                  crop::Symbol = get(io, :limit, false) ? :both : :none,
                   crop_subheader::Bool = false,
                   crop_num_lines_at_beginning::Int = 0,
                   columns_width::Union{Int,AbstractVector{Int}} = 0,
@@ -36,7 +36,7 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                   row_name_crayon::Crayon = Crayon(bold = true),
                   row_name_header_crayon::Crayon = Crayon(bold = true),
                   row_number_alignment::Symbol = :r,
-                  screen_size::Union{Nothing,Tuple{Int,Int}} = nothing,
+                  screen_size::Tuple{Int,Int} = displaysize(io),
                   show_omitted_cell_summary::Bool = true,
                   sortkeys::Bool = false,
                   tf::TextFormat = tf_unicode,
@@ -83,35 +83,21 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     buf          = IOContext(buf_io, :color => io_has_color)
     screen       = Screen(has_color = io_has_color)
 
-    # If the user did not specified the screen size, then get the current
-    # display size. However, if cropping is not desired, then just do nothing
-    # since the size is initialized with -1.
-    if crop != :none
-        if screen_size == nothing
-            # For files, the function `displaysize` returns the value of the
-            # environments variables "LINES" and "COLUMNS". Hence, here we set
-            # those to `-1`, so that we can use this information to avoid
-            # limiting the output.
-            withenv("LINES" => -1, "COLUMNS" => -1) do
-                screen.size = displaysize(io)
-            end
-        else
-            screen.size = screen_size
-        end
-
-        # If the user does not want to crop, then change the size to -1.
-        if crop == :vertical
-            screen.size = (screen.size[1],-1)
-        elseif crop == :horizontal
-            screen.size = (-1,screen.size[2])
-        end
-
-        vcrop_mode ∉ [:bottom, :middle] && (vcrop_mode = :bottom)
+    # Check which type of cropping the user wants.
+    if crop == :both
+        screen.size = screen_size
+    elseif crop == :vertical
+        screen.size = (screen_size[1], -1)
+    elseif crop == :horizontal
+        screen.size = (-1, screen_size[2])
     else
         # If the table will not be cropped, then we should never show an omitted
         # cell summary.
         show_omitted_cell_summary = false
     end
+
+    # Make sure that `vcrop_mode` is valid.
+    vcrop_mode ∉ [:bottom, :middle] && (vcrop_mode = :bottom)
 
     crop_num_lines_at_beginning < 0 && (crop_num_lines_at_beginning = 0)
 

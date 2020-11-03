@@ -41,6 +41,7 @@
 
     result = pretty_table(String, matrix, header,
                           alignment = [:l, :c, :r],
+                          crop = :both,
                           screen_size = (0,90))
 
     @test result == expected
@@ -59,6 +60,7 @@
 
     result = pretty_table(String, matrix, header,
                           alignment = [:l, :c, :r],
+                          crop = :both,
                           screen_size = (0,89))
 
     @test result == expected

@@ -53,7 +53,9 @@ passed as keywords when calling the function `pretty_table`:
           available screen size (see `screen_size`). It can be `:both` to crop
           on vertical and horizontal direction, `:horizontal` to crop only on
           horizontal direction, `:vertical` to crop only on vertical direction,
-          or `:none` to do not crop the data at all.
+          or `:none` to do not crop the data at all. If the `io` has
+          `:limit => true`, then `crop` is set to `:both` by default.
+          Otherwise, it is set to `:none` by default.
 * `crop_num_lines_at_beginning`: Number of lines to be left at the beginning of
                                  the printing when vertically cropping the
                                  output. Notice that the lines required to show
@@ -127,9 +129,9 @@ passed as keywords when calling the function `pretty_table`:
 * `screen_size`: A tuple of two integers that defines the screen size (num. of
                  rows, num. of columns) that is available to print the table. It
                  is used to crop the data depending on the value of the keyword
-                 `crop`. If it is `nothing`, then the size will be obtained
-                 automatically. Notice that if a dimension is not positive, then
-                 it will be treated as unlimited. (**Default** = `nothing`)
+                 `crop`. Notice that if a dimension is not positive, then
+                 it will be treated as unlimited.
+                 (**Default** = `displaysize(io)`)
 * `show_omitted_cell_summary`: If `true`, then a summary will be printed after
                                the table with the number of columns and rows
                                that were omitted. (**Default** = `true`)
@@ -204,8 +206,19 @@ documentation](https://github.com/KristofferC/Crayons.jl/blob/master/README.md).
 
 ## Cropping
 
-By default, the data will be cropped to fit the screen. This behavior can be
-changed by using the keyword `crop`.
+The keyword `crop` can be used to define how the output will be cropped if the
+display has limits. The default behavior depends on the property `:limit` of the
+`io`. If `io` has `:limit => true`, the default value of `crop` is `:both`.
+Otherwise, if `:limit => false` or it is not defined at all, then `crop`
+defaults to `:none`.
+
+If `pretty_table` is called without `io`, then `stdout` is wrapped in a
+`IOContext` with `:limit => true`.
+
+The display size can be configured by the keyword `screen_size`, which is a
+tuple of two `Int` with the number of rows and columns, respectively. If this
+keyword is not specified, then it is automatically obtained using the function
+`displaysize(io)`.
 
 ```jldoctest
 julia> data = Any[1    false      1.0     0x01 ;
@@ -238,10 +251,6 @@ julia> pretty_table(data, screen_size = (11,30), crop = :none)
 │      6 │   true │    6.0 │      6 │
 └────────┴────────┴────────┴────────┘
 ```
-
-If the keyword `screen_size` is not specified (or is `nothing`), then the screen
-size will be obtained automatically. For files, `screen_size = (-1,-1)`, meaning
-that no limit exits in both vertical and horizontal direction.
 
 !!! note
 

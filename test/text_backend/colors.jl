@@ -185,6 +185,7 @@ end
 """
 
     result = sprint((io)->pretty_table(io, matrix,
+                                       crop = :both,
                                        highlighters = (hl,),
                                        vcrop_mode = :middle,
                                        screen_size = (15,-1)),
@@ -209,6 +210,7 @@ end
 """
 
     result = sprint((io)->pretty_table(io, matrix,
+                                       crop = :both,
                                        filters_row = ((data, i)->i % 2 == 0,),
                                        highlighters = (hl,),
                                        vcrop_mode = :middle,
@@ -234,6 +236,7 @@ end
 """
 
     result = sprint((io)->pretty_table(io, matrix,
+                                       crop = :both,
                                        filters_col = ((data, i)->i != 1,),
                                        filters_row = ((data, i)->i % 2 == 0,),
                                        highlighters = (hl,),

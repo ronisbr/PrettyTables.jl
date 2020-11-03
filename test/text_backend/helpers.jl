@@ -117,4 +117,8 @@
     @test d[1] == "São José dos Campos"
     @test d[2] == "SP"
     @test d[3] == "Brasil"
+
+    # Clean configurations to avoid test failures if this is run in the same
+    # section.
+    @ptconfclean
 end
