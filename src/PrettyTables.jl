@@ -44,13 +44,13 @@ include("tables.jl")
 
 # Text backend
 include("backends/text/cell_parse.jl")
+include("backends/text/display.jl")
 include("backends/text/fill.jl")
 include("backends/text/predefined_formats.jl")
 include("backends/text/predefined_highlighters.jl")
 include("backends/text/print.jl")
 include("backends/text/print_aux.jl")
 include("backends/text/recipes.jl")
-include("backends/text/screen.jl")
 include("backends/text/string.jl")
 
 # HTML backend

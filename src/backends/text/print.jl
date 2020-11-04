@@ -81,15 +81,15 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     io_has_color = get(io, :color, false)
     buf_io       = IOBuffer()
     buf          = IOContext(buf_io, :color => io_has_color)
-    screen       = Screen(has_color = io_has_color)
+    display      = Display(has_color = io_has_color)
 
     # Check which type of cropping the user wants.
     if crop == :both
-        screen.size = screen_size
+        display.size = screen_size
     elseif crop == :vertical
-        screen.size = (screen_size[1], -1)
+        display.size = (screen_size[1], -1)
     elseif crop == :horizontal
-        screen.size = (-1, screen_size[2])
+        display.size = (-1, screen_size[2])
     else
         # If the table will not be cropped, then we should never show an omitted
         # cell summary.
@@ -163,17 +163,17 @@ function _pt_text(io::IO, pinfo::PrintInfo;
 
     # If the user wants to horizontally crop the printing, then it is not
     # necessary to process all the lines. We will to process, at most, the
-    # number of lines in the screen.
-    if screen.size[1] > 0
-        num_printed_rows = min(num_printed_rows, screen.size[1])
+    # number of lines in the display.
+    if display.size[1] > 0
+        num_printed_rows = min(num_printed_rows, display.size[1])
     end
 
     # If the user wants to vertically crop the printing, then it is not
     # necessary to process all the columns. However, we cannot know at this
     # stage the size of each column. Thus, this initial algorithm uses the fact
     # that each column printed will have at least 4 spaces.
-    if screen.size[2] > 0
-        num_printed_cols = min(num_printed_cols, ceil(Int, screen.size[2]/4))
+    if display.size[2] > 0
+        num_printed_cols = min(num_printed_cols, ceil(Int, display.size[2]/4))
     end
 
     # We need to process at least the row number and row name columns to avoid
@@ -291,7 +291,7 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                                      data,
                                      header,
                                      formatters,
-                                     screen,
+                                     display,
                                      # Configuration options.
                                      autowrap,
                                      cell_first_line_only,
@@ -321,7 +321,7 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     hlines = _process_hlines(hlines, body_hlines, num_printed_rows, noheader)
 
     # Check if the last horizontal line must be drawn. This is required when
-    # computing the moment that the screen will be cropped.
+    # computing the moment that the display will be cropped.
     draw_last_hline = (num_printed_rows + !noheader) ∈ hlines
 
     # Process `vlines`.
@@ -332,7 +332,7 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     # --------------------------------------------------------------------------
 
     table_width = sum(cols_width) + 2length(cols_width) + length(vlines)
-    screen.size[2] > 0 && table_width > screen.size[2] && (table_width = screen.size[2])
+    display.size[2] > 0 && table_width > display.size[2] && (table_width = display.size[2])
 
     # Process the title
     # --------------------------------------------------------------------------
@@ -342,7 +342,7 @@ function _pt_text(io::IO, pinfo::PrintInfo;
 
     if length(title) > 0
         # Compute the title width.
-        title_width = title_same_width_as_table ? table_width : screen.size[2]
+        title_width = title_same_width_as_table ? table_width : display.size[2]
 
         # If the title width is not higher than 0, then we should only print the
         # title.
@@ -370,12 +370,12 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     # Compute the table data printing recipe
     # --------------------------------------------------------------------------
 
-    # Number of additional lines that must be consider to crop the screen
+    # Number of additional lines that must be consider to crop the display
     # vertically.
-    Δscreen_lines = 1 + newline_at_end + draw_last_hline + crop_num_lines_at_beginning
+    Δdisplay_lines = 1 + newline_at_end + draw_last_hline + crop_num_lines_at_beginning
 
     row_printing_recipe, col_printing_recipe, num_omitted_rows, num_omitted_cols =
-        _create_printing_recipe(screen,
+        _create_printing_recipe(display,
                                 header_num_rows,
                                 num_filtered_rows,
                                 num_filtered_cols,
@@ -386,7 +386,7 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                                 id_rows,
                                 hlines,
                                 vlines,
-                                Δscreen_lines,
+                                Δdisplay_lines,
                                 Δc,
                                 # Configurations
                                 crop,
@@ -404,18 +404,18 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     # Process the title separating the tokens.
     if length(title) > 0
         # Print the title.
-        screen.has_color && print(buf, title_crayon)
+        display.has_color && print(buf, title_crayon)
         num_tokens = length(title_tokens)
 
         @inbounds for i = 1:num_tokens
             print(buf, rstrip(title_tokens[i]))
 
             # In the last line we must not add the new line character
-            # because we need to reset the crayon first if the screen
+            # because we need to reset the crayon first if the display
             # supports colors.
             i != num_tokens && println(buf)
         end
-        screen.has_color && print(buf, _reset_crayon)
+        display.has_color && print(buf, _reset_crayon)
         println(buf)
     end
 
@@ -427,7 +427,7 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     # Top table line
     # ==========================================================================
 
-    0 ∈ hlines && _draw_line!(screen, buf, tf.up_left_corner,
+    0 ∈ hlines && _draw_line!(display, buf, tf.up_left_corner,
                               tf.up_intersection, tf.up_right_corner, tf.row,
                               border_crayon, cols_width, vlines)
 
@@ -440,7 +440,7 @@ function _pt_text(io::IO, pinfo::PrintInfo;
 
     if !noheader
         _print_table_header!(buf,
-                             screen,
+                             display,
                              header,
                              header_str,
                              header_len,
@@ -467,7 +467,7 @@ function _pt_text(io::IO, pinfo::PrintInfo;
         # Bottom header line
         #-----------------------------------------------------------------------
 
-        1 ∈ hlines && _draw_line!(screen, buf, tf.left_intersection,
+        1 ∈ hlines && _draw_line!(display, buf, tf.left_intersection,
                                   tf.middle_intersection,
                                   tf.right_intersection, tf.row,
                                   border_crayon, cols_width, vlines)
@@ -477,7 +477,7 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     # ==========================================================================
 
     @inbounds _print_table_data(buf,
-                                screen,
+                                display,
                                 data,
                                 data_str,
                                 data_len,
@@ -508,7 +508,7 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     # ==========================================================================
 
     draw_last_hline &&
-        _draw_line!(screen, buf, tf.bottom_left_corner, tf.bottom_intersection,
+        _draw_line!(display, buf, tf.bottom_left_corner, tf.bottom_intersection,
                     tf.bottom_right_corner, tf.row, border_crayon, cols_width,
                     vlines)
 
@@ -537,9 +537,9 @@ function _pt_text(io::IO, pinfo::PrintInfo;
         textwidth(cs_str) < table_width &&
             (cs_str = _str_aligned(cs_str, :r, table_width)[1])
 
-        screen.has_color && print(buf, omitted_cell_summary_crayon)
+        display.has_color && print(buf, omitted_cell_summary_crayon)
         print(buf, cs_str)
-        screen.has_color && print(buf, _reset_crayon)
+        display.has_color && print(buf, _reset_crayon)
         println(buf)
     end
 
@@ -549,9 +549,9 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     # ==========================================================================
 
     # If `overwrite` is `true`, then delete the exact number of lines of the
-    # table. This can be used to replace the table in the screen continuously.
+    # table. This can be used to replace the table in the display continuously.
 
-    str_overwrite = overwrite ? "\e[1F\e[2K"^(screen.row - 1) : ""
+    str_overwrite = overwrite ? "\e[1F\e[2K"^(display.row - 1) : ""
 
     # Print the buffer
     # ==========================================================================

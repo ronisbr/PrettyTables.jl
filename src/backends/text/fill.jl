@@ -76,7 +76,7 @@ function _fill_matrix_data!(header_str::Matrix{String},
                             data::Any,
                             header::Any,
                             formatters::Tuple,
-                            screen::Screen,
+                            display::Display,
                             # Configuration options.
                             autowrap::Bool,
                             cell_first_line_only::Bool,
@@ -119,7 +119,7 @@ function _fill_matrix_data!(header_str::Matrix{String},
                                      cell_first_line_only = false,
                                      column_width = -1,
                                      compact_printing = compact_printing,
-                                     has_color = screen.has_color,
+                                     has_color = display.has_color,
                                      linebreaks = false,
                                      renderer = Val(:print))
 
@@ -168,7 +168,7 @@ function _fill_matrix_data!(header_str::Matrix{String},
                                  cell_first_line_only = cell_first_line_only,
                                  column_width = columns_width[ic],
                                  compact_printing = compact_printing,
-                                 has_color = screen.has_color,
+                                 has_color = display.has_color,
                                  linebreaks = linebreaks,
                                  renderer = renderer)
 
@@ -192,12 +192,12 @@ function _fill_matrix_data!(header_str::Matrix{String},
 
             # If the crop mode if `:middle`, then we need to always process a
             # row in the top and in another in the bottom before stopping due to
-            # screen size. This is required to avoid printing from a cell that
+            # display size. This is required to avoid printing from a cell that
             # is undefined. Notice that due to the printing order in `jvec` we
             # just need to check if `k` is even.
             if ( (vcrop_mode == :bottom) ||
                  ( (vcrop_mode == :middle) && (k % 2 == 0) ) ) &&
-                (screen.size[1] > 0) && (num_processed_rows ≥ screen.size[1])
+                (display.size[1] > 0) && (num_processed_rows ≥ display.size[1])
                 break
             end
         end
@@ -206,10 +206,10 @@ function _fill_matrix_data!(header_str::Matrix{String},
         # another column.
         #
         # TODO: Should we take into account the dividers?
-        if screen.size[2] > 0
+        if display.size[2] > 0
             pred_tab_width += cols_width[i]
 
-            if pred_tab_width > screen.size[2]
+            if pred_tab_width > display.size[2]
                 num_printed_cols = i
                 break
             end

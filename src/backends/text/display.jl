@@ -3,19 +3,19 @@
 # Description
 # ==============================================================================
 #
-#   Functions related to screen printing and manipulation.
+#   Functions related to display printing and manipulation.
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 """
-    _draw_continuation_row(screen::Screen, io::IO, tf::TextFormat, text_crayon::Crayon, border_crayon::Crayon, cols_width::Vector{Int}, vlines::Vector{Int}, alignment::Symbol)
+    _draw_continuation_row(display::Display, io::IO, tf::TextFormat, text_crayon::Crayon, border_crayon::Crayon, cols_width::Vector{Int}, vlines::Vector{Int}, alignment::Symbol)
 
 Draw the continuation row when the table has filled the vertical space
 available. This function prints in each column the character `⋮` with the
 alignment in `alignment`.
 
 """
-function _draw_continuation_row(screen::Screen, io::IO, tf::TextFormat,
+function _draw_continuation_row(display::Display, io::IO, tf::TextFormat,
                                 text_crayon::Crayon, border_crayon::Crayon,
                                 cols_width::Vector{Int}, vlines::Vector{Int},
                                 alignment::Symbol)
@@ -23,12 +23,12 @@ function _draw_continuation_row(screen::Screen, io::IO, tf::TextFormat,
     # In case of a continuation row, we want the last character to indicate that
     # the table continues both vertically and horizontally in case the text is
     # cropped.
-    old_cont_char = screen.cont_char
-    screen.cont_char = '⋱'
+    old_cont_char = display.cont_char
+    display.cont_char = '⋱'
 
     num_cols = length(cols_width)
 
-    0 ∈ vlines && _p!(screen, border_crayon, tf.column)
+    0 ∈ vlines && _p!(display, border_crayon, tf.column)
 
     @inbounds for j = 1:num_cols
         data_ij_str, data_ij_len = _str_aligned("⋮", alignment, cols_width[j])
@@ -37,86 +37,87 @@ function _draw_continuation_row(screen::Screen, io::IO, tf::TextFormat,
 
         flp = j == num_cols
 
-        _p!(screen, text_crayon, data_ij_str, false, data_ij_len)
-        _pc!(j ∈ vlines, screen, border_crayon, tf.column, "", flp, 1, 0)
-        _eol(screen) && break
+        _p!(display, text_crayon, data_ij_str, false, data_ij_len)
+        _pc!(j ∈ vlines, display, border_crayon, tf.column, "", flp, 1, 0)
+        _eol(display) && break
     end
 
-    _nl!(screen, io)
+    _nl!(display, io)
 
-    screen.cont_char = old_cont_char
+    display.cont_char = old_cont_char
 
     return nothing
 end
 
 """
-    _draw_line!(screen::Screen, io::IO, left::Char, intersection::Char, right::Char, row::Char, border_crayon::Crayon, cols_width::Vector{Int}, vlines::Vector{Int})
+    _draw_line!(display::Display, io::IO, left::Char, intersection::Char, right::Char, row::Char, border_crayon::Crayon, cols_width::Vector{Int}, vlines::Vector{Int})
 
-Draw a vertical line in internal line buffer of `screen` and then flush to the
+Draw a vertical line in internal line buffer of `display` and then flush to the
 io `io`.
 
 """
-function _draw_line!(screen::Screen, io::IO, left::Char, intersection::Char,
+function _draw_line!(display::Display, io::IO, left::Char, intersection::Char,
                      right::Char, row::Char, border_crayon::Crayon,
                      cols_width::Vector{Int}, vlines::Vector{Int})
 
     # We does not want to add ellipsis when drawing lines.
-    old_cont_char          = screen.cont_char
-    old_cont_space_char    = screen.cont_space_char
-    screen.cont_char       = row
-    screen.cont_space_char = row
+    old_cont_char           = display.cont_char
+    old_cont_space_char     = display.cont_space_char
+    display.cont_char       = row
+    display.cont_space_char = row
 
     num_cols = length(cols_width)
 
-    0 ∈ vlines && _p!(screen, border_crayon, left)
+    0 ∈ vlines && _p!(display, border_crayon, left)
 
     @inbounds for i = 1:num_cols
         # Check the alignment and print.
-        _p!(screen, border_crayon, row^(cols_width[i]+2)) && break
+        _p!(display, border_crayon, row^(cols_width[i]+2)) && break
 
         i != num_cols &&
-            _pc!(i ∈ vlines, screen, border_crayon, intersection, "")
+            _pc!(i ∈ vlines, display, border_crayon, intersection, "")
     end
 
-    _pc!(num_cols ∈ vlines, screen, border_crayon, right, "", true)
-    _nl!(screen, io)
+    _pc!(num_cols ∈ vlines, display, border_crayon, right, "", true)
+    _nl!(display, io)
 
-    screen.cont_char       = old_cont_char
-    screen.cont_space_char = old_cont_space_char
+    display.cont_char       = old_cont_char
+    display.cont_space_char = old_cont_space_char
 
     return nothing
 end
 
 """
-    _eol(screen::Screen)
+    _eol(display::Display)
 
 Return `true` if the cursor is at the end of line or `false` otherwise.
 
 """
-_eol(screen::Screen) = (screen.size[2] > 0) && (screen.col >= screen.size[2])
+_eol(display::Display) =
+    (display.size[2] > 0) && (display.col >= display.size[2])
 
 """
-    _nl!(screen::Screen, io::IO)
+    _nl!(display::Display, io::IO)
 
-Flush the internal line buffer of `screen` into `io`.
+Flush the internal line buffer of `display` into `io`.
 
 """
-function _nl!(screen::Screen, io::IO)
-    # Update the information about the current columns and row of the screen.
-    screen.row += 1
-    screen.col  = 0
+function _nl!(display::Display, io::IO)
+    # Update the information about the current columns and row of the display.
+    display.row += 1
+    display.col  = 0
 
     # Flush the current line to the buffer removing any trailing space.
-    str = rstrip(String(take!(screen.buf_line)))
+    str = rstrip(String(take!(display.buf_line)))
     println(io, str)
 end
 
 """
-    _p!(screen::Screen, crayon::Crayon, str::Char, final_line_print::Bool = false, lstr::Int = -1)
-    _p!(screen::Screen, crayon::Crayon, str::String, final_line_print::Bool = false, lstr::Int = -1)
+    _p!(display::Display, crayon::Crayon, str::Char, final_line_print::Bool = false, lstr::Int = -1)
+    _p!(display::Display, crayon::Crayon, str::String, final_line_print::Bool = false, lstr::Int = -1)
 
-Print `str` into the internal line buffer of `screen` using the Crayon `crayon`
-with the screen information in `screen`. The parameter `final_line_print` must
+Print `str` into the internal line buffer of `display` using the Crayon `crayon`
+with the display information in `display`. The parameter `final_line_print` must
 be set to `true` if this is the last string that will be printed in the line.
 This is necessary for the algorithm to select whether or not to include the
 continuation character.
@@ -127,10 +128,10 @@ The size of the string can be passed to `lstr` to save computational burden. If
 The line buffer can be flushed to an `io` using the function `_nl!`.
 
 """
-_p!(screen::Screen, crayon::Crayon, str::Char, final_line_print::Bool = false,
-    lstr::Int = -1) = _p!(screen, crayon, string(str), final_line_print, lstr)
+_p!(display::Display, crayon::Crayon, str::Char, final_line_print::Bool = false,
+    lstr::Int = -1) = _p!(display, crayon, string(str), final_line_print, lstr)
 
-function _p!(screen::Screen, crayon::Crayon, str::String,
+function _p!(display::Display, crayon::Crayon, str::String,
              final_line_print::Bool = false, lstr::Int = -1)
 
     # Get the size of the string if required.
@@ -141,14 +142,14 @@ function _p!(screen::Screen, crayon::Crayon, str::String,
     sapp = ""
     lapp = 0
 
-    # When printing a line, we must verify if the screen has bounds. This is
+    # When printing a line, we must verify if the display has bounds. This is
     # done by looking if the horizontal size is positive.
-    @inbounds if screen.size[2] > 0
+    @inbounds if display.size[2] > 0
 
         # If we are at the end of the line, then just return.
-        _eol(screen) && return true
+        _eol(display) && return true
 
-        Δ = screen.size[2] - (lstr + screen.col)
+        Δ = display.size[2] - (lstr + display.col)
 
         # Check if we can print the entire string.
         if Δ <= 0
@@ -159,21 +160,21 @@ function _p!(screen::Screen, crayon::Crayon, str::String,
                 # reserving 2 characters for the line continuation indicator.
                 str  = _crop_str(str, lstr + Δ - 2)
                 lstr = lstr + Δ - 2
-                sapp = screen.cont_space_char * screen.cont_char
+                sapp = display.cont_space_char * display.cont_char
                 lapp = 2
-            elseif screen.size[2] - screen.col == 2
+            elseif display.size[2] - display.col == 2
                 # If there are only 2 characters left, then we must only print
                 # " ⋯".
                 str  = ""
                 lstr = 0
-                sapp = screen.cont_space_char * screen.cont_char
+                sapp = display.cont_space_char * display.cont_char
                 lapp = 2
-            elseif screen.size[2] - screen.col == 1
+            elseif display.size[2] - display.col == 1
                 # If there are only 1 character left, then we must only print
                 # "⋯".
                 str  = ""
                 lstr = 0
-                sapp = string(screen.cont_char)
+                sapp = string(display.cont_char)
                 lapp = 1
             else
                 # This should never be reached.
@@ -181,7 +182,7 @@ function _p!(screen::Screen, crayon::Crayon, str::String,
                 return true
             end
 
-            # In this case, we reached the end of screen. Thus, remove any
+            # In this case, we reached the end of display. Thus, remove any
             # trailing spaces.
             sapp = rstrip(sapp)
             length(sapp) == 0 && (str = rstrip(str))
@@ -196,10 +197,10 @@ function _p!(screen::Screen, crayon::Crayon, str::String,
             if Δ == 1
                 str   = lstr > 1 ? _crop_str(str, lstr - 1) : ""
                 lstr -= 1
-                sapp  = screen.cont_space_char * screen.cont_char
+                sapp  = display.cont_space_char * display.cont_char
                 lapp  = 2
 
-                # In this case, we reached the end of screen. Thus, remove any
+                # In this case, we reached the end of display. Thus, remove any
                 # trailing spaces.
                 sapp = rstrip(sapp)
                 length(sapp) == 0 && (str = rstrip(str))
@@ -212,25 +213,25 @@ function _p!(screen::Screen, crayon::Crayon, str::String,
     # Notice that all text printed with crayon is reset right after the string.
     # Hence, if the crayon is empty (`_default_crayon`) or if it is a reset,
     # then we can just print as if the terminal does not support color.
-    if (crayon != _default_crayon) && (crayon != _reset_crayon) && screen.has_color
-        print(screen.buf_line, crayon, str, _reset_crayon, sapp)
+    if (crayon != _default_crayon) && (crayon != _reset_crayon) && display.has_color
+        print(display.buf_line, crayon, str, _reset_crayon, sapp)
     else
-        print(screen.buf_line, str, sapp)
+        print(display.buf_line, str, sapp)
     end
 
     # Update the current columns.
-    screen.col += lstr + lapp
+    display.col += lstr + lapp
 
     # Return if we reached the end of line.
-    return _eol(screen)
+    return _eol(display)
 end
 
 """
-    _pc!(cond::Bool, screen::Screen, io::IO, crayon::Crayon, str_true::Union{Char,String}, str_false::Union{Char,String}, final_line_print::Bool = false, lstr_true::Int = -1, lstr_false::Int = -1)
+    _pc!(cond::Bool, display::Display, io::IO, crayon::Crayon, str_true::Union{Char,String}, str_false::Union{Char,String}, final_line_print::Bool = false, lstr_true::Int = -1, lstr_false::Int = -1)
 
 If `cond == true` then print `str_true`. Otherwise, print `str_false`. Those
-strings will be printed into the internal line buffer of `screen` using the
-Crayon `crayon` with the screen information in `screen`. The parameter
+strings will be printed into the internal line buffer of `display` using the
+Crayon `crayon` with the display information in `display`. The parameter
 `final_line_print` must be set to `true` if this is the last string that will be
 printed in the line. This is necessary for the algorithm to select whether or
 not to include the continuation character.
@@ -240,13 +241,13 @@ computational burden. If they are `-1`, then the string lengths will be computed
 inside the function.
 
 """
-function _pc!(cond::Bool, screen::Screen, crayon::Crayon,
+function _pc!(cond::Bool, display::Display, crayon::Crayon,
               str_true::Union{Char,String}, str_false::Union{Char,String},
               final_line_print::Bool = false, lstr_true::Int = -1,
               lstr_false::Int = -1)
     if cond
-        return _p!(screen, crayon, str_true, final_line_print, lstr_true)
+        return _p!(display, crayon, str_true, final_line_print, lstr_true)
     else
-        return _p!(screen, crayon, str_false, final_line_print, lstr_false)
+        return _p!(display, crayon, str_false, final_line_print, lstr_false)
     end
 end

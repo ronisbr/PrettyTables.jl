@@ -9,7 +9,7 @@
 
 # Create the printing recipes for the rows and columns of the table. This
 # function also computed how many rows and columns are omitted in the printing.
-function _create_printing_recipe(screen::Screen,
+function _create_printing_recipe(display::Display,
                                  header_num_rows::Int,
                                  num_filtered_rows::Int,
                                  num_filtered_cols::Int,
@@ -20,7 +20,7 @@ function _create_printing_recipe(screen::Screen,
                                  id_rows::Vector{Int},
                                  hlines::Vector{Int},
                                  vlines::Vector{Int},
-                                 Δscreen_lines::Int,
+                                 Δdisplay_lines::Int,
                                  Δc::Int,
                                  # Configurations
                                  crop::Symbol,
@@ -37,7 +37,7 @@ function _create_printing_recipe(screen::Screen,
 
     # Verify if the output must be cropped.
     if crop == :both || crop == :horizontal
-        data_horizontal_limit = screen.size[2] - 1
+        data_horizontal_limit = display.size[2] - 1
     end
 
     # The variable stores the current line length to check how many columns we
@@ -103,7 +103,7 @@ function _create_printing_recipe(screen::Screen,
     # Verify if the output must be vertically cropped.
     data_vcropped = false
 
-    if (screen.size[1] > 0) && ( (crop == :both) || (crop == :vertical) )
+    if (display.size[1] > 0) && ( (crop == :both) || (crop == :vertical) )
         # Compute the number of lines required to print the table. Notice that
         # we need to omit the last line since it is always printed.
         total_hlines = count(x->0 ≤ x < (!noheader + num_printed_rows), hlines)
@@ -111,7 +111,7 @@ function _create_printing_recipe(screen::Screen,
         total_table_lines += total_hlines + sum(num_lines_in_row)
 
         # Check if we can print all the table lines in the available space.
-        data_vertical_limit = screen.size[1] - Δscreen_lines - crop_space
+        data_vertical_limit = display.size[1] - Δdisplay_lines - crop_space
         Δ = data_vertical_limit - total_table_lines
 
         # Given the additional space we have when printing the continuation

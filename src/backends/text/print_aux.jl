@@ -9,7 +9,7 @@
 
 # Print the table header without the horizontal lines.
 function _print_table_header!(buf::IO,
-                              screen::Screen,
+                              display::Display,
                               header::Any,
                               header_str::Matrix{String},
                               header_len::Matrix{Int},
@@ -36,7 +36,7 @@ function _print_table_header!(buf::IO,
     header_num_rows, ~ = size(header_str)
 
     @inbounds @views for i = 1:header_num_rows
-        0 ∈ vlines && _p!(screen, border_crayon, tf.column, false, 1)
+        0 ∈ vlines && _p!(display, border_crayon, tf.column, false, 1)
 
         for j = 1:num_printed_cols
             # Get the information about the alignment and the crayon.
@@ -79,23 +79,23 @@ function _print_table_header!(buf::IO,
             flp = j == num_printed_cols
 
             # Print the text.
-            _p!(screen, crayon_ij, header_ij_str, false, header_ij_len)
+            _p!(display, crayon_ij, header_ij_str, false, header_ij_len)
 
             # Check if we need to draw a vertical line here.
-            _pc!(j ∈ vlines, screen, border_crayon, tf.column, "", flp, 1, 0)
+            _pc!(j ∈ vlines, display, border_crayon, tf.column, "", flp, 1, 0)
 
-            _eol(screen) && break
+            _eol(display) && break
         end
 
-        i != header_num_rows && _nl!(screen, buf)
+        i != header_num_rows && _nl!(display, buf)
     end
 
-    _nl!(screen, buf)
+    _nl!(display, buf)
 end
 
 # Print the entire table data.
 function _print_table_data(buf::IO,
-                           screen::Screen,
+                           display::Display,
                            data::Any,
                            data_str::Matrix{Vector{String}},
                            data_len::Matrix{Vector{Int}},
@@ -127,10 +127,10 @@ function _print_table_data(buf::IO,
     for r in row_printing_recipe
         if r isa Symbol
             if r == :row_line
-                _draw_line!(screen, buf, body_hlines_format..., border_crayon,
+                _draw_line!(display, buf, body_hlines_format..., border_crayon,
                             cols_width, vlines)
             elseif r == :continuation_line
-                _draw_continuation_row(screen, buf, tf, text_crayon,
+                _draw_continuation_row(display, buf, tf, text_crayon,
                                        border_crayon, cols_width, vlines,
                                        continuation_row_alignment)
             else
@@ -143,7 +143,7 @@ function _print_table_data(buf::IO,
             for l = l₀:(l₀+num_lines-1)
 
                 # Check if we should print the ellipsis here.
-                screen.cont_char =
+                display.cont_char =
                     line_count % (ellipsis_line_skip + 1) == 0 ? '⋯' : ' '
                 line_count += 1
 
@@ -156,11 +156,11 @@ function _print_table_data(buf::IO,
 
                     if c isa Symbol
                         if c == :left_line
-                            _p!(screen, border_crayon, tf.column, flp, 1)
+                            _p!(display, border_crayon, tf.column, flp, 1)
                         elseif c == :column_line
-                            _p!(screen, border_crayon, tf.column, flp, 1)
+                            _p!(display, border_crayon, tf.column, flp, 1)
                         elseif c == :right_line
-                            _p!(screen, border_crayon, tf.column, flp, 1)
+                            _p!(display, border_crayon, tf.column, flp, 1)
                         else
                             error("Internal error: wrong symbol in column printing recipe.")
                         end
@@ -214,10 +214,10 @@ function _print_table_data(buf::IO,
                                                cell_alignment,
                                                highlighters)
 
-                        _p!(screen, crayon_ij, data_ij_str, false, data_ij_len)
+                        _p!(display, crayon_ij, data_ij_str, false, data_ij_len)
                     end
                 end
-                _nl!(screen, buf)
+                _nl!(display, buf)
             end
         end
     end

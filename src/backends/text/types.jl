@@ -102,23 +102,23 @@ Highlighter(f, crayon::Crayon) = Highlighter(f = f, crayon = crayon)
 Highlighter(f::Function, fd::Function) = Highlighter(f = f, fd = fd)
 
 """
-    Screen
+    Display
 
-Store the information of the screen and the current cursor position. Notice that
-this is not the real cursor position with respect to the screen, but with
+Store the information of the display and the current cursor position. Notice
+that this is not the real cursor position with respect to the display, but with
 respect to the point in which the table is printed.
 
 # Fields
 
-* `size`: Screen size.
+* `size`: Display size.
 * `row`: Current row.
 * `col`: Current column.
-* `has_color`: Indicates if the screen has color support.
+* `has_color`: Indicates if the display has color support.
 * `cont_char`: The character that indicates the line is cropped.
 * `cont_space_char`: Space character to be printed before `cont_char`.
 
 """
-@kwdef mutable struct Screen
+@kwdef mutable struct Display
     size::Tuple{Int,Int}  = (-1,-1)
     row::Int              = 1
     col::Int              = 0

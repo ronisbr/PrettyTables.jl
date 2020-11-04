@@ -21,7 +21,7 @@ The size of the string can be passed to `lstr` to save computational burden. If
 function _crop_str(str::String, crop_size::Int, lstr::Int = -1)
     lstr < 0 && (lstr = textwidth(str))
 
-    # If the crop_size is large than the screen size, then just return the
+    # If the `crop_size` is large than the string length, then just return the
     # current string.
     crop_size ≥ lstr && return str
 
