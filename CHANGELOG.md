@@ -1,6 +1,92 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 0.10.0
+--------------
+
+- ![BREAKING][badge-breaking] `same_column_size` was renamed to
+  `equal_columns_width`.
+- ![BREAKING][badge-breaking] Remove dependency Parameters.jl. This reduced the
+  loading time in 30% but some features related to structure copying are now
+  missing. (Issue [#79][gh-issue-79])
+- ![BREAKING][badge-breaking] All table format variables now has the prefix
+  `tf_`. This was required to avoid naming conflicts since some variables like
+  `matrix` have common names.
+- ![BREAKING][badge-breaking] `screen_size` was renamed to `display_size`.
+- ![BREAKING][badge-breaking]![Feature][badge-feature] If a table is cropped in
+  text back-end, then a summary indicating the number of omitted rows and
+  columns is now printed. This can be disable by the option
+  `show_omitted_cell_summary`.
+- ![BREAKING][badge-breaking]![Enhancement][badge-enhancement] PrettyTables.jl
+  now uses compact printing by default.
+- ![BREAKING][badge-breaking]![Enhancement][badge-enhancement] LaTeX tables when
+  using `tabular` is now wrapped inside a `table` environment.
+- ![BREAKING][badge-breaking] PrettyTables.jl does not print trailing spaces
+  anymore.
+- ![Feature][badge-feature] Option `crop_subheader` in text back-end. If this
+  option is `true`, PrettyTables.jl neglects the subheader length when computing
+  the row size, cropping it if necessary.
+- ![Feature][badge-feature] Option `minimum_columns_width` in text back-end.
+  This option allows the user the specify the minimum allowed size of each
+  column.
+- ![Feature][badge-feature] Option `maximum_columns_width` in text back-end.
+  This option allows the user the specify the maximum allowed size of each
+  column.
+- ![Feature][badge-feature] Option `title`. It is now possible to define the
+  table title in all back-ends. (Issue [#32][gh-issue-32])
+- ![Feature][badge-feature] Header cells can now be aligned independently from
+  the column alignment. (Issue [#66][gh-issue-66])
+- ![Feature][badge-feature] Option `hlines` in LaTeX back-end. The user can now
+  define where they want horizontal lines in the LaTeX back-end. (Issue
+  [#70][gh-issue-70])
+- ![Feature][badge-feature] Option `cell_first_line_only`. If `true`, then only
+  the first line of the cells are printed.
+- ![Feature][badge-feature] Option `row_number_alignment` in text back-end. This
+  option can be used to select the alignment of the row number column in text
+  back-end.
+- ![Feature][badge-feature] PrettyTables.jl can now render Markdown cells in all
+  back-ends. (PR [#63][gh-pr-63] and other commits)
+- ![Feature][badge-feature] Option `crop_num_lines_at_beginning` in text
+  back-end. This option defines how many lines are skipped at the beginning when
+  cropping the table.
+- ![Feature][badge-feature] Option `newline_at_end` in text back-end. If
+  `false`, then the table is printed without a newline character at end.
+- ![Feature][badge-feature] Option `continuation_row_alignment` in text
+  back-end. This option allows the user to select the alignment of the
+  continuation row.
+- ![Feature][badge-feature] Option `row_number_column_title`. This selects the
+  title of the row number column.
+- ![Feature][badge-feature] A new configuration system is added so that the user
+  can create structures storing printing configurations to be reused.
+- ![Feature][badge-feature] PrettyTables.jl can now use the function `print` or
+  `show` to render the cells. This is selected by the keyword `renderer`.
+- ![Feature][badge-feature] Option `ellipsis_line_skip` in text back-end. This
+  option configures how many lines are skipped when showing ellipsis to indicate
+  that the lines were cropped.
+- ![Feature][badge-feature] Text back-end can now crop a table in the middle.
+  The behavior can be selected by the keyword `vcrop_mode`.
+- ![Enhancement][badge-enhancement] PrettyTables.jl can now handle UTF-8 strings
+  with variable character size.
+- ![Enhancement][badge-enhancement] PrettyTables.jl now supports `#undef` cells.
+- ![Enhancement][badge-enhancement] A lot of optimizations were performed to
+  decrease the time to print the first table, which is now almost 45% less.
+- ![Enhancement][badge-enhancement] LaTeX output is now indented.
+- ![Enhancement][badge-enhancement] HTML output is now indented.
+- ![Enhancement][badge-enhancement] The types when printing Tables.jl now has a
+  compact representation.
+- ![Enhancement][badge-enhancement] `show_row_number` is now available in all
+  back-ends.
+- ![Enhancement][badge-enhancement] Revamp of internal mechanism of text
+  back-end, leading to a much more organized code base.
+- ![Bugfix][badge-bugfix] The original data is now passed to highlighters and
+  filters when the table complies with Tables.jl API. (Issue [#65][gh-issue-65])
+- ![Bugfix][badge-bugfix] LaTeX alignment was wrong in filtered columns.
+- ![Bugfix][badge-bugfix] Fix row name crayons in text back-end. (Issue
+  [#68][gh-issue-68])
+- ![Bugfix][badge-bugfix] Do not throw an error is a table is empty.
+- ![Info][badge-info] End of support of Julia 1.4. The supported versions are
+  1.0 and 1.5.
+
 Version 0.9.1
 -------------
 
@@ -292,11 +378,17 @@ Version 0.1.0
 [gh-issue-24]: https://github.com/ronisbr/PrettyTables.jl/issues/24
 [gh-issue-28]: https://github.com/ronisbr/PrettyTables.jl/issues/28
 [gh-issue-29]: https://github.com/ronisbr/PrettyTables.jl/issues/29
+[gh-issue-32]: https://github.com/ronisbr/PrettyTables.jl/issues/32
 [gh-issue-33]: https://github.com/ronisbr/PrettyTables.jl/issues/33
 [gh-issue-38]: https://github.com/ronisbr/PrettyTables.jl/issues/38
 [gh-issue-40]: https://github.com/ronisbr/PrettyTables.jl/issues/40
 [gh-issue-45]: https://github.com/ronisbr/PrettyTables.jl/issues/45
 [gh-issue-46]: https://github.com/ronisbr/PrettyTables.jl/issues/46
+[gh-issue-65]: https://github.com/ronisbr/PrettyTables.jl/issues/65
+[gh-issue-66]: https://github.com/ronisbr/PrettyTables.jl/issues/66
+[gh-issue-68]: https://github.com/ronisbr/PrettyTables.jl/issues/68
+[gh-issue-70]: https://github.com/ronisbr/PrettyTables.jl/issues/70
+[gh-issue-79]: https://github.com/ronisbr/PrettyTables.jl/issues/79
 
 [gh-pr-5]: https://github.com/ronisbr/PrettyTables.jl/pull/5
 [gh-pr-8]: https://github.com/ronisbr/PrettyTables.jl/pull/8
@@ -307,3 +399,4 @@ Version 0.1.0
 [gh-pr-53]: https://github.com/ronisbr/PrettyTables.jl/pull/53
 [gh-pr-54]: https://github.com/ronisbr/PrettyTables.jl/pull/54
 [gh-pr-56]: https://github.com/ronisbr/PrettyTables.jl/pull/56
+[gh-pr-63]: https://github.com/ronisbr/PrettyTables.jl/pull/63
