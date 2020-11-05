@@ -22,6 +22,7 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                   crop_subheader::Bool = false,
                   crop_num_lines_at_beginning::Int = 0,
                   columns_width::Union{Int,AbstractVector{Int}} = 0,
+                  display_size::Tuple{Int,Int} = displaysize(io),
                   equal_columns_width::Bool = false,
                   ellipsis_line_skip::Integer = 0,
                   highlighters::Union{Highlighter,Tuple} = (),
@@ -36,7 +37,6 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                   row_name_crayon::Crayon = Crayon(bold = true),
                   row_name_header_crayon::Crayon = Crayon(bold = true),
                   row_number_alignment::Symbol = :r,
-                  screen_size::Tuple{Int,Int} = displaysize(io),
                   show_omitted_cell_summary::Bool = true,
                   sortkeys::Bool = false,
                   tf::TextFormat = tf_unicode,
@@ -85,11 +85,11 @@ function _pt_text(io::IO, pinfo::PrintInfo;
 
     # Check which type of cropping the user wants.
     if crop == :both
-        display.size = screen_size
+        display.size = display_size
     elseif crop == :vertical
-        display.size = (screen_size[1], -1)
+        display.size = (display_size[1], -1)
     elseif crop == :horizontal
-        display.size = (-1, screen_size[2])
+        display.size = (-1, display_size[2])
     else
         # If the table will not be cropped, then we should never show an omitted
         # cell summary.

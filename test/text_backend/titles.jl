@@ -127,7 +127,7 @@ That has two lines.
 """
     result = pretty_table(String, data,
                           crop = :both,
-                          screen_size = (13,35),
+                          display_size = (13,35),
                           title = "This is a long long long long long long title\nThat has two lines.")
     @test result == expected
 
@@ -146,7 +146,7 @@ That has two lines.
 """
     result = pretty_table(String, data,
                           crop = :both,
-                          screen_size = (13,35),
+                          display_size = (13,35),
                           title = "This is a long long long long long long title\nThat has two lines.",
                           title_autowrap = true)
     @test result == expected

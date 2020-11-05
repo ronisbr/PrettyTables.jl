@@ -143,8 +143,8 @@ julia> pretty_table(A, filters_row = (f_r,), filters_col = (f_c,), show_row_numb
 
 ![](../assets/ex_00011.png)
 
-By default, if the data is larger than the screen, then it will be cropped to
-fit it. This can be changed by using the keywords `crop` and `screen_size`.
+By default, if the data is larger than the display, then it will be cropped to
+fit it. This can be changed by using the keywords `crop` and `display_size`.
 
 ```julia
 julia> data = rand(100,10); pretty_table(data, highlighters = (hl_gt(0.5),))

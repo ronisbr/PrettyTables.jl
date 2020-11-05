@@ -86,9 +86,9 @@
     result = pretty_table(String, data,
                           ["C1" "C2" "C3" "C4"; "Int" "Bool" "Float" "Hex"],
                           crop = :both,
+                          display_size = (12,40),
                           row_names = ["Row $i" for i = 1:6],
                           row_name_column_title = "Row names",
-                          row_name_alignment = :c,
-                          screen_size = (12,40))
+                          row_name_alignment = :c)
     @test result == expected
 end

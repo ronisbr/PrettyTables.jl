@@ -50,7 +50,7 @@ passed as keywords when calling the function `pretty_table`:
                                 the table is vertically cropped.
                                 (**Default** = `:c`)
 * `crop`: Select the printing behavior when the data is bigger than the
-          available screen size (see `screen_size`). It can be `:both` to crop
+          available display size (see `display_size`). It can be `:both` to crop
           on vertical and horizontal direction, `:horizontal` to crop only on
           horizontal direction, `:vertical` to crop only on vertical direction,
           or `:none` to do not crop the data at all. If the `io` has
@@ -66,6 +66,12 @@ passed as keywords when calling the function `pretty_table`:
                     algorithm can crop it to save space. This has no effect if
                     the user selects a fixed column width.
                     (**Default** = `false`)
+* `display_size`: A tuple of two integers that defines the display size (num. of
+                  rows, num. of columns) that is available to print the table.
+                  It is used to crop the data depending on the value of the
+                  keyword `crop`. Notice that if a dimension is not positive,
+                  then it will be treated as unlimited.
+                  (**Default** = `displaysize(io)`)
 * `ellipsis_line_skip`: An integer defining how many lines will be skipped from
                         showing the ellipsis that indicates the text was
                         cropped. (**Default** = 0)
@@ -123,15 +129,9 @@ passed as keywords when calling the function `pretty_table`:
 * `omitted_cell_summary_crayon`: Crayon used to print the omitted cell summary.
 * `overwrite`: If `true`, then the same number of lines in the printed table
                will be deleted from the output `io`. This can be used to update
-               the table in the screen continuously. (**Default** = `false`)
+               the table in the display continuously. (**Default** = `false`)
 * `row_number_alignment`: Select the alignment of the row number column (see the
                           section [Alignment](@ref)). (**Default** = `:r`)
-* `screen_size`: A tuple of two integers that defines the screen size (num. of
-                 rows, num. of columns) that is available to print the table. It
-                 is used to crop the data depending on the value of the keyword
-                 `crop`. Notice that if a dimension is not positive, then
-                 it will be treated as unlimited.
-                 (**Default** = `displaysize(io)`)
 * `show_omitted_cell_summary`: If `true`, then a summary will be printed after
                                the table with the number of columns and rows
                                that were omitted. (**Default** = `true`)
@@ -141,7 +141,7 @@ passed as keywords when calling the function `pretty_table`:
 * `title_crayon`: Crayon to print the title.
 * `title_same_width_as_table`: If `true`, then the title width will match that
                                of the table. Otherwise, the title size will be
-                               equal to the screen width.
+                               equal to the display width.
                                (**Default** = `false`)
 * `tf`: Table format used to print the table (see the section
         [Text table formats](@ref)). (**Default** = `tf_unicode`)
@@ -215,7 +215,7 @@ defaults to `:none`.
 If `pretty_table` is called without `io`, then `stdout` is wrapped in a
 `IOContext` with `:limit => true`.
 
-The display size can be configured by the keyword `screen_size`, which is a
+The display size can be configured by the keyword `display_size`, which is a
 tuple of two `Int` with the number of rows and columns, respectively. If this
 keyword is not specified, then it is automatically obtained using the function
 `displaysize(io)`.
@@ -228,7 +228,7 @@ julia> data = Any[1    false      1.0     0x01 ;
                   5    false      5.0     0x05 ;
                   6     true      6.0     0x06 ;];
 
-julia> pretty_table(data, screen_size = (11,30))
+julia> pretty_table(data, display_size = (11,30))
 ┌────────┬────────┬────────┬──
 │ Col. 1 │ Col. 2 │ Col. 3 │ ⋯
 ├────────┼────────┼────────┼──
@@ -239,7 +239,7 @@ julia> pretty_table(data, screen_size = (11,30))
 └────────┴────────┴────────┴──
    1 column and 3 rows omitted
 
-julia> pretty_table(data, screen_size = (11,30), crop = :none)
+julia> pretty_table(data, display_size = (11,30), crop = :none)
 ┌────────┬────────┬────────┬────────┐
 │ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
 ├────────┼────────┼────────┼────────┤
@@ -297,7 +297,7 @@ julia> data = Any[1    false      1.0     0x01 ;
                   5    false      5.0     0x05 ;
                   6     true      6.0     0x06 ;];
 
-julia> pretty_table(data, screen_size = (11,30), vcrop_mode = :middle)
+julia> pretty_table(data, display_size = (11,30), vcrop_mode = :middle)
 ┌────────┬────────┬────────┬──
 │ Col. 1 │ Col. 2 │ Col. 3 │ ⋯
 ├────────┼────────┼────────┼──

@@ -186,9 +186,9 @@ end
 
     result = sprint((io)->pretty_table(io, matrix,
                                        crop = :both,
+                                       display_size = (15,-1),
                                        highlighters = (hl,),
-                                       vcrop_mode = :middle,
-                                       screen_size = (15,-1)),
+                                       vcrop_mode = :middle),
                     context = :color => true)
 
     @test result == expected
@@ -211,10 +211,10 @@ end
 
     result = sprint((io)->pretty_table(io, matrix,
                                        crop = :both,
+                                       display_size = (15,-1),
                                        filters_row = ((data, i)->i % 2 == 0,),
                                        highlighters = (hl,),
-                                       vcrop_mode = :middle,
-                                       screen_size = (15,-1)),
+                                       vcrop_mode = :middle),
                     context = :color => true)
 
     @test result == expected
@@ -237,11 +237,11 @@ end
 
     result = sprint((io)->pretty_table(io, matrix,
                                        crop = :both,
+                                       display_size = (15,-1),
                                        filters_col = ((data, i)->i != 1,),
                                        filters_row = ((data, i)->i % 2 == 0,),
                                        highlighters = (hl,),
-                                       vcrop_mode = :middle,
-                                       screen_size = (15,-1)),
+                                       vcrop_mode = :middle),
                     context = :color => true)
 
     @test result == expected

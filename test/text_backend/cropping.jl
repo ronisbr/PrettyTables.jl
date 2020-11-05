@@ -20,10 +20,10 @@
 └────────┴────────┴────────┴────────┘
 """
 
-    result = pretty_table(String, data, screen_size = (10,10), crop = :none)
+    result = pretty_table(String, data, display_size = (10,10), crop = :none)
     @test result == expected
 
-    result = pretty_table(String, data, screen_size = (-1,-1), crop = :both)
+    result = pretty_table(String, data, display_size = (-1,-1), crop = :both)
     @test result == expected
 
     expected = """
@@ -38,7 +38,7 @@
    1 column and 3 rows omitted
 """
 
-    result = pretty_table(String, data, screen_size = (11,30), crop = :both)
+    result = pretty_table(String, data, display_size = (11,30), crop = :both)
     @test result == expected
 
     expected = """
@@ -55,10 +55,12 @@
               1 column omitted
 """
 
-    result = pretty_table(String, data, screen_size = (11,30), crop = :horizontal)
+    result = pretty_table(String, data,
+                          display_size = (11,30),
+                          crop = :horizontal)
     @test result == expected
 
-    result = pretty_table(String, data, screen_size = (-1,30), crop = :both)
+    result = pretty_table(String, data, display_size = (-1,30), crop = :both)
     @test result == expected
 
     expected = """
@@ -73,10 +75,12 @@
                        3 rows omitted
 """
 
-    result = pretty_table(String, data, screen_size = (11,30), crop = :vertical)
+    result = pretty_table(String, data,
+                          display_size = (11,30),
+                          crop = :vertical)
     @test result == expected
 
-    result = pretty_table(String, data, screen_size = (11,-1), crop = :both)
+    result = pretty_table(String, data, display_size = (11,-1), crop = :both)
     @test result == expected
 
     expected = """
@@ -91,7 +95,7 @@
 2 columns and 3 rows omitted
 """
 
-    result = pretty_table(String, data, screen_size = (11,25), crop = :both)
+    result = pretty_table(String, data, display_size = (11,25), crop = :both)
     @test result == expected
 
     # Limits
@@ -110,7 +114,7 @@
 └────────┴────────┴────────┴────────┘
 """
 
-    result = pretty_table(String, data, screen_size = (12,-1), crop = :both)
+    result = pretty_table(String, data, display_size = (12,-1), crop = :both)
     @test result == expected
 
     data_text = Any[1    false            1.0     0x01 ;
@@ -135,8 +139,8 @@
 
     result = pretty_table(String, data_text,
                           crop = :both,
-                          linebreaks = true,
-                          screen_size = (12,-1))
+                          display_size = (12,-1),
+                          linebreaks = true)
     @test result == expected
 
     # Linebreaks
@@ -164,9 +168,9 @@
 
     result = pretty_table(String, matrix,
                           crop = :both,
+                          display_size = (17,-1),
                           linebreaks = true,
-                          hlines = :all,
-                          screen_size = (17,-1))
+                          hlines = :all)
 
     @test result == expected
 
@@ -188,9 +192,9 @@
 """
     result = pretty_table(String, matrix,
                           crop = :both,
+                          display_size = (16,-1),
                           linebreaks = true,
-                          hlines = :all,
-                          screen_size = (16,-1))
+                          hlines = :all)
 
     @test result == expected
 
@@ -211,9 +215,9 @@
 """
     result = pretty_table(String, matrix,
                           crop = :both,
+                          display_size = (15,-1),
                           linebreaks = true,
-                          hlines = :all,
-                          screen_size = (15,-1))
+                          hlines = :all)
 
     @test result == expected
 
@@ -235,9 +239,9 @@
 """
     result = pretty_table(String, matrix,
                           crop = :both,
+                          display_size = (16,-1),
                           linebreaks = true,
-                          hlines = [0,1,2,3],
-                          screen_size = (16,-1))
+                          hlines = [0,1,2,3])
 
     @test result == expected
 
@@ -259,8 +263,8 @@
 
     result = pretty_table(String, data,
                           crop = :both,
+                          display_size = (12,35),
                           linebreaks = true,
-                          screen_size = (12,35),
                           show_row_number = true,
                           row_names = ["Row $i" for i = 1:6],
                           row_name_column_title = "Row name")
@@ -282,8 +286,8 @@
 
     result = pretty_table(String, data,
                           crop = :both,
+                          display_size = (12,25),
                           linebreaks = true,
-                          screen_size = (12,25),
                           show_row_number = true,
                           row_names = ["Row $i" for i = 1:6],
                           row_name_column_title = "Row name")
@@ -305,8 +309,8 @@
 
     result = pretty_table(String, data,
                           crop = :both,
+                          display_size = (12,15),
                           linebreaks = true,
-                          screen_size = (12,15),
                           show_row_number = true,
                           row_names = ["Row $i" for i = 1:6],
                           row_name_column_title = "Row name")
@@ -329,13 +333,13 @@ end
 """
 
     result = pretty_table(String, data,
-                          screen_size = (10,10),
                           crop = :none,
+                          display_size = (10,10),
                           vcrop_mode = :middle)
 
     @test result == expected
 
-    result = pretty_table(String, data, screen_size = (-1,-1),
+    result = pretty_table(String, data, display_size = (-1,-1),
                           crop = :both,
                           vcrop_mode = :middle)
 
@@ -354,15 +358,15 @@ end
 """
 
     result = pretty_table(String, data,
-                          screen_size = (11,30),
                           crop = :both,
+                          display_size = (11,30),
                           vcrop_mode = :middle)
 
     @test result == expected
 
     result = pretty_table(String, data,
-                          screen_size = (11,30),
                           crop = :both,
+                          display_size = (11,30),
                           vcrop_mode = :middle)
 
     @test result == expected
@@ -382,15 +386,15 @@ end
 """
 
     result = pretty_table(String, data,
-                          screen_size = (11,30),
                           crop = :horizontal,
+                          display_size = (11,30),
                           vcrop_mode = :middle)
 
     @test result == expected
 
     result = pretty_table(String, data,
-                          screen_size = (-1,30),
                           crop = :both,
+                          display_size = (-1,30),
                           vcrop_mode = :middle)
 
     @test result == expected
@@ -408,15 +412,15 @@ end
 """
 
     result = pretty_table(String, data,
-                          screen_size = (11,30),
                           crop = :vertical,
+                          display_size = (11,30),
                           vcrop_mode = :middle)
 
     @test result == expected
 
     result = pretty_table(String, data,
-                          screen_size = (11,-1),
                           crop = :both,
+                          display_size = (11,-1),
                           vcrop_mode = :middle)
 
     @test result == expected
@@ -434,8 +438,8 @@ end
 """
 
     result = pretty_table(String, data,
-                          screen_size = (11,25),
                           crop = :both,
+                          display_size = (11,25),
                           vcrop_mode = :middle)
 
     @test result == expected
@@ -458,7 +462,7 @@ end
 
     result = pretty_table(String, data,
                           crop = :both,
-                          screen_size = (12,-1),
+                          display_size = (12,-1),
                           vcrop_mode = :middle)
 
     @test result == expected
@@ -485,8 +489,8 @@ end
 
     result = pretty_table(String, data_text,
                           crop = :both,
+                          display_size = (12,-1),
                           linebreaks = true,
-                          screen_size = (12,-1),
                           vcrop_mode = :middle)
 
     @test result == expected
@@ -516,9 +520,9 @@ end
 
     result = pretty_table(String, matrix,
                           crop = :both,
+                          display_size = (17,-1),
                           linebreaks = true,
                           hlines = :all,
-                          screen_size = (17,-1),
                           vcrop_mode = :middle)
 
     @test result == expected
@@ -541,9 +545,9 @@ end
 """
     result = pretty_table(String, matrix,
                           crop = :both,
+                          display_size = (16,-1),
                           linebreaks = true,
                           hlines = :all,
-                          screen_size = (16,-1),
                           vcrop_mode = :middle)
 
     @test result == expected
@@ -565,9 +569,9 @@ end
 """
     result = pretty_table(String, matrix,
                           crop = :both,
+                          display_size = (15,-1),
                           linebreaks = true,
                           hlines = :all,
-                          screen_size = (15,-1),
                           vcrop_mode = :middle)
 
     @test result == expected
@@ -591,9 +595,9 @@ end
 
     result = pretty_table(String, matrix,
                           crop = :both,
+                          display_size = (16,-1),
                           linebreaks = true,
                           hlines = [0,1,2,3],
-                          screen_size = (16,-1),
                           vcrop_mode = :middle)
 
     @test result == expected
@@ -619,9 +623,9 @@ end
 
     result = pretty_table(String, matrix,
                           crop = :both,
+                          display_size = (16,-1),
                           hlines = :all,
                           linebreaks = true,
-                          screen_size = (16,-1),
                           vcrop_mode = :middle)
 
     @test result == expected
@@ -717,7 +721,7 @@ end
     result = pretty_table(String, data,
                           continuation_row_alignment = :l,
                           crop = :both,
-                          screen_size = (11,30))
+                          display_size = (11,30))
     @test result == expected
 
     expected = """
@@ -735,7 +739,7 @@ end
     result = pretty_table(String, data,
                           continuation_row_alignment = :r,
                           crop = :both,
-                          screen_size = (11,30))
+                          display_size = (11,30))
     @test result == expected
 
     # Trailing spaces at continuation line
@@ -757,7 +761,7 @@ end
                           alignment = :l,
                           continuation_row_alignment = :l,
                           crop = :both,
-                          screen_size = (11,40),
+                          display_size = (11,40),
                           vlines = :none)
 
     @test result == expected
@@ -783,7 +787,7 @@ end
     result = pretty_table(String, data,
                           ["Col. 1" "Col. 2" "Col. 3" "Col. 4"; "A" "B" "C" "D"],
                           crop = :both,
-                          screen_size = (-1,25),
+                          display_size = (-1,25),
                           ellipsis_line_skip = 3)
     @test result == expected
 end
