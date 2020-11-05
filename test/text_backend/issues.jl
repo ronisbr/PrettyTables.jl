@@ -66,23 +66,6 @@ end
     @test result == expected
 end
 
-@testset "Issue #16 - Printing DataFrames that contains strings" begin
-    df = DataFrame(:a => Int64[1, 2], :b => ["A", "B"]);
-
-    expected = """
-┌───────┬────────┐
-│     a │      b │
-│ Int64 │ String │
-├───────┼────────┤
-│     1 │      A │
-│     2 │      B │
-└───────┴────────┘
-"""
-
-    result = pretty_table(String, df)
-    @test result == expected
-end
-
 @testset "Issue #19 - ft_printf with cells that are not numbers" begin
     matrix = [1 1; 2 2; 3 3; "teste" "teste"; 4 4; 5 5; true true; :s :s]
 
@@ -181,15 +164,15 @@ end
 end
 
 @testset "Issue #28 - Tables.jl API must have priority when printing" begin
-    # A DataFrame is compliant with Tables.jl API.
-    df = DataFrame(x = Int64(1):Int64(3),
-                   y = 'a':'c',
-                   z = ["String 1";"String 2";"String 3"]);
+    # A NamedTuple is compliant with Tables.jl API.
+    table = (x = Int64(1):Int64(3),
+             y = 'a':'c',
+             z = ["String 1";"String 2";"String 3"]);
 
     # Thus, the following 3 calls must provide the same results.
-    result_1 = pretty_table(String, df)
-    result_2 = pretty_table(String, Tables.rowtable(df))
-    result_3 = pretty_table(String, Tables.columns(df))
+    result_1 = pretty_table(String, table)
+    result_2 = pretty_table(String, Tables.rowtable(table))
+    result_3 = pretty_table(String, Tables.columns(table))
 
     expected = """
 ┌───────┬──────┬──────────┐

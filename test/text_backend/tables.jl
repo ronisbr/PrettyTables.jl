@@ -26,17 +26,17 @@ struct MyMatrixRow{T} <: Tables.AbstractRow
 end
 
 @testset "Tables.jl compatibility" begin
-    # A DataFrame is compliant with Tables.jl API.
-    df = DataFrame(x = Int64(1):Int64(3),
-                   y = 'a':'c',
-                   z = ["String 1";"String 2";"String 3"]);
+    # A NamedTuple is compliant with Tables.jl API.
+    table = (x = Int64(1):Int64(3),
+             y = 'a':'c',
+             z = ["String 1";"String 2";"String 3"]);
 
     # Thus, the following 5 calls must provide the same results.
-    result_1 = pretty_table(String, df)
-    result_2 = pretty_table(String, Tables.rowtable(df))
-    result_3 = pretty_table(String, Tables.columntable(df))
-    result_4 = pretty_table(String, Tables.columns(df))
-    result_5 = pretty_table(String, Tables.rows(df))
+    result_1 = pretty_table(String, table)
+    result_2 = pretty_table(String, Tables.rowtable(table))
+    result_3 = pretty_table(String, Tables.columntable(table))
+    result_4 = pretty_table(String, Tables.columns(table))
+    result_5 = pretty_table(String, Tables.rows(table))
 
     expected = """
 ┌───────┬──────┬──────────┐
@@ -53,7 +53,7 @@ end
 
     # If a header is passed, then it must replace the Tables.jl schema.
 
-    result = pretty_table(String, df, ["My col. 1", "My col. 2", "My col. 3"])
+    result = pretty_table(String, table, ["My col. 1", "My col. 2", "My col. 3"])
 
     expected = """
 ┌───────────┬───────────┬───────────┐

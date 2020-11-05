@@ -322,8 +322,8 @@ end
     # Tables.jl API
     # --------------------------------------------------------------------------
 
-    df = DataFrame(a = [missing,Int64(1),Int64(2),Int64(3)],
-                   b = [nothing,Int64(1),missing,Int64(1)])
+    table = (a = [missing,Int64(1),Int64(2),Int64(3)],
+             b = [nothing,Int64(1),missing,Int64(1)])
 
     expected = """
 ┌─────────┬────────────────────┐
@@ -336,7 +336,7 @@ end
 │       3 │                  1 │
 └─────────┴────────────────────┘
 """
-    result = pretty_table(String, df)
+    result = pretty_table(String, table)
     @test result == expected
 end
 
@@ -378,12 +378,13 @@ end
 # ==============================================================================
 
 @testset "Issue #65 - Data type in filters with Tables.jl" begin
-    df = DataFrame(A = Int64.(1:20), B = Float64.(1:20))
-    rowfilter(data,i) = i <= div(size(data,1),2)
+    table = (A = Int64.(1:20), B = Float64.(1:20))
+    rowfilter1(data,i) = i <= div(length(first(data)),2)
+    rowfilter2(data,i) = i <= div(length(data),2)
 
-    result1 = pretty_table(String, df,                 filters_row = (rowfilter,))
-    result2 = pretty_table(String, Tables.columns(df), filters_row = (rowfilter,))
-    result3 = pretty_table(String, Tables.rows(df),    filters_row = (rowfilter,))
+    result1 = pretty_table(String, table,                 filters_row = (rowfilter1,))
+    result2 = pretty_table(String, Tables.columns(table), filters_row = (rowfilter1,))
+    result3 = pretty_table(String, Tables.rows(table),    filters_row = (rowfilter2,))
 
     expected = """
 ┌───────┬─────────┐
@@ -407,18 +408,16 @@ end
     @test result2 == expected
     @test result3 == expected
 
-    df = DataFrame(A = Int64.(1:10),
-                   B = Float64.(1:10),
-                   C = Int64.(1:10),
-                   D = Float64.(1:10))
-    colfilter1(data,j) = j <= div(size(data,2),2)
+    table = (A = Int64.(1:10),
+             B = Float64.(1:10),
+             C = Int64.(1:10),
+             D = Float64.(1:10))
+    colfilter1(data,j) = j <= div(length(data),2)
+    colfilter2(data,j) = j <= div(length(first(data)),2)
 
-    # `size` applied to `Tables.rows(df)` returns only the number of rows.
-    colfilter2(data,j) = j <= div(size(data[1],1),2)
-
-    result1 = pretty_table(String, df,                 filters_col = (colfilter1,))
-    result2 = pretty_table(String, Tables.columns(df), filters_col = (colfilter1,))
-    result3 = pretty_table(String, Tables.rows(df),    filters_col = (colfilter2,))
+    result1 = pretty_table(String, table,                 filters_col = (colfilter1,))
+    result2 = pretty_table(String, Tables.columns(table), filters_col = (colfilter1,))
+    result3 = pretty_table(String, Tables.rows(table),    filters_col = (colfilter2,))
 
     @test result1 == expected
     @test result2 == expected
