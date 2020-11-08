@@ -4,7 +4,7 @@ PrettyTables.jl Changelog
 Version 0.11.0
 --------------
 
-- ![BREAKING][badge-breaking]![Enhancement][badge-enhancement] LaTeX tables can 
+- ![Enhancement][badge-enhancement] LaTeX tables can 
   now control whether to use the `table` environment or not.
 
 Version 0.10.0
