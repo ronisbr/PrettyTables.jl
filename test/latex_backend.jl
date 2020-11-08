@@ -25,3 +25,22 @@
     result = pretty_table(String, data, backend = :latex)
     @test result == expected
 end
+
+@testset "Controlling wrap_table" begin
+    data = [1 2; 3 4]
+
+    expected = """
+\\begin{tabular}{rr}
+  \\hline\\hline
+  \\textbf{Col. 1} & \\textbf{Col. 2} \\\\\\hline
+  1 & 2 \\\\
+  3 & 4 \\\\\\hline\\hline
+\\end{tabular}
+"""
+
+	result = pretty_table(String, data, backend = :latex, wrap_table = false)
+	@test result == expected
+
+	@test_throws ErrorException pretty_table(data, backend = :latex, wrap_table = true,
+		                                     table_type = :longtable)
+end

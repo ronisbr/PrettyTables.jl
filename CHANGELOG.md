@@ -4,6 +4,8 @@ PrettyTables.jl Changelog
 Version 0.10.0
 --------------
 
+- ![BREAKING][badge-breaking]![Enhancement][badge-enhancement] LaTeX tables can 
+  now control whether to use the `table` environment or not.
 - ![BREAKING][badge-breaking] `same_column_size` was renamed to
   `equal_columns_width`.
 - ![BREAKING][badge-breaking] Remove dependency Parameters.jl. This reduced the

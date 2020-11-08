@@ -18,7 +18,8 @@ function _pt_latex(io::IO, pinfo::PrintInfo;
                    nosubheader::Bool = false,
                    row_number_alignment::Symbol = :r,
                    table_type::Symbol = :tabular,
-                   vlines::Union{Nothing,Symbol,AbstractVector} = nothing)
+                   vlines::Union{Nothing,Symbol,AbstractVector} = nothing,
+                   wrap_table::Bool = true)
 
     # Unpack fields of `pinfo`.
     data                    = pinfo.data
@@ -144,7 +145,11 @@ function _pt_latex(io::IO, pinfo::PrintInfo;
     # Print LaTeX header
     # ==========================================================================
 
-    if table_type == :tabular
+    if table_type != :tabular && wrap_table == true
+        error("Option `wrap_table` can only be used with `table_type` equal to `:tabular`")
+    end
+
+    if table_type == :tabular && wrap_table == true
         _aprintln(buf, "\\begin{table}", il, ns)
         il += 1
         length(title) > 0 && _aprintln(buf, "\\caption{$title}", il, ns)
@@ -346,7 +351,7 @@ function _pt_latex(io::IO, pinfo::PrintInfo;
     il -= 1
     _aprintln(buf, "\\end{$table_env}", il, ns)
 
-    if table_type == :tabular
+    if table_type == :tabular && wrap_table == true
         il -= 1
         _aprintln(buf, "\\end{table}", il, ns)
     end
