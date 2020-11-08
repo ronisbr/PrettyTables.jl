@@ -13,7 +13,7 @@ passed as keywords when calling the function `pretty_table`:
 
 * `border_crayon`: Crayon to print the border.
 * `header_crayon`: Crayon to print the header.
-* `subheaders_crayon`: Crayon to print sub-headers.
+* `subheader_crayon`: Crayon to print sub-headers.
 * `rownum_header_crayon`: Crayon for the header of the column with the row
                           numbers.
 * `text_crayon`: Crayon to print default text.
@@ -168,7 +168,7 @@ passed as keywords when calling the function `pretty_table`:
 
   (**Default** = `nothing`)
 
-The keywords `header_crayon` and `subheaders_crayon` can be a `Crayon` or a
+The keywords `header_crayon` and `subheader_crayon` can be a `Crayon` or a
 `Vector{Crayon}`. In the first case, the `Crayon` will be applied to all the
 elements. In the second, each element can have its own crayon, but the length of
 the vector must be equal to the number of columns in the data.
