@@ -145,10 +145,6 @@ function _pt_latex(io::IO, pinfo::PrintInfo;
     # Print LaTeX header
     # ==========================================================================
 
-    if table_type != :tabular && wrap_table == true
-        error("Option `wrap_table` can only be used with `table_type` equal to `:tabular`")
-    end
-
     if table_type == :tabular && wrap_table == true
         _aprintln(buf, "\\begin{table}", il, ns)
         il += 1

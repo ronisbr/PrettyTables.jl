@@ -41,6 +41,19 @@ end
 	result = pretty_table(String, data, backend = :latex, wrap_table = false)
 	@test result == expected
 
-	@test_throws ErrorException pretty_table(data, backend = :latex, wrap_table = true,
-		                                     table_type = :longtable)
+    expected = """
+\\begin{longtable}{rr}
+  \\hline\\hline
+  \\textbf{Col. 1} & \\textbf{Col. 2} \\\\\\hline
+  \\endhead
+  \\hline\\hline
+  \\endfoot
+  \\endlastfoot
+  1 & 2 \\\\
+  3 & 4 \\\\\\hline\\hline
+\\end{longtable}
+"""
+	result = pretty_table(String, data, backend = :latex, wrap_table = true,
+		                    table_type = :longtable)
+    @test result == expected
 end
