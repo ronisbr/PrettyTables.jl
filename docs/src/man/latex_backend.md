@@ -73,7 +73,11 @@ passed as keywords when calling the function [`pretty_table`](@ref):
             variable `show_row_number`. Finally, for convenience, the left and
             right border can be drawn by adding the symbols `:begin` and `:end`
             to this vector, respectively. (**Default** = `:none`)
-
+* `wrap_table`: This variable controls whether to wrap the table in a `table`
+               environment. Defaults to `true`. When `false`, the printed
+               table begins with `\begin{tabular}` rather than `\begin{table}`.
+               Does not work when using the `:longtable` table type.
+               
 ## LaTeX highlighters
 
 A set of highlighters can be passed as a `Tuple` to the `highlighters` keyword.
