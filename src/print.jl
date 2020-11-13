@@ -683,7 +683,7 @@ end
 @inline function pretty_table(data::AbstractVecOrMat,
                               header::AbstractVecOrMat;
                               kwargs...)
-    io = IOContext(stdout, :limit => true)
+    io = stdout isa Base.TTY ? IOContext(stdout, :limit => true) : stdout
     _pretty_table(io, data, header; kwargs...)
 end
 
