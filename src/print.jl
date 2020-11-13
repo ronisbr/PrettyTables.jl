@@ -670,12 +670,12 @@ compatible.
 
 """
 @inline function pretty_table(data; kwargs...)
-    io = IOContext(stdout, :limit => true)
+    io = stdout isa Base.TTY ? IOContext(stdout, :limit => true) : stdout
     _pretty_table(io, data, String[]; kwargs...)
 end
 
 @inline function pretty_table(data, header::AbstractVecOrMat; kwargs...)
-    io = IOContext(stdout, :limit => true)
+    io = stdout isa Base.TTY ? IOContext(stdout, :limit => true) : stdout
     _pretty_table(io, data, header; kwargs...)
 end
 

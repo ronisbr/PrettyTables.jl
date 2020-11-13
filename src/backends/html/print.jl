@@ -275,7 +275,8 @@ function _pt_html(io::IO, pinfo::PrintInfo;
     # Print the buffer into the io.
     # ==========================================================================
 
-    if io == stdout
+    # If we are printing to `stdout`, then wrap the output in a `HTML` object.
+    if (io == stdout) || ( (io isa IOContext) && (io.io == stdout) )
         display("text/html", HTML(String(take!(buf_io))))
     else
         print(io, String(take!(buf_io)))
