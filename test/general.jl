@@ -423,3 +423,5 @@ end
     @test result2 == expected
     @test result3 == expected
 end
+
+include("./general/tables.jl")

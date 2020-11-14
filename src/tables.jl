@@ -41,8 +41,15 @@ function isassigned(ctable::ColumnTable, inds...)
     # Get the column name.
     column_name = ctable.column_names[j]
 
-    # Get the element.
-    return isassigned(Tables.getcolumn(ctable.table, column_name),i)
+    # Get the column.
+    col = Tables.getcolumn(ctable.table, column_name)
+
+    # If the column is a `Tuple`, then all the elements must be defined.
+    if col isa Tuple
+        return true
+    else
+        return isassigned(col, i)
+    end
 end
 
 length(ctable::ColumnTable) = ctable.size[1] * ctable.size[2]
