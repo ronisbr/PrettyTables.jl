@@ -12,7 +12,7 @@
 
 import Base: getindex, isassigned, length, size
 
-#                       Fuctions related to ColumnTable
+#                       Functions related to ColumnTable
 # ==============================================================================
 
 function getindex(ctable::ColumnTable, inds...)
@@ -58,7 +58,7 @@ size(ctable::ColumnTable) = ctable.size
 
 _getdata(ctable::ColumnTable) = ctable.data
 
-#                         Fuctions related to RowTable
+#                         Functions related to RowTable
 # ==============================================================================
 
 function getindex(rtable::RowTable, inds...)
