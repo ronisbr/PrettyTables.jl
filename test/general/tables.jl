@@ -6,34 +6,33 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-# Issues
-# ==============================================================================
+@testset "Tables.jl with custom column name vector" begin
+    struct TestVec{T} <: AbstractArray{T,1}
+        data::Array{T,1}
+    end
+    Base.IndexStyle(::Type{A}) where {A<:TestVec} = Base.IndexCartesian()
+    Base.size(A::TestVec) = size(getfield(A, :data))
+    Base.getindex(A::TestVec, index::Int) = getindex(getfield(A, :data), index)
+    Base.collect(::Type{T}, itr::TestVec) where {T} = TestVec(collect(T, getfield(itr, :data)))
 
-@testset "Issue #90 - Tables.jl returning tuples as columns" begin
-    struct SimpleTable{T}
-        data::Matrix{T}
+    struct MinimalTable
+        data::Matrix
+        colnames::TestVec
     end
 
-    Tables.istable(::SimpleTable) = true
-    Tables.columnaccess(::SimpleTable) = true
-    Tables.columnnames(x::SimpleTable) = [Symbol(i) for i = 1:size(x.data, 2)]
-    Tables.columns(x::SimpleTable) = x
-    Tables.getcolumn(x::SimpleTable, i::Symbol) = tuple(x.data[parse(Int,string(i)),:]...)
+    Tables.istable(x::MinimalTable) = true
+    Tables.columnaccess(::MinimalTable) = true
+    Tables.columnnames(x::MinimalTable) = getfield(x, :colnames)
+    Tables.columns(x::MinimalTable) = x
+    Base.getindex(x::MinimalTable, i1, i2) = getindex(getfield(x, :data), i1, i2)
+    Base.getproperty(x::MinimalTable, s::Symbol) = getindex(x, :, findfirst(==(s), Tables.columnnames(x)))
+    Base.convert(::Type{<:TestVec}, x::Array) = TestVec(x)
 
-    table = SimpleTable([10.0^(i+j) for i = 1:10, j = 1:5])
+    data     = [10.0^(i+j) for i = 1:10, j = 1:5]
+    mintable = MinimalTable(data, [:C1, :C2, :C3, :C4, :C5])
 
-    expected = """
-┌──────────┬──────────┬──────────┬──────────┬────────┐
-│        1 │        2 │        3 │        4 │      5 │
-├──────────┼──────────┼──────────┼──────────┼────────┤
-│    100.0 │   1000.0 │  10000.0 │ 100000.0 │  1.0e6 │
-│   1000.0 │  10000.0 │ 100000.0 │    1.0e6 │  1.0e7 │
-│  10000.0 │ 100000.0 │    1.0e6 │    1.0e7 │  1.0e8 │
-│ 100000.0 │    1.0e6 │    1.0e7 │    1.0e8 │  1.0e9 │
-│    1.0e6 │    1.0e7 │    1.0e8 │    1.0e9 │ 1.0e10 │
-└──────────┴──────────┴──────────┴──────────┴────────┘
-"""
+    str_data     = pretty_table(String, data, ["C1", "C2", "C3", "C4", "C5"])
+    str_mintable = pretty_table(String, mintable)
 
-    result = pretty_table(String, table)
-    @test result == expected
+    @test str_data == str_mintable
 end

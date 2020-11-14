@@ -6,13 +6,6 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-data = Any[1    false      1.0     0x01 ;
-           2     true      2.0     0x02 ;
-           3    false      3.0     0x03 ;
-           4     true      4.0     0x04 ;
-           5    false      5.0     0x05 ;
-           6     true      6.0     0x06 ;]
-
 @testset "Default tests" begin
     include("text_backend/default.jl")
 end
@@ -46,10 +39,6 @@ end
 
 @testset "Headers" begin
     include("text_backend/headers.jl")
-end
-
-@testset "Helpers" begin
-    include("text_backend/helpers.jl")
 end
 
 @testset "Line breaks" begin

@@ -2,9 +2,40 @@
 #
 # Description
 #
-#    Tests of helpers to print tables.
+#   Tests of the configuration framework.
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+@testset "Configurations" begin
+    data = [1 2 3
+            4 5 6]
+
+    conf1 = set_pt_conf(tf = tf_markdown)
+    conf2 = set_pt_conf(tf = tf_ascii_dots, formatters = ft_printf("%5.3d"))
+    set_pt_conf!(conf2, hlinetf_s = :none)
+
+    expected = """
+| Col. 1 | Col. 2 | Col. 3 |
+|--------|--------|--------|
+|      1 |      2 |      3 |
+|      4 |      5 |      6 |
+"""
+
+    result = pretty_table_with_conf(conf1, String, data)
+    @test result == expected
+
+    expected = """
+: Col. 1 : Col. 2 : Col. 3 :
+:    001 :    002 :    003 :
+:    004 :    005 :    006 :
+"""
+
+    clear_pt_conf!(conf2)
+    expected = pretty_table(String, data)
+    result = pretty_table_with_conf(conf2, String, data)
+
+    @test result == expected
+end
 
 @testset "@pt" begin
     # To get the output of the macro @pt, we must redirect the stdout.
