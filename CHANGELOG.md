@@ -7,6 +7,12 @@ Version 0.11.0
 - ![Enhancement][badge-enhancement] LaTeX tables can 
   now control whether to use the `table` environment or not.
 
+Version 0.10.1
+--------------
+
+- ![Bugfix][badge-bugfix] The cell width computation when the column has a
+  maximum allowed size was fixed. (Issue [#93][gh-issue-93])
+
 Version 0.10.0
 --------------
 
