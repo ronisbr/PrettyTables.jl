@@ -13,6 +13,7 @@ function _pt_html(io::IO, pinfo::PrintInfo;
                   linebreaks::Bool = false,
                   noheader::Bool = false,
                   nosubheader::Bool = false,
+                  sortkeys::Bool = false,
                   standalone::Bool = true)
 
     # Unpack fields of `pinfo`.
