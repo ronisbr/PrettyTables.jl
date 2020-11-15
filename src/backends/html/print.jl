@@ -183,6 +183,20 @@ function _pt_html(io::IO, pinfo::PrintInfo;
                 end
             end
 
+            # The row name column title must appear only on the first line.
+            if show_row_names
+                if i == 1
+                    style = Dict{String,String}("text-align" => _html_alignment[row_name_alignment])
+                    row_name_title_html = _styled_html("th",
+                                                       row_name_column_title,
+                                                       style;
+                                                       class = "rowName")
+                    _aprintln(buf, row_name_title_html, il, ns)
+                else
+                    _aprintln(buf, "<th></th>", il, ns)
+                end
+            end
+
             for j = 1:num_printed_cols
                 # Index of the j-th printed column in `data`.
                 jc = id_cols[j]
@@ -222,7 +236,19 @@ function _pt_html(io::IO, pinfo::PrintInfo;
         il += 1
 
         if show_row_number
-            _aprintln(buf, "<td class = rowNumber>" * string(ir) * "</td>", il, ns)
+            _aprintln(buf, "<td class = \"rowNumber\">" * string(ir) * "</td>", il, ns)
+        end
+
+        if show_row_names
+            row_name_i_str = _parse_cell_html(row_names[i];
+                                              cell_first_line_only = false,
+                                              compact_printing = compact_printing,
+                                              linebreaks = false,
+                                              renderer = renderer)
+            style = Dict{String,String}("text-align" => _html_alignment[row_name_alignment])
+            row_name_i_html = _styled_html("td", row_name_i_str, style;
+                                           class = "rowName")
+            _aprintln(buf, row_name_i_html, il, ns)
         end
 
         for j = 1:num_printed_cols
