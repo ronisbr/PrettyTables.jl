@@ -169,7 +169,7 @@ function _str_aligned(data::String, alignment::Symbol,
         data *= "…"
 
         # In this case, the string has the same size of the field.
-        lstr = lstr + Δ - 1
+        lstr = lstr + Δ
         Δ = 0
     end
 
