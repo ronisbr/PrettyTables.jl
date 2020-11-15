@@ -164,18 +164,18 @@ function _pt_html(io::IO, pinfo::PrintInfo;
             if (i == 1) && (header_num_rows == 1)
                 _aprintln(buf, "<tr class = \"header headerLastRow\">", il, ns)
             elseif i == 1
-                _aprintln(buf, "<tr class = header>", il, ns)
+                _aprintln(buf, "<tr class = \"header\">", il, ns)
             elseif i == header_num_rows
                 _aprintln(buf, "<tr class = \"subheader headerLastRow\">", il, ns)
             else
-                _aprintln(buf, "<tr class = subheader>", il, ns)
+                _aprintln(buf, "<tr class = \"subheader\">", il, ns)
             end
             il += 1
 
             # The text "Row" must appear only on the first line.
             if show_row_number
                 if i == 1
-                    _aprintln(buf, "<th class = rowNumber>" *
+                    _aprintln(buf, "<th class = \"rowNumber\">" *
                               row_number_column_title *
                               "</th>", il, ns)
                 else

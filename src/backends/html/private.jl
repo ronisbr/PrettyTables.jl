@@ -17,7 +17,7 @@ function _styled_html(tag::String, text::String,
                       style::Dict{String,String} = Dict{String,String}();
                       class::String = "")
 
-    str_class = isempty(class) ? "" : " class = " * class
+    str_class = isempty(class) ? "" : " class = \"" * class * "\""
 
     # If there is no keys in the style dictionary, just return the tag.
     if isempty(style)
