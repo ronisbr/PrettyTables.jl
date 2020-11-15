@@ -1,6 +1,12 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 0.10.1
+--------------
+
+- ![Bugfix][badge-bugfix] The cell width computation when the column has a
+  maximum allowed size was fixed. (Issue [#93][gh-issue-93])
+
 Version 0.10.0
 --------------
 
@@ -389,6 +395,7 @@ Version 0.1.0
 [gh-issue-68]: https://github.com/ronisbr/PrettyTables.jl/issues/68
 [gh-issue-70]: https://github.com/ronisbr/PrettyTables.jl/issues/70
 [gh-issue-79]: https://github.com/ronisbr/PrettyTables.jl/issues/79
+[gh-issue-93]: https://github.com/ronisbr/PrettyTables.jl/issues/93
 
 [gh-pr-5]: https://github.com/ronisbr/PrettyTables.jl/pull/5
 [gh-pr-8]: https://github.com/ronisbr/PrettyTables.jl/pull/8
