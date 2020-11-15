@@ -14,46 +14,46 @@
     expected = """
 <table>
   <tr class = "header headerLastRow">
-    <th style = "text-align: left; ">Col. 1</th>
-    <th style = "text-align: left; ">Col. 2</th>
-    <th style = "text-align: left; ">Col. 3</th>
-    <th style = "text-align: left; ">Col. 4</th>
+    <th style = "text-align: left;">Col. 1</th>
+    <th style = "text-align: left;">Col. 2</th>
+    <th style = "text-align: left;">Col. 3</th>
+    <th style = "text-align: left;">Col. 4</th>
   </tr>
   <tr>
-    <td style = "text-align: left; ">1</td>
-    <td style = "text-align: left; ">false</td>
-    <td style = "text-align: left; ">1.0</td>
-    <td style = "text-align: left; ">1</td>
+    <td style = "text-align: left;">1</td>
+    <td style = "text-align: left;">false</td>
+    <td style = "text-align: left;">1.0</td>
+    <td style = "text-align: left;">1</td>
   </tr>
   <tr>
-    <td style = "text-align: left; ">2</td>
-    <td style = "text-align: left; ">true</td>
-    <td style = "text-align: left; ">2.0</td>
-    <td style = "text-align: left; ">2</td>
+    <td style = "text-align: left;">2</td>
+    <td style = "text-align: left;">true</td>
+    <td style = "text-align: left;">2.0</td>
+    <td style = "text-align: left;">2</td>
   </tr>
   <tr>
-    <td style = "text-align: left; ">3</td>
-    <td style = "text-align: left; ">false</td>
-    <td style = "text-align: left; ">3.0</td>
-    <td style = "text-align: left; ">3</td>
+    <td style = "text-align: left;">3</td>
+    <td style = "text-align: left;">false</td>
+    <td style = "text-align: left;">3.0</td>
+    <td style = "text-align: left;">3</td>
   </tr>
   <tr>
-    <td style = "text-align: left; ">4</td>
-    <td style = "text-align: left; ">true</td>
-    <td style = "text-align: left; ">4.0</td>
-    <td style = "text-align: left; ">4</td>
+    <td style = "text-align: left;">4</td>
+    <td style = "text-align: left;">true</td>
+    <td style = "text-align: left;">4.0</td>
+    <td style = "text-align: left;">4</td>
   </tr>
   <tr>
-    <td style = "text-align: left; ">5</td>
-    <td style = "text-align: left; ">false</td>
-    <td style = "text-align: left; ">5.0</td>
-    <td style = "text-align: left; ">5</td>
+    <td style = "text-align: left;">5</td>
+    <td style = "text-align: left;">false</td>
+    <td style = "text-align: left;">5.0</td>
+    <td style = "text-align: left;">5</td>
   </tr>
   <tr>
-    <td style = "text-align: left; ">6</td>
-    <td style = "text-align: left; ">true</td>
-    <td style = "text-align: left; ">6.0</td>
-    <td style = "text-align: left; ">6</td>
+    <td style = "text-align: left;">6</td>
+    <td style = "text-align: left;">true</td>
+    <td style = "text-align: left;">6.0</td>
+    <td style = "text-align: left;">6</td>
   </tr>
 </table>
 """
@@ -70,46 +70,46 @@
     expected = """
 <table>
   <tr class = "header headerLastRow">
-    <th style = "text-align: center; ">Col. 1</th>
-    <th style = "text-align: center; ">Col. 2</th>
-    <th style = "text-align: center; ">Col. 3</th>
-    <th style = "text-align: center; ">Col. 4</th>
+    <th style = "text-align: center;">Col. 1</th>
+    <th style = "text-align: center;">Col. 2</th>
+    <th style = "text-align: center;">Col. 3</th>
+    <th style = "text-align: center;">Col. 4</th>
   </tr>
   <tr>
-    <td style = "text-align: center; ">1</td>
-    <td style = "text-align: center; ">false</td>
-    <td style = "text-align: center; ">1.0</td>
-    <td style = "text-align: center; ">1</td>
+    <td style = "text-align: center;">1</td>
+    <td style = "text-align: center;">false</td>
+    <td style = "text-align: center;">1.0</td>
+    <td style = "text-align: center;">1</td>
   </tr>
   <tr>
-    <td style = "text-align: center; ">2</td>
-    <td style = "text-align: center; ">true</td>
-    <td style = "text-align: center; ">2.0</td>
-    <td style = "text-align: center; ">2</td>
+    <td style = "text-align: center;">2</td>
+    <td style = "text-align: center;">true</td>
+    <td style = "text-align: center;">2.0</td>
+    <td style = "text-align: center;">2</td>
   </tr>
   <tr>
-    <td style = "text-align: center; ">3</td>
-    <td style = "text-align: center; ">false</td>
-    <td style = "text-align: center; ">3.0</td>
-    <td style = "text-align: center; ">3</td>
+    <td style = "text-align: center;">3</td>
+    <td style = "text-align: center;">false</td>
+    <td style = "text-align: center;">3.0</td>
+    <td style = "text-align: center;">3</td>
   </tr>
   <tr>
-    <td style = "text-align: center; ">4</td>
-    <td style = "text-align: center; ">true</td>
-    <td style = "text-align: center; ">4.0</td>
-    <td style = "text-align: center; ">4</td>
+    <td style = "text-align: center;">4</td>
+    <td style = "text-align: center;">true</td>
+    <td style = "text-align: center;">4.0</td>
+    <td style = "text-align: center;">4</td>
   </tr>
   <tr>
-    <td style = "text-align: center; ">5</td>
-    <td style = "text-align: center; ">false</td>
-    <td style = "text-align: center; ">5.0</td>
-    <td style = "text-align: center; ">5</td>
+    <td style = "text-align: center;">5</td>
+    <td style = "text-align: center;">false</td>
+    <td style = "text-align: center;">5.0</td>
+    <td style = "text-align: center;">5</td>
   </tr>
   <tr>
-    <td style = "text-align: center; ">6</td>
-    <td style = "text-align: center; ">true</td>
-    <td style = "text-align: center; ">6.0</td>
-    <td style = "text-align: center; ">6</td>
+    <td style = "text-align: center;">6</td>
+    <td style = "text-align: center;">true</td>
+    <td style = "text-align: center;">6.0</td>
+    <td style = "text-align: center;">6</td>
   </tr>
 </table>
 """
@@ -127,46 +127,46 @@
     expected = """
 <table>
   <tr class = "header headerLastRow">
-    <th style = "text-align: left; ">Col. 1</th>
-    <th style = "text-align: right; ">Col. 2</th>
-    <th style = "text-align: center; ">Col. 3</th>
-    <th style = "text-align: right; ">Col. 4</th>
+    <th style = "text-align: left;">Col. 1</th>
+    <th style = "text-align: right;">Col. 2</th>
+    <th style = "text-align: center;">Col. 3</th>
+    <th style = "text-align: right;">Col. 4</th>
   </tr>
   <tr>
-    <td style = "text-align: left; ">1</td>
-    <td style = "text-align: right; ">false</td>
-    <td style = "text-align: center; ">1.0</td>
-    <td style = "text-align: right; ">1</td>
+    <td style = "text-align: left;">1</td>
+    <td style = "text-align: right;">false</td>
+    <td style = "text-align: center;">1.0</td>
+    <td style = "text-align: right;">1</td>
   </tr>
   <tr>
-    <td style = "text-align: left; ">2</td>
-    <td style = "text-align: right; ">true</td>
-    <td style = "text-align: center; ">2.0</td>
-    <td style = "text-align: right; ">2</td>
+    <td style = "text-align: left;">2</td>
+    <td style = "text-align: right;">true</td>
+    <td style = "text-align: center;">2.0</td>
+    <td style = "text-align: right;">2</td>
   </tr>
   <tr>
-    <td style = "text-align: left; ">3</td>
-    <td style = "text-align: right; ">false</td>
-    <td style = "text-align: center; ">3.0</td>
-    <td style = "text-align: right; ">3</td>
+    <td style = "text-align: left;">3</td>
+    <td style = "text-align: right;">false</td>
+    <td style = "text-align: center;">3.0</td>
+    <td style = "text-align: right;">3</td>
   </tr>
   <tr>
-    <td style = "text-align: left; ">4</td>
-    <td style = "text-align: right; ">true</td>
-    <td style = "text-align: center; ">4.0</td>
-    <td style = "text-align: right; ">4</td>
+    <td style = "text-align: left;">4</td>
+    <td style = "text-align: right;">true</td>
+    <td style = "text-align: center;">4.0</td>
+    <td style = "text-align: right;">4</td>
   </tr>
   <tr>
-    <td style = "text-align: left; ">5</td>
-    <td style = "text-align: right; ">false</td>
-    <td style = "text-align: center; ">5.0</td>
-    <td style = "text-align: right; ">5</td>
+    <td style = "text-align: left;">5</td>
+    <td style = "text-align: right;">false</td>
+    <td style = "text-align: center;">5.0</td>
+    <td style = "text-align: right;">5</td>
   </tr>
   <tr>
-    <td style = "text-align: left; ">6</td>
-    <td style = "text-align: right; ">true</td>
-    <td style = "text-align: center; ">6.0</td>
-    <td style = "text-align: right; ">6</td>
+    <td style = "text-align: left;">6</td>
+    <td style = "text-align: right;">true</td>
+    <td style = "text-align: center;">6.0</td>
+    <td style = "text-align: right;">6</td>
   </tr>
 </table>
 """
@@ -182,46 +182,46 @@ end
     expected = """
 <table>
   <tr class = "header headerLastRow">
-    <th style = "text-align: left; ">Col. 1</th>
-    <th style = "text-align: right; ">Col. 2</th>
-    <th style = "text-align: center; ">Col. 3</th>
-    <th style = "text-align: right; ">Col. 4</th>
+    <th style = "text-align: left;">Col. 1</th>
+    <th style = "text-align: right;">Col. 2</th>
+    <th style = "text-align: center;">Col. 3</th>
+    <th style = "text-align: right;">Col. 4</th>
   </tr>
   <tr>
-    <td style = "text-align: left; ">1</td>
-    <td style = "text-align: right; ">false</td>
-    <td style = "text-align: center; ">1.0</td>
-    <td style = "text-align: left; ">1</td>
+    <td style = "text-align: left;">1</td>
+    <td style = "text-align: right;">false</td>
+    <td style = "text-align: center;">1.0</td>
+    <td style = "text-align: left;">1</td>
   </tr>
   <tr>
-    <td style = "text-align: left; ">2</td>
-    <td style = "text-align: right; ">true</td>
-    <td style = "text-align: center; ">2.0</td>
-    <td style = "text-align: right; ">2</td>
+    <td style = "text-align: left;">2</td>
+    <td style = "text-align: right;">true</td>
+    <td style = "text-align: center;">2.0</td>
+    <td style = "text-align: right;">2</td>
   </tr>
   <tr>
-    <td style = "text-align: right; ">3</td>
-    <td style = "text-align: left; ">false</td>
-    <td style = "text-align: center; ">3.0</td>
-    <td style = "text-align: center; ">3</td>
+    <td style = "text-align: right;">3</td>
+    <td style = "text-align: left;">false</td>
+    <td style = "text-align: center;">3.0</td>
+    <td style = "text-align: center;">3</td>
   </tr>
   <tr>
-    <td style = "text-align: left; ">4</td>
-    <td style = "text-align: right; ">true</td>
-    <td style = "text-align: center; ">4.0</td>
-    <td style = "text-align: center; ">4</td>
+    <td style = "text-align: left;">4</td>
+    <td style = "text-align: right;">true</td>
+    <td style = "text-align: center;">4.0</td>
+    <td style = "text-align: center;">4</td>
   </tr>
   <tr>
-    <td style = "text-align: left; ">5</td>
-    <td style = "text-align: right; ">false</td>
-    <td style = "text-align: center; ">5.0</td>
-    <td style = "text-align: right; ">5</td>
+    <td style = "text-align: left;">5</td>
+    <td style = "text-align: right;">false</td>
+    <td style = "text-align: center;">5.0</td>
+    <td style = "text-align: right;">5</td>
   </tr>
   <tr>
-    <td style = "text-align: left; ">6</td>
-    <td style = "text-align: right; ">true</td>
-    <td style = "text-align: center; ">6.0</td>
-    <td style = "text-align: left; ">6</td>
+    <td style = "text-align: left;">6</td>
+    <td style = "text-align: right;">true</td>
+    <td style = "text-align: center;">6.0</td>
+    <td style = "text-align: left;">6</td>
   </tr>
 </table>
 """
@@ -246,52 +246,52 @@ end
     expected = """
 <table>
   <tr class = "header">
-    <th style = "text-align: left; ">A</th>
-    <th style = "text-align: center; ">B</th>
-    <th style = "text-align: right; ">C</th>
-    <th style = "text-align: right; ">D</th>
+    <th style = "text-align: left;">A</th>
+    <th style = "text-align: center;">B</th>
+    <th style = "text-align: right;">C</th>
+    <th style = "text-align: right;">D</th>
   </tr>
   <tr class = "subheader headerLastRow">
-    <th style = "text-align: left; ">a</th>
-    <th style = "text-align: center; ">b</th>
-    <th style = "text-align: right; ">c</th>
-    <th style = "text-align: right; ">d</th>
+    <th style = "text-align: left;">a</th>
+    <th style = "text-align: center;">b</th>
+    <th style = "text-align: right;">c</th>
+    <th style = "text-align: right;">d</th>
   </tr>
   <tr>
-    <td style = "text-align: left; ">1</td>
-    <td style = "text-align: right; ">false</td>
-    <td style = "text-align: center; ">1.0</td>
-    <td style = "text-align: left; ">1</td>
+    <td style = "text-align: left;">1</td>
+    <td style = "text-align: right;">false</td>
+    <td style = "text-align: center;">1.0</td>
+    <td style = "text-align: left;">1</td>
   </tr>
   <tr>
-    <td style = "text-align: left; ">2</td>
-    <td style = "text-align: right; ">true</td>
-    <td style = "text-align: center; ">2.0</td>
-    <td style = "text-align: right; ">2</td>
+    <td style = "text-align: left;">2</td>
+    <td style = "text-align: right;">true</td>
+    <td style = "text-align: center;">2.0</td>
+    <td style = "text-align: right;">2</td>
   </tr>
   <tr>
-    <td style = "text-align: right; ">3</td>
-    <td style = "text-align: left; ">false</td>
-    <td style = "text-align: center; ">3.0</td>
-    <td style = "text-align: center; ">3</td>
+    <td style = "text-align: right;">3</td>
+    <td style = "text-align: left;">false</td>
+    <td style = "text-align: center;">3.0</td>
+    <td style = "text-align: center;">3</td>
   </tr>
   <tr>
-    <td style = "text-align: left; ">4</td>
-    <td style = "text-align: right; ">true</td>
-    <td style = "text-align: center; ">4.0</td>
-    <td style = "text-align: center; ">4</td>
+    <td style = "text-align: left;">4</td>
+    <td style = "text-align: right;">true</td>
+    <td style = "text-align: center;">4.0</td>
+    <td style = "text-align: center;">4</td>
   </tr>
   <tr>
-    <td style = "text-align: left; ">5</td>
-    <td style = "text-align: right; ">false</td>
-    <td style = "text-align: center; ">5.0</td>
-    <td style = "text-align: right; ">5</td>
+    <td style = "text-align: left;">5</td>
+    <td style = "text-align: right;">false</td>
+    <td style = "text-align: center;">5.0</td>
+    <td style = "text-align: right;">5</td>
   </tr>
   <tr>
-    <td style = "text-align: left; ">6</td>
-    <td style = "text-align: right; ">true</td>
-    <td style = "text-align: center; ">6.0</td>
-    <td style = "text-align: left; ">6</td>
+    <td style = "text-align: left;">6</td>
+    <td style = "text-align: right;">true</td>
+    <td style = "text-align: center;">6.0</td>
+    <td style = "text-align: left;">6</td>
   </tr>
 </table>
 """
@@ -312,52 +312,52 @@ end
     expected = """
 <table>
   <tr class = "header">
-    <th style = "text-align: right; ">A</th>
-    <th style = "text-align: center; ">B</th>
-    <th style = "text-align: right; ">C</th>
-    <th style = "text-align: right; ">D</th>
+    <th style = "text-align: right;">A</th>
+    <th style = "text-align: center;">B</th>
+    <th style = "text-align: right;">C</th>
+    <th style = "text-align: right;">D</th>
   </tr>
   <tr class = "subheader headerLastRow">
-    <th style = "text-align: left; ">a</th>
-    <th style = "text-align: left; ">b</th>
-    <th style = "text-align: right; ">c</th>
-    <th style = "text-align: center; ">d</th>
+    <th style = "text-align: left;">a</th>
+    <th style = "text-align: left;">b</th>
+    <th style = "text-align: right;">c</th>
+    <th style = "text-align: center;">d</th>
   </tr>
   <tr>
-    <td style = "text-align: left; ">1</td>
-    <td style = "text-align: right; ">false</td>
-    <td style = "text-align: center; ">1.0</td>
-    <td style = "text-align: left; ">1</td>
+    <td style = "text-align: left;">1</td>
+    <td style = "text-align: right;">false</td>
+    <td style = "text-align: center;">1.0</td>
+    <td style = "text-align: left;">1</td>
   </tr>
   <tr>
-    <td style = "text-align: left; ">2</td>
-    <td style = "text-align: right; ">true</td>
-    <td style = "text-align: center; ">2.0</td>
-    <td style = "text-align: right; ">2</td>
+    <td style = "text-align: left;">2</td>
+    <td style = "text-align: right;">true</td>
+    <td style = "text-align: center;">2.0</td>
+    <td style = "text-align: right;">2</td>
   </tr>
   <tr>
-    <td style = "text-align: right; ">3</td>
-    <td style = "text-align: left; ">false</td>
-    <td style = "text-align: center; ">3.0</td>
-    <td style = "text-align: center; ">3</td>
+    <td style = "text-align: right;">3</td>
+    <td style = "text-align: left;">false</td>
+    <td style = "text-align: center;">3.0</td>
+    <td style = "text-align: center;">3</td>
   </tr>
   <tr>
-    <td style = "text-align: left; ">4</td>
-    <td style = "text-align: right; ">true</td>
-    <td style = "text-align: center; ">4.0</td>
-    <td style = "text-align: center; ">4</td>
+    <td style = "text-align: left;">4</td>
+    <td style = "text-align: right;">true</td>
+    <td style = "text-align: center;">4.0</td>
+    <td style = "text-align: center;">4</td>
   </tr>
   <tr>
-    <td style = "text-align: left; ">5</td>
-    <td style = "text-align: right; ">false</td>
-    <td style = "text-align: center; ">5.0</td>
-    <td style = "text-align: right; ">5</td>
+    <td style = "text-align: left;">5</td>
+    <td style = "text-align: right;">false</td>
+    <td style = "text-align: center;">5.0</td>
+    <td style = "text-align: right;">5</td>
   </tr>
   <tr>
-    <td style = "text-align: left; ">6</td>
-    <td style = "text-align: right; ">true</td>
-    <td style = "text-align: center; ">6.0</td>
-    <td style = "text-align: left; ">6</td>
+    <td style = "text-align: left;">6</td>
+    <td style = "text-align: right;">true</td>
+    <td style = "text-align: center;">6.0</td>
+    <td style = "text-align: left;">6</td>
   </tr>
 </table>
 """

@@ -33,13 +33,17 @@ function _styled_html(tag::String, text::String,
         vk  = @view k[ind]
         vv  = @view v[ind]
 
-        for i = 1:length(vk)
+        num_styles = length(vk)
+
+        @inbounds for i = 1:num_styles
             # If the value is empty, then just continue.
             value = vv[i]
             isempty(value) && continue
 
             style_str *= vk[i] * ": "
-            style_str *= value * "; "
+            style_str *= value * ";"
+
+            i != num_styles && (style_str *= " ")
         end
 
         return "<" * tag * str_class * " style = \"" * style_str * "\">" * text * "</" * tag * ">"

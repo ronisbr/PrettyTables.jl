@@ -22,51 +22,51 @@
 <table>
   <tr class = "header">
     <th class = "rowNumber">#</th>
-    <th class = "rowName" style = "text-align: right; ">Test</th>
-    <th style = "text-align: right; ">C1</th>
-    <th style = "text-align: right; ">C2</th>
-    <th style = "text-align: right; ">C3</th>
-    <th style = "text-align: right; ">C4</th>
+    <th class = "rowName" style = "text-align: right;">Test</th>
+    <th style = "text-align: right;">C1</th>
+    <th style = "text-align: right;">C2</th>
+    <th style = "text-align: right;">C3</th>
+    <th style = "text-align: right;">C4</th>
   </tr>
   <tr class = "subheader headerLastRow">
     <th></th>
     <th></th>
-    <th style = "text-align: right; ">S1</th>
-    <th style = "text-align: right; ">S2</th>
-    <th style = "text-align: right; ">S3</th>
-    <th style = "text-align: right; ">S4</th>
+    <th style = "text-align: right;">S1</th>
+    <th style = "text-align: right;">S2</th>
+    <th style = "text-align: right;">S3</th>
+    <th style = "text-align: right;">S4</th>
   </tr>
   <tr>
     <td class = "rowNumber">1</td>
-    <td class = "rowName" style = "text-align: right; ">1</td>
-    <td style = "text-align: right; ">3.141592653589793238462643383279502884197169399375105820974944592307816406286198</td>
-    <td style = "text-align: right; ">3.14159</td>
-    <td style = "text-align: right; ">10.0</td>
-    <td style = "text-align: right; ">1.0</td>
+    <td class = "rowName" style = "text-align: right;">1</td>
+    <td style = "text-align: right;">3.141592653589793238462643383279502884197169399375105820974944592307816406286198</td>
+    <td style = "text-align: right;">3.14159</td>
+    <td style = "text-align: right;">10.0</td>
+    <td style = "text-align: right;">1.0</td>
   </tr>
   <tr>
     <td class = "rowNumber">2</td>
-    <td class = "rowName" style = "text-align: right; ">2</td>
-    <td style = "text-align: right; ">1</td>
-    <td style = "text-align: right; ">1</td>
-    <td style = "text-align: right; ">1</td>
-    <td style = "text-align: right; ">1</td>
+    <td class = "rowName" style = "text-align: right;">2</td>
+    <td style = "text-align: right;">1</td>
+    <td style = "text-align: right;">1</td>
+    <td style = "text-align: right;">1</td>
+    <td style = "text-align: right;">1</td>
   </tr>
   <tr>
     <td class = "rowNumber">3</td>
-    <td class = "rowName" style = "text-align: right; ">3</td>
-    <td style = "text-align: right; ">true</td>
-    <td style = "text-align: right; ">false</td>
-    <td style = "text-align: right; ">true</td>
-    <td style = "text-align: right; ">false</td>
+    <td class = "rowName" style = "text-align: right;">3</td>
+    <td style = "text-align: right;">true</td>
+    <td style = "text-align: right;">false</td>
+    <td style = "text-align: right;">true</td>
+    <td style = "text-align: right;">false</td>
   </tr>
   <tr>
     <td class = "rowNumber">4</td>
-    <td class = "rowName" style = "text-align: right; ">4</td>
-    <td style = "text-align: right; ">Teste</td>
-    <td style = "text-align: right; ">Teste<BR>Teste</td>
-    <td style = "text-align: right; ">Teste "quote" Teste</td>
-    <td style = "text-align: right; ">Teste<BR>"quote"<BR>Teste</td>
+    <td class = "rowName" style = "text-align: right;">4</td>
+    <td style = "text-align: right;">Teste</td>
+    <td style = "text-align: right;">Teste<BR>Teste</td>
+    <td style = "text-align: right;">Teste "quote" Teste</td>
+    <td style = "text-align: right;">Teste<BR>"quote"<BR>Teste</td>
   </tr>
 </table>
 """
@@ -86,51 +86,51 @@
 <table>
   <tr class = "header">
     <th class = "rowNumber">#</th>
-    <th class = "rowName" style = "text-align: right; ">Test</th>
-    <th style = "text-align: right; ">C1</th>
-    <th style = "text-align: right; ">C2</th>
-    <th style = "text-align: right; ">C3</th>
-    <th style = "text-align: right; ">C4</th>
+    <th class = "rowName" style = "text-align: right;">Test</th>
+    <th style = "text-align: right;">C1</th>
+    <th style = "text-align: right;">C2</th>
+    <th style = "text-align: right;">C3</th>
+    <th style = "text-align: right;">C4</th>
   </tr>
   <tr class = "subheader headerLastRow">
     <th></th>
     <th></th>
-    <th style = "text-align: right; ">S1</th>
-    <th style = "text-align: right; ">S2</th>
-    <th style = "text-align: right; ">S3</th>
-    <th style = "text-align: right; ">S4</th>
+    <th style = "text-align: right;">S1</th>
+    <th style = "text-align: right;">S2</th>
+    <th style = "text-align: right;">S3</th>
+    <th style = "text-align: right;">S4</th>
   </tr>
   <tr>
     <td class = "rowNumber">1</td>
-    <td class = "rowName" style = "text-align: right; ">1</td>
-    <td style = "text-align: right; ">3.141592653589793238462643383279502884197169399375105820974944592307816406286198</td>
-    <td style = "text-align: right; ">3.141592653589793</td>
-    <td style = "text-align: right; ">10.0</td>
-    <td style = "text-align: right; ">1.0</td>
+    <td class = "rowName" style = "text-align: right;">1</td>
+    <td style = "text-align: right;">3.141592653589793238462643383279502884197169399375105820974944592307816406286198</td>
+    <td style = "text-align: right;">3.141592653589793</td>
+    <td style = "text-align: right;">10.0</td>
+    <td style = "text-align: right;">1.0</td>
   </tr>
   <tr>
     <td class = "rowNumber">2</td>
-    <td class = "rowName" style = "text-align: right; ">2</td>
-    <td style = "text-align: right; ">1</td>
-    <td style = "text-align: right; ">1</td>
-    <td style = "text-align: right; ">1</td>
-    <td style = "text-align: right; ">1</td>
+    <td class = "rowName" style = "text-align: right;">2</td>
+    <td style = "text-align: right;">1</td>
+    <td style = "text-align: right;">1</td>
+    <td style = "text-align: right;">1</td>
+    <td style = "text-align: right;">1</td>
   </tr>
   <tr>
     <td class = "rowNumber">3</td>
-    <td class = "rowName" style = "text-align: right; ">3</td>
-    <td style = "text-align: right; ">true</td>
-    <td style = "text-align: right; ">false</td>
-    <td style = "text-align: right; ">true</td>
-    <td style = "text-align: right; ">false</td>
+    <td class = "rowName" style = "text-align: right;">3</td>
+    <td style = "text-align: right;">true</td>
+    <td style = "text-align: right;">false</td>
+    <td style = "text-align: right;">true</td>
+    <td style = "text-align: right;">false</td>
   </tr>
   <tr>
     <td class = "rowNumber">4</td>
-    <td class = "rowName" style = "text-align: right; ">4</td>
-    <td style = "text-align: right; ">Teste</td>
-    <td style = "text-align: right; ">Teste<BR>Teste</td>
-    <td style = "text-align: right; ">Teste "quote" Teste</td>
-    <td style = "text-align: right; ">Teste<BR>"quote"<BR>Teste</td>
+    <td class = "rowName" style = "text-align: right;">4</td>
+    <td style = "text-align: right;">Teste</td>
+    <td style = "text-align: right;">Teste<BR>Teste</td>
+    <td style = "text-align: right;">Teste "quote" Teste</td>
+    <td style = "text-align: right;">Teste<BR>"quote"<BR>Teste</td>
   </tr>
 </table>
 """
@@ -163,51 +163,51 @@ end
 <table>
   <tr class = "header">
     <th class = "rowNumber">#</th>
-    <th class = "rowName" style = "text-align: right; ">Test</th>
-    <th style = "text-align: right; ">C1</th>
-    <th style = "text-align: right; ">C2</th>
-    <th style = "text-align: right; ">C3</th>
-    <th style = "text-align: right; ">C4</th>
+    <th class = "rowName" style = "text-align: right;">Test</th>
+    <th style = "text-align: right;">C1</th>
+    <th style = "text-align: right;">C2</th>
+    <th style = "text-align: right;">C3</th>
+    <th style = "text-align: right;">C4</th>
   </tr>
   <tr class = "subheader headerLastRow">
     <th></th>
     <th></th>
-    <th style = "text-align: right; ">S1</th>
-    <th style = "text-align: right; ">S2</th>
-    <th style = "text-align: right; ">S3</th>
-    <th style = "text-align: right; ">S4</th>
+    <th style = "text-align: right;">S1</th>
+    <th style = "text-align: right;">S2</th>
+    <th style = "text-align: right;">S3</th>
+    <th style = "text-align: right;">S4</th>
   </tr>
   <tr>
     <td class = "rowNumber">1</td>
-    <td class = "rowName" style = "text-align: right; ">1</td>
-    <td style = "text-align: right; ">3.14159</td>
-    <td style = "text-align: right; ">3.14159</td>
-    <td style = "text-align: right; ">10.0</td>
-    <td style = "text-align: right; ">1.0</td>
+    <td class = "rowName" style = "text-align: right;">1</td>
+    <td style = "text-align: right;">3.14159</td>
+    <td style = "text-align: right;">3.14159</td>
+    <td style = "text-align: right;">10.0</td>
+    <td style = "text-align: right;">1.0</td>
   </tr>
   <tr>
     <td class = "rowNumber">2</td>
-    <td class = "rowName" style = "text-align: right; ">2</td>
-    <td style = "text-align: right; ">0x01</td>
-    <td style = "text-align: right; ">0x0001</td>
-    <td style = "text-align: right; ">0x00000001</td>
-    <td style = "text-align: right; ">0x0000000000000001</td>
+    <td class = "rowName" style = "text-align: right;">2</td>
+    <td style = "text-align: right;">0x01</td>
+    <td style = "text-align: right;">0x0001</td>
+    <td style = "text-align: right;">0x00000001</td>
+    <td style = "text-align: right;">0x0000000000000001</td>
   </tr>
   <tr>
     <td class = "rowNumber">3</td>
-    <td class = "rowName" style = "text-align: right; ">3</td>
-    <td style = "text-align: right; ">true</td>
-    <td style = "text-align: right; ">false</td>
-    <td style = "text-align: right; ">true</td>
-    <td style = "text-align: right; ">false</td>
+    <td class = "rowName" style = "text-align: right;">3</td>
+    <td style = "text-align: right;">true</td>
+    <td style = "text-align: right;">false</td>
+    <td style = "text-align: right;">true</td>
+    <td style = "text-align: right;">false</td>
   </tr>
   <tr>
     <td class = "rowNumber">4</td>
-    <td class = "rowName" style = "text-align: right; ">'4'</td>
-    <td style = "text-align: right; ">Teste</td>
-    <td style = "text-align: right; ">Teste<BR>Teste</td>
-    <td style = "text-align: right; ">Teste "quote" Teste</td>
-    <td style = "text-align: right; ">Teste<BR>"quote"<BR>Teste</td>
+    <td class = "rowName" style = "text-align: right;">'4'</td>
+    <td style = "text-align: right;">Teste</td>
+    <td style = "text-align: right;">Teste<BR>Teste</td>
+    <td style = "text-align: right;">Teste "quote" Teste</td>
+    <td style = "text-align: right;">Teste<BR>"quote"<BR>Teste</td>
   </tr>
 </table>
 """
@@ -228,51 +228,51 @@ end
 <table>
   <tr class = "header">
     <th class = "rowNumber">#</th>
-    <th class = "rowName" style = "text-align: right; ">Test</th>
-    <th style = "text-align: right; ">C1</th>
-    <th style = "text-align: right; ">C2</th>
-    <th style = "text-align: right; ">C3</th>
-    <th style = "text-align: right; ">C4</th>
+    <th class = "rowName" style = "text-align: right;">Test</th>
+    <th style = "text-align: right;">C1</th>
+    <th style = "text-align: right;">C2</th>
+    <th style = "text-align: right;">C3</th>
+    <th style = "text-align: right;">C4</th>
   </tr>
   <tr class = "subheader headerLastRow">
     <th></th>
     <th></th>
-    <th style = "text-align: right; ">S1</th>
-    <th style = "text-align: right; ">S2</th>
-    <th style = "text-align: right; ">S3</th>
-    <th style = "text-align: right; ">S4</th>
+    <th style = "text-align: right;">S1</th>
+    <th style = "text-align: right;">S2</th>
+    <th style = "text-align: right;">S3</th>
+    <th style = "text-align: right;">S4</th>
   </tr>
   <tr>
     <td class = "rowNumber">1</td>
-    <td class = "rowName" style = "text-align: right; ">1</td>
-    <td style = "text-align: right; ">3.141592653589793238462643383279502884197169399375105820974944592307816406286198</td>
-    <td style = "text-align: right; ">3.141592653589793</td>
-    <td style = "text-align: right; ">10.0f0</td>
-    <td style = "text-align: right; ">Float16(1.0)</td>
+    <td class = "rowName" style = "text-align: right;">1</td>
+    <td style = "text-align: right;">3.141592653589793238462643383279502884197169399375105820974944592307816406286198</td>
+    <td style = "text-align: right;">3.141592653589793</td>
+    <td style = "text-align: right;">10.0f0</td>
+    <td style = "text-align: right;">Float16(1.0)</td>
   </tr>
   <tr>
     <td class = "rowNumber">2</td>
-    <td class = "rowName" style = "text-align: right; ">2</td>
-    <td style = "text-align: right; ">0x01</td>
-    <td style = "text-align: right; ">0x0001</td>
-    <td style = "text-align: right; ">0x00000001</td>
-    <td style = "text-align: right; ">0x0000000000000001</td>
+    <td class = "rowName" style = "text-align: right;">2</td>
+    <td style = "text-align: right;">0x01</td>
+    <td style = "text-align: right;">0x0001</td>
+    <td style = "text-align: right;">0x00000001</td>
+    <td style = "text-align: right;">0x0000000000000001</td>
   </tr>
   <tr>
     <td class = "rowNumber">3</td>
-    <td class = "rowName" style = "text-align: right; ">3</td>
-    <td style = "text-align: right; ">true</td>
-    <td style = "text-align: right; ">false</td>
-    <td style = "text-align: right; ">true</td>
-    <td style = "text-align: right; ">false</td>
+    <td class = "rowName" style = "text-align: right;">3</td>
+    <td style = "text-align: right;">true</td>
+    <td style = "text-align: right;">false</td>
+    <td style = "text-align: right;">true</td>
+    <td style = "text-align: right;">false</td>
   </tr>
   <tr>
     <td class = "rowNumber">4</td>
-    <td class = "rowName" style = "text-align: right; ">'4'</td>
-    <td style = "text-align: right; ">Teste</td>
-    <td style = "text-align: right; ">Teste<BR>Teste</td>
-    <td style = "text-align: right; ">Teste "quote" Teste</td>
-    <td style = "text-align: right; ">Teste<BR>"quote"<BR>Teste</td>
+    <td class = "rowName" style = "text-align: right;">'4'</td>
+    <td style = "text-align: right;">Teste</td>
+    <td style = "text-align: right;">Teste<BR>Teste</td>
+    <td style = "text-align: right;">Teste "quote" Teste</td>
+    <td style = "text-align: right;">Teste<BR>"quote"<BR>Teste</td>
   </tr>
 </table>
 """

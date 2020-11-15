@@ -20,20 +20,20 @@
     expected = """
 <table>
   <tr class = "header headerLastRow">
-    <th style = "text-align: right; ">Information</th>
-    <th style = "text-align: right; ">Value</th>
+    <th style = "text-align: right;">Information</th>
+    <th style = "text-align: right;">Value</th>
   </tr>
   <tr>
-    <td style = "text-align: right; ">This line contains<BR>the velocity [m/s]</td>
-    <td style = "text-align: right; ">10.0</td>
+    <td style = "text-align: right;">This line contains<BR>the velocity [m/s]</td>
+    <td style = "text-align: right;">10.0</td>
   </tr>
   <tr>
-    <td style = "text-align: right; ">This line contains<BR>the acceleration [m/s^2]</td>
-    <td style = "text-align: right; ">1.0</td>
+    <td style = "text-align: right;">This line contains<BR>the acceleration [m/s^2]</td>
+    <td style = "text-align: right;">1.0</td>
   </tr>
   <tr>
-    <td style = "text-align: right; ">This line contains<BR>the time from the<BR>beginning of the simulation</td>
-    <td style = "text-align: right; ">10</td>
+    <td style = "text-align: right;">This line contains<BR>the time from the<BR>beginning of the simulation</td>
+    <td style = "text-align: right;">10</td>
   </tr>
 </table>
 """
@@ -51,20 +51,20 @@
     expected = """
 <table>
   <tr class = "header headerLastRow">
-    <th style = "text-align: right; ">Information</th>
-    <th style = "text-align: right; ">Value</th>
+    <th style = "text-align: right;">Information</th>
+    <th style = "text-align: right;">Value</th>
   </tr>
   <tr>
-    <td style = "text-align: right; ">This line contains</td>
-    <td style = "text-align: right; ">10.0</td>
+    <td style = "text-align: right;">This line contains</td>
+    <td style = "text-align: right;">10.0</td>
   </tr>
   <tr>
-    <td style = "text-align: right; ">This line contains</td>
-    <td style = "text-align: right; ">1.0</td>
+    <td style = "text-align: right;">This line contains</td>
+    <td style = "text-align: right;">1.0</td>
   </tr>
   <tr>
-    <td style = "text-align: right; ">This line contains</td>
-    <td style = "text-align: right; ">10</td>
+    <td style = "text-align: right;">This line contains</td>
+    <td style = "text-align: right;">10</td>
   </tr>
 </table>
 """

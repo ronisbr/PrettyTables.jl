@@ -129,19 +129,19 @@
     <!-- <PrettyTables Table 1> -->
     <table>
       <tr class = "header headerLastRow">
-        <th style = "text-align: right; ">Col. 1</th>
-        <th style = "text-align: right; ">Col. 2</th>
-        <th style = "text-align: right; ">Col. 3</th>
+        <th style = "text-align: right;">Col. 1</th>
+        <th style = "text-align: right;">Col. 2</th>
+        <th style = "text-align: right;">Col. 3</th>
       </tr>
       <tr>
-        <td style = "text-align: right; ">1</td>
-        <td style = "text-align: right; ">2</td>
-        <td style = "text-align: right; ">3</td>
+        <td style = "text-align: right;">1</td>
+        <td style = "text-align: right;">2</td>
+        <td style = "text-align: right;">3</td>
       </tr>
       <tr>
-        <td style = "text-align: right; ">4</td>
-        <td style = "text-align: right; ">5</td>
-        <td style = "text-align: right; ">6</td>
+        <td style = "text-align: right;">4</td>
+        <td style = "text-align: right;">5</td>
+        <td style = "text-align: right;">6</td>
       </tr>
     </table>
     <!-- </PrettyTables> -->
