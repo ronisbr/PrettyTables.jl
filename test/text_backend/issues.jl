@@ -187,3 +187,25 @@ end
 
     @test result_1 == result_2 == result_3 == expected
 end
+
+@testset "Issue #93 - Cropping with max. column width" begin
+    matrix = [1111111111111111111 2222222222222222222 3333333333333333333
+              1111111111111111111 2222222222222222222 3333333333333333333]
+
+    expected = """
+┌──────────────────┬────────────────────
+│           Col. 1 │           Col. 2  ⋯
+├──────────────────┼────────────────────
+│ 111111111111111… │ 222222222222222…  ⋯
+│ 111111111111111… │ 222222222222222…  ⋯
+└──────────────────┴────────────────────
+                        1 column omitted
+"""
+
+    result = pretty_table(String, matrix;
+                          crop = :both,
+                          display_size = (-1, 40),
+                          maximum_columns_width = 16)
+
+    @test result == expected
+end
