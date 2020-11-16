@@ -246,3 +246,235 @@ end
 
     @test result == expected
 end
+
+@testset "Pre-defined highlighters" begin
+
+    # hl_cell
+    # ==========================================================================
+
+    expected = """
+┌────────┬────────┬────────┬────────┐
+│\e[1m Col. 1 \e[0m│\e[1m Col. 2 \e[0m│\e[1m Col. 3 \e[0m│\e[1m Col. 4 \e[0m│
+├────────┼────────┼────────┼────────┤
+│      1 │  false │    1.0 │      1 │
+│      2 │   true │    2.0 │      2 │
+│      3 │  false │\e[33m    3.0 \e[0m│      3 │
+│      4 │   true │    4.0 │      4 │
+│      5 │  false │    5.0 │      5 │
+│      6 │   true │    6.0 │      6 │
+└────────┴────────┴────────┴────────┘
+"""
+
+    result = sprint((io)->pretty_table(io, data;
+                                       highlighters = hl_cell(3, 3, crayon"yellow")),
+                    context = :color => true)
+
+    @test result == expected
+
+    expected = """
+┌────────┬────────┬────────┬────────┐
+│\e[1m Col. 1 \e[0m│\e[1m Col. 2 \e[0m│\e[1m Col. 3 \e[0m│\e[1m Col. 4 \e[0m│
+├────────┼────────┼────────┼────────┤
+│      1 │  false │    1.0 │      1 │
+│      2 │   true │\e[33m    2.0 \e[0m│      2 │
+│      3 │  false │\e[33m    3.0 \e[0m│      3 │
+│      4 │   true │    4.0 │\e[33m      4 \e[0m│
+│      5 │  false │    5.0 │      5 │
+│      6 │   true │    6.0 │      6 │
+└────────┴────────┴────────┴────────┘
+"""
+
+    result = sprint((io)->pretty_table(io, data;
+                                       highlighters = hl_cell([(2, 3), (3, 3), (4, 4)],
+                                                              crayon"yellow")),
+                    context = :color => true)
+
+    @test result == expected
+
+    # hl_col
+    # ==========================================================================
+
+    expected = """
+┌────────┬────────┬────────┬────────┐
+│\e[1m Col. 1 \e[0m│\e[1m Col. 2 \e[0m│\e[1m Col. 3 \e[0m│\e[1m Col. 4 \e[0m│
+├────────┼────────┼────────┼────────┤
+│      1 │\e[33m  false \e[0m│    1.0 │      1 │
+│      2 │\e[33m   true \e[0m│    2.0 │      2 │
+│      3 │\e[33m  false \e[0m│    3.0 │      3 │
+│      4 │\e[33m   true \e[0m│    4.0 │      4 │
+│      5 │\e[33m  false \e[0m│    5.0 │      5 │
+│      6 │\e[33m   true \e[0m│    6.0 │      6 │
+└────────┴────────┴────────┴────────┘
+"""
+
+    result = sprint((io)->pretty_table(io, data;
+                                       highlighters = hl_col(2, crayon"yellow")),
+                    context = :color => true)
+
+    @test result == expected
+
+    expected = """
+┌────────┬────────┬────────┬────────┐
+│\e[1m Col. 1 \e[0m│\e[1m Col. 2 \e[0m│\e[1m Col. 3 \e[0m│\e[1m Col. 4 \e[0m│
+├────────┼────────┼────────┼────────┤
+│      1 │\e[33m  false \e[0m│    1.0 │\e[33m      1 \e[0m│
+│      2 │\e[33m   true \e[0m│    2.0 │\e[33m      2 \e[0m│
+│      3 │\e[33m  false \e[0m│    3.0 │\e[33m      3 \e[0m│
+│      4 │\e[33m   true \e[0m│    4.0 │\e[33m      4 \e[0m│
+│      5 │\e[33m  false \e[0m│    5.0 │\e[33m      5 \e[0m│
+│      6 │\e[33m   true \e[0m│    6.0 │\e[33m      6 \e[0m│
+└────────┴────────┴────────┴────────┘
+"""
+
+    result = sprint((io)->pretty_table(io, data;
+                                       highlighters = hl_col([2,4], crayon"yellow")),
+                    context = :color => true)
+
+    @test result == expected
+
+    # hl_row
+    # ==========================================================================
+
+    expected = """
+┌────────┬────────┬────────┬────────┐
+│\e[1m Col. 1 \e[0m│\e[1m Col. 2 \e[0m│\e[1m Col. 3 \e[0m│\e[1m Col. 4 \e[0m│
+├────────┼────────┼────────┼────────┤
+│      1 │  false │    1.0 │      1 │
+│\e[33m      2 \e[0m│\e[33m   true \e[0m│\e[33m    2.0 \e[0m│\e[33m      2 \e[0m│
+│      3 │  false │    3.0 │      3 │
+│      4 │   true │    4.0 │      4 │
+│      5 │  false │    5.0 │      5 │
+│      6 │   true │    6.0 │      6 │
+└────────┴────────┴────────┴────────┘
+"""
+
+    result = sprint((io)->pretty_table(io, data;
+                                       highlighters = hl_row(2, crayon"yellow")),
+                    context = :color => true)
+
+    @test result == expected
+
+    expected = """
+┌────────┬────────┬────────┬────────┐
+│\e[1m Col. 1 \e[0m│\e[1m Col. 2 \e[0m│\e[1m Col. 3 \e[0m│\e[1m Col. 4 \e[0m│
+├────────┼────────┼────────┼────────┤
+│      1 │  false │    1.0 │      1 │
+│\e[33m      2 \e[0m│\e[33m   true \e[0m│\e[33m    2.0 \e[0m│\e[33m      2 \e[0m│
+│      3 │  false │    3.0 │      3 │
+│\e[33m      4 \e[0m│\e[33m   true \e[0m│\e[33m    4.0 \e[0m│\e[33m      4 \e[0m│
+│      5 │  false │    5.0 │      5 │
+│      6 │   true │    6.0 │      6 │
+└────────┴────────┴────────┴────────┘
+"""
+
+    result = sprint((io)->pretty_table(io, data;
+                                       highlighters = hl_row([2,4], crayon"yellow")),
+                    context = :color => true)
+
+    @test result == expected
+
+    # hl_lt
+    # ==========================================================================
+
+    expected = """
+┌────────┬────────┬────────┬────────┐
+│\e[1m Col. 1 \e[0m│\e[1m Col. 2 \e[0m│\e[1m Col. 3 \e[0m│\e[1m Col. 4 \e[0m│
+├────────┼────────┼────────┼────────┤
+│\e[31;1m      1 \e[0m│\e[31;1m  false \e[0m│\e[31;1m    1.0 \e[0m│\e[31;1m      1 \e[0m│
+│\e[31;1m      2 \e[0m│\e[31;1m   true \e[0m│\e[31;1m    2.0 \e[0m│\e[31;1m      2 \e[0m│
+│      3 │\e[31;1m  false \e[0m│    3.0 │      3 │
+│      4 │\e[31;1m   true \e[0m│    4.0 │      4 │
+│      5 │\e[31;1m  false \e[0m│    5.0 │      5 │
+│      6 │\e[31;1m   true \e[0m│    6.0 │      6 │
+└────────┴────────┴────────┴────────┘
+"""
+
+    result = sprint((io)->pretty_table(io, data; highlighters = hl_lt(3)),
+                    context = :color => true)
+
+    @test result == expected
+
+    # hl_leq
+    # ==========================================================================
+
+    expected = """
+┌────────┬────────┬────────┬────────┐
+│\e[1m Col. 1 \e[0m│\e[1m Col. 2 \e[0m│\e[1m Col. 3 \e[0m│\e[1m Col. 4 \e[0m│
+├────────┼────────┼────────┼────────┤
+│\e[31;1m      1 \e[0m│\e[31;1m  false \e[0m│\e[31;1m    1.0 \e[0m│\e[31;1m      1 \e[0m│
+│\e[31;1m      2 \e[0m│\e[31;1m   true \e[0m│\e[31;1m    2.0 \e[0m│\e[31;1m      2 \e[0m│
+│\e[31;1m      3 \e[0m│\e[31;1m  false \e[0m│\e[31;1m    3.0 \e[0m│\e[31;1m      3 \e[0m│
+│      4 │\e[31;1m   true \e[0m│    4.0 │      4 │
+│      5 │\e[31;1m  false \e[0m│    5.0 │      5 │
+│      6 │\e[31;1m   true \e[0m│    6.0 │      6 │
+└────────┴────────┴────────┴────────┘
+"""
+
+    result = sprint((io)->pretty_table(io, data; highlighters = hl_leq(3)),
+                    context = :color => true)
+
+    @test result == expected
+
+    # hl_gt
+    # ==========================================================================
+
+    expected = """
+┌────────┬────────┬────────┬────────┐
+│\e[1m Col. 1 \e[0m│\e[1m Col. 2 \e[0m│\e[1m Col. 3 \e[0m│\e[1m Col. 4 \e[0m│
+├────────┼────────┼────────┼────────┤
+│      1 │  false │    1.0 │      1 │
+│      2 │   true │    2.0 │      2 │
+│      3 │  false │    3.0 │      3 │
+│\e[34;1m      4 \e[0m│   true │\e[34;1m    4.0 \e[0m│\e[34;1m      4 \e[0m│
+│\e[34;1m      5 \e[0m│  false │\e[34;1m    5.0 \e[0m│\e[34;1m      5 \e[0m│
+│\e[34;1m      6 \e[0m│   true │\e[34;1m    6.0 \e[0m│\e[34;1m      6 \e[0m│
+└────────┴────────┴────────┴────────┘
+"""
+
+    result = sprint((io)->pretty_table(io, data; highlighters = hl_gt(3)),
+                    context = :color => true)
+
+    @test result == expected
+
+    # hl_geq
+    # ==========================================================================
+
+    expected = """
+┌────────┬────────┬────────┬────────┐
+│\e[1m Col. 1 \e[0m│\e[1m Col. 2 \e[0m│\e[1m Col. 3 \e[0m│\e[1m Col. 4 \e[0m│
+├────────┼────────┼────────┼────────┤
+│      1 │  false │    1.0 │      1 │
+│      2 │   true │    2.0 │      2 │
+│\e[34;1m      3 \e[0m│  false │\e[34;1m    3.0 \e[0m│\e[34;1m      3 \e[0m│
+│\e[34;1m      4 \e[0m│   true │\e[34;1m    4.0 \e[0m│\e[34;1m      4 \e[0m│
+│\e[34;1m      5 \e[0m│  false │\e[34;1m    5.0 \e[0m│\e[34;1m      5 \e[0m│
+│\e[34;1m      6 \e[0m│   true │\e[34;1m    6.0 \e[0m│\e[34;1m      6 \e[0m│
+└────────┴────────┴────────┴────────┘
+"""
+
+    result = sprint((io)->pretty_table(io, data; highlighters = hl_geq(3)),
+                    context = :color => true)
+
+    @test result == expected
+
+    # hl_value
+    # ==========================================================================
+
+    expected = """
+┌────────┬────────┬────────┬────────┐
+│\e[1m Col. 1 \e[0m│\e[1m Col. 2 \e[0m│\e[1m Col. 3 \e[0m│\e[1m Col. 4 \e[0m│
+├────────┼────────┼────────┼────────┤
+│      1 │  false │    1.0 │      1 │
+│      2 │   true │    2.0 │      2 │
+│\e[33;1m      3 \e[0m│  false │\e[33;1m    3.0 \e[0m│\e[33;1m      3 \e[0m│
+│      4 │   true │    4.0 │      4 │
+│      5 │  false │    5.0 │      5 │
+│      6 │   true │    6.0 │      6 │
+└────────┴────────┴────────┴────────┘
+"""
+
+    result = sprint((io)->pretty_table(io, data; highlighters = hl_value(3)),
+                    context = :color => true)
+
+    @test result == expected
+end
