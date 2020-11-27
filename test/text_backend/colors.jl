@@ -181,7 +181,7 @@ end
 │     99 │     99 │     99 │
 │    100 │\e[33m    100 \e[0m│    100 │
 └────────┴────────┴────────┘
-\e[31m             93 rows omitted\e[0m
+\e[36m             93 rows omitted\e[0m
 """
 
     result = sprint((io)->pretty_table(io, matrix,
@@ -206,7 +206,7 @@ end
 │     98 │     98 │     98 │
 │    100 │\e[33m    100 \e[0m│    100 │
 └────────┴────────┴────────┘
-\e[31m             43 rows omitted\e[0m
+\e[36m             43 rows omitted\e[0m
 """
 
     result = sprint((io)->pretty_table(io, matrix,
@@ -232,7 +232,7 @@ end
 │     98 │     98 │
 │\e[33m    100 \e[0m│    100 │
 └────────┴────────┘
-\e[31m    43 rows omitted\e[0m
+\e[36m    43 rows omitted\e[0m
 """
 
     result = sprint((io)->pretty_table(io, matrix,

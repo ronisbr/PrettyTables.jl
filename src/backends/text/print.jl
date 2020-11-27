@@ -13,7 +13,7 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                   subheader_crayon::Union{Crayon,Vector{Crayon}} = Crayon(foreground = :dark_gray),
                   rownum_header_crayon::Crayon = Crayon(bold = true),
                   text_crayon::Crayon = Crayon(),
-                  omitted_cell_summary_crayon::Crayon = Crayon(foreground = :red),
+                  omitted_cell_summary_crayon::Crayon = Crayon(foreground = :cyan),
                   autowrap::Bool = false,
                   body_hlines::Vector{Int} = Int[],
                   body_hlines_format::Union{Nothing,NTuple{4,Char}} = nothing,
