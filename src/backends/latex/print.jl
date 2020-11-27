@@ -151,16 +151,18 @@ function _pt_latex(io::IO, pinfo::PrintInfo;
         length(title) > 0 && _aprintln(buf, "\\caption{$title}", il, ns)
     end
 
-    _aprintln(buf,"""
-              \\begin{$table_env}$(_latex_table_desc(id_cols,
-                                                     alignment,
-                                                     show_row_number,
-                                                     row_number_alignment,
-                                                     vlines,
-                                                     left_vline,
-                                                     mid_vline,
-                                                     right_vline))""",
-              il, ns)
+    table_desc = _latex_table_desc(id_cols,
+                                   alignment,
+                                   show_row_names,
+                                   row_name_alignment,
+                                   show_row_number,
+                                   row_number_alignment,
+                                   vlines,
+                                   left_vline,
+                                   mid_vline,
+                                   right_vline)
+
+    _aprintln(buf,"\\begin{$table_env}$table_desc", il, ns)
     il += 1
 
     if table_type == :longtable
@@ -182,10 +184,10 @@ function _pt_latex(io::IO, pinfo::PrintInfo;
 
     if !noheader
         @inbounds @views for i = 1:header_num_rows
+            _aprint(buf, il, ns)
+
             # The text "Row" must appear only on the first line.
             if show_row_number
-                _aprint(buf, il, ns)
-
                 if i == 1
                     print(buf, _latex_envs(row_number_column_title, header_envs))
                 end
@@ -193,10 +195,16 @@ function _pt_latex(io::IO, pinfo::PrintInfo;
                 print(buf, " & ")
             end
 
-            for j = 1:num_printed_cols
-                # Apply the alignment to this row.
-                (!show_row_number && j == 1) && _aprint(buf, il, ns)
+            # The row name column title must appear only on the first  line.
+            if show_row_names
+                if i == 1
+                    print(buf, _latex_envs(row_name_column_title, header_envs))
+                end
 
+                print(buf, " & ")
+            end
+
+            for j = 1:num_printed_cols
                 # Index of the j-th printed column in `data`.
                 jc = id_cols[j]
 
@@ -277,14 +285,22 @@ function _pt_latex(io::IO, pinfo::PrintInfo;
     @inbounds @views for i = 1:num_printed_rows
         ir = id_rows[i]
 
+        # Apply indentation to the current line.
+        _aprint(buf, il, ns)
+
         if show_row_number
-            _aprint(buf, string(ir) * " & ", il, ns)
+            print(buf, string(ir) * " & ")
+        end
+
+        if show_row_names
+            row_name_i_str = _parse_cell_latex(row_names[i];
+                                               cell_first_line_only = false,
+                                               compact_printing = compact_printing,
+                                               renderer = renderer)
+            print(buf, row_name_i_str * " & ")
         end
 
         for j = 1:num_printed_cols
-            # Apply the alignment to this row.
-            (!show_row_number && j == 1) && _aprint(buf, il, ns)
-
             jc = id_cols[j]
 
             # If we have highlighters defined, then we need to verify if this

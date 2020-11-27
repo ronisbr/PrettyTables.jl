@@ -48,6 +48,8 @@ end
 # Get the LaTeX table description (alignment and vertical columns).
 function _latex_table_desc(id_cols::AbstractVector,
                            alignment::Vector{Symbol},
+                           show_row_name::Bool,
+                           row_name_alignment::Symbol,
                            show_row_number::Bool,
                            row_number_alignment::Symbol,
                            vlines::AbstractVector,
@@ -64,9 +66,15 @@ function _latex_table_desc(id_cols::AbstractVector,
     # Add the alignment information of the row number column if required.
     Δc = 0
     if show_row_number
-        Δc = 1
+        Δc += 1
         str *= _latex_alignment(row_number_alignment)
-        1 ∈ vlines && (str *= mid_vline)
+        Δc ∈ vlines && (str *= mid_vline)
+    end
+
+    if show_row_name
+        Δc += 1
+        str *= _latex_alignment(row_name_alignment)
+        Δc ∈ vlines && (str *= mid_vline)
     end
 
     # Process the alignment of all the other columns.
@@ -89,7 +97,14 @@ end
 
 # Wrap the `text` into LaTeX environment(s).
 _latex_envs(text::AbstractString, envs::Vector{String}) = _latex_envs(text, envs, length(envs))
-_latex_envs(text::AbstractString, env::String) = "\\" * string(env) * "{" * text * "}"
+
+function _latex_envs(text::AbstractString, env::String)
+    if !isempty(text)
+        return "\\" * string(env) * "{" * text * "}"
+    else
+        return ""
+    end
+end
 
 function _latex_envs(text::AbstractString, envs::Vector{String}, i::Int)
     @inbounds if i > 0
