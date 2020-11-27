@@ -7,8 +7,12 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
+@testset "Default" begin
+    include("latex_backend/default.jl")
+end
+
 @testset "Issues" begin
-    include("text_backend/issues.jl")
+    include("latex_backend/issues.jl")
 end
 
 @testset "Row names" begin

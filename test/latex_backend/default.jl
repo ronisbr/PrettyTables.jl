@@ -1,0 +1,86 @@
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#
+# Description
+# ==============================================================================
+#
+#    Tests of default printing.
+#
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+@testset "Pre-defined formats" begin
+
+    # Default
+    # ==========================================================================
+
+    expected = """
+\\begin{table}
+  \\begin{tabular}{|r|r|r|r|}
+    \\hline\\hline
+    \\textbf{Col. 1} & \\textbf{Col. 2} & \\textbf{Col. 3} & \\textbf{Col. 4} \\\\\\hline
+    1 & false & 1.0 & 1 \\\\\\hline
+    2 & true & 2.0 & 2 \\\\\\hline
+    3 & false & 3.0 & 3 \\\\\\hline
+    4 & true & 4.0 & 4 \\\\\\hline
+    5 & false & 5.0 & 5 \\\\\\hline
+    6 & true & 6.0 & 6 \\\\\\hline\\hline
+  \\end{tabular}
+\\end{table}
+"""
+
+    result = pretty_table(String, data,
+                          hlines = :all,
+                          vlines = :all,
+                          tf = tf_latex_default)
+
+    @test result == expected
+
+    # Simple
+    # ==========================================================================
+
+    expected = """
+\\begin{table}
+  \\begin{tabular}{|r|r|r|r|}
+    \\hline
+    \\textbf{Col. 1} & \\textbf{Col. 2} & \\textbf{Col. 3} & \\textbf{Col. 4} \\\\\\hline
+    1 & false & 1.0 & 1 \\\\\\hline
+    2 & true & 2.0 & 2 \\\\\\hline
+    3 & false & 3.0 & 3 \\\\\\hline
+    4 & true & 4.0 & 4 \\\\\\hline
+    5 & false & 5.0 & 5 \\\\\\hline
+    6 & true & 6.0 & 6 \\\\\\hline
+  \\end{tabular}
+\\end{table}
+"""
+
+    result = pretty_table(String, data,
+                          hlines = :all,
+                          vlines = :all,
+                          tf = tf_latex_simple)
+
+    @test result == expected
+
+    # Modern
+    # ==========================================================================
+
+    expected = """
+\\begin{table}
+  \\begin{tabular}{!{\\vrule width 2pt}r!{\\vrule width 1pt}r!{\\vrule width 1pt}r!{\\vrule width 1pt}r!{\\vrule width 2pt}}
+    \\noalign{\\hrule height 2pt}
+    \\textbf{Col. 1} & \\textbf{Col. 2} & \\textbf{Col. 3} & \\textbf{Col. 4} \\\\\\noalign{\\hrule height 2pt}
+    1 & false & 1.0 & 1 \\\\\\noalign{\\hrule height 1pt}
+    2 & true & 2.0 & 2 \\\\\\noalign{\\hrule height 1pt}
+    3 & false & 3.0 & 3 \\\\\\noalign{\\hrule height 1pt}
+    4 & true & 4.0 & 4 \\\\\\noalign{\\hrule height 1pt}
+    5 & false & 5.0 & 5 \\\\\\noalign{\\hrule height 1pt}
+    6 & true & 6.0 & 6 \\\\\\noalign{\\hrule height 2pt}
+  \\end{tabular}
+\\end{table}
+"""
+
+    result = pretty_table(String, data,
+                          hlines = :all,
+                          vlines = :all,
+                          tf = tf_latex_modern)
+
+    @test result == expected
+end

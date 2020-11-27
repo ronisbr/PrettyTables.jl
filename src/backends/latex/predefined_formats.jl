@@ -6,7 +6,7 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-export tf_latex_default, tf_latex_simple
+export tf_latex_default, tf_latex_simple, tf_latex_modern
 
 const tf_latex_default = LatexTableFormat()
 
@@ -18,6 +18,18 @@ const tf_latex_simple = LatexTableFormat(
     left_vline     = "|",
     mid_vline      = "|",
     right_vline    = "|",
+    header_envs    = ["textbf"],
+    subheader_envs = ["texttt"]
+   )
+
+const tf_latex_modern = LatexTableFormat(
+    top_line       = "\\noalign{\\hrule height 2pt}",
+    header_line    = "\\noalign{\\hrule height 2pt}",
+    mid_line       = "\\noalign{\\hrule height 1pt}",
+    bottom_line    = "\\noalign{\\hrule height 2pt}",
+    left_vline     = "!{\\vrule width 2pt}",
+    mid_vline      = "!{\\vrule width 1pt}",
+    right_vline    = "!{\\vrule width 2pt}",
     header_envs    = ["textbf"],
     subheader_envs = ["texttt"]
    )
