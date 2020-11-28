@@ -19,7 +19,7 @@ Structure that defines parameters to decorate a table cell.
     background::String      = ""
     font_family::String     = ""
     font_weight::String     = ""
-    font_decoration::String = ""
+    text_decoration::String = ""
 end
 
 HTMLDecoration(color::String) = HTMLDecoration(color = color)
@@ -29,9 +29,9 @@ function Dict(d::HTMLDecoration)
 
     !isempty(d.color)           && (style["color"]           = d.color)
     !isempty(d.background)      && (style["background"]      = d.background)
-    !isempty(d.font_decoration) && (style["font-decoration"] = d.font_decoration)
     !isempty(d.font_family)     && (style["font-family"]     = d.font_family)
     !isempty(d.font_weight)     && (style["font-weight"]     = d.font_weight)
+    !isempty(d.text_decoration) && (style["text-decoration"] = d.text_decoration)
 
     return style
 end
