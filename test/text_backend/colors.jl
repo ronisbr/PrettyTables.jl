@@ -111,9 +111,6 @@ end
 end
 
 @testset "Highlighters" begin
-    hl = Highlighter((data, i, j)-> i == 3 && j == 3,
-                     crayon"yellow bold")
-
     expected = """
 ┌────────┬────────┬────────┬────────┐
 │\e[1m Col. 1 \e[0m│\e[1m Col. 2 \e[0m│\e[1m Col. 3 \e[0m│\e[1m Col. 4 \e[0m│
@@ -126,6 +123,18 @@ end
 │      6 │   true │    6.0 │      6 │
 └────────┴────────┴────────┴────────┘
 """
+
+    hl = Highlighter((data, i, j)-> i == 3 && j == 3;
+                     bold = true,
+                     foreground = :yellow)
+
+    result = sprint((io)->pretty_table(io, data, highlighters = hl),
+                    context = :color => true)
+
+    @test result == expected
+
+    hl = Highlighter((data, i, j)-> i == 3 && j == 3,
+                     crayon"yellow bold")
 
     result = sprint((io)->pretty_table(io, data, highlighters = hl),
                     context = :color => true)
@@ -480,6 +489,21 @@ end
 end
 
 @testset "Markdown" begin
+    a = md"""
+       # Header
+
+       This is a paragraph.
+
+       ```julia
+       function test()
+           return 1
+       end
+       ```
+       """;
+
+    data = [1 a
+            2 a]
+
     expected = """
 ┌────────┬────────────────────────┐
 │\e[1m Col. 1 \e[0m│\e[1m                 Col. 2 \e[0m│
