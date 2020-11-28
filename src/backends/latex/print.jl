@@ -174,7 +174,14 @@ function _pt_latex(io::IO, pinfo::PrintInfo;
         @goto print_to_output
     end
 
-    0 ∈ hlines && _aprintln(buf, top_line, il, ns)
+    # We use a separate buffer because if `:longtable` is used, then we need to
+    # repeat the header. Otherwise the caption is repeated in every page and it
+    # is also added to the TOC (see issue #95).
+
+    buf_io_h = IOBuffer()
+    buf_h    = IOContext(buf_io_h)
+
+    0 ∈ hlines && _aprintln(buf_h, top_line, il, ns)
 
     # Data header
     # ==========================================================================
@@ -184,24 +191,24 @@ function _pt_latex(io::IO, pinfo::PrintInfo;
 
     if !noheader
         @inbounds @views for i = 1:header_num_rows
-            _aprint(buf, il, ns)
+            _aprint(buf_h, il, ns)
 
             # The text "Row" must appear only on the first line.
             if show_row_number
                 if i == 1
-                    print(buf, _latex_envs(row_number_column_title, header_envs))
+                    print(buf_h, _latex_envs(row_number_column_title, header_envs))
                 end
 
-                print(buf, " & ")
+                print(buf_h, " & ")
             end
 
             # The row name column title must appear only on the first  line.
             if show_row_names
                 if i == 1
-                    print(buf, _latex_envs(row_name_column_title, header_envs))
+                    print(buf_h, _latex_envs(row_name_column_title, header_envs))
                 end
 
-                print(buf, " & ")
+                print(buf_h, " & ")
             end
 
             for j = 1:num_printed_cols
@@ -245,22 +252,28 @@ function _pt_latex(io::IO, pinfo::PrintInfo;
                                                                 right_vline)
                 end
 
-                print(buf, header_str_ij)
+                print(buf_h, header_str_ij)
 
-                j != num_printed_cols && print(buf, " & ")
+                j != num_printed_cols && print(buf_h, " & ")
             end
 
-            print(buf, " \\\\")
+            print(buf_h, " \\\\")
             if (i == header_num_rows) && (1 ∈ hlines)
-                print(buf, header_line)
+                print(buf_h, header_line)
             end
-            println(buf, "")
+            println(buf_h, "")
         end
     end
+
+    header_dump = String(take!(buf_io_h))
+
+    print(buf, header_dump)
 
     # If we are using `longtable`, then we must mark the end of header and also
     # create the footer.
     if table_type == :longtable
+        _aprintln(buf, "\\endfirsthead", il, ns)
+        print(buf, header_dump)
         _aprintln(buf, "\\endhead", il, ns)
         _aprintln(buf, bottom_line, il, ns)
 
