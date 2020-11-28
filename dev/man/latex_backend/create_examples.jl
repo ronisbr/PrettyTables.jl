@@ -13,7 +13,7 @@ data = [true  100.0 0x8080 "String"
 
 run(`cp example.tex format_default.tex`)
 include_pt_in_file("format_default.tex", "Table 1", data, backend = :latex,
-                   backup_file = false, tf = latex_default)
+                   backup_file = false, tf = tf_latex_default)
 run(`pdflatex format_default.tex`)
 run(`pdflatex format_default.tex`)
 run(`convert -density 150 -trim -strip format_default.pdf format_default.png`)
@@ -25,12 +25,24 @@ run(`rm format_default.pdf`)
 
 run(`cp example.tex format_simple.tex`)
 include_pt_in_file("format_simple.tex", "Table 1", data, backend = :latex,
-                   backup_file = false, tf = latex_simple)
+                   backup_file = false, tf = tf_latex_simple)
 run(`pdflatex format_simple.tex`)
 run(`pdflatex format_simple.tex`)
 run(`convert -density 150 -trim -strip format_simple.pdf format_simple.png`)
 run(`rm format_simple.tex`)
 run(`rm format_simple.pdf`)
+
+# Modern
+# ======
+
+run(`cp example.tex format_modern.tex`)
+include_pt_in_file("format_modern.tex", "Table 1", data, backend = :latex,
+                   backup_file = false, tf = tf_latex_modern)
+run(`pdflatex format_modern.tex`)
+run(`pdflatex format_modern.tex`)
+run(`convert -density 150 -trim -strip format_modern.pdf format_modern.png`)
+run(`rm format_modern.tex`)
+run(`rm format_modern.pdf`)
 
 #                                 Highlighters
 # ==============================================================================

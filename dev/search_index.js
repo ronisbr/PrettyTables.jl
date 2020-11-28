@@ -189,7 +189,7 @@ var documenterSearchIndex = {"docs": [
     "page": "LaTeX",
     "title": "LaTeX table formats",
     "category": "section",
-    "text": "The following table formats are available when using the LaTeX back-end:tf_latex_default (Default)(Image: )tf_latex_simple(Image: )"
+    "text": "The following table formats are available when using the LaTeX back-end:tf_latex_default (Default)(Image: )tf_latex_simple(Image: )tf_latex_modern(Image: )note: Note\nYou need the LaTeX package array to use the vertical divisions with this format."
 },
 
 {
