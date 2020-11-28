@@ -35,6 +35,10 @@ end
     include("./html_backend/linebreaks.jl")
 end
 
+@testset "Markdown" begin
+    include("./html_backend/markdown.jl")
+end
+
 @testset "Renderers" begin
     include("./html_backend/renderers.jl")
 end
