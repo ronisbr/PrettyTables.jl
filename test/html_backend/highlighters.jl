@@ -1,0 +1,548 @@
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#
+# Description
+# ==============================================================================
+#
+#   Tests of highlighters.
+#
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+@testset "Highlighters" begin
+    expected = """
+<table>
+  <tr class = "header headerLastRow">
+    <th style = "text-align: right;">Col. 1</th>
+    <th style = "text-align: right;">Col. 2</th>
+    <th style = "text-align: right;">Col. 3</th>
+    <th style = "text-align: right;">Col. 4</th>
+  </tr>
+  <tr>
+    <td style = "text-align: right;">1</td>
+    <td style = "text-align: right;">false</td>
+    <td style = "text-align: right;">1.0</td>
+    <td style = "text-align: right;">1</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right;">2</td>
+    <td style = "text-align: right;">true</td>
+    <td style = "text-align: right;">2.0</td>
+    <td style = "text-align: right;">2</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right;">3</td>
+    <td style = "text-align: right;">false</td>
+    <td style = "text-align: right;">3.0</td>
+    <td style = "text-align: right;">3</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right;">4</td>
+    <td style = "text-align: right;">true</td>
+    <td style = "text-align: right;">4.0</td>
+    <td style = "text-align: right;">4</td>
+  </tr>
+  <tr>
+    <td style = "color: red; text-align: right;">5</td>
+    <td style = "text-align: right;">false</td>
+    <td style = "color: red; text-align: right;">5.0</td>
+    <td style = "color: red; text-align: right;">5</td>
+  </tr>
+  <tr>
+    <td style = "color: red; text-align: right;">6</td>
+    <td style = "text-align: right;">true</td>
+    <td style = "color: red; text-align: right;">6.0</td>
+    <td style = "color: red; text-align: right;">6</td>
+  </tr>
+</table>
+"""
+
+    result = pretty_table(String, data;
+                          backend = :html,
+                          highlighters = HTMLHighlighter((data, i, j)->data[i,j] > 4,
+                                                         HTMLDecoration(color = "red")),
+                          standalone = true)
+end
+
+@testset "Pre-defined highlighters" begin
+    # hl_cell
+    # ==========================================================================
+
+    expected = """
+<table>
+  <tr class = "header headerLastRow">
+    <th style = "text-align: right;">Col. 1</th>
+    <th style = "text-align: right;">Col. 2</th>
+    <th style = "text-align: right;">Col. 3</th>
+    <th style = "text-align: right;">Col. 4</th>
+  </tr>
+  <tr>
+    <td style = "text-align: right;">1</td>
+    <td style = "text-align: right;">false</td>
+    <td style = "text-align: right;">1.0</td>
+    <td style = "text-align: right;">1</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right;">2</td>
+    <td style = "background: blue; text-align: right;">true</td>
+    <td style = "text-align: right;">2.0</td>
+    <td style = "text-align: right;">2</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right;">3</td>
+    <td style = "text-align: right;">false</td>
+    <td style = "background: blue; text-align: right;">3.0</td>
+    <td style = "text-align: right;">3</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right;">4</td>
+    <td style = "text-align: right;">true</td>
+    <td style = "text-align: right;">4.0</td>
+    <td style = "text-align: right;">4</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right;">5</td>
+    <td style = "text-align: right;">false</td>
+    <td style = "text-align: right;">5.0</td>
+    <td style = "text-align: right;">5</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right;">6</td>
+    <td style = "text-align: right;">true</td>
+    <td style = "text-align: right;">6.0</td>
+    <td style = "text-align: right;">6</td>
+  </tr>
+</table>
+"""
+
+    result = pretty_table(String, data;
+                          backend = :html,
+                          highlighters = (hl_cell(2, 2, HTMLDecoration(background = "blue")),
+                                          hl_cell(3, 3, HTMLDecoration(background = "blue"))),
+                          standalone = false)
+
+    @test result == expected
+
+    result = pretty_table(String, data;
+                          backend = :html,
+                          highlighters = hl_cell([(2, 2), (3, 3)], HTMLDecoration(background = "blue")),
+                          standalone = false)
+
+    # hl_col
+    # ==========================================================================
+
+    expected = """
+<table>
+  <tr class = "header headerLastRow">
+    <th style = "text-align: right;">Col. 1</th>
+    <th style = "text-align: right;">Col. 2</th>
+    <th style = "text-align: right;">Col. 3</th>
+    <th style = "text-align: right;">Col. 4</th>
+  </tr>
+  <tr>
+    <td style = "font-weight: bold; text-align: right;">1</td>
+    <td style = "text-align: right;">false</td>
+    <td style = "text-align: right;">1.0</td>
+    <td style = "font-weight: bold; text-align: right;">1</td>
+  </tr>
+  <tr>
+    <td style = "font-weight: bold; text-align: right;">2</td>
+    <td style = "text-align: right;">true</td>
+    <td style = "text-align: right;">2.0</td>
+    <td style = "font-weight: bold; text-align: right;">2</td>
+  </tr>
+  <tr>
+    <td style = "font-weight: bold; text-align: right;">3</td>
+    <td style = "text-align: right;">false</td>
+    <td style = "text-align: right;">3.0</td>
+    <td style = "font-weight: bold; text-align: right;">3</td>
+  </tr>
+  <tr>
+    <td style = "font-weight: bold; text-align: right;">4</td>
+    <td style = "text-align: right;">true</td>
+    <td style = "text-align: right;">4.0</td>
+    <td style = "font-weight: bold; text-align: right;">4</td>
+  </tr>
+  <tr>
+    <td style = "font-weight: bold; text-align: right;">5</td>
+    <td style = "text-align: right;">false</td>
+    <td style = "text-align: right;">5.0</td>
+    <td style = "font-weight: bold; text-align: right;">5</td>
+  </tr>
+  <tr>
+    <td style = "font-weight: bold; text-align: right;">6</td>
+    <td style = "text-align: right;">true</td>
+    <td style = "text-align: right;">6.0</td>
+    <td style = "font-weight: bold; text-align: right;">6</td>
+  </tr>
+</table>
+"""
+
+    result = pretty_table(String, data;
+                          backend = :html,
+                          highlighters = (hl_col(1, HTMLDecoration(font_weight = "bold")),
+                                          hl_col(4, HTMLDecoration(font_weight = "bold"))),
+                          standalone = false)
+
+    @test result == expected
+
+    result = pretty_table(String, data;
+                          backend = :html,
+                          highlighters = hl_col([1, 4], HTMLDecoration(font_weight = "bold")),
+                          standalone = false)
+
+    @test result == expected
+
+    # hl_row
+    # ==========================================================================
+
+    expected = """
+<table>
+  <tr class = "header headerLastRow">
+    <th style = "text-align: right;">Col. 1</th>
+    <th style = "text-align: right;">Col. 2</th>
+    <th style = "text-align: right;">Col. 3</th>
+    <th style = "text-align: right;">Col. 4</th>
+  </tr>
+  <tr>
+    <td style = "font-family: monospace; text-align: right;">1</td>
+    <td style = "font-family: monospace; text-align: right;">false</td>
+    <td style = "font-family: monospace; text-align: right;">1.0</td>
+    <td style = "font-family: monospace; text-align: right;">1</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right;">2</td>
+    <td style = "text-align: right;">true</td>
+    <td style = "text-align: right;">2.0</td>
+    <td style = "text-align: right;">2</td>
+  </tr>
+  <tr>
+    <td style = "font-family: monospace; text-align: right;">3</td>
+    <td style = "font-family: monospace; text-align: right;">false</td>
+    <td style = "font-family: monospace; text-align: right;">3.0</td>
+    <td style = "font-family: monospace; text-align: right;">3</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right;">4</td>
+    <td style = "text-align: right;">true</td>
+    <td style = "text-align: right;">4.0</td>
+    <td style = "text-align: right;">4</td>
+  </tr>
+  <tr>
+    <td style = "font-family: monospace; text-align: right;">5</td>
+    <td style = "font-family: monospace; text-align: right;">false</td>
+    <td style = "font-family: monospace; text-align: right;">5.0</td>
+    <td style = "font-family: monospace; text-align: right;">5</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right;">6</td>
+    <td style = "text-align: right;">true</td>
+    <td style = "text-align: right;">6.0</td>
+    <td style = "text-align: right;">6</td>
+  </tr>
+</table>
+"""
+
+    result = pretty_table(String, data;
+                          backend = :html,
+                          highlighters = (hl_row(1, HTMLDecoration(font_family = "monospace")),
+                                          hl_row(3, HTMLDecoration(font_family = "monospace")),
+                                          hl_row(5, HTMLDecoration(font_family = "monospace"))),
+                          standalone = false)
+
+    @test result == expected
+
+    result = pretty_table(String, data;
+                          backend = :html,
+                          highlighters = hl_row([1, 3, 5], HTMLDecoration(font_family = "monospace")),
+                          standalone = false)
+
+    @test result == expected
+
+    # hl_lt
+    # ==========================================================================
+
+    expected = """
+<table>
+  <tr class = "header headerLastRow">
+    <th style = "text-align: right;">Col. 1</th>
+    <th style = "text-align: right;">Col. 2</th>
+    <th style = "text-align: right;">Col. 3</th>
+    <th style = "text-align: right;">Col. 4</th>
+  </tr>
+  <tr>
+    <td style = "background: black; color: white; text-align: right;">1</td>
+    <td style = "background: black; color: white; text-align: right;">false</td>
+    <td style = "background: black; color: white; text-align: right;">1.0</td>
+    <td style = "background: black; color: white; text-align: right;">1</td>
+  </tr>
+  <tr>
+    <td style = "background: black; color: white; text-align: right;">2</td>
+    <td style = "background: black; color: white; text-align: right;">true</td>
+    <td style = "background: black; color: white; text-align: right;">2.0</td>
+    <td style = "background: black; color: white; text-align: right;">2</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right;">3</td>
+    <td style = "background: black; color: white; text-align: right;">false</td>
+    <td style = "text-align: right;">3.0</td>
+    <td style = "text-align: right;">3</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right;">4</td>
+    <td style = "background: black; color: white; text-align: right;">true</td>
+    <td style = "text-align: right;">4.0</td>
+    <td style = "text-align: right;">4</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right;">5</td>
+    <td style = "background: black; color: white; text-align: right;">false</td>
+    <td style = "text-align: right;">5.0</td>
+    <td style = "text-align: right;">5</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right;">6</td>
+    <td style = "background: black; color: white; text-align: right;">true</td>
+    <td style = "text-align: right;">6.0</td>
+    <td style = "text-align: right;">6</td>
+  </tr>
+</table>
+"""
+
+    result = pretty_table(String, data;
+                          backend = :html,
+                          highlighters = hl_lt(3, HTMLDecoration(color = "white",
+                                                                 background = "black")),
+                          standalone = false)
+
+    @test result == expected
+
+    # hl_leq
+    # ==========================================================================
+
+    expected = """
+<table>
+  <tr class = "header headerLastRow">
+    <th style = "text-align: right;">Col. 1</th>
+    <th style = "text-align: right;">Col. 2</th>
+    <th style = "text-align: right;">Col. 3</th>
+    <th style = "text-align: right;">Col. 4</th>
+  </tr>
+  <tr>
+    <td style = "background: black; color: white; text-align: right;">1</td>
+    <td style = "background: black; color: white; text-align: right;">false</td>
+    <td style = "background: black; color: white; text-align: right;">1.0</td>
+    <td style = "background: black; color: white; text-align: right;">1</td>
+  </tr>
+  <tr>
+    <td style = "background: black; color: white; text-align: right;">2</td>
+    <td style = "background: black; color: white; text-align: right;">true</td>
+    <td style = "background: black; color: white; text-align: right;">2.0</td>
+    <td style = "background: black; color: white; text-align: right;">2</td>
+  </tr>
+  <tr>
+    <td style = "background: black; color: white; text-align: right;">3</td>
+    <td style = "background: black; color: white; text-align: right;">false</td>
+    <td style = "background: black; color: white; text-align: right;">3.0</td>
+    <td style = "background: black; color: white; text-align: right;">3</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right;">4</td>
+    <td style = "background: black; color: white; text-align: right;">true</td>
+    <td style = "text-align: right;">4.0</td>
+    <td style = "text-align: right;">4</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right;">5</td>
+    <td style = "background: black; color: white; text-align: right;">false</td>
+    <td style = "text-align: right;">5.0</td>
+    <td style = "text-align: right;">5</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right;">6</td>
+    <td style = "background: black; color: white; text-align: right;">true</td>
+    <td style = "text-align: right;">6.0</td>
+    <td style = "text-align: right;">6</td>
+  </tr>
+</table>
+"""
+
+    result = pretty_table(String, data;
+                          backend = :html,
+                          highlighters = hl_leq(3, HTMLDecoration(color = "white",
+                                                                  background = "black")),
+                          standalone = false)
+
+    @test result == expected
+
+    # hl_gt
+    # ==========================================================================
+
+    expected = """
+<table>
+  <tr class = "header headerLastRow">
+    <th style = "text-align: right;">Col. 1</th>
+    <th style = "text-align: right;">Col. 2</th>
+    <th style = "text-align: right;">Col. 3</th>
+    <th style = "text-align: right;">Col. 4</th>
+  </tr>
+  <tr>
+    <td style = "text-align: right;">1</td>
+    <td style = "text-align: right;">false</td>
+    <td style = "text-align: right;">1.0</td>
+    <td style = "text-align: right;">1</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right;">2</td>
+    <td style = "text-align: right;">true</td>
+    <td style = "text-align: right;">2.0</td>
+    <td style = "text-align: right;">2</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right;">3</td>
+    <td style = "text-align: right;">false</td>
+    <td style = "text-align: right;">3.0</td>
+    <td style = "text-align: right;">3</td>
+  </tr>
+  <tr>
+    <td style = "background: black; color: white; text-align: right;">4</td>
+    <td style = "text-align: right;">true</td>
+    <td style = "background: black; color: white; text-align: right;">4.0</td>
+    <td style = "background: black; color: white; text-align: right;">4</td>
+  </tr>
+  <tr>
+    <td style = "background: black; color: white; text-align: right;">5</td>
+    <td style = "text-align: right;">false</td>
+    <td style = "background: black; color: white; text-align: right;">5.0</td>
+    <td style = "background: black; color: white; text-align: right;">5</td>
+  </tr>
+  <tr>
+    <td style = "background: black; color: white; text-align: right;">6</td>
+    <td style = "text-align: right;">true</td>
+    <td style = "background: black; color: white; text-align: right;">6.0</td>
+    <td style = "background: black; color: white; text-align: right;">6</td>
+  </tr>
+</table>
+"""
+
+    result = pretty_table(String, data;
+                          backend = :html,
+                          highlighters = hl_gt(3, HTMLDecoration(color = "white",
+                                                                 background = "black")),
+                          standalone = false)
+
+    @test result == expected
+
+    # hl_geq
+    # ==========================================================================
+
+    expected = """
+<table>
+  <tr class = "header headerLastRow">
+    <th style = "text-align: right;">Col. 1</th>
+    <th style = "text-align: right;">Col. 2</th>
+    <th style = "text-align: right;">Col. 3</th>
+    <th style = "text-align: right;">Col. 4</th>
+  </tr>
+  <tr>
+    <td style = "text-align: right;">1</td>
+    <td style = "text-align: right;">false</td>
+    <td style = "text-align: right;">1.0</td>
+    <td style = "text-align: right;">1</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right;">2</td>
+    <td style = "text-align: right;">true</td>
+    <td style = "text-align: right;">2.0</td>
+    <td style = "text-align: right;">2</td>
+  </tr>
+  <tr>
+    <td style = "background: black; color: white; text-align: right;">3</td>
+    <td style = "text-align: right;">false</td>
+    <td style = "background: black; color: white; text-align: right;">3.0</td>
+    <td style = "background: black; color: white; text-align: right;">3</td>
+  </tr>
+  <tr>
+    <td style = "background: black; color: white; text-align: right;">4</td>
+    <td style = "text-align: right;">true</td>
+    <td style = "background: black; color: white; text-align: right;">4.0</td>
+    <td style = "background: black; color: white; text-align: right;">4</td>
+  </tr>
+  <tr>
+    <td style = "background: black; color: white; text-align: right;">5</td>
+    <td style = "text-align: right;">false</td>
+    <td style = "background: black; color: white; text-align: right;">5.0</td>
+    <td style = "background: black; color: white; text-align: right;">5</td>
+  </tr>
+  <tr>
+    <td style = "background: black; color: white; text-align: right;">6</td>
+    <td style = "text-align: right;">true</td>
+    <td style = "background: black; color: white; text-align: right;">6.0</td>
+    <td style = "background: black; color: white; text-align: right;">6</td>
+  </tr>
+</table>
+"""
+
+    result = pretty_table(String, data;
+                          backend = :html,
+                          highlighters = hl_geq(3, HTMLDecoration(color = "white",
+                                                                  background = "black")),
+                          standalone = false)
+
+    @test result == expected
+
+    # hl_value
+    # ==========================================================================
+
+    expected = """
+<table>
+  <tr class = "header headerLastRow">
+    <th style = "text-align: right;">Col. 1</th>
+    <th style = "text-align: right;">Col. 2</th>
+    <th style = "text-align: right;">Col. 3</th>
+    <th style = "text-align: right;">Col. 4</th>
+  </tr>
+  <tr>
+    <td style = "text-align: right;">1</td>
+    <td style = "text-align: right;">false</td>
+    <td style = "text-align: right;">1.0</td>
+    <td style = "text-align: right;">1</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right;">2</td>
+    <td style = "text-align: right;">true</td>
+    <td style = "text-align: right;">2.0</td>
+    <td style = "text-align: right;">2</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right; text-decoration: line-through;">3</td>
+    <td style = "text-align: right;">false</td>
+    <td style = "text-align: right; text-decoration: line-through;">3.0</td>
+    <td style = "text-align: right; text-decoration: line-through;">3</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right;">4</td>
+    <td style = "text-align: right;">true</td>
+    <td style = "text-align: right;">4.0</td>
+    <td style = "text-align: right;">4</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right;">5</td>
+    <td style = "text-align: right;">false</td>
+    <td style = "text-align: right;">5.0</td>
+    <td style = "text-align: right;">5</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right;">6</td>
+    <td style = "text-align: right;">true</td>
+    <td style = "text-align: right;">6.0</td>
+    <td style = "text-align: right;">6</td>
+  </tr>
+</table>
+"""
+
+    result = pretty_table(String, data;
+                          backend = :html,
+                          highlighters = hl_value(3, HTMLDecoration(text_decoration = "line-through")),
+                          standalone = false)
+
+    @test result == expected
+end

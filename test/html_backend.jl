@@ -27,6 +27,10 @@ end
     include("./html_backend/headers.jl")
 end
 
+@testset "Highlighters" begin
+    include("./html_backend/highlighters.jl")
+end
+
 @testset "Linebreaks" begin
     include("./html_backend/linebreaks.jl")
 end
