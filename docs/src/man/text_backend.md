@@ -220,7 +220,7 @@ tuple of two `Int` with the number of rows and columns, respectively. If this
 keyword is not specified, then it is automatically obtained using the function
 `displaysize(io)`.
 
-```jldoctest
+```julia-repl
 julia> data = Any[1    false      1.0     0x01 ;
                   2     true      2.0     0x02 ;
                   3    false      3.0     0x03 ;
@@ -289,7 +289,7 @@ It is also possible to change the vertical cropping behavior to crop the table
 in the middle instead of the bottom. This can be accomplished by passing the
 option `vcrop_mode = :middle` to `pretty_table`:
 
-```jldoctest
+```julia-repl
 julia> data = Any[1    false      1.0     0x01 ;
                   2     true      2.0     0x02 ;
                   3    false      3.0     0x03 ;
