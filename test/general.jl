@@ -18,6 +18,10 @@ end
     include("./general/compact_types.jl")
 end
 
+@testset "Errors" begin
+    include("./general/errors.jl")
+end
+
 @testset "Table to file" begin
     include("./general/files.jl")
 end
