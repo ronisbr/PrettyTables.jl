@@ -183,3 +183,12 @@ The following table formats are available when using the LaTeX back-end:
 `tf_latex_simple`
 
 ![](./latex_backend/format_simple.png)
+
+`tf_latex_modern`
+
+![](./latex_backend/format_modern.png)
+
+!!! note
+
+    You need the LaTeX package `array` to use the vertical divisions with this
+    format.
