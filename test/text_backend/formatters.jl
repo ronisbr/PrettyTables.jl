@@ -96,6 +96,42 @@ end
     result = pretty_table(String, data, formatters = ft_round(1,[3,1]))
     @test result == expected
 
+    # Check if `ft_round` correctly avoid unsupported types.
+
+    vec = ["Test", :symbol, 'a', π, exp(1), log(19)]
+
+    expected = """
+┌────────┐
+│ Col. 1 │
+├────────┤
+│   Test │
+│ symbol │
+│      a │
+│   3.14 │
+│   2.72 │
+│   2.94 │
+└────────┘
+"""
+
+    result = pretty_table(String, vec, formatters = ft_round(2))
+    @test result == expected
+
+    expected = """
+┌─────────┐
+│  Col. 1 │
+├─────────┤
+│  "Test" │
+│ :symbol │
+│     'a' │
+│    3.14 │
+│    2.72 │
+│    2.94 │
+└─────────┘
+"""
+
+    result = pretty_table(String, vec, formatters = ft_round(2), renderer = :show)
+    @test result == expected
+
     # ft_printf
     # ==========================================================================
 
