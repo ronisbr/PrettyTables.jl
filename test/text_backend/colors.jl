@@ -478,3 +478,36 @@ end
 
     @test result == expected
 end
+
+@testset "Markdown" begin
+    expected = """
+┌────────┬────────────────────────┐
+│\e[1m Col. 1 \e[0m│\e[1m                 Col. 2 \e[0m│
+├────────┼────────────────────────┤
+│      1 │ \e[1m  Header\e[22m\e[0m               │
+│        │ \e[1m  ≡≡≡≡≡≡≡≡\e[22m\e[0m             │
+│        │ \e[0m                       │
+│        │   This is a paragraph.\e[0m │
+│        │ \e[0m                       │
+│        │ \e[36m  function test()\e[39m\e[0m      │
+│        │ \e[36m      return 1\e[39m\e[0m         │
+│        │ \e[36m  end\e[39m\e[0m                  │
+├────────┼────────────────────────┤
+│      2 │ \e[1m  Header\e[22m\e[0m               │
+│        │ \e[1m  ≡≡≡≡≡≡≡≡\e[22m\e[0m             │
+│        │ \e[0m                       │
+│        │   This is a paragraph.\e[0m │
+│        │ \e[0m                       │
+│        │ \e[36m  function test()\e[39m\e[0m      │
+│        │ \e[36m      return 1\e[39m\e[0m         │
+│        │ \e[36m  end\e[39m\e[0m                  │
+└────────┴────────────────────────┘
+"""
+
+    result = sprint((io)->pretty_table(io, data,
+                                       hlines = :all,
+                                       linebreaks = true),
+                    context = :color => true)
+
+    @test result == expected
+end
