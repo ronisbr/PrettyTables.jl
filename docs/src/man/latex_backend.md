@@ -58,9 +58,11 @@ passed as keywords when calling the function [`pretty_table`](@ref):
                           section [Alignment](@ref)). (**Default** = `:r`)
 * `table_type`: Select which LaTeX environment will be used to print the table.
                 Currently supported options are `:tabular` for `tabular` or
-                `:longtable` for `longtable`. (**Default** = `:tabular`)
-* `tf`: An instance of the structure [`LatexTableFormat`](@ref) that defines the
-        general format of the LaTeX table.
+                `:longtable` for `longtable`. If it is `nothing` then the
+                default option of the table format will be used.
+                (**Default** = `nothing`)
+* `tf`: An instance of the structure `LatexTableFormat` that defines the general
+        format of the LaTeX table.
 * `vlines`: This variable controls where the vertical lines will be drawn. It
             can be `:all`, `:none` or a vector of integers. In the first case
             (the default behavior), all vertical lines will be drawn. In the
@@ -73,10 +75,16 @@ passed as keywords when calling the function [`pretty_table`](@ref):
             variable `show_row_number`. Finally, for convenience, the left and
             right border can be drawn by adding the symbols `:begin` and `:end`
             to this vector, respectively. (**Default** = `:none`)
-* `wrap_table`: This variable controls whether to wrap the table in a `table`
-               environment. Defaults to `true`. When `false`, the printed
-               table begins with `\begin{tabular}` rather than `\begin{table}`.
-               Does not work when using the `:longtable` table type.
+* `wrap_table`: This variable controls whether to wrap the table in a
+                environment defined by the variable `wrap_table_environment`.
+                Defaults to `true`. When `false`, the printed table begins with
+                `\begin{tabular}`. This option does not work with `:longtable`.
+                If it is `nothing` then the default option of the table format
+                will be used. (**Default** = `nothing`)
+* `wrap_table_environment`: Environment that will be used to wrap the table if
+                            the option `wrap_table` is `true`. If it is
+                            `nothing` then the default option of the table
+                            format will be used. (**Default** = `nothing`)
                
 ## LaTeX highlighters
 

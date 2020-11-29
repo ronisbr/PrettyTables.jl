@@ -549,7 +549,9 @@ This backend produces LaTeX tables. This backend can be used by selecting
                           section `Alignment`). (**Default** = `:r`)
 * `table_type`: Select which LaTeX environment will be used to print the table.
                 Currently supported options are `:tabular` for `tabular` or
-                `:longtable` for `longtable`. (**Default** = `:tabular`)
+                `:longtable` for `longtable`. If it is `nothing` then the
+                default option of the table format will be used.
+                (**Default** = `nothing`)
 * `tf`: An instance of the structure `LatexTableFormat` that defines the general
         format of the LaTeX table.
 * `vlines`: This variable controls where the vertical lines will be drawn. It
@@ -567,8 +569,13 @@ This backend produces LaTeX tables. This backend can be used by selecting
 * `wrap_table`: This variable controls whether to wrap the table in a
                 environment defined by the variable `wrap_table_environment`.
                 Defaults to `true`. When `false`, the printed table begins with
-                `\begin{tabular}`. Does not work when using the `:longtable`
-                table type.
+                `\begin{tabular}`. This option does not work with `:longtable`.
+                If it is `nothing` then the default option of the table format
+                will be used. (**Default** = `nothing`)
+* `wrap_table_environment`: Environment that will be used to wrap the table if
+                            the option `wrap_table` is `true`. If it is
+                            `nothing` then the default option of the table
+                            format will be used. (**Default** = `nothing`)
 
 ## LaTeX highlighters
 

@@ -27,6 +27,11 @@ This structure defines the format of the LaTeX table.
                     cell.
 * `hlines`: Horizontal lines that must be drawn by default.
 * `vlines`: Vertical lines that must be drawn by default.
+* `table_type`: Select the type of table that should be used for this format.
+* `wrap_table`: Select if the table must be wrapped inside the environment
+                defined by `wrap_table_environment`.
+* `wrap_table_environment`: Environment in which the table will be wrapped if
+                            `wrap_table` is true.
 
 """
 @kwdef struct LatexTableFormat
@@ -41,6 +46,9 @@ This structure defines the format of the LaTeX table.
     subheader_envs::Vector{String}       = ["texttt"]
     hlines::Vector{Symbol}               = [:begin,:header,:end]
     vlines::Union{Symbol,Vector{Symbol}} = :none
+    table_type::Symbol                   = :tabular
+    wrap_table::Bool                     = true
+    wrap_table_environment::String       = "table"
 end
 
 """

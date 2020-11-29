@@ -17,10 +17,10 @@ function _pt_latex(io::IO, pinfo::PrintInfo;
                    noheader::Bool = false,
                    nosubheader::Bool = false,
                    row_number_alignment::Symbol = :r,
-                   table_type::Symbol = :tabular,
+                   table_type::Union{Nothing,Symbol} = nothing,
                    vlines::Union{Nothing,Symbol,AbstractVector} = nothing,
-                   wrap_table::Bool = true,
-                   wrap_table_environment::String = "table")
+                   wrap_table::Union{Nothing,Bool} = true,
+                   wrap_table_environment::Union{Nothing,String} = nothing)
 
     # Unpack fields of `pinfo`.
     data                    = pinfo.data
@@ -60,6 +60,11 @@ function _pt_latex(io::IO, pinfo::PrintInfo;
     right_vline    = tf.right_vline
     header_envs    = tf.header_envs
     subheader_envs = tf.subheader_envs
+
+    # Unpack fields of `tf` that depends on the user options.
+    isnothing(table_type)             && (table_type = tf.table_type)
+    isnothing(wrap_table)             && (wrap_table = tf.wrap_table)
+    isnothing(wrap_table_environment) && (wrap_table_environment = tf.wrap_table_environment)
 
     # Let's create a `IOBuffer` to write everything and then transfer to `io`.
     buf_io = IOBuffer()
