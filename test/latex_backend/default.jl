@@ -7,6 +7,26 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
+@testset "Default" begin
+    expected = """
+\\begin{table}
+  \\begin{tabular}{rrrr}
+    \\hline\\hline
+    \\textbf{Col. 1} & \\textbf{Col. 2} & \\textbf{Col. 3} & \\textbf{Col. 4} \\\\\\hline
+    1 & false & 1.0 & 1 \\\\
+    2 & true & 2.0 & 2 \\\\
+    3 & false & 3.0 & 3 \\\\
+    4 & true & 4.0 & 4 \\\\
+    5 & false & 5.0 & 5 \\\\
+    6 & true & 6.0 & 6 \\\\\\hline\\hline
+  \\end{tabular}
+\\end{table}
+"""
+
+    result = pretty_table(String, data, backend = :latex)
+    @test result == expected
+end
+
 @testset "Pre-defined formats" begin
 
     # Default
