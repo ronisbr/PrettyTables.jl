@@ -144,8 +144,6 @@ function ft_latex_sn(m_digits::AbstractVector{Int}, columns::AbstractVector{Int}
 
     if lc == 0
         return (v,i,j) -> begin
-            str::String = ""
-
             if typeof(v) <: Number
                 str = sprintf1("%." * string(m_digits[1]) * "g", v)
 
@@ -156,18 +154,16 @@ function ft_latex_sn(m_digits::AbstractVector{Int}, columns::AbstractVector{Int}
                     str = replace(str, r"e.*" => exp_str)
                     str = "\$" * str * "\$"
                 end
-            else
-                str = sprint(print, v)
-            end
 
-            return str
+                return str
+            else
+                return v
+            end
         end
     else
         return (v,i,j) -> begin
             @inbounds for k = 1:length(columns)
                 if j == columns[k]
-                    str::String = ""
-
                     if typeof(v) <: Number
                         str = sprintf1("%." * string(m_digits[k]) * "g", v)
 
@@ -178,11 +174,11 @@ function ft_latex_sn(m_digits::AbstractVector{Int}, columns::AbstractVector{Int}
                             str = replace(str, r"e.*" => exp_str)
                             str = "\$" * str * "\$"
                         end
-                    else
-                        str = sprint(print, v)
-                    end
 
-                    return str
+                        return str
+                    else
+                        return v
+                    end
                 end
             end
 
