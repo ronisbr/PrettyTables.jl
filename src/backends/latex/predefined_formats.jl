@@ -6,7 +6,7 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-export tf_latex_default, tf_latex_simple, tf_latex_modern
+export tf_latex_default, tf_latex_simple, tf_latex_modern, tf_latex_booktabs
 
 const tf_latex_default = LatexTableFormat()
 
@@ -32,4 +32,16 @@ const tf_latex_modern = LatexTableFormat(
     right_vline    = "!{\\vrule width 2pt}",
     header_envs    = ["textbf"],
     subheader_envs = ["texttt"]
+   )
+
+const tf_latex_booktabs = LatexTableFormat(
+    top_line       = "\\toprule",
+    header_line    = "\\midrule",
+    mid_line       = "\\midrule",
+    bottom_line    = "\\bottomrule",
+    left_vline     = "",
+    mid_vline      = "",
+    right_vline    = "",
+    header_envs    = ["textbf"],
+    subheader_envs = ["texttt"],
    )
