@@ -103,4 +103,29 @@ end
                           tf = tf_latex_modern)
 
     @test result == expected
+
+    # booktabs
+    # ==========================================================================
+
+    expected = """
+\\begin{table}
+  \\begin{tabular}{rrrr}
+    \\toprule
+    \\textbf{Col. 1} & \\textbf{Col. 2} & \\textbf{Col. 3} & \\textbf{Col. 4} \\\\\\midrule
+    1 & false & 1.0 & 1 \\\\\\midrule
+    2 & true & 2.0 & 2 \\\\\\midrule
+    3 & false & 3.0 & 3 \\\\\\midrule
+    4 & true & 4.0 & 4 \\\\\\midrule
+    5 & false & 5.0 & 5 \\\\\\midrule
+    6 & true & 6.0 & 6 \\\\\\bottomrule
+  \\end{tabular}
+\\end{table}
+"""
+
+    result = pretty_table(String, data,
+                          hlines = :all,
+                          vlines = :all,
+                          tf = tf_latex_booktabs)
+
+    @test result == expected
 end
