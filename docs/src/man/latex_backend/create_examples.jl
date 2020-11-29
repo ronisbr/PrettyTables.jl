@@ -44,6 +44,18 @@ run(`convert -density 150 -trim -strip format_modern.pdf format_modern.png`)
 run(`rm format_modern.tex`)
 run(`rm format_modern.pdf`)
 
+# Booktabs
+# ========
+
+run(`cp example_booktabs.tex format_booktabs.tex`)
+include_pt_in_file("format_booktabs.tex", "Table 1", data, backend = :latex,
+                   backup_file = false, tf = tf_latex_booktabs)
+run(`pdflatex format_booktabs.tex`)
+run(`pdflatex format_booktabs.tex`)
+run(`convert -density 150 -trim -strip format_booktabs.pdf format_booktabs.png`)
+run(`rm format_booktabs.tex`)
+run(`rm format_booktabs.pdf`)
+
 #                                 Highlighters
 # ==============================================================================
 
