@@ -1,7 +1,7 @@
 Pretty Tables
 =============
 
-![CI](https://github.com/ronisbr/PrettyTables.jl/workflows/CI/badge.svg)
+[![Build status](https://github.com/ronisbr/PrettyTables.jl/workflows/CI/badge.svg)](https://gitbub.com/ronisbr/PrettyTables.jl/actions)
 [![Build status](https://ci.appveyor.com/api/projects/status/r06s51ispe3cgmqp?svg=true)](https://ci.appveyor.com/project/ronisbr/prettytables-jl)
 [![codecov](https://codecov.io/gh/ronisbr/PrettyTables.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/ronisbr/PrettyTables.jl)
 [![Coverage Status](https://coveralls.io/repos/github/ronisbr/PrettyTables.jl/badge.svg?branch=master)](https://coveralls.io/github/ronisbr/PrettyTables.jl?branch=master)
