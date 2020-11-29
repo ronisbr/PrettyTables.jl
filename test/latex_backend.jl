@@ -11,6 +11,10 @@
     include("latex_backend/default.jl")
 end
 
+@testset "Formatters" begin
+    include("latex_backend/formatters.jl")
+end
+
 @testset "Issues" begin
     include("latex_backend/issues.jl")
 end
