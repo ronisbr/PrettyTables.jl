@@ -15,6 +15,10 @@ end
     include("latex_backend/formatters.jl")
 end
 
+@testset "Highlighters" begin
+    include("latex_backend/highlighters.jl")
+end
+
 @testset "Issues" begin
     include("latex_backend/issues.jl")
 end
