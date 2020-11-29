@@ -192,3 +192,11 @@ The following table formats are available when using the LaTeX back-end:
 
     You need the LaTeX package `array` to use the vertical divisions with this
     format.
+
+`tf_latex_booktabs`
+
+![](./latex_backend/format_booktabs.png)
+
+!!! note
+
+    You need the LaTeX package `booktabs` to render this format.
