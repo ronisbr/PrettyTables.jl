@@ -19,7 +19,8 @@ function _pt_latex(io::IO, pinfo::PrintInfo;
                    row_number_alignment::Symbol = :r,
                    table_type::Symbol = :tabular,
                    vlines::Union{Nothing,Symbol,AbstractVector} = nothing,
-                   wrap_table::Bool = true)
+                   wrap_table::Bool = true,
+                   wrap_table_environment::String = "table")
 
     # Unpack fields of `pinfo`.
     data                    = pinfo.data
@@ -146,7 +147,7 @@ function _pt_latex(io::IO, pinfo::PrintInfo;
     # ==========================================================================
 
     if table_type == :tabular && wrap_table == true
-        _aprintln(buf, "\\begin{table}", il, ns)
+        _aprintln(buf, "\\begin{" * wrap_table_environment * "}", il, ns)
         il += 1
         length(title) > 0 && _aprintln(buf, "\\caption{$title}", il, ns)
     end
@@ -378,7 +379,7 @@ function _pt_latex(io::IO, pinfo::PrintInfo;
 
     if table_type == :tabular && wrap_table == true
         il -= 1
-        _aprintln(buf, "\\end{table}", il, ns)
+        _aprintln(buf, "\\end{" * wrap_table_environment * "}", il, ns)
     end
 
     # Print the buffer into the io.
