@@ -70,10 +70,10 @@ function _pt_latex(io::IO, pinfo::PrintInfo;
     buf_io = IOBuffer()
     buf    = IOContext(buf_io)
 
-    table_type ∉ [:tabular, :longtable] &&
-    error("Unknown table type $table_type. Possible values are `:tabular` or `:longtable`.")
+    !haskey(_latex_table_env, table_type) &&
+    error("Unknown table type $table_type.")
 
-    table_env = table_type == :tabular ? "tabular" : "longtable"
+    table_env = _latex_table_env[table_type]
 
     !noheader && num_cols != header_num_cols &&
     error("The header length must be equal to the number of columns.")
@@ -151,7 +151,7 @@ function _pt_latex(io::IO, pinfo::PrintInfo;
     # Print LaTeX header
     # ==========================================================================
 
-    if table_type == :tabular && wrap_table == true
+    if table_type != :longtable && wrap_table == true
         _aprintln(buf, "\\begin{" * wrap_table_environment * "}", il, ns)
         il += 1
         length(title) > 0 && _aprintln(buf, "\\caption{$title}", il, ns)
@@ -382,7 +382,7 @@ function _pt_latex(io::IO, pinfo::PrintInfo;
     il -= 1
     _aprintln(buf, "\\end{$table_env}", il, ns)
 
-    if table_type == :tabular && wrap_table == true
+    if table_type != :longtable && wrap_table == true
         il -= 1
         _aprintln(buf, "\\end{" * wrap_table_environment * "}", il, ns)
     end

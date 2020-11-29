@@ -6,6 +6,11 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
+# Dictionary that translates table type to environment.
+const _latex_table_env = Dict(:array     => "array",
+                              :longtable => "longtable",
+                              :tabular   => "tabular")
+
 # Apply an alignment to a LaTeX table cell.
 function _latex_apply_cell_alignment(str::String, alignment::Symbol, j::Int,
                                      num_printed_cols::Int,
