@@ -25,8 +25,8 @@ function _str_latex_escaped(io::IO, s::AbstractString, esc::String = "")
         elseif !isoverlong(c) && !ismalformed(c)
             isprint(c)         ? print(io, c) :
             c <= '\x7f'        ? print(io, "\\x", string(UInt32(c), base = 16, pad = 2)) :
-            c <= '\uffff'      ? print(io, "\\u", string(UInt32(c), base = 16, pad = need_full_hex(peek(a)) ? 4 : 2)) :
-                                 print(io, "\\U", string(UInt32(c), base = 16, pad = need_full_hex(peek(a)) ? 8 : 4))
+            c <= '\uffff'      ? print(io, "\\u", string(UInt32(c), base = 16, pad = Base.need_full_hex(peek(a)) ? 4 : 2)) :
+                                 print(io, "\\U", string(UInt32(c), base = 16, pad = Base.need_full_hex(peek(a)) ? 8 : 4))
         else # malformed or overlong
             u = bswap(reinterpret(UInt32, c))
             while true
