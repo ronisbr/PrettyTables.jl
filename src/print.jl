@@ -201,6 +201,17 @@ This back-end produces text tables. This back-end can be used by selecting
                         intersection, the right intersection, and the row. If it
                         is `nothing`, then it will use the same format specified
                         in `tf`. (**Default** = `nothing`)
+* `column_alignment_regex`: A dictionary `Dict{Int, Regex}` with a set of
+                            regexes that is used to align the values in the
+                            columns (keys). The characters at the first regex
+                            match of each line in every cell of the column will
+                            be aligned. The regex matching is applied after the
+                            cell conversion to string, which includes the
+                            formatters. If no match is found for a specific
+                            line, then the beginning of the line is used.
+                            Example: `Dict(2 => r"\\.")` aligns the decimal
+                            point of the cells in the second column.
+                            (**Default** = `Dict{Int, Regex}()`)
 * `columns_width`: A set of integers specifying the width of each column. If the
                    width is equal or lower than 0, then it will be automatically
                    computed to fit the large cell in the column. If it is

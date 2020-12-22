@@ -43,6 +43,7 @@ include("tables.jl")
 # ========
 
 # Text backend
+include("backends/text/alignment.jl")
 include("backends/text/cell_parse.jl")
 include("backends/text/display.jl")
 include("backends/text/fill.jl")

@@ -17,6 +17,7 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                   autowrap::Bool = false,
                   body_hlines::Vector{Int} = Int[],
                   body_hlines_format::Union{Nothing,NTuple{4,Char}} = nothing,
+                  column_alignment_regex::Dict{Int,Regex} = Dict{Int,Regex}(),
                   continuation_row_alignment::Symbol = :c,
                   crop::Symbol = get(io, :limit, false) ? :both : :none,
                   crop_subheader::Bool = false,
@@ -229,6 +230,19 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                                             num_printed_rows,
                                             vcrop_mode)
 
+    # Cell alignment override
+    # --------------------------------------------------------------------------
+
+    # Compute the cells in which the alignment is overridden.
+    cell_alignment_override = _compute_cell_alignment_override(data,
+                                                               id_cols,
+                                                               id_rows,
+                                                               Δc,
+                                                               num_printed_cols,
+                                                               num_printed_rows,
+                                                               # Configurations.
+                                                               cell_alignment)
+
     # Row numbers
     # --------------------------------------------------------------------------
 
@@ -303,6 +317,22 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                                      noheader,
                                      renderer,
                                      vcrop_mode)
+
+    # Column alignment regex
+    # --------------------------------------------------------------------------
+
+    _apply_column_alignment_regex!(data_str,
+                                   data_len,
+                                   cols_width,
+                                   alignment,
+                                   column_alignment_regex,
+                                   id_cols,
+                                   id_rows,
+                                   Δc,
+                                   # Configurations.
+                                   cell_alignment_override,
+                                   fixed_col_width,
+                                   maximum_columns_width)
 
     # If the user wants all the columns with the same size, then select the
     # larger.
@@ -491,7 +521,7 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                                 # Configurations.
                                 alignment,
                                 body_hlines_format,
-                                cell_alignment,
+                                cell_alignment_override,
                                 continuation_row_alignment,
                                 ellipsis_line_skip,
                                 highlighters,

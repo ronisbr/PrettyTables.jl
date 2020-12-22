@@ -109,7 +109,7 @@ function _print_table_data(buf::IO,
                            # Configurations.
                            alignment::Vector{Symbol},
                            body_hlines_format::Tuple,
-                           cell_alignment::Tuple,
+                           cell_alignment_override::Dict{Tuple{Int, Int}, Symbol},
                            continuation_row_alignment::Symbol,
                            ellipsis_line_skip::Integer,
                            highlighters::Tuple,
@@ -199,6 +199,12 @@ function _print_table_data(buf::IO,
                             data_ij_len = 0
                         end
 
+                        # Check if the alignment of this cell is overridden by
+                        # the user.
+                        if haskey(cell_alignment_override, (ir, jc))
+                            alignment_ij = cell_alignment_override[(ir, jc)]
+                        end
+
                         # Process the string with the correct alignment and also
                         # apply the highlighters.
                         data_ij_str, data_ij_len, crayon_ij =
@@ -211,7 +217,6 @@ function _print_table_data(buf::IO,
                                                cols_width[j],
                                                crayon_ij,
                                                alignment_ij,
-                                               cell_alignment,
                                                highlighters)
 
                         _p!(display, crayon_ij, data_ij_str, false, data_ij_len)

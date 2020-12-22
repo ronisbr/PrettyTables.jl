@@ -106,7 +106,7 @@ end
 @inline _parse_cell_text(cell::UndefInitializer; kwargs...) = ["#undef"], [6], 6
 
 """
-    _process_cell_text(data::Any, i::Int, j::Int, data_cell::Bool, data_str::String, data_len::Int, col_width::Int, crayon::Crayon, alignment::Symbol, cell_alignment::Tuple, highlighters::Tuple)
+    _process_cell_text(data::Any, i::Int, j::Int, data_cell::Bool, data_str::String, data_len::Int, col_width::Int, crayon::Crayon, alignment::Symbol, highlighters::Tuple)
 
 Process the cell by applying the right alignment and also verifying the
 highlighters.
@@ -121,7 +121,6 @@ function _process_cell_text(data::Any,
                             col_width::Int,
                             crayon::Crayon,
                             alignment::Symbol,
-                            cell_alignment::Tuple,
                             highlighters::Tuple)
 
     if data_cell
@@ -133,18 +132,7 @@ function _process_cell_text(data::Any,
             end
         end
 
-        # Check for cell alignment override.
-        for f in cell_alignment
-            aux = f(_getdata(data), i, j)
-
-            if aux ∈ [:l, :c, :r, :L, :C, :R]
-                alignment = aux
-                break
-            end
-        end
-
-        # For Markdown cells, we will overwrite alignment and
-        # highlighters.
+        # For Markdown cells, we will overwrite alignment and highlighters.
         if isassigned(data, i, j) && (data[i,j] isa Markdown.MD)
             alignment = :l
             crayon = Crayon()
