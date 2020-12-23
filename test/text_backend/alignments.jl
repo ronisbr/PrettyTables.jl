@@ -165,7 +165,7 @@ end
 """
 
     result = pretty_table(String, matrix,
-                          column_alignment_regex = Dict(i => r"\." for i = 1:7))
+                          alignment_anchor_regex = Dict(i => r"\." for i = 1:7))
 
     @test result == expected
 
@@ -187,7 +187,7 @@ end
 """
 
     result = pretty_table(String, matrix,
-                          column_alignment_regex = Dict(4 => r"\."),
+                          alignment_anchor_regex = Dict(4 => r"\."),
                           filters_col = ((data,j)->j ∈ [1,4,5],))
 
     @test result == expected
@@ -210,7 +210,7 @@ end
 """
 
     result = pretty_table(String, matrix,
-                          column_alignment_regex = Dict(4 => r"\."),
+                          alignment_anchor_regex = Dict(4 => r"\."),
                           filters_col = ((data,j)->j ∈ [1,4,5],),
                           show_row_number = true)
 
@@ -231,7 +231,7 @@ end
 """
 
     result = pretty_table(String, matrix,
-                          column_alignment_regex = Dict(4 => r"\."),
+                          alignment_anchor_regex = Dict(4 => r"\."),
                           filters_col = ((data,j)->j ∈ [1,4,5],),
                           row_names = ["a" for i = 1:7],
                           show_row_number = true)
@@ -256,7 +256,7 @@ end
 """
 
     result = pretty_table(String, matrix,
-                          column_alignment_regex = Dict(4 => r"\."),
+                          alignment_anchor_regex = Dict(4 => r"\."),
                           columns_width = [-1, -1, -1, 20, -1, -1, -1],
                           filters_col = ((data,j)->j ∈ [1,4,5],))
 
@@ -278,7 +278,7 @@ end
 
     result = pretty_table(String, matrix,
                           alignment = :c,
-                          column_alignment_regex = Dict(4 => r"\."),
+                          alignment_anchor_regex = Dict(4 => r"\."),
                           columns_width = [-1, -1, -1, 20, -1, -1, -1],
                           filters_col = ((data,j)->j ∈ [1,4,5],))
 
@@ -300,7 +300,7 @@ end
 
     result = pretty_table(String, matrix,
                           alignment = :l,
-                          column_alignment_regex = Dict(4 => r"\."),
+                          alignment_anchor_regex = Dict(4 => r"\."),
                           columns_width = [-1, -1, -1, 20, -1, -1, -1],
                           filters_col = ((data,j)->j ∈ [1,4,5],))
 
@@ -324,7 +324,7 @@ end
 """
 
     result = pretty_table(String, matrix,
-                          column_alignment_regex = Dict(4 => r"\."),
+                          alignment_anchor_regex = Dict(4 => r"\."),
                           minimum_columns_width = 15,
                           filters_col = ((data,j)->j ∈ [1,4,5],))
 
@@ -345,7 +345,7 @@ end
 """
 
     result = pretty_table(String, matrix,
-                          column_alignment_regex = Dict(4 => r"\."),
+                          alignment_anchor_regex = Dict(4 => r"\."),
                           maximum_columns_width = 10,
                           filters_col = ((data,j)->j ∈ [1,4,5],))
 

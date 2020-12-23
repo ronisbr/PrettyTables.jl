@@ -14,10 +14,10 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                   rownum_header_crayon::Crayon = Crayon(bold = true),
                   text_crayon::Crayon = Crayon(),
                   omitted_cell_summary_crayon::Crayon = Crayon(foreground = :cyan),
+                  alignment_anchor_regex::Dict{Int,Regex} = Dict{Int,Regex}(),
                   autowrap::Bool = false,
                   body_hlines::Vector{Int} = Int[],
                   body_hlines_format::Union{Nothing,NTuple{4,Char}} = nothing,
-                  column_alignment_regex::Dict{Int,Regex} = Dict{Int,Regex}(),
                   continuation_row_alignment::Symbol = :c,
                   crop::Symbol = get(io, :limit, false) ? :both : :none,
                   crop_subheader::Bool = false,
@@ -321,11 +321,11 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     # Column alignment regex
     # --------------------------------------------------------------------------
 
-    _apply_column_alignment_regex!(data_str,
+    _apply_alignment_anchor_regex!(data_str,
                                    data_len,
                                    cols_width,
                                    alignment,
-                                   column_alignment_regex,
+                                   alignment_anchor_regex,
                                    id_cols,
                                    id_rows,
                                    Δc,

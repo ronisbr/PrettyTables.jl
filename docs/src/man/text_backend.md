@@ -17,8 +17,17 @@ passed as keywords when calling the function `pretty_table`:
 * `rownum_header_crayon`: Crayon for the header of the column with the row
                           numbers.
 * `text_crayon`: Crayon to print default text.
-* `alignment`: Select the alignment of the columns (see the section
-               [Alignment](@ref)).
+* `alignment_anchor_regex`: A dictionary `Dict{Int, Regex}` with a set of
+                            regexes that is used to align the values in the
+                            columns (keys). The characters at the first regex
+                            match (or anchor) of each line in every cell of the
+                            column will be aligned. The regex matching is
+                            applied after the cell conversion to string, which
+                            includes the formatters. If no match is found for a
+                            specific line, then the beginning of the line is
+                            used. Example: `Dict(2 => r"\\.")` aligns the
+                            decimal point of the cells in the second column.
+                            (**Default** = `Dict{Int, Regex}()`)
 * `autowrap`: If `true`, then the text will be wrapped on spaces to fit the
               column. Notice that this function requires `linebreaks = true` and
               the column must have a fixed size (see `columns_width`).
@@ -40,17 +49,6 @@ passed as keywords when calling the function `pretty_table`:
                     alignment of the cell `(i,j)` to `a` regardless of the
                     columns alignment selected. `a` must be a symbol like
                     specified in the section [Alignment](@ref).
-* `column_alignment_regex`: A dictionary `Dict{Int, Regex}` with a set of
-                            regexes that is used to align the values in the
-                            columns (keys). The characters at the first regex
-                            match of each line in every cell of the column will
-                            be aligned. The regex matching is applied after the
-                            cell conversion to string, which includes the
-                            formatters. If no match is found for a specific
-                            line, then the beginning of the line is used.
-                            Example: `Dict(2 => r"\\.")` aligns the decimal
-                            point of the cells in the second column.
-                            (**Default** = `Dict{Int, Regex}()`)
 * `columns_width`: A set of integers specifying the width of each column. If the
                    width is equal or lower than 0, then it will be automatically
                    computed to fit the large cell in the column. If it is

@@ -7,12 +7,13 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-# Apply the column alignment regex to the data after conversion to string.
-function _apply_column_alignment_regex!(data_str::Matrix{Vector{String}},
+# Apply the column alignment obtained from regex to the data after conversion to
+# string.
+function _apply_alignment_anchor_regex!(data_str::Matrix{Vector{String}},
                                         data_len::Matrix{Vector{Int}},
                                         cols_width::Vector{Int},
                                         alignment::Vector{Symbol},
-                                        alignment_regex::Dict{Int, Regex},
+                                        alignment_anchor_regex::Dict{Int, Regex},
                                         id_cols::Vector{Int},
                                         id_rows::Vector{Int},
                                         Δc::Int,
@@ -23,11 +24,11 @@ function _apply_column_alignment_regex!(data_str::Matrix{Vector{String}},
 
     num_printed_rows, ~ = size(data_str)
 
-    @inbounds for jc in keys(alignment_regex)
+    @inbounds for jc in keys(alignment_anchor_regex)
         j = findfirst(x->x == jc, id_cols)
         j === nothing && continue
         j += Δc
-        regex = alignment_regex[jc]
+        regex = alignment_anchor_regex[jc]
 
         # Store in which column we must align the match.
         alignment_column = 0
