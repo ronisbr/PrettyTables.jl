@@ -187,13 +187,15 @@ This back-end produces text tables. This back-end can be used by selecting
 * `alignment_anchor_regex`: A dictionary `Dict{Int, Regex}` with a set of
                             regexes that is used to align the values in the
                             columns (keys). The characters at the first regex
-                            match of each line in every cell of the column will
-                            be aligned. The regex matching is applied after the
-                            cell conversion to string, which includes the
-                            formatters. If no match is found for a specific
-                            line, then the beginning of the line is used.
-                            Example: `Dict(2 => r"\\.")` aligns the decimal
-                            point of the cells in the second column.
+                            match (or anchor) of each line in every cell of the
+                            column will be aligned. The regex matching is
+                            applied after the cell conversion to string, which
+                            includes the formatters. If no match is found for a
+                            specific line, then the alignment of this line
+                            depends on the options `fallback_alignment_anchor`
+                            and `fallback_alignment_anchor_override`. Example:
+                            `Dict(2 => r"\\.")` aligns the decimal point of the
+                            cells in the second column.
                             (**Default** = `Dict{Int, Regex}()`)
 * `autowrap`: If `true`, then the text will be wrapped on spaces to fit the
               column. Notice that this function requires `linebreaks = true` and
@@ -249,6 +251,19 @@ This back-end produces text tables. This back-end can be used by selecting
                         cropped. (**Default** = 0)
 * `equal_columns_width`: If `true`, then all the columns will have the same
                          width. (**Default** = `false`)
+* `fallback_alignment_anchor`: This keyword controls the line alignment when
+                               using the regex alignment anchors if a match is
+                               not found. If it is `:l`, then the left of the
+                               line will be aligned with the anchor. If it is
+                               `:c`, then the line center will be aligned with
+                               the anchor. Otherwise, the end of the line will
+                               be aligned with the anchor. (**Default** = `:l`)
+* `fallback_alignment_anchor_override`: A `Dict{Int, Symbol}` to override the
+                                        behavior of `fallback_alignment_anchor`
+                                        for a specific column. Example:
+                                        `Dict(3 => :c)` changes the fallback
+                                        alignment anchor behavior for `:c` only
+                                        for the column 3.
 * `highlighters`: An instance of `Highlighter` or a tuple with a list of
                   text highlighters (see the section `Text highlighters`).
 * `hlines`: This variable controls where the horizontal lines will be drawn. It

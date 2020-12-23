@@ -26,6 +26,8 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                   display_size::Tuple{Int,Int} = displaysize(io),
                   equal_columns_width::Bool = false,
                   ellipsis_line_skip::Integer = 0,
+                  fallback_alignment_anchor::Symbol = :l,
+                  fallback_alignment_anchor_override::Dict{Int, Symbol} = Dict{Int, Symbol}(),
                   highlighters::Union{Highlighter,Tuple} = (),
                   hlines::Union{Nothing,Symbol,AbstractVector} = nothing,
                   linebreaks::Bool = false,
@@ -325,12 +327,14 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                                    data_len,
                                    cols_width,
                                    alignment,
-                                   alignment_anchor_regex,
                                    id_cols,
                                    id_rows,
                                    Δc,
                                    # Configurations.
+                                   alignment_anchor_regex,
                                    cell_alignment_override,
+                                   fallback_alignment_anchor,
+                                   fallback_alignment_anchor_override,
                                    fixed_col_width,
                                    maximum_columns_width)
 

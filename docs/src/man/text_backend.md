@@ -86,6 +86,19 @@ passed as keywords when calling the function `pretty_table`:
                         cropped. (**Default** = 0)
 * `equal_columns_width`: If `true`, then all the columns will have the same
                          width. (**Default** = `false`)
+* `fallback_alignment_anchor`: This keyword controls the line alignment when
+                               using the regex alignment anchors if a match is
+                               not found. If it is `:l`, then the left of the
+                               line will be aligned with the anchor. If it is
+                               `:c`, then the line center will be aligned with
+                               the anchor. Otherwise, the end of the line will
+                               be aligned with the anchor. (**Default** = `:r`)
+* `fallback_alignment_anchor_override`: A `Dict{Int, Symbol}` to override the
+                                        behavior of `fallback_alignment_anchor`
+                                        for a specific column. Example:
+                                        `Dict(3 => :c)` changes the fallback
+                                        alignment anchor behavior for `:c` only
+                                        for the column 3.
 * `filters_row`: Filters for the rows (see the section [Filters](@ref)).
 * `filters_col`: Filters for the columns (see the section [Filters](@ref)).
 * `highlighters`: An instance of `Highlighter` or a tuple with a list of

@@ -13,12 +13,14 @@ function _apply_alignment_anchor_regex!(data_str::Matrix{Vector{String}},
                                         data_len::Matrix{Vector{Int}},
                                         cols_width::Vector{Int},
                                         alignment::Vector{Symbol},
-                                        alignment_anchor_regex::Dict{Int, Regex},
                                         id_cols::Vector{Int},
                                         id_rows::Vector{Int},
                                         Δc::Int,
                                         # Configurations.
+                                        alignment_anchor_regex::Dict{Int, Regex},
                                         cell_alignment_override::Dict{Tuple{Int, Int}, Symbol},
+                                        fallback_alignment_anchor::Symbol,
+                                        fallback_alignment_anchor_override::Dict{Int, Symbol},
                                         fixed_col_width::Vector{Bool},
                                         maximum_columns_width::Vector{Int})
 
@@ -39,15 +41,31 @@ function _apply_alignment_anchor_regex!(data_str::Matrix{Vector{String}},
             !isassigned(data_str, i, j) && continue
             haskey(cell_alignment_override, (id_rows[i], jc)) && continue
 
-            for line in data_str[i, j]
+            for l = 1:length(data_str[i, j])
+                line = data_str[i, j][l]
                 m = findfirst(regex, line)
 
                 if m !== nothing
                     alignment_column_i = first(m)
+                else
+                    # If a match is not found, then the alignment column
+                    # depends on the user selection.
 
-                    alignment_column_i > alignment_column &&
-                        (alignment_column = alignment_column_i)
+                    fallback = haskey(fallback_alignment_anchor_override, jc) ?
+                        fallback_alignment_anchor_override[jc] :
+                        fallback_alignment_anchor
+
+                    if fallback == :c
+                        alignment_column_i = div(data_len[i, j][l], 2)
+                    elseif fallback == :r
+                        alignment_column_i = data_len[i, j][l]
+                    else
+                        alignment_column_i = 1
+                    end
                 end
+
+                alignment_column_i > alignment_column &&
+                    (alignment_column = alignment_column_i)
             end
         end
 
@@ -68,7 +86,20 @@ function _apply_alignment_anchor_regex!(data_str::Matrix{Vector{String}},
                     match_column_k = first(m)
                     pad = alignment_column - match_column_k
                 else
-                    pad = alignment_column - 1
+                    # If a match is not found, then the alignment column
+                    # depends on the user selection.
+
+                    fallback = haskey(fallback_alignment_anchor_override, jc) ?
+                        fallback_alignment_anchor_override[jc] :
+                        fallback_alignment_anchor
+
+                    if fallback == :c
+                        pad = alignment_column - div(data_len[i, j][l], 2)
+                    elseif fallback == :r
+                        pad = alignment_column - data_len[i, j][l]
+                    else
+                        pad = alignment_column - 1
+                    end
                 end
 
                 # Make sure `pad` is positive.
