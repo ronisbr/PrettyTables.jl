@@ -18,7 +18,8 @@ Clean all global configurations to pretty print tables using the macro `@pt`.
 
 """
 macro ptconfclean()
-    return :(clear_pt_conf!(_pt_conf))
+    ex = :(clear_pt_conf!(PrettyTables._pt_conf))
+    return esc(ex)
 end
 
 """
@@ -51,7 +52,9 @@ macro ptconf(expr...)
         end
     end
 
-    return :(set_pt_conf!(_pt_conf, $(kws...)))
+    ex = :(set_pt_conf!(PrettyTables._pt_conf, $(kws...)))
+
+    return esc(ex)
 end
 
 """

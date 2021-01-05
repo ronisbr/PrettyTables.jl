@@ -153,3 +153,49 @@ end
     # section.
     @ptconfclean
 end
+
+@testset "Issue #107" begin
+    # To get the output of the macro @pt, we must redirect the stdout.
+    old_stdout = stdout
+    in, out    = redirect_stdout()
+
+    tf_compact2 = TextFormat(up_right_corner = '─',
+                   up_left_corner      = '─',
+                   bottom_left_corner  = '─',
+                   bottom_right_corner = '─',
+                   up_intersection     = '─',
+                   left_intersection   = '─',
+                   right_intersection  = '─',
+                   middle_intersection = '─',
+                   bottom_intersection = '─',
+                   column              = ' ',
+                   row                 = '─',
+                   hlines              = [:begin,:header,:end],
+                   vlines              = :all);
+
+    expected = """
+─────────────────────────────────────
+  Col. 1   Col. 2   Col. 3   Col. 4
+─────────────────────────────────────
+       1    false      1.0        1
+       2     true      2.0        2
+       3    false      3.0        3
+       4     true      4.0        4
+       5    false      5.0        5
+       6     true      6.0        6
+─────────────────────────────────────
+"""
+
+    @ptconf tf = tf_compact2
+    @pt data
+
+    result = String(readavailable(in))
+    @test result == expected
+
+    # Restore the original stdout.
+    close(in)
+    close(out)
+    redirect_stdout(old_stdout)
+
+    @ptconfclean
+end
