@@ -13,6 +13,7 @@ function _pt_latex(io::IO, pinfo::PrintInfo;
                    cell_alignment::Dict{Tuple{Int,Int},Symbol} = Dict{Tuple{Int,Int},Symbol}(),
                    highlighters::Union{LatexHighlighter,Tuple} = (),
                    hlines::Union{Nothing,Symbol,AbstractVector} = nothing,
+                   label::AbstractString = "",
                    longtable_footer::Union{Nothing,AbstractString} = nothing,
                    noheader::Bool = false,
                    nosubheader::Bool = false,
@@ -154,6 +155,11 @@ function _pt_latex(io::IO, pinfo::PrintInfo;
     if table_type != :longtable && wrap_table == true
         _aprintln(buf, "\\begin{" * wrap_table_environment * "}", il, ns)
         il += 1
+
+        # If available, add the label to the table.
+        !isempty(label) && _aprintln(buf, "\\label{" * label * "}", il)
+
+        # If available, add the title to the table.
         length(title) > 0 && _aprintln(buf, "\\caption{$title}", il, ns)
     end
 
@@ -172,6 +178,10 @@ function _pt_latex(io::IO, pinfo::PrintInfo;
     il += 1
 
     if table_type == :longtable
+        # If available, add the label to the table.
+        !isempty(label) && _aprintln(buf, "\\label{" * label * "}", il)
+
+        # If available, add the title to the table.
         length(title) > 0 && _aprintln(buf, "\\caption{$title}\\\\", il, ns)
     end
 

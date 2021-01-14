@@ -129,3 +129,59 @@ end
 
     @test result == expected
 end
+
+@testset "Caption" begin
+    expected = """
+\\begin{table}
+  \\label{tab:label}
+  \\caption{Table title}
+  \\begin{tabular}{rrrr}
+    \\hline\\hline
+    \\textbf{Col. 1} & \\textbf{Col. 2} & \\textbf{Col. 3} & \\textbf{Col. 4} \\\\\\hline
+    1 & false & 1.0 & 1 \\\\
+    2 & true & 2.0 & 2 \\\\
+    3 & false & 3.0 & 3 \\\\
+    4 & true & 4.0 & 4 \\\\
+    5 & false & 5.0 & 5 \\\\
+    6 & true & 6.0 & 6 \\\\\\hline\\hline
+  \\end{tabular}
+\\end{table}
+"""
+
+    result = pretty_table(String, data,
+                          backend = :latex,
+                          label = "tab:label",
+                          title = "Table title")
+
+    @test result == expected
+
+    expected = """
+\\begin{longtable}{rrrr}
+  \\label{tab:label}
+  \\caption{Table title}\\\\
+  \\hline\\hline
+  \\textbf{Col. 1} & \\textbf{Col. 2} & \\textbf{Col. 3} & \\textbf{Col. 4} \\\\\\hline
+  \\endfirsthead
+  \\hline\\hline
+  \\textbf{Col. 1} & \\textbf{Col. 2} & \\textbf{Col. 3} & \\textbf{Col. 4} \\\\\\hline
+  \\endhead
+  \\hline\\hline
+  \\endfoot
+  \\endlastfoot
+  1 & false & 1.0 & 1 \\\\
+  2 & true & 2.0 & 2 \\\\
+  3 & false & 3.0 & 3 \\\\
+  4 & true & 4.0 & 4 \\\\
+  5 & false & 5.0 & 5 \\\\
+  6 & true & 6.0 & 6 \\\\\\hline\\hline
+\\end{longtable}
+"""
+
+    result = pretty_table(String, data,
+                          backend = :latex,
+                          label = "tab:label",
+                          table_type = :longtable,
+                          title = "Table title")
+
+    @test result == expected
+end

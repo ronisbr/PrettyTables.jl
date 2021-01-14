@@ -566,6 +566,8 @@ This backend produces LaTeX tables. This backend can be used by selecting
       horizontal lines can be drawn even if `hlines` is `:none`.
 
   (**Default** = `nothing`)
+* `label`: The label of the table. If empty, then no label will be added.
+           (**Default** = "")
 * `longtable_footer`: The string that will be drawn in the footer of the tables
                       before a page break. This only works if `table_type` is
                       `:longtable`. If it is `nothing`, then no footer will be
