@@ -65,11 +65,11 @@ function _apply_alignment_anchor_regex!(data_str::Matrix{Vector{String}},
                         alignment_anchor_fallback
 
                     if fallback == :c
-                        alignment_column_i = div(data_len[i, j][l], 2)
+                        alignment_column_i = div(data_len[i, j][l], 2, RoundUp)
                     elseif fallback == :r
-                        alignment_column_i = data_len[i, j][l]
+                        alignment_column_i = data_len[i, j][l] + 1
                     else
-                        alignment_column_i = 1
+                        alignment_column_i = 0
                     end
                 end
 
@@ -111,11 +111,11 @@ function _apply_alignment_anchor_regex!(data_str::Matrix{Vector{String}},
                         alignment_anchor_fallback
 
                     if fallback == :c
-                        pad = alignment_column - div(data_len[i, j][l], 2)
+                        pad = alignment_column - div(data_len[i, j][l], 2, RoundUp)
                     elseif fallback == :r
-                        pad = alignment_column - data_len[i, j][l]
+                        pad = alignment_column - data_len[i, j][l] - 1
                     else
-                        pad = alignment_column - 1
+                        pad = alignment_column
                     end
                 end
 
