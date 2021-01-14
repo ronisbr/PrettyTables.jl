@@ -165,6 +165,11 @@ end
 """
 
     result = pretty_table(String, matrix,
+                          alignment_anchor_regex = Dict(0 => [r"\."]))
+
+    @test result == expected
+
+    result = pretty_table(String, matrix,
                           alignment_anchor_regex = Dict(i => [r"\."] for i = 1:7))
 
     @test result == expected
@@ -184,7 +189,7 @@ end
 """
 
     result = pretty_table(String, matrix,
-                          alignment_anchor_regex = Dict(i => [r"\.", r"^"] for i = 1:7))
+                          alignment_anchor_regex = Dict(0 => [r"\.", r"^"]))
 
     @test result == expected
 
@@ -428,7 +433,7 @@ end
 """
 
     result = pretty_table(String, matrix,
-                          alignment_anchor_regex = Dict(i => [r"\."] for i = 1:7),
+                          alignment_anchor_regex = Dict(0 => [r"\."]),
                           alignment_anchor_fallback_override = Dict(2 => :c, 4 => :r, 5 => :l))
 
     @test result == expected
@@ -448,7 +453,7 @@ end
 """
 
     result = pretty_table(String, matrix,
-                          alignment_anchor_regex = Dict(i => [r"\."] for i = 1:7),
+                          alignment_anchor_regex = Dict(0 => [r"\."]),
                           alignment_anchor_fallback = :c,
                           alignment_anchor_fallback_override = Dict(2 => :c, 4 => :r, 5 => :l))
 

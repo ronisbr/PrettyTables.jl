@@ -26,11 +26,22 @@ function _apply_alignment_anchor_regex!(data_str::Matrix{Vector{String}},
 
     num_printed_rows, ~ = size(data_str)
 
-    @inbounds for jc in keys(alignment_anchor_regex)
+    # If we have a key `0`, then it will be used to align all the columns.
+    if haskey(alignment_anchor_regex, 0)
+        alignment_keys = 1:maximum(id_cols)
+        global_regex   = true
+    else
+        alignment_keys = collect(keys(alignment_anchor_regex))
+        global_regex   = false
+    end
+
+    @inbounds for jc in alignment_keys
         j = findfirst(x->x == jc, id_cols)
         j === nothing && continue
         j += Δc
-        regex = alignment_anchor_regex[jc]
+
+        regex = global_regex ? alignment_anchor_regex[0] :
+                               alignment_anchor_regex[jc]
 
         # Store in which column we must align the match.
         alignment_column = 0

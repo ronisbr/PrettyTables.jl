@@ -208,7 +208,10 @@ This back-end produces text tables. This back-end can be used by selecting
                             formatters. If no match is found for a specific
                             line, then the alignment of this line depends on the
                             options `alignment_anchor_fallback` and
-                            `alignment_anchor_fallback_override`. Example:
+                            `alignment_anchor_fallback_override`. If the key `0`
+                            is present, then the related regexes will be used to
+                            align all the columns. In this case, all the other
+                            keys will be neglected. Example:
                             `Dict(2 => [r"\\."])` aligns the decimal point of
                             the cells in the second column.
                             (**Default** = `Dict{Int, Vector{Regex}}()`)
