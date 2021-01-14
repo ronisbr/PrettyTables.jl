@@ -14,7 +14,9 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                   rownum_header_crayon::Crayon = Crayon(bold = true),
                   text_crayon::Crayon = Crayon(),
                   omitted_cell_summary_crayon::Crayon = Crayon(foreground = :cyan),
-                  alignment_anchor_regex::Dict{Int,Regex} = Dict{Int,Regex}(),
+                  alignment_anchor_fallback::Symbol = :l,
+                  alignment_anchor_fallback_override::Dict{Int, Symbol} = Dict{Int, Symbol}(),
+                  alignment_anchor_regex::Dict{Int, T} where T <:AbstractVector{Regex} = Dict{Int, Vector{Regex}}(),
                   autowrap::Bool = false,
                   body_hlines::Vector{Int} = Int[],
                   body_hlines_format::Union{Nothing,NTuple{4,Char}} = nothing,
@@ -26,8 +28,6 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                   display_size::Tuple{Int,Int} = displaysize(io),
                   equal_columns_width::Bool = false,
                   ellipsis_line_skip::Integer = 0,
-                  fallback_alignment_anchor::Symbol = :l,
-                  fallback_alignment_anchor_override::Dict{Int, Symbol} = Dict{Int, Symbol}(),
                   highlighters::Union{Highlighter,Tuple} = (),
                   hlines::Union{Nothing,Symbol,AbstractVector} = nothing,
                   linebreaks::Bool = false,
@@ -331,10 +331,10 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                                    id_rows,
                                    Δc,
                                    # Configurations.
+                                   alignment_anchor_fallback,
+                                   alignment_anchor_fallback_override,
                                    alignment_anchor_regex,
                                    cell_alignment_override,
-                                   fallback_alignment_anchor,
-                                   fallback_alignment_anchor_override,
                                    fixed_col_width,
                                    maximum_columns_width)
 
