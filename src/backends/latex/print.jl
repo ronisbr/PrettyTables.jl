@@ -156,9 +156,6 @@ function _pt_latex(io::IO, pinfo::PrintInfo;
         _aprintln(buf, "\\begin{" * wrap_table_environment * "}", il, ns)
         il += 1
 
-        # If available, add the label to the table.
-        !isempty(label) && _aprintln(buf, "\\label{" * label * "}", il)
-
         # If available, add the title to the table.
         length(title) > 0 && _aprintln(buf, "\\caption{$title}", il, ns)
     end
@@ -178,9 +175,6 @@ function _pt_latex(io::IO, pinfo::PrintInfo;
     il += 1
 
     if table_type == :longtable
-        # If available, add the label to the table.
-        !isempty(label) && _aprintln(buf, "\\label{" * label * "}", il)
-
         # If available, add the title to the table.
         length(title) > 0 && _aprintln(buf, "\\caption{$title}\\\\", il, ns)
     end
@@ -389,10 +383,17 @@ function _pt_latex(io::IO, pinfo::PrintInfo;
     # Print LaTeX footer
     # ==========================================================================
 
+    # If available, add the label to the table if we are using `longtable`.
+    table_type == :longtable && !isempty(label) &&
+        _aprintln(buf, "\\label{" * label * "}", il)
+
     il -= 1
     _aprintln(buf, "\\end{$table_env}", il, ns)
 
     if table_type != :longtable && wrap_table == true
+        # If available, add the label to the table.
+        !isempty(label) && _aprintln(buf, "\\label{" * label * "}", il)
+
         il -= 1
         _aprintln(buf, "\\end{" * wrap_table_environment * "}", il, ns)
     end
