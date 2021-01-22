@@ -43,6 +43,7 @@ function _pt_html(io::IO, pinfo::PrintInfo;
     header_cell_alignment   = pinfo.header_cell_alignment
     cell_first_line_only    = pinfo.cell_first_line_only
     renderer                = pinfo.renderer
+    limit_printing          = pinfo.limit_printing
 
     # Unpack fields of `tf`.
     css         = tf.css
@@ -85,6 +86,7 @@ function _pt_html(io::IO, pinfo::PrintInfo;
                 header_str[j,i] =
                     _parse_cell_html(header[(ic-1)*header_num_rows + j],
                                      compact_printing = compact_printing,
+                                     limit_printing = limit_printing,
                                      renderer = Val(:print))
             end
         end
@@ -103,6 +105,7 @@ function _pt_html(io::IO, pinfo::PrintInfo;
             data_str[j,i] = _parse_cell_html(data_ij;
                                              cell_first_line_only = cell_first_line_only,
                                              compact_printing = compact_printing,
+                                             limit_printing = limit_printing,
                                              linebreaks = linebreaks,
                                              renderer = renderer)
         end

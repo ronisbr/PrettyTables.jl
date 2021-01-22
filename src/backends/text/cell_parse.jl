@@ -23,6 +23,7 @@ function _parse_cell_text(cell;
                           cell_first_line_only::Bool = false,
                           column_width::Integer = -1,
                           compact_printing::Bool = true,
+                          limit_printing::Bool = true,
                           linebreaks::Bool = false,
                           renderer::Union{Val{:print}, Val{:show}} = Val(:print),
                           kwargs...)
@@ -33,6 +34,7 @@ function _parse_cell_text(cell;
     cell_vstr = _render_text(renderer, cell,
                              compact_printing = compact_printing,
                              isstring = isstring,
+                             limit_printing = limit_printing,
                              linebreaks = linebreaks || cell_first_line_only)
 
     # Check if we must autowrap the text.

@@ -156,6 +156,7 @@ function _print_info(data, header::AbstractVecOrMat;
                                                   Dict{Tuple{Int,Int},Symbol},
                                                   Function,
                                                   Tuple} = nothing,
+                     limit_printing::Bool = true,
                      renderer::Symbol = :print,
                      row_names::Union{Nothing,AbstractVector} = nothing,
                      row_name_alignment::Symbol = :r,
@@ -317,7 +318,7 @@ function _print_info(data, header::AbstractVecOrMat;
                       row_name_column_title, alignment, cell_alignment,
                       formatters, compact_printing, title, title_alignment,
                       header_alignment, header_cell_alignment,
-                      cell_first_line_only, renderer_val)
+                      cell_first_line_only, renderer_val, limit_printing)
 
     return pinfo
 end
@@ -376,6 +377,7 @@ function _pt(io::IO, data, header::AbstractVecOrMat;
                                           Dict{Tuple{Int,Int},Symbol},
                                           Function,
                                           Tuple} = nothing,
+             limit_printing::Bool = true,
              renderer::Symbol = :print,
              row_names::Union{Nothing,AbstractVector} = nothing,
              row_name_alignment::Symbol = :r,
@@ -408,6 +410,7 @@ function _pt(io::IO, data, header::AbstractVecOrMat;
                         formatters              = formatters,
                         header_alignment        = header_alignment,
                         header_cell_alignment   = header_cell_alignment,
+                        limit_printing          = limit_printing,
                         renderer                = renderer,
                         row_names               = row_names,
                         row_name_alignment      = row_name_alignment,

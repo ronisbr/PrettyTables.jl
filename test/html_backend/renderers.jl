@@ -146,6 +146,57 @@
                           standalone = false)
 
     @test expected == result
+
+    # Limit printing
+    # --------------------------------------------------------------------------
+
+    matrix = [ [collect(1:1:30)] [collect(1:1:21)]
+               [collect(1:1:20)] [collect(1:1:2)]]
+
+    expected = """
+<table>
+  <tr class = "header headerLastRow">
+    <th style = "text-align: right;">Col. 1</th>
+    <th style = "text-align: right;">Col. 2</th>
+  </tr>
+  <tr>
+    <td style = "text-align: right;">[1, 2, 3, 4, 5, 6, 7, 8, 9, 10  …  21, 22, 23, 24, 25, 26, 27, 28, 29, 30]</td>
+    <td style = "text-align: right;">[1, 2, 3, 4, 5, 6, 7, 8, 9, 10  …  12, 13, 14, 15, 16, 17, 18, 19, 20, 21]</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right;">[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]</td>
+    <td style = "text-align: right;">[1, 2]</td>
+  </tr>
+</table>
+"""
+
+    result = pretty_table(String, matrix,
+                          backend = :html,
+                          standalone = false)
+    @test expected == result
+
+    expected = """
+<table>
+  <tr class = "header headerLastRow">
+    <th style = "text-align: right;">Col. 1</th>
+    <th style = "text-align: right;">Col. 2</th>
+  </tr>
+  <tr>
+    <td style = "text-align: right;">[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]</td>
+    <td style = "text-align: right;">[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right;">[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]</td>
+    <td style = "text-align: right;">[1, 2]</td>
+  </tr>
+</table>
+"""
+
+    result = pretty_table(String, matrix,
+                          backend = :html,
+                          limit_printing = false,
+                          standalone = false)
+    @test expected == result
 end
 
 @testset "Renderers - show" begin
@@ -288,5 +339,58 @@ end
                           standalone = false,
                           show_row_number = true)
 
+    @test expected == result
+
+    # Limit printing
+    # --------------------------------------------------------------------------
+
+    matrix = [ [collect(1:1:30)] [collect(1:1:21)]
+               [collect(1:1:20)] [collect(1:1:2)]]
+
+    expected = """
+<table>
+  <tr class = "header headerLastRow">
+    <th style = "text-align: right;">Col. 1</th>
+    <th style = "text-align: right;">Col. 2</th>
+  </tr>
+  <tr>
+    <td style = "text-align: right;">[1, 2, 3, 4, 5, 6, 7, 8, 9, 10  …  21, 22, 23, 24, 25, 26, 27, 28, 29, 30]</td>
+    <td style = "text-align: right;">[1, 2, 3, 4, 5, 6, 7, 8, 9, 10  …  12, 13, 14, 15, 16, 17, 18, 19, 20, 21]</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right;">[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]</td>
+    <td style = "text-align: right;">[1, 2]</td>
+  </tr>
+</table>
+"""
+
+    result = pretty_table(String, matrix,
+                          backend = :html,
+                          renderer = :show,
+                          standalone = false)
+    @test expected == result
+
+    expected = """
+<table>
+  <tr class = "header headerLastRow">
+    <th style = "text-align: right;">Col. 1</th>
+    <th style = "text-align: right;">Col. 2</th>
+  </tr>
+  <tr>
+    <td style = "text-align: right;">[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]</td>
+    <td style = "text-align: right;">[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]</td>
+  </tr>
+  <tr>
+    <td style = "text-align: right;">[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]</td>
+    <td style = "text-align: right;">[1, 2]</td>
+  </tr>
+</table>
+"""
+
+    result = pretty_table(String, matrix,
+                          backend = :html,
+                          limit_printing = false,
+                          renderer = :show,
+                          standalone = false)
     @test expected == result
 end

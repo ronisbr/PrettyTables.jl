@@ -92,6 +92,9 @@ is not compliant, then only the following types are supported:
       and the rest is discarded.
 
   (**Default** = `nothing`)
+* `limit_printing`: If `true`, then the cells will be converted using the
+                    property `:limit => true` of `IOContext`.
+                    (**Default** = `true`)
 * `renderer`: A symbol that indicates which function should be used to convert
               an object to a string. It can be `:print` to use the function
               `print` or `:show` to use the function `show`. Notice that this

@@ -83,6 +83,7 @@ function _fill_matrix_data!(header_str::Matrix{String},
                             compact_printing::Bool,
                             crop_subheader::Bool,
                             fixed_col_width::Vector{Bool},
+                            limit_printing::Bool,
                             linebreaks::Bool,
                             maximum_columns_width::Vector{Int},
                             noheader::Bool,
@@ -120,6 +121,7 @@ function _fill_matrix_data!(header_str::Matrix{String},
                                      column_width = -1,
                                      compact_printing = compact_printing,
                                      has_color = display.has_color,
+                                     limit_printing = limit_printing,
                                      linebreaks = false,
                                      renderer = Val(:print))
 
@@ -169,6 +171,7 @@ function _fill_matrix_data!(header_str::Matrix{String},
                                  column_width = columns_width[ic],
                                  compact_printing = compact_printing,
                                  has_color = display.has_color,
+                                 limit_printing = limit_printing,
                                  linebreaks = linebreaks,
                                  renderer = renderer)
 

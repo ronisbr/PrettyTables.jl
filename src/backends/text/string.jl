@@ -66,7 +66,7 @@ function _crop_str(str::String, crop_size::Int, lstr::Int = -1)
 end
 
 """
-    _render_text(T, v; compact_printing::Bool = true, isstring::Bool = false, linebreaks::Bool = false)
+    _render_text(T, v; compact_printing::Bool = true, isstring::Bool = false, limit_printing::Bool = true, linebreaks::Bool = false)
 
 Render the value `v` to strings using the rendered `T` to be displayed in the
 text back-end.
@@ -87,13 +87,23 @@ original data is not a string even if `v` is a string. Hence, the surrounding
 quotes added by `show` will be removed. This is required to correctly handle
 formatters.
 
+If `limit_printing` is `true`, then `v` will be converted to string using the
+property `:limit => true`.
+
 """
 @inline function _render_text(::Val{:print}, v;
                               compact_printing::Bool = true,
                               isstring::Bool = false,
+                              limit_printing::Bool = true,
                               linebreaks::Bool = false)
 
-    str = sprint(print, v; context = :compact => compact_printing)
+    # Create the context that will be used when rendering the cell. Notice that
+    # the `IOBuffer` will be neglected.
+    context = IOContext(stdout,
+                        :compact => compact_printing,
+                        :limit => limit_printing)
+
+    str = sprint(print, v; context = context)
 
     return _render_text(Val(:print), str;
                         compact_printing = compact_printing,
@@ -104,6 +114,7 @@ end
 @inline function _render_text(::Val{:print}, str::AbstractString;
                               compact_printing::Bool = true,
                               isstring::Bool = false,
+                              limit_printing::Bool = true,
                               linebreaks::Bool = false)
 
     if linebreaks
@@ -120,11 +131,18 @@ end
 @inline function _render_text(::Val{:show}, v;
                               compact_printing::Bool = true,
                               linebreaks::Bool = false,
+                              limit_printing::Bool = true,
                               isstring::Bool = false)
+
+    # Create the context that will be used when rendering the cell. Notice that
+    # the `IOBuffer` will be neglected.
+    context = IOContext(stdout,
+                        :compact => compact_printing,
+                        :limit => limit_printing)
 
     if v isa AbstractString
         aux  = linebreaks ? string.(split(v, '\n')) : [v]
-        vstr = sprint.(show, aux; context = :compact => compact_printing)
+        vstr = sprint.(show, aux; context = context)
 
         if !isstring
             for i = 1:length(vstr)
@@ -133,7 +151,7 @@ end
             end
         end
     else
-        str  = sprint(show, v; context = :compact => compact_printing)
+        str  = sprint(show, v; context = context)
         vstr = linebreaks ? string.(split(str, '\n')) : [str]
     end
 

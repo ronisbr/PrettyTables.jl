@@ -76,6 +76,7 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     header_cell_alignment   = pinfo.header_cell_alignment
     cell_first_line_only    = pinfo.cell_first_line_only
     renderer                = pinfo.renderer
+    limit_printing          = pinfo.limit_printing
 
     # Input variables verification and initial setup
     # ==========================================================================
@@ -314,6 +315,7 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                                      compact_printing,
                                      crop_subheader,
                                      fixed_col_width,
+                                     limit_printing,
                                      linebreaks,
                                      maximum_columns_width,
                                      noheader,
