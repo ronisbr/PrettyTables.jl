@@ -4,8 +4,44 @@ PrettyTables.jl Changelog
 Version 0.11.0
 --------------
 
+- ![BREAKING][badge-breaking] By default, all the cells are now rendered using
+  the option `:limit => true` of `IOContext`. To return to the old behavior, use
+  `limit_printing = false`.
+- ![Feature][badge-feature] HTML backend now supports row names.
+- ![Feature][badge-feature] LaTeX backend now supports row names.
+- ![Feature][badge-feature] A new LaTeX pre-defined format was added:
+  `tf_latex_modern`.
+- ![Feature][badge-feature] A new LaTeX pre-defined format was added:
+  `tf_latex_booktabs`.
+- ![Feature][badge-feature] The wrap table environment of LaTeX backend can now
+  be changed using the keyword `wrap_table_environment`.
+- ![Feature][badge-feature] A new table type of LaTeX backend was added:
+  `:array`.
+- ![Feature][badge-feature] In Text backend, it is now possible to align the
+  column cells using regexes (see `alignment_regex_anchor`).
+- ![Feature][badge-feature] It is now possible to select the table label in
+  LaTeX backend. (Issue [#103][gh-issue-103])
 - ![Enhancement][badge-enhancement] LaTeX tables can 
   now control whether to use the `table` environment or not.
+- ![Enhancement][badge-enhancement] HTML classes in CSS are now surrounded by
+  quotes.
+- ![Enhancement][badge-enhancement] An unnecessary space in HTML tags was
+  removed.
+- ![Enhancement][badge-enhancement] The color of omitted cell text in Text
+  backend was changed from red to cyan. (Issue [#94])
+- ![Enhancement][badge-enhancement] The compat bounds of Reexport.jl was
+  updated. (Issue [#105][gh-issue-105])
+- ![Bugfix][badge-bugfix] PrettyTables.jl now support Tables.jl that returns
+  tuples as columns. (Issue [#90][gh-issue-90])
+- ![Bugfix][badge-bugfix] The option `sortkeys` can now be used when printing
+  dictionaries using HTML backend.
+- ![Bugfix][badge-bugfix] The first header is now correctly set when using
+  `longtable` in LaTeX backend, avoiding multiple entries in list of tables.
+  (Issue [#95][gh-issue-95])
+- ![Bugfix][badge-bugfix] The formatter `ft_latex_sn` now only modifies
+  `Number`.
+- ![Bugfix][badge-bugfix] The arguments of `@ptconf` was not being escaped.
+  (Issue [#107][gh-issue-107])
 
 Version 0.10.1
 --------------
@@ -401,6 +437,11 @@ Version 0.1.0
 [gh-issue-68]: https://github.com/ronisbr/PrettyTables.jl/issues/68
 [gh-issue-70]: https://github.com/ronisbr/PrettyTables.jl/issues/70
 [gh-issue-79]: https://github.com/ronisbr/PrettyTables.jl/issues/79
+[gh-issue-90]: https://github.com/ronisbr/PrettyTables.jl/issues/90
+[gh-issue-95]: https://github.com/ronisbr/PrettyTables.jl/issues/95
+[gh-issue-103]: https://github.com/ronisbr/PrettyTables.jl/issues/103
+[gh-issue-105]: https://github.com/ronisbr/PrettyTables.jl/issues/105
+[gh-issue-107]: https://github.com/ronisbr/PrettyTables.jl/issues/107
 
 [gh-pr-5]: https://github.com/ronisbr/PrettyTables.jl/pull/5
 [gh-pr-8]: https://github.com/ronisbr/PrettyTables.jl/pull/8
