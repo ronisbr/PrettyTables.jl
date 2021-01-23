@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<meta charset="UTF-8">
+<style>
+table, td, th {
+    border-collapse: collapse;
+    font-family: sans-serif;
+}
+
+td, th {
+    border-bottom: 0;
+    padding: 4px
+}
+
+tr:nth-child(odd) {
+    background: #eee;
+}
+
+tr:nth-child(even) {
+    background: #fff;
+}
+
+tr.header {
+    background: navy !important;
+    color: white;
+    font-weight: bold;
+}
+
+tr.subheader {
+    background: lightgray !important;
+    color: black;
+}
+
+tr.headerLastRow {
+    border-bottom: 2px solid black;
+}
+
+th.rowNumber, td.rowNumber {
+    text-align: right;
+}
+
+</style>
+<body>
+<table>
+<tr class = header>
+<th style = "text-align: right; ">Header 1</th>
+<th style = "text-align: right; ">Header 2</th>
+<th style = "text-align: right; ">Header 3</th>
+<th style = "text-align: right; ">Header 4</th>
+</tr>
+<tr class = "subheader headerLastRow">
+<th style = "text-align: right; ">Sub 1</th>
+<th style = "text-align: right; ">Sub 2</th>
+<th style = "text-align: right; ">Sub 3</th>
+<th style = "text-align: right; ">Sub 4</th>
+</tr>
+<tr>
+<td style = "text-align: right; ">true</td>
+<td style = "text-align: right; ">100.0</td>
+<td style = "text-align: right; ">32896</td>
+<td style = "text-align: right; ">String</td>
+</tr>
+<tr>
+<td style = "text-align: right; ">false</td>
+<td style = "text-align: right; ">200.0</td>
+<td style = "text-align: right; ">2056</td>
+<td style = "text-align: right; ">String</td>
+</tr>
+<tr>
+<td style = "text-align: right; ">true</td>
+<td style = "text-align: right; ">300.0</td>
+<td style = "text-align: right; ">6534</td>
+<td style = "text-align: right; ">String</td>
+</tr>
+<tr>
+<td style = "text-align: right; ">false</td>
+<td style = "text-align: right; ">400.0</td>
+<td style = "text-align: right; ">6535</td>
+<td style = "text-align: right; ">String</td>
+</tr>
+</table>
+</body>
+</html>
