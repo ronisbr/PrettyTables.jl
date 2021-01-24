@@ -7,6 +7,64 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
+# Flush the content of `buf` to `io`.
+function _flush_buffer!(io::IO,
+                        buf::IO,
+                        overwrite::Bool,
+                        newline_at_end::Bool,
+                        num_displayed_rows::Int)
+
+    # If `overwrite` is `true`, then delete the exact number of lines of the
+    # table. This can be used to replace the table in the display continuously.
+    str_overwrite = overwrite ? "\e[1F\e[2K"^(num_displayed_rows - 1) : ""
+
+    output_str = String(take!(buf))
+
+    # Check if the user does not want a newline at end.
+    !newline_at_end && (output_str = chomp(output_str))
+
+    print(io, str_overwrite * output_str)
+
+    return nothing
+end
+
+function _print_omitted_cell_summary(buf::IO,
+                                     has_color::Bool,
+                                     num_omitted_cols::Int,
+                                     num_omitted_rows::Int,
+                                     omitted_cell_summary_crayon::Crayon,
+                                     show_omitted_cell_summary::Bool,
+                                     table_width::Int)
+
+    if show_omitted_cell_summary && ((num_omitted_cols + num_omitted_rows) > 0)
+        cs_str_col = ""
+        cs_str_and = ""
+        cs_str_row = ""
+
+        if num_omitted_cols > 0
+            cs_str_col = string(num_omitted_cols)
+            cs_str_col *= num_omitted_cols > 1 ? " columns" : " column"
+        end
+
+        if num_omitted_rows > 0
+            cs_str_row = string(num_omitted_rows)
+            cs_str_row *= num_omitted_rows > 1 ? " rows" : " row"
+
+            num_omitted_cols > 0 && (cs_str_and = " and ")
+        end
+
+        cs_str = cs_str_col * cs_str_and * cs_str_row * " omitted"
+
+        textwidth(cs_str) < table_width &&
+            (cs_str = _str_aligned(cs_str, :r, table_width)[1])
+
+        has_color && print(buf, omitted_cell_summary_crayon)
+        print(buf, cs_str)
+        has_color && print(buf, _reset_crayon)
+        println(buf)
+    end
+end
+
 # Print the table header without the horizontal lines.
 function _print_table_header!(buf::IO,
                               display::Display,

@@ -373,35 +373,17 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     # Process the title
     # --------------------------------------------------------------------------
 
-    # Process the title separating the tokens.
-    title_tokens = String[]
+    title_tokens = _tokenize_title(title,
+                                   display.size[2],
+                                   table_width,
+                                   # Configurations
+                                   title_alignment,
+                                   title_autowrap,
+                                   title_same_width_as_table)
 
-    if length(title) > 0
-        # Compute the title width.
-        title_width = title_same_width_as_table ? table_width : display.size[2]
-
-        # If the title width is not higher than 0, then we should only print the
-        # title.
-        if title_width ≤ 0
-            push!(title_tokens, title)
-
-        # Otherwise, we must check for the alignments.
-        else
-            title_tokens_raw = string.(split(title, '\n'))
-            title_autowrap && (title_tokens_raw = _str_autowrap(title_tokens_raw, title_width))
-            num_tokens = length(title_tokens_raw)
-
-            @inbounds for i = 1:num_tokens
-                token = title_tokens_raw[i]
-                token_str = _str_aligned(token, title_alignment, title_width)[1]
-                push!(title_tokens, token_str)
-            end
-
-            # Sum the number of lines in the title to the number of lines that
-            # must be available at the beginning of the table.
-            crop_num_lines_at_beginning += length(title_tokens_raw)
-        end
-    end
+    # Sum the number of lines in the title to the number of lines that must be
+    # available at the beginning of the table.
+    crop_num_lines_at_beginning += length(title_tokens)
 
     # Compute the table data printing recipe
     # --------------------------------------------------------------------------
@@ -437,23 +419,7 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     # Title
     # ==========================================================================
 
-    # Process the title separating the tokens.
-    if length(title) > 0
-        # Print the title.
-        display.has_color && print(buf, title_crayon)
-        num_tokens = length(title_tokens)
-
-        @inbounds for i = 1:num_tokens
-            print(buf, rstrip(title_tokens[i]))
-
-            # In the last line we must not add the new line character
-            # because we need to reset the crayon first if the display
-            # supports colors.
-            i != num_tokens && println(buf)
-        end
-        display.has_color && print(buf, _reset_crayon)
-        println(buf)
-    end
+    _print_title(buf, title_tokens, display.has_color, title_crayon)
 
     # If there is no column or row to be printed, then just exit.
     if (num_printed_cols == 0) || (num_printed_rows == 0)
@@ -551,54 +517,20 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     # Summary of the omitted cells
     # ==========================================================================
 
-    if show_omitted_cell_summary && ((num_omitted_cols + num_omitted_rows) > 0)
-        cs_str_col = ""
-        cs_str_and = ""
-        cs_str_row = ""
-
-        if num_omitted_cols > 0
-            cs_str_col = string(num_omitted_cols)
-            cs_str_col *= num_omitted_cols > 1 ? " columns" : " column"
-        end
-
-        if num_omitted_rows > 0
-            cs_str_row = string(num_omitted_rows)
-            cs_str_row *= num_omitted_rows > 1 ? " rows" : " row"
-
-            num_omitted_cols > 0 && (cs_str_and = " and ")
-        end
-
-        cs_str = cs_str_col * cs_str_and * cs_str_row * " omitted"
-
-        textwidth(cs_str) < table_width &&
-            (cs_str = _str_aligned(cs_str, :r, table_width)[1])
-
-        display.has_color && print(buf, omitted_cell_summary_crayon)
-        print(buf, cs_str)
-        display.has_color && print(buf, _reset_crayon)
-        println(buf)
-    end
+    _print_omitted_cell_summary(buf,
+                                display.has_color,
+                                num_omitted_cols,
+                                num_omitted_rows,
+                                omitted_cell_summary_crayon,
+                                show_omitted_cell_summary,
+                                table_width)
 
     @label print_to_output
 
-    # Overwrite table
-    # ==========================================================================
-
-    # If `overwrite` is `true`, then delete the exact number of lines of the
-    # table. This can be used to replace the table in the display continuously.
-
-    str_overwrite = overwrite ? "\e[1F\e[2K"^(display.row - 1) : ""
-
     # Print the buffer
     # ==========================================================================
-    output_str = String(take!(buf_io))
 
-    # Check if the user does not want a newline at end.
-    if !newline_at_end && (output_str[end] == '\n')
-        output_str = first(output_str, length(output_str)-1)
-    end
-
-    print(io, str_overwrite * output_str)
+    _flush_buffer!(io, buf_io, overwrite, newline_at_end, display.row)
 
     return nothing
 end

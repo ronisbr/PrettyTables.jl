@@ -53,6 +53,7 @@ include("backends/text/print.jl")
 include("backends/text/print_aux.jl")
 include("backends/text/recipes.jl")
 include("backends/text/string.jl")
+include("backends/text/title.jl")
 
 # HTML backend
 include("backends/html/cell_parse.jl")
