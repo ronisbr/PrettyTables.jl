@@ -86,11 +86,6 @@ function _fill_matrix_data!(header_str::Matrix{String},
     num_printed_rows, num_printed_cols = size(data_str)
     header_num_rows, ~ = size(header_str)
 
-    # Regex to remove ANSI escape sequences so that we can compute the printable
-    # size of the cell. This is required for computing the width of Markdown
-    # cells.
-    r_ansi_escape = r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])"
-
     # This variable stores the predicted table width. If the user wants
     # horizontal cropping, then it can be use to avoid unnecessary processing of
     # columns that will not be displayed.
@@ -169,10 +164,9 @@ function _fill_matrix_data!(header_str::Matrix{String},
             num_processed_rows += length(data_str[j,i])
 
             if data_ij isa Markdown.MD
-                for line in data_str[j,i]
-                    str_p = replace(line, r_ansi_escape => "")
-                    largest_cell_width = max(largest_cell_width, textwidth(str_p))
-                end
+                largest_cell_width =
+                    max(largest_cell_width,
+                        maximum(_printable_textwidth.(data_str[j,i])))
             else
                 largest_cell_width = max(largest_cell_width,
                                          maximum(textwidth.(data_str[j,i])))
