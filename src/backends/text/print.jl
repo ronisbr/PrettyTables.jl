@@ -223,14 +223,14 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     # --------------------------------------------------------------------------
 
     if show_row_number
-        @inbounds _fill_row_number_column!(header_str,
-                                           data_str,
-                                           id_rows,
-                                           jvec,
-                                           jrvec,
-                                           noheader,
-                                           num_rows,
-                                           row_number_column_title)
+        _fill_row_number_column!(header_str,
+                                 data_str,
+                                 id_rows,
+                                 jvec,
+                                 jrvec,
+                                 noheader,
+                                 num_rows,
+                                 row_number_column_title)
 
         # Add information about the row number column to the variables.
         push!(alignment_add, row_number_alignment)
@@ -240,15 +240,15 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     # --------------------------------------------------------------------------
 
     if show_row_names
-        @inbounds _fill_row_name_column!(header_str,
-                                         data_str,
-                                         row_names,
-                                         jvec,
-                                         jrvec,
-                                         Δc,
-                                         compact_printing,
-                                         renderer,
-                                         row_name_column_title)
+        _fill_row_name_column!(header_str,
+                               data_str,
+                               row_names,
+                               jvec,
+                               jrvec,
+                               Δc,
+                               compact_printing,
+                               renderer,
+                               row_name_column_title)
 
         # Add information about the row name column to the variables.
         push!(alignment_add, row_name_alignment)
@@ -260,27 +260,27 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     # --------------------------------------------------------------------------
 
     num_printed_cols, num_printed_rows =
-        @inbounds _fill_matrix_data!(header_str,
-                                     data_str,
-                                     id_cols,
-                                     jvec,
-                                     jrvec,
-                                     Δc,
-                                     data,
-                                     header,
-                                     formatters,
-                                     display,
-                                     # Configuration options.
-                                     autowrap,
-                                     cell_first_line_only,
-                                     columns_width,
-                                     compact_printing,
-                                     crop_subheader,
-                                     limit_printing,
-                                     linebreaks,
-                                     noheader,
-                                     renderer,
-                                     vcrop_mode)
+        _fill_matrix_data!(header_str,
+                           data_str,
+                           id_cols,
+                           jvec,
+                           jrvec,
+                           Δc,
+                           data,
+                           header,
+                           formatters,
+                           display,
+                           # Configuration options.
+                           autowrap,
+                           cell_first_line_only,
+                           columns_width,
+                           compact_printing,
+                           crop_subheader,
+                           limit_printing,
+                           linebreaks,
+                           noheader,
+                           renderer,
+                           vcrop_mode)
 
     # Column alignment regex
     # --------------------------------------------------------------------------

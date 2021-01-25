@@ -96,7 +96,7 @@ function _fill_matrix_data!(header_str::Matrix{String},
     # columns that will not be displayed.
     pred_tab_width = 0
 
-    for i = (1+Δc):num_printed_cols
+    @inbounds for i = (1+Δc):num_printed_cols
         # Here we store the number of processed rows. This is used to save
         # processing if the user wants to crop the output and has cells with
         # multiple lines.
@@ -222,11 +222,11 @@ function _fill_row_number_column!(header_str::Matrix{String},
     num_printed_rows == 0 && return nothing
 
     # Set the header of the row column.
-    header_str[1,1]      = row_number_column_title
-    header_str[2:end,1] .= ""
+    @inbounds header_str[1,1]      = row_number_column_title
+    @inbounds header_str[2:end,1] .= ""
 
     # Set the data of the row column.
-    for i = 1:num_printed_rows
+    @inbounds for i = 1:num_printed_rows
         j  = jvec[i]
         jr = jrvec[i]
 
@@ -252,14 +252,15 @@ function _fill_row_name_column!(header_str::Matrix{String},
     num_printed_rows == 0 && return nothing
 
     # Escape the row name column title.
-    header_str[1,Δc]      = first(_render_text(Val(:print),
-                                               row_name_column_title,
-                                               compact_printing = compact_printing,
-                                               linebreaks = false))
-    header_str[2:end,Δc] .= ""
+    @inbounds header_str[1,Δc] =
+        first(_render_text(Val(:print),
+                           row_name_column_title,
+                           compact_printing = compact_printing,
+                           linebreaks = false))
+    @inbounds header_str[2:end,Δc] .= ""
 
     # Convert the row names to string.
-    for i = 1:num_printed_rows
+    @inbounds for i = 1:num_printed_rows
         j  = jvec[i]
         jr = jrvec[i]
 
