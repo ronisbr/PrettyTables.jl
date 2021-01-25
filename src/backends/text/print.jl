@@ -251,9 +251,7 @@ function _pt_text(io::IO, pinfo::PrintInfo;
 
     if show_row_number
         @inbounds _fill_row_number_column!(header_str,
-                                           header_len,
                                            data_str,
-                                           data_len,
                                            cols_width,
                                            id_rows,
                                            jvec,
@@ -271,10 +269,7 @@ function _pt_text(io::IO, pinfo::PrintInfo;
 
     if show_row_names
         @inbounds _fill_row_name_column!(header_str,
-                                         header_len,
                                          data_str,
-                                         data_len,
-                                         cols_width,
                                          row_names,
                                          jvec,
                                          jrvec,
@@ -294,13 +289,8 @@ function _pt_text(io::IO, pinfo::PrintInfo;
 
     num_printed_cols, num_printed_rows =
         @inbounds _fill_matrix_data!(header_str,
-                                     header_len,
                                      data_str,
-                                     data_len,
-                                     cols_width,
                                      id_cols,
-                                     id_rows,
-                                     num_lines_in_row,
                                      jvec,
                                      jrvec,
                                      Δc,
@@ -317,10 +307,28 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                                      fixed_col_width,
                                      limit_printing,
                                      linebreaks,
-                                     maximum_columns_width,
                                      noheader,
                                      renderer,
                                      vcrop_mode)
+
+    # Update the table lengths
+    # --------------------------------------------------------------------------
+
+    _update_text_table_lengths!(header_str,
+                                header_len,
+                                data_str,
+                                data_len,
+                                id_cols,
+                                Δc,
+                                cols_width,
+                                num_lines_in_row,
+                                # Configurations
+                                columns_width,
+                                crop_subheader,
+                                fixed_col_width,
+                                maximum_columns_width,
+                                minimum_columns_width,
+                                noheader)
 
     # Column alignment regex
     # --------------------------------------------------------------------------
@@ -411,7 +419,6 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                                 noheader,
                                 show_omitted_cell_summary,
                                 vcrop_mode)
-
 
     #                           Print the table
     # ==========================================================================

@@ -10,11 +10,8 @@
 """
     _parse_cell_text(cell::T; kwargs...)
 
-Parse the table cell `cell` of type `T`. This function must return:
-
-* A vector of `String` with the parsed cell text, one component per line.
-* A vector with the length of each parsed line.
-* The necessary width for the cell.
+Parse the table cell `cell` of type `T` and return a vector of `String` with the
+parsed cell text, one component per line.
 
 """
 function _parse_cell_text(cell;
@@ -40,16 +37,10 @@ function _parse_cell_text(cell;
     # Check if we must autowrap the text.
     autowrap && (cell_vstr = _str_autowrap(cell_vstr, column_width))
 
-    if cell_first_line_only
-        cell_vstr  = [first(cell_vstr)]
-        cell_lstr  = [textwidth(first(cell_vstr))]
-        cell_width = first(cell_lstr)
-    else
-        cell_lstr  = textwidth.(cell_vstr)
-        cell_width = maximum(cell_lstr)
-    end
+    # Check if the user only wants the first line.
+    cell_first_line_only && (cell_vstr  = [first(cell_vstr)])
 
-    return cell_vstr, cell_lstr, cell_width
+    return cell_vstr
 end
 
 function _parse_cell_text(cell::Markdown.MD;
@@ -77,35 +68,30 @@ function _parse_cell_text(cell::Markdown.MD;
     str_nc = replace(str, r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])" => "")
 
     if !linebreaks
-        str_nc     = replace(str_nc, "\n" => "\\n")
-        cell_width = textwidth(str_nc)
-
         if !has_color
-            return [str_nc], [cell_width], cell_width
+            str_nc = replace(str_nc, "\n" => "\\n")
+            return [str_nc]
         else
             str = replace(str, "\n" => "\\n")
-            return [str], [cell_width], cell_width
+            return [str]
         end
     else
         # Obtain the number of lines and the maximum number of used columns.
         tokens_nc = split(str_nc, '\n')
-        lines     = length(tokens_nc)
-        max_cols  = maximum(textwidth.(tokens_nc))
-        num_chars = textwidth.(tokens_nc)
 
         if !has_color
-            return tokens_nc, num_chars, max_cols
+            return tokens_nc
         else
             tokens = split(str, '\n')
             _reapply_ansi_format!(tokens)
-            return tokens, num_chars, max_cols
+            return tokens
         end
     end
 end
 
-@inline _parse_cell_text(cell::Missing; kwargs...) = ["missing"], [7], 7
-@inline _parse_cell_text(cell::Nothing; kwargs...) = ["nothing"], [7], 7
-@inline _parse_cell_text(cell::UndefInitializer; kwargs...) = ["#undef"], [6], 6
+@inline _parse_cell_text(cell::Missing; kwargs...) = ["missing"]
+@inline _parse_cell_text(cell::Nothing; kwargs...) = ["nothing"]
+@inline _parse_cell_text(cell::UndefInitializer; kwargs...) = ["#undef"]
 
 """
     _process_cell_text(data::Any, i::Int, j::Int, data_cell::Bool, data_str::String, data_len::Int, col_width::Int, crayon::Crayon, alignment::Symbol, highlighters::Tuple)
