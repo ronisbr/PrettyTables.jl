@@ -320,23 +320,22 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                                    alignment_anchor_regex,
                                    cell_alignment_override)
 
-    # Update the table lengths
+    # Update the table size data that is used in the printing algorithm
     # --------------------------------------------------------------------------
 
-    _update_text_table_lengths!(header_str,
-                                data_str,
-                                id_cols,
-                                Δc,
-                                cols_width,
-                                num_lines_in_row,
-                                # Configurations
-                                columns_width,
-                                crop_subheader,
-                                fixed_col_width,
-                                maximum_columns_width,
-                                minimum_columns_width,
-                                noheader)
-
+    _update_table_size_data!(cols_width,
+                             num_lines_in_row,
+                             header_str,
+                             data_str,
+                             id_cols,
+                             Δc,
+                             # Configurations
+                             columns_width,
+                             crop_subheader,
+                             fixed_col_width,
+                             maximum_columns_width,
+                             minimum_columns_width,
+                             noheader)
 
     # If the user wants all the columns with the same size, then select the
     # larger.

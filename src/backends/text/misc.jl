@@ -7,19 +7,19 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-function _update_text_table_lengths!(header_str::Matrix{String},
-                                     data_str::Matrix{Vector{String}},
-                                     id_cols::Vector{Int},
-                                     Δc::Int,
-                                     cols_width::Vector{Int},
-                                     num_lines_in_row::Vector{Int},
-                                     # Configurations
-                                     columns_width::Vector{Int},
-                                     crop_subheader::Bool,
-                                     fixed_col_width::Vector{Bool},
-                                     maximum_columns_width::Vector{Int},
-                                     minimum_columns_width::Vector{Int},
-                                     noheader::Bool)
+function _update_table_size_data!(cols_width::Vector{Int},
+                                  num_lines_in_row::Vector{Int},
+                                  header_str::Matrix{String},
+                                  data_str::Matrix{Vector{String}},
+                                  id_cols::Vector{Int},
+                                  Δc::Int,
+                                  # Configurations
+                                  columns_width::Vector{Int},
+                                  crop_subheader::Bool,
+                                  fixed_col_width::Vector{Bool},
+                                  maximum_columns_width::Vector{Int},
+                                  minimum_columns_width::Vector{Int},
+                                  noheader::Bool)
 
     num_printed_rows, num_printed_cols = size(data_str)
     num_header_printed_rows, ~         = size(header_str)
