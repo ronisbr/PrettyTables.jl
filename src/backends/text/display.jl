@@ -31,13 +31,12 @@ function _draw_continuation_row(display::Display, io::IO, tf::TextFormat,
     0 ∈ vlines && _p!(display, border_crayon, tf.column)
 
     @inbounds for j = 1:num_cols
-        data_ij_str, data_ij_len = _str_aligned("⋮", alignment, cols_width[j])
+        data_ij_str  = _str_aligned("⋮", alignment, cols_width[j])
         data_ij_str  = " " * data_ij_str * " "
-        data_ij_len += 2
 
         flp = j == num_cols
 
-        _p!(display, text_crayon, data_ij_str, false, data_ij_len)
+        _p!(display, text_crayon, data_ij_str, false)
         _pc!(j ∈ vlines, display, border_crayon, tf.column, "", flp, 1, 0)
         _eol(display) && break
     end

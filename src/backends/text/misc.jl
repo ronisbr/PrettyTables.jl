@@ -8,9 +8,7 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 function _update_text_table_lengths!(header_str::Matrix{String},
-                                     header_len::Matrix{Int},
                                      data_str::Matrix{Vector{String}},
-                                     data_len::Matrix{Vector{Int}},
                                      id_cols::Vector{Int},
                                      Δc::Int,
                                      cols_width::Vector{Int},
@@ -51,7 +49,6 @@ function _update_text_table_lengths!(header_str::Matrix{String},
                 str_p = replace(header_str[i,j], r_ansi_escape => "")
 
                 header_ij_len   = textwidth(str_p)
-                header_len[i,j] = header_ij_len
 
                 # If the user wants to crop the subheader, then it should not be
                 # used to compute the largest cell width of this column.
@@ -70,19 +67,11 @@ function _update_text_table_lengths!(header_str::Matrix{String},
 
             num_lines_in_row[i] = max(num_lines_in_row[i], num_lines)
 
-            # Make sure the number of lines in `data_len` match the number of
-            # lines in `data_str`.
-            (!isassigned(data_len, i, j) || num_lines ≠ length(data_len[i,j])) &&
-                (data_len[i,j] = zeros(Int, num_lines))
-
             for k = 1:num_lines
                 # Remove the escape sequences to obtain only printable
                 # characters.
                 str_p = replace(data_str[i,j][k], r_ansi_escape => "")
-
-                data_ijk_len     = textwidth(str_p)
-                data_len[i,j][k] = data_ijk_len
-
+                data_ijk_len = textwidth(str_p)
                 largest_cell_width = max(largest_cell_width, data_ijk_len)
             end
         end

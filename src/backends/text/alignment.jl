@@ -10,7 +10,6 @@
 # Apply the column alignment obtained from regex to the data after conversion to
 # string.
 function _apply_alignment_anchor_regex!(data_str::Matrix{Vector{String}},
-                                        data_len::Matrix{Vector{Int}},
                                         cols_width::Vector{Int},
                                         alignment::Vector{Symbol},
                                         id_cols::Vector{Int},
@@ -76,9 +75,11 @@ function _apply_alignment_anchor_regex!(data_str::Matrix{Vector{String}},
                         alignment_anchor_fallback
 
                     if fallback == :c
-                        alignment_column_i = div(data_len[i, j][l], 2, RoundUp)
+                        data_ijl_len = textwidth(line)
+                        alignment_column_i = div(data_ijl_len, 2, RoundUp)
                     elseif fallback == :r
-                        alignment_column_i = data_len[i, j][l] + 1
+                        data_ijl_len = textwidth(line)
+                        alignment_column_i = data_ijl_len + 1
                     else
                         alignment_column_i = 0
                     end
@@ -122,9 +123,11 @@ function _apply_alignment_anchor_regex!(data_str::Matrix{Vector{String}},
                         alignment_anchor_fallback
 
                     if fallback == :c
-                        pad = alignment_column - div(data_len[i, j][l], 2, RoundUp)
+                        data_ijl_len = textwidth(line)
+                        pad = alignment_column - div(data_ijl_len, 2, RoundUp)
                     elseif fallback == :r
-                        pad = alignment_column - data_len[i, j][l] - 1
+                        data_ijl_len = textwidth(line)
+                        pad = alignment_column - data_ijl_len - 1
                     else
                         pad = alignment_column
                     end
@@ -134,10 +137,10 @@ function _apply_alignment_anchor_regex!(data_str::Matrix{Vector{String}},
                 pad < 0 && (pad = 0)
 
                 data_str[i, j][l]  = " "^pad * line
-                data_len[i, j][l] += pad
+                data_ijl_len = textwidth(data_str[i,j][l])
 
-                if data_len[i, j][l] > largest_cell_width
-                    largest_cell_width = data_len[i, j][l]
+                if data_ijl_len > largest_cell_width
+                    largest_cell_width = data_ijl_len
                 end
             end
         end
@@ -149,10 +152,9 @@ function _apply_alignment_anchor_regex!(data_str::Matrix{Vector{String}},
             haskey(cell_alignment_override, (id_rows[i], jc)) && continue
 
             for l = 1:length(data_str[i, j])
-                pad = largest_cell_width - data_len[i, j][l]
+                pad = largest_cell_width - textwidth(data_str[i, j][l])
                 pad < 0 && (pad = 0)
                 data_str[i, j][l] = data_str[i, j][l] * " "^pad
-                data_len[i, j][l] = largest_cell_width
             end
         end
 

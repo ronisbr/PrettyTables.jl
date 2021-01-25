@@ -56,7 +56,7 @@ function _print_omitted_cell_summary(buf::IO,
         cs_str = cs_str_col * cs_str_and * cs_str_row * " omitted"
 
         textwidth(cs_str) < table_width &&
-            (cs_str = _str_aligned(cs_str, :r, table_width)[1])
+            (cs_str = _str_aligned(cs_str, :r, table_width))
 
         has_color && print(buf, omitted_cell_summary_crayon)
         print(buf, cs_str)
@@ -70,7 +70,6 @@ function _print_table_header!(buf::IO,
                               display::Display,
                               header::Any,
                               header_str::Matrix{String},
-                              header_len::Matrix{Int},
                               id_cols::Vector{Int},
                               id_rows::Vector{Int},
                               num_printed_cols::Int,
@@ -94,7 +93,7 @@ function _print_table_header!(buf::IO,
     header_num_rows, ~ = size(header_str)
 
     @inbounds @views for i = 1:header_num_rows
-        0 ∈ vlines && _p!(display, border_crayon, tf.column, false, 1)
+        0 ∈ vlines && _p!(display, border_crayon, tf.column, false)
 
         for j = 1:num_printed_cols
             # Get the information about the alignment and the crayon.
@@ -127,17 +126,15 @@ function _print_table_header!(buf::IO,
             end
 
             # Prepare the text to be printed.
-            header_ij_str, header_ij_len = _str_aligned(header_str[i,j],
-                                                        alignment_ij,
-                                                        cols_width[j],
-                                                        header_len[i,j])
+            header_ij_str = _str_aligned(header_str[i,j],
+                                         alignment_ij,
+                                         cols_width[j])
             header_ij_str  = " " * header_ij_str * " "
-            header_ij_len += 2
 
             flp = j == num_printed_cols
 
             # Print the text.
-            _p!(display, crayon_ij, header_ij_str, false, header_ij_len)
+            _p!(display, crayon_ij, header_ij_str, false)
 
             # Check if we need to draw a vertical line here.
             _pc!(j ∈ vlines, display, border_crayon, tf.column, "", flp, 1, 0)
@@ -156,7 +153,6 @@ function _print_table_data(buf::IO,
                            display::Display,
                            data::Any,
                            data_str::Matrix{Vector{String}},
-                           data_len::Matrix{Vector{Int}},
                            id_cols::Vector{Int},
                            id_rows::Vector{Int},
                            Δc::Int,
@@ -251,10 +247,8 @@ function _print_table_data(buf::IO,
                         # String to be processed.
                         if length(data_str[i,j]) >= l
                             data_ij_str = data_str[i,j][l]
-                            data_ij_len = data_len[i,j][l]
                         else
                             data_ij_str = ""
-                            data_ij_len = 0
                         end
 
                         # Check if the alignment of this cell is overridden by
@@ -265,17 +259,19 @@ function _print_table_data(buf::IO,
 
                         # Process the string with the correct alignment and also
                         # apply the highlighters.
-                        data_ij_str, data_ij_len, crayon_ij =
+                        data_ij_str, crayon_ij =
                             _process_cell_text(data,
                                                ir,
                                                jc,
                                                data_cell,
                                                data_ij_str,
-                                               data_ij_len,
                                                cols_width[j],
                                                crayon_ij,
                                                alignment_ij,
                                                highlighters)
+
+                        # Compute the printable size of the string.
+                        data_ij_len = _printable_textwidth(data_ij_str)
 
                         _p!(display, crayon_ij, data_ij_str, false, data_ij_len)
                     end

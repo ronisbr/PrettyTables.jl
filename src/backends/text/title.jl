@@ -74,7 +74,7 @@ function _tokenize_title(title::AbstractString,
 
             @inbounds for i = 1:num_tokens
                 token = title_tokens_raw[i]
-                token_str = _str_aligned(token, title_alignment, title_width)[1]
+                token_str = _str_aligned(token, title_alignment, title_width)
                 push!(title_tokens, token_str)
             end
         end

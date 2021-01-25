@@ -105,11 +105,12 @@ function _process_cell_text(data::Any,
                             j::Int,
                             data_cell::Bool,
                             data_str::String,
-                            data_len::Int,
                             col_width::Int,
                             crayon::Crayon,
                             alignment::Symbol,
                             highlighters::Tuple)
+
+    lstr = -1
 
     if data_cell
         # Check for highlighters.
@@ -124,15 +125,15 @@ function _process_cell_text(data::Any,
         if isassigned(data, i, j) && (data[i,j] isa Markdown.MD)
             alignment = :l
             crayon = Crayon()
+            lstr = _printable_textwidth(data_str)
         end
     end
 
     # Align the string to be printed.
-    data_str, data_len = _str_aligned(data_str, alignment, col_width, data_len)
+    data_str = _str_aligned(data_str, alignment, col_width, lstr)
 
     # Add spacing.
     data_str  = " " * data_str * " "
-    data_len += 2
 
-    return data_str, data_len, crayon
+    return data_str, crayon
 end

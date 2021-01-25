@@ -195,14 +195,9 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     # the matrix. Notice that we must create only the matrix with the printed
     # rows and columns.
     header_str = Matrix{String}(undef, header_num_rows, num_printed_cols)
-    header_len = zeros(Int, header_num_rows, num_printed_cols)
-
     data_str   = Matrix{Vector{String}}(undef,
                                         num_printed_rows,
                                         num_printed_cols)
-    data_len   = Matrix{Vector{Int}}(undef,
-                                     num_printed_rows,
-                                     num_printed_cols)
 
     num_lines_in_row = ones(Int, num_printed_rows)
 
@@ -315,9 +310,7 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     # --------------------------------------------------------------------------
 
     _update_text_table_lengths!(header_str,
-                                header_len,
                                 data_str,
-                                data_len,
                                 id_cols,
                                 Δc,
                                 cols_width,
@@ -334,7 +327,6 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     # --------------------------------------------------------------------------
 
     _apply_alignment_anchor_regex!(data_str,
-                                   data_len,
                                    cols_width,
                                    alignment,
                                    id_cols,
@@ -452,7 +444,6 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                              display,
                              header,
                              header_str,
-                             header_len,
                              id_cols,
                              id_rows,
                              num_printed_cols,
@@ -489,7 +480,6 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                                 display,
                                 data,
                                 data_str,
-                                data_len,
                                 id_cols,
                                 id_rows,
                                 Δc,

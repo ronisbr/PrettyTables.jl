@@ -66,6 +66,24 @@ function _crop_str(str::String, crop_size::Int, lstr::Int = -1)
 end
 
 """
+    _printable_textwidth(str::AbstractString)
+
+Compute the width of the string `str` neglecting all ANSI escape sequences that
+are not printable.
+
+"""
+function _printable_textwidth(str::AbstractString)
+    # Regex to remove ANSI escape sequences so that we can compute the printable
+    # size of the cell.
+    r_ansi_escape = r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])"
+
+    # Compute the field size considering only the printable characters.
+    str_p = replace(str, r_ansi_escape => "")
+
+    return textwidth(str_p)
+end
+
+"""
     _render_text(T, v; compact_printing::Bool = true, isstring::Bool = false, limit_printing::Bool = true, linebreaks::Bool = false)
 
 Render the value `v` to strings using the rendered `T` to be displayed in the
@@ -183,7 +201,7 @@ function _str_aligned(data::String, alignment::Symbol,
 
     # If the length is larger than the field, then we will crop the string.
     if Δ < 0
-        data  = _crop_str(data, lstr + Δ - 1)
+        data  = _crop_str(data, lstr + Δ - 1, lstr)
         data *= "…"
 
         # In this case, the string has the same size of the field.
@@ -194,13 +212,13 @@ function _str_aligned(data::String, alignment::Symbol,
     # TODO: If Δ is 0, can we just return the string?
 
     if alignment == :l || alignment == :L
-        return data * " "^Δ, lstr + Δ
+        return data * " "^Δ
     elseif alignment == :c || alignment == :C
         left  = div(Δ,2)
         right = Δ-left
-        return " "^left * data * " "^right, lstr + Δ
+        return " "^left * data * " "^right
     else
-        return " "^Δ * data, lstr + Δ
+        return " "^Δ * data
     end
 end
 
