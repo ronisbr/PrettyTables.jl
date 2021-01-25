@@ -7,16 +7,22 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-function _update_table_size_data!(cols_width::Vector{Int},
-                                  num_lines_in_row::Vector{Int},
-                                  header_str::Matrix{String},
+"""
+    _compute_table_size_data(header_str::Matrix{String}, data_str::Matrix{Vector{String}}, id_cols::Vector{Int}, Δc::Int, # Configurations columns_width::Vector{Int}, crop_subheader::Bool, maximum_columns_width::Vector{Int}, minimum_columns_width::Vector{Int}, noheader::Bool)
+
+Compute the following table size data:
+
+* The width of each column; and
+* The maximum number of lines in the cells of each column.
+
+"""
+function _compute_table_size_data(header_str::Matrix{String},
                                   data_str::Matrix{Vector{String}},
                                   id_cols::Vector{Int},
                                   Δc::Int,
                                   # Configurations
                                   columns_width::Vector{Int},
                                   crop_subheader::Bool,
-                                  fixed_col_width::Vector{Bool},
                                   maximum_columns_width::Vector{Int},
                                   minimum_columns_width::Vector{Int},
                                   noheader::Bool)
@@ -24,11 +30,11 @@ function _update_table_size_data!(cols_width::Vector{Int},
     num_printed_rows, num_printed_cols = size(data_str)
     num_header_printed_rows, ~         = size(header_str)
 
-    # The column width must be updated.
-    cols_width .= zeros(Int, num_printed_cols)
+    # The width of the columns in the table.
+    cols_width = zeros(Int, num_printed_cols)
 
-    # The number of lines in each row must be updated.
-    num_lines_in_row .= ones(Int, num_printed_rows)
+    # The number of lines in each row.
+    num_lines_in_row = ones(Int, num_printed_rows)
 
     # Regex to remove ANSI escape sequences so that we can compute the printable
     # size of the cell. This is required for Markdown cells.
@@ -86,7 +92,7 @@ function _update_table_size_data!(cols_width::Vector{Int},
             jc = id_cols[j-Δc]
 
             # Check if we need to replace the column width.
-            if !fixed_col_width[jc]
+            if columns_width[jc] ≤ 0
                 cols_width[j] = max(cols_width[j], largest_cell_width)
 
                 # Make sure that the maximum column width is respected.
@@ -106,5 +112,5 @@ function _update_table_size_data!(cols_width::Vector{Int},
         end
     end
 
-    return nothing
+    return cols_width, num_lines_in_row
 end

@@ -149,16 +149,10 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     # Check which columns must have fixed sizes.
     typeof(columns_width) <: Integer && (columns_width = ones(Int, num_cols)*columns_width)
     length(columns_width) != num_cols && error("The length of `columns_width` must be the same as the number of columns.")
-    fixed_col_width = map(w->w > 0, columns_width)
 
     # The number of lines that must be skipped from printing ellipsis must be
     # greater of equal 0.
     (ellipsis_line_skip < 0) && (ellipsis_line_skip = 0)
-
-    # Assign the minimum size to those columns that does not have a fixed size.
-    for i = 1:num_cols
-        !fixed_col_width[i] && (columns_width[i] = minimum_columns_width[i])
-    end
 
     # Increase the number of printed columns if the user wants to show
     # additional columns.
@@ -199,22 +193,6 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                                         num_printed_rows,
                                         num_printed_cols)
 
-    num_lines_in_row = ones(Int, num_printed_rows)
-
-    # The variable `columns_width` is the specification of the user for the
-    # columns width. The variable `cols_width` contains the actual size of each
-    # column. This is necessary because if the user asks for a width equal or
-    # lower than 0 in a column, then the width will be automatically computed to
-    # fit the longest field.
-    #
-    # By default, if the user wants to show the row number of the row names,
-    # those columns will have the size computed automatically.
-    cols_width = Vector{Int}(undef, num_printed_cols)
-
-    for i = (Δc+1):num_printed_cols
-        cols_width[i] = columns_width[id_cols[i-Δc]]
-    end
-
     # Auxiliary variables to adjust `alignment` based on the new columns added
     # to the table.
     alignment_add = Symbol[]
@@ -247,7 +225,6 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     if show_row_number
         @inbounds _fill_row_number_column!(header_str,
                                            data_str,
-                                           cols_width,
                                            id_rows,
                                            jvec,
                                            jrvec,
@@ -289,7 +266,6 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                                      jvec,
                                      jrvec,
                                      Δc,
-                                     columns_width,
                                      data,
                                      header,
                                      formatters,
@@ -297,9 +273,9 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                                      # Configuration options.
                                      autowrap,
                                      cell_first_line_only,
+                                     columns_width,
                                      compact_printing,
                                      crop_subheader,
-                                     fixed_col_width,
                                      limit_printing,
                                      linebreaks,
                                      noheader,
@@ -323,19 +299,29 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     # Update the table size data that is used in the printing algorithm
     # --------------------------------------------------------------------------
 
-    _update_table_size_data!(cols_width,
-                             num_lines_in_row,
-                             header_str,
-                             data_str,
-                             id_cols,
-                             Δc,
-                             # Configurations
-                             columns_width,
-                             crop_subheader,
-                             fixed_col_width,
-                             maximum_columns_width,
-                             minimum_columns_width,
-                             noheader)
+    # The variable `columns_width` is the specification of the user for the
+    # columns width. The variable `cols_width` contains the actual size of each
+    # column. This is necessary because if the user asks for a width equal or
+    # lower than 0 in a column, then the width will be automatically computed to
+    # fit the longest field.
+    #
+    # By default, if the user wants to show the row number of the row names,
+    # those columns will have the size computed automatically.
+    #
+    # The variable `num_lines_in_row` stores the maximum number of lines in the
+    # cells of each printed table row.
+
+    cols_width, num_lines_in_row =
+        _compute_table_size_data(header_str,
+                                 data_str,
+                                 id_cols,
+                                 Δc,
+                                 # Configurations
+                                 columns_width,
+                                 crop_subheader,
+                                 maximum_columns_width,
+                                 minimum_columns_width,
+                                 noheader)
 
     # If the user wants all the columns with the same size, then select the
     # larger.

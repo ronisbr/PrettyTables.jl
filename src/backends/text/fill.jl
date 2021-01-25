@@ -67,7 +67,6 @@ function _fill_matrix_data!(header_str::Matrix{String},
                             jvec::Vector{Int},
                             jrvec::Vector{Int},
                             Δc::Int,
-                            columns_width::Vector{Int},
                             data::Any,
                             header::Any,
                             formatters::Tuple,
@@ -75,9 +74,9 @@ function _fill_matrix_data!(header_str::Matrix{String},
                             # Configuration options.
                             autowrap::Bool,
                             cell_first_line_only::Bool,
+                            columns_width::Vector{Int},
                             compact_printing::Bool,
                             crop_subheader::Bool,
-                            fixed_col_width::Vector{Bool},
                             limit_printing::Bool,
                             linebreaks::Bool,
                             noheader::Bool,
@@ -150,9 +149,12 @@ function _fill_matrix_data!(header_str::Matrix{String},
                 data_ij = f(data_ij, jr, ic)
             end
 
+            # Check if this is a columns with fixed size.
+            fixed_col_width = columns_width[ic] > 0
+
             # Parse the cell.
             data_str[j,i] = _parse_cell_text(data_ij;
-                                             autowrap = autowrap && fixed_col_width[ic],
+                                             autowrap = autowrap && fixed_col_width,
                                              cell_data_type = data_ij_type,
                                              cell_first_line_only = cell_first_line_only,
                                              column_width = columns_width[ic],
@@ -208,7 +210,6 @@ end
 # Fill the information related to the row number column.
 function _fill_row_number_column!(header_str::Matrix{String},
                                   data_str::Matrix{Vector{String}},
-                                  cols_width::Vector{Int},
                                   id_rows::Vector{Int},
                                   jvec::Vector{Int},
                                   jrvec::Vector{Int},
