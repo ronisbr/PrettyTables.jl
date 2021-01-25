@@ -306,6 +306,20 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                                      renderer,
                                      vcrop_mode)
 
+    # Column alignment regex
+    # --------------------------------------------------------------------------
+
+    _apply_alignment_anchor_regex!(data_str,
+                                   alignment,
+                                   id_cols,
+                                   id_rows,
+                                   Δc,
+                                   # Configurations.
+                                   alignment_anchor_fallback,
+                                   alignment_anchor_fallback_override,
+                                   alignment_anchor_regex,
+                                   cell_alignment_override)
+
     # Update the table lengths
     # --------------------------------------------------------------------------
 
@@ -323,22 +337,6 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                                 minimum_columns_width,
                                 noheader)
 
-    # Column alignment regex
-    # --------------------------------------------------------------------------
-
-    _apply_alignment_anchor_regex!(data_str,
-                                   cols_width,
-                                   alignment,
-                                   id_cols,
-                                   id_rows,
-                                   Δc,
-                                   # Configurations.
-                                   alignment_anchor_fallback,
-                                   alignment_anchor_fallback_override,
-                                   alignment_anchor_regex,
-                                   cell_alignment_override,
-                                   fixed_col_width,
-                                   maximum_columns_width)
 
     # If the user wants all the columns with the same size, then select the
     # larger.

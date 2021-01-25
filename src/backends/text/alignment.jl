@@ -10,7 +10,6 @@
 # Apply the column alignment obtained from regex to the data after conversion to
 # string.
 function _apply_alignment_anchor_regex!(data_str::Matrix{Vector{String}},
-                                        cols_width::Vector{Int},
                                         alignment::Vector{Symbol},
                                         id_cols::Vector{Int},
                                         id_rows::Vector{Int},
@@ -19,9 +18,7 @@ function _apply_alignment_anchor_regex!(data_str::Matrix{Vector{String}},
                                         alignment_anchor_fallback::Symbol,
                                         alignment_anchor_fallback_override::Dict{Int, Symbol},
                                         alignment_anchor_regex::Dict{Int, T} where T<:AbstractVector{Regex},
-                                        cell_alignment_override::Dict{Tuple{Int, Int}, Symbol},
-                                        fixed_col_width::Vector{Bool},
-                                        maximum_columns_width::Vector{Int})
+                                        cell_alignment_override::Dict{Tuple{Int, Int}, Symbol})
 
     num_printed_rows, ~ = size(data_str)
 
@@ -155,18 +152,6 @@ function _apply_alignment_anchor_regex!(data_str::Matrix{Vector{String}},
                 pad = largest_cell_width - textwidth(data_str[i, j][l])
                 pad < 0 && (pad = 0)
                 data_str[i, j][l] = data_str[i, j][l] * " "^pad
-            end
-        end
-
-        # Check if we need to replace the column width.
-        if !fixed_col_width[jc]
-            cols_width[j] < largest_cell_width &&
-                (cols_width[j] = largest_cell_width)
-
-            # Make sure that the maximum column width is respected.
-            if maximum_columns_width[jc] > 0 &&
-                maximum_columns_width[jc] < cols_width[j]
-                cols_width[j] = maximum_columns_width[jc]
             end
         end
     end
