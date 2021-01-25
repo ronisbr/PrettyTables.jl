@@ -107,6 +107,9 @@ function _fill_matrix_data!(header_str::Matrix{String},
         # Index of the i-th printed column in `data`.
         ic = id_cols[i-Δc]
 
+        # Store the largest cell width in this column.
+        largest_cell_width = 0
+
         if !noheader
             for j = 1:header_num_rows
                 id = (ic-1)*header_num_rows + j
@@ -130,22 +133,10 @@ function _fill_matrix_data!(header_str::Matrix{String},
 
                 num_processed_rows += 1
 
-                # If the user does not want a fixed column width, then we must
-                # store the information to automatically compute the field size.
-                if !fixed_col_width[ic]
-                    # Check if we should consider the sub-header size when
-                    # computing the column width.
-                    if (j == 1) || (!crop_subheader)
-                        # Check if we need to increase the columns size.
-                        cols_width[i] < cell_width && (cols_width[i] = cell_width)
-
-                        # Make sure that the maximum column width is respected.
-                        if maximum_columns_width[ic] > 0 &&
-                            maximum_columns_width[ic] < cols_width[i]
-                            cols_width[i] = maximum_columns_width[ic]
-                        end
-                    end
-                end
+                # If the user wants to crop the subheader, then we do not need
+                # to consider it when computing the largest cell width.
+                ((j == 1) || (!crop_subheader)) &&
+                    (largest_cell_width = max(largest_cell_width, cell_width))
             end
         end
 
@@ -181,17 +172,8 @@ function _fill_matrix_data!(header_str::Matrix{String},
 
             num_processed_rows += num_lines_ij
 
-            # If the user does not want a fixed column width, then we must store
-            # the information to automatically compute the field size.
-            if !fixed_col_width[ic]
-                # Check if we need to increase the columns size.
-                cols_width[i] < cell_width && (cols_width[i] = cell_width)
-
-                # Make sure that the maximum column width is respected.
-                if maximum_columns_width[ic] > 0 && maximum_columns_width[ic] < cols_width[i]
-                    cols_width[i] = maximum_columns_width[ic]
-                end
-            end
+            # Update the largest cell width of this column.
+            largest_cell_width = max(largest_cell_width, cell_width)
 
             # If the crop mode if `:middle`, then we need to always process a
             # row in the top and in another in the bottom before stopping due to
@@ -202,6 +184,19 @@ function _fill_matrix_data!(header_str::Matrix{String},
                  ( (vcrop_mode == :middle) && (k % 2 == 0) ) ) &&
                 (display.size[1] > 0) && (num_processed_rows ≥ display.size[1])
                 break
+            end
+        end
+
+        # If the user does not want a fixed column width, then we must store the
+        # information to automatically compute the field size.
+        if !fixed_col_width[ic]
+            # Check if we need to increase the columns size.
+            cols_width[i] = max(cols_width[i], largest_cell_width)
+
+            # Make sure that the maximum column width is respected.
+            if maximum_columns_width[ic] > 0 &&
+               maximum_columns_width[ic] < cols_width[i]
+                cols_width[i] = maximum_columns_width[ic]
             end
         end
 
@@ -294,8 +289,10 @@ function _fill_row_name_column!(header_str::Matrix{String},
     str_len = textwidth(header_str[1,Δc])
     header_len[1,Δc] = str_len
 
+    # Store the largest cell width in this column.
+    largest_cell_width = str_len
+
     # Convert the row names to string.
-    max_size = 0
     for i = 1:num_printed_rows
         j  = jvec[i]
         jr = jrvec[i]
@@ -313,11 +310,11 @@ function _fill_row_name_column!(header_str::Matrix{String},
         data_str[j,Δc] = row_name_str
         data_len[j,Δc] = row_name_lstr
 
-        cell_width > max_size && (max_size = cell_width)
+        largest_cell_width = max(largest_cell_width, cell_width)
     end
 
     # Obtain the size of the row name column.
-    cols_width[Δc] = max(str_len, max_size)
+    cols_width[Δc] = largest_cell_width
 
     return nothing
 end
