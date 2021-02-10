@@ -1,6 +1,13 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 0.11.1
+--------------
+
+- ![Bugfix][badge-bugfix] In specific situations, the algorithm that aligns
+  columns based on regexes was trying to align columns that were not printed,
+  leading to segmentation fault. (Issue [#112][gh-issue-112])
+
 Version 0.11.0
 --------------
 
@@ -442,6 +449,7 @@ Version 0.1.0
 [gh-issue-103]: https://github.com/ronisbr/PrettyTables.jl/issues/103
 [gh-issue-105]: https://github.com/ronisbr/PrettyTables.jl/issues/105
 [gh-issue-107]: https://github.com/ronisbr/PrettyTables.jl/issues/107
+[gh-issue-112]: https://github.com/ronisbr/PrettyTables.jl/issues/112
 
 [gh-pr-5]: https://github.com/ronisbr/PrettyTables.jl/pull/5
 [gh-pr-8]: https://github.com/ronisbr/PrettyTables.jl/pull/8
