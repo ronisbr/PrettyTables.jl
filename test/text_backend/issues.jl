@@ -209,3 +209,132 @@ end
 
     @test result == expected
 end
+
+@testset "Issue #112 - Segmentation fault due to alignment anchor" begin
+    matrix = [j ∈ [1,2,3] ? 10.0^(mod(i+j,8)) : missing for i = 1:30, j = 1:30];
+
+    expected = """
+┌────────────┬────────────┬─────────────
+│     Col. 1 │     Col. 2 │     Col. 3 ⋯
+├────────────┼────────────┼─────────────
+│    100.0   │   1000.0   │  10000.0   ⋯
+│   1000.0   │  10000.0   │ 100000.0   ⋯
+│  10000.0   │ 100000.0   │      1.0e6 ⋯
+│ 100000.0   │      1.0e6 │      1.0e7 ⋯
+│      1.0e6 │      1.0e7 │      1.0   ⋯
+│      1.0e7 │      1.0   │     10.0   ⋯
+│      1.0   │     10.0   │    100.0   ⋯
+│     10.0   │    100.0   │   1000.0   ⋯
+│    100.0   │   1000.0   │  10000.0   ⋯
+│   1000.0   │  10000.0   │ 100000.0   ⋯
+│  10000.0   │ 100000.0   │      1.0e6 ⋯
+│ 100000.0   │      1.0e6 │      1.0e7 ⋯
+│     ⋮      │     ⋮      │     ⋮      ⋱
+└────────────┴────────────┴─────────────
+          27 columns and 18 rows omitted
+"""
+
+    result = pretty_table(String, matrix,
+                          alignment_anchor_regex = Dict(0 => [r"\."]),
+                          crop = :both,
+                          display_size = (20,40))
+
+    @test result == expected
+
+    result = pretty_table(String, matrix,
+                          alignment_anchor_regex = Dict(i => [r"\."] for i = 1:1000),
+                          crop = :both,
+                          display_size = (20,40))
+
+    @test result == expected
+
+    expected = """
+┌─────┬────────────┬──────────┬──────────────
+│ Row │     Col. 1 │   Col. 2 │     Col. 3  ⋯
+├─────┼────────────┼──────────┼──────────────
+│   1 │    100.0   │   1000.0 │  10000.0    ⋯
+│   2 │   1000.0   │  10000.0 │ 100000.0    ⋯
+│   3 │  10000.0   │ 100000.0 │      1.0e6  ⋯
+│   4 │ 100000.0   │    1.0e6 │      1.0e7  ⋯
+│   5 │      1.0e6 │    1.0e7 │      1.0    ⋯
+│   6 │      1.0e7 │      1.0 │     10.0    ⋯
+│   7 │      1.0   │     10.0 │    100.0    ⋯
+│   8 │     10.0   │    100.0 │   1000.0    ⋯
+│   9 │    100.0   │   1000.0 │  10000.0    ⋯
+│  10 │   1000.0   │  10000.0 │ 100000.0    ⋯
+│  11 │  10000.0   │ 100000.0 │      1.0e6  ⋯
+│  12 │ 100000.0   │    1.0e6 │      1.0e7  ⋯
+│  ⋮  │     ⋮      │    ⋮     │     ⋮       ⋱
+└─────┴────────────┴──────────┴──────────────
+               27 columns and 18 rows omitted
+"""
+
+    result = pretty_table(String, matrix,
+                          alignment_anchor_regex = Dict(i => [r"\."] for i = vcat(1,3:1000)),
+                          crop = :both,
+                          display_size = (20,45),
+                          show_row_number = true)
+
+    @test result == expected
+
+    expected = """
+┌─────┬──────┬────────────┬──────────┬────────────
+│ Row │      │     Col. 1 │   Col. 2 │     Col.  ⋯
+├─────┼──────┼────────────┼──────────┼────────────
+│   1 │ NAME │    100.0   │   1000.0 │  10000.0  ⋯
+│   2 │ NAME │   1000.0   │  10000.0 │ 100000.0  ⋯
+│   3 │ NAME │  10000.0   │ 100000.0 │      1.0e ⋯
+│   4 │ NAME │ 100000.0   │    1.0e6 │      1.0e ⋯
+│   5 │ NAME │      1.0e6 │    1.0e7 │      1.0  ⋯
+│   6 │ NAME │      1.0e7 │      1.0 │     10.0  ⋯
+│   7 │ NAME │      1.0   │     10.0 │    100.0  ⋯
+│   8 │ NAME │     10.0   │    100.0 │   1000.0  ⋯
+│   9 │ NAME │    100.0   │   1000.0 │  10000.0  ⋯
+│  10 │ NAME │   1000.0   │  10000.0 │ 100000.0  ⋯
+│  11 │ NAME │  10000.0   │ 100000.0 │      1.0e ⋯
+│  12 │ NAME │ 100000.0   │    1.0e6 │      1.0e ⋯
+│  ⋮  │  ⋮   │     ⋮      │    ⋮     │     ⋮     ⋱
+└─────┴──────┴────────────┴──────────┴────────────
+                    28 columns and 18 rows omitted
+"""
+
+    result = pretty_table(String, matrix,
+                          alignment_anchor_regex = Dict(i => [r"\."] for i = vcat(1,3:1000)),
+                          crop = :both,
+                          display_size = (20,50),
+                          row_names = ["NAME" for i = 1:30],
+                          show_row_number = true)
+
+    @test result == expected
+
+    expected = """
+┌─────┬──────┬────────────┬────────────┬──────────
+│ Row │      │     Col. 1 │     Col. 3 │  Col. 4 ⋯
+├─────┼──────┼────────────┼────────────┼──────────
+│   1 │ NAME │    100.0   │  10000.0   │ missing ⋯
+│   2 │ NAME │   1000.0   │ 100000.0   │ missing ⋯
+│   3 │ NAME │  10000.0   │      1.0e6 │ missing ⋯
+│   4 │ NAME │ 100000.0   │      1.0e7 │ missing ⋯
+│   5 │ NAME │      1.0e6 │      1.0   │ missing ⋯
+│   6 │ NAME │      1.0e7 │     10.0   │ missing ⋯
+│   7 │ NAME │      1.0   │    100.0   │ missing ⋯
+│   8 │ NAME │     10.0   │   1000.0   │ missing ⋯
+│   9 │ NAME │    100.0   │  10000.0   │ missing ⋯
+│  10 │ NAME │   1000.0   │ 100000.0   │ missing ⋯
+│  11 │ NAME │  10000.0   │      1.0e6 │ missing ⋯
+│  12 │ NAME │ 100000.0   │      1.0e7 │ missing ⋯
+│  ⋮  │  ⋮   │     ⋮      │     ⋮      │    ⋮    ⋱
+└─────┴──────┴────────────┴────────────┴──────────
+                    26 columns and 18 rows omitted
+"""
+
+    result = pretty_table(String, matrix,
+                          alignment_anchor_regex = Dict(i => [r"\."] for i = vcat(1,3:1000)),
+                          crop = :both,
+                          display_size = (20,50),
+                          filters_col = ((data, i)-> i ≠ 2,),
+                          row_names = ["NAME" for i = 1:30],
+                          show_row_number = true)
+
+    @test result == expected
+end
