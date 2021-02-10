@@ -24,7 +24,7 @@ function _apply_alignment_anchor_regex!(data_str::Matrix{Vector{String}},
                                         fixed_col_width::Vector{Bool},
                                         maximum_columns_width::Vector{Int})
 
-    num_printed_rows, ~ = size(data_str)
+    num_printed_rows, num_printed_cols = size(data_str)
 
     # If we have a key `0`, then it will be used to align all the columns.
     if haskey(alignment_anchor_regex, 0)
@@ -39,6 +39,10 @@ function _apply_alignment_anchor_regex!(data_str::Matrix{Vector{String}},
         j = findfirst(x->x == jc, id_cols)
         j === nothing && continue
         j += Δc
+
+        # If `j` is larger than `num_printed_cols`, then we can skip since this
+        # column will not be printed.
+        j > num_printed_cols && continue
 
         regex = global_regex ? alignment_anchor_regex[0] :
                                alignment_anchor_regex[jc]
