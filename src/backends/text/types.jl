@@ -127,7 +127,7 @@ respect to the point in which the table is printed.
     cont_space_char::Char = ' '
 
     # Buffer that will store the current line.
-    buf_line = IOBuffer()
+    buf_line::IOBuffer = IOBuffer()
 end
 
 ################################################################################
