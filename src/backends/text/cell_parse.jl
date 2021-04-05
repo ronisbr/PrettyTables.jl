@@ -100,7 +100,7 @@ Process the cell by applying the right alignment and also verifying the
 highlighters.
 
 """
-function _process_cell_text(data::Any,
+function _process_cell_text((@nospecialize data),
                             i::Int,
                             j::Int,
                             data_cell::Bool,

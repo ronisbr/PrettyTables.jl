@@ -164,7 +164,7 @@ function _apply_alignment_anchor_regex!(data_str::Matrix{Vector{String}},
 end
 
 # Compute a list of cells in which the alignment is overridden by the user.
-function _compute_cell_alignment_override(data::Any,
+function _compute_cell_alignment_override((@nospecialize data),
                                           id_cols::Vector{Int},
                                           id_rows::Vector{Int},
                                           Δc::Int,
