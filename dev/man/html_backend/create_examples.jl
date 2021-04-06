@@ -14,7 +14,7 @@ for (filename, format) in
      ("./html_format_simple.html",     html_simple))
 
     open(filename, "w") do f
-        pretty_table(f, data, header, backend = :html, tf = format)
+        pretty_table(f, data, header, backend = Val(:html), tf = format)
     end
 end
 
