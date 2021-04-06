@@ -7,7 +7,7 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # Low-level function to print the table using the text backend.
-function _pt_text(io::IO, pinfo::PrintInfo;
+function _pt_text(r_io::Ref{Any}, pinfo::PrintInfo;
                   border_crayon::Crayon = Crayon(),
                   header_crayon::Union{Crayon,Vector{Crayon}} = Crayon(bold = true),
                   subheader_crayon::Union{Crayon,Vector{Crayon}} = Crayon(foreground = :dark_gray),
@@ -21,11 +21,11 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                   body_hlines::Vector{Int} = Int[],
                   body_hlines_format::Union{Nothing,NTuple{4,Char}} = nothing,
                   continuation_row_alignment::Symbol = :c,
-                  crop::Symbol = get(io, :limit, false) ? :both : :none,
+                  crop::Symbol = get(r_io.x, :limit, false) ? :both : :none,
                   crop_subheader::Bool = false,
                   crop_num_lines_at_beginning::Int = 0,
                   columns_width::Union{Int,AbstractVector{Int}} = 0,
-                  display_size::Tuple{Int,Int} = displaysize(io),
+                  display_size::Tuple{Int,Int} = displaysize(r_io.x),
                   equal_columns_width::Bool = false,
                   ellipsis_line_skip::Integer = 0,
                   highlighters::Union{Highlighter,Tuple} = (),
@@ -48,6 +48,12 @@ function _pt_text(io::IO, pinfo::PrintInfo;
                   title_same_width_as_table::Bool = false,
                   vcrop_mode::Symbol = :bottom,
                   vlines::Union{Nothing,Symbol,AbstractVector} = nothing)
+
+    # `r_io` must always be a reference to `IO`. Here, we unpack it. This is
+    # done to improve inference and reduce compilation time. Ideally, we need to
+    # add the `@nospecialize` annotation to `io`. However, it returns the
+    # message that this annotation is not supported with more than 32 arguments.
+    io = r_io.x
 
     # Unpack fields of `pinfo`.
     data                    = pinfo.data

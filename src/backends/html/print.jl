@@ -7,7 +7,7 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # Low-level function to print the table using the text backend.
-function _pt_html(io::IO, pinfo::PrintInfo;
+function _pt_html(r_io::Ref{Any}, pinfo::PrintInfo;
                   tf::HTMLTableFormat = tf_html_default,
                   highlighters::Union{HTMLHighlighter,Tuple} = (),
                   linebreaks::Bool = false,
@@ -15,6 +15,12 @@ function _pt_html(io::IO, pinfo::PrintInfo;
                   nosubheader::Bool = false,
                   sortkeys::Bool = false,
                   standalone::Bool = true)
+
+    # `r_io` must always be a reference to `IO`. Here, we unpack it. This is
+    # done to improve inference and reduce compilation time. Ideally, we need to
+    # add the `@nospecialize` annotation to `io`. However, it returns the
+    # message that this annotation is not supported with more than 32 arguments.
+    io = r_io.x
 
     # Unpack fields of `pinfo`.
     data                    = pinfo.data

@@ -329,7 +329,7 @@ end
 
 # This is a middleware function to apply the preprocess step to the data that
 # will be printed.
-function _pretty_table(io::IO, data::Any, header::AbstractVecOrMat; kwargs...)
+function _pretty_table((@nospecialize io::IO), data::Any, header::AbstractVecOrMat; kwargs...)
     if Tables.istable(data)
         if Tables.columnaccess(data)
             pdata, pheader = _preprocess_Tables_column(data, header)
@@ -354,7 +354,7 @@ end
 # This is the low level function that prints the table. In this case, `data`
 # must be accessed by `[i,j]` and the size of the `header` must be equal to the
 # number of columns in `data`.
-function _pt(io::IO, data::Any, header::AbstractVecOrMat;
+function _pt((@nospecialize io::IO), data::Any, header::AbstractVecOrMat;
              alignment::Union{Symbol,Vector{Symbol}} = :r,
              backend::T_BACKENDS = Val(:auto),
              cell_alignment::Union{Nothing,
@@ -429,11 +429,11 @@ function _pt(io::IO, data::Any, header::AbstractVecOrMat;
 
     # Select the appropriate backend.
     if backend === Val(:text)
-        _pt_text(io, pinfo; kwargs...)
+        _pt_text(Ref{Any}(io), pinfo; kwargs...)
     elseif backend === Val(:html)
-        _pt_html(io, pinfo; kwargs...)
+        _pt_html(Ref{Any}(io), pinfo; kwargs...)
     elseif backend === Val(:latex)
-        _pt_latex(io, pinfo; kwargs...)
+        _pt_latex(Ref{Any}(io), pinfo; kwargs...)
     end
 
     return nothing

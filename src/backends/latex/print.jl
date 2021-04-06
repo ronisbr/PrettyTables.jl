@@ -7,7 +7,7 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # Low-level function to print the table using the LaTeX backend.
-function _pt_latex(io::IO, pinfo::PrintInfo;
+function _pt_latex(r_io::Ref{Any}, pinfo::PrintInfo;
                    tf::LatexTableFormat = tf_latex_default,
                    body_hlines::Vector{Int} = Int[],
                    cell_alignment::Dict{Tuple{Int,Int},Symbol} = Dict{Tuple{Int,Int},Symbol}(),
@@ -22,6 +22,12 @@ function _pt_latex(io::IO, pinfo::PrintInfo;
                    vlines::Union{Nothing,Symbol,AbstractVector} = nothing,
                    wrap_table::Union{Nothing,Bool} = true,
                    wrap_table_environment::Union{Nothing,String} = nothing)
+
+    # `r_io` must always be a reference to `IO`. Here, we unpack it. This is
+    # done to improve inference and reduce compilation time. Ideally, we need to
+    # add the `@nospecialize` annotation to `io`. However, it returns the
+    # message that this annotation is not supported with more than 32 arguments.
+    io = r_io.x
 
     # Unpack fields of `pinfo`.
     data                    = pinfo.data
