@@ -8,6 +8,12 @@
 
 export PrettyTablesConf
 
+"""
+    T_BACKENDS
+
+Types that define the supported backends.
+
+"""
 const T_BACKENDS = Union{Val{:auto}, Val{:text}, Val{:html}, Val{:latex}}
 
 """

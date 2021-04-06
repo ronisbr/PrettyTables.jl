@@ -24,7 +24,8 @@
 """
 
     hl = LatexHighlighter((data, i, j)->data[i,j] == 3, "color{red}")
-    result = pretty_table(String, data, backend = :latex, highlighters = hl)
+    result = pretty_table(String, data, backend = Val(:latex),
+                          highlighters = hl)
 
     @test result == expected
 
@@ -44,7 +45,8 @@
 """
 
     hl = LatexHighlighter((data, i, j)->data[i,j] == 3, ["textbf", "color{red}"])
-    result = pretty_table(String, data, backend = :latex, highlighters = hl)
+    result = pretty_table(String, data, backend = Val(:latex),
+                          highlighters = hl)
 
     @test result == expected
 end

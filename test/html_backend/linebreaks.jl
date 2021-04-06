@@ -39,7 +39,7 @@
 """
 
     result = pretty_table(String, data, header,
-                          backend = :html,
+                          backend = Val(:html),
                           linebreaks = true,
                           standalone = false)
 
@@ -70,7 +70,7 @@
 """
 
     result = pretty_table(String, data, header,
-                          backend = :html,
+                          backend = Val(:html),
                           cell_first_line_only = true,
                           standalone = false)
 

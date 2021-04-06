@@ -24,7 +24,7 @@
 \\end{table}
 """
 
-    result = pretty_table(String, data, backend = :latex,
+    result = pretty_table(String, data, backend = Val(:latex),
                           ["C1" "C2" "C3" "C4"; "Int" "Bool" "Float" "Hex"],
                           row_names = ["Row $i" for i = 1:6])
 
@@ -46,7 +46,7 @@
 \\end{table}
 """
 
-    result = pretty_table(String, data, backend = :latex,
+    result = pretty_table(String, data, backend = Val(:latex),
                           ["C1" "C2" "C3" "C4"; "Int" "Bool" "Float" "Hex"],
                           row_names = ["Row $i" for i = 1:6],
                           row_name_column_title = "Row names")
@@ -69,7 +69,7 @@
 \\end{table}
 """
 
-    result = pretty_table(String, data, backend = :latex,
+    result = pretty_table(String, data, backend = Val(:latex),
                           ["C1" "C2" "C3" "C4"; "Int" "Bool" "Float" "Hex"],
                           row_names = ["Row $i" for i = 1:6],
                           row_name_column_title = "Row names",

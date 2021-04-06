@@ -59,7 +59,7 @@
 """
     result = pretty_table(String, data;
                           alignment = :l,
-                          backend = :html,
+                          backend = Val(:html),
                           standalone = false)
 
     @test result == expected
@@ -116,7 +116,7 @@
 
     result = pretty_table(String, data;
                           alignment = :c,
-                          backend = :html,
+                          backend = Val(:html),
                           standalone = false)
 
     @test result == expected
@@ -172,7 +172,7 @@
 """
     result = pretty_table(String, data;
                           alignment = [:l,:r,:c,:r],
-                          backend = :html,
+                          backend = Val(:html),
                           standalone = false)
 
     @test result == expected
@@ -227,7 +227,7 @@ end
 """
     result = pretty_table(String, data;
                           alignment = [:l,:r,:c,:r],
-                          backend = :html,
+                          backend = Val(:html),
                           cell_alignment = Dict((3,1) => :r,
                                                 (3,2) => :l,
                                                 (1,4) => :l,
@@ -297,7 +297,7 @@ end
 """
     result = pretty_table(String, data, header;
                           alignment = [:l,:r,:c,:r],
-                          backend = :html,
+                          backend = Val(:html),
                           cell_alignment = Dict( (3,1) => :r,
                                                  (3,2) => :l,
                                                  (1,4) => :l,
@@ -364,7 +364,7 @@ end
 
     result = pretty_table(String, data, header;
                           alignment = [:l,:r,:c,:r],
-                          backend = :html,
+                          backend = Val(:html),
                           cell_alignment = Dict( (3,1) => :r,
                                                  (3,2) => :l,
                                                  (1,4) => :l,

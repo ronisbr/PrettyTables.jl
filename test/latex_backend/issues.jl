@@ -23,7 +23,7 @@
 \\end{table}
 """
 
-    result = pretty_table(String, data, backend = :latex)
+    result = pretty_table(String, data, backend = Val(:latex))
     @test result == expected
 end
 
@@ -39,7 +39,8 @@ end
 \\end{tabular}
 """
 
-    result = pretty_table(String, data, backend = :latex, wrap_table = false)
+    result = pretty_table(String, data, backend = Val(:latex),
+                          wrap_table = false)
     @test result == expected
 
     expected = """
@@ -57,7 +58,7 @@ end
   3 & 4 \\\\\\hline\\hline
 \\end{longtable}
 """
-    result = pretty_table(String, data, backend = :latex, wrap_table = true,
+    result = pretty_table(String, data, backend = Val(:latex), wrap_table = true,
                           table_type = :longtable)
     @test result == expected
 end
@@ -91,7 +92,7 @@ end
 """
 
     result = pretty_table(String, data, [1 2 3 4; 'a' 'b' 'c' 'd'; :e :f :g :h];
-                          backend = :latex,
+                          backend = Val(:latex),
                           table_type = :longtable)
 
     @test result == expected
@@ -124,7 +125,7 @@ end
 """
 
     result = pretty_table(String, data, [1 2 3 4; 'a' 'b' 'c' 'd'; :e :f :g :h];
-                          backend = :latex,
+                          backend = Val(:latex),
                           longtable_footer = "Long table footer",
                           table_type = :longtable,
                           title = "Table title")

@@ -46,7 +46,7 @@ function _preprocess_dict(dict::Dict{K,V}; sortkeys::Bool = false) where {K,V}
     return pdata, pheader
 end
 
-function _preprocess_Tables_column(data, header::AbstractVecOrMat)
+function _preprocess_Tables_column(data::Any, header::AbstractVecOrMat)
     # Access the table using the columns.
     table = Tables.columns(data)
 
@@ -89,7 +89,7 @@ function _preprocess_Tables_column(data, header::AbstractVecOrMat)
     return pdata, pheader
 end
 
-function _preprocess_Tables_row(data, header::AbstractVecOrMat)
+function _preprocess_Tables_row(data::Any, header::AbstractVecOrMat)
     # Access the table using the rows.
     table = Tables.rows(data)
 
@@ -140,7 +140,7 @@ end
 ################################################################################
 
 # This function creates the structure that holds the global print information.
-function _print_info(data, header::AbstractVecOrMat;
+function _print_info(data::Any, header::AbstractVecOrMat;
                      alignment::Union{Symbol,Vector{Symbol}} = :r,
                      cell_alignment::Union{Nothing,
                                            Dict{Tuple{Int,Int},Symbol},
@@ -327,15 +327,9 @@ end
 #                                   Printing
 ################################################################################
 
-# Dictionary to hold the information between the table format type and the
-# backend.
-const _type_backend_dict = Dict{DataType, Symbol}(TextFormat       => :text,
-                                                  HTMLTableFormat  => :html,
-                                                  LatexTableFormat => :latex)
-
 # This is a middleware function to apply the preprocess step to the data that
 # will be printed.
-function _pretty_table(io::IO, data, header::AbstractVecOrMat; kwargs...)
+function _pretty_table(io::IO, data::Any, header::AbstractVecOrMat; kwargs...)
     if Tables.istable(data)
         if Tables.columnaccess(data)
             pdata, pheader = _preprocess_Tables_column(data, header)
@@ -360,9 +354,9 @@ end
 # This is the low level function that prints the table. In this case, `data`
 # must be accessed by `[i,j]` and the size of the `header` must be equal to the
 # number of columns in `data`.
-function _pt(io::IO, data, header::AbstractVecOrMat;
+function _pt(io::IO, data::Any, header::AbstractVecOrMat;
              alignment::Union{Symbol,Vector{Symbol}} = :r,
-             backend::Union{Nothing,Symbol} = nothing,
+             backend::T_BACKENDS = Val(:auto),
              cell_alignment::Union{Nothing,
                                    Dict{Tuple{Int,Int},Symbol},
                                    Function,
@@ -388,14 +382,27 @@ function _pt(io::IO, data, header::AbstractVecOrMat;
              title_alignment::Symbol = :l,
              kwargs...)
 
-    if backend == nothing
+    if backend === Val(:auto)
         # In this case, if we do not have the `tf` keyword, then we just
-        # fallback to the text backend. Otherwise, check if the type is
-        # listed in the dictionary `_type_backend_dict`.
-        if haskey(kwargs, :tf) && haskey(_type_backend_dict, typeof(kwargs[:tf]))
-            backend = _type_backend_dict[typeof(kwargs[:tf])]
+        # fallback to the text backend. Otherwise, check if the type of `tf`.
+        if haskey(kwargs, :tf)
+            tf = kwargs[:tf]
+
+            if tf isa TextFormat
+                backend = Val(:text)
+            elseif tf isa HTMLTableFormat
+                backend = Val(:html)
+            elseif tf isa LatexTableFormat
+                backend = Val(:latex)
+            else
+                throw( TypeError(:_pt,
+                                 Union{TextFormat,
+                                       HTMLTableFormat,
+                                       LatexTableFormat},
+                                 typeof(tf)))
+            end
         else
-            backend = :text
+            backend = Val(:text)
         end
     end
 
@@ -421,14 +428,12 @@ function _pt(io::IO, data, header::AbstractVecOrMat;
                         title_alignment         = title_alignment)
 
     # Select the appropriate backend.
-    if backend == :text
+    if backend === Val(:text)
         _pt_text(io, pinfo; kwargs...)
-    elseif backend == :html
+    elseif backend === Val(:html)
         _pt_html(io, pinfo; kwargs...)
-    elseif backend == :latex
+    elseif backend === Val(:latex)
         _pt_latex(io, pinfo; kwargs...)
-    else
-        error("Unknown backend `$backend`.")
     end
 
     return nothing

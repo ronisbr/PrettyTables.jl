@@ -100,7 +100,7 @@
 </body>
 </html>
 """
-    result = pretty_table(String, data, backend = :html)
+    result = pretty_table(String, data, backend = Val(:html))
     @test result == expected
 
     expected = """
@@ -150,7 +150,7 @@
 </table>
 """
 
-    result = pretty_table(String, data, backend = :html, standalone = false)
+    result = pretty_table(String, data, backend = Val(:html), standalone = false)
     @test result == expected
 end
 
@@ -196,7 +196,7 @@ end
 """
 
     result = pretty_table(String, dict;
-                          backend = :html,
+                          backend = Val(:html),
                           sortkeys = true,
                           standalone = false)
 
@@ -233,7 +233,7 @@ end
 </table>
 """
 
-    result = pretty_table(String, vec, backend = :html, standalone = false)
+    result = pretty_table(String, vec, backend = Val(:html), standalone = false)
     @test result == expected
 
     expected = """
@@ -271,7 +271,7 @@ end
 
     result = pretty_table(String, vec;
                           alignment = :c,
-                          backend = :html,
+                          backend = Val(:html),
                           show_row_number = true,
                           standalone = false)
 
@@ -313,7 +313,7 @@ end
 """
 
     result = pretty_table(String, vec, ["A", "B", "C", "D"];
-                          backend = :html,
+                          backend = Val(:html),
                           standalone = false)
 
     @test result == expected

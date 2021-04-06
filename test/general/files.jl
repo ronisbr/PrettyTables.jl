@@ -114,7 +114,7 @@
     data_table_1 = [1 2 3
                     4 5 6]
 
-    include_pt_in_file(path, "Table 1", data_table_1, backend = :html,
+    include_pt_in_file(path, "Table 1", data_table_1, backend = Val(:html),
                        standalone = false, tag_append = " -->")
 
     result = read(path, String)

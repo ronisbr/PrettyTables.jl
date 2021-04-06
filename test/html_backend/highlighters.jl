@@ -56,7 +56,7 @@
 """
 
     result = pretty_table(String, data;
-                          backend = :html,
+                          backend = Val(:html),
                           highlighters = HTMLHighlighter((data, i, j)->data[i,j] > 4,
                                                          HTMLDecoration(color = "red")),
                           standalone = true)
@@ -114,7 +114,7 @@ end
 """
 
     result = pretty_table(String, data;
-                          backend = :html,
+                          backend = Val(:html),
                           highlighters = (hl_cell(2, 2, HTMLDecoration(background = "blue")),
                                           hl_cell(3, 3, HTMLDecoration(background = "blue"))),
                           standalone = false)
@@ -122,7 +122,7 @@ end
     @test result == expected
 
     result = pretty_table(String, data;
-                          backend = :html,
+                          backend = Val(:html),
                           highlighters = hl_cell([(2, 2), (3, 3)], HTMLDecoration(background = "blue")),
                           standalone = false)
 
@@ -177,7 +177,7 @@ end
 """
 
     result = pretty_table(String, data;
-                          backend = :html,
+                          backend = Val(:html),
                           highlighters = (hl_col(1, HTMLDecoration(font_weight = "bold")),
                                           hl_col(4, HTMLDecoration(font_weight = "bold"))),
                           standalone = false)
@@ -185,7 +185,7 @@ end
     @test result == expected
 
     result = pretty_table(String, data;
-                          backend = :html,
+                          backend = Val(:html),
                           highlighters = hl_col([1, 4], HTMLDecoration(font_weight = "bold")),
                           standalone = false)
 
@@ -242,7 +242,7 @@ end
 """
 
     result = pretty_table(String, data;
-                          backend = :html,
+                          backend = Val(:html),
                           highlighters = (hl_row(1, HTMLDecoration(font_family = "monospace")),
                                           hl_row(3, HTMLDecoration(font_family = "monospace")),
                                           hl_row(5, HTMLDecoration(font_family = "monospace"))),
@@ -251,7 +251,7 @@ end
     @test result == expected
 
     result = pretty_table(String, data;
-                          backend = :html,
+                          backend = Val(:html),
                           highlighters = hl_row([1, 3, 5], HTMLDecoration(font_family = "monospace")),
                           standalone = false)
 
@@ -308,7 +308,7 @@ end
 """
 
     result = pretty_table(String, data;
-                          backend = :html,
+                          backend = Val(:html),
                           highlighters = hl_lt(3, HTMLDecoration(color = "white",
                                                                  background = "black")),
                           standalone = false)
@@ -366,7 +366,7 @@ end
 """
 
     result = pretty_table(String, data;
-                          backend = :html,
+                          backend = Val(:html),
                           highlighters = hl_leq(3, HTMLDecoration(color = "white",
                                                                   background = "black")),
                           standalone = false)
@@ -424,7 +424,7 @@ end
 """
 
     result = pretty_table(String, data;
-                          backend = :html,
+                          backend = Val(:html),
                           highlighters = hl_gt(3, HTMLDecoration(color = "white",
                                                                  background = "black")),
                           standalone = false)
@@ -482,7 +482,7 @@ end
 """
 
     result = pretty_table(String, data;
-                          backend = :html,
+                          backend = Val(:html),
                           highlighters = hl_geq(3, HTMLDecoration(color = "white",
                                                                   background = "black")),
                           standalone = false)
@@ -540,7 +540,7 @@ end
 """
 
     result = pretty_table(String, data;
-                          backend = :html,
+                          backend = Val(:html),
                           highlighters = hl_value(3, HTMLDecoration(text_decoration = "line-through")),
                           standalone = false)
 

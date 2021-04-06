@@ -28,7 +28,8 @@
 \\end{table}
 """
 
-    result = pretty_table(String, matrix, backend = :latex, formatters = ft)
+    result = pretty_table(String, matrix, backend = Val(:latex),
+                          formatters = ft)
     @test result == expected
 end
 
@@ -58,7 +59,7 @@ end
 \\end{table}
 """
 
-    result = pretty_table(String, matrix, backend = :latex,
+    result = pretty_table(String, matrix, backend = Val(:latex),
                           formatters = ft_latex_sn(1))
     @test result == expected
 
@@ -82,7 +83,7 @@ end
 \\end{table}
 """
 
-    result = pretty_table(String, matrix, backend = :latex,
+    result = pretty_table(String, matrix, backend = Val(:latex),
                           formatters = ft_latex_sn(2))
     @test result == expected
 
@@ -106,7 +107,7 @@ end
 \\end{table}
 """
 
-    result = pretty_table(String, matrix, backend = :latex,
+    result = pretty_table(String, matrix, backend = Val(:latex),
                           formatters = ft_latex_sn(1, [1, 3]))
     @test result == expected
 
@@ -130,7 +131,7 @@ end
 \\end{table}
 """
 
-    result = pretty_table(String, matrix, backend = :latex,
+    result = pretty_table(String, matrix, backend = Val(:latex),
                           formatters = ft_latex_sn([1, 3], [1, 3]))
     @test result == expected
 end

@@ -13,7 +13,7 @@
     # ==========================================================================
 
     auto   = pretty_table(String, data, tf = tf_unicode)
-    manual = pretty_table(String, data, tf = tf_unicode, backend = :text)
+    manual = pretty_table(String, data, tf = tf_unicode, backend = Val(:text))
 
     @test auto == manual
 
@@ -21,7 +21,8 @@
     # ==========================================================================
 
     auto   = pretty_table(String, data, tf = tf_html_simple)
-    manual = pretty_table(String, data, tf = tf_html_simple, backend = :html)
+    manual = pretty_table(String, data, tf = tf_html_simple,
+                          backend = Val(:html))
 
     @test auto == manual
 
@@ -29,7 +30,8 @@
     # ==========================================================================
 
     auto   = pretty_table(String, data, tf = tf_latex_default)
-    manual = pretty_table(String, data, tf = tf_latex_default, backend = :latex)
+    manual = pretty_table(String, data, tf = tf_latex_default,
+                          backend = Val(:latex))
 
     @test auto == manual
 

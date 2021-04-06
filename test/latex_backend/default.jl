@@ -23,7 +23,7 @@
 \\end{table}
 """
 
-    result = pretty_table(String, data, backend = :latex)
+    result = pretty_table(String, data, backend = Val(:latex))
     @test result == expected
 end
 
@@ -149,7 +149,7 @@ end
 """
 
     result = pretty_table(String, data,
-                          backend = :latex,
+                          backend = Val(:latex),
                           label = "tab:label",
                           title = "Table title")
 
@@ -178,7 +178,7 @@ end
 """
 
     result = pretty_table(String, data,
-                          backend = :latex,
+                          backend = Val(:latex),
                           label = "tab:label",
                           table_type = :longtable,
                           title = "Table title")

@@ -64,7 +64,7 @@
     end
 
     result = pretty_table(String, data;
-                          backend = :html,
+                          backend = Val(:html),
                           formatters = formatter,
                           standalone = false)
 

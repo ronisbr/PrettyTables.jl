@@ -12,7 +12,7 @@ data = [true  100.0 0x8080 "String"
 # =======
 
 run(`cp example.tex format_default.tex`)
-include_pt_in_file("format_default.tex", "Table 1", data, backend = :latex,
+include_pt_in_file("format_default.tex", "Table 1", data, backend = Val(:latex),
                    backup_file = false, tf = tf_latex_default)
 run(`pdflatex format_default.tex`)
 run(`pdflatex format_default.tex`)
@@ -24,7 +24,7 @@ run(`rm format_default.pdf`)
 # ======
 
 run(`cp example.tex format_simple.tex`)
-include_pt_in_file("format_simple.tex", "Table 1", data, backend = :latex,
+include_pt_in_file("format_simple.tex", "Table 1", data, backend = Val(:latex),
                    backup_file = false, tf = tf_latex_simple)
 run(`pdflatex format_simple.tex`)
 run(`pdflatex format_simple.tex`)
@@ -36,7 +36,7 @@ run(`rm format_simple.pdf`)
 # ======
 
 run(`cp example.tex format_modern.tex`)
-include_pt_in_file("format_modern.tex", "Table 1", data, backend = :latex,
+include_pt_in_file("format_modern.tex", "Table 1", data, backend = Val(:latex),
                    backup_file = false, tf = tf_latex_modern)
 run(`pdflatex format_modern.tex`)
 run(`pdflatex format_modern.tex`)
@@ -48,7 +48,7 @@ run(`rm format_modern.pdf`)
 # ========
 
 run(`cp example_booktabs.tex format_booktabs.tex`)
-include_pt_in_file("format_booktabs.tex", "Table 1", data, backend = :latex,
+include_pt_in_file("format_booktabs.tex", "Table 1", data, backend = Val(:latex),
                    backup_file = false, tf = tf_latex_booktabs)
 run(`pdflatex format_booktabs.tex`)
 run(`pdflatex format_booktabs.tex`)
@@ -74,7 +74,7 @@ hl_e = LatexHighlighter( (data,i,j)->(i == 10), ["cellcolor{black}", "color{whit
 
 run(`cp example.tex latex_highlighter.tex`)
 include_pt_in_file("latex_highlighter.tex", "Table 1", data, header,
-                   backend = :latex, backup_file = false,
+                   backend = Val(:latex), backup_file = false,
                    highlighters = (hl_e, hl_p, hl_v))
 run(`pdflatex latex_highlighter.tex`)
 run(`pdflatex latex_highlighter.tex`)

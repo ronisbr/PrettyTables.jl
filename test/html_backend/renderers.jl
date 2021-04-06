@@ -72,7 +72,7 @@
 """
 
     result = pretty_table(String, matrix, header;
-                          backend = :html,
+                          backend = Val(:html),
                           linebreaks = true,
                           row_names = row_names,
                           row_name_column_title = "Test",
@@ -136,7 +136,7 @@
 """
 
     result = pretty_table(String, matrix, header;
-                          backend = :html,
+                          backend = Val(:html),
                           compact_printing = false,
                           linebreaks = true,
                           row_names = row_names,
@@ -171,7 +171,7 @@
 """
 
     result = pretty_table(String, matrix,
-                          backend = :html,
+                          backend = Val(:html),
                           standalone = false)
     @test expected == result
 
@@ -193,7 +193,7 @@
 """
 
     result = pretty_table(String, matrix,
-                          backend = :html,
+                          backend = Val(:html),
                           limit_printing = false,
                           standalone = false)
     @test expected == result
@@ -264,7 +264,7 @@ end
 """
 
     result = pretty_table(String, matrix, header;
-                          backend = :html,
+                          backend = Val(:html),
                           linebreaks = true,
                           renderer = :show,
                           row_names = row_names,
@@ -329,7 +329,7 @@ end
 """
 
     result = pretty_table(String, matrix, header;
-                          backend = :html,
+                          backend = Val(:html),
                           compact_printing = false,
                           linebreaks = true,
                           renderer = :show,
@@ -365,7 +365,7 @@ end
 """
 
     result = pretty_table(String, matrix,
-                          backend = :html,
+                          backend = Val(:html),
                           renderer = :show,
                           standalone = false)
     @test expected == result
@@ -388,7 +388,7 @@ end
 """
 
     result = pretty_table(String, matrix,
-                          backend = :html,
+                          backend = Val(:html),
                           limit_printing = false,
                           renderer = :show,
                           standalone = false)

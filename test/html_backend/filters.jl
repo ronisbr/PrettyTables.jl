@@ -34,7 +34,7 @@
 """
 
     result = pretty_table(String, data;
-                          backend = :html,
+                          backend = Val(:html),
                           filters_row = ((data,i) -> i%2 == 0,),
                           filters_col = ((data,i) -> i%2 == 1,),
                           formatters = ft_printf("%.1f",3),
@@ -70,7 +70,7 @@
 
     result = pretty_table(String, data;
                           alignment = [:c,:l,:l,:c],
-                          backend = :html,
+                          backend = Val(:html),
                           filters_row = ((data,i) -> i%2 == 0,),
                           filters_col = ((data,i) -> i%2 == 1,),
                           formatters = ft_printf("%.1f",3),

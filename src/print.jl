@@ -453,7 +453,7 @@ highlighted cell.
 # Pretty table HTML backend
 
 This backend produces HTML tables. This backend can be used by selecting
-`backend = :html`.
+`backend = Val(:html)`.
 
 # Keywords
 
@@ -533,7 +533,7 @@ specifying the function `fd`.
 # Pretty table LaTeX backend
 
 This backend produces LaTeX tables. This backend can be used by selecting
-`backend = :latex`.
+`backend = Val(:latex)`.
 
 # Keywords
 
