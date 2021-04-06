@@ -8,6 +8,8 @@
 
 export PrettyTablesConf
 
+const T_BACKENDS = Union{Val{:auto}, Val{:text}, Val{:html}, Val{:latex}}
+
 """
     struct ColumnTable
 
@@ -16,10 +18,10 @@ specification of Tables.jl.
 
 """
 struct ColumnTable
-    data         # .............................................. Original table
-    table        # ....................... Table converted using `Tables.column`
-    column_names # ................................................ Column names
-    size         # ........................................... Size of the table
+    data::Any                    # .............................. Original table
+    table::Any                   # ....... Table converted using `Tables.column`
+    column_names::Vector{Symbol} # ................................ Column names
+    size::Tuple{Int, Int}        # ........................... Size of the table
 end
 
 """
@@ -30,10 +32,10 @@ specification of Tables.jl.
 
 """
 struct RowTable
-    data         # .............................................. Original table
-    table        # ......................... Table converted using `Tables.rows`
-    column_names # ................................................ Column names
-    size         # ........................................... Size of the table
+    data::Any                    # .............................. Original table
+    table::Any                   # ......... Table converted using `Tables.rows`
+    column_names::Vector{Symbol} # ................................ Column names
+    size::Tuple{Int, Int}        # ........................... Size of the table
 end
 
 """
@@ -44,8 +46,8 @@ the tables.
 
 """
 struct PrintInfo
-    data
-    header
+    data::Any
+    header::Any
     id_cols::Vector{Int}
     id_rows::Vector{Int}
     num_rows::Int
@@ -57,17 +59,17 @@ struct PrintInfo
     show_row_number::Bool
     row_number_column_title::String
     show_row_names::Bool
-    row_names
+    row_names::Any
     row_name_alignment::Symbol
     row_name_column_title::String
     alignment::Vector{Symbol}
-    cell_alignment
-    formatters
+    cell_alignment::Tuple
+    formatters::Tuple
     compact_printing::Bool
     title::String
     title_alignment::Symbol
     header_alignment::Vector{Symbol}
-    header_cell_alignment
+    header_cell_alignment::Tuple
     cell_first_line_only::Bool
     renderer::Union{Val{:print}, Val{:show}}
     limit_printing::Bool
