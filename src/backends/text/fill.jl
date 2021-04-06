@@ -113,15 +113,20 @@ function _fill_matrix_data!(header_str::Matrix{String},
 
                 # NOTE: For headers, we always use `print` instead of `show` to
                 # avoid quotes.
-                hstr = _parse_cell_text(header_ij;
-                                        autowrap = false,
-                                        cell_first_line_only = false,
-                                        column_width = -1,
-                                        compact_printing = compact_printing,
-                                        has_color = display.has_color,
-                                        limit_printing = limit_printing,
-                                        linebreaks = false,
-                                        renderer = Val(:print))
+                #
+                # Due to the non-specialization of `data`, `hstr` here is
+                # inferred as `Any`. However, we know that the output of
+                # `_parse_cell_text` must be a vector of String.
+                hstr::Vector{String} =
+                    _parse_cell_text(header_ij;
+                                     autowrap = false,
+                                     cell_first_line_only = false,
+                                     column_width = -1,
+                                     compact_printing = compact_printing,
+                                     has_color = display.has_color,
+                                     limit_printing = limit_printing,
+                                     linebreaks = false,
+                                     renderer = Val(:print))
 
                 header_str[j,i] = first(hstr)
                 num_processed_rows += 1
@@ -259,13 +264,18 @@ function _fill_row_name_column!(header_str::Matrix{String},
         jr = jrvec[i]
 
         row_names_j = isassigned(row_names,jr) ? row_names[jr] : undef
-        row_name_str = _parse_cell_text(row_names_j;
-                                        autowrap = false,
-                                        cell_first_line_only = false,
-                                        column_width = -1,
-                                        compact_printing = compact_printing,
-                                        linebreaks = false,
-                                        renderer = Val(:print))
+
+        # Due to the non-specialization of `data`, `hstr` here is inferred as
+        # `Any`. However, we know that the output of `_parse_cell_text` must be
+        # a vector of String.
+        row_name_str::Vector{String} =
+            _parse_cell_text(row_names_j;
+                             autowrap = false,
+                             cell_first_line_only = false,
+                             column_width = -1,
+                             compact_printing = compact_printing,
+                             linebreaks = false,
+                             renderer = Val(:print))
 
         data_str[j,Δc] = row_name_str
     end

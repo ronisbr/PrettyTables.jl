@@ -14,7 +14,7 @@ Parse the table cell `cell` of type `T` and return a vector of `String` with the
 parsed cell text, one component per line.
 
 """
-function _parse_cell_text(cell::Any;
+function _parse_cell_text(cell;
                           autowrap::Bool = true,
                           cell_data_type::DataType = Nothing,
                           cell_first_line_only::Bool = false,
@@ -28,11 +28,16 @@ function _parse_cell_text(cell::Any;
     isstring = cell_data_type <: AbstractString
 
     # Convert to string using the desired renderer.
-    cell_vstr = _render_text(renderer, cell,
-                             compact_printing = compact_printing,
-                             isstring = isstring,
-                             limit_printing = limit_printing,
-                             linebreaks = linebreaks || cell_first_line_only)
+    #
+    # Due to the non-specialization of `data`, `cell` here is inferred as `Any`.
+    # However, we know that the output of `_render_text` must be a vector of
+    # String.
+    cell_vstr::Vector{String} =
+        _render_text(renderer, cell,
+                     compact_printing = compact_printing,
+                     isstring = isstring,
+                     limit_printing = limit_printing,
+                     linebreaks = linebreaks || cell_first_line_only)
 
     # Check if we must autowrap the text.
     autowrap && (cell_vstr = _str_autowrap(cell_vstr, column_width))
@@ -77,12 +82,12 @@ function _parse_cell_text(cell::Markdown.MD;
         end
     else
         # Obtain the number of lines and the maximum number of used columns.
-        tokens_nc = split(str_nc, '\n')
+        tokens_nc = String.(split(str_nc, '\n'))
 
         if !has_color
             return tokens_nc
         else
-            tokens = split(str, '\n')
+            tokens = String.(split(str, '\n'))
             _reapply_ansi_format!(tokens)
             return tokens
         end
@@ -116,7 +121,7 @@ function _process_cell_text((@nospecialize data::Any),
         # Check for highlighters.
         for h in highlighters.x
             if h.f(_getdata(data), i, j)
-                crayon = h.fd(h, _getdata(data), i, j)
+                crayon = h.fd(h, _getdata(data), i, j)::Crayon
                 break
             end
         end

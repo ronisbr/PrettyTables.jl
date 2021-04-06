@@ -21,7 +21,7 @@ function _flush_buffer!(io::IO,
     output_str = String(take!(buf))
 
     # Check if the user does not want a newline at end.
-    !newline_at_end && (output_str = chomp(output_str))
+    !newline_at_end && (output_str = String(chomp(output_str)))
 
     print(io, str_overwrite * output_str)
 
@@ -115,7 +115,7 @@ function _print_table_header!(buf::IO,
                     aux = f(header, i, jc)
 
                     if aux ∈ (:l, :c, :r, :L, :C, :R, :s, :S)
-                        alignment_ij = aux
+                        alignment_ij = Symbol(aux)
                         break
                     end
                 end

@@ -143,7 +143,14 @@ end
 
     # NOTE: Here we cannot use `escape_string(str)` because it also adds the
     # character `"` to the list of characters to be escaped.
-    return [sprint(escape_string, s, "", sizehint = lastindex(s)) for s in vstr]
+    output_str = Vector{String}(undef, length(vstr))
+
+    @inbounds for i = 1:length(vstr)
+        s = vstr[i]
+        output_str[i] = sprint(escape_string, s, "", sizehint = lastindex(s))
+    end
+
+    return output_str
 end
 
 @inline function _render_text(::Val{:show}, v::Any;

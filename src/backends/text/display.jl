@@ -107,8 +107,10 @@ function _nl!(display::Display, io::IO)
     display.col  = 0
 
     # Flush the current line to the buffer removing any trailing space.
-    str = rstrip(String(take!(display.buf_line)))
+    str = String(rstrip(String(take!(display.buf_line))))
     println(io, str)
+
+    return nothing
 end
 
 """
@@ -183,8 +185,8 @@ function _p!(display::Display, crayon::Crayon, str::String,
 
             # In this case, we reached the end of display. Thus, remove any
             # trailing spaces.
-            sapp = rstrip(sapp)
-            length(sapp) == 0 && (str = rstrip(str))
+            sapp = String(rstrip(sapp))
+            length(sapp) == 0 && (str = String(rstrip(str)))
 
         elseif !final_line_print
             # Here we must verify if this is the final printing on this line. If
@@ -201,8 +203,8 @@ function _p!(display::Display, crayon::Crayon, str::String,
 
                 # In this case, we reached the end of display. Thus, remove any
                 # trailing spaces.
-                sapp = rstrip(sapp)
-                length(sapp) == 0 && (str = rstrip(str))
+                sapp = String(rstrip(sapp))
+                length(sapp) == 0 && (str = String(rstrip(str)))
             end
         end
     end

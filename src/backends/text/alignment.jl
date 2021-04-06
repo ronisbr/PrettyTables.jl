@@ -24,7 +24,7 @@ function _apply_alignment_anchor_regex!(data_str::Matrix{Vector{String}},
 
     # If we have a key `0`, then it will be used to align all the columns.
     if haskey(alignment_anchor_regex, 0)
-        alignment_keys = 1:maximum(id_cols)
+        alignment_keys = collect(1:maximum(id_cols))
         global_regex   = true
     else
         alignment_keys = collect(keys(alignment_anchor_regex))
