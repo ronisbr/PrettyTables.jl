@@ -206,14 +206,14 @@ function _print_info(data::Any, header::AbstractVecOrMat;
         header_num_cols = header_size[1]
     end
 
-    if typeof(alignment) == Symbol
-        alignment = [alignment for i = 1:num_cols]
+    if alignment isa Symbol
+        alignment = fill(alignment, num_cols)
     else
         length(alignment) != num_cols && error("The length of `alignment` must be the same as the number of rows.")
     end
 
-    if typeof(header_alignment) == Symbol
-        header_alignment = [header_alignment for i = 1:num_cols]
+    if header_alignment isa Symbol
+        header_alignment = fill(header_alignment, num_cols)
     else
         length(header_alignment) != num_cols && error("The length of `header_alignment` must be the same as the number of rows.")
     end

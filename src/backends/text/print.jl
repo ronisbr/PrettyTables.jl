@@ -126,15 +126,15 @@ function _pt_text(r_io::Ref{Any}, pinfo::PrintInfo;
         end
 
         # Transform some keywords that are single elements to vectors.
-        if typeof(header_crayon) == Crayon
-            header_crayon = [header_crayon for i = 1:num_cols]
+        if header_crayon isa Crayon
+            header_crayon = fill(header_crayon, num_cols)
         else
             length(header_crayon) != num_cols &&
             error("The length of `header_crayon` must be the same as the number of columns.")
         end
 
-        if typeof(subheader_crayon) == Crayon
-            subheader_crayon = [subheader_crayon for i = 1:num_cols]
+        if subheader_crayon isa Crayon
+            subheader_crayon = fill(subheader_crayon, num_cols)
         else
             length(subheader_crayon) != num_cols &&
             error("The length of `subheader_crayon` must be the same as the number of columns.")
@@ -149,15 +149,15 @@ function _pt_text(r_io::Ref{Any}, pinfo::PrintInfo;
     end
 
     # Make sure that `maximum_columns_width` is always a vector.
-    typeof(maximum_columns_width) <: Integer &&
-        (maximum_columns_width = ones(Int, num_cols)*maximum_columns_width)
+    maximum_columns_width isa Integer &&
+        (maximum_columns_width = fill(maximum_columns_width, num_cols))
 
     # Make sure that `minimum_columns_width` is always a vector.
-    typeof(minimum_columns_width) <: Integer &&
-        (minimum_columns_width = ones(Int, num_cols)*minimum_columns_width)
+    minimum_columns_width isa Integer &&
+        (minimum_columns_width = fill(minimum_columns_width, num_cols))
 
     # Check which columns must have fixed sizes.
-    typeof(columns_width) <: Integer && (columns_width = ones(Int, num_cols)*columns_width)
+    columns_width isa Integer && (columns_width = fill(columns_width, num_cols))
     length(columns_width) != num_cols && error("The length of `columns_width` must be the same as the number of columns.")
 
     # The number of lines that must be skipped from printing ellipsis must be
@@ -335,7 +335,7 @@ function _pt_text(r_io::Ref{Any}, pinfo::PrintInfo;
 
     # If the user wants all the columns with the same size, then select the
     # larger.
-    equal_columns_width && (cols_width = [maximum(cols_width) for i = 1:num_printed_cols])
+    equal_columns_width && (cols_width = fill(maximum(cols_width), num_printed_cols))
 
     # Compute where the horizontal and vertical lines must be drawn
     # --------------------------------------------------------------------------
@@ -346,16 +346,22 @@ function _pt_text(r_io::Ref{Any}, pinfo::PrintInfo;
                               tf.right_intersection, tf.row)
     end
 
-    hlines == nothing && (hlines = tf.hlines)
-    hlines = _process_hlines(hlines, body_hlines, num_printed_rows, noheader)
+    if hlines == nothing
+        hlines = _process_hlines(tf.hlines, body_hlines, num_printed_rows, noheader)
+    else
+        hlines = _process_hlines(hlines, body_hlines, num_printed_rows, noheader)
+    end
 
     # Check if the last horizontal line must be drawn. This is required when
     # computing the moment that the display will be cropped.
     draw_last_hline = (num_printed_rows + !noheader) ∈ hlines
 
     # Process `vlines`.
-    vlines == nothing && (vlines = tf.vlines)
-    vlines = _process_vlines(vlines, num_printed_cols)
+    if vlines == nothing
+        vlines = _process_vlines(tf.vlines, num_printed_cols)
+    else
+        vlines = _process_vlines(vlines, num_printed_cols)
+    end
 
     # Compute the table width
     # --------------------------------------------------------------------------
