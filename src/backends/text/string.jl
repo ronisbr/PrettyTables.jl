@@ -109,7 +109,7 @@ If `limit_printing` is `true`, then `v` will be converted to string using the
 property `:limit => true`.
 
 """
-@inline function _render_text(::Val{:print}, v;
+@inline function _render_text(::Val{:print}, v::Any;
                               compact_printing::Bool = true,
                               isstring::Bool = false,
                               limit_printing::Bool = true,
@@ -146,7 +146,7 @@ end
     return [sprint(escape_string, s, "", sizehint = lastindex(s)) for s in vstr]
 end
 
-@inline function _render_text(::Val{:show}, v;
+@inline function _render_text(::Val{:show}, v::Any;
                               compact_printing::Bool = true,
                               linebreaks::Bool = false,
                               limit_printing::Bool = true,

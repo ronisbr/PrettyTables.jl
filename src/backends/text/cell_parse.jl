@@ -14,7 +14,7 @@ Parse the table cell `cell` of type `T` and return a vector of `String` with the
 parsed cell text, one component per line.
 
 """
-function _parse_cell_text(cell;
+function _parse_cell_text(cell::Any;
                           autowrap::Bool = true,
                           cell_data_type::DataType = Nothing,
                           cell_first_line_only::Bool = false,
@@ -100,7 +100,7 @@ Process the cell by applying the right alignment and also verifying the
 highlighters.
 
 """
-function _process_cell_text((@nospecialize data),
+function _process_cell_text((@nospecialize data::Any),
                             i::Int,
                             j::Int,
                             data_cell::Bool,
