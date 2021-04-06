@@ -79,7 +79,7 @@ function _print_table_header!(buf::IO,
                               # Configurations.
                               alignment::Vector{Symbol},
                               header_alignment::Vector{Symbol},
-                              header_cell_alignment::Tuple,
+                              header_cell_alignment::Ref{Any},
                               show_row_names::Bool,
                               show_row_number::Bool,
                               tf::TextFormat,
@@ -111,7 +111,7 @@ function _print_table_header!(buf::IO,
                 alignment_ij = header_alignment[jc]
 
                 # Check for cell alignment override.
-                for f in header_cell_alignment
+                for f in header_cell_alignment.x
                     aux = f(header, i, jc)
 
                     if aux ∈ (:l, :c, :r, :L, :C, :R, :s, :S)
@@ -162,11 +162,11 @@ function _print_table_data(buf::IO,
                            col_printing_recipe::Vector{Union{Int,Symbol}},
                            # Configurations.
                            alignment::Vector{Symbol},
-                           body_hlines_format::Tuple,
+                           body_hlines_format::NTuple{4, Char},
                            cell_alignment_override::Dict{Tuple{Int, Int}, Symbol},
                            continuation_row_alignment::Symbol,
                            ellipsis_line_skip::Integer,
-                           highlighters::Tuple,
+                           highlighters::Ref{Any},
                            noheader::Bool,
                            show_row_names::Bool,
                            show_row_number::Bool,

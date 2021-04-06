@@ -82,7 +82,7 @@ function _pt_text(io::IO, pinfo::PrintInfo;
     # ==========================================================================
 
     # Let's create a `IOBuffer` to write everything and then transfer to `io`.
-    io_has_color = get(io, :color, false)
+    io_has_color = get(io, :color, false)::Bool
     buf_io       = IOBuffer()
     buf          = IOContext(buf_io, :color => io_has_color)
     display      = Display(has_color = io_has_color)
@@ -135,8 +135,12 @@ function _pt_text(io::IO, pinfo::PrintInfo;
         end
     end
 
-    # Make sure that `highlighters` is always a tuple.
-    !(highlighters isa Tuple) && (highlighters = (highlighters,))
+    # Make sure that `highlighters` is always a Ref{Any}(Tuple).
+    if !(highlighters isa Tuple)
+        highlighters = Ref{Any}((highlighters,))
+    else
+        highlighters = Ref{Any}(highlighters)
+    end
 
     # Make sure that `maximum_columns_width` is always a vector.
     typeof(maximum_columns_width) <: Integer &&

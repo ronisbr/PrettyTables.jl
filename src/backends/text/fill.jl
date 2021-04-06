@@ -69,7 +69,7 @@ function _fill_matrix_data!(header_str::Matrix{String},
                             Δc::Int,
                             (@nospecialize data::Any),
                             (@nospecialize header::Any),
-                            (@nospecialize formatters::Tuple),
+                            (@nospecialize formatters::Ref{Any}),
                             display::Display,
                             # Configuration options.
                             autowrap::Bool,
@@ -140,7 +140,7 @@ function _fill_matrix_data!(header_str::Matrix{String},
 
             data_ij_type = typeof(data_ij)
 
-            for f in formatters
+            for f in formatters.x
                 data_ij = f(data_ij, jr, ic)
             end
 

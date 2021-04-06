@@ -171,7 +171,7 @@ function _compute_cell_alignment_override((@nospecialize data),
                                           num_printed_cols::Int,
                                           num_printed_rows::Int,
                                           # Configurations.
-                                          cell_alignment::Tuple)
+                                          cell_alignment::Ref{Any})
 
     # Dictionary with the cells in which the alignment is overridden.
     cell_alignment_override = Dict{Tuple{Int, Int}, Symbol}()
@@ -182,7 +182,7 @@ function _compute_cell_alignment_override((@nospecialize data),
         for i = 1:num_printed_rows
             ir = id_rows[i]
 
-            for f in cell_alignment
+            for f in cell_alignment.x
                 aux = f(_getdata(data), ir, jc)
 
                 if (aux == :l) || (aux == :c) || (aux == :r) ||

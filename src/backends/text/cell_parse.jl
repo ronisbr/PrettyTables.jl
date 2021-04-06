@@ -94,7 +94,7 @@ end
 @inline _parse_cell_text(cell::UndefInitializer; kwargs...) = ["#undef"]
 
 """
-    _process_cell_text(data::Any, i::Int, j::Int, data_cell::Bool, data_str::String, data_len::Int, col_width::Int, crayon::Crayon, alignment::Symbol, highlighters::Tuple)
+    _process_cell_text(data::Any, i::Int, j::Int, data_cell::Bool, data_str::String, data_len::Int, col_width::Int, crayon::Crayon, alignment::Symbol, highlighters::Ref{Any})
 
 Process the cell by applying the right alignment and also verifying the
 highlighters.
@@ -108,13 +108,13 @@ function _process_cell_text((@nospecialize data),
                             col_width::Int,
                             crayon::Crayon,
                             alignment::Symbol,
-                            highlighters::Tuple)
+                            highlighters::Ref{Any})
 
     lstr = -1
 
     if data_cell
         # Check for highlighters.
-        for h in highlighters
+        for h in highlighters.x
             if h.f(_getdata(data), i, j)
                 crayon = h.fd(h, _getdata(data), i, j)
                 break

@@ -69,13 +69,13 @@ struct PrintInfo
     row_name_alignment::Symbol
     row_name_column_title::String
     alignment::Vector{Symbol}
-    cell_alignment::Tuple
-    formatters::Tuple
+    cell_alignment::Ref{Any}
+    formatters::Ref{Any}
     compact_printing::Bool
     title::String
     title_alignment::Symbol
     header_alignment::Vector{Symbol}
-    header_cell_alignment::Tuple
+    header_cell_alignment::Ref{Any}
     cell_first_line_only::Bool
     renderer::Union{Val{:print}, Val{:show}}
     limit_printing::Bool

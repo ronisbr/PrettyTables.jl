@@ -92,8 +92,12 @@ function _pt_latex(io::IO, pinfo::PrintInfo;
         end
     end
 
-    # Make sure that `highlighters` is always a tuple.
-    !(highlighters isa Tuple) && (highlighters = (highlighters,))
+    # Make sure that `highlighters` is always a Ref{Any}(Tuple).
+    if !(highlighters isa Tuple)
+        highlighters = Ref{Any}((highlighters,))
+    else
+        highlighters = Ref{Any}(highlighters)
+    end
 
     # Get the string which is printed when `print` is called in each element of
     # the matrix. Notice that we must create only the matrix with the printed
@@ -122,7 +126,7 @@ function _pt_latex(io::IO, pinfo::PrintInfo;
             # Apply the formatters.
             data_ij = isassigned(data,jr,ic) ? data[jr,ic] : undef
 
-            for f in formatters
+            for f in formatters.x
                 data_ij = f(data_ij, jr, ic)
             end
 
@@ -241,7 +245,7 @@ function _pt_latex(io::IO, pinfo::PrintInfo;
                 # Check the alignment of this cell.
                 alignment_ij = header_alignment[jc]
 
-                for f in header_cell_alignment
+                for f in header_cell_alignment.x
                     aux = f(header, i, jc)
 
                     if aux ∈ (:l, :c, :r, :L, :C, :R, :s, :S)
@@ -333,7 +337,7 @@ function _pt_latex(io::IO, pinfo::PrintInfo;
             # data should be highlight.
             data_str_ij = data_str[i,j]
 
-            for h in highlighters
+            for h in highlighters.x
                 if h.f(_getdata(data), ir, jc)
                     data_str_ij = h.fd(_getdata(data), i, j, data_str[i,j])
                     break
@@ -343,7 +347,7 @@ function _pt_latex(io::IO, pinfo::PrintInfo;
             # Check the alignment of this cell.
             alignment_ij = alignment[jc]
 
-            for f in cell_alignment
+            for f in cell_alignment.x
                 aux = f(_getdata(data), ir, jc)
 
                 if aux ∈ [:l, :c, :r, :L, :C, :R]
