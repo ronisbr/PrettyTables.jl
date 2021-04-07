@@ -147,14 +147,20 @@ function _pt_latex(r_io::Ref{Any}, pinfo::PrintInfo;
     # Compute where the horizontal and vertical lines must be drawn
     # --------------------------------------------------------------------------
 
-    hlines == nothing && (hlines = tf.hlines)
-    hlines = _process_hlines(hlines, body_hlines, num_printed_rows, noheader)
+    if hlines == nothing
+        hlines = _process_hlines(tf.hlines, body_hlines, num_printed_rows, noheader)
+    else
+        hlines = _process_hlines(hlines, body_hlines, num_printed_rows, noheader)
+    end
 
     # Process `vlines`.
     #
     # TODO: `num_printed_cols` must consider the row number.
-    vlines == nothing && (vlines = tf.vlines)
-    vlines = _process_vlines(vlines, num_printed_cols + show_row_number)
+    if vlines == nothing
+        vlines = _process_vlines(tf.vlines, num_printed_cols)
+    else
+        vlines = _process_vlines(vlines, num_printed_cols)
+    end
 
     # Variables to store information about indentation
     # ==========================================================================
@@ -249,7 +255,7 @@ function _pt_latex(r_io::Ref{Any}, pinfo::PrintInfo;
                 header_str_ij = _latex_envs(header_str[i,j], envs)
 
                 # Check the alignment of this cell.
-                alignment_ij = header_alignment[jc]
+                alignment_ij::Symbol = header_alignment[jc]
 
                 for f in header_cell_alignment.x
                     aux = f(header, i, jc)
@@ -329,10 +335,14 @@ function _pt_latex(r_io::Ref{Any}, pinfo::PrintInfo;
         end
 
         if show_row_names
-            row_name_i_str = _parse_cell_latex(row_names[i];
-                                               cell_first_line_only = false,
-                                               compact_printing = compact_printing,
-                                               renderer = renderer)
+            # Due to the non-specialization of `row_names`, `row_name_i_str`
+            # here is inferred as `Any`. However, we know that the output of
+            # `_parse_cell_latex` must be a String.
+            row_name_i_str::String =
+                _parse_cell_latex(row_names[i];
+                                  cell_first_line_only = false,
+                                  compact_printing = compact_printing,
+                                  renderer = renderer)
             print(buf, row_name_i_str * " & ")
         end
 
@@ -345,13 +355,13 @@ function _pt_latex(r_io::Ref{Any}, pinfo::PrintInfo;
 
             for h in highlighters.x
                 if h.f(_getdata(data), ir, jc)
-                    data_str_ij = h.fd(_getdata(data), i, j, data_str[i,j])
+                    data_str_ij = h.fd(_getdata(data), i, j, data_str[i,j])::String
                     break
                 end
             end
 
             # Check the alignment of this cell.
-            alignment_ij = alignment[jc]
+            alignment_ij::Symbol = alignment[jc]
 
             for f in cell_alignment.x
                 aux = f(_getdata(data), ir, jc)
