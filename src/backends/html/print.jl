@@ -216,7 +216,7 @@ function _pt_html(r_io::Ref{Any}, pinfo::PrintInfo;
                 jc = id_cols[j]
 
                 # Check the alignment of this cell.
-                alignment_ij = header_alignment[jc]
+                alignment_ij::Symbol = header_alignment[jc]
 
                 for f in header_cell_alignment.x
                     aux = f(header, i, jc)
@@ -254,11 +254,16 @@ function _pt_html(r_io::Ref{Any}, pinfo::PrintInfo;
         end
 
         if show_row_names
-            row_name_i_str = _parse_cell_html(row_names[i];
-                                              cell_first_line_only = false,
-                                              compact_printing = compact_printing,
-                                              linebreaks = false,
-                                              renderer = renderer)
+            # Due to the non-specialization of `row_names`, `row_name_i_str`
+            # here is inferred as `Any`. However, we know that the output of
+            # `_parse_cell_latex` must be a String.
+            row_name_i_str::String =
+                _parse_cell_html(row_names[i];
+                                 cell_first_line_only = false,
+                                 compact_printing = compact_printing,
+                                 linebreaks = false,
+                                 renderer = renderer)
+
             style = Dict{String,String}("text-align" => _html_alignment[row_name_alignment])
             row_name_i_html = _styled_html("td", row_name_i_str, style;
                                            class = "rowName")
@@ -269,7 +274,7 @@ function _pt_html(r_io::Ref{Any}, pinfo::PrintInfo;
             jc = id_cols[j]
 
             # Check the alignment of this cell.
-            alignment_ij = alignment[jc]
+            alignment_ij::Symbol = alignment[jc]
 
             for f in cell_alignment.x
                 aux = f(_getdata(data), ir, jc)
