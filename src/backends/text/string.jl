@@ -109,11 +109,11 @@ If `limit_printing` is `true`, then `v` will be converted to string using the
 property `:limit => true`.
 
 """
-@inline function _render_text(::Val{:print}, v::Any;
-                              compact_printing::Bool = true,
-                              isstring::Bool = false,
-                              limit_printing::Bool = true,
-                              linebreaks::Bool = false)
+function _render_text(::Val{:print}, v::Any;
+                      compact_printing::Bool = true,
+                      isstring::Bool = false,
+                      limit_printing::Bool = true,
+                      linebreaks::Bool = false)
 
     # Create the context that will be used when rendering the cell. Notice that
     # the `IOBuffer` will be neglected.
@@ -129,11 +129,11 @@ property `:limit => true`.
                         linebreaks = linebreaks)
 end
 
-@inline function _render_text(::Val{:print}, str::AbstractString;
-                              compact_printing::Bool = true,
-                              isstring::Bool = false,
-                              limit_printing::Bool = true,
-                              linebreaks::Bool = false)
+function _render_text(::Val{:print}, str::AbstractString;
+                      compact_printing::Bool = true,
+                      isstring::Bool = false,
+                      limit_printing::Bool = true,
+                      linebreaks::Bool = false)
 
     if linebreaks
         vstr = string.(split(str, '\n'))
@@ -153,11 +153,11 @@ end
     return output_str
 end
 
-@inline function _render_text(::Val{:show}, v::Any;
-                              compact_printing::Bool = true,
-                              linebreaks::Bool = false,
-                              limit_printing::Bool = true,
-                              isstring::Bool = false)
+function _render_text(::Val{:show}, v::Any;
+                      compact_printing::Bool = true,
+                      linebreaks::Bool = false,
+                      limit_printing::Bool = true,
+                      isstring::Bool = false)
 
     # Create the context that will be used when rendering the cell. Notice that
     # the `IOBuffer` will be neglected.
