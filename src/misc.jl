@@ -31,7 +31,7 @@ end
 ################################################################################
 
 """
-    _aprint(buf, [v,] indentation = 0, nspace = 2)
+    _aprint(buf::IO, [v,] indentation = 0, nspace = 2)
 
 Print the variable `v` to the buffer `buf` at the indentation level
 `indentation`. Each level has `nspaces` spaces.
@@ -39,7 +39,7 @@ Print the variable `v` to the buffer `buf` at the indentation level
 If `v` is not present, then only the indentation spaces will be printed.
 
 """
-@inline function _aprint(buf, v::String, indentation::Int = 0, nspaces::Int = 2)
+function _aprint(buf::IO, v::String, indentation::Int = 0, nspaces::Int = 2)
     tokens  = split(v, '\n')
     padding = " "^(indentation*nspaces)
     ntokens = length(tokens)
@@ -55,18 +55,18 @@ If `v` is not present, then only the indentation spaces will be printed.
     end
 end
 
-@inline function _aprint(buf, indentation::Int = 0, nspaces::Int = 2)
+function _aprint(buf::IO, indentation::Int = 0, nspaces::Int = 2)
     padding = " "^(indentation*nspaces)
     print(buf, padding)
 end
 
 """
-    _aprintln(buf, [v,] indentation = 0, nspaces = 2)
+    _aprintln(buf::IO, [v,] indentation = 0, nspaces = 2)
 
 Same as `_aprint`, but a new line will be added at the end.
 
 """
-@inline function _aprintln(buf, v::String, indentation::Int = 0, nspaces::Int = 2)
+function _aprintln(buf::IO, v::String, indentation::Int = 0, nspaces::Int = 2)
     tokens  = split(v, '\n')
     padding = " "^(indentation*nspaces)
     ntokens = length(tokens)
@@ -83,7 +83,7 @@ Same as `_aprint`, but a new line will be added at the end.
     end
 end
 
-@inline function _aprintln(buf, indentation::Int = 0, nspaces::Int = 2)
+function _aprintln(buf::IO, indentation::Int = 0, nspaces::Int = 2)
     padding = " "^(indentation*nspaces)
     println(buf, padding)
 end
