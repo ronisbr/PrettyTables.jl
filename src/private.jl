@@ -356,7 +356,7 @@ end
 # number of columns in `data`.
 function _pt((@nospecialize io::IO), data::Any, header::AbstractVecOrMat;
              alignment::Union{Symbol,Vector{Symbol}} = :r,
-             backend::T_BACKENDS = Val(:auto),
+             backend::Union{Symbol, T_BACKENDS} = Val(:auto),
              cell_alignment::Union{Nothing,
                                    Dict{Tuple{Int,Int},Symbol},
                                    Function,
@@ -382,18 +382,28 @@ function _pt((@nospecialize io::IO), data::Any, header::AbstractVecOrMat;
              title_alignment::Symbol = :l,
              kwargs...)
 
-    if backend === Val(:auto)
+    # NOTE: Inform that using `backend` as `Symbol` is deprecated. This will be
+    # removed in the next PrettyTables.jl version.
+    if backend isa Symbol
+      _backend = Val(backend)
+      Base.depwarn("Using `backend` as a symbol is deprecated. Use `Val(:$backend)` instead.",
+                   nothing)
+    else
+      _backend = backend
+    end
+
+    if _backend === Val(:auto)
         # In this case, if we do not have the `tf` keyword, then we just
-        # fallback to the text backend. Otherwise, check if the type of `tf`.
+        # fallback to the text _backend. Otherwise, check if the type of `tf`.
         if haskey(kwargs, :tf)
             tf = kwargs[:tf]
 
             if tf isa TextFormat
-                backend = Val(:text)
+                _backend = Val(:text)
             elseif tf isa HTMLTableFormat
-                backend = Val(:html)
+                _backend = Val(:html)
             elseif tf isa LatexTableFormat
-                backend = Val(:latex)
+                _backend = Val(:latex)
             else
                 throw( TypeError(:_pt,
                                  Union{TextFormat,
@@ -402,7 +412,7 @@ function _pt((@nospecialize io::IO), data::Any, header::AbstractVecOrMat;
                                  typeof(tf)))
             end
         else
-            backend = Val(:text)
+            _backend = Val(:text)
         end
     end
 
@@ -428,11 +438,11 @@ function _pt((@nospecialize io::IO), data::Any, header::AbstractVecOrMat;
                         title_alignment         = title_alignment)
 
     # Select the appropriate backend.
-    if backend === Val(:text)
+    if _backend === Val(:text)
         _pt_text(Ref{Any}(io), pinfo; kwargs...)
-    elseif backend === Val(:html)
+    elseif _backend === Val(:html)
         _pt_html(Ref{Any}(io), pinfo; kwargs...)
-    elseif backend === Val(:latex)
+    elseif _backend === Val(:latex)
         _pt_latex(Ref{Any}(io), pinfo; kwargs...)
     end
 
