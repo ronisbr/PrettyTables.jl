@@ -70,4 +70,15 @@ include("backends/latex/private.jl")
 include("backends/latex/print.jl")
 include("backends/latex/string.jl")
 
+if Base.VERSION >= v"1.4.2"
+    # This try/catch is necessary in case the precompilation statements do not
+    # exists. In this case, PrettyTables.jl will work correctly but without the
+    # optimizations.
+    try
+        include("precompile/precompile_PrettyTables.jl")
+        _precompile_()
+    catch
+    end
+end
+
 end # module
