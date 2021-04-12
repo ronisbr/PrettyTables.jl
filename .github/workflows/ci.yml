@@ -32,7 +32,6 @@ jobs:
       - uses: actions/cache@v1
         env:
           cache-name: cache-artifacts
-          DISABLE_AMEND_COVERAGE_FROM_SRC: yes
         with:
           path: ~/.julia/artifacts
           key: ${{ runner.os }}-test-${{ env.cache-name }}-${{ hashFiles('**/Project.toml') }}
