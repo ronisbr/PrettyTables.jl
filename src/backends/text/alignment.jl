@@ -77,7 +77,7 @@ function _apply_alignment_anchor_regex!(data_str::Matrix{Vector{String}},
 
                     if fallback == :c
                         data_ijl_len = textwidth(line)
-                        alignment_column_i = div(data_ijl_len, 2, RoundUp)
+                        alignment_column_i = cld(data_ijl_len, 2)
                     elseif fallback == :r
                         data_ijl_len = textwidth(line)
                         alignment_column_i = data_ijl_len + 1
@@ -125,7 +125,7 @@ function _apply_alignment_anchor_regex!(data_str::Matrix{Vector{String}},
 
                     if fallback == :c
                         data_ijl_len = textwidth(line)
-                        pad = alignment_column - div(data_ijl_len, 2, RoundUp)
+                        pad = alignment_column - cld(data_ijl_len, 2)
                     elseif fallback == :r
                         data_ijl_len = textwidth(line)
                         pad = alignment_column - data_ijl_len - 1

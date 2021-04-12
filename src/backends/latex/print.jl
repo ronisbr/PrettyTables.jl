@@ -70,9 +70,9 @@ function _pt_latex(r_io::Ref{Any}, pinfo::PrintInfo;
     subheader_envs = tf.subheader_envs
 
     # Unpack fields of `tf` that depends on the user options.
-    isnothing(table_type)             && (table_type = tf.table_type)
-    isnothing(wrap_table)             && (wrap_table = tf.wrap_table)
-    isnothing(wrap_table_environment) && (wrap_table_environment = tf.wrap_table_environment)
+    table_type === nothing             && (table_type = tf.table_type)
+    wrap_table === nothing             && (wrap_table = tf.wrap_table)
+    wrap_table_environment === nothing && (wrap_table_environment = tf.wrap_table_environment)
 
     # Let's create a `IOBuffer` to write everything and then transfer to `io`.
     buf_io = IOBuffer()

@@ -38,5 +38,9 @@
     # Error
     # ==========================================================================
 
-    @test_throws TypeError pretty_table(data, tf = [])
+    if VERSION < v"1.1"
+        @test_throws MethodError pretty_table(data, tf = [])
+    else
+        @test_throws TypeError pretty_table(data, tf = [])
+    end
 end
