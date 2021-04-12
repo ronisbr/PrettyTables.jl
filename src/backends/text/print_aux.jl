@@ -115,7 +115,7 @@ function _print_table_header!(buf::IO,
                     aux = f(header, i, jc)
 
                     if aux ∈ (:l, :c, :r, :L, :C, :R, :s, :S)
-                        alignment_ij = Symbol(aux)
+                        alignment_ij::Symbol = aux
                         break
                     end
                 end

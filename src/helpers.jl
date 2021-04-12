@@ -141,16 +141,7 @@ macro pt(expr...)
             header = esc(ex.args[2])
         # If it is not, then we assume that it is a table to be printed.
         else
-            # Assemble the arguments.
-            args = Expr[]
-            header != nothing  && push!(args, header)
-
-            if isempty(args)
-                expr = :(pretty_table_with_conf(_pt_conf, $(esc(ex)) ))
-            else
-                expr = :(pretty_table_with_conf(_pt_conf, $(esc(ex)), $(args...)))
-            end
-
+            expr = :(pretty_table_with_conf(_pt_conf, $(esc(ex)), header = $header))
             push!(exprs, expr)
             header = nothing
         end

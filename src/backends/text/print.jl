@@ -121,7 +121,6 @@ function _pt_text(r_io::Ref{Any}, pinfo::PrintInfo;
         if nosubheader
             # Now, `header` will be a view of the first line of the matrix that
             # has the header.
-            header = @view header[1:header_num_rows:end]
             header_num_rows = 1
         end
 

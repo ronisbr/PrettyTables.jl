@@ -53,7 +53,8 @@ end
 
     # If a header is passed, then it must replace the Tables.jl schema.
 
-    result = pretty_table(String, table, ["My col. 1", "My col. 2", "My col. 3"])
+    result = pretty_table(String, table;
+                          header = ["My col. 1", "My col. 2", "My col. 3"])
 
     expected = """
 ┌───────────┬───────────┬───────────┐

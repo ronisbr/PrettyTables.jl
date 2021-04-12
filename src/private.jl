@@ -15,9 +15,9 @@
 # depending on its type.
 
 function _preprocess_vec_or_mat(data::AbstractVecOrMat,
-                                header::AbstractVecOrMat)
-    if isempty(header)
-        pheader = ["Col. " * string(i) for i = 1:size(data,2)]
+                                header::Union{Nothing, AbstractVector})
+    if header === nothing
+        pheader = [["Col. " * string(i) for i = 1:size(data,2)]]
     else
         pheader = header
     end
@@ -26,8 +26,9 @@ function _preprocess_vec_or_mat(data::AbstractVecOrMat,
 end
 
 function _preprocess_dict(dict::Dict{K,V}; sortkeys::Bool = false) where {K,V}
-    pheader::Matrix{String} = ["Keys"              "Values";
-                               compact_type_str(K) compact_type_str(V)]
+    pheader::Vector{Vector{String}} =
+        [["Keys",              "Values"],
+         [compact_type_str(K), compact_type_str(V)]]
 
     k = collect(keys(dict))
     v = collect(values(dict))
@@ -46,7 +47,9 @@ function _preprocess_dict(dict::Dict{K,V}; sortkeys::Bool = false) where {K,V}
     return pdata, pheader
 end
 
-function _preprocess_Tables_column(data::Any, header::AbstractVecOrMat)
+function _preprocess_Tables_column(data::Any,
+                                   header::Union{Nothing, AbstractVector})
+
     # Access the table using the columns.
     table = Tables.columns(data)
 
@@ -66,7 +69,7 @@ function _preprocess_Tables_column(data::Any, header::AbstractVecOrMat)
     #        header.
     #     3. If the table does not have a schema, then build a default header
     #        based on the column name and type.
-    if isempty(header)
+    if header === nothing
         sch = Tables.schema(data)
 
         if sch != nothing
@@ -74,11 +77,7 @@ function _preprocess_Tables_column(data::Any, header::AbstractVecOrMat)
 
             # Check if we have only one column. In this case, the header must be
             # a `Vector`.
-            if length(names) == 1
-                pheader = [names[1]; types[1]]
-            else
-                pheader = [permutedims(names); permutedims(types)]
-            end
+            pheader = [names, types]
         else
             pheader = pdata.column_names
         end
@@ -89,7 +88,9 @@ function _preprocess_Tables_column(data::Any, header::AbstractVecOrMat)
     return pdata, pheader
 end
 
-function _preprocess_Tables_row(data::Any, header::AbstractVecOrMat)
+function _preprocess_Tables_row(data::Any,
+                                header::Union{Nothing, AbstractVector})
+
     # Access the table using the rows.
     table = Tables.rows(data)
 
@@ -112,7 +113,7 @@ function _preprocess_Tables_row(data::Any, header::AbstractVecOrMat)
     #        header.
     #     3. If the table does not have a schema, then build a default header
     #        based on the column name and type.
-    if isempty(header)
+    if header === nothing
         sch = Tables.schema(data)
 
         if sch != nothing
@@ -120,11 +121,7 @@ function _preprocess_Tables_row(data::Any, header::AbstractVecOrMat)
 
             # Check if we have only one column. In this case, the header must be
             # a `Vector`.
-            if length(names) == 1
-                pheader = [names[1]; types[1]]
-            else
-                pheader = [permutedims(names); permutedims(types)]
-            end
+            pheader = [names, types]
         else
             pheader = pdata.column_names
         end
@@ -140,7 +137,7 @@ end
 ################################################################################
 
 # This function creates the structure that holds the global print information.
-function _print_info(data::Any, header::AbstractVecOrMat;
+function _print_info(data::Any;
                      alignment::Union{Symbol,Vector{Symbol}} = :r,
                      cell_alignment::Union{Nothing,
                                            Dict{Tuple{Int,Int},Symbol},
@@ -151,6 +148,7 @@ function _print_info(data::Any, header::AbstractVecOrMat;
                      filters_row::Union{Nothing,Tuple} = nothing,
                      filters_col::Union{Nothing,Tuple} = nothing,
                      formatters::Union{Nothing,Function,Tuple} = nothing,
+                     header::Union{Nothing, AbstractVector} = nothing,
                      header_alignment::Union{Symbol,Vector{Symbol}} = :s,
                      header_cell_alignment::Union{Nothing,
                                                   Dict{Tuple{Int,Int},Symbol},
@@ -181,30 +179,10 @@ function _print_info(data::Any, header::AbstractVecOrMat;
         throw(ArgumentError("`data` must not have more than 2 dimensions."))
     end
 
-    # The way we get the number of columns of the header depends on its
-    # dimension, because the header can be a vector or a matrix. It also depends
-    # on the dimension of the `data`. If `data` is a vector, then `header` must
-    # be a vector, in which the first elements if the header and the others are
-    # sub-headers.
+    _header = (eltype(header) <: AbstractVector) ? header : [header]
 
-    header_size     = size(header)
-    header_num_dims = length(header_size)
-
-    # Check if it is vector or a matrix with only one column.
-    if (num_dims == 1) || (num_dims == 2 && num_cols == 1)
-        if (header_num_dims != 1) && (header_size[2] != 1)
-            error("If the input data has only one column, then the header must be a vector.")
-        end
-
-        header_num_cols = 1
-        header_num_rows = header_size[1]
-    elseif length(header_size) == 2
-        header_num_rows = header_size[1]
-        header_num_cols = header_size[2]
-    else
-        header_num_rows = 1
-        header_num_cols = header_size[1]
-    end
+    header_num_cols = length(first(_header))
+    header_num_rows = length(_header)
 
     if alignment isa Symbol
         alignment = fill(alignment, num_cols)
@@ -311,7 +289,7 @@ function _print_info(data::Any, header::AbstractVecOrMat;
     renderer_val = renderer == :show ? Val(:show) : Val(:print)
 
     # Create the structure that stores the print information.
-    pinfo = PrintInfo(data, header, id_cols, id_rows, num_rows, num_cols,
+    pinfo = PrintInfo(data, _header, id_cols, id_rows, num_rows, num_cols,
                       num_printed_cols, num_printed_rows, header_num_rows,
                       header_num_cols, show_row_number, row_number_column_title,
                       show_row_names, row_names, row_name_alignment,
@@ -329,7 +307,10 @@ end
 
 # This is a middleware function to apply the preprocess step to the data that
 # will be printed.
-function _pretty_table((@nospecialize io::IO), data::Any, header::AbstractVecOrMat; kwargs...)
+function _pretty_table((@nospecialize io::IO), data::Any;
+                       header::Union{Nothing, AbstractVector} = nothing,
+                       kwargs...)
+
     if Tables.istable(data)
         if Tables.columnaccess(data)
             pdata, pheader = _preprocess_Tables_column(data, header)
@@ -348,13 +329,13 @@ function _pretty_table((@nospecialize io::IO), data::Any, header::AbstractVecOrM
         error("The type $(typeof(data)) is not supported.")
     end
 
-    return _pt(io, pdata, pheader; kwargs...)
+    return _pt(io, pdata; header = pheader, kwargs...)
 end
 
 # This is the low level function that prints the table. In this case, `data`
 # must be accessed by `[i,j]` and the size of the `header` must be equal to the
 # number of columns in `data`.
-function _pt((@nospecialize io::IO), data::Any, header::AbstractVecOrMat;
+function _pt((@nospecialize io::IO), data::Any;
              alignment::Union{Symbol,Vector{Symbol}} = :r,
              backend::Union{Symbol, T_BACKENDS} = Val(:auto),
              cell_alignment::Union{Nothing,
@@ -366,6 +347,7 @@ function _pt((@nospecialize io::IO), data::Any, header::AbstractVecOrMat;
              filters_row::Union{Nothing,Tuple} = nothing,
              filters_col::Union{Nothing,Tuple} = nothing,
              formatters::Union{Nothing,Function,Tuple} = nothing,
+             header::Union{Nothing, AbstractVector} = nothing,
              header_alignment::Union{Symbol,Vector{Symbol}} = :s,
              header_cell_alignment::Union{Nothing,
                                           Dict{Tuple{Int,Int},Symbol},
@@ -417,7 +399,7 @@ function _pt((@nospecialize io::IO), data::Any, header::AbstractVecOrMat;
     end
 
     # Create the structure that stores the print information.
-    pinfo = _print_info(data, header;
+    pinfo = _print_info(data;
                         alignment               = alignment,
                         cell_alignment          = cell_alignment,
                         cell_first_line_only    = cell_first_line_only,
@@ -425,6 +407,7 @@ function _pt((@nospecialize io::IO), data::Any, header::AbstractVecOrMat;
                         filters_row             = filters_row,
                         filters_col             = filters_col,
                         formatters              = formatters,
+                        header                  = header,
                         header_alignment        = header_alignment,
                         header_cell_alignment   = header_cell_alignment,
                         limit_printing          = limit_printing,

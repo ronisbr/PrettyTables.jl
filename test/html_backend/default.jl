@@ -312,8 +312,9 @@ end
 </table>
 """
 
-    result = pretty_table(String, vec, ["A", "B", "C", "D"];
+    result = pretty_table(String, vec;
                           backend = Val(:html),
+                          header = [["A"], ["B"], ["C"], ["D"]],
                           standalone = false)
 
     @test result == expected

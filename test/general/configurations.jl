@@ -63,7 +63,7 @@ end
 """
 
     @ptconf tf = tf_ascii_dots
-    @pt :header = ["1","2","3","4"] data
+    @pt :header = ["1", "2", "3", "4"] data
 
     result = String(readavailable(in))
     @test result == expected
@@ -105,7 +105,7 @@ end
 '----------'----------'
 """
 
-    header = ["Column 1" "Column 2"; "Sub. 1" "Sub. 2"]
+header = [["Column 1", "Column 2"], ["Sub. 1", "Sub. 2"]]
 
     @ptconfclean
     @ptconf tf = tf_ascii_rounded

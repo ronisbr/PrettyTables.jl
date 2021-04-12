@@ -87,8 +87,8 @@
     # Headers
     # ==========================================================================
 
-    header = ["A" "B" "C" "D"
-              "a" "b" "c" "d"]
+    header = [["A", "B", "C", "D"],
+              ["a", "b", "c", "d"]]
 
     expected = """
 ┌───────────┬───────────┬───────────┬───────────┐
@@ -104,7 +104,8 @@
 └───────────┴───────────┴───────────┴───────────┘
 """
 
-    result = pretty_table(String, data, header;
+    result = pretty_table(String, data;
+                          header = header,
                           alignment = [:l,:r,:c,:r],
                           cell_alignment = Dict( (3,1) => :r,
                                                  (3,2) => :l,
@@ -130,7 +131,8 @@
 └───────────┴───────────┴───────────┴───────────┘
 """
 
-    result = pretty_table(String, data, header;
+    result = pretty_table(String, data;
+                          header = header,
                           alignment = [:l,:r,:c,:r],
                           cell_alignment = Dict( (3,1) => :r,
                                                  (3,2) => :l,

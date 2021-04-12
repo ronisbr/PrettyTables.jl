@@ -103,8 +103,8 @@ julia> t = 0:1:20;
 
 julia> data = hcat(t, ones(length(t))*1, 1*t, 0.5.*t.^2);
 
-julia> header = ["Time" "Acceleration" "Velocity" "Distance";
-                  "[s]"       "[m/s²]"    "[m/s]"      "[m]"];
+julia> header = [["Time", "Acceleration", "Velocity", "Distance"],
+                 [ "[s]",       "[m/s²]",    "[m/s]",      "[m]"]];
 
 julia> hl_v = HTMLHighlighter( (data,i,j)->(j == 3) && data[i,3] > 9, HTMLDecoration(color = "blue", font_weight = "bold"));
 
@@ -112,7 +112,7 @@ julia> hl_p = HTMLHighlighter( (data,i,j)->(j == 4) && data[i,4] > 10, HTMLDecor
 
 julia> hl_e = HTMLHighlighter( (data,i,j)->data[i,1] == 10, HTMLDecoration(background = "black", color = "white"))
 
-julia> pretty_table(data, header, backend = :html, highlighters = (hl_e, hl_p, hl_v))
+julia> pretty_table(data; backend = Val(:html), header = header, highlighters = (hl_e, hl_p, hl_v))
 ```
 
 ```@raw html

@@ -67,8 +67,11 @@
 </table>
 """
 
-    result = pretty_table(String, data, ["1" "2" "3" "4"; :A :B :C :D; :E :F :G :H];
+    result = pretty_table(String, data;
                           backend = Val(:html),
+                          header = [["1", "2", "3", "4"],
+                                    [:A,  :B,  :C,  :D],
+                                    [:E,  :F,  :G,  :H]],
                           standalone = false)
 
     @test result == expected
@@ -120,8 +123,11 @@
 </table>
 """
 
-    result = pretty_table(String, data, ["1" "2" "3" "4"; :A :B :C :D; :E :F :G :H];
+    result = pretty_table(String, data;
                           backend = Val(:html),
+                          header = [["1", "2", "3", "4"],
+                                    [:A,  :B,  :C,  :D],
+                                    [:E,  :F,  :G,  :H]],
                           nosubheader = true,
                           standalone = false)
 
@@ -168,8 +174,11 @@
 </table>
 """
 
-    result = pretty_table(String, data, ["1" "2" "3" "4"; :A :B :C :D; :E :F :G :H];
+    result = pretty_table(String, data;
                           backend = Val(:html),
+                          header = [["1", "2", "3", "4"],
+                                    [:A,  :B,  :C,  :D],
+                                    [:E,  :F,  :G,  :H]],
                           noheader = true,
                           standalone = false)
 

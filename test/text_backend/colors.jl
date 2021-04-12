@@ -25,7 +25,8 @@
 
     @test result == expected
 
-    header = [1 2 3 4; 5 6 7 8]
+    header = [[1, 2, 3, 4],
+              [5, 6, 7, 8]]
 
     expected = """
 ┌───┬───────┬─────┬───┐
@@ -41,7 +42,7 @@
 └───┴───────┴─────┴───┘
 """
 
-    result = sprint((io)->pretty_table(io, data, header),
+    result = sprint((io)->pretty_table(io, data; header = header),
                     context = :color => true)
 
     @test result == expected

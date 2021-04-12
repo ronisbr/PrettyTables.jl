@@ -31,7 +31,8 @@ Base.convert(::Type{<:TestVec}, x::Array) = TestVec(x)
     data     = [10.0^(i+j) for i = 1:10, j = 1:5]
     mintable = MinimalTable(data, [:C1, :C2, :C3, :C4, :C5])
 
-    str_data     = pretty_table(String, data, ["C1", "C2", "C3", "C4", "C5"])
+    str_data     = pretty_table(String, data;
+                                header = ["C1", "C2", "C3", "C4", "C5"])
     str_mintable = pretty_table(String, mintable)
 
     @test str_data == str_mintable

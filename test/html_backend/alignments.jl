@@ -240,8 +240,8 @@ end
 end
 
 @testset "Header alignment" begin
-    header = ["A" "B" "C" "D"
-              "a" "b" "c" "d"]
+    header = [["A", "B", "C", "D"],
+              ["a", "b", "c", "d"]]
 
     expected = """
 <table>
@@ -295,7 +295,8 @@ end
   </tr>
 </table>
 """
-    result = pretty_table(String, data, header;
+    result = pretty_table(String, data;
+                          header = header,
                           alignment = [:l,:r,:c,:r],
                           backend = Val(:html),
                           cell_alignment = Dict( (3,1) => :r,
@@ -362,7 +363,8 @@ end
 </table>
 """
 
-    result = pretty_table(String, data, header;
+    result = pretty_table(String, data;
+                          header = header,
                           alignment = [:l,:r,:c,:r],
                           backend = Val(:html),
                           cell_alignment = Dict( (3,1) => :r,

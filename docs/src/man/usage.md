@@ -11,27 +11,19 @@ end
 The following function can be used to print data.
 
 ```julia
-function pretty_table([io::IO | String,] table[, header::AbstractVecOrMat];  kwargs...)
+function pretty_table([io::IO | String,] table;  kwargs...)
 ```
 
-Print to `io` the table `table` with header `header`. If `conf` is omitted, then
-the default configuration will be used. If `io` is omitted, then it defaults to
+Print to `io` the table `table`. If `io` is omitted, then it defaults to
 `stdout`. If `String` is passed in the place of `io`, then a `String` with the
 printed table will be returned by the function.
-
-The `header` can be a `Vector` or a `Matrix`. If it is a `Matrix`, then each row
-will be a header line. The first line is called *header* and the others are
-called *sub-headers* . If `header` is empty or missing, then it will be
-automatically filled with "Col.  i" for the *i*-th column.
 
 When printing, it will be verified if `table` complies with
 [**Tables.jl**](https://github.com/JuliaData/Tables.jl) API.  If it is is
 compliant, then this interface will be used to print the table. If it is not
 compliant, then only the following types are supported:
 
-1. `AbstractVector`: any vector can be printed. In this case, the `header`
-   **must** be a vector, where the first element is considered the header and
-   the others are the sub-headers.
+1. `AbstractVector`: any vector can be printed.
 2. `AbstractMatrix`: any matrix can be printed.
 3. `Dict`: any `Dict` can be printed. In this case, the special keyword
    `sortkeys` can be used to select whether or not the user wants to print the
@@ -82,6 +74,11 @@ Each back-end defines its own configuration keywords that can be passed using
 * `filters_row`: Filters for the rows (see the section [Filters](@ref)).
 * `filters_col`: Filters for the columns (see the section [Filters](@ref)).
 * `formatters`: See the section [Formatters](@ref).
+* `header`: The header must be a vector of vectors. Each one must have the
+            number of elements equal to the number of columns in the table. The
+            first vector is considered the header and the others are the
+            subheaders. If it is `nothing`, then a default value based on the
+            type will be used. (**Default** = `nothing`)
 * `header_alignment`: Select the alignment of the header columns (see the
                       section [Alignment](@ref). If the symbol that specifies
                       the alignment is `:s` for a specific column, then the same
@@ -144,7 +141,7 @@ the text back-end.
 ```jldoctest
 julia> data = [1 2 3; 4 5 6];
 
-julia> pretty_table(data, ["Column 1", "Column 2", "Column 3"])
+julia> pretty_table(data; header = ["Column 1", "Column 2", "Column 3"])
 ┌──────────┬──────────┬──────────┐
 │ Column 1 │ Column 2 │ Column 3 │
 ├──────────┼──────────┼──────────┤
@@ -152,7 +149,9 @@ julia> pretty_table(data, ["Column 1", "Column 2", "Column 3"])
 │        4 │        5 │        6 │
 └──────────┴──────────┴──────────┘
 
-julia> pretty_table(data, ["Column 1" "Column 2" "Column 3"; "A" "B" "C"])
+julia> pretty_table(data;
+                    header = [["Column 1", "Column 2", "Column 3"],
+                              ["A", "B", "C"]])
 ┌──────────┬──────────┬──────────┐
 │ Column 1 │ Column 2 │ Column 3 │
 │        A │        B │        C │
@@ -161,7 +160,8 @@ julia> pretty_table(data, ["Column 1" "Column 2" "Column 3"; "A" "B" "C"])
 │        4 │        5 │        6 │
 └──────────┴──────────┴──────────┘
 
-julia> str = pretty_table(String, data, ["Column 1", "Column 2", "Column 3"]);
+julia> str = pretty_table(String, data;
+                          header = ["Column 1", "Column 2", "Column 3"]);
 
 julia> print(str)
 ┌──────────┬──────────┬──────────┐
@@ -225,9 +225,9 @@ julia> conf = set_pt_conf(tf = tf_markdown, alignment = :c);
 
 julia> data = [1 2 3; 4 5 6];
 
-julia> header = ["Column 1" "Column 2" "Column 3"];
+julia> header = ["Column 1", "Column 2", "Column 3"];
 
-julia> pretty_table_with_conf(conf, data, header)
+julia> pretty_table_with_conf(conf, data; header = header)
 | Column 1 | Column 2 | Column 3 |
 |----------|----------|----------|
 |    1     |    2     |    3     |
@@ -309,7 +309,7 @@ julia> @pt data
 │      4 │      5 │      6 │
 └────────┴────────┴────────┘
 
-julia> @pt :header = ["Column 1", "Column 2", "Column 3"] data :header = ["Column 1" "Column 2" "Column 3"; "A" "B" "C"] data
+julia> @pt :header = ["Column 1", "Column 2", "Column 3"] data :header = [["Column 1", "Column 2", "Column 3"], ["A", "B", "C"]] data
 ┌──────────┬──────────┬──────────┐
 │ Column 1 │ Column 2 │ Column 3 │
 ├──────────┼──────────┼──────────┤

@@ -91,9 +91,6 @@ function _pt_latex(r_io::Ref{Any}, pinfo::PrintInfo;
         # If the user do not want to print the sub-header but wants to print the
         # header, then just force the number of rows in header to be 1.
         if nosubheader
-            # Now, `header` will be a view of the first line of the matrix that
-            # has the header.
-            header = @view header[1:header_num_rows:end]
             header_num_rows = 1
         end
     end
@@ -118,7 +115,7 @@ function _pt_latex(r_io::Ref{Any}, pinfo::PrintInfo;
         if !noheader
             for j = 1:header_num_rows
                 header_str[j,i] =
-                    _parse_cell_latex(header[(ic-1)*header_num_rows + j],
+                    _parse_cell_latex(header[j][ic],
                                       compact_printing = compact_printing,
                                       limit_printing = limit_printing,
                                       renderer = Val(:print))

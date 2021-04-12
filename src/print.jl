@@ -13,25 +13,17 @@ export pretty_table
 ################################################################################
 
 """
-    pretty_table([io::IO | String,] table[, header::AbstractVecOrMat];  kwargs...)
+    pretty_table([io::IO | String,] table;  kwargs...)
 
-Print to `io` the table `table` with header `header`. If `conf` is omitted, then
-the default configuration will be used. If `io` is omitted, then it defaults to
+Print to `io` the table `table`. If `io` is omitted, then it defaults to
 `stdout`. If `String` is passed in the place of `io`, then a `String` with the
 printed table will be returned by the function.
-
-The `header` can be a `Vector` or a `Matrix`. If it is a `Matrix`, then each row
-will be a header line. The first line is called *header* and the others are
-called *sub-headers* . If `header` is empty or missing, then it will be
-automatically filled with "Col.  i" for the *i*-th column.
 
 When printing, it will be verified if `table` complies with **Tables.jl** API.
 If it is compliant, then this interface will be used to print the table. If it
 is not compliant, then only the following types are supported:
 
-1. `AbstractVector`: any vector can be printed. In this case, the `header`
-   **must** be a vector, where the first element is considered the header and
-   the others are the sub-headers.
+1. `AbstractVector`: any vector can be printed.
 2. `AbstractMatrix`: any matrix can be printed.
 3. `Dict`: any `Dict` can be printed. In this case, the special keyword
    `sortkeys` can be used to select whether or not the user wants to print the
@@ -73,6 +65,11 @@ is not compliant, then only the following types are supported:
 * `filters_row`: Filters for the rows (see the section `Filters`).
 * `filters_col`: Filters for the columns (see the section `Filters`).
 * `formatters`: See the section `Formatters`.
+* `header`: The header must be a vector of vectors. Each one must have the
+            number of elements equal to the number of columns in the table. The
+            first vector is considered the header and the others are the
+            subheaders. If it is `nothing`, then a default value based on the
+            type will be used. (**Default** = `nothing`)
 * `header_alignment`: Select the alignment of the header columns (see the
                       section `Alignment`). If the symbol that specifies the
                       alignment is `:s` for a specific column, then the same
@@ -715,41 +712,14 @@ compatible.
 """
 @inline function pretty_table(data; kwargs...)
     io = stdout isa Base.TTY ? IOContext(stdout, :limit => true) : stdout
-    _pretty_table(io, data, String[]; kwargs...)
+    _pretty_table(io, data; kwargs...)
 end
-
-@inline function pretty_table(data, header::AbstractVecOrMat; kwargs...)
-    io = stdout isa Base.TTY ? IOContext(stdout, :limit => true) : stdout
-    _pretty_table(io, data, header; kwargs...)
-end
-
-# This definition is required to avoid ambiguities.
-@inline function pretty_table(data::AbstractVecOrMat,
-                              header::AbstractVecOrMat;
-                              kwargs...)
-    io = stdout isa Base.TTY ? IOContext(stdout, :limit => true) : stdout
-    _pretty_table(io, data, header; kwargs...)
-end
-
-# This definition is required to avoid ambiguities.
-pretty_table(io::IO, data::AbstractVecOrMat; kwargs...) =
-    _pretty_table(io, data, String[]; kwargs...)
 
 pretty_table(io::IO, data; kwargs...) =
-    _pretty_table(io, data, String[]; kwargs...)
+    _pretty_table(io, data; kwargs...)
 
-pretty_table(io::IO, data, header::AbstractVecOrMat; kwargs...) =
-    _pretty_table(io, data, header; kwargs...)
-
-# This definition is required to avoid ambiguities.
-pretty_table(::Type{String}, data::AbstractVecOrMat; kwargs...) =
-    pretty_table(String, data, String[]; kwargs...)
-
-pretty_table(::Type{String}, data; kwargs...) =
-    pretty_table(String, data, String[]; kwargs...)
-
-function pretty_table(::Type{String}, data, header::AbstractVecOrMat; kwargs...)
+function pretty_table(::Type{String}, data; kwargs...)
     io = IOBuffer()
-    _pretty_table(io, data, header; kwargs...)
+    _pretty_table(io, data; kwargs...)
     return String(take!(io))
 end

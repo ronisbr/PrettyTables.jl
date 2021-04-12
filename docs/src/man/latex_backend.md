@@ -87,7 +87,7 @@ passed as keywords when calling the function [`pretty_table`](@ref):
                             the option `wrap_table` is `true`. If it is
                             `nothing` then the default option of the table
                             format will be used. (**Default** = `nothing`)
-               
+
 ## LaTeX highlighters
 
 A set of highlighters can be passed as a `Tuple` to the `highlighters` keyword.
@@ -163,8 +163,8 @@ julia> t = 0:1:20;
 
 julia> data = hcat(t, ones(length(t))*1, 1*t, 0.5.*t.^2);
 
-julia> header = ["Time" "Acceleration" "Velocity" "Distance";
-                  "[s]"  "[m/s\$^2\$]"    "[m/s]"      "[m]"];
+julia> header = [["Time", "Acceleration", "Velocity", "Distance"],
+                 [ "[s]",  "[m/s\$^2\$]",    "[m/s]",      "[m]"]];
 
 julia> hl_v = LatexHighlighter( (data,i,j)->(j == 3) && data[i,3] > 9, ["color{blue}","textbf"]);
 
@@ -172,7 +172,7 @@ julia> hl_p = LatexHighlighter( (data,i,j)->(j == 4) && data[i,4] > 10, ["color{
 
 julia> hl_e = LatexHighlighter( (data,i,j)->(i == 10), ["cellcolor{black}", "color{white}", "textbf"])
 
-julia> pretty_table(data, header, backend = :latex, highlighters = (hl_e, hl_p, hl_v))
+julia> pretty_table(data, backend = Val(:latex), header = header, highlighters = (hl_e, hl_p, hl_v))
 ```
 
 ![](./latex_backend/latex_highlighter.png)

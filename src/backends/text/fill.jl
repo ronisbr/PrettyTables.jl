@@ -108,8 +108,7 @@ function _fill_matrix_data!(header_str::Matrix{String},
 
         if !noheader
             for j = 1:header_num_rows
-                id = (ic-1)*header_num_rows + j
-                header_ij = isassigned(header,id) ? header[id] : undef
+                header_ij = isassigned(header[j], ic) ? header[j][ic] : undef
 
                 # NOTE: For headers, we always use `print` instead of `show` to
                 # avoid quotes.
