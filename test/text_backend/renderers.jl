@@ -12,10 +12,10 @@
                  true         false     true    false
                  "Teste" "Teste\nTeste" "Teste \"quote\" Teste" "Teste\n\"quote\"\nTeste"]
 
-    header = [["C1", "C2", "C3", "C4"],
-              ["S1", "S2", "S3", "S4"]]
+    header = (["C1", "C2", "C3", "C4"],
+              ["S1", "S2", "S3", "S4"])
 
-    row_names = [1,2,"3",'4']
+    row_names = [1, 2, "3", '4']
 
     # Print
     # --------------------------------------------------------------------------
@@ -107,10 +107,10 @@ end
                  true         false     true    false
                  "Teste" "Teste\nTeste" "Teste \"quote\" Teste" "Teste\n\"quote\"\nTeste"]
 
-    header = [["C1", "C2", "C3", "C4"],
-              ["S1", "S2", "S3", "S4"]]
+    header = (["C1", "C2", "C3", "C4"],
+              ["S1", "S2", "S3", "S4"])
 
-    row_names = [1,2,"3",'4']
+    row_names = [1, 2, "3", '4']
 
     # Show
     # --------------------------------------------------------------------------

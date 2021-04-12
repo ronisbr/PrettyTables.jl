@@ -21,19 +21,21 @@
 
 @deprecate(pretty_table(data::Any, header::AbstractMatrix; kwargs...),
            pretty_table(data;
-                        header = [header[i, :] for i = 1:size(header, 1)],
+                        header = tuple([header[i, :] for i = 1:size(header, 1)]...),
                         kwargs...))
 
 @deprecate(pretty_table(io::IO, data::Any, header::AbstractMatrix; kwargs...),
            pretty_table(io, data;
-                        header = [header[i, :] for i = 1:size(header, 1)],
+                        header = tuple([header[i, :] for i = 1:size(header, 1)]...),
                         kwargs...))
 
 @deprecate(pretty_table(::Type{String}, data::Any, header::AbstractMatrix; kwargs...),
            pretty_table(String, data;
-                        header = [header[i, :] for i = 1:size(header, 1)],
+                        header = tuple([header[i, :] for i = 1:size(header, 1)]...),
                         kwargs...))
 
+# Those definitions are necessary to avoid ambiguities. They **must** be removed
+# together with the previous deprecations.
 pretty_table(io::IO, data::AbstractVector; kwargs...) =
     _pretty_table(io, data; kwargs...)
 

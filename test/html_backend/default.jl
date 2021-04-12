@@ -314,7 +314,7 @@ end
 
     result = pretty_table(String, vec;
                           backend = Val(:html),
-                          header = [["A"], ["B"], ["C"], ["D"]],
+                          header = (["A"], ["B"], ["C"], ["D"]),
                           standalone = false)
 
     @test result == expected

@@ -15,9 +15,11 @@
 # depending on its type.
 
 function _preprocess_vec_or_mat(data::AbstractVecOrMat,
-                                header::Union{Nothing, AbstractVector})
+                                header::Union{Nothing, AbstractVector, Tuple})
     if header === nothing
-        pheader = [["Col. " * string(i) for i = 1:size(data,2)]]
+        pheader = (["Col. " * string(i) for i = 1:size(data,2)],)
+    elseif header isa AbstractVector
+        pheader = (header,)
     else
         pheader = header
     end
@@ -26,9 +28,9 @@ function _preprocess_vec_or_mat(data::AbstractVecOrMat,
 end
 
 function _preprocess_dict(dict::Dict{K,V}; sortkeys::Bool = false) where {K,V}
-    pheader::Vector{Vector{String}} =
-        [["Keys",              "Values"],
-         [compact_type_str(K), compact_type_str(V)]]
+    pheader =
+        (["Keys",              "Values"],
+         [compact_type_str(K), compact_type_str(V)])
 
     k = collect(keys(dict))
     v = collect(values(dict))
@@ -48,7 +50,7 @@ function _preprocess_dict(dict::Dict{K,V}; sortkeys::Bool = false) where {K,V}
 end
 
 function _preprocess_Tables_column(data::Any,
-                                   header::Union{Nothing, AbstractVector})
+                                   header::Union{Nothing, AbstractVector, Tuple})
 
     # Access the table using the columns.
     table = Tables.columns(data)
@@ -74,13 +76,12 @@ function _preprocess_Tables_column(data::Any,
 
         if sch != nothing
             types::Vector{String} = compact_type_str.([sch.types...])
-
-            # Check if we have only one column. In this case, the header must be
-            # a `Vector`.
-            pheader = [names, types]
+            pheader = (names, types)
         else
-            pheader = pdata.column_names
+            pheader = (pdata.column_names,)
         end
+    elseif header isa AbstractVector
+        pheader = (header,)
     else
         pheader = header
     end
@@ -89,7 +90,7 @@ function _preprocess_Tables_column(data::Any,
 end
 
 function _preprocess_Tables_row(data::Any,
-                                header::Union{Nothing, AbstractVector})
+                                header::Union{Nothing, AbstractVector, Tuple})
 
     # Access the table using the rows.
     table = Tables.rows(data)
@@ -118,13 +119,12 @@ function _preprocess_Tables_row(data::Any,
 
         if sch != nothing
             types::Vector{String} = compact_type_str.([sch.types...])
-
-            # Check if we have only one column. In this case, the header must be
-            # a `Vector`.
-            pheader = [names, types]
+            pheader = (names, types)
         else
-            pheader = pdata.column_names
+            pheader = (pdata.column_names,)
         end
+    elseif header isa AbstractVector
+        pheader = (header,)
     else
         pheader = header
     end
@@ -148,7 +148,7 @@ function _print_info(data::Any;
                      filters_row::Union{Nothing,Tuple} = nothing,
                      filters_col::Union{Nothing,Tuple} = nothing,
                      formatters::Union{Nothing,Function,Tuple} = nothing,
-                     header::Union{Nothing, AbstractVector} = nothing,
+                     header::Union{Nothing, AbstractVector, Tuple} = nothing,
                      header_alignment::Union{Symbol,Vector{Symbol}} = :s,
                      header_cell_alignment::Union{Nothing,
                                                   Dict{Tuple{Int,Int},Symbol},
@@ -179,7 +179,7 @@ function _print_info(data::Any;
         throw(ArgumentError("`data` must not have more than 2 dimensions."))
     end
 
-    _header = (eltype(header) <: AbstractVector) ? header : [header]
+    _header = header isa Tuple ? header : (header,)
 
     header_num_cols = length(first(_header))
     header_num_rows = length(_header)
@@ -308,7 +308,7 @@ end
 # This is a middleware function to apply the preprocess step to the data that
 # will be printed.
 function _pretty_table((@nospecialize io::IO), data::Any;
-                       header::Union{Nothing, AbstractVector} = nothing,
+                       header::Union{Nothing, AbstractVector, Tuple} = nothing,
                        kwargs...)
 
     if Tables.istable(data)
@@ -347,7 +347,7 @@ function _pt((@nospecialize io::IO), data::Any;
              filters_row::Union{Nothing,Tuple} = nothing,
              filters_col::Union{Nothing,Tuple} = nothing,
              formatters::Union{Nothing,Function,Tuple} = nothing,
-             header::Union{Nothing, AbstractVector} = nothing,
+             header::Union{Nothing, AbstractVector, Tuple} = nothing,
              header_alignment::Union{Symbol,Vector{Symbol}} = :s,
              header_cell_alignment::Union{Nothing,
                                           Dict{Tuple{Int,Int},Symbol},

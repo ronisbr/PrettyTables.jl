@@ -74,11 +74,12 @@ Each back-end defines its own configuration keywords that can be passed using
 * `filters_row`: Filters for the rows (see the section [Filters](@ref)).
 * `filters_col`: Filters for the columns (see the section [Filters](@ref)).
 * `formatters`: See the section [Formatters](@ref).
-* `header`: The header must be a vector of vectors. Each one must have the
+* `header`: The header must be a tuple of vectors. Each one must have the
             number of elements equal to the number of columns in the table. The
             first vector is considered the header and the others are the
             subheaders. If it is `nothing`, then a default value based on the
-            type will be used. (**Default** = `nothing`)
+            type will be used. If a single vector is passed, then it will be
+            considered the header. (**Default** = `nothing`)
 * `header_alignment`: Select the alignment of the header columns (see the
                       section [Alignment](@ref). If the symbol that specifies
                       the alignment is `:s` for a specific column, then the same
@@ -150,8 +151,8 @@ julia> pretty_table(data; header = ["Column 1", "Column 2", "Column 3"])
 └──────────┴──────────┴──────────┘
 
 julia> pretty_table(data;
-                    header = [["Column 1", "Column 2", "Column 3"],
-                              ["A", "B", "C"]])
+                    header = (["Column 1", "Column 2", "Column 3"],
+                              ["A", "B", "C"]))
 ┌──────────┬──────────┬──────────┐
 │ Column 1 │ Column 2 │ Column 3 │
 │        A │        B │        C │
@@ -309,7 +310,7 @@ julia> @pt data
 │      4 │      5 │      6 │
 └────────┴────────┴────────┘
 
-julia> @pt :header = ["Column 1", "Column 2", "Column 3"] data :header = [["Column 1", "Column 2", "Column 3"], ["A", "B", "C"]] data
+julia> @pt :header = ["Column 1", "Column 2", "Column 3"] data :header = (["Column 1", "Column 2", "Column 3"], ["A", "B", "C"]) data
 ┌──────────┬──────────┬──────────┐
 │ Column 1 │ Column 2 │ Column 3 │
 ├──────────┼──────────┼──────────┤

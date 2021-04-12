@@ -240,8 +240,8 @@ end
 end
 
 @testset "Header alignment" begin
-    header = [["A", "B", "C", "D"],
-              ["a", "b", "c", "d"]]
+    header = (["A", "B", "C", "D"],
+              ["a", "b", "c", "d"])
 
     expected = """
 <table>

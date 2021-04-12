@@ -65,11 +65,12 @@ is not compliant, then only the following types are supported:
 * `filters_row`: Filters for the rows (see the section `Filters`).
 * `filters_col`: Filters for the columns (see the section `Filters`).
 * `formatters`: See the section `Formatters`.
-* `header`: The header must be a vector of vectors. Each one must have the
+* `header`: The header must be a tuple of vectors. Each one must have the
             number of elements equal to the number of columns in the table. The
             first vector is considered the header and the others are the
             subheaders. If it is `nothing`, then a default value based on the
-            type will be used. (**Default** = `nothing`)
+            type will be used. If a single vector is passed, then it will be
+            considered the header. (**Default** = `nothing`)
 * `header_alignment`: Select the alignment of the header columns (see the
                       section `Alignment`). If the symbol that specifies the
                       alignment is `:s` for a specific column, then the same

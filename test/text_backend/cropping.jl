@@ -678,8 +678,8 @@ end
     # Sub-header cropping
     # --------------------------------------------------------------------------
 
-    header = [["A",            "B",             "C",            "D"],
-              ["First column", "Second column", "Third column", "Fourth column"]]
+    header = (["A",            "B",             "C",            "D"],
+              ["First column", "Second column", "Third column", "Fourth column"])
 
     expected = """
 ┌───┬───────┬─────┬───┐
@@ -787,10 +787,10 @@ end
 """
 
     result = pretty_table(String, data;
-                          header = [["Col. 1", "Col. 2", "Col. 3", "Col. 4"],
-                                    ["A",      "B",      "C",      "D"]],
+                          header = (["Col. 1", "Col. 2", "Col. 3", "Col. 4"],
+                                    ["A",      "B",      "C",      "D"]),
                           crop = :both,
-                          display_size = (-1,25),
+                          display_size = (-1, 25),
                           ellipsis_line_skip = 3)
     @test result == expected
 end

@@ -26,8 +26,8 @@
 
     result = pretty_table(String, data;
                           backend = Val(:latex),
-                          header = [["C1",  "C2",   "C3",    "C4"],
-                                    ["Int", "Bool", "Float", "Hex"]],
+                          header = (["C1",  "C2",   "C3",    "C4"],
+                                    ["Int", "Bool", "Float", "Hex"]),
                           row_names = ["Row $i" for i = 1:6])
 
     @test result == expected
@@ -50,8 +50,8 @@
 
     result = pretty_table(String, data;
                           backend = Val(:latex),
-                          header = [["C1",  "C2",   "C3",    "C4"],
-                                    ["Int", "Bool", "Float", "Hex"]],
+                          header = (["C1",  "C2",   "C3",    "C4"],
+                                    ["Int", "Bool", "Float", "Hex"]),
                           row_names = ["Row $i" for i = 1:6],
                           row_name_column_title = "Row names")
 
@@ -75,8 +75,8 @@
 
     result = pretty_table(String, data;
                           backend = Val(:latex),
-                          header = [["C1",  "C2",   "C3",    "C4"],
-                                    ["Int", "Bool", "Float", "Hex"]],
+                          header = (["C1",  "C2",   "C3",    "C4"],
+                                    ["Int", "Bool", "Float", "Hex"]),
                           row_names = ["Row $i" for i = 1:6],
                           row_name_column_title = "Row names",
                           row_name_alignment = :c,

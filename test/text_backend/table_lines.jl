@@ -117,12 +117,12 @@ end
 """
 
     result1 = pretty_table(String, data;
-                           header = [["C1",  "C2",   "C3",    "C4"],
-                                     ["Int", "Bool", "Float", "Hex"]],
+                           header = (["C1",  "C2",   "C3",    "C4"],
+                                     ["Int", "Bool", "Float", "Hex"]),
                            vlines = [])
     result2 = pretty_table(String, data;
-                           header = [["C1",  "C2",   "C3",    "C4"],
-                                     ["Int", "Bool", "Float", "Hex"]],
+                           header = (["C1",  "C2",   "C3",    "C4"],
+                                     ["Int", "Bool", "Float", "Hex"]),
                            vlines = :none)
     @test result1 == expected
     @test result2 == expected
@@ -142,12 +142,12 @@ end
 """
 
     result1 = pretty_table(String, data;
-                           header = [["C1",  "C2",   "C3",    "C4"],
-                                     ["Int", "Bool", "Float", "Hex"]],
+                           header = (["C1",  "C2",   "C3",    "C4"],
+                                     ["Int", "Bool", "Float", "Hex"]),
                            vlines = [:begin,:end])
     result2 = pretty_table(String, data;
-                           header = [["C1",  "C2",   "C3",    "C4"],
-                                     ["Int", "Bool", "Float", "Hex"]],
+                           header = (["C1",  "C2",   "C3",    "C4"],
+                                     ["Int", "Bool", "Float", "Hex"]),
                            vlines = [0,4])
     @test result1 == expected
     @test result2 == expected
@@ -167,8 +167,8 @@ end
 """
 
     result = pretty_table(String, data;
-                          header = [["C1",  "C2",   "C3",    "C4"],
-                                    ["Int", "Bool", "Float", "Hex"]],
+                          header = (["C1",  "C2",   "C3",    "C4"],
+                                    ["Int", "Bool", "Float", "Hex"]),
                           vlines = [:begin,1,:end],
                           show_row_number = true)
     @test result == expected
@@ -188,8 +188,8 @@ end
 """
 
     result = pretty_table(String, data;
-                          header = [["C1",  "C2",   "C3",    "C4"],
-                                    ["Int", "Bool", "Float", "Hex"]],
+                          header = (["C1",  "C2",   "C3",    "C4"],
+                                    ["Int", "Bool", "Float", "Hex"]),
                           vlines = [:begin,1,2,:end],
                           show_row_number = true,
                           row_names = ["Row $i" for i = 1:6],
@@ -211,8 +211,8 @@ end
 """
 
     result = pretty_table(String, data;
-                          header = [["C1",  "C2",   "C3",    "C4"],
-                                    ["Int", "Bool", "Float", "Hex"]],
+                          header = (["C1",  "C2",   "C3",    "C4"],
+                                    ["Int", "Bool", "Float", "Hex"]),
                           crop = :both,
                           display_size = (12,35),
                           show_row_number = true,

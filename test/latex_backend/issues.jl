@@ -93,9 +93,9 @@ end
 
     result = pretty_table(String, data;
                           backend = Val(:latex),
-                          header = [[1,   2,   3,   4],
+                          header = ([1,   2,   3,   4],
                                     ['a', 'b', 'c', 'd'],
-                                    [:e,  :f,  :g,  :h]],
+                                    [:e,  :f,  :g,  :h]),
                           table_type = :longtable)
 
     @test result == expected
@@ -129,9 +129,9 @@ end
 
     result = pretty_table(String, data;
                           backend = Val(:latex),
-                          header = [[1,   2,   3,   4],
+                          header = ([1,   2,   3,   4],
                                     ['a', 'b', 'c', 'd'],
-                                    [:e,  :f,  :g,  :h]],
+                                    [:e,  :f,  :g,  :h]),
                           longtable_footer = "Long table footer",
                           table_type = :longtable,
                           title = "Table title")

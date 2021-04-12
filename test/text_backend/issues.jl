@@ -42,9 +42,9 @@ end
 └─────┴───┴───────┴─────┴────┘
 """
     result = pretty_table(String, data,
-                          header = [[1,  2,  3,  4],
+                          header = ([1,  2,  3,  4],
                                     [5,  6,  7,  8],
-                                    [9, 10, 11, 12],];
+                                    [9, 10, 11, 12]);
                           show_row_number = true)
     @test result == expected
 end

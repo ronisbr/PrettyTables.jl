@@ -313,7 +313,7 @@ end
 """
 
     result = pretty_table(String, vec;
-                          header = [["Header"], ["Sub-header"]])
+                          header = (["Header"], ["Sub-header"]))
     @test result == expected
 
     @test_throws Exception pretty_table(vec;
@@ -344,14 +344,14 @@ end
 
 @testset "Overwrite" begin
     result = pretty_table(String, data;
-                          header = [["A", "B", "C", "D"], ["E", "F", "G", "H"]],
+                          header = (["A", "B", "C", "D"], ["E", "F", "G", "H"]),
                           body_hlines = collect(1:1:6))
 
     num_lines = length(findall(x->x == '\n', result))
 
     io = IOBuffer()
     pretty_table(io, data;
-                 header = [["A", "B", "C", "D"], ["E", "F", "G", "H"]],
+                 header = (["A", "B", "C", "D"], ["E", "F", "G", "H"]),
                  body_hlines = collect(1:1:6),
                  overwrite = true)
 

@@ -13,8 +13,8 @@
                  true         false     true    false
                  "Teste" "Teste\nTeste" "Teste \"quote\" Teste" "Teste\n\"quote\"\nTeste"]
 
-    header = [["C1", "C2", "C3", "C4"],
-              ["S1", "S2", "S3", "S4"]]
+    header = (["C1", "C2", "C3", "C4"],
+              ["S1", "S2", "S3", "S4"])
 
     row_names = [1, 2, "3", '4']
 
@@ -152,8 +152,8 @@
     # Limit printing
     # --------------------------------------------------------------------------
 
-    matrix = [ [collect(1:1:30)] [collect(1:1:21)]
-               [collect(1:1:20)] [collect(1:1:2)]]
+    matrix = [[collect(1:1:30)] [collect(1:1:21)]
+              [collect(1:1:20)] [collect(1:1:2)]]
 
     expected = """
 <table>
@@ -207,8 +207,8 @@ end
                  true         false     true    false
                  "Teste" "Teste\nTeste" "Teste \"quote\" Teste" "Teste\n\"quote\"\nTeste"]
 
-    header = [["C1", "C2", "C3", "C4"],
-              ["S1", "S2", "S3", "S4"]]
+    header = (["C1", "C2", "C3", "C4"],
+              ["S1", "S2", "S3", "S4"])
 
     row_names = [1, 2, "3", '4']
 
@@ -348,8 +348,8 @@ end
     # Limit printing
     # --------------------------------------------------------------------------
 
-    matrix = [ [collect(1:1:30)] [collect(1:1:21)]
-               [collect(1:1:20)] [collect(1:1:2)]]
+    matrix = [[collect(1:1:30)] [collect(1:1:21)]
+              [collect(1:1:20)] [collect(1:1:2)]]
 
     expected = """
 <table>

@@ -163,8 +163,8 @@ julia> t = 0:1:20;
 
 julia> data = hcat(t, ones(length(t))*1, 1*t, 0.5.*t.^2);
 
-julia> header = [["Time", "Acceleration", "Velocity", "Distance"],
-                 [ "[s]",  "[m/s\$^2\$]",    "[m/s]",      "[m]"]];
+julia> header = (["Time", "Acceleration", "Velocity", "Distance"],
+                 [ "[s]",  "[m/s\$^2\$]",    "[m/s]",      "[m]"]);
 
 julia> hl_v = LatexHighlighter( (data,i,j)->(j == 3) && data[i,3] > 9, ["color{blue}","textbf"]);
 

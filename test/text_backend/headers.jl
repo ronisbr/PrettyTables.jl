@@ -41,8 +41,8 @@
 └───┴───────┴─────┴───┘
 """
     result = pretty_table(String, data;
-                          header = [[1, 2, 3, 4],
-                                    [5, 6, 7, 8]])
+                          header = ([1, 2, 3, 4],
+                                    [5, 6, 7, 8]))
     @test result == expected
 end
 
@@ -102,8 +102,8 @@ end
 └───┴───────┴─────┴───┘
 """
 
-    header = [[1, 2, 3, 4],
-              ["this is", "a very very", "big", "sub-header"]]
+    header = ([1, 2, 3, 4],
+              ["this is", "a very very", "big", "sub-header"])
     result = pretty_table(String, data;
                           header = header,
                           nosubheader = true)
