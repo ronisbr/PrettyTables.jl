@@ -1,6 +1,30 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 0.12.0
+--------------
+
+- ![Deprecation][badge-deprecation]![Enhancement][badge-enhancement] The backend
+  selection is not handled by a `Symbol` anymore. It is now selected using a
+  `Val`. Hence, `backend = :text` must be replaced by `backend = Val(:text)`.
+  The old API still works but it is marked as deprecated and will be removed in
+  the next version. This drastically reduced the time to print the first table
+  in LaTeX and HTML backends.
+- ![Deprecation][badge-deprecation]![Enhancement][badge-enhancement] The header
+  is not selected by an argument anymore, but by a keyword called `header`. The
+  format has also changed. It must be now a tuple of vectors instead of a
+  matrix. The first vector is the header whereas the others are the subheaders.
+  The old API still works but it is marked as deprecated and will be removed in
+  the next version.
+- ![Enhancement][badge-enhancement] Many internal code enhancements allowed to
+  improve a lot the performance (despecializations, type instabilities fixes,
+  code refactoring to avoid unnecessary allocations, tweaking `@inline`
+  annotations, etc.). (Issue [#116][gh-issue-116])
+- ![Enhancement][badge-enhancement] The package now has a precompilation script
+  that reduced a lot the time to print the first table in all backends.
+- ![Info][badge-info] End of support of Julia 1.5. The supported versions are
+  1.0 and 1.6.
+
 Version 0.11.1
 --------------
 
@@ -28,8 +52,8 @@ Version 0.11.0
   column cells using regexes (see `alignment_regex_anchor`).
 - ![Feature][badge-feature] It is now possible to select the table label in
   LaTeX backend. (Issue [#103][gh-issue-103])
-- ![Enhancement][badge-enhancement] LaTeX tables can 
-  now control whether to use the `table` environment or not.
+- ![Enhancement][badge-enhancement] LaTeX tables can now control whether to use
+  the `table` environment or not.
 - ![Enhancement][badge-enhancement] HTML classes in CSS are now surrounded by
   quotes.
 - ![Enhancement][badge-enhancement] An unnecessary space in HTML tags was
@@ -450,6 +474,7 @@ Version 0.1.0
 [gh-issue-105]: https://github.com/ronisbr/PrettyTables.jl/issues/105
 [gh-issue-107]: https://github.com/ronisbr/PrettyTables.jl/issues/107
 [gh-issue-112]: https://github.com/ronisbr/PrettyTables.jl/issues/112
+[gh-issue-116]: https://github.com/ronisbr/PrettyTables.jl/issues/116
 
 [gh-pr-5]: https://github.com/ronisbr/PrettyTables.jl/pull/5
 [gh-pr-8]: https://github.com/ronisbr/PrettyTables.jl/pull/8
