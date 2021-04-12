@@ -490,6 +490,9 @@ end
 end
 
 @testset "Markdown" begin
+    # With linebreaks
+    # ==========================================================================
+
     a = md"""
        # Header
 
@@ -532,6 +535,31 @@ end
     result = sprint((io)->pretty_table(io, data,
                                        hlines = :all,
                                        linebreaks = true),
+                    context = :color => true)
+
+    @test result == expected
+
+    # Without linebreaks
+    # ==========================================================================
+
+    a = md"""
+    **bold**
+    *italics*
+    """
+
+    data = [1 a]
+
+    expected = """
+┌────────┬────────────────┐
+│\e[1m Col. 1 \e[0m│\e[1m         Col. 2 \e[0m│
+├────────┼────────────────┤
+│      1 │   \e[1mbold\e[22m \e[4mitalics\e[24m │
+└────────┴────────────────┘
+"""
+
+    result = sprint((io)->pretty_table(io, data,
+                                       hlines = :all,
+                                       linebreaks = false),
                     context = :color => true)
 
     @test result == expected

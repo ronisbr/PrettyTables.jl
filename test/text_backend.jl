@@ -29,6 +29,10 @@ end
     include("text_backend/cropping.jl")
 end
 
+@testset "Errors" begin
+    include("text_backend/errors.jl")
+end
+
 @testset "Filters" begin
     include("text_backend/filters.jl")
 end
