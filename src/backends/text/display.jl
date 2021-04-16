@@ -156,37 +156,49 @@ function _p!(display::Display, crayon::Crayon, str::String,
         if Δ <= 0
             # If we cannot, then create a wrapped string considering how many
             # columns are left.
-            if lstr + Δ - 2 > 0
+            cropped_str_len = lstr + Δ - 2
+
+            if cropped_str_len > 0
                 # Here we crop the string considering the available space
                 # reserving 2 characters for the line continuation indicator.
-                str  = _crop_str(str, lstr + Δ - 2)
-                lstr = lstr + Δ - 2
+                str  = _crop_str(str, cropped_str_len)
+                lstr = cropped_str_len
                 sapp = display.cont_space_char * display.cont_char
                 lapp = 2
-            elseif display.size[2] - display.col == 2
-                # If there are only 2 characters left, then we must only print
-                # " ⋯".
-                str  = ""
-                lstr = 0
-                sapp = display.cont_space_char * display.cont_char
-                lapp = 2
-            elseif display.size[2] - display.col == 1
-                # If there are only 1 character left, then we must only print
-                # "⋯".
-                str  = ""
-                lstr = 0
-                sapp = string(display.cont_char)
-                lapp = 1
             else
-                # This should never be reached.
-                @error("Internal error!")
-                return true
+                # In this case, we do not have space to show any part of the
+                # string.
+                display_rem_chars = display.size[2] - display.col
+
+                if display_rem_chars == 2
+                    # If there are only 2 characters left, then we must only
+                    # print " ⋯".
+                    str  = ""
+                    lstr = 0
+                    sapp = display.cont_space_char * display.cont_char
+                    lapp = 2
+                elseif display_rem_chars == 1
+                    # If there are only 1 character left, then we must only
+                    # print "⋯".
+                    str  = ""
+                    lstr = 0
+                    sapp = string(display.cont_char)
+                    lapp = 1
+                else
+                    # This should never be reached.
+                    error("Internal error!")
+                end
             end
 
             # In this case, we reached the end of display. Thus, remove any
             # trailing spaces.
-            sapp = String(rstrip(sapp))
-            length(sapp) == 0 && (str = String(rstrip(str)))
+            sapp_strip = rstrip(sapp)
+            sapp = String(sapp_strip)
+
+            if length(sapp) == 0
+                str_strip = rstrip(str)
+                str = String(str_strip)
+            end
 
         elseif !final_line_print
             # Here we must verify if this is the final printing on this line. If
@@ -196,15 +208,20 @@ function _p!(display::Display, crayon::Crayon, str::String,
             # we just add the continuation character sequence.
 
             if Δ == 1
-                str   = lstr > 1 ? _crop_str(str, lstr - 1) : ""
+                str   = (lstr > 1) ? _crop_str(str, lstr - 1) : ""
                 lstr -= 1
                 sapp  = display.cont_space_char * display.cont_char
                 lapp  = 2
 
                 # In this case, we reached the end of display. Thus, remove any
                 # trailing spaces.
-                sapp = String(rstrip(sapp))
-                length(sapp) == 0 && (str = String(rstrip(str)))
+                sapp_strip = rstrip(sapp)
+                sapp = String(sapp_strip)
+
+                if length(sapp) == 0
+                    str_strip = rstrip(str)
+                    str = String(str_strip)
+                end
             end
         end
     end
