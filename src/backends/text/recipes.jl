@@ -7,6 +7,17 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
+# Constants that identify some actions inside the column receipes. They **must
+# be** lower than zero.
+const _LEFT_LINE = -1
+const _COLUMN_LINE = -2
+const _RIGHT_LINE = -3
+
+# Constants that identify some actions inside the row receipes. They **must be**
+# a `NTuple{4, Int}` with the first index lower than 0.
+const _ROW_LINE = (-1, 0, 0, 0)
+const _CONTINUATION_LINE = (-2, 0, 0, 0)
+
 # Create the printing recipes for the rows and columns of the table. This
 # function also computed how many rows and columns are omitted in the printing.
 function _create_printing_recipe(display::Display,
@@ -31,7 +42,7 @@ function _create_printing_recipe(display::Display,
     # Column printing recipe
     # ==========================================================================
 
-    col_printing_recipe   = Vector{Union{Int,Symbol}}(undef, 0)
+    col_printing_recipe   = Vector{Int}(undef, 0)
     data_horizontal_limit = 0
     fully_printed_cols    = 0
 
@@ -46,7 +57,7 @@ function _create_printing_recipe(display::Display,
 
     if 0 ∈ vlines
         line_length += 1
-        push!(col_printing_recipe, :left_line)
+        push!(col_printing_recipe, _LEFT_LINE)
     end
 
     @inbounds for i = 1:num_printed_cols
@@ -69,9 +80,9 @@ function _create_printing_recipe(display::Display,
 
         if i ∈ vlines
             if i != num_printed_cols
-                push!(col_printing_recipe, :column_line)
+                push!(col_printing_recipe, _COLUMN_LINE)
             else
-                push!(col_printing_recipe, :right_line)
+                push!(col_printing_recipe, _RIGHT_LINE)
             end
             line_length += 1
         end
@@ -92,7 +103,7 @@ function _create_printing_recipe(display::Display,
     #     3. How many lines must be printed.
     #     4. The initial printing line.
 
-    row_printing_recipe = Vector{Union{Tuple{Int, Int, Int, Int}, Symbol}}(undef, 0)
+    row_printing_recipe = Vector{NTuple{4, Int}}(undef, 0)
     data_vertical_limit = 0
     fully_printed_rows  = 0
 
@@ -142,7 +153,7 @@ function _create_printing_recipe(display::Display,
             push!(row_printing_recipe, (i, ir, num_lines_in_row[i], 1))
 
             (i != num_printed_rows) && ((i+!noheader) ∈ hlines) &&
-                push!(row_printing_recipe, :row_line)
+                push!(row_printing_recipe, _ROW_LINE)
         end
     else
         # Compute the required size for the header.
@@ -175,7 +186,7 @@ function _create_printing_recipe(display::Display,
                     remaining_rows = data_vertical_limit - printed_lines
                     remaining_rows > 0 &&
                         push!(row_printing_recipe, (i, ir, remaining_rows, 1))
-                    push!(row_printing_recipe, :continuation_line)
+                    push!(row_printing_recipe, _CONTINUATION_LINE)
                     break
                 else
                     push!(row_printing_recipe, (i, ir, num_lines_row_i, 1))
@@ -186,11 +197,11 @@ function _create_printing_recipe(display::Display,
                     Δ = data_vertical_limit - printed_lines
 
                     if (Δ < 0)
-                        push!(row_printing_recipe, :continuation_line)
+                        push!(row_printing_recipe, _CONTINUATION_LINE)
                         break
                     else
                         if (Δ > 0) && (i != num_printed_rows) && ((i+!noheader) ∈ hlines)
-                            push!(row_printing_recipe, :row_line)
+                            push!(row_printing_recipe, _ROW_LINE)
                             printed_lines += 1
                         end
                     end
@@ -204,7 +215,7 @@ function _create_printing_recipe(display::Display,
             # end to the beginning of the table. Hence, we create a temporary
             # vector of the recipe that will be reversed and merged into the
             # main one.
-            row_printing_recipe_end = Vector{Union{Tuple{Int, Int, Int, Int}, Symbol}}(undef, 0)
+            row_printing_recipe_end = Vector{NTuple{4, Int}}(undef, 0)
 
             # Compute the amount of space left to print the table data.
             table_data_space = data_vertical_limit - header_length
@@ -243,7 +254,7 @@ function _create_printing_recipe(display::Display,
                         break
                     else
                         if (Δ > 0) && (i != num_printed_rows) && ((i+!noheader) ∈ hlines)
-                            push!(row_printing_recipe, :row_line)
+                            push!(row_printing_recipe, _ROW_LINE)
                             printed_lines += 1
                         end
                     end
@@ -252,7 +263,7 @@ function _create_printing_recipe(display::Display,
 
             # In this case, we know that the data is cropped. Hence, we print
             # the continuation line in the middle.
-            push!(row_printing_recipe, :continuation_line)
+            push!(row_printing_recipe, _CONTINUATION_LINE)
 
             Δs = table_data_space - Δs
 
@@ -290,7 +301,7 @@ function _create_printing_recipe(display::Display,
                         break
                     else
                         if (Δ > 0) && ((i-1+!noheader) ∈ hlines)
-                            push!(row_printing_recipe_end, :row_line)
+                            push!(row_printing_recipe_end, _ROW_LINE)
                             printed_lines += 1
                         end
                     end

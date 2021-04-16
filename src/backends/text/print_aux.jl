@@ -158,8 +158,8 @@ function _print_table_data(buf::IO,
                            Δc::Int,
                            cols_width::Vector{Int},
                            vlines::Vector{Int},
-                           row_printing_recipe::Vector{Union{Tuple{Int, Int, Int, Int},Symbol}},
-                           col_printing_recipe::Vector{Union{Int,Symbol}},
+                           row_printing_recipe::Vector{NTuple{4, Int}},
+                           col_printing_recipe::Vector{Int},
                            # Configurations.
                            alignment::Vector{Symbol},
                            body_hlines_format::NTuple{4, Char},
@@ -179,11 +179,11 @@ function _print_table_data(buf::IO,
     line_count = 0
 
     for r in row_printing_recipe
-        if r isa Symbol
-            if r == :row_line
+        if r[1] < 0
+            if r[1] == _ROW_LINE[1]
                 _draw_line!(display, buf, body_hlines_format..., border_crayon,
                             cols_width, vlines)
-            elseif r == :continuation_line
+            elseif r[1] == _CONTINUATION_LINE[1]
                 _draw_continuation_row(display, buf, tf, text_crayon,
                                        border_crayon, cols_width, vlines,
                                        continuation_row_alignment)
@@ -208,12 +208,12 @@ function _print_table_data(buf::IO,
 
                     flp = c_id == num_col_recipes
 
-                    if c isa Symbol
-                        if c == :left_line
+                    if c < 0
+                        if c == _LEFT_LINE
                             _p!(display, border_crayon, tf.column, flp, 1)
-                        elseif c == :column_line
+                        elseif c == _COLUMN_LINE
                             _p!(display, border_crayon, tf.column, flp, 1)
-                        elseif c == :right_line
+                        elseif c == _RIGHT_LINE
                             _p!(display, border_crayon, tf.column, flp, 1)
                         else
                             error("Internal error: wrong symbol in column printing recipe.")
