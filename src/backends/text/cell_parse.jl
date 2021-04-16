@@ -105,7 +105,7 @@ Process the cell by applying the right alignment and also verifying the
 highlighters.
 
 """
-function _process_cell_text(data::Any,
+function _process_cell_text((@nospecialize data::Any),
                             i::Int,
                             j::Int,
                             data_cell::Bool,
@@ -113,7 +113,7 @@ function _process_cell_text(data::Any,
                             col_width::Int,
                             crayon::Crayon,
                             alignment::Symbol,
-                            highlighters::Ref{Any})
+                            (@nospecialize highlighters::Ref{Any}))
 
     lstr = -1
 
