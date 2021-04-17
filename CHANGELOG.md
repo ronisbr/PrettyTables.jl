@@ -1,6 +1,15 @@
 PrettyTables.jl Changelog
 =========================
 
+Verison 0.12.1
+--------------
+
+- ![Bugfix][badge-bugfix] The minimum column width must be 1, otherwise
+  `pretty_table` will crash when cropping an empty column in text backend.
+  (Issue [#118][gh-issue-118])
+- ![Enhancement][badge-enhancement] Some despecializations were performed and
+  type instabilities were fixed, leading to a slightly performance increase.
+
 Version 0.12.0
 --------------
 
@@ -475,6 +484,7 @@ Version 0.1.0
 [gh-issue-107]: https://github.com/ronisbr/PrettyTables.jl/issues/107
 [gh-issue-112]: https://github.com/ronisbr/PrettyTables.jl/issues/112
 [gh-issue-116]: https://github.com/ronisbr/PrettyTables.jl/issues/116
+[gh-issue-118]: https://github.com/ronisbr/PrettyTables.jl/issues/118
 
 [gh-pr-5]: https://github.com/ronisbr/PrettyTables.jl/pull/5
 [gh-pr-8]: https://github.com/ronisbr/PrettyTables.jl/pull/8
