@@ -30,8 +30,9 @@ function _compute_table_size_data(header_str::Matrix{String},
     num_printed_rows, num_printed_cols = size(data_str)
     num_header_printed_rows, ~         = size(header_str)
 
-    # The width of the columns in the table.
-    cols_width = zeros(Int, num_printed_cols)
+    # The width of the columns in the table. Notice that the minimum allowed
+    # column size must be one.
+    cols_width = ones(Int, num_printed_cols)
 
     # The number of lines in each row.
     num_lines_in_row = ones(Int, num_printed_rows)

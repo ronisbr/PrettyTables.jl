@@ -340,3 +340,66 @@ end
 
     @test result == expected
 end
+
+@testset "Issue #118 - Cropping empty columns" begin
+    matrix = hcat(1:1:9, 1:1:9, fill("", 9), fill("", 9), fill("", 9))
+    header = [1, 2, "", "", ""]
+
+    expected = """
+┌───┬───┬───┬───┬───┐
+│ 1 │ 2 │   │   │   │
+├───┼───┼───┼───┼───┤
+│ 1 │ 1 │   │   │   │
+│ 2 │ 2 │   │   │   │
+│ 3 │ 3 │   │   │   │
+│ 4 │ 4 │   │   │   │
+│ 5 │ 5 │   │   │   │
+│ 6 │ 6 │   │   │   │
+│ 7 │ 7 │   │   │   │
+│ 8 │ 8 │   │   │   │
+│ 9 │ 9 │   │   │   │
+└───┴───┴───┴───┴───┘
+"""
+
+    result = pretty_table(String, matrix, header = header)
+    @test result == expected
+
+    expected = """
+┌───┬───┬───┬───
+│ 1 │ 2 │   │  ⋯
+├───┼───┼───┼───
+│ 1 │ 1 │   │  ⋯
+│ 2 │ 2 │   │  ⋯
+│ 3 │ 3 │   │  ⋯
+│ 4 │ 4 │   │  ⋯
+│ ⋮ │ ⋮ │ ⋮ │  ⋱
+└───┴───┴───┴───
+2 columns and 5 rows omitted
+"""
+
+    result = pretty_table(String, matrix;
+                          header = header,
+                          crop = :both,
+                          display_size = (12,16))
+    @test result == expected
+
+    expected = """
+┌───┬───┬───┬───
+│ 1 │ 2 │   │  ⋯
+├───┼───┼───┼───
+│ 1 │ 1 │   │  ⋯
+│ 2 │ 2 │   │  ⋯
+│ ⋮ │ ⋮ │ ⋮ │  ⋱
+│ 8 │ 8 │   │  ⋯
+│ 9 │ 9 │   │  ⋯
+└───┴───┴───┴───
+2 columns and 5 rows omitted
+"""
+
+    result = pretty_table(String, matrix;
+                          header = header,
+                          crop = :both,
+                          display_size = (12,16),
+                          vcrop_mode = :middle)
+    @test result == expected
+end
