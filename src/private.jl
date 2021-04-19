@@ -27,7 +27,7 @@ function _preprocess_vec_or_mat(data::AbstractVecOrMat,
     return data, pheader
 end
 
-function _preprocess_dict(dict::Dict{K,V}; sortkeys::Bool = false) where {K,V}
+function _preprocess_dict(dict::AbstractDict{K, V}; sortkeys::Bool = false) where {K, V}
     pheader =
         (["Keys",              "Values"],
          [compact_type_str(K), compact_type_str(V)])
@@ -322,7 +322,7 @@ function _pretty_table((@nospecialize io::IO), data::Any;
 
     elseif typeof(data) <: AbstractVecOrMat
         pdata, pheader = _preprocess_vec_or_mat(data, header)
-    elseif typeof(data) <: Dict
+    elseif typeof(data) <: AbstractDict
         sortkeys = get(kwargs, :sortkeys, false)
         pdata, pheader = _preprocess_dict(data; sortkeys = sortkeys)
     else
