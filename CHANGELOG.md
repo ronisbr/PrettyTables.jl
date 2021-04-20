@@ -1,6 +1,20 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 1.0.0
+-------------
+
+In this version, the API of text backend is stabilized. It means that current
+functionality will always work during the lifespan of v1. There can be new
+features, but none will be breaking. The only exception is if Julia printing
+system has a breaking change, which is allowed.
+
+The HTML and LaTeX APIs **are not** stabilized. They **can** and will likely
+change during the lifespan of v1. However, any breaking change will only occur
+when the minor version is bumped. Those two backend must be considered **beta**.
+
+- ![Enhancement][badge-enhancement] Any `AbstractDict` can now be printed.
+
 Verison 0.12.1
 --------------
 
