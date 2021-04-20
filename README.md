@@ -10,6 +10,14 @@ This package has the purpose to print data in matrices in a human-readable
 format. It was inspired in the functionality provided by
 https://ozh.github.io/ascii-tables/
 
+## Backends status
+
+* **Text backend**: stable.
+* **HTML backend**: not stable, API can change in minor versions, consider as
+  **beta**.
+* **LaTeX backend**: not stable, API can change in minor version, consider as
+  **beta**.
+
 ## Requirements
 
 * Julia >= 1.0
