@@ -1,6 +1,14 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 1.0.1
+-------------
+
+- ![Bugfix][badge-bugfix] The alignment regex keys are now sorted before
+  processing. This introduces a slight delay, but avoid a huge wait time for
+  very large tables. (Ref:
+  https://github.com/JuliaData/DataFrames.jl/issues/2739)
+
 Version 1.0.0
 -------------
 
