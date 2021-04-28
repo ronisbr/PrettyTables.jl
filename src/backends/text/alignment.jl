@@ -27,7 +27,7 @@ function _apply_alignment_anchor_regex!(data_str::Matrix{Vector{String}},
         alignment_keys = collect(1:maximum(id_cols))
         global_regex   = true
     else
-        alignment_keys = collect(keys(alignment_anchor_regex))
+        alignment_keys = sort(collect(keys(alignment_anchor_regex)))
         global_regex   = false
     end
 
@@ -36,9 +36,10 @@ function _apply_alignment_anchor_regex!(data_str::Matrix{Vector{String}},
         j === nothing && continue
         j += Δc
 
-        # If `j` is larger than `num_printed_cols`, then we can skip since this
-        # column will not be printed.
-        j > num_printed_cols && continue
+        # If `j` is larger than `num_printed_cols`, then we can stop the
+        # processing, because the keys are ordered and anything larger than
+        # `num_printed_cols` will not be printed.
+        j > num_printed_cols && break
 
         regex = global_regex ? alignment_anchor_regex[0] :
                                alignment_anchor_regex[jc]
