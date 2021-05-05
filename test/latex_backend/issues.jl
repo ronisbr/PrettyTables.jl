@@ -138,3 +138,24 @@ end
 
     @test result == expected
 end
+
+# Issue #125
+# ==============================================================================
+
+@testset "Issue #125 - Special characters" begin
+    data = ["%"]
+
+    expected = """
+\\begin{table}
+  \\begin{tabular}{r}
+    \\hline\\hline
+    \\textbf{Col. 1} \\\\\\hline
+    \\% \\\\\\hline\\hline
+  \\end{tabular}
+\\end{table}
+"""
+
+    result = pretty_table(String, data, backend = Val(:latex))
+
+    @test result == expected
+end
