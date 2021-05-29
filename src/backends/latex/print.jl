@@ -1,27 +1,30 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
+# ==============================================================================
 #
 #   Print function of the LaTeX backend.
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # Low-level function to print the table using the LaTeX backend.
-function _pt_latex(r_io::Ref{Any}, pinfo::PrintInfo;
-                   tf::LatexTableFormat = tf_latex_default,
-                   body_hlines::Vector{Int} = Int[],
-                   cell_alignment::Dict{Tuple{Int,Int},Symbol} = Dict{Tuple{Int,Int},Symbol}(),
-                   highlighters::Union{LatexHighlighter,Tuple} = (),
-                   hlines::Union{Nothing,Symbol,AbstractVector} = nothing,
-                   label::AbstractString = "",
-                   longtable_footer::Union{Nothing,AbstractString} = nothing,
-                   noheader::Bool = false,
-                   nosubheader::Bool = false,
-                   row_number_alignment::Symbol = :r,
-                   table_type::Union{Nothing,Symbol} = nothing,
-                   vlines::Union{Nothing,Symbol,AbstractVector} = nothing,
-                   wrap_table::Union{Nothing,Bool} = true,
-                   wrap_table_environment::Union{Nothing,String} = nothing)
+function _pt_latex(
+    r_io::Ref{Any}, pinfo::PrintInfo;
+    tf::LatexTableFormat = tf_latex_default,
+    body_hlines::Vector{Int} = Int[],
+    cell_alignment::Dict{Tuple{Int, Int}, Symbol} = Dict{Tuple{Int, Int}, Symbol}(),
+    highlighters::Union{LatexHighlighter, Tuple} = (),
+    hlines::Union{Nothing, Symbol, AbstractVector} = nothing,
+    label::AbstractString = "",
+    longtable_footer::Union{Nothing, AbstractString} = nothing,
+    noheader::Bool = false,
+    nosubheader::Bool = false,
+    row_number_alignment::Symbol = :r,
+    table_type::Union{Nothing, Symbol} = nothing,
+    vlines::Union{Nothing, Symbol, AbstractVector} = nothing,
+    wrap_table::Union{Nothing, Bool} = true,
+    wrap_table_environment::Union{Nothing, String} = nothing
+)
 
     # `r_io` must always be a reference to `IO`. Here, we unpack it. This is
     # done to improve inference and reduce compilation time. Ideally, we need to
@@ -78,13 +81,15 @@ function _pt_latex(r_io::Ref{Any}, pinfo::PrintInfo;
     buf_io = IOBuffer()
     buf    = IOContext(buf_io)
 
-    !haskey(_latex_table_env, table_type) &&
-    error("Unknown table type $table_type.")
+    if !haskey(_latex_table_env, table_type)
+        error("Unknown table type $table_type.")
+    end
 
     table_env = _latex_table_env[table_type]
 
-    !noheader && num_cols != header_num_cols &&
-    error("The header length must be equal to the number of columns.")
+    if !noheader && num_cols != header_num_cols
+        error("The header length must be equal to the number of columns.")
+    end
 
     # Additional processing necessary if the user wants to print the header.
     if !noheader
@@ -114,11 +119,12 @@ function _pt_latex(r_io::Ref{Any}, pinfo::PrintInfo;
 
         if !noheader
             for j = 1:header_num_rows
-                header_str[j,i] =
-                    _parse_cell_latex(header[j][ic],
-                                      compact_printing = compact_printing,
-                                      limit_printing = limit_printing,
-                                      renderer = Val(:print))
+                header_str[j, i] = _parse_cell_latex(
+                    header[j][ic],
+                    compact_printing = compact_printing,
+                    limit_printing = limit_printing,
+                    renderer = Val(:print)
+                )
             end
         end
 
@@ -133,11 +139,13 @@ function _pt_latex(r_io::Ref{Any}, pinfo::PrintInfo;
                 data_ij = f(data_ij, jr, ic)
             end
 
-            data_str[j,i] = _parse_cell_latex(data_ij;
-                                              cell_first_line_only = cell_first_line_only,
-                                              compact_printing = compact_printing,
-                                              limit_printing = limit_printing,
-                                              renderer = renderer)
+            data_str[j, i] = _parse_cell_latex(
+                data_ij;
+                cell_first_line_only = cell_first_line_only,
+                compact_printing = compact_printing,
+                limit_printing = limit_printing,
+                renderer = renderer
+            )
         end
     end
 
@@ -176,16 +184,18 @@ function _pt_latex(r_io::Ref{Any}, pinfo::PrintInfo;
         length(title) > 0 && _aprintln(buf, "\\caption{$title}", il, ns)
     end
 
-    table_desc = _latex_table_desc(id_cols,
-                                   alignment,
-                                   show_row_names,
-                                   row_name_alignment,
-                                   show_row_number,
-                                   row_number_alignment,
-                                   vlines,
-                                   left_vline,
-                                   mid_vline,
-                                   right_vline)
+    table_desc = _latex_table_desc(
+        id_cols,
+        alignment,
+        show_row_names,
+        row_name_alignment,
+        show_row_number,
+        row_number_alignment,
+        vlines,
+        left_vline,
+        mid_vline,
+        right_vline
+    )
 
     _aprintln(buf,"\\begin{$table_env}$table_desc", il, ns)
     il += 1
@@ -268,14 +278,16 @@ function _pt_latex(r_io::Ref{Any}, pinfo::PrintInfo;
 
                 # Check if the alignment of the cell must be overridden.
                 if alignment_ij != alignment[jc]
-                    header_str_ij = _latex_apply_cell_alignment(header_str_ij,
-                                                                alignment_ij, j,
-                                                                num_printed_cols,
-                                                                show_row_number,
-                                                                vlines,
-                                                                left_vline,
-                                                                mid_vline,
-                                                                right_vline)
+                    header_str_ij = _latex_apply_cell_alignment(
+                        header_str_ij,
+                        alignment_ij, j,
+                        num_printed_cols,
+                        show_row_number,
+                        vlines,
+                        left_vline,
+                        mid_vline,
+                        right_vline
+                    )
                 end
 
                 print(buf_h, header_str_ij)
@@ -335,11 +347,12 @@ function _pt_latex(r_io::Ref{Any}, pinfo::PrintInfo;
             # Due to the non-specialization of `row_names`, `row_name_i_str`
             # here is inferred as `Any`. However, we know that the output of
             # `_parse_cell_latex` must be a String.
-            row_name_i_str::String =
-                _parse_cell_latex(row_names[i];
-                                  cell_first_line_only = false,
-                                  compact_printing = compact_printing,
-                                  renderer = renderer)
+            row_name_i_str::String = _parse_cell_latex(
+                row_names[i];
+                cell_first_line_only = false,
+                compact_printing = compact_printing,
+                renderer = renderer
+            )
             print(buf, row_name_i_str * " & ")
         end
 
@@ -371,13 +384,17 @@ function _pt_latex(r_io::Ref{Any}, pinfo::PrintInfo;
 
             # Check if the alignment of the cell must be overridden.
             if alignment_ij != alignment[jc]
-                data_str_ij = _latex_apply_cell_alignment(data_str_ij,
-                                                          alignment_ij, j,
-                                                          num_printed_cols,
-                                                          show_row_number,
-                                                          vlines, left_vline,
-                                                          mid_vline,
-                                                          right_vline)
+                data_str_ij = _latex_apply_cell_alignment(
+                    data_str_ij,
+                    alignment_ij,
+                    j,
+                    num_printed_cols,
+                    show_row_number,
+                    vlines,
+                    left_vline,
+                    mid_vline,
+                    right_vline
+                )
             end
 
             print(buf, data_str_ij)
@@ -404,8 +421,9 @@ function _pt_latex(r_io::Ref{Any}, pinfo::PrintInfo;
     # ==========================================================================
 
     # If available, add the label to the table if we are using `longtable`.
-    table_type == :longtable && !isempty(label) &&
+    if table_type == :longtable && !isempty(label)
         _aprintln(buf, "\\label{" * label * "}", il)
+    end
 
     il -= 1
     _aprintln(buf, "\\end{$table_env}", il, ns)
