@@ -1,6 +1,7 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
+# ==============================================================================
 #
 #   Types and structures.
 #
@@ -12,7 +13,6 @@ export PrettyTablesConf
     T_BACKENDS
 
 Types that define the supported backends.
-
 """
 const T_BACKENDS = Union{Val{:auto}, Val{:text}, Val{:html}, Val{:latex}}
 
@@ -21,7 +21,6 @@ const T_BACKENDS = Union{Val{:auto}, Val{:text}, Val{:html}, Val{:latex}}
 
 This structure helps to access elements that comply with the column access
 specification of Tables.jl.
-
 """
 struct ColumnTable
     data::Any                    # .............................. Original table
@@ -35,7 +34,6 @@ end
 
 This structure helps to access elements that comply with the row access
 specification of Tables.jl.
-
 """
 struct RowTable
     data::Any                    # .............................. Original table
@@ -49,7 +47,6 @@ end
 
 This structure stores the information required so that the backends can print
 the tables.
-
 """
 struct PrintInfo
     data::Any
@@ -86,7 +83,6 @@ end
 
 Type of the object that holds a pre-defined set of configurations for
 PrettyTables.jl.
-
 """
 struct PrettyTablesConf
     confs::Dict{Symbol, Any}
