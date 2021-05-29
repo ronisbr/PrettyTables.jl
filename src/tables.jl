@@ -1,6 +1,7 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
+# ==============================================================================
 #
 #   Functions to define interfaces with Tables.jl.
 #
@@ -16,11 +17,12 @@ import Base: getindex, isassigned, length, size
 # ==============================================================================
 
 function getindex(ctable::ColumnTable, inds...)
-    length(inds) != 2 &&
-    error("A element of type `ColumnTable` must be accesses using 2 indices.")
+    if length(inds) != 2
+        error("A element of type `ColumnTable` must be accesses using 2 indices.")
+    end
 
     # Access index.
-    i,j = inds[1], inds[2]
+    i, j = inds[1], inds[2]
 
     # Get the column name.
     column_name = ctable.column_names[j]
@@ -32,11 +34,12 @@ function getindex(ctable::ColumnTable, inds...)
 end
 
 function isassigned(ctable::ColumnTable, inds...)
-    length(inds) != 2 &&
-    error("A element of type `ColumnTable` must be accesses using 2 indices.")
+    if length(inds) != 2
+        error("A element of type `ColumnTable` must be accesses using 2 indices.")
+    end
 
     # Access index.
-    i,j = inds[1], inds[2]
+    i, j = inds[1], inds[2]
 
     # Get the column name.
     column_name = ctable.column_names[j]
@@ -62,20 +65,20 @@ _getdata(ctable::ColumnTable) = ctable.data
 # ==============================================================================
 
 function getindex(rtable::RowTable, inds...)
-    length(inds) != 2 &&
-    error("A element of type `RowTable` must be accesses using 2 indices.")
+    if length(inds) != 2
+        error("A element of type `RowTable` must be accesses using 2 indices.")
+    end
 
     # Access index.
-    i,j = inds[1], inds[2]
+    i, j = inds[1], inds[2]
 
     # Get the column name.
     column_name = rtable.column_names[j]
 
     # Get the element.
-    it,~ = iterate(rtable.table, i)
+    it, ~ = iterate(rtable.table, i)
 
-    it == nothing &&
-    error("The row `i` does not exist.")
+    it == nothing && error("The row `i` does not exist.")
 
     element = it[column_name]
 
@@ -83,20 +86,20 @@ function getindex(rtable::RowTable, inds...)
 end
 
 function isassigned(rtable::RowTable, inds...)
-    length(inds) != 2 &&
-    error("A element of type `RowTable` must be accesses using 2 indices.")
+    if length(inds) != 2
+        error("A element of type `RowTable` must be accesses using 2 indices.")
+    end
 
     # Access index.
-    i,j = inds[1], inds[2]
+    i, j = inds[1], inds[2]
 
     # Get the column name.
     column_name = rtable.column_names[j]
 
     # Get the element.
-    it,~ = iterate(rtable.table, i)
+    it, ~ = iterate(rtable.table, i)
 
-    it == nothing &&
-    error("The row `i` does not exist.")
+    it == nothing && error("The row `i` does not exist.")
 
     try
         element = it[column_name]
