@@ -9,16 +9,18 @@
 
 # Apply the column alignment obtained from regex to the data after conversion to
 # string.
-function _apply_alignment_anchor_regex!(data_str::Matrix{Vector{String}},
-                                        alignment::Vector{Symbol},
-                                        id_cols::Vector{Int},
-                                        id_rows::Vector{Int},
-                                        Δc::Int,
-                                        # Configurations.
-                                        alignment_anchor_fallback::Symbol,
-                                        alignment_anchor_fallback_override::Dict{Int, Symbol},
-                                        alignment_anchor_regex::Dict{Int, T} where T<:AbstractVector{Regex},
-                                        cell_alignment_override::Dict{Tuple{Int, Int}, Symbol})
+function _apply_alignment_anchor_regex!(
+    data_str::Matrix{Vector{String}},
+    alignment::Vector{Symbol},
+    id_cols::Vector{Int},
+    id_rows::Vector{Int},
+    Δc::Int,
+    # Configurations.
+    alignment_anchor_fallback::Symbol,
+    alignment_anchor_fallback_override::Dict{Int, Symbol},
+    alignment_anchor_regex::Dict{Int, T} where T<:AbstractVector{Regex},
+    cell_alignment_override::Dict{Tuple{Int, Int}, Symbol}
+)
 
     num_printed_rows, num_printed_cols = size(data_str)
 
@@ -32,7 +34,7 @@ function _apply_alignment_anchor_regex!(data_str::Matrix{Vector{String}},
     end
 
     @inbounds for jc in alignment_keys
-        j = findfirst(x->x == jc, id_cols)
+        j = findfirst(x -> x == jc, id_cols)
         j === nothing && continue
         j += Δc
 
@@ -41,8 +43,7 @@ function _apply_alignment_anchor_regex!(data_str::Matrix{Vector{String}},
         # `num_printed_cols` will not be printed.
         j > num_printed_cols && break
 
-        regex = global_regex ? alignment_anchor_regex[0] :
-                               alignment_anchor_regex[jc]
+        regex = global_regex ? alignment_anchor_regex[0] : alignment_anchor_regex[jc]
 
         # Store in which column we must align the match.
         alignment_column = 0
@@ -139,7 +140,7 @@ function _apply_alignment_anchor_regex!(data_str::Matrix{Vector{String}},
                 pad < 0 && (pad = 0)
 
                 data_str[i, j][l]  = " "^pad * line
-                data_ijl_len = textwidth(data_str[i,j][l])
+                data_ijl_len = textwidth(data_str[i, j][l])
 
                 if data_ijl_len > largest_cell_width
                     largest_cell_width = data_ijl_len
@@ -165,15 +166,16 @@ function _apply_alignment_anchor_regex!(data_str::Matrix{Vector{String}},
 end
 
 # Compute a list of cells in which the alignment is overridden by the user.
-function _compute_cell_alignment_override(data::Any,
-                                          id_cols::Vector{Int},
-                                          id_rows::Vector{Int},
-                                          Δc::Int,
-                                          num_printed_cols::Int,
-                                          num_printed_rows::Int,
-                                          # Configurations.
-                                          cell_alignment::Ref{Any})
-
+function _compute_cell_alignment_override(
+    data::Any,
+    id_cols::Vector{Int},
+    id_rows::Vector{Int},
+    Δc::Int,
+    num_printed_cols::Int,
+    num_printed_rows::Int,
+    # Configurations.
+    cell_alignment::Ref{Any}
+)
     # Dictionary with the cells in which the alignment is overridden.
     cell_alignment_override = Dict{Tuple{Int, Int}, Symbol}()
 
