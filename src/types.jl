@@ -43,7 +43,7 @@ struct RowTable
 end
 
 """
-    PrintInfo{Td,Th,Trn}
+    struct PrintInfo
 
 This structure stores the information required so that the backends can print
 the tables.
@@ -79,7 +79,7 @@ struct PrintInfo
 end
 
 """
-    PrettyTablesConf
+    struct PrettyTablesConf
 
 Type of the object that holds a pre-defined set of configurations for
 PrettyTables.jl.
