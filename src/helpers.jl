@@ -1,10 +1,11 @@
-#== # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
+# ==============================================================================
 #
 #   Auxiliary functions to pretty print tables.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ==#
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 export @ptconfclean, @ptconf, @pt
 
@@ -15,7 +16,6 @@ const _pt_conf = PrettyTablesConf()
     @ptconfclean()
 
 Clean all global configurations to pretty print tables using the macro `@pt`.
-
 """
 macro ptconfclean()
     ex = :(clear_pt_conf!(PrettyTables._pt_conf))
@@ -35,11 +35,9 @@ in which the keywords can be any other possible keyword that can be used in the
 function `pretty_table`.
 
 !!! warning
-
     If a keyword is not supported by the function `pretty_table`, then no error
     message is printed when calling `@ptconf`. However, an error will be thrown
     when `@pt` is called.
-
 """
 macro ptconf(expr...)
     kws = Expr[]
@@ -78,10 +76,15 @@ Notice that the header is valid only for the next printed table. Hence:
 will print `table1` using `header1`, `table2` using `header2`, and `table3`
 using the default header.
 
+!!! info
+    When more than one table is passed to this macro, then multiple calls to
+    `pretty_table` will occur. Hence, the cropping algorithm will behave exactly
+    the same as printing the tables separately.
+
 # Examples
 
 ```julia
-julia> @ptconf tf = simple
+julia> @ptconf tf = tf_simple
 
 julia> @pt :header = ["Time","Velocity"] [1:1:10 ones(10)] :header = ["Time","Position"] [1:1:10 1:1:10]
 ======= ===========
@@ -122,13 +125,6 @@ julia> @pt ones(3,3) + I + [1 2 3; 4 5 6; 7 8 9]
      8.0      9.0     11.0
 ========= ======== =========
 ```
-
-# Remarks
-
-When more than one table is passed to this macro, then multiple calls to
-`pretty_table` will occur. Hence, the cropping algorithm will behave exactly the
-same as printing the tables separately.
-
 """
 macro pt(expr...)
     exprs  = Expr[]
