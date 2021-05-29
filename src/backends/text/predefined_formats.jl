@@ -1,13 +1,14 @@
-#== # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
+# ==============================================================================
 #
 #   Pre-defined formats.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ==#
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-export tf_unicode, tf_ascii_dots, tf_ascii_rounded, tf_borderless, tf_compact,
-       tf_markdown, tf_mysql, tf_simple, tf_unicode_rounded, tf_matrix
+export tf_unicode, tf_ascii_dots, tf_ascii_rounded, tf_borderless, tf_compact
+export tf_markdown, tf_mysql, tf_simple, tf_unicode_rounded, tf_matrix
 
 const tf_unicode = TextFormat()
 
@@ -123,6 +124,6 @@ const tf_matrix = TextFormat(
     left_intersection   = '│',
     right_intersection  = '│',
     row                 = ' ',
-    vlines              = [:begin,:end],
-    hlines              = [:begin,:end]
+    vlines              = [:begin, :end],
+    hlines              = [:begin, :end]
 )
