@@ -38,5 +38,6 @@ function _str_latex_escaped(io::IO, s::AbstractString, esc::String = "")
     end
 end
 
-_str_latex_escaped(s::AbstractString, esc::String = "") =
-    sprint(_str_latex_escaped, s, esc, sizehint=lastindex(s))
+function _str_latex_escaped(s::AbstractString, esc::String = "")
+    return sprint(_str_latex_escaped, s, esc, sizehint=lastindex(s))
+end
