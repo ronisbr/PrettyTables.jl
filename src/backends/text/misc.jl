@@ -14,19 +14,19 @@ Compute the following table size data:
 
 * The width of each column; and
 * The maximum number of lines in the cells of each column.
-
 """
-function _compute_table_size_data(header_str::Matrix{String},
-                                  data_str::Matrix{Vector{String}},
-                                  id_cols::Vector{Int},
-                                  Δc::Int,
-                                  # Configurations
-                                  columns_width::Vector{Int},
-                                  crop_subheader::Bool,
-                                  maximum_columns_width::Vector{Int},
-                                  minimum_columns_width::Vector{Int},
-                                  noheader::Bool)
-
+function _compute_table_size_data(
+    header_str::Matrix{String},
+    data_str::Matrix{Vector{String}},
+    id_cols::Vector{Int},
+    Δc::Int,
+    # Configurations
+    columns_width::Vector{Int},
+    crop_subheader::Bool,
+    maximum_columns_width::Vector{Int},
+    minimum_columns_width::Vector{Int},
+    noheader::Bool
+)
     num_printed_rows, num_printed_cols = size(data_str)
     num_header_printed_rows, ~         = size(header_str)
 
@@ -59,8 +59,9 @@ function _compute_table_size_data(header_str::Matrix{String},
 
                 # If the user wants to crop the subheader, then it should not be
                 # used to compute the largest cell width of this column.
-                ((i == 1) || (!crop_subheader)) &&
-                    (largest_cell_width = max(largest_cell_width, header_ij_len))
+                if (i == 1) || (!crop_subheader)
+                    largest_cell_width = max(largest_cell_width, header_ij_len)
+                end
             end
         end
 
