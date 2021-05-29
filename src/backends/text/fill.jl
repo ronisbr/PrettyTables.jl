@@ -9,10 +9,11 @@
 
 # Compute the vectors that will be used to fill the rows of the matrix that will
 # be printed. This is required due to the different crop modes available.
-function _compute_row_fill_vectors(id_rows::Vector{Int},
-                                   num_printed_rows::Int,
-                                   vcrop_mode::Symbol)
-
+function _compute_row_fill_vectors(
+    id_rows::Vector{Int},
+    num_printed_rows::Int,
+    vcrop_mode::Symbol
+)
     # Compute the array separation if the vertical crop mode is `:middle`.
     num_rows = length(id_rows)
     Δ₀ = cld(num_printed_rows, 2)
@@ -61,28 +62,29 @@ function _compute_row_fill_vectors(id_rows::Vector{Int},
 end
 
 # Fill the header and matrix data.
-function _fill_matrix_data!(header_str::Matrix{String},
-                            data_str::Matrix{Vector{String}},
-                            id_cols::Vector{Int},
-                            jvec::Vector{Int},
-                            jrvec::Vector{Int},
-                            Δc::Int,
-                            (@nospecialize data::Any),
-                            (@nospecialize header::Any),
-                            (@nospecialize formatters::Ref{Any}),
-                            display::Display,
-                            # Configuration options.
-                            autowrap::Bool,
-                            cell_first_line_only::Bool,
-                            columns_width::Vector{Int},
-                            compact_printing::Bool,
-                            crop_subheader::Bool,
-                            limit_printing::Bool,
-                            linebreaks::Bool,
-                            noheader::Bool,
-                            renderer::Union{Val{:print}, Val{:show}},
-                            vcrop_mode::Symbol)
-
+function _fill_matrix_data!(
+    header_str::Matrix{String},
+    data_str::Matrix{Vector{String}},
+    id_cols::Vector{Int},
+    jvec::Vector{Int},
+    jrvec::Vector{Int},
+    Δc::Int,
+    (@nospecialize data::Any),
+    (@nospecialize header::Any),
+    (@nospecialize formatters::Ref{Any}),
+    display::Display,
+    # Configuration options.
+    autowrap::Bool,
+    cell_first_line_only::Bool,
+    columns_width::Vector{Int},
+    compact_printing::Bool,
+    crop_subheader::Bool,
+    limit_printing::Bool,
+    linebreaks::Bool,
+    noheader::Bool,
+    renderer::Union{Val{:print}, Val{:show}},
+    vcrop_mode::Symbol
+)
     num_printed_rows, num_printed_cols = size(data_str)
     header_num_rows, ~ = size(header_str)
 
@@ -91,14 +93,14 @@ function _fill_matrix_data!(header_str::Matrix{String},
     # columns that will not be displayed.
     pred_tab_width = 0
 
-    @inbounds for i = (1+Δc):num_printed_cols
+    @inbounds for i = (1 + Δc):num_printed_cols
         # Here we store the number of processed rows. This is used to save
         # processing if the user wants to crop the output and has cells with
         # multiple lines.
         num_processed_rows = 0
 
         # Index of the i-th printed column in `data`.
-        ic = id_cols[i-Δc]
+        ic = id_cols[i - Δc]
 
         # Store the largest cell width in this column. This leads to a double
         # computation of the cell size, here and in the
@@ -116,22 +118,25 @@ function _fill_matrix_data!(header_str::Matrix{String},
                 # Due to the non-specialization of `data`, `hstr` here is
                 # inferred as `Any`. However, we know that the output of
                 # `_parse_cell_text` must be a vector of String.
-                hstr::Vector{String} =
-                    _parse_cell_text(header_ij;
-                                     autowrap = false,
-                                     cell_first_line_only = false,
-                                     column_width = -1,
-                                     compact_printing = compact_printing,
-                                     has_color = display.has_color,
-                                     limit_printing = limit_printing,
-                                     linebreaks = false,
-                                     renderer = Val(:print))
+                hstr::Vector{String} = _parse_cell_text(
+                    header_ij;
+                    autowrap = false,
+                    cell_first_line_only = false,
+                    column_width = -1,
+                    compact_printing = compact_printing,
+                    has_color = display.has_color,
+                    limit_printing = limit_printing,
+                    linebreaks = false,
+                    renderer = Val(:print)
+                )
 
-                header_str[j,i] = first(hstr)
+                header_str[j, i] = first(hstr)
                 num_processed_rows += 1
 
-                largest_cell_width = max(largest_cell_width,
-                                         textwidth(header_str[j,i]))
+                largest_cell_width = max(
+                    largest_cell_width,
+                    textwidth(header_str[j,i])
+                )
             end
         end
 
@@ -140,7 +145,7 @@ function _fill_matrix_data!(header_str::Matrix{String},
             jr = jrvec[k]
 
             # Apply the formatters.
-            data_ij = isassigned(data,jr,ic) ? data[jr,ic] : undef
+            data_ij = isassigned(data, jr, ic) ? data[jr, ic] : undef
 
             data_ij_type = typeof(data_ij)
 
@@ -152,28 +157,33 @@ function _fill_matrix_data!(header_str::Matrix{String},
             fixed_col_width = columns_width[ic] > 0
 
             # Parse the cell.
-            data_str[j,i] = _parse_cell_text(data_ij;
-                                             autowrap = autowrap && fixed_col_width,
-                                             cell_data_type = data_ij_type,
-                                             cell_first_line_only = cell_first_line_only,
-                                             column_width = columns_width[ic],
-                                             compact_printing = compact_printing,
-                                             has_color = display.has_color,
-                                             limit_printing = limit_printing,
-                                             linebreaks = linebreaks,
-                                             renderer = renderer)
+            data_str[j, i] = _parse_cell_text(
+                data_ij;
+                autowrap = autowrap && fixed_col_width,
+                cell_data_type = data_ij_type,
+                cell_first_line_only = cell_first_line_only,
+                column_width = columns_width[ic],
+                compact_printing = compact_printing,
+                has_color = display.has_color,
+                limit_printing = limit_printing,
+                linebreaks = linebreaks,
+                renderer = renderer
+            )
 
             # Compute the number of lines so that we can avoid process
             # unnecessary cells due to cropping.
-            num_processed_rows += length(data_str[j,i])
+            num_processed_rows += length(data_str[j, i])
 
             if data_ij isa Markdown.MD
-                largest_cell_width =
-                    max(largest_cell_width,
-                        maximum(_printable_textwidth.(data_str[j,i])))
+                largest_cell_width = max(
+                    largest_cell_width,
+                    maximum(_printable_textwidth.(data_str[j, i]))
+                )
             else
-                largest_cell_width = max(largest_cell_width,
-                                         maximum(textwidth.(data_str[j,i])))
+                largest_cell_width = max(
+                    largest_cell_width,
+                    maximum(textwidth.(data_str[j, i]))
+                )
             end
 
             # If the crop mode if `:middle`, then we need to always process a
@@ -206,77 +216,84 @@ function _fill_matrix_data!(header_str::Matrix{String},
 end
 
 # Fill the information related to the row number column.
-function _fill_row_number_column!(header_str::Matrix{String},
-                                  data_str::Matrix{Vector{String}},
-                                  id_rows::Vector{Int},
-                                  jvec::Vector{Int},
-                                  jrvec::Vector{Int},
-                                  noheader::Bool,
-                                  num_rows::Int,
-                                  row_number_column_title::String)
-
+function _fill_row_number_column!(
+    header_str::Matrix{String},
+    data_str::Matrix{Vector{String}},
+    id_rows::Vector{Int},
+    jvec::Vector{Int},
+    jrvec::Vector{Int},
+    noheader::Bool,
+    num_rows::Int,
+    row_number_column_title::String
+)
     num_printed_rows = size(data_str)[1]
 
     num_printed_rows == 0 && return nothing
 
     # Set the header of the row column.
-    @inbounds header_str[1,1]      = row_number_column_title
-    @inbounds header_str[2:end,1] .= ""
+    @inbounds header_str[1, 1]      = row_number_column_title
+    @inbounds header_str[2:end, 1] .= ""
 
     # Set the data of the row column.
     @inbounds for i = 1:num_printed_rows
         j  = jvec[i]
         jr = jrvec[i]
 
-        data_str[j,1] = [string(jr)]
+        data_str[j, 1] = [string(jr)]
     end
 
     return nothing
 end
 
 # Fill the information related to the row name column.
-function _fill_row_name_column!(header_str::Matrix{String},
-                                data_str::Matrix{Vector{String}},
-                                (@nospecialize row_names::AbstractVector),
-                                jvec::Vector{Int},
-                                jrvec::Vector{Int},
-                                Δc::Int,
-                                compact_printing::Bool,
-                                renderer::Union{Val{:print}, Val{:show}},
-                                row_name_column_title::String)
+function _fill_row_name_column!(
+    header_str::Matrix{String},
+    data_str::Matrix{Vector{String}},
+    (@nospecialize row_names::AbstractVector),
+    jvec::Vector{Int},
+    jrvec::Vector{Int},
+    Δc::Int,
+    compact_printing::Bool,
+    renderer::Union{Val{:print}, Val{:show}},
+    row_name_column_title::String
+)
 
     num_printed_rows = size(data_str)[1]
 
     num_printed_rows == 0 && return nothing
 
     # Escape the row name column title.
-    @inbounds header_str[1,Δc] =
-        first(_render_text(Val(:print),
-                           row_name_column_title,
-                           compact_printing = compact_printing,
-                           linebreaks = false))
-    @inbounds header_str[2:end,Δc] .= ""
+    @inbounds header_str[1, Δc] = first(
+        _render_text(
+            Val(:print),
+            row_name_column_title,
+            compact_printing = compact_printing,
+            linebreaks = false
+        )
+    )
+    @inbounds header_str[2:end, Δc] .= ""
 
     # Convert the row names to string.
     @inbounds for i = 1:num_printed_rows
         j  = jvec[i]
         jr = jrvec[i]
 
-        row_names_j = isassigned(row_names,jr) ? row_names[jr] : undef
+        row_names_j = isassigned(row_names, jr) ? row_names[jr] : undef
 
         # Due to the non-specialization of `data`, `hstr` here is inferred as
         # `Any`. However, we know that the output of `_parse_cell_text` must be
         # a vector of String.
-        row_name_str::Vector{String} =
-            _parse_cell_text(row_names_j;
-                             autowrap = false,
-                             cell_first_line_only = false,
-                             column_width = -1,
-                             compact_printing = compact_printing,
-                             linebreaks = false,
-                             renderer = Val(:print))
+        row_name_str::Vector{String} = _parse_cell_text(
+            row_names_j;
+            autowrap = false,
+            cell_first_line_only = false,
+            column_width = -1,
+            compact_printing = compact_printing,
+            linebreaks = false,
+            renderer = Val(:print)
+        )
 
-        data_str[j,Δc] = row_name_str
+        data_str[j, Δc] = row_name_str
     end
 
     return nothing
