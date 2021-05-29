@@ -138,7 +138,7 @@ function _render_text(
     limit_printing::Bool = true,
     linebreaks::Bool = false
 )
-    vstr = linebreak ? string.(split(str, '\n')) : [str]
+    vstr = linebreaks ? string.(split(str, '\n')) : [str]
 
     # NOTE: Here we cannot use `escape_string(str)` because it also adds the
     # character `"` to the list of characters to be escaped.

@@ -8,17 +8,17 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 """
-    _print_title(buf::IO, title_tokens::Vector{String}, # Configurations has_color::Bool, title_crayon::Crayon)
+    _print_title(buf::IO, title_tokens::Vector{String}, has_color::Bool, title_crayon::Crayon)
 
 Print the table title to the buffer `buf`.
-
 """
-function _print_title(buf::IO,
-                      title_tokens::Vector{String},
-                      # Configurations
-                      has_color::Bool,
-                      title_crayon::Crayon)
-
+function _print_title(
+    buf::IO,
+    title_tokens::Vector{String},
+    # Configurations
+    has_color::Bool,
+    title_crayon::Crayon
+)
     num_tokens = length(title_tokens)
 
     num_tokens == 0 && return nothing
@@ -41,19 +41,19 @@ function _print_title(buf::IO,
 end
 
 """
-    _tokenize_title(title::AbstractString, display_width::Int, table_width::Int, # Configurations title_alignment::Symbol, title_autowrap::Bool, title_same_width_as_table::Bool)
+    _tokenize_title(title::AbstractString, display_width::Int, table_width::Int, title_alignment::Symbol, title_autowrap::Bool, title_same_width_as_table::Bool)
 
 Split the table title into tokens considering the line break character.
-
 """
-function _tokenize_title(title::AbstractString,
-                         display_width::Int,
-                         table_width::Int,
-                         # Configurations
-                         title_alignment::Symbol,
-                         title_autowrap::Bool,
-                         title_same_width_as_table::Bool)
-
+function _tokenize_title(
+    title::AbstractString,
+    display_width::Int,
+    table_width::Int,
+    # Configurations
+    title_alignment::Symbol,
+    title_autowrap::Bool,
+    title_same_width_as_table::Bool
+)
     # Process the title separating the tokens.
     title_tokens = String[]
 
