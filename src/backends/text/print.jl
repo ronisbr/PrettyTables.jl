@@ -1,54 +1,56 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
+# ==============================================================================
 #
 #   Print function of the text backend.
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # Low-level function to print the table using the text backend.
-function _pt_text(r_io::Ref{Any}, pinfo::PrintInfo;
-                  border_crayon::Crayon = Crayon(),
-                  header_crayon::Union{Crayon,Vector{Crayon}} = Crayon(bold = true),
-                  subheader_crayon::Union{Crayon,Vector{Crayon}} = Crayon(foreground = :dark_gray),
-                  rownum_header_crayon::Crayon = Crayon(bold = true),
-                  text_crayon::Crayon = Crayon(),
-                  omitted_cell_summary_crayon::Crayon = Crayon(foreground = :cyan),
-                  alignment_anchor_fallback::Symbol = :l,
-                  alignment_anchor_fallback_override::Dict{Int, Symbol} = Dict{Int, Symbol}(),
-                  alignment_anchor_regex::Dict{Int, T} where T <:AbstractVector{Regex} = Dict{Int, Vector{Regex}}(),
-                  autowrap::Bool = false,
-                  body_hlines::Vector{Int} = Int[],
-                  body_hlines_format::Union{Nothing,NTuple{4,Char}} = nothing,
-                  continuation_row_alignment::Symbol = :c,
-                  crop::Symbol = get(r_io.x, :limit, false) ? :both : :none,
-                  crop_subheader::Bool = false,
-                  crop_num_lines_at_beginning::Int = 0,
-                  columns_width::Union{Int,AbstractVector{Int}} = 0,
-                  display_size::Tuple{Int,Int} = displaysize(r_io.x),
-                  equal_columns_width::Bool = false,
-                  ellipsis_line_skip::Integer = 0,
-                  highlighters::Union{Highlighter,Tuple} = (),
-                  hlines::Union{Nothing,Symbol,AbstractVector} = nothing,
-                  linebreaks::Bool = false,
-                  maximum_columns_width::Union{Int,AbstractVector{Int}} = 0,
-                  minimum_columns_width::Union{Int,AbstractVector{Int}} = 0,
-                  newline_at_end::Bool = true,
-                  overwrite::Bool = false,
-                  noheader::Bool = false,
-                  nosubheader::Bool = false,
-                  row_name_crayon::Crayon = Crayon(bold = true),
-                  row_name_header_crayon::Crayon = Crayon(bold = true),
-                  row_number_alignment::Symbol = :r,
-                  show_omitted_cell_summary::Bool = true,
-                  sortkeys::Bool = false,
-                  tf::TextFormat = tf_unicode,
-                  title_autowrap::Bool = false,
-                  title_crayon::Crayon = Crayon(bold = true),
-                  title_same_width_as_table::Bool = false,
-                  vcrop_mode::Symbol = :bottom,
-                  vlines::Union{Nothing,Symbol,AbstractVector} = nothing)
-
+function _pt_text(
+    r_io::Ref{Any}, pinfo::PrintInfo;
+    border_crayon::Crayon = Crayon(),
+    header_crayon::Union{Crayon, Vector{Crayon}} = Crayon(bold = true),
+    subheader_crayon::Union{Crayon,Vector{Crayon}} = Crayon(foreground = :dark_gray),
+    rownum_header_crayon::Crayon = Crayon(bold = true),
+    text_crayon::Crayon = Crayon(),
+    omitted_cell_summary_crayon::Crayon = Crayon(foreground = :cyan),
+    alignment_anchor_fallback::Symbol = :l,
+    alignment_anchor_fallback_override::Dict{Int, Symbol} = Dict{Int, Symbol}(),
+    alignment_anchor_regex::Dict{Int, T} where T <:AbstractVector{Regex} = Dict{Int, Vector{Regex}}(),
+    autowrap::Bool = false,
+    body_hlines::Vector{Int} = Int[],
+    body_hlines_format::Union{Nothing, NTuple{4, Char}} = nothing,
+    continuation_row_alignment::Symbol = :c,
+    crop::Symbol = get(r_io.x, :limit, false) ? :both : :none,
+    crop_subheader::Bool = false,
+    crop_num_lines_at_beginning::Int = 0,
+    columns_width::Union{Int, AbstractVector{Int}} = 0,
+    display_size::Tuple{Int, Int} = displaysize(r_io.x),
+    equal_columns_width::Bool = false,
+    ellipsis_line_skip::Integer = 0,
+    highlighters::Union{Highlighter, Tuple} = (),
+    hlines::Union{Nothing, Symbol, AbstractVector} = nothing,
+    linebreaks::Bool = false,
+    maximum_columns_width::Union{Int, AbstractVector{Int}} = 0,
+    minimum_columns_width::Union{Int, AbstractVector{Int}} = 0,
+    newline_at_end::Bool = true,
+    overwrite::Bool = false,
+    noheader::Bool = false,
+    nosubheader::Bool = false,
+    row_name_crayon::Crayon = Crayon(bold = true),
+    row_name_header_crayon::Crayon = Crayon(bold = true),
+    row_number_alignment::Symbol = :r,
+    show_omitted_cell_summary::Bool = true,
+    sortkeys::Bool = false,
+    tf::TextFormat = tf_unicode,
+    title_autowrap::Bool = false,
+    title_crayon::Crayon = Crayon(bold = true),
+    title_same_width_as_table::Bool = false,
+    vcrop_mode::Symbol = :bottom,
+    vlines::Union{Nothing, Symbol, AbstractVector} = nothing
+)
     # `r_io` must always be a reference to `IO`. Here, we unpack it. This is
     # done to improve inference and reduce compilation time. Ideally, we need to
     # add the `@nospecialize` annotation to `io`. However, it returns the
@@ -111,8 +113,9 @@ function _pt_text(r_io::Ref{Any}, pinfo::PrintInfo;
 
     crop_num_lines_at_beginning < 0 && (crop_num_lines_at_beginning = 0)
 
-    !noheader && num_cols != header_num_cols &&
-    error("The header length must be equal to the number of columns.")
+    if !noheader && num_cols != header_num_cols
+        error("The header length must be equal to the number of columns.")
+    end
 
     # Additional processing necessary if the user wants to print the header.
     if !noheader
@@ -128,15 +131,17 @@ function _pt_text(r_io::Ref{Any}, pinfo::PrintInfo;
         if header_crayon isa Crayon
             header_crayon = fill(header_crayon, num_cols)
         else
-            length(header_crayon) != num_cols &&
-            error("The length of `header_crayon` must be the same as the number of columns.")
+            if length(header_crayon) != num_cols
+                error("The length of `header_crayon` must be the same as the number of columns.")
+            end
         end
 
         if subheader_crayon isa Crayon
             subheader_crayon = fill(subheader_crayon, num_cols)
         else
-            length(subheader_crayon) != num_cols &&
-            error("The length of `subheader_crayon` must be the same as the number of columns.")
+            if length(subheader_crayon) != num_cols
+                error("The length of `subheader_crayon` must be the same as the number of columns.")
+            end
         end
     end
 
@@ -148,16 +153,21 @@ function _pt_text(r_io::Ref{Any}, pinfo::PrintInfo;
     end
 
     # Make sure that `maximum_columns_width` is always a vector.
-    maximum_columns_width isa Integer &&
-        (maximum_columns_width = fill(maximum_columns_width, num_cols))
+    if maximum_columns_width isa Integer
+        maximum_columns_width = fill(maximum_columns_width, num_cols)
+    end
 
     # Make sure that `minimum_columns_width` is always a vector.
-    minimum_columns_width isa Integer &&
-        (minimum_columns_width = fill(minimum_columns_width, num_cols))
+    if minimum_columns_width isa Integer
+        minimum_columns_width = fill(minimum_columns_width, num_cols)
+    end
 
     # Check which columns must have fixed sizes.
     columns_width isa Integer && (columns_width = fill(columns_width, num_cols))
-    length(columns_width) != num_cols && error("The length of `columns_width` must be the same as the number of columns.")
+
+    if length(columns_width) != num_cols
+        error("The length of `columns_width` must be the same as the number of columns.")
+    end
 
     # The number of lines that must be skipped from printing ellipsis must be
     # greater of equal 0.
@@ -180,7 +190,7 @@ function _pt_text(r_io::Ref{Any}, pinfo::PrintInfo;
     # stage the size of each column. Thus, this initial algorithm uses the fact
     # that each column printed will have at least 4 spaces.
     if display.size[2] > 0
-        num_printed_cols = min(num_printed_cols, ceil(Int, display.size[2]/4))
+        num_printed_cols = min(num_printed_cols, ceil(Int, display.size[2] / 4))
     end
 
     # We need to process at least the row number and row name columns to avoid
@@ -198,9 +208,7 @@ function _pt_text(r_io::Ref{Any}, pinfo::PrintInfo;
     # the matrix. Notice that we must create only the matrix with the printed
     # rows and columns.
     header_str = Matrix{String}(undef, header_num_rows, num_printed_cols)
-    data_str   = Matrix{Vector{String}}(undef,
-                                        num_printed_rows,
-                                        num_printed_cols)
+    data_str   = Matrix{Vector{String}}(undef, num_printed_rows, num_printed_cols)
 
     # Auxiliary variables to adjust `alignment` based on the new columns added
     # to the table.
@@ -211,35 +219,41 @@ function _pt_text(r_io::Ref{Any}, pinfo::PrintInfo;
 
     # The vector `jvec` contains the indices in the printed matrix whereas the
     # vector `jrvec` contains the indices in the data matrix.
-    jvec, jrvec = _compute_row_fill_vectors(id_rows,
-                                            num_printed_rows,
-                                            vcrop_mode)
+    jvec, jrvec = _compute_row_fill_vectors(
+        id_rows,
+        num_printed_rows,
+        vcrop_mode
+    )
 
     # Cell alignment override
     # --------------------------------------------------------------------------
 
     # Compute the cells in which the alignment is overridden.
-    cell_alignment_override = _compute_cell_alignment_override(data,
-                                                               id_cols,
-                                                               id_rows,
-                                                               Δc,
-                                                               num_printed_cols,
-                                                               num_printed_rows,
-                                                               # Configurations.
-                                                               cell_alignment)
+    cell_alignment_override = _compute_cell_alignment_override(
+        data,
+        id_cols,
+        id_rows,
+        Δc,
+        num_printed_cols,
+        num_printed_rows,
+        # Configurations.
+        cell_alignment
+    )
 
     # Row numbers
     # --------------------------------------------------------------------------
 
     if show_row_number
-        _fill_row_number_column!(header_str,
-                                 data_str,
-                                 id_rows,
-                                 jvec,
-                                 jrvec,
-                                 noheader,
-                                 num_rows,
-                                 row_number_column_title)
+        _fill_row_number_column!(
+            header_str,
+            data_str,
+            id_rows,
+            jvec,
+            jrvec,
+            noheader,
+            num_rows,
+            row_number_column_title
+        )
 
         # Add information about the row number column to the variables.
         push!(alignment_add, row_number_alignment)
@@ -249,15 +263,17 @@ function _pt_text(r_io::Ref{Any}, pinfo::PrintInfo;
     # --------------------------------------------------------------------------
 
     if show_row_names
-        _fill_row_name_column!(header_str,
-                               data_str,
-                               row_names,
-                               jvec,
-                               jrvec,
-                               Δc,
-                               compact_printing,
-                               renderer,
-                               row_name_column_title)
+        _fill_row_name_column!(
+            header_str,
+            data_str,
+            row_names,
+            jvec,
+            jrvec,
+            Δc,
+            compact_printing,
+            renderer,
+            row_name_column_title
+        )
 
         # Add information about the row name column to the variables.
         push!(alignment_add, row_name_alignment)
@@ -268,42 +284,45 @@ function _pt_text(r_io::Ref{Any}, pinfo::PrintInfo;
     # Table data
     # --------------------------------------------------------------------------
 
-    num_printed_cols, num_printed_rows =
-        _fill_matrix_data!(header_str,
-                           data_str,
-                           id_cols,
-                           jvec,
-                           jrvec,
-                           Δc,
-                           data,
-                           header,
-                           formatters,
-                           display,
-                           # Configuration options.
-                           autowrap,
-                           cell_first_line_only,
-                           columns_width,
-                           compact_printing,
-                           crop_subheader,
-                           limit_printing,
-                           linebreaks,
-                           noheader,
-                           renderer,
-                           vcrop_mode)
+    num_printed_cols, num_printed_rows = _fill_matrix_data!(
+        header_str,
+        data_str,
+        id_cols,
+        jvec,
+        jrvec,
+        Δc,
+        data,
+        header,
+        formatters,
+        display,
+        # Configuration options.
+        autowrap,
+        cell_first_line_only,
+        columns_width,
+        compact_printing,
+        crop_subheader,
+        limit_printing,
+        linebreaks,
+        noheader,
+        renderer,
+        vcrop_mode
+    )
 
     # Column alignment regex
     # --------------------------------------------------------------------------
 
-    _apply_alignment_anchor_regex!(data_str,
-                                   alignment,
-                                   id_cols,
-                                   id_rows,
-                                   Δc,
-                                   # Configurations.
-                                   alignment_anchor_fallback,
-                                   alignment_anchor_fallback_override,
-                                   alignment_anchor_regex,
-                                   cell_alignment_override)
+    _apply_alignment_anchor_regex!(
+        data_str,
+        alignment,
+        id_cols,
+        id_rows,
+        Δc,
+        # Configurations.
+        alignment_anchor_fallback,
+        alignment_anchor_fallback_override,
+        alignment_anchor_regex,
+        cell_alignment_override
+    )
 
     # Update the table size data that is used in the printing algorithm
     # --------------------------------------------------------------------------
@@ -320,17 +339,18 @@ function _pt_text(r_io::Ref{Any}, pinfo::PrintInfo;
     # The variable `num_lines_in_row` stores the maximum number of lines in the
     # cells of each printed table row.
 
-    cols_width, num_lines_in_row =
-        _compute_table_size_data(header_str,
-                                 data_str,
-                                 id_cols,
-                                 Δc,
-                                 # Configurations
-                                 columns_width,
-                                 crop_subheader,
-                                 maximum_columns_width,
-                                 minimum_columns_width,
-                                 noheader)
+    cols_width, num_lines_in_row = _compute_table_size_data(
+        header_str,
+        data_str,
+        id_cols,
+        Δc,
+        # Configurations
+        columns_width,
+        crop_subheader,
+        maximum_columns_width,
+        minimum_columns_width,
+        noheader
+    )
 
     # If the user wants all the columns with the same size, then select the
     # larger.
@@ -341,8 +361,12 @@ function _pt_text(r_io::Ref{Any}, pinfo::PrintInfo;
 
     # Create the format of the horizontal lines.
     if body_hlines_format == nothing
-        body_hlines_format = (tf.left_intersection, tf.middle_intersection,
-                              tf.right_intersection, tf.row)
+        body_hlines_format = (
+            tf.left_intersection,
+            tf.middle_intersection,
+            tf.right_intersection,
+            tf.row
+        )
     end
 
     if hlines == nothing
@@ -366,18 +390,23 @@ function _pt_text(r_io::Ref{Any}, pinfo::PrintInfo;
     # --------------------------------------------------------------------------
 
     table_width = sum(cols_width) + 2length(cols_width) + length(vlines)
-    display.size[2] > 0 && table_width > display.size[2] && (table_width = display.size[2])
+
+    if (display.size[2] > 0) && (table_width > display.size[2])
+        table_width = display.size[2]
+    end
 
     # Process the title
     # --------------------------------------------------------------------------
 
-    title_tokens = _tokenize_title(title,
-                                   display.size[2],
-                                   table_width,
-                                   # Configurations
-                                   title_alignment,
-                                   title_autowrap,
-                                   title_same_width_as_table)
+    title_tokens = _tokenize_title(
+        title,
+        display.size[2],
+        table_width,
+        # Configurations
+        title_alignment,
+        title_autowrap,
+        title_same_width_as_table
+    )
 
     # Sum the number of lines in the title to the number of lines that must be
     # available at the beginning of the table.
@@ -391,24 +420,26 @@ function _pt_text(r_io::Ref{Any}, pinfo::PrintInfo;
     Δdisplay_lines = 1 + newline_at_end + draw_last_hline + crop_num_lines_at_beginning
 
     row_printing_recipe, col_printing_recipe, num_omitted_rows, num_omitted_cols =
-        _create_printing_recipe(display,
-                                header_num_rows,
-                                num_filtered_rows,
-                                num_filtered_cols,
-                                num_printed_rows,
-                                num_printed_cols,
-                                num_lines_in_row,
-                                cols_width,
-                                id_rows,
-                                hlines,
-                                vlines,
-                                Δdisplay_lines,
-                                Δc,
-                                # Configurations
-                                crop,
-                                noheader,
-                                show_omitted_cell_summary,
-                                vcrop_mode)
+        _create_printing_recipe(
+            display,
+            header_num_rows,
+            num_filtered_rows,
+            num_filtered_cols,
+            num_printed_rows,
+            num_printed_cols,
+            num_lines_in_row,
+            cols_width,
+            id_rows,
+            hlines,
+            vlines,
+            Δdisplay_lines,
+            Δc,
+            # Configurations
+            crop,
+            noheader,
+            show_omitted_cell_summary,
+            vcrop_mode
+        )
 
     #                           Print the table
     # ==========================================================================
@@ -426,10 +457,19 @@ function _pt_text(r_io::Ref{Any}, pinfo::PrintInfo;
     # Top table line
     # ==========================================================================
 
-    0 ∈ hlines && _draw_line!(display, buf, tf.up_left_corner,
-                              tf.up_intersection, tf.up_right_corner, tf.row,
-                              border_crayon, cols_width, vlines)
-
+    if 0 ∈ hlines
+        _draw_line!(
+            display,
+            buf,
+            tf.up_left_corner,
+            tf.up_intersection,
+            tf.up_right_corner,
+            tf.row,
+            border_crayon,
+            cols_width,
+            vlines
+        )
+    end
 
     # Header
     # ==========================================================================
@@ -438,87 +478,111 @@ function _pt_text(r_io::Ref{Any}, pinfo::PrintInfo;
     # --------------------------------------------------------------------------
 
     if !noheader
-        _print_table_header!(buf,
-                             display,
-                             header,
-                             header_str,
-                             id_cols,
-                             id_rows,
-                             num_printed_cols,
-                             Δc,
-                             cols_width,
-                             vlines,
-                              # Configurations.
-                             alignment,
-                             header_alignment,
-                             header_cell_alignment,
-                             show_row_names,
-                             show_row_number,
-                             tf,
-                             # Crayons.
-                             border_crayon,
-                             header_crayon,
-                             subheader_crayon,
-                             rownum_header_crayon,
-                             row_name_header_crayon)
+        _print_table_header!(
+            buf,
+            display,
+            header,
+            header_str,
+            id_cols,
+            id_rows,
+            num_printed_cols,
+            Δc,
+            cols_width,
+            vlines,
+            # Configurations.
+            alignment,
+            header_alignment,
+            header_cell_alignment,
+            show_row_names,
+            show_row_number,
+            tf,
+            # Crayons.
+            border_crayon,
+            header_crayon,
+            subheader_crayon,
+            rownum_header_crayon,
+            row_name_header_crayon
+        )
 
         # Bottom header line
         #-----------------------------------------------------------------------
 
-        1 ∈ hlines && _draw_line!(display, buf, tf.left_intersection,
-                                  tf.middle_intersection,
-                                  tf.right_intersection, tf.row,
-                                  border_crayon, cols_width, vlines)
+        if 1 ∈ hlines
+            _draw_line!(
+                display,
+                buf,
+                tf.left_intersection,
+                tf.middle_intersection,
+                tf.right_intersection,
+                tf.row,
+                border_crayon,
+                cols_width,
+                vlines
+            )
+        end
     end
 
     # Data
     # ==========================================================================
 
-    @inbounds _print_table_data(buf,
-                                display,
-                                data,
-                                data_str,
-                                id_cols,
-                                id_rows,
-                                Δc,
-                                cols_width,
-                                vlines,
-                                row_printing_recipe,
-                                col_printing_recipe,
-                                # Configurations.
-                                alignment,
-                                body_hlines_format,
-                                cell_alignment_override,
-                                continuation_row_alignment,
-                                ellipsis_line_skip,
-                                highlighters,
-                                noheader,
-                                show_row_names,
-                                show_row_number,
-                                tf,
-                                # Crayons.
-                                border_crayon,
-                                row_name_crayon,
-                                text_crayon)
+    @inbounds _print_table_data(
+        buf,
+        display,
+        data,
+        data_str,
+        id_cols,
+        id_rows,
+        Δc,
+        cols_width,
+        vlines,
+        row_printing_recipe,
+        col_printing_recipe,
+        # Configurations.
+        alignment,
+        body_hlines_format,
+        cell_alignment_override,
+        continuation_row_alignment,
+        ellipsis_line_skip,
+        highlighters,
+        noheader,
+        show_row_names,
+        show_row_number,
+        tf,
+        # Crayons.
+        border_crayon,
+        row_name_crayon,
+        text_crayon
+    )
 
     # Bottom table line
     # ==========================================================================
 
-    draw_last_hline &&
-        _draw_line!(display, buf, tf.bottom_left_corner, tf.bottom_intersection,
-                    tf.bottom_right_corner, tf.row, border_crayon, cols_width,
-                    vlines)
+    if draw_last_hline
+        _draw_line!(
+            display,
+            buf,
+            tf.bottom_left_corner,
+            tf.bottom_intersection,
+            tf.bottom_right_corner,
+            tf.row,
+            border_crayon,
+            cols_width,
+            vlines
+        )
+    end
 
     # Summary of the omitted cells
     # ==========================================================================
 
-    _print_omitted_cell_summary(buf,
-                                display.has_color,
-                                num_omitted_cols,
-                                num_omitted_rows,
-                                omitted_cell_summary_crayon,
-                                show_omitted_cell_summary,
-                                table_width)
+    _print_omitted_cell_summary(
+        buf,
+        display.has_color,
+        num_omitted_cols,
+        num_omitted_rows,
+        omitted_cell_summary_crayon,
+        show_omitted_cell_summary,
+        table_width
+    )
 
     @label print_to_output
 
