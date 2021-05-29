@@ -10,13 +10,13 @@
 """
     _crop_str(str, crop_size, lstr = -1)
 
-Return a cropped string of `str` with size `crop_size`. Notice that if the last
-character before the crop does not fit due to its width, then blank spaces are
-added.
+Return a cropped string of `str` with size `crop_size`.
+
+If the last character before the crop does not fit due to its width, then blank
+spaces are added.
 
 The size of the string can be passed to `lstr` to save computational burden. If
 `lstr = -1`, then the string length will be computed inside the function.
-
 """
 function _crop_str(str::String, crop_size::Int, lstr::Int = -1)
     lstr < 0 && (lstr = textwidth(str))
@@ -70,7 +70,6 @@ end
 
 Compute the width of the string `str` neglecting all ANSI escape sequences that
 are not printable.
-
 """
 function _printable_textwidth(str::AbstractString)
     # Regex to remove ANSI escape sequences so that we can compute the printable
@@ -91,8 +90,8 @@ text back-end.
 
 `T` can be:
 
-* `Val(:print)`: the function `print` will be used.
-* `Val(:show)`: the function `show` will be used.
+- `Val(:print)`: the function `print` will be used.
+- `Val(:show)`: the function `show` will be used.
 
 This function must return a vector of strings in which each element is a line
 inside the rendered cell.
@@ -107,39 +106,39 @@ formatters.
 
 If `limit_printing` is `true`, then `v` will be converted to string using the
 property `:limit => true`.
-
 """
-function _render_text(::Val{:print}, v::Any;
-                      compact_printing::Bool = true,
-                      isstring::Bool = false,
-                      limit_printing::Bool = true,
-                      linebreaks::Bool = false)
-
+function _render_text(
+    ::Val{:print},
+    v::Any;
+    compact_printing::Bool = true,
+    isstring::Bool = false,
+    limit_printing::Bool = true,
+    linebreaks::Bool = false
+)
     # Create the context that will be used when rendering the cell. Notice that
     # the `IOBuffer` will be neglected.
-    context = IOContext(stdout,
-                        :compact => compact_printing,
-                        :limit => limit_printing)
+    context = IOContext(stdout, :compact => compact_printing, :limit => limit_printing)
 
     str = sprint(print, v; context = context)
 
-    return _render_text(Val(:print), str;
-                        compact_printing = compact_printing,
-                        isstring = isstring,
-                        linebreaks = linebreaks)
+    return _render_text(
+        Val(:print),
+        str;
+        compact_printing = compact_printing,
+        isstring = isstring,
+        linebreaks = linebreaks
+    )
 end
 
-function _render_text(::Val{:print}, str::AbstractString;
-                      compact_printing::Bool = true,
-                      isstring::Bool = false,
-                      limit_printing::Bool = true,
-                      linebreaks::Bool = false)
-
-    if linebreaks
-        vstr = string.(split(str, '\n'))
-    else
-        vstr = [str]
-    end
+function _render_text(
+    ::Val{:print},
+    str::AbstractString;
+    compact_printing::Bool = true,
+    isstring::Bool = false,
+    limit_printing::Bool = true,
+    linebreaks::Bool = false
+)
+    vstr = linebreak ? string.(split(str, '\n')) : [str]
 
     # NOTE: Here we cannot use `escape_string(str)` because it also adds the
     # character `"` to the list of characters to be escaped.
@@ -153,17 +152,16 @@ function _render_text(::Val{:print}, str::AbstractString;
     return output_str
 end
 
-function _render_text(::Val{:show}, v::Any;
-                      compact_printing::Bool = true,
-                      linebreaks::Bool = false,
-                      limit_printing::Bool = true,
-                      isstring::Bool = false)
-
+function _render_text(
+    ::Val{:show}, v::Any;
+    compact_printing::Bool = true,
+    linebreaks::Bool = false,
+    limit_printing::Bool = true,
+    isstring::Bool = false
+)
     # Create the context that will be used when rendering the cell. Notice that
     # the `IOBuffer` will be neglected.
-    context = IOContext(stdout,
-                        :compact => compact_printing,
-                        :limit => limit_printing)
+    context = IOContext(stdout, :compact => compact_printing, :limit => limit_printing)
 
     if v isa AbstractString
         aux  = linebreaks ? string.(split(v, '\n')) : [v]
@@ -171,8 +169,8 @@ function _render_text(::Val{:show}, v::Any;
 
         if !isstring
             for i = 1:length(vstr)
-                aux_i   = first(vstr[i], length(vstr[i])-1)
-                vstr[i] = last(aux_i, length(aux_i)-1)
+                aux_i   = first(vstr[i], length(vstr[i]) - 1)
+                vstr[i] = last(aux_i, length(aux_i) - 1)
             end
         end
     else
@@ -186,10 +184,12 @@ end
 """
     _str_aligned(data::String, alignment::Symbol, field_size::Integer, lstr::Integer = -1)
 
-This function returns the string `data` with alignment `alignment` in a field
-with size `field_size`. `alignment` can be `:l` or `:L` for left alignment, `:c`
-or `:C` for center alignment, or `:r` or `:R` for right alignment. It defaults
-to `:r` if `alignment` is any other symbol.
+Returns the string `data` with a specific `alignment` in a field with size
+`field_size`.
+
+`alignment` can be `:l` or `:L` for left alignment, `:c` or `:C` for center
+alignment, or `:r` or `:R` for right alignment. It defaults to `:r` if
+`alignment` is any other symbol.
 
 This function also returns the new size of the aligned string.
 
@@ -198,11 +198,13 @@ be added as the last character.
 
 The size of the string can be passed to `lstr` to save computational burden. If
 `lstr = -1`, then the string length will be computed inside the function.
-
 """
-function _str_aligned(data::String, alignment::Symbol,
-                      field_size::Integer, lstr::Integer = -1)
-
+function _str_aligned(
+    data::String,
+    alignment::Symbol,
+    field_size::Integer,
+    lstr::Integer = -1
+)
     lstr < 0 && (lstr = textwidth(data))
     Δ = field_size - lstr
 
@@ -232,13 +234,12 @@ end
 """
     _str_autowrap(tokens_raw::Vector{String}, width::Int = 0)
 
-Autowrap the tokens in `tokens_raw` considering a field width of `width`. It
-returns a new vector with the new wrapped tokens.
-
+Autowrap the tokens in `tokens_raw` considering a field with a specific `width`.
+It returns a new vector with the new wrapped tokens.
 """
 function _str_autowrap(tokens_raw::Vector{String}, width::Int = 0)
     # Check for errors.
-    (width <= 0) && error("If `autowrap` is true, then the width must not be positive.")
+    width <= 0 && error("If `autowrap` is true, then the width must not be positive.")
 
     tokens = String[]
 
@@ -309,10 +310,8 @@ Given a vector with a set of ANSI escape sequences, return a composed escape
 sequence that leads to the same formatting.
 
 !!! warning
-
     This function only works with the minimal set used by `Markdown` in
     `stdlib`.
-
 """
 function _get_composed_ansi_format(ansi::Vector{T}) where T<:AbstractString
     bold = false
@@ -360,13 +359,12 @@ end
     _reapply_ansi_format!(lines::Vector{T}) where T<:AbstractString
 
 For each line in `lines`, reapply the ANSI format left by the previous line.
-
 """
 function _reapply_ansi_format!(lines::Vector{T}) where T<:AbstractString
     length(lines) ≤ 1 && return nothing
 
     aux  = collect(eachmatch(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])", lines[1]))
-    ansi = map(x->x.match, aux)
+    ansi = map(x -> x.match, aux)
 
     lines[1] *= "\e[0m"
 
@@ -374,7 +372,7 @@ function _reapply_ansi_format!(lines::Vector{T}) where T<:AbstractString
         composed_ansi = _get_composed_ansi_format(ansi)
 
         # Find the first non-blank character.
-        id = findfirst(x->x ≠ ' ', lines[i])
+        id = findfirst(x -> x ≠ ' ', lines[i])
 
         if (id == nothing) || (id == 1)
             lines[i] = composed_ansi * lines[i]
@@ -383,7 +381,7 @@ function _reapply_ansi_format!(lines::Vector{T}) where T<:AbstractString
         end
 
         aux  = collect(eachmatch(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])", lines[i]))
-        ansi = map(x->x.match, aux)
+        ansi = map(x -> x.match, aux)
 
         lines[i] *= "\e[0m"
     end
