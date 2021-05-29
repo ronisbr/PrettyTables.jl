@@ -20,25 +20,26 @@ const _CONTINUATION_LINE = (-2, 0, 0, 0)
 
 # Create the printing recipes for the rows and columns of the table. This
 # function also computed how many rows and columns are omitted in the printing.
-function _create_printing_recipe(display::Display,
-                                 header_num_rows::Int,
-                                 num_filtered_rows::Int,
-                                 num_filtered_cols::Int,
-                                 num_printed_rows::Int,
-                                 num_printed_cols::Int,
-                                 num_lines_in_row::Vector{Int},
-                                 cols_width::Vector{Int},
-                                 id_rows::Vector{Int},
-                                 hlines::Vector{Int},
-                                 vlines::Vector{Int},
-                                 Δdisplay_lines::Int,
-                                 Δc::Int,
-                                 # Configurations
-                                 crop::Symbol,
-                                 noheader::Bool,
-                                 show_omitted_cell_summary::Bool,
-                                 vcrop_mode::Symbol)
-
+function _create_printing_recipe(
+    display::Display,
+    header_num_rows::Int,
+    num_filtered_rows::Int,
+    num_filtered_cols::Int,
+    num_printed_rows::Int,
+    num_printed_cols::Int,
+    num_lines_in_row::Vector{Int},
+    cols_width::Vector{Int},
+    id_rows::Vector{Int},
+    hlines::Vector{Int},
+    vlines::Vector{Int},
+    Δdisplay_lines::Int,
+    Δc::Int,
+    # Configurations
+    crop::Symbol,
+    noheader::Bool,
+    show_omitted_cell_summary::Bool,
+    vcrop_mode::Symbol
+)
     # Column printing recipe
     # ==========================================================================
 
@@ -68,9 +69,7 @@ function _create_printing_recipe(display::Display,
         line_length += cols_width[i]
         push!(col_printing_recipe, i)
 
-        Δ = data_horizontal_limit > 0 ?
-            data_horizontal_limit - line_length :
-            1
+        Δ = data_horizontal_limit > 0 ? data_horizontal_limit - line_length : 1
         Δ ≤ 0 && break
 
         fully_printed_cols += 1
@@ -89,8 +88,11 @@ function _create_printing_recipe(display::Display,
     end
 
     # Compute the number of omitted columns.
-    num_omitted_cols = clamp(num_filtered_cols - (fully_printed_cols - Δc),
-                             0, num_filtered_cols)
+    num_omitted_cols = clamp(
+        num_filtered_cols - (fully_printed_cols - Δc),
+        0,
+        num_filtered_cols
+    )
 
     # Row printing recipe
     # ==========================================================================
@@ -117,7 +119,7 @@ function _create_printing_recipe(display::Display,
     if (display.size[1] > 0) && ( (crop == :both) || (crop == :vertical) )
         # Compute the number of lines required to print the table. Notice that
         # we need to omit the last line since it is always printed.
-        total_hlines = count(x->0 ≤ x < (!noheader + num_printed_rows), hlines)
+        total_hlines = count(x -> 0 ≤ x < (!noheader + num_printed_rows), hlines)
         total_table_lines  = !noheader ? header_num_rows : 0
         total_table_lines += total_hlines + sum(num_lines_in_row)
 
@@ -152,8 +154,9 @@ function _create_printing_recipe(display::Display,
 
             push!(row_printing_recipe, (i, ir, num_lines_in_row[i], 1))
 
-            (i != num_printed_rows) && ((i+!noheader) ∈ hlines) &&
+            if (i != num_printed_rows) && ((i+!noheader) ∈ hlines)
                 push!(row_printing_recipe, _ROW_LINE)
+            end
         end
     else
         # Compute the required size for the header.
@@ -184,8 +187,11 @@ function _create_printing_recipe(display::Display,
                 # Verify if the entire row can be printed.
                 if Δ < 0
                     remaining_rows = data_vertical_limit - printed_lines
-                    remaining_rows > 0 &&
+
+                    if remaining_rows > 0
                         push!(row_printing_recipe, (i, ir, remaining_rows, 1))
+                    end
+
                     push!(row_printing_recipe, _CONTINUATION_LINE)
                     break
                 else
@@ -239,8 +245,11 @@ function _create_printing_recipe(display::Display,
                 # Verify if the entire row can be printed.
                 if Δ < 0
                     remaining_rows = Δs - printed_lines
-                    remaining_rows > 0 &&
+
+                    if remaining_rows > 0
                         push!(row_printing_recipe, (i, ir, remaining_rows, 1))
+                    end
+
                     break
                 else
                     push!(row_printing_recipe, (i, ir, num_lines_row_i, 1))
@@ -285,9 +294,13 @@ function _create_printing_recipe(display::Display,
 
                     # This row is cropped and we are in the bottom part. Hence,
                     # we need to print the lower part of the row.
-                    remaining_rows > 0 &&
-                        push!(row_printing_recipe_end,
-                              (i, ir, remaining_rows, num_lines_row_i - remaining_rows + 1))
+                    if remaining_rows > 0
+                        push!(
+                            row_printing_recipe_end,
+                            (i, ir, remaining_rows, num_lines_row_i - remaining_rows + 1)
+                        )
+                    end
+
                     break
                 else
                     push!(row_printing_recipe_end, (i, ir, num_lines_row_i, 1))
@@ -309,8 +322,10 @@ function _create_printing_recipe(display::Display,
             end
 
             # Merge the top and bottom parts.
-            row_printing_recipe = vcat(row_printing_recipe,
-                                       reverse(row_printing_recipe_end))
+            row_printing_recipe = vcat(
+                row_printing_recipe,
+                reverse(row_printing_recipe_end)
+            )
         else
             error("Unknown vertical crop mode.")
         end
@@ -318,6 +333,5 @@ function _create_printing_recipe(display::Display,
 
     num_omitted_rows = num_filtered_rows - fully_printed_rows
 
-    return row_printing_recipe, col_printing_recipe, num_omitted_rows,
-           num_omitted_cols
+    return row_printing_recipe, col_printing_recipe, num_omitted_rows, num_omitted_cols
 end
