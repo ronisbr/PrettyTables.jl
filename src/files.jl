@@ -1,6 +1,7 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
+# ==============================================================================
 #
 #   Function to include a table in a file.
 #
@@ -11,7 +12,7 @@ export include_pt_in_file
 """
     include_pt_in_file(filename::AbstractString, mark::AbstractString, args...; kwargs...)
 
-Include a table in the file `filename` using the mark `mark`.
+Include a table in the file `filename` using the `mark`.
 
 This function will print a table using the arguments `args` and keywords
 `kwargs` in the function `pretty_table` (**the IO must not be passed to `args`
@@ -41,12 +42,16 @@ can be used to add a table into HTML files:
 By default, this function will copy the original file to `filename_backup`. If
 this is not desired, then pass the keyword `backup_file = false` to the
 function.
-
 """
-function include_pt_in_file(filename::AbstractString, mark::AbstractString,
-                            args...; backup_file = true, remove_tags = false,
-                            tag_append::String = "", kwargs...)
-
+function include_pt_in_file(
+    filename::AbstractString,
+    mark::AbstractString,
+    args...;
+    backup_file = true,
+    remove_tags = false,
+    tag_append::String = "",
+    kwargs...
+)
     orig = ""
 
     open(filename, "r") do f
@@ -61,7 +66,7 @@ function include_pt_in_file(filename::AbstractString, mark::AbstractString,
     str = String(take!(io))
 
     # Write the output to a temporary file.
-    (path,io) = mktemp()
+    path, io = mktemp()
 
     if !remove_tags
         r = Regex("(?<=<PrettyTables $mark>$tag_append)(?:.|\n)*?(?=.*</PrettyTables>)")
