@@ -1,29 +1,41 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
+# ==============================================================================
 #
 #   Private functions and macros.
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # Dictionary that translates table type to environment.
-const _latex_table_env = Dict(:array     => "array",
-                              :longtable => "longtable",
-                              :tabular   => "tabular")
+const _latex_table_env = Dict(
+    :array     => "array",
+    :longtable => "longtable",
+    :tabular   => "tabular"
+)
 
 # Apply an alignment to a LaTeX table cell.
-function _latex_apply_cell_alignment(str::String, alignment::Symbol, j::Int,
-                                     num_printed_cols::Int,
-                                     show_row_number::Bool, vlines::Vector{Int},
-                                     left_vline::String, mid_vline::String,
-                                     right_vline::String)
-
+function _latex_apply_cell_alignment(
+    str::String,
+    alignment::Symbol,
+    j::Int,
+    num_printed_cols::Int,
+    show_row_number::Bool,
+    vlines::Vector{Int},
+    left_vline::String,
+    mid_vline::String,
+    right_vline::String
+)
     a = _latex_alignment(alignment)
-    aux_j = show_row_number ? j+1 : j
+    aux_j = show_row_number ? j + 1 : j
 
     # We only need to add left vertical line if it is the first
     # column.
-    lvline = (0 ∈ vlines) && (aux_j-1 == 0) ? left_vline : ""
+    lvline = if (0 ∈ vlines) && (aux_j - 1 == 0)
+        left_vline
+    else
+        ""
+    end
 
     # For the right vertical line, we must check if it is a mid line
     # or right line.
@@ -51,17 +63,18 @@ function _latex_alignment(s::Symbol)
 end
 
 # Get the LaTeX table description (alignment and vertical columns).
-function _latex_table_desc(id_cols::AbstractVector,
-                           alignment::Vector{Symbol},
-                           show_row_name::Bool,
-                           row_name_alignment::Symbol,
-                           show_row_number::Bool,
-                           row_number_alignment::Symbol,
-                           vlines::AbstractVector,
-                           left_vline::AbstractString,
-                           mid_vline::AbstractString,
-                           right_vline::AbstractString)
-
+function _latex_table_desc(
+    id_cols::AbstractVector,
+    alignment::Vector{Symbol},
+    show_row_name::Bool,
+    row_name_alignment::Symbol,
+    show_row_number::Bool,
+    row_number_alignment::Symbol,
+    vlines::AbstractVector,
+    left_vline::AbstractString,
+    mid_vline::AbstractString,
+    right_vline::AbstractString
+)
     Δc = show_row_number ? 1 : 0
 
     str = "{"
@@ -101,7 +114,9 @@ function _latex_table_desc(id_cols::AbstractVector,
 end
 
 # Wrap the `text` into LaTeX environment(s).
-_latex_envs(text::AbstractString, envs::Vector{String}) = _latex_envs(text, envs, length(envs))
+function _latex_envs(text::AbstractString, envs::Vector{String})
+    return _latex_envs(text, envs, length(envs))
+end
 
 function _latex_envs(text::AbstractString, env::String)
     if !isempty(text)
