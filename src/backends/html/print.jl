@@ -12,7 +12,7 @@ function _pt_html(
     r_io::Ref{Any},
     pinfo::PrintInfo;
     tf::HTMLTableFormat = tf_html_default,
-    highlighters::Union{HTMLHighlighter,Tuple} = (),
+    highlighters::Union{HTMLHighlighter, Tuple} = (),
     linebreaks::Bool = false,
     noheader::Bool = false,
     nosubheader::Bool = false,

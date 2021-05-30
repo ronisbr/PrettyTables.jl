@@ -32,15 +32,15 @@ is not compliant, then only the following types are supported:
     `sortkeys` can be used to select whether or not the user wants to print the
     dictionary with the keys sorted. If it is `false`, then the elements will be
     printed on the same order returned by the functions `keys` and `values`.
-    Notice that this assumes that the keys are sortable, if they are not, then an
-    error will be thrown.
+    Notice that this assumes that the keys are sortable, if they are not, then
+    an error will be thrown.
 
 # Keywords
 
 - `alignment::Union{Symbol, Vector{Symbol}}`: Select the alignment of the
-    columns (see the section [`Alignment`](@ref)).
+    columns (see the section `Alignment`).
 - `backend::Union{Symbol, T_BACKENDS}`: Select which back-end will be used to
-    print the table (see the section [`Backend`](@ref)). Notice that the
+    print the table (see the section `Backend`). Notice that the
     additional configuration in `kwargs...` depends on the selected backend.
 - `cell_alignment::Union{Nothing, Dict{Tuple{Int, Int}, Symbol}, Function, Tuple}`:
     A tuple of functions with the signature `f(data, i, j)` that overrides the
@@ -48,10 +48,10 @@ is not compliant, then only the following types are supported:
     single function, when it is assumed that only one alignment function is
     required, or `nothing`, when no cell alignment modification will be
     performed. If the function `f` does not return a valid alignment symbol as
-    shown in section [`Alignment`](@ref), then it will be discarded. For
+    shown in section `Alignment`, then it will be discarded. For
     convenience, it can also be a dictionary of type `(i, j) => a` that
     overrides the alignment of the cell `(i, j)` to `a`. `a` must be a symbol
-    like specified in the section [`Alignment`](@ref). (**Default** = `nothing`)
+    like specified in the section `Alignment`. (**Default** = `nothing`)
 
 !!! note
     If more than one alignment function is passed to `cell_alignment`, then
@@ -64,11 +64,11 @@ is not compliant, then only the following types are supported:
 - `compact_printing::Bool`: Select if the option `:compact` will be used when
     printing the data. (**Default** = `true`)
 - `filters_row::Union{Nothing, Tuple}`: Filters for the rows (see the section
-    [`Filters`](@ref)).
+    `Filters`).
 - `filters_col::Union{Nothing, Tuple}`: Filters for the columns (see the section
-    [`Filters`](@ref)).
+    `Filters`).
 - `formatters::Union{Nothing, Function, Tuple}`: See the section
-    [`Formatters`](@ref).
+    `Formatters`.
 - `header::Union{Symbol, Vector{Symbol}}`: The header must be a tuple of
     vectors. Each one must have the number of elements equal to the number of
     columns in the table. The first vector is considered the header and the
@@ -76,7 +76,7 @@ is not compliant, then only the following types are supported:
     the type will be used. If a single vector is passed, then it will be
     considered the header. (**Default** = `nothing`)
 - `header_alignment::Union{Symbol, Vector{Symbol}}`: Select the alignment of the
-    header columns (see the section [`Alignment`](@ref)). If the symbol that
+    header columns (see the section `Alignment`). If the symbol that
     specifies the alignment is `:s` for a specific column, then the same
     alignment in the keyword `alignment` for that column will be used.
     (**Default** = `:s`)
@@ -105,7 +105,7 @@ is not compliant, then only the following types are supported:
     column with the row names will not be shown. Notice that the size of this
     vector must match the number of rows in the table. (**Default** = `nothing`)
 - `row_name_alignment::Symbol`: Alignment of the column with the rows name (see
-    the section [`Alignment`](@ref)).
+    the section `Alignment`).
 - `row_name_column_title::AbstractString`: Title of the column with the row
     names. (**Default** = "")
 - `row_number_column_title::AbstractString`: Title of the column with the row
@@ -115,7 +115,7 @@ is not compliant, then only the following types are supported:
 - `title::AbstractString`: The title of the table. If it is empty, then no title
     will be printed. (**Default** = "")
 - `title_alignment::Symbol`: Alignment of the title, which must be a symbol as
-    explained in the section [`Alignment`](@ref). This argument is ignored in the
+    explained in the section `Alignment`. This argument is ignored in the
     LaTeX backend. (**Default** = :l)
 
 !!! note
@@ -260,8 +260,8 @@ This back-end produces text tables. This back-end can be used by selecting
 - `equal_columns_width::Bool`: If `true`, then all the columns will have the
     same width. (**Default** = `false`)
 - `highlighters::Union{Highlighter, Tuple}`: An instance of `Highlighter` or a
-    tuple with a list of text highlighters (see the section [`Text
-    highlighters`](@ref)).
+    tuple with a list of text highlighters (see the section `Text
+    highlighters`).
 - `hlines::Union{Nothing, Symbol, AbstractVector}`: This variable controls where
     the horizontal lines will be drawn. It can be `nothing`, `:all`, `:none` or
     a vector of integers. (**Default** = `nothing`)
@@ -309,7 +309,7 @@ This back-end produces text tables. This back-end can be used by selecting
     table will be deleted from the output `io`. This can be used to update the
     table in the display continuously. (**Default** = `false`)
 - `row_number_alignment::Symbol`: Select the alignment of the row number column
-    (see the section [`Alignment`](@ref)). (**Default** = `:r`)
+    (see the section `Alignment`). (**Default** = `:r`)
 - `show_omitted_cell_summary::Bool`: If `true`, then a summary will be printed
     after the table with the number of columns and rows that were omitted.
     (**Default** = `true`)
@@ -435,7 +435,7 @@ This backend produces HTML tables. This backend can be used by selecting
 
 - `highlighters::Union{HTMLHighlighter, Tuple}`: An instance of
     [`HTMLHighlighter`](@ref) or a tuple with a list of HTML highlighters (see
-    the section [`HTML highlighters`](@ref)).
+    the section `HTML highlighters`).
 - `linebreaks::Bool`: If `true`, then `\\n` will be replaced by `<br>`.
     (**Default** = `false`)
 - `noheader::Bool`: If `true`, then the header will not be printed. Notice that
@@ -459,7 +459,7 @@ contains the following two public fields:
 - `f::Function`: Function with the signature `f(data, i, j)` in which should
     return `true` if the element `(i,j)` in `data` must be highlighted, or
     `false` otherwise.
-- `fd::Function`: Function with the signature `f(h,data,i,j)` in which `h` is
+- `fd::Function`: Function with the signature `f(h, data, i, j)` in which `h` is
     the highlighter. This function must return the `HTMLDecoration` to be
     applied to the cell that must be highlighted.
 
@@ -519,7 +519,7 @@ This backend produces LaTeX tables. This backend can be used by selecting
     first data row. (**Default** = `Int[]`)
 - `highlighters::Union{LatexHighlighter, Tuple}`: An instance of
     `LatexHighlighter` or a tuple with a list of LaTeX highlighters (see the
-    section [`LaTeX highlighters`](@ref)).
+    section `LaTeX highlighters`).
 - `hlines::Union{Nothing, Symbol, AbstractVector}`: This variable controls where
     the horizontal lines will be drawn. It can be `nothing`, `:all`, `:none` or
     a vector of integers. (**Default** = `nothing`)
@@ -556,7 +556,7 @@ This backend produces LaTeX tables. This backend can be used by selecting
     *i.e.* the header will contain only one line. Notice that this option has no
     effect if `noheader = true`. (**Default** = `false`)
 - `row_number_alignment::Symbol`: Select the alignment of the row number column
-    (see the section [`Alignment`](@ref)). (**Default** = `:r`)
+    (see the section `Alignment`). (**Default** = `:r`)
 - `table_type::Union{Nothing, Symbol}`: Select which LaTeX environment will be
     used to print the table. Currently supported options are `:tabular` for
     `tabular` or `:longtable` for `longtable`. If it is `nothing` then the
