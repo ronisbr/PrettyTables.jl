@@ -10,23 +10,22 @@
 """
     _parse_cell_html(cell::T; kwargs...)
 
-Parse the table cell `cell` of type `T`. This function must return a string that
-will be printed to the IO.
+Parse the table `cell` of type `T`.
 
+This function must return a string that will be printed to the IO.
 """
-@inline function _parse_cell_html(cell;
-                                  cell_first_line_only::Bool = false,
-                                  compact_printing::Bool = true,
-                                  limit_printing::Bool = true,
-                                  linebreaks::Bool = false,
-                                  renderer::Union{Val{:print}, Val{:show}} = Val(:print),
-                                  kwargs...)
-
+@inline function _parse_cell_html(
+    cell;
+    cell_first_line_only::Bool = false,
+    compact_printing::Bool = true,
+    limit_printing::Bool = true,
+    linebreaks::Bool = false,
+    renderer::Union{Val{:print}, Val{:show}} = Val(:print),
+    kwargs...
+)
     # Create the context that will be used when rendering the cell. Notice that
     # the `IOBuffer` will be neglected.
-    context = IOContext(stdout,
-                        :compact => compact_printing,
-                        :limit => limit_printing)
+    context = IOContext(stdout, :compact => compact_printing, :limit => limit_printing)
 
     # Convert to string using the desired renderer.
     if renderer === Val(:show)
@@ -50,8 +49,9 @@ will be printed to the IO.
     return _str_escaped(cell_str)
 end
 
-@inline _parse_cell_html(cell::Markdown.MD; kwargs...) =
-    replace(sprint(show, MIME("text/html"), cell),"\n"=>"")
+@inline function _parse_cell_html(cell::Markdown.MD; kwargs...)
+    return replace(sprint(show, MIME("text/html"), cell),"\n"=>"")
+end
 
 @inline _parse_cell_html(cell::Missing; kwargs...) = "missing"
 @inline _parse_cell_html(cell::Nothing; kwargs...) = "nothing"
