@@ -1,21 +1,24 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
+# ==============================================================================
 #
 #   Print function of the html backend.
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # Low-level function to print the table using the text backend.
-function _pt_html(r_io::Ref{Any}, pinfo::PrintInfo;
-                  tf::HTMLTableFormat = tf_html_default,
-                  highlighters::Union{HTMLHighlighter,Tuple} = (),
-                  linebreaks::Bool = false,
-                  noheader::Bool = false,
-                  nosubheader::Bool = false,
-                  sortkeys::Bool = false,
-                  standalone::Bool = true)
-
+function _pt_html(
+    r_io::Ref{Any},
+    pinfo::PrintInfo;
+    tf::HTMLTableFormat = tf_html_default,
+    highlighters::Union{HTMLHighlighter,Tuple} = (),
+    linebreaks::Bool = false,
+    noheader::Bool = false,
+    nosubheader::Bool = false,
+    sortkeys::Bool = false,
+    standalone::Bool = true
+)
     # `r_io` must always be a reference to `IO`. Here, we unpack it. This is
     # done to improve inference and reduce compilation time. Ideally, we need to
     # add the `@nospecialize` annotation to `io`. However, it returns the
@@ -59,16 +62,15 @@ function _pt_html(r_io::Ref{Any}, pinfo::PrintInfo;
     buf_io = IOBuffer()
     buf    = IOContext(buf_io)
 
-    !noheader && num_cols != header_num_cols &&
-    error("The header length must be equal to the number of columns.")
+    if !noheader && (num_cols != header_num_cols)
+        error("The header length must be equal to the number of columns.")
+    end
 
     # Additional processing necessary if the user wants to print the header.
     if !noheader
         # If the user do not want to print the sub-header but wants to print the
         # header, then just force the number of rows in header to be 1.
-        if nosubheader
-            header_num_rows = 1
-        end
+        nosubheader && (header_num_rows = 1)
     end
 
     # Make sure that `highlighters` is always a Ref{Any}(Tuple).
@@ -90,11 +92,12 @@ function _pt_html(r_io::Ref{Any}, pinfo::PrintInfo;
 
         if !noheader
             for j = 1:header_num_rows
-                header_str[j,i] =
-                    _parse_cell_html(header[j][ic],
-                                     compact_printing = compact_printing,
-                                     limit_printing = limit_printing,
-                                     renderer = Val(:print))
+                header_str[j, i] = _parse_cell_html(
+                    header[j][ic],
+                    compact_printing = compact_printing,
+                    limit_printing = limit_printing,
+                    renderer = Val(:print)
+                )
             end
         end
 
@@ -103,18 +106,20 @@ function _pt_html(r_io::Ref{Any}, pinfo::PrintInfo;
             jr = id_rows[j]
 
             # Apply the formatters.
-            data_ij = isassigned(data,jr,ic) ? data[jr,ic] : undef
+            data_ij = isassigned(data, jr, ic) ? data[jr, ic] : undef
 
             for f in formatters.x
                 data_ij = f(data_ij, jr, ic)
             end
 
-            data_str[j,i] = _parse_cell_html(data_ij;
-                                             cell_first_line_only = cell_first_line_only,
-                                             compact_printing = compact_printing,
-                                             limit_printing = limit_printing,
-                                             linebreaks = linebreaks,
-                                             renderer = renderer)
+            data_str[j, i] = _parse_cell_html(
+                data_ij;
+                cell_first_line_only = cell_first_line_only,
+                compact_printing = compact_printing,
+                limit_printing = limit_printing,
+                linebreaks = linebreaks,
+                renderer = renderer
+            )
         end
     end
 
@@ -128,24 +133,38 @@ function _pt_html(r_io::Ref{Any}, pinfo::PrintInfo;
     # ==========================================================================
 
     if standalone
-        _aprintln(buf, """
-                  <!DOCTYPE html>
-                  <html>
-                  <meta charset=\"UTF-8\">
-                  <style>""", il, ns)
+        _aprintln(
+            buf,
+            """
+            <!DOCTYPE html>
+            <html>
+            <meta charset=\"UTF-8\">
+            <style>""",
+            il,
+            ns
+        )
         il += 1
 
-        !isempty(table_width) && _aprintln(buf, """
+        if !isempty(table_width)
+            _aprintln(
+                buf,
+                """
                 table {
                     width: $table_width;
                 }
-                """, il, ns)
+                """,
+                il,
+                ns)
+        end
 
         _aprintln(buf, css, il, ns)
         il -= 1
-        _aprintln(buf, """
-                  </style>
-                  <body>""")
+        _aprintln(
+            buf,
+            """
+            </style>
+            <body>"""
+        )
     end
 
     _aprintln(buf, "<table>", il, ns)
@@ -186,9 +205,13 @@ function _pt_html(r_io::Ref{Any}, pinfo::PrintInfo;
             # The text "Row" must appear only on the first line.
             if show_row_number
                 if i == 1
-                    _aprintln(buf, "<th class = \"rowNumber\">" *
-                              row_number_column_title *
-                              "</th>", il, ns)
+                    _aprintln(
+                        buf,
+                        "<th class = \"rowNumber\">" *
+                            row_number_column_title *
+                            "</th>",
+                        il,
+                        ns)
                 else
                     _aprintln(buf, "<th></th>", il, ns)
                 end
@@ -197,11 +220,17 @@ function _pt_html(r_io::Ref{Any}, pinfo::PrintInfo;
             # The row name column title must appear only on the first line.
             if show_row_names
                 if i == 1
-                    style = Dict{String,String}("text-align" => _html_alignment[row_name_alignment])
-                    row_name_title_html = _styled_html("th",
-                                                       row_name_column_title,
-                                                       style;
-                                                       class = "rowName")
+                    style = Dict{String,String}(
+                        "text-align" => _html_alignment[row_name_alignment]
+                    )
+
+                    row_name_title_html = _styled_html(
+                        "th",
+                        row_name_column_title,
+                        style;
+                        class = "rowName"
+                    )
+
                     _aprintln(buf, row_name_title_html, il, ns)
                 else
                     _aprintln(buf, "<th></th>", il, ns)
@@ -225,12 +254,12 @@ function _pt_html(r_io::Ref{Any}, pinfo::PrintInfo;
                 end
 
                 # If alignment is `:s`, then we must use the column alignment.
-                alignment_ij ∈ (:s,:S) && (alignment_ij = alignment[jc])
+                alignment_ij ∈ (:s, :S) && (alignment_ij = alignment[jc])
 
                 # Alignment of this cell.
                 style = Dict{String,String}("text-align" => _html_alignment[alignment_ij])
 
-                _aprintln(buf, _styled_html("th", header_str[i,j], style), il, ns)
+                _aprintln(buf, _styled_html("th", header_str[i, j], style), il, ns)
             end
             il -= 1
             _aprintln(buf, "</tr>", il, ns)
@@ -254,16 +283,25 @@ function _pt_html(r_io::Ref{Any}, pinfo::PrintInfo;
             # Due to the non-specialization of `row_names`, `row_name_i_str`
             # here is inferred as `Any`. However, we know that the output of
             # `_parse_cell_latex` must be a String.
-            row_name_i_str::String =
-                _parse_cell_html(row_names[i];
-                                 cell_first_line_only = false,
-                                 compact_printing = compact_printing,
-                                 linebreaks = false,
-                                 renderer = renderer)
+            row_name_i_str::String = _parse_cell_html(
+                row_names[i];
+                cell_first_line_only = false,
+                compact_printing = compact_printing,
+                linebreaks = false,
+                renderer = renderer
+            )
 
-            style = Dict{String,String}("text-align" => _html_alignment[row_name_alignment])
-            row_name_i_html = _styled_html("td", row_name_i_str, style;
-                                           class = "rowName")
+            style = Dict{String,String}(
+                "text-align" => _html_alignment[row_name_alignment]
+            )
+
+            row_name_i_html = _styled_html(
+                "td",
+                row_name_i_str,
+                style;
+                class = "rowName"
+            )
+
             _aprintln(buf, row_name_i_html, il, ns)
         end
 
@@ -294,7 +332,7 @@ function _pt_html(r_io::Ref{Any}, pinfo::PrintInfo;
                 end
             end
 
-            _aprintln(buf, _styled_html("td", data_str[i,j], style), il, ns)
+            _aprintln(buf, _styled_html("td", data_str[i, j], style), il, ns)
         end
 
         il -= 1
@@ -309,9 +347,14 @@ function _pt_html(r_io::Ref{Any}, pinfo::PrintInfo;
     il -= 1
     _aprintln(buf, "</table>", il, ns)
     if standalone
-        _aprintln(buf, """
-                  </body>
-                  </html>""", il, ns)
+        _aprintln(
+            buf,
+            """
+            </body>
+            </html>""",
+            il,
+            ns
+        )
     end
 
     # Print the buffer into the io.
