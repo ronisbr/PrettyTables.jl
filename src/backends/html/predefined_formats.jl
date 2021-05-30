@@ -1,13 +1,14 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
+# ==============================================================================
 #
 #   Pre-defined formats for HTML tables.
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-export tf_html_default, tf_html_dark, tf_html_minimalist, tf_html_simple,
-       tf_html_matrix
+export tf_html_default, tf_html_dark, tf_html_minimalist, tf_html_simple
+export tf_html_matrix
 
 const tf_html_default = HTMLTableFormat()
 
