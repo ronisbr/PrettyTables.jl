@@ -1,22 +1,27 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
+# ==============================================================================
 #
 #   Private functions and macros.
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-const _html_alignment = Dict(:l => "left",
-                             :L => "left",
-                             :c => "center",
-                             :C => "center",
-                             :r => "right",
-                             :R => "right")
+const _html_alignment = Dict(
+    :l => "left",
+    :L => "left",
+    :c => "center",
+    :C => "center",
+    :r => "right",
+    :R => "right"
+)
 
-function _styled_html(tag::String, text::String,
-                      style::Dict{String,String} = Dict{String,String}();
-                      class::String = "")
-
+function _styled_html(
+    tag::String,
+    text::String,
+    style::Dict{String,String} = Dict{String,String}();
+    class::String = ""
+)
     str_class = isempty(class) ? "" : " class = \"" * class * "\""
 
     # If there is no keys in the style dictionary, just return the tag.
@@ -49,5 +54,3 @@ function _styled_html(tag::String, text::String,
         return "<" * tag * str_class * " style = \"" * style_str * "\">" * text * "</" * tag * ">"
     end
 end
-
-
