@@ -22,7 +22,7 @@ columns in `data`. The *i*-th symbol in the vector specify the alignment of the
 *i*-th column using the same symbols as described previously.
 
 ```jldoctest
-julia> data = Any[ f(a) for a = 0:30:90, f in (sind,cosd,tand)];
+julia> data = Any[ f(a) for a = 0:30:90, f in (sind, cosd, tand)];
 
 julia> pretty_table(data; alignment=:l)
 ┌──────────┬──────────┬─────────┐
@@ -34,7 +34,7 @@ julia> pretty_table(data; alignment=:l)
 │ 1.0      │ 0.0      │ Inf     │
 └──────────┴──────────┴─────────┘
 
-julia> pretty_table(data; alignment=[:l,:c,:r])
+julia> pretty_table(data; alignment=[:l, :c, :r])
 ┌──────────┬──────────┬─────────┐
 │ Col. 1   │  Col. 2  │  Col. 3 │
 ├──────────┼──────────┼─────────┤
@@ -46,5 +46,4 @@ julia> pretty_table(data; alignment=[:l,:c,:r])
 ```
 
 !!! note
-
     The `alignment` keyword is supported in all back-ends.

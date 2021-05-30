@@ -14,14 +14,6 @@ format. It was inspired in the functionality provided by
 
 ![](./assets/welcome_figure.png)
 
-## Requirements
-
-* Julia >= 1.0
-* Crayons >= 4.0
-* Formatting >= 0.4
-* Reexport >= 0.2
-* Tables >= 0.2
-
 ## Installation
 
 ```julia-repl

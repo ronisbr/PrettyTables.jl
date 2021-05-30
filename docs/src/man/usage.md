@@ -14,9 +14,11 @@ The following function can be used to print data.
 function pretty_table([io::IO | String,] table;  kwargs...)
 ```
 
-Print to `io` the table `table`. If `io` is omitted, then it defaults to
-`stdout`. If `String` is passed in the place of `io`, then a `String` with the
-printed table will be returned by the function.
+Print to `io` the table `table`.
+
+If `io` is omitted, then it defaults to `stdout`. If `String` is passed in the
+place of `io`, then a `String` with the printed table will be returned by the
+function.
 
 When printing, it will be verified if `table` complies with
 [**Tables.jl**](https://github.com/JuliaData/Tables.jl) API.  If it is is
@@ -26,108 +28,105 @@ compliant, then only the following types are supported:
 1. `AbstractVector`: any vector can be printed.
 2. `AbstractMatrix`: any matrix can be printed.
 3. `Dict`: any `Dict` can be printed. In this case, the special keyword
-   `sortkeys` can be used to select whether or not the user wants to print the
-   dictionary with the keys sorted. If it is `false`, then the elements will be
-   printed on the same order returned by the functions `keys` and `values`.
-   Notice that this assumes that the keys are sortable, if they are not, then an
-   error will be thrown.
+    `sortkeys` can be used to select whether or not the user wants to print the
+    dictionary with the keys sorted. If it is `false`, then the elements will be
+    printed on the same order returned by the functions `keys` and `values`.
+    Notice that this assumes that the keys are sortable, if they are not, then
+    an error will be thrown.
 
 The user can select which back-end will be used to print the tables using the
 keyword argument `backend`. Currently, the following back-ends are supported:
 
 1. **Text** (`backend = Val(:text)`): prints the table in text mode. This is the
-   default selection if the keyword `backend` is absent.
+    default selection if the keyword `backend` is absent.
 2. **HTML** (`backend = Val(:html)`): prints the table in HTML.
 3. **LaTeX** (`backend = Val(:latex)`): prints the table in LaTeX format.
 
 Each back-end defines its own configuration keywords that can be passed using
 `kwargs`. However, the following keywords are valid for all back-ends:
 
-* `alignment`: Select the alignment of the columns (see the section
-               [Alignment](@ref).
-* `backend`: Select which back-end will be used to print the table. Notice that
-             the additional configuration in `kwargs...` depends on the selected
-             back-end.
-* `cell_alignment`: A tuple of functions with the signature `f(data,i,j)` that
-                    overrides the alignment of the cell `(i,j)` to the value
-                    returned by `f`. It can also be a single function, when it
-                    is assumed that only one alignment function is required, or
-                    `nothing`, when no cell alignment modification will be
-                    performed. If the function `f` does not return a valid
-                    alignment symbol as shown in section [Alignment](@ref), then
-                    it will be discarded. For convenience, it can also be a
-                    dictionary of type `(i,j) => a` that overrides the
-                    alignment of the cell `(i,j)` to `a`. `a` must be a symbol
-                    like specified in the section [Alignment](@ref).
-  !!! note
+- `alignment::Union{Symbol, Vector{Symbol}}`: Select the alignment of the
+    columns (see the section [Alignment](@ref)).
+- `backend::Union{Symbol, T_BACKENDS}`: Select which back-end will be used to
+    print the table. Notice that the additional configuration in `kwargs...`
+    depends on the selected backend.
+- `cell_alignment::Union{Nothing, Dict{Tuple{Int, Int}, Symbol}, Function, Tuple}`:
+    A tuple of functions with the signature `f(data, i, j)` that overrides the
+    alignment of the cell `(i, j)` to the value returned by `f`. It can also be a
+    single function, when it is assumed that only one alignment function is
+    required, or `nothing`, when no cell alignment modification will be
+    performed. If the function `f` does not return a valid alignment symbol as
+    shown in section [Alignment](@ref), then it will be discarded. For
+    convenience, it can also be a dictionary of type `(i, j) => a` that
+    overrides the alignment of the cell `(i, j)` to `a`. `a` must be a symbol
+    like specified in the section [Alignment](@ref). (**Default** = `nothing`)
 
-      If more than one alignment function is passed to `cell_alignment`, then
-      the functions will be evaluated in the same order of the tuple. The
-      first one that returns a valid alignment symbol for each cell is applied,
-      and the rest is discarded.
+!!! note
+    If more than one alignment function is passed to `cell_alignment`, then
+    the functions will be evaluated in the same order of the tuple. The
+    first one that returns a valid alignment symbol for each cell is applied,
+    and the rest is discarded.
 
-  (**Default** = `nothing`)
-* `cell_first_line_only`: If `true`, then only the first line of each cell will
-  be printed. (**Default** = `false`)
-* `compact_printing`: Select if the option `:compact` will be used when printing
-                      the data. (**Default** = `true`)
-* `filters_row`: Filters for the rows (see the section [Filters](@ref)).
-* `filters_col`: Filters for the columns (see the section [Filters](@ref)).
-* `formatters`: See the section [Formatters](@ref).
-* `header`: The header must be a tuple of vectors. Each one must have the
-            number of elements equal to the number of columns in the table. The
-            first vector is considered the header and the others are the
-            subheaders. If it is `nothing`, then a default value based on the
-            type will be used. If a single vector is passed, then it will be
-            considered the header. (**Default** = `nothing`)
-* `header_alignment`: Select the alignment of the header columns (see the
-                      section [Alignment](@ref). If the symbol that specifies
-                      the alignment is `:s` for a specific column, then the same
-                      alignment in the keyword `alignment` for that column will
-                      be used. (**Default** = `:s`)
-* `header_cell_alignment`: This keyword has the same structure of
-                           `cell_alignment` but in this case it operates in the
-                           header. Thus, `(i,j)` will be a cell in the header
-                           matrix that contains the header and sub-headers. This
-                           means that the `data` field in the functions will be
-                           the same value passed in the keyword `header`.
-  !!! note
+- `cell_first_line_only::Bool`: If `true`, then only the first line of each cell
+    will be printed. (**Default** = `false`)
+- `compact_printing::Bool`: Select if the option `:compact` will be used when
+    printing the data. (**Default** = `true`)
+- `filters_row::Union{Nothing, Tuple}`: Filters for the rows (see the section
+    [Filters](@ref)).
+- `filters_col::Union{Nothing, Tuple}`: Filters for the columns (see the section
+    [Filters](@ref)).
+- `formatters::Union{Nothing, Function, Tuple}`: See the section
+    [Formatters](@ref).
+- `header::Union{Symbol, Vector{Symbol}}`: The header must be a tuple of
+    vectors. Each one must have the number of elements equal to the number of
+    columns in the table. The first vector is considered the header and the
+    others are the subheaders. If it is `nothing`, then a default value based on
+    the type will be used. If a single vector is passed, then it will be
+    considered the header. (**Default** = `nothing`)
+- `header_alignment::Union{Symbol, Vector{Symbol}}`: Select the alignment of the
+    header columns (see the section [Alignment](@ref)). If the symbol that
+    specifies the alignment is `:s` for a specific column, then the same
+    alignment in the keyword `alignment` for that column will be used.
+    (**Default** = `:s`)
+- `header_cell_alignment::Union{Nothing, Dict{Tuple{Int, Int}, Symbol}, Function, Tuple}`:
+    This keyword has the same structure of `cell_alignment` but in this case it
+    operates in the header. Thus, `(i, j)` will be a cell in the header matrix
+    that contains the header and sub-headers. This means that the `data` field
+    in the functions will be the same value passed in the keyword `header`.
+    (**Default** = `nothing`)
 
+!!! note
       If more than one alignment function is passed to `header_cell_alignment`,
       then the functions will be evaluated in the same order of the tuple. The
       first one that returns a valid alignment symbol for each cell is applied,
       and the rest is discarded.
 
-  (**Default** = `nothing`)
-* `limit_printing`: If `true`, then the cells will be converted using the
-                    property `:limit => true` of `IOContext`.
-                    (**Default** = `true`)
-* `renderer`: A symbol that indicates which function should be used to convert
-              an object to a string. It can be `:print` to use the function
-              `print` or `:show` to use the function `show`. Notice that this
-              selection is not applicable to the headers and sub-headers. They
-              will always be converted using `print`. (**Default** = `:print`)
-* `row_names`: A vector containing the row names that will be appended to the
-               left of the table. If it is `nothing`, then the column with the
-               row names will not be shown. Notice that the size of this vector
-               must match the number of rows in the table.
-               (**Default** = `nothing`)
-* `row_name_alignment`: Alignment of the column with the rows name (see the
-                        section [Alignment](@ref)).
-* `row_name_column_title`: Title of the column with the row names.
-                           (**Default** = "")
-* `row_number_column_title`: The title of the column that shows the row numbers.
-                             (**Default** = "Row")
-* `show_row_number`: If `true`, then a new column will be printed showing the
-                     row number. (**Default** = `false`)
-* `title`: The title of the table. If it is empty, then no title will be
-           printed. (**Default** = "")
-* `title_alignment`: Alignment of the title, which must be a symbol as explained
-                     in the section [Alignment](@ref). This argument is
-                     ignored in the LaTeX backend. (**Default** = :l)
+- `limit_printing::Bool`: If `true`, then the cells will be converted using the
+    property `:limit => true` of `IOContext`. (**Default** = `true`)
+- `renderer::Symbol`: A symbol that indicates which function should be used to
+    convert an object to a string. It can be `:print` to use the function
+    `print` or `:show` to use the function `show`. Notice that this selection is
+    applicable only to the table data. Headers, sub-headers, and row name column
+    are always rendered with print. (**Default** = `:print`)
+- `row_names::Union{Nothing, AbstractVector}`: A vector containing the row names
+    that will be appended to the left of the table. If it is `nothing`, then the
+    column with the row names will not be shown. Notice that the size of this
+    vector must match the number of rows in the table. (**Default** = `nothing`)
+- `row_name_alignment::Symbol`: Alignment of the column with the rows name (see
+    the section [Alignment](@ref)).
+- `row_name_column_title::AbstractString`: Title of the column with the row
+    names. (**Default** = "")
+- `row_number_column_title::AbstractString`: Title of the column with the row
+    numbers. (**Default** = "Row")
+- `show_row_number::Bool`: If `true`, then a new column will be printed showing
+    the row number. (**Default** = `false`)
+- `title::AbstractString`: The title of the table. If it is empty, then no title
+    will be printed. (**Default** = "")
+- `title_alignment::Symbol`: Alignment of the title, which must be a symbol as
+    explained in the section [Alignment](@ref). This argument is ignored in the
+    LaTeX backend. (**Default** = :l)
 
 !!! note
-
     Notice that all back-ends have the keyword `tf` to specify the table
     printing format. Thus, if the keyword `backend` is not present or if it is
     `nothing`, then the back-end will be automatically inferred from the type of
@@ -201,7 +200,6 @@ julia> pretty_table(dict, sortkeys = true)
 │     5 │    May │
 │     6 │    Jun │
 └───────┴────────┘
-
 ```
 
 # Configuration
@@ -288,13 +286,11 @@ The keywords can be any possible keyword that can be used in the function
 All the configurations can be reseted by calling `@ptconfclean`.
 
 !!! warning
-
     If a keyword is not supported by the function `pretty_table`, then no error
     message is printed when calling `@ptconf`. However, an error will be thrown
     when `@pt` is called.
 
 !!! info
-
     When more than one table is passed to the macro `@pt`, then multiple calls
     to `pretty_table` will occur. Hence, the cropping algorithm will behave
     exactly the same as printing the tables separately.

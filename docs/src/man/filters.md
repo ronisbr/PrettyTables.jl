@@ -16,7 +16,7 @@ are two types of filters: the row filters, which are specified by the keyword
 The filters are a tuple of functions that must have the following signature:
 
 ```julia
-f(data,i)::Bool
+f(data, i)::Bool
 ```
 
 in which `data` is a pointer to the matrix that is being printed and `i` is the
@@ -33,7 +33,6 @@ If the keyword is set to `nothing`, which is the default, then no filtering will
 be applied to the row and/or column.
 
 !!! note
-
     The filters do not change the row and column numbering for the others
     modifiers such as column width specification, formatters, and highlighters.
     Thus, for example, if only the 4-th row is printed, then it will also be
@@ -49,21 +48,20 @@ Given a matrix `data`, let's suppose that is desired to print:
 Then we can use one of the following approaches:
 
 ```julia
-f_c(data,i)  = i in (5,6)
-f_r1(data,i) = data[i,5] >= 0
-f_r2(data,i) = data[i,6] >= 0
+f_c(data, i)  = i in (5, 6)
+f_r1(data, i) = data[i, 5] >= 0
+f_r2(data, i) = data[i, 6] >= 0
 ```
 
-and set `filters_col = (f_c,)` and `filters_row = (f_r1,f_r2)`, or
+and set `filters_col = (f_c,)` and `filters_row = (f_r1, f_r2)`, or
 
 
 ```julia
-f_c(data,i) = i in (5,6)
-f_r(data,i) = (data[i,5] >= 0) && (data[i,6] >= 0)
+f_c(data, i) = i in (5, 6)
+f_r(data, i) = (data[i, 5] >= 0) && (data[i, 6] >= 0)
 ```
 
 and set `filters_col = (f_c,)` and `filters_row = (f_r,)`.
 
 !!! note
-
     The keywords related to the filters are supported in all back-ends.

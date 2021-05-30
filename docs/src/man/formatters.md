@@ -15,7 +15,7 @@ following signature:
     f(v, i, j)
 
 where `v` is the value in the cell, `i` is the row number, and `j` is the column
-number. Thus, it must return the formatted value of the cell `(i,j)` that has
+number. Thus, it must return the formatted value of the cell `(i, j)` that has
 the value `v`. Notice that the returned value will be converted to string after
 using the function `sprint`.
 
@@ -25,7 +25,7 @@ available, or `nothing`, meaning that no formatter will be used.
 For example, if we want to multiply all values in odd rows of the column 2 by π,
 then the formatter should look like:
 
-    formatters = (v,i,j) -> (j == 2 && isodd(i)) ? v*π : v
+    formatters = (v, i, j) -> (j == 2 && isodd(i)) ? v * π : v
 
 If multiple formatters are available, then they will be applied in the same
 order as they are located in the tuple. Thus, for the following `formatters`:
@@ -34,17 +34,17 @@ order as they are located in the tuple. Thus, for the following `formatters`:
 
 each element `v` in the table (i-th row and j-th column) will be formatted by:
 
-    v = f1(v,i,j)
-    v = f2(v,i,j)
-    v = f3(v,i,j)
+    v = f1(v, i, j)
+    v = f2(v, i, j)
+    v = f3(v, i, j)
 
 Thus, the user must be ensure that the type of `v` between the calls are
 compatible.
 
 ```jldoctest
-julia> data = Any[ f(a) for a = 0:30:90, f in (sind,cosd,tand)];
+julia> data = Any[f(a) for a = 0:30:90, f in (sind, cosd, tand)];
 
-julia> formatter = (v,i,j) -> round(v, digits=3);
+julia> formatter = (v, i, j) -> round(v, digits = 3);
 
 julia> pretty_table(data; formatters = formatter)
 ┌────────┬────────┬────────┐
@@ -58,7 +58,6 @@ julia> pretty_table(data; formatters = formatter)
 ```
 
 !!! note
-
     The user can check if a value is undefined (`#undef`) inside a formatter by
     using the comparison `v == undef`.
 
@@ -81,12 +80,11 @@ Otherwise, if `ftv_str` is a `String` and `columns` is a `Vector`, then the
 format will be applied only to the columns in `columns`.
 
 !!! note
-
     This formatter will be applied only to the cells that are of type `Number`.
     The other types of cells will be left untouched.
 
 ```jldoctest
-julia> data = Any[ f(a) for a = 0:30:90, f in (sind,cosd,tand)];
+julia> data = Any[ f(a) for a = 0:30:90, f in (sind, cosd, tand)];
 
 julia> pretty_table(data; formatters = ft_printf("%5.3f"))
 ┌────────┬────────┬────────┐
@@ -110,7 +108,6 @@ julia> pretty_table(data; formatters = ft_printf("%5.3f", [1,3]))
 ```
 
 !!! note
-
     Now, this formatter uses the function `sprintf1` from the package
     [Formatting.jl](https://github.com/JuliaIO/Formatting.jl) that drastically
     improved the performance compared to the case with the macro `@sprintf`.
@@ -130,7 +127,7 @@ elements in the columns `columns` will be rounded to the number of digits
 `digits`.
 
 ```jldoctest
-julia> data = Any[ f(a) for a = 0:30:90, f in (sind,cosd,tand)];
+julia> data = Any[ f(a) for a = 0:30:90, f in (sind, cosd, tand)];
 
 julia> pretty_table(data; formatters = ft_round(1))
 ┌────────┬────────┬────────┐
@@ -142,7 +139,7 @@ julia> pretty_table(data; formatters = ft_round(1))
 │    1.0 │    0.0 │    Inf │
 └────────┴────────┴────────┘
 
-julia> pretty_table(data; formatters = ft_round(1,[1,3]))
+julia> pretty_table(data; formatters = ft_round(1, [1, 3]))
 ┌────────┬──────────┬────────┐
 │ Col. 1 │   Col. 2 │ Col. 3 │
 ├────────┼──────────┼────────┤
@@ -154,5 +151,4 @@ julia> pretty_table(data; formatters = ft_round(1,[1,3]))
 ```
 
 !!! note
-
     The `formatters` keyword is supported in all back-ends.

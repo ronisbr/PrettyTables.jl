@@ -14,17 +14,9 @@ https://ozh.github.io/ascii-tables/
 
 * **Text backend**: stable.
 * **HTML backend**: not stable, API can change in minor versions, consider as
-  **beta**.
+    **beta**.
 * **LaTeX backend**: not stable, API can change in minor version, consider as
-  **beta**.
-
-## Requirements
-
-* Julia >= 1.0
-* Crayons >= 4.0
-* Formatting >= 0.4
-* Reexport >= 0.2
-* Tables >= 0.2
+    **beta**.
 
 ## Installation
 

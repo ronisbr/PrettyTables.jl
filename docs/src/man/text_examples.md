@@ -48,7 +48,7 @@ The following example shows how `formatters` can be used to change how elements
 are printed.
 
 ```julia-repl
-julia> formatter = (v,i,j) -> begin
+julia> formatter = (v, i, j) -> begin
            if j != 2
                return isodd(i) ? i : 0
            else
@@ -65,15 +65,15 @@ The following example indicates how `highlighters` can be used to highlight the
 lowest and highest element in the data considering the columns 1, 3, and 5:
 
 ```julia-repl
-julia> h1 = Highlighter( (data,i,j)->j in (1,3,4) && data[i,j] == maximum(data[2:end,[1,3,4]]),
-                         bold       = true,
-                         foreground = :blue )
+julia> h1 = Highlighter((data, i, j) -> j in (1, 3, 4) && data[i, j] == maximum(data[2:end, [1, 3, 4]]),
+                        bold       = true,
+                        foreground = :blue )
 
-julia> h2 = Highlighter( (data,i,j)->j in (1,3,4) && data[i,j] == minimum(data[2:end,[1,3,4]]),
+julia> h2 = Highlighter( (data,i,j)->j in (1, 3, 4) && data[i, j] == minimum(data[2:end,[1, 3, 4]]),
                          bold       = true,
                          foreground = :red )
 
-julia> pretty_table(data, highlighters = (h1,h2))
+julia> pretty_table(data, highlighters = (h1, h2))
 ```
 
 ![](../assets/ex_00006.png)
@@ -88,7 +88,7 @@ julia> using DataFrames
 
 julia> df = DataFrame(A = 1:2:20, B = rand(10), C = rand(10))
 
-julia> pretty_table(df, formatters = ft_printf("%.3f", [2,3]), highlighters = (hl_lt(0.2), hl_gt(0.8)))
+julia> pretty_table(df, formatters = ft_printf("%.3f", [2, 3]), highlighters = (hl_lt(0.2), hl_gt(0.8)))
 ```
 
 ![](../assets/ex_00007.png)
@@ -96,7 +96,7 @@ julia> pretty_table(df, formatters = ft_printf("%.3f", [2,3]), highlighters = (h
 You can use `body_hlines` keyword to divide the table into interesting parts:
 
 ```julia-repl
-julia> pretty_table(data, body_hlines = [2,4])
+julia> pretty_table(data, body_hlines = [2, 4])
 ```
 
 ![](../assets/ex_00008.png)
@@ -110,7 +110,7 @@ julia> text = ["This line contains\nthe velocity [m/s]" 10.0;
                "This line contains\nthe acceleration [m/s^2]" 1.0;
                "This line contains\nthe time from the\nbeginning of the simulation" 10;]
 
-julia> pretty_table(text, linebreaks = true, body_hlines = [1,2,3])
+julia> pretty_table(text, linebreaks = true, body_hlines = [1, 2, 3])
 ```
 
 ![](../assets/ex_00009.png)
@@ -128,15 +128,15 @@ In the following, it is shown how the filters can be used to print only the even
 rows and columns:
 
 ```julia-repl
-julia> A = [ (0:1:10)'
-             (1:1:11)'
-             (2:1:12)'
-             (3:1:13)'
-             (4:1:14)' ]
+julia> A = [(0:1:10)'
+            (1:1:11)'
+            (2:1:12)'
+            (3:1:13)'
+            (4:1:14)']
 
-julia> f_c(data,i) = i % 2 == 0
+julia> f_c(data, i) = i % 2 == 0
 
-julia> f_r(data,i) = i % 2 == 0
+julia> f_r(data, i) = i % 2 == 0
 
 julia> pretty_table(A, filters_row = (f_r,), filters_col = (f_c,), show_row_number = true)
 ```
@@ -147,7 +147,7 @@ By default, if the data is larger than the display, then it will be cropped to
 fit it. This can be changed by using the keywords `crop` and `display_size`.
 
 ```julia
-julia> data = rand(100,10); pretty_table(data, highlighters = (hl_gt(0.5),))
+julia> data = rand(100, 10); pretty_table(data, highlighters = (hl_gt(0.5),))
 ```
 
 ![](../assets/ex_00012.png)
@@ -156,11 +156,11 @@ You can use the keyword `columns_width` to select the width of each column, so
 that the data is cropped to fit the available space.
 
 ```julia-repl
-julia> mat = rand(100,4)
+julia> mat = rand(100, 4)
 
 julia> pretty_table(mat,
                     highlighters = hl_gt(0.5),
-                    columns_width = [7,-1,7,8],
+                    columns_width = [7, -1, 7, 8],
                     compact_printing = false)
 ```
 
@@ -191,11 +191,11 @@ julia> data = ["Torques" "" "" "";
 
 julia> pretty_table(data, tf = tf_borderless,
                     noheader = true,
-                    cell_alignment = Dict( (1,1) => :l, (7,1) => :l ),
+                    cell_alignment = Dict((1, 1) => :l, (7, 1) => :l),
                     formatters = ft_printf("%10.1f", 2),
-                    highlighters = (hl_cell( [(1,1);(7,1)], crayon"bold"),
+                    highlighters = (hl_cell([(1, 1); (7, 1)], crayon"bold"),
                                     hl_col(2, crayon"dark_gray"),
-                                    hl_row([5,11], crayon"bold yellow")),
+                                    hl_row([5, 11], crayon"bold yellow")),
                     body_hlines = [1,7],
                     body_hlines_format = Tuple('─' for _ = 1:4) )
 ```
@@ -211,14 +211,14 @@ displayed better in a terminal that supports 24-bit color):
 ```julia-repl
 julia> using ColorSchemes
 
-julia> data = [ sind(x)*cosd(y) for x in 0:10:180, y in 0:10:180 ]
+julia> data = [sind(x) * cosd(y) for x in 0:10:180, y in 0:10:180]
 
-julia> hl = Highlighter((data,i,j)->true,
-                        (h,data,i,j)->begin
-                             color = get(colorschemes[:coolwarm], data[i,j], (-1,1))
-                             return Crayon(foreground = (round(Int,color.r*255),
-                                                         round(Int,color.g*255),
-                                                         round(Int,color.b*255)))
+julia> hl = Highlighter((data, i, j) -> true,
+                        (h, data, i, j) -> begin
+                             color = get(colorschemes[:coolwarm], data[i, j], (-1, 1))
+                             return Crayon(foreground = (round(Int, color.r * 255),
+                                                         round(Int, color.g * 255),
+                                                         round(Int, color.b * 255)))
                          end)
 
 julia> pretty_table(data;
