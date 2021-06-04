@@ -288,6 +288,7 @@ function _print_table_data(
                             data,
                             ir,
                             jc,
+                            l,
                             data_cell,
                             data_ij_str,
                             cols_width[j],
@@ -299,7 +300,61 @@ function _print_table_data(
                         # Compute the printable size of the string.
                         data_ij_len = _printable_textwidth(data_ij_str)
 
-                        _p!(display, crayon_ij, data_ij_str, false, data_ij_len)
+                        # Check if we have a custom cell
+                        iscustom = data_cell && isassigned(data, ir, jc) &&
+                            (data[ir, jc] isa CustomTextCell)
+
+                        # If we have a custom cell, then we need a custom
+                        # printing function.
+                        if iscustom
+                            _p!(display, _default_crayon, " ", false, 1)
+
+                            # Compute the new string given the display size.
+                            str, suffix, ~ = _fit_str_to_display(
+                                display,
+                                data_ij_str,
+                                false,
+                                data_ij_len
+                            )
+
+                            new_lstr = textwidth(str)
+
+                            # Check if we need to crop the string to fit the
+                            # display.
+                            if data_ij_len > new_lstr
+                                apply_line_padding!(data[ir, jc], l, 0, 0)
+                                crop_line!(
+                                    data[ir, jc],
+                                    l,
+                                    data_ij_len - new_lstr
+                                )
+                            end
+
+                            # Get the rendered text.
+                            rendered_str = get_rendered_line(
+                                data[ir, jc],
+                                l
+                            )::String
+
+                            # Write it to the display.
+                            _write_to_display!(
+                                display,
+                                crayon_ij,
+                                rendered_str,
+                                suffix,
+                                new_lstr + textwidth(suffix)
+                            )
+
+                            _p!(display, _default_crayon, " ", false, 1)
+                        else
+                            _p!(
+                                display,
+                                crayon_ij,
+                                " " * data_ij_str * " ",
+                                false,
+                                data_ij_len + 2
+                            )
+                        end
                     end
                 end
 

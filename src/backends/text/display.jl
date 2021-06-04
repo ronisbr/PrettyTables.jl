@@ -96,45 +96,33 @@ _eol(display::Display) =
     (display.size[2] > 0) && (display.col >= display.size[2])
 
 """
-    _nl!(display::Display, io::IO)
+    _fit_str_to_display!(display::Display, str::Char, final_line_print::Bool = false, lstr::Int = -1)
 
-Flush the internal line buffer of `display` into `io`.
+Return the string and the suffix to be printed in the display. It ensures that
+the return data will fit the `display`.
 
-"""
-function _nl!(display::Display, io::IO)
-    # Update the information about the current columns and row of the display.
-    display.row += 1
-    display.col  = 0
-
-    # Flush the current line to the buffer removing any trailing space.
-    str = String(rstrip(String(take!(display.buf_line))))
-    println(io, str)
-
-    return nothing
-end
-
-"""
-    _p!(display::Display, crayon::Crayon, str::Char, final_line_print::Bool = false, lstr::Int = -1)
-    _p!(display::Display, crayon::Crayon, str::String, final_line_print::Bool = false, lstr::Int = -1)
-
-Print `str` into the internal line buffer of `display` using the Crayon `crayon`
-with the display information in `display`. The parameter `final_line_print` must
-be set to `true` if this is the last string that will be printed in the line.
-This is necessary for the algorithm to select whether or not to include the
-continuation character.
+The parameter `final_line_print` must be set to `true` if this is the last
+string that will be printed in the line. This is necessary for the algorithm to
+select whether or not to include the continuation character.
 
 The size of the string can be passed to `lstr` to save computational burden. If
 `lstr = -1`, then the string length will be computed inside the function.
 
 The line buffer can be flushed to an `io` using the function `_nl!`.
 
+# Return
+
+- The new string, which is `str` cropped to fit the display.
+- The suffix to be appended to the cropped string.
+- The number of columns that will be used to print the string and the suffix.
+
 """
-_p!(display::Display, crayon::Crayon, str::Char, final_line_print::Bool = false,
-    lstr::Int = -1) = _p!(display, crayon, string(str), final_line_print, lstr)
-
-function _p!(display::Display, crayon::Crayon, str::String,
-             final_line_print::Bool = false, lstr::Int = -1)
-
+function _fit_str_to_display(
+    display::Display,
+    str::String,
+    final_line_print::Bool = false,
+    lstr::Int = -1
+)
     # Get the size of the string if required.
     lstr < 0 && (lstr = textwidth(str))
 
@@ -148,7 +136,7 @@ function _p!(display::Display, crayon::Crayon, str::String,
     @inbounds if display.size[2] > 0
 
         # If we are at the end of the line, then just return.
-        _eol(display) && return true
+        _eol(display) && return "", "", 0
 
         Δ = display.size[2] - (lstr + display.col)
 
@@ -226,22 +214,60 @@ function _p!(display::Display, crayon::Crayon, str::String,
         end
     end
 
-    # Print the with correct formating.
-    #
-    # Notice that all text printed with crayon is reset right after the string.
-    # Hence, if the crayon is empty (`_default_crayon`) or if it is a reset,
-    # then we can just print as if the terminal does not support color.
-    if (crayon != _default_crayon) && (crayon != _reset_crayon) && display.has_color
-        print(display.buf_line, crayon, str, _reset_crayon, sapp)
-    else
-        print(display.buf_line, str, sapp)
-    end
+    return str, sapp, lstr + lapp
+end
 
-    # Update the current columns.
-    display.col += lstr + lapp
+"""
+    _nl!(display::Display, io::IO)
 
-    # Return if we reached the end of line.
-    return _eol(display)
+Flush the internal line buffer of `display` into `io`.
+
+"""
+function _nl!(display::Display, io::IO)
+    # Update the information about the current columns and row of the display.
+    display.row += 1
+    display.col  = 0
+
+    # Flush the current line to the buffer removing any trailing space.
+    str = String(rstrip(String(take!(display.buf_line))))
+    println(io, str)
+
+    return nothing
+end
+
+"""
+    _p!(display::Display, crayon::Crayon, str::Char, final_line_print::Bool = false, lstr::Int = -1)
+    _p!(display::Display, crayon::Crayon, str::String, final_line_print::Bool = false, lstr::Int = -1)
+
+Print `str` into the internal line buffer of `display` using the Crayon `crayon`
+with the display information in `display`. The parameter `final_line_print` must
+be set to `true` if this is the last string that will be printed in the line.
+This is necessary for the algorithm to select whether or not to include the
+continuation character.
+
+The size of the string can be passed to `lstr` to save computational burden. If
+`lstr = -1`, then the string length will be computed inside the function.
+
+The line buffer can be flushed to an `io` using the function `_nl!`.
+
+"""
+_p!(display::Display, crayon::Crayon, str::Char, final_line_print::Bool = false,
+    lstr::Int = -1) = _p!(display, crayon, string(str), final_line_print, lstr)
+
+function _p!(display::Display, crayon::Crayon, str::String,
+             final_line_print::Bool = false, lstr::Int = -1)
+
+    _eol(display) && return true
+
+    # Compute the new string given the display size.
+    str, suffix, num_printed_cols = _fit_str_to_display(
+        display,
+        str,
+        final_line_print,
+        lstr
+    )
+
+    return _write_to_display!(display, crayon, str, suffix, num_printed_cols)
 end
 
 """
@@ -268,4 +294,31 @@ function _pc!(cond::Bool, display::Display, crayon::Crayon,
     else
         return _p!(display, crayon, str_false, final_line_print, lstr_false)
     end
+end
+
+function _write_to_display!(
+    display::Display,
+    crayon::Crayon,
+    str::String,
+    suffix::String,
+    num_printed_cols::Int
+)
+    num_printed_cols < 0 && (num_printed_cols = textwidth(str) + textwidth(suffix))
+
+    # Print the with correct formating.
+    #
+    # Notice that all text printed with crayon is reset right after the string.
+    # Hence, if the crayon is empty (`_default_crayon`) or if it is a reset,
+    # then we can just print as if the terminal does not support color.
+    if (crayon != _default_crayon) && (crayon != _reset_crayon) && display.has_color
+        print(display.buf_line, crayon, str, _reset_crayon, suffix)
+    else
+        print(display.buf_line, str, suffix)
+    end
+
+    # Update the current columns.
+    display.col += num_printed_cols
+
+    # Return if we reached the end of line.
+    return _eol(display)
 end

@@ -206,29 +206,24 @@ function _str_aligned(
     lstr::Integer = -1
 )
     lstr < 0 && (lstr = textwidth(data))
-    Δ = field_size - lstr
 
-    # If the length is larger than the field, then we will crop the string.
-    if Δ < 0
-        data  = _crop_str(data, lstr + Δ - 1, lstr)
+    # Compute the crop and alignment data for the string.
+    crop_chars, left_pad, right_pad = _str_compute_alignment_and_crop(
+        data,
+        alignment,
+        field_size,
+        lstr
+    )
+
+    # Check if we need to crop of align the string.
+    if crop_chars > 0
+        data  = _crop_str(data, lstr - crop_chars - 1, lstr)
         data *= "…"
-
-        # In this case, the string has the same size of the field.
-        lstr = lstr + Δ
-        Δ = 0
-    end
-
-    # TODO: If Δ is 0, can we just return the string?
-
-    if alignment == :l || alignment == :L
-        return data * " "^Δ
-    elseif alignment == :c || alignment == :C
-        left  = div(Δ,2)
-        right = Δ-left
-        return " "^left * data * " "^right
     else
-        return " "^Δ * data
+        data = " "^left_pad * data * " "^right_pad
     end
+
+    return data
 end
 
 """
@@ -297,6 +292,59 @@ function _str_autowrap(tokens_raw::Vector{String}, width::Int = 0)
     end
 
     return tokens
+end
+
+"""
+    _str_compute_alignment_and_crop( data::String, alignment::Symbol, field_size::Integer, lstr::Integer = -1 )
+
+Return if the string `data` must be cropped or aligned given a field with field
+size `field_size` and a specific `alignment`.
+
+`alignment` can be `:l` or `:L` for left alignment, `:c` or `:C` for center
+alignment, or `:r` or `:R` for right alignment. It defaults to `:r` if
+`alignment` is any other symbol.
+
+The size of the string can be passed to `lstr` to save computational burden. If
+`lstr = -1`, then the string length will be computed inside the function.
+
+# Returns
+
+- The number of characters that must be cropped.
+- The left padding.
+- The right padding.
+"""
+function _str_compute_alignment_and_crop(
+    data::String,
+    alignment::Symbol,
+    field_size::Integer,
+    lstr::Integer = -1
+)
+    lstr < 0 && (lstr = textwidth(data))
+    Δ = field_size - lstr
+
+    # If the length is larger than the field, then we need to crop the string.
+    crop_chars = 0
+    if Δ < 0
+        crop_chars = -Δ
+
+        # In this case, the string has the same size of the field. Thus, we just
+        # ask for cropping.
+        return crop_chars, 0, 0
+    else
+        left_pad = 0
+        right_pad = 0
+
+        if alignment == :l || alignment == :L
+            right_pad = Δ
+        elseif alignment == :c || alignment == :C
+            left_pad  = div(Δ, 2)
+            right_pad = Δ - left_pad
+        else
+            left_pad = Δ
+        end
+
+        return 0, left_pad, right_pad
+    end
 end
 
 ################################################################################

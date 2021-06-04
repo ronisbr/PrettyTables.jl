@@ -56,6 +56,9 @@ include("backends/text/recipes.jl")
 include("backends/text/string.jl")
 include("backends/text/title.jl")
 
+include("backends/text/custom_text_cells/custom_text_cell.jl")
+include("backends/text/custom_text_cells/url_text_cell.jl")
+
 # HTML backend
 include("backends/html/cell_parse.jl")
 include("backends/html/predefined_formats.jl")
