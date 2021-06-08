@@ -68,29 +68,31 @@ function get_rendered_line(c::URLTextCell, l::Int)
     if l == 1
         url_text_width = textwidth(c.text)
         printable_size = c._left_pad + url_text_width + c._right_pad
+        rem_chars = printable_size - c._crop
 
-        # No cropping.
-        if c._crop ≤ 0
-            str = "\e]8;;" * c.url * "\e\\" * c.text * "\e]8;;\e\\" * c._suffix
-            str = " "^c._left_pad * str * " "^c._right_pad
+        # Left padding
+        # ======================================================================
 
-        # We should only show the left padding.
-        elseif c._left_pad ≥ (printable_size - c._crop)
-            str = " "^(printable_size - c._crop) * c._suffix
+        Δ = clamp(rem_chars, 0, c._left_pad)
+        str = " " ^ Δ
+        Δ < c._left_pad && return str * c._suffix
+        rem_chars -= c._left_pad
 
-        # We should crop the text.
-        elseif c._left_pad + url_text_width ≥ (printable_size - c._crop)
-            proc_text = _crop_str(c.text, printable_size - c._left_pad - c._crop)
-            str  = " "^c._left_pad
-            str *= "\e]8;;" * c.url * "\e\\" * proc_text * "\e]8;;\e\\" * c._suffix
+        # URL text
+        # ======================================================================
 
-        else
-            str  = " "^c._left_pad
-            str *= "\e]8;;" * c.url * "\e\\" * c.text * "\e]8;;\e\\"
-            str *= " "^(c._right_pad - c._crop)
-        end
+        Δ = clamp(rem_chars, 0, url_text_width)
+        proc_text = _crop_str(c.text, Δ)
+        str *= "\e]8;;" * c.url * "\e\\" * proc_text * "\e]8;;\e\\"
+        Δ < url_text_width && return str * c._suffix
+        rem_chars -= url_text_width
 
-        return str
+        # Right padding
+        # ======================================================================
+
+        Δ = clamp(rem_chars, 0, c._right_pad)
+        str *= " " ^ Δ
+        return str * c._suffix
     else
         return ""
     end
