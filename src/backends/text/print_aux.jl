@@ -322,7 +322,6 @@ function _print_table_data(
                             # Check if we need to crop the string to fit the
                             # display.
                             if data_ij_len > new_lstr
-                                apply_line_padding!(data[ir, jc], l, 0, 0)
                                 crop_line!(
                                     data[ir, jc],
                                     l,

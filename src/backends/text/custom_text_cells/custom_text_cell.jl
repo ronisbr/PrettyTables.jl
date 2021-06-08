@@ -31,7 +31,8 @@ end
 """
     crop_line!(c::CustomTextCell, l::Int, num::Int)
 
-Crop `num` characters from the line `l` of the custom text cell `c`.
+Crop `num` characters from the line `l` of the custom text cell `c`. The number
+of cropped characters must consider the left and right alignment paddings.
 """
 function crop_line!(c::CustomTextCell, l::Int, num::Int)
     error("The method `crop_line!` is not defined for `$(typeof(c))`.")
@@ -41,7 +42,8 @@ end
 """
     get_printable_cell_line(c::CustomTextCell, l::Int)
 
-Return the printable line `l` of the custom text cell `c`.
+Return the printable line `l` of the custom text cell `c`. The printable cell
+line must consider the left and right alignment paddings.
 """
 function get_printable_cell_line(c::CustomTextCell, l::Int)
     error("The method `get_printable_cell_line` is not defined for `$(typeof(c))`.")
