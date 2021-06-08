@@ -67,7 +67,7 @@ end
 function get_rendered_line(c::URLTextCell, l::Int)
     if l == 1
         proc_text = _crop_str(c.text, textwidth(c.text) - c._crop)
-        str = "\e]8;;" * c.url * "\e\\" * proc_text * "\e]8;;\e\\"
+        str = "\e]8;;" * c.url * "\e\\" * proc_text * "\e]8;;\e\\" * c._suffix
         str = " "^c._left_pad * str * " "^c._right_pad
         return str
     else
