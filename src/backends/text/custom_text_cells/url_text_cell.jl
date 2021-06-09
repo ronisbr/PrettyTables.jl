@@ -48,7 +48,7 @@ A text cell that contains a URL and is rendered using the ANSI escape sequence
     _suffix::String = ""
 
     function URLTextCell(text::String, url::String)
-        new(text, url, 0, 0, 0, "")
+        return new(text, url, 0, 0, 0, "")
     end
 end
 
