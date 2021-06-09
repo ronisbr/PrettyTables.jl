@@ -14,7 +14,6 @@ Append the `suffix` to the line `l` of the custom cell text `c`.
 """
 function append_suffix_to_line!(c::CustomTextCell, l::Int, suffix::String)
     error("The method `append_suffix_to_line!` is not defined for `$(typeof(c))`.")
-    return nothing
 end
 
 """
@@ -25,7 +24,6 @@ spaces in the left and `right_pad` spaces in the right.
 """
 function apply_line_padding!(c::CustomTextCell, l::Int, left_pad::Int, right_pad::Int)
     error("The method `apply_line_padding` is not defined for `$(typeof(c))`.")
-    return nothing
 end
 
 """
@@ -36,7 +34,6 @@ of cropped characters must consider the left and right alignment paddings.
 """
 function crop_line!(c::CustomTextCell, l::Int, num::Int)
     error("The method `crop_line!` is not defined for `$(typeof(c))`.")
-    return nothing
 end
 
 """
@@ -47,7 +44,6 @@ line must consider the left and right alignment paddings.
 """
 function get_printable_cell_line(c::CustomTextCell, l::Int)
     error("The method `get_printable_cell_line` is not defined for `$(typeof(c))`.")
-    return ""
 end
 
 """
@@ -57,7 +53,6 @@ Return the rendered line `l` of the custom text cell `l`.
 """
 function get_rendered_line(c::CustomTextCell, l::Int)
     error("The method `get_rendered_line` is not defined for `$(typeof(c))`.")
-    return ""
 end
 
 """
@@ -88,7 +83,6 @@ them.
 """
 function parse_cell_text(c::CustomTextCell; kwargs...)
     error("The method `parse_cell_text` is not defined for `$(typeof(c))`.")
-    return [""]
 end
 
 """
