@@ -75,7 +75,7 @@ function get_rendered_line(c::URLTextCell, l::Int)
 
         Δ = clamp(rem_chars, 0, c._left_pad)
         str = " " ^ Δ
-        Δ < c._left_pad && return str * c._suffix
+        rem_chars ≤ c._left_pad && return str * c._suffix
         rem_chars -= c._left_pad
 
         # URL text
@@ -84,7 +84,7 @@ function get_rendered_line(c::URLTextCell, l::Int)
         Δ = clamp(rem_chars, 0, url_text_width)
         proc_text = _crop_str(c.text, Δ)
         str *= "\e]8;;" * c.url * "\e\\" * proc_text * "\e]8;;\e\\"
-        Δ < url_text_width && return str * c._suffix
+        rem_chars ≤ url_text_width && return str * c._suffix
         rem_chars -= url_text_width
 
         # Right padding
