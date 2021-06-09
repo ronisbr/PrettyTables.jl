@@ -119,6 +119,7 @@ function _process_cell_text(
     j::Int,
     l::Int,
     data_cell::Bool,
+    custom_cell::Bool,
     data_str::String,
     col_width::Int,
     crayon::Crayon,
@@ -144,7 +145,7 @@ function _process_cell_text(
         end
     end
 
-    if data_cell && isassigned(data, i, j) && (data[i, j] isa CustomTextCell)
+    if custom_cell
         # To align a custom text cell, we need to compute the alignment and
         # cropping data and apply it using the API functions.
         crop_chars, left_pad, right_pad = _str_compute_alignment_and_crop(
