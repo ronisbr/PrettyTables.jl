@@ -1,6 +1,16 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 1.1.0
+-------------
+
+- ![Feature][badge-feature] The text backend now supports custom text cells that
+  can have escape characters to apply, for example, decorations. The custom cell
+  `URLTextCell` is bundled with PrettyTables.jl to add hyperlinks to text using
+  the escape sequence `\e]8`. (Issue [#129][gh-issue-129])
+- ![Bugfix][badge-bugfix] The character `%` is now escaped in LaTeX. (Issue
+  [#125][gh-issue-125])
+
 Version 1.0.1
 -------------
 
@@ -507,6 +517,8 @@ Version 0.1.0
 [gh-issue-112]: https://github.com/ronisbr/PrettyTables.jl/issues/112
 [gh-issue-116]: https://github.com/ronisbr/PrettyTables.jl/issues/116
 [gh-issue-118]: https://github.com/ronisbr/PrettyTables.jl/issues/118
+[gh-issue-125]: https://github.com/ronisbr/PrettyTables.jl/issues/125
+[gh-issue-129]: https://github.com/ronisbr/PrettyTables.jl/issues/129
 
 [gh-pr-5]: https://github.com/ronisbr/PrettyTables.jl/pull/5
 [gh-pr-8]: https://github.com/ronisbr/PrettyTables.jl/pull/8
