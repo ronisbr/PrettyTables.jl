@@ -12,10 +12,10 @@ export URLTextCell
 """
     URLTextCell
 
-A text cell that contains an URL and is rendered using the conceal ANSI escape
-sequence.
+A text cell that contains a URL and is rendered using the ANSI escape sequence
+`\\e8]`.
 
-!!! warn
+!!! warning
     Some terminals **do not** support this feature, leading to a layout problem
     in the printed table.
 
