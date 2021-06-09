@@ -36,20 +36,20 @@ A text cell that contains a URL and is rendered using the ANSI escape sequence
     rendering the URL.
 - `_suffix::String`: Suffix to be appended to the text when rendering the URL.
 """
-@kwdef mutable struct URLTextCell <: CustomTextCell
+mutable struct URLTextCell <: CustomTextCell
     # Public
     text::String
     url::String
 
     # Private
-    _crop::Int = 0
-    _left_pad::Int = 0
-    _right_pad::Int = 0
-    _suffix::String = ""
+    _crop::Int
+    _left_pad::Int
+    _right_pad::Int
+    _suffix::String
+end
 
-    function URLTextCell(text::String, url::String)
-        return new(text, url, 0, 0, 0, "")
-    end
+function URLTextCell(text::String, url::String)
+    return URLTextCell(text, url, 0, 0, 0, "")
 end
 
 ################################################################################
