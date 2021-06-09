@@ -254,4 +254,48 @@
         crop = :both
     )
     @test expected == result
+
+    # Multi-line cells
+    # --------------------------------------------------------------------------
+
+    table = [
+        1 "Website\nRonan Arraes Jardim Chagas" URLTextCell("Ronan Arraes Jardim Chagas", "https://ronanarraes.com")
+        2 "Website\nGoogle" URLTextCell("Google", "https://google.com")
+        3 "Website\nApple" URLTextCell("Apple", "https://apple.com")
+        4 "Website\nEmojis!" URLTextCell("😃"^20, "https://emojipedia.org/github/")
+    ]
+
+    expected = """
+        ┌────────┬────────────────────────────┬──────────────────────────────────────────┐
+        │ Col. 1 │                     Col. 2 │                                   Col. 3 │
+        ├────────┼────────────────────────────┼──────────────────────────────────────────┤
+        │      1 │                    Website │               \e]8;;https://ronanarraes.com\e\\Ronan Arraes Jardim Chagas\e]8;;\e\\ │
+        │        │ Ronan Arraes Jardim Chagas │                                          │
+        │      2 │                    Website │                                   \e]8;;https://google.com\e\\Google\e]8;;\e\\ │
+        │        │                     Google │                                          │
+        │      3 │                    Website │                                    \e]8;;https://apple.com\e\\Apple\e]8;;\e\\ │
+        │        │                      Apple │                                          │
+        │      4 │                    Website │ \e]8;;https://emojipedia.org/github/\e\\😃😃😃😃😃😃😃😃😃😃😃😃😃😃😃😃😃😃😃😃\e]8;;\e\\ │
+        │        │                    Emojis! │                                          │
+        └────────┴────────────────────────────┴──────────────────────────────────────────┘
+        """
+
+    result = pretty_table(String, table, linebreaks = true)
+    @test expected == result
+end
+
+mutable struct MyCustomCell <: CustomTextCell
+    str::String
+end
+
+@testset "Custom cells - Errors" begin
+    mycell = MyCustomCell("Test")
+
+    @test_throws ErrorException PrettyTables.append_suffix_to_line!(mycell, 1, "")
+    @test_throws ErrorException PrettyTables.apply_line_padding!(mycell, 1, 10, 10)
+    @test_throws ErrorException PrettyTables.crop_line!(mycell, 1, 10)
+    @test_throws ErrorException PrettyTables.get_printable_cell_line(mycell, 1)
+    @test_throws ErrorException PrettyTables.get_rendered_line(mycell, 1)
+    @test_throws ErrorException PrettyTables.parse_cell_text(mycell; autowrap = true)
+    @test PrettyTables.reset!(mycell) === nothing
 end
