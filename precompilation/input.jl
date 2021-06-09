@@ -108,4 +108,16 @@ function precompilation_input()
                 :c => (3, 3))
 
     pretty_table(dict, sortkeys = true)
+
+    # Input: Data with URLTextCell
+    # ==========================================================================
+
+    custom_cells = [
+        1 "Ronan Arraes Jardim Chagas" URLTextCell("Ronan Arraes Jardim Chagas", "https://ronanarraes.com")
+        2 "Google" URLTextCell("Google", "https://google.com")
+        3 "Apple" URLTextCell("Apple", "https://apple.com")
+        4 "Emojis!" URLTextCell("😃"^20, "https://emojipedia.org/github/")
+    ]
+
+    pretty_table(custom_cells)
 end
