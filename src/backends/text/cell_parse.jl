@@ -96,12 +96,19 @@ function _parse_cell_text(
     end
 end
 
+function _parse_cell_text(cell::CustomTextCell; kwargs...)
+    # Call the API function to reset all the fields in the custom text cell.
+    reset!(cell)
+    cell_vstr = parse_cell_text(cell; kwargs...)
+    return cell_vstr
+end
+
 @inline _parse_cell_text(cell::Missing; kwargs...) = ["missing"]
 @inline _parse_cell_text(cell::Nothing; kwargs...) = ["nothing"]
 @inline _parse_cell_text(cell::UndefInitializer; kwargs...) = ["#undef"]
 
 """
-    _process_cell_text(data::Any, i::Int, j::Int, data_cell::Bool, data_str::String, data_len::Int, col_width::Int, crayon::Crayon, alignment::Symbol, highlighters::Ref{Any})
+    _process_cell_text(data::Any, i::Int, j::Int, l::Int, data_cell::Bool, data_str::String, data_len::Int, col_width::Int, crayon::Crayon, alignment::Symbol, highlighters::Ref{Any})
 
 Process the cell by applying the right alignment and also verifying the
 highlighters.
@@ -110,7 +117,9 @@ function _process_cell_text(
     (@nospecialize data::Any),
     i::Int,
     j::Int,
+    l::Int,
     data_cell::Bool,
+    custom_cell::Bool,
     data_str::String,
     col_width::Int,
     crayon::Crayon,
@@ -136,11 +145,29 @@ function _process_cell_text(
         end
     end
 
-    # Align the string to be printed.
-    data_str = _str_aligned(data_str, alignment, col_width, lstr)
+    if custom_cell
+        # To align a custom text cell, we need to compute the alignment and
+        # cropping data and apply it using the API functions.
+        crop_chars, left_pad, right_pad = _str_compute_alignment_and_crop(
+            data_str,
+            alignment,
+            col_width,
+            -1
+        )
 
-    # Add spacing.
-    data_str  = " " * data_str * " "
+        if crop_chars > 0
+            apply_line_padding!(data[i, j], l, 0, 0)
+            crop_line!(data[i, j], l, crop_chars + 1)
+            append_suffix_to_line!(data[i, j], l, "…")
+        else
+            apply_line_padding!(data[i, j], l, left_pad, right_pad)
+        end
+
+        data_str = get_printable_cell_line(data[i, j], l)::String
+    else
+        # Align the string to be printed.
+        data_str = _str_aligned(data_str, alignment, col_width, lstr)
+    end
 
     return data_str, crayon
 end

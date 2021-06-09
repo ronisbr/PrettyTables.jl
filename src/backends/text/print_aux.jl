@@ -272,8 +272,10 @@ function _print_table_data(
                         # String to be processed.
                         if length(data_str[i, j]) >= l
                             data_ij_str = data_str[i, j][l]
+                            line_has_data = true
                         else
                             data_ij_str = ""
+                            line_has_data = false
                         end
 
                         # Check if the alignment of this cell is overridden by
@@ -282,13 +284,22 @@ function _print_table_data(
                             alignment_ij = cell_alignment_override[(ir, jc)]
                         end
 
+                        # Check if we have a custom cell.
+                        custom_cell =
+                            data_cell &&
+                            isassigned(data, ir, jc) &&
+                            line_has_data &&
+                            (data[ir, jc] isa CustomTextCell)
+
                         # Process the string with the correct alignment and also
                         # apply the highlighters.
                         data_ij_str, crayon_ij = _process_cell_text(
                             data,
                             ir,
                             jc,
+                            l,
                             data_cell,
+                            custom_cell,
                             data_ij_str,
                             cols_width[j],
                             crayon_ij,
@@ -299,7 +310,56 @@ function _print_table_data(
                         # Compute the printable size of the string.
                         data_ij_len = _printable_textwidth(data_ij_str)
 
-                        _p!(display, crayon_ij, data_ij_str, false, data_ij_len)
+                        # If we have a custom cell, then we need a custom
+                        # printing function.
+                        if custom_cell
+                            _p!(display, _default_crayon, " ", false, 1)
+
+                            # Compute the new string given the display size.
+                            str, suffix, ~ = _fit_str_to_display(
+                                display,
+                                data_ij_str,
+                                false,
+                                data_ij_len
+                            )
+
+                            new_lstr = textwidth(str)
+
+                            # Check if we need to crop the string to fit the
+                            # display.
+                            if data_ij_len > new_lstr
+                                crop_line!(
+                                    data[ir, jc],
+                                    l,
+                                    data_ij_len - new_lstr
+                                )
+                            end
+
+                            # Get the rendered text.
+                            rendered_str = get_rendered_line(
+                                data[ir, jc],
+                                l
+                            )::String
+
+                            # Write it to the display.
+                            _write_to_display!(
+                                display,
+                                crayon_ij,
+                                rendered_str,
+                                suffix,
+                                new_lstr + textwidth(suffix)
+                            )
+
+                            _p!(display, _default_crayon, " ", false, 1)
+                        else
+                            _p!(
+                                display,
+                                crayon_ij,
+                                " " * data_ij_str * " ",
+                                false,
+                                data_ij_len + 2
+                            )
+                        end
                     end
                 end
 
