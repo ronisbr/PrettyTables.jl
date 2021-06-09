@@ -642,3 +642,101 @@ julia> pretty_table(data, tf = tf)
 
 For more information, see the documentation of the structure
 [`TextFormat`](@ref).
+
+## Custom text cells
+
+**PrettyTables.jl** escapes all ANSI sequences by default so that every
+character in the cell is printable. This behavior let us to easily compute the
+cell size, which is essential to many features like alignment and cropping.
+However, there are specific cases in which the user wants to render a cell with
+escape sequences that does not produce printable characters. In this case, the
+user must create a custom text cell.
+
+A custom text cell is an object of a type derived from [`CustomTextCell`](@ref).
+Let's suppose that we want to create a custom cell called `MyTextCell`. This
+object must comply with the API by defining the following functions:
+
+    append_suffix_to_line!(c::MyTextCell, l::Int, suffix::String)
+
+Append the `suffix` to the line `l` of the custom cell text `c`.
+
+    apply_line_padding!(c::MyTextCell, l::Int, left_pad::Int, right_pad::Int)
+
+Apply to the line `l` of the custom text cell `c` the padding with `left_pad`
+spaces in the left and `right_pad` spaces in the right.
+
+    crop_line!(c::MyTextCell, l::Int, num::Int)
+
+Crop `num` characters from the line `l` of the custom text cell `c`.
+
+    get_printable_cell_line(c::MyTextCell, l::Int)
+
+Return the printable line `l` of the custom text cell `c`.
+
+    get_rendered_line(c::MyTextCell, l::Int)
+
+Return the rendered line `l` of the custom text cell `l`.
+
+    parse_cell_text(c::CustomTextCell; kwargs...)
+
+Parse the cell text and return a vector of `String` with the printable cell
+text, where each element in the vector is a new line.
+
+The returned data must contain **only** the printable characters.
+
+The following keyword arguments are passed to this function, which is called
+during the cell parsing phase. Those options are related to the input
+configuration of `pretty_table`, and the user must choose whether or not support
+them.
+
+- `autowrap::Bool`: If `true`, the user wants to wrap the text in the cell. In
+    this case, the option `column_width` contains the column width so that the
+    text can be wrapped into multiple lines.
+- `cell_first_line_only::Bool`: If `true`, the user only wants the first line.
+- `column_width::Integer`: The column width.
+- `compact_printing::Bool`: If `true`, the user wants compact printing (see
+    `:compact` options of `IOContext`).
+- `limit_printing::Bool`: If `true`, the user wants the cells to be converted
+    using the option `:limit => true` in `IOContext`.
+- `linebreaks::Bool`: If `true`, the user wants line breaks inside the cells.
+- `renderer::Union{Val{:print}, Val{:show}}`: The render that the user wants to
+    convert the cells to strings.
+
+
+    reset!(c::CustomTextCell)
+
+Reset all fields in the custom text cell `c`.
+
+!!! info
+    The `reset!` function is not required for the API. It is called before
+    parsing the custom text cell.
+
+### URLTextCell
+
+There is one custom text cell bundled with **PrettyTables.jl** called
+[`URLTextCell`](@ref). This type adds support for rendering [implicit
+hyperlinks](https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda)
+using the escape sequence `\e]8`. Hence, the user can render a text that has a
+hyperlink associated with it.
+
+A [`URLTextCell`](@ref) can be created with the following function:
+
+    URLTextCell(text::String, url::String
+
+which creates a URL cell with a specific `text` that points to an `url`.
+
+```
+julia> table = [
+        1 "Ronan Arraes Jardim Chagas" URLTextCell("Ronan Arraes Jardim Chagas", "https://ronanarraes.com")
+        2 "Google" URLTextCell("Google", "https://google.com")
+        3 "Apple" URLTextCell("Apple", "https://apple.com")
+        4 "Emojis!" URLTextCell("😃"^20, "https://emojipedia.org/github/")
+    ]
+
+julia> pretty_table(table)
+```
+
+![](../assets/ex_UrlTextCell.png)
+
+!!! warning
+    This feature is not supported by all terminal emulators.
