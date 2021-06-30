@@ -20,13 +20,12 @@ Structure that defines parameters to decorate a table cell.
     font_family::String     = ""
     font_weight::String     = ""
     text_decoration::String = ""
-    style::Dict{String,String} = Dict{String,String}()
 end
 
 HTMLDecoration(color::String) = HTMLDecoration(color = color)
 
 function Dict(d::HTMLDecoration)
-    style = d.style
+    style = Dict{String,String}()
 
     !isempty(d.color)           && (style["color"]           = d.color)
     !isempty(d.background)      && (style["background"]      = d.background)
