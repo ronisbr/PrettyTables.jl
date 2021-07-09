@@ -403,3 +403,143 @@ end
                           vcrop_mode = :middle)
     @test result == expected
 end
+
+@testset "Issue #133 - Horizontal lines with middle cropping" begin
+    matrix = [collect(0:1:100) collect(0:2:200) collect(0:3:300)]
+
+    expected = """
+┌─────┬────┬────────┬────────┬─────
+│ Row │    │ Col. 1 │ Col. 2 │ Co ⋯
+├─────┼────┼────────┼────────┼─────
+│   1 │  0 │      0 │      0 │    ⋯
+│   2 │  1 │      1 │      2 │    ⋯
+│   3 │  2 │      2 │      4 │    ⋯
+│   4 │  3 │      3 │      6 │    ⋯
+│   5 │  4 │      4 │      8 │    ⋯
+├─────┼────┼────────┼────────┼─────
+│   6 │  5 │      5 │     10 │    ⋯
+│   7 │  6 │      6 │     12 │    ⋯
+│   8 │  7 │      7 │     14 │    ⋯
+│   9 │  8 │      8 │     16 │    ⋯
+│  10 │  9 │      9 │     18 │    ⋯
+├─────┼────┼────────┼────────┼─────
+│  ⋮  │ ⋮  │   ⋮    │   ⋮    │    ⋱
+└─────┴────┴────────┴────────┴─────
+       1 column and 91 rows omitted
+"""
+
+    result = pretty_table(
+        String,
+        matrix;
+        crop = :both,
+        body_hlines = collect(0:5:100),
+        display_size = (20, 35),
+        row_names = 0:1:100,
+        show_row_number = true
+    )
+
+    @test result == expected
+
+    expected = """
+┌─────┬────┬────────┬────────┬─────
+│ Row │    │ Col. 1 │ Col. 2 │ Co ⋯
+├─────┼────┼────────┼────────┼─────
+│   2 │  1 │      1 │      2 │    ⋯
+│   4 │  3 │      3 │      6 │    ⋯
+│   6 │  5 │      5 │     10 │    ⋯
+│   8 │  7 │      7 │     14 │    ⋯
+│  10 │  9 │      9 │     18 │    ⋯
+├─────┼────┼────────┼────────┼─────
+│  12 │ 11 │     11 │     22 │    ⋯
+│  14 │ 13 │     13 │     26 │    ⋯
+│  16 │ 15 │     15 │     30 │    ⋯
+│  18 │ 17 │     17 │     34 │    ⋯
+│  20 │ 19 │     19 │     38 │    ⋯
+├─────┼────┼────────┼────────┼─────
+│  ⋮  │ ⋮  │   ⋮    │   ⋮    │    ⋱
+└─────┴────┴────────┴────────┴─────
+       1 column and 40 rows omitted
+"""
+
+    result = pretty_table(
+        String,
+        matrix;
+        crop = :both,
+        body_hlines = collect(0:5:100),
+        display_size = (20, 35),
+        filters_row = ((data, i) -> i % 2 == 0,),
+        row_names = 0:1:100,
+        show_row_number = true
+    )
+
+    @test result == expected
+
+    expected = """
+┌─────┬─────┬────────┬────────┬────
+│ Row │     │ Col. 1 │ Col. 2 │ C ⋯
+├─────┼─────┼────────┼────────┼────
+│   1 │   0 │      0 │      0 │   ⋯
+│   2 │   1 │      1 │      2 │   ⋯
+│   3 │   2 │      2 │      4 │   ⋯
+│   4 │   3 │      3 │      6 │   ⋯
+│   5 │   4 │      4 │      8 │   ⋯
+├─────┼─────┼────────┼────────┼────
+│  ⋮  │  ⋮  │   ⋮    │   ⋮    │   ⋱
+│  97 │  96 │     96 │    192 │   ⋯
+│  98 │  97 │     97 │    194 │   ⋯
+│  99 │  98 │     98 │    196 │   ⋯
+│ 100 │  99 │     99 │    198 │   ⋯
+├─────┼─────┼────────┼────────┼────
+│ 101 │ 100 │    100 │    200 │   ⋯
+└─────┴─────┴────────┴────────┴────
+       1 column and 91 rows omitted
+"""
+
+    result = pretty_table(
+        String,
+        matrix;
+        crop = :both,
+        body_hlines = collect(0:5:100),
+        display_size = (20, 35),
+        row_names = 0:1:100,
+        show_row_number = true,
+        vcrop_mode = :middle
+    )
+
+    @test result == expected
+
+    expected = """
+┌─────┬────┬────────┬────────┬─────
+│ Row │    │ Col. 1 │ Col. 2 │ Co ⋯
+├─────┼────┼────────┼────────┼─────
+│   2 │  1 │      1 │      2 │    ⋯
+│   4 │  3 │      3 │      6 │    ⋯
+│   6 │  5 │      5 │     10 │    ⋯
+│   8 │  7 │      7 │     14 │    ⋯
+│  10 │  9 │      9 │     18 │    ⋯
+├─────┼────┼────────┼────────┼─────
+│  ⋮  │ ⋮  │   ⋮    │   ⋮    │    ⋱
+├─────┼────┼────────┼────────┼─────
+│  92 │ 91 │     91 │    182 │    ⋯
+│  94 │ 93 │     93 │    186 │    ⋯
+│  96 │ 95 │     95 │    190 │    ⋯
+│  98 │ 97 │     97 │    194 │    ⋯
+│ 100 │ 99 │     99 │    198 │    ⋯
+└─────┴────┴────────┴────────┴─────
+       1 column and 40 rows omitted
+"""
+
+    result = pretty_table(
+        String,
+        matrix;
+        crop = :both,
+        body_hlines = collect(0:5:100),
+        display_size = (20, 35),
+        filters_row = ((data, i) -> i % 2 == 0,),
+        row_names = 0:1:100,
+        show_row_number = true,
+        vcrop_mode = :middle
+    )
+
+    @test result == expected
+end

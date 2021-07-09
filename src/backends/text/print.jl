@@ -375,14 +375,14 @@ function _pt_text(
     end
 
     if hlines == nothing
-        hlines = _process_hlines(tf.hlines, body_hlines, num_printed_rows, noheader)
+        hlines = _process_hlines(tf.hlines, body_hlines, num_filtered_rows, noheader)
     else
-        hlines = _process_hlines(hlines, body_hlines, num_printed_rows, noheader)
+        hlines = _process_hlines(hlines, body_hlines, num_filtered_rows, noheader)
     end
 
     # Check if the last horizontal line must be drawn. This is required when
     # computing the moment that the display will be cropped.
-    draw_last_hline = (num_printed_rows + !noheader) ∈ hlines
+    draw_last_hline = (num_filtered_rows + !noheader) ∈ hlines
 
     # Process `vlines`.
     if vlines == nothing

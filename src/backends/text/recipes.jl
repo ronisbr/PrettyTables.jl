@@ -281,8 +281,11 @@ function _create_printing_recipe(
             @inbounds for i = num_printed_rows:-1:Δr+1
                 num_lines_row_i = num_lines_in_row[i]
 
+                # Index of this row in the filtered table.
+                ifilt = num_filtered_rows - (num_printed_rows - i)
+
                 # Index of this row in `data`.
-                ir = id_rows[num_filtered_rows - (num_printed_rows - i)]
+                ir = id_rows[ifilt]
 
                 # This variable contains the number of available lines we have
                 # to print the data.
@@ -313,7 +316,7 @@ function _create_printing_recipe(
                     if (Δ < 0)
                         break
                     else
-                        if (Δ > 0) && ((i-1+!noheader) ∈ hlines)
+                        if (Δ > 0) && ((ifilt - 1 + !noheader) ∈ hlines)
                             push!(row_printing_recipe_end, _ROW_LINE)
                             printed_lines += 1
                         end
