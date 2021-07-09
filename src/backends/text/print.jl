@@ -219,6 +219,11 @@ function _pt_text(
 
     # The vector `jvec` contains the indices in the printed matrix whereas the
     # vector `jrvec` contains the indices in the data matrix.
+    #
+    # NOTE: The vector `jvec` is not sorted when crop mode is `:middle`.
+    # This format is required to make sure we always fill one row at the top and
+    # one row in the bottom. Otherwise, we can have access to an undefined
+    # reference.
     jvec, jrvec = _compute_row_fill_vectors(
         id_rows,
         num_printed_rows,
