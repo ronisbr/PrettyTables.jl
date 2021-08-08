@@ -65,6 +65,7 @@ include("backends/html/predefined_formats.jl")
 include("backends/html/predefined_highlighters.jl")
 include("backends/html/print.jl")
 include("backends/html/private.jl")
+include("backends/html/string.jl")
 
 # LaTeX backend
 include("backends/latex/cell_parse.jl")

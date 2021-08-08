@@ -40,13 +40,14 @@ This function must return a string that will be printed to the IO.
         cell_str = sprint(print, cell; context = context)
     end
 
+    # Check if we need to replace `\n` with `<br>`.
+    replace_newline = !cell_first_line_only && linebreaks
+
     if cell_first_line_only
         cell_str = split(cell_str, '\n')[1]
-    elseif linebreaks
-        cell_str = replace(cell_str, "\n" => "<BR>")
     end
 
-    return _str_escaped(cell_str)
+    return _str_html_escaped(cell_str, replace_newline)
 end
 
 @inline function _parse_cell_html(cell::Markdown.MD; kwargs...)
