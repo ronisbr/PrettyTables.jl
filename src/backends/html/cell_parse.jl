@@ -16,6 +16,7 @@ This function must return a string that will be printed to the IO.
 """
 @inline function _parse_cell_html(
     cell;
+    allow_html_in_cells::Bool = false,
     cell_first_line_only::Bool = false,
     compact_printing::Bool = true,
     limit_printing::Bool = true,
@@ -47,7 +48,9 @@ This function must return a string that will be printed to the IO.
         cell_str = split(cell_str, '\n')[1]
     end
 
-    return _str_html_escaped(cell_str, replace_newline)
+    # If the user wants HTML code inside cell, then we must not escape the HTML
+    # characters.
+    return _str_html_escaped(cell_str, replace_newline, !allow_html_in_cells)
 end
 
 @inline function _parse_cell_html(cell::Markdown.MD; kwargs...)

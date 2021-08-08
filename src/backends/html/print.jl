@@ -12,6 +12,7 @@ function _pt_html(
     r_io::Ref{Any},
     pinfo::PrintInfo;
     tf::HTMLTableFormat = tf_html_default,
+    allow_html_in_cells::Bool = false,
     highlighters::Union{HTMLHighlighter, Tuple} = (),
     linebreaks::Bool = false,
     minify::Bool = false,
@@ -95,6 +96,7 @@ function _pt_html(
             for j = 1:header_num_rows
                 header_str[j, i] = _parse_cell_html(
                     header[j][ic],
+                    allow_html_in_cells = allow_html_in_cells,
                     compact_printing = compact_printing,
                     limit_printing = limit_printing,
                     renderer = Val(:print)
@@ -115,6 +117,7 @@ function _pt_html(
 
             data_str[j, i] = _parse_cell_html(
                 data_ij;
+                allow_html_in_cells = allow_html_in_cells,
                 cell_first_line_only = cell_first_line_only,
                 compact_printing = compact_printing,
                 limit_printing = limit_printing,

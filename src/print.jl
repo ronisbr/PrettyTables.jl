@@ -433,6 +433,12 @@ This backend produces HTML tables. This backend can be used by selecting
 
 # Keywords
 
+- `allow_html_in_cells::Bool`: By default, special characters like `<`, `>`,
+    `"`, etc. are replaced in HTML backend to generate valid code. However, this
+    algorithm blocks the usage of HTML code inside of the cells. If this keyword
+    is `true`, then the escape algorithm **will not** be applied, allowing HTML
+    code inside all the cells. In this case, the user must ensure that the
+    output code is valid. (**Default** = `false`)
 - `highlighters::Union{HTMLHighlighter, Tuple}`: An instance of
     [`HTMLHighlighter`](@ref) or a tuple with a list of HTML highlighters (see
     the section `HTML highlighters`).
