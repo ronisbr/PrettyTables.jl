@@ -399,3 +399,87 @@ end
 
     @test result == expected
 end
+
+@testset "HTML escaping" begin
+    header = [
+        "<span style = \"color: blue;\">1</span>",
+        "<span style = \"color: blue;\">2</span>"
+    ]
+
+    matrix = [
+        1 "<b>Bold</b>"
+        2 "<em>Italics</em>"
+        3 "<p class=\"myClass\">Paragraph</p>"
+    ]
+
+    expected = """
+<table>
+  <thead>
+    <tr class = "header headerLastRow">
+      <th style = "text-align: right;">&lt;span style = &quot;color: blue;&quot;&gt;1&lt;/span&gt;</th>
+      <th style = "text-align: right;">&lt;span style = &quot;color: blue;&quot;&gt;2&lt;/span&gt;</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style = "text-align: right;">1</td>
+      <td style = "text-align: right;">&lt;b&gt;Bold&lt;/b&gt;</td>
+    </tr>
+    <tr>
+      <td style = "text-align: right;">2</td>
+      <td style = "text-align: right;">&lt;em&gt;Italics&lt;/em&gt;</td>
+    </tr>
+    <tr>
+      <td style = "text-align: right;">3</td>
+      <td style = "text-align: right;">&lt;p class=&quot;myClass&quot;&gt;Paragraph&lt;/p&gt;</td>
+    </tr>
+  </tbody>
+</table>
+"""
+
+    result = pretty_table(
+        String,
+        matrix;
+        backend = :html,
+        header = header,
+        standalone = false
+    )
+
+    @test result == expected
+
+    expected = """
+<table>
+  <thead>
+    <tr class = "header headerLastRow">
+      <th style = "text-align: right;"><span style = "color: blue;">1</span></th>
+      <th style = "text-align: right;"><span style = "color: blue;">2</span></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style = "text-align: right;">1</td>
+      <td style = "text-align: right;"><b>Bold</b></td>
+    </tr>
+    <tr>
+      <td style = "text-align: right;">2</td>
+      <td style = "text-align: right;"><em>Italics</em></td>
+    </tr>
+    <tr>
+      <td style = "text-align: right;">3</td>
+      <td style = "text-align: right;"><p class="myClass">Paragraph</p></td>
+    </tr>
+  </tbody>
+</table>
+"""
+
+    result = pretty_table(
+        String,
+        matrix;
+        allow_html_in_cells = true,
+        backend = :html,
+        header = header,
+        standalone = false
+    )
+
+    @test result == expected
+end
