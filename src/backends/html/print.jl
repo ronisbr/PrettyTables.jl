@@ -190,6 +190,9 @@ function _pt_html(
     # --------------------------------------------------------------------------
 
     if !noheader
+        _aprintln(buf, "<thead>", il, ns)
+        il += 1
+
         @inbounds @views for i = 1:header_num_rows
             if (i == 1) && (header_num_rows == 1)
                 _aprintln(buf, "<tr class = \"header headerLastRow\">", il, ns)
@@ -264,10 +267,16 @@ function _pt_html(
             il -= 1
             _aprintln(buf, "</tr>", il, ns)
         end
+
+        il -= 1
+        _aprintln(buf, "</thead>", il, ns)
     end
 
     # Data
     # ==========================================================================
+
+    _aprintln(buf, "<tbody>", il, ns)
+    il += 1
 
     @inbounds @views for i = 1:num_printed_rows
         ir = id_rows[i]
@@ -338,6 +347,9 @@ function _pt_html(
         il -= 1
         _aprintln(buf, "</tr>", il, ns)
     end
+
+    il -= 1
+    _aprintln(buf, "</tbody>", il, ns)
 
     @label print_to_output
 
