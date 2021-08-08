@@ -36,65 +36,107 @@ end
 ################################################################################
 
 """
-    _aprint(buf::IO, [v,] indentation = 0, nspace = 2)
+    _aprint(buf::IO, [v,] indentation = 0, nspace = 2, minify = false)
 
 Print the variable `v` to the buffer `buf` at the indentation level
-`indentation`. Each level has `nspaces` spaces.
+`indentation`. Each level has `nspaces` spaces. If `minify` is `true`, then the
+text is printed without breaklines or padding.
 
 If `v` is not present, then only the indentation spaces will be printed.
 """
-function _aprint(buf::IO, v::String, indentation::Int = 0, nspaces::Int = 2)
+function _aprint(
+    buf::IO,
+    v::String,
+    indentation::Int = 0,
+    nspaces::Int = 2,
+    minify::Bool = false
+)
     tokens  = split(v, '\n')
-    padding = " "^(indentation * nspaces)
     ntokens = length(tokens)
 
-    @inbounds for i = 1:ntokens
-        # If the token is empty, then we do nothing to avoid unnecessary white
-        # spaces.
-        if length(tokens[i]) != 0
-            print(buf, padding)
-            print(buf, tokens[i])
+    if !minify
+        padding = " "^(indentation * nspaces)
+
+        @inbounds for i in 1:ntokens
+            # If the token is empty, then we do nothing to avoid unnecessary
+            # white spaces.
+            if length(tokens[i]) != 0
+                print(buf, padding)
+                print(buf, tokens[i])
+            end
+            i != ntokens && println(buf)
         end
-        i != ntokens && println(buf)
-    end
-
-    return nothing
-end
-
-function _aprint(buf::IO, indentation::Int = 0, nspaces::Int = 2)
-    padding = " "^(indentation*nspaces)
-    print(buf, padding)
-
-    return nothing
-end
-
-"""
-    _aprintln(buf::IO, [v,] indentation = 0, nspaces = 2)
-
-Same as `_aprint`, but a new line will be added at the end.
-"""
-function _aprintln(buf::IO, v::String, indentation::Int = 0, nspaces::Int = 2)
-    tokens  = split(v, '\n')
-    padding = " "^(indentation * nspaces)
-    ntokens = length(tokens)
-
-    @inbounds for i = 1:ntokens
-        # If the token is empty, then we do nothing to avoid unnecessary white
-        # spaces.
-        if length(tokens[i]) != 0
-            print(buf, padding)
-            println(buf, tokens[i])
-        else
-            println(buf)
+    else
+        @inbounds for i in 1:ntokens
+            if length(tokens[i]) != 0
+                print(buf, strip(tokens[i]))
+            end
         end
     end
 
     return nothing
 end
 
-function _aprintln(buf::IO, indentation::Int = 0, nspaces::Int = 2)
-    padding = " "^(indentation*nspaces)
-    println(buf, padding)
+function _aprint(
+    buf::IO,
+    indentation::Int = 0,
+    nspaces::Int = 2,
+    minify::Bool = false
+)
+    if !minify
+        padding = " "^(indentation*nspaces)
+        print(buf, padding)
+    end
+
+    return nothing
+end
+
+"""
+    _aprintln(buf::IO, [v,] indentation = 0, nspaces = 2, minify = false)
+
+Same as `_aprint`, but a new line will be added at the end. Notice that this
+newline is not added if `minify` is `true` Notice that this newline is not added
+if `minify` is `true`.
+"""
+function _aprintln(
+    buf::IO,
+    v::String,
+    indentation::Int = 0,
+    nspaces::Int = 2,
+    minify::Bool = false
+)
+    if !minify
+        tokens  = split(v, '\n')
+        padding = " "^(indentation * nspaces)
+        ntokens = length(tokens)
+
+        @inbounds for i = 1:ntokens
+            # If the token is empty, then we do nothing to avoid unnecessary white
+            # spaces.
+            if length(tokens[i]) != 0
+                print(buf, padding)
+                println(buf, tokens[i])
+            else
+                println(buf)
+            end
+        end
+    else
+        _aprint(buf, v, indentation, nspaces, minify)
+    end
+
+    return nothing
+end
+
+function _aprintln(
+    buf::IO,
+    indentation::Int = 0,
+    nspaces::Int = 2,
+    minify::Bool = false
+)
+    if !minify
+        padding = " "^(indentation*nspaces)
+        println(buf, padding)
+    end
 
     return nothing
 end

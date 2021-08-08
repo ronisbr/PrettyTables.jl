@@ -14,6 +14,7 @@ function _pt_html(
     tf::HTMLTableFormat = tf_html_default,
     highlighters::Union{HTMLHighlighter, Tuple} = (),
     linebreaks::Bool = false,
+    minify::Bool = false,
     noheader::Bool = false,
     nosubheader::Bool = false,
     sortkeys::Bool = false,
@@ -141,7 +142,8 @@ function _pt_html(
             <meta charset=\"UTF-8\">
             <style>""",
             il,
-            ns
+            ns,
+            minify
         )
         il += 1
 
@@ -154,20 +156,26 @@ function _pt_html(
                 }
                 """,
                 il,
-                ns)
+                ns,
+                minify
+            )
         end
 
-        _aprintln(buf, css, il, ns)
+        _aprintln(buf, css, il, ns, minify)
         il -= 1
+
         _aprintln(
             buf,
             """
             </style>
-            <body>"""
+            <body>""",
+            il,
+            ns,
+            minify
         )
     end
 
-    _aprintln(buf, "<table>", il, ns)
+    _aprintln(buf, "<table>", il, ns, minify)
     il += 1
 
     # Table title
@@ -175,7 +183,7 @@ function _pt_html(
 
     if length(title) > 0
         style = Dict{String,String}("text-align" => _html_alignment[title_alignment])
-        _aprintln(buf, _styled_html("caption", title, style), il, ns)
+        _aprintln(buf, _styled_html("caption", title, style), il, ns, minify)
     end
 
     # If there is no column or row to be printed, then just exit.
@@ -190,18 +198,30 @@ function _pt_html(
     # --------------------------------------------------------------------------
 
     if !noheader
-        _aprintln(buf, "<thead>", il, ns)
+        _aprintln(buf, "<thead>", il, ns, minify)
         il += 1
 
         @inbounds @views for i = 1:header_num_rows
             if (i == 1) && (header_num_rows == 1)
-                _aprintln(buf, "<tr class = \"header headerLastRow\">", il, ns)
+                _aprintln(
+                    buf,
+                    "<tr class = \"header headerLastRow\">",
+                    il,
+                    ns,
+                    minify
+                )
             elseif i == 1
-                _aprintln(buf, "<tr class = \"header\">", il, ns)
+                _aprintln(buf, "<tr class = \"header\">", il, ns, minify)
             elseif i == header_num_rows
-                _aprintln(buf, "<tr class = \"subheader headerLastRow\">", il, ns)
+                _aprintln(
+                    buf,
+                    "<tr class = \"subheader headerLastRow\">",
+                    il,
+                    ns,
+                    minify
+                )
             else
-                _aprintln(buf, "<tr class = \"subheader\">", il, ns)
+                _aprintln(buf, "<tr class = \"subheader\">", il, ns, minify)
             end
             il += 1
 
@@ -210,13 +230,13 @@ function _pt_html(
                 if i == 1
                     _aprintln(
                         buf,
-                        "<th class = \"rowNumber\">" *
-                            row_number_column_title *
-                            "</th>",
+                        "<th class = \"rowNumber\">" * row_number_column_title * "</th>",
                         il,
-                        ns)
+                        ns,
+                        minify
+                    )
                 else
-                    _aprintln(buf, "<th></th>", il, ns)
+                    _aprintln(buf, "<th></th>", il, ns, minify)
                 end
             end
 
@@ -234,9 +254,9 @@ function _pt_html(
                         class = "rowName"
                     )
 
-                    _aprintln(buf, row_name_title_html, il, ns)
+                    _aprintln(buf, row_name_title_html, il, ns, minify)
                 else
-                    _aprintln(buf, "<th></th>", il, ns)
+                    _aprintln(buf, "<th></th>", il, ns, minify)
                 end
             end
 
@@ -262,30 +282,30 @@ function _pt_html(
                 # Alignment of this cell.
                 style = Dict{String,String}("text-align" => _html_alignment[alignment_ij])
 
-                _aprintln(buf, _styled_html("th", header_str[i, j], style), il, ns)
+                _aprintln(buf, _styled_html("th", header_str[i, j], style), il, ns, minify)
             end
             il -= 1
-            _aprintln(buf, "</tr>", il, ns)
+            _aprintln(buf, "</tr>", il, ns, minify)
         end
 
         il -= 1
-        _aprintln(buf, "</thead>", il, ns)
+        _aprintln(buf, "</thead>", il, ns, minify)
     end
 
     # Data
     # ==========================================================================
 
-    _aprintln(buf, "<tbody>", il, ns)
+    _aprintln(buf, "<tbody>", il, ns, minify)
     il += 1
 
     @inbounds @views for i = 1:num_printed_rows
         ir = id_rows[i]
 
-        _aprintln(buf, "<tr>", il, ns)
+        _aprintln(buf, "<tr>", il, ns, minify)
         il += 1
 
         if show_row_number
-            _aprintln(buf, "<td class = \"rowNumber\">" * string(ir) * "</td>", il, ns)
+            _aprintln(buf, "<td class = \"rowNumber\">" * string(ir) * "</td>", il, ns, minify)
         end
 
         if show_row_names
@@ -311,7 +331,7 @@ function _pt_html(
                 class = "rowName"
             )
 
-            _aprintln(buf, row_name_i_html, il, ns)
+            _aprintln(buf, row_name_i_html, il, ns, minify)
         end
 
         for j = 1:num_printed_cols
@@ -341,15 +361,21 @@ function _pt_html(
                 end
             end
 
-            _aprintln(buf, _styled_html("td", data_str[i, j], style), il, ns)
+            _aprintln(
+                buf,
+                _styled_html("td", data_str[i, j], style),
+                il,
+                ns,
+                minify
+            )
         end
 
         il -= 1
-        _aprintln(buf, "</tr>", il, ns)
+        _aprintln(buf, "</tr>", il, ns, minify)
     end
 
     il -= 1
-    _aprintln(buf, "</tbody>", il, ns)
+    _aprintln(buf, "</tbody>", il, ns, minify)
 
     @label print_to_output
 
@@ -357,7 +383,7 @@ function _pt_html(
     # ==========================================================================
 
     il -= 1
-    _aprintln(buf, "</table>", il, ns)
+    _aprintln(buf, "</table>", il, ns, minify)
     if standalone
         _aprintln(
             buf,
@@ -365,7 +391,8 @@ function _pt_html(
             </body>
             </html>""",
             il,
-            ns
+            ns,
+            minify
         )
     end
 

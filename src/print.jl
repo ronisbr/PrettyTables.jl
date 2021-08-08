@@ -438,6 +438,8 @@ This backend produces HTML tables. This backend can be used by selecting
     the section `HTML highlighters`).
 - `linebreaks::Bool`: If `true`, then `\\n` will be replaced by `<br>`.
     (**Default** = `false`)
+- `minify::Bool`: If `true`, then output will be displayed minified, *i.e.*
+    without unnecessary indentation or newlines. (**Default** = `false`)
 - `noheader::Bool`: If `true`, then the header will not be printed. Notice that
     all keywords and parameters related to the header and sub-headers will be
     ignored. (**Default** = `false`)
