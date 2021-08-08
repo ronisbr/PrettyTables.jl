@@ -10,48 +10,52 @@
 @testset "Highlighters" begin
     expected = """
 <table>
-  <tr class = "header headerLastRow">
-    <th style = "text-align: right;">Col. 1</th>
-    <th style = "text-align: right;">Col. 2</th>
-    <th style = "text-align: right;">Col. 3</th>
-    <th style = "text-align: right;">Col. 4</th>
-  </tr>
-  <tr>
-    <td style = "text-align: right;">1</td>
-    <td style = "text-align: right;">false</td>
-    <td style = "text-align: right;">1.0</td>
-    <td style = "text-align: right;">1</td>
-  </tr>
-  <tr>
-    <td style = "text-align: right;">2</td>
-    <td style = "text-align: right;">true</td>
-    <td style = "text-align: right;">2.0</td>
-    <td style = "text-align: right;">2</td>
-  </tr>
-  <tr>
-    <td style = "text-align: right;">3</td>
-    <td style = "text-align: right;">false</td>
-    <td style = "text-align: right;">3.0</td>
-    <td style = "text-align: right;">3</td>
-  </tr>
-  <tr>
-    <td style = "text-align: right;">4</td>
-    <td style = "text-align: right;">true</td>
-    <td style = "text-align: right;">4.0</td>
-    <td style = "text-align: right;">4</td>
-  </tr>
-  <tr>
-    <td style = "color: red; text-align: right;">5</td>
-    <td style = "text-align: right;">false</td>
-    <td style = "color: red; text-align: right;">5.0</td>
-    <td style = "color: red; text-align: right;">5</td>
-  </tr>
-  <tr>
-    <td style = "color: red; text-align: right;">6</td>
-    <td style = "text-align: right;">true</td>
-    <td style = "color: red; text-align: right;">6.0</td>
-    <td style = "color: red; text-align: right;">6</td>
-  </tr>
+  <thead>
+    <tr class = "header headerLastRow">
+      <th style = "text-align: right;">Col. 1</th>
+      <th style = "text-align: right;">Col. 2</th>
+      <th style = "text-align: right;">Col. 3</th>
+      <th style = "text-align: right;">Col. 4</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style = "text-align: right;">1</td>
+      <td style = "text-align: right;">false</td>
+      <td style = "text-align: right;">1.0</td>
+      <td style = "text-align: right;">1</td>
+    </tr>
+    <tr>
+      <td style = "text-align: right;">2</td>
+      <td style = "text-align: right;">true</td>
+      <td style = "text-align: right;">2.0</td>
+      <td style = "text-align: right;">2</td>
+    </tr>
+    <tr>
+      <td style = "text-align: right;">3</td>
+      <td style = "text-align: right;">false</td>
+      <td style = "text-align: right;">3.0</td>
+      <td style = "text-align: right;">3</td>
+    </tr>
+    <tr>
+      <td style = "text-align: right;">4</td>
+      <td style = "text-align: right;">true</td>
+      <td style = "text-align: right;">4.0</td>
+      <td style = "text-align: right;">4</td>
+    </tr>
+    <tr>
+      <td style = "color: red; text-align: right;">5</td>
+      <td style = "text-align: right;">false</td>
+      <td style = "color: red; text-align: right;">5.0</td>
+      <td style = "color: red; text-align: right;">5</td>
+    </tr>
+    <tr>
+      <td style = "color: red; text-align: right;">6</td>
+      <td style = "text-align: right;">true</td>
+      <td style = "color: red; text-align: right;">6.0</td>
+      <td style = "color: red; text-align: right;">6</td>
+    </tr>
+  </tbody>
 </table>
 """
 
@@ -68,48 +72,52 @@ end
 
     expected = """
 <table>
-  <tr class = "header headerLastRow">
-    <th style = "text-align: right;">Col. 1</th>
-    <th style = "text-align: right;">Col. 2</th>
-    <th style = "text-align: right;">Col. 3</th>
-    <th style = "text-align: right;">Col. 4</th>
-  </tr>
-  <tr>
-    <td style = "text-align: right;">1</td>
-    <td style = "text-align: right;">false</td>
-    <td style = "text-align: right;">1.0</td>
-    <td style = "text-align: right;">1</td>
-  </tr>
-  <tr>
-    <td style = "text-align: right;">2</td>
-    <td style = "background: blue; text-align: right;">true</td>
-    <td style = "text-align: right;">2.0</td>
-    <td style = "text-align: right;">2</td>
-  </tr>
-  <tr>
-    <td style = "text-align: right;">3</td>
-    <td style = "text-align: right;">false</td>
-    <td style = "background: blue; text-align: right;">3.0</td>
-    <td style = "text-align: right;">3</td>
-  </tr>
-  <tr>
-    <td style = "text-align: right;">4</td>
-    <td style = "text-align: right;">true</td>
-    <td style = "text-align: right;">4.0</td>
-    <td style = "text-align: right;">4</td>
-  </tr>
-  <tr>
-    <td style = "text-align: right;">5</td>
-    <td style = "text-align: right;">false</td>
-    <td style = "text-align: right;">5.0</td>
-    <td style = "text-align: right;">5</td>
-  </tr>
-  <tr>
-    <td style = "text-align: right;">6</td>
-    <td style = "text-align: right;">true</td>
-    <td style = "text-align: right;">6.0</td>
-    <td style = "text-align: right;">6</td>
-  </tr>
+  <thead>
+    <tr class = "header headerLastRow">
+      <th style = "text-align: right;">Col. 1</th>
+      <th style = "text-align: right;">Col. 2</th>
+      <th style = "text-align: right;">Col. 3</th>
+      <th style = "text-align: right;">Col. 4</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style = "text-align: right;">1</td>
+      <td style = "text-align: right;">false</td>
+      <td style = "text-align: right;">1.0</td>
+      <td style = "text-align: right;">1</td>
+    </tr>
+    <tr>
+      <td style = "text-align: right;">2</td>
+      <td style = "background: blue; text-align: right;">true</td>
+      <td style = "text-align: right;">2.0</td>
+      <td style = "text-align: right;">2</td>
+    </tr>
+    <tr>
+      <td style = "text-align: right;">3</td>
+      <td style = "text-align: right;">false</td>
+      <td style = "background: blue; text-align: right;">3.0</td>
+      <td style = "text-align: right;">3</td>
+    </tr>
+    <tr>
+      <td style = "text-align: right;">4</td>
+      <td style = "text-align: right;">true</td>
+      <td style = "text-align: right;">4.0</td>
+      <td style = "text-align: right;">4</td>
+    </tr>
+    <tr>
+      <td style = "text-align: right;">5</td>
+      <td style = "text-align: right;">false</td>
+      <td style = "text-align: right;">5.0</td>
+      <td style = "text-align: right;">5</td>
+    </tr>
+    <tr>
+      <td style = "text-align: right;">6</td>
+      <td style = "text-align: right;">true</td>
+      <td style = "text-align: right;">6.0</td>
+      <td style = "text-align: right;">6</td>
+    </tr>
+  </tbody>
 </table>
 """
 
@@ -131,48 +139,52 @@ end
 
     expected = """
 <table>
-  <tr class = "header headerLastRow">
-    <th style = "text-align: right;">Col. 1</th>
-    <th style = "text-align: right;">Col. 2</th>
-    <th style = "text-align: right;">Col. 3</th>
-    <th style = "text-align: right;">Col. 4</th>
-  </tr>
-  <tr>
-    <td style = "font-weight: bold; text-align: right;">1</td>
-    <td style = "text-align: right;">false</td>
-    <td style = "text-align: right;">1.0</td>
-    <td style = "font-weight: bold; text-align: right;">1</td>
-  </tr>
-  <tr>
-    <td style = "font-weight: bold; text-align: right;">2</td>
-    <td style = "text-align: right;">true</td>
-    <td style = "text-align: right;">2.0</td>
-    <td style = "font-weight: bold; text-align: right;">2</td>
-  </tr>
-  <tr>
-    <td style = "font-weight: bold; text-align: right;">3</td>
-    <td style = "text-align: right;">false</td>
-    <td style = "text-align: right;">3.0</td>
-    <td style = "font-weight: bold; text-align: right;">3</td>
-  </tr>
-  <tr>
-    <td style = "font-weight: bold; text-align: right;">4</td>
-    <td style = "text-align: right;">true</td>
-    <td style = "text-align: right;">4.0</td>
-    <td style = "font-weight: bold; text-align: right;">4</td>
-  </tr>
-  <tr>
-    <td style = "font-weight: bold; text-align: right;">5</td>
-    <td style = "text-align: right;">false</td>
-    <td style = "text-align: right;">5.0</td>
-    <td style = "font-weight: bold; text-align: right;">5</td>
-  </tr>
-  <tr>
-    <td style = "font-weight: bold; text-align: right;">6</td>
-    <td style = "text-align: right;">true</td>
-    <td style = "text-align: right;">6.0</td>
-    <td style = "font-weight: bold; text-align: right;">6</td>
-  </tr>
+  <thead>
+    <tr class = "header headerLastRow">
+      <th style = "text-align: right;">Col. 1</th>
+      <th style = "text-align: right;">Col. 2</th>
+      <th style = "text-align: right;">Col. 3</th>
+      <th style = "text-align: right;">Col. 4</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style = "font-weight: bold; text-align: right;">1</td>
+      <td style = "text-align: right;">false</td>
+      <td style = "text-align: right;">1.0</td>
+      <td style = "font-weight: bold; text-align: right;">1</td>
+    </tr>
+    <tr>
+      <td style = "font-weight: bold; text-align: right;">2</td>
+      <td style = "text-align: right;">true</td>
+      <td style = "text-align: right;">2.0</td>
+      <td style = "font-weight: bold; text-align: right;">2</td>
+    </tr>
+    <tr>
+      <td style = "font-weight: bold; text-align: right;">3</td>
+      <td style = "text-align: right;">false</td>
+      <td style = "text-align: right;">3.0</td>
+      <td style = "font-weight: bold; text-align: right;">3</td>
+    </tr>
+    <tr>
+      <td style = "font-weight: bold; text-align: right;">4</td>
+      <td style = "text-align: right;">true</td>
+      <td style = "text-align: right;">4.0</td>
+      <td style = "font-weight: bold; text-align: right;">4</td>
+    </tr>
+    <tr>
+      <td style = "font-weight: bold; text-align: right;">5</td>
+      <td style = "text-align: right;">false</td>
+      <td style = "text-align: right;">5.0</td>
+      <td style = "font-weight: bold; text-align: right;">5</td>
+    </tr>
+    <tr>
+      <td style = "font-weight: bold; text-align: right;">6</td>
+      <td style = "text-align: right;">true</td>
+      <td style = "text-align: right;">6.0</td>
+      <td style = "font-weight: bold; text-align: right;">6</td>
+    </tr>
+  </tbody>
 </table>
 """
 
@@ -196,48 +208,52 @@ end
 
     expected = """
 <table>
-  <tr class = "header headerLastRow">
-    <th style = "text-align: right;">Col. 1</th>
-    <th style = "text-align: right;">Col. 2</th>
-    <th style = "text-align: right;">Col. 3</th>
-    <th style = "text-align: right;">Col. 4</th>
-  </tr>
-  <tr>
-    <td style = "font-family: monospace; text-align: right;">1</td>
-    <td style = "font-family: monospace; text-align: right;">false</td>
-    <td style = "font-family: monospace; text-align: right;">1.0</td>
-    <td style = "font-family: monospace; text-align: right;">1</td>
-  </tr>
-  <tr>
-    <td style = "text-align: right;">2</td>
-    <td style = "text-align: right;">true</td>
-    <td style = "text-align: right;">2.0</td>
-    <td style = "text-align: right;">2</td>
-  </tr>
-  <tr>
-    <td style = "font-family: monospace; text-align: right;">3</td>
-    <td style = "font-family: monospace; text-align: right;">false</td>
-    <td style = "font-family: monospace; text-align: right;">3.0</td>
-    <td style = "font-family: monospace; text-align: right;">3</td>
-  </tr>
-  <tr>
-    <td style = "text-align: right;">4</td>
-    <td style = "text-align: right;">true</td>
-    <td style = "text-align: right;">4.0</td>
-    <td style = "text-align: right;">4</td>
-  </tr>
-  <tr>
-    <td style = "font-family: monospace; text-align: right;">5</td>
-    <td style = "font-family: monospace; text-align: right;">false</td>
-    <td style = "font-family: monospace; text-align: right;">5.0</td>
-    <td style = "font-family: monospace; text-align: right;">5</td>
-  </tr>
-  <tr>
-    <td style = "text-align: right;">6</td>
-    <td style = "text-align: right;">true</td>
-    <td style = "text-align: right;">6.0</td>
-    <td style = "text-align: right;">6</td>
-  </tr>
+  <thead>
+    <tr class = "header headerLastRow">
+      <th style = "text-align: right;">Col. 1</th>
+      <th style = "text-align: right;">Col. 2</th>
+      <th style = "text-align: right;">Col. 3</th>
+      <th style = "text-align: right;">Col. 4</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style = "font-family: monospace; text-align: right;">1</td>
+      <td style = "font-family: monospace; text-align: right;">false</td>
+      <td style = "font-family: monospace; text-align: right;">1.0</td>
+      <td style = "font-family: monospace; text-align: right;">1</td>
+    </tr>
+    <tr>
+      <td style = "text-align: right;">2</td>
+      <td style = "text-align: right;">true</td>
+      <td style = "text-align: right;">2.0</td>
+      <td style = "text-align: right;">2</td>
+    </tr>
+    <tr>
+      <td style = "font-family: monospace; text-align: right;">3</td>
+      <td style = "font-family: monospace; text-align: right;">false</td>
+      <td style = "font-family: monospace; text-align: right;">3.0</td>
+      <td style = "font-family: monospace; text-align: right;">3</td>
+    </tr>
+    <tr>
+      <td style = "text-align: right;">4</td>
+      <td style = "text-align: right;">true</td>
+      <td style = "text-align: right;">4.0</td>
+      <td style = "text-align: right;">4</td>
+    </tr>
+    <tr>
+      <td style = "font-family: monospace; text-align: right;">5</td>
+      <td style = "font-family: monospace; text-align: right;">false</td>
+      <td style = "font-family: monospace; text-align: right;">5.0</td>
+      <td style = "font-family: monospace; text-align: right;">5</td>
+    </tr>
+    <tr>
+      <td style = "text-align: right;">6</td>
+      <td style = "text-align: right;">true</td>
+      <td style = "text-align: right;">6.0</td>
+      <td style = "text-align: right;">6</td>
+    </tr>
+  </tbody>
 </table>
 """
 
@@ -262,48 +278,52 @@ end
 
     expected = """
 <table>
-  <tr class = "header headerLastRow">
-    <th style = "text-align: right;">Col. 1</th>
-    <th style = "text-align: right;">Col. 2</th>
-    <th style = "text-align: right;">Col. 3</th>
-    <th style = "text-align: right;">Col. 4</th>
-  </tr>
-  <tr>
-    <td style = "background: black; color: white; text-align: right;">1</td>
-    <td style = "background: black; color: white; text-align: right;">false</td>
-    <td style = "background: black; color: white; text-align: right;">1.0</td>
-    <td style = "background: black; color: white; text-align: right;">1</td>
-  </tr>
-  <tr>
-    <td style = "background: black; color: white; text-align: right;">2</td>
-    <td style = "background: black; color: white; text-align: right;">true</td>
-    <td style = "background: black; color: white; text-align: right;">2.0</td>
-    <td style = "background: black; color: white; text-align: right;">2</td>
-  </tr>
-  <tr>
-    <td style = "text-align: right;">3</td>
-    <td style = "background: black; color: white; text-align: right;">false</td>
-    <td style = "text-align: right;">3.0</td>
-    <td style = "text-align: right;">3</td>
-  </tr>
-  <tr>
-    <td style = "text-align: right;">4</td>
-    <td style = "background: black; color: white; text-align: right;">true</td>
-    <td style = "text-align: right;">4.0</td>
-    <td style = "text-align: right;">4</td>
-  </tr>
-  <tr>
-    <td style = "text-align: right;">5</td>
-    <td style = "background: black; color: white; text-align: right;">false</td>
-    <td style = "text-align: right;">5.0</td>
-    <td style = "text-align: right;">5</td>
-  </tr>
-  <tr>
-    <td style = "text-align: right;">6</td>
-    <td style = "background: black; color: white; text-align: right;">true</td>
-    <td style = "text-align: right;">6.0</td>
-    <td style = "text-align: right;">6</td>
-  </tr>
+  <thead>
+    <tr class = "header headerLastRow">
+      <th style = "text-align: right;">Col. 1</th>
+      <th style = "text-align: right;">Col. 2</th>
+      <th style = "text-align: right;">Col. 3</th>
+      <th style = "text-align: right;">Col. 4</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style = "background: black; color: white; text-align: right;">1</td>
+      <td style = "background: black; color: white; text-align: right;">false</td>
+      <td style = "background: black; color: white; text-align: right;">1.0</td>
+      <td style = "background: black; color: white; text-align: right;">1</td>
+    </tr>
+    <tr>
+      <td style = "background: black; color: white; text-align: right;">2</td>
+      <td style = "background: black; color: white; text-align: right;">true</td>
+      <td style = "background: black; color: white; text-align: right;">2.0</td>
+      <td style = "background: black; color: white; text-align: right;">2</td>
+    </tr>
+    <tr>
+      <td style = "text-align: right;">3</td>
+      <td style = "background: black; color: white; text-align: right;">false</td>
+      <td style = "text-align: right;">3.0</td>
+      <td style = "text-align: right;">3</td>
+    </tr>
+    <tr>
+      <td style = "text-align: right;">4</td>
+      <td style = "background: black; color: white; text-align: right;">true</td>
+      <td style = "text-align: right;">4.0</td>
+      <td style = "text-align: right;">4</td>
+    </tr>
+    <tr>
+      <td style = "text-align: right;">5</td>
+      <td style = "background: black; color: white; text-align: right;">false</td>
+      <td style = "text-align: right;">5.0</td>
+      <td style = "text-align: right;">5</td>
+    </tr>
+    <tr>
+      <td style = "text-align: right;">6</td>
+      <td style = "background: black; color: white; text-align: right;">true</td>
+      <td style = "text-align: right;">6.0</td>
+      <td style = "text-align: right;">6</td>
+    </tr>
+  </tbody>
 </table>
 """
 
@@ -320,48 +340,52 @@ end
 
     expected = """
 <table>
-  <tr class = "header headerLastRow">
-    <th style = "text-align: right;">Col. 1</th>
-    <th style = "text-align: right;">Col. 2</th>
-    <th style = "text-align: right;">Col. 3</th>
-    <th style = "text-align: right;">Col. 4</th>
-  </tr>
-  <tr>
-    <td style = "background: black; color: white; text-align: right;">1</td>
-    <td style = "background: black; color: white; text-align: right;">false</td>
-    <td style = "background: black; color: white; text-align: right;">1.0</td>
-    <td style = "background: black; color: white; text-align: right;">1</td>
-  </tr>
-  <tr>
-    <td style = "background: black; color: white; text-align: right;">2</td>
-    <td style = "background: black; color: white; text-align: right;">true</td>
-    <td style = "background: black; color: white; text-align: right;">2.0</td>
-    <td style = "background: black; color: white; text-align: right;">2</td>
-  </tr>
-  <tr>
-    <td style = "background: black; color: white; text-align: right;">3</td>
-    <td style = "background: black; color: white; text-align: right;">false</td>
-    <td style = "background: black; color: white; text-align: right;">3.0</td>
-    <td style = "background: black; color: white; text-align: right;">3</td>
-  </tr>
-  <tr>
-    <td style = "text-align: right;">4</td>
-    <td style = "background: black; color: white; text-align: right;">true</td>
-    <td style = "text-align: right;">4.0</td>
-    <td style = "text-align: right;">4</td>
-  </tr>
-  <tr>
-    <td style = "text-align: right;">5</td>
-    <td style = "background: black; color: white; text-align: right;">false</td>
-    <td style = "text-align: right;">5.0</td>
-    <td style = "text-align: right;">5</td>
-  </tr>
-  <tr>
-    <td style = "text-align: right;">6</td>
-    <td style = "background: black; color: white; text-align: right;">true</td>
-    <td style = "text-align: right;">6.0</td>
-    <td style = "text-align: right;">6</td>
-  </tr>
+  <thead>
+    <tr class = "header headerLastRow">
+      <th style = "text-align: right;">Col. 1</th>
+      <th style = "text-align: right;">Col. 2</th>
+      <th style = "text-align: right;">Col. 3</th>
+      <th style = "text-align: right;">Col. 4</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style = "background: black; color: white; text-align: right;">1</td>
+      <td style = "background: black; color: white; text-align: right;">false</td>
+      <td style = "background: black; color: white; text-align: right;">1.0</td>
+      <td style = "background: black; color: white; text-align: right;">1</td>
+    </tr>
+    <tr>
+      <td style = "background: black; color: white; text-align: right;">2</td>
+      <td style = "background: black; color: white; text-align: right;">true</td>
+      <td style = "background: black; color: white; text-align: right;">2.0</td>
+      <td style = "background: black; color: white; text-align: right;">2</td>
+    </tr>
+    <tr>
+      <td style = "background: black; color: white; text-align: right;">3</td>
+      <td style = "background: black; color: white; text-align: right;">false</td>
+      <td style = "background: black; color: white; text-align: right;">3.0</td>
+      <td style = "background: black; color: white; text-align: right;">3</td>
+    </tr>
+    <tr>
+      <td style = "text-align: right;">4</td>
+      <td style = "background: black; color: white; text-align: right;">true</td>
+      <td style = "text-align: right;">4.0</td>
+      <td style = "text-align: right;">4</td>
+    </tr>
+    <tr>
+      <td style = "text-align: right;">5</td>
+      <td style = "background: black; color: white; text-align: right;">false</td>
+      <td style = "text-align: right;">5.0</td>
+      <td style = "text-align: right;">5</td>
+    </tr>
+    <tr>
+      <td style = "text-align: right;">6</td>
+      <td style = "background: black; color: white; text-align: right;">true</td>
+      <td style = "text-align: right;">6.0</td>
+      <td style = "text-align: right;">6</td>
+    </tr>
+  </tbody>
 </table>
 """
 
@@ -378,48 +402,52 @@ end
 
     expected = """
 <table>
-  <tr class = "header headerLastRow">
-    <th style = "text-align: right;">Col. 1</th>
-    <th style = "text-align: right;">Col. 2</th>
-    <th style = "text-align: right;">Col. 3</th>
-    <th style = "text-align: right;">Col. 4</th>
-  </tr>
-  <tr>
-    <td style = "text-align: right;">1</td>
-    <td style = "text-align: right;">false</td>
-    <td style = "text-align: right;">1.0</td>
-    <td style = "text-align: right;">1</td>
-  </tr>
-  <tr>
-    <td style = "text-align: right;">2</td>
-    <td style = "text-align: right;">true</td>
-    <td style = "text-align: right;">2.0</td>
-    <td style = "text-align: right;">2</td>
-  </tr>
-  <tr>
-    <td style = "text-align: right;">3</td>
-    <td style = "text-align: right;">false</td>
-    <td style = "text-align: right;">3.0</td>
-    <td style = "text-align: right;">3</td>
-  </tr>
-  <tr>
-    <td style = "background: black; color: white; text-align: right;">4</td>
-    <td style = "text-align: right;">true</td>
-    <td style = "background: black; color: white; text-align: right;">4.0</td>
-    <td style = "background: black; color: white; text-align: right;">4</td>
-  </tr>
-  <tr>
-    <td style = "background: black; color: white; text-align: right;">5</td>
-    <td style = "text-align: right;">false</td>
-    <td style = "background: black; color: white; text-align: right;">5.0</td>
-    <td style = "background: black; color: white; text-align: right;">5</td>
-  </tr>
-  <tr>
-    <td style = "background: black; color: white; text-align: right;">6</td>
-    <td style = "text-align: right;">true</td>
-    <td style = "background: black; color: white; text-align: right;">6.0</td>
-    <td style = "background: black; color: white; text-align: right;">6</td>
-  </tr>
+  <thead>
+    <tr class = "header headerLastRow">
+      <th style = "text-align: right;">Col. 1</th>
+      <th style = "text-align: right;">Col. 2</th>
+      <th style = "text-align: right;">Col. 3</th>
+      <th style = "text-align: right;">Col. 4</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style = "text-align: right;">1</td>
+      <td style = "text-align: right;">false</td>
+      <td style = "text-align: right;">1.0</td>
+      <td style = "text-align: right;">1</td>
+    </tr>
+    <tr>
+      <td style = "text-align: right;">2</td>
+      <td style = "text-align: right;">true</td>
+      <td style = "text-align: right;">2.0</td>
+      <td style = "text-align: right;">2</td>
+    </tr>
+    <tr>
+      <td style = "text-align: right;">3</td>
+      <td style = "text-align: right;">false</td>
+      <td style = "text-align: right;">3.0</td>
+      <td style = "text-align: right;">3</td>
+    </tr>
+    <tr>
+      <td style = "background: black; color: white; text-align: right;">4</td>
+      <td style = "text-align: right;">true</td>
+      <td style = "background: black; color: white; text-align: right;">4.0</td>
+      <td style = "background: black; color: white; text-align: right;">4</td>
+    </tr>
+    <tr>
+      <td style = "background: black; color: white; text-align: right;">5</td>
+      <td style = "text-align: right;">false</td>
+      <td style = "background: black; color: white; text-align: right;">5.0</td>
+      <td style = "background: black; color: white; text-align: right;">5</td>
+    </tr>
+    <tr>
+      <td style = "background: black; color: white; text-align: right;">6</td>
+      <td style = "text-align: right;">true</td>
+      <td style = "background: black; color: white; text-align: right;">6.0</td>
+      <td style = "background: black; color: white; text-align: right;">6</td>
+    </tr>
+  </tbody>
 </table>
 """
 
@@ -436,48 +464,52 @@ end
 
     expected = """
 <table>
-  <tr class = "header headerLastRow">
-    <th style = "text-align: right;">Col. 1</th>
-    <th style = "text-align: right;">Col. 2</th>
-    <th style = "text-align: right;">Col. 3</th>
-    <th style = "text-align: right;">Col. 4</th>
-  </tr>
-  <tr>
-    <td style = "text-align: right;">1</td>
-    <td style = "text-align: right;">false</td>
-    <td style = "text-align: right;">1.0</td>
-    <td style = "text-align: right;">1</td>
-  </tr>
-  <tr>
-    <td style = "text-align: right;">2</td>
-    <td style = "text-align: right;">true</td>
-    <td style = "text-align: right;">2.0</td>
-    <td style = "text-align: right;">2</td>
-  </tr>
-  <tr>
-    <td style = "background: black; color: white; text-align: right;">3</td>
-    <td style = "text-align: right;">false</td>
-    <td style = "background: black; color: white; text-align: right;">3.0</td>
-    <td style = "background: black; color: white; text-align: right;">3</td>
-  </tr>
-  <tr>
-    <td style = "background: black; color: white; text-align: right;">4</td>
-    <td style = "text-align: right;">true</td>
-    <td style = "background: black; color: white; text-align: right;">4.0</td>
-    <td style = "background: black; color: white; text-align: right;">4</td>
-  </tr>
-  <tr>
-    <td style = "background: black; color: white; text-align: right;">5</td>
-    <td style = "text-align: right;">false</td>
-    <td style = "background: black; color: white; text-align: right;">5.0</td>
-    <td style = "background: black; color: white; text-align: right;">5</td>
-  </tr>
-  <tr>
-    <td style = "background: black; color: white; text-align: right;">6</td>
-    <td style = "text-align: right;">true</td>
-    <td style = "background: black; color: white; text-align: right;">6.0</td>
-    <td style = "background: black; color: white; text-align: right;">6</td>
-  </tr>
+  <thead>
+    <tr class = "header headerLastRow">
+      <th style = "text-align: right;">Col. 1</th>
+      <th style = "text-align: right;">Col. 2</th>
+      <th style = "text-align: right;">Col. 3</th>
+      <th style = "text-align: right;">Col. 4</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style = "text-align: right;">1</td>
+      <td style = "text-align: right;">false</td>
+      <td style = "text-align: right;">1.0</td>
+      <td style = "text-align: right;">1</td>
+    </tr>
+    <tr>
+      <td style = "text-align: right;">2</td>
+      <td style = "text-align: right;">true</td>
+      <td style = "text-align: right;">2.0</td>
+      <td style = "text-align: right;">2</td>
+    </tr>
+    <tr>
+      <td style = "background: black; color: white; text-align: right;">3</td>
+      <td style = "text-align: right;">false</td>
+      <td style = "background: black; color: white; text-align: right;">3.0</td>
+      <td style = "background: black; color: white; text-align: right;">3</td>
+    </tr>
+    <tr>
+      <td style = "background: black; color: white; text-align: right;">4</td>
+      <td style = "text-align: right;">true</td>
+      <td style = "background: black; color: white; text-align: right;">4.0</td>
+      <td style = "background: black; color: white; text-align: right;">4</td>
+    </tr>
+    <tr>
+      <td style = "background: black; color: white; text-align: right;">5</td>
+      <td style = "text-align: right;">false</td>
+      <td style = "background: black; color: white; text-align: right;">5.0</td>
+      <td style = "background: black; color: white; text-align: right;">5</td>
+    </tr>
+    <tr>
+      <td style = "background: black; color: white; text-align: right;">6</td>
+      <td style = "text-align: right;">true</td>
+      <td style = "background: black; color: white; text-align: right;">6.0</td>
+      <td style = "background: black; color: white; text-align: right;">6</td>
+    </tr>
+  </tbody>
 </table>
 """
 
@@ -494,48 +526,52 @@ end
 
     expected = """
 <table>
-  <tr class = "header headerLastRow">
-    <th style = "text-align: right;">Col. 1</th>
-    <th style = "text-align: right;">Col. 2</th>
-    <th style = "text-align: right;">Col. 3</th>
-    <th style = "text-align: right;">Col. 4</th>
-  </tr>
-  <tr>
-    <td style = "text-align: right;">1</td>
-    <td style = "text-align: right;">false</td>
-    <td style = "text-align: right;">1.0</td>
-    <td style = "text-align: right;">1</td>
-  </tr>
-  <tr>
-    <td style = "text-align: right;">2</td>
-    <td style = "text-align: right;">true</td>
-    <td style = "text-align: right;">2.0</td>
-    <td style = "text-align: right;">2</td>
-  </tr>
-  <tr>
-    <td style = "text-align: right; text-decoration: line-through;">3</td>
-    <td style = "text-align: right;">false</td>
-    <td style = "text-align: right; text-decoration: line-through;">3.0</td>
-    <td style = "text-align: right; text-decoration: line-through;">3</td>
-  </tr>
-  <tr>
-    <td style = "text-align: right;">4</td>
-    <td style = "text-align: right;">true</td>
-    <td style = "text-align: right;">4.0</td>
-    <td style = "text-align: right;">4</td>
-  </tr>
-  <tr>
-    <td style = "text-align: right;">5</td>
-    <td style = "text-align: right;">false</td>
-    <td style = "text-align: right;">5.0</td>
-    <td style = "text-align: right;">5</td>
-  </tr>
-  <tr>
-    <td style = "text-align: right;">6</td>
-    <td style = "text-align: right;">true</td>
-    <td style = "text-align: right;">6.0</td>
-    <td style = "text-align: right;">6</td>
-  </tr>
+  <thead>
+    <tr class = "header headerLastRow">
+      <th style = "text-align: right;">Col. 1</th>
+      <th style = "text-align: right;">Col. 2</th>
+      <th style = "text-align: right;">Col. 3</th>
+      <th style = "text-align: right;">Col. 4</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style = "text-align: right;">1</td>
+      <td style = "text-align: right;">false</td>
+      <td style = "text-align: right;">1.0</td>
+      <td style = "text-align: right;">1</td>
+    </tr>
+    <tr>
+      <td style = "text-align: right;">2</td>
+      <td style = "text-align: right;">true</td>
+      <td style = "text-align: right;">2.0</td>
+      <td style = "text-align: right;">2</td>
+    </tr>
+    <tr>
+      <td style = "text-align: right; text-decoration: line-through;">3</td>
+      <td style = "text-align: right;">false</td>
+      <td style = "text-align: right; text-decoration: line-through;">3.0</td>
+      <td style = "text-align: right; text-decoration: line-through;">3</td>
+    </tr>
+    <tr>
+      <td style = "text-align: right;">4</td>
+      <td style = "text-align: right;">true</td>
+      <td style = "text-align: right;">4.0</td>
+      <td style = "text-align: right;">4</td>
+    </tr>
+    <tr>
+      <td style = "text-align: right;">5</td>
+      <td style = "text-align: right;">false</td>
+      <td style = "text-align: right;">5.0</td>
+      <td style = "text-align: right;">5</td>
+    </tr>
+    <tr>
+      <td style = "text-align: right;">6</td>
+      <td style = "text-align: right;">true</td>
+      <td style = "text-align: right;">6.0</td>
+      <td style = "text-align: right;">6</td>
+    </tr>
+  </tbody>
 </table>
 """
 
