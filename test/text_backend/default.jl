@@ -226,8 +226,14 @@ end
 end
 
 @testset "Dictionaries" begin
-    dict = Dict{Int64,String}(1 => "Jan", 2 => "Feb", 3 => "Mar", 4 => "Apr",
-                              5 => "May", 6 => "Jun")
+    dict = Dict{Int64,String}(
+        1 => "Jan",
+        2 => "Feb",
+        3 => "Mar",
+        4 => "Apr",
+        5 => "May",
+        6 => "Jun"
+    )
 
     expected = """
 ┌───────┬────────┐
@@ -312,12 +318,17 @@ end
 └────────────┘
 """
 
-    result = pretty_table(String, vec;
-                          header = (["Header"], ["Sub-header"]))
+    result = pretty_table(
+        String,
+        vec;
+        header = (["Header"], ["Sub-header"])
+    )
     @test result == expected
 
-    @test_throws Exception pretty_table(vec;
-                                        header = ["1", "1"])
+    @test_throws Exception pretty_table(
+        vec;
+        header = ["1", "1"]
+    )
 end
 
 @testset "Print missing, nothing, and #undef" begin
@@ -343,17 +354,23 @@ end
 end
 
 @testset "Overwrite" begin
-    result = pretty_table(String, data;
-                          header = (["A", "B", "C", "D"], ["E", "F", "G", "H"]),
-                          body_hlines = collect(1:1:6))
+    result = pretty_table(
+        String,
+        data;
+        header = (["A", "B", "C", "D"], ["E", "F", "G", "H"]),
+        body_hlines = collect(1:1:6)
+    )
 
     num_lines = length(findall(x->x == '\n', result))
 
     io = IOBuffer()
-    pretty_table(io, data;
-                 header = (["A", "B", "C", "D"], ["E", "F", "G", "H"]),
-                 body_hlines = collect(1:1:6),
-                 overwrite = true)
+    pretty_table(
+        io,
+        data;
+        header = (["A", "B", "C", "D"], ["E", "F", "G", "H"]),
+        body_hlines = collect(1:1:6),
+        overwrite = true
+    )
 
     io_result = String(take!(io))
 

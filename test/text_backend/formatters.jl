@@ -58,7 +58,7 @@
         return data
     end
 
-    result = pretty_table(String, data; formatters = (f1,f2))
+    result = pretty_table(String, data; formatters = (f1, f2))
     @test result == expected
 end
 
@@ -78,7 +78,7 @@ end
 │    6.0 │    1.0 │    6.0 │    6.0 │
 └────────┴────────┴────────┴────────┘
 """
-    result = pretty_table(String, data, formatters = ft_round(1))
+    result = pretty_table(String, data; formatters = ft_round(1))
     @test result == expected
 
     expected = """
@@ -93,7 +93,7 @@ end
 │    6.0 │   true │    6.0 │      6 │
 └────────┴────────┴────────┴────────┘
 """
-    result = pretty_table(String, data, formatters = ft_round(1,[3,1]))
+    result = pretty_table(String, data; formatters = ft_round(1, [3, 1]))
     @test result == expected
 
     # Check if `ft_round` correctly avoid unsupported types.
@@ -113,7 +113,7 @@ end
 └────────┘
 """
 
-    result = pretty_table(String, vec, formatters = ft_round(2))
+    result = pretty_table(String, vec; formatters = ft_round(2))
     @test result == expected
 
     expected = """
@@ -129,7 +129,7 @@ end
 └─────────┘
 """
 
-    result = pretty_table(String, vec, formatters = ft_round(2), renderer = :show)
+    result = pretty_table(String, vec; formatters = ft_round(2), renderer = :show)
     @test result == expected
 
     # ft_printf
@@ -147,7 +147,7 @@ end
 │    6.000 │    1.000 │    6.000 │    6.000 │
 └──────────┴──────────┴──────────┴──────────┘
 """
-    result = pretty_table(String, data, formatters = ft_printf("%8.3f"))
+    result = pretty_table(String, data; formatters = ft_printf("%8.3f"))
     @test result == expected
 
     expected = """
@@ -162,7 +162,7 @@ end
 │    6.000 │   true │    6.0 │    6.000 │
 └──────────┴────────┴────────┴──────────┘
 """
-    result = pretty_table(String, data, formatters = ft_printf("%8.3f",[1,4]))
+    result = pretty_table(String, data; formatters = ft_printf("%8.3f",[1,4]))
     @test result == expected
 
     expected = """
@@ -177,7 +177,10 @@ end
 │     6.00 │   true │    6.0 │   6.0000 │
 └──────────┴────────┴────────┴──────────┘
 """
-    result = pretty_table(String, data,
-                          formatters = ft_printf(["%8.2f","%8.4f"],[1,4]))
+    result = pretty_table(
+        String,
+        data;
+        formatters = ft_printf(["%8.2f", "%8.4f"], [1, 4])
+    )
     @test result == expected
 end

@@ -65,11 +65,14 @@
   </tbody>
 </table>
 """
-    result = pretty_table(String, data;
-                          alignment = [:l,:r,:c,:r],
-                          backend = Val(:html),
-                          standalone = false,
-                          show_row_number = true)
+    result = pretty_table(
+        String,
+        data;
+        alignment = [:l, :r, :c, :r],
+        backend = Val(:html),
+        standalone = false,
+        show_row_number = true
+    )
 
     @test result == expected
 
@@ -130,12 +133,15 @@
   </tbody>
 </table>
 """
-    result = pretty_table(String, data;
-                          alignment = [:l,:r,:c,:r],
-                          backend = Val(:html),
-                          standalone = false,
-                          row_number_column_title = "Row number",
-                          show_row_number = true)
+    result = pretty_table(
+        String,
+        data;
+        alignment = [:l, :r, :c, :r],
+        backend = Val(:html),
+        standalone = false,
+        row_number_column_title = "Row number",
+        show_row_number = true
+    )
 
     @test result == expected
 end

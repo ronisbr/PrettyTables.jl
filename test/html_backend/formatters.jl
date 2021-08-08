@@ -67,10 +67,13 @@
         end
     end
 
-    result = pretty_table(String, data;
-                          backend = Val(:html),
-                          formatters = formatter,
-                          standalone = false)
+    result = pretty_table(
+        String,
+        data;
+        backend = Val(:html),
+        formatters = formatter,
+        standalone = false
+    )
 
     @test result == expected
 end

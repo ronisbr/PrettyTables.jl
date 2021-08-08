@@ -21,8 +21,11 @@
 └───┴───────┴─────┴───┘
 """
 
-    result = pretty_table(String, data;
-                          header = ["1", "2\n", "3", "4"])
+    result = pretty_table(
+        String,
+        data;
+        header = ["1", "2\n", "3", "4"]
+    )
     @test result == expected
 end
 
@@ -41,11 +44,16 @@ end
 │   6 │ 6 │  true │ 6.0 │  6 │
 └─────┴───┴───────┴─────┴────┘
 """
-    result = pretty_table(String, data,
-                          header = ([1,  2,  3,  4],
-                                    [5,  6,  7,  8],
-                                    [9, 10, 11, 12]);
-                          show_row_number = true)
+    result = pretty_table(
+        String,
+        data;
+        header = (
+            [1,  2,  3,  4],
+            [5,  6,  7,  8],
+            [9, 10, 11, 12]
+        ),
+        show_row_number = true
+    )
     @test result == expected
 end
 
@@ -86,7 +94,7 @@ end
 └────────────┴────────┘
 """
 
-    result = pretty_table(String, matrix; formatters = ft_printf("%10.2f",[1]))
+    result = pretty_table(String, matrix; formatters = ft_printf("%10.2f", [1]))
     @test result == expected
 
 end
@@ -236,17 +244,23 @@ end
           27 columns and 18 rows omitted
 """
 
-    result = pretty_table(String, matrix,
-                          alignment_anchor_regex = Dict(0 => [r"\."]),
-                          crop = :both,
-                          display_size = (20,40))
+    result = pretty_table(
+        String,
+        matrix;
+        alignment_anchor_regex = Dict(0 => [r"\."]),
+        crop = :both,
+        display_size = (20, 40)
+    )
 
     @test result == expected
 
-    result = pretty_table(String, matrix,
-                          alignment_anchor_regex = Dict(i => [r"\."] for i = 1:1000),
-                          crop = :both,
-                          display_size = (20,40))
+    result = pretty_table(
+        String,
+        matrix;
+        alignment_anchor_regex = Dict(i => [r"\."] for i in 1:1000),
+        crop = :both,
+        display_size = (20, 40)
+    )
 
     @test result == expected
 
@@ -271,11 +285,14 @@ end
                27 columns and 18 rows omitted
 """
 
-    result = pretty_table(String, matrix,
-                          alignment_anchor_regex = Dict(i => [r"\."] for i = vcat(1,3:1000)),
-                          crop = :both,
-                          display_size = (20,45),
-                          show_row_number = true)
+    result = pretty_table(
+        String,
+        matrix;
+        alignment_anchor_regex = Dict(i => [r"\."] for i in vcat(1, 3:1000)),
+        crop = :both,
+        display_size = (20, 45),
+        show_row_number = true
+    )
 
     @test result == expected
 
@@ -300,12 +317,15 @@ end
                     28 columns and 18 rows omitted
 """
 
-    result = pretty_table(String, matrix,
-                          alignment_anchor_regex = Dict(i => [r"\."] for i = vcat(1,3:1000)),
-                          crop = :both,
-                          display_size = (20,50),
-                          row_names = ["NAME" for i = 1:30],
-                          show_row_number = true)
+    result = pretty_table(
+        String,
+        matrix;
+        alignment_anchor_regex = Dict(i => [r"\."] for i in vcat(1, 3:1000)),
+        crop = :both,
+        display_size = (20, 50),
+        row_names = ["NAME" for i in 1:30],
+        show_row_number = true
+    )
 
     @test result == expected
 
@@ -330,13 +350,16 @@ end
                     26 columns and 18 rows omitted
 """
 
-    result = pretty_table(String, matrix,
-                          alignment_anchor_regex = Dict(i => [r"\."] for i = vcat(1,3:1000)),
-                          crop = :both,
-                          display_size = (20,50),
-                          filters_col = ((data, i)-> i ≠ 2,),
-                          row_names = ["NAME" for i = 1:30],
-                          show_row_number = true)
+    result = pretty_table(
+        String,
+        matrix;
+        alignment_anchor_regex = Dict(i => [r"\."] for i in vcat(1,3:1000)),
+        crop = :both,
+        display_size = (20, 50),
+        filters_col = ((data, i)-> i ≠ 2,),
+        row_names = ["NAME" for i in 1:30],
+        show_row_number = true
+    )
 
     @test result == expected
 end
@@ -377,10 +400,13 @@ end
 2 columns and 5 rows omitted
 """
 
-    result = pretty_table(String, matrix;
-                          header = header,
-                          crop = :both,
-                          display_size = (12,16))
+    result = pretty_table(
+        String,
+        matrix;
+        header = header,
+        crop = :both,
+        display_size = (12, 16)
+    )
     @test result == expected
 
     expected = """
@@ -396,11 +422,14 @@ end
 2 columns and 5 rows omitted
 """
 
-    result = pretty_table(String, matrix;
-                          header = header,
-                          crop = :both,
-                          display_size = (12,16),
-                          vcrop_mode = :middle)
+    result = pretty_table(
+        String,
+        matrix;
+        header = header,
+        crop = :both,
+        display_size = (12, 16),
+        vcrop_mode = :middle
+    )
     @test result == expected
 end
 

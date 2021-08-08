@@ -23,10 +23,12 @@
     result   = pretty_table(String, data; header = header_v)
     @test result == expected
 
-    dict = Dict(:a => 1,
-                :b => 2,
-                :c => 3,
-                :d => 4)
+    dict = Dict(
+        :a => 1,
+        :b => 2,
+        :c => 3,
+        :d => 4
+    )
 
     expected = sprint(pretty_table, data)
     result   = pretty_table(String, data)

@@ -23,7 +23,7 @@
 \\end{table}
 """
 
-    result = pretty_table(String, data, backend = Val(:latex))
+    result = pretty_table(String, data; backend = Val(:latex))
     @test result == expected
 end
 
@@ -47,10 +47,13 @@ end
 \\end{table}
 """
 
-    result = pretty_table(String, data,
-                          hlines = :all,
-                          vlines = :all,
-                          tf = tf_latex_default)
+    result = pretty_table(
+        String,
+        data;
+        hlines = :all,
+        vlines = :all,
+        tf = tf_latex_default
+    )
 
     @test result == expected
 
@@ -72,10 +75,13 @@ end
 \\end{table}
 """
 
-    result = pretty_table(String, data,
-                          hlines = :all,
-                          vlines = :all,
-                          tf = tf_latex_simple)
+    result = pretty_table(
+        String,
+        data;
+        hlines = :all,
+        vlines = :all,
+        tf = tf_latex_simple
+    )
 
     @test result == expected
 
@@ -97,10 +103,13 @@ end
 \\end{table}
 """
 
-    result = pretty_table(String, data,
-                          hlines = :all,
-                          vlines = :all,
-                          tf = tf_latex_modern)
+    result = pretty_table(
+        String,
+        data;
+        hlines = :all,
+        vlines = :all,
+        tf = tf_latex_modern
+    )
 
     @test result == expected
 
@@ -122,10 +131,13 @@ end
 \\end{table}
 """
 
-    result = pretty_table(String, data,
-                          hlines = :all,
-                          vlines = :all,
-                          tf = tf_latex_booktabs)
+    result = pretty_table(
+        String,
+        data;
+        hlines = :all,
+        vlines = :all,
+        tf = tf_latex_booktabs
+    )
 
     @test result == expected
 end
@@ -148,10 +160,13 @@ end
 \\end{table}
 """
 
-    result = pretty_table(String, data,
-                          backend = Val(:latex),
-                          label = "tab:label",
-                          title = "Table title")
+    result = pretty_table(
+        String,
+        data;
+        backend = Val(:latex),
+        label = "tab:label",
+        title = "Table title"
+    )
 
     @test result == expected
 
@@ -177,11 +192,14 @@ end
 \\end{longtable}
 """
 
-    result = pretty_table(String, data,
-                          backend = Val(:latex),
-                          label = "tab:label",
-                          table_type = :longtable,
-                          title = "Table title")
+    result = pretty_table(
+        String,
+        data;
+        backend = Val(:latex),
+        label = "tab:label",
+        table_type = :longtable,
+        title = "Table title"
+    )
 
     @test result == expected
 end

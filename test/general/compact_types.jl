@@ -28,8 +28,10 @@
     # Tables.jl API
     # --------------------------------------------------------------------------
 
-    table = (a = [missing, Int64(1), Int64(2), Int64(3)],
-             b = [nothing, Int64(1), missing, Int64(1)])
+    table = (
+        a = [missing, Int64(1), Int64(2), Int64(3)],
+        b = [nothing, Int64(1), missing, Int64(1)]
+    )
 
     expected = """
 ┌─────────┬────────────────────┐

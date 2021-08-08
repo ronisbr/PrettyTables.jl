@@ -20,8 +20,10 @@
 └────────┴────────┴────────┴────────┘
 """
 
-    result = sprint((io)->pretty_table(io, data),
-                    context = :color => true)
+    result = sprint(
+        (io)->pretty_table(io, data),
+        context = :color => true
+    )
 
     @test result == expected
 
@@ -42,8 +44,10 @@
 └───┴───────┴─────┴───┘
 """
 
-    result = sprint((io)->pretty_table(io, data; header = header),
-                    context = :color => true)
+    result = sprint(
+        (io)->pretty_table(io, data; header = header),
+        context = :color => true
+    )
 
     @test result == expected
 end
@@ -62,8 +66,10 @@ end
 └─────┴────────┴────────┴────────┴────────┘
 """
 
-    result = sprint((io)->pretty_table(io, data, show_row_number = true),
-                    context = :color => true)
+    result = sprint(
+        (io)->pretty_table(io, data, show_row_number = true),
+        context = :color => true
+    )
 
     @test result == expected
 end
@@ -83,10 +89,12 @@ end
 """
 
     row_names = ['A'+i for i = 0:5]
-    result = sprint((io)->pretty_table(io, data,
-                                       row_names = row_names,
-                                       row_name_column_title = "Name"),
-                    context = :color => true)
+    result = sprint((io)->pretty_table(
+        io,
+        data,
+        row_names = row_names,
+        row_name_column_title = "Name"
+    ), context = :color => true)
 
     @test result == expected
 end
@@ -105,8 +113,10 @@ end
 \e[33m└\e[0m\e[33m────────\e[0m\e[33m┴\e[0m\e[33m────────\e[0m\e[33m┴\e[0m\e[33m────────\e[0m\e[33m┴\e[0m\e[33m────────\e[0m\e[33m┘\e[0m
 """
 
-    result = sprint((io)->pretty_table(io, data, border_crayon = crayon"yellow"),
-                    context = :color => true)
+    result = sprint(
+        (io)->pretty_table(io, data, border_crayon = crayon"yellow"),
+        context = :color => true
+    )
 
     @test result == expected
 end
@@ -125,25 +135,29 @@ end
 └────────┴────────┴────────┴────────┘
 """
 
-    hl = Highlighter((data, i, j)-> i == 3 && j == 3;
-                     bold = true,
-                     foreground = :yellow)
+    hl = Highlighter(
+        (data, i, j)-> i == 3 && j == 3;
+        bold = true,
+        foreground = :yellow
+    )
 
-    result = sprint((io)->pretty_table(io, data, highlighters = hl),
-                    context = :color => true)
-
-    @test result == expected
-
-    hl = Highlighter((data, i, j)-> i == 3 && j == 3,
-                     crayon"yellow bold")
-
-    result = sprint((io)->pretty_table(io, data, highlighters = hl),
-                    context = :color => true)
+    result = sprint(
+        (io)->pretty_table(io, data, highlighters = hl),
+        context = :color => true
+    )
 
     @test result == expected
 
-    hl2 = Highlighter((data, i, j)-> i == 3 && j == 2,
-                      crayon"blue bold")
+    hl = Highlighter((data, i, j)-> i == 3 && j == 3, crayon"yellow bold")
+
+    result = sprint(
+        (io)->pretty_table(io, data, highlighters = hl),
+        context = :color => true
+    )
+
+    @test result == expected
+
+    hl2 = Highlighter((data, i, j)-> i == 3 && j == 2, crayon"blue bold")
 
     expected = """
 ┌────────┬────────┬────────┬────────┐
@@ -158,16 +172,22 @@ end
 └────────┴────────┴────────┴────────┘
 """
 
-    result = sprint((io)->pretty_table(io, data, highlighters = (hl, hl2)),
-                    context = :color => true)
+    result = sprint(
+        (io)->pretty_table(io, data, highlighters = (hl, hl2)),
+        context = :color => true
+    )
 
     @test result == expected
 
-    hl3 = Highlighter((data, i, j)-> data[i,j] isa AbstractFloat && data[i,j] == 3,
-                      (h, data, i, j)->crayon"yellow bold")
+    hl3 = Highlighter(
+        (data, i, j)-> data[i,j] isa AbstractFloat && data[i,j] == 3,
+        (h, data, i, j)->crayon"yellow bold"
+    )
 
-    result = sprint((io)->pretty_table(io, data, highlighters = (hl3, hl2)),
-                    context = :color => true)
+    result = sprint(
+        (io)->pretty_table(io, data, highlighters = (hl3, hl2)),
+        context = :color => true
+    )
 
     @test result == expected
 end
@@ -175,8 +195,7 @@ end
 @testset "Highlighters with table cropping and filters" begin
     matrix = [1:1:100 1:1:100 1:1:100]
 
-    hl = Highlighter((data, i, j)-> i == 100 && j == 2,
-                        crayon"yellow")
+    hl = Highlighter((data, i, j)-> i == 100 && j == 2, crayon"yellow")
 
     expected = """
 ┌────────┬────────┬────────┐
@@ -194,12 +213,14 @@ end
 \e[36m             93 rows omitted\e[0m
 """
 
-    result = sprint((io)->pretty_table(io, matrix,
-                                       crop = :both,
-                                       display_size = (15,-1),
-                                       highlighters = (hl,),
-                                       vcrop_mode = :middle),
-                    context = :color => true)
+    result = sprint((io)->pretty_table(
+        io,
+        matrix,
+        crop = :both,
+        display_size = (15, -1),
+        highlighters = (hl,),
+        vcrop_mode = :middle
+    ), context = :color => true)
 
     @test result == expected
 
@@ -219,13 +240,15 @@ end
 \e[36m             43 rows omitted\e[0m
 """
 
-    result = sprint((io)->pretty_table(io, matrix,
-                                       crop = :both,
-                                       display_size = (15,-1),
-                                       filters_row = ((data, i)->i % 2 == 0,),
-                                       highlighters = (hl,),
-                                       vcrop_mode = :middle),
-                    context = :color => true)
+    result = sprint((io)->pretty_table(
+        io,
+        matrix,
+        crop = :both,
+        display_size = (15, -1),
+        filters_row = ((data, i)->i % 2 == 0,),
+        highlighters = (hl,),
+        vcrop_mode = :middle
+    ), context = :color => true)
 
     @test result == expected
 
@@ -245,14 +268,16 @@ end
 \e[36m    43 rows omitted\e[0m
 """
 
-    result = sprint((io)->pretty_table(io, matrix,
-                                       crop = :both,
-                                       display_size = (15,-1),
-                                       filters_col = ((data, i)->i != 1,),
-                                       filters_row = ((data, i)->i % 2 == 0,),
-                                       highlighters = (hl,),
-                                       vcrop_mode = :middle),
-                    context = :color => true)
+    result = sprint((io)->pretty_table(
+        io,
+        matrix;
+        crop = :both,
+        display_size = (15, -1),
+        filters_col = ((data, i)->i != 1,),
+        filters_row = ((data, i)->i % 2 == 0,),
+        highlighters = (hl,),
+        vcrop_mode = :middle
+    ), context = :color => true)
 
     @test result == expected
 end
@@ -275,9 +300,11 @@ end
 └────────┴────────┴────────┴────────┘
 """
 
-    result = sprint((io)->pretty_table(io, data;
-                                       highlighters = hl_cell(3, 3, crayon"yellow")),
-                    context = :color => true)
+    result = sprint((io)->pretty_table(
+        io,
+        data;
+        highlighters = hl_cell(3, 3, crayon"yellow")
+    ), context = :color => true)
 
     @test result == expected
 
@@ -294,10 +321,11 @@ end
 └────────┴────────┴────────┴────────┘
 """
 
-    result = sprint((io)->pretty_table(io, data;
-                                       highlighters = hl_cell([(2, 3), (3, 3), (4, 4)],
-                                                              crayon"yellow")),
-                    context = :color => true)
+    result = sprint((io)->pretty_table(
+        io,
+        data;
+        highlighters = hl_cell([(2, 3), (3, 3), (4, 4)], crayon"yellow")
+    ), context = :color => true)
 
     @test result == expected
 
@@ -317,9 +345,11 @@ end
 └────────┴────────┴────────┴────────┘
 """
 
-    result = sprint((io)->pretty_table(io, data;
-                                       highlighters = hl_col(2, crayon"yellow")),
-                    context = :color => true)
+    result = sprint((io)->pretty_table(
+        io,
+        data;
+        highlighters = hl_col(2, crayon"yellow")
+    ), context = :color => true)
 
     @test result == expected
 
@@ -336,9 +366,11 @@ end
 └────────┴────────┴────────┴────────┘
 """
 
-    result = sprint((io)->pretty_table(io, data;
-                                       highlighters = hl_col([2,4], crayon"yellow")),
-                    context = :color => true)
+    result = sprint((io)->pretty_table(
+        io,
+        data;
+        highlighters = hl_col([2,4], crayon"yellow")
+    ), context = :color => true)
 
     @test result == expected
 
@@ -358,9 +390,11 @@ end
 └────────┴────────┴────────┴────────┘
 """
 
-    result = sprint((io)->pretty_table(io, data;
-                                       highlighters = hl_row(2, crayon"yellow")),
-                    context = :color => true)
+    result = sprint((io)->pretty_table(
+        io,
+        data;
+        highlighters = hl_row(2, crayon"yellow")
+    ), context = :color => true)
 
     @test result == expected
 
@@ -377,9 +411,11 @@ end
 └────────┴────────┴────────┴────────┘
 """
 
-    result = sprint((io)->pretty_table(io, data;
-                                       highlighters = hl_row([2,4], crayon"yellow")),
-                    context = :color => true)
+    result = sprint((io)->pretty_table(
+        io,
+        data;
+        highlighters = hl_row([2, 4], crayon"yellow")
+    ), context = :color => true)
 
     @test result == expected
 
@@ -399,8 +435,11 @@ end
 └────────┴────────┴────────┴────────┘
 """
 
-    result = sprint((io)->pretty_table(io, data; highlighters = hl_lt(3)),
-                    context = :color => true)
+    result = sprint((io)->pretty_table(
+        io,
+        data;
+        highlighters = hl_lt(3)
+    ), context = :color => true)
 
     @test result == expected
 
@@ -420,8 +459,11 @@ end
 └────────┴────────┴────────┴────────┘
 """
 
-    result = sprint((io)->pretty_table(io, data; highlighters = hl_leq(3)),
-                    context = :color => true)
+    result = sprint((io)->pretty_table(
+        io,
+        data;
+        highlighters = hl_leq(3)
+    ), context = :color => true)
 
     @test result == expected
 
@@ -441,8 +483,11 @@ end
 └────────┴────────┴────────┴────────┘
 """
 
-    result = sprint((io)->pretty_table(io, data; highlighters = hl_gt(3)),
-                    context = :color => true)
+    result = sprint((io)->pretty_table(
+        io,
+        data;
+        highlighters = hl_gt(3)
+    ), context = :color => true)
 
     @test result == expected
 
@@ -462,8 +507,11 @@ end
 └────────┴────────┴────────┴────────┘
 """
 
-    result = sprint((io)->pretty_table(io, data; highlighters = hl_geq(3)),
-                    context = :color => true)
+    result = sprint((io)->pretty_table(
+        io,
+        data;
+        highlighters = hl_geq(3)
+    ), context = :color => true)
 
     @test result == expected
 
@@ -483,8 +531,10 @@ end
 └────────┴────────┴────────┴────────┘
 """
 
-    result = sprint((io)->pretty_table(io, data; highlighters = hl_value(3)),
-                    context = :color => true)
+    result = sprint((io)->pretty_table(
+        io,
+        data; highlighters = hl_value(3)
+    ), context = :color => true)
 
     @test result == expected
 end
@@ -532,10 +582,12 @@ end
 └────────┴────────────────────────┘
 """
 
-    result = sprint((io)->pretty_table(io, data,
-                                       hlines = :all,
-                                       linebreaks = true),
-                    context = :color => true)
+    result = sprint((io)->pretty_table(
+        io,
+        data,
+        hlines = :all,
+        linebreaks = true
+    ), context = :color => true)
 
     @test result == expected
 
@@ -557,10 +609,12 @@ end
 └────────┴────────────────┘
 """
 
-    result = sprint((io)->pretty_table(io, data,
-                                       hlines = :all,
-                                       linebreaks = false),
-                    context = :color => true)
+    result = sprint((io)->pretty_table(
+        io,
+        data;
+        hlines = :all,
+        linebreaks = false
+    ), context = :color => true)
 
     @test result == expected
 end

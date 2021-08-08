@@ -207,10 +207,13 @@ end
 </table>
 """
 
-    result = pretty_table(String, dict;
-                          backend = Val(:html),
-                          sortkeys = true,
-                          standalone = false)
+    result = pretty_table(
+        String,
+        dict;
+        backend = Val(:html),
+        sortkeys = true,
+        standalone = false
+    )
 
     @test result == expected
 end
@@ -289,11 +292,14 @@ end
 </table>
 """
 
-    result = pretty_table(String, vec;
-                          alignment = :c,
-                          backend = Val(:html),
-                          show_row_number = true,
-                          standalone = false)
+    result = pretty_table(
+        String,
+        vec;
+        alignment = :c,
+        backend = Val(:html),
+        show_row_number = true,
+        standalone = false
+    )
 
     @test result == expected
 
@@ -336,10 +342,13 @@ end
 </table>
 """
 
-    result = pretty_table(String, vec;
-                          backend = Val(:html),
-                          header = (["A"], ["B"], ["C"], ["D"]),
-                          standalone = false)
+    result = pretty_table(
+        String,
+        vec;
+        backend = Val(:html),
+        header = (["A"], ["B"], ["C"], ["D"]),
+        standalone = false
+    )
 
     @test result == expected
 end
@@ -381,9 +390,12 @@ end
 </table>
 """
 
-    result = pretty_table(String, matrix;
-                          tf = tf_html_default,
-                          standalone = false)
+    result = pretty_table(
+        String,
+        matrix;
+        tf = tf_html_default,
+        standalone = false
+    )
 
     @test result == expected
 end

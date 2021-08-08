@@ -20,10 +20,10 @@
 └────────┴────────┴────────┴────────┘
 """
 
-    result = pretty_table(String, data, display_size = (10,10), crop = :none)
+    result = pretty_table(String, data; display_size = (10, 10), crop = :none)
     @test result == expected
 
-    result = pretty_table(String, data, display_size = (-1,-1), crop = :both)
+    result = pretty_table(String, data; display_size = (-1, -1), crop = :both)
     @test result == expected
 
     expected = """
@@ -38,7 +38,7 @@
    1 column and 3 rows omitted
 """
 
-    result = pretty_table(String, data, display_size = (11,30), crop = :both)
+    result = pretty_table(String, data; display_size = (11, 30), crop = :both)
     @test result == expected
 
     expected = """
@@ -55,12 +55,15 @@
               1 column omitted
 """
 
-    result = pretty_table(String, data,
-                          display_size = (11,30),
-                          crop = :horizontal)
+    result = pretty_table(
+        String,
+        data;
+        display_size = (11, 30),
+        crop = :horizontal
+    )
     @test result == expected
 
-    result = pretty_table(String, data, display_size = (-1,30), crop = :both)
+    result = pretty_table(String, data; display_size = (-1, 30), crop = :both)
     @test result == expected
 
     expected = """
@@ -75,12 +78,15 @@
                        3 rows omitted
 """
 
-    result = pretty_table(String, data,
-                          display_size = (11,30),
-                          crop = :vertical)
+    result = pretty_table(
+        String,
+        data,
+        display_size = (11, 30),
+        crop = :vertical
+    )
     @test result == expected
 
-    result = pretty_table(String, data, display_size = (11,-1), crop = :both)
+    result = pretty_table(String, data; display_size = (11, -1), crop = :both)
     @test result == expected
 
     expected = """
@@ -95,7 +101,7 @@
 2 columns and 3 rows omitted
 """
 
-    result = pretty_table(String, data, display_size = (11,25), crop = :both)
+    result = pretty_table(String, data; display_size = (11, 25), crop = :both)
     @test result == expected
 
     # Limits
@@ -114,7 +120,7 @@
 └────────┴────────┴────────┴────────┘
 """
 
-    result = pretty_table(String, data, display_size = (12,-1), crop = :both)
+    result = pretty_table(String, data; display_size = (12, -1), crop = :both)
     @test result == expected
 
     data_text = Any[1    false            1.0     0x01 ;
@@ -137,10 +143,13 @@
                        2 rows omitted
 """
 
-    result = pretty_table(String, data_text,
-                          crop = :both,
-                          display_size = (12,-1),
-                          linebreaks = true)
+    result = pretty_table(
+        String,
+        data_text;
+        crop = :both,
+        display_size = (12, -1),
+        linebreaks = true
+    )
     @test result == expected
 
     # Linebreaks
@@ -166,11 +175,14 @@
 └────────┘
 """
 
-    result = pretty_table(String, matrix,
-                          crop = :both,
-                          display_size = (17,-1),
-                          linebreaks = true,
-                          hlines = :all)
+    result = pretty_table(
+        String,
+        matrix;
+        crop = :both,
+        display_size = (17, -1),
+        linebreaks = true,
+        hlines = :all
+    )
 
     @test result == expected
 
@@ -190,11 +202,14 @@
 └────────┘
 1 row omitted
 """
-    result = pretty_table(String, matrix,
-                          crop = :both,
-                          display_size = (16,-1),
-                          linebreaks = true,
-                          hlines = :all)
+    result = pretty_table(
+        String,
+        matrix;
+        crop = :both,
+        display_size = (16, -1),
+        linebreaks = true,
+        hlines = :all
+    )
 
     @test result == expected
 
@@ -213,11 +228,14 @@
 └────────┘
 1 row omitted
 """
-    result = pretty_table(String, matrix,
-                          crop = :both,
-                          display_size = (15,-1),
-                          linebreaks = true,
-                          hlines = :all)
+    result = pretty_table(
+        String,
+        matrix;
+        crop = :both,
+        display_size = (15,-1),
+        linebreaks = true,
+        hlines = :all
+    )
 
     @test result == expected
 
@@ -237,11 +255,14 @@
 │      3 │
 │      3 │
 """
-    result = pretty_table(String, matrix,
-                          crop = :both,
-                          display_size = (16,-1),
-                          linebreaks = true,
-                          hlines = [0,1,2,3])
+    result = pretty_table(
+        String,
+        matrix;
+        crop = :both,
+        display_size = (16, -1),
+        linebreaks = true,
+        hlines = [0, 1, 2, 3]
+    )
 
     @test result == expected
 
@@ -261,13 +282,16 @@
        3 columns and 2 rows omitted
 """
 
-    result = pretty_table(String, data,
-                          crop = :both,
-                          display_size = (12,35),
-                          linebreaks = true,
-                          show_row_number = true,
-                          row_names = ["Row $i" for i = 1:6],
-                          row_name_column_title = "Row name")
+    result = pretty_table(
+        String,
+        data;
+        crop = :both,
+        display_size = (12, 35),
+        linebreaks = true,
+        show_row_number = true,
+        row_names = ["Row $i" for i in 1:6],
+        row_name_column_title = "Row name"
+    )
 
     @test result == expected
 
@@ -284,13 +308,16 @@
 4 columns and 2 rows omitted
 """
 
-    result = pretty_table(String, data,
-                          crop = :both,
-                          display_size = (12,25),
-                          linebreaks = true,
-                          show_row_number = true,
-                          row_names = ["Row $i" for i = 1:6],
-                          row_name_column_title = "Row name")
+    result = pretty_table(
+        String,
+        data;
+        crop = :both,
+        display_size = (12, 25),
+        linebreaks = true,
+        show_row_number = true,
+        row_names = ["Row $i" for i in 1:6],
+        row_name_column_title = "Row name"
+    )
 
     @test result == expected
 
@@ -307,13 +334,16 @@
 4 columns and 2 rows omitted
 """
 
-    result = pretty_table(String, data,
-                          crop = :both,
-                          display_size = (12,15),
-                          linebreaks = true,
-                          show_row_number = true,
-                          row_names = ["Row $i" for i = 1:6],
-                          row_name_column_title = "Row name")
+    result = pretty_table(
+        String,
+        data;
+        crop = :both,
+        display_size = (12, 15),
+        linebreaks = true,
+        show_row_number = true,
+        row_names = ["Row $i" for i in 1:6],
+        row_name_column_title = "Row name"
+    )
 
     @test result == expected
 end
@@ -332,16 +362,23 @@ end
 └────────┴────────┴────────┴────────┘
 """
 
-    result = pretty_table(String, data,
-                          crop = :none,
-                          display_size = (10,10),
-                          vcrop_mode = :middle)
+    result = pretty_table(
+        String,
+        data;
+        crop = :none,
+        display_size = (10, 10),
+        vcrop_mode = :middle
+    )
 
     @test result == expected
 
-    result = pretty_table(String, data, display_size = (-1,-1),
-                          crop = :both,
-                          vcrop_mode = :middle)
+    result = pretty_table(
+        String,
+        data;
+        display_size = (-1, -1),
+        crop = :both,
+        vcrop_mode = :middle
+    )
 
     @test result == expected
 
@@ -357,17 +394,23 @@ end
    1 column and 3 rows omitted
 """
 
-    result = pretty_table(String, data,
-                          crop = :both,
-                          display_size = (11,30),
-                          vcrop_mode = :middle)
+    result = pretty_table(
+        String,
+        data;
+        crop = :both,
+        display_size = (11, 30),
+        vcrop_mode = :middle
+    )
 
     @test result == expected
 
-    result = pretty_table(String, data,
-                          crop = :both,
-                          display_size = (11,30),
-                          vcrop_mode = :middle)
+    result = pretty_table(
+        String,
+        data;
+        crop = :both,
+        display_size = (11, 30),
+        vcrop_mode = :middle
+    )
 
     @test result == expected
 
@@ -385,17 +428,23 @@ end
               1 column omitted
 """
 
-    result = pretty_table(String, data,
-                          crop = :horizontal,
-                          display_size = (11,30),
-                          vcrop_mode = :middle)
+    result = pretty_table(
+        String,
+        data;
+        crop = :horizontal,
+        display_size = (11, 30),
+        vcrop_mode = :middle
+    )
 
     @test result == expected
 
-    result = pretty_table(String, data,
-                          crop = :both,
-                          display_size = (-1,30),
-                          vcrop_mode = :middle)
+    result = pretty_table(
+        String,
+        data;
+        crop = :both,
+        display_size = (-1, 30),
+        vcrop_mode = :middle
+    )
 
     @test result == expected
 
@@ -411,17 +460,23 @@ end
                        3 rows omitted
 """
 
-    result = pretty_table(String, data,
-                          crop = :vertical,
-                          display_size = (11,30),
-                          vcrop_mode = :middle)
+    result = pretty_table(
+        String,
+        data;
+        crop = :vertical,
+        display_size = (11, 30),
+        vcrop_mode = :middle
+    )
 
     @test result == expected
 
-    result = pretty_table(String, data,
-                          crop = :both,
-                          display_size = (11,-1),
-                          vcrop_mode = :middle)
+    result = pretty_table(
+        String,
+        data;
+        crop = :both,
+        display_size = (11, -1),
+        vcrop_mode = :middle
+    )
 
     @test result == expected
 
@@ -437,10 +492,13 @@ end
 2 columns and 3 rows omitted
 """
 
-    result = pretty_table(String, data,
-                          crop = :both,
-                          display_size = (11,25),
-                          vcrop_mode = :middle)
+    result = pretty_table(
+        String,
+        data;
+        crop = :both,
+        display_size = (11, 25),
+        vcrop_mode = :middle
+    )
 
     @test result == expected
 
@@ -460,10 +518,13 @@ end
 └────────┴────────┴────────┴────────┘
 """
 
-    result = pretty_table(String, data,
-                          crop = :both,
-                          display_size = (12,-1),
-                          vcrop_mode = :middle)
+    result = pretty_table(
+        String,
+        data;
+        crop = :both,
+        display_size = (12, -1),
+        vcrop_mode = :middle
+    )
 
     @test result == expected
 
@@ -487,11 +548,14 @@ end
                        3 rows omitted
 """
 
-    result = pretty_table(String, data_text,
-                          crop = :both,
-                          display_size = (12,-1),
-                          linebreaks = true,
-                          vcrop_mode = :middle)
+    result = pretty_table(
+        String,
+        data_text;
+        crop = :both,
+        display_size = (12, -1),
+        linebreaks = true,
+        vcrop_mode = :middle
+    )
 
     @test result == expected
 
@@ -518,12 +582,15 @@ end
 └────────┘
 """
 
-    result = pretty_table(String, matrix,
-                          crop = :both,
-                          display_size = (17,-1),
-                          linebreaks = true,
-                          hlines = :all,
-                          vcrop_mode = :middle)
+    result = pretty_table(
+        String,
+        matrix;
+        crop = :both,
+        display_size = (17, -1),
+        linebreaks = true,
+        hlines = :all,
+        vcrop_mode = :middle
+    )
 
     @test result == expected
 
@@ -543,12 +610,15 @@ end
 └────────┘
 1 row omitted
 """
-    result = pretty_table(String, matrix,
-                          crop = :both,
-                          display_size = (16,-1),
-                          linebreaks = true,
-                          hlines = :all,
-                          vcrop_mode = :middle)
+    result = pretty_table(
+        String,
+        matrix;
+        crop = :both,
+        display_size = (16, -1),
+        linebreaks = true,
+        hlines = :all,
+        vcrop_mode = :middle
+    )
 
     @test result == expected
 
@@ -567,12 +637,15 @@ end
 └────────┘
 1 row omitted
 """
-    result = pretty_table(String, matrix,
-                          crop = :both,
-                          display_size = (15,-1),
-                          linebreaks = true,
-                          hlines = :all,
-                          vcrop_mode = :middle)
+    result = pretty_table(
+        String,
+        matrix;
+        crop = :both,
+        display_size = (15, -1),
+        linebreaks = true,
+        hlines = :all,
+        vcrop_mode = :middle
+    )
 
     @test result == expected
 
@@ -593,12 +666,15 @@ end
 │      3 │
 """
 
-    result = pretty_table(String, matrix,
-                          crop = :both,
-                          display_size = (16,-1),
-                          linebreaks = true,
-                          hlines = [0,1,2,3],
-                          vcrop_mode = :middle)
+    result = pretty_table(
+        String,
+        matrix;
+        crop = :both,
+        display_size = (16, -1),
+        linebreaks = true,
+        hlines = [0, 1, 2, 3],
+        vcrop_mode = :middle
+    )
 
     @test result == expected
 
@@ -621,12 +697,15 @@ end
 1 row omitted
 """
 
-    result = pretty_table(String, matrix,
-                          crop = :both,
-                          display_size = (16,-1),
-                          hlines = :all,
-                          linebreaks = true,
-                          vcrop_mode = :middle)
+    result = pretty_table(
+        String,
+        matrix;
+        crop = :both,
+        display_size = (16, -1),
+        hlines = :all,
+        linebreaks = true,
+        vcrop_mode = :middle
+    )
 
     @test result == expected
 end
@@ -650,9 +729,12 @@ end
 └───┴─────────────┴────┴─────┴──────┴───────┴────────┴─────────┴──────────┴───────────┘
 """
 
-    result = pretty_table(String, model,
-                          columns_width = [1, 0, 2, 3, 4, 5, 6, 7, 8, 9],
-                          alignment = [:l, :l, :r, :c, :r, :c, :l, :l, :c, :r])
+    result = pretty_table(
+        String,
+        model;
+        columns_width = [1, 0, 2, 3, 4, 5, 6, 7, 8, 9],
+        alignment = [:l, :l, :r, :c, :r, :c, :l, :l, :c, :r]
+    )
 
     expected = """
 ┌────────┬────────┬────────┬────────┬────────┬────────┬────────┬────────┬────────┬────────┐
@@ -669,9 +751,12 @@ end
 └────────┴────────┴────────┴────────┴────────┴────────┴────────┴────────┴────────┴────────┘
 """
 
-    result = pretty_table(String, model,
-                          columns_width = 6,
-                          alignment = [:l, :l, :r, :c, :r, :c, :l, :l, :c, :r])
+    result = pretty_table(
+        String,
+        model;
+        columns_width = 6,
+        alignment = [:l, :l, :r, :c, :r, :c, :l, :l, :c, :r]
+    )
 
     @test result == expected
 
@@ -695,9 +780,12 @@ end
 └───┴───────┴─────┴───┘
 """
 
-    result = pretty_table(String, data;
-                          header = header,
-                          crop_subheader = true)
+    result = pretty_table(
+        String,
+        data;
+        header = header,
+        crop_subheader = true
+    )
 
     @test result == expected
 end
@@ -720,10 +808,13 @@ end
    1 column and 3 rows omitted
 """
 
-    result = pretty_table(String, data,
-                          continuation_row_alignment = :l,
-                          crop = :both,
-                          display_size = (11,30))
+    result = pretty_table(
+        String,
+        data;
+        continuation_row_alignment = :l,
+        crop = :both,
+        display_size = (11, 30)
+    )
     @test result == expected
 
     expected = """
@@ -738,10 +829,13 @@ end
    1 column and 3 rows omitted
 """
 
-    result = pretty_table(String, data,
-                          continuation_row_alignment = :r,
-                          crop = :both,
-                          display_size = (11,30))
+    result = pretty_table(
+        String,
+        data;
+        continuation_row_alignment = :r,
+        crop = :both,
+        display_size = (11, 30)
+    )
     @test result == expected
 
     # Trailing spaces at continuation line
@@ -759,12 +853,15 @@ end
                   3 rows omitted
 """
 
-    result = pretty_table(String, data,
-                          alignment = :l,
-                          continuation_row_alignment = :l,
-                          crop = :both,
-                          display_size = (11,40),
-                          vlines = :none)
+    result = pretty_table(
+        String,
+        data;
+        alignment = :l,
+        continuation_row_alignment = :l,
+        crop = :both,
+        display_size = (11, 40),
+        vlines = :none
+    )
 
     @test result == expected
 
@@ -786,11 +883,16 @@ end
         2 columns omitted
 """
 
-    result = pretty_table(String, data;
-                          header = (["Col. 1", "Col. 2", "Col. 3", "Col. 4"],
-                                    ["A",      "B",      "C",      "D"]),
-                          crop = :both,
-                          display_size = (-1, 25),
-                          ellipsis_line_skip = 3)
+    result = pretty_table(
+        String,
+        data;
+        header = (
+            ["Col. 1", "Col. 2", "Col. 3", "Col. 4"],
+            ["A",      "B",      "C",      "D"]
+        ),
+        crop = :both,
+        display_size = (-1, 25),
+        ellipsis_line_skip = 3
+    )
     @test result == expected
 end

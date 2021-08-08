@@ -21,10 +21,14 @@
 └───────┴─────┴───────┴───────┴─────┘
 """
 
-    result = pretty_table(String, data;
-                          header = (["C1",  "C2",   "C3",    "C4"],
-                                    ["Int", "Bool", "Float", "Hex"]),
-                          row_names = ["Row $i" for i = 1:6])
+    result = pretty_table(
+        String, data;
+        header = (
+            ["C1",  "C2",   "C3",    "C4"],
+            ["Int", "Bool", "Float", "Hex"]
+        ),
+        row_names = ["Row $i" for i in 1:6]
+    )
 
     @test result == expected
 
@@ -42,11 +46,16 @@
 └───────────┴─────┴───────┴───────┴─────┘
 """
 
-    result = pretty_table(String, data;
-                          header = (["C1",  "C2",   "C3",    "C4"],
-                                    ["Int", "Bool", "Float", "Hex"]),
-                          row_names = ["Row $i" for i = 1:6],
-                          row_name_column_title = "Row names")
+    result = pretty_table(
+        String,
+        data;
+        header = (
+            ["C1",  "C2",   "C3",    "C4"],
+            ["Int", "Bool", "Float", "Hex"]
+        ),
+        row_names = ["Row $i" for i in 1:6],
+        row_name_column_title = "Row names"
+    )
 
     @test result == expected
 
@@ -64,12 +73,16 @@
 └───────────┴─────┴───────┴───────┴─────┘
 """
 
-    result = pretty_table(String, data;
-                          header = (["C1",  "C2",   "C3",    "C4"],
-                                    ["Int", "Bool", "Float", "Hex"]),
-                          row_names = ["Row $i" for i = 1:6],
-                          row_name_column_title = "Row names",
-                          row_name_alignment = :c)
+    result = pretty_table(
+        String, data;
+        header = (
+            ["C1",  "C2",   "C3",    "C4"],
+            ["Int", "Bool", "Float", "Hex"]
+        ),
+        row_names = ["Row $i" for i in 1:6],
+        row_name_column_title = "Row names",
+        row_name_alignment = :c
+    )
 
     @test result == expected
 
@@ -86,13 +99,18 @@
              1 column and 3 rows omitted
 """
 
-    result = pretty_table(String, data;
-                          header = (["C1",  "C2",   "C3",    "C4"],
-                                    ["Int", "Bool", "Float", "Hex"]),
-                          crop = :both,
-                          display_size = (12,40),
-                          row_names = ["Row $i" for i = 1:6],
-                          row_name_column_title = "Row names",
-                          row_name_alignment = :c)
+    result = pretty_table(
+        String,
+        data;
+        header = (
+            ["C1",  "C2",   "C3",    "C4"],
+            ["Int", "Bool", "Float", "Hex"]
+        ),
+        crop = :both,
+        display_size = (12, 40),
+        row_names = ["Row $i" for i in 1:6],
+        row_name_column_title = "Row names",
+        row_name_alignment = :c
+    )
     @test result == expected
 end

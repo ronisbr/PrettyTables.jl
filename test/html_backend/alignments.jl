@@ -61,10 +61,13 @@
   </tbody>
 </table>
 """
-    result = pretty_table(String, data;
-                          alignment = :l,
-                          backend = Val(:html),
-                          standalone = false)
+    result = pretty_table(
+        String,
+        data;
+        alignment = :l,
+        backend = Val(:html),
+        standalone = false
+    )
 
     @test result == expected
 
@@ -122,10 +125,13 @@
 </table>
 """
 
-    result = pretty_table(String, data;
-                          alignment = :c,
-                          backend = Val(:html),
-                          standalone = false)
+    result = pretty_table(
+        String,
+        data;
+        alignment = :c,
+        backend = Val(:html),
+        standalone = false
+    )
 
     @test result == expected
 
@@ -182,10 +188,13 @@
   </tbody>
 </table>
 """
-    result = pretty_table(String, data;
-                          alignment = [:l,:r,:c,:r],
-                          backend = Val(:html),
-                          standalone = false)
+    result = pretty_table(
+        String,
+        data;
+        alignment = [:l, :r, :c, :r],
+        backend = Val(:html),
+        standalone = false
+    )
 
     @test result == expected
 end
@@ -241,16 +250,21 @@ end
   </tbody>
 </table>
 """
-    result = pretty_table(String, data;
-                          alignment = [:l,:r,:c,:r],
-                          backend = Val(:html),
-                          cell_alignment = Dict((3,1) => :r,
-                                                (3,2) => :l,
-                                                (1,4) => :l,
-                                                (3,4) => :c,
-                                                (4,4) => :c,
-                                                (6,4) => :l ),
-                          standalone = false)
+    result = pretty_table(
+        String,
+        data;
+        alignment = [:l, :r, :c, :r],
+        backend = Val(:html),
+        cell_alignment = Dict(
+            (3,1) => :r,
+            (3,2) => :l,
+            (1,4) => :l,
+            (3,4) => :c,
+            (4,4) => :c,
+            (6,4) => :l
+        ),
+        standalone = false
+    )
 
     @test result == expected
 end
@@ -315,18 +329,22 @@ end
   </tbody>
 </table>
 """
-    result = pretty_table(String, data;
-                          header = header,
-                          alignment = [:l,:r,:c,:r],
-                          backend = Val(:html),
-                          cell_alignment = Dict( (3,1) => :r,
-                                                 (3,2) => :l,
-                                                 (1,4) => :l,
-                                                 (3,4) => :c,
-                                                 (4,4) => :c,
-                                                 (6,4) => :l ),
-                          header_alignment = [:l,:c,:r,:r],
-                          standalone = false)
+    result = pretty_table(
+        String,
+        data;
+        header = header,
+        alignment = [:l, :r, :c, :r],
+        backend = Val(:html),
+        cell_alignment = Dict( (3,1) => :r,
+            (3,2) => :l,
+            (1,4) => :l,
+            (3,4) => :c,
+            (4,4) => :c,
+            (6,4) => :l
+        ),
+        header_alignment = [:l, :c, :r, :r],
+        standalone = false
+    )
 
     @test result == expected
 
@@ -387,21 +405,28 @@ end
 </table>
 """
 
-    result = pretty_table(String, data;
-                          header = header,
-                          alignment = [:l,:r,:c,:r],
-                          backend = Val(:html),
-                          cell_alignment = Dict( (3,1) => :r,
-                                                 (3,2) => :l,
-                                                 (1,4) => :l,
-                                                 (3,4) => :c,
-                                                 (4,4) => :c,
-                                                 (6,4) => :l ),
-                          header_alignment = [:l,:c,:r,:r],
-                          header_cell_alignment = Dict( (1,1) => :r,
-                                                        (2,2) => :l,
-                                                        (2,4) => :c),
-                          standalone = false)
+    result = pretty_table(
+        String,
+        data;
+        header = header,
+        alignment = [:l, :r, :c, :r],
+        backend = Val(:html),
+        cell_alignment = Dict(
+            (3,1) => :r,
+            (3,2) => :l,
+            (1,4) => :l,
+            (3,4) => :c,
+            (4,4) => :c,
+            (6,4) => :l
+        ),
+        header_alignment = [:l, :c, :r, :r],
+        header_cell_alignment = Dict(
+            (1,1) => :r,
+            (2,2) => :l,
+            (2,4) => :c
+        ),
+        standalone = false
+    )
 
     @test result == expected
 end

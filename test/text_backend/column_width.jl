@@ -25,9 +25,12 @@
 └──────┴───────┴──────┴──────┘
 """
 
-    result = pretty_table(String, data;
-                          header = header,
-                          minimum_columns_width = 4)
+    result = pretty_table(
+        String,
+        data;
+        header = header,
+        minimum_columns_width = 4
+    )
     @test result == expected
 
     # Precedence of `columns_width`.
@@ -45,10 +48,13 @@
 └────┴────┴────┴────┘
 """
 
-    result = pretty_table(String, data;
-                          header = header,
-                          columns_width = 2,
-                          minimum_columns_width = 4)
+    result = pretty_table(
+        String,
+        data;
+        header = header,
+        columns_width = 2,
+        minimum_columns_width = 4
+    )
     @test result == expected
 
     # Test with a vector in `minimum_column_width`.
@@ -66,9 +72,12 @@
 └────┴───────┴────────┴──────────┘
 """
 
-    result = pretty_table(String, data;
-                          header = header,
-                          minimum_columns_width = [2,4,6,8])
+    result = pretty_table(
+        String,
+        data;
+        header = header,
+        minimum_columns_width = [2, 4, 6, 8]
+    )
     @test result == expected
 
     # Test with the option `equal_columns_width``.
@@ -86,10 +95,13 @@
 └──────────┴──────────┴──────────┴──────────┘
 """
 
-    result = pretty_table(String, data;
-                          header = header,
-                          minimum_columns_width = [2,4,6,8],
-                          equal_columns_width = true)
+    result = pretty_table(
+        String,
+        data;
+        header = header,
+        minimum_columns_width = [2, 4, 6, 8],
+        equal_columns_width = true
+    )
     @test result == expected
 
     # Maximum column width
@@ -108,9 +120,12 @@
 └───┴─────┴─────┴───┘
 """
 
-    result = pretty_table(String, data;
-                          header = header,
-                          maximum_columns_width = 3)
+    result = pretty_table(
+        String,
+        data;
+        header = header,
+        maximum_columns_width = 3
+    )
     @test result == expected
 
     # Precedence of `columns_width`.
@@ -128,10 +143,13 @@
 └───┴────┴─────┴──────┘
 """
 
-    result = pretty_table(String, data;
-                          header = header,
-                          columns_width = [1,2,3,4],
-                          maximum_columns_width = 3)
+    result = pretty_table(
+        String,
+        data;
+        header = header,
+        columns_width = [1, 2, 3, 4],
+        maximum_columns_width = 3
+    )
     @test result == expected
 
     # Test with a vector in `maximum_column_width`.
@@ -149,9 +167,12 @@
 └───┴─────┴────┴───┘
 """
 
-    result = pretty_table(String, data;
-                          header = header,
-                          maximum_columns_width = [20,3,2,5])
+    result = pretty_table(
+        String,
+        data;
+        header = header,
+        maximum_columns_width = [20, 3, 2, 5]
+    )
     @test result == expected
 
     # Test with the option `equal_columns_width``.
@@ -169,9 +190,12 @@
 └─────┴─────┴─────┴─────┘
 """
 
-    result = pretty_table(String, data;
-                          header = header,
-                          equal_columns_width = true,
-                          maximum_columns_width = [20,3,2,5])
+    result = pretty_table(
+        String,
+        data;
+        header = header,
+        equal_columns_width = true,
+        maximum_columns_width = [20, 3, 2, 5]
+    )
     @test result == expected
 end

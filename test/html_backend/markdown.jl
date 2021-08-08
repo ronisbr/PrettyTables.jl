@@ -32,8 +32,12 @@
 </table>
 """
 
-    result = pretty_table(String, data, backend = Val(:html),
-                          standalone = false)
+    result = pretty_table(
+        String,
+        data,
+        backend = Val(:html),
+        standalone = false
+    )
 
     @test result == expected
 end

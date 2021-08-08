@@ -28,16 +28,17 @@
 \\end{table}
 """
 
-    result = pretty_table(String, matrix, backend = Val(:latex),
-                          formatters = ft)
+    result = pretty_table(String, matrix, backend = Val(:latex), formatters = ft)
     @test result == expected
 end
 
 @testset "Pre-defined formatters" begin
-    matrix = hcat(1:1:11,
-                  1:1.0:11,
-                  [10^i for i = -5:1.:5],
-                  [ i == 5 ? nothing : "Teste" for i = 1:11])
+    matrix = hcat(
+        1:1:11,
+        1:1.0:11,
+        [10^i for i in -5:1.:5],
+        [ i == 5 ? nothing : "Teste" for i in 1:11]
+    )
 
     expected = """
 \\begin{table}
@@ -59,8 +60,12 @@ end
 \\end{table}
 """
 
-    result = pretty_table(String, matrix, backend = Val(:latex),
-                          formatters = ft_latex_sn(1))
+    result = pretty_table(
+        String,
+        matrix;
+        backend = Val(:latex),
+        formatters = ft_latex_sn(1)
+    )
     @test result == expected
 
     expected = """
@@ -83,8 +88,12 @@ end
 \\end{table}
 """
 
-    result = pretty_table(String, matrix, backend = Val(:latex),
-                          formatters = ft_latex_sn(2))
+    result = pretty_table(
+        String,
+        matrix;
+        backend = Val(:latex),
+        formatters = ft_latex_sn(2)
+    )
     @test result == expected
 
     expected = """
@@ -107,8 +116,12 @@ end
 \\end{table}
 """
 
-    result = pretty_table(String, matrix, backend = Val(:latex),
-                          formatters = ft_latex_sn(1, [1, 3]))
+    result = pretty_table(
+        String,
+        matrix;
+        backend = Val(:latex),
+        formatters = ft_latex_sn(1, [1, 3])
+    )
     @test result == expected
 
     expected = """
@@ -131,7 +144,11 @@ end
 \\end{table}
 """
 
-    result = pretty_table(String, matrix, backend = Val(:latex),
-                          formatters = ft_latex_sn([1, 3], [1, 3]))
+    result = pretty_table(
+        String,
+        matrix;
+        backend = Val(:latex),
+        formatters = ft_latex_sn([1, 3], [1, 3])
+    )
     @test result == expected
 end

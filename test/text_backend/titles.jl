@@ -22,8 +22,7 @@ This is a very very long title that will be displayed above the table.
 │      6 │   true │    6.0 │      6 │
 └────────┴────────┴────────┴────────┘
 """
-    result = pretty_table(String, data,
-                          title = title)
+    result = pretty_table(String, data, title = title)
     @test result == expected
 
     expected = """
@@ -39,9 +38,12 @@ This is a very very long title that …
 │      6 │   true │    6.0 │      6 │
 └────────┴────────┴────────┴────────┘
 """
-    result = pretty_table(String, data,
-                          title = title,
-                          title_same_width_as_table = true)
+    result = pretty_table(
+        String,
+        data;
+        title = title,
+        title_same_width_as_table = true
+    )
     @test result == expected
 
     expected = """
@@ -58,10 +60,13 @@ will be displayed above the table.
 │      6 │   true │    6.0 │      6 │
 └────────┴────────┴────────┴────────┘
 """
-    result = pretty_table(String, data,
-                          title = title,
-                          title_autowrap = true,
-                          title_same_width_as_table = true)
+    result = pretty_table(
+        String,
+        data;
+        title = title,
+        title_autowrap = true,
+        title_same_width_as_table = true
+    )
     @test result == expected
 
     expected = """
@@ -78,11 +83,14 @@ will be displayed above the table.
 │      6 │   true │    6.0 │      6 │
 └────────┴────────┴────────┴────────┘
 """
-    result = pretty_table(String, data,
-                          title = title,
-                          title_alignment = :c,
-                          title_autowrap = true,
-                          title_same_width_as_table = true)
+    result = pretty_table(
+        String,
+        data;
+        title = title,
+        title_alignment = :c,
+        title_autowrap = true,
+        title_same_width_as_table = true
+    )
     @test result == expected
 
     expected = """
@@ -99,11 +107,14 @@ will be displayed above the table.
 │      6 │   true │    6.0 │      6 │
 └────────┴────────┴────────┴────────┘
 """
-    result = pretty_table(String, data,
-                          title = title,
-                          title_alignment = :r,
-                          title_autowrap = true,
-                          title_same_width_as_table = true)
+    result = pretty_table(
+        String,
+        data;
+        title = title,
+        title_alignment = :r,
+        title_autowrap = true,
+        title_same_width_as_table = true
+    )
     @test result == expected
 end
 
@@ -125,10 +136,13 @@ That has two lines.
 └────────┴────────┴────────┴───────
         1 column and 3 rows omitted
 """
-    result = pretty_table(String, data,
-                          crop = :both,
-                          display_size = (13,35),
-                          title = "This is a long long long long long long title\nThat has two lines.")
+    result = pretty_table(
+        String,
+        data;
+        crop = :both,
+        display_size = (13, 35),
+        title = "This is a long long long long long long title\nThat has two lines."
+    )
     @test result == expected
 
     expected = """
@@ -144,10 +158,13 @@ That has two lines.
 └────────┴────────┴────────┴───────
         1 column and 4 rows omitted
 """
-    result = pretty_table(String, data,
-                          crop = :both,
-                          display_size = (13,35),
-                          title = "This is a long long long long long long title\nThat has two lines.",
-                          title_autowrap = true)
+    result = pretty_table(
+        String,
+        data;
+        crop = :both,
+        display_size = (13, 35),
+        title = "This is a long long long long long long title\nThat has two lines.",
+        title_autowrap = true
+    )
     @test result == expected
 end

@@ -19,9 +19,12 @@
 │   6 │ 6      │   true │  6.0   │      6 │
 └─────┴────────┴────────┴────────┴────────┘
 """
-    result = pretty_table(String, data;
-                          alignment       = [:l,:r,:c,:r],
-                          show_row_number = true)
+    result = pretty_table(
+        String,
+        data;
+        alignment       = [:l, :r, :c, :r],
+        show_row_number = true
+    )
     @test result == expected
 
     expected = """
@@ -37,10 +40,13 @@
 └─────┴────────┴────────┴────────┴────────┘
 """
 
-    result = pretty_table(String, data;
-                          alignment = [:l,:r,:c,:r],
-                          row_number_alignment = :c,
-                          show_row_number = true)
+    result = pretty_table(
+        String,
+        data;
+        alignment = [:l, :r, :c, :r],
+        row_number_alignment = :c,
+        show_row_number = true
+    )
     @test result == expected
 
     expected = """
@@ -56,10 +62,13 @@
 └───┴────────┴────────┴────────┴────────┘
 """
 
-    result = pretty_table(String, data;
-                          alignment = [:l,:r,:c,:r],
-                          row_number_alignment = :c,
-                          row_number_column_title = "#",
-                          show_row_number = true)
+    result = pretty_table(
+        String,
+        data;
+        alignment = [:l, :r, :c, :r],
+        row_number_alignment = :c,
+        row_number_column_title = "#",
+        show_row_number = true
+    )
     @test result == expected
 end

@@ -130,9 +130,11 @@ header = (["Column 1", "Column 2"], ["Sub. 1", "Sub. 2"])
 
     @ptconf sortkeys = true
     @ptconf alignment = :l
-    @pt d = Dict(Int64(1) => "São José dos Campos",
-                 Int64(2) => "SP",
-                 Int64(3) => "Brasil")
+    @pt d = Dict(
+        Int64(1) => "São José dos Campos",
+        Int64(2) => "SP",
+        Int64(3) => "Brasil"
+    )
 
     result = String(readavailable(in))
     @test result == expected
@@ -159,19 +161,21 @@ end
     old_stdout = stdout
     in, out    = redirect_stdout()
 
-    tf_compact2 = TextFormat(up_right_corner = '─',
-                   up_left_corner      = '─',
-                   bottom_left_corner  = '─',
-                   bottom_right_corner = '─',
-                   up_intersection     = '─',
-                   left_intersection   = '─',
-                   right_intersection  = '─',
-                   middle_intersection = '─',
-                   bottom_intersection = '─',
-                   column              = ' ',
-                   row                 = '─',
-                   hlines              = [:begin,:header,:end],
-                   vlines              = :all);
+    tf_compact2 = TextFormat(
+        up_right_corner = '─',
+        up_left_corner      = '─',
+        bottom_left_corner  = '─',
+        bottom_right_corner = '─',
+        up_intersection     = '─',
+        left_intersection   = '─',
+        right_intersection  = '─',
+        middle_intersection = '─',
+        bottom_intersection = '─',
+        column              = ' ',
+        row                 = '─',
+        hlines              = [:begin, :header, :end],
+        vlines              = :all
+    );
 
     expected = """
 ─────────────────────────────────────

@@ -8,8 +8,7 @@
 
 @testset "Strings with characters that have variable width" begin
     matrix = ["😄"^10 "😄"^10 "😅"^10; "🧐"^5 "🥺"^5 "😇"^5; "a"^10 "a"^10 "a"^10]
-    header = (["😋"^5,  "😁"^10, "🤣"^15],
-              ["⚡️"^15, "👽"^10, "🤩"^5])
+    header = (["😋"^5,  "😁"^10, "🤣"^15], ["⚡️"^15, "👽"^10, "🤩"^5])
 
     expected = """
 ┌────────────────────────────────┬──────────────────────┬────────────────────────────────┐
@@ -22,9 +21,12 @@
 └────────────────────────────────┴──────────────────────┴────────────────────────────────┘
 """
 
-    result = pretty_table(String, matrix;
-                          header = header,
-                          alignment = [:l, :c, :r])
+    result = pretty_table(
+        String,
+        matrix;
+        header = header,
+        alignment = [:l, :c, :r]
+    )
 
     @test result == expected
 
@@ -42,11 +44,14 @@
 └────────────────────────────────┴──────────────────────┴─────────────────────────────────
 """
 
-    result = pretty_table(String, matrix;
-                          header = header,
-                          alignment = [:l, :c, :r],
-                          crop = :both,
-                          display_size = (0,90))
+    result = pretty_table(
+        String,
+        matrix;
+        header = header,
+        alignment = [:l, :c, :r],
+        crop = :both,
+        display_size = (0, 90)
+    )
 
     @test result == expected
 
@@ -62,11 +67,14 @@
                                                                          1 column omitted
 """
 
-    result = pretty_table(String, matrix;
-                          header = header,
-                          alignment = [:l, :c, :r],
-                          crop = :both,
-                          display_size = (0,89))
+    result = pretty_table(
+        String,
+        matrix;
+        header = header,
+        alignment = [:l, :c, :r],
+        crop = :both,
+        display_size = (0, 89)
+    )
 
     @test result == expected
 end

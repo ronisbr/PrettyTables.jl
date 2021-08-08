@@ -56,7 +56,7 @@
 │ 6      │   true │  6.0   │      6 │
 └────────┴────────┴────────┴────────┘
 """
-    result = pretty_table(String, data; alignment = [:l,:r,:c,:r])
+    result = pretty_table(String, data; alignment = [:l, :r, :c, :r])
     @test result == expected
 
     # Cell override
@@ -74,14 +74,19 @@
 │ 6      │   true │  6.0   │ 6      │
 └────────┴────────┴────────┴────────┘
 """
-    result = pretty_table(String, data;
-                          alignment = [:l,:r,:c,:r],
-                          cell_alignment = Dict( (3,1) => :r,
-                                                 (3,2) => :l,
-                                                 (1,4) => :l,
-                                                 (3,4) => :c,
-                                                 (4,4) => :c,
-                                                 (6,4) => :l ))
+    result = pretty_table(
+        String,
+        data;
+        alignment = [:l, :r, :c, :r],
+        cell_alignment = Dict(
+            (3,1) => :r,
+            (3,2) => :l,
+            (1,4) => :l,
+            (3,4) => :c,
+            (4,4) => :c,
+            (6,4) => :l
+        )
+    )
     @test result == expected
 
     # Headers
@@ -104,17 +109,22 @@
 └───────────┴───────────┴───────────┴───────────┘
 """
 
-    result = pretty_table(String, data;
-                          header = header,
-                          alignment = [:l,:r,:c,:r],
-                          cell_alignment = Dict( (3,1) => :r,
-                                                 (3,2) => :l,
-                                                 (1,4) => :l,
-                                                 (3,4) => :c,
-                                                 (4,4) => :c,
-                                                 (6,4) => :l ),
-                          columns_width = 9,
-                          header_alignment = [:l,:c,:r,:r])
+    result = pretty_table(
+        String,
+        data;
+        header = header,
+        alignment = [:l, :r, :c, :r],
+        cell_alignment = Dict(
+            (3,1) => :r,
+            (3,2) => :l,
+            (1,4) => :l,
+            (3,4) => :c,
+            (4,4) => :c,
+            (6,4) => :l
+        ),
+        columns_width = 9,
+        header_alignment = [:l, :c, :r, :r]
+    )
     @test result == expected
 
     expected = """
@@ -131,20 +141,26 @@
 └───────────┴───────────┴───────────┴───────────┘
 """
 
-    result = pretty_table(String, data;
-                          header = header,
-                          alignment = [:l,:r,:c,:r],
-                          cell_alignment = Dict( (3,1) => :r,
-                                                 (3,2) => :l,
-                                                 (1,4) => :l,
-                                                 (3,4) => :c,
-                                                 (4,4) => :c,
-                                                 (6,4) => :l ),
-                          columns_width = 9,
-                          header_alignment = [:l,:c,:r,:r],
-                          header_cell_alignment = Dict( (1,1) => :r,
-                                                        (2,2) => :l,
-                                                        (2,4) => :c))
+    result = pretty_table(
+        String, data;
+        header = header,
+        alignment = [:l, :r, :c, :r],
+        cell_alignment = Dict(
+            (3,1) => :r,
+            (3,2) => :l,
+            (1,4) => :l,
+            (3,4) => :c,
+            (4,4) => :c,
+            (6,4) => :l
+        ),
+        columns_width = 9,
+        header_alignment = [:l, :c, :r, :r],
+        header_cell_alignment = Dict(
+            (1,1) => :r,
+            (2,2) => :l,
+            (2,4) => :c
+        )
+    )
     @test result == expected
 end
 
@@ -166,13 +182,19 @@ end
 └────────────┴────────────┴──────────────┴──────────────┴────────────────┴────────────────┴────────────────┘
 """
 
-    result = pretty_table(String, matrix,
-                          alignment_anchor_regex = Dict(0 => [r"\."]))
+    result = pretty_table(
+        String,
+        matrix;
+        alignment_anchor_regex = Dict(0 => [r"\."])
+    )
 
     @test result == expected
 
-    result = pretty_table(String, matrix,
-                          alignment_anchor_regex = Dict(i => [r"\."] for i = 1:7))
+    result = pretty_table(
+        String,
+        matrix;
+        alignment_anchor_regex = Dict(i => [r"\."] for i in 1:7)
+    )
 
     @test result == expected
 
@@ -190,8 +212,11 @@ end
 └───────────┴───────────┴─────────────┴─────────────┴───────────────┴───────────────┴───────────────┘
 """
 
-    result = pretty_table(String, matrix,
-                          alignment_anchor_regex = Dict(0 => [r"\.", r"^"]))
+    result = pretty_table(
+        String,
+        matrix;
+        alignment_anchor_regex = Dict(0 => [r"\.", r"^"])
+    )
 
     @test result == expected
 
@@ -212,9 +237,12 @@ end
 └─────────┴─────────────┴──────────┘
 """
 
-    result = pretty_table(String, matrix,
-                          alignment_anchor_regex = Dict(4 => [r"\.", r"^"]),
-                          filters_col = ((data,j)->j ∈ [1,4,5],))
+    result = pretty_table(
+        String,
+        matrix;
+        alignment_anchor_regex = Dict(4 => [r"\.", r"^"]),
+        filters_col = ((data, j) -> j ∈ [1, 4, 5],)
+    )
 
     @test result == expected
 
@@ -235,10 +263,13 @@ end
 └─────┴─────────┴─────────────┴──────────┘
 """
 
-    result = pretty_table(String, matrix,
-                          alignment_anchor_regex = Dict(4 => [r"\.", r"^"]),
-                          filters_col = ((data,j)->j ∈ [1,4,5],),
-                          show_row_number = true)
+    result = pretty_table(
+        String,
+        matrix,
+        alignment_anchor_regex = Dict(4 => [r"\.", r"^"]),
+        filters_col = ((data, j) -> j ∈ [1, 4, 5],),
+        show_row_number = true
+    )
 
     @test result == expected
 
@@ -256,11 +287,14 @@ end
 └─────┴───┴─────────┴─────────────┴──────────┘
 """
 
-    result = pretty_table(String, matrix,
-                          alignment_anchor_regex = Dict(4 => [r"\.", r"^"]),
-                          filters_col = ((data,j)->j ∈ [1,4,5],),
-                          row_names = ["a" for i = 1:7],
-                          show_row_number = true)
+    result = pretty_table(
+        String,
+        matrix,
+        alignment_anchor_regex = Dict(4 => [r"\.", r"^"]),
+        filters_col = ((data, j) -> j ∈ [1, 4, 5],),
+        row_names = ["a" for i in 1:7],
+        show_row_number = true
+    )
 
     @test result == expected
 
@@ -281,10 +315,13 @@ end
 └─────────┴──────────────────────┴──────────┘
 """
 
-    result = pretty_table(String, matrix,
-                          alignment_anchor_regex = Dict(4 => [r"\.", r"^"]),
-                          columns_width = [-1, -1, -1, 20, -1, -1, -1],
-                          filters_col = ((data,j)->j ∈ [1,4,5],))
+    result = pretty_table(
+        String,
+        matrix;
+        alignment_anchor_regex = Dict(4 => [r"\.", r"^"]),
+        columns_width = [-1, -1, -1, 20, -1, -1, -1],
+        filters_col = ((data, j) -> j ∈ [1, 4, 5],)
+    )
 
     @test result == expected
 
@@ -302,11 +339,14 @@ end
 └─────────┴──────────────────────┴──────────┘
 """
 
-    result = pretty_table(String, matrix,
-                          alignment = :c,
-                          alignment_anchor_regex = Dict(4 => [r"\.", r"^"]),
-                          columns_width = [-1, -1, -1, 20, -1, -1, -1],
-                          filters_col = ((data,j)->j ∈ [1,4,5],))
+    result = pretty_table(
+        String,
+        matrix;
+        alignment = :c,
+        alignment_anchor_regex = Dict(4 => [r"\.", r"^"]),
+        columns_width = [-1, -1, -1, 20, -1, -1, -1],
+        filters_col = ((data, j) -> j ∈ [1, 4, 5],)
+    )
 
     @test result == expected
 
@@ -324,11 +364,14 @@ end
 └─────────┴──────────────────────┴──────────┘
 """
 
-    result = pretty_table(String, matrix,
-                          alignment = :l,
-                          alignment_anchor_regex = Dict(4 => [r"\.", r"^"]),
-                          columns_width = [-1, -1, -1, 20, -1, -1, -1],
-                          filters_col = ((data,j)->j ∈ [1,4,5],))
+    result = pretty_table(
+        String,
+        matrix;
+        alignment = :l,
+        alignment_anchor_regex = Dict(4 => [r"\.", r"^"]),
+        columns_width = [-1, -1, -1, 20, -1, -1, -1],
+        filters_col = ((data, j) -> j ∈ [1, 4, 5],)
+    )
 
     @test result == expected
 
@@ -349,10 +392,13 @@ end
 └─────────────────┴─────────────────┴─────────────────┘
 """
 
-    result = pretty_table(String, matrix,
-                          alignment_anchor_regex = Dict(4 => [r"\.", r"^"]),
-                          minimum_columns_width = 15,
-                          filters_col = ((data,j)->j ∈ [1,4,5],))
+    result = pretty_table(
+        String,
+        matrix;
+        alignment_anchor_regex = Dict(4 => [r"\.", r"^"]),
+        minimum_columns_width = 15,
+        filters_col = ((data, j) -> j ∈ [1, 4, 5],)
+    )
 
     @test result == expected
 
@@ -370,10 +416,13 @@ end
 └─────────┴────────────┴──────────┘
 """
 
-    result = pretty_table(String, matrix,
-                          alignment_anchor_regex = Dict(4 => [r"\.", r"^"]),
-                          maximum_columns_width = 10,
-                          filters_col = ((data,j)->j ∈ [1,4,5],))
+    result = pretty_table(
+        String,
+        matrix;
+        alignment_anchor_regex = Dict(4 => [r"\.", r"^"]),
+        maximum_columns_width = 10,
+        filters_col = ((data, j) -> j ∈ [1, 4, 5],)
+    )
 
     @test result == expected
 
@@ -394,9 +443,12 @@ end
 └──────────┴──────────┴───────────┴──────────┴────────────┴────────────┴────────────┘
 """
 
-    result = pretty_table(String, matrix,
-                          alignment_anchor_regex = Dict(i => [r"\."] for i = 1:7),
-                          alignment_anchor_fallback = :c)
+    result = pretty_table(
+        String,
+        matrix;
+        alignment_anchor_regex = Dict(i => [r"\."] for i in 1:7),
+        alignment_anchor_fallback = :c
+    )
 
     @test result == expected
 
@@ -414,9 +466,12 @@ end
 └──────────────┴──────────────┴──────────────┴─────────────┴────────────┴───────────┴─────────────┘
 """
 
-    result = pretty_table(String, matrix,
-                          alignment_anchor_regex = Dict(i => [r"\."] for i = 1:7),
-                          alignment_anchor_fallback = :r)
+    result = pretty_table(
+        String,
+        matrix;
+        alignment_anchor_regex = Dict(i => [r"\."] for i in 1:7),
+        alignment_anchor_fallback = :r
+    )
 
     @test result == expected
 
@@ -434,9 +489,12 @@ end
 └────────────┴──────────┴──────────────┴─────────────┴────────────────┴────────────────┴────────────────┘
 """
 
-    result = pretty_table(String, matrix,
-                          alignment_anchor_regex = Dict(0 => [r"\."]),
-                          alignment_anchor_fallback_override = Dict(2 => :c, 4 => :r, 5 => :l))
+    result = pretty_table(
+        String,
+        matrix;
+        alignment_anchor_regex = Dict(0 => [r"\."]),
+        alignment_anchor_fallback_override = Dict(2 => :c, 4 => :r, 5 => :l)
+    )
 
     @test result == expected
 
@@ -454,10 +512,13 @@ end
 └──────────┴──────────┴───────────┴─────────────┴────────────────┴────────────┴────────────┘
 """
 
-    result = pretty_table(String, matrix,
-                          alignment_anchor_regex = Dict(0 => [r"\."]),
-                          alignment_anchor_fallback = :c,
-                          alignment_anchor_fallback_override = Dict(2 => :c, 4 => :r, 5 => :l))
+    result = pretty_table(
+        String,
+        matrix;
+        alignment_anchor_regex = Dict(0 => [r"\."]),
+        alignment_anchor_fallback = :c,
+        alignment_anchor_fallback_override = Dict(2 => :c, 4 => :r, 5 => :l)
+    )
 
     @test result == expected
 end

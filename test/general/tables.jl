@@ -28,11 +28,15 @@ Base.getproperty(x::MinimalTable, s::Symbol) = getindex(x, :, findfirst(==(s), T
 Base.convert(::Type{<:TestVec}, x::Array) = TestVec(x)
 
 @testset "Tables.jl with custom column name vector" begin
-    data     = [10.0^(i+j) for i = 1:10, j = 1:5]
+    data     = [10.0^(i + j) for i in 1:10, j in 1:5]
     mintable = MinimalTable(data, [:C1, :C2, :C3, :C4, :C5])
 
-    str_data     = pretty_table(String, data;
-                                header = ["C1", "C2", "C3", "C4", "C5"])
+    str_data = pretty_table(
+        String,
+        data;
+        header = ["C1", "C2", "C3", "C4", "C5"]
+    )
+
     str_mintable = pretty_table(String, mintable)
 
     @test str_data == str_mintable

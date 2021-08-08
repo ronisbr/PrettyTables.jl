@@ -11,9 +11,9 @@
     rowfilter1(data,i) = i <= div(length(first(data)),2)
     rowfilter2(data,i) = i <= div(length(data),2)
 
-    result1 = pretty_table(String, table,                 filters_row = (rowfilter1,))
-    result2 = pretty_table(String, Tables.columns(table), filters_row = (rowfilter1,))
-    result3 = pretty_table(String, Tables.rows(table),    filters_row = (rowfilter2,))
+    result1 = pretty_table(String, table;                 filters_row = (rowfilter1,))
+    result2 = pretty_table(String, Tables.columns(table); filters_row = (rowfilter1,))
+    result3 = pretty_table(String, Tables.rows(table);    filters_row = (rowfilter2,))
 
     expected = """
 ┌───────┬─────────┐
@@ -37,16 +37,18 @@
     @test result2 == expected
     @test result3 == expected
 
-    table = (A = Int64.(1:10),
-             B = Float64.(1:10),
-             C = Int64.(1:10),
-             D = Float64.(1:10))
+    table = (
+        A = Int64.(1:10),
+        B = Float64.(1:10),
+        C = Int64.(1:10),
+        D = Float64.(1:10)
+    )
     colfilter1(data,j) = j <= div(length(data),2)
     colfilter2(data,j) = j <= div(length(first(data)),2)
 
-    result1 = pretty_table(String, table,                 filters_col = (colfilter1,))
-    result2 = pretty_table(String, Tables.columns(table), filters_col = (colfilter1,))
-    result3 = pretty_table(String, Tables.rows(table),    filters_col = (colfilter2,))
+    result1 = pretty_table(String, table;                 filters_col = (colfilter1,))
+    result2 = pretty_table(String, Tables.columns(table); filters_col = (colfilter1,))
+    result3 = pretty_table(String, Tables.rows(table);    filters_col = (colfilter2,))
 
     @test result1 == expected
     @test result2 == expected
@@ -63,7 +65,7 @@ Tables.columnnames(x::SimpleTable) = [Symbol(i) for i = 1:size(x.data, 2)]
 Tables.columns(x::SimpleTable) = x
 Tables.getcolumn(x::SimpleTable, i::Symbol) = tuple(x.data[parse(Int,string(i)),:]...)
 
-table = SimpleTable([10.0^(i+j) for i = 1:10, j = 1:5])
+table = SimpleTable([10.0^(i+j) for i in 1:10, j in 1:5])
 
 @testset "Issue #90 - Tables.jl returning tuples as columns" begin
     expected = """

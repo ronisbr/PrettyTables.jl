@@ -19,12 +19,10 @@
 │ 6 │  true │ 6.0 │ 6 │
 └───┴───────┴─────┴───┘
 """
-    result = pretty_table(String, data;
-                          header = [1, 2, 3, 4])
+    result = pretty_table(String, data; header = [1, 2, 3, 4])
     @test result == expected
 
-    result = pretty_table(String, data;
-                          header = [1, 2, 3, 4])
+    result = pretty_table(String, data; header = [1, 2, 3, 4])
     @test result == expected
 
     expected = """
@@ -40,9 +38,7 @@
 │ 6 │  true │ 6.0 │ 6 │
 └───┴───────┴─────┴───┘
 """
-    result = pretty_table(String, data;
-                          header = ([1, 2, 3, 4],
-                                    [5, 6, 7, 8]))
+    result = pretty_table(String, data; header = ([1, 2, 3, 4], [5, 6, 7, 8]))
     @test result == expected
 end
 
@@ -65,9 +61,7 @@ end
     result = pretty_table(String, data; noheader = true)
     @test result == expected
 
-    result = pretty_table(String, data;
-                          header = [1, 2],
-                          noheader = true)
+    result = pretty_table(String, data; header = [1, 2], noheader = true)
     @test result == expected
 
     expected = """
@@ -80,10 +74,13 @@ end
 │ 6 │ true  │ 6.0 │ 6 │
 └───┴───────┴─────┴───┘
 """
-    result = pretty_table(String, data;
-                          header = [1, 2],
-                          alignment = :l,
-                          noheader = true)
+    result = pretty_table(
+        String,
+        data;
+        header = [1, 2],
+        alignment = :l,
+        noheader = true
+    )
     @test result == expected
 
     # Sub-header
@@ -102,10 +99,15 @@ end
 └───┴───────┴─────┴───┘
 """
 
-    header = ([1, 2, 3, 4],
-              ["this is", "a very very", "big", "sub-header"])
-    result = pretty_table(String, data;
-                          header = header,
-                          nosubheader = true)
+    header = (
+        [1, 2, 3, 4],
+        ["this is", "a very very", "big", "sub-header"]
+    )
+    result = pretty_table(
+        String,
+        data;
+        header = header,
+        nosubheader = true
+    )
     @test result == expected
 end

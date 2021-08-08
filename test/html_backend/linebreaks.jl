@@ -42,11 +42,14 @@
 </table>
 """
 
-    result = pretty_table(String, data;
-                          backend = Val(:html),
-                          header = header,
-                          linebreaks = true,
-                          standalone = false)
+    result = pretty_table(
+        String,
+        data;
+        backend = Val(:html),
+        header = header,
+        linebreaks = true,
+        standalone = false
+    )
 
     @test result == expected
 
@@ -78,11 +81,14 @@
 </table>
 """
 
-    result = pretty_table(String, data;
-                          backend = Val(:html),
-                          header = header,
-                          cell_first_line_only = true,
-                          standalone = false)
+    result = pretty_table(
+        String,
+        data;
+        backend = Val(:html),
+        header = header,
+        cell_first_line_only = true,
+        standalone = false
+    )
 
     @test result == expected
 end

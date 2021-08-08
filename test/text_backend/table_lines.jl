@@ -21,8 +21,11 @@
 │      6 │   true │    6.0 │      6 │
 └────────┴────────┴────────┴────────┘
 """
-    result = pretty_table(String, data;
-                          body_hlines = vcat(findall(x->x == true, data[:,2])))
+    result = pretty_table(
+        String,
+        data;
+        body_hlines = vcat(findall(x->x == true, data[:,2]))
+    )
     @test result == expected
 
     expected = """
@@ -39,9 +42,12 @@
 │      6 │   true │    6.0 │      6 │
 └────────┴────────┴────────┴────────┘
 """
-    result = pretty_table(String, data;
-                          body_hlines = vcat(findall(x->x == true, data[:,2])),
-                          body_hlines_format = ('├','+','┤','.'))
+    result = pretty_table(
+        String,
+        data;
+        body_hlines = vcat(findall(x -> x == true, data[:, 2])),
+        body_hlines_format = ('├','+','┤','.')
+    )
     @test result == expected
 
     expected = """
@@ -56,9 +62,12 @@
 │ 6 │  true │ 6.0 │ 6 │
 └───┴───────┴─────┴───┘
 """
-    result = pretty_table(String, data;
-                          noheader = true,
-                          body_hlines = vcat(findall(x->x == true, data[:,2])))
+    result = pretty_table(
+        String,
+        data;
+        noheader = true,
+        body_hlines = vcat(findall(x -> x == true, data[:, 2]))
+    )
     @test result == expected
 
     # Test the case when `hlines` is a symbol
@@ -82,8 +91,7 @@
 └────────┴────────┴────────┴────────┘
 """
 
-    result = pretty_table(String, data;
-                          hlines = :all)
+    result = pretty_table(String, data; hlines = :all)
     @test result == expected
 
     expected = """
@@ -96,8 +104,7 @@
 │      6 │   true │    6.0 │      6 │
 """
 
-    result = pretty_table(String, data;
-                          hlines = :none)
+    result = pretty_table(String, data; hlines = :none)
     @test result == expected
 end
 
@@ -116,14 +123,23 @@ end
 ────────────────────────
 """
 
-    result1 = pretty_table(String, data;
-                           header = (["C1",  "C2",   "C3",    "C4"],
-                                     ["Int", "Bool", "Float", "Hex"]),
-                           vlines = [])
-    result2 = pretty_table(String, data;
-                           header = (["C1",  "C2",   "C3",    "C4"],
-                                     ["Int", "Bool", "Float", "Hex"]),
-                           vlines = :none)
+    result1 = pretty_table(
+        String,
+        data;
+        header = (
+            ["C1",  "C2",   "C3",    "C4"],
+            ["Int", "Bool", "Float", "Hex"]
+        ),
+        vlines = []
+    )
+    result2 = pretty_table(
+        String, data;
+        header = (
+            ["C1",  "C2",   "C3",    "C4"],
+            ["Int", "Bool", "Float", "Hex"]
+        ),
+        vlines = :none
+    )
     @test result1 == expected
     @test result2 == expected
 
@@ -141,14 +157,24 @@ end
 └────────────────────────┘
 """
 
-    result1 = pretty_table(String, data;
-                           header = (["C1",  "C2",   "C3",    "C4"],
-                                     ["Int", "Bool", "Float", "Hex"]),
-                           vlines = [:begin,:end])
-    result2 = pretty_table(String, data;
-                           header = (["C1",  "C2",   "C3",    "C4"],
-                                     ["Int", "Bool", "Float", "Hex"]),
-                           vlines = [0,4])
+    result1 = pretty_table(
+        String,
+        data;
+        header = (
+            ["C1",  "C2",   "C3",    "C4"],
+            ["Int", "Bool", "Float", "Hex"]
+        ),
+        vlines = [:begin, :end]
+    )
+    result2 = pretty_table(
+        String,
+        data;
+        header = (
+            ["C1",  "C2",   "C3",    "C4"],
+            ["Int", "Bool", "Float", "Hex"]
+        ),
+        vlines = [0, 4]
+    )
     @test result1 == expected
     @test result2 == expected
 
@@ -166,11 +192,16 @@ end
 └─────┴────────────────────────┘
 """
 
-    result = pretty_table(String, data;
-                          header = (["C1",  "C2",   "C3",    "C4"],
-                                    ["Int", "Bool", "Float", "Hex"]),
-                          vlines = [:begin,1,:end],
-                          show_row_number = true)
+    result = pretty_table(
+        String,
+        data;
+        header = (
+            ["C1",  "C2",   "C3",    "C4"],
+            ["Int", "Bool", "Float", "Hex"]
+        ),
+        vlines = [:begin, 1 ,:end],
+        show_row_number = true
+    )
     @test result == expected
 
     expected = """
@@ -187,14 +218,19 @@ end
 └─────┴───────────┴────────────────────────┘
 """
 
-    result = pretty_table(String, data;
-                          header = (["C1",  "C2",   "C3",    "C4"],
-                                    ["Int", "Bool", "Float", "Hex"]),
-                          vlines = [:begin,1,2,:end],
-                          show_row_number = true,
-                          row_names = ["Row $i" for i = 1:6],
-                          row_name_column_title = "Row names",
-                          row_name_alignment = :c)
+    result = pretty_table(
+        String,
+        data;
+        header = (
+            ["C1",  "C2",   "C3",    "C4"],
+            ["Int", "Bool", "Float", "Hex"]
+        ),
+        vlines = [:begin, 1, 2, :end],
+        show_row_number = true,
+        row_names = ["Row $i" for i in 1:6],
+        row_name_column_title = "Row names",
+        row_name_alignment = :c
+    )
     @test result == expected
 
     expected = """
@@ -210,15 +246,20 @@ end
        2 columns and 3 rows omitted
 """
 
-    result = pretty_table(String, data;
-                          header = (["C1",  "C2",   "C3",    "C4"],
-                                    ["Int", "Bool", "Float", "Hex"]),
-                          crop = :both,
-                          display_size = (12,35),
-                          show_row_number = true,
-                          row_names = ["Row $i" for i = 1:6],
-                          row_name_column_title = "Row names",
-                          row_name_alignment = :c,
-                          vlines = [:begin,1,2,4,:end])
+    result = pretty_table(
+        String,
+        data;
+        header = (
+            ["C1",  "C2",   "C3",    "C4"],
+            ["Int", "Bool", "Float", "Hex"]
+        ),
+        crop = :both,
+        display_size = (12, 35),
+        show_row_number = true,
+        row_names = ["Row $i" for i in 1:6],
+        row_name_column_title = "Row names",
+        row_name_alignment = :c,
+        vlines = [:begin, 1, 2, 4, :end]
+    )
     @test result == expected
 end

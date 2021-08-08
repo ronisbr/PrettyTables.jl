@@ -38,18 +38,41 @@
         write(f, orig)
     end
 
-    data_table_1 = [1 2 3
-                    4 5 6]
+    data_table_1 = [
+        1 2 3
+        4 5 6
+    ]
 
-    data_table_2 = [7 8 9
-                    1 2 3]
+    data_table_2 = [
+        7 8 9
+        1 2 3
+    ]
 
-    include_pt_in_file(path, "Table 2", data_table_2, tf = tf_mysql,
-                       body_hlines = [1])
-    include_pt_in_file(path, "Table 1", data_table_1, alignment = :c,
-                       show_row_number = true, backup_file = false)
-    include_pt_in_file(path, "Table 3", data_table_2, alignment = :c,
-                       show_row_number = true, backup_file = false)
+    include_pt_in_file(
+        path,
+        "Table 2",
+        data_table_2;
+        tf = tf_mysql,
+        body_hlines = [1]
+    )
+
+    include_pt_in_file(
+        path,
+        "Table 1",
+        data_table_1;
+        alignment = :c,
+        show_row_number = true,
+        backup_file = false
+    )
+
+    include_pt_in_file(
+        path,
+        "Table 3",
+        data_table_2;
+        alignment = :c,
+        show_row_number = true,
+        backup_file = false
+    )
 
     result = read(path, String)
     backup = read(path * "_backup", String)
@@ -89,8 +112,10 @@
     # HTML (`tag_append` option)
     # ==========================================================================
 
-    data_table_1 = [1 2 3
-                    4 5 6]
+    data_table_1 = [
+        1 2 3
+        4 5 6
+    ]
 
     path = "test.html"
 
@@ -111,11 +136,19 @@
         write(f, orig)
     end
 
-    data_table_1 = [1 2 3
-                    4 5 6]
+    data_table_1 = [
+        1 2 3
+        4 5 6
+    ]
 
-    include_pt_in_file(path, "Table 1", data_table_1, backend = Val(:html),
-                       standalone = false, tag_append = " -->")
+    include_pt_in_file(
+        path,
+        "Table 1",
+        data_table_1;
+        backend = Val(:html),
+        standalone = false,
+        tag_append = " -->"
+    )
 
     result = read(path, String)
     backup = read(path * "_backup", String)
@@ -160,8 +193,10 @@
     # Markdown (`remove_tags` option)
     # ==========================================================================
 
-    data_table_1 = [1 2 3
-                    4 5 6]
+    data_table_1 = [
+        1 2 3
+        4 5 6
+    ]
 
     path = "test.md"
 
@@ -182,11 +217,19 @@
         write(f, orig)
     end
 
-    data_table_1 = [1 2 3
-                    4 5 6]
+    data_table_1 = [
+        1 2 3
+        4 5 6
+    ]
 
-    include_pt_in_file(path, "Table 1", data_table_1, tf = tf_markdown,
-                       remove_tags = true)
+    include_pt_in_file(
+        path,
+        "Table 1",
+        data_table_1;
+        tf = tf_markdown,
+        remove_tags = true
+    )
+
     result = read(path, String)
     backup = read(path * "_backup", String)
 

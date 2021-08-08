@@ -27,9 +27,11 @@ end
 
 @testset "Tables.jl compatibility" begin
     # A NamedTuple is compliant with Tables.jl API.
-    table = (x = Int64(1):Int64(3),
-             y = 'a':'c',
-             z = ["String 1";"String 2";"String 3"]);
+    table = (
+        x = Int64(1):Int64(3),
+        y = 'a':'c',
+        z = ["String 1";"String 2";"String 3"]
+    )
 
     # Thus, the following 5 calls must provide the same results.
     result_1 = pretty_table(String, table)
@@ -53,8 +55,11 @@ end
 
     # If a header is passed, then it must replace the Tables.jl schema.
 
-    result = pretty_table(String, table;
-                          header = ["My col. 1", "My col. 2", "My col. 3"])
+    result = pretty_table(
+        String,
+        table;
+        header = ["My col. 1", "My col. 2", "My col. 3"]
+    )
 
     expected = """
 ┌───────────┬───────────┬───────────┐
@@ -99,9 +104,11 @@ end
     Tables.getcolumn(m::MyColumnTable, i::Int) = mat(m)[:, i]
     Tables.columnnames(m::MyColumnTable) = names(m)
 
-    table = MyColumnTable([:a,:b,:c,:d],
-                          Dict(:a => 1, :b => 2, :c => 3, :d => 4),
-                          data)
+    table = MyColumnTable(
+        [:a, :b, :c, :d],
+        Dict(:a => 1, :b => 2, :c => 3, :d => 4),
+        data
+    )
 
     result = pretty_table(String, table)
 
@@ -129,12 +136,18 @@ end
         getfield(getfield(m, :source), :matrix)[getfield(m, :row), col]
     Tables.getcolumn(m::MyMatrixRow, i::Int) =
         getfield(getfield(m, :source), :matrix)[getfield(m, :row), i]
-    Tables.getcolumn(m::MyMatrixRow, nm::Symbol) =
-        getfield(getfield(m, :source), :matrix)[getfield(m, :row), getfield(getfield(m, :source), :lookup)[nm]]
+    Tables.getcolumn(m::MyMatrixRow, nm::Symbol) = getfield(
+        getfield(m, :source), :matrix)[
+            getfield(m, :row),
+            getfield(getfield(m, :source), :lookup)[nm]
+        ]
     Tables.columnnames(m::MyMatrixRow) = names(getfield(m, :source))
 
-    table = MyRowTable([:a,:b,:c,:d], Dict(:a => 1, :b => 2, :c => 3, :d => 4),
-                       data)
+    table = MyRowTable(
+        [:a, :b, :c, :d],
+        Dict(:a => 1, :b => 2, :c => 3, :d => 4),
+        data
+    )
 
     result = pretty_table(String, table)
 

@@ -34,13 +34,16 @@
 └───┴──────┴──────────────────────────────────────────────────────────────────────────────────┴─────────┴─────────────────────┴─────────┘
 """
 
-    result = pretty_table(String, matrix;
-                          header = header,
-                          linebreaks = true,
-                          row_names = row_names,
-                          row_name_column_title = "Test",
-                          row_number_column_title = "#",
-                          show_row_number = true)
+    result = pretty_table(
+        String,
+        matrix;
+        header = header,
+        linebreaks = true,
+        row_names = row_names,
+        row_name_column_title = "Test",
+        row_number_column_title = "#",
+        show_row_number = true
+    )
 
     @test expected == result
 
@@ -58,22 +61,27 @@
 └───┴──────┴──────────────────────────────────────────────────────────────────────────────────┴───────────────────┴─────────────────────┴─────────┘
 """
 
-    result = pretty_table(String, matrix;
-                          header = header,
-                          compact_printing = false,
-                          linebreaks = true,
-                          row_names = row_names,
-                          row_name_column_title = "Test",
-                          row_number_column_title = "#",
-                          show_row_number = true)
+    result = pretty_table(
+        String,
+        matrix;
+        header = header,
+        compact_printing = false,
+        linebreaks = true,
+        row_names = row_names,
+        row_name_column_title = "Test",
+        row_number_column_title = "#",
+        show_row_number = true
+    )
 
     @test expected == result
 
     # Limit printing
     # --------------------------------------------------------------------------
 
-    matrix = [ [collect(1:1:30)] [collect(1:1:21)]
-               [collect(1:1:20)] [collect(1:1:2)]]
+    matrix = [
+        [collect(1:1:30)] [collect(1:1:21)]
+        [collect(1:1:20)] [collect(1:1:2)]
+    ]
 
     expected = """
 ┌────────────────────────────────────────────────────────────────────────────┬────────────────────────────────────────────────────────────────────────────┐
@@ -102,13 +110,17 @@
 end
 
 @testset "Renderers - show" begin
-    matrix = Any[BigFloat(pi) float(pi) 10.0f0  Float16(1)
-                 0x01         0x001     0x00001 0x000000001
-                 true         false     true    false
-                 "Teste" "Teste\nTeste" "Teste \"quote\" Teste" "Teste\n\"quote\"\nTeste"]
+    matrix = Any[
+        BigFloat(pi) float(pi) 10.0f0  Float16(1)
+        0x01         0x001     0x00001 0x000000001
+        true         false     true    false
+        "Teste" "Teste\nTeste" "Teste \"quote\" Teste" "Teste\n\"quote\"\nTeste"
+    ]
 
-    header = (["C1", "C2", "C3", "C4"],
-              ["S1", "S2", "S3", "S4"])
+    header = (
+        ["C1", "C2", "C3", "C4"],
+        ["S1", "S2", "S3", "S4"]
+    )
 
     row_names = [1, 2, "3", '4']
 
@@ -129,14 +141,17 @@ end
 └───┴──────┴─────────┴─────────┴─────────────────────────┴────────────────────┘
 """
 
-    result = pretty_table(String, matrix;
-                          header = header,
-                          linebreaks = true,
-                          renderer = :show,
-                          row_names = row_names,
-                          row_name_column_title = "Test",
-                          row_number_column_title = "#",
-                          show_row_number = true)
+    result = pretty_table(
+        String,
+        matrix;
+        header = header,
+        linebreaks = true,
+        renderer = :show,
+        row_names = row_names,
+        row_name_column_title = "Test",
+        row_number_column_title = "#",
+        show_row_number = true
+    )
 
     @test expected == result
 
@@ -154,15 +169,18 @@ end
 └───┴──────┴──────────────────────────────────────────────────────────────────────────────────┴───────────────────┴─────────────────────────┴────────────────────┘
 """
 
-    result = pretty_table(String, matrix;
-                          header = header,
-                          compact_printing = false,
-                          linebreaks = true,
-                          renderer = :show,
-                          row_names = row_names,
-                          row_name_column_title = "Test",
-                          row_number_column_title = "#",
-                          show_row_number = true)
+    result = pretty_table(
+        String,
+        matrix;
+        header = header,
+        compact_printing = false,
+        linebreaks = true,
+        renderer = :show,
+        row_names = row_names,
+        row_name_column_title = "Test",
+        row_number_column_title = "#",
+        show_row_number = true
+    )
 
     @test expected == result
 
@@ -191,17 +209,22 @@ end
 └────────┴────────┴────────┴────────┘
 """
 
-    result = pretty_table(String, matrix,
-                          formatters = f,
-                          renderer = :show)
+    result = pretty_table(
+        String,
+        matrix;
+        formatters = f,
+        renderer = :show
+    )
 
     @test result == expected
 
     # Limit printing
     # --------------------------------------------------------------------------
 
-    matrix = [ [collect(1:1:30)] [collect(1:1:21)]
-               [collect(1:1:20)] [collect(1:1:2)]]
+    matrix = [
+        [collect(1:1:30)] [collect(1:1:21)]
+        [collect(1:1:20)] [collect(1:1:2)]
+    ]
 
     expected = """
 ┌────────────────────────────────────────────────────────────────────────────┬────────────────────────────────────────────────────────────────────────────┐
@@ -212,8 +235,7 @@ end
 └────────────────────────────────────────────────────────────────────────────┴────────────────────────────────────────────────────────────────────────────┘
 """
 
-    result = pretty_table(String, matrix,
-                          renderer = :show)
+    result = pretty_table(String, matrix; renderer = :show)
     @test expected == result
 
     expected = """
@@ -225,8 +247,11 @@ end
 └─────────────────────────────────────────────────────────────────────────────────────────────────────────────────┴─────────────────────────────────────────────────────────────────────────────┘
 """
 
-    result = pretty_table(String, matrix,
-                          limit_printing = false,
-                          renderer = :show)
+    result = pretty_table(
+        String,
+        matrix;
+        limit_printing = false,
+        renderer = :show
+    )
     @test expected == result
 end

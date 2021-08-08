@@ -37,13 +37,15 @@
 </table>
 """
 
-    result = pretty_table(String, data;
-                          backend = Val(:html),
-                          filters_row = ((data,i) -> i%2 == 0,),
-                          filters_col = ((data,i) -> i%2 == 1,),
-                          formatters = ft_printf("%.1f",3),
-                          standalone = false,
-                          show_row_number = true)
+    result = pretty_table(
+        String, data;
+        backend = Val(:html),
+        filters_row = ((data,i) -> i%2 == 0,),
+        filters_col = ((data,i) -> i%2 == 1,),
+        formatters = ft_printf("%.1f",3),
+        standalone = false,
+        show_row_number = true
+    )
 
     @test result == expected
 
@@ -76,14 +78,16 @@
 </table>
 """
 
-    result = pretty_table(String, data;
-                          alignment = [:c,:l,:l,:c],
-                          backend = Val(:html),
-                          filters_row = ((data,i) -> i%2 == 0,),
-                          filters_col = ((data,i) -> i%2 == 1,),
-                          formatters = ft_printf("%.1f",3),
-                          standalone = false,
-                          show_row_number = true)
+    result = pretty_table(
+        String, data;
+        alignment = [:c, :l, :l, :c],
+        backend = Val(:html),
+        filters_row = ((data, i) -> i % 2 == 0,),
+        filters_col = ((data ,i) -> i % 2 == 1,),
+        formatters = ft_printf("%.1f", 3),
+        standalone = false,
+        show_row_number = true
+    )
 
     @test result == expected
 end

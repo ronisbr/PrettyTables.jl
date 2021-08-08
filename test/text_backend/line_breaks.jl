@@ -27,9 +27,7 @@
 └─────────────────────────────┴───────┘
 """
 
-    result = pretty_table(String, data;
-                          header = header,
-                          linebreaks = true)
+    result = pretty_table(String, data; header = header, linebreaks = true)
     @test result == expected
 
     expected = """
@@ -46,10 +44,13 @@
 └─────────────────────────────┴───────┘
 """
 
-    result = pretty_table(String, data;
-                          header = header,
-                          alignment = :c,
-                          linebreaks = true)
+    result = pretty_table(
+        String,
+        data;
+        header = header,
+        alignment = :c,
+        linebreaks = true
+    )
     @test result == expected
 
     expected = """
@@ -66,10 +67,13 @@
 └─────────────────────────────┴───────┘
 """
 
-    result = pretty_table(String, data;
-                          header = header,
-                          alignment = :l,
-                          linebreaks = true)
+    result = pretty_table(
+        String,
+        data;
+        header = header,
+        alignment = :l,
+        linebreaks = true
+    )
     @test result == expected
 
     expected = """
@@ -82,8 +86,7 @@
 └────────────────────────────────────────────────────────────────────┴───────┘
 """
 
-    result = pretty_table(String, data;
-                          header = header)
+    result = pretty_table(String, data; header = header)
     @test result == expected
 
     # Show only the first line
@@ -99,9 +102,12 @@
 └────────────────────┴───────┘
 """
 
-    result = pretty_table(String, data;
-                          header = header,
-                          cell_first_line_only = true)
+    result = pretty_table(
+        String,
+        data;
+        header = header,
+        cell_first_line_only = true
+    )
     @test result == expected
 end
 
@@ -152,12 +158,15 @@ end
 └──────────────┴────────────────────────────────┘
 """
 
-    result = pretty_table(String, table;
-                          header        = header,
-                          autowrap      = true,
-                          linebreaks    = true,
-                          body_hlines   = [1,2],
-                          columns_width = [-1,30])
+    result = pretty_table(
+        String,
+        table;
+        header        = header,
+        autowrap      = true,
+        linebreaks    = true,
+        body_hlines   = [1, 2],
+        columns_width = [-1, 30]
+    )
 
     @test result == expected
 
@@ -192,13 +201,16 @@ end
 └──────────────┴────────────────────────────────┘
 """
 
-    result = pretty_table(String, table;
-                          header        = header,
-                          alignment     = :c,
-                          autowrap      = true,
-                          linebreaks    = true,
-                          body_hlines   = [1,2],
-                          columns_width = [-1,30])
+    result = pretty_table(
+        String,
+        table;
+        header        = header,
+        alignment     = :c,
+        autowrap      = true,
+        linebreaks    = true,
+        body_hlines   = [1, 2],
+        columns_width = [-1, 30]
+    )
 
     @test result == expected
 
@@ -233,13 +245,16 @@ end
 └──────────────┴────────────────────────────────┘
 """
 
-    result = pretty_table(String, table;
-                          header        = header,
-                          alignment     = :l,
-                          autowrap      = true,
-                          linebreaks    = true,
-                          body_hlines   = [1,2],
-                          columns_width = [-1,30])
+    result = pretty_table(
+        String,
+        table;
+        header        = header,
+        alignment     = :l,
+        autowrap      = true,
+        linebreaks    = true,
+        body_hlines   = [1, 2],
+        columns_width = [-1, 30]
+    )
 
     @test result == expected
 
@@ -277,16 +292,18 @@ end
 └─────┴──────────┴──────────────┴────────────────────────────────┘
 """
 
-    result = pretty_table(String, table;
-                          header                = header,
-                          alignment             = :l,
-                          autowrap              = true,
-                          linebreaks            = true,
-                          body_hlines           = [1,2],
-                          columns_width         = [-1,30],
-                          show_row_number       = true,
-                          row_names             = ["Primeiro","Segundo","Terceiro"],
-                          row_name_column_title = "Verso")
+    result = pretty_table(
+        String, table;
+        header                = header,
+        alignment             = :l,
+        autowrap              = true,
+        linebreaks            = true,
+        body_hlines           = [1, 2],
+        columns_width         = [-1, 30],
+        show_row_number       = true,
+        row_names             = ["Primeiro", "Segundo", "Terceiro"],
+        row_name_column_title = "Verso"
+    )
 
     @test result == expected
 end

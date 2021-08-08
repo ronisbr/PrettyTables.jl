@@ -62,10 +62,13 @@
 </table>
 """
 
-    result = pretty_table(String, data,
-                          standalone = false,
-                          tf = tf_html_default,
-                          title = title)
+    result = pretty_table(
+        String,
+        data,
+        standalone = false,
+        tf = tf_html_default,
+        title = title
+    )
 
     @test result == expected
 
@@ -121,11 +124,14 @@
 </table>
 """
 
-    result = pretty_table(String, data,
-                          standalone = false,
-                          tf = tf_html_default,
-                          title = title,
-                          title_alignment = :c)
+    result = pretty_table(
+        String,
+        data,
+        standalone = false,
+        tf = tf_html_default,
+        title = title,
+        title_alignment = :c
+    )
 
     @test result == expected
 
@@ -181,11 +187,14 @@
 </table>
 """
 
-    result = pretty_table(String, data,
-                          standalone = false,
-                          tf = tf_html_default,
-                          title = title,
-                          title_alignment = :r)
+    result = pretty_table(
+        String,
+        data,
+        standalone = false,
+        tf = tf_html_default,
+        title = title,
+        title_alignment = :r
+    )
 
     @test result == expected
 end
