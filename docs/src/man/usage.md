@@ -18,7 +18,8 @@ Print to `io` the table `table`.
 
 If `io` is omitted, then it defaults to `stdout`. If `String` is passed in the
 place of `io`, then a `String` with the printed table will be returned by the
-function.
+function. If `HTML` is passed in the place of `io`, then an `HTML` object is
+returned with the printed table.
 
 When printing, it will be verified if `table` complies with
 [**Tables.jl**](https://github.com/JuliaData/Tables.jl) API.  If it is is
@@ -131,7 +132,8 @@ Each back-end defines its own configuration keywords that can be passed using
     printing format. Thus, if the keyword `backend` is not present or if it is
     `nothing`, then the back-end will be automatically inferred from the type of
     the keyword `tf`. In this case, if `tf` is also not present, then it just
-    fall-back to the text back-end.
+    fall-back to the text back-end unless `HTML` is passed as the first
+    argument. In this case, the default back-end is set to HTML.
 
 # Examples
 

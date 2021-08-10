@@ -14,13 +14,14 @@ export pretty_table
 ################################################################################
 
 """
-    pretty_table([io::IO | String,] table;  kwargs...)
+    pretty_table([io::IO | String | HTML,] table;  kwargs...)
 
 Print to `io` the `table`.
 
 If `io` is omitted, then it defaults to `stdout`. If `String` is passed in the
 place of `io`, then a `String` with the printed table will be returned by the
-function.
+function. If `HTML` is passed in the place of `io`, then an `HTML` object is
+returned with the printed table.
 
 When printing, it will be verified if `table` complies with **Tables.jl** API.
 If it is compliant, then this interface will be used to print the table. If it
@@ -123,7 +124,8 @@ is not compliant, then only the following types are supported:
     printing format. Thus, if the keyword `backend` is not present or if it is
     `nothing`, then the back-end will be automatically inferred from the type of
     the keyword `tf`. In this case, if `tf` is also not present, then it just
-    fall-back to the text back-end.
+    fall-back to the text back-end unless `HTML` is passed as the first
+    argument. In this case, the default back-end is set to HTML.
 
 # Alignment
 
@@ -706,4 +708,16 @@ function pretty_table(::Type{String}, data; kwargs...)
     io = IOBuffer()
     _pretty_table(io, data; kwargs...)
     return String(take!(io))
+end
+
+function pretty_table(::Type{HTML}, data; kwargs...)
+    # If the keywords does not set the backend or the table format, use the HTML
+    # backend by default.
+    if !haskey(kwargs, :backend) && !haskey(kwargs, :tf)
+        str = pretty_table(String, data; backend = Val(:html), kwargs...)
+    else
+        str = pretty_table(String, data; kwargs...)
+    end
+
+    return HTML(str)
 end
