@@ -140,6 +140,10 @@ If it is a vector, then it must have the same number of symbols as the number of
 columns in `data`. The *i*-th symbol in the vector specify the alignment of the
 -i*-th column using the same symbols as described previously.
 
+!!! note
+    In HTML backend, the user can select `:n` ou `:N` to print the cell without
+    any alignment annotation.
+
 # Filters
 
 It is possible to specify filters to filter the data that will be printed. There

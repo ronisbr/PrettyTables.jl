@@ -246,9 +246,7 @@ function _pt_html(
             # The row name column title must appear only on the first line.
             if show_row_names
                 if i == 1
-                    style = Dict{String,String}(
-                        "text-align" => _html_alignment[row_name_alignment]
-                    )
+                    style = _html_text_alignment_dict(row_name_alignment)
 
                     row_name_title_html = _styled_html(
                         "th",
@@ -283,7 +281,7 @@ function _pt_html(
                 alignment_ij ∈ (:s, :S) && (alignment_ij = alignment[jc])
 
                 # Alignment of this cell.
-                style = Dict{String,String}("text-align" => _html_alignment[alignment_ij])
+                style = _html_text_alignment_dict(alignment_ij)
 
                 _aprintln(buf, _styled_html("th", header_str[i, j], style), il, ns, minify)
             end
@@ -353,7 +351,7 @@ function _pt_html(
             end
 
             # Alignment of this cell.
-            style = Dict{String,String}("text-align" => _html_alignment[alignment_ij])
+            style = _html_text_alignment_dict(alignment_ij)
 
             # If we have highlighters defined, then we need to verify if this
             # data should be highlight.

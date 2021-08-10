@@ -16,6 +16,16 @@ const _html_alignment = Dict(
     :R => "right"
 )
 
+function _html_text_alignment_dict(alignment::Symbol)
+    if (alignment == :n) || (alignment == :N)
+        return Dict{String, String}()
+    elseif haskey(_html_alignment, alignment)
+        return Dict{String, String}("text-align" => _html_alignment[alignment])
+    else
+        return Dict{String, String}("text-align" => _html_alignment[:r])
+    end
+end
+
 function _styled_html(
     tag::String,
     text::String,
