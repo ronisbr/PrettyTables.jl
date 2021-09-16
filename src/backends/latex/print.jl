@@ -23,7 +23,8 @@ function _pt_latex(
     table_type::Union{Nothing, Symbol} = nothing,
     vlines::Union{Nothing, Symbol, AbstractVector} = nothing,
     wrap_table::Union{Nothing, Bool} = true,
-    wrap_table_environment::Union{Nothing, String} = nothing
+    wrap_table_environment::Union{Nothing, String} = nothing,
+    multicol::Union{Nothing, Tuple} = (1, 2)
 )
 
     # `r_io` must always be a reference to `IO`. Here, we unpack it. This is
@@ -258,8 +259,19 @@ function _pt_latex(
                 else
                     envs = subheader_envs
                 end
-
-                header_str_ij = _latex_envs(header_str[i,j], envs)
+                if !isnothing(multicol)
+                    mstart, mlen = multicol
+                    if mstart == j
+                        t = _latex_envs(header_str[i,j], envs)
+                        header_str_ij = "\\multicol{$mlen}{$t}"
+                    elseif j - mstart < mlen
+                        header_str_ij = ""
+                    else
+                        header_str_ij = _latex_envs(header_str[i,j], envs)
+                    end
+                else
+                    header_str_ij = _latex_envs(header_str[i,j], envs)
+                end
 
                 # Check the alignment of this cell.
                 alignment_ij::Symbol = header_alignment[jc]
