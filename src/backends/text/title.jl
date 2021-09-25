@@ -25,7 +25,7 @@ function _print_title(
 
     has_color && print(buf, title_crayon)
 
-    @inbounds for i = 1:num_tokens
+    @inbounds for i in 1:num_tokens
         print(buf, rstrip(title_tokens[i]))
 
         # In the last line we must not add the new line character
@@ -72,7 +72,7 @@ function _tokenize_title(
             title_autowrap && (title_tokens_raw = _str_autowrap(title_tokens_raw, title_width))
             num_tokens = length(title_tokens_raw)
 
-            @inbounds for i = 1:num_tokens
+            @inbounds for i in 1:num_tokens
                 token = title_tokens_raw[i]
                 token_str = _str_aligned(token, title_alignment, title_width)
                 push!(title_tokens, token_str)
