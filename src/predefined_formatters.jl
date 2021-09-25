@@ -161,7 +161,7 @@ function ft_latex_sn(
 
                 # Check if we have scientific notation.
                 aux = match(r"e[+,-][0-9]+", str)
-                if aux != nothing
+                if aux !== nothing
                     exp_str = " \\cdot 10^{" * string(parse(Int, aux.match[2:end])) * "}"
                     str = replace(str, r"e.*" => exp_str)
                     str = "\$" * str * "\$"
@@ -181,7 +181,7 @@ function ft_latex_sn(
 
                         # Check if we have scientific notation.
                         aux = match(r"e[+,-][0-9]+", str)
-                        if aux != nothing
+                        if aux !== nothing
                             exp_str =
                                 " \\cdot 10^{" * string(parse(Int, aux.match[2:end])) * "}"
                             str = replace(str, r"e.*" => exp_str)

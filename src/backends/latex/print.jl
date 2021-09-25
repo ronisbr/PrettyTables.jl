@@ -152,7 +152,7 @@ function _pt_latex(
     # Compute where the horizontal and vertical lines must be drawn
     # --------------------------------------------------------------------------
 
-    if hlines == nothing
+    if hlines === nothing
         hlines = _process_hlines(tf.hlines, body_hlines, num_printed_rows, noheader)
     else
         hlines = _process_hlines(hlines, body_hlines, num_printed_rows, noheader)
@@ -161,7 +161,7 @@ function _pt_latex(
     # Process `vlines`.
     #
     # TODO: `num_printed_cols` must consider the row number.
-    if vlines == nothing
+    if vlines === nothing
         vlines = _process_vlines(tf.vlines, num_printed_cols)
     else
         vlines = _process_vlines(vlines, num_printed_cols)
@@ -316,7 +316,7 @@ function _pt_latex(
         _aprintln(buf, bottom_line, il, ns)
 
         # Check if the user wants a text on the footer.
-        if longtable_footer != nothing
+        if longtable_footer !== nothing
             lvline =            0 ∈ vlines ? left_vline : ""
             rvline = id_cols[end] ∈ vlines ? right_vline : ""
 

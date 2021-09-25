@@ -23,7 +23,7 @@ function _compute_row_fill_vectors(
     jrvec = Vector{Int}(undef, num_printed_rows)
 
     if vcrop_mode == :bottom
-        for i = 1:num_printed_rows
+        for i in 1:num_printed_rows
             jvec[i]  = i
             jrvec[i] = id_rows[i]
         end
@@ -93,7 +93,7 @@ function _fill_matrix_data!(
     # columns that will not be displayed.
     pred_tab_width = 0
 
-    @inbounds for i = (1 + Δc):num_printed_cols
+    @inbounds for i in (1 + Δc):num_printed_cols
         # Here we store the number of processed rows. This is used to save
         # processing if the user wants to crop the output and has cells with
         # multiple lines.
@@ -109,7 +109,7 @@ function _fill_matrix_data!(
         largest_cell_width = 0
 
         if !noheader
-            for j = 1:header_num_rows
+            for j in 1:header_num_rows
                 header_ij = isassigned(header[j], ic) ? header[j][ic] : undef
 
                 # NOTE: For headers, we always use `print` instead of `show` to
@@ -140,7 +140,7 @@ function _fill_matrix_data!(
             end
         end
 
-        for k = 1:num_printed_rows
+        for k in 1:num_printed_rows
             j  = jvec[k]
             jr = jrvec[k]
 
@@ -274,7 +274,7 @@ function _fill_row_name_column!(
     @inbounds header_str[2:end, Δc] .= ""
 
     # Convert the row names to string.
-    @inbounds for i = 1:num_printed_rows
+    @inbounds for i in 1:num_printed_rows
         j  = jvec[i]
         jr = jrvec[i]
 

@@ -81,7 +81,7 @@ function _preprocess_Tables_column(
     if header === nothing
         sch = Tables.schema(data)
 
-        if sch != nothing
+        if sch !== nothing
             types::Vector{String} = compact_type_str.([sch.types...])
             pheader = (names, types)
         else
@@ -104,7 +104,7 @@ function _preprocess_Tables_row(
     table = Tables.rows(data)
 
     # We need to fetch the first row to get information about the columns.
-    row₁,~ = iterate(table, 1)
+    row₁, ~ = iterate(table, 1)
 
     # Get the column names.
     names = collect(Symbol, Tables.columnnames(row₁))
@@ -125,7 +125,7 @@ function _preprocess_Tables_row(
     if header === nothing
         sch = Tables.schema(data)
 
-        if sch != nothing
+        if sch !== nothing
             types::Vector{String} = compact_type_str.([sch.types...])
             pheader = (names, types)
         else
@@ -215,7 +215,7 @@ function _print_info(
 
     # If there is a vector of row names, then it must have the same size of the
     # number of rows.
-    if row_names != nothing
+    if row_names !== nothing
         if length(row_names) != num_rows
             error("The number of lines in `row_names` must match the number of lines in the matrix.")
         end
@@ -231,7 +231,7 @@ function _print_info(
     filtered_rows = ones(Bool, num_rows)
     filtered_cols = ones(Bool, num_cols)
 
-    if filters_row != nothing
+    if filters_row !== nothing
         @inbounds for i = 1:num_rows
             filtered_i = true
 
@@ -243,7 +243,7 @@ function _print_info(
         end
     end
 
-    if filters_col != nothing
+    if filters_col !== nothing
         @inbounds for i = 1:num_cols
             filtered_i = true
 
@@ -263,7 +263,7 @@ function _print_info(
     num_printed_rows = length(id_rows)
 
     # Make sure that `cell_alignment` is a tuple.
-    if cell_alignment == nothing
+    if cell_alignment === nothing
         cell_alignment = ()
     elseif typeof(cell_alignment) <: Dict
         # If it is a `Dict`, then `cell_alignment[(i,j)]` contains the desired
@@ -282,7 +282,7 @@ function _print_info(
     end
 
     # Make sure that `header_cell_alignment` is a tuple.
-    if header_cell_alignment == nothing
+    if header_cell_alignment === nothing
         header_cell_alignment = ()
     elseif typeof(header_cell_alignment) <: Dict
         # If it is a `Dict`, then `header_cell_alignment[(i,j)]` contains the
@@ -301,7 +301,7 @@ function _print_info(
     end
 
     # Make sure that `formatters` is a tuple.
-    formatters == nothing  && (formatters = ())
+    formatters === nothing  && (formatters = ())
     typeof(formatters) <: Function && (formatters = (formatters,))
 
     # Render.

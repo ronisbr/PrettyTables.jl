@@ -41,14 +41,14 @@ function _compute_table_size_data(
     # size of the cell. This is required for Markdown cells.
     r_ansi_escape = r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])"
 
-    @inbounds for j = 1:num_printed_cols
+    @inbounds for j in 1:num_printed_cols
         largest_cell_width = 0
 
         # Header
         # ----------------------------------------------------------------------
 
         if !noheader
-            for i = 1:num_header_printed_rows
+            for i in 1:num_header_printed_rows
                 !isassigned(header_str, i, j) && continue
 
                 # Remove the escape sequences to obtain only printable
@@ -68,7 +68,7 @@ function _compute_table_size_data(
         # Data
         # ----------------------------------------------------------------------
 
-        for i = 1:num_printed_rows
+        for i in 1:num_printed_rows
             !isassigned(data_str, i, j) && continue
 
             num_lines = length(data_str[i,j])

@@ -78,7 +78,7 @@ function getindex(rtable::RowTable, inds...)
     # Get the element.
     it, ~ = iterate(rtable.table, i)
 
-    it == nothing && error("The row `i` does not exist.")
+    it === nothing && error("The row `i` does not exist.")
 
     element = it[column_name]
 
@@ -99,7 +99,7 @@ function isassigned(rtable::RowTable, inds...)
     # Get the element.
     it, ~ = iterate(rtable.table, i)
 
-    it == nothing && error("The row `i` does not exist.")
+    it === nothing && error("The row `i` does not exist.")
 
     try
         element = it[column_name]

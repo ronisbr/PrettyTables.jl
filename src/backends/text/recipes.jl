@@ -61,7 +61,7 @@ function _create_printing_recipe(
         push!(col_printing_recipe, _LEFT_LINE)
     end
 
-    @inbounds for i = 1:num_printed_cols
+    @inbounds for i in 1:num_printed_cols
         # Space before the next row.
         line_length += 1
 
@@ -148,7 +148,7 @@ function _create_printing_recipe(
     if !data_vcropped
         fully_printed_rows = num_printed_rows
 
-        @inbounds for i = 1:num_printed_rows
+        @inbounds for i in 1:num_printed_rows
             # Index of this row in `data`.
             ir = id_rows[i]
 
@@ -174,7 +174,7 @@ function _create_printing_recipe(
         fully_printed_rows = 0
 
         if vcrop_mode == :bottom
-            @inbounds for i = 1:num_printed_rows
+            @inbounds for i in 1:num_printed_rows
                 num_lines_row_i = num_lines_in_row[i]
 
                 # Index of this row in `data`.
@@ -232,7 +232,7 @@ function _create_printing_recipe(
             printed_lines = 0
 
             # Fill the top of the table.
-            @inbounds for i = 1:Δr
+            @inbounds for i in 1:Δr
                 num_lines_row_i = num_lines_in_row[i]
 
                 # Index of this row in `data`.
@@ -278,7 +278,7 @@ function _create_printing_recipe(
 
             printed_lines = 0
 
-            @inbounds for i = num_printed_rows:-1:Δr+1
+            @inbounds for i in num_printed_rows:-1:Δr+1
                 num_lines_row_i = num_lines_in_row[i]
 
                 # Index of this row in the filtered table.

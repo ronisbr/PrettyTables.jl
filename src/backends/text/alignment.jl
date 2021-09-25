@@ -50,7 +50,7 @@ function _apply_alignment_anchor_regex!(
 
         # We need to pass through the entire row searching for matches to
         # compute in which column we need to align the matches.
-        for i = 1:num_printed_rows
+        for i in 1:num_printed_rows
             !isassigned(data_str, i, j) && continue
             haskey(cell_alignment_override, (id_rows[i], jc)) && continue
 

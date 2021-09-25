@@ -39,7 +39,7 @@ function _crop_str(str::String, crop_size::Int, lstr::Int = -1)
     tokens = split(str, r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])")
     crop_finished = false
 
-    for i = 1:length(tokens)
+    for i in 1:length(tokens)
         for c in tokens[i]
             sc = textwidth(c)
 
@@ -144,7 +144,7 @@ function _render_text(
     # character `"` to the list of characters to be escaped.
     output_str = Vector{String}(undef, length(vstr))
 
-    @inbounds for i = 1:length(vstr)
+    @inbounds for i in 1:length(vstr)
         s = vstr[i]
         output_str[i] = sprint(escape_string, s, "", sizehint = lastindex(s))
     end
@@ -168,7 +168,7 @@ function _render_text(
         vstr = sprint.(show, aux; context = context)
 
         if !isstring
-            for i = 1:length(vstr)
+            for i in 1:length(vstr)
                 aux_i   = first(vstr[i], length(vstr[i]) - 1)
                 vstr[i] = last(aux_i, length(aux_i) - 1)
             end
@@ -416,7 +416,7 @@ function _reapply_ansi_format!(lines::Vector{T}) where T<:AbstractString
 
     lines[1] *= "\e[0m"
 
-    @inbounds @views for i = 2:length(lines)
+    @inbounds @views for i in 2:length(lines)
         composed_ansi = _get_composed_ansi_format(ansi)
 
         # Find the first non-blank character.

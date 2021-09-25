@@ -50,7 +50,7 @@ function _styled_html(
 
         num_styles = length(vk)
 
-        @inbounds for i = 1:num_styles
+        @inbounds for i in 1:num_styles
             # If the value is empty, then just continue.
             value = vv[i]
             isempty(value) && continue

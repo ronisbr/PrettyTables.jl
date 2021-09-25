@@ -365,7 +365,7 @@ function _pt_text(
     # --------------------------------------------------------------------------
 
     # Create the format of the horizontal lines.
-    if body_hlines_format == nothing
+    if body_hlines_format === nothing
         body_hlines_format = (
             tf.left_intersection,
             tf.middle_intersection,
@@ -374,7 +374,7 @@ function _pt_text(
         )
     end
 
-    if hlines == nothing
+    if hlines === nothing
         hlines = _process_hlines(tf.hlines, body_hlines, num_filtered_rows, noheader)
     else
         hlines = _process_hlines(hlines, body_hlines, num_filtered_rows, noheader)
@@ -385,7 +385,7 @@ function _pt_text(
     draw_last_hline = (num_filtered_rows + !noheader) ∈ hlines
 
     # Process `vlines`.
-    if vlines == nothing
+    if vlines === nothing
         vlines = _process_vlines(tf.vlines, num_printed_cols)
     else
         vlines = _process_vlines(vlines, num_printed_cols)
