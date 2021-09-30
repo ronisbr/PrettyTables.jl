@@ -299,3 +299,34 @@ end
     @test_throws ErrorException PrettyTables.parse_cell_text(mycell; autowrap = true)
     @test PrettyTables.reset!(mycell) === nothing
 end
+
+
+@testset "Custom text cells - AnsiTextCell" begin
+    strings = ["\e[1mHello\e[22m", "\e[1mWorld\e[22m"]
+    data = [AnsiTextCell(io -> print(io, x)) for x in strings]
+    @testset "Basic" begin
+        result = pretty_table(String, data)
+        expected = """
+        ┌────────┐
+        │ Col. 1 │
+        ├────────┤
+        │  \e[1mHello\e[22m │
+        │  \e[1mWorld\e[22m │
+        └────────┘
+        """
+        @test result == expected
+    end
+
+    @testset "Cropped" begin
+        result = pretty_table(String, data, display_size=(-1, 10))
+        expected = """
+        ┌────────┐
+        │ Col. 1 │
+        ├────────┤
+        │  \e[1mHello\e[22m │
+        │  \e[1mWorld\e[22m │
+        └────────┘
+        """
+        @test result == expected
+    end
+end
