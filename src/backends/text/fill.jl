@@ -10,7 +10,7 @@
 # Compute the vectors that will be used to fill the rows of the matrix that will
 # be printed. This is required due to the different crop modes available.
 function _compute_row_fill_vectors(
-    id_rows::Vector{Int},
+    id_rows::AbstractVector{Int},
     num_printed_rows::Int,
     vcrop_mode::Symbol
 )
@@ -65,7 +65,7 @@ end
 function _fill_matrix_data!(
     header_str::Matrix{String},
     data_str::Matrix{Vector{String}},
-    id_cols::Vector{Int},
+    id_cols::AbstractVector{Int},
     jvec::Vector{Int},
     jrvec::Vector{Int},
     Δc::Int,
@@ -219,7 +219,7 @@ end
 function _fill_row_number_column!(
     header_str::Matrix{String},
     data_str::Matrix{Vector{String}},
-    id_rows::Vector{Int},
+    id_rows::AbstractVector{Int},
     jvec::Vector{Int},
     jrvec::Vector{Int},
     noheader::Bool,
