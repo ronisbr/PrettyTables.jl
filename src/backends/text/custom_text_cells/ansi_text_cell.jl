@@ -201,13 +201,8 @@ function apply_line_padding!(cell::AnsiTextCell, l::Int, left_pad::Int, right_pa
 end
 
 function crop_line!(cell::AnsiTextCell, l::Int, num::Int)
-    l > length(cell._rendered_lines) && return nothing
-
     stripped = cell._stripped_lines[l]
     rendered = cell._rendered_lines[l]
-
-    length(stripped) == 0 && return nothing
-
     crop = length(stripped) - num
     crop < 0 && return nothing
     cell._rendered_lines[l] = _crop_str(rendered, crop, textwidth(rendered))
