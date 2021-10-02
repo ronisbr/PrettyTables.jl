@@ -10,10 +10,50 @@
 export AnsiTextCell
 
 """
-    AnsiTextCell(renderfn[; context]) <: CustomTextCell
+    AnsiTextCell
 
 A text cell that supports rendering ANSI escape sequences without interfering
 with the table layout.
+
+# Fields
+
+**Public**
+
+- `string::String`: The string with the cell text that can contain ANSI escape
+    sequences.
+
+**Private**
+
+- `_rendered_lines::Union{Nothing, Vector{String}}`: The lines with the rendered
+    strings.
+- `_stripped_lines::Union{Nothing, Vector{String}}`: The lines with the
+    printable text.
+- `_crops::Dict{Int, Int}`: Dictionary with the number of characters that must
+    be cropped.
+- `_left_pads::Dict{Int, Int}`: Left padding to be applied to each line.
+- `_right_pads::Dict{Int, Int}`: Right padding to be applied to each line.
+- `_suffixes::Dict{Int, String}`: Suffixed to be applied to each line.
+"""
+mutable struct AnsiTextCell <: CustomTextCell
+    string::String
+
+    # Private
+    _rendered_lines::Union{Nothing, Vector{String}}
+    _stripped_lines::Union{Nothing, Vector{String}}
+    _crops::Union{Nothing, Vector{Int}}
+    _left_pads::Union{Nothing, Vector{Int}}
+    _right_pads::Union{Nothing, Vector{Int}}
+    _suffixes::Union{Nothing, Vector{String}}
+end
+
+"""
+    AnsiTextCell(string::AbstractString)
+
+Create an [`AnsiTextCell`](@ref) using `string`.
+
+    AnsiTextCell(renderfn[; context])
+
+Create an [`AnsiTextCell`](@ref) using a render function.
 
 `renderfn` is a function with the following signature:
 
@@ -31,6 +71,20 @@ Useful for supporting packages that have rich terminal outputs.
 
 Below are examples for wrappers around `AnsiTextCell` to print rich data into
 tables that make use of packages with rich terminal output.
+
+### Crayons.jl
+
+Apply custom decoration to text inside a cell.
+
+```julia
+using Crayons, PrettyTables
+
+b = crayon"blue bold"
+y = crayon"yellow bold"
+g = crayon"green bold"
+
+pretty_table([AnsiTextCell("\$(g)This \$(y)is \$(b)awesome!") for _ in 1:5, _ in 1:5])
+```
 
 ### ImageInTerminal.jl
 
@@ -87,114 +141,107 @@ end
 pretty_table([MarkdownCell(cm"**Hi**") MarkdownCell(cm"> quote")])
 ```
 """
-mutable struct AnsiTextCell <: CustomTextCell
-    renderfn
-    context
-
-    # Private
-    _rendered
-    _stripped
-    _crops
-    _left_pads
-    _right_pads
-    _suffixes
-end
-
-function AnsiTextCell(
-    renderfn;
-    context = ()
-)
+function AnsiTextCell(string::AbstractString)
     return AnsiTextCell(
-        renderfn,
-        context,
+        string,
         nothing,
         nothing,
-        Dict{Int, Int}(),
-        Dict{Int, Int}(),
-        Dict{Int, Int}(),
-        Dict{Int, String}()
+        nothing,
+        nothing,
+        nothing,
+        nothing
     )
 end
 
-function PrettyTables.reset!(cell::AnsiTextCell)
-    cell._rendered   = nothing
-    cell._stripped   = nothing
-    cell._crops      = Dict{Int, Int}()
-    cell._left_pads  = Dict{Int, Int}()
-    cell._right_pads = Dict{Int, Int}()
-    cell._suffixes   = Dict{Int, String}()
+function AnsiTextCell(renderfn::Function; context::Tuple = ())
+    # Render the text and create the text cell.
+    io = IOBuffer()
+    renderfn(IOContext(io, context...))
+    rendered = String(take!(io))
+    return AnsiTextCell(rendered)
 end
 
+################################################################################
+#                                     API
+################################################################################
+
 function get_printable_cell_line(cell::AnsiTextCell, l::Int)
-    if l > length(cell._stripped)
+    if l > length(cell._stripped_lines)
         return ""
     else
-        lpad, rpad = get(cell._left_pads, l, 0), get(cell._right_pads, l, 0)
-        return " "^lpad * cell._stripped[l] * " "^rpad
+        lpad = cell._left_pads[l]
+        rpad = cell._right_pads[l]
+        return " "^lpad * cell._stripped_lines[l] * " "^rpad
     end
 end
 
 function get_rendered_line(cell::AnsiTextCell, l::Int)
-    if l > length(cell._stripped)
+    if l > length(cell._stripped_lines)
         return ""
     else
-        lpad, rpad = get(cell._left_pads, l, 0), get(cell._right_pads, l, 0)
-        suffix = get(cell._suffixes, l, "")
-        return " "^lpad * cell._rendered[l] * " "^rpad * suffix
+        lpad = cell._left_pads[l]
+        rpad = cell._right_pads[l]
+        suffix = cell._suffixes[l]
+
+        # We must reset everything after rendering the cell to avoid messing
+        # with the decoration of the table.
+        return " "^lpad * cell._rendered_lines[l] * "\e[0m" * " "^rpad * suffix
     end
 end
 
-function parse_cell_text(cell::AnsiTextCell; kwargs...)
-    io = IOBuffer()
-    cell.renderfn(IOContext(io, cell.context...))
-    rendered = String(take!(io))
-    cell._rendered = filter(!isempty, map(String, split(rendered, '\n')))
-    cell._stripped = map(_stripansi, cell._rendered)
-    return cell._stripped
-end
-
 function append_suffix_to_line!(cell::AnsiTextCell, l::Int, suffix::String)
-    cell._suffixes[l] = get(cell._suffixes, l, "") * suffix
+    cell._suffixes[l] *= suffix
     return nothing
 end
 
 function apply_line_padding!(cell::AnsiTextCell, l::Int, left_pad::Int, right_pad::Int)
-    cell._left_pads[l] = get(cell._left_pads, l, 0) + left_pad
-    cell._right_pads[l] = get(cell._right_pads, l, 0) + right_pad
+    cell._left_pads[l] += left_pad
+    cell._right_pads[l] += right_pad
     return nothing
 end
 
 function crop_line!(cell::AnsiTextCell, l::Int, num::Int)
-    l > length(cell._rendered) && return nothing
+    l > length(cell._rendered_lines) && return nothing
 
-    stripped = cell._stripped[l]
-    rendered = cell._rendered[l]
+    stripped = cell._stripped_lines[l]
+    rendered = cell._rendered_lines[l]
+
     length(stripped) == 0 && return nothing
+
     crop = length(stripped) - num
     crop < 0 && return nothing
-    cell._rendered[l] = _cropansi(rendered, crop; lstr = textwidth(rendered))
+    cell._rendered_lines[l] = _crop_str(rendered, crop, textwidth(rendered))
 
     return nothing
 end
 
-################################################################################
-#                              Private functions
-################################################################################
-
-"""
-    _stripansi(str)
-
-Strip all ANSI escape sequences from a string.
-"""
-function _stripansi(str::AbstractString)
+function parse_cell_text(cell::AnsiTextCell; kwargs...)
+    # Regex to remove escape sequences from the string.
     r_ansi_escape = r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])"
-    return replace(str, r_ansi_escape => "")
+
+    _rendered_lines = filter(!isempty, map(String, split(cell.string, '\n')))
+    _stripped_lines = replace.(_rendered_lines, r_ansi_escape => "")
+
+    num_lines = length(_rendered_lines)
+
+    cell._rendered_lines = _rendered_lines
+    cell._stripped_lines = _stripped_lines
+    cell._crops          = zeros(Int, num_lines)
+    cell._left_pads      = zeros(Int, num_lines)
+    cell._right_pads     = zeros(Int, num_lines)
+    cell._suffixes       = fill("", num_lines)
+
+    return cell._stripped_lines
 end
 
-"""
-    _cropansi(s, n)
+function reset!(cell::AnsiTextCell)
+    cell._rendered_lines = nothing
+    cell._stripped_lines = nothing
+    cell._crops          = nothing
+    cell._left_pads      = nothing
+    cell._right_pads     = nothing
+    cell._suffixes       = nothing
 
-Crop an ANSI string to `n` visible characters. Trailing ANSI sequences are
-removed.
-"""
-_cropansi(s::AbstractString, n; lstr = -1) = _crop_str(s, n, lstr) * "\e[0m"
+    return nothing
+end
+
