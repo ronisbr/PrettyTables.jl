@@ -109,6 +109,17 @@ function precompilation_input()
 
     pretty_table(dict, sortkeys = true)
 
+    # Filters
+    # ==========================================================================
+
+    pretty_table(data, filters_row = ((data, i) -> i % 2 == 0,))
+    pretty_table(data, filters_col = ((data, i) -> i % 2 == 0,))
+    pretty_table(
+        data,
+        filters_col = ((data, i) -> i % 2 == 0,),
+        filters_row = ((data, i) -> i % 2 == 0,)
+    )
+
     # Input: Data with URLTextCell
     # ==========================================================================
 
@@ -120,4 +131,19 @@ function precompilation_input()
     ]
 
     pretty_table(custom_cells)
+
+    # Input: Data with AnsiCellText
+    # ==========================================================================
+
+    b = crayon"blue bold"
+    y = crayon"yellow bold"
+    g = crayon"green bold"
+
+    ansi_table = [
+        AnsiTextCell("$(g)This $(y)is $(b)awesome!")
+        AnsiTextCell("$(g)😃😃 $(y)is $(b)awesome!")
+        AnsiTextCell("$(g)σ𝛕θ⍺ $(y)is $(b)awesome!")
+    ]
+
+    pretty_table(ansi_table)
 end
