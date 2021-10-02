@@ -310,8 +310,8 @@ end
         ┌────────┐
         │ Col. 1 │
         ├────────┤
-        │  \e[1mHello\e[22m │
-        │  \e[1mWorld\e[22m │
+        │  \e[1mHello\e[22m\e[0m │
+        │  \e[1mWorld\e[22m\e[0m │
         └────────┘
         """
         @test result == expected
@@ -323,8 +323,8 @@ end
         ┌────────┐
         │ Col. 1 │
         ├────────┤
-        │  \e[1mHello\e[22m │
-        │  \e[1mWorld\e[22m │
+        │  \e[1mHello\e[22m\e[0m │
+        │  \e[1mWorld\e[22m\e[0m │
         └────────┘
         """
         @test result == expected
