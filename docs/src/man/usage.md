@@ -135,6 +135,10 @@ Each back-end defines its own configuration keywords that can be passed using
     fall-back to the text back-end unless `HTML` is passed as the first
     argument. In this case, the default back-end is set to HTML.
 
+If `String` is used, then the keyword `color` selects whether or not the table
+will be converted to string with or without colors. The default value is
+`false`. Notice that this option only has effect in text backend.
+
 # Examples
 
 In the following, it is possible to see some examples for a quick start using

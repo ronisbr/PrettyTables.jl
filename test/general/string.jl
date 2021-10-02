@@ -33,4 +33,15 @@
     expected = sprint(pretty_table, data)
     result   = pretty_table(String, data)
     @test result == expected
+
+    expected = """
+    ┌────────┬────────┐
+    │\e[1m Col. 1 \e[0m│\e[1m Col. 2 \e[0m│
+    ├────────┼────────┤
+    │      1 │\e[33;1m      2 \e[0m│
+    └────────┴────────┘
+    """
+
+    result = pretty_table(String, [1 2], color = true, highlighters = hl_value(2))
+    @test result == expected
 end

@@ -127,6 +127,10 @@ is not compliant, then only the following types are supported:
     fall-back to the text back-end unless `HTML` is passed as the first
     argument. In this case, the default back-end is set to HTML.
 
+If `String` is used, then the keyword `color` selects whether or not the table
+will be converted to string with or without colors. The default value is
+`false`. Notice that this option only has effect in text backend.
+
 # Alignment
 
 The keyword `alignment` can be a `Symbol` or a vector of `Symbol`.
@@ -704,10 +708,10 @@ end
 
 pretty_table(io::IO, data; kwargs...) = _pretty_table(io, data; kwargs...)
 
-function pretty_table(::Type{String}, data; kwargs...)
-    io = IOBuffer()
+function pretty_table(::Type{String}, data; color::Bool = false, kwargs...)
+    io = IOContext(IOBuffer(), :color => color)
     _pretty_table(io, data; kwargs...)
-    return String(take!(io))
+    return String(take!(io.io))
 end
 
 function pretty_table(::Type{HTML}, data; kwargs...)
