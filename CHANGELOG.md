@@ -1,6 +1,38 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 1.2.0
+-------------
+
+- ![Deprecation][badge-deprecation] All deprecations introduced in v0.12 are now
+  removed.
+- ![Feature][badge-feature] The HTML decoration can now used any custom style.
+  (PR [#135][gh-pr-135])
+- ![Feature][badge-feature] The HTML backend now has an option to minify the
+  output.
+- ![Feature][badge-feature] The HTML backend now has the option
+  `allow_html_in_cells` so that the user can use HTML code inside the table.
+- ![Feature][badge-feature] The alignment option in HTML backend can now be set
+  to `:n` so that no alignment annotation is added.
+- ![Feature][badge-feature] The option `HTML` can be passed to `pretty_table` so
+  that an HTML object is returned. (Issue [#130][gh-issue-130])
+- ![Feature][badge-feature] The text backend has now a new custom cell called
+  `AnsiTextCell`, which allows adding a cell with ANSI escape sequences inside
+  the table. (Issue [#142][gh-issue-142]) (PR [#143][gh-pr-143])
+- ![Feature][badge-feature] The keyword `color` can now be used when converting
+  a table to string to render the ANSI escape sequences.
+- ![Enhancement][badge-enhancement] The HTML rendering now uses the section
+  `thead` and `tbody`.
+- ![Enhancement][badge-enhancement] Some special characters in HTML are now
+  escaped to ensure a correct rendering.
+- ![Enhancement][badge-enhancement] The vectors related to filtering are now set
+  to `UnitRange` if filtering is not present. Hence, the performance when
+  printing huge tables cropped to the display size is highly improved by
+  avoiding allocating big vectors. (Issue [#140][gh-issue-140]) (PR
+  [#144][gh-issue-144])
+- ![Bugfix][badge-bugfix] The horizontal line selection is now consistent if the
+  vertical cropping is set to `:middle`. (Issue [#133][gh-issue-133])
+
 Version 1.1.0
 -------------
 
@@ -519,6 +551,10 @@ Version 0.1.0
 [gh-issue-118]: https://github.com/ronisbr/PrettyTables.jl/issues/118
 [gh-issue-125]: https://github.com/ronisbr/PrettyTables.jl/issues/125
 [gh-issue-129]: https://github.com/ronisbr/PrettyTables.jl/issues/129
+[gh-issue-130]: https://github.com/ronisbr/PrettyTables.jl/issues/130
+[gh-issue-133]: https://github.com/ronisbr/PrettyTables.jl/issues/133
+[gh-issue-140]: https://github.com/ronisbr/PrettyTables.jl/issues/140
+[gh-issue-142]: https://github.com/ronisbr/PrettyTables.jl/issues/142
 
 [gh-pr-5]: https://github.com/ronisbr/PrettyTables.jl/pull/5
 [gh-pr-8]: https://github.com/ronisbr/PrettyTables.jl/pull/8
@@ -530,3 +566,6 @@ Version 0.1.0
 [gh-pr-54]: https://github.com/ronisbr/PrettyTables.jl/pull/54
 [gh-pr-56]: https://github.com/ronisbr/PrettyTables.jl/pull/56
 [gh-pr-63]: https://github.com/ronisbr/PrettyTables.jl/pull/63
+[gh-pr-135]: https://github.com/ronisbr/PrettyTables.jl/pull/135
+[gh-pr-140]: https://github.com/ronisbr/PrettyTables.jl/pull/140
+[gh-pr-143]: https://github.com/ronisbr/PrettyTables.jl/pull/143
