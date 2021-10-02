@@ -440,7 +440,7 @@ end
     result = pretty_table(
         String,
         matrix;
-        backend = :html,
+        backend = Val(:html),
         header = header,
         standalone = false
     )
@@ -476,7 +476,7 @@ end
         String,
         matrix;
         allow_html_in_cells = true,
-        backend = :html,
+        backend = Val(:html),
         header = header,
         standalone = false
     )
