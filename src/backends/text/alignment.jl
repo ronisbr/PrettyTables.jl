@@ -12,8 +12,8 @@
 function _apply_alignment_anchor_regex!(
     data_str::Matrix{Vector{String}},
     alignment::Vector{Symbol},
-    id_cols::Vector{Int},
-    id_rows::Vector{Int},
+    id_cols::AbstractVector{Int},
+    id_rows::AbstractVector{Int},
     Δc::Int,
     # Configurations.
     alignment_anchor_fallback::Symbol,
@@ -168,8 +168,8 @@ end
 # Compute a list of cells in which the alignment is overridden by the user.
 function _compute_cell_alignment_override(
     data::Any,
-    id_cols::Vector{Int},
-    id_rows::Vector{Int},
+    id_cols::AbstractVector{Int},
+    id_rows::AbstractVector{Int},
     Δc::Int,
     num_printed_cols::Int,
     num_printed_rows::Int,

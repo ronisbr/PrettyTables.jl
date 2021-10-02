@@ -51,8 +51,8 @@ the tables.
 struct PrintInfo
     data::Any
     header::Any
-    id_cols::Vector{Int}
-    id_rows::Vector{Int}
+    id_cols::AbstractVector{Int}
+    id_rows::AbstractVector{Int}
     num_rows::Int
     num_cols::Int
     num_printed_cols::Int

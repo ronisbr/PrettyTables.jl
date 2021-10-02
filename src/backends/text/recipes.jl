@@ -29,7 +29,7 @@ function _create_printing_recipe(
     num_printed_cols::Int,
     num_lines_in_row::Vector{Int},
     cols_width::Vector{Int},
-    id_rows::Vector{Int},
+    id_rows::AbstractVector{Int},
     hlines::Vector{Int},
     vlines::Vector{Int},
     Δdisplay_lines::Int,
