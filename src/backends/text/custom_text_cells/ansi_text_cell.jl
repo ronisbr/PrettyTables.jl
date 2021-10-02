@@ -171,7 +171,13 @@ function get_printable_cell_line(cell::AnsiTextCell, l::Int)
     else
         lpad = cell._left_pads[l]
         rpad = cell._right_pads[l]
-        return " "^lpad * cell._stripped_lines[l] * " "^rpad
+        line = " "^lpad * cell._stripped_lines[l] * " "^rpad
+
+        # Compute the total size of the string.
+        line_width = lpad + textwidth(cell._stripped_lines[l]) + rpad
+
+        # Return the cropped string.
+        return _crop_str(line, line_width - cell._crops[l], line_width)
     end
 end
 
@@ -183,9 +189,18 @@ function get_rendered_line(cell::AnsiTextCell, l::Int)
         rpad = cell._right_pads[l]
         suffix = cell._suffixes[l]
 
+        # Compute the total size of the string.
+        line_width = lpad + textwidth(cell._stripped_lines[l]) + rpad
+
+        # Create the rendered line.
+        line = " "^lpad * cell._rendered_lines[l] * " "^rpad
+
+        # Crop the rendered line.
+        cropped_line = _crop_str(line, line_width - cell._crops[l], line_width)
+
         # We must reset everything after rendering the cell to avoid messing
         # with the decoration of the table.
-        return " "^lpad * cell._rendered_lines[l] * "\e[0m" * " "^rpad * suffix
+        return cropped_line * "\e[0m" * suffix
     end
 end
 
@@ -201,11 +216,9 @@ function apply_line_padding!(cell::AnsiTextCell, l::Int, left_pad::Int, right_pa
 end
 
 function crop_line!(cell::AnsiTextCell, l::Int, num::Int)
-    stripped = cell._stripped_lines[l]
-    rendered = cell._rendered_lines[l]
-    crop = length(stripped) - num
-    crop < 0 && return nothing
-    cell._rendered_lines[l] = _crop_str(rendered, crop, textwidth(rendered))
+    if num ≥ 0
+        cell._crops[l] = num
+    end
 
     return nothing
 end

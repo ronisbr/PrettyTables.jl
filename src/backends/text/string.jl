@@ -39,7 +39,10 @@ function _crop_str(str::String, crop_size::Int, lstr::Int = -1)
     tokens = split(str, r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])")
     crop_finished = false
 
-    for i in 1:length(tokens)
+    num_tokens = length(tokens)
+    num_ansi = length(ansi)
+
+    @inbounds for i in 1:num_tokens
         for c in tokens[i]
             sc = textwidth(c)
 
@@ -59,7 +62,9 @@ function _crop_str(str::String, crop_size::Int, lstr::Int = -1)
 
         crop_finished && break
 
-        cstr *= ansi[i].match
+        if i ≤ num_ansi
+            cstr *= ansi[i].match
+        end
     end
 
     return cstr
