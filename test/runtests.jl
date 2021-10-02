@@ -1,4 +1,5 @@
 using Test
+using Crayons
 using PrettyTables
 using Tables
 using Markdown

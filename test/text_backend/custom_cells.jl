@@ -284,6 +284,132 @@
     @test expected == result
 end
 
+@testset "Custom cells - AnsiTextCell" begin
+    b = crayon"blue bold"
+    y = crayon"yellow bold"
+    g = crayon"green bold"
+
+    # From strings
+    # ==========================================================================
+
+    ansi_table = [
+        AnsiTextCell("$(g)This $(y)is $(b)awesome!")
+        AnsiTextCell("$(g)😃😃 $(y)is $(b)awesome!")
+        AnsiTextCell("$(g)σ𝛕θ⍺ $(y)is $(b)awesome!")
+    ]
+
+    # No crop
+    # --------------------------------------------------------------------------
+
+    expected = """
+    ┌──────────────────┐
+    │           Col. 1 │
+    ├──────────────────┤
+    │ \e[32;1mThis \e[33;1mis \e[34;1mawesome!\e[0m │
+    │ \e[32;1m😃😃 \e[33;1mis \e[34;1mawesome!\e[0m │
+    │ \e[32;1mσ𝛕θ⍺ \e[33;1mis \e[34;1mawesome!\e[0m │
+    └──────────────────┘
+    """
+
+    result = pretty_table(String, ansi_table)
+
+    @test result == expected
+
+    # Cropping
+    # --------------------------------------------------------------------------
+
+    expected = """
+    ┌──────────┐
+    │   Col. 1 │
+    ├──────────┤
+    │ \e[32;1mThis \e[33;1mis\e[0m… │
+    │ \e[32;1m😃😃 \e[33;1mis\e[0m… │
+    │ \e[32;1mσ𝛕θ⍺ \e[33;1mis\e[0m… │
+    └──────────┘
+    """
+
+    result = pretty_table(String, ansi_table, maximum_columns_width = 8)
+    @test result == expected
+
+    expected = """
+    ┌─────────
+    │        ⋯
+    ├─────────
+    │ \e[32;1mThis \e[33;1mi\e[0m ⋯
+    │ \e[32;1m😃😃 \e[33;1mi\e[0m ⋯
+    │ \e[32;1mσ𝛕θ⍺ \e[33;1mi\e[0m ⋯
+    └─────────
+    1 column omitted
+    """
+
+    result = pretty_table(String, ansi_table, display_size = (-1, 10), crop = :both)
+    @test result == expected
+
+    # From functions
+    # ==========================================================================
+
+    function f(io)
+        b = crayon"blue bold"
+        y = crayon"yellow bold"
+        g = crayon"green bold"
+        print(io, "$(g)This $(y)is $(b)awesome!")
+        return nothing
+    end
+
+    ansi_table = [
+        AnsiTextCell(f, context = (:color => true,))
+        AnsiTextCell(f, context = (:color => true,))
+        AnsiTextCell(f, context = (:color => true,))
+    ]
+
+    # No crop
+    # --------------------------------------------------------------------------
+
+    expected = """
+    ┌──────────────────┐
+    │           Col. 1 │
+    ├──────────────────┤
+    │ \e[32;1mThis \e[33;1mis \e[34;1mawesome!\e[0m │
+    │ \e[32;1mThis \e[33;1mis \e[34;1mawesome!\e[0m │
+    │ \e[32;1mThis \e[33;1mis \e[34;1mawesome!\e[0m │
+    └──────────────────┘
+    """
+
+    result = pretty_table(String, ansi_table)
+
+    @test result == expected
+
+    # Cropping
+    # --------------------------------------------------------------------------
+
+    expected = """
+    ┌──────────┐
+    │   Col. 1 │
+    ├──────────┤
+    │ \e[32;1mThis \e[33;1mis\e[0m… │
+    │ \e[32;1mThis \e[33;1mis\e[0m… │
+    │ \e[32;1mThis \e[33;1mis\e[0m… │
+    └──────────┘
+    """
+
+    result = pretty_table(String, ansi_table, maximum_columns_width = 8)
+    @test result == expected
+
+    expected = """
+    ┌─────────
+    │        ⋯
+    ├─────────
+    │ \e[32;1mThis \e[33;1mi\e[0m ⋯
+    │ \e[32;1mThis \e[33;1mi\e[0m ⋯
+    │ \e[32;1mThis \e[33;1mi\e[0m ⋯
+    └─────────
+    1 column omitted
+    """
+
+    result = pretty_table(String, ansi_table, display_size = (-1, 10), crop = :both)
+    @test result == expected
+end
+
 mutable struct MyCustomCell <: CustomTextCell
     str::String
 end
@@ -300,33 +426,3 @@ end
     @test PrettyTables.reset!(mycell) === nothing
 end
 
-
-@testset "Custom text cells - AnsiTextCell" begin
-    strings = ["\e[1mHello\e[22m", "\e[1mWorld\e[22m"]
-    data = [AnsiTextCell(io -> print(io, x)) for x in strings]
-    @testset "Basic" begin
-        result = pretty_table(String, data)
-        expected = """
-        ┌────────┐
-        │ Col. 1 │
-        ├────────┤
-        │  \e[1mHello\e[22m\e[0m │
-        │  \e[1mWorld\e[22m\e[0m │
-        └────────┘
-        """
-        @test result == expected
-    end
-
-    @testset "Cropped" begin
-        result = pretty_table(String, data, display_size=(-1, 10))
-        expected = """
-        ┌────────┐
-        │ Col. 1 │
-        ├────────┤
-        │  \e[1mHello\e[22m\e[0m │
-        │  \e[1mWorld\e[22m\e[0m │
-        └────────┘
-        """
-        @test result == expected
-    end
-end
