@@ -1,6 +1,12 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 1.2.2
+-------------
+
+- ![Bugfix][badge-bugfix] Newlines must be kept in `AnsiTextCell`. Otherwise, it
+  will be impossible to align text between those cells.
+
 Version 1.2.1
 -------------
 
