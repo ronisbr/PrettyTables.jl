@@ -1,6 +1,13 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 1.2.1
+-------------
+
+- ![Deprecation][badge-deprecation] The deprecations removed in v1.2.0 were
+  added again so that this new version is not breaking.
+  (Issue [#146][gh-issue-146])
+
 Version 1.2.0
 -------------
 
