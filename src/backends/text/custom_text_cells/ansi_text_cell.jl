@@ -227,7 +227,7 @@ function parse_cell_text(cell::AnsiTextCell; kwargs...)
     # Regex to remove escape sequences from the string.
     r_ansi_escape = r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])"
 
-    _rendered_lines = filter(!isempty, map(String, split(cell.string, '\n')))
+    _rendered_lines = map(String, split(cell.string, '\n'))
     _stripped_lines = map(l -> replace(l, r_ansi_escape => ""), _rendered_lines)
 
     num_lines = length(_rendered_lines)

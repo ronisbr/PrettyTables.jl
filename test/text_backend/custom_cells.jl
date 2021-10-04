@@ -408,6 +408,34 @@ end
 
     result = pretty_table(String, ansi_table, display_size = (-1, 10), crop = :both)
     @test result == expected
+
+    # Newlines
+    # --------------------------------------------------------------------------
+
+    ansi_table = [
+        AnsiTextCell("$(g)This\n$(y)is\n$(b)awesome!")
+        AnsiTextCell("$(g)😃😃\n$(y)is\n$(b)awesome!")
+        AnsiTextCell("$(g)σ𝛕θ⍺\n$(y)is\n$(b)awesome!")
+    ]
+
+    expected = """
+    ┌──────────┐
+    │   Col. 1 │
+    ├──────────┤
+    │     \e[32;1mThis\e[0m │
+    │       \e[33;1mis\e[0m │
+    │ \e[34;1mawesome!\e[0m │
+    │     \e[32;1m😃😃\e[0m │
+    │       \e[33;1mis\e[0m │
+    │ \e[34;1mawesome!\e[0m │
+    │     \e[32;1mσ𝛕θ⍺\e[0m │
+    │       \e[33;1mis\e[0m │
+    │ \e[34;1mawesome!\e[0m │
+    └──────────┘
+    """
+
+    result = pretty_table(String, ansi_table)
+    @test result == expected
 end
 
 mutable struct MyCustomCell <: CustomTextCell
