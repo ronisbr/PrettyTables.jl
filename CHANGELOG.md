@@ -562,6 +562,7 @@ Version 0.1.0
 [gh-issue-133]: https://github.com/ronisbr/PrettyTables.jl/issues/133
 [gh-issue-140]: https://github.com/ronisbr/PrettyTables.jl/issues/140
 [gh-issue-142]: https://github.com/ronisbr/PrettyTables.jl/issues/142
+[gh-issue-146]: https://github.com/ronisbr/PrettyTables.jl/issues/146
 
 [gh-pr-5]: https://github.com/ronisbr/PrettyTables.jl/pull/5
 [gh-pr-8]: https://github.com/ronisbr/PrettyTables.jl/pull/8
