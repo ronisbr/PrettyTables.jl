@@ -19,6 +19,9 @@
 @deprecate(pretty_table(::Type{String}, data::Any, header::AbstractVector; kwargs...),
            pretty_table(String, data; header = header, kwargs...))
 
+@deprecate(pretty_table(::Type{HTML}, data::Any, header::AbstractVector; kwargs...),
+           pretty_table(HTML, data; header = header, kwargs...))
+
 @deprecate(pretty_table(data::Any, header::AbstractMatrix; kwargs...),
            pretty_table(data;
                         header = tuple([header[i, :] for i = 1:size(header, 1)]...),
@@ -31,6 +34,11 @@
 
 @deprecate(pretty_table(::Type{String}, data::Any, header::AbstractMatrix; kwargs...),
            pretty_table(String, data;
+                        header = tuple([header[i, :] for i = 1:size(header, 1)]...),
+                        kwargs...))
+
+@deprecate(pretty_table(::Type{HTML}, data::Any, header::AbstractMatrix; kwargs...),
+           pretty_table(HTML, data;
                         header = tuple([header[i, :] for i = 1:size(header, 1)]...),
                         kwargs...))
 
@@ -52,4 +60,24 @@ function pretty_table(::Type{String}, data::AbstractMatrix; kwargs...)
     io = IOBuffer()
     _pretty_table(io, data; kwargs...)
     return String(take!(io))
+end
+
+function pretty_table(::Type{HTML}, data::AbstractVector; kwargs...)
+    if !haskey(kwargs, :backend) && !haskey(kwargs, :tf)
+        str = pretty_table(String, data; backend = Val(:html), kwargs...)
+    else
+        str = pretty_table(String, data; kwargs...)
+    end
+
+    return HTML(str)
+end
+
+function pretty_table(::Type{HTML}, data::AbstractMatrix; kwargs...)
+    if !haskey(kwargs, :backend) && !haskey(kwargs, :tf)
+        str = pretty_table(String, data; backend = Val(:html), kwargs...)
+    else
+        str = pretty_table(String, data; kwargs...)
+    end
+
+    return HTML(str)
 end
