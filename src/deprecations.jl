@@ -74,16 +74,26 @@
 pretty_table(io::IO, data::AbstractVector; kwargs...) = _pretty_table(io, data; kwargs...)
 pretty_table(io::IO, data::AbstractMatrix; kwargs...) = _pretty_table(io, data; kwargs...)
 
-function pretty_table(::Type{String}, data::AbstractVector; kwargs...)
-    io = IOBuffer()
+function pretty_table(
+    ::Type{String},
+    data::AbstractVector;
+    color::Bool = false,
+    kwargs...
+)
+    io = IOContext(IOBuffer(), :color => color)
     _pretty_table(io, data; kwargs...)
-    return String(take!(io))
+    return String(take!(io.io))
 end
 
-function pretty_table(::Type{String}, data::AbstractMatrix; kwargs...)
-    io = IOBuffer()
+function pretty_table(
+    ::Type{String},
+    data::AbstractMatrix;
+    color::Bool = false,
+    kwargs...
+)
+    io = IOContext(IOBuffer(), :color => color)
     _pretty_table(io, data; kwargs...)
-    return String(take!(io))
+    return String(take!(io.io))
 end
 
 function pretty_table(::Type{HTML}, data::AbstractVector; kwargs...)
