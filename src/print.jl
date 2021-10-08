@@ -170,7 +170,7 @@ filters. If this function returns `true` for `i`, then the i-th row (in case of
 Otherwise, it will be omitted.
 
 A set of filters can be passed inside of a tuple. Notice that, in this case,
--*all filters** for a specific row or column must be return `true` so that it
+**all filters** for a specific row or column must be return `true` so that it
 can be printed, *i.e* the set of filters has an `AND` logic.
 
 If the keyword is set to `nothing`, which is the default, then no filtering will
