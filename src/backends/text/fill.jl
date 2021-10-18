@@ -65,6 +65,8 @@ end
 function _fill_matrix_data!(
     header_str::Matrix{String},
     data_str::Matrix{Vector{String}},
+    cols_width::Vector{Int},
+    num_lines_in_row::Vector{Int},
     id_cols::AbstractVector{Int},
     jvec::Vector{Int},
     jrvec::Vector{Int},
@@ -81,6 +83,8 @@ function _fill_matrix_data!(
     crop_subheader::Bool,
     limit_printing::Bool,
     linebreaks::Bool,
+    maximum_columns_width::Vector{Int},
+    minimum_columns_width::Vector{Int},
     noheader::Bool,
     renderer::Union{Val{:print}, Val{:show}},
     vcrop_mode::Symbol
@@ -104,9 +108,9 @@ function _fill_matrix_data!(
 
         # Store the largest cell width in this column. This leads to a double
         # computation of the cell size, here and in the
-        # `_update_text_table_lengths`. However, we need this to stop processing
+        # `_compute_table_size_data`. However, we need this to stop processing
         # columns when cropping horizontally.
-        largest_cell_width = 0
+        largest_cell_width = minimum_columns_width[ic] ≤ 0 ? 0 : minimum_columns_width[ic]
 
         if !noheader
             for j in 1:header_num_rows
@@ -133,10 +137,13 @@ function _fill_matrix_data!(
                 header_str[j, i] = first(hstr)
                 num_processed_rows += 1
 
-                largest_cell_width = max(
-                    largest_cell_width,
-                    textwidth(header_str[j,i])
-                )
+                header_ji_len = textwidth(header_str[j, i])
+
+                # If the user wants to crop the subheader, then it should not be
+                # used to compute the largest cell width of this column.
+                if (j == 1) || (!crop_subheader)
+                    largest_cell_width = max(largest_cell_width, header_ji_len)
+                end
             end
         end
 
@@ -172,7 +179,9 @@ function _fill_matrix_data!(
 
             # Compute the number of lines so that we can avoid process
             # unnecessary cells due to cropping.
-            num_processed_rows += length(data_str[j, i])
+            num_lines_ji = length(data_str[j, i])
+            num_processed_rows += num_lines_ji
+            num_lines_in_row[j] = max(num_lines_in_row[j], num_lines_ji)
 
             if data_ij isa Markdown.MD
                 largest_cell_width = max(
@@ -198,12 +207,21 @@ function _fill_matrix_data!(
             end
         end
 
+        # Compute the column width given the user's configuration.
+        cols_width[i] = _update_column_width(
+            cols_width[i],
+            largest_cell_width,
+            columns_width[ic],
+            maximum_columns_width[ic],
+            minimum_columns_width[ic]
+        )
+
         # If the user horizontal cropping, then check if we need to process
         # another column.
         #
         # TODO: Should we take into account the dividers?
         if display.size[2] > 0
-            pred_tab_width += largest_cell_width
+            pred_tab_width += cols_width[i]
 
             if pred_tab_width > display.size[2]
                 num_printed_cols = i
@@ -219,11 +237,10 @@ end
 function _fill_row_number_column!(
     header_str::Matrix{String},
     data_str::Matrix{Vector{String}},
-    id_rows::AbstractVector{Int},
+    cols_width::Vector{Int},
     jvec::Vector{Int},
     jrvec::Vector{Int},
     noheader::Bool,
-    num_rows::Int,
     row_number_column_title::String
 )
     num_printed_rows = size(data_str)[1]
@@ -234,12 +251,20 @@ function _fill_row_number_column!(
     @inbounds header_str[1, 1]      = row_number_column_title
     @inbounds header_str[2:end, 1] .= ""
 
+    # Do not take the header size into account if the user does not want a
+    # header.
+    if !noheader
+        cols_width[1] = max(cols_width[1], textwidth(row_number_column_title))
+    end
+
     # Set the data of the row column.
     @inbounds for i = 1:num_printed_rows
         j  = jvec[i]
         jr = jrvec[i]
 
-        data_str[j, 1] = [string(jr)]
+        str_jr = string(jr)
+        data_str[j, 1] = [str_jr]
+        cols_width[1] = max(cols_width[1], textwidth(str_jr))
     end
 
     return nothing
@@ -249,6 +274,7 @@ end
 function _fill_row_name_column!(
     header_str::Matrix{String},
     data_str::Matrix{Vector{String}},
+    cols_width::Vector{Int},
     (@nospecialize row_names::AbstractVector),
     jvec::Vector{Int},
     jrvec::Vector{Int},
@@ -273,6 +299,8 @@ function _fill_row_name_column!(
     )
     @inbounds header_str[2:end, Δc] .= ""
 
+    cols_width[Δc] = max(cols_width[Δc], textwidth(header_str[1, Δc]))
+
     # Convert the row names to string.
     @inbounds for i in 1:num_printed_rows
         j  = jvec[i]
@@ -294,6 +322,8 @@ function _fill_row_name_column!(
         )
 
         data_str[j, Δc] = row_name_str
+
+        cols_width[Δc] = max(cols_width[Δc], textwidth(first(row_name_str)))
     end
 
     return nothing

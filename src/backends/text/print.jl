@@ -214,6 +214,20 @@ function _pt_text(
     # to the table.
     alignment_add = Symbol[]
 
+    # Vector that must contain the width of each column.
+    cols_width = ones(Int, num_printed_cols)
+
+    # Vector that must contain the number of lines in each printed row.
+    num_lines_in_row = ones(Int, num_printed_rows)
+
+    # NOTE: Algorithm to compute the table size and number of lines in the rows.
+    # Previously, the algorithm to compute the table size and the number of
+    # lines in the rows was a function called after the conversion of the input
+    # matrix to the string matrix. Although this approach was cleaner, we had
+    # problems when computing how many columns we can fit on the display to
+    # avoid unnecessary processing. Hence, the functions that fill the data are
+    # also responsible to compute the size of each column.
+
     # Vectors with the order that the rows must be filled
     # --------------------------------------------------------------------------
 
@@ -252,11 +266,10 @@ function _pt_text(
         _fill_row_number_column!(
             header_str,
             data_str,
-            id_rows,
+            cols_width,
             jvec,
             jrvec,
             noheader,
-            num_rows,
             row_number_column_title
         )
 
@@ -271,6 +284,7 @@ function _pt_text(
         _fill_row_name_column!(
             header_str,
             data_str,
+            cols_width,
             row_names,
             jvec,
             jrvec,
@@ -292,6 +306,8 @@ function _pt_text(
     num_printed_cols, num_printed_rows = _fill_matrix_data!(
         header_str,
         data_str,
+        cols_width,
+        num_lines_in_row,
         id_cols,
         jvec,
         jrvec,
@@ -308,6 +324,8 @@ function _pt_text(
         crop_subheader,
         limit_printing,
         linebreaks,
+        maximum_columns_width,
+        minimum_columns_width,
         noheader,
         renderer,
         vcrop_mode
@@ -318,7 +336,7 @@ function _pt_text(
 
     _apply_alignment_anchor_regex!(
         data_str,
-        alignment,
+        cols_width,
         id_cols,
         id_rows,
         Δc,
@@ -326,35 +344,10 @@ function _pt_text(
         alignment_anchor_fallback,
         alignment_anchor_fallback_override,
         alignment_anchor_regex,
-        cell_alignment_override
-    )
-
-    # Update the table size data that is used in the printing algorithm
-    # --------------------------------------------------------------------------
-
-    # The variable `columns_width` is the specification of the user for the
-    # columns width. The variable `cols_width` contains the actual size of each
-    # column. This is necessary because if the user asks for a width equal or
-    # lower than 0 in a column, then the width will be automatically computed to
-    # fit the longest field.
-    #
-    # By default, if the user wants to show the row number of the row names,
-    # those columns will have the size computed automatically.
-    #
-    # The variable `num_lines_in_row` stores the maximum number of lines in the
-    # cells of each printed table row.
-
-    cols_width, num_lines_in_row = _compute_table_size_data(
-        header_str,
-        data_str,
-        id_cols,
-        Δc,
-        # Configurations
+        cell_alignment_override,
         columns_width,
-        crop_subheader,
         maximum_columns_width,
-        minimum_columns_width,
-        noheader
+        minimum_columns_width
     )
 
     # If the user wants all the columns with the same size, then select the

@@ -11,7 +11,7 @@
 # string.
 function _apply_alignment_anchor_regex!(
     data_str::Matrix{Vector{String}},
-    alignment::Vector{Symbol},
+    cols_width::Vector{Int},
     id_cols::AbstractVector{Int},
     id_rows::AbstractVector{Int},
     Δc::Int,
@@ -19,7 +19,10 @@ function _apply_alignment_anchor_regex!(
     alignment_anchor_fallback::Symbol,
     alignment_anchor_fallback_override::Dict{Int, Symbol},
     alignment_anchor_regex::Dict{Int, T} where T<:AbstractVector{Regex},
-    cell_alignment_override::Dict{Tuple{Int, Int}, Symbol}
+    cell_alignment_override::Dict{Tuple{Int, Int}, Symbol},
+    columns_width::Vector{Int},
+    maximum_columns_width::Vector{Int},
+    minimum_columns_width::Vector{Int}
 )
 
     num_printed_rows, num_printed_cols = size(data_str)
@@ -160,6 +163,18 @@ function _apply_alignment_anchor_regex!(
                 data_str[i, j][l] = data_str[i, j][l] * " "^pad
             end
         end
+
+        # Since the alignemnt can change the column size, we need to recompute
+        # it considering the user's configuration. Notice that the old value in
+        # `cols_width` must be considered here because the header width is not
+        # taken into account when calculating `largest_cell_width`.
+        cols_width[j] = _update_column_width(
+            cols_width[j],
+            largest_cell_width,
+            columns_width[jc],
+            maximum_columns_width[jc],
+            minimum_columns_width[jc]
+        )
     end
 
     return nothing
