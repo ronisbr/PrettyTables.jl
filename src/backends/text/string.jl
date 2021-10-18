@@ -427,7 +427,7 @@ function _reapply_ansi_format!(lines::Vector{T}) where T<:AbstractString
         # Find the first non-blank character.
         id = findfirst(x -> x ≠ ' ', lines[i])
 
-        if (id == nothing) || (id == 1)
+        if (id === nothing) || (id == 1)
             lines[i] = composed_ansi * lines[i]
         else
             lines[i] = lines[i][1:id-1] * composed_ansi * lines[i][id:end]
