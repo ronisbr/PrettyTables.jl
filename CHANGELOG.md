@@ -1,6 +1,14 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 1.2.3
+-------------
+
+- ![Bugfix][badge-bugfix] We were not considering the column width configuration
+  (`maximum_columns_width`, `minimum_columns_width`, etc.) when computing the
+  number of columns we can display in the available size. This behavior was
+  leading to incorrect cropping in many situation. (Issue [#149][gh-issue-149])
+
 Version 1.2.2
 -------------
 
@@ -569,6 +577,7 @@ Version 0.1.0
 [gh-issue-140]: https://github.com/ronisbr/PrettyTables.jl/issues/140
 [gh-issue-142]: https://github.com/ronisbr/PrettyTables.jl/issues/142
 [gh-issue-146]: https://github.com/ronisbr/PrettyTables.jl/issues/146
+[gh-issue-149]: https://github.com/ronisbr/PrettyTables.jl/issues/149
 
 [gh-pr-5]: https://github.com/ronisbr/PrettyTables.jl/pull/5
 [gh-pr-8]: https://github.com/ronisbr/PrettyTables.jl/pull/8
