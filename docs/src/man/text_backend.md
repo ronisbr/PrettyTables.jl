@@ -318,7 +318,7 @@ Each highlighter is an instance of the structure `Highlighter` that contains
 three fields:
 
 - `f::Function`: Function with the signature `f(data, i, j)` in which should
-    return `true` if the element `(i, j)` in `data` must be highlighter, or
+    return `true` if the element `(i, j)` in `data` must be highlighted, or
     `false` otherwise.
 - `fd::Function`: Function with the signature `f(h,data,i,j)` in which `h` is
     the highlighter. This function must return the `Crayon` to be applied to the
