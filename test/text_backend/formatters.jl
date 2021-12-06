@@ -184,4 +184,54 @@ end
         formatters = ft_printf(["%8.2f", "%8.4f"], [1, 4])
     )
     @test result == expected
+
+    # ft_nomissing and ft_nonothing
+    # ==========================================================================
+
+    table = Any[1 2 nothing; 3 missing 4; nothing 6 missing; 3//4 π 1.0f0]
+
+    expected = """
+┌─────────┬────────┬─────────┐
+│  Col. 1 │ Col. 2 │  Col. 3 │
+├─────────┼────────┼─────────┤
+│       1 │      2 │ nothing │
+│       3 │        │       4 │
+│ nothing │      6 │         │
+│    3//4 │      π │     1.0 │
+└─────────┴────────┴─────────┘
+"""
+
+    result = pretty_table(String, table; formatters = ft_nomissing)
+    @test result == expected
+
+    expected = """
+┌────────┬─────────┬─────────┐
+│ Col. 1 │  Col. 2 │  Col. 3 │
+├────────┼─────────┼─────────┤
+│      1 │       2 │         │
+│      3 │ missing │       4 │
+│        │       6 │ missing │
+│   3//4 │       π │     1.0 │
+└────────┴─────────┴─────────┘
+"""
+
+    result = pretty_table(String, table; formatters = ft_nonothing)
+    @test result == expected
+
+    expected = """
+┌────────┬────────┬────────┐
+│ Col. 1 │ Col. 2 │ Col. 3 │
+├────────┼────────┼────────┤
+│      1 │      2 │        │
+│      3 │        │      4 │
+│        │      6 │        │
+│   3//4 │      π │    1.0 │
+└────────┴────────┴────────┘
+"""
+
+    result = pretty_table(String, table; formatters = (ft_nomissing, ft_nonothing))
+    @test result == expected
+
+    result = pretty_table(String, table; formatters = (ft_nonothing, ft_nomissing))
+    @test result == expected
 end

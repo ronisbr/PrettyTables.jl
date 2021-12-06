@@ -7,7 +7,7 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-export ft_printf, ft_round, ft_latex_sn
+export ft_printf, ft_round, ft_latex_sn, ft_nomissing, ft_nonothing
 
 """
     ft_printf(ftv_str, [columns])
@@ -199,3 +199,21 @@ function ft_latex_sn(
         end
     end
 end
+
+"""
+    ft_nomissing(v, i::Int, j::Int)
+
+Replace `missing` with an empty string. If `v` is not `Missing`, then `v` is
+returned.
+"""
+ft_nomissing(v::Missing, i::Int, j::Int) = ""
+ft_nomissing(v, i::Int, j::Int) = v
+
+"""
+    ft_nonothing(v, i::Int, j::Int)
+
+Replace `nothing` with an empty string. If `v` is not `Nothing`, then `v` is
+returned.
+"""
+ft_nonothing(v::Nothing, i::Int, j::Int) = ""
+ft_nonothing(v, i::Int, j::Int) = v

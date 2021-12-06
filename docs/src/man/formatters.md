@@ -150,5 +150,78 @@ julia> pretty_table(data; formatters = ft_round(1, [1, 3]))
 └────────┴──────────┴────────┘
 ```
 
+```
+ft_nomissing
+```
+
+This pre-defined formatter converts any cell that is `missing` to an empty
+string.
+
+```jldoctest
+julia> data = [1 2 missing; 3 missing 4; 5 6 missing];
+
+julia> pretty_table(data)
+┌────────┬─────────┬─────────┐
+│ Col. 1 │  Col. 2 │  Col. 3 │
+├────────┼─────────┼─────────┤
+│      1 │       2 │ missing │
+│      3 │ missing │       4 │
+│      5 │       6 │ missing │
+└────────┴─────────┴─────────┘
+
+julia> pretty_table(data, formatters = ft_nomissing)
+┌────────┬────────┬────────┐
+│ Col. 1 │ Col. 2 │ Col. 3 │
+├────────┼────────┼────────┤
+│      1 │      2 │        │
+│      3 │        │      4 │
+│      5 │      6 │        │
+└────────┴────────┴────────┘
+```
+
+```
+ft_nonothing
+```
+
+This pre-defined formatter converts any cell that is `nothing` to an empty
+string.
+
+```jldoctest
+julia> data = [1 2 nothing; 3 missing 4; 5 6 nothing];
+
+julia> pretty_table(data)
+┌────────┬─────────┬─────────┐
+│ Col. 1 │  Col. 2 │  Col. 3 │
+├────────┼─────────┼─────────┤
+│      1 │       2 │ nothing │
+│      3 │ missing │       4 │
+│      5 │       6 │ nothing │
+└────────┴─────────┴─────────┘
+
+julia> pretty_table(data, formatters = ft_nonothing)
+┌────────┬─────────┬────────┐
+│ Col. 1 │  Col. 2 │ Col. 3 │
+├────────┼─────────┼────────┤
+│      1 │       2 │        │
+│      3 │ missing │      4 │
+│      5 │       6 │        │
+└────────┴─────────┴────────┘
+```
+
+Notice that `ft_nomissing` and `ft_nonothing` can be combined:
+
+```julia
+julia> data = [1 2 nothing; 3 missing 4; 5 6 nothing];
+
+julia> pretty_table(data, formatters = (ft_nonothing, ft_nomissing))
+┌────────┬────────┬────────┐
+│ Col. 1 │ Col. 2 │ Col. 3 │
+├────────┼────────┼────────┤
+│      1 │      2 │        │
+│      3 │        │      4 │
+│      5 │      6 │        │
+└────────┴────────┴────────┘
+```
+
 !!! note
     The `formatters` keyword is supported in all back-ends.
