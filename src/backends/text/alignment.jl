@@ -72,7 +72,7 @@ function _apply_alignment_anchor_regex!(
                 end
 
                 if m !== nothing
-                    alignment_column_i = textwidth(view(line, 1:first(m)))
+                    alignment_column_i = textwidth(@views(line[1:first(m)]))
                 else
                     # If a match is not found, then the alignment column
                     # depends on the user selection.
@@ -119,7 +119,7 @@ function _apply_alignment_anchor_regex!(
                 end
 
                 if m !== nothing
-                    match_column_k = textwidth(view(line, 1:first(m)))
+                    match_column_k = textwidth(@views(line[1:first(m)]))
                     pad = alignment_column - match_column_k
                 else
                     # If a match is not found, then the alignment column
