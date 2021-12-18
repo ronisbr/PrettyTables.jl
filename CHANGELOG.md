@@ -1,6 +1,16 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 1.3.0
+-------------
+
+- ![Bugfix][badge-bugfix] The alignment anchor regex algorithm was not computing
+  the alignment row correctly in lines with UTF-8 symbols. (Issue
+  [#147][gh-issue-153])
+- ![Feature][badge-feature] Two predefined formatters were added: `ft_nomissing`
+  and `ft_nonothing`. They can be used to transform, respectively, `missing` and
+  `nothing` into an empty string. (Issue [#150][gh-issue-150])
+
 Version 1.2.3
 -------------
 
@@ -578,6 +588,8 @@ Version 0.1.0
 [gh-issue-142]: https://github.com/ronisbr/PrettyTables.jl/issues/142
 [gh-issue-146]: https://github.com/ronisbr/PrettyTables.jl/issues/146
 [gh-issue-149]: https://github.com/ronisbr/PrettyTables.jl/issues/149
+[gh-issue-150]: https://github.com/ronisbr/PrettyTables.jl/issues/150
+[gh-issue-153]: https://github.com/ronisbr/PrettyTables.jl/issues/153
 
 [gh-pr-5]: https://github.com/ronisbr/PrettyTables.jl/pull/5
 [gh-pr-8]: https://github.com/ronisbr/PrettyTables.jl/pull/8
