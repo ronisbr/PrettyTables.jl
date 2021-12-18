@@ -825,3 +825,25 @@ end
 
     @test result == expected
 end
+
+@testset "Issue #153 - Alignment anchor regex with UTF-8 chars." begin
+    matrix = ["¹⁹/₄", "¹⁰/₄₁", "⁴²⁵/₁₁₄", "⁷⁷⁷⁷⁷⁷/₄₈₈₈₈₈₈₈₈₈"]
+
+    expected = """
+┌───────────────────┐
+│            Col. 1 │
+├───────────────────┤
+│     ¹⁹/₄          │
+│     ¹⁰/₄₁         │
+│    ⁴²⁵/₁₁₄        │
+│ ⁷⁷⁷⁷⁷⁷/₄₈₈₈₈₈₈₈₈₈ │
+└───────────────────┘
+"""
+
+    result = pretty_table(
+        String,
+        matrix;
+        alignment_anchor_regex = Dict(0 => [r"/"])
+    )
+    @test result == expected
+end

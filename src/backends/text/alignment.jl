@@ -29,7 +29,8 @@ function _apply_alignment_anchor_regex!(
 
     # If we have a key `0`, then it will be used to align all the columns.
     if haskey(alignment_anchor_regex, 0)
-        alignment_keys = collect(1:maximum(id_cols))
+        max_id_cols    = maximum(id_cols)::Int
+        alignment_keys = collect(1:max_id_cols)
         global_regex   = true
     else
         alignment_keys = sort(collect(keys(alignment_anchor_regex)))
@@ -37,7 +38,7 @@ function _apply_alignment_anchor_regex!(
     end
 
     @inbounds for jc in alignment_keys
-        j = findfirst(x -> x == jc, id_cols)
+        j = findfirst(==(jc), id_cols)::Int
         j === nothing && continue
         j += Δc
 
@@ -71,7 +72,7 @@ function _apply_alignment_anchor_regex!(
                 end
 
                 if m !== nothing
-                    alignment_column_i = first(m)
+                    alignment_column_i = textwidth(@view(line[1:first(m)]))
                 else
                     # If a match is not found, then the alignment column
                     # depends on the user selection.
@@ -118,7 +119,7 @@ function _apply_alignment_anchor_regex!(
                 end
 
                 if m !== nothing
-                    match_column_k = first(m)
+                    match_column_k = textwidth(@view(line[1:first(m)]))
                     pad = alignment_column - match_column_k
                 else
                     # If a match is not found, then the alignment column
