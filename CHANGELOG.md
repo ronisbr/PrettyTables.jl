@@ -1,6 +1,13 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 1.3.1
+-------------
+
+- ![Bugfix][badge-bugfix] The function `pretty_table` was returning an error
+  when the alignment regex anchor contained a columns that does not exists.
+  (Issue [#154][gh-issue-154])
+
 Version 1.3.0
 -------------
 
@@ -590,6 +597,7 @@ Version 0.1.0
 [gh-issue-149]: https://github.com/ronisbr/PrettyTables.jl/issues/149
 [gh-issue-150]: https://github.com/ronisbr/PrettyTables.jl/issues/150
 [gh-issue-153]: https://github.com/ronisbr/PrettyTables.jl/issues/153
+[gh-issue-154]: https://github.com/ronisbr/PrettyTables.jl/issues/154
 
 [gh-pr-5]: https://github.com/ronisbr/PrettyTables.jl/pull/5
 [gh-pr-8]: https://github.com/ronisbr/PrettyTables.jl/pull/8
