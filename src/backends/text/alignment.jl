@@ -38,7 +38,7 @@ function _apply_alignment_anchor_regex!(
     end
 
     @inbounds for jc in alignment_keys
-        j = findfirst(==(jc), id_cols)::Int
+        j = findfirst(==(jc), id_cols)::Union{Nothing, Int}
         j === nothing && continue
         j += Δc
 

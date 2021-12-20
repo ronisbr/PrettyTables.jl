@@ -826,7 +826,7 @@ end
     @test result == expected
 end
 
-@testset "Issue #153 - Alignment anchor regex with UTF-8 chars." begin
+@testset "Issue #153 - Alignment anchor regex with UTF-8 chars" begin
     matrix = ["¹⁹/₄", "¹⁰/₄₁", "⁴²⁵/₁₁₄", "⁷⁷⁷⁷⁷⁷/₄₈₈₈₈₈₈₈₈₈"]
 
     expected = """
@@ -844,6 +844,39 @@ end
         String,
         matrix;
         alignment_anchor_regex = Dict(0 => [r"/"])
+    )
+    @test result == expected
+end
+
+@testset "Issue #154 - Alignment anchor regex with unvalid columns" begin
+    data = [1 2 3]
+
+    expected = """
+┌────────┬────────┬────────┐
+│ Col. 1 │ Col. 2 │ Col. 3 │
+├────────┼────────┼────────┤
+│      1 │      2 │      3 │
+└────────┴────────┴────────┘
+"""
+
+    result = pretty_table(
+        String,
+        data;
+        alignment_anchor_regex = Dict(10 => [r"/"])
+    )
+    @test result == expected
+
+    result = pretty_table(
+        String,
+        data;
+        alignment_anchor_regex = Dict(-10 => [r"/"])
+    )
+    @test result == expected
+
+    result = pretty_table(
+        String,
+        data;
+        alignment_anchor_regex = Dict(-10 => [r"/"], -5 => [r"\."])
     )
     @test result == expected
 end
