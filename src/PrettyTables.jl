@@ -7,7 +7,7 @@ using Markdown
 
 @reexport using Crayons
 
-import Base: Dict, ismalformed, isoverlong, @kwdef
+import Base: Dict, ismalformed, isoverlong, @kwdef, getindex, size
 
 # The performance of PrettyTables.jl does not increase by a lot of optimizations
 # that is performed by the compiler. Hence, we disable then to improve compile
@@ -38,6 +38,15 @@ include("predefined_formatters.jl")
 include("print.jl")
 include("private.jl")
 include("tables.jl")
+
+# Processed table
+# ===============
+
+include("./processed_table/addtional_data.jl")
+include("./processed_table/constructors.jl")
+include("./processed_table/filters.jl")
+include("./processed_table/get.jl")
+include("./processed_table/size.jl")
 
 # Backends
 # ========

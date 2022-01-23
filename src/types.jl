@@ -42,6 +42,30 @@ struct RowTable
     size::Tuple{Int, Int}        # ........................... Size of the table
 end
 
+Base.@kwdef mutable struct ProcessedTable
+    data::Any
+    header::Any
+
+    # Private fields
+    # ==========================================================================
+
+    # Inputs
+    # --------------------------------------------------------------------------
+    _column_filters::Union{Nothing, Tuple} = nothing
+    _row_filters::Union{Nothing, Tuple} = nothing
+
+    # Internal variables
+    # --------------------------------------------------------------------------
+    _additional_column_id::Vector{Symbol} = Symbol[]
+    _additional_data_columns::Vector{Any} = Any[]
+    _additional_header_columns::Vector{Vector{String}} = Vector{String}[]
+    _filters_processed::Bool = false
+    _id_rows::Union{Nothing, Vector{Int}} = nothing
+    _id_columns::Union{Nothing, Vector{Int}} = nothing
+    _num_filtered_rows::Int = -1
+    _num_filtered_columns::Int = -1
+end
+
 """
     struct PrintInfo
 
@@ -49,14 +73,8 @@ This structure stores the information required so that the backends can print
 the tables.
 """
 struct PrintInfo
-    data::Any
+    data::ProcessedTable
     header::Any
-    id_cols::AbstractVector{Int}
-    id_rows::AbstractVector{Int}
-    num_rows::Int
-    num_cols::Int
-    num_printed_cols::Int
-    num_printed_rows::Int
     header_num_rows::Int
     header_num_cols::Int
     show_row_number::Bool
