@@ -29,10 +29,15 @@ end
 """
     _size(ptable::ProcessedTable)
 
-Return a tuple with the current size of the table, considering the filtered data
-plus the additional columns.
+Return a tuple with the current size of the table, considering the header,
+filtered data, and the additional columns.
 """
 function _size(ptable::ProcessedTable)
-    return ptable._num_filtered_rows,
-        ptable._num_filtered_columns + length(ptable._additional_data_columns)
+    total_columns =
+        ptable._num_filtered_columns +
+        length(ptable._additional_data_columns)
+
+    total_rows = ptable._num_header_rows + ptable._num_filtered_rows
+
+    return total_rows, total_columns
 end

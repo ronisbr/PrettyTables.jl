@@ -40,20 +40,3 @@ function _add_column!(
 
     return nothing
 end
-
-"""
-    _get_column_id(ptable::ProcessedTable, j::Int)
-
-Return the identification symbol of the column `j` of `ptable`. If the column is
-from the original data, then `:__ORIGINAL_DATA__` is returned.
-"""
-function _get_column_id(ptable::ProcessedTable, j::Int)
-    Δc = length(ptable._additional_data_columns)
-
-    # Check if we are in the additional columns.
-    if j ≤ Δc
-        return ptable._additional_column_id[j]
-    else
-        return :__ORIGINAL_DATA__
-    end
-end
