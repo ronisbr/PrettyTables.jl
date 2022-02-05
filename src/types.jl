@@ -42,6 +42,12 @@ struct RowTable
     size::Tuple{Int, Int}        # ........................... Size of the table
 end
 
+"""
+    struct ProcessedTable
+
+This struct contains the processed table, which handles additional columns,
+filters, etc. All the backend functions have access to this object.
+"""
 Base.@kwdef mutable struct ProcessedTable
     data::Any
     header::Any
@@ -62,6 +68,8 @@ Base.@kwdef mutable struct ProcessedTable
     _filters_processed::Bool = false
     _id_rows::Union{Nothing, Vector{Int}} = nothing
     _id_columns::Union{Nothing, Vector{Int}} = nothing
+    _num_header_rows::Int = -1
+    _num_header_columns::Int = -1
     _num_filtered_rows::Int = -1
     _num_filtered_columns::Int = -1
 end
@@ -74,13 +82,7 @@ the tables.
 """
 struct PrintInfo
     data::ProcessedTable
-    header::Any
-    header_num_rows::Int
-    header_num_cols::Int
-    show_row_number::Bool
     row_number_column_title::String
-    show_row_names::Bool
-    row_names::Any
     row_name_alignment::Symbol
     row_name_column_title::String
     alignment::Vector{Symbol}

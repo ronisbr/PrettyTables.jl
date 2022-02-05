@@ -34,12 +34,16 @@ function ProcessedTable(
         if num_columns != num_header_columns
             error("The number of columns in the header must be equal to that of the table.")
         end
+
+        num_header_rows = length(first(header))
     end
 
     return ProcessedTable(
         data = data,
         header = header,
         _column_filters = column_filters,
-        _row_filters = row_filters
+        _row_filters = row_filters,
+        _num_header_columns = num_header_columns,
+        _num_header_rows = num_header_rows
     )
 end
