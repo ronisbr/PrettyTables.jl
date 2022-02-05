@@ -29,13 +29,13 @@ function ProcessedTable(
 
     # Check if the header dimension is correct.
     if header !== nothing
-        num_header_columns = length(header)
+        num_header_columns = length(first(header))
 
         if num_columns != num_header_columns
             error("The number of columns in the header must be equal to that of the table.")
         end
 
-        num_header_rows = length(first(header))
+        num_header_rows = length(header)
     end
 
     return ProcessedTable(

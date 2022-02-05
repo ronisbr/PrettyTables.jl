@@ -45,7 +45,7 @@ function _get_element(ptable::ProcessedTable, i::Int, j::Int)
         jd = _get_data_column_index(ptable, j - Δc)
 
         if i ≤ ptable._num_header_rows
-            return ptable.header[jd][i]
+            return ptable.header[i][jd]
         else
             id = _get_data_row_index(ptable, i - ptable._num_header_rows)
             return ptable.data[id, jd]
