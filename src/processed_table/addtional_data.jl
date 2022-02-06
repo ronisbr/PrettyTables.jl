@@ -47,6 +47,7 @@ function _add_column!(
     push!(ptable._additional_data_columns, new_column)
     push!(ptable._additional_header_columns, new_header)
     push!(ptable._additional_column_alignment, alignment)
+    push!(ptable._additional_column_header_alignment, header_alignment)
 
     return nothing
 end
