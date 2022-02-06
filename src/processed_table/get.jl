@@ -85,6 +85,30 @@ function _get_cell_alignemnt(ptable::ProcessedTable, i::Int, j::Int)
 end
 
 """
+    _get_column_alignment(ptable::ProcessedTable, j::Int)
+
+Return the alignment of the `j`th column in `ptable`.
+"""
+function _get_column_alignment(ptable::ProcessedTable, j::Int)
+    # Get the identification of the row and column.
+    column_id = _get_column_id(ptable, j)
+
+    # Verify if we are at header.
+    if column_id == :__ORIGINAL_DATA__
+        # In this case, we must find the column index in the original data.
+        jr = _get_data_column_index(ptable, j)
+
+        alignment = ptable._data_alignment isa Symbol ?
+            ptable._data_alignment :
+            ptable._data_alignment[jr]
+
+        return alignment
+    else
+        return ptable._additional_column_alignment[j]
+    end
+end
+
+"""
     _get_column_id(ptable::ProcessedTable, j::Int)
 
 Return the identification symbol of the column `j` of `ptable`. If the column is
@@ -113,18 +137,24 @@ function _get_element(ptable::ProcessedTable, i::Int, j::Int)
     # Check if we need to return an additional column or the real data.
     if j ≤ Δc
         if i ≤ ptable._num_header_rows
-            return ptable._additional_header_columns[j][i]
+            l = length(ptable._additional_header_columns[j])
+
+            if i ≤ l
+                return ptable._additional_header_columns[j][i]
+            else
+                return ""
+            end
         else
-            id = _get_data_row_index(ptable, i - ptable._num_header_rows)
+            id = _get_data_row_index(ptable, i)
             return ptable._additional_data_columns[j][id]
         end
     else
-        jd = _get_data_column_index(ptable, j - Δc)
+        jd = _get_data_column_index(ptable, j)
 
         if i ≤ ptable._num_header_rows
             return ptable.header[i][jd]
         else
-            id = _get_data_row_index(ptable, i - ptable._num_header_rows)
+            id = _get_data_row_index(ptable, i)
             return ptable.data[id, jd]
         end
     end
