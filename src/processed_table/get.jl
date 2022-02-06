@@ -8,6 +8,83 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 """
+    _get_cell_alignemnt(ptable::ProcessedTable, i::Int, j::Int)
+
+Get the alignment of the `ptable` cell in `i`th row and `j`th column.
+"""
+function _get_cell_alignemnt(ptable::ProcessedTable, i::Int, j::Int)
+
+    # Get the identification of the row and column.
+    row_id = _get_row_id(ptable, i)
+    column_id = _get_column_id(ptable, j)
+
+    # Verify if we are at header.
+    if (row_id == :__HEADER__) || (row_id == :__SUBHEADER__)
+        if column_id == :__ORIGINAL_DATA__
+            header_alignment_override = nothing
+
+            # Get the cell index in the original table.
+            ir = _get_data_row_index(ptable, i)
+            jr = _get_data_column_index(ptable, j)
+
+            # Search for alignment overrides in this cell.
+            for f in ptable._header_cell_alignment
+                header_alignment_override = f(ptable.header, ir, jr)
+
+                if _is_alignment_valid(header_alignment_override)
+                    return header_alignment_override
+                end
+            end
+
+            header_alignment = ptable._header_alignment isa Symbol ?
+                ptable._header_alignment :
+                ptable._header_alignment[j]
+
+            if (header_alignment == :s) || (header_alignment == :S)
+                header_alignment = ptable.alignment isa Symbol ?
+                    ptable._data_alignment :
+                    ptable._data_alignment[j]
+            end
+
+            return header_alignment
+        else
+            header_alignment = ptable._additional_column_header_alignment[j]
+
+            if (header_alignment == :s) || (header_alignment == :S)
+                header_alignment = ptable._additional_column_alignment[j]
+            end
+
+            return header_alignment
+        end
+    else
+        if column_id == :__ORIGINAL_DATA__
+            alignment_override = nothing
+
+            # Get the cell index in the original table.
+            ir = _get_data_row_index(ptable, i)
+            jr = _get_data_column_index(ptable, j)
+
+            # Search for alignment overrides in this cell.
+            for f in ptable._data_cell_alignment
+                alignment_override = f(_getdata(ptable.data), ir, jr)
+
+                if _is_alignment_valid(alignment_override)
+                    return alignment_override
+                end
+            end
+
+            alignment = ptable._data_alignment isa Symbol ?
+                ptable._data_alignment :
+                ptable._data_alignment[j]
+
+            return alignment
+        else
+            return ptable._additional_column_alignment[j]
+        end
+    end
+end
+
+"""
     _get_column_id(ptable::ProcessedTable, j::Int)
 
 Return the identification symbol of the column `j` of `ptable`. If the column is
@@ -77,10 +154,12 @@ end
 Get the index of the `j`th filtered column in `ptable`.
 """
 function _get_data_column_index(ptable::ProcessedTable, j::Int)
+    Δc = length(ptable._additional_data_columns)
+
     if ptable._id_columns !== nothing
-        return ptable._id_columns[j]
+        return ptable._id_columns[j - Δc]
     else
-        return j
+        return j - Δc
     end
 end
 
@@ -91,9 +170,9 @@ Get the index of the `i`th filtered row in `ptable`.
 """
 function _get_data_row_index(ptable::ProcessedTable, i::Int)
     if ptable._id_rows !== nothing
-        return ptable._id_rows[i]
+        return ptable._id_rows[i - ptable._num_header_rows]
     else
-        return i
+        return i - ptable._num_header_rows
     end
 end
 

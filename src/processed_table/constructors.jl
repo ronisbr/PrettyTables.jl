@@ -21,10 +21,23 @@ Create a processed table with `data` and `header`.
 function ProcessedTable(
     data::Any,
     header::Any;
+    alignment::Union{Symbol, Vector{Symbol}} = :r,
+    cell_alignment::Union{
+        Nothing,
+        Dict{Tuple{Int, Int}, Symbol},
+        Function,
+        Tuple
+    } = nothing,
     column_filters::Union{Nothing, Tuple} = nothing,
+    header_alignment::Union{Symbol, Vector{Symbol}} = :s,
+    header_cell_alignment::Union{
+        Nothing,
+        Dict{Tuple{Int, Int}, Symbol},
+        Function,
+        Tuple
+    } = nothing,
     row_filters::Union{Nothing, Tuple} = nothing
 )
-
     ~, num_columns = size(data)
 
     # Check if the header dimension is correct.
@@ -38,10 +51,52 @@ function ProcessedTable(
         num_header_rows = length(header)
     end
 
+    # Make sure that `cell_alignment` is a tuple.
+    if cell_alignment === nothing
+        cell_alignment = ()
+    elseif typeof(cell_alignment) <: Dict
+        # If it is a `Dict`, then `cell_alignment[(i,j)]` contains the desired
+        # alignment for the cell `(i,j)`. Thus, we need to create a wrapper
+        # function.
+        cell_alignment_dict = copy(cell_alignment)
+        cell_alignment = ((data, i, j) -> begin
+            if haskey(cell_alignment_dict, (i, j))
+                return cell_alignment_dict[(i, j)]
+            else
+                return nothing
+            end
+        end,)
+    elseif typeof(cell_alignment) <: Function
+        cell_alignment = (cell_alignment,)
+    end
+
+    # Make sure that `header_cell_alignment` is a tuple.
+    if header_cell_alignment === nothing
+        header_cell_alignment = ()
+    elseif typeof(header_cell_alignment) <: Dict
+        # If it is a `Dict`, then `header_cell_alignment[(i,j)]` contains the
+        # desired alignment for the cell `(i,j)`. Thus, we need to create a
+        # wrapper function.
+        header_cell_alignment_dict = copy(header_cell_alignment)
+        header_cell_alignment = ((data, i, j) -> begin
+            if haskey(header_cell_alignment_dict, (i, j))
+                return header_cell_alignment_dict[(i, j)]
+            else
+                return nothing
+            end
+        end,)
+    elseif typeof(header_cell_alignment) <: Function
+        header_cell_alignment = (header_cell_alignment,)
+    end
+
     return ProcessedTable(
         data = data,
         header = header,
+        _data_alignment = alignment,
+        _data_cell_alignment = cell_alignment,
         _column_filters = column_filters,
+        _header_alignment = header_alignment,
+        _header_cell_alignment = header_cell_alignment,
         _row_filters = row_filters,
         _num_header_columns = num_header_columns,
         _num_header_rows = num_header_rows

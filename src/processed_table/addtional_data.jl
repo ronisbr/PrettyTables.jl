@@ -8,15 +8,24 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 """
-    _add_column!(ptable::ProcessedTable, new_column::AbstractVector, new_header::Vector{String} = String[""])
+    _add_column!(ptable::ProcessedTable, new_column::AbstractVector, new_header::Vector{String} = String[""]; kwargs...)
 
-Add a new column `new_column` with header `new_header` to `ptable`. The `id` can
-be set to a symbol so that the additional column can be identified easily.
+Add a new column `new_column` with header `new_header` to `ptable`.
+
+# Keywords
+
+- `alignment::Symbol`: Alignment for the new column. (**Default** = `:r`)
+- `header_alignment::Symbol`: Alignment for the new column header.
+    (**Default** = `:s`)
+- `id::Symbol`: Identification symbol for the new column.
+    (**Default** = `:additional_column`)
 """
 function _add_column!(
     ptable::ProcessedTable,
     new_column::AbstractVector,
-    new_header::Vector{String} = String[""],
+    new_header::Vector{String} = String[""];
+    alignment::Symbol = :r,
+    header_alignment::Symbol = :s,
     id::Symbol = :additional_column
 )
 
@@ -37,6 +46,7 @@ function _add_column!(
     push!(ptable._additional_column_id, id)
     push!(ptable._additional_data_columns, new_column)
     push!(ptable._additional_header_columns, new_header)
+    push!(ptable._additional_column_alignment, alignment)
 
     return nothing
 end
