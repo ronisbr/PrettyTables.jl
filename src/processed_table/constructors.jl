@@ -36,19 +36,26 @@ function ProcessedTable(
         Function,
         Tuple
     } = nothing,
+    noheader::Bool = false,
+    nosubheader::Bool = false,
     row_filters::Union{Nothing, Tuple} = nothing
 )
     ~, num_columns = size(data)
 
-    # Check if the header dimension is correct.
+    # Process the header and subheader.
+    num_header_rows = 0
+    num_header_columns = num_columns
+
     if header !== nothing
-        num_header_columns = length(first(header))
+        if !noheader
+            num_header_columns = length(first(header))
 
-        if num_columns != num_header_columns
-            error("The number of columns in the header must be equal to that of the table.")
+            if num_columns != num_header_columns
+                error("The number of columns in the header must be equal to that of the table.")
+            end
+
+            num_header_rows = nosubheader ? 1 : length(header)
         end
-
-        num_header_rows = length(header)
     end
 
     # Make sure that `cell_alignment` is a tuple.
