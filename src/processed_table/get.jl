@@ -22,13 +22,14 @@ function _get_cell_alignment(ptable::ProcessedTable, i::Int, j::Int)
         if column_id == :__ORIGINAL_DATA__
             header_alignment_override = nothing
 
-            # Get the cell index in the original table.
-            ir = _get_data_row_index(ptable, i)
+            # Get the cell index in the original table. Notice that there is no
+            # filter for header rows. Hence, we just need to verify the column
+            # here.
             jr = _get_data_column_index(ptable, j)
 
             # Search for alignment overrides in this cell.
             for f in ptable._header_cell_alignment
-                header_alignment_override = f(ptable.header, ir, jr)
+                header_alignment_override = f(ptable.header, i, jr)
 
                 if _is_alignment_valid(header_alignment_override)
                     return header_alignment_override
