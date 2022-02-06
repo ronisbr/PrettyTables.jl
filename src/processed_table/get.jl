@@ -12,8 +12,7 @@
 
 Get the alignment of the `ptable` cell in `i`th row and `j`th column.
 """
-function _get_cell_alignemnt(ptable::ProcessedTable, i::Int, j::Int)
-
+function _get_cell_alignment(ptable::ProcessedTable, i::Int, j::Int)
     # Get the identification of the row and column.
     row_id = _get_row_id(ptable, i)
     column_id = _get_column_id(ptable, j)
@@ -38,12 +37,12 @@ function _get_cell_alignemnt(ptable::ProcessedTable, i::Int, j::Int)
 
             header_alignment = ptable._header_alignment isa Symbol ?
                 ptable._header_alignment :
-                ptable._header_alignment[j]
+                ptable._header_alignment[jr]
 
             if (header_alignment == :s) || (header_alignment == :S)
-                header_alignment = ptable.alignment isa Symbol ?
+                header_alignment = ptable._data_alignment isa Symbol ?
                     ptable._data_alignment :
-                    ptable._data_alignment[j]
+                    ptable._data_alignment[jr]
             end
 
             return header_alignment
@@ -75,7 +74,7 @@ function _get_cell_alignemnt(ptable::ProcessedTable, i::Int, j::Int)
 
             alignment = ptable._data_alignment isa Symbol ?
                 ptable._data_alignment :
-                ptable._data_alignment[j]
+                ptable._data_alignment[jr]
 
             return alignment
         else
