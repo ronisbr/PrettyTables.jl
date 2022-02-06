@@ -36,14 +36,18 @@ function _get_cell_alignment(ptable::ProcessedTable, i::Int, j::Int)
                 end
             end
 
+            # The apparently unnecessary conversion to `Symbol` avoids type
+            # instability.
             header_alignment = ptable._header_alignment isa Symbol ?
-                ptable._header_alignment :
-                ptable._header_alignment[jr]
+                Symbol(ptable._header_alignment) :
+                Symbol(ptable._header_alignment[jr])
 
             if (header_alignment == :s) || (header_alignment == :S)
+                # The apparently unnecessary conversion to `Symbol` avoids type
+                # instability.
                 header_alignment = ptable._data_alignment isa Symbol ?
-                    ptable._data_alignment :
-                    ptable._data_alignment[jr]
+                    Symbol(ptable._data_alignment) :
+                    Symbol(ptable._data_alignment[jr])
             end
 
             return header_alignment
@@ -73,9 +77,11 @@ function _get_cell_alignment(ptable::ProcessedTable, i::Int, j::Int)
                 end
             end
 
+            # The apparently unnecessary conversion to `Symbol` avoids type
+            # instability.
             alignment = ptable._data_alignment isa Symbol ?
-                ptable._data_alignment :
-                ptable._data_alignment[jr]
+                Symbol(ptable._data_alignment) :
+                Symbol(ptable._data_alignment[jr])
 
             return alignment
         else
@@ -98,9 +104,11 @@ function _get_column_alignment(ptable::ProcessedTable, j::Int)
         # In this case, we must find the column index in the original data.
         jr = _get_data_column_index(ptable, j)
 
+        # The apparently unnecessary conversion to `Symbol` avoids type
+        # instability.
         alignment = ptable._data_alignment isa Symbol ?
-            ptable._data_alignment :
-            ptable._data_alignment[jr]
+            Symbol(ptable._data_alignment) :
+            Symbol(ptable._data_alignment[jr])
 
         return alignment
     else
