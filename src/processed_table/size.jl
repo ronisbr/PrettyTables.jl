@@ -22,8 +22,26 @@ end
 Return a tuple with the filtered data size.
 """
 function _filtered_data_size(ptable::ProcessedTable)
-
     return ptable._num_filtered_rows, ptable._num_filtered_columns
+end
+
+"""
+    _header_size(ptable::ProcessedTable)
+
+Return a tuple with the header size.
+"""
+function _header_size(ptable::ProcessedTable)
+
+    return ptable._num_header_rows, ptable._num_header_columns
+end
+
+"""
+    _num_additional_columns(ptable::ProcessedTable)
+
+Return the number of additional columns.
+"""
+function _num_additional_columns(ptable::ProcessedTable)
+    return length(ptable._additional_data_columns)
 end
 
 """
