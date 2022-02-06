@@ -26,7 +26,7 @@ function _process_filters!(
     max_num_filtered_rows::Int = 0,
     max_num_filtered_columns::Int = 0
 )
-    num_rows, num_columns = size(ptable.data)
+    num_rows, num_columns = size(ptable.data)::Tuple{Int, Int}
 
     # If the user wants to filter the data, then check which columns and rows
     # must be printed. Notice that if a data is filtered, then it means that it
@@ -50,11 +50,14 @@ function _process_filters!(
         # Loop throught the columns and apply the column filters. If a column
         # is filtered, then add its number to the vector `filtered_columns`. At
         # the end, this vector will contain the ids of the filtered columns.
-        @inbounds for i = 1:num_columns
+        @inbounds for i in 1:num_columns
             filtered_i = true
 
             for filter in column_filters
-                !filter(_getdata(ptable.data), i) && (filtered_i = false) && break
+                if !filter(_getdata(ptable.data), i)
+                    filtered_i = false
+                    break
+                end
             end
 
             if filtered_i
@@ -93,7 +96,10 @@ function _process_filters!(
             filtered_i = true
 
             for filter in row_filters
-                !filter(_getdata(ptable.data), i) && (filtered_i = false) && break
+                if !filter(_getdata(ptable.data), i)
+                    filtered_i = false
+                    break
+                end
             end
 
             if filtered_i
