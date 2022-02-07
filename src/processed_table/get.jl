@@ -133,6 +133,9 @@ function _get_column_id(ptable::ProcessedTable, j::Int)
     end
 end
 
+# Function related to the API of Tables.jl inside PrettyTables.jl.
+_getdata(ptable::ProcessedTable) = _getdata(ptable.data)
+
 """
     _get_element(ptable::ProcessedTable, i::Int, j::Int)
 

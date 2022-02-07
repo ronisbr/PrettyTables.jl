@@ -168,6 +168,8 @@ function _print_info(
         Tuple
     } = nothing,
     limit_printing::Bool = true,
+    noheader::Bool = false,
+    nosubheader::Bool = false,
     renderer::Symbol = :print,
     row_names::Union{Nothing, AbstractVector} = nothing,
     row_name_alignment::Symbol = :r,
@@ -177,130 +179,42 @@ function _print_info(
     title::AbstractString = "",
     title_alignment::Symbol = :l
 )
-    # Get information about the table we have to print based on the format of
-    # `data`, which must be an `AbstractMatrix` or an `AbstractVector`.
-    dims     = size(data)
-    num_dims = length(dims)
-
-    if num_dims == 1
-        num_rows = dims[1]
-        num_cols = 1
-    elseif num_dims == 2
-        num_rows = dims[1]
-        num_cols = dims[2]
-    else
-        throw(ArgumentError("`data` must not have more than 2 dimensions."))
-    end
 
     _header = header isa Tuple ? header : (header,)
 
-    header_num_cols = length(first(_header))
-    header_num_rows = length(_header)
+    # Create the processed table, which holds information about the additonal
+    # columns, filters, etc.
+    ptable = ProcessedTable(
+        data,
+        _header;
+        alignment = alignment,
+        cell_alignment = cell_alignment,
+        column_filters = filters_col,
+        header_alignment = header_alignment,
+        header_cell_alignment = header_cell_alignment,
+        noheader = noheader,
+        nosubheader = nosubheader,
+        row_filters = filters_row
+    )
 
-    if alignment isa Symbol
-        alignment = fill(alignment, num_cols)
-    else
-        if length(alignment) != num_cols
-            error("The length of `alignment` must be the same as the number of rows.")
-        end
+    # Add the additional columns if requested.
+    if show_row_number
+        _add_column!(
+            ptable,
+            1:size(data)[1],
+            [row_number_column_title];
+            id = :row_number
+        )
     end
 
-    if header_alignment isa Symbol
-        header_alignment = fill(header_alignment, num_cols)
-    else
-        if length(header_alignment) != num_cols
-            error("The length of `header_alignment` must be the same as the number of rows.")
-        end
-    end
-
-    # If there is a vector of row names, then it must have the same size of the
-    # number of rows.
     if row_names !== nothing
-        if length(row_names) != num_rows
-            error("The number of lines in `row_names` must match the number of lines in the matrix.")
-        end
-
-        show_row_names = true
-    else
-        show_row_names = false
-    end
-
-    # `id_cols` and `id_rows` contains the indices of the data array that will
-    # be printed.
-    id_cols = 1:num_cols
-    id_rows = 1:num_rows
-    num_printed_cols = num_cols
-    num_printed_rows = num_rows
-
-    # If the user wants to filter the data, then check which columns and rows
-    # must be printed. Notice that if a data is filtered, then it means that it
-    # passed the filter and must be printed.
-    if filters_row !== nothing
-        filtered_rows = ones(Bool, num_rows)
-        @inbounds for i = 1:num_rows
-            filtered_i = true
-
-            for filter in filters_row
-                !filter(_getdata(data), i) && (filtered_i = false) && break
-            end
-
-            filtered_rows[i] = filtered_i
-        end
-        id_rows = findall(filtered_rows)
-        num_printed_rows = length(id_rows)
-    end
-
-    if filters_col !== nothing
-        filtered_cols = ones(Bool, num_cols)
-        @inbounds for i = 1:num_cols
-            filtered_i = true
-
-            for filter in filters_col
-                !filter(_getdata(data), i) && (filtered_i = false) && break
-            end
-
-            filtered_cols[i] = filtered_i
-        end
-        id_cols = findall(filtered_cols)
-        num_printed_cols = length(id_cols)
-    end
-
-    # Make sure that `cell_alignment` is a tuple.
-    if cell_alignment === nothing
-        cell_alignment = ()
-    elseif typeof(cell_alignment) <: Dict
-        # If it is a `Dict`, then `cell_alignment[(i,j)]` contains the desired
-        # alignment for the cell `(i,j)`. Thus, we need to create a wrapper
-        # function.
-        cell_alignment_dict = copy(cell_alignment)
-        cell_alignment = ((data, i, j) -> begin
-            if haskey(cell_alignment_dict, (i, j))
-                return cell_alignment_dict[(i, j)]
-            else
-                return nothing
-            end
-        end,)
-    elseif typeof(cell_alignment) <: Function
-        cell_alignment = (cell_alignment,)
-    end
-
-    # Make sure that `header_cell_alignment` is a tuple.
-    if header_cell_alignment === nothing
-        header_cell_alignment = ()
-    elseif typeof(header_cell_alignment) <: Dict
-        # If it is a `Dict`, then `header_cell_alignment[(i,j)]` contains the
-        # desired alignment for the cell `(i,j)`. Thus, we need to create a
-        # wrapper function.
-        header_cell_alignment_dict = copy(header_cell_alignment)
-        header_cell_alignment = ((data, i, j) -> begin
-            if haskey(header_cell_alignment_dict, (i, j))
-                return header_cell_alignment_dict[(i, j)]
-            else
-                return nothing
-            end
-        end,)
-    elseif typeof(header_cell_alignment) <: Function
-        header_cell_alignment = (header_cell_alignment,)
+        _add_column!(
+            ptable,
+            row_names,
+            [row_name_column_title];
+            alignment = row_name_alignment,
+            id = :row_name
+        )
     end
 
     # Make sure that `formatters` is a tuple.
@@ -312,30 +226,11 @@ function _print_info(
 
     # Create the structure that stores the print information.
     pinfo = PrintInfo(
-        data,
-        _header,
-        id_cols,
-        id_rows,
-        num_rows,
-        num_cols,
-        num_printed_cols,
-        num_printed_rows,
-        header_num_rows,
-        header_num_cols,
-        show_row_number,
-        row_number_column_title,
-        show_row_names,
-        row_names,
-        row_name_alignment,
-        row_name_column_title,
-        alignment,
-        cell_alignment,
+        ptable,
         formatters,
         compact_printing,
         title,
         title_alignment,
-        header_alignment,
-        header_cell_alignment,
         cell_first_line_only,
         renderer_val,
         limit_printing
@@ -405,6 +300,8 @@ function _pt(
         Function,
         Tuple
     } = nothing,
+    noheader::Bool = false,
+    nosubheader::Bool = false,
     limit_printing::Bool = true,
     renderer::Symbol = :print,
     row_names::Union{Nothing, AbstractVector} = nothing,
@@ -468,6 +365,8 @@ function _pt(
         header_alignment        = header_alignment,
         header_cell_alignment   = header_cell_alignment,
         limit_printing          = limit_printing,
+        noheader                = noheader,
+        nosubheader             = nosubheader,
         renderer                = renderer,
         row_names               = row_names,
         row_name_alignment      = row_name_alignment,

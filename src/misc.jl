@@ -240,3 +240,80 @@ function _process_vlines(vlines::AbstractVector, num_printed_cols::Int)
 
     return Vector{Int}(vlines)
 end
+
+"""
+    _check_hline(ptable::ProcessedTable, hlines, body_hlines::AbstractVector, i::Int)
+
+Check if there is a horizontal line after the `i`th row of `ptable` considering
+the options `hlines` and `body_hlines`.
+"""
+function _check_hline(
+    ptable::ProcessedTable,
+    hlines::AbstractVector,
+    body_hlines::AbstractVector,
+    i::Int
+)
+
+    num_printed_rows = _size(ptable)[1]
+    num_header_rows = _header_size(ptable)[1]
+
+    if (i == 0)  && ((:begin ∈ hlines) || (0 ∈ hlines))
+        return true
+    elseif (i == num_printed_rows) && (:end ∈ hlines)
+        return true
+    elseif (i == num_header_rows) && ((:header ∈ hlines) || (1 ∈ hlines))
+        return true
+    elseif (i > num_header_rows) && (i - num_header_rows + 1 ∈ hlines)
+        return true
+    elseif ((i - num_header_rows) ∈ body_hlines)
+        return true
+    else
+        return false
+    end
+end
+
+function _check_hline(
+    ptable::ProcessedTable,
+    hlines::Symbol,
+    body_hlines::AbstractVector,
+    i::Int
+)
+    if hlines == :all
+        return true
+    elseif hlines == :none
+        return false
+    else
+        error("`hlines` must be `:all`, `:none`, or a vector of integers.")
+    end
+end
+
+"""
+    _check_vline(ptable::ProcessedTable, vlines::AbstractVector, j::Int)
+
+Check if there is a vertical line after the `j`th column of `ptable` considering
+the option `vlines`.
+"""
+function _check_vline(ptable::ProcessedTable, vlines::AbstractVector, j::Int)
+
+    num_printed_columns = _size(ptable)[2]
+
+    if (j == 0) && (:begin ∈ vlines)
+        return true
+    elseif (j == num_printed_columns) && (:end ∈ vlines)
+        return true
+    elseif (j ∈ vlines)
+        return true
+    else
+        return false
+    end
+end
+
+function _check_vline(ptable::ProcessedTable, vlines::Symbol, j::Int)
+    if vlines == :all
+        return true
+    elseif vlines == :none
+        return false
+    else
+        error("`vlines` must be `:all`, `:none`, or a vector of integers.")
+    end
+end

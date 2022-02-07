@@ -16,31 +16,28 @@ const _latex_table_env = Dict(
 
 # Apply an alignment to a LaTeX table cell.
 function _latex_apply_cell_alignment(
+    ptable::ProcessedTable,
     str::String,
     alignment::Symbol,
     j::Int,
-    num_printed_cols::Int,
-    show_row_number::Bool,
-    vlines::Vector{Int},
+    vlines::Union{Nothing, Symbol, Vector{Int}},
     left_vline::String,
     mid_vline::String,
     right_vline::String
 )
     a = _latex_alignment(alignment)
-    aux_j = show_row_number ? j + 1 : j
 
     # We only need to add left vertical line if it is the first
     # column.
-    lvline = if (0 ∈ vlines) && (aux_j - 1 == 0)
-        left_vline
-    else
+    lvline = ((j == 0) && (_check_vline(ptable, vlines, 0))) ?
+        left_vline :
         ""
-    end
 
     # For the right vertical line, we must check if it is a mid line
     # or right line.
-    if aux_j ∈ vlines
-        rvline = (j == num_printed_cols) ? right_vline : mid_vline
+    if _check_vline(ptable, vlines, j)
+        num_printed_columns = _size(ptable)[2]
+        rvline = (j == num_printed_columns) ? right_vline : mid_vline
     else
         rvline = ""
     end
@@ -63,44 +60,26 @@ function _latex_alignment(s::Symbol)
 end
 
 # Get the LaTeX table description (alignment and vertical columns).
-function _latex_table_desc(
-    id_cols::AbstractVector,
-    alignment::Vector{Symbol},
-    show_row_name::Bool,
-    row_name_alignment::Symbol,
-    show_row_number::Bool,
-    row_number_alignment::Symbol,
-    vlines::AbstractVector,
+function _latex_table_description(
+    ptable::ProcessedTable,
+    vlines::Union{Symbol, AbstractVector},
     left_vline::AbstractString,
     mid_vline::AbstractString,
     right_vline::AbstractString
 )
-    Δc = show_row_number ? 1 : 0
-
     str = "{"
+    num_printed_columns = _size(ptable)[2]
 
-    0 ∈ vlines && (str *= left_vline)
-
-    # Add the alignment information of the row number column if required.
-    Δc = 0
-    if show_row_number
-        Δc += 1
-        str *= _latex_alignment(row_number_alignment)
-        Δc ∈ vlines && (str *= mid_vline)
+    if _check_vline(ptable, vlines, 0)
+        str *= left_vline
     end
 
-    if show_row_name
-        Δc += 1
-        str *= _latex_alignment(row_name_alignment)
-        Δc ∈ vlines && (str *= mid_vline)
-    end
+    for j in 1:num_printed_columns
+        alignment = _get_column_alignment(ptable, j) |> _latex_alignment
+        str *= alignment
 
-    # Process the alignment of all the other columns.
-    for i = 1:length(id_cols)
-        str *= _latex_alignment(alignment[id_cols[i]])
-
-        if i+Δc ∈ vlines
-            if i != length(id_cols)
+        if _check_vline(ptable, vlines, j)
+            if j != num_printed_columns
                 str *= mid_vline
             else
                 str *= right_vline
