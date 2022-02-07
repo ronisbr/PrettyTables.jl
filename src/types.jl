@@ -74,10 +74,12 @@ Base.@kwdef mutable struct ProcessedTable
     _id_columns::Union{Nothing, Vector{Int}} = nothing
     _header_alignment::Union{Symbol, Vector{Symbol}} = :s
     _header_cell_alignment::Tuple = ()
-    _num_header_rows::Int = -1
-    _num_header_columns::Int = -1
+    _num_data_rows::Int = -1
+    _num_data_columns::Int = -1
     _num_filtered_rows::Int = -1
     _num_filtered_columns::Int = -1
+    _num_header_rows::Int = -1
+    _num_header_columns::Int = -1
 end
 
 """
@@ -88,15 +90,10 @@ the tables.
 """
 struct PrintInfo
     ptable::ProcessedTable
-    row_name_alignment::Symbol
-    alignment::Vector{Symbol}
-    cell_alignment::Ref{Any}
     formatters::Ref{Any}
     compact_printing::Bool
     title::String
     title_alignment::Symbol
-    header_alignment::Vector{Symbol}
-    header_cell_alignment::Ref{Any}
     cell_first_line_only::Bool
     renderer::Union{Val{:print}, Val{:show}}
     limit_printing::Bool

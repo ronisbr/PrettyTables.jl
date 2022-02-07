@@ -17,9 +17,6 @@ function _pt_latex(
     hlines::Union{Nothing, Symbol, AbstractVector} = nothing,
     label::AbstractString = "",
     longtable_footer::Union{Nothing, AbstractString} = nothing,
-    noheader::Bool = false,
-    nosubheader::Bool = false,
-    row_number_alignment::Symbol = :r,
     table_type::Union{Nothing, Symbol} = nothing,
     vlines::Union{Nothing, Symbol, AbstractVector} = nothing,
     wrap_table::Union{Nothing, Bool} = true,
@@ -33,33 +30,17 @@ function _pt_latex(
     io = r_io.x
 
     # Unpack fields of `pinfo`.
-    data                    = pinfo.data
-    header                  = pinfo.header
-    id_cols                 = pinfo.id_cols
-    id_rows                 = pinfo.id_rows
-    num_rows                = pinfo.num_rows
-    num_cols                = pinfo.num_cols
-    num_printed_cols        = pinfo.num_printed_cols
-    num_printed_rows        = pinfo.num_printed_rows
-    header_num_rows         = pinfo.header_num_rows
-    header_num_cols         = pinfo.header_num_cols
-    show_row_number         = pinfo.show_row_number
-    row_number_column_title = pinfo.row_number_column_title
-    show_row_names          = pinfo.show_row_names
-    row_names               = pinfo.row_names
-    row_name_alignment      = pinfo.row_name_alignment
-    row_name_column_title   = pinfo.row_name_column_title
-    alignment               = pinfo.alignment
-    cell_alignment          = pinfo.cell_alignment
-    formatters              = pinfo.formatters
-    compact_printing        = pinfo.compact_printing
-    title                   = pinfo.title
-    title_alignment         = pinfo.title_alignment
-    header_alignment        = pinfo.header_alignment
-    header_cell_alignment   = pinfo.header_cell_alignment
-    cell_first_line_only    = pinfo.cell_first_line_only
-    renderer                = pinfo.renderer
-    limit_printing          = pinfo.limit_printing
+    ptable               = pinfo.ptable
+    formatters           = pinfo.formatters
+    compact_printing     = pinfo.compact_printing
+    title                = pinfo.title
+    title_alignment      = pinfo.title_alignment
+    cell_first_line_only = pinfo.cell_first_line_only
+    renderer             = pinfo.renderer
+    limit_printing       = pinfo.limit_printing
+
+    # Process the filters in `ptable`.
+    _process_filters!(ptable)
 
     # Unpack fields of `tf`.
     top_line       = tf.top_line
@@ -73,9 +54,25 @@ function _pt_latex(
     subheader_envs = tf.subheader_envs
 
     # Unpack fields of `tf` that depends on the user options.
-    table_type === nothing             && (table_type = tf.table_type)
-    wrap_table === nothing             && (wrap_table = tf.wrap_table)
-    wrap_table_environment === nothing && (wrap_table_environment = tf.wrap_table_environment)
+    if table_type === nothing
+        table_type = tf.table_type
+    end
+
+    if wrap_table === nothing
+        wrap_table = tf.wrap_table
+    end
+
+    if wrap_table_environment === nothing
+        wrap_table_environment = tf.wrap_table_environment
+    end
+
+    if hlines === nothing
+        hlines = tf.hlines
+    end
+
+    if vlines === nothing
+        vlines = tf.vlines
+    end
 
     # Let's create a `IOBuffer` to write everything and then transfer to `io`.
     buf_io = IOBuffer()
@@ -87,84 +84,9 @@ function _pt_latex(
 
     table_env = _latex_table_env[table_type]
 
-    if !noheader && num_cols != header_num_cols
-        error("The header length must be equal to the number of columns.")
-    end
-
-    # Additional processing necessary if the user wants to print the header.
-    if !noheader
-        # If the user do not want to print the sub-header but wants to print the
-        # header, then just force the number of rows in header to be 1.
-        if nosubheader
-            header_num_rows = 1
-        end
-    end
-
     # Make sure that `highlighters` is always a Ref{Any}(Tuple).
     if !(highlighters isa Tuple)
-        highlighters = Ref{Any}((highlighters,))
-    else
-        highlighters = Ref{Any}(highlighters)
-    end
-
-    # Get the string which is printed when `print` is called in each element of
-    # the matrix. Notice that we must create only the matrix with the printed
-    # rows and columns.
-    header_str = Matrix{String}(undef, header_num_rows, num_printed_cols)
-    data_str   = Matrix{String}(undef, num_printed_rows, num_printed_cols)
-
-    @inbounds for i = 1:num_printed_cols
-        # Index of the i-th printed column in `data`.
-        ic = id_cols[i]
-
-        if !noheader
-            for j = 1:header_num_rows
-                header_str[j, i] = _parse_cell_latex(
-                    header[j][ic],
-                    compact_printing = compact_printing,
-                    limit_printing = limit_printing,
-                    renderer = Val(:print)
-                )
-            end
-        end
-
-        for j = 1:num_printed_rows
-            # Index of the j-th printed row in `data`.
-            jr = id_rows[j]
-
-            # Apply the formatters.
-            data_ij = isassigned(data,jr,ic) ? data[jr,ic] : undef
-
-            for f in formatters.x
-                data_ij = f(data_ij, jr, ic)
-            end
-
-            data_str[j, i] = _parse_cell_latex(
-                data_ij;
-                cell_first_line_only = cell_first_line_only,
-                compact_printing = compact_printing,
-                limit_printing = limit_printing,
-                renderer = renderer
-            )
-        end
-    end
-
-    # Compute where the horizontal and vertical lines must be drawn
-    # --------------------------------------------------------------------------
-
-    if hlines === nothing
-        hlines = _process_hlines(tf.hlines, body_hlines, num_printed_rows, noheader)
-    else
-        hlines = _process_hlines(hlines, body_hlines, num_printed_rows, noheader)
-    end
-
-    # Process `vlines`.
-    #
-    # TODO: `num_printed_cols` must consider the row number.
-    if vlines === nothing
-        vlines = _process_vlines(tf.vlines, num_printed_cols)
-    else
-        vlines = _process_vlines(vlines, num_printed_cols)
+        highlighters = (highlighters,)
     end
 
     # Variables to store information about indentation
@@ -184,13 +106,9 @@ function _pt_latex(
         length(title) > 0 && _aprintln(buf, "\\caption{$title}", il, ns)
     end
 
-    table_desc = _latex_table_desc(
-        id_cols,
-        alignment,
-        show_row_names,
-        row_name_alignment,
-        show_row_number,
-        row_number_alignment,
+    # Obtain the table description with the alignments and vertical lines.
+    table_desc = _latex_table_description(
+        ptable,
         vlines,
         left_vline,
         mid_vline,
@@ -205,11 +123,6 @@ function _pt_latex(
         length(title) > 0 && _aprintln(buf, "\\caption{$title}\\\\", il, ns)
     end
 
-    # If there is no column or row to be printed, then just exit.
-    if (num_printed_cols == 0) || (num_printed_rows == 0)
-        @goto print_to_output
-    end
-
     # We use a separate buffer because if `:longtable` is used, then we need to
     # repeat the header. Otherwise the caption is repeated in every page and it
     # is also added to the TOC (see issue #95).
@@ -217,72 +130,86 @@ function _pt_latex(
     buf_io_h = IOBuffer()
     buf_h    = IOContext(buf_io_h)
 
-    0 ∈ hlines && _aprintln(buf_h, top_line, il, ns)
+    buf_io_b = IOBuffer()
+    buf_b    = IOContext(buf_io_b)
 
-    # Data header
+    # Get the number of printed lines and columns.
+    num_printed_rows, num_printed_columns = _size(ptable)
+
+    # If there is no column or row to be printed, then just exit.
+    if (num_printed_columns == 0) || (num_printed_rows == 0)
+        @goto print_to_output
+    end
+
+    if _check_hline(ptable, hlines, body_hlines, 0)
+        _aprintln(buf_h, top_line, il, ns)
+    end
+
+    # Print the table
     # ==========================================================================
 
-    # Header and sub-header texts
-    # --------------------------------------------------------------------------
+    # If the line is part of the header, we need to write to `buf_h`.
+    # Otherwise, we must switch to `buf_b`.
+    buf_aux = buf_h
 
-    if !noheader
-        @inbounds @views for i = 1:header_num_rows
-            _aprint(buf_h, il, ns)
+    @inbounds for i in 1:num_printed_rows
+        # Get the identification of the current row.
+        row_id = _get_row_id(ptable, i)
 
-            # The text "Row" must appear only on the first line.
-            if show_row_number
-                if i == 1
-                    print(buf_h, _latex_envs(row_number_column_title, header_envs))
-                end
+        if (row_id == :__HEADER__) || (row_id == :__SUBHEADER__)
+            buf_aux = buf_h
+        else
+            buf_aux = buf_b
+        end
 
-                print(buf_h, " & ")
-            end
+        # Apply the indentation.
+        _aprint(buf_aux, il, ns)
 
-            # The row name column title must appear only on the first  line.
-            if show_row_names
-                if i == 1
-                    print(buf_h, _latex_envs(row_name_column_title, header_envs))
-                end
+        @inbounds for j in 1:num_printed_columns
+            # Get the identification of the current columns.
+            column_id = _get_column_id(ptable, j)
 
-                print(buf_h, " & ")
-            end
+            # Get the column alignment.
+            column_alignment = _get_column_alignment(ptable, j)
 
-            for j = 1:num_printed_cols
-                # Index of the j-th printed column in `data`.
-                jc = id_cols[j]
+            # Get the alignment for the current cell.
+            cell_alignment = _get_cell_alignment(ptable, i, j)
 
-                # Configure the LaTeX environments for the header and
-                # sub-headers.
-                if i == 1
-                    envs = header_envs
+            # Get the cell data.
+            cell_data = _get_element(ptable, i, j)
+
+            # If we do not annotate the type here, then we get type instability
+            # due to `_parse_cell_text`.
+            cell_str::String = ""
+
+            if (row_id == :__HEADER__) || (row_id == :__SUBHEADER__)
+                if column_id == :__ORIGINAL_DATA
+                    cell_str = _parse_cell_latex(
+                        cell_data,
+                        compact_printing = compact_printing,
+                        limit_printing = limit_printing,
+                        renderer = Val(:print)
+                    )
                 else
-                    envs = subheader_envs
+                    # For the additional cells, we just need to convert to
+                    # string.
+                    cell_str = string(cell_data)
                 end
 
-                header_str_ij = _latex_envs(header_str[i,j], envs)
+                # Get the LaTeX environments for this cell.
+                envs = row_id == :__HEADER__ ? header_envs : subheader_envs
 
-                # Check the alignment of this cell.
-                alignment_ij::Symbol = header_alignment[jc]
+                # Apply the environments to the STR.
+                cell_str = _latex_envs(cell_str, envs)
 
-                for f in header_cell_alignment.x
-                    aux = f(header, i, jc)
-
-                    if aux ∈ (:l, :c, :r, :L, :C, :R, :s, :S)
-                        alignment_ij = aux
-                        break
-                    end
-                end
-
-                # If alignment is `:s`, then we must use the column alignment.
-                alignment_ij ∈ (:s,:S) && (alignment_ij = alignment[jc])
-
-                # Check if the alignment of the cell must be overridden.
-                if alignment_ij != alignment[jc]
-                    header_str_ij = _latex_apply_cell_alignment(
-                        header_str_ij,
-                        alignment_ij, j,
-                        num_printed_cols,
-                        show_row_number,
+                # Check if the cell alignment must be changed with respect to
+                # the column alignment.
+                if cell_alignment != column_alignment
+                    cell_str = _latex_apply_cell_alignment(
+                        ptable,
+                        cell_str,
+                        cell_alignment,
+                        j,
                         vlines,
                         left_vline,
                         mid_vline,
@@ -290,25 +217,84 @@ function _pt_latex(
                     )
                 end
 
-                print(buf_h, header_str_ij)
+                print(buf_h, cell_str)
+                j != num_printed_columns && print(buf_h, " & ")
+            else
 
-                j != num_printed_cols && print(buf_h, " & ")
-            end
+                ir = _get_data_row_index(ptable, i)
+                jr = _get_data_column_index(ptable, j)
 
-            print(buf_h, " \\\\")
-            if (i == header_num_rows) && (1 ∈ hlines)
-                print(buf_h, header_line)
+                if column_id == :__ORIGINAL_DATA__
+                    # Apply the formatters.
+                    for f in formatters.x
+                        cell_data = f(cell_data, ir, jr)
+                    end
+
+                    cell_str = _parse_cell_latex(
+                        cell_data;
+                        cell_first_line_only = cell_first_line_only,
+                        compact_printing = compact_printing,
+                        limit_printing = limit_printing,
+                        renderer = renderer
+                    )
+
+                    # Apply highlighters.
+                    for h in highlighters
+                        if h.f(_getdata(ptable), ir, jr)
+                            cell_str = h.fd(_getdata(ptable), ir, jr, cell_str)::String
+                            break
+                        end
+                    end
+
+                    # Check if the cell alignment must be changed with respect to
+                    # the column alignment.
+                    if cell_alignment != column_alignment
+                        cell_str = _latex_apply_cell_alignment(
+                            ptable,
+                            cell_str,
+                            cell_alignment,
+                            j,
+                            vlines,
+                            left_vline,
+                            mid_vline,
+                            right_vline
+                        )
+                    end
+                else
+                    # For the additional cells, we just need to convert to
+                    # string.
+                    cell_str = string(cell_data)
+                end
+
+                print(buf_aux, cell_str)
+                j != num_printed_columns && print(buf_aux, " & ")
             end
-            println(buf_h, "")
         end
+
+        print(buf_aux, " \\\\")
+
+        if _check_hline(ptable, hlines, body_hlines, i)
+            if i == num_printed_rows
+                print(buf_aux, bottom_line)
+            elseif (row_id == :__HEADER__) || (row_id == :__SUBHEADER__)
+                print(buf_aux, header_line)
+            else
+                print(buf_aux, mid_line)
+            end
+        end
+
+        println(buf_aux)
     end
 
+    @label print_to_output
+
     header_dump = String(take!(buf_io_h))
+    body_dump   = String(take!(buf_io_b))
 
     print(buf, header_dump)
 
     # If we are using `longtable`, then we must mark the end of header and also
-    # create the footer.
+    # create the footer before printing the body.
     if table_type == :longtable
         _aprintln(buf, "\\endfirsthead", il, ns)
         print(buf, header_dump)
@@ -317,10 +303,10 @@ function _pt_latex(
 
         # Check if the user wants a text on the footer.
         if longtable_footer !== nothing
-            lvline =            0 ∈ vlines ? left_vline : ""
-            rvline = id_cols[end] ∈ vlines ? right_vline : ""
+            lvline = _check_vline(ptable, vlines, 0) ? left_vline : ""
+            rvline = _check_vline(ptable, vlines, num_printed_columns) ? right_vline : ""
 
-            env = "multicolumn{" * string(num_printed_cols) * "}" * "{r}"
+            env = "multicolumn{" * string(num_printed_columns) * "}" * "{r}"
 
             _aprintln(buf, _latex_envs(longtable_footer, env) * "\\\\", il, ns)
             _aprintln(buf, bottom_line, il, ns)
@@ -330,92 +316,7 @@ function _pt_latex(
         _aprintln(buf, "\\endlastfoot", il, ns)
     end
 
-    # Data
-    # ==========================================================================
-
-    @inbounds @views for i = 1:num_printed_rows
-        ir = id_rows[i]
-
-        # Apply indentation to the current line.
-        _aprint(buf, il, ns)
-
-        if show_row_number
-            print(buf, string(ir) * " & ")
-        end
-
-        if show_row_names
-            # Due to the non-specialization of `row_names`, `row_name_i_str`
-            # here is inferred as `Any`. However, we know that the output of
-            # `_parse_cell_latex` must be a String.
-            row_name_i_str::String = _parse_cell_latex(
-                row_names[i];
-                cell_first_line_only = false,
-                compact_printing = compact_printing,
-                renderer = renderer
-            )
-            print(buf, row_name_i_str * " & ")
-        end
-
-        for j = 1:num_printed_cols
-            jc = id_cols[j]
-
-            # If we have highlighters defined, then we need to verify if this
-            # data should be highlight.
-            data_str_ij = data_str[i,j]
-
-            for h in highlighters.x
-                if h.f(_getdata(data), ir, jc)
-                    data_str_ij = h.fd(_getdata(data), i, j, data_str[i,j])::String
-                    break
-                end
-            end
-
-            # Check the alignment of this cell.
-            alignment_ij::Symbol = alignment[jc]
-
-            for f in cell_alignment.x
-                aux = f(_getdata(data), ir, jc)
-
-                if aux ∈ [:l, :c, :r, :L, :C, :R]
-                    alignment_ij = aux
-                    break
-                end
-            end
-
-            # Check if the alignment of the cell must be overridden.
-            if alignment_ij != alignment[jc]
-                data_str_ij = _latex_apply_cell_alignment(
-                    data_str_ij,
-                    alignment_ij,
-                    j,
-                    num_printed_cols,
-                    show_row_number,
-                    vlines,
-                    left_vline,
-                    mid_vline,
-                    right_vline
-                )
-            end
-
-            print(buf, data_str_ij)
-            j != num_printed_cols && print(buf, " & ")
-        end
-
-        print(buf, " \\\\")
-
-        # Check if the user wants a horizontal line here.
-        if (i+!noheader) ∈ hlines
-            if i != num_printed_rows
-                # Check if we must draw a horizontal line here.
-                print(buf, mid_line)
-            else
-                print(buf, bottom_line)
-            end
-        end
-        println(buf, "")
-    end
-
-    @label print_to_output
+    print(buf, body_dump)
 
     # Print LaTeX footer
     # ==========================================================================

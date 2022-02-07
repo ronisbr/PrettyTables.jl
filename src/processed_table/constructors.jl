@@ -40,17 +40,30 @@ function ProcessedTable(
     nosubheader::Bool = false,
     row_filters::Union{Nothing, Tuple} = nothing
 )
-    ~, num_columns = size(data)
+    # Get information about the table we have to print based on the format of
+    # `data`, which must be an `AbstractMatrix` or an `AbstractVector`.
+    dims     = size(data)
+    num_dims = length(dims)
+
+    if num_dims == 1
+        num_data_rows = dims[1]
+        num_data_columns = 1
+    elseif num_dims == 2
+        num_data_rows = dims[1]
+        num_data_columns = dims[2]
+    else
+        throw(ArgumentError("`data` must not have more than 2 dimensions."))
+    end
 
     # Process the header and subheader.
     num_header_rows = 0
-    num_header_columns = num_columns
+    num_header_columns = num_data_columns
 
     if header !== nothing
         if !noheader
             num_header_columns = length(first(header))
 
-            if num_columns != num_header_columns
+            if num_data_columns != num_header_columns
                 error("The number of columns in the header must be equal to that of the table.")
             end
 
@@ -105,6 +118,8 @@ function ProcessedTable(
         _header_alignment = header_alignment,
         _header_cell_alignment = header_cell_alignment,
         _row_filters = row_filters,
+        _num_data_rows = num_data_rows,
+        _num_data_columns = num_data_columns,
         _num_header_columns = num_header_columns,
         _num_header_rows = num_header_rows
     )

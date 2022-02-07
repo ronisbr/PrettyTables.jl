@@ -26,7 +26,7 @@ function _process_filters!(
     max_num_filtered_rows::Int = 0,
     max_num_filtered_columns::Int = 0
 )
-    num_rows, num_columns = size(ptable.data)::Tuple{Int, Int}
+    num_rows, num_columns = _data_size(ptable)
 
     # If the user wants to filter the data, then check which columns and rows
     # must be printed. Notice that if a data is filtered, then it means that it

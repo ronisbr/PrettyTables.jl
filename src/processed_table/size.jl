@@ -13,7 +13,7 @@
 Return a tuple with the original data size.
 """
 function _data_size(ptable::ProcessedTable)
-    return size(ptable.data)
+    return ptable._num_data_rows, ptable._num_data_columns
 end
 
 """
