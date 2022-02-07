@@ -247,3 +247,27 @@ function _get_row_id(ptable::ProcessedTable, j::Int)
         return :__ORIGINAL_DATA__
     end
 end
+
+"""
+    _get_table_column_index(ptable::ProcessedTable, jr::Int)
+
+Get the table column index related to a data table index `jr` in `ptable`.
+"""
+function _get_table_column_index(ptable::ProcessedTable, jr::Int)
+
+    if !isnothing(ptable._id_columns)
+        jd = findfirst(==(jr), ptable._id_columns)
+
+        if !isnothing(jd)
+            return jd + length(ptable._additional_data_columns)
+        else
+            return nothing
+        end
+    else
+        if 0 < jr ≤ ptable._num_data_columns
+            return jr + length(ptable._additional_data_columns)
+        else
+            return nothing
+        end
+    end
+end
