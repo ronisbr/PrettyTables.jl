@@ -157,7 +157,12 @@ function _get_element(ptable::ProcessedTable, i::Int, j::Int)
             end
         else
             id = _get_data_row_index(ptable, i)
-            return ptable._additional_data_columns[j][id]
+
+            if isassigned(ptable._additional_data_columns[j], id)
+                return ptable._additional_data_columns[j][id]
+            else
+                return undef
+            end
         end
     else
         jd = _get_data_column_index(ptable, j)
@@ -166,7 +171,12 @@ function _get_element(ptable::ProcessedTable, i::Int, j::Int)
             return ptable.header[i][jd]
         else
             id = _get_data_row_index(ptable, i)
-            return ptable.data[id, jd]
+
+            if isassigned(ptable.data, id, jd)
+                return ptable.data[id, jd]
+            else
+                return undef
+            end
         end
     end
 end
