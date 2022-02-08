@@ -166,7 +166,7 @@ function _pt_latex(
         _aprint(buf_aux, il, ns)
 
         @inbounds for j in 1:num_printed_columns
-            # Get the identification of the current columns.
+            # Get the identification of the current column.
             column_id = _get_column_id(ptable, j)
 
             # Get the column alignment.
