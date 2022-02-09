@@ -174,6 +174,7 @@ function _print_info(
     row_names::Union{Nothing, AbstractVector} = nothing,
     row_name_alignment::Symbol = :r,
     row_name_column_title::AbstractString = "",
+    row_number_alignment::Symbol = :r,
     row_number_column_title::AbstractString = "Row",
     show_row_number::Bool = false,
     title::AbstractString = "",
@@ -203,6 +204,7 @@ function _print_info(
             ptable,
             1:size(data)[1],
             [row_number_column_title];
+            alignment = row_number_alignment,
             id = :row_number
         )
     end
@@ -307,6 +309,7 @@ function _pt(
     row_names::Union{Nothing, AbstractVector} = nothing,
     row_name_alignment::Symbol = :r,
     row_name_column_title::AbstractString = "",
+    row_number_alignment::Symbol = :r,
     row_number_column_title::AbstractString = "Row",
     show_row_number::Bool = false,
     title::AbstractString = "",
@@ -371,6 +374,7 @@ function _pt(
         row_names               = row_names,
         row_name_alignment      = row_name_alignment,
         row_name_column_title   = row_name_column_title,
+        row_number_alignment    = row_number_alignment,
         row_number_column_title = row_number_column_title,
         show_row_number         = show_row_number,
         title                   = title,
