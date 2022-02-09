@@ -7,44 +7,32 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-"""
-    _print_title(buf::IO, title_tokens::Vector{String}, has_color::Bool, title_crayon::Crayon)
-
-Print the table title to the buffer `buf`.
-"""
-function _print_title(
-    buf::IO,
+# Print the table title to the display.
+function _print_title!(
+    display::Display,
     title_tokens::Vector{String},
     # Configurations
-    has_color::Bool,
     title_crayon::Crayon
 )
     num_tokens = length(title_tokens)
 
     num_tokens == 0 && return nothing
 
-    has_color && print(buf, title_crayon)
-
     @inbounds for i in 1:num_tokens
-        print(buf, rstrip(title_tokens[i]))
+        _write_to_display!(display, title_crayon, string(rstrip(title_tokens[i])), "")
 
         # In the last line we must not add the new line character
         # because we need to reset the crayon first if the display
         # supports colors.
-        i != num_tokens && println(buf)
+        i != num_tokens && _nl!(display)
     end
 
-    has_color && print(buf, _reset_crayon)
-    println(buf)
+    _nl!(display)
 
     return nothing
 end
 
-"""
-    _tokenize_title(title::AbstractString, display_width::Int, table_width::Int, title_alignment::Symbol, title_autowrap::Bool, title_same_width_as_table::Bool)
-
-Split the table title into tokens considering the line break character.
-"""
+# Split the table title into tokens considering the line break character.
 function _tokenize_title(
     title::AbstractString,
     display_width::Int,

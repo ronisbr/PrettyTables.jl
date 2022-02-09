@@ -19,20 +19,20 @@ end
     include("text_backend/column_width.jl")
 end
 
-@testset "Colors" begin
-    # Those tests are failing in Windows for Julia 1.0.
-    if (VERSION > v"1.1") || !Sys.iswindows()
-        include("text_backend/colors.jl")
-    end
-end
+# @testset "Colors" begin
+#     # Those tests are failing in Windows for Julia 1.0.
+#     if (VERSION > v"1.1") || !Sys.iswindows()
+#         include("text_backend/colors.jl")
+#     end
+# end
 
-@testset "Cropping" begin
-    include("text_backend/cropping.jl")
-end
+# @testset "Cropping" begin
+#     include("text_backend/cropping.jl")
+# end
 
-@testset "Custom text cell" begin
-    include("text_backend/custom_cells.jl")
-end
+# @testset "Custom text cell" begin
+#     include("text_backend/custom_cells.jl")
+# end
 
 @testset "Errors" begin
     include("text_backend/errors.jl")

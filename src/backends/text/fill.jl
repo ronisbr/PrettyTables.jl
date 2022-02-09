@@ -7,74 +7,14 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-# Compute the vectors that will be used to fill the rows of the matrix that will
-# be printed. This is required due to the different crop modes available.
-function _compute_row_fill_vectors(
-    id_rows::AbstractVector{Int},
-    num_printed_rows::Int,
-    vcrop_mode::Symbol
-)
-    # Compute the array separation if the vertical crop mode is `:middle`.
-    num_rows = length(id_rows)
-    Δ₀ = cld(num_printed_rows, 2)
-
-    # Create the vector that will be used to fill the rows given the crop mode.
-    jvec  = Vector{Int}(undef, num_printed_rows)
-    jrvec = Vector{Int}(undef, num_printed_rows)
-
-    if vcrop_mode == :bottom
-        for i in 1:num_printed_rows
-            jvec[i]  = i
-            jrvec[i] = id_rows[i]
-        end
-    elseif vcrop_mode == :middle
-        i  = 1
-        i₀ = 1
-        i₁ = 1
-
-        len₀ = Δ₀
-        len₁ = num_printed_rows - Δ₀
-
-        while (i₀ ≤ len₀) || (i₁ ≤ len₁)
-            if i₀ ≤ len₀
-                j        = i₀
-                jvec[i]  = j
-                jrvec[i] = id_rows[j]
-
-                i  += 1
-                i₀ += 1
-            end
-
-            if i₁ ≤ len₁
-                j = num_printed_rows - i₁ + 1
-                jvec[i]  = j
-                jrvec[i] = id_rows[num_rows - i₁ + 1]
-
-                i  += 1
-                i₁ += 1
-            end
-        end
-    else
-        error("Unknown vertical crop mode.")
-    end
-
-    return jvec, jrvec
-end
-
-# Fill the header and matrix data.
+# Fill the the string matrix table.
 function _fill_matrix_data!(
-    header_str::Matrix{String},
-    data_str::Matrix{Vector{String}},
-    cols_width::Vector{Int},
-    num_lines_in_row::Vector{Int},
-    id_cols::AbstractVector{Int},
-    jvec::Vector{Int},
-    jrvec::Vector{Int},
-    Δc::Int,
-    (@nospecialize data::Any),
-    (@nospecialize header::Any),
-    (@nospecialize formatters::Ref{Any}),
+    table_str::Matrix{Vector{String}},
+    ptable::ProcessedTable,
+    actual_columns_width::Vector{Int},
     display::Display,
+    (@nospecialize formatters::Ref{Any}),
+    num_lines_in_row::Vector{Int},
     # Configuration options.
     autowrap::Bool,
     cell_first_line_only::Bool,
@@ -85,45 +25,68 @@ function _fill_matrix_data!(
     linebreaks::Bool,
     maximum_columns_width::Vector{Int},
     minimum_columns_width::Vector{Int},
-    noheader::Bool,
     renderer::Union{Val{:print}, Val{:show}},
     vcrop_mode::Symbol
 )
-    num_printed_rows, num_printed_cols = size(data_str)
-    header_num_rows, ~ = size(header_str)
+    num_rows, ~ = _size(ptable)
+    num_header_rows, ~ = _header_size(ptable)
+    num_rendered_rows, num_rendered_columns = size(table_str)
 
     # This variable stores the predicted table width. If the user wants
     # horizontal cropping, then it can be use to avoid unnecessary processing of
     # columns that will not be displayed.
-    pred_tab_width = 0
+    pred_table_width = 0
 
-    @inbounds for i in (1 + Δc):num_printed_cols
-        # Here we store the number of processed rows. This is used to save
+    @inbounds for j in 1:num_rendered_columns
+        # Get the identification of the current column.
+        column_id = _get_column_id(ptable, j)
+
+        # Here we store the number of processed lines. This is used to save
         # processing if the user wants to crop the output and has cells with
         # multiple lines.
-        num_processed_rows = 0
+        num_processed_lines = 0
 
-        # Index of the i-th printed column in `data`.
-        ic = id_cols[i - Δc]
+        # Get the column index in the original data. Notice that this is ignored
+        # if the column is not from the original data.
+        jr = _get_data_column_index(ptable, j)
 
         # Store the largest cell width in this column. This leads to a double
         # computation of the cell size, here and in the
         # `_compute_table_size_data`. However, we need this to stop processing
         # columns when cropping horizontally.
-        largest_cell_width = minimum_columns_width[ic] ≤ 0 ? 0 : minimum_columns_width[ic]
+        if (column_id == :__ORIGINAL_DATA__)
+            largest_cell_width = minimum_columns_width[jr] ≤ 0 ?
+                0 :
+                minimum_columns_width[jr]
+        else
+            largest_cell_width = 0
+        end
 
-        if !noheader
-            for j in 1:header_num_rows
-                header_ij = isassigned(header[j], ic) ? header[j][ic] : undef
+        for i in 1:num_rendered_rows
+            # We need to force `cell_str` to `Vector{String}` to avoid type
+            # instabilities.
+            local cell_str::Vector{String}
 
-                # NOTE: For headers, we always use `print` instead of `show` to
-                # avoid quotes.
-                #
-                # Due to the non-specialization of `data`, `hstr` here is
-                # inferred as `Any`. However, we know that the output of
-                # `_parse_cell_text` must be a vector of String.
-                hstr::Vector{String} = _parse_cell_text(
-                    header_ij;
+            # Get the identification of the current row.
+            row_id = _get_row_id(ptable, i)
+
+            # Get the row number given the crop mechanism. `i_ts` is the row
+            # index in the `table_str` whereas `i_pt` is the row index in the
+            # `ptable`.
+            i_ts, i_pt = _vcrop_row_number(
+                vcrop_mode,
+                num_rows,
+                num_header_rows,
+                num_rendered_rows,
+                i
+            )
+
+            # Get the cell data.
+            cell_data = _get_element(ptable, i_pt, j);
+
+            if (row_id == :__HEADER__) || (row_id == :__SUBHEADER__)
+                cell_str = _parse_cell_text(
+                    cell_data;
                     autowrap = false,
                     cell_first_line_only = false,
                     column_width = -1,
@@ -134,197 +97,115 @@ function _fill_matrix_data!(
                     renderer = Val(:print)
                 )
 
-                header_str[j, i] = first(hstr)
-                num_processed_rows += 1
+            elseif (column_id == :row_name)
+                cell_str = _parse_cell_text(
+                    cell_data;
+                    autowrap = false,
+                    cell_first_line_only = false,
+                    column_width = -1,
+                    compact_printing = compact_printing,
+                    has_color = display.has_color,
+                    limit_printing = limit_printing,
+                    linebreaks = false,
+                    renderer = Val(:print)
+                )
 
-                header_ji_len = textwidth(header_str[j, i])
+            elseif (column_id == :__ORIGINAL_DATA__) && (row_id == :__ORIGINAL_DATA__)
+                # Get the row index in the original data.
+                ir = _get_data_row_index(ptable, i_pt)
 
-                # If the user wants to crop the subheader, then it should not be
-                # used to compute the largest cell width of this column.
-                if (j == 1) || (!crop_subheader)
-                    largest_cell_width = max(largest_cell_width, header_ji_len)
+                # Check if this is a column with fixed size.
+                fixed_column_width = columns_width[jr] > 0
+
+                # Get the original type of the cell, which is used in some
+                # special cases in the renderers.
+                cell_data_type = typeof(cell_data)
+
+                # Apply the formatters.
+                for f in formatters.x
+                    cell_data = f(cell_data, ir, jr)
                 end
+
+                # Render the cell.
+                cell_str = _parse_cell_text(
+                    cell_data,
+                    autowrap = autowrap && fixed_column_width,
+                    cell_data_type = cell_data_type,
+                    cell_first_line_only = cell_first_line_only,
+                    column_width = columns_width[jr],
+                    compact_printing = compact_printing,
+                    has_color = display.has_color,
+                    limit_printing = limit_printing,
+                    linebreaks = linebreaks,
+                    renderer = renderer
+                )
+
+            else
+                cell_str = [string(cell_data)]
+
             end
-        end
 
-        for k in 1:num_printed_rows
-            j  = jvec[k]
-            jr = jrvec[k]
+            table_str[i_ts, j] = cell_str
 
-            # Apply the formatters.
-            data_ij = isassigned(data, jr, ic) ? data[jr, ic] : undef
-
-            data_ij_type = typeof(data_ij)
-
-            for f in formatters.x
-                data_ij = f(data_ij, jr, ic)
-            end
-
-            # Check if this is a columns with fixed size.
-            fixed_col_width = columns_width[ic] > 0
-
-            # Parse the cell.
-            data_str[j, i] = _parse_cell_text(
-                data_ij;
-                autowrap = autowrap && fixed_col_width,
-                cell_data_type = data_ij_type,
-                cell_first_line_only = cell_first_line_only,
-                column_width = columns_width[ic],
-                compact_printing = compact_printing,
-                has_color = display.has_color,
-                limit_printing = limit_printing,
-                linebreaks = linebreaks,
-                renderer = renderer
-            )
-
-            # Compute the number of lines so that we can avoid process
-            # unnecessary cells due to cropping.
-            num_lines_ji = length(data_str[j, i])
-            num_processed_rows += num_lines_ji
-            num_lines_in_row[j] = max(num_lines_in_row[j], num_lines_ji)
-
-            if data_ij isa Markdown.MD
+            if cell_data isa Markdown.MD
                 largest_cell_width = max(
                     largest_cell_width,
-                    maximum(_printable_textwidth.(data_str[j, i]))
+                    maximum(_printable_textwidth.(cell_str))
                 )
             else
                 largest_cell_width = max(
                     largest_cell_width,
-                    maximum(textwidth.(data_str[j, i]))
+                    maximum(textwidth.(cell_str))
                 )
             end
+
+            # Compute the number of lines so that we can avoid process
+            # unnecessary cells due to cropping.
+            num_lines = length(cell_str)
+            num_processed_lines += num_lines
+            num_lines_in_row[i_ts] = max(num_lines_in_row[i_ts], num_lines)
 
             # If the crop mode if `:middle`, then we need to always process a
             # row in the top and in another in the bottom before stopping due to
             # display size. This is required to avoid printing from a cell that
             # is undefined. Notice that due to the printing order in `jvec` we
             # just need to check if `k` is even.
-            if ( (vcrop_mode == :bottom) ||
-                 ( (vcrop_mode == :middle) && (k % 2 == 0) ) ) &&
-                (display.size[1] > 0) && (num_processed_rows ≥ display.size[1])
+            if ((vcrop_mode == :bottom) || ((vcrop_mode == :middle))) &&
+                (display.size[1] > 0) &&
+                (num_processed_lines ≥ display.size[1])
                 break
             end
         end
 
-        # Compute the column width given the user's configuration.
-        cols_width[i] = _update_column_width(
-            cols_width[i],
-            largest_cell_width,
-            columns_width[ic],
-            maximum_columns_width[ic],
-            minimum_columns_width[ic]
-        )
+        if (column_id == :__ORIGINAL_DATA__)
+            # Compute the column width given the user's configuration.
+            actual_columns_width[j] = _update_column_width(
+                actual_columns_width[j],
+                largest_cell_width,
+                columns_width[jr],
+                maximum_columns_width[jr],
+                minimum_columns_width[jr]
+            )
+        else
+            actual_columns_width[j] = max(
+                actual_columns_width[j],
+                largest_cell_width
+            )
+        end
 
         # If the user horizontal cropping, then check if we need to process
         # another column.
         #
         # TODO: Should we take into account the dividers?
         if display.size[2] > 0
-            pred_tab_width += cols_width[i]
+            pred_table_width += actual_columns_width[j]
 
-            if pred_tab_width > display.size[2]
-                num_printed_cols = i
+            if pred_table_width > display.size[2]
+                num_rendered_columns = j
                 break
             end
         end
     end
 
-    return num_printed_cols, num_printed_rows
-end
-
-# Fill the information related to the row number column.
-function _fill_row_number_column!(
-    header_str::Matrix{String},
-    data_str::Matrix{Vector{String}},
-    cols_width::Vector{Int},
-    jvec::Vector{Int},
-    jrvec::Vector{Int},
-    noheader::Bool,
-    row_number_column_title::String
-)
-    num_printed_rows = size(data_str)[1]
-
-    num_printed_rows == 0 && return nothing
-
-    # Set the header of the row column.
-    @inbounds header_str[1, 1]      = row_number_column_title
-    @inbounds header_str[2:end, 1] .= ""
-
-    # Do not take the header size into account if the user does not want a
-    # header.
-    if !noheader
-        cols_width[1] = max(cols_width[1], textwidth(row_number_column_title))
-    end
-
-    # Set the data of the row column.
-    @inbounds for i = 1:num_printed_rows
-        j  = jvec[i]
-        jr = jrvec[i]
-
-        str_jr = string(jr)
-        data_str[j, 1] = [str_jr]
-        cols_width[1] = max(cols_width[1], textwidth(str_jr))
-    end
-
-    return nothing
-end
-
-# Fill the information related to the row name column.
-function _fill_row_name_column!(
-    header_str::Matrix{String},
-    data_str::Matrix{Vector{String}},
-    cols_width::Vector{Int},
-    (@nospecialize row_names::AbstractVector),
-    jvec::Vector{Int},
-    jrvec::Vector{Int},
-    Δc::Int,
-    compact_printing::Bool,
-    renderer::Union{Val{:print}, Val{:show}},
-    row_name_column_title::String
-)
-
-    num_printed_rows = size(data_str)[1]
-
-    num_printed_rows == 0 && return nothing
-
-    # Escape the row name column title.
-    @inbounds header_str[1, Δc] = first(
-        _render_text(
-            Val(:print),
-            row_name_column_title,
-            compact_printing = compact_printing,
-            linebreaks = false
-        )
-    )
-    @inbounds header_str[2:end, Δc] .= ""
-
-    cols_width[Δc] = max(cols_width[Δc], textwidth(header_str[1, Δc]))
-
-    # Convert the row names to string.
-    @inbounds for i in 1:num_printed_rows
-        j  = jvec[i]
-        jr = jrvec[i]
-
-        row_names_j = isassigned(row_names, jr) ? row_names[jr] : undef
-
-        # Due to the non-specialization of `data`, `hstr` here is inferred as
-        # `Any`. However, we know that the output of `_parse_cell_text` must be
-        # a vector of String.
-        row_name_str::Vector{String} = _parse_cell_text(
-            row_names_j;
-            autowrap = false,
-            cell_first_line_only = false,
-            column_width = -1,
-            compact_printing = compact_printing,
-            linebreaks = false,
-            renderer = Val(:print)
-        )
-
-        data_str[j, Δc] = row_name_str
-
-        cols_width[Δc] = max(cols_width[Δc], textwidth(first(row_name_str)))
-    end
-
-    return nothing
+    return num_rendered_rows, num_rendered_columns
 end
