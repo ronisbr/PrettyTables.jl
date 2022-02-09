@@ -142,106 +142,6 @@ function _aprintln(
 end
 
 """
-    _process_hlines(hlines::Union{Symbol,AbstractVector}, body_hlines::AbstractVector, num_printed_rows::Int, noheader::Bool)
-
-Process the horizontal lines in `hlines` and `body_hlines` considering the
-number of filtered rows `num_filtered_rows` and if the header is present
-(`noheader`).
-
-It returns a vector of `Int` stating where the horizontal lines must be drawn.
-"""
-@inline function _process_hlines(
-    hlines::Symbol,
-    body_hlines::AbstractVector,
-    num_filtered_rows::Int,
-    noheader::Bool
-)
-    if hlines == :all
-        vhlines = collect(0:1:num_filtered_rows + !noheader)
-    elseif hlines == :none
-        vhlines = Int[]
-    else
-        error("`hlines` must be `:all`, `:none`, or a vector of integers.")
-    end
-
-    return _process_hlines(vhlines, body_hlines, num_filtered_rows, noheader)
-end
-
-function _process_hlines(
-    hlines::AbstractVector,
-    body_hlines::AbstractVector,
-    num_filtered_rows::Int,
-    noheader::Bool
-)
-    # The symbol `:begin` is replaced by 0, the symbol `:header` by the line
-    # after the header, and the symbol `:end` is replaced by the last row.
-    hlines = replace(
-        hlines,
-        :begin  => 0,
-        :header => noheader ? -1 : 1,
-        :end    => num_filtered_rows + !noheader
-    )
-
-    # All numbers less than 1 and higher or equal the number of filtered rows
-    # must be removed from `body_hlines`.
-    body_hlines = filter(x -> (x ≥ 1) && (x < num_filtered_rows), body_hlines)
-
-    # Merge `hlines` with `body_hlines`.
-    hlines = unique(vcat(hlines, body_hlines .+ !noheader))
-    #                                               ^
-    #                                               |
-    # If we have header, then the index in `body_hlines` must be incremented.
-
-    # Make sure that the compiler knows that this function always returns a
-    # vector of `Int`s.
-    ret::Vector{Int} = Vector{Int}(hlines)
-
-    return ret
-end
-
-"""
-    _process_vlines(vlines::AbstractVector, num_printed_cols::Int)
-
-Process the vertical lines `vlines` considerering the number of printed columns
-`num_printed_cols`.
-
-It returns a vector of `Int` stating where the vertical lines must be drawn.
-"""
-@inline function _process_vlines(vlines::Symbol, num_printed_cols::Int)
-    # Process `vlines`.
-    if vlines == :all
-        vvlines = collect(0:1:num_printed_cols)
-    elseif vlines == :none
-        vvlines = Int[]
-    else
-        error("`vlines` must be `:all`, `:none`, or a vector of integers.")
-    end
-
-    return _process_vlines(vvlines, num_printed_cols)
-end
-
-function _process_vlines(vlines::AbstractVector, num_printed_cols::Int)
-    # Process `vlines`.
-    if vlines == :all
-        vlines = collect(0:1:num_printed_cols)
-    elseif vlines == :none
-        vlines = Int[]
-    elseif !(typeof(vlines) <: AbstractVector)
-        error("`vlines` must be `:all`, `:none`, or a vector of integers.")
-    end
-
-    # The symbol `:begin` is replaced by 0 and the symbol `:end` is replaced by
-    # the last column.
-    vlines = replace(
-        vlines,
-        :begin => 0,
-        :end   => num_printed_cols
-    )
-
-    return Vector{Int}(vlines)
-end
-
-"""
     _check_hline(ptable::ProcessedTable, hlines, body_hlines::AbstractVector, i::Int)
 
 Check if there is a horizontal line after the `i`th row of `ptable` considering
@@ -249,27 +149,37 @@ the options `hlines` and `body_hlines`.
 """
 function _check_hline(
     ptable::ProcessedTable,
-    hlines::AbstractVector,
+    hlines::Vector{Int},
     body_hlines::AbstractVector,
     i::Int
 )
-
-    num_printed_rows = _size(ptable)[1]
     num_header_rows = _header_size(ptable)[1]
 
-    if (i == 0)  && ((:begin ∈ hlines) || (0 ∈ hlines))
+    if (i == 0) && (0 ∈ hlines)
         return true
-    elseif (i == num_printed_rows) && (:end ∈ hlines)
-        return true
-    elseif (i == num_header_rows) && ((:header ∈ hlines) || (1 ∈ hlines))
-        return true
-    elseif (i > num_header_rows) && (i - num_header_rows + 1 ∈ hlines)
-        return true
-    elseif ((i - num_header_rows) ∈ body_hlines)
-        return true
+
+    elseif (i <= num_header_rows)
+        if (i == num_header_rows)
+            if 1 ∈ hlines
+                return true
+            elseif 0 ∈ body_hlines
+                return true
+            end
+        end
+
     else
-        return false
+        Δ = num_header_rows > 0 ? 1 : 0
+        i = i - num_header_rows + Δ
+
+        if (i ∈ hlines)
+            return true
+
+        elseif ((i - Δ) ∈ body_hlines)
+            return true
+        end
     end
+
+    return false
 end
 
 function _check_hline(
@@ -281,7 +191,7 @@ function _check_hline(
     if hlines == :all
         return true
     elseif hlines == :none
-        return false
+        return _check_hline(ptable, Int[], body_hlines, i)
     else
         error("`hlines` must be `:all`, `:none`, or a vector of integers.")
     end
@@ -316,4 +226,134 @@ function _check_vline(ptable::ProcessedTable, vlines::Symbol, j::Int)
     else
         error("`vlines` must be `:all`, `:none`, or a vector of integers.")
     end
+end
+
+"""
+    _count_hlines(ptable::ProcessedTable, hlines::Vector{Int}, body_hlines::Vector{Int})
+
+Count the number of horizontal lines.
+"""
+function _count_hlines(
+    ptable::ProcessedTable,
+    hlines::Vector{Int},
+    body_hlines::Vector{Int}
+)
+    num_header_lines = _header_size(ptable)[1]
+    num_rows = _size(ptable)[1]
+    Δ = num_header_lines > 0 ? 1 : 0
+
+    merged_hlines = unique(sort(vcat(hlines, body_hlines .+ Δ)))
+
+    total_hlines = 0
+
+    for h in merged_hlines
+        if 0 ≤ h ≤ num_rows
+            total_hlines += 1
+        end
+    end
+
+    return total_hlines
+end
+
+function _count_hlines(
+    ptable::ProcessedTable,
+    hlines::Symbol,
+    body_hlines::Vector{Int}
+)
+    num_rows = _size(ptable)[1]
+
+    if hlines == :all
+        return num_rows + 1
+
+    elseif hlines == :none
+        num_header_lines = _header_size(ptable)[1]
+        Δ = num_header_lines > 0 ? 1 : 0
+        merged_hlines = unique(sort(body_hlines .+ Δ))
+        total_hlines = 0
+
+        for h in merged_hlines
+            if 0 ≤ h ≤ num_rows
+                total_hlines += 1
+            end
+        end
+
+        return total_hlines
+    end
+end
+
+"""
+    _count_vlines(ptable::ProcessedTable, vlines::Vector{Int})
+
+Count the number of vertical lines.
+"""
+function _count_vlines(ptable::ProcessedTable, vlines::Vector{Int})
+    num_columns = _size(ptable)[2]
+    total_vlines = 0
+
+    for h in vlines
+        if 0 ≤ h ≤ num_columns
+            total_vlines += 1
+        end
+    end
+
+    return total_vlines
+end
+
+function _count_vlines(ptable::ProcessedTable, vlines::Symbol)
+    num_columns = _size(ptable)[2]
+
+    if vlines == :all
+        return num_columns + 1
+
+    elseif vlines == :none
+        return 0
+
+    end
+end
+
+"""
+    _process_hlines(ptable::ProcessedTable, hlines)
+
+Process the horizontal lines `hlines` considerering the processed table `ptable`.
+"""
+@inline function _process_hlines(ptable::ProcessedTable, hlines::Symbol)
+    return hlines
+end
+
+@inline function _process_hlines(ptable::ProcessedTable, hlines::AbstractVector)
+    # The symbol `:begin` is replaced by 0, the symbol `:header` by the line
+    # after the header, and the symbol `:end` is replaced by the last row.
+    num_header_rows = _header_size(ptable)[1]
+    num_rows = _size(ptable)[1]
+    Δ  = num_header_rows > 0 ? 1 : 0
+
+    hlines = replace(
+        hlines,
+        :begin  => 0,
+        :header => num_header_rows > 0 ? 1 : -1,
+        :end    => num_rows - num_header_rows + Δ
+    )
+
+    return Vector{Int}(hlines)
+end
+
+"""
+    _process_vlines(ptable::ProcessedTable, vlines)
+
+Process the vertical lines `vlines` considerering the processed table `ptable`.
+"""
+@inline function _process_vlines(ptable::ProcessedTable, vlines::Symbol)
+    return vlines
+end
+
+function _process_vlines(ptable::ProcessedTable, vlines::AbstractVector)
+    # The symbol `:begin` is replaced by 0 and the symbol `:end` is replaced by
+    # the last column.
+    vlines = replace(
+        vlines,
+        :begin => 0,
+        :end   => _size(ptable)[2]
+    )
+
+    return Vector{Int}(vlines)
 end
