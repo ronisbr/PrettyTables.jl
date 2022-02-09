@@ -69,10 +69,12 @@ function _pt_latex(
     if hlines === nothing
         hlines = tf.hlines
     end
+    hlines = _process_hlines(ptable, hlines)
 
     if vlines === nothing
         vlines = tf.vlines
     end
+    vlines = _process_vlines(ptable, vlines)
 
     # Let's create a `IOBuffer` to write everything and then transfer to `io`.
     buf_io = IOBuffer()
@@ -156,7 +158,7 @@ function _pt_latex(
         # Get the identification of the current row.
         row_id = _get_row_id(ptable, i)
 
-        if (row_id == :__HEADER__) || (row_id == :__SUBHEADER__)
+        if _is_header_row(row_id)
             buf_aux = buf_h
         else
             buf_aux = buf_b
@@ -182,7 +184,7 @@ function _pt_latex(
             # due to `_parse_cell_text`.
             cell_str::String = ""
 
-            if (row_id == :__HEADER__) || (row_id == :__SUBHEADER__)
+            if _is_header_row(row_id)
                 if column_id == :__ORIGINAL_DATA
                     cell_str = _parse_cell_latex(
                         cell_data,
@@ -276,7 +278,7 @@ function _pt_latex(
         if _check_hline(ptable, hlines, body_hlines, i)
             if i == num_printed_rows
                 print(buf_aux, bottom_line)
-            elseif (row_id == :__HEADER__) || (row_id == :__SUBHEADER__)
+            elseif _is_header_row(row_id)
                 print(buf_aux, header_line)
             else
                 print(buf_aux, mid_line)
