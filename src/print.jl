@@ -13,6 +13,7 @@ export pretty_table
 #                               Public Functions
 ################################################################################
 
+# TODO: Update info about body_hlines.
 """
     pretty_table([io::IO | String | HTML,] table;  kwargs...)
 
