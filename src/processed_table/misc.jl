@@ -7,6 +7,7 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
+# Return `true` if the `alignment` is valid. Otherwise, return `false`.
 function _is_alignment_valid(alignment::Symbol)
     return (alignment == :l) || (alignment == :c) || (alignment == :r) ||
            (alignment == :L) || (alignment == :C) || (alignment == :R)
@@ -66,3 +67,15 @@ function _is_cell_alignment_overridden(ptable::ProcessedTable, i::Int, j::Int)
 
     return false
 end
+
+# Return `true` if the `row_id` is from the header.
+function _is_header_row(row_id::Symbol)
+    return (row_id == :__HEADER__) || (row_id == :__SUBHEADER__)
+end
+
+# Return `true` if the `i`th row in `ptable` is from the header.
+function _is_header_row(ptable::ProcessedTable, i::Int)
+    row_id = _get_row_id(ptable, i)
+    return _is_header_row(row_id)
+end
+
