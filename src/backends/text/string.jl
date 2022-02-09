@@ -7,17 +7,13 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-"""
-    _crop_str(str, crop_size, lstr = -1)
-
-Return a cropped string of `str` with size `crop_size`.
-
-If the last character before the crop does not fit due to its width, then blank
-spaces are added.
-
-The size of the string can be passed to `lstr` to save computational burden. If
-`lstr = -1`, then the string length will be computed inside the function.
-"""
+# Return a cropped string of `str` with size `crop_size`.
+#
+# If the last character before the crop does not fit due to its width, then
+# blank spaces are added.
+#
+# The size of the string can be passed to `lstr` to save computational burden.
+# If `lstr = -1`, then the string length will be computed inside the function.
 function _crop_str(str::String, crop_size::Int, lstr::Int = -1)
     lstr < 0 && (lstr = textwidth(str))
 
@@ -70,12 +66,8 @@ function _crop_str(str::String, crop_size::Int, lstr::Int = -1)
     return cstr
 end
 
-"""
-    _printable_textwidth(str::AbstractString)
-
-Compute the width of the string `str` neglecting all ANSI escape sequences that
-are not printable.
-"""
+# Compute the width of the string `str` neglecting all ANSI escape sequences
+# that are not printable.
 function _printable_textwidth(str::AbstractString)
     # Regex to remove ANSI escape sequences so that we can compute the printable
     # size of the cell.
@@ -87,31 +79,27 @@ function _printable_textwidth(str::AbstractString)
     return textwidth(str_p)
 end
 
-"""
-    _render_text(T, v; compact_printing::Bool = true, isstring::Bool = false, limit_printing::Bool = true, linebreaks::Bool = false)
-
-Render the value `v` to strings using the rendered `T` to be displayed in the
-text back-end.
-
-`T` can be:
-
-- `Val(:print)`: the function `print` will be used.
-- `Val(:show)`: the function `show` will be used.
-
-This function must return a vector of strings in which each element is a line
-inside the rendered cell.
-
-If `linebreaks` is `true`, then the rendered should split the created string
-into multiple tokens.
-
-In case `show` is used, if `isstring` is `false`, then it means that the
-original data is not a string even if `v` is a string. Hence, the surrounding
-quotes added by `show` will be removed. This is required to correctly handle
-formatters.
-
-If `limit_printing` is `true`, then `v` will be converted to string using the
-property `:limit => true`.
-"""
+# Render the value `v` to strings using the rendered `T` to be displayed in the
+# text back-end.
+#
+# The first argument can be:
+#
+# - `Val(:print)`: the function `print` will be used.
+# - `Val(:show)`: the function `show` will be used.
+#
+# This function must return a vector of strings in which each element is a line
+# inside the rendered cell.
+#
+# If `linebreaks` is `true`, then the rendered should split the created string
+# into multiple tokens.
+#
+# In case `show` is used, if `isstring` is `false`, then it means that the
+# original data is not a string even if `v` is a string. Hence, the surrounding
+# quotes added by `show` will be removed. This is required to correctly handle
+# formatters.
+#
+# If `limit_printing` is `true`, then `v` will be converted to string using the
+# property `:limit => true`.
 function _render_text(
     ::Val{:print},
     v::Any;
@@ -186,24 +174,20 @@ function _render_text(
     return vstr
 end
 
-"""
-    _str_aligned(data::String, alignment::Symbol, field_size::Integer, lstr::Integer = -1)
-
-Returns the string `data` with a specific `alignment` in a field with size
-`field_size`.
-
-`alignment` can be `:l` or `:L` for left alignment, `:c` or `:C` for center
-alignment, or `:r` or `:R` for right alignment. It defaults to `:r` if
-`alignment` is any other symbol.
-
-This function also returns the new size of the aligned string.
-
-If the string is larger than `field_size`, then it will be cropped and `⋯` will
-be added as the last character.
-
-The size of the string can be passed to `lstr` to save computational burden. If
-`lstr = -1`, then the string length will be computed inside the function.
-"""
+# Returns the string `data` with a specific `alignment` in a field with size
+# `field_size`.
+#
+# `alignment` can be `:l` or `:L` for left alignment, `:c` or `:C` for center
+# alignment, or `:r` or `:R` for right alignment. It defaults to `:r` if
+# `alignment` is any other symbol.
+#
+# This function also returns the new size of the aligned string.
+#
+# If the string is larger than `field_size`, then it will be cropped and `⋯`
+# will be added as the last character.
+#
+# The size of the string can be passed to `lstr` to save computational burden.
+# If `lstr = -1`, then the string length will be computed inside the function.
 function _str_aligned(
     data::String,
     alignment::Symbol,
@@ -231,12 +215,8 @@ function _str_aligned(
     return data
 end
 
-"""
-    _str_autowrap(tokens_raw::Vector{String}, width::Int = 0)
-
-Autowrap the tokens in `tokens_raw` considering a field with a specific `width`.
-It returns a new vector with the new wrapped tokens.
-"""
+# Autowrap the tokens in `tokens_raw` considering a field with a specific
+# `width`. It returns a new vector with the new wrapped tokens.
 function _str_autowrap(tokens_raw::Vector{String}, width::Int = 0)
     # Check for errors.
     width <= 0 && error("If `autowrap` is true, then the width must not be positive.")
@@ -299,25 +279,21 @@ function _str_autowrap(tokens_raw::Vector{String}, width::Int = 0)
     return tokens
 end
 
-"""
-    _str_compute_alignment_and_crop( data::String, alignment::Symbol, field_size::Integer, lstr::Integer = -1 )
-
-Return if the string `data` must be cropped or aligned given a field with field
-size `field_size` and a specific `alignment`.
-
-`alignment` can be `:l` or `:L` for left alignment, `:c` or `:C` for center
-alignment, or `:r` or `:R` for right alignment. It defaults to `:r` if
-`alignment` is any other symbol.
-
-The size of the string can be passed to `lstr` to save computational burden. If
-`lstr = -1`, then the string length will be computed inside the function.
-
-# Returns
-
-- The number of characters that must be cropped.
-- The left padding.
-- The right padding.
-"""
+# Return if the string `data` must be cropped or aligned given a field with
+# field size `field_size` and a specific `alignment`.
+#
+# `alignment` can be `:l` or `:L` for left alignment, `:c` or `:C` for center
+# alignment, or `:r` or `:R` for right alignment. It defaults to `:r` if
+# `alignment` is any other symbol.
+#
+# The size of the string can be passed to `lstr` to save computational burden.
+# If `lstr = -1`, then the string length will be computed inside the function.
+#
+# # Returns
+#
+# - The number of characters that must be cropped.
+# - The left padding.
+# - The right padding.
 function _str_compute_alignment_and_crop(
     data::String,
     alignment::Symbol,
@@ -356,16 +332,12 @@ end
 #                             ANSI Escape Sequence
 ################################################################################
 
-"""
-    _get_composed_ansi_format(ansi::Vector{T}) where T<:AbstractString
-
-Given a vector with a set of ANSI escape sequences, return a composed escape
-sequence that leads to the same formatting.
-
-!!! warning
-    This function only works with the minimal set used by `Markdown` in
-    `stdlib`.
-"""
+# Given a vector with a set of ANSI escape sequences, return a composed escape
+# sequence that leads to the same formatting.
+#
+# !!! warning
+#     This function only works with the minimal set used by `Markdown` in
+#     `stdlib`.
 function _get_composed_ansi_format(ansi::Vector{T}) where T<:AbstractString
     bold = false
     underline = false
@@ -408,11 +380,7 @@ function _get_composed_ansi_format(ansi::Vector{T}) where T<:AbstractString
     return composed_ansi
 end
 
-"""
-    _reapply_ansi_format!(lines::Vector{T}) where T<:AbstractString
-
-For each line in `lines`, reapply the ANSI format left by the previous line.
-"""
+# For each line in `lines`, reapply the ANSI format left by the previous line.
 function _reapply_ansi_format!(lines::Vector{T}) where T<:AbstractString
     length(lines) ≤ 1 && return nothing
 

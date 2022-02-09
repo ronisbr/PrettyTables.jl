@@ -116,7 +116,7 @@ Store the information of the display and the current cursor position.
 
 - `size::Tuple{Int, Int}`: Display size.
 - `row::Int`: Current row.
-- `col::Int`: Current column.
+- `column::Int`: Current column.
 - `has_color::Bool`: Indicates if the display has color support.
 - `cont_char::Char`: The character that indicates the line is cropped.
 - `cont_space_char::Char`: Space character to be printed before `cont_char`.
@@ -124,13 +124,15 @@ Store the information of the display and the current cursor position.
 @kwdef mutable struct Display
     size::Tuple{Int,Int}  = (-1, -1)
     row::Int              = 1
-    col::Int              = 0
+    column::Int           = 0
     has_color::Bool       = false
     cont_char::Char       = '⋯'
     cont_space_char::Char = ' '
 
-    # Buffer that will store the current line.
+    # Buffer that stores the current line.
     buf_line::IOBuffer = IOBuffer()
+    # Buffer that stores the entire output.
+    buf::IOBuffer = IOBuffer()
 end
 
 """
@@ -161,6 +163,20 @@ Each type must implement the following API:
 - `reset!`: Reset all the temporary fields. This function is not required.
 """
 abstract type CustomTextCell end
+
+"""
+    RowPrintingState
+
+Structure that hold the state of the row printing state machine.
+"""
+@kwdef mutable struct RowPrintingState
+    state::Symbol = :top_horizontal_line
+    i::Int = 0
+    l::Int = 0
+    continuation_line_drawn::Bool = false
+    printed_header_lines::Int = 0
+    printed_data_lines::Int = 0
+end
 
 ################################################################################
 #                                  Constants
