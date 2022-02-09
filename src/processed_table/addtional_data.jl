@@ -31,7 +31,7 @@ function _add_column!(
 
     # The length of the new column must match the number of rows in the initial
     # data.
-    num_rows, ~ = size(ptable.data)
+    num_rows, ~ = _data_size(ptable)
 
     if num_rows != length(new_column)
         error("The size of the new column does not match the size of the table.")
