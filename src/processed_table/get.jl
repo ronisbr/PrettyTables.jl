@@ -208,7 +208,13 @@ function _get_data_column_index(ptable::ProcessedTable, j::Int)
     Δc = length(ptable._additional_data_columns)
 
     if ptable._id_columns !== nothing
-        return ptable._id_columns[j - Δc]
+        # Check if the user ask for the index of a column that is an additional
+        # column.
+        if j - Δc > 0
+            return ptable._id_columns[j - Δc]
+        else
+            return nothing
+        end
     else
         return j - Δc
     end
