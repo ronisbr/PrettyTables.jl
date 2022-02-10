@@ -567,6 +567,15 @@ function _iterate_row_printing_state_vcrop_middle!(
             end
 
             while (Δrows - total_lines) > 0
+                if _check_hline(ptable, hlines, body_hlines, num_rows - Δi)
+                    total_lines += 1
+
+                    if total_lines ≥ Δrows
+                        rps.state = :row_finished
+                        break
+                    end
+                end
+
                 total_lines += num_lines_in_row[num_rendered_rows - Δi]
 
                 if total_lines ≥ Δrows
@@ -576,15 +585,6 @@ function _iterate_row_printing_state_vcrop_middle!(
                 else
                     Δi += 1
                     new_l = 0
-                end
-
-                if _check_hline(ptable, hlines, body_hlines, num_rows - Δi)
-                    total_lines += 1
-
-                    if total_lines ≥ Δrows
-                        rps.state = :row_finished
-                        break
-                    end
                 end
             end
 

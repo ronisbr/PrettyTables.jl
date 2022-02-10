@@ -308,7 +308,6 @@ function _pt_text(
     Δdisplay_lines =
         1 +
         newline_at_end +
-        draw_last_hline +
         crop_num_lines_at_beginning +
         length(title_tokens)
 
