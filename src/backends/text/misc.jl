@@ -51,7 +51,7 @@ function _compute_continuation_row_in_bottom_vcrop(
     if display.size[1] > 0
         available_display_lines = display.size[1] - Δdisplay_lines
 
-        if table_height >= available_display_lines
+        if table_height > available_display_lines
             continuation_row_line = available_display_lines - draw_last_hline
         else
             continuation_row_line = -1
@@ -75,6 +75,7 @@ function _compute_continuation_row_in_middle_vcrop(
         available_display_lines = display.size[1] - Δdisplay_lines
 
         if table_height >= available_display_lines
+            # TODO: Remove the hardcoded 2.
             num_header_lines =
                 sum(num_lines_in_row[1:num_header_rows]) + 2
 
