@@ -174,8 +174,8 @@ Structure that hold the state of the row printing state machine.
     i::Int = 0
     l::Int = 0
     continuation_line_drawn::Bool = false
-    printed_header_lines::Int = 0
-    printed_data_lines::Int = 0
+    printed_lines::Int = 1
+    i_pt::Int = 0
 end
 
 ################################################################################
