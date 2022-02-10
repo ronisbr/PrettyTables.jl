@@ -52,7 +52,11 @@ function _compute_continuation_row_in_bottom_vcrop(
         available_display_lines = display.size[1] - Δdisplay_lines
 
         if table_height > available_display_lines
-            continuation_row_line = available_display_lines - draw_last_hline
+            # In this case, we will have to save one line to print the omitted
+            # cell summary.
+            #
+            # TODO: Remove this space is the user omit the summary.
+            continuation_row_line = available_display_lines - draw_last_hline - 1
         else
             continuation_row_line = -1
         end
@@ -79,11 +83,15 @@ function _compute_continuation_row_in_middle_vcrop(
             num_header_lines =
                 sum(num_lines_in_row[1:num_header_rows]) + 2
 
+            # In this case, we will have to save one line to print the omitted
+            # cell summary.
+            #
+            # TODO: Remove this space is the user omit the summary.
             continuation_row_line = div(
                 available_display_lines - num_header_lines,
                 2,
                 RoundUp
-            ) + num_header_lines
+            ) + num_header_lines - 1
         else
             continuation_row_line = -1
         end
