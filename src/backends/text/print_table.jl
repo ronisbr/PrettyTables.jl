@@ -55,18 +55,30 @@ function _print_table_data!(
     # Initialize the row printing state machine.
     rps = RowPrintingState()
 
+    # Compute the position of the continuation line with respect to the printed
+    # table line.
+    if vcrop_mode != :middle
+        continuation_row_line = _compute_continuation_row_in_bottom_vcrop(
+            display,
+            table_height,
+            draw_last_hline,
+            Δdisplay_lines
+        )
+    else
+        continuation_row_line = _compute_continuation_row_in_middle_vcrop(
+            display,
+            table_height,
+            num_lines_in_row,
+            num_header_rows,
+            Δdisplay_lines
+        )
+    end
+
     while rps.state ≠ :finish
         # Row printing state machine
         # ======================================================================
 
         if vcrop_mode != :middle
-            continuation_row_line = _compute_continuation_row_in_bottom_vcrop(
-                display,
-                table_height,
-                draw_last_hline,
-                Δdisplay_lines
-            )
-
             action = _iterate_row_printing_state!(
                 rps,
                 ptable,
@@ -80,14 +92,6 @@ function _print_table_data!(
                 continuation_row_line
             )
         else
-            continuation_row_line = _compute_continuation_row_in_middle_vcrop(
-                display,
-                table_height,
-                num_lines_in_row,
-                num_header_rows,
-                Δdisplay_lines
-            )
-
             action = _iterate_row_printing_state_vcrop_middle!(
                 rps,
                 ptable,
