@@ -15,6 +15,7 @@ function _print_table_data!(
     actual_columns_width::Vector{Int},
     num_lines_in_row::Vector{Int},
     vcrop_mode::Symbol,
+    table_height::Int,
     Δdisplay_lines::Int,
     # Configurations.
     body_hlines::Vector{Int},
@@ -36,6 +37,7 @@ function _print_table_data!(
 )
     # Get size information from the processed table.
     num_rows = _size(ptable)[1]
+    num_header_rows = _header_size(ptable)[1]
     num_rendered_rows, num_rendered_columns = size(table_str)
 
     # Check if the last horizontal line must be drawn, which must happen
@@ -58,6 +60,13 @@ function _print_table_data!(
         # ======================================================================
 
         if vcrop_mode != :middle
+            continuation_row_line = _compute_continuation_row_in_bottom_vcrop(
+                display,
+                table_height,
+                draw_last_hline,
+                Δdisplay_lines
+            )
+
             action = _iterate_row_printing_state!(
                 rps,
                 ptable,
@@ -67,10 +76,31 @@ function _print_table_data!(
                 hlines,
                 body_hlines,
                 draw_last_hline,
-                Δdisplay_lines
+                Δdisplay_lines,
+                continuation_row_line
             )
         else
-            error("`vcrop_mode = :middle` is not implemented yet.")
+            continuation_row_line = _compute_continuation_row_in_middle_vcrop(
+                display,
+                table_height,
+                num_lines_in_row,
+                num_header_rows,
+                Δdisplay_lines
+            )
+
+            action = _iterate_row_printing_state_vcrop_middle!(
+                rps,
+                ptable,
+                display,
+                num_lines_in_row,
+                num_rendered_rows,
+                hlines,
+                body_hlines,
+                draw_last_hline,
+                Δdisplay_lines,
+                table_height,
+                continuation_row_line
+            )
         end
 
         # Render the top line
@@ -153,7 +183,7 @@ function _print_table_data!(
         # Render a table line
         # ======================================================================
 
-        elseif action == :table_line
+        elseif (action == :table_line) || (action == :table_line_row_finished)
             i = rps.i
             l = rps.l
             row_id = _get_row_id(ptable, i)
@@ -309,12 +339,13 @@ function _print_table_data!(
 
             _nl!(display)
 
-        # Actions after a row is finished (all the lines are printed)
-        # ======================================================================
+            # Actions after a row is finished (all the lines are printed)
+            # ----------------------------------------------------------------------
 
-        elseif action == :row_finished
-            if !_is_header_row(ptable, rps.i)
-                fully_printed_rows += 1
+            if action == :table_line_row_finished
+                if !_is_header_row(ptable, rps.i)
+                    fully_printed_rows += 1
+                end
             end
 
         # End state
@@ -338,7 +369,8 @@ function _iterate_row_printing_state!(
     hlines::Union{Symbol, AbstractVector},
     body_hlines::Vector{Int},
     draw_last_hline::Bool,
-    Δdisplay_lines::Int
+    Δdisplay_lines::Int,
+    continuation_row_line::Int
 )
     # Loop until we find a state that must generate an action.
     action = :nop
@@ -353,13 +385,21 @@ function _iterate_row_printing_state!(
         # Compute the number of remaining rows.
         Δrows = _available_rows(display) - Δdisplay_lines
 
-        if rps.state == :top_horizontal_line
+        if rps.printed_lines == continuation_row_line
+            action = :continuation_line
+            rps.state = :continuation_line
+            rps.printed_lines += 1
+            break
+
+        elseif rps.state == :top_horizontal_line
             rps.state = :table_line
             rps.i = 1
             rps.l = 0
 
             if _check_hline(ptable, hlines, body_hlines, 0)
                 action = :top_horizontal_line
+                rps.printed_lines += 1
+                break
             else
                 continue
             end
@@ -373,47 +413,202 @@ function _iterate_row_printing_state!(
         elseif rps.state == :table_line
             rps.l += 1
 
-            if (rps.i ≤ num_rendered_rows) && (rps.l ≤ num_lines_in_row[rps.i])
-                if vcrop && (Δrows ≤  1) && (rps.i < num_rendered_rows || rps.l < num_line_in_row[rps.i])
-                    rps.state = :continuation_line
-                    action = :continuation_line
-                else
+            if rps.i ≤ num_rendered_rows
+                if rps.l < num_lines_in_row[rps.i]
                     action = :table_line
+                    rps.printed_lines += 1
                     break
+                elseif rps.l == num_lines_in_row[rps.i]
+                    action = :table_line_row_finished
+                    rps.printed_lines += 1
+                    break
+                else
+                    rps.state = :row_finished
+                    continue
                 end
-            else
-                rps.state = :row_finished
-                action = :row_finished
-                break
             end
 
         elseif rps.state == :continuation_line
             if draw_last_hline
                 rps.state = :bottom_horizontal_line
                 action = :bottom_horizontal_line
+                rps.printed_lines += 1
+                break
             else
                 rps.state = :finish
                 action = :finish
+                rps.printed_lines += 1
+                break
             end
 
         elseif rps.state == :row_finished
             has_hline = _check_hline(ptable, hlines, body_hlines, rps.i)
 
             if rps.i < num_rendered_rows
-                if vcrop && (Δrows ≤  1) && (rps.i < num_rendered_rows || num_lines_in_row[rps.i] > 1)
-                    rps.state = :continuation_line
-                    action = :continuation_line
+                if has_hline
+                    action = :middle_horizontal_line
+                    rps.state = :middle_horizontal_line
+                    rps.printed_lines += 1
+                    break
                 else
-                    if has_hline
-                        action = :middle_horizontal_line
-                        rps.state = :middle_horizontal_line
+                    rps.state = :table_line
+                    rps.i += 1
+                    rps.l = 0
+                    continue
+                end
+            else
+                rps.state = :finish
+
+                if draw_last_hline
+                    action = :bottom_horizontal_line
+                else
+                    action = :finish
+                end
+            end
+
+        elseif rps.state == :bottom_horizontal_line
+            action = :finish
+            rps.state = :finish
+            break
+        end
+    end
+
+    return action
+end
+
+# Iterate the row printing state machine.
+function _iterate_row_printing_state_vcrop_middle!(
+    rps::RowPrintingState,
+    ptable::ProcessedTable,
+    display::Display,
+    num_lines_in_row::Vector{Int},
+    num_rendered_rows::Int,
+    hlines::Union{Symbol, AbstractVector},
+    body_hlines::Vector{Int},
+    draw_last_hline::Bool,
+    Δdisplay_lines::Int,
+    table_height::Int,
+    continuation_row_line::Int
+)
+    # Loop until we find a state that must generate an action.
+    action = :nop
+
+    if display.size[1] ≤ 0
+        vcrop = false
+    else
+        vcrop = true
+    end
+
+    while action == :nop
+        if rps.printed_lines == continuation_row_line
+            rps.state = :continuation_line
+            action = :continuation_line
+            rps.printed_lines += 1
+            break
+
+        elseif rps.state == :top_horizontal_line
+            rps.state = :table_line
+            rps.i = 1
+            rps.i_pt = 1
+            rps.l = 0
+
+            if _check_hline(ptable, hlines, body_hlines, 0)
+                action = :top_horizontal_line
+                rps.printed_lines += 1
+                break
+            else
+                continue
+            end
+
+        elseif rps.state == :middle_horizontal_line
+            rps.state = :table_line
+            rps.i += 1
+            rps.i_pt += 1
+            rps.l = 0
+            continue
+
+        elseif rps.state == :table_line
+            rps.l += 1
+
+            if rps.i ≤ num_rendered_rows
+                if (rps.l < num_lines_in_row[rps.i])
+                    action = :table_line
+                    rps.printed_lines += 1
+                    break
+                elseif rps.l == num_lines_in_row[rps.i]
+                    action = :table_line_row_finished
+                    rps.printed_lines += 1
+                    break
+                else
+                    rps.state = :row_finished
+                    continue
+                end
+            else
+                rps.state = :row_finished
+                continue
+            end
+
+        elseif rps.state == :continuation_line
+            num_rows = _size(ptable)[1]
+            Δrows = _available_rows(display) - Δdisplay_lines
+            Δi = 0
+            new_l = 0
+            total_lines = 0
+
+            if Δrows ≤ 0
+                if draw_last_hline
+                    rps.state = :bottom_horizontal_line
+                    action = :bottom_horizontal_line
+                else
+                    rps.state = :finish
+                    action = :finish
+                end
+                break
+            end
+
+            while (Δrows - total_lines) > 0
+                total_lines += num_lines_in_row[num_rendered_rows - Δi]
+
+                if total_lines ≥ Δrows
+                    new_l = total_lines - Δrows
+                    rps.state = :table_line
+                    break
+                else
+                    Δi += 1
+                    new_l = 0
+                end
+
+                if _check_hline(ptable, hlines, body_hlines, num_rows - Δi)
+                    total_lines += 1
+
+                    if total_lines ≥ Δrows
+                        rps.state = :row_finished
                         break
-                    else
-                        rps.state = :table_line
-                        rps.i += 1
-                        rps.l = 0
-                        continue
                     end
+                end
+            end
+
+            rps.i = num_rendered_rows - Δi
+            rps.i_pt = num_rows - Δi
+            rps.l = new_l
+
+            continue
+
+        elseif rps.state == :row_finished
+            has_hline = _check_hline(ptable, hlines, body_hlines, rps.i_pt)
+
+            if rps.i < num_rendered_rows
+                if has_hline
+                    action = :middle_horizontal_line
+                    rps.state = :middle_horizontal_line
+                    rps.printed_lines += 1
+                    break
+                else
+                    rps.state = :table_line
+                    rps.i += 1
+                    rps.i_pt += 1
+                    rps.l = 0
+                    continue
                 end
             else
                 rps.state = :finish

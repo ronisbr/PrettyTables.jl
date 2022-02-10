@@ -7,6 +7,21 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
+# Compute the table height.
+function _compute_table_height(
+    display::Display,
+    ptable::ProcessedTable,
+    hlines::Union{Symbol, Vector{Int}},
+    body_hlines::Union{Symbol, Vector{Int}},
+    num_lines_in_row::Vector{Int}
+)
+    table_height =
+        sum(num_lines_in_row) +
+        _count_hlines(ptable, hlines, body_hlines)
+
+    return table_height
+end
+
 # Compute the table width.
 function _compute_table_width(
     display::Display,
@@ -25,6 +40,57 @@ function _compute_table_width(
     end
 
     return table_width
+end
+
+function _compute_continuation_row_in_bottom_vcrop(
+    display::Display,
+    table_height::Int,
+    draw_last_hline::Bool,
+    Δdisplay_lines::Int
+)
+    if display.size[1] > 0
+        available_display_lines = display.size[1] - Δdisplay_lines
+
+        if table_height >= available_display_lines
+            continuation_row_line = available_display_lines - draw_last_hline
+        else
+            continuation_row_line = -1
+        end
+    else
+        continuation_row_line = -1
+    end
+
+    return continuation_row_line
+end
+
+# Compute the position of the continuation row if the vertical crop is selected.
+function _compute_continuation_row_in_middle_vcrop(
+    display::Display,
+    table_height::Int,
+    num_lines_in_row::Vector{Int},
+    num_header_rows::Int,
+    Δdisplay_lines::Int
+)
+    if display.size[1] > 0
+        available_display_lines = display.size[1] - Δdisplay_lines
+
+        if table_height >= available_display_lines
+            num_header_lines =
+                sum(num_lines_in_row[1:num_header_rows]) + 2
+
+            continuation_row_line = div(
+                available_display_lines - num_header_lines,
+                2,
+                RoundUp
+            ) + num_header_lines
+        else
+            continuation_row_line = -1
+        end
+    else
+        continuation_row_line = -1
+    end
+
+    return continuation_row_line
 end
 
 # Return the default crayon for a cell in a row with identification `row_id` and

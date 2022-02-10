@@ -177,7 +177,7 @@ function _pt_text(
     actual_columns_width = ones(Int, num_rendered_columns)
 
     # Vector that must contain the number of lines in each rendered row.
-    num_lines_in_row = ones(Int, num_rendered_rows)
+    num_lines_in_row = zeros(Int, num_rendered_rows)
 
     # NOTE: Algorithm to compute the table size and number of lines in the rows.
     # Previously, the algorithm to compute the table size and the number of
@@ -256,7 +256,7 @@ function _pt_text(
     # computing the moment that the display will be cropped.
     draw_last_hline = _check_hline(ptable, hlines, body_hlines, num_rows)
 
-    # Compute the table width
+    # Compute the table width and height
     # --------------------------------------------------------------------------
 
     table_width = _compute_table_width(
@@ -264,6 +264,14 @@ function _pt_text(
         ptable,
         vlines,
         actual_columns_width,
+    )
+
+    table_height = _compute_table_height(
+        display,
+        ptable,
+        hlines,
+        body_hlines,
+        num_lines_in_row
     )
 
     # Process the title
@@ -297,7 +305,12 @@ function _pt_text(
 
     # Number of additional lines that must be consider to crop the display
     # vertically.
-    Δdisplay_lines = 1 + newline_at_end + draw_last_hline + crop_num_lines_at_beginning
+    Δdisplay_lines =
+        1 +
+        newline_at_end +
+        draw_last_hline +
+        crop_num_lines_at_beginning +
+        length(title_tokens)
 
     fully_printed_rows, fully_printed_columns = _print_table_data!(
         display,
@@ -306,6 +319,7 @@ function _pt_text(
         actual_columns_width,
         num_lines_in_row,
         vcrop_mode,
+        table_height,
         Δdisplay_lines,
         # Configurations.
         body_hlines,
