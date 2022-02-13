@@ -260,14 +260,12 @@ function _pt_text(
     # --------------------------------------------------------------------------
 
     table_width = _compute_table_width(
-        display,
         ptable,
         vlines,
         actual_columns_width,
     )
 
     table_height = _compute_table_height(
-        display,
         ptable,
         hlines,
         body_hlines,

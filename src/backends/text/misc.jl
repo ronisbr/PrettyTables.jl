@@ -9,7 +9,6 @@
 
 # Compute the table height.
 function _compute_table_height(
-    display::Display,
     ptable::ProcessedTable,
     hlines::Union{Symbol, Vector{Int}},
     body_hlines::Union{Symbol, Vector{Int}},
@@ -24,7 +23,6 @@ end
 
 # Compute the table width.
 function _compute_table_width(
-    display::Display,
     ptable::ProcessedTable,
     vlines::Union{Symbol, Vector{Int}},
     columns_width::Vector{Int}
@@ -34,10 +32,6 @@ function _compute_table_width(
         sum(columns_width) +
         2length(columns_width) +
         _count_vlines(ptable, vlines)
-
-    if display.size[2] > 0
-        table_width = min(table_width, display.size[2])
-    end
 
     return table_width
 end
