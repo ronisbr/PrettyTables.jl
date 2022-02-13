@@ -13,6 +13,7 @@ function _print_table_data!(
     ptable::ProcessedTable,
     table_str::Matrix{Vector{String}},
     actual_columns_width::Vector{Int},
+    continuation_row_line::Int,
     num_lines_in_row::Vector{Int},
     vcrop_mode::Symbol,
     table_height::Int,
@@ -48,31 +49,8 @@ function _print_table_data!(
     # characters.
     line_count = 0
 
-    # Those variables are used to verify how many rows and columns were omitted.
-    fully_printed_columns = 0
-    fully_printed_rows = 0
-
     # Initialize the row printing state machine.
     rps = RowPrintingState()
-
-    # Compute the position of the continuation line with respect to the printed
-    # table line.
-    if vcrop_mode != :middle
-        continuation_row_line = _compute_continuation_row_in_bottom_vcrop(
-            display,
-            table_height,
-            draw_last_hline,
-            Δdisplay_lines
-        )
-    else
-        continuation_row_line = _compute_continuation_row_in_middle_vcrop(
-            display,
-            table_height,
-            num_lines_in_row,
-            num_header_rows,
-            Δdisplay_lines
-        )
-    end
 
     while rps.state ≠ :finish
         # Row printing state machine
@@ -208,9 +186,6 @@ function _print_table_data!(
                 _p!(display, border_crayon, tf.column, false, 1)
             end
 
-            # TODO: This variable must be computed only one time.
-            fully_printed_columns = 0
-
             # Render the cells in each column
             # ------------------------------------------------------------------
 
@@ -236,10 +211,6 @@ function _print_table_data!(
                         false,
                         actual_columns_width[j] + 2
                     ) && break
-
-                    if row_id == :__ORIGINAL_DATA__
-                        fully_printed_columns += 1
-                    end
 
                 else
                     column_id = _get_column_id(ptable, j)
@@ -317,8 +288,6 @@ function _print_table_data!(
                                 highlighters
                             ) && break
                         end
-
-                        fully_printed_columns += 1
                     end
                 end
 
@@ -331,15 +300,6 @@ function _print_table_data!(
 
             _nl!(display)
 
-            # Actions after a row is finished (all the lines are printed)
-            # ------------------------------------------------------------------
-
-            if action == :table_line_row_finished
-                if !_is_header_row(ptable, rps.i)
-                    fully_printed_rows += 1
-                end
-            end
-
         # End state
         # ======================================================================
 
@@ -348,6 +308,5 @@ function _print_table_data!(
         end
     end
 
-    return fully_printed_rows, fully_printed_columns
+    return nothing
 end
-
