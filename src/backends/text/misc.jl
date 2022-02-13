@@ -39,7 +39,11 @@ end
 # Compute the position of the continuation row if the vertical crop is selected
 # with the bottom crop mode.
 function _compute_continuation_row_in_bottom_vcrop(
+    ptable::ProcessedTable,
     display::Display,
+    hlines::Union{Symbol, Vector{Int}},
+    body_hlines::Vector{Int},
+    num_lines_in_row::Vector{Int},
     table_height::Int,
     draw_last_hline::Bool,
     Δdisplay_lines::Int
@@ -48,11 +52,26 @@ function _compute_continuation_row_in_bottom_vcrop(
         available_display_lines = display.size[1] - Δdisplay_lines
 
         if table_height > available_display_lines
+            # Count the number of lines in the header considering that lines before
+            # and after it.
+            num_header_lines = _count_header_lines(
+                ptable,
+                hlines,
+                body_hlines,
+                num_lines_in_row
+            )
+
             # In this case, we will have to save one line to print the omitted
             # cell summary.
             #
             # TODO: Remove this space is the user omit the summary.
             continuation_row_line = available_display_lines - draw_last_hline - 1
+
+            # We must print at least the header.
+            continuation_row_line = max(
+                continuation_row_line,
+                num_header_lines
+            )
         else
             continuation_row_line = -1
         end
@@ -68,7 +87,7 @@ end
 function _compute_continuation_row_in_middle_vcrop(
     ptable::ProcessedTable,
     display::Display,
-    hlines::Vector{Int},
+    hlines::Union{Symbol, Vector{Int}},
     body_hlines::Vector{Int},
     num_lines_in_row::Vector{Int},
     table_height::Int,
@@ -243,7 +262,7 @@ end
 # and the line after the last subheader.
 function _count_header_lines(
     ptable::ProcessedTable,
-    hlines::Vector{Int},
+    hlines::Union{Symbol, Vector{Int}},
     body_hlines::Vector{Int},
     num_lines_in_row::Vector{Int}
 )
