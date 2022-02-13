@@ -229,21 +229,17 @@ function _print_table_data!(
                     )
 
                     # Print the cell with the spacing.
-                    _p!(display, _default_crayon, " ", false, 1) && break
-
                     _p!(
                         display,
                         _default_crayon,
-                        cell_processed_str,
+                        " " * cell_processed_str * " ",
                         false,
-                        actual_columns_width[j]
+                        actual_columns_width[j] + 2
                     ) && break
 
                     if row_id == :__ORIGINAL_DATA__
                         fully_printed_columns += 1
                     end
-
-                    _p!(display, _default_crayon, " ", final_line_print, 1) && break
 
                 else
                     column_id = _get_column_id(ptable, j)
@@ -274,17 +270,13 @@ function _print_table_data!(
                         )
 
                         # Print the cell with the spacing.
-                        _p!(display, _default_crayon, " ", false, 1) && break
-
                         _p!(
                             display,
                             cell_crayon,
-                            cell_processed_str,
+                            " " * cell_processed_str * " ",
                             false,
-                            actual_columns_width[j]
+                            actual_columns_width[j] + 2
                         ) && break
-
-                        _p!(display, _default_crayon, " ", final_line_print, 1) && break
 
                     else
                         # In this case, we need to process the cell to apply the
@@ -305,15 +297,13 @@ function _print_table_data!(
                             highlighters
                         )
 
-                        _p!(display, _default_crayon, " ", false, 1) && break
-
                         if !(cell_data isa CustomTextCell)
                             _p!(
                                 display,
                                 cell_crayon,
-                                cell_processed_str,
+                                " " * cell_processed_str * " ",
                                 false,
-                                actual_columns_width[j]
+                                actual_columns_width[j] + 2
                             ) && break
                         else
                             # If we have a custom cell, we need a custom
@@ -329,8 +319,6 @@ function _print_table_data!(
                         end
 
                         fully_printed_columns += 1
-
-                        _p!(display, _default_crayon, " ", false, 1) && break
                     end
                 end
 
