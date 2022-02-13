@@ -66,19 +66,26 @@ end
 # Compute the position of the continuation row if the vertical crop is selected
 # with the middle crop mode.
 function _compute_continuation_row_in_middle_vcrop(
+    ptable::ProcessedTable,
     display::Display,
-    table_height::Int,
+    hlines::Vector{Int},
+    body_hlines::Vector{Int},
     num_lines_in_row::Vector{Int},
-    num_header_rows::Int,
+    table_height::Int,
     Δdisplay_lines::Int
 )
     if display.size[1] > 0
         available_display_lines = display.size[1] - Δdisplay_lines
 
         if table_height >= available_display_lines
-            # TODO: Remove the hardcoded 2.
-            num_header_lines =
-                sum(num_lines_in_row[1:num_header_rows]) + 2
+            # Count the number of lines in the header considering that lines before
+            # and after it.
+            num_header_lines = _count_header_lines(
+                ptable,
+                hlines,
+                body_hlines,
+                num_lines_in_row
+            )
 
             # In this case, we will have to save one line to print the omitted
             # cell summary.
@@ -97,6 +104,166 @@ function _compute_continuation_row_in_middle_vcrop(
     end
 
     return continuation_row_line
+end
+
+function _compute_omitted_cells(
+    ptable::ProcessedTable,
+    display::Display,
+    columns_width::Vector{Int},
+    continuation_row_line::Int,
+    num_lines_in_row::Vector{Int},
+    body_hlines::Vector{Int},
+    hlines::Union{Symbol, Vector{Int}},
+    vlines::Union{Symbol, Vector{Int}},
+    Δdisplay_lines::Int
+)
+    num_rows, num_columns  = _size(ptable)
+    num_additional_columns = _num_additional_columns(ptable)
+    num_header_rows        = _header_size(ptable)[1]
+    num_rendered_rows      = length(num_lines_in_row)
+    num_rendered_columns   = length(columns_width)
+
+    # Rows
+    # ==========================================================================
+
+    @views if continuation_row_line > 0
+        # If we have a continuation line, then we just need to pass the table
+        # from the beginning to end until we reach this line. Then we pass the
+        # table from end to the continuation line. In those passes, we count the
+        # number of fully displayed rows. This algorithm works for both bottom
+        # and middle cropping.
+
+        # Number of available line.
+        available_display_lines = display.size[1] - Δdisplay_lines
+
+        # Count the number of lines in the header.
+        num_header_lines = _count_header_lines(
+            ptable,
+            hlines,
+            body_hlines,
+            num_lines_in_row
+        )
+
+        # Update the number of available lines.
+        available_display_lines -= num_header_lines
+
+        fully_printed_rows = 0
+        current_line = num_header_lines
+
+        # First pass: go from the beginning of the table to the continuation
+        # line.
+        for i = (num_header_rows + 1):num_rendered_rows
+            current_line += num_lines_in_row[i]
+
+            if current_line ≥ continuation_row_line
+                available_display_lines -=
+                    num_lines_in_row[i] - (current_line - continuation_row_line)
+                break
+            end
+
+            available_display_lines -= num_lines_in_row[i]
+            fully_printed_rows += 1
+
+            if _check_hline(ptable, hlines, body_hlines, i)
+                current_line += 1
+                available_display_lines -= 1
+            end
+        end
+
+        # Second pass: go from the end of the table to the continuationl line.
+        # Notice that we know rows are cropped, hence we must reserve a line for
+        # the omitted cell summary.
+        #
+        # TODO: Update the computation if the user omitted the summary.
+        available_display_lines -= 1
+
+        for i = num_rendered_rows:-1:1
+            Δi = num_rendered_rows - i + 1
+
+            if _check_hline(ptable, hlines, body_hlines, num_rows - Δi)
+                available_display_lines -= 1
+            end
+
+            available_display_lines -= num_lines_in_row[i]
+            available_display_lines ≤ 0 && break
+
+            fully_printed_rows += 1
+        end
+
+        num_omitted_rows = (num_rows - num_header_rows) - fully_printed_rows
+    else
+        num_omitted_rows = 0
+    end
+
+    # Columns
+    # ==========================================================================
+
+    @inbounds @views if display.size[2] > 0
+        available_display_columns = display.size[2]
+
+        fully_printed_columns = 0
+
+        if _check_vline(ptable, vlines, 0)
+            available_display_columns -= 1
+        end
+
+        for j = 1:num_rendered_columns
+            # Take into account the column width plus the padding before the
+            # column.
+            available_display_columns -= columns_width[j] + 1
+
+            available_display_columns < 2 && break
+
+            # We should neglect the additional columns when computing the number
+            # of fully printed columns.
+            if j > num_additional_columns
+                fully_printed_columns += 1
+            end
+
+            # Take into account the column width plus the padding after the
+            # column.
+            available_display_columns -= 1
+
+            # Take into account a vertical line after the columns
+            if _check_vline(ptable, vlines, j)
+                available_display_columns -= 1
+            end
+        end
+
+        num_omitted_columns =
+            (num_columns - num_additional_columns) - fully_printed_columns
+    else
+        num_omitted_columns = 0
+    end
+
+    return num_omitted_rows, num_omitted_columns
+end
+
+# Count the number of lines in the header. It contains the first horizontal line
+# and the line after the last subheader.
+function _count_header_lines(
+    ptable::ProcessedTable,
+    hlines::Vector{Int},
+    body_hlines::Vector{Int},
+    num_lines_in_row::Vector{Int}
+)
+    num_header_lines = 0
+
+    @inbounds @views begin
+        num_header_rows = _header_size(ptable)[1]
+
+        if _check_hline(ptable, hlines, body_hlines, 0)
+            num_header_lines += 1
+        end
+
+        num_header_lines += sum(num_lines_in_row[1:num_header_rows])
+
+        if _check_hline(ptable, hlines, body_hlines, num_header_rows)
+            num_header_lines += 1
+        end
+    end
+
+    return num_header_lines
 end
 
 # Return the default crayon for a cell in a row with identification `row_id` and

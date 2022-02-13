@@ -309,11 +309,33 @@ function _pt_text(
         crop_num_lines_at_beginning +
         length(title_tokens)
 
-    fully_printed_rows, fully_printed_columns = _print_table_data!(
+    # Compute the position of the continuation line with respect to the printed
+    # table line.
+    if vcrop_mode != :middle
+        continuation_row_line = _compute_continuation_row_in_bottom_vcrop(
+            display,
+            table_height,
+            draw_last_hline,
+            Δdisplay_lines
+        )
+    else
+        continuation_row_line = _compute_continuation_row_in_middle_vcrop(
+            ptable,
+            display,
+            hlines,
+            body_hlines,
+            num_lines_in_row,
+            table_height,
+            Δdisplay_lines
+        )
+    end
+
+    _print_table_data!(
         display,
         ptable,
         table_str,
         actual_columns_width,
+        continuation_row_line,
         num_lines_in_row,
         vcrop_mode,
         table_height,
@@ -340,11 +362,19 @@ function _pt_text(
     # Summary of the omitted cells
     # ==========================================================================
 
-    num_omitted_rows = num_rows - num_header_rows - fully_printed_rows
-    num_omitted_columns =
-        num_columns -
-        fully_printed_columns -
-        _num_additional_columns(ptable)
+    # Compute the number of omitted cells.
+
+    num_omitted_rows, num_omitted_columns = _compute_omitted_cells(
+        ptable,
+        display,
+        actual_columns_width,
+        continuation_row_line,
+        num_lines_in_row,
+        body_hlines,
+        hlines,
+        vlines,
+        Δdisplay_lines
+    )
 
     _print_omitted_cell_summary(
         display,

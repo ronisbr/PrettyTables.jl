@@ -65,12 +65,8 @@ function _iterate_row_printing_state_vcrop_bottom!(
             rps.l += 1
 
             if rps.i ≤ num_rendered_rows
-                if rps.l < num_lines_in_row[rps.i]
+                if rps.l ≤ num_lines_in_row[rps.i]
                     action = :table_line
-                    rps.printed_lines += 1
-                    break
-                elseif rps.l == num_lines_in_row[rps.i]
-                    action = :table_line_row_finished
                     rps.printed_lines += 1
                     break
                 else
@@ -185,12 +181,8 @@ function _iterate_row_printing_state_vcrop_middle!(
             rps.l += 1
 
             if rps.i ≤ num_rendered_rows
-                if (rps.l < num_lines_in_row[rps.i])
+                if (rps.l ≤ num_lines_in_row[rps.i])
                     action = :table_line
-                    rps.printed_lines += 1
-                    break
-                elseif rps.l == num_lines_in_row[rps.i]
-                    action = :table_line_row_finished
                     rps.printed_lines += 1
                     break
                 else
