@@ -234,6 +234,11 @@ function _print_table_data!(
                         ) && break
 
                     else
+                        # TODO: Can we improve by moving to another part?
+                        # We are getting both row and column in all cells.
+                        ir = _get_data_row_index(ptable, rps.i_pt)
+                        jr = _get_data_column_index(ptable, j)
+
                         # In this case, we need to process the cell to apply the
                         # correct alignment and highlighters before rendering
                         # it.
@@ -243,8 +248,8 @@ function _print_table_data!(
                             ptable,
                             cell_data,
                             table_str[i, j][l],
-                            i,
-                            j,
+                            ir,
+                            jr,
                             l,
                             actual_columns_width[j],
                             text_crayon,
