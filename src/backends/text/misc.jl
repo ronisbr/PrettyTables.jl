@@ -106,15 +106,18 @@ function _compute_continuation_row_in_middle_vcrop(
                 num_lines_in_row
             )
 
-            # In this case, we will have to save one line to print the omitted
-            # cell summary.
+            # Number of rows available to draw table data. In this case, we will
+            # have to save one line to print the omitted cell summary.
             #
-            # TODO: Remove this space is the user omit the summary.
+            # TODO: Remove this space if the user omit the summary.
+            available_rows_for_data =
+                available_display_lines - num_header_lines - 1
+
             continuation_row_line = div(
-                available_display_lines - num_header_lines,
+                available_rows_for_data,
                 2,
                 RoundUp
-            ) + num_header_lines - 1
+            ) + num_header_lines
         else
             continuation_row_line = -1
         end
