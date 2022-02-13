@@ -313,7 +313,11 @@ function _pt_text(
     # table line.
     if vcrop_mode != :middle
         continuation_row_line = _compute_continuation_row_in_bottom_vcrop(
+            ptable,
             display,
+            hlines,
+            body_hlines,
+            num_lines_in_row,
             table_height,
             draw_last_hline,
             Δdisplay_lines

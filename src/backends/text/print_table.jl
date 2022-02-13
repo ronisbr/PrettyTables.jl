@@ -56,34 +56,18 @@ function _print_table_data!(
         # Row printing state machine
         # ======================================================================
 
-        if vcrop_mode != :middle
-            action = _iterate_row_printing_state_vcrop_bottom!(
-                rps,
-                ptable,
-                display,
-                num_lines_in_row,
-                num_rendered_rows,
-                hlines,
-                body_hlines,
-                draw_last_hline,
-                Δdisplay_lines,
-                continuation_row_line
-            )
-        else
-            action = _iterate_row_printing_state_vcrop_middle!(
-                rps,
-                ptable,
-                display,
-                num_lines_in_row,
-                num_rendered_rows,
-                hlines,
-                body_hlines,
-                draw_last_hline,
-                Δdisplay_lines,
-                table_height,
-                continuation_row_line
-            )
-        end
+        action = _iterate_row_printing_state!(
+            rps,
+            ptable,
+            display,
+            num_lines_in_row,
+            num_rendered_rows,
+            hlines,
+            body_hlines,
+            draw_last_hline,
+            Δdisplay_lines,
+            continuation_row_line
+        )
 
         # Render the top line
         # ======================================================================
