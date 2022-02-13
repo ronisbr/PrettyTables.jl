@@ -47,9 +47,9 @@ function _print_custom_text_cell!(
     return _write_to_display!(
         display,
         cell_crayon,
-        rendered_str,
+        " " * rendered_str * " ",
         suffix,
-        new_lstr + textwidth(suffix)
+        new_lstr + textwidth(suffix) + 2
     )
 end
 
@@ -81,8 +81,14 @@ function _print_omitted_cell_summary(
 
         cs_str = cs_str_col * cs_str_and * cs_str_row * " omitted"
 
-        if textwidth(cs_str) < table_width
-            cs_str = _str_aligned(cs_str, :r, table_width)
+        if display.size[2] > 0
+            table_display_width = min(table_width, display.size[2])
+        else
+            table_display_width = table_width
+        end
+
+        if textwidth(cs_str) < table_display_width
+            cs_str = _str_aligned(cs_str, :r, table_display_width)
         end
 
         _write_to_display!(display, omitted_cell_summary_crayon, cs_str, "")
