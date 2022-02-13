@@ -36,6 +36,8 @@ function _compute_table_width(
     return table_width
 end
 
+# Compute the position of the continuation row if the vertical crop is selected
+# with the bottom crop mode.
 function _compute_continuation_row_in_bottom_vcrop(
     display::Display,
     table_height::Int,
@@ -61,7 +63,8 @@ function _compute_continuation_row_in_bottom_vcrop(
     return continuation_row_line
 end
 
-# Compute the position of the continuation row if the vertical crop is selected.
+# Compute the position of the continuation row if the vertical crop is selected
+# with the middle crop mode.
 function _compute_continuation_row_in_middle_vcrop(
     display::Display,
     table_height::Int,
