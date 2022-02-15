@@ -147,16 +147,22 @@ function _fill_matrix_data!(
 
             table_str[i_ts, j] = cell_str
 
+            # Update the size of the largest cell in this column to draw the
+            # table.
             if cell_data isa Markdown.MD
                 largest_cell_width = max(
                     largest_cell_width,
                     maximum(_printable_textwidth.(cell_str))
                 )
             else
-                largest_cell_width = max(
-                    largest_cell_width,
-                    maximum(textwidth.(cell_str))
-                )
+                # If we are at the subheader and the user wants to crop it, then
+                # just skip this computation.
+                if (row_id != :__SUBHEADER__) || !crop_subheader
+                    largest_cell_width = max(
+                        largest_cell_width,
+                        maximum(textwidth.(cell_str))
+                    )
+                end
             end
 
             # Compute the number of lines so that we can avoid process

@@ -71,7 +71,7 @@ function _iterate_row_printing_state!(
         elseif rps.state == :continuation_line
             # If we reached the continuation line, then we must search backwards
             # how much lines we can print and select the correct row/line
-            # indices to continuat printing.
+            # indices to continue printing.
 
             num_rows = _size(ptable)[1]
             Δrows = _available_rows(display) - Δdisplay_lines
