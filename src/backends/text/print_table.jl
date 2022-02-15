@@ -15,8 +15,6 @@ function _print_table_data!(
     actual_columns_width::Vector{Int},
     continuation_row_line::Int,
     num_lines_in_row::Vector{Int},
-    vcrop_mode::Symbol,
-    table_height::Int,
     Δdisplay_lines::Int,
     # Configurations.
     body_hlines::Vector{Int},
@@ -38,7 +36,6 @@ function _print_table_data!(
 )
     # Get size information from the processed table.
     num_rows = _size(ptable)[1]
-    num_header_rows = _header_size(ptable)[1]
     num_rendered_rows, num_rendered_columns = size(table_str)
 
     # Check if the last horizontal line must be drawn, which must happen

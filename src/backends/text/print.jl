@@ -376,8 +376,6 @@ function _pt_text(
         actual_columns_width,
         continuation_row_line,
         num_lines_in_row,
-        vcrop_mode,
-        table_height,
         Δdisplay_lines,
         # Configurations.
         body_hlines,
