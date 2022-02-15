@@ -309,6 +309,19 @@ function _pt_text(
         crop_num_lines_at_beginning +
         length(title_tokens)
 
+    # Compute the number of omitted columns. We need this information to check
+    # if we need to reserve a line after the table to print the omitted cell
+    # summary
+    num_omitted_columns = _compute_omitted_columns(
+        ptable,
+        display,
+        actual_columns_width,
+        vlines
+    )
+
+    need_omitted_cell_summary =
+        show_omitted_cell_summary && (num_omitted_columns > 0)
+
     # Compute the position of the continuation line with respect to the printed
     # table line.
     if vcrop_mode != :middle
@@ -320,6 +333,8 @@ function _pt_text(
             num_lines_in_row,
             table_height,
             draw_last_hline,
+            need_omitted_cell_summary,
+            show_omitted_cell_summary,
             Δdisplay_lines
         )
     else
@@ -330,10 +345,30 @@ function _pt_text(
             body_hlines,
             num_lines_in_row,
             table_height,
+            need_omitted_cell_summary,
+            show_omitted_cell_summary,
             Δdisplay_lines
         )
     end
 
+    need_omitted_cell_summary =
+        show_omitted_cell_summary &&
+        ((num_omitted_columns > 0) || (continuation_row_line > 0))
+
+    # Now we can compute the number of omitted rows because we already computed
+    # the continuation line.
+    num_omitted_rows = _compute_omitted_rows(
+        ptable,
+        display,
+        continuation_row_line,
+        num_lines_in_row,
+        body_hlines,
+        hlines,
+        need_omitted_cell_summary,
+        Δdisplay_lines
+    )
+
+    # Print the table.
     _print_table_data!(
         display,
         ptable,
@@ -365,20 +400,6 @@ function _pt_text(
 
     # Summary of the omitted cells
     # ==========================================================================
-
-    # Compute the number of omitted cells.
-
-    num_omitted_rows, num_omitted_columns = _compute_omitted_cells(
-        ptable,
-        display,
-        actual_columns_width,
-        continuation_row_line,
-        num_lines_in_row,
-        body_hlines,
-        hlines,
-        vlines,
-        Δdisplay_lines
-    )
 
     _print_omitted_cell_summary(
         display,

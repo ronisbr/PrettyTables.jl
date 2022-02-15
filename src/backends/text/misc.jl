@@ -46,12 +46,14 @@ function _compute_continuation_row_in_bottom_vcrop(
     num_lines_in_row::Vector{Int},
     table_height::Int,
     draw_last_hline::Bool,
+    need_omitted_cell_summary::Bool,
+    show_omitted_cell_summary::Bool,
     Δdisplay_lines::Int
 )
     if display.size[1] > 0
         available_display_lines = display.size[1] - Δdisplay_lines
 
-        if table_height > available_display_lines
+        if table_height > available_display_lines - need_omitted_cell_summary
             # Count the number of lines in the header considering that lines before
             # and after it.
             num_header_lines = _count_header_lines(
@@ -63,9 +65,8 @@ function _compute_continuation_row_in_bottom_vcrop(
 
             # In this case, we will have to save one line to print the omitted
             # cell summary.
-            #
-            # TODO: Remove this space is the user omit the summary.
-            continuation_row_line = available_display_lines - draw_last_hline - 1
+            continuation_row_line =
+                available_display_lines - draw_last_hline - show_omitted_cell_summary
 
             # We must print at least the header.
             continuation_row_line = max(
@@ -91,12 +92,14 @@ function _compute_continuation_row_in_middle_vcrop(
     body_hlines::Vector{Int},
     num_lines_in_row::Vector{Int},
     table_height::Int,
+    need_omitted_cell_summary::Bool,
+    show_omitted_cell_summary::Bool,
     Δdisplay_lines::Int
 )
     if display.size[1] > 0
         available_display_lines = display.size[1] - Δdisplay_lines
 
-        if table_height >= available_display_lines
+        if table_height > available_display_lines - need_omitted_cell_summary
             # Count the number of lines in the header considering that lines before
             # and after it.
             num_header_lines = _count_header_lines(
@@ -108,10 +111,8 @@ function _compute_continuation_row_in_middle_vcrop(
 
             # Number of rows available to draw table data. In this case, we will
             # have to save one line to print the omitted cell summary.
-            #
-            # TODO: Remove this space if the user omit the summary.
             available_rows_for_data =
-                available_display_lines - num_header_lines - 1
+                available_display_lines - num_header_lines - show_omitted_cell_summary
 
             continuation_row_line = div(
                 available_rows_for_data,
@@ -128,25 +129,72 @@ function _compute_continuation_row_in_middle_vcrop(
     return continuation_row_line
 end
 
-function _compute_omitted_cells(
+# Compute the number of omitted columns.
+function _compute_omitted_columns(
     ptable::ProcessedTable,
     display::Display,
     columns_width::Vector{Int},
+    vlines::Union{Symbol, Vector{Int}},
+)
+    ~, num_columns         = _size(ptable)
+    num_additional_columns = _num_additional_columns(ptable)
+    num_rendered_columns   = length(columns_width)
+
+    @inbounds @views if display.size[2] > 0
+        available_display_columns = display.size[2]
+
+        fully_printed_columns = 0
+
+        if _check_vline(ptable, vlines, 0)
+            available_display_columns -= 1
+        end
+
+        for j = 1:num_rendered_columns
+            # Take into account the column width plus the padding before the
+            # column.
+            available_display_columns -= columns_width[j] + 1
+
+            available_display_columns < 2 && break
+
+            # We should neglect the additional columns when computing the number
+            # of fully printed columns.
+            if j > num_additional_columns
+                fully_printed_columns += 1
+            end
+
+            # Take into account the column width plus the padding after the
+            # column.
+            available_display_columns -= 1
+
+            # Take into account a vertical line after the columns
+            if _check_vline(ptable, vlines, j)
+                available_display_columns -= 1
+            end
+        end
+
+        num_omitted_columns =
+            (num_columns - num_additional_columns) - fully_printed_columns
+    else
+        num_omitted_columns = 0
+    end
+
+    return num_omitted_columns
+end
+
+# Compute the number of omitted rows.
+function _compute_omitted_rows(
+    ptable::ProcessedTable,
+    display::Display,
     continuation_row_line::Int,
     num_lines_in_row::Vector{Int},
     body_hlines::Vector{Int},
     hlines::Union{Symbol, Vector{Int}},
-    vlines::Union{Symbol, Vector{Int}},
+    need_omitted_cell_summary::Bool,
     Δdisplay_lines::Int
 )
-    num_rows, num_columns  = _size(ptable)
-    num_additional_columns = _num_additional_columns(ptable)
-    num_header_rows        = _header_size(ptable)[1]
-    num_rendered_rows      = length(num_lines_in_row)
-    num_rendered_columns   = length(columns_width)
-
-    # Rows
-    # ==========================================================================
+    num_rows, ~       = _size(ptable)
+    num_header_rows   = _header_size(ptable)[1]
+    num_rendered_rows = length(num_lines_in_row)
 
     @views if continuation_row_line > 0
         # If we have a continuation line, then we just need to pass the table
@@ -194,20 +242,19 @@ function _compute_omitted_cells(
 
         # Second pass: go from the end of the table to the continuationl line.
         # Notice that we know rows are cropped, hence we must reserve a line for
-        # the omitted cell summary.
-        #
-        # TODO: Update the computation if the user omitted the summary.
-        available_display_lines -= 1
+        # the omitted cell summary if the user wants.
+
+        available_display_lines -= need_omitted_cell_summary
 
         for i = num_rendered_rows:-1:1
-            Δi = num_rendered_rows - i + 1
+            Δi = num_rendered_rows - i
 
             if _check_hline(ptable, hlines, body_hlines, num_rows - Δi)
                 available_display_lines -= 1
             end
 
             available_display_lines -= num_lines_in_row[i]
-            available_display_lines ≤ 0 && break
+            available_display_lines < 0 && break
 
             fully_printed_rows += 1
         end
@@ -217,48 +264,7 @@ function _compute_omitted_cells(
         num_omitted_rows = 0
     end
 
-    # Columns
-    # ==========================================================================
-
-    @inbounds @views if display.size[2] > 0
-        available_display_columns = display.size[2]
-
-        fully_printed_columns = 0
-
-        if _check_vline(ptable, vlines, 0)
-            available_display_columns -= 1
-        end
-
-        for j = 1:num_rendered_columns
-            # Take into account the column width plus the padding before the
-            # column.
-            available_display_columns -= columns_width[j] + 1
-
-            available_display_columns < 2 && break
-
-            # We should neglect the additional columns when computing the number
-            # of fully printed columns.
-            if j > num_additional_columns
-                fully_printed_columns += 1
-            end
-
-            # Take into account the column width plus the padding after the
-            # column.
-            available_display_columns -= 1
-
-            # Take into account a vertical line after the columns
-            if _check_vline(ptable, vlines, j)
-                available_display_columns -= 1
-            end
-        end
-
-        num_omitted_columns =
-            (num_columns - num_additional_columns) - fully_printed_columns
-    else
-        num_omitted_columns = 0
-    end
-
-    return num_omitted_rows, num_omitted_columns
+    return num_omitted_rows
 end
 
 # Count the number of lines in the header. It contains the first horizontal line
