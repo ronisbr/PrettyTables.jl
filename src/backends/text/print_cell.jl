@@ -20,10 +20,13 @@ function _print_custom_text_cell!(
 )
     cell_printable_textwidth = _printable_textwidth(cell_processed_str)
 
+    # Print the padding character before the cell.
+    _p!(display, _default_crayon, " ", false, 1)
+
     # Compute the new string given the display size.
     str, suffix, ~ = _fit_str_to_display(
         display,
-        cell_processed_str,
+        " " * cell_processed_str * " ",
         false,
         cell_printable_textwidth
     )
@@ -44,13 +47,17 @@ function _print_custom_text_cell!(
     rendered_str = get_rendered_line(cell_data, l)::String
 
     # Write it to the display.
-    return _write_to_display!(
+    _write_to_display!(
         display,
         cell_crayon,
-        " " * rendered_str * " ",
+        rendered_str,
         suffix,
         new_lstr + textwidth(suffix) + 2
     )
+
+    # Print the padding character after the cell and return if the display has
+    # reached end-of-line.
+    return _p!(display, _default_crayon, " ", false, 1)
 end
 
 # Print the summary of the omitted rows and columns.

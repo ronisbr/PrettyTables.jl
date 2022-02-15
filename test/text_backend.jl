@@ -30,9 +30,9 @@ end
     include("text_backend/cropping.jl")
 end
 
-# @testset "Custom text cell" begin
-#     include("text_backend/custom_cells.jl")
-# end
+@testset "Custom text cell" begin
+    include("text_backend/custom_cells.jl")
+end
 
 @testset "Errors" begin
     include("text_backend/errors.jl")
