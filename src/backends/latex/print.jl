@@ -185,7 +185,7 @@ function _pt_latex(
             cell_str::String = ""
 
             if _is_header_row(row_id)
-                if column_id == :__ORIGINAL_DATA
+                if column_id == :__ORIGINAL_DATA__
                     cell_str = _parse_cell_latex(
                         cell_data,
                         compact_printing = compact_printing,
