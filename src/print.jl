@@ -62,12 +62,10 @@ is not compliant, then only the following types are supported:
 
 - `cell_first_line_only::Bool`: If `true`, then only the first line of each cell
     will be printed. (**Default** = `false`)
+- `column_filters::Union{Nothing, Tuple}`: Filters for the columns (see the
+    section `Filters`).
 - `compact_printing::Bool`: Select if the option `:compact` will be used when
     printing the data. (**Default** = `true`)
-- `filters_row::Union{Nothing, Tuple}`: Filters for the rows (see the section
-    `Filters`).
-- `filters_col::Union{Nothing, Tuple}`: Filters for the columns (see the section
-    `Filters`).
 - `formatters::Union{Nothing, Function, Tuple}`: See the section
     `Formatters`.
 - `header::Union{Symbol, Vector{Symbol}}`: The header must be a tuple of
@@ -111,6 +109,8 @@ is not compliant, then only the following types are supported:
     names. (**Default** = "")
 - `row_number_column_title::AbstractString`: Title of the column with the row
     numbers. (**Default** = "Row")
+- `row_filters::Union{Nothing, Tuple}`: Filters for the rows (see the section
+    `Filters`).
 - `show_row_number::Bool`: If `true`, then a new column will be printed showing
     the row number. (**Default** = `false`)
 - `title::AbstractString`: The title of the table. If it is empty, then no title
@@ -154,8 +154,8 @@ columns in `data`. The *i*-th symbol in the vector specify the alignment of the
 
 It is possible to specify filters to filter the data that will be printed. There
 are two types of filters: the row filters, which are specified by the keyword
-`filters_row`, and the column filters, which are specified by the keyword
-`filters_col`.
+`row_filters`, and the column filters, which are specified by the keyword
+`column_filters`.
 
 The filters are a tuple of functions that must have the following signature:
 
@@ -166,7 +166,7 @@ f(data,i)::Bool
 in which `data` is a pointer to the matrix that is being printed and `i` is the
 i-th row in the case of the row filters or the i-th column in the case of column
 filters. If this function returns `true` for `i`, then the i-th row (in case of
-`filters_row`) or the i-th column (in case of `filters_col`) will be printed.
+`row_filters`) or the i-th column (in case of `column_filters`) will be printed.
 Otherwise, it will be omitted.
 
 A set of filters can be passed inside of a tuple. Notice that, in this case,

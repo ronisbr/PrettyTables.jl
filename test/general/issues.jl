@@ -12,9 +12,9 @@
     rowfilter1(data,i) = i <= div(length(first(data)),2)
     rowfilter2(data,i) = i <= div(length(data),2)
 
-    result1 = pretty_table(String, table;                 filters_row = (rowfilter1,))
-    result2 = pretty_table(String, Tables.columns(table); filters_row = (rowfilter1,))
-    result3 = pretty_table(String, Tables.rows(table);    filters_row = (rowfilter2,))
+    result1 = pretty_table(String, table;                 row_filters = (rowfilter1,))
+    result2 = pretty_table(String, Tables.columns(table); row_filters = (rowfilter1,))
+    result3 = pretty_table(String, Tables.rows(table);    row_filters = (rowfilter2,))
 
     expected = """
 ┌───────┬─────────┐
@@ -47,9 +47,9 @@
     colfilter1(data,j) = j <= div(length(data),2)
     colfilter2(data,j) = j <= div(length(first(data)),2)
 
-    result1 = pretty_table(String, table;                 filters_col = (colfilter1,))
-    result2 = pretty_table(String, Tables.columns(table); filters_col = (colfilter1,))
-    result3 = pretty_table(String, Tables.rows(table);    filters_col = (colfilter2,))
+    result1 = pretty_table(String, table;                 column_filters = (colfilter1,))
+    result2 = pretty_table(String, Tables.columns(table); column_filters = (colfilter1,))
+    result3 = pretty_table(String, Tables.rows(table);    column_filters = (colfilter2,))
 
     @test result1 == expected
     @test result2 == expected

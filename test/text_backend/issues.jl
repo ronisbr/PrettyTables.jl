@@ -355,9 +355,9 @@ end
         String,
         matrix;
         alignment_anchor_regex = Dict(i => [r"\."] for i in vcat(1,3:1000)),
+        column_filters = ((data, i)-> i ≠ 2,),
         crop = :both,
         display_size = (20, 50),
-        filters_col = ((data, i)-> i ≠ 2,),
         row_names = ["NAME" for i in 1:30],
         show_row_number = true
     )
@@ -497,8 +497,8 @@ end
         crop = :both,
         body_hlines = collect(0:5:100),
         display_size = (20, 35),
-        filters_row = ((data, i) -> i % 2 == 0,),
         row_names = 0:1:100,
+        row_filters = ((data, i) -> i % 2 == 0,),
         show_row_number = true
     )
 
@@ -565,7 +565,7 @@ end
         crop = :both,
         body_hlines = collect(0:5:100),
         display_size = (20, 35),
-        filters_row = ((data, i) -> i % 2 == 0,),
+        row_filters = ((data, i) -> i % 2 == 0,),
         row_names = 0:1:100,
         show_row_number = true,
         vcrop_mode = :middle
