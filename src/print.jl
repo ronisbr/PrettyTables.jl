@@ -13,7 +13,6 @@ export pretty_table
 #                               Public Functions
 ################################################################################
 
-# TODO: Update info about body_hlines.
 """
     pretty_table([io::IO | String | HTML,] table;  kwargs...)
 
@@ -228,7 +227,7 @@ This back-end produces text tables. This back-end can be used by selecting
     column must have a fixed size (see `columns_width`).
 - `body_hlines::Vector{Int}`: A vector of `Int` indicating row numbers in which
     an additional horizontal line should be drawn after the row. Notice that
-    numbers lower than 1 and equal or higher than the number of printed rows
+    numbers lower than 0 and equal or higher than the number of printed rows
     will be neglected. This vector will be appended to the one in `hlines`, but
     the indices here are related to the printed rows of the body. Thus, if `1`
     is added to `body_hlines`, then a horizontal line will be drawn after the
