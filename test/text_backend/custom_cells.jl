@@ -87,9 +87,9 @@
     result = pretty_table(
         String,
         table,
-        filters_col = ((data, j) -> j % 2 == 1,),
-        filters_row = ((data, i)-> i % 2 == 1,),
+        column_filters = ((data, j) -> j % 2 == 1,),
         row_names = ["A", "B", "C", "D"],
+        row_filters = ((data, i)-> i % 2 == 1,),
         show_row_number = true,
     )
     @test expected == result

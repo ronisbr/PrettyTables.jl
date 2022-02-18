@@ -246,8 +246,8 @@ end
         matrix,
         crop = :both,
         display_size = (15, -1),
-        filters_row = ((data, i)->i % 2 == 0,),
         highlighters = (hl,),
+        row_filters = ((data, i) -> i % 2 == 0,),
         vcrop_mode = :middle
     ), context = :color => true)
 
@@ -273,10 +273,10 @@ end
         io,
         matrix;
         crop = :both,
+        column_filters = ((data, i) -> i != 1,),
         display_size = (15, -1),
-        filters_col = ((data, i)->i != 1,),
-        filters_row = ((data, i)->i % 2 == 0,),
         highlighters = (hl,),
+        row_filters = ((data, i) -> i % 2 == 0,),
         vcrop_mode = :middle
     ), context = :color => true)
 

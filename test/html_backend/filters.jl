@@ -40,9 +40,9 @@
     result = pretty_table(
         String, data;
         backend = Val(:html),
-        filters_row = ((data,i) -> i%2 == 0,),
-        filters_col = ((data,i) -> i%2 == 1,),
+        column_filters = ((data, i) -> i % 2 == 1,),
         formatters = ft_printf("%.1f",3),
+        row_filters = ((data, i) -> i % 2 == 0,),
         standalone = false,
         show_row_number = true
     )
@@ -82,9 +82,9 @@
         String, data;
         alignment = [:c, :l, :l, :c],
         backend = Val(:html),
-        filters_row = ((data, i) -> i % 2 == 0,),
-        filters_col = ((data ,i) -> i % 2 == 1,),
+        column_filters = ((data ,i) -> i % 2 == 1,),
         formatters = ft_printf("%.1f", 3),
+        row_filters = ((data, i) -> i % 2 == 0,),
         standalone = false,
         show_row_number = true
     )

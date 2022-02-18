@@ -21,9 +21,9 @@
     result = pretty_table(
         String,
         data;
-        filters_row     = ((data,i) -> i%2 == 0,),
-        filters_col     = ((data,i) -> i%2 == 1,),
+        column_filters  = ((data, i) -> i % 2 == 1,),
         formatters      = ft_printf("%.1f", 3),
+        row_filters     = ((data, i) -> i % 2 == 0,),
         show_row_number = true
     )
     @test result == expected
@@ -41,11 +41,11 @@
     result = pretty_table(
         String,
         data;
-        filters_row     = ((data,i) -> i%2 == 0,),
-        filters_col     = ((data,i) -> i%2 == 1,),
+        alignment       = [:c, :l, :l, :c],
+        column_filters  = ((data, i) -> i % 2 == 1,),
         formatters      = ft_printf("%.1f", 3),
         show_row_number = true,
-        alignment       = [:c, :l, :l, :c]
+        row_filters     = ((data, i) -> i % 2 == 0,)
     )
     @test result == expected
 
@@ -55,22 +55,22 @@
     result = pretty_table(
         String,
         data;
-        filters_row     = ((data,i) -> false,),
-        filters_col     = ((data,i) -> i % 2 == 1,),
+        alignment       = [:c, :l, :l, :c],
+        column_filters  = ((data, i) -> i % 2 == 1,),
         formatters      = ft_printf("%.1f", 3),
         show_row_number = true,
-        alignment       = [:c, :l, :l, :c]
+        row_filters     = ((data, i) -> false,)
     )
     @test result == ""
 
     result = pretty_table(
         String,
         data;
-        filters_row     = ((data,i) -> false,),
-        filters_col     = ((data,i) -> i % 2 == 1,),
-        formatters      = ft_printf("%.1f", 3),
-        show_row_number = true,
         alignment       = [:c, :l, :l, :c],
+        column_filters  = ((data, i) -> i % 2 == 1,),
+        formatters      = ft_printf("%.1f", 3),
+        row_filters     = ((data, i) -> false,),
+        show_row_number = true,
         title           = "Empty"
     )
     @test result == "Empty\n"

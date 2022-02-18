@@ -72,10 +72,8 @@ Each back-end defines its own configuration keywords that can be passed using
     will be printed. (**Default** = `false`)
 - `compact_printing::Bool`: Select if the option `:compact` will be used when
     printing the data. (**Default** = `true`)
-- `filters_row::Union{Nothing, Tuple}`: Filters for the rows (see the section
-    [Filters](@ref)).
-- `filters_col::Union{Nothing, Tuple}`: Filters for the columns (see the section
-    [Filters](@ref)).
+- `column_filters::Union{Nothing, Tuple}`: Filters for the columns (see the
+    section [Filters](@ref)).
 - `formatters::Union{Nothing, Function, Tuple}`: See the section
     [Formatters](@ref).
 - `header::Union{Symbol, Vector{Symbol}}`: The header must be a tuple of
@@ -109,6 +107,8 @@ Each back-end defines its own configuration keywords that can be passed using
     `print` or `:show` to use the function `show`. Notice that this selection is
     applicable only to the table data. Headers, sub-headers, and row name column
     are always rendered with print. (**Default** = `:print`)
+- `row_filters::Union{Nothing, Tuple}`: Filters for the rows (see the section
+    [Filters](@ref)).
 - `row_names::Union{Nothing, AbstractVector}`: A vector containing the row names
     that will be appended to the left of the table. If it is `nothing`, then the
     column with the row names will not be shown. Notice that the size of this

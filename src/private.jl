@@ -156,8 +156,8 @@ function _print_info(
     } = nothing,
     cell_first_line_only::Bool = false,
     compact_printing::Bool = true,
-    filters_row::Union{Nothing, Tuple} = nothing,
-    filters_col::Union{Nothing, Tuple} = nothing,
+    row_filters::Union{Nothing, Tuple} = nothing,
+    column_filters::Union{Nothing, Tuple} = nothing,
     formatters::Union{Nothing, Function, Tuple} = nothing,
     header::Union{Nothing, AbstractVector, Tuple} = nothing,
     header_alignment::Union{Symbol, Vector{Symbol}} = :s,
@@ -188,14 +188,14 @@ function _print_info(
     ptable = ProcessedTable(
         data,
         _header;
-        alignment = alignment,
-        cell_alignment = cell_alignment,
-        column_filters = filters_col,
-        header_alignment = header_alignment,
+        alignment             = alignment,
+        cell_alignment        = cell_alignment,
+        column_filters        = column_filters,
+        header_alignment      = header_alignment,
         header_cell_alignment = header_cell_alignment,
-        noheader = noheader,
-        nosubheader = nosubheader,
-        row_filters = filters_row
+        noheader              = noheader,
+        nosubheader           = nosubheader,
+        row_filters           = row_filters
     )
 
     # Add the additional columns if requested.
@@ -291,8 +291,8 @@ function _pt(
     } = nothing,
     cell_first_line_only::Bool = false,
     compact_printing::Bool = true,
-    filters_row::Union{Nothing, Tuple} = nothing,
-    filters_col::Union{Nothing, Tuple} = nothing,
+    row_filters::Union{Nothing, Tuple} = nothing,
+    column_filters::Union{Nothing, Tuple} = nothing,
     formatters::Union{Nothing, Function, Tuple} = nothing,
     header::Union{Nothing, AbstractVector, Tuple} = nothing,
     header_alignment::Union{Symbol, Vector{Symbol}} = :s,
@@ -316,6 +316,27 @@ function _pt(
     title_alignment::Symbol = :l,
     kwargs...
 )
+    # Check for deprecations.
+    if haskey(kwargs, :filters_row)
+        Base.depwarn(
+            "The option `filters_row` is deprecated. Use `row_filters` instead.",
+            :filters_row
+        )
+
+        row_filters = kwargs[:filters_row]
+        kwargs = _rm_filters_row(;kwargs...)
+    end
+
+    if haskey(kwargs, :filters_col)
+        Base.depwarn(
+            "The option `filters_row` is deprecated. Use `row_filters` instead.",
+            :filters_row
+        )
+
+        column_filters = kwargs[:filters_col]
+        kwargs = _rm_filters_col(;kwargs...)
+    end
+
     # NOTE: Inform that using `backend` as `Symbol` is deprecated. This will be
     # removed in the next PrettyTables.jl version.
     if backend isa Symbol
@@ -361,8 +382,8 @@ function _pt(
         cell_alignment          = cell_alignment,
         cell_first_line_only    = cell_first_line_only,
         compact_printing        = compact_printing,
-        filters_row             = filters_row,
-        filters_col             = filters_col,
+        column_filters          = column_filters,
+        row_filters             = row_filters,
         formatters              = formatters,
         header                  = header,
         header_alignment        = header_alignment,

@@ -242,7 +242,7 @@ end
         String,
         matrix;
         alignment_anchor_regex = Dict(4 => [r"\.", r"^"]),
-        filters_col = ((data, j) -> j ∈ [1, 4, 5],)
+        column_filters = ((data, j) -> j ∈ [1, 4, 5],)
     )
 
     @test result == expected
@@ -268,7 +268,7 @@ end
         String,
         matrix,
         alignment_anchor_regex = Dict(4 => [r"\.", r"^"]),
-        filters_col = ((data, j) -> j ∈ [1, 4, 5],),
+        column_filters = ((data, j) -> j ∈ [1, 4, 5],),
         show_row_number = true
     )
 
@@ -292,7 +292,7 @@ end
         String,
         matrix,
         alignment_anchor_regex = Dict(4 => [r"\.", r"^"]),
-        filters_col = ((data, j) -> j ∈ [1, 4, 5],),
+        column_filters = ((data, j) -> j ∈ [1, 4, 5],),
         row_names = ["a" for i in 1:7],
         show_row_number = true
     )
@@ -320,8 +320,8 @@ end
         String,
         matrix;
         alignment_anchor_regex = Dict(4 => [r"\.", r"^"]),
-        columns_width = [-1, -1, -1, 20, -1, -1, -1],
-        filters_col = ((data, j) -> j ∈ [1, 4, 5],)
+        column_filters = ((data, j) -> j ∈ [1, 4, 5],),
+        columns_width = [-1, -1, -1, 20, -1, -1, -1]
     )
 
     @test result == expected
@@ -345,8 +345,8 @@ end
         matrix;
         alignment = :c,
         alignment_anchor_regex = Dict(4 => [r"\.", r"^"]),
-        columns_width = [-1, -1, -1, 20, -1, -1, -1],
-        filters_col = ((data, j) -> j ∈ [1, 4, 5],)
+        column_filters = ((data, j) -> j ∈ [1, 4, 5],),
+        columns_width = [-1, -1, -1, 20, -1, -1, -1]
     )
 
     @test result == expected
@@ -370,8 +370,8 @@ end
         matrix;
         alignment = :l,
         alignment_anchor_regex = Dict(4 => [r"\.", r"^"]),
-        columns_width = [-1, -1, -1, 20, -1, -1, -1],
-        filters_col = ((data, j) -> j ∈ [1, 4, 5],)
+        column_filters = ((data, j) -> j ∈ [1, 4, 5],),
+        columns_width = [-1, -1, -1, 20, -1, -1, -1]
     )
 
     @test result == expected
@@ -397,8 +397,8 @@ end
         String,
         matrix;
         alignment_anchor_regex = Dict(4 => [r"\.", r"^"]),
-        minimum_columns_width = 15,
-        filters_col = ((data, j) -> j ∈ [1, 4, 5],)
+        column_filters = ((data, j) -> j ∈ [1, 4, 5],),
+        minimum_columns_width = 15
     )
 
     @test result == expected
@@ -421,8 +421,8 @@ end
         String,
         matrix;
         alignment_anchor_regex = Dict(4 => [r"\.", r"^"]),
-        maximum_columns_width = 10,
-        filters_col = ((data, j) -> j ∈ [1, 4, 5],)
+        column_filters = ((data, j) -> j ∈ [1, 4, 5],),
+        maximum_columns_width = 10
     )
 
     @test result == expected
