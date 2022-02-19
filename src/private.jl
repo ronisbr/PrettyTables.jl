@@ -337,6 +337,19 @@ function _pt(
         kwargs = _rm_filters_col(;kwargs...)
     end
 
+    if haskey(kwargs, :rownum_header_crayon)
+        Base.depwarn(
+            "The option `rownum_header_crayon` is deprecated. Use `row_number_header_crayon` instead.",
+            :rownum_header_crayon
+        )
+
+        kwargs = _rm_rownum_header_crayon(;
+            row_number_header_crayon = kwargs[:rownum_header_crayon],
+            kwargs...
+        )
+    end
+
+
     # NOTE: Inform that using `backend` as `Symbol` is deprecated. This will be
     # removed in the next PrettyTables.jl version.
     if backend isa Symbol

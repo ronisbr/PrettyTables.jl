@@ -23,3 +23,10 @@ function _rm_filters_col(;
 )
     return kwargs
 end
+
+function _rm_rownum_header_crayon(;
+    rownum_header_crayon::Crayon,
+    kwargs...
+)
+    return kwargs
+end

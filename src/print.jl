@@ -195,8 +195,8 @@ This back-end produces text tables. This back-end can be used by selecting
 - `header_crayon::Union{Crayon, Vector{Crayon}}`: Crayon to print the header.
 - `subheader_crayon::Union{Crayon, Vector{Crayon}}`: Crayon to print
     sub-headers.
-- `rownum_header_crayon::Crayon`: Crayon for the header of the column with the
-    row numbers.
+- `row_number_header_crayon::Crayon`: Crayon for the header of the column with
+    the row numbers.
 - `text_crayon::Crayon`: Crayon to print default text.
 - `omitted_cell_summary_crayon::Crayon`: Crayon used to print the omitted cell
     summary.
