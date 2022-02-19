@@ -30,7 +30,7 @@ function _print_table_data!(
     header_crayon::Crayon,
     row_name_crayon::Crayon,
     row_name_header_crayon::Crayon,
-    rownum_header_crayon::Crayon,
+    row_number_header_crayon::Crayon,
     subheader_crayon::Crayon,
     text_crayon::Crayon
 )
@@ -203,7 +203,7 @@ function _print_table_data!(
                         header_crayon,
                         row_name_crayon,
                         row_name_header_crayon,
-                        rownum_header_crayon,
+                        row_number_header_crayon,
                         subheader_crayon,
                         text_crayon
                     )

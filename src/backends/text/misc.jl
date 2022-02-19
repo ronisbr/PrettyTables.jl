@@ -302,13 +302,13 @@ function _select_default_cell_crayon(
     header_crayon::Crayon,
     row_name_crayon::Crayon,
     row_name_header_crayon::Crayon,
-    rownum_header_crayon::Crayon,
+    row_number_header_crayon::Crayon,
     subheader_crayon::Crayon,
     text_crayon::Crayon
 )
     if column_id == :row_number
         if row_id == :__HEADER__
-            return rownum_header_crayon
+            return row_number_header_crayon
         else
             return text_crayon
         end

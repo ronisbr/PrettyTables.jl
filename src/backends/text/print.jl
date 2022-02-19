@@ -13,7 +13,7 @@ function _pt_text(
     border_crayon::Crayon = Crayon(),
     header_crayon::Union{Crayon, Vector{Crayon}} = Crayon(bold = true),
     subheader_crayon::Union{Crayon,Vector{Crayon}} = Crayon(foreground = :dark_gray),
-    rownum_header_crayon::Crayon = Crayon(bold = true),
+    row_number_header_crayon::Crayon = Crayon(bold = true),
     text_crayon::Crayon = Crayon(),
     omitted_cell_summary_crayon::Crayon = Crayon(foreground = :cyan),
     alignment_anchor_fallback::Symbol = :l,
@@ -391,7 +391,7 @@ function _pt_text(
         header_crayon,
         row_name_crayon,
         row_name_header_crayon,
-        rownum_header_crayon,
+        row_number_header_crayon,
         subheader_crayon,
         text_crayon,
     )
