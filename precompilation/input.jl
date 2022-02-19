@@ -146,4 +146,31 @@ function precompilation_input()
     ]
 
     pretty_table(ansi_table)
+
+    # Combination of types in `header_crayon` and `subheader_crayon`
+    # ==========================================================================
+
+    header = (
+        ["Column $i" for i in 1:4],
+        ["Sub $i" for i in 1:4]
+    )
+
+    pretty_table(
+        data;
+        header = header,
+        header_crayon = [crayon"yellow bold" for _ in 1:4]
+    )
+
+    pretty_table(
+        data;
+        header = header,
+        subheader_crayon = [crayon"yellow bold" for _ in 1:4]
+    )
+
+    pretty_table(
+        data;
+        header = header,
+        header_crayon = [crayon"yellow bold" for _ in 1:4],
+        subheader_crayon = [crayon"yellow bold" for _ in 1:4]
+    )
 end
