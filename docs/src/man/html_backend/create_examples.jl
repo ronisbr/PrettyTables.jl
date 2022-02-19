@@ -14,10 +14,23 @@ for (filename, format) in
      ("./html_format_simple.html",     html_simple))
 
     open(filename, "w") do f
-        pretty_table(f, data, header, backend = Val(:html), tf = format)
+        pretty_table(
+            f,
+            data;
+            backend = Val(:html),
+            header = header,
+            standalone = true,
+            tf = format,
+        )
     end
 end
 
 open("./html_format_matrix.html", "w") do f
-    pretty_table(f, data, tf = html_matrix, noheader = true)
+    pretty_table(
+        f,
+        data;
+        tf = html_matrix,
+        noheader = true,
+        standalone = true
+    )
 end
