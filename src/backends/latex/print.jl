@@ -135,11 +135,11 @@ function _pt_latex(
     buf_io_b = IOBuffer()
     buf_b    = IOContext(buf_io_b)
 
-    # Get the number of printed lines and columns.
-    num_printed_rows, num_printed_columns = _size(ptable)
+    # Get the number of filtered lines and columns.
+    num_filtered_rows, num_filtered_columns = _size(ptable)
 
     # If there is no column or row to be printed, then just exit.
-    if (num_printed_columns == 0) || (num_printed_rows == 0)
+    if (num_filtered_columns == 0) || (num_filtered_rows == 0)
         @goto print_to_output
     end
 
@@ -154,7 +154,7 @@ function _pt_latex(
     # Otherwise, we must switch to `buf_b`.
     buf_aux = buf_h
 
-    @inbounds for i in 1:num_printed_rows
+    @inbounds for i in 1:num_filtered_rows
         # Get the identification of the current row.
         row_id = _get_row_id(ptable, i)
 
@@ -167,7 +167,7 @@ function _pt_latex(
         # Apply the indentation.
         _aprint(buf_aux, il, ns)
 
-        @inbounds for j in 1:num_printed_columns
+        @inbounds for j in 1:num_filtered_columns
             # Get the identification of the current column.
             column_id = _get_column_id(ptable, j)
 
@@ -220,7 +220,7 @@ function _pt_latex(
                 end
 
                 print(buf_h, cell_str)
-                j != num_printed_columns && print(buf_h, " & ")
+                j != num_filtered_columns && print(buf_h, " & ")
             else
 
                 ir = _get_data_row_index(ptable, i)
@@ -269,14 +269,14 @@ function _pt_latex(
                 end
 
                 print(buf_aux, cell_str)
-                j != num_printed_columns && print(buf_aux, " & ")
+                j != num_filtered_columns && print(buf_aux, " & ")
             end
         end
 
         print(buf_aux, " \\\\")
 
         if _check_hline(ptable, hlines, body_hlines, i)
-            if i == num_printed_rows
+            if i == num_filtered_rows
                 print(buf_aux, bottom_line)
             elseif _is_header_row(row_id)
                 print(buf_aux, header_line)
@@ -306,9 +306,9 @@ function _pt_latex(
         # Check if the user wants a text on the footer.
         if longtable_footer !== nothing
             lvline = _check_vline(ptable, vlines, 0) ? left_vline : ""
-            rvline = _check_vline(ptable, vlines, num_printed_columns) ? right_vline : ""
+            rvline = _check_vline(ptable, vlines, num_filtered_columns) ? right_vline : ""
 
-            env = "multicolumn{" * string(num_printed_columns) * "}" * "{r}"
+            env = "multicolumn{" * string(num_filtered_columns) * "}" * "{r}"
 
             _aprintln(buf, _latex_envs(longtable_footer, env) * "\\\\", il, ns)
             _aprintln(buf, bottom_line, il, ns)
