@@ -178,6 +178,26 @@ Structure that hold the state of the row printing state machine.
     i_pt::Int = 0
 end
 
+"""
+    struct TextCrayons
+
+Structure that holds all the crayons in the text backend.
+"""
+struct TextCrayons{
+    Thc<:Union{Crayon, Vector{Crayon}},
+    Tsc<:Union{Crayon, Vector{Crayon}}
+}
+    border_crayon::Crayon
+    header_crayon::Thc
+    omitted_cell_summary_crayon::Crayon
+    row_name_crayon::Crayon
+    row_name_header_crayon::Crayon
+    row_number_header_crayon::Crayon
+    subheader_crayon::Tsc
+    text_crayon::Crayon
+    title_crayon::Crayon
+end
+
 ################################################################################
 #                                  Constants
 ################################################################################

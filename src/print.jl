@@ -191,15 +191,6 @@ This back-end produces text tables. This back-end can be used by selecting
 
 # Keywords
 
-- `border_crayon::Crayon`: Crayon to print the border.
-- `header_crayon::Union{Crayon, Vector{Crayon}}`: Crayon to print the header.
-- `subheader_crayon::Union{Crayon, Vector{Crayon}}`: Crayon to print
-    sub-headers.
-- `row_number_header_crayon::Crayon`: Crayon for the header of the column with
-    the row numbers.
-- `text_crayon::Crayon`: Crayon to print default text.
-- `omitted_cell_summary_crayon::Crayon`: Crayon used to print the omitted cell
-    summary.
 - `alignment_anchor_fallback::Symbol`: This keyword controls the line alignment
     when using the regex alignment anchors if a match is not found. If it is
     `:l`, then the left of the line will be aligned with the anchor. If it is
@@ -328,7 +319,6 @@ This back-end produces text tables. This back-end can be used by selecting
 - `title_autowrap::Bool`: If `true`, then the title text will be wrapped
     considering the title size. Otherwise, lines larger than the title size will
     be cropped. (**Default** = `false`)
-- `title_crayon::Crayon`: Crayon to print the title.
 - `title_same_width_as_table::Bool`: If `true`, then the title width will match
     that of the table. Otherwise, the title size will be equal to the display
     width. (**Default** = `false`)
@@ -353,6 +343,23 @@ This back-end produces text tables. This back-end can be used by selecting
         lines can be drawn by adding the symbols `:begin` and `:end` to this
         vector, respectively, and the line after the header can be drawn by
         adding the symbol `:header`.
+
+The following keywords related to crayons are available to customize the output
+decoration:
+
+- `border_crayon::Crayon`: Crayon to print the border.
+- `header_crayon::Union{Crayon, Vector{Crayon}}`: Crayon to print the header.
+- `omitted_cell_summary_crayon::Crayon`: Crayon used to print the omitted cell
+    summary.
+- `row_name_crayon::Crayon`: Crayon to print the row names.
+- `row_name_header_crayon::Crayon`: Crayon to print the header of the column
+    with the row names.
+- `row_number_header_crayon::Crayon`: Crayon for the header of the column with
+    the row numbers.
+- `subheader_crayon::Union{Crayon, Vector{Crayon}}`: Crayon to print
+    sub-headers.
+- `text_crayon::Crayon`: Crayon to print default text.
+- `title_crayon::Crayon`: Crayon to print the title.
 
 The keywords `header_crayon` and `subheader_crayon` can be a `Crayon` or a
 `Vector{Crayon}`. In the first case, the `Crayon` will be applied to all the

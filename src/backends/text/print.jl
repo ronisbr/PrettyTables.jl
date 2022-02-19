@@ -10,12 +10,6 @@
 # Low-level function to print the table using the text backend.
 function _pt_text(
     r_io::Ref{Any}, pinfo::PrintInfo;
-    border_crayon::Crayon = Crayon(),
-    header_crayon::Union{Crayon, Vector{Crayon}} = Crayon(bold = true),
-    subheader_crayon::Union{Crayon,Vector{Crayon}} = Crayon(foreground = :dark_gray),
-    row_number_header_crayon::Crayon = Crayon(bold = true),
-    text_crayon::Crayon = Crayon(),
-    omitted_cell_summary_crayon::Crayon = Crayon(foreground = :cyan),
     alignment_anchor_fallback::Symbol = :l,
     alignment_anchor_fallback_override::Dict{Int, Symbol} = Dict{Int, Symbol}(),
     alignment_anchor_regex::Dict{Int, T} where T <:AbstractVector{Regex} = Dict{Int, Vector{Regex}}(),
@@ -37,16 +31,23 @@ function _pt_text(
     minimum_columns_width::Union{Int, AbstractVector{Int}} = 0,
     newline_at_end::Bool = true,
     overwrite::Bool = false,
-    row_name_crayon::Crayon = Crayon(bold = true),
-    row_name_header_crayon::Crayon = Crayon(bold = true),
     show_omitted_cell_summary::Bool = true,
     sortkeys::Bool = false,
     tf::TextFormat = tf_unicode,
     title_autowrap::Bool = false,
-    title_crayon::Crayon = Crayon(bold = true),
     title_same_width_as_table::Bool = false,
     vcrop_mode::Symbol = :bottom,
-    vlines::Union{Nothing, Symbol, AbstractVector} = nothing
+    vlines::Union{Nothing, Symbol, AbstractVector} = nothing,
+    # Crayons
+    border_crayon::Crayon = Crayon(),
+    header_crayon::Union{Crayon, Vector{Crayon}} = Crayon(bold = true),
+    omitted_cell_summary_crayon::Crayon = Crayon(foreground = :cyan),
+    row_name_crayon::Crayon = Crayon(bold = true),
+    row_name_header_crayon::Crayon = Crayon(bold = true),
+    row_number_header_crayon::Crayon = Crayon(bold = true),
+    subheader_crayon::Union{Crayon, Vector{Crayon}} = Crayon(foreground = :dark_gray),
+    text_crayon::Crayon = Crayon(),
+    title_crayon::Crayon = Crayon(bold = true),
 )
     # `r_io` must always be a reference to `IO`. Here, we unpack it. This is
     # done to improve inference and reduce compilation time. Ideally, we need to
@@ -120,6 +121,28 @@ function _pt_text(
     # The number of lines that must be skipped from printing ellipsis must be
     # greater of equal 0.
     (ellipsis_line_skip < 0) && (ellipsis_line_skip = 0)
+
+    # Check the size of the crayons related with the headers.
+    if (header_crayon isa Vector) && (length(header_crayon) != num_columns)
+        error("The length of `header_crayon` must be the same as the number of columns.")
+    end
+
+    if (subheader_crayon isa Vector) && (length(subheader_crayon) != num_columns)
+        error("The length of `subheader_crayon` must be the same as the number of columns.")
+    end
+
+    # Structure that holds all the crayons in text backend.
+    text_crayons = TextCrayons(
+        border_crayon,
+        header_crayon,
+        omitted_cell_summary_crayon,
+        row_name_crayon,
+        row_name_header_crayon,
+        row_number_header_crayon,
+        subheader_crayon,
+        text_crayon,
+        title_crayon
+    )
 
     # Process filters
     # ==========================================================================
@@ -291,7 +314,7 @@ function _pt_text(
     # Title
     # ==========================================================================
 
-    _print_title!(display, title_tokens, title_crayon)
+    _print_title!(display, title_tokens, text_crayons.title_crayon)
 
     # If there is no column or row to be printed, then just exit.
     if (num_rows - num_header_rows == 0) || (num_columns == 0)
@@ -385,15 +408,8 @@ function _pt_text(
         highlighters,
         hlines,
         tf,
-        vlines,
-        # Crayons.
-        border_crayon,
-        header_crayon,
-        row_name_crayon,
-        row_name_header_crayon,
-        row_number_header_crayon,
-        subheader_crayon,
-        text_crayon,
+        text_crayons,
+        vlines
     )
 
     # Summary of the omitted cells

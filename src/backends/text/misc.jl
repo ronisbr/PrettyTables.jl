@@ -295,35 +295,40 @@ function _count_header_lines(
 end
 
 # Return the default crayon for a cell in a row with identification `row_id` and
-# in a column with identification `column_id`.
+# in a column with identification `column_id`. It is also necessary to pass the
+# data column index `jr` in case the header or subheader crayons are a vector.
 function _select_default_cell_crayon(
     row_id::Symbol,
     column_id::Symbol,
-    header_crayon::Crayon,
-    row_name_crayon::Crayon,
-    row_name_header_crayon::Crayon,
-    row_number_header_crayon::Crayon,
-    subheader_crayon::Crayon,
-    text_crayon::Crayon
+    text_crayons::TextCrayons,
+    jr::Int
 )
     if column_id == :row_number
         if row_id == :__HEADER__
-            return row_number_header_crayon
+            return text_crayons.row_number_header_crayon
         else
-            return text_crayon
+            return text_crayons.text_crayon
         end
     elseif column_id == :row_name
         if row_id == :__HEADER__
-            return row_name_header_crayon
+            return text_crayons.row_name_header_crayon
         else
-            return row_name_crayon
+            return text_crayons.row_name_crayon
         end
     elseif row_id == :__HEADER__
-        return header_crayon
+        if text_crayons.header_crayon isa Crayon
+            return text_crayons.header_crayon
+        else
+            return text_crayons.header_crayon[jr]
+        end
     elseif row_id == :__SUBHEADER__
-        return subheader_crayon
+        if text_crayons.subheader_crayon isa Crayon
+            return text_crayons.subheader_crayon
+        else
+            return text_crayons.subheader_crayon[jr]
+        end
     else
-        return text_crayon
+        return text_crayons.text_crayon
     end
 end
 
