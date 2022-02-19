@@ -28,33 +28,17 @@ function _pt_html(
     io = r_io.x
 
     # Unpack fields of `pinfo`.
-    data                    = pinfo.data
-    header                  = pinfo.header
-    id_cols                 = pinfo.id_cols
-    id_rows                 = pinfo.id_rows
-    num_rows                = pinfo.num_rows
-    num_cols                = pinfo.num_cols
-    num_printed_cols        = pinfo.num_printed_cols
-    num_printed_rows        = pinfo.num_printed_rows
-    header_num_rows         = pinfo.header_num_rows
-    header_num_cols         = pinfo.header_num_cols
-    show_row_number         = pinfo.show_row_number
-    row_number_column_title = pinfo.row_number_column_title
-    show_row_names          = pinfo.show_row_names
-    row_names               = pinfo.row_names
-    row_name_alignment      = pinfo.row_name_alignment
-    row_name_column_title   = pinfo.row_name_column_title
-    alignment               = pinfo.alignment
-    cell_alignment          = pinfo.cell_alignment
-    formatters              = pinfo.formatters
-    compact_printing        = pinfo.compact_printing
-    title                   = pinfo.title
-    title_alignment         = pinfo.title_alignment
-    header_alignment        = pinfo.header_alignment
-    header_cell_alignment   = pinfo.header_cell_alignment
-    cell_first_line_only    = pinfo.cell_first_line_only
-    renderer                = pinfo.renderer
-    limit_printing          = pinfo.limit_printing
+    ptable               = pinfo.ptable
+    formatters           = pinfo.formatters
+    compact_printing     = pinfo.compact_printing
+    title                = pinfo.title
+    title_alignment      = pinfo.title_alignment
+    cell_first_line_only = pinfo.cell_first_line_only
+    renderer             = pinfo.renderer
+    limit_printing       = pinfo.limit_printing
+
+    # Process the filters in `ptable`.
+    _process_filters!(ptable)
 
     # Unpack fields of `tf`.
     css         = tf.css
@@ -64,67 +48,17 @@ function _pt_html(
     buf_io = IOBuffer()
     buf    = IOContext(buf_io)
 
-    if !noheader && (num_cols != header_num_cols)
-        error("The header length must be equal to the number of columns.")
-    end
+    # Get the number of filtered lines and columns.
+    num_filtered_rows, num_filtered_columns = _size(ptable)
 
-    # Additional processing necessary if the user wants to print the header.
-    if !noheader
-        # If the user do not want to print the sub-header but wants to print the
-        # header, then just force the number of rows in header to be 1.
-        nosubheader && (header_num_rows = 1)
-    end
+    # Get the number of header rows.
+    num_header_rows, ~ = _header_size(ptable)
 
     # Make sure that `highlighters` is always a Ref{Any}(Tuple).
     if !(highlighters isa Tuple)
         highlighters = Ref{Any}((highlighters,))
     else
         highlighters = Ref{Any}(highlighters)
-    end
-
-    # Get the string which is printed when `print` is called in each element of
-    # the matrix. Notice that we must create only the matrix with the printed
-    # rows and columns.
-    header_str = Matrix{String}(undef, header_num_rows, num_printed_cols)
-    data_str   = Matrix{String}(undef, num_printed_rows, num_printed_cols)
-
-    @inbounds for i = 1:num_printed_cols
-        # Index of the i-th printed column in `data`.
-        ic = id_cols[i]
-
-        if !noheader
-            for j = 1:header_num_rows
-                header_str[j, i] = _parse_cell_html(
-                    header[j][ic],
-                    allow_html_in_cells = allow_html_in_cells,
-                    compact_printing = compact_printing,
-                    limit_printing = limit_printing,
-                    renderer = Val(:print)
-                )
-            end
-        end
-
-        for j = 1:num_printed_rows
-            # Index of the j-th printed row in `data`.
-            jr = id_rows[j]
-
-            # Apply the formatters.
-            data_ij = isassigned(data, jr, ic) ? data[jr, ic] : undef
-
-            for f in formatters.x
-                data_ij = f(data_ij, jr, ic)
-            end
-
-            data_str[j, i] = _parse_cell_html(
-                data_ij;
-                allow_html_in_cells = allow_html_in_cells,
-                cell_first_line_only = cell_first_line_only,
-                compact_printing = compact_printing,
-                limit_printing = limit_printing,
-                linebreaks = linebreaks,
-                renderer = renderer
-            )
-        end
     end
 
     # Variables to store information about indentation
@@ -190,189 +124,164 @@ function _pt_html(
     end
 
     # If there is no column or row to be printed, then just exit.
-    if (num_printed_cols == 0) || (num_printed_rows == 0)
+    if (num_filtered_rows == 0) || (num_filtered_columns == 0)
         @goto print_to_output
     end
 
-    # Data header
+    # Print the table
     # ==========================================================================
 
-    # Header and sub-header texts
-    # --------------------------------------------------------------------------
+    @inbounds for i in 1:num_filtered_rows
+        # Get the identification of the current row.
+        row_id = _get_row_id(ptable, i)
 
-    if !noheader
-        _aprintln(buf, "<thead>", il, ns, minify)
+        # HTML tag for the row.
+        html_row_tag = ""
+
+        # Class of the row.
+        row_class = ""
+
+        if (num_header_rows == 0) && (i == 1)
+            _aprintln(buf, "<tbody>", il, ns, minify)
+            il += 1
+        end
+
+        if _is_header_row(row_id)
+            html_row_tag = "th"
+
+            # If we have a header row and `i = 1`, then we need to start the
+            # header. We can do this because the header is always at the
+            # beginning of the table.
+            if i == 1
+                _aprintln(buf, "<thead>", il, ns, minify)
+                il += 1
+            end
+
+            # Check the row class.
+            if (i == 1) && (num_header_rows == 1)
+                row_class = "header headerLastRow"
+            elseif (i == 1)
+                row_class = "header"
+            elseif (i == num_header_rows)
+                row_class = "subheader headerLastRow"
+            else
+                row_class = "subheader"
+            end
+
+        else
+            html_row_tag = "td"
+
+        end
+
+        if isempty(row_class)
+            _aprintln(buf, "<tr>", il, ns, minify)
+        else
+            _aprintln(buf, "<tr class = \"" * row_class * "\">", il, ns, minify)
+        end
         il += 1
 
-        @inbounds @views for i = 1:header_num_rows
-            if (i == 1) && (header_num_rows == 1)
-                _aprintln(
-                    buf,
-                    "<tr class = \"header headerLastRow\">",
-                    il,
-                    ns,
-                    minify
-                )
-            elseif i == 1
-                _aprintln(buf, "<tr class = \"header\">", il, ns, minify)
-            elseif i == header_num_rows
-                _aprintln(
-                    buf,
-                    "<tr class = \"subheader headerLastRow\">",
-                    il,
-                    ns,
-                    minify
-                )
-            else
-                _aprintln(buf, "<tr class = \"subheader\">", il, ns, minify)
-            end
-            il += 1
+        @inbounds for j in 1:num_filtered_columns
+            # Get the identification of the current column.
+            column_id = _get_column_id(ptable, j)
 
-            # The text "Row" must appear only on the first line.
-            if show_row_number
-                if i == 1
-                    _aprintln(
-                        buf,
-                        "<th class = \"rowNumber\">" * row_number_column_title * "</th>",
-                        il,
-                        ns,
-                        minify
-                    )
-                else
-                    _aprintln(buf, "<th></th>", il, ns, minify)
-                end
+            # Get the column alignment.
+            column_alignment = _get_column_alignment(ptable, j)
+
+            # Get the alignment for the current cell.
+            cell_alignment = _get_cell_alignment(ptable, i, j)
+
+            # Get the cell data.
+            cell_data = _get_element(ptable, i, j)
+
+            # If we do not annotate the type here, then we get type instability
+            # due to `_parse_cell_text`.
+            cell_str::String = ""
+
+            # The class of the cell.
+            cell_class = ""
+
+            # Style of the cell.
+            style = _html_text_alignment_dict(cell_alignment)
+
+            if column_id == :row_number
+                cell_class = "rowNumber"
+            elseif column_id == :row_name
+                cell_class = "rowName"
             end
 
-            # The row name column title must appear only on the first line.
-            if show_row_names
-                if i == 1
-                    style = _html_text_alignment_dict(row_name_alignment)
+            if _is_header_row(row_id)
+                cell_str = _parse_cell_html(
+                    cell_data,
+                    allow_html_in_cells = allow_html_in_cells,
+                    compact_printing = compact_printing,
+                    limit_printing = limit_printing,
+                    renderer = Val(:print)
+                )
 
-                    row_name_title_html = _styled_html(
-                        "th",
-                        row_name_column_title,
+                _aprintln(
+                    buf,
+                    _styled_html(
+                        html_row_tag,
+                        cell_str,
                         style;
-                        class = "rowName"
-                    )
+                        class = cell_class
+                    ),
+                    il,
+                    ns,
+                    minify
+                )
 
-                    _aprintln(buf, row_name_title_html, il, ns, minify)
-                else
-                    _aprintln(buf, "<th></th>", il, ns, minify)
-                end
-            end
+            else
+                is_original_data = column_id == :__ORIGINAL_DATA__
 
-            for j = 1:num_printed_cols
-                # Index of the j-th printed column in `data`.
-                jc = id_cols[j]
+                if is_original_data
+                    ir = _get_data_row_index(ptable, i)
+                    jr = _get_data_column_index(ptable, j)
 
-                # Check the alignment of this cell.
-                alignment_ij::Symbol = header_alignment[jc]
-
-                for f in header_cell_alignment.x
-                    aux = f(header, i, jc)
-
-                    if aux ∈ (:l, :c, :r, :L, :C, :R, :s, :S)
-                        alignment_ij = aux
-                        break
+                    for f in formatters.x
+                        cell_data = f(cell_data, ir, jr)
                     end
                 end
 
-                # If alignment is `:s`, then we must use the column alignment.
-                alignment_ij ∈ (:s, :S) && (alignment_ij = alignment[jc])
+                cell_str = _parse_cell_html(
+                    cell_data;
+                    allow_html_in_cells = allow_html_in_cells,
+                    cell_first_line_only = cell_first_line_only,
+                    compact_printing = compact_printing,
+                    limit_printing = limit_printing,
+                    linebreaks = linebreaks,
+                    renderer = renderer
+                )
 
-                # Alignment of this cell.
-                style = _html_text_alignment_dict(alignment_ij)
-
-                _aprintln(buf, _styled_html("th", header_str[i, j], style), il, ns, minify)
-            end
-            il -= 1
-            _aprintln(buf, "</tr>", il, ns, minify)
-        end
-
-        il -= 1
-        _aprintln(buf, "</thead>", il, ns, minify)
-    end
-
-    # Data
-    # ==========================================================================
-
-    _aprintln(buf, "<tbody>", il, ns, minify)
-    il += 1
-
-    @inbounds @views for i = 1:num_printed_rows
-        ir = id_rows[i]
-
-        _aprintln(buf, "<tr>", il, ns, minify)
-        il += 1
-
-        if show_row_number
-            _aprintln(buf, "<td class = \"rowNumber\">" * string(ir) * "</td>", il, ns, minify)
-        end
-
-        if show_row_names
-            # Due to the non-specialization of `row_names`, `row_name_i_str`
-            # here is inferred as `Any`. However, we know that the output of
-            # `_parse_cell_latex` must be a String.
-            row_name_i_str::String = _parse_cell_html(
-                row_names[i];
-                cell_first_line_only = false,
-                compact_printing = compact_printing,
-                linebreaks = false,
-                renderer = renderer
-            )
-
-            style = Dict{String,String}(
-                "text-align" => _html_alignment[row_name_alignment]
-            )
-
-            row_name_i_html = _styled_html(
-                "td",
-                row_name_i_str,
-                style;
-                class = "rowName"
-            )
-
-            _aprintln(buf, row_name_i_html, il, ns, minify)
-        end
-
-        for j = 1:num_printed_cols
-            jc = id_cols[j]
-
-            # Check the alignment of this cell.
-            alignment_ij::Symbol = alignment[jc]
-
-            for f in cell_alignment.x
-                aux = f(_getdata(data), ir, jc)
-
-                if aux ∈ [:l, :c, :r, :L, :C, :R]
-                    alignment_ij = aux
-                    break
+                if is_original_data
+                    # Apply highlighters.
+                    for h in highlighters.x
+                        if h.f(_getdata(ptable), ir, jr)
+                            merge!(style, Dict(h.fd(h, _getdata(ptable), i, j)))
+                            break
+                        end
+                    end
                 end
+
+                _aprintln(
+                    buf,
+                    _styled_html(html_row_tag, cell_str, style; class = cell_class),
+                    il,
+                    ns,
+                    minify
+                )
             end
-
-            # Alignment of this cell.
-            style = _html_text_alignment_dict(alignment_ij)
-
-            # If we have highlighters defined, then we need to verify if this
-            # data should be highlight.
-            for h in highlighters.x
-                if h.f(_getdata(data), ir, jc)
-                    merge!(style, Dict(h.fd(h,_getdata(data),i,j)))
-                    break
-                end
-            end
-
-            _aprintln(
-                buf,
-                _styled_html("td", data_str[i, j], style),
-                il,
-                ns,
-                minify
-            )
         end
 
         il -= 1
         _aprintln(buf, "</tr>", il, ns, minify)
+
+        if i == num_header_rows
+            il -= 1
+            _aprintln(buf, "</thead>", il, ns, minify)
+            _aprintln(buf, "<tbody>", il, ns, minify)
+            il += 1
+        end
     end
 
     il -= 1
