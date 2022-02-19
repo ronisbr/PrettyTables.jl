@@ -19,7 +19,7 @@ function _pt_html(
     noheader::Bool = false,
     nosubheader::Bool = false,
     sortkeys::Bool = false,
-    standalone::Bool = true
+    standalone::Bool = false
 )
     # `r_io` must always be a reference to `IO`. Here, we unpack it. This is
     # done to improve inference and reduce compilation time. Ideally, we need to

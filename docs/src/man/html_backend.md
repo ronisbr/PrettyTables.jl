@@ -34,7 +34,7 @@ passed as keywords when calling the function [`pretty_table`](@ref):
     effect if `noheader = true`. (**Default** = `false`)
 - `standalone::Bool`: If `true`, then a complete HTML page will be generated.
     Otherwise, only the content between the tags `<table>` and `</table>` will
-    be printed (with the tags included). (**Default** = `true`)
+    be printed (with the tags included). (**Default** = `false`)
 - `tf::HTMLTableFormat`: An instance of the structure [`HTMLTableFormat`](@ref)
     that defines the general format of the HTML table.
 
@@ -108,7 +108,7 @@ julia> hl_p = HTMLHighlighter((data, i, j) -> (j == 4) && data[i, 4] > 10, HTMLD
 
 julia> hl_e = HTMLHighlighter((data, i, j) -> data[i, 1] == 10, HTMLDecoration(background = "black", color = "white"))
 
-julia> pretty_table(data; backend = Val(:html), header = header, highlighters = (hl_e, hl_p, hl_v))
+julia> pretty_table(data; backend = Val(:html), header = header, highlighters = (hl_e, hl_p, hl_v), standalone = true)
 ```
 
 ```@raw html
