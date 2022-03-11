@@ -257,7 +257,7 @@ function _pt_html(
                     # Apply highlighters.
                     for h in highlighters.x
                         if h.f(_getdata(ptable), ir, jr)
-                            merge!(style, Dict(h.fd(h, _getdata(ptable), i, j)))
+                            merge!(style, Dict(h.fd(h, _getdata(ptable), ir, jr)))
                             break
                         end
                     end
