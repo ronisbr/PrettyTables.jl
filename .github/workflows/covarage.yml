@@ -1,11 +1,11 @@
-name: CI
+name: Coverage
 on:
   pull_request:
     branches:
-      - master
+      - main
   push:
     branches:
-      - master
+      - main
     tags: '*'
 jobs:
   test:
@@ -15,14 +15,13 @@ jobs:
       fail-fast: false
       matrix:
         version:
-          - '1.6'
           - '1'  # This automatically expands to the latest stable 1.x release.
         os:
           - ubuntu-latest
-          - macos-latest
-          - windows-latest
         arch:
           - x64
+    env:
+      PRETTY_TABLES_NO_PRECOMPILATION: ""
     steps:
       - uses: actions/checkout@v2
       - uses: julia-actions/setup-julia@v1
@@ -41,3 +40,7 @@ jobs:
             ${{ runner.os }}-
       - uses: julia-actions/julia-buildpkg@v1
       - uses: julia-actions/julia-runtest@v1
+      - uses: julia-actions/julia-processcoverage@v1
+      - uses: codecov/codecov-action@v2
+        with:
+          file: lcov.info

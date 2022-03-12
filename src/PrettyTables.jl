@@ -86,12 +86,15 @@ include("backends/latex/private.jl")
 include("backends/latex/print.jl")
 include("backends/latex/string.jl")
 
-if Base.VERSION >= v"1.4.2"
+# The environment variable `PRETTY_TABLES_NO_PRECOMPILATION` is used to disable
+# the precompilation directives. This option must only be used inside Github
+# Actions to improve the coverage results.
+if Base.VERSION >= v"1.4.2" && !haskey(ENV, "PRETTY_TABLES_NO_PRECOMPILATION")
     # This try/catch is necessary in case the precompilation statements do not
     # exists. In this case, PrettyTables.jl will work correctly but without the
     # optimizations.
     try
-        include("precompile/precompile_PrettyTables.jl")
+        include("../precompilation/precompile_PrettyTables.jl")
         _precompile_()
     catch
     end
