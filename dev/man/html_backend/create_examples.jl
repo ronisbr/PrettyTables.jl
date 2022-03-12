@@ -30,7 +30,7 @@ open("./html_format_matrix.html", "w") do f
         f,
         data;
         tf = html_matrix,
-        noheader = true,
+        show_header = false,
         standalone = true
     )
 end
