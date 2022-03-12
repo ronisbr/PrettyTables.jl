@@ -26,12 +26,6 @@ passed as keywords when calling the function [`pretty_table`](@ref):
     the section [HTML highlighters](@ref)).
 - `linebreaks::Bool`: If `true`, then `\\n` will be replaced by `<br>`.
     (**Default** = `false`)
-- `noheader::Bool`: If `true`, then the header will not be printed. Notice that
-    all keywords and parameters related to the header and sub-headers will be
-    ignored. (**Default** = `false`)
-- `nosubheader::Bool`: If `true`, then the sub-header will not be printed,
-    *i.e.* the header will contain only one line. Notice that this option has no
-    effect if `noheader = true`. (**Default** = `false`)
 - `standalone::Bool`: If `true`, then a complete HTML page will be generated.
     Otherwise, only the content between the tags `<table>` and `</table>` will
     be printed (with the tags included). (**Default** = `false`)

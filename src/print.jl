@@ -111,8 +111,14 @@ is not compliant, then only the following types are supported:
     numbers. (**Default** = "Row")
 - `row_filters::Union{Nothing, Tuple}`: Filters for the rows (see the section
     `Filters`).
+- `show_header::Bool`: If `true`, then the header will be printed. Notice that
+    all keywords and parameters related to the header and sub-headers will be
+    ignored. (**Default** = `false`)
 - `show_row_number::Bool`: If `true`, then a new column will be printed showing
     the row number. (**Default** = `false`)
+- `show_subheader::Bool`: If `true`, then the sub-header will be printed, *i.e.*
+    the header will contain only one line. Notice that this option has no effect
+    if `show_header = false`. (**Default** = `false`)
 - `title::AbstractString`: The title of the table. If it is empty, then no title
     will be printed. (**Default** = "")
 - `title_alignment::Symbol`: Alignment of the title, which must be a symbol as
@@ -277,7 +283,7 @@ This back-end produces text tables. This back-end can be used by selecting
         considered as only 1 row. Furthermore, it is important to mention that
         the row number in this variable is related to the **printed rows**.
         Thus, it is affected by filters, and by the option to suppress the
-        header `noheader`. Finally, for convenience, the top and bottom lines
+        header `show_header`. Finally, for convenience, the top and bottom lines
         can be drawn by adding the symbols `:begin` and `:end` to this vector,
         respectively, and the line after the header can be drawn by adding the
         symbol `:header`.
@@ -300,12 +306,6 @@ This back-end produces text tables. This back-end can be used by selecting
     `columns_width` has precedence over this one. (**Default** = 0)
 - `newline_at_end::Bool`: If `false`, then the table will not end with a newline
     character. (**Default** = `true`)
-- `noheader::Bool`: If `true`, then the header will not be printed. Notice that
-    all keywords and parameters related to the header and sub-headers will be
-    ignored. (**Default** = `false`)
-- `nosubheader::Bool`: If `true`, then the sub-header will not be printed,
-    *i.e.* the header will contain only one line. Notice that this option has no
-    effect if `noheader = true`. (**Default** = `false`)
 - `overwrite::Bool`: If `true`, then the same number of lines in the printed
     table will be deleted from the output `io`. This can be used to update the
     table in the display continuously. (**Default** = `false`)
@@ -463,12 +463,6 @@ This backend produces HTML tables. This backend can be used by selecting
     (**Default** = `false`)
 - `minify::Bool`: If `true`, then output will be displayed minified, *i.e.*
     without unnecessary indentation or newlines. (**Default** = `false`)
-- `noheader::Bool`: If `true`, then the header will not be printed. Notice that
-    all keywords and parameters related to the header and sub-headers will be
-    ignored. (**Default** = `false`)
-- `nosubheader::Bool`: If `true`, then the sub-header will not be printed,
-    *i.e.* the header will contain only one line. Notice that this option has no
-    effect if `noheader = true`. (**Default** = `false`)
 - `standalone::Bool`: If `true`, then a complete HTML page will be generated.
     Otherwise, only the content between the tags `<table>` and `</table>` will
     be printed (with the tags included). (**Default** = `false`)
@@ -559,7 +553,7 @@ This backend produces LaTeX tables. This backend can be used by selecting
         considered as only 1 row. Furthermore, it is important to mention that
         the row number in this variable is related to the **printed rows**.
         Thus, it is affected by filters, and by the option to suppress the
-        header `noheader`. Finally, for convenience, the top and bottom lines
+        header `show_header`. Finally, for convenience, the top and bottom lines
         can be drawn by adding the symbols `:begin` and `:end` to this vector,
         respectively, and the line after the header can be drawn by adding the
         symbol `:header`.
@@ -574,12 +568,6 @@ This backend produces LaTeX tables. This backend can be used by selecting
     drawn in the footer of the tables before a page break. This only works if
     `table_type` is `:longtable`. If it is `nothing`, then no footer will be
     used. (**Default** = `nothing`)
-- `noheader::Bool`: If `true`, then the header will not be printed. Notice that
-    all keywords and parameters related to the header and sub-headers will be
-    ignored. (**Default** = `false`)
-- `nosubheader::Bool`: If `true`, then the sub-header will not be printed,
-    *i.e.* the header will contain only one line. Notice that this option has no
-    effect if `noheader = true`. (**Default** = `false`)
 - `row_number_alignment::Symbol`: Select the alignment of the row number column
     (see the section `Alignment`). (**Default** = `:r`)
 - `table_type::Union{Nothing, Symbol}`: Select which LaTeX environment will be

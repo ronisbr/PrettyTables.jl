@@ -137,7 +137,7 @@ end
 │ 6   true  6.0  6 │
 └                  ┘
 """
-    result = pretty_table(String, data, tf = tf_matrix, noheader = true)
+    result = pretty_table(String, data, tf = tf_matrix, show_header = false)
     @test result == expected
 
     # mysql

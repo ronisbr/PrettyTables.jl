@@ -97,7 +97,7 @@ passed as keywords when calling the function `pretty_table`:
         considered as only 1 row. Furthermore, it is important to mention that
         the row number in this variable is related to the **printed rows**.
         Thus, it is affected by filters, and by the option to suppress the
-        header `noheader`. Finally, for convenience, the top and bottom lines
+        header `show_header`. Finally, for convenience, the top and bottom lines
         can be drawn by adding the symbols `:begin` and `:end` to this vector,
         respectively, and the line after the header can be drawn by adding the
         symbol `:header`.
@@ -120,12 +120,6 @@ passed as keywords when calling the function `pretty_table`:
     `columns_width` has precedence over this one. (**Default** = 0)
 - `newline_at_end::Bool`: If `false`, then the table will not end with a newline
     character. (**Default** = `true`)
-- `noheader::Bool`: If `true`, then the header will not be printed. Notice that
-    all keywords and parameters related to the header and sub-headers will be
-    ignored. (**Default** = `false`)
-- `nosubheader::Bool`: If `true`, then the sub-header will not be printed,
-    *i.e.* the header will contain only one line. Notice that this option has no
-    effect if `noheader = true`. (**Default** = `false`)
 - `overwrite::Bool`: If `true`, then the same number of lines in the printed
     table will be deleted from the output `io`. This can be used to update the
     table in the display continuously. (**Default** = `false`)
@@ -509,7 +503,7 @@ The following table formats are available when using the text back-end:
 !!! info
 
     In this case, the table format `matrix` was printed with the option
-    `noheader = true`.
+    `show_header = false`.
 
 `tf_mysql`
 

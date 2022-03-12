@@ -73,7 +73,7 @@ end
 └───┴───┘
 """
 
-    result = pretty_table(String, v; noheader = true, show_row_number = true)
+    result = pretty_table(String, v; show_header = false, show_row_number = true)
     @test result == expected
 end
 

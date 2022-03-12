@@ -11,12 +11,6 @@
     ProcessedTable(data::Any, header::Any; kwargs...)
 
 Create a processed table with `data` and `header`.
-
-# Keywords
-
-- `column_filters::Union{Nothing, Tuple}`: Column filters.
-    (**Default** = `nothing`)
-- `row_filters::Union{Nothing, Tuple}`: Row filters. (**Default** = `nothing`)
 """
 function ProcessedTable(
     data::Any,
@@ -36,9 +30,9 @@ function ProcessedTable(
         Function,
         Tuple
     } = nothing,
-    noheader::Bool = false,
-    nosubheader::Bool = false,
-    row_filters::Union{Nothing, Tuple} = nothing
+    row_filters::Union{Nothing, Tuple} = nothing,
+    show_header::Bool = true,
+    show_subheader::Bool = true
 )
     # Get information about the table we have to print based on the format of
     # `data`, which must be an `AbstractMatrix` or an `AbstractVector`.
@@ -60,14 +54,14 @@ function ProcessedTable(
     num_header_columns = num_data_columns
 
     if header !== nothing
-        if !noheader
+        if show_header
             num_header_columns = length(first(header))
 
             if num_data_columns != num_header_columns
                 error("The number of columns in the header must be equal to that of the table.")
             end
 
-            num_header_rows = nosubheader ? 1 : length(header)
+            num_header_rows = show_subheader ? length(header) : 1
         end
     end
 

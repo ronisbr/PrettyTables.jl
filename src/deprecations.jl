@@ -30,3 +30,11 @@ function _rm_rownum_header_crayon(;
 )
     return kwargs
 end
+
+function _rm_noheader(; noheader::Bool, kwargs...)
+    return kwargs
+end
+
+function _rm_nosubheader(; nosubheader::Bool, kwargs...)
+    return kwargs
+end

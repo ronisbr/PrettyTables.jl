@@ -119,8 +119,14 @@ Each back-end defines its own configuration keywords that can be passed using
     names. (**Default** = "")
 - `row_number_column_title::AbstractString`: Title of the column with the row
     numbers. (**Default** = "Row")
+- `show_header::Bool`: If `true`, then the header will be printed. Notice that
+    all keywords and parameters related to the header and sub-headers will be
+    ignored. (**Default** = `false`)
 - `show_row_number::Bool`: If `true`, then a new column will be printed showing
     the row number. (**Default** = `false`)
+- `show_subheader::Bool`: If `true`, then the sub-header will be printed, *i.e.*
+    the header will contain only one line. Notice that this option has no effect
+    if `show_header = false`. (**Default** = `false`)
 - `title::AbstractString`: The title of the table. If it is empty, then no title
     will be printed. (**Default** = "")
 - `title_alignment::Symbol`: Alignment of the title, which must be a symbol as

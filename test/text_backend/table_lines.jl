@@ -66,7 +66,7 @@
     result = pretty_table(
         String,
         data;
-        noheader = true,
+        show_header = false,
         body_hlines = vcat(findall(x -> x == true, data[:, 2]))
     )
     @test result == expected

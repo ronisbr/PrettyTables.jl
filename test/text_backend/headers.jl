@@ -59,10 +59,10 @@ end
 └───┴───────┴─────┴───┘
 """
 
-    result = pretty_table(String, data; noheader = true)
+    result = pretty_table(String, data; show_header = false)
     @test result == expected
 
-    result = pretty_table(String, data; header = [1, 2], noheader = true)
+    result = pretty_table(String, data; header = [1, 2], show_header = false)
     @test result == expected
 
     expected = """
@@ -80,7 +80,7 @@ end
         data;
         header = [1, 2],
         alignment = :l,
-        noheader = true
+        show_header = false
     )
     @test result == expected
 
@@ -108,7 +108,7 @@ end
         String,
         data;
         header = header,
-        nosubheader = true
+        show_subheader = false
     )
     @test result == expected
 end

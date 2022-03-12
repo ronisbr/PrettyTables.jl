@@ -145,7 +145,7 @@
             [:A,  :B,  :C,  :D],
             [:E,  :F,  :G,  :H]
         ),
-        nosubheader = true,
+        show_subheader = false,
         standalone = false
     )
 
@@ -203,7 +203,7 @@
             [:A,  :B,  :C,  :D],
             [:E,  :F,  :G,  :H]
         ),
-        noheader = true,
+        show_header = false,
         standalone = false
     )
 

@@ -16,8 +16,6 @@ function _pt_html(
     highlighters::Union{HTMLHighlighter, Tuple} = (),
     linebreaks::Bool = false,
     minify::Bool = false,
-    noheader::Bool = false,
-    nosubheader::Bool = false,
     sortkeys::Bool = false,
     standalone::Bool = false
 )

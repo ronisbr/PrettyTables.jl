@@ -168,15 +168,15 @@ function _print_info(
         Tuple
     } = nothing,
     limit_printing::Bool = true,
-    noheader::Bool = false,
-    nosubheader::Bool = false,
     renderer::Symbol = :print,
     row_names::Union{Nothing, AbstractVector} = nothing,
     row_name_alignment::Symbol = :r,
     row_name_column_title::AbstractString = "",
     row_number_alignment::Symbol = :r,
     row_number_column_title::AbstractString = "Row",
+    show_header::Bool = true,
     show_row_number::Bool = false,
+    show_subheader::Bool = true,
     title::AbstractString = "",
     title_alignment::Symbol = :l
 )
@@ -193,8 +193,8 @@ function _print_info(
         column_filters        = column_filters,
         header_alignment      = header_alignment,
         header_cell_alignment = header_cell_alignment,
-        noheader              = noheader,
-        nosubheader           = nosubheader,
+        show_header           = show_header,
+        show_subheader        = show_subheader,
         row_filters           = row_filters
     )
 
@@ -302,8 +302,6 @@ function _pt(
         Function,
         Tuple
     } = nothing,
-    noheader::Bool = false,
-    nosubheader::Bool = false,
     limit_printing::Bool = true,
     renderer::Symbol = :print,
     row_names::Union{Nothing, AbstractVector} = nothing,
@@ -311,7 +309,9 @@ function _pt(
     row_name_column_title::AbstractString = "",
     row_number_alignment::Symbol = :r,
     row_number_column_title::AbstractString = "Row",
+    show_header::Bool = true,
     show_row_number::Bool = false,
+    show_subheader::Bool = true,
     title::AbstractString = "",
     title_alignment::Symbol = :l,
     kwargs...
@@ -349,6 +349,25 @@ function _pt(
         )
     end
 
+    if haskey(kwargs, :noheader)
+        Base.depwarn(
+            "The option `noheader` is deprecated. Use `show_header` instead.",
+            :noheader
+        )
+
+        show_header = !kwargs[:noheader]
+        kwargs = _rm_noheader(; kwargs...)
+    end
+
+    if haskey(kwargs, :nosubheader)
+        Base.depwarn(
+            "The option `nosubheader` is deprecated. Use `show_subheader` instead.",
+            :nosubheader
+        )
+
+        show_subheader = !kwargs[:nosubheader]
+        kwargs = _rm_nosubheader(; kwargs...)
+    end
 
     # NOTE: Inform that using `backend` as `Symbol` is deprecated. This will be
     # removed in the next PrettyTables.jl version.
@@ -402,15 +421,15 @@ function _pt(
         header_alignment        = header_alignment,
         header_cell_alignment   = header_cell_alignment,
         limit_printing          = limit_printing,
-        noheader                = noheader,
-        nosubheader             = nosubheader,
         renderer                = renderer,
         row_names               = row_names,
         row_name_alignment      = row_name_alignment,
         row_name_column_title   = row_name_column_title,
         row_number_alignment    = row_number_alignment,
         row_number_column_title = row_number_column_title,
+        show_header             = show_header,
         show_row_number         = show_row_number,
+        show_subheader          = show_subheader,
         title                   = title,
         title_alignment         = title_alignment
     )

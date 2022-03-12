@@ -50,12 +50,6 @@ passed as keywords when calling the function [`pretty_table`](@ref):
     drawn in the footer of the tables before a page break. This only works if
     `table_type` is `:longtable`. If it is `nothing`, then no footer will be
     used. (**Default** = `nothing`)
-- `noheader::Bool`: If `true`, then the header will not be printed. Notice that
-    all keywords and parameters related to the header and sub-headers will be
-    ignored. (**Default** = `false`)
-- `nosubheader::Bool`: If `true`, then the sub-header will not be printed,
-    *i.e.* the header will contain only one line. Notice that this option has no
-    effect if `noheader = true`. (**Default** = `false`)
 - `row_number_alignment::Symbol`: Select the alignment of the row number column
     (see the section [Alignment](@ref)). (**Default** = `:r`)
 - `table_type::Union{Nothing, Symbol}`: Select which LaTeX environment will be
