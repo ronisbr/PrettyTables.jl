@@ -28,11 +28,14 @@ with the table layout.
     strings.
 - `_stripped_lines::Union{Nothing, Vector{String}}`: The lines with the
     printable text.
-- `_crops::Dict{Int, Int}`: Dictionary with the number of characters that must
-    be cropped.
-- `_left_pads::Dict{Int, Int}`: Left padding to be applied to each line.
-- `_right_pads::Dict{Int, Int}`: Right padding to be applied to each line.
-- `_suffixes::Dict{Int, String}`: Suffixed to be applied to each line.
+- `_crops::Union{Nothing, Vector{Int}}`: Vector with the number of characters
+    that must be cropped at each line.
+- `_left_pads::Union{Nothing, Vector{Int}}`: Left padding to be applied to each
+    line.
+- `_right_pads::Union{Nothing, Vector{Int}}`: Right padding to be applied to
+    each line.
+- `_suffixes::Union{Nothing, Vector{String}}`: Suffixed to be applied to each
+    line.
 """
 mutable struct AnsiTextCell <: CustomTextCell
     string::String
@@ -166,37 +169,71 @@ end
 ################################################################################
 
 function get_printable_cell_line(cell::AnsiTextCell, l::Int)
-    if l > length(cell._stripped_lines)
+    cell_stripped_lines = cell._stripped_lines
+    isnothing(cell_stripped_lines) && return ""
+
+    if l > length(cell_stripped_lines)
         return ""
     else
-        lpad = cell._left_pads[l]
-        rpad = cell._right_pads[l]
-        line = " "^lpad * cell._stripped_lines[l] * " "^rpad
+        cell_crops          = cell._crops
+        cell_left_pads      = cell._left_pads
+        cell_right_pads     = cell._right_pads
+        cell_stripped_lines = cell._stripped_lines
+
+        if isnothing(cell_crops) ||
+            isnothing(cell_left_pads) ||
+            isnothing(cell_right_pads) ||
+            isnothing(cell_stripped_lines)
+            return ""
+        end
+
+        lpad = cell_left_pads[l]
+        rpad = cell_right_pads[l]
+        line = " "^lpad * cell_stripped_lines[l] * " "^rpad
 
         # Compute the total size of the string.
-        line_width = lpad + textwidth(cell._stripped_lines[l]) + rpad
+        line_width = lpad + textwidth(cell_stripped_lines[l]) + rpad
 
         # Return the cropped string.
-        return _crop_str(line, line_width - cell._crops[l], line_width)
+        return _crop_str(line, line_width - cell_crops[l], line_width)
     end
 end
 
 function get_rendered_line(cell::AnsiTextCell, l::Int)
-    if l > length(cell._stripped_lines)
+    cell_stripped_lines = cell._stripped_lines
+    isnothing(cell_stripped_lines) && return ""
+
+    if l > length(cell_stripped_lines)
         return ""
     else
-        lpad = cell._left_pads[l]
-        rpad = cell._right_pads[l]
-        suffix = cell._suffixes[l]
+        cell_crops          = cell._crops
+        cell_left_pads      = cell._left_pads
+        cell_right_pads     = cell._right_pads
+        cell_stripped_lines = cell._stripped_lines
+        cell_rendered_lines = cell._rendered_lines
+        cell_suffixes       = cell._suffixes
+
+        if isnothing(cell_crops) ||
+            isnothing(cell_left_pads) ||
+            isnothing(cell_right_pads) ||
+            isnothing(cell_stripped_lines) ||
+            isnothing(cell_rendered_lines) ||
+            isnothing(cell_suffixes)
+            return ""
+        end
+
+        lpad   = cell_left_pads[l]
+        rpad   = cell_right_pads[l]
+        suffix = cell_suffixes[l]
 
         # Compute the total size of the string.
-        line_width = lpad + textwidth(cell._stripped_lines[l]) + rpad
+        line_width = lpad + textwidth(cell_stripped_lines[l]) + rpad
 
         # Create the rendered line.
-        line = " "^lpad * cell._rendered_lines[l] * " "^rpad
+        line = " "^lpad * cell_rendered_lines[l] * " "^rpad
 
         # Crop the rendered line.
-        cropped_line = _crop_str(line, line_width - cell._crops[l], line_width)
+        cropped_line = _crop_str(line, line_width - cell_crops[l], line_width)
 
         # We must reset everything after rendering the cell to avoid messing
         # with the decoration of the table.
@@ -205,19 +242,36 @@ function get_rendered_line(cell::AnsiTextCell, l::Int)
 end
 
 function append_suffix_to_line!(cell::AnsiTextCell, l::Int, suffix::String)
-    cell._suffixes[l] *= suffix
+    cell_suffixes = cell._suffixes
+
+    if !isnothing(cell_suffixes)
+        cell_suffixes[l] *= suffix
+    end
+
     return nothing
 end
 
 function apply_line_padding!(cell::AnsiTextCell, l::Int, left_pad::Int, right_pad::Int)
-    cell._left_pads[l] += left_pad
-    cell._right_pads[l] += right_pad
+    cell_left_pads = cell._left_pads
+
+    if !isnothing(cell_left_pads)
+        cell_left_pads[l] += left_pad
+    end
+
+    cell_right_pads = cell._right_pads
+
+    if !isnothing(cell_right_pads)
+        cell_right_pads[l] += right_pad
+    end
+
     return nothing
 end
 
 function crop_line!(cell::AnsiTextCell, l::Int, num::Int)
-    if num ≥ 0
-        cell._crops[l] = num
+    cell_crops = cell._crops
+
+    if !isnothing(cell_crops) && (num ≥ 0)
+        cell_crops[l] = num
     end
 
     return nothing
