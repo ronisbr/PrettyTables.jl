@@ -203,3 +203,74 @@ end
 
     @test result == expected
 end
+
+@testset "Escaping" begin
+    matrix = Any[
+        "\$\\mathbf{\\pi}\$"    π
+        "\\textbf{Character}"   'a'
+        "\\textbf{Emoji}"       "😅 emoji 😃"
+        "\\textbf{Float64}"     Float16(1)
+        "\\texttt{Missing}"     missing
+        "\\textbf{New line}"    "One line\nAnother line"
+        "\\emph{Nothing}"       nothing
+        "\\textbf{Regex}"       r"1"
+        "\\textbf{String}"      String(UInt8[0, 1, 2, 3])
+        "\\textbf{Symbol}"      :a
+        "\\textbf{Sub. string}" s"1"
+        "\\textbf{UInt64}"      0x1
+    ]
+
+    # Renderer = `:printf`
+    # ==========================================================================
+
+    expected = """
+        \\begin{table}
+          \\begin{tabular}{rr}
+            \\hline\\hline
+            \\textbf{Col. 1} & \\textbf{Col. 2} \\\\\\hline
+            \$\\mathbf{\\pi}\$ & π \\\\
+            \\textbf{Character} & a \\\\
+            \\textbf{Emoji} & 😅 emoji 😃 \\\\
+            \\textbf{Float64} & 1.0 \\\\
+            \\texttt{Missing} & missing \\\\
+            \\textbf{New line} & One line\\textbackslash{}nAnother line \\\\
+            \\emph{Nothing} & nothing \\\\
+            \\textbf{Regex} & r"1" \\\\
+            \\textbf{String} & \\textbackslash{}0\\textbackslash{}x01\\textbackslash{}x02\\textbackslash{}x03 \\\\
+            \\textbf{Symbol} & a \\\\
+            \\textbf{Sub. string} & 1 \\\\
+            \\textbf{UInt64} & 1 \\\\\\hline\\hline
+          \\end{tabular}
+        \\end{table}
+        """
+
+    result = pretty_table(String, matrix, backend = :latex)
+    @test result == expected
+
+    # Renderer = `:show`
+    # ==========================================================================
+
+    expected = """
+        \\begin{table}
+          \\begin{tabular}{rr}
+            \\hline\\hline
+            \\textbf{Col. 1} & \\textbf{Col. 2} \\\\\\hline
+            \$\\mathbf{\\pi}\$ & π \\\\
+            \\textbf{Character} & 'a' \\\\
+            \\textbf{Emoji} & 😅 emoji 😃 \\\\
+            \\textbf{Float64} & 1.0 \\\\
+            \\texttt{Missing} & missing \\\\
+            \\textbf{New line} & One line\\textbackslash{}nAnother line \\\\
+            \\emph{Nothing} & nothing \\\\
+            \\textbf{Regex} & r"1" \\\\
+            \\textbf{String} & \\textbackslash{}0\\textbackslash{}x01\\textbackslash{}x02\\textbackslash{}x03 \\\\
+            \\textbf{Symbol} & :a \\\\
+            \\textbf{Sub. string} & 1 \\\\
+            \\textbf{UInt64} & 0x01 \\\\\\hline\\hline
+          \\end{tabular}
+        \\end{table}
+        """
+
+    result = pretty_table(String, matrix, backend = :latex, renderer = :show)
+    @test result == expected
+end
