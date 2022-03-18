@@ -18,6 +18,7 @@ function _str_latex_escaped(io::IO, s::AbstractString, esc::String = "")
         elseif isascii(c)
             c == '\0'          ? print(io, "\\textbackslash{}0") :
             c == '\e'          ? print(io, "\\textbackslash{}e") :
+            # c == '\\'          ? print(io, "\\textbackslash{}") :
             '\a' <= c <= '\r'  ? print(io, "\\textbackslash{}", "abtnvfr"[Int(c)-6]) :
             c == '%'           ? print(io, "\\%") :
             isprint(c)         ? print(io, c) :
