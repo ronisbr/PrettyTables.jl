@@ -38,16 +38,20 @@ function _get_cell_alignment(ptable::ProcessedTable, i::Int, j::Int)
 
             # The apparently unnecessary conversion to `Symbol` avoids type
             # instability.
-            header_alignment = ptable._header_alignment isa Symbol ?
-                Symbol(ptable._header_alignment) :
-                Symbol(ptable._header_alignment[jr])
+            ptable_header_alignment = ptable._header_alignment
+
+            header_alignment = ptable_header_alignment isa Symbol ?
+                Symbol(ptable_header_alignment) :
+                Symbol(ptable_header_alignment[jr])
 
             if (header_alignment == :s) || (header_alignment == :S)
                 # The apparently unnecessary conversion to `Symbol` avoids type
                 # instability.
-                header_alignment = ptable._data_alignment isa Symbol ?
-                    Symbol(ptable._data_alignment) :
-                    Symbol(ptable._data_alignment[jr])
+                ptable_data_alignment = ptable._data_alignment
+
+                header_alignment = ptable_data_alignment isa Symbol ?
+                    Symbol(ptable_data_alignment) :
+                    Symbol(ptable_data_alignment[jr])
             end
 
             return header_alignment
@@ -79,9 +83,11 @@ function _get_cell_alignment(ptable::ProcessedTable, i::Int, j::Int)
 
             # The apparently unnecessary conversion to `Symbol` avoids type
             # instability.
-            alignment = ptable._data_alignment isa Symbol ?
-                Symbol(ptable._data_alignment) :
-                Symbol(ptable._data_alignment[jr])
+            ptable_data_alignment = ptable._data_alignment
+
+            alignment = ptable_data_alignment isa Symbol ?
+                Symbol(ptable_data_alignment) :
+                Symbol(ptable_data_alignment[jr])
 
             return alignment
         else
@@ -106,9 +112,11 @@ function _get_column_alignment(ptable::ProcessedTable, j::Int)
 
         # The apparently unnecessary conversion to `Symbol` avoids type
         # instability.
-        alignment = ptable._data_alignment isa Symbol ?
-            Symbol(ptable._data_alignment) :
-            Symbol(ptable._data_alignment[jr])
+        ptable_data_alignment = ptable._data_alignment
+
+        alignment = ptable_data_alignment isa Symbol ?
+            Symbol(ptable_data_alignment) :
+            Symbol(ptable_data_alignment[jr])
 
         return alignment
     else
@@ -158,8 +166,10 @@ function _get_element(ptable::ProcessedTable, i::Int, j::Int)
         else
             id = _get_data_row_index(ptable, i)
 
-            if isassigned(ptable._additional_data_columns[j], id)
-                return ptable._additional_data_columns[j][id]
+            ptable_additional_data_columns_j = ptable._additional_data_columns[j]
+
+            if isassigned(ptable_additional_data_columns_j, id)
+                return ptable_additional_data_columns_j[id]
             else
                 return undef
             end
@@ -207,11 +217,13 @@ Get the index of the `j`th filtered column in `ptable`.
 function _get_data_column_index(ptable::ProcessedTable, j::Int)
     Δc = length(ptable._additional_data_columns)
 
-    if ptable._id_columns !== nothing
+    ptable_id_columns = ptable._id_columns
+
+    if !isnothing(ptable_id_columns)
         # Check if the user ask for the index of a column that is an additional
         # column.
         if j - Δc > 0
-            return ptable._id_columns[j - Δc]
+            return ptable_id_columns[j - Δc]
         else
             return nothing
         end
@@ -226,8 +238,10 @@ end
 Get the index of the `i`th filtered row in `ptable`.
 """
 function _get_data_row_index(ptable::ProcessedTable, i::Int)
-    if ptable._id_rows !== nothing
-        return ptable._id_rows[i - ptable._num_header_rows]
+    ptable_id_rows = ptable._id_rows
+
+    if !isnothing(ptable_id_rows)
+        return ptable_id_rows[i - ptable._num_header_rows]
     else
         return i - ptable._num_header_rows
     end
@@ -260,9 +274,10 @@ end
 Get the table column index related to a data table index `jr` in `ptable`.
 """
 function _get_table_column_index(ptable::ProcessedTable, jr::Int)
+    ptable_id_columns = ptable._id_columns
 
-    if !isnothing(ptable._id_columns)
-        jd = findfirst(==(jr), ptable._id_columns)
+    if !isnothing(ptable_id_columns)
+        jd = findfirst(==(jr), ptable_id_columns)
 
         if !isnothing(jd)
             return jd + length(ptable._additional_data_columns)
