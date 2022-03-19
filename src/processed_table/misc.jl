@@ -39,7 +39,8 @@ function _is_cell_alignment_overridden(ptable::ProcessedTable, i::Int, j::Int)
 
             # Search for alignment overrides in this cell.
             for f in ptable._header_cell_alignment
-                header_alignment_override = f(ptable.header, i, jr)
+                header_alignment_override =
+                    f(ptable.header, i, jr)::Union{Nothing, Symbol}
 
                 if _is_alignment_valid(header_alignment_override)
                     return true
@@ -56,7 +57,8 @@ function _is_cell_alignment_overridden(ptable::ProcessedTable, i::Int, j::Int)
 
             # Search for alignment overrides in this cell.
             for f in ptable._data_cell_alignment
-                alignment_override = f(_getdata(ptable.data), ir, jr)
+                alignment_override =
+                    f(_getdata(ptable.data), ir, jr)::Union{Nothing, Symbol}
 
                 if _is_alignment_valid(alignment_override)
                     return true
