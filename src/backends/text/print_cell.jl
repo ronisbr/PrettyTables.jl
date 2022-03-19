@@ -18,23 +18,22 @@ function _print_custom_text_cell!(
     l::Int,
     (@nospecialize highlighters::Ref{Any}),
 )
-    cell_printable_textwidth = _printable_textwidth(cell_processed_str)
+    cell_printable_textwidth = printable_textwidth(cell_processed_str)
 
     # Print the padding character before the cell.
     _p!(display, _default_crayon, " ", false, 1)
 
     # Compute the new string given the display size.
-    str, suffix, ~ = _fit_str_to_display(
+    str, suffix, ~ = _fit_string_in_display(
         display,
-        " " * cell_processed_str * " ",
+        cell_processed_str,
         false,
         cell_printable_textwidth
     )
 
     new_lstr = textwidth(str)
 
-    # Check if we need to crop the string to fit the
-    # display.
+    # Check if we need to crop the string to fit the display.
     if cell_printable_textwidth > new_lstr
         crop_line!(
             cell_data,
@@ -52,7 +51,7 @@ function _print_custom_text_cell!(
         cell_crayon,
         rendered_str,
         suffix,
-        new_lstr + textwidth(suffix) + 2
+        new_lstr + textwidth(suffix)
     )
 
     # Print the padding character after the cell and return if the display has
@@ -95,7 +94,7 @@ function _print_omitted_cell_summary(
         end
 
         if textwidth(cs_str) < table_display_width
-            cs_str = _str_aligned(cs_str, :r, table_display_width)
+            cs_str = align_string(cs_str, table_display_width, :r)
         end
 
         _write_to_display!(display, omitted_cell_summary_crayon, cs_str, "")
@@ -119,8 +118,6 @@ function _process_data_cell_text(
     alignment::Symbol,
     (@nospecialize highlighters::Ref{Any})
 )
-    lstr = -1
-
     # Check for highlighters.
     for h in highlighters.x
         if h.f(_getdata(ptable), i, j)
@@ -133,18 +130,35 @@ function _process_data_cell_text(
     if cell_data isa Markdown.MD
         alignment = :l
         crayon = Crayon()
-        lstr = _printable_textwidth(cell_str)
+        lstr = printable_textwidth(cell_str)
+    else
+        lstr = textwidth(cell_str)
     end
 
     if cell_data isa CustomTextCell
         # To align a custom text cell, we need to compute the alignment and
         # cropping data and apply it using the API functions.
-        crop_chars, left_pad, right_pad = _str_compute_alignment_and_crop(
+        padding = get_padding_for_string_alignment(
             cell_str,
-            alignment,
             column_width,
-            -1
+            alignment;
+            fill = true,
+            printable_string_width = lstr
         )
+
+        if !isnothing(padding)
+            left_pad, right_pad = padding
+            crop_chars = 0
+        else
+            left_pad, right_pad = 0, 0
+
+            crop_chars = get_crop_to_fit_string_in_field(
+                cell_str,
+                column_width;
+                add_continuation_char = false,
+                printable_string_width = lstr
+            )
+        end
 
         if crop_chars > 0
             apply_line_padding!(cell_data, l, 0, 0)
@@ -156,8 +170,23 @@ function _process_data_cell_text(
 
         cell_str = get_printable_cell_line(cell_data, l)::String
     else
-        # Align the string to be printed.
-        cell_str = _str_aligned(cell_str, alignment, column_width, lstr)
+        # Align and crop the string to be printed.
+        cell_str = align_string(
+            cell_str,
+            column_width,
+            alignment;
+            fill = true,
+            printable_string_width = lstr
+        )
+
+        # If this is not a custom cell, we ensure it does not have any ANSI
+        # escape sequence. Hence, we do not need to keep it after the cropping.
+        cell_str = fit_string_in_field(
+            cell_str,
+            column_width;
+            keep_ansi = false,
+            printable_string_width = lstr
+        )
     end
 
     return cell_str, crayon

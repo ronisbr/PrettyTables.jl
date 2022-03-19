@@ -232,6 +232,18 @@ function _get_data_column_index(ptable::ProcessedTable, j::Int)
     end
 end
 
+function _unsafe_get_data_column_index(ptable::ProcessedTable, j::Int)
+    Δc = length(ptable._additional_data_columns)
+
+    ptable_id_columns = ptable._id_columns
+
+    if !isnothing(ptable_id_columns)
+        return ptable_id_columns[j - Δc]
+    else
+        return j - Δc
+    end
+end
+
 """
     _get_data_row_index(ptable::ProcessedTable, i::Int)
 

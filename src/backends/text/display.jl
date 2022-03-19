@@ -41,7 +41,7 @@ function _draw_continuation_line(
     _check_vline(ptable, vlines, 0) && _p!(display, border_crayon, tf.column)
 
     @inbounds for j in 1:num_cols
-        str = " " * _str_aligned("⋮", alignment, columns_width[j]) * " "
+        str = " " * align_string("⋮", columns_width[j], alignment; fill = true) * " "
         final_line_print = j == num_cols
 
         _p!(display, text_crayon, str, false) && break
@@ -126,7 +126,7 @@ end
 # - The new string, which is `str` cropped to fit the display.
 # - The suffix to be appended to the cropped string.
 # - The number of columns that will be used to print the string and the suffix.
-function _fit_str_to_display(
+function _fit_string_in_display(
     display::Display,
     str::String,
     final_line_print::Bool = false,
@@ -135,95 +135,57 @@ function _fit_str_to_display(
     # Get the size of the string if required.
     lstr < 0 && (lstr = textwidth(str))
 
-    # `sapp` is a string to be appended to `str`. This is used to add `⋯` if the
-    # text must be wrapped. Notice that `lapp` is the length of `sapp`.
-    sapp = ""
-    lapp = 0
-
-    # When printing a line, we must verify if the display has bounds. This is
-    # done by looking if the horizontal size is positive.
     @inbounds if display.size[2] > 0
+        # We need to check the continuation string that the user wants to
+        # display. The width of this string must be used as a margin to the
+        # cropping algorithm.
+        cont_str     = string(display.cont_space_char) * string(display.cont_char)
+        field_margin = textwidth(cont_str)
 
-        # If we are at the end of the line, then just return.
-        _eol(display) && return "", "", 0
+        # Get the number of characters we need to crop to fit the display.
+        crop = get_crop_to_fit_string_in_field(
+            str,
+            display.size[2] - display.column - field_margin;
+            add_continuation_char = false,
+            continuation_char = display.cont_char,
+            printable_string_width = lstr
+        )
 
-        Δ = display.size[2] - (lstr + display.column)
+        # There are two situations in which we do not need to crop the string:
+        #
+        #   1. If the number of characters that must be cropped is 0, it means
+        #      that we have enough size to display the string plus the
+        #      continuation characters. Thus, we just print the current string
+        #      now. If the continuation characters are needed, they will be
+        #      printed in the next cell.
+        #   2. If the number of characters that must be cropped equals the size
+        #      of the continuation string and we are at the final line print, we
+        #      just need to print the string.
 
-        # Check if we can print the entire string.
-        if Δ <= 0
-            # If we cannot, then create a wrapped string considering how many
-            # columns are left.
-            cropped_str_len = lstr + Δ - 2
+        if (final_line_print && (crop ≤ field_margin)) || (crop == 0)
+            suffix = ""
+            num_columns = lstr
 
-            if cropped_str_len > 0
-                # Here we crop the string considering the available space
-                # reserving 2 characters for the line continuation indicator.
-                str  = _crop_str(str, cropped_str_len)
-                lstr = cropped_str_len
-                sapp = display.cont_space_char * display.cont_char
-                lapp = 2
-            else
-                # In this case, we do not have space to show any part of the
-                # string.
-                display_rem_chars = display.size[2] - display.column
+        else
+            suffix = cont_str
 
-                if display_rem_chars == 2
-                    # If there are only 2 characters left, then we must only
-                    # print " ⋯".
-                    str  = ""
-                    lstr = 0
-                    sapp = display.cont_space_char * display.cont_char
-                    lapp = 2
-                elseif display_rem_chars == 1
-                    # If there are only 1 character left, then we must only
-                    # print "⋯".
-                    str  = ""
-                    lstr = 0
-                    sapp = string(display.cont_char)
-                    lapp = 1
-                else
-                    # This should never be reached.
-                    error("Internal error!")
-                end
-            end
+            str, ~ = right_crop(
+                str,
+                crop;
+                keep_escape_seq = false,
+                printable_string_width = lstr
+            )
 
-            # In this case, we reached the end of display. Thus, remove any
-            # trailing spaces.
-            sapp_strip = rstrip(sapp)
-            sapp = String(sapp_strip)
-
-            if length(sapp) == 0
-                str_strip = rstrip(str)
-                str = String(str_strip)
-            end
-
-        elseif !final_line_print
-            # Here we must verify if this is the final printing on this line. If
-            # it is, then we should just check if the entire string fits on the
-            # available size. Otherwise, we must see if, after printing the
-            # current string, we will have more than 1 space left. If not, then
-            # we just add the continuation character sequence.
-
-            if Δ == 1
-                str   = (lstr > 1) ? _crop_str(str, lstr - 1) : ""
-                lstr -= 1
-                sapp  = display.cont_space_char * display.cont_char
-                lapp  = 2
-
-                # In this case, we reached the end of display. Thus, remove any
-                # trailing spaces.
-                sapp_strip = rstrip(sapp)
-                sapp = String(sapp_strip)
-
-                if length(sapp) == 0
-                    str_strip = rstrip(str)
-                    str = String(str_strip)
-                end
-            end
+            num_columns = lstr - crop + field_margin
         end
+
+    else
+        suffix = ""
+        num_columns = lstr
+
     end
 
-    return str, sapp, lstr + lapp
+    return str, suffix, num_columns
 end
 
 # Flush the content of the display buffer into `io`.
@@ -290,16 +252,16 @@ function _p!(
     lstr::Int = -1
 )
     _eol(display) && return true
+    lstr < 0 && (lstr = textwidth(str))
 
-    # Compute the new string given the display size.
-    str, suffix, num_printed_cols = _fit_str_to_display(
+    str, suffix, num_columns = _fit_string_in_display(
         display,
         str,
         final_line_print,
         lstr
     )
 
-    return _write_to_display!(display, crayon, str, suffix, num_printed_cols)
+    return _write_to_display!(display, crayon, str, suffix, num_columns)
 end
 
 # Write the string `str` to the display considering the decoration in `crayon`.
@@ -311,6 +273,9 @@ function _write_to_display!(
     suffix::String,
     num_printed_text_columns::Int = -1
 )
+    # If we reached end-of-line, just return.
+    _eol(display) && return true
+
     if num_printed_text_columns < 0
         num_printed_text_columns = textwidth(str) + textwidth(suffix)
     end

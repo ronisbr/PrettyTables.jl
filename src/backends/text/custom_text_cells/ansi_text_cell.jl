@@ -179,23 +179,33 @@ function get_printable_cell_line(cell::AnsiTextCell, l::Int)
         cell_left_pads      = cell._left_pads
         cell_right_pads     = cell._right_pads
         cell_stripped_lines = cell._stripped_lines
+        cell_suffixes       = cell._suffixes
 
         if isnothing(cell_crops) ||
             isnothing(cell_left_pads) ||
             isnothing(cell_right_pads) ||
-            isnothing(cell_stripped_lines)
+            isnothing(cell_stripped_lines) ||
+            isnothing(cell_suffixes)
             return ""
         end
 
-        lpad = cell_left_pads[l]
-        rpad = cell_right_pads[l]
-        line = " "^lpad * cell_stripped_lines[l] * " "^rpad
+        lpad   = cell_left_pads[l]
+        rpad   = cell_right_pads[l]
+        line   = " "^lpad * cell_stripped_lines[l] * " "^rpad
+        suffix = cell_suffixes[l]
 
         # Compute the total size of the string.
         line_width = lpad + textwidth(cell_stripped_lines[l]) + rpad
 
         # Return the cropped string.
-        return _crop_str(line, line_width - cell_crops[l], line_width)
+        cropped_line = fit_string_in_field(
+            line,
+            line_width - cell_crops[l];
+            add_continuation_char = false,
+            printable_string_width = line_width
+        )
+
+        return cropped_line * suffix
     end
 end
 
@@ -232,8 +242,15 @@ function get_rendered_line(cell::AnsiTextCell, l::Int)
         # Create the rendered line.
         line = " "^lpad * cell_rendered_lines[l] * " "^rpad
 
-        # Crop the rendered line.
-        cropped_line = _crop_str(line, line_width - cell_crops[l], line_width)
+        # Crop the rendered line. Notice that we can discard the remaining ANSI
+        # sequence because we reset everything after printing the cell.
+        cropped_line = fit_string_in_field(
+            line,
+            line_width - cell_crops[l];
+            add_continuation_char = false,
+            keep_ansi = false,
+            printable_string_width = line_width
+        )
 
         # We must reset everything after rendering the cell to avoid messing
         # with the decoration of the table.
@@ -278,11 +295,8 @@ function crop_line!(cell::AnsiTextCell, l::Int, num::Int)
 end
 
 function parse_cell_text(cell::AnsiTextCell; kwargs...)
-    # Regex to remove escape sequences from the string.
-    r_ansi_escape = r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])"
-
     _rendered_lines = map(String, split(cell.string, '\n'))
-    _stripped_lines = map(l -> replace(l, r_ansi_escape => ""), _rendered_lines)
+    _stripped_lines = remove_decorations.(_rendered_lines)
 
     num_lines = length(_rendered_lines)
 

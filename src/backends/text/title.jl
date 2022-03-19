@@ -62,7 +62,21 @@ function _tokenize_title(
 
             @inbounds for i in 1:num_tokens
                 token = title_tokens_raw[i]
-                token_str = _str_aligned(token, title_alignment, title_width)
+
+                # Align and crop the title.
+                token_pw  = printable_textwidth(token)
+                token_str = align_string(
+                    token,
+                    title_width,
+                    title_alignment;
+                    printable_string_width = token_pw
+                )
+                token_str = fit_string_in_field(
+                    token_str,
+                    title_width;
+                    printable_string_width = token_pw
+                )
+
                 push!(title_tokens, token_str)
             end
         end

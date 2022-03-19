@@ -880,3 +880,30 @@ end
     )
     @test result == expected
 end
+
+@testset "Issue #161 - Wrong computation of EOL when using CustomTextCells" begin
+    g = crayon"green bold"
+    y = crayon"yellow bold"
+    b = crayon"blue bold"
+
+    ansi_table = hcat(
+        hcat([AnsiTextCell("$(g)This $(y)is $(b)awesome!") for _ in 1:10]...)...
+    )
+
+    expected = """
+┌──────────┬────────
+│   Col. 1 │   Col ⋯
+├──────────┼────────
+│ \e[32;1mThis \e[33;1mis\e[0m… │ \e[32;1mThis\e[0m… ⋯
+└──────────┴────────
+   9 columns omitted
+"""
+
+    result = pretty_table(
+        String,
+        ansi_table;
+        crop = :both,
+        display_size = (-1, 20),
+        maximum_columns_width = 8
+    )
+end

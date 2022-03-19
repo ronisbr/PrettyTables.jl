@@ -175,11 +175,7 @@ function _print_table_data!(
                 # align it.
                 if length(table_str[i, j]) < l
                     # Align the text in the column.
-                    cell_processed_str = _str_aligned(
-                        "",
-                        :l,
-                        actual_columns_width[j]
-                    )
+                    cell_processed_str = " "^actual_columns_width[j]
 
                     # Print the cell with the spacing.
                     _p!(
@@ -193,9 +189,8 @@ function _print_table_data!(
                 else
                     column_id = _get_column_id(ptable, j)
 
-
                     jr = (column_id == :__ORIGINAL_DATA__) ?
-                        _get_data_column_index(ptable, j) :
+                        _unsafe_get_data_column_index(ptable, j) :
                         0
 
                     # Get the correct crayon for this cell.
@@ -209,14 +204,34 @@ function _print_table_data!(
                     # Get the alignment for this cell.
                     cell_alignment = _get_cell_alignment(ptable, i, j)
 
-                    # Select the rendering algorihtm based on the type of the
+                    # Select the rendering algorithm based on the type of the
                     # cell.
                     if _is_header_row(row_id) || (column_id != :__ORIGINAL_DATA__)
+                        table_str_ij_l = table_str[i, j][l]
+                        actual_columns_width_j = actual_columns_width[j]
+
+                        # Get the string printable width. Notice that, in this
+                        # case, we know that we do not have any invisible
+                        # characters inside the string.
+                        str_printable_width = textwidth(table_str_ij_l)
+
                         # Align the text in the column.
-                        cell_processed_str = _str_aligned(
-                            table_str[i, j][l],
-                            cell_alignment,
-                            actual_columns_width[j]
+                        cell_processed_str = align_string(
+                            table_str_ij_l,
+                            actual_columns_width_j,
+                            cell_alignment;
+                            fill = true,
+                            printable_string_width = str_printable_width
+                        )
+
+                        # Crop the string the make sure it fits the cell. Notice
+                        # that we ensure that there is not ANSI escape sequences
+                        # inside this string.
+                        cell_processed_str = fit_string_in_field(
+                            cell_processed_str,
+                            actual_columns_width_j;
+                            keep_ansi = false,
+                            printable_string_width = str_printable_width
                         )
 
                         # Print the cell with the spacing.

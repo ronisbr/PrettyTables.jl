@@ -61,18 +61,9 @@ function _parse_cell_text(
     # First, we need to render the Markdown with all the colors.
     str = sprint(Markdown.term, cell, column_width; context = :color => true)
 
-    # Now, we need to remove all ANSI escape sequences to count the printable
-    # characters.
-    #
-    # This regex was obtained at:
-    #
-    #     https://stackoverflow.com/questions/14693701/how-can-i-remove-the-ansi-escape-sequences-from-a-string-in-python
-    #
-    str_nc = replace(str, r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])" => "")
-
     if !linebreaks
         if !has_color
-            str_nc = replace(str_nc, "\n" => "\\n")
+            str_nc = replace(remove_decorations(str), "\n" => "\\n")
             return [str_nc]
         else
             str = replace(str, "\n" => "\\n")
@@ -80,14 +71,25 @@ function _parse_cell_text(
         end
     else
         # Obtain the number of lines and the maximum number of used columns.
-        tokens_nc = String.(split(str_nc, '\n'))
+        tokens = String.(split(str, '\n'))
 
         if !has_color
-            return tokens_nc
+            return remove_decorations.(tokens)
         else
-            tokens = String.(split(str, '\n'))
-            _reapply_ansi_format!(tokens)
-            return tokens
+            # Here, we need to take the composed decoration at the end of line
+            # and apply it to the next one because we need to reset the entire
+            # decoration after printing the cell.
+            processed_tokens = similar(tokens)
+            decoration = Decoration()
+
+            for l = 1:length(tokens)
+                processed_tokens[l] = convert(String, decoration) * tokens[l] * "\e[0m"
+
+                # Get the composed decoration of the current line.
+                decoration = update_decoration(decoration, tokens[l])
+            end
+
+            return processed_tokens
         end
     end
 end

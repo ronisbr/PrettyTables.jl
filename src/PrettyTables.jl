@@ -4,6 +4,7 @@ using Formatting
 using Reexport
 using Tables
 using Markdown
+using StringManipulation
 
 @reexport using Crayons
 

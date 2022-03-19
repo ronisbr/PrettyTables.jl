@@ -152,7 +152,7 @@ function _fill_matrix_data!(
             if cell_data isa Markdown.MD
                 largest_cell_width = max(
                     largest_cell_width,
-                    maximum(_printable_textwidth.(cell_str))
+                    maximum(printable_textwidth.(cell_str))
                 )
             else
                 # If we are at the subheader and the user wants to crop it, then

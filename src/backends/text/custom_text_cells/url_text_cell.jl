@@ -82,7 +82,13 @@ function get_rendered_line(c::URLTextCell, l::Int)
         # ======================================================================
 
         Δ = clamp(rem_chars, 0, url_text_width)
-        proc_text = _crop_str(c.text, Δ)
+
+        proc_text = fit_string_in_field(
+            c.text,
+            Δ;
+            add_continuation_char = false
+        )
+
         str *= "\e]8;;" * c.url * "\e\\" * proc_text * "\e]8;;\e\\"
         rem_chars ≤ url_text_width && return str * c._suffix
         rem_chars -= url_text_width
