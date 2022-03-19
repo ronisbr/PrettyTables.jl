@@ -320,10 +320,23 @@ function _write_to_display!(
     # Notice that all text printed with crayon is reset right after the string.
     # Hence, if the crayon is empty (`_default_crayon`) or if it is a reset,
     # then we can just print as if the terminal does not support color.
+    buf_line = display.buf_line
+
     if (crayon != _default_crayon) && (crayon != _reset_crayon) && display.has_color
-        print(display.buf_line, crayon, str, _reset_crayon, suffix)
+        # If we convert the crayon to string using `string`, it calls `print`
+        # which checks if the Base has colors, leading to inference problems.
+        # For more information, see:
+        #
+        #   https://github.com/KristofferC/Crayons.jl/issues/62
+        write(buf_line, Crayons.CSI)
+        Crayons._print(buf_line, crayon)
+        write(buf_line, Crayons.END_ANSI)
+
+        write(buf_line, str)
+        write(buf_line, _reset_crayon_str)
+        write(buf_line, suffix)
     else
-        print(display.buf_line, str, suffix)
+        write(buf_line, str, suffix)
     end
 
     # Update the current column in the display.
