@@ -83,6 +83,10 @@ function _parse_cell_text(
             decoration = Decoration()
 
             for l = 1:length(tokens)
+                # If a property of the last decoration was inactive, we should
+                # drop it to avoid unnecessary escape sequences.
+                decoration = drop_inactive_properties(decoration)
+
                 processed_tokens[l] = convert(String, decoration) * tokens[l] * "\e[0m"
 
                 # Get the composed decoration of the current line.
