@@ -271,7 +271,7 @@ function crop_line!(cell::AnsiTextCell, l::Int, num::Int)
     cell_crops = cell._crops
 
     if !isnothing(cell_crops) && (num ≥ 0)
-        cell_crops[l] = num
+        cell_crops[l] += num
     end
 
     return nothing
