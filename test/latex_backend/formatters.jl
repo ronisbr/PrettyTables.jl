@@ -15,14 +15,14 @@
 
     expected = """
 \\begin{tabular}{rrrr}
-  \\hline\\hline
+  \\hline
   \\textbf{Col. 1} & \\textbf{Col. 2} & \\textbf{Col. 3} & \\textbf{Col. 4} \\\\\\hline
   1 & false & 1.0 & 1 \\\\
   2 & true & 2.0 & 2 \\\\
   3 & false & \$\\emptyset\$ & 3 \\\\
   4 & true & 4.0 & 4 \\\\
   5 & false & 5.0 & 5 \\\\
-  6 & true & 6.0 & 6 \\\\\\hline\\hline
+  6 & true & 6.0 & 6 \\\\\\hline
 \\end{tabular}
 """
 
@@ -40,7 +40,7 @@ end
 
     expected = """
 \\begin{tabular}{rrrr}
-  \\hline\\hline
+  \\hline
   \\textbf{Col. 1} & \\textbf{Col. 2} & \\textbf{Col. 3} & \\textbf{Col. 4} \\\\\\hline
   1 & 1 & \$1 \\cdot 10^{-5}\$ & Teste \\\\
   2 & 2 & 0.0001 & Teste \\\\
@@ -52,7 +52,7 @@ end
   8 & 8 & \$1 \\cdot 10^{2}\$ & Teste \\\\
   9 & 9 & \$1 \\cdot 10^{3}\$ & Teste \\\\
   \$1 \\cdot 10^{1}\$ & \$1 \\cdot 10^{1}\$ & \$1 \\cdot 10^{4}\$ & Teste \\\\
-  \$1 \\cdot 10^{1}\$ & \$1 \\cdot 10^{1}\$ & \$1 \\cdot 10^{5}\$ & Teste \\\\\\hline\\hline
+  \$1 \\cdot 10^{1}\$ & \$1 \\cdot 10^{1}\$ & \$1 \\cdot 10^{5}\$ & Teste \\\\\\hline
 \\end{tabular}
 """
 
@@ -66,7 +66,7 @@ end
 
     expected = """
 \\begin{tabular}{rrrr}
-  \\hline\\hline
+  \\hline
   \\textbf{Col. 1} & \\textbf{Col. 2} & \\textbf{Col. 3} & \\textbf{Col. 4} \\\\\\hline
   1 & 1 & \$1 \\cdot 10^{-5}\$ & Teste \\\\
   2 & 2 & 0.0001 & Teste \\\\
@@ -78,7 +78,7 @@ end
   8 & 8 & \$1 \\cdot 10^{2}\$ & Teste \\\\
   9 & 9 & \$1 \\cdot 10^{3}\$ & Teste \\\\
   10 & 10 & \$1 \\cdot 10^{4}\$ & Teste \\\\
-  11 & 11 & \$1 \\cdot 10^{5}\$ & Teste \\\\\\hline\\hline
+  11 & 11 & \$1 \\cdot 10^{5}\$ & Teste \\\\\\hline
 \\end{tabular}
 """
 
@@ -92,7 +92,7 @@ end
 
     expected = """
 \\begin{tabular}{rrrr}
-  \\hline\\hline
+  \\hline
   \\textbf{Col. 1} & \\textbf{Col. 2} & \\textbf{Col. 3} & \\textbf{Col. 4} \\\\\\hline
   1 & 1.0 & \$1 \\cdot 10^{-5}\$ & Teste \\\\
   2 & 2.0 & 0.0001 & Teste \\\\
@@ -104,7 +104,7 @@ end
   8 & 8.0 & \$1 \\cdot 10^{2}\$ & Teste \\\\
   9 & 9.0 & \$1 \\cdot 10^{3}\$ & Teste \\\\
   \$1 \\cdot 10^{1}\$ & 10.0 & \$1 \\cdot 10^{4}\$ & Teste \\\\
-  \$1 \\cdot 10^{1}\$ & 11.0 & \$1 \\cdot 10^{5}\$ & Teste \\\\\\hline\\hline
+  \$1 \\cdot 10^{1}\$ & 11.0 & \$1 \\cdot 10^{5}\$ & Teste \\\\\\hline
 \\end{tabular}
 """
 
@@ -118,7 +118,7 @@ end
 
     expected = """
 \\begin{tabular}{rrrr}
-  \\hline\\hline
+  \\hline
   \\textbf{Col. 1} & \\textbf{Col. 2} & \\textbf{Col. 3} & \\textbf{Col. 4} \\\\\\hline
   1 & 1.0 & \$1 \\cdot 10^{-5}\$ & Teste \\\\
   2 & 2.0 & 0.0001 & Teste \\\\
@@ -130,7 +130,7 @@ end
   8 & 8.0 & 100 & Teste \\\\
   9 & 9.0 & \$1 \\cdot 10^{3}\$ & Teste \\\\
   \$1 \\cdot 10^{1}\$ & 10.0 & \$1 \\cdot 10^{4}\$ & Teste \\\\
-  \$1 \\cdot 10^{1}\$ & 11.0 & \$1 \\cdot 10^{5}\$ & Teste \\\\\\hline\\hline
+  \$1 \\cdot 10^{1}\$ & 11.0 & \$1 \\cdot 10^{5}\$ & Teste \\\\\\hline
 \\end{tabular}
 """
 

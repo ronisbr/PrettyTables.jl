@@ -38,10 +38,10 @@ This structure defines the format of the LaTeX table.
     wrapped if `wrap_table` is true.
 """
 @kwdef struct LatexTableFormat
-    top_line::String                      = "\\hline\\hline"
+    top_line::String                      = "\\hline"
     header_line::String                   = "\\hline"
     mid_line::String                      = "\\hline"
-    bottom_line::String                   = "\\hline\\hline"
+    bottom_line::String                   = "\\hline"
     left_vline::String                    = "|"
     mid_vline::String                     = "|"
     right_vline::String                   = "|"

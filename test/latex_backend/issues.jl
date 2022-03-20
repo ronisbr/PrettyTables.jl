@@ -15,9 +15,9 @@
 
     expected = """
 \\begin{tabular}{rr}
-  \\hline\\hline
+  \\hline
   \\textbf{Col. 1} & \\textbf{Col. 2} \\\\\\hline
-  2.0 ± 1 & 3.0 ± 1 \\\\\\hline\\hline
+  2.0 ± 1 & 3.0 ± 1 \\\\\\hline
 \\end{tabular}
 """
 
@@ -30,10 +30,10 @@ end
 
     expected = """
 \\begin{tabular}{rr}
-  \\hline\\hline
+  \\hline
   \\textbf{Col. 1} & \\textbf{Col. 2} \\\\\\hline
   1 & 2 \\\\
-  3 & 4 \\\\\\hline\\hline
+  3 & 4 \\\\\\hline
 \\end{tabular}
 """
 
@@ -42,17 +42,17 @@ end
 
     expected = """
 \\begin{longtable}{rr}
-  \\hline\\hline
+  \\hline
   \\textbf{Col. 1} & \\textbf{Col. 2} \\\\\\hline
   \\endfirsthead
-  \\hline\\hline
+  \\hline
   \\textbf{Col. 1} & \\textbf{Col. 2} \\\\\\hline
   \\endhead
-  \\hline\\hline
+  \\hline
   \\endfoot
   \\endlastfoot
   1 & 2 \\\\
-  3 & 4 \\\\\\hline\\hline
+  3 & 4 \\\\\\hline
 \\end{longtable}
 """
     result = pretty_table(
@@ -71,17 +71,17 @@ end
 @testset "Issue #95 - Multi-page longtables generate multiple entries in listoftables" begin
     expected = """
 \\begin{longtable}{rrrr}
-  \\hline\\hline
+  \\hline
   \\textbf{1} & \\textbf{2} & \\textbf{3} & \\textbf{4} \\\\
   \\texttt{a} & \\texttt{b} & \\texttt{c} & \\texttt{d} \\\\
   \\texttt{e} & \\texttt{f} & \\texttt{g} & \\texttt{h} \\\\\\hline
   \\endfirsthead
-  \\hline\\hline
+  \\hline
   \\textbf{1} & \\textbf{2} & \\textbf{3} & \\textbf{4} \\\\
   \\texttt{a} & \\texttt{b} & \\texttt{c} & \\texttt{d} \\\\
   \\texttt{e} & \\texttt{f} & \\texttt{g} & \\texttt{h} \\\\\\hline
   \\endhead
-  \\hline\\hline
+  \\hline
   \\endfoot
   \\endlastfoot
   1 & false & 1.0 & 1 \\\\
@@ -89,7 +89,7 @@ end
   3 & false & 3.0 & 3 \\\\
   4 & true & 4.0 & 4 \\\\
   5 & false & 5.0 & 5 \\\\
-  6 & true & 6.0 & 6 \\\\\\hline\\hline
+  6 & true & 6.0 & 6 \\\\\\hline
 \\end{longtable}
 """
 
@@ -111,19 +111,19 @@ end
     expected = """
 \\begin{longtable}{rrrr}
   \\caption{Table title}\\\\
-  \\hline\\hline
+  \\hline
   \\textbf{1} & \\textbf{2} & \\textbf{3} & \\textbf{4} \\\\
   \\texttt{a} & \\texttt{b} & \\texttt{c} & \\texttt{d} \\\\
   \\texttt{e} & \\texttt{f} & \\texttt{g} & \\texttt{h} \\\\\\hline
   \\endfirsthead
-  \\hline\\hline
+  \\hline
   \\textbf{1} & \\textbf{2} & \\textbf{3} & \\textbf{4} \\\\
   \\texttt{a} & \\texttt{b} & \\texttt{c} & \\texttt{d} \\\\
   \\texttt{e} & \\texttt{f} & \\texttt{g} & \\texttt{h} \\\\\\hline
   \\endhead
-  \\hline\\hline
+  \\hline
   \\multicolumn{4}{r}{Long table footer}\\\\
-  \\hline\\hline
+  \\hline
   \\endfoot
   \\endlastfoot
   1 & false & 1.0 & 1 \\\\
@@ -131,7 +131,7 @@ end
   3 & false & 3.0 & 3 \\\\
   4 & true & 4.0 & 4 \\\\
   5 & false & 5.0 & 5 \\\\
-  6 & true & 6.0 & 6 \\\\\\hline\\hline
+  6 & true & 6.0 & 6 \\\\\\hline
 \\end{longtable}
 """
 
@@ -161,9 +161,9 @@ end
 
     expected = """
 \\begin{tabular}{r}
-  \\hline\\hline
+  \\hline
   \\textbf{Col. 1} \\\\\\hline
-  \\% \\\\\\hline\\hline
+  \\% \\\\\\hline
 \\end{tabular}
 """
 

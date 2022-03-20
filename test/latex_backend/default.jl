@@ -10,14 +10,14 @@
 @testset "Default" begin
     expected = """
 \\begin{tabular}{rrrr}
-  \\hline\\hline
+  \\hline
   \\textbf{Col. 1} & \\textbf{Col. 2} & \\textbf{Col. 3} & \\textbf{Col. 4} \\\\\\hline
   1 & false & 1.0 & 1 \\\\
   2 & true & 2.0 & 2 \\\\
   3 & false & 3.0 & 3 \\\\
   4 & true & 4.0 & 4 \\\\
   5 & false & 5.0 & 5 \\\\
-  6 & true & 6.0 & 6 \\\\\\hline\\hline
+  6 & true & 6.0 & 6 \\\\\\hline
 \\end{tabular}
 """
 
@@ -26,34 +26,7 @@
 end
 
 @testset "Pre-defined formats" begin
-
     # Default
-    # ==========================================================================
-
-    expected = """
-\\begin{tabular}{|r|r|r|r|}
-  \\hline\\hline
-  \\textbf{Col. 1} & \\textbf{Col. 2} & \\textbf{Col. 3} & \\textbf{Col. 4} \\\\\\hline
-  1 & false & 1.0 & 1 \\\\\\hline
-  2 & true & 2.0 & 2 \\\\\\hline
-  3 & false & 3.0 & 3 \\\\\\hline
-  4 & true & 4.0 & 4 \\\\\\hline
-  5 & false & 5.0 & 5 \\\\\\hline
-  6 & true & 6.0 & 6 \\\\\\hline\\hline
-\\end{tabular}
-"""
-
-    result = pretty_table(
-        String,
-        data;
-        hlines = :all,
-        vlines = :all,
-        tf = tf_latex_default
-    )
-
-    @test result == expected
-
-    # Simple
     # ==========================================================================
 
     expected = """
@@ -74,7 +47,33 @@ end
         data;
         hlines = :all,
         vlines = :all,
-        tf = tf_latex_simple
+        tf = tf_latex_default
+    )
+
+    @test result == expected
+
+    # Double
+    # ==========================================================================
+
+    expected = """
+\\begin{tabular}{|r|r|r|r|}
+  \\hline\\hline
+  \\textbf{Col. 1} & \\textbf{Col. 2} & \\textbf{Col. 3} & \\textbf{Col. 4} \\\\\\hline
+  1 & false & 1.0 & 1 \\\\\\hline
+  2 & true & 2.0 & 2 \\\\\\hline
+  3 & false & 3.0 & 3 \\\\\\hline
+  4 & true & 4.0 & 4 \\\\\\hline
+  5 & false & 5.0 & 5 \\\\\\hline
+  6 & true & 6.0 & 6 \\\\\\hline\\hline
+\\end{tabular}
+"""
+
+    result = pretty_table(
+        String,
+        data;
+        hlines = :all,
+        vlines = :all,
+        tf = tf_latex_double
     )
 
     @test result == expected
@@ -153,7 +152,7 @@ end
 
     expected = """
         \\begin{tabular}{rr}
-          \\hline\\hline
+          \\hline
           \\textbf{Col. 1} & \\textbf{Col. 2} \\\\\\hline
           \$\\mathbf{\\pi}\$ & π \\\\
           \\textbf{Character} & a \\\\
@@ -166,7 +165,7 @@ end
           \\textbf{String} & \\textbackslash{}0\\textbackslash{}x01\\textbackslash{}x02\\textbackslash{}x03 \\\\
           \\textbf{Symbol} & a \\\\
           \\textbf{Sub. string} & 1 \\\\
-          \\textbf{UInt64} & 1 \\\\\\hline\\hline
+          \\textbf{UInt64} & 1 \\\\\\hline
         \\end{tabular}
         """
 
@@ -178,7 +177,7 @@ end
 
     expected = """
         \\begin{tabular}{rr}
-          \\hline\\hline
+          \\hline
           \\textbf{Col. 1} & \\textbf{Col. 2} \\\\\\hline
           \$\\mathbf{\\pi}\$ & π \\\\
           \\textbf{Character} & 'a' \\\\
@@ -191,7 +190,7 @@ end
           \\textbf{String} & \\textbackslash{}0\\textbackslash{}x01\\textbackslash{}x02\\textbackslash{}x03 \\\\
           \\textbf{Symbol} & :a \\\\
           \\textbf{Sub. string} & 1 \\\\
-          \\textbf{UInt64} & 0x01 \\\\\\hline\\hline
+          \\textbf{UInt64} & 0x01 \\\\\\hline
         \\end{tabular}
         """
 
@@ -204,14 +203,14 @@ end
 \\begin{table}
   \\caption{Table title}
   \\begin{tabular}{rrrr}
-    \\hline\\hline
+    \\hline
     \\textbf{Col. 1} & \\textbf{Col. 2} & \\textbf{Col. 3} & \\textbf{Col. 4} \\\\\\hline
     1 & false & 1.0 & 1 \\\\
     2 & true & 2.0 & 2 \\\\
     3 & false & 3.0 & 3 \\\\
     4 & true & 4.0 & 4 \\\\
     5 & false & 5.0 & 5 \\\\
-    6 & true & 6.0 & 6 \\\\\\hline\\hline
+    6 & true & 6.0 & 6 \\\\\\hline
   \\end{tabular}
   \\label{tab:label}
 \\end{table}
@@ -231,13 +230,13 @@ end
     expected = """
 \\begin{longtable}{rrrr}
   \\caption{Table title}\\\\
-  \\hline\\hline
+  \\hline
   \\textbf{Col. 1} & \\textbf{Col. 2} & \\textbf{Col. 3} & \\textbf{Col. 4} \\\\\\hline
   \\endfirsthead
-  \\hline\\hline
+  \\hline
   \\textbf{Col. 1} & \\textbf{Col. 2} & \\textbf{Col. 3} & \\textbf{Col. 4} \\\\\\hline
   \\endhead
-  \\hline\\hline
+  \\hline
   \\endfoot
   \\endlastfoot
   1 & false & 1.0 & 1 \\\\
@@ -245,7 +244,7 @@ end
   3 & false & 3.0 & 3 \\\\
   4 & true & 4.0 & 4 \\\\
   5 & false & 5.0 & 5 \\\\
-  6 & true & 6.0 & 6 \\\\\\hline\\hline
+  6 & true & 6.0 & 6 \\\\\\hline
   \\label{tab:label}
 \\end{longtable}
 """

@@ -10,7 +10,7 @@
 @testset "Show row names" begin
     expected = """
 \\begin{tabular}{rrrrr}
-  \\hline\\hline
+  \\hline
    & \\textbf{C1} & \\textbf{C2} & \\textbf{C3} & \\textbf{C4} \\\\
    & \\texttt{Int} & \\texttt{Bool} & \\texttt{Float} & \\texttt{Hex} \\\\\\hline
   Row 1 & 1 & false & 1.0 & 1 \\\\
@@ -18,7 +18,7 @@
   Row 3 & 3 & false & 3.0 & 3 \\\\
   Row 4 & 4 & true & 4.0 & 4 \\\\
   Row 5 & 5 & false & 5.0 & 5 \\\\
-  Row 6 & 6 & true & 6.0 & 6 \\\\\\hline\\hline
+  Row 6 & 6 & true & 6.0 & 6 \\\\\\hline
 \\end{tabular}
 """
 
@@ -37,7 +37,7 @@
 
     expected = """
 \\begin{tabular}{rrrrr}
-  \\hline\\hline
+  \\hline
   \\textbf{Row names} & \\textbf{C1} & \\textbf{C2} & \\textbf{C3} & \\textbf{C4} \\\\
    & \\texttt{Int} & \\texttt{Bool} & \\texttt{Float} & \\texttt{Hex} \\\\\\hline
   Row 1 & 1 & false & 1.0 & 1 \\\\
@@ -45,7 +45,7 @@
   Row 3 & 3 & false & 3.0 & 3 \\\\
   Row 4 & 4 & true & 4.0 & 4 \\\\
   Row 5 & 5 & false & 5.0 & 5 \\\\
-  Row 6 & 6 & true & 6.0 & 6 \\\\\\hline\\hline
+  Row 6 & 6 & true & 6.0 & 6 \\\\\\hline
 \\end{tabular}
 """
 
@@ -65,7 +65,7 @@
 
     expected = """
 \\begin{tabular}{rcrrrr}
-  \\hline\\hline
+  \\hline
   \\textbf{Row} & \\textbf{Row names} & \\textbf{C1} & \\textbf{C2} & \\textbf{C3} & \\textbf{C4} \\\\
    &  & \\texttt{Int} & \\texttt{Bool} & \\texttt{Float} & \\texttt{Hex} \\\\\\hline
   1 & Row 1 & 1 & false & 1.0 & 1 \\\\
@@ -73,7 +73,7 @@
   3 & Row 3 & 3 & false & 3.0 & 3 \\\\
   4 & Row 4 & 4 & true & 4.0 & 4 \\\\
   5 & Row 5 & 5 & false & 5.0 & 5 \\\\
-  6 & Row 6 & 6 & true & 6.0 & 6 \\\\\\hline\\hline
+  6 & Row 6 & 6 & true & 6.0 & 6 \\\\\\hline
 \\end{tabular}
 """
 

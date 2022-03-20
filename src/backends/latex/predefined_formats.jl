@@ -7,15 +7,15 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-export tf_latex_default, tf_latex_simple, tf_latex_modern, tf_latex_booktabs
+export tf_latex_default, tf_latex_double, tf_latex_modern, tf_latex_booktabs
 
 const tf_latex_default = LatexTableFormat()
 
-const tf_latex_simple = LatexTableFormat(
-    top_line       = "\\hline",
+const tf_latex_double = LatexTableFormat(
+    top_line       = "\\hline\\hline",
     header_line    = "\\hline",
     mid_line       = "\\hline",
-    bottom_line    = "\\hline",
+    bottom_line    = "\\hline\\hline",
     left_vline     = "|",
     mid_vline      = "|",
     right_vline    = "|",

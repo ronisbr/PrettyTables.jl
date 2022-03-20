@@ -179,9 +179,9 @@ The following table formats are available when using the LaTeX back-end:
 
 ![](./latex_backend/format_default.png)
 
-`tf_latex_simple`
+`tf_latex_double`
 
-![](./latex_backend/format_simple.png)
+![](./latex_backend/format_double.png)
 
 `tf_latex_modern`
 
