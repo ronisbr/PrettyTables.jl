@@ -311,6 +311,32 @@ function _count_vlines(ptable::ProcessedTable, vlines::Symbol)
     end
 end
 
+# Return the string with the information about the number of omitted cells.
+function _get_omitted_cell_string(
+    num_omitted_rows::Int,
+    num_omitted_columns::Int
+)
+    cs_str_col = ""
+    cs_str_and = ""
+    cs_str_row = ""
+
+    if num_omitted_columns > 0
+        cs_str_col = string(num_omitted_columns)
+        cs_str_col *= num_omitted_columns > 1 ? " columns" : " column"
+    end
+
+    if num_omitted_rows > 0
+        cs_str_row = string(num_omitted_rows)
+        cs_str_row *= num_omitted_rows > 1 ? " rows" : " row"
+
+        num_omitted_columns > 0 && (cs_str_and = " and ")
+    end
+
+    cs_str = cs_str_col * cs_str_and * cs_str_row * " omitted"
+
+    return cs_str
+end
+
 """
     _process_hlines(ptable::ProcessedTable, hlines)
 

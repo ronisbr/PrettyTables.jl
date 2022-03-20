@@ -69,23 +69,7 @@ function _print_omitted_cell_summary(
     table_width::Int
 )
     if show_omitted_cell_summary && ((num_omitted_cols + num_omitted_rows) > 0)
-        cs_str_col = ""
-        cs_str_and = ""
-        cs_str_row = ""
-
-        if num_omitted_cols > 0
-            cs_str_col = string(num_omitted_cols)
-            cs_str_col *= num_omitted_cols > 1 ? " columns" : " column"
-        end
-
-        if num_omitted_rows > 0
-            cs_str_row = string(num_omitted_rows)
-            cs_str_row *= num_omitted_rows > 1 ? " rows" : " row"
-
-            num_omitted_cols > 0 && (cs_str_and = " and ")
-        end
-
-        cs_str = cs_str_col * cs_str_and * cs_str_row * " omitted"
+        cs_str = _get_omitted_cell_string(num_omitted_rows, num_omitted_cols)
 
         if display.size[2] > 0
             table_display_width = min(table_width, display.size[2])
