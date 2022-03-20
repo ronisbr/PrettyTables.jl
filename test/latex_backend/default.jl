@@ -244,7 +244,7 @@ end
         \\end{table}
         """
 
-    result = pretty_table(String, matrix, backend = :latex)
+    result = pretty_table(String, matrix, backend = Val(:latex))
     @test result == expected
 
     # Renderer = `:show`
@@ -271,6 +271,6 @@ end
         \\end{table}
         """
 
-    result = pretty_table(String, matrix, backend = :latex, renderer = :show)
+    result = pretty_table(String, matrix, backend = Val(:latex), renderer = :show)
     @test result == expected
 end

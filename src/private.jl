@@ -282,7 +282,7 @@ function _pt(
     (@nospecialize io::IO),
     data::Any;
     alignment::Union{Symbol, Vector{Symbol}} = :r,
-    backend::Union{Symbol, T_BACKENDS} = Val(:auto),
+    backend::T_BACKENDS = Val(:auto),
     cell_alignment::Union{
         Nothing,
         Dict{Tuple{Int, Int}, Symbol},
@@ -369,30 +369,18 @@ function _pt(
         kwargs = _rm_nosubheader(; kwargs...)
     end
 
-    # NOTE: Inform that using `backend` as `Symbol` is deprecated. This will be
-    # removed in the next PrettyTables.jl version.
-    if backend isa Symbol
-      _backend = Val(backend)
-      Base.depwarn(
-          "Using `backend` as a symbol is deprecated. Use `Val(:$backend)` instead.",
-          nothing
-      )
-    else
-      _backend = backend
-    end
-
-    if _backend === Val(:auto)
+    if backend === Val(:auto)
         # In this case, if we do not have the `tf` keyword, then we just
-        # fallback to the text _backend. Otherwise, check if the type of `tf`.
+        # fallback to the text backend. Otherwise, check if the type of `tf`.
         if haskey(kwargs, :tf)
             tf = kwargs[:tf]
 
             if tf isa TextFormat
-                _backend = Val(:text)
+                backend = Val(:text)
             elseif tf isa HTMLTableFormat
-                _backend = Val(:html)
+                backend = Val(:html)
             elseif tf isa LatexTableFormat
-                _backend = Val(:latex)
+                backend = Val(:latex)
             else
                 throw(
                     TypeError(
@@ -403,7 +391,7 @@ function _pt(
                 )
             end
         else
-            _backend = Val(:text)
+            backend = Val(:text)
         end
     end
 
@@ -435,11 +423,11 @@ function _pt(
     )
 
     # Select the appropriate backend.
-    if _backend === Val(:text)
+    if backend === Val(:text)
         _pt_text(io, pinfo; kwargs...)
-    elseif _backend === Val(:html)
+    elseif backend === Val(:html)
         _pt_html(io, pinfo; kwargs...)
-    elseif _backend === Val(:latex)
+    elseif backend === Val(:latex)
         _pt_latex(io, pinfo; kwargs...)
     end
 
