@@ -436,11 +436,11 @@ function _pt(
 
     # Select the appropriate backend.
     if _backend === Val(:text)
-        _pt_text(Ref{Any}(io), pinfo; kwargs...)
+        _pt_text(io, pinfo; kwargs...)
     elseif _backend === Val(:html)
-        _pt_html(Ref{Any}(io), pinfo; kwargs...)
+        _pt_html(io, pinfo; kwargs...)
     elseif _backend === Val(:latex)
-        _pt_latex(Ref{Any}(io), pinfo; kwargs...)
+        _pt_latex(io, pinfo; kwargs...)
     end
 
     return nothing

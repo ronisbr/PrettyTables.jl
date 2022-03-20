@@ -9,7 +9,7 @@
 
 # Low-level function to print the table using the text backend.
 function _pt_html(
-    r_io::Ref{Any},
+    io::IO,
     pinfo::PrintInfo;
     tf::HTMLTableFormat = tf_html_default,
     allow_html_in_cells::Bool = false,
@@ -19,12 +19,6 @@ function _pt_html(
     sortkeys::Bool = false,
     standalone::Bool = false
 )
-    # `r_io` must always be a reference to `IO`. Here, we unpack it. This is
-    # done to improve inference and reduce compilation time. Ideally, we need to
-    # add the `@nospecialize` annotation to `io`. However, it returns the
-    # message that this annotation is not supported with more than 32 arguments.
-    io = r_io.x
-
     # Unpack fields of `pinfo`.
     ptable               = pinfo.ptable
     formatters           = pinfo.formatters

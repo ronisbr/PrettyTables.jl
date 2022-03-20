@@ -9,7 +9,8 @@
 
 # Low-level function to print the table using the text backend.
 function _pt_text(
-    r_io::Ref{Any}, pinfo::PrintInfo;
+    io::IO,
+    pinfo::PrintInfo;
     alignment_anchor_fallback::Symbol = :l,
     alignment_anchor_fallback_override::Dict{Int, Symbol} = Dict{Int, Symbol}(),
     alignment_anchor_regex::Dict{Int, T} where T <:AbstractVector{Regex} = Dict{Int, Vector{Regex}}(),
@@ -17,11 +18,11 @@ function _pt_text(
     body_hlines::Vector{Int} = Int[],
     body_hlines_format::Union{Nothing, NTuple{4, Char}} = nothing,
     continuation_row_alignment::Symbol = :c,
-    crop::Symbol = get(r_io.x, :limit, false) ? :both : :none,
+    crop::Symbol = get(io, :limit, false) ? :both : :none,
     crop_subheader::Bool = false,
     crop_num_lines_at_beginning::Int = 0,
     columns_width::Union{Int, AbstractVector{Int}} = 0,
-    display_size::Tuple{Int, Int} = displaysize(r_io.x),
+    display_size::Tuple{Int, Int} = displaysize(io),
     equal_columns_width::Bool = false,
     ellipsis_line_skip::Integer = 0,
     highlighters::Union{Highlighter, Tuple} = (),
@@ -49,12 +50,6 @@ function _pt_text(
     text_crayon::Crayon = Crayon(),
     title_crayon::Crayon = Crayon(bold = true),
 )
-    # `r_io` must always be a reference to `IO`. Here, we unpack it. This is
-    # done to improve inference and reduce compilation time. Ideally, we need to
-    # add the `@nospecialize` annotation to `io`. However, it returns the
-    # message that this annotation is not supported with more than 32 arguments.
-    io = r_io.x
-
     # Unpack fields of `pinfo`.
     ptable               = pinfo.ptable
     formatters           = pinfo.formatters
