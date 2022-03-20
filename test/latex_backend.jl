@@ -11,6 +11,10 @@
     include("latex_backend/default.jl")
 end
 
+@testset "Cropping"  begin
+    include("latex_backend/crop.jl")
+end
+
 @testset "Formatters" begin
     include("latex_backend/formatters.jl")
 end
