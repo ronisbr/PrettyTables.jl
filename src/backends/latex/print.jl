@@ -22,7 +22,7 @@ function _pt_latex(
     maximum_number_of_rows::Int = -1,
     table_type::Union{Nothing, Symbol} = nothing,
     vlines::Union{Nothing, Symbol, AbstractVector} = nothing,
-    wrap_table::Union{Nothing, Bool} = true,
+    wrap_table::Union{Nothing, Bool} = false,
     wrap_table_environment::Union{Nothing, String} = nothing
 )
     # Unpack fields of `pinfo`.

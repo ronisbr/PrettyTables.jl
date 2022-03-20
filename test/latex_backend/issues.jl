@@ -14,13 +14,11 @@
     data = ["2.0 ± 1" "3.0 ± 1"]
 
     expected = """
-\\begin{table}
-  \\begin{tabular}{rr}
-    \\hline\\hline
-    \\textbf{Col. 1} & \\textbf{Col. 2} \\\\\\hline
-    2.0 ± 1 & 3.0 ± 1 \\\\\\hline\\hline
-  \\end{tabular}
-\\end{table}
+\\begin{tabular}{rr}
+  \\hline\\hline
+  \\textbf{Col. 1} & \\textbf{Col. 2} \\\\\\hline
+  2.0 ± 1 & 3.0 ± 1 \\\\\\hline\\hline
+\\end{tabular}
 """
 
     result = pretty_table(String, data, backend = Val(:latex))
@@ -39,7 +37,7 @@ end
 \\end{tabular}
 """
 
-    result = pretty_table(String, data, backend = Val(:latex), wrap_table = false)
+    result = pretty_table(String, data, backend = Val(:latex))
     @test result == expected
 
     expected = """
@@ -60,7 +58,7 @@ end
     result = pretty_table(
         String,
         data;
-        backend = Val(:latex),
+        backend    = Val(:latex),
         wrap_table = true,
         table_type = :longtable
     )
@@ -104,7 +102,8 @@ end
             ['a', 'b', 'c', 'd'],
             [:e,  :f,  :g,  :h]
         ),
-        table_type = :longtable
+        table_type = :longtable,
+        wrap_table = true
     )
 
     @test result == expected
@@ -147,7 +146,8 @@ end
         ),
         longtable_footer = "Long table footer",
         table_type = :longtable,
-        title = "Table title"
+        title = "Table title",
+        wrap_table = true
     )
 
     @test result == expected
@@ -160,13 +160,11 @@ end
     data = ["%"]
 
     expected = """
-\\begin{table}
-  \\begin{tabular}{r}
-    \\hline\\hline
-    \\textbf{Col. 1} \\\\\\hline
-    \\% \\\\\\hline\\hline
-  \\end{tabular}
-\\end{table}
+\\begin{tabular}{r}
+  \\hline\\hline
+  \\textbf{Col. 1} \\\\\\hline
+  \\% \\\\\\hline\\hline
+\\end{tabular}
 """
 
     result = pretty_table(String, data, backend = Val(:latex))
