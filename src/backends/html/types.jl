@@ -13,6 +13,27 @@ export HTMLDecoration, HTMLHighlighter, HTMLTableFormat
     HTMLDecoration
 
 Structure that defines parameters to decorate a table cell.
+All the style parameters are added in-line to the HTML style of the cell
+
+# Fields
+
+The following 5 fields can be provided as keyword argumets and are useed to set the 
+relevant HTML/CSS style attributes of the same name:
+- `color::String`
+- `background::String`      
+- `font_family::String`     
+- `font_weight::String`     
+- `text_decoration::String` 
+
+Additionally, a final field:
+- `style::Dict{String,String}`
+is used to provide a dictionary where the keys are names of arbitrary CSS style values
+and the values are the corresponding style values to assign to the cell.
+
+# Remark
+Any style attribute provided among the first 5 fields of the HMTLDecoration element will 
+overwrite existing values for the same attribute in the optionally provided `style` Dict.
+
 """
 @kwdef struct HTMLDecoration
     color::String           = ""
