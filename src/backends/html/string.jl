@@ -31,7 +31,6 @@ function _str_html_escaped(
             c == '\e'          ? print(io, "\\e") :
             c == '\\'          ? print(io, "\\\\") :
             '\a' <= c <= '\r'  ? print(io, '\\', "abtnvfr"[Int(c)-6]) :
-            c == '%'           ? print(io, "\\%") :
             isprint(c)         ? print(io, c) :
                                  print(io, "\\x", string(UInt32(c), base = 16, pad = 2))
         elseif !isoverlong(c) && !ismalformed(c)
