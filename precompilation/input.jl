@@ -153,8 +153,8 @@ function precompilation_input()
     # ==========================================================================
 
     latex_table = [
-        latex"\textbf{a}"
-        latex"\emph{b}"
+        latex_cell"\textbf{a}"
+        latex_cell"\emph{b}"
     ]
 
     pretty_table(latex_table, backend = Val(:latex))
