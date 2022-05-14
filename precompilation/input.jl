@@ -68,9 +68,11 @@ function precompilation_input()
              ["S" "S"; "S" "S"],
              ['C' 'C'; 'C' 'C']]
 
-    pretty_table(types;
-                 alignment = :l,
-                 crop = :none)
+    pretty_table(
+        types;
+        alignment = :l,
+        crop = :none
+    )
 
     # Input: Tables.jl
     # ==========================================================================
@@ -146,6 +148,16 @@ function precompilation_input()
     ]
 
     pretty_table(ansi_table)
+
+    # Input: Data with LatexCell
+    # ==========================================================================
+
+    latex_table = [
+        latex"\textbf{a}"
+        latex"\emph{b}"
+    ]
+
+    pretty_table(latex_table, backend = Val(:latex))
 
     # Combination of types in `header_crayon` and `subheader_crayon`
     # ==========================================================================
