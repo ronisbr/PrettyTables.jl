@@ -167,7 +167,7 @@ function ft_latex_sn(
                     str = "\$" * str * "\$"
                 end
 
-                return str
+                return str |> LatexCell
             else
                 return v
             end
@@ -188,7 +188,7 @@ function ft_latex_sn(
                             str = "\$" * str * "\$"
                         end
 
-                        return str
+                        return str |> LatexCell
                     else
                         return v
                     end

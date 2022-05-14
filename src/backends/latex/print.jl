@@ -20,6 +20,7 @@ function _pt_latex(
     longtable_footer::Union{Nothing, AbstractString} = nothing,
     maximum_number_of_columns::Int = -1,
     maximum_number_of_rows::Int = -1,
+    sortkeys::Bool = false,
     table_type::Union{Nothing, Symbol} = nothing,
     vlines::Union{Nothing, Symbol, AbstractVector} = nothing,
     wrap_table::Union{Nothing, Bool} = false,

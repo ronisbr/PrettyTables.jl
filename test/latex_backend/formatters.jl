@@ -8,7 +8,7 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 @testset "Formatters" begin
-    ft = (v,i,j)->v === missing ? "\$\\emptyset\$" : v
+    ft = (v,i,j)->v === missing ? LatexCell("\$\\emptyset\$") : v
 
     matrix = deepcopy(data)
     matrix[3,3] = missing

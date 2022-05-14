@@ -7,7 +7,34 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-export LatexTableFormat, LatexHighlighter
+export LatexCell, LatexTableFormat, LatexHighlighter
+export @latex_cell_str
+
+"""
+    struct LatexCell
+
+Defines a table cell that contains LaTeX code. It can be created using the macro
+[`@latex_cell_str`](@ref).
+"""
+struct LatexCell{T}
+    data::T
+end
+
+"""
+    @latex_cell_str(str)
+
+Create a table cell with LaTeX code.
+
+# Examples
+
+```jldoctest
+julia> latex_cell"\textbf{Bold text}"
+LatexCell{String}("\\textbf{Bold text}")
+```
+"""
+macro latex_cell_str(str)
+    return :(LatexCell($str))
+end
 
 """
     LatexTableFormat

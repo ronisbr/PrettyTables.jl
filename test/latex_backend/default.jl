@@ -133,18 +133,18 @@ end
 
 @testset "Escaping" begin
     matrix = Any[
-        "\$\\mathbf{\\pi}\$"    π
-        "\\textbf{Character}"   'a'
-        "\\textbf{Emoji}"       "😅 emoji 😃"
-        "\\textbf{Float64}"     Float16(1)
-        "\\texttt{Missing}"     missing
-        "\\textbf{New line}"    "One line\nAnother line"
-        "\\emph{Nothing}"       nothing
-        "\\textbf{Regex}"       r"1"
-        "\\textbf{String}"      String(UInt8[0, 1, 2, 3])
-        "\\textbf{Symbol}"      :a
-        "\\textbf{Sub. string}" s"1"
-        "\\textbf{UInt64}"      0x1
+        latex_cell"$\mathbf{\pi}$"       π
+        latex_cell"\textbf{Character}"   'a'
+        latex_cell"\textbf{Emoji}"       "😅 emoji 😃"
+        latex_cell"\textbf{Float64}"     Float16(1)
+        latex_cell"\texttt{Missing}"     missing
+        latex_cell"\textbf{New line}"    "One line\nAnother line"
+        latex_cell"\emph{Nothing}"       nothing
+        latex_cell"\textbf{Regex}"       r"1"
+        latex_cell"\textbf{String}"      String(UInt8[0, 1, 2, 3])
+        latex_cell"\textbf{Symbol}"      :a
+        latex_cell"\textbf{Sub. string}" s"1"
+        latex_cell"\textbf{UInt64}"      0x1
     ]
 
     # Renderer = `:printf`
