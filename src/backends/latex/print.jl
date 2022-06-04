@@ -13,7 +13,6 @@ function _pt_latex(
     pinfo::PrintInfo;
     tf::LatexTableFormat = tf_latex_default,
     body_hlines::Vector{Int} = Int[],
-    cell_alignment::Dict{Tuple{Int, Int}, Symbol} = Dict{Tuple{Int, Int}, Symbol}(),
     highlighters::Union{LatexHighlighter, Tuple} = (),
     hlines::Union{Nothing, Symbol, AbstractVector} = nothing,
     label::AbstractString = "",
