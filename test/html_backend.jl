@@ -11,6 +11,10 @@
     include("./html_backend/alignments.jl")
 end
 
+@testset "Cropping" begin
+    include("./html_backend/crop.jl")
+end
+
 @testset "Default" begin
     include("./html_backend/default.jl")
 end

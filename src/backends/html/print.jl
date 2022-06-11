@@ -20,17 +20,23 @@ function _pt_html(
     standalone::Bool = false
 )
     # Unpack fields of `pinfo`.
-    ptable               = pinfo.ptable
-    formatters           = pinfo.formatters
-    compact_printing     = pinfo.compact_printing
-    title                = pinfo.title
-    title_alignment      = pinfo.title_alignment
-    cell_first_line_only = pinfo.cell_first_line_only
-    renderer             = pinfo.renderer
-    limit_printing       = pinfo.limit_printing
+    ptable                    = pinfo.ptable
+    cell_first_line_only      = pinfo.cell_first_line_only
+    compact_printing          = pinfo.compact_printing
+    formatters                = pinfo.formatters
+    limit_printing            = pinfo.limit_printing
+    maximum_number_of_columns = pinfo.maximum_number_of_columns
+    maximum_number_of_rows    = pinfo.maximum_number_of_rows
+    renderer                  = pinfo.renderer
+    title                     = pinfo.title
+    title_alignment           = pinfo.title_alignment
 
     # Process the filters in `ptable`.
-    _process_filters!(ptable)
+    hidden_rows_at_end, hidden_columns_at_end = _process_filters!(
+        ptable;
+        max_num_filtered_rows = maximum_number_of_rows,
+        max_num_filtered_columns = maximum_number_of_columns
+    )
 
     # Unpack fields of `tf`.
     css         = tf.css
@@ -223,6 +229,22 @@ function _pt_html(
                     minify
                 )
 
+                # Check if we need to draw the continuation character.
+                if (j == num_filtered_columns) && hidden_columns_at_end
+                    _aprintln(
+                        buf,
+                        _styled_html(
+                            html_row_tag,
+                            "⋯",
+                            style;
+                            class = cell_class
+                        ),
+                        il,
+                        ns,
+                        minify
+                    )
+                end
+
             else
                 is_original_data = column_id == :__ORIGINAL_DATA__
 
@@ -262,6 +284,22 @@ function _pt_html(
                     ns,
                     minify
                 )
+
+                # Check if we need to draw the continuation character.
+                if (j == num_filtered_columns) && hidden_columns_at_end
+                    _aprintln(
+                        buf,
+                        _styled_html(
+                            html_row_tag,
+                            "⋯",
+                            style;
+                            class = cell_class
+                        ),
+                        il,
+                        ns,
+                        minify
+                    )
+                end
             end
         end
 
@@ -273,6 +311,44 @@ function _pt_html(
             _aprintln(buf, "</thead>", il, ns, minify)
             _aprintln(buf, "<tbody>", il, ns, minify)
             il += 1
+        end
+
+        # If we have hidden rows, we need to print an additional row with the
+        # continuation characters.
+        if (i == num_filtered_rows) && hidden_rows_at_end
+            _aprintln(buf, "<tr>", il, ns, minify)
+            il += 1
+
+            for j in 1:num_filtered_columns
+                _aprintln(
+                    buf,
+                    _styled_html(
+                        html_row_tag,
+                        "⋮",
+                        style;
+                    ),
+                    il,
+                    ns,
+                    minify
+                )
+
+                if (j == num_filtered_columns) && hidden_columns_at_end
+                    _aprintln(
+                        buf,
+                        _styled_html(
+                            html_row_tag,
+                            "⋱",
+                            style;
+                        ),
+                        il,
+                        ns,
+                        minify
+                    )
+                end
+            end
+
+            il -= 1
+            _aprintln(buf, "</tr>", il, ns, minify)
         end
     end
 
