@@ -42,8 +42,6 @@ function _process_filters!(
     end
 
     if column_filters !== nothing
-        num_filtered_columns = 0
-
         filtered_columns = Vector{Int}(undef, max_num_filtered_columns)
         id_filt = 1
 
@@ -64,14 +62,14 @@ function _process_filters!(
                 if id_filt ≤ max_num_filtered_columns
                     filtered_columns[id_filt] = i
                     id_filt += 1
+                else
+                    break
                 end
-
-                num_filtered_columns += 1
             end
         end
 
         ptable._id_columns = filtered_columns[1:(id_filt - 1)]
-        ptable._num_filtered_columns = num_filtered_columns
+        ptable._num_filtered_columns = id_filt - 1
     else
         ptable._num_filtered_columns = max_num_filtered_columns
     end
@@ -84,8 +82,6 @@ function _process_filters!(
     end
 
     if row_filters !== nothing
-        num_filtered_rows = 0
-
         filtered_rows = Vector{Int}(undef, max_num_filtered_rows)
         id_filt = 1
 
@@ -106,14 +102,14 @@ function _process_filters!(
                 if id_filt ≤ max_num_filtered_rows
                     filtered_rows[id_filt] = i
                     id_filt += 1
+                else
+                    break
                 end
-
-                num_filtered_rows +=1
             end
         end
 
         ptable._id_rows = filtered_rows[1:(id_filt - 1)]
-        ptable._num_filtered_rows = num_filtered_rows
+        ptable._num_filtered_rows = id_filt - 1
     else
         ptable._num_filtered_rows = max_num_filtered_rows
     end
