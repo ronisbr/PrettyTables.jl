@@ -168,6 +168,8 @@ function _print_info(
         Tuple
     } = nothing,
     limit_printing::Bool = true,
+    maximum_number_of_columns::Int = -1,
+    maximum_number_of_rows::Int = -1,
     renderer::Symbol = :print,
     row_names::Union{Nothing, AbstractVector} = nothing,
     row_name_alignment::Symbol = :r,
@@ -235,7 +237,9 @@ function _print_info(
         title_alignment,
         cell_first_line_only,
         renderer_val,
-        limit_printing
+        limit_printing,
+        maximum_number_of_columns,
+        maximum_number_of_rows
     )
 
     return pinfo
@@ -303,6 +307,8 @@ function _pt(
         Tuple
     } = nothing,
     limit_printing::Bool = true,
+    maximum_number_of_columns::Int = -1,
+    maximum_number_of_rows::Int = -1,
     renderer::Symbol = :print,
     row_names::Union{Nothing, AbstractVector} = nothing,
     row_name_alignment::Symbol = :r,
@@ -398,28 +404,30 @@ function _pt(
     # Create the structure that stores the print information.
     pinfo = _print_info(
         data;
-        alignment               = alignment,
-        cell_alignment          = cell_alignment,
-        cell_first_line_only    = cell_first_line_only,
-        compact_printing        = compact_printing,
-        column_filters          = column_filters,
-        row_filters             = row_filters,
-        formatters              = formatters,
-        header                  = header,
-        header_alignment        = header_alignment,
-        header_cell_alignment   = header_cell_alignment,
-        limit_printing          = limit_printing,
-        renderer                = renderer,
-        row_names               = row_names,
-        row_name_alignment      = row_name_alignment,
-        row_name_column_title   = row_name_column_title,
-        row_number_alignment    = row_number_alignment,
-        row_number_column_title = row_number_column_title,
-        show_header             = show_header,
-        show_row_number         = show_row_number,
-        show_subheader          = show_subheader,
-        title                   = title,
-        title_alignment         = title_alignment
+        alignment                 = alignment,
+        cell_alignment            = cell_alignment,
+        cell_first_line_only      = cell_first_line_only,
+        compact_printing          = compact_printing,
+        column_filters            = column_filters,
+        row_filters               = row_filters,
+        formatters                = formatters,
+        header                    = header,
+        header_alignment          = header_alignment,
+        header_cell_alignment     = header_cell_alignment,
+        maximum_number_of_columns = maximum_number_of_columns,
+        maximum_number_of_rows    = maximum_number_of_rows,
+        limit_printing            = limit_printing,
+        renderer                  = renderer,
+        row_names                 = row_names,
+        row_name_alignment        = row_name_alignment,
+        row_name_column_title     = row_name_column_title,
+        row_number_alignment      = row_number_alignment,
+        row_number_column_title   = row_number_column_title,
+        show_header               = show_header,
+        show_row_number           = show_row_number,
+        show_subheader            = show_subheader,
+        title                     = title,
+        title_alignment           = title_alignment
     )
 
     # Select the appropriate backend.

@@ -63,6 +63,7 @@ end
 function _latex_table_description(
     ptable::ProcessedTable,
     num_printed_columns::Int,
+    maximum_number_of_columns::Int,
     vlines::Union{Symbol, AbstractVector},
     left_vline::AbstractString,
     mid_vline::AbstractString,
@@ -90,7 +91,7 @@ function _latex_table_description(
 
     # If the number of printed columns is less than that of filtered columns, we
     # need an additional column to show the continuation characters.
-    if num_printed_columns < num_filtered_columns
+    if maximum_number_of_columns > 0
         str *= "c"
 
         # Check if we need to draw a line at the end of the table.

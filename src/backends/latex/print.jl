@@ -17,8 +17,6 @@ function _pt_latex(
     hlines::Union{Nothing, Symbol, AbstractVector} = nothing,
     label::AbstractString = "",
     longtable_footer::Union{Nothing, AbstractString} = nothing,
-    maximum_number_of_columns::Int = -1,
-    maximum_number_of_rows::Int = -1,
     sortkeys::Bool = false,
     table_type::Union{Nothing, Symbol} = nothing,
     vlines::Union{Nothing, Symbol, AbstractVector} = nothing,
@@ -26,17 +24,23 @@ function _pt_latex(
     wrap_table_environment::Union{Nothing, String} = nothing
 )
     # Unpack fields of `pinfo`.
-    ptable               = pinfo.ptable
-    formatters           = pinfo.formatters
-    compact_printing     = pinfo.compact_printing
-    title                = pinfo.title
-    title_alignment      = pinfo.title_alignment
-    cell_first_line_only = pinfo.cell_first_line_only
-    renderer             = pinfo.renderer
-    limit_printing       = pinfo.limit_printing
+    ptable                    = pinfo.ptable
+    cell_first_line_only      = pinfo.cell_first_line_only
+    compact_printing          = pinfo.compact_printing
+    formatters                = pinfo.formatters
+    limit_printing            = pinfo.limit_printing
+    maximum_number_of_columns = pinfo.maximum_number_of_columns
+    maximum_number_of_rows    = pinfo.maximum_number_of_rows
+    renderer                  = pinfo.renderer
+    title                     = pinfo.title
+    title_alignment           = pinfo.title_alignment
 
     # Process the filters in `ptable`.
-    _process_filters!(ptable)
+    _process_filters!(
+        ptable;
+        max_num_filtered_columns = maximum_number_of_columns,
+        max_num_filtered_rows = maximum_number_of_rows,
+    )
 
     # Unpack fields of `tf`.
     top_line       = tf.top_line
@@ -125,6 +129,7 @@ function _pt_latex(
     table_desc = _latex_table_description(
         ptable,
         num_printed_columns,
+        maximum_number_of_columns,
         vlines,
         left_vline,
         mid_vline,
@@ -235,7 +240,7 @@ function _pt_latex(
                 # Check if we need to draw the continuation character.
                 if j != num_printed_columns
                     print(buf_h, " & ")
-                elseif num_printed_columns < num_filtered_columns
+                elseif maximum_number_of_columns > 0
                     print(buf_h, " & \$\\cdots\$")
                 end
             else
@@ -290,7 +295,7 @@ function _pt_latex(
                 # Check if we need to draw the continuation character.
                 if j != num_printed_columns
                     print(buf_aux, " & ")
-                elseif num_printed_columns < num_filtered_columns
+                elseif maximum_number_of_columns > 0
                     print(buf_aux, " & \$\\cdots\$")
                 end
             end
@@ -308,7 +313,7 @@ function _pt_latex(
                 # Check if we need to draw the continuation character.
                 if j != num_printed_columns
                     print(buf_aux, " & ")
-                elseif num_printed_columns < num_filtered_columns
+                elseif maximum_number_of_columns > 0
                     print(buf_aux, " & \$\\ddots\$")
                 end
             end

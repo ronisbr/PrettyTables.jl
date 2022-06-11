@@ -97,6 +97,8 @@ struct PrintInfo
     cell_first_line_only::Bool
     renderer::Union{Val{:print}, Val{:show}}
     limit_printing::Bool
+    maximum_number_of_columns::Int
+    maximum_number_of_rows::Int
 end
 
 """
