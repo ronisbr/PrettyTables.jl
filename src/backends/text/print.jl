@@ -51,14 +51,16 @@ function _pt_text(
     title_crayon::Crayon = Crayon(bold = true),
 )
     # Unpack fields of `pinfo`.
-    ptable               = pinfo.ptable
-    formatters           = pinfo.formatters
-    compact_printing     = pinfo.compact_printing
-    title                = pinfo.title
-    title_alignment      = pinfo.title_alignment
-    cell_first_line_only = pinfo.cell_first_line_only
-    renderer             = pinfo.renderer
-    limit_printing       = pinfo.limit_printing
+    ptable                    = pinfo.ptable
+    formatters                = pinfo.formatters
+    compact_printing          = pinfo.compact_printing
+    title                     = pinfo.title
+    title_alignment           = pinfo.title_alignment
+    cell_first_line_only      = pinfo.cell_first_line_only
+    renderer                  = pinfo.renderer
+    limit_printing            = pinfo.limit_printing
+    maximum_number_of_columns = pinfo.maximum_number_of_columns
+    maximum_number_of_rows    = pinfo.maximum_number_of_rows
 
     # Get size information from the processed table.
     num_rows, num_columns = _data_size(ptable)
@@ -142,7 +144,11 @@ function _pt_text(
     # Process filters
     # ==========================================================================
 
-    _process_filters!(ptable)
+    _process_filters!(
+        ptable;
+        max_num_filtered_columns = maximum_number_of_columns,
+        max_num_filtered_rows = maximum_number_of_rows
+    )
 
     # Get the number of rows and columns in the processed table.
     num_rows, num_columns = _size(ptable)

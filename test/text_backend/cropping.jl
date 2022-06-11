@@ -897,3 +897,45 @@ end
     )
     @test result == expected
 end
+
+@testset "Maximum number of rows and columns" begin
+
+    expected = """
+┌────────┬────────┬────────┬────────┐
+│ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
+├────────┼────────┼────────┼────────┤
+│      1 │  false │    1.0 │      1 │
+│      2 │   true │    2.0 │      2 │
+│      3 │  false │    3.0 │      3 │
+└────────┴────────┴────────┴────────┘
+"""
+
+    result = pretty_table(
+        String,
+        data;
+        maximum_number_of_columns = 4,
+        maximum_number_of_rows = 3
+    )
+
+    @test result == expected
+
+    expected = """
+┌─────┬────────┬────────┬────────┬────────┐
+│ Row │ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
+├─────┼────────┼────────┼────────┼────────┤
+│   1 │      1 │  false │    1.0 │      1 │
+│   2 │      2 │   true │    2.0 │      2 │
+│   3 │      3 │  false │    3.0 │      3 │
+└─────┴────────┴────────┴────────┴────────┘
+"""
+
+    result = pretty_table(
+        String,
+        data;
+        maximum_number_of_columns = 4,
+        maximum_number_of_rows = 3,
+        show_row_number = true
+    )
+
+    @test result == expected
+end
