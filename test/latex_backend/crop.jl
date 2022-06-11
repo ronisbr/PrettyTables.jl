@@ -31,7 +31,7 @@
         matrix;
         backend = Val(:latex),
         header  = header,
-        maximum_number_of_rows = 5,
+        maximum_number_of_rows = 3,
         maximum_number_of_columns = 3
     )
     @test result == expected
@@ -53,7 +53,7 @@
         matrix;
         backend = Val(:latex),
         header  = header,
-        maximum_number_of_rows = 5
+        maximum_number_of_rows = 3
     )
     @test result == expected
 
@@ -99,7 +99,7 @@
         column_filters = ((data, i) -> i % 2 == 0,),
         header = header,
         maximum_number_of_columns = 2,
-        maximum_number_of_rows = 4,
+        maximum_number_of_rows = 2,
         row_filters = ((data, i) -> i % 2 == 1,)
     )
     @test result == expected

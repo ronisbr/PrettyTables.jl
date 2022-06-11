@@ -114,12 +114,11 @@ function _pt_latex(
     # Obtain the table description with the alignments and vertical lines.
     table_desc = _latex_table_description(
         ptable,
-        num_filtered_columns,
-        maximum_number_of_columns,
         vlines,
         left_vline,
         mid_vline,
-        right_vline
+        right_vline,
+        hidden_columns_at_end
     )
 
     _aprintln(buf,"\\begin{$table_env}$table_desc", il, ns)
@@ -293,13 +292,13 @@ function _pt_latex(
             println(buf_aux)
             _aprint(buf_aux, il, ns)
 
-            for j in 1:num_filtered_rows
+            for j in 1:num_filtered_columns
                 print(buf_aux, "\$\\vdots\$")
 
                 # Check if we need to draw the continuation character.
-                if j != num_filtered_rows
+                if j != num_filtered_columns
                     print(buf_aux, " & ")
-                elseif hidden_rows_at_end
+                elseif hidden_columns_at_end
                     print(buf_aux, " & \$\\ddots\$")
                 end
             end

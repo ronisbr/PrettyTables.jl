@@ -62,12 +62,11 @@ end
 # Get the LaTeX table description (alignment and vertical columns).
 function _latex_table_description(
     ptable::ProcessedTable,
-    num_printed_columns::Int,
-    maximum_number_of_columns::Int,
     vlines::Union{Symbol, AbstractVector},
     left_vline::AbstractString,
     mid_vline::AbstractString,
-    right_vline::AbstractString
+    right_vline::AbstractString,
+    hidden_columns_at_end::Bool
 )
     str = "{"
     num_filtered_columns = _size(ptable)[2]
@@ -76,12 +75,12 @@ function _latex_table_description(
         str *= left_vline
     end
 
-    for j in 1:num_printed_columns
+    for j in 1:num_filtered_columns
         alignment = _get_column_alignment(ptable, j) |> _latex_alignment
         str *= alignment
 
         if _check_vline(ptable, vlines, j)
-            if j != num_printed_columns
+            if j != num_filtered_columns
                 str *= mid_vline
             else
                 str *= right_vline
@@ -89,9 +88,9 @@ function _latex_table_description(
         end
     end
 
-    # If the number of printed columns is less than that of filtered columns, we
-    # need an additional column to show the continuation characters.
-    if maximum_number_of_columns > 0
+    # If we have hidden columns at the end, we need an additional column to show
+    # the continuation characters.
+    if hidden_columns_at_end
         str *= "c"
 
         # Check if we need to draw a line at the end of the table.
