@@ -10,7 +10,8 @@
 """
     _process_filters!(table::ProcessedTable; kwargs...)
 
-Process the filters in the table `ptable`.
+Process the filters in the table `ptable`. It returns a tuple with two `Bool`s
+indicating whether there are hidden rows or columns at the end of table.
 
 # Keywords
 
@@ -34,11 +35,19 @@ function _process_filters!(
     column_filters = ptable._column_filters
     row_filters    = ptable._row_filters
 
+    # Variables to store if we have hidden columns or rows at the end of table.
+    hidden_columns_at_end = false
+    hidden_rows_at_end = false
+
     # Process the column filters.
     if max_num_filtered_columns ≤ 0
         max_num_filtered_columns = num_columns
     else
         max_num_filtered_columns = min(max_num_filtered_columns, num_columns)
+
+        if max_num_filtered_columns < num_columns
+            hidden_columns_at_end = true
+        end
     end
 
     if column_filters !== nothing
@@ -63,6 +72,7 @@ function _process_filters!(
                     filtered_columns[id_filt] = i
                     id_filt += 1
                 else
+                    hidden_columns_at_end = true
                     break
                 end
             end
@@ -79,6 +89,10 @@ function _process_filters!(
         max_num_filtered_rows = num_rows
     else
         max_num_filtered_rows = min(max_num_filtered_rows, num_rows)
+
+        if max_num_filtered_rows < num_rows
+            hidden_rows_at_end = true
+        end
     end
 
     if row_filters !== nothing
@@ -103,6 +117,7 @@ function _process_filters!(
                     filtered_rows[id_filt] = i
                     id_filt += 1
                 else
+                    hidden_rows_at_end = true
                     break
                 end
             end
@@ -117,5 +132,5 @@ function _process_filters!(
     # Indicate that the filters were processed.
     ptable._filters_processed = true
 
-    return nothing
+    return hidden_rows_at_end, hidden_columns_at_end
 end

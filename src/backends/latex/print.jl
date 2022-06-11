@@ -36,7 +36,7 @@ function _pt_latex(
     title_alignment           = pinfo.title_alignment
 
     # Process the filters in `ptable`.
-    _process_filters!(
+    hidden_rows_at_end, hidden_columns_at_end = _process_filters!(
         ptable;
         max_num_filtered_columns = maximum_number_of_columns,
         max_num_filtered_rows = maximum_number_of_rows,
@@ -94,20 +94,6 @@ function _pt_latex(
     # Get the number of filtered lines and columns.
     num_filtered_rows, num_filtered_columns = _size(ptable)
 
-    if (maximum_number_of_rows ≥ 0) &&
-        (maximum_number_of_rows < num_filtered_rows)
-        num_printed_rows = maximum_number_of_rows
-    else
-        num_printed_rows = num_filtered_rows
-    end
-
-    if (maximum_number_of_columns ≥ 0) &&
-        (maximum_number_of_columns < num_filtered_columns)
-        num_printed_columns = maximum_number_of_columns
-    else
-        num_printed_columns = num_filtered_columns
-    end
-
     # Variables to store information about indentation
     # ==========================================================================
 
@@ -128,7 +114,7 @@ function _pt_latex(
     # Obtain the table description with the alignments and vertical lines.
     table_desc = _latex_table_description(
         ptable,
-        num_printed_columns,
+        num_filtered_columns,
         maximum_number_of_columns,
         vlines,
         left_vline,
@@ -155,7 +141,7 @@ function _pt_latex(
     buf_b    = IOContext(buf_io_b)
 
     # If there is no column or row to be printed, then just exit.
-    if (num_printed_columns == 0) || (num_printed_rows == 0)
+    if (num_filtered_columns == 0) || (num_filtered_rows == 0)
         @goto print_to_output
     end
 
@@ -170,7 +156,7 @@ function _pt_latex(
     # Otherwise, we must switch to `buf_b`.
     buf_aux = buf_h
 
-    @inbounds for i in 1:num_printed_rows
+    @inbounds for i in 1:num_filtered_rows
         # Get the identification of the current row.
         row_id = _get_row_id(ptable, i)
 
@@ -183,7 +169,7 @@ function _pt_latex(
         # Apply the indentation.
         _aprint(buf_aux, il, ns)
 
-        @inbounds for j in 1:num_printed_columns
+        @inbounds for j in 1:num_filtered_columns
             # Get the identification of the current column.
             column_id = _get_column_id(ptable, j)
 
@@ -238,9 +224,9 @@ function _pt_latex(
                 print(buf_h, cell_str)
 
                 # Check if we need to draw the continuation character.
-                if j != num_printed_columns
+                if j != num_filtered_columns
                     print(buf_h, " & ")
-                elseif maximum_number_of_columns > 0
+                elseif hidden_columns_at_end
                     print(buf_h, " & \$\\cdots\$")
                 end
             else
@@ -293,9 +279,9 @@ function _pt_latex(
                 print(buf_aux, cell_str)
 
                 # Check if we need to draw the continuation character.
-                if j != num_printed_columns
+                if j != num_filtered_columns
                     print(buf_aux, " & ")
-                elseif maximum_number_of_columns > 0
+                elseif hidden_columns_at_end
                     print(buf_aux, " & \$\\cdots\$")
                 end
             end
@@ -303,17 +289,17 @@ function _pt_latex(
 
         print(buf_aux, " \\\\")
 
-        if (i == num_printed_rows) && (num_printed_rows < num_filtered_rows)
+        if (i == num_filtered_rows) && hidden_rows_at_end
             println(buf_aux)
             _aprint(buf_aux, il, ns)
 
-            for j in 1:num_printed_columns
+            for j in 1:num_filtered_rows
                 print(buf_aux, "\$\\vdots\$")
 
                 # Check if we need to draw the continuation character.
-                if j != num_printed_columns
+                if j != num_filtered_rows
                     print(buf_aux, " & ")
-                elseif maximum_number_of_columns > 0
+                elseif hidden_rows_at_end
                     print(buf_aux, " & \$\\ddots\$")
                 end
             end
@@ -324,7 +310,7 @@ function _pt_latex(
         # After the last line, we need to check if we are printing all the rows
         # or not. In the latter, we need to pass the last row index to check if
         # the last horizontal line must be drawn.
-        i_hline = i == num_printed_rows ? num_filtered_rows : i
+        i_hline = i == num_filtered_rows ? num_filtered_rows : i
 
         if _check_hline(ptable, hlines, body_hlines, i_hline)
             if i_hline == num_filtered_rows
