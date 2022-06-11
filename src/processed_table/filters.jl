@@ -44,10 +44,6 @@ function _process_filters!(
         max_num_filtered_columns = num_columns
     else
         max_num_filtered_columns = min(max_num_filtered_columns, num_columns)
-
-        if max_num_filtered_columns < num_columns
-            hidden_columns_at_end = true
-        end
     end
 
     if column_filters !== nothing
@@ -82,6 +78,10 @@ function _process_filters!(
         ptable._num_filtered_columns = id_filt - 1
     else
         ptable._num_filtered_columns = max_num_filtered_columns
+
+        if max_num_filtered_columns < num_columns
+            hidden_columns_at_end = true
+        end
     end
 
     # Process the row filters.
@@ -89,10 +89,6 @@ function _process_filters!(
         max_num_filtered_rows = num_rows
     else
         max_num_filtered_rows = min(max_num_filtered_rows, num_rows)
-
-        if max_num_filtered_rows < num_rows
-            hidden_rows_at_end = true
-        end
     end
 
     if row_filters !== nothing
@@ -127,6 +123,10 @@ function _process_filters!(
         ptable._num_filtered_rows = id_filt - 1
     else
         ptable._num_filtered_rows = max_num_filtered_rows
+
+        if max_num_filtered_rows < num_rows
+            hidden_rows_at_end = true
+        end
     end
 
     # Indicate that the filters were processed.
