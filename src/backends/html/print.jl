@@ -51,6 +51,9 @@ function _pt_html(
     # Get the number of header rows.
     num_header_rows, ~ = _header_size(ptable)
 
+    # Get the number of data rows and columns.
+    num_data_rows, num_data_columns = _data_size(ptable)
+
     # Make sure that `highlighters` is always a Tuple.
     if !(highlighters isa Tuple)
         highlighters = (highlighters,)
@@ -157,7 +160,7 @@ function _pt_html(
     end
 
     # If there is no column or row to be printed, then just exit.
-    if (num_rows == 0) || (num_columns == 0)
+    if (num_data_rows == 0) || (num_data_columns == 0)
         @goto print_to_output
     end
 
@@ -166,7 +169,7 @@ function _pt_html(
 
     if hidden_rows_at_end
         continuation_line_id = vcrop_mode == :middle ?
-            _header_size(ptable)[1] + div(num_rows, 2, RoundUp) - 1 :
+            num_header_rows + div(num_rows, 2, RoundUp) - 1 :
             num_rows
     else
         continuation_line_id = 0
