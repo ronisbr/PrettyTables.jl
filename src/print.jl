@@ -441,6 +441,19 @@ This backend produces HTML tables. This backend can be used by selecting
     middle if necessary. (**Default** = `:bottom`)
 - `tf::HTMLTableFormat`: An instance of the structure [`HTMLTableFormat`](@ref)
     that defines the general format of the HTML table.
+- `top_left_str::String`: String to be printed at the left position of the top
+    bar. (**Default** = "")
+- `top_left_str_decoration::HTMLDecoration`: Decoration used to print the
+    top-left string (see `top_left_str`). (**Default** = `HTMLDecoration()`)
+- `top_center_str::String`: String to be printed at the center position of the
+    top bar. (**Default** = "")
+- `top_center_str_decoration::HTMLDecoration`: Decoration used to print the
+    top-center string (see `top_center_str`). (**Default** = `HTMLDecoration()`)
+- `top_right_str::String`: String to be printed at the right position of the
+    top bar. Notice that this string will be replaced with the omitted cell
+    summary if it must be displayed. (**Default** = "")
+- `top_right_str_decoration::HTMLDecoration`: Decoration used to print the
+    top-right string (see `top_right_str`). (**Default** = `HTMLDecoration()`)
 
 ## HTML highlighters
 

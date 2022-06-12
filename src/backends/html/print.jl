@@ -19,6 +19,12 @@ function _pt_html(
     sortkeys::Bool = false,
     show_omitted_cell_summary::Bool = false,
     standalone::Bool = false,
+    top_left_str::String = "",
+    top_left_str_decoration::HTMLDecoration = HTMLDecoration(),
+    top_center_str::String = "",
+    top_center_str_decoration::HTMLDecoration = HTMLDecoration(),
+    top_right_str::String = "",
+    top_right_str_decoration::HTMLDecoration = HTMLDecoration(),
     vcrop_mode::Symbol = :bottom
 )
     # Unpack fields of `pinfo`.
@@ -110,6 +116,9 @@ function _pt_html(
         )
     end
 
+    # Omitte cell summary
+    # ==========================================================================
+
     # Check if the user wants the omitted cell summary.
     if show_omitted_cell_summary
         str = ""
@@ -132,27 +141,37 @@ function _pt_html(
 
         if !isempty(str)
             str *= " omitted"
-        end
 
-        style = Dict{String,String}(
-            "position" => "absolute",
-            "top"      => "0",
-            "right"    => "0"
-        )
-        _aprintln(
-            buf,
-            _styled_html("div", "<p>" * str * "</p>", style),
-            il,
-            ns,
-            minify
-        )
+            # If we reached this point, we need to show the omitted cell
+            # summary. Hence, we replace whatever it in the top right string.
+            top_right_str = str
+        end
     end
+
+    # Top bar
+    # ==========================================================================
+
+    _print_top_bar(
+        buf,
+        top_left_str,
+        top_left_str_decoration,
+        top_center_str,
+        top_center_str_decoration,
+        top_right_str,
+        top_right_str_decoration,
+        il,
+        ns,
+        minify
+    )
+
+    # Table
+    # ==========================================================================
 
     _aprintln(buf, "<table>", il, ns, minify)
     il += 1
 
-    # Table title and omitted cell summary
-    # ==========================================================================
+    # Table title
+    # --------------------------------------------------------------------------
 
     if length(title) > 0
         style = Dict{String,String}("text-align" => _html_alignment[title_alignment])

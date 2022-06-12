@@ -401,3 +401,134 @@
 
     @test result == expected
 end
+
+@testset "Omitted cell summary" begin
+    matrix = [(i, j) for i in 1:7, j in 1:7]
+    header = (
+        ["Column $i" for i in 1:7],
+        ["C$i" for i in 1:7]
+    )
+
+    expected = """
+<div style="height: 14px">
+  <div style="position: absolute; right: 0; text-align: right">
+    <span>4 columns and 4 rows omitted</span>
+  </div>
+</div>
+<table>
+  <thead>
+    <tr class = "header">
+      <th style = "text-align: right;">Column 1</th>
+      <th style = "text-align: right;">Column 2</th>
+      <th style = "text-align: right;">Column 3</th>
+      <th style = "text-align: right;">⋯</th>
+    </tr>
+    <tr class = "subheader headerLastRow">
+      <th style = "text-align: right;">C1</th>
+      <th style = "text-align: right;">C2</th>
+      <th style = "text-align: right;">C3</th>
+      <th style = "text-align: right;">⋯</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style = "text-align: right;">(1, 1)</td>
+      <td style = "text-align: right;">(1, 2)</td>
+      <td style = "text-align: right;">(1, 3)</td>
+      <td style = "text-align: right;">⋯</td>
+    </tr>
+    <tr>
+      <td style = "text-align: right;">(2, 1)</td>
+      <td style = "text-align: right;">(2, 2)</td>
+      <td style = "text-align: right;">(2, 3)</td>
+      <td style = "text-align: right;">⋯</td>
+    </tr>
+    <tr>
+      <td style = "text-align: right;">(3, 1)</td>
+      <td style = "text-align: right;">(3, 2)</td>
+      <td style = "text-align: right;">(3, 3)</td>
+      <td style = "text-align: right;">⋯</td>
+    </tr>
+    <tr>
+      <td style = "text-align: right;">⋮</td>
+      <td style = "text-align: right;">⋮</td>
+      <td style = "text-align: right;">⋮</td>
+      <td style = "text-align: right;">⋱</td>
+    </tr>
+  </tbody>
+</table>
+"""
+
+    result = pretty_table(
+        String,
+        matrix;
+        backend = Val(:html),
+        header  = header,
+        max_num_of_rows = 3,
+        max_num_of_columns = 3,
+        show_omitted_cell_summary = true
+    )
+    @test result == expected
+
+    expected = """
+<div style="height: 14px">
+  <div style="position: absolute; right: 0; text-align: right">
+    <span>4 columns and 4 rows omitted</span>
+  </div>
+</div>
+<table>
+  <thead>
+    <tr class = "header">
+      <th style = "text-align: right;">Column 1</th>
+      <th style = "text-align: right;">Column 2</th>
+      <th style = "text-align: right;">Column 3</th>
+      <th style = "text-align: right;">⋯</th>
+    </tr>
+    <tr class = "subheader headerLastRow">
+      <th style = "text-align: right;">C1</th>
+      <th style = "text-align: right;">C2</th>
+      <th style = "text-align: right;">C3</th>
+      <th style = "text-align: right;">⋯</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style = "text-align: right;">(1, 1)</td>
+      <td style = "text-align: right;">(1, 2)</td>
+      <td style = "text-align: right;">(1, 3)</td>
+      <td style = "text-align: right;">⋯</td>
+    </tr>
+    <tr>
+      <td style = "text-align: right;">(2, 1)</td>
+      <td style = "text-align: right;">(2, 2)</td>
+      <td style = "text-align: right;">(2, 3)</td>
+      <td style = "text-align: right;">⋯</td>
+    </tr>
+    <tr>
+      <td style = "text-align: right;">⋮</td>
+      <td style = "text-align: right;">⋮</td>
+      <td style = "text-align: right;">⋮</td>
+      <td style = "text-align: right;">⋱</td>
+    </tr>
+    <tr>
+      <td style = "text-align: right;">(7, 1)</td>
+      <td style = "text-align: right;">(7, 2)</td>
+      <td style = "text-align: right;">(7, 3)</td>
+      <td style = "text-align: right;">⋯</td>
+    </tr>
+  </tbody>
+</table>
+"""
+
+    result = pretty_table(
+        String,
+        matrix;
+        backend = Val(:html),
+        header  = header,
+        max_num_of_rows = 3,
+        max_num_of_columns = 3,
+        show_omitted_cell_summary = true,
+        vcrop_mode = :middle
+    )
+    @test result == expected
+end

@@ -50,3 +50,7 @@ end
 @testset "Titles" begin
     include("./html_backend/titles.jl")
 end
+
+@testset "Top bar" begin
+    include("./html_backend/topbar.jl")
+end

@@ -64,3 +64,107 @@ function _styled_html(
         return "<" * tag * str_class * " style = \"" * style_str * "\">" * text * "</" * tag * ">"
     end
 end
+
+# Print the HTML top bar.
+function _print_top_bar(
+    buf::IO,
+    top_left_str::String,
+    top_left_str_decoration::HTMLDecoration,
+    top_center_str::String,
+    top_center_str_decoration::HTMLDecoration,
+    top_right_str::String,
+    top_right_str_decoration::HTMLDecoration,
+    il::Int,
+    ns::Int,
+    minify::Bool
+)
+    # Check if there is information to be displayed in the top bar.
+    if !isempty(top_left_str) || !isempty(top_center_str) || !isempty(top_right_str)
+        _aprintln(
+            buf,
+            "<div style=\"height: 14px\">",
+            il,
+            ns,
+            minify
+        )
+        il += 1
+
+        # Top left
+        # ----------------------------------------------------------------------
+
+        if !isempty(top_left_str)
+            _aprintln(
+                buf,
+                "<div style=\"position: absolute; text-align: left\">",
+                il,
+                ns,
+                minify
+            )
+            il += 1
+
+            _aprintln(
+                buf,
+                _styled_html("span", top_left_str, Dict(top_left_str_decoration)),
+                il,
+                ns,
+                minify
+            )
+
+            il -= 1
+            _aprintln(buf, "</div>", il, ns, minify)
+        end
+
+        # Top right
+        # ----------------------------------------------------------------------
+
+        if !isempty(top_right_str)
+            _aprintln(
+                buf,
+                "<div style=\"position: absolute; right: 0; text-align: right\">",
+                il,
+                ns,
+                minify
+            )
+            il += 1
+
+            _aprintln(
+                buf,
+                _styled_html("span", top_right_str, Dict(top_right_str_decoration)),
+                il,
+                ns,
+                minify
+            )
+
+            il -= 1
+            _aprintln(buf, "</div>", il, ns, minify)
+        end
+
+        # Top center
+        # ----------------------------------------------------------------------
+
+        if !isempty(top_center_str)
+            _aprintln(
+                buf,
+                "<div style=\"position: absolute; left: 0; right: 0; text-align: center\">",
+                il,
+                ns,
+                minify
+            )
+            il += 1
+
+            _aprintln(
+                buf,
+                _styled_html("span", top_center_str, Dict(top_center_str_decoration)),
+                il,
+                ns,
+                minify
+            )
+
+            il -= 1
+            _aprintln(buf, "</div>", il, ns, minify)
+        end
+
+        il -= 1
+        _aprintln(buf, "</div>", il, ns, minify)
+    end
+end
