@@ -46,11 +46,9 @@ function _pt_html(
     # Get the number of header rows.
     num_header_rows, ~ = _header_size(ptable)
 
-    # Make sure that `highlighters` is always a Ref{Any}(Tuple).
+    # Make sure that `highlighters` is always a Tuple.
     if !(highlighters isa Tuple)
-        highlighters = Ref{Any}((highlighters,))
-    else
-        highlighters = Ref{Any}(highlighters)
+        highlighters = (highlighters,)
     end
 
     # Variables to store information about indentation
@@ -260,7 +258,7 @@ function _pt_html(
 
                 if is_original_data
                     # Apply highlighters.
-                    for h in highlighters.x
+                    for h in highlighters
                         if h.f(_getdata(ptable), ir, jr)
                             merge!(style, Dict(h.fd(h, _getdata(ptable), ir, jr)))
                             break
