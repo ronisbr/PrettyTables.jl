@@ -17,6 +17,7 @@ function _pt_html(
     linebreaks::Bool = false,
     minify::Bool = false,
     sortkeys::Bool = false,
+    show_omitted_cell_summary::Bool = false,
     standalone::Bool = false
 )
     # Unpack fields of `pinfo`.
@@ -29,8 +30,11 @@ function _pt_html(
     title                     = pinfo.title
     title_alignment           = pinfo.title_alignment
 
-    hidden_rows_at_end = _get_num_of_hidden_rows(ptable) > 0
-    hidden_columns_at_end = _get_num_of_hidden_columns(ptable) > 0
+    num_hidden_rows_at_end = _get_num_of_hidden_rows(ptable)
+    num_hidden_columns_at_end = _get_num_of_hidden_columns(ptable)
+
+    hidden_rows_at_end = num_hidden_rows_at_end > 0
+    hidden_columns_at_end = num_hidden_columns_at_end > 0
 
     # Unpack fields of `tf`.
     css         = tf.css
@@ -102,13 +106,51 @@ function _pt_html(
         )
     end
 
+    # Check if the user wants the omitted cell summary.
+    if show_omitted_cell_summary
+        str = ""
+
+        if num_hidden_columns_at_end > 1
+            str *= string(num_hidden_columns_at_end) * " columns"
+        elseif num_hidden_columns_at_end == 1
+            str *= string(num_hidden_columns_at_end) * " column"
+        end
+
+        if !isempty(str) && hidden_rows_at_end
+            str *= " and "
+        end
+
+        if num_hidden_rows_at_end > 1
+            str *= string(num_hidden_rows_at_end) * " rows"
+        elseif num_hidden_rows_at_end == 1
+            str *= string(num_hidden_rows_at_end) * " row"
+        end
+
+        if !isempty(str)
+            str *= " omitted"
+        end
+
+        style = Dict{String,String}(
+            "position" => "absolute",
+            "top"      => "0",
+            "right"    => "0"
+        )
+        _aprintln(
+            buf,
+            _styled_html("div", "<p>" * str * "</p>", style),
+            il,
+            ns,
+            minify
+        )
+    end
+
     _aprintln(buf, "<table>", il, ns, minify)
     il += 1
 
-    # Table title
+    # Table title and omitted cell summary
     # ==========================================================================
 
-    if length(title) > 0
+    if (length(title) > 0) || (show_omitted_cell_summary && (hidden_rows_at_end || hidden_columns_at_end))
         style = Dict{String,String}("text-align" => _html_alignment[title_alignment])
         _aprintln(buf, _styled_html("caption", title, style), il, ns, minify)
     end
