@@ -65,7 +65,6 @@ Return the total table size neglecting the options `max_num_of_columns` and
 `max_num_of_rows`.
 """
 function _total_size(ptable::ProcessedTable)
-
     total_columns = ptable._num_data_columns + length(ptable._additional_data_columns)
     total_rows = ptable._num_data_rows + ptable._num_header_rows
     return total_rows, total_columns
