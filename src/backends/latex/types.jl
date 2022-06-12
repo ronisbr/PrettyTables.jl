@@ -27,7 +27,7 @@ Create a table cell with LaTeX code.
 
 # Examples
 
-```jldoctest
+```julia
 julia> latex_cell"\textbf{Bold text}"
 LatexCell{String}("\\textbf{Bold text}")
 ```

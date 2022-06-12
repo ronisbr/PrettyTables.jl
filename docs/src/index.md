@@ -30,7 +30,6 @@ Pages = [
     "man/html_backend.md"
     "man/latex_backend.md"
     "man/alignment.md"
-    "man/filters.md"
     "man/formatters.md"
     "man/text_examples.md"
     "man/html_examples.md"

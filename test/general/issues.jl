@@ -7,55 +7,6 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-@testset "Issue #65 - Data type in filters with Tables.jl" begin
-    table = (A = Int64.(1:20), B = Float64.(1:20))
-    rowfilter1(data,i) = i <= div(length(first(data)),2)
-    rowfilter2(data,i) = i <= div(length(data),2)
-
-    result1 = pretty_table(String, table;                 row_filters = (rowfilter1,))
-    result2 = pretty_table(String, Tables.columns(table); row_filters = (rowfilter1,))
-    result3 = pretty_table(String, Tables.rows(table);    row_filters = (rowfilter2,))
-
-    expected = """
-┌───────┬─────────┐
-│     A │       B │
-│ Int64 │ Float64 │
-├───────┼─────────┤
-│     1 │     1.0 │
-│     2 │     2.0 │
-│     3 │     3.0 │
-│     4 │     4.0 │
-│     5 │     5.0 │
-│     6 │     6.0 │
-│     7 │     7.0 │
-│     8 │     8.0 │
-│     9 │     9.0 │
-│    10 │    10.0 │
-└───────┴─────────┘
-"""
-
-    @test result1 == expected
-    @test result2 == expected
-    @test result3 == expected
-
-    table = (
-        A = Int64.(1:10),
-        B = Float64.(1:10),
-        C = Int64.(1:10),
-        D = Float64.(1:10)
-    )
-    colfilter1(data,j) = j <= div(length(data),2)
-    colfilter2(data,j) = j <= div(length(first(data)),2)
-
-    result1 = pretty_table(String, table;                 column_filters = (colfilter1,))
-    result2 = pretty_table(String, Tables.columns(table); column_filters = (colfilter1,))
-    result3 = pretty_table(String, Tables.rows(table);    column_filters = (colfilter2,))
-
-    @test result1 == expected
-    @test result2 == expected
-    @test result3 == expected
-end
-
 struct SimpleTable{T}
     data::Matrix{T}
 end

@@ -913,8 +913,8 @@ end
     result = pretty_table(
         String,
         data;
-        maximum_number_of_columns = 4,
-        maximum_number_of_rows = 3
+        max_num_of_columns = 4,
+        max_num_of_rows = 3
     )
 
     @test result == expected
@@ -932,8 +932,8 @@ end
     result = pretty_table(
         String,
         data;
-        maximum_number_of_columns = 4,
-        maximum_number_of_rows = 3,
+        max_num_of_columns = 4,
+        max_num_of_rows = 3,
         show_row_number = true
     )
 

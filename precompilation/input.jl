@@ -111,17 +111,6 @@ function precompilation_input()
 
     pretty_table(dict, sortkeys = true)
 
-    # Filters
-    # ==========================================================================
-
-    pretty_table(data, filters_row = ((data, i) -> i % 2 == 0,))
-    pretty_table(data, filters_col = ((data, i) -> i % 2 == 0,))
-    pretty_table(
-        data,
-        filters_col = ((data, i) -> i % 2 == 0,),
-        filters_row = ((data, i) -> i % 2 == 0,)
-    )
-
     # Input: Data with URLTextCell
     # ==========================================================================
 

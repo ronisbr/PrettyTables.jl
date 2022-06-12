@@ -124,25 +124,6 @@ julia> pretty_table(data, tf = tf_borderless, show_header = false)
 
 ![](../assets/ex_00010.png)
 
-In the following, it is shown how the filters can be used to print only the even
-rows and columns:
-
-```julia-repl
-julia> A = [(0:1:10)'
-            (1:1:11)'
-            (2:1:12)'
-            (3:1:13)'
-            (4:1:14)']
-
-julia> f_c(data, i) = i % 2 == 0
-
-julia> f_r(data, i) = i % 2 == 0
-
-julia> pretty_table(A, filters_row = (f_r,), filters_col = (f_c,), show_row_number = true)
-```
-
-![](../assets/ex_00011.png)
-
 By default, if the data is larger than the display, then it will be cropped to
 fit it. This can be changed by using the keywords `crop` and `display_size`.
 

@@ -69,18 +69,18 @@ function _latex_table_description(
     hidden_columns_at_end::Bool
 )
     str = "{"
-    num_filtered_columns = _size(ptable)[2]
+    num_columns = _size(ptable)[2]
 
     if _check_vline(ptable, vlines, 0)
         str *= left_vline
     end
 
-    for j in 1:num_filtered_columns
+    for j in 1:num_columns
         alignment = _get_column_alignment(ptable, j) |> _latex_alignment
         str *= alignment
 
         if _check_vline(ptable, vlines, j)
-            if j != num_filtered_columns
+            if j != num_columns
                 str *= mid_vline
             else
                 str *= right_vline
@@ -94,7 +94,7 @@ function _latex_table_description(
         str *= "c"
 
         # Check if we need to draw a line at the end of the table.
-        if _check_vline(ptable, vlines, num_filtered_columns)
+        if _check_vline(ptable, vlines, num_columns)
             str *= right_vline
         end
     end

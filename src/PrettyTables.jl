@@ -45,7 +45,6 @@ include("tables.jl")
 
 include("./processed_table/addtional_data.jl")
 include("./processed_table/constructors.jl")
-include("./processed_table/filters.jl")
 include("./processed_table/get.jl")
 include("./processed_table/misc.jl")
 include("./processed_table/size.jl")

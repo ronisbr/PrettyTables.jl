@@ -96,11 +96,10 @@ passed as keywords when calling the function `pretty_table`:
         drawn if `0` is in `hlines`, and the header and subheaders are
         considered as only 1 row. Furthermore, it is important to mention that
         the row number in this variable is related to the **printed rows**.
-        Thus, it is affected by filters, and by the option to suppress the
-        header `show_header`. Finally, for convenience, the top and bottom lines
-        can be drawn by adding the symbols `:begin` and `:end` to this vector,
-        respectively, and the line after the header can be drawn by adding the
-        symbol `:header`.
+        Thus, it is affected by the option to suppress the header `show_header`.
+        Finally, for convenience, the top and bottom lines can be drawn by
+        adding the symbols `:begin` and `:end` to this vector, respectively, and
+        the line after the header can be drawn by adding the symbol `:header`.
 
 !!! info
     The values of `body_hlines` will be appended to this vector. Thus,
@@ -152,11 +151,11 @@ passed as keywords when calling the function `pretty_table`:
         after the columns in the vector. Notice that the top line will be drawn
         if `0` is in `vlines`. Furthermore, it is important to mention that the
         column number in this variable is related to the **printed column**.
-        Thus, it is affected by filters, and by the options `row_names` and
-        `show_row_number`. Finally, for convenience, the left and right vertical
-        lines can be drawn by adding the symbols `:begin` and `:end` to this
-        vector, respectively, and the line after the header can be drawn by
-        adding the symbol `:header`.
+        Thus, it is affected by the options `row_names` and `show_row_number`.
+        Finally, for convenience, the left and right vertical lines can be drawn
+        by adding the symbols `:begin` and `:end` to this vector, respectively,
+        and the line after the header can be drawn by adding the symbol
+        `:header`.
 
 The following keywords related to crayons are available to customize the output
 decoration:

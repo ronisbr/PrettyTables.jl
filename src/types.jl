@@ -45,8 +45,8 @@ end
 """
     struct ProcessedTable
 
-This struct contains the processed table, which handles additional columns,
-filters, etc. All the backend functions have access to this object.
+This struct contains the processed table, which handles additional columns, etc.
+All the backend functions have access to this object.
 """
 Base.@kwdef mutable struct ProcessedTable
     data::Any
@@ -55,13 +55,6 @@ Base.@kwdef mutable struct ProcessedTable
     # Private fields
     # ==========================================================================
 
-    # Inputs
-    # --------------------------------------------------------------------------
-    _column_filters::Union{Nothing, Tuple} = nothing
-    _row_filters::Union{Nothing, Tuple} = nothing
-
-    # Internal variables
-    # --------------------------------------------------------------------------
     _additional_column_id::Vector{Symbol} = Symbol[]
     _additional_data_columns::Vector{Any} = Any[]
     _additional_header_columns::Vector{Vector{String}} = Vector{String}[]
@@ -69,15 +62,12 @@ Base.@kwdef mutable struct ProcessedTable
     _additional_column_header_alignment::Vector{Symbol} = Symbol[]
     _data_alignment::Union{Symbol, Vector{Symbol}} = :r
     _data_cell_alignment::Tuple = ()
-    _filters_processed::Bool = false
-    _id_rows::Union{Nothing, Vector{Int}} = nothing
-    _id_columns::Union{Nothing, Vector{Int}} = nothing
     _header_alignment::Union{Symbol, Vector{Symbol}} = :s
     _header_cell_alignment::Tuple = ()
+    _max_num_of_rows::Int = -1
+    _max_num_of_columns::Int = -1
     _num_data_rows::Int = -1
     _num_data_columns::Int = -1
-    _num_filtered_rows::Int = -1
-    _num_filtered_columns::Int = -1
     _num_header_rows::Int = -1
     _num_header_columns::Int = -1
 end
@@ -97,8 +87,6 @@ struct PrintInfo
     cell_first_line_only::Bool
     renderer::Union{Val{:print}, Val{:show}}
     limit_printing::Bool
-    maximum_number_of_columns::Int
-    maximum_number_of_rows::Int
 end
 
 """

@@ -22,7 +22,6 @@ function ProcessedTable(
         Function,
         Tuple
     } = nothing,
-    column_filters::Union{Nothing, Tuple} = nothing,
     header_alignment::Union{Symbol, Vector{Symbol}} = :s,
     header_cell_alignment::Union{
         Nothing,
@@ -30,7 +29,8 @@ function ProcessedTable(
         Function,
         Tuple
     } = nothing,
-    row_filters::Union{Nothing, Tuple} = nothing,
+    max_num_of_rows::Int = -1,
+    max_num_of_columns::Int = -1,
     show_header::Bool = true,
     show_subheader::Bool = true
 )
@@ -103,15 +103,24 @@ function ProcessedTable(
         header_cell_alignment = (header_cell_alignment,)
     end
 
+    # Check if the user does not want to process all the rows and columns.
+    if max_num_of_rows > 0
+        max_num_of_rows = min(max_num_of_rows, num_data_rows)
+    end
+
+    if max_num_of_columns > 0
+        max_num_of_columns = min(max_num_of_columns, num_data_columns)
+    end
+
     return ProcessedTable(
         data = data,
         header = header,
         _data_alignment = alignment,
         _data_cell_alignment = cell_alignment,
-        _column_filters = column_filters,
         _header_alignment = header_alignment,
         _header_cell_alignment = header_cell_alignment,
-        _row_filters = row_filters,
+        _max_num_of_rows = max_num_of_rows,
+        _max_num_of_columns = max_num_of_columns,
         _num_data_rows = num_data_rows,
         _num_data_columns = num_data_columns,
         _num_header_columns = num_header_columns,

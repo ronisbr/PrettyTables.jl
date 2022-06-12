@@ -32,9 +32,7 @@ function _is_cell_alignment_overridden(ptable::ProcessedTable, i::Int, j::Int)
         if column_id == :__ORIGINAL_DATA__
             header_alignment_override = nothing
 
-            # Get the cell index in the original table. Notice that there is no
-            # filter for header rows. Hence, we just need to verify the column
-            # here.
+            # Get the cell index in the original table.
             jr = _get_data_column_index(ptable, j)
 
             # Search for alignment overrides in this cell.

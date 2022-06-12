@@ -22,9 +22,7 @@ function _get_cell_alignment(ptable::ProcessedTable, i::Int, j::Int)
         if column_id == :__ORIGINAL_DATA__
             header_alignment_override = nothing
 
-            # Get the cell index in the original table. Notice that there is no
-            # filter for header rows. Hence, we just need to verify the column
-            # here.
+            # Get the cell index in the original table.
             jr = _get_data_column_index(ptable, j)
 
             # Search for alignment overrides in this cell.
@@ -214,50 +212,45 @@ end
 """
     _get_data_column_index(ptable::ProcessedTable, j::Int)
 
-Get the index of the `j`th filtered column in `ptable`.
+Get the index of the `j`th data column in `ptable`.
 """
 function _get_data_column_index(ptable::ProcessedTable, j::Int)
     Δc = length(ptable._additional_data_columns)
-
-    ptable_id_columns = ptable._id_columns
-
-    if !isnothing(ptable_id_columns)
-        # Check if the user ask for the index of a column that is an additional
-        # column.
-        if j - Δc > 0
-            return ptable_id_columns[j - Δc]
-        else
-            return nothing
-        end
-    else
-        return j - Δc
-    end
-end
-
-function _unsafe_get_data_column_index(ptable::ProcessedTable, j::Int)
-    Δc = length(ptable._additional_data_columns)
-
-    ptable_id_columns = ptable._id_columns
-
-    if !isnothing(ptable_id_columns)
-        return ptable_id_columns[j - Δc]
-    else
-        return j - Δc
-    end
+    return j - Δc
 end
 
 """
     _get_data_row_index(ptable::ProcessedTable, i::Int)
 
-Get the index of the `i`th filtered row in `ptable`.
+Get the index of the `i`th data row in `ptable`.
 """
 function _get_data_row_index(ptable::ProcessedTable, i::Int)
-    ptable_id_rows = ptable._id_rows
+    return i - ptable._num_header_rows
+end
 
-    if !isnothing(ptable_id_rows)
-        return ptable_id_rows[i - ptable._num_header_rows]
+"""
+    _get_num_of_hidden_columns(ptable::ProcessedTable)
+
+Return the number of hidden columns (see option `max_num_of_columns`).
+"""
+function _get_num_of_hidden_columns(ptable::ProcessedTable)
+    if ptable._max_num_of_columns > 0
+        return ptable._num_data_columns - ptable._max_num_of_columns
     else
-        return i - ptable._num_header_rows
+        return 0
+    end
+end
+
+"""
+    _get_num_of_hidden_rows(ptable::ProcessedTable)
+
+Return the number of hidden rows (see option `max_num_of_rows`).
+"""
+function _get_num_of_hidden_rows(ptable::ProcessedTable)
+    if ptable._max_num_of_rows > 0
+        return ptable._num_data_rows - ptable._max_num_of_rows
+    else
+        return 0
     end
 end
 
@@ -288,21 +281,9 @@ end
 Get the table column index related to a data table index `jr` in `ptable`.
 """
 function _get_table_column_index(ptable::ProcessedTable, jr::Int)
-    ptable_id_columns = ptable._id_columns
-
-    if !isnothing(ptable_id_columns)
-        jd = findfirst(==(jr), ptable_id_columns)
-
-        if !isnothing(jd)
-            return jd + length(ptable._additional_data_columns)
-        else
-            return nothing
-        end
+    if 0 < jr ≤ ptable._num_data_columns
+        return jr + length(ptable._additional_data_columns)
     else
-        if 0 < jr ≤ ptable._num_data_columns
-            return jr + length(ptable._additional_data_columns)
-        else
-            return nothing
-        end
+        return nothing
     end
 end

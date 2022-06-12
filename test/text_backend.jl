@@ -38,10 +38,6 @@ end
     include("text_backend/errors.jl")
 end
 
-@testset "Filters" begin
-    include("text_backend/filters.jl")
-end
-
 @testset "Formatters" begin
     include("text_backend/formatters.jl")
 end

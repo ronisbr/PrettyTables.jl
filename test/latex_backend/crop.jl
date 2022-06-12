@@ -31,8 +31,8 @@
         matrix;
         backend = Val(:latex),
         header  = header,
-        maximum_number_of_rows = 3,
-        maximum_number_of_columns = 3
+        max_num_of_rows = 3,
+        max_num_of_columns = 3
     )
     @test result == expected
 
@@ -53,7 +53,7 @@
         matrix;
         backend = Val(:latex),
         header  = header,
-        maximum_number_of_rows = 3
+        max_num_of_rows = 3
     )
     @test result == expected
 
@@ -77,30 +77,7 @@
         matrix;
         backend = Val(:latex),
         header  = header,
-        maximum_number_of_columns = 3
-    )
-    @test result == expected
-
-    expected = """
-\\begin{tabular}{rrc}
-  \\hline
-  \\textbf{Column 2} & \\textbf{Column 4} & \$\\cdots\$ \\\\
-  \\texttt{C2} & \\texttt{C4} & \$\\cdots\$ \\\\\\hline
-  (1, 2) & (1, 4) & \$\\cdots\$ \\\\
-  (3, 2) & (3, 4) & \$\\cdots\$ \\\\
-  \$\\vdots\$ & \$\\vdots\$ & \$\\ddots\$ \\\\\\hline
-\\end{tabular}
-"""
-
-    result = pretty_table(
-        String,
-        matrix;
-        backend = Val(:latex),
-        column_filters = ((data, i) -> i % 2 == 0,),
-        header = header,
-        maximum_number_of_columns = 2,
-        maximum_number_of_rows = 2,
-        row_filters = ((data, i) -> i % 2 == 1,)
+        max_num_of_columns = 3
     )
     @test result == expected
 end

@@ -72,28 +72,6 @@
     )
     @test expected == result
 
-    # Filters
-    # ==========================================================================
-
-    expected = """
-        ┌─────┬───┬────────┬────────────────────────────┐
-        │ Row │   │ Col. 1 │                     Col. 3 │
-        ├─────┼───┼────────┼────────────────────────────┤
-        │   1 │ A │      1 │ \e]8;;https://ronanarraes.com\e\\Ronan Arraes Jardim Chagas\e]8;;\e\\ │
-        │   3 │ C │      3 │                      \e]8;;https://apple.com\e\\Apple\e]8;;\e\\ │
-        └─────┴───┴────────┴────────────────────────────┘
-        """
-
-    result = pretty_table(
-        String,
-        table,
-        column_filters = ((data, j) -> j % 2 == 1,),
-        row_names = ["A", "B", "C", "D"],
-        row_filters = ((data, i)-> i % 2 == 1,),
-        show_row_number = true,
-    )
-    @test expected == result
-
     # Highlighters
     # ==========================================================================
 

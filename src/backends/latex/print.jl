@@ -29,18 +29,12 @@ function _pt_latex(
     compact_printing          = pinfo.compact_printing
     formatters                = pinfo.formatters
     limit_printing            = pinfo.limit_printing
-    maximum_number_of_columns = pinfo.maximum_number_of_columns
-    maximum_number_of_rows    = pinfo.maximum_number_of_rows
     renderer                  = pinfo.renderer
     title                     = pinfo.title
     title_alignment           = pinfo.title_alignment
 
-    # Process the filters in `ptable`.
-    hidden_rows_at_end, hidden_columns_at_end = _process_filters!(
-        ptable;
-        max_num_filtered_columns = maximum_number_of_columns,
-        max_num_filtered_rows = maximum_number_of_rows,
-    )
+    hidden_rows_at_end = _get_num_of_hidden_rows(ptable) > 0
+    hidden_columns_at_end = _get_num_of_hidden_columns(ptable) > 0
 
     # Unpack fields of `tf`.
     top_line       = tf.top_line
@@ -91,8 +85,8 @@ function _pt_latex(
         highlighters = (highlighters,)
     end
 
-    # Get the number of filtered lines and columns.
-    num_filtered_rows, num_filtered_columns = _size(ptable)
+    # Get the number of lines and columns in the table.
+    num_rows, num_columns = _size(ptable)
 
     # Variables to store information about indentation
     # ==========================================================================
@@ -140,7 +134,7 @@ function _pt_latex(
     buf_b    = IOContext(buf_io_b)
 
     # If there is no column or row to be printed, then just exit.
-    if (num_filtered_columns == 0) || (num_filtered_rows == 0)
+    if (num_columns == 0) || (num_rows == 0)
         @goto print_to_output
     end
 
@@ -155,7 +149,7 @@ function _pt_latex(
     # Otherwise, we must switch to `buf_b`.
     buf_aux = buf_h
 
-    @inbounds for i in 1:num_filtered_rows
+    @inbounds for i in 1:num_rows
         # Get the identification of the current row.
         row_id = _get_row_id(ptable, i)
 
@@ -168,7 +162,7 @@ function _pt_latex(
         # Apply the indentation.
         _aprint(buf_aux, il, ns)
 
-        @inbounds for j in 1:num_filtered_columns
+        @inbounds for j in 1:num_columns
             # Get the identification of the current column.
             column_id = _get_column_id(ptable, j)
 
@@ -223,7 +217,7 @@ function _pt_latex(
                 print(buf_h, cell_str)
 
                 # Check if we need to draw the continuation character.
-                if j != num_filtered_columns
+                if j != num_columns
                     print(buf_h, " & ")
                 elseif hidden_columns_at_end
                     print(buf_h, " & \$\\cdots\$")
@@ -278,7 +272,7 @@ function _pt_latex(
                 print(buf_aux, cell_str)
 
                 # Check if we need to draw the continuation character.
-                if j != num_filtered_columns
+                if j != num_columns
                     print(buf_aux, " & ")
                 elseif hidden_columns_at_end
                     print(buf_aux, " & \$\\cdots\$")
@@ -288,15 +282,15 @@ function _pt_latex(
 
         print(buf_aux, " \\\\")
 
-        if (i == num_filtered_rows) && hidden_rows_at_end
+        if (i == num_rows) && hidden_rows_at_end
             println(buf_aux)
             _aprint(buf_aux, il, ns)
 
-            for j in 1:num_filtered_columns
+            for j in 1:num_columns
                 print(buf_aux, "\$\\vdots\$")
 
                 # Check if we need to draw the continuation character.
-                if j != num_filtered_columns
+                if j != num_columns
                     print(buf_aux, " & ")
                 elseif hidden_columns_at_end
                     print(buf_aux, " & \$\\ddots\$")
@@ -309,10 +303,10 @@ function _pt_latex(
         # After the last line, we need to check if we are printing all the rows
         # or not. In the latter, we need to pass the last row index to check if
         # the last horizontal line must be drawn.
-        i_hline = i == num_filtered_rows ? num_filtered_rows : i
+        i_hline = i == num_rows ? num_rows : i
 
         if _check_hline(ptable, hlines, body_hlines, i_hline)
-            if i_hline == num_filtered_rows
+            if i_hline == num_rows
                 print(buf_aux, bottom_line)
             elseif _is_header_row(row_id)
                 print(buf_aux, header_line)
@@ -342,9 +336,9 @@ function _pt_latex(
         # Check if the user wants a text on the footer.
         if longtable_footer !== nothing
             lvline = _check_vline(ptable, vlines, 0) ? left_vline : ""
-            rvline = _check_vline(ptable, vlines, num_filtered_columns) ? right_vline : ""
+            rvline = _check_vline(ptable, vlines, num_columns) ? right_vline : ""
 
-            env = "multicolumn{" * string(num_filtered_columns) * "}" * "{r}"
+            env = "multicolumn{" * string(num_columns) * "}" * "{r}"
 
             _aprintln(buf, _latex_envs(longtable_footer, env) * "\\\\", il, ns)
             _aprintln(buf, bottom_line, il, ns)

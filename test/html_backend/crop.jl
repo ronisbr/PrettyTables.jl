@@ -64,8 +64,8 @@
         matrix;
         backend = Val(:html),
         header  = header,
-        maximum_number_of_rows = 3,
-        maximum_number_of_columns = 3
+        max_num_of_rows = 3,
+        max_num_of_columns = 3
     )
     @test result == expected
 
@@ -137,7 +137,7 @@
         matrix;
         backend = Val(:html),
         header  = header,
-        maximum_number_of_rows = 3
+        max_num_of_rows = 3
     )
     @test result == expected
 
@@ -209,53 +209,7 @@
         matrix;
         backend = Val(:html),
         header  = header,
-        maximum_number_of_columns = 3
-    )
-    @test result == expected
-
-    expected = """
-<table>
-  <thead>
-    <tr class = "header">
-      <th style = "text-align: right;">Column 2</th>
-      <th style = "text-align: right;">Column 4</th>
-      <th style = "text-align: right;">⋯</th>
-    </tr>
-    <tr class = "subheader headerLastRow">
-      <th style = "text-align: right;">C2</th>
-      <th style = "text-align: right;">C4</th>
-      <th style = "text-align: right;">⋯</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style = "text-align: right;">(1, 2)</td>
-      <td style = "text-align: right;">(1, 4)</td>
-      <td style = "text-align: right;">⋯</td>
-    </tr>
-    <tr>
-      <td style = "text-align: right;">(3, 2)</td>
-      <td style = "text-align: right;">(3, 4)</td>
-      <td style = "text-align: right;">⋯</td>
-    </tr>
-    <tr>
-      <td style = "text-align: right;">⋮</td>
-      <td style = "text-align: right;">⋮</td>
-      <td style = "text-align: right;">⋱</td>
-    </tr>
-  </tbody>
-</table>
-"""
-
-    result = pretty_table(
-        String,
-        matrix;
-        backend = Val(:html),
-        column_filters = ((data, i) -> i % 2 == 0,),
-        header = header,
-        maximum_number_of_columns = 2,
-        maximum_number_of_rows = 2,
-        row_filters = ((data, i) -> i % 2 == 1,)
+        max_num_of_columns = 3
     )
     @test result == expected
 end

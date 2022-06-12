@@ -190,7 +190,7 @@ function _print_table_data!(
                     column_id = _get_column_id(ptable, j)
 
                     jr = (column_id == :__ORIGINAL_DATA__) ?
-                        _unsafe_get_data_column_index(ptable, j) :
+                        _get_data_column_index(ptable, j) :
                         0
 
                     # Get the correct crayon for this cell.

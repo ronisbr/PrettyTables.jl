@@ -62,8 +62,6 @@ is not compliant, then only the following types are supported:
 
 - `cell_first_line_only::Bool`: If `true`, then only the first line of each cell
     will be printed. (**Default** = `false`)
-- `column_filters::Union{Nothing, Tuple}`: Filters for the columns (see the
-    section `Filters`).
 - `compact_printing::Bool`: Select if the option `:compact` will be used when
     printing the data. (**Default** = `true`)
 - `formatters::Union{Nothing, Function, Tuple}`: See the section
@@ -109,8 +107,6 @@ is not compliant, then only the following types are supported:
     names. (**Default** = "")
 - `row_number_column_title::AbstractString`: Title of the column with the row
     numbers. (**Default** = "Row")
-- `row_filters::Union{Nothing, Tuple}`: Filters for the rows (see the section
-    `Filters`).
 - `show_header::Bool`: If `true`, then the header will be printed. Notice that
     all keywords and parameters related to the header and sub-headers will be
     ignored. (**Default** = `false`)
@@ -155,38 +151,6 @@ columns in `data`. The *i*-th symbol in the vector specify the alignment of the
 !!! note
     In HTML backend, the user can select `:n` ou `:N` to print the cell without
     any alignment annotation.
-
-# Filters
-
-It is possible to specify filters to filter the data that will be printed. There
-are two types of filters: the row filters, which are specified by the keyword
-`row_filters`, and the column filters, which are specified by the keyword
-`column_filters`.
-
-The filters are a tuple of functions that must have the following signature:
-
-```julia
-f(data,i)::Bool
-```
-
-in which `data` is a pointer to the matrix that is being printed and `i` is the
-i-th row in the case of the row filters or the i-th column in the case of column
-filters. If this function returns `true` for `i`, then the i-th row (in case of
-`row_filters`) or the i-th column (in case of `column_filters`) will be printed.
-Otherwise, it will be omitted.
-
-A set of filters can be passed inside of a tuple. Notice that, in this case,
-**all filters** for a specific row or column must be return `true` so that it
-can be printed, *i.e* the set of filters has an `AND` logic.
-
-If the keyword is set to `nothing`, which is the default, then no filtering will
-be applied to the data.
-
-!!! note
-    The filters do not change the row and column numbering for the others
-    modifiers such as column width specification, formatters, and highlighters.
-    Thus, for example, if only the 4-th row is printed, then it will also be
-    referenced inside the formatters and highlighters as 4 instead of 1.
 
 ---
 
@@ -282,11 +246,10 @@ This back-end produces text tables. This back-end can be used by selecting
         drawn if `0` is in `hlines`, and the header and subheaders are
         considered as only 1 row. Furthermore, it is important to mention that
         the row number in this variable is related to the **printed rows**.
-        Thus, it is affected by filters, and by the option to suppress the
-        header `show_header`. Finally, for convenience, the top and bottom lines
-        can be drawn by adding the symbols `:begin` and `:end` to this vector,
-        respectively, and the line after the header can be drawn by adding the
-        symbol `:header`.
+        Thus, it is affected by the option to suppress the header `show_header`.
+        Finally, for convenience, the top and bottom lines can be drawn by
+        adding the symbols `:begin` and `:end` to this vector, respectively, and
+        the line after the header can be drawn by adding the symbol `:header`.
 
 !!! info
     The values of `body_hlines` will be appended to this vector. Thus,
@@ -338,11 +301,11 @@ This back-end produces text tables. This back-end can be used by selecting
         after the columns in the vector. Notice that the top line will be drawn
         if `0` is in `vlines`. Furthermore, it is important to mention that the
         column number in this variable is related to the **printed column**.
-        Thus, it is affected by filters, and by the options `row_names` and
-        `show_row_number`. Finally, for convenience, the left and right vertical
-        lines can be drawn by adding the symbols `:begin` and `:end` to this
-        vector, respectively, and the line after the header can be drawn by
-        adding the symbol `:header`.
+        Thus, it is affected by the options `row_names` and `show_row_number`.
+        Finally, for convenience, the left and right vertical lines can be drawn
+        by adding the symbols `:begin` and `:end` to this vector, respectively,
+        and the line after the header can be drawn by adding the symbol
+        `:header`.
 
 The following keywords related to crayons are available to customize the output
 decoration:
@@ -552,11 +515,10 @@ This backend produces LaTeX tables. This backend can be used by selecting
         drawn if `0` is in `hlines`, and the header and subheaders are
         considered as only 1 row. Furthermore, it is important to mention that
         the row number in this variable is related to the **printed rows**.
-        Thus, it is affected by filters, and by the option to suppress the
-        header `show_header`. Finally, for convenience, the top and bottom lines
-        can be drawn by adding the symbols `:begin` and `:end` to this vector,
-        respectively, and the line after the header can be drawn by adding the
-        symbol `:header`.
+        Thus, it is affected by the option to suppress the header `show_header`.
+        Finally, for convenience, the top and bottom lines can be drawn by
+        adding the symbols `:begin` and `:end` to this vector, respectively, and
+        the line after the header can be drawn by adding the symbol `:header`.
 
 !!! info
     The values of `body_hlines` will be appended to this vector. Thus,
@@ -584,9 +546,9 @@ This backend produces LaTeX tables. This backend can be used by selecting
     Notice that the left border will be drawn if `0` is in `vlines`.
     Furthermore, it is important to mention that the column number in this
     variable is related to the **printed columns**. Thus, it is affected by
-    filters, and by the columns added using the variable `show_row_number`.
-    Finally, for convenience, the left and right border can be drawn by adding
-    the symbols `:begin` and `:end` to this vector, respectively.
+    the columns added using the variable `show_row_number`. Finally, for
+    convenience, the left and right border can be drawn by adding the symbols
+    `:begin` and `:end` to this vector, respectively.
     (**Default** = `:none`)
 - `wrap_table::Union{Nothing, String}`: This variable controls whether to wrap
     the table in a environment defined by the variable `wrap_table_environment`.

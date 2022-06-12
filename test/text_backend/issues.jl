@@ -329,40 +329,6 @@ end
     )
 
     @test result == expected
-
-    expected = """
-┌─────┬──────┬────────────┬────────────┬──────────
-│ Row │      │     Col. 1 │     Col. 3 │  Col. 4 ⋯
-├─────┼──────┼────────────┼────────────┼──────────
-│   1 │ NAME │    100.0   │  10000.0   │ missing ⋯
-│   2 │ NAME │   1000.0   │ 100000.0   │ missing ⋯
-│   3 │ NAME │  10000.0   │      1.0e6 │ missing ⋯
-│   4 │ NAME │ 100000.0   │      1.0e7 │ missing ⋯
-│   5 │ NAME │      1.0e6 │      1.0   │ missing ⋯
-│   6 │ NAME │      1.0e7 │     10.0   │ missing ⋯
-│   7 │ NAME │      1.0   │    100.0   │ missing ⋯
-│   8 │ NAME │     10.0   │   1000.0   │ missing ⋯
-│   9 │ NAME │    100.0   │  10000.0   │ missing ⋯
-│  10 │ NAME │   1000.0   │ 100000.0   │ missing ⋯
-│  11 │ NAME │  10000.0   │      1.0e6 │ missing ⋯
-│  12 │ NAME │ 100000.0   │      1.0e7 │ missing ⋯
-│  ⋮  │  ⋮   │     ⋮      │     ⋮      │    ⋮    ⋱
-└─────┴──────┴────────────┴────────────┴──────────
-                    26 columns and 18 rows omitted
-"""
-
-    result = pretty_table(
-        String,
-        matrix;
-        alignment_anchor_regex = Dict(i => [r"\."] for i in vcat(1,3:1000)),
-        column_filters = ((data, i)-> i ≠ 2,),
-        crop = :both,
-        display_size = (20, 50),
-        row_names = ["NAME" for i in 1:30],
-        show_row_number = true
-    )
-
-    @test result == expected
 end
 
 @testset "Issue #118 - Cropping empty columns" begin
@@ -471,40 +437,6 @@ end
     @test result == expected
 
     expected = """
-┌─────┬────┬────────┬────────┬─────
-│ Row │    │ Col. 1 │ Col. 2 │ Co ⋯
-├─────┼────┼────────┼────────┼─────
-│   2 │  1 │      1 │      2 │    ⋯
-│   4 │  3 │      3 │      6 │    ⋯
-│   6 │  5 │      5 │     10 │    ⋯
-│   8 │  7 │      7 │     14 │    ⋯
-│  10 │  9 │      9 │     18 │    ⋯
-├─────┼────┼────────┼────────┼─────
-│  12 │ 11 │     11 │     22 │    ⋯
-│  14 │ 13 │     13 │     26 │    ⋯
-│  16 │ 15 │     15 │     30 │    ⋯
-│  18 │ 17 │     17 │     34 │    ⋯
-│  20 │ 19 │     19 │     38 │    ⋯
-├─────┼────┼────────┼────────┼─────
-│  ⋮  │ ⋮  │   ⋮    │   ⋮    │    ⋱
-└─────┴────┴────────┴────────┴─────
-       1 column and 40 rows omitted
-"""
-
-    result = pretty_table(
-        String,
-        matrix;
-        crop = :both,
-        body_hlines = collect(0:5:100),
-        display_size = (20, 35),
-        row_names = 0:1:100,
-        row_filters = ((data, i) -> i % 2 == 0,),
-        show_row_number = true
-    )
-
-    @test result == expected
-
-    expected = """
 ┌─────┬─────┬────────┬────────┬────
 │ Row │     │ Col. 1 │ Col. 2 │ C ⋯
 ├─────┼─────┼────────┼────────┼────
@@ -531,41 +463,6 @@ end
         crop = :both,
         body_hlines = collect(0:5:100),
         display_size = (20, 35),
-        row_names = 0:1:100,
-        show_row_number = true,
-        vcrop_mode = :middle
-    )
-
-    @test result == expected
-
-    expected = """
-┌─────┬────┬────────┬────────┬─────
-│ Row │    │ Col. 1 │ Col. 2 │ Co ⋯
-├─────┼────┼────────┼────────┼─────
-│   2 │  1 │      1 │      2 │    ⋯
-│   4 │  3 │      3 │      6 │    ⋯
-│   6 │  5 │      5 │     10 │    ⋯
-│   8 │  7 │      7 │     14 │    ⋯
-│  10 │  9 │      9 │     18 │    ⋯
-├─────┼────┼────────┼────────┼─────
-│  ⋮  │ ⋮  │   ⋮    │   ⋮    │    ⋱
-├─────┼────┼────────┼────────┼─────
-│  92 │ 91 │     91 │    182 │    ⋯
-│  94 │ 93 │     93 │    186 │    ⋯
-│  96 │ 95 │     95 │    190 │    ⋯
-│  98 │ 97 │     97 │    194 │    ⋯
-│ 100 │ 99 │     99 │    198 │    ⋯
-└─────┴────┴────────┴────────┴─────
-       1 column and 40 rows omitted
-"""
-
-    result = pretty_table(
-        String,
-        matrix;
-        crop = :both,
-        body_hlines = collect(0:5:100),
-        display_size = (20, 35),
-        row_filters = ((data, i) -> i % 2 == 0,),
         row_names = 0:1:100,
         show_row_number = true,
         vcrop_mode = :middle

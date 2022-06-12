@@ -19,10 +19,6 @@ end
     include("./html_backend/default.jl")
 end
 
-@testset "Filters" begin
-    include("./html_backend/filters.jl")
-end
-
 @testset "Formatters" begin
     include("./html_backend/formatters.jl")
 end

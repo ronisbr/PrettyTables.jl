@@ -156,8 +156,6 @@ function _print_info(
     } = nothing,
     cell_first_line_only::Bool = false,
     compact_printing::Bool = true,
-    row_filters::Union{Nothing, Tuple} = nothing,
-    column_filters::Union{Nothing, Tuple} = nothing,
     formatters::Union{Nothing, Function, Tuple} = nothing,
     header::Union{Nothing, AbstractVector, Tuple} = nothing,
     header_alignment::Union{Symbol, Vector{Symbol}} = :s,
@@ -168,8 +166,8 @@ function _print_info(
         Tuple
     } = nothing,
     limit_printing::Bool = true,
-    maximum_number_of_columns::Int = -1,
-    maximum_number_of_rows::Int = -1,
+    max_num_of_columns::Int = -1,
+    max_num_of_rows::Int = -1,
     renderer::Symbol = :print,
     row_names::Union{Nothing, AbstractVector} = nothing,
     row_name_alignment::Symbol = :r,
@@ -186,18 +184,18 @@ function _print_info(
     _header = header isa Tuple ? header : (header,)
 
     # Create the processed table, which holds information about the additonal
-    # columns, filters, etc.
+    # columns, etc.
     ptable = ProcessedTable(
         data,
         _header;
         alignment             = alignment,
         cell_alignment        = cell_alignment,
-        column_filters        = column_filters,
         header_alignment      = header_alignment,
         header_cell_alignment = header_cell_alignment,
+        max_num_of_columns    = max_num_of_columns,
+        max_num_of_rows       = max_num_of_rows,
         show_header           = show_header,
         show_subheader        = show_subheader,
-        row_filters           = row_filters
     )
 
     # Add the additional columns if requested.
@@ -238,8 +236,6 @@ function _print_info(
         cell_first_line_only,
         renderer_val,
         limit_printing,
-        maximum_number_of_columns,
-        maximum_number_of_rows
     )
 
     return pinfo
@@ -295,8 +291,6 @@ function _pt(
     } = nothing,
     cell_first_line_only::Bool = false,
     compact_printing::Bool = true,
-    row_filters::Union{Nothing, Tuple} = nothing,
-    column_filters::Union{Nothing, Tuple} = nothing,
     formatters::Union{Nothing, Function, Tuple} = nothing,
     header::Union{Nothing, AbstractVector, Tuple} = nothing,
     header_alignment::Union{Symbol, Vector{Symbol}} = :s,
@@ -307,8 +301,8 @@ function _pt(
         Tuple
     } = nothing,
     limit_printing::Bool = true,
-    maximum_number_of_columns::Int = -1,
-    maximum_number_of_rows::Int = -1,
+    max_num_of_columns::Int = -1,
+    max_num_of_rows::Int = -1,
     renderer::Symbol = :print,
     row_names::Union{Nothing, AbstractVector} = nothing,
     row_name_alignment::Symbol = :r,
@@ -323,26 +317,6 @@ function _pt(
     kwargs...
 )
     # Check for deprecations.
-    if haskey(kwargs, :filters_row)
-        Base.depwarn(
-            "The option `filters_row` is deprecated. Use `row_filters` instead.",
-            :filters_row
-        )
-
-        row_filters = kwargs[:filters_row]
-        kwargs = _rm_filters_row(;kwargs...)
-    end
-
-    if haskey(kwargs, :filters_col)
-        Base.depwarn(
-            "The option `filters_row` is deprecated. Use `row_filters` instead.",
-            :filters_row
-        )
-
-        column_filters = kwargs[:filters_col]
-        kwargs = _rm_filters_col(;kwargs...)
-    end
-
     if haskey(kwargs, :rownum_header_crayon)
         Base.depwarn(
             "The option `rownum_header_crayon` is deprecated. Use `row_number_header_crayon` instead.",
@@ -404,30 +378,28 @@ function _pt(
     # Create the structure that stores the print information.
     pinfo = _print_info(
         data;
-        alignment                 = alignment,
-        cell_alignment            = cell_alignment,
-        cell_first_line_only      = cell_first_line_only,
-        compact_printing          = compact_printing,
-        column_filters            = column_filters,
-        row_filters               = row_filters,
-        formatters                = formatters,
-        header                    = header,
-        header_alignment          = header_alignment,
-        header_cell_alignment     = header_cell_alignment,
-        maximum_number_of_columns = maximum_number_of_columns,
-        maximum_number_of_rows    = maximum_number_of_rows,
-        limit_printing            = limit_printing,
-        renderer                  = renderer,
-        row_names                 = row_names,
-        row_name_alignment        = row_name_alignment,
-        row_name_column_title     = row_name_column_title,
-        row_number_alignment      = row_number_alignment,
-        row_number_column_title   = row_number_column_title,
-        show_header               = show_header,
-        show_row_number           = show_row_number,
-        show_subheader            = show_subheader,
-        title                     = title,
-        title_alignment           = title_alignment
+        alignment               = alignment,
+        cell_alignment          = cell_alignment,
+        cell_first_line_only    = cell_first_line_only,
+        compact_printing        = compact_printing,
+        formatters              = formatters,
+        header                  = header,
+        header_alignment        = header_alignment,
+        header_cell_alignment   = header_cell_alignment,
+        max_num_of_columns      = max_num_of_columns,
+        max_num_of_rows         = max_num_of_rows,
+        limit_printing          = limit_printing,
+        renderer                = renderer,
+        row_names               = row_names,
+        row_name_alignment      = row_name_alignment,
+        row_name_column_title   = row_name_column_title,
+        row_number_alignment    = row_number_alignment,
+        row_number_column_title = row_number_column_title,
+        show_header             = show_header,
+        show_row_number         = show_row_number,
+        show_subheader          = show_subheader,
+        title                   = title,
+        title_alignment         = title_alignment
     )
 
     # Select the appropriate backend.
