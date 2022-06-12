@@ -39,7 +39,8 @@ end
     _size(ptable::ProcessedTable)
 
 Return a tuple with the current size of the table, considering the header, and
-the additional columns.
+the additional columns, but also the maximum number of rows and columns that
+user wants.
 """
 function _size(ptable::ProcessedTable)
     total_columns = ptable._max_num_of_columns > 0 ?
@@ -54,5 +55,18 @@ function _size(ptable::ProcessedTable)
 
     total_rows += ptable._num_header_rows
 
+    return total_rows, total_columns
+end
+
+"""
+    _total_size(ptable::ProcessedTable)
+
+Return the total table size neglecting the options `max_num_of_columns` and
+`max_num_of_rows`.
+"""
+function _total_size(ptable::ProcessedTable)
+
+    total_columns = ptable._num_data_columns + length(ptable._additional_data_columns)
+    total_rows = ptable._num_data_rows + ptable._num_header_rows
     return total_rows, total_columns
 end

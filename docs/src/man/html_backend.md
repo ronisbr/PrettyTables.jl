@@ -29,6 +29,10 @@ passed as keywords when calling the function [`pretty_table`](@ref):
 - `standalone::Bool`: If `true`, then a complete HTML page will be generated.
     Otherwise, only the content between the tags `<table>` and `</table>` will
     be printed (with the tags included). (**Default** = `false`)
+- `vcrop_mode::Symbol`: This variable defines the vertical crop behavior. If it
+    is `:bottom`, then the data, if required, will be cropped in the bottom. On
+    the other hand, if it is `:middle`, then the data will be cropped in the
+    middle if necessary. (**Default** = `:bottom`)
 - `tf::HTMLTableFormat`: An instance of the structure [`HTMLTableFormat`](@ref)
     that defines the general format of the HTML table.
 

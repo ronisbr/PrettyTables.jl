@@ -18,17 +18,18 @@ function _pt_html(
     minify::Bool = false,
     sortkeys::Bool = false,
     show_omitted_cell_summary::Bool = false,
-    standalone::Bool = false
+    standalone::Bool = false,
+    vcrop_mode::Symbol = :bottom
 )
     # Unpack fields of `pinfo`.
-    ptable                    = pinfo.ptable
-    cell_first_line_only      = pinfo.cell_first_line_only
-    compact_printing          = pinfo.compact_printing
-    formatters                = pinfo.formatters
-    limit_printing            = pinfo.limit_printing
-    renderer                  = pinfo.renderer
-    title                     = pinfo.title
-    title_alignment           = pinfo.title_alignment
+    ptable               = pinfo.ptable
+    cell_first_line_only = pinfo.cell_first_line_only
+    compact_printing     = pinfo.compact_printing
+    formatters           = pinfo.formatters
+    limit_printing       = pinfo.limit_printing
+    renderer             = pinfo.renderer
+    title                = pinfo.title
+    title_alignment      = pinfo.title_alignment
 
     num_hidden_rows_at_end = _get_num_of_hidden_rows(ptable)
     num_hidden_columns_at_end = _get_num_of_hidden_columns(ptable)
@@ -150,7 +151,7 @@ function _pt_html(
     # Table title and omitted cell summary
     # ==========================================================================
 
-    if (length(title) > 0) || (show_omitted_cell_summary && (hidden_rows_at_end || hidden_columns_at_end))
+    if length(title) > 0
         style = Dict{String,String}("text-align" => _html_alignment[title_alignment])
         _aprintln(buf, _styled_html("caption", title, style), il, ns, minify)
     end
@@ -160,12 +161,28 @@ function _pt_html(
         @goto print_to_output
     end
 
+    # Vertical cropping mode
+    # ==========================================================================
+
+    if hidden_rows_at_end
+        continuation_line_id = vcrop_mode == :middle ?
+            _header_size(ptable)[1] + div(num_rows, 2, RoundUp) - 1 :
+            num_rows
+    else
+        continuation_line_id = 0
+    end
+
     # Print the table
     # ==========================================================================
 
+    # Offset in the rows used when we have middle cropping. In this case, after
+    # drawing the continuation line, we use this variable to render the bottom
+    # part of the table.
+    Δr = 0
+
     @inbounds for i in 1:num_rows
         # Get the identification of the current row.
-        row_id = _get_row_id(ptable, i)
+        row_id = _get_row_id(ptable, i + Δr)
 
         # HTML tag for the row.
         html_row_tag = ""
@@ -217,10 +234,10 @@ function _pt_html(
             column_id = _get_column_id(ptable, j)
 
             # Get the alignment for the current cell.
-            cell_alignment = _get_cell_alignment(ptable, i, j)
+            cell_alignment = _get_cell_alignment(ptable, i + Δr, j)
 
             # Get the cell data.
-            cell_data = _get_element(ptable, i, j)
+            cell_data = _get_element(ptable, i + Δr, j)
 
             # If we do not annotate the type here, then we get type instability
             # due to `_parse_cell_text`.
@@ -346,40 +363,23 @@ function _pt_html(
 
         # If we have hidden rows, we need to print an additional row with the
         # continuation characters.
-        if (i == num_rows) && hidden_rows_at_end
+        if i == continuation_line_id
             _aprintln(buf, "<tr>", il, ns, minify)
             il += 1
 
             for j in 1:num_columns
-                _aprintln(
-                    buf,
-                    _styled_html(
-                        html_row_tag,
-                        "⋮",
-                        style;
-                    ),
-                    il,
-                    ns,
-                    minify
-                )
+                _aprintln(buf, _styled_html(html_row_tag, "⋮", style), il, ns, minify)
 
                 if (j == num_columns) && hidden_columns_at_end
-                    _aprintln(
-                        buf,
-                        _styled_html(
-                            html_row_tag,
-                            "⋱",
-                            style;
-                        ),
-                        il,
-                        ns,
-                        minify
-                    )
+                    _aprintln(buf, _styled_html(html_row_tag, "⋱", style), il, ns, minify)
                 end
             end
 
             il -= 1
             _aprintln(buf, "</tr>", il, ns, minify)
+
+            # Apply the offset in case we are using middle cropping.
+            Δr = _total_size(ptable)[1] - num_rows
         end
     end
 
