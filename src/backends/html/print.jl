@@ -169,7 +169,7 @@ function _pt_html(
 
     if hidden_rows_at_end
         continuation_line_id = vcrop_mode == :middle ?
-            num_header_rows + div(num_rows, 2, RoundUp) - 1 :
+            num_header_rows + div(num_rows - num_header_rows, 2, RoundUp) :
             num_rows
     else
         continuation_line_id = 0
