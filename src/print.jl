@@ -92,6 +92,12 @@ is not compliant, then only the following types are supported:
 
 - `limit_printing::Bool`: If `true`, then the cells will be converted using the
     property `:limit => true` of `IOContext`. (**Default** = `true`)
+- `max_num_of_columns`::Int: The maximum number of table columns that will be
+    rendered. If it is lower than 0, then all columns will be rendered.
+    (**Default** = -1)
+- `max_num_of_rows`::Int: The maximum number of table rows that will be
+    rendered. If it is lower than 0, then all rows will be rendered.
+    (**Default** = -1)
 - `renderer::Symbol`: A symbol that indicates which function should be used to
     convert an object to a string. It can be `:print` to use the function
     `print` or `:show` to use the function `show`. Notice that this selection is
