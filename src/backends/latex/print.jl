@@ -80,7 +80,7 @@ function _pt_latex(
 
     table_env = _latex_table_env[table_type]
 
-    # Make sure that `highlighters` is always a Ref{Any}(Tuple).
+    # Make sure that `highlighters` is always a Tuple.
     if !(highlighters isa Tuple)
         highlighters = (highlighters,)
     end
