@@ -82,7 +82,7 @@ function _print_top_bar(
     if !isempty(top_left_str) || !isempty(top_center_str) || !isempty(top_right_str)
         _aprintln(
             buf,
-            "<div style=\"height: 14px\">",
+            "<div style=\"overflow: auto; margin: 0 0 15pt 0\">",
             il,
             ns,
             minify
@@ -145,7 +145,7 @@ function _print_top_bar(
         if !isempty(top_center_str)
             _aprintln(
                 buf,
-                "<div style=\"position: absolute; left: 0; right: 0; text-align: center\">",
+                "<div style=\"position: absolute; left: 0; right: 0; text-align: center;\">",
                 il,
                 ns,
                 minify
