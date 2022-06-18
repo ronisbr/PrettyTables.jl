@@ -410,7 +410,7 @@ end
     )
 
     expected = """
-<div style="height: 14px">
+<div style="overflow: auto; margin: 0 0 15pt 0">
   <div style="position: absolute; right: 0; text-align: right">
     <span>4 columns and 4 rows omitted</span>
   </div>
@@ -471,7 +471,7 @@ end
     @test result == expected
 
     expected = """
-<div style="height: 14px">
+<div style="overflow: auto; margin: 0 0 15pt 0">
   <div style="position: absolute; right: 0; text-align: right">
     <span>4 columns and 4 rows omitted</span>
   </div>

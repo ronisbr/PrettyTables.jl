@@ -9,14 +9,14 @@
 
 @testset "Top bar" begin
     expected = """
-<div style="height: 14px">
+<div style="overflow: auto; margin: 0 0 15pt 0">
   <div style="position: absolute; text-align: left">
     <span style = "color: black;">Top left</span>
   </div>
   <div style="position: absolute; right: 0; text-align: right">
     <span style = "color: yellow;">Top right</span>
   </div>
-  <div style="position: absolute; left: 0; right: 0; text-align: center">
+  <div style="position: absolute; left: 0; right: 0; text-align: center;">
     <span style = "color: green;">Top center</span>
   </div>
 </div>
