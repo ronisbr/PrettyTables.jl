@@ -70,8 +70,6 @@ function _print_top_bar(
     buf::IO,
     top_left_str::String,
     top_left_str_decoration::HTMLDecoration,
-    top_center_str::String,
-    top_center_str_decoration::HTMLDecoration,
     top_right_str::String,
     top_right_str_decoration::HTMLDecoration,
     il::Int,
@@ -79,10 +77,10 @@ function _print_top_bar(
     minify::Bool
 )
     # Check if there is information to be displayed in the top bar.
-    if !isempty(top_left_str) || !isempty(top_center_str) || !isempty(top_right_str)
+    if !isempty(top_left_str) || !isempty(top_right_str)
         _aprintln(
             buf,
-            "<div style=\"overflow: auto; margin: 0 0 15pt 0\">",
+            "<div>",
             il,
             ns,
             minify
@@ -95,7 +93,7 @@ function _print_top_bar(
         if !isempty(top_left_str)
             _aprintln(
                 buf,
-                "<div style=\"position: absolute; text-align: left\">",
+                "<div style=\"float: left\">",
                 il,
                 ns,
                 minify
@@ -120,7 +118,7 @@ function _print_top_bar(
         if !isempty(top_right_str)
             _aprintln(
                 buf,
-                "<div style=\"position: absolute; right: 0; text-align: right\">",
+                "<div style=\"float: right\">",
                 il,
                 ns,
                 minify
@@ -139,30 +137,9 @@ function _print_top_bar(
             _aprintln(buf, "</div>", il, ns, minify)
         end
 
-        # Top center
-        # ----------------------------------------------------------------------
-
-        if !isempty(top_center_str)
-            _aprintln(
-                buf,
-                "<div style=\"position: absolute; left: 0; right: 0; text-align: center;\">",
-                il,
-                ns,
-                minify
-            )
-            il += 1
-
-            _aprintln(
-                buf,
-                _styled_html("span", top_center_str, Dict(top_center_str_decoration)),
-                il,
-                ns,
-                minify
-            )
-
-            il -= 1
-            _aprintln(buf, "</div>", il, ns, minify)
-        end
+        # We need to clear the floats so that the table is rendered below the
+        # top bar.
+        _aprintln(buf, "<div style=\"clear: both\"></div>", il, ns, minify)
 
         il -= 1
         _aprintln(buf, "</div>", il, ns, minify)

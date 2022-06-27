@@ -410,10 +410,11 @@ end
     )
 
     expected = """
-<div style="overflow: auto; margin: 0 0 15pt 0">
-  <div style="position: absolute; right: 0; text-align: right">
+<div>
+  <div style="float: right">
     <span>4 columns and 4 rows omitted</span>
   </div>
+  <div style="clear: both"></div>
 </div>
 <table>
   <thead>
@@ -471,10 +472,11 @@ end
     @test result == expected
 
     expected = """
-<div style="overflow: auto; margin: 0 0 15pt 0">
-  <div style="position: absolute; right: 0; text-align: right">
+<div>
+  <div style="float: right">
     <span>4 columns and 4 rows omitted</span>
   </div>
+  <div style="clear: both"></div>
 </div>
 <table>
   <thead>

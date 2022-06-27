@@ -19,13 +19,13 @@ function _pt_html(
     sortkeys::Bool = false,
     show_omitted_cell_summary::Bool = false,
     standalone::Bool = false,
+    table_div_class::String = "",
     top_left_str::String = "",
     top_left_str_decoration::HTMLDecoration = HTMLDecoration(),
-    top_center_str::String = "",
-    top_center_str_decoration::HTMLDecoration = HTMLDecoration(),
     top_right_str::String = "",
     top_right_str_decoration::HTMLDecoration = HTMLDecoration(),
-    vcrop_mode::Symbol = :bottom
+    vcrop_mode::Symbol = :bottom,
+    wrap_table_in_div::Bool = false
 )
     # Unpack fields of `pinfo`.
     ptable               = pinfo.ptable
@@ -155,8 +155,6 @@ function _pt_html(
         buf,
         top_left_str,
         top_left_str_decoration,
-        top_center_str,
-        top_center_str_decoration,
         top_right_str,
         top_right_str_decoration,
         il,
@@ -166,6 +164,15 @@ function _pt_html(
 
     # Table
     # ==========================================================================
+
+    if wrap_table_in_div
+        div_str = isempty(table_div_class) ?
+            "<div style=\"overflow-x: scroll\">" :
+            "<div class=\"" * table_div_class * "\" style=\"overflow-x: scroll\">"
+
+        _aprintln(buf, div_str, il, ns, minify)
+        il += 1
+    end
 
     _aprintln(buf, "<table>", il, ns, minify)
     il += 1
@@ -425,6 +432,11 @@ function _pt_html(
             ns,
             minify
         )
+    end
+
+    if wrap_table_in_div
+        il -= 1
+        _aprintln(buf, "</div>", il, ns, minify)
     end
 
     # Print the buffer into the io.
