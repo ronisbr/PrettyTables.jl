@@ -15,12 +15,13 @@ export HTMLDecoration, HTMLHighlighter, HTMLTableFormat
 Structure that defines parameters to decorate a table cell.
 """
 @kwdef struct HTMLDecoration
-    color::String           = ""
-    background::String      = ""
-    font_family::String     = ""
-    font_weight::String     = ""
-    text_decoration::String = ""
-    style::Dict{String,String} = Dict{String,String}()
+    color::String               = ""
+    background::String          = ""
+    font_family::String         = ""
+    font_style::String          = ""
+    font_weight::String         = ""
+    text_decoration::String     = ""
+    style::Dict{String, String} = Dict{String, String}()
 end
 
 HTMLDecoration(color::String) = HTMLDecoration(color = color)
@@ -32,6 +33,7 @@ function Dict(d::HTMLDecoration)
     !isempty(d.background)      && (style["background"]      = d.background)
     !isempty(d.font_family)     && (style["font-family"]     = d.font_family)
     !isempty(d.font_weight)     && (style["font-weight"]     = d.font_weight)
+    !isempty(d.font_style)      && (style["font-style"]      = d.font_style)
     !isempty(d.text_decoration) && (style["text-decoration"] = d.text_decoration)
 
     return style
