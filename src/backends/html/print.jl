@@ -312,7 +312,7 @@ function _pt_html(
                         buf,
                         _styled_html(
                             html_row_tag,
-                            "⋯",
+                            "&ctdot;",
                             style;
                             class = cell_class
                         ),
@@ -368,7 +368,7 @@ function _pt_html(
                         buf,
                         _styled_html(
                             html_row_tag,
-                            "⋯",
+                            "&ctdot;",
                             style;
                             class = cell_class
                         ),
@@ -397,10 +397,22 @@ function _pt_html(
             il += 1
 
             for j in 1:num_columns
-                _aprintln(buf, _styled_html(html_row_tag, "⋮", style), il, ns, minify)
+                _aprintln(
+                    buf,
+                    _styled_html(html_row_tag, "&vellip;", style),
+                    il,
+                    ns,
+                    minify
+                )
 
                 if (j == num_columns) && hidden_columns_at_end
-                    _aprintln(buf, _styled_html(html_row_tag, "⋱", style), il, ns, minify)
+                    _aprintln(
+                        buf,
+                        _styled_html(html_row_tag, "&dtdot;", style),
+                        il,
+                        ns,
+                        minify
+                    )
                 end
             end
 
