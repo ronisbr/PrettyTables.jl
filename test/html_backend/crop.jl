@@ -24,13 +24,13 @@
       <th style = "text-align: right;">Column 1</th>
       <th style = "text-align: right;">Column 2</th>
       <th style = "text-align: right;">Column 3</th>
-      <th style = "text-align: right;">⋯</th>
+      <th style = "text-align: right;">&ctdot;</th>
     </tr>
     <tr class = "subheader headerLastRow">
       <th style = "text-align: right;">C1</th>
       <th style = "text-align: right;">C2</th>
       <th style = "text-align: right;">C3</th>
-      <th style = "text-align: right;">⋯</th>
+      <th style = "text-align: right;">&ctdot;</th>
     </tr>
   </thead>
   <tbody>
@@ -38,25 +38,25 @@
       <td style = "text-align: right;">(1, 1)</td>
       <td style = "text-align: right;">(1, 2)</td>
       <td style = "text-align: right;">(1, 3)</td>
-      <td style = "text-align: right;">⋯</td>
+      <td style = "text-align: right;">&ctdot;</td>
     </tr>
     <tr>
       <td style = "text-align: right;">(2, 1)</td>
       <td style = "text-align: right;">(2, 2)</td>
       <td style = "text-align: right;">(2, 3)</td>
-      <td style = "text-align: right;">⋯</td>
+      <td style = "text-align: right;">&ctdot;</td>
     </tr>
     <tr>
       <td style = "text-align: right;">(3, 1)</td>
       <td style = "text-align: right;">(3, 2)</td>
       <td style = "text-align: right;">(3, 3)</td>
-      <td style = "text-align: right;">⋯</td>
+      <td style = "text-align: right;">&ctdot;</td>
     </tr>
     <tr>
-      <td style = "text-align: right;">⋮</td>
-      <td style = "text-align: right;">⋮</td>
-      <td style = "text-align: right;">⋮</td>
-      <td style = "text-align: right;">⋱</td>
+      <td style = "text-align: right;">&vellip;</td>
+      <td style = "text-align: right;">&vellip;</td>
+      <td style = "text-align: right;">&vellip;</td>
+      <td style = "text-align: right;">&dtdot;</td>
     </tr>
   </tbody>
 </table>
@@ -123,13 +123,13 @@
       <td style = "text-align: right;">(3, 7)</td>
     </tr>
     <tr>
-      <td style = "text-align: right;">⋮</td>
-      <td style = "text-align: right;">⋮</td>
-      <td style = "text-align: right;">⋮</td>
-      <td style = "text-align: right;">⋮</td>
-      <td style = "text-align: right;">⋮</td>
-      <td style = "text-align: right;">⋮</td>
-      <td style = "text-align: right;">⋮</td>
+      <td style = "text-align: right;">&vellip;</td>
+      <td style = "text-align: right;">&vellip;</td>
+      <td style = "text-align: right;">&vellip;</td>
+      <td style = "text-align: right;">&vellip;</td>
+      <td style = "text-align: right;">&vellip;</td>
+      <td style = "text-align: right;">&vellip;</td>
+      <td style = "text-align: right;">&vellip;</td>
     </tr>
   </tbody>
 </table>
@@ -151,13 +151,13 @@
       <th style = "text-align: right;">Column 1</th>
       <th style = "text-align: right;">Column 2</th>
       <th style = "text-align: right;">Column 3</th>
-      <th style = "text-align: right;">⋯</th>
+      <th style = "text-align: right;">&ctdot;</th>
     </tr>
     <tr class = "subheader headerLastRow">
       <th style = "text-align: right;">C1</th>
       <th style = "text-align: right;">C2</th>
       <th style = "text-align: right;">C3</th>
-      <th style = "text-align: right;">⋯</th>
+      <th style = "text-align: right;">&ctdot;</th>
     </tr>
   </thead>
   <tbody>
@@ -165,43 +165,43 @@
       <td style = "text-align: right;">(1, 1)</td>
       <td style = "text-align: right;">(1, 2)</td>
       <td style = "text-align: right;">(1, 3)</td>
-      <td style = "text-align: right;">⋯</td>
+      <td style = "text-align: right;">&ctdot;</td>
     </tr>
     <tr>
       <td style = "text-align: right;">(2, 1)</td>
       <td style = "text-align: right;">(2, 2)</td>
       <td style = "text-align: right;">(2, 3)</td>
-      <td style = "text-align: right;">⋯</td>
+      <td style = "text-align: right;">&ctdot;</td>
     </tr>
     <tr>
       <td style = "text-align: right;">(3, 1)</td>
       <td style = "text-align: right;">(3, 2)</td>
       <td style = "text-align: right;">(3, 3)</td>
-      <td style = "text-align: right;">⋯</td>
+      <td style = "text-align: right;">&ctdot;</td>
     </tr>
     <tr>
       <td style = "text-align: right;">(4, 1)</td>
       <td style = "text-align: right;">(4, 2)</td>
       <td style = "text-align: right;">(4, 3)</td>
-      <td style = "text-align: right;">⋯</td>
+      <td style = "text-align: right;">&ctdot;</td>
     </tr>
     <tr>
       <td style = "text-align: right;">(5, 1)</td>
       <td style = "text-align: right;">(5, 2)</td>
       <td style = "text-align: right;">(5, 3)</td>
-      <td style = "text-align: right;">⋯</td>
+      <td style = "text-align: right;">&ctdot;</td>
     </tr>
     <tr>
       <td style = "text-align: right;">(6, 1)</td>
       <td style = "text-align: right;">(6, 2)</td>
       <td style = "text-align: right;">(6, 3)</td>
-      <td style = "text-align: right;">⋯</td>
+      <td style = "text-align: right;">&ctdot;</td>
     </tr>
     <tr>
       <td style = "text-align: right;">(7, 1)</td>
       <td style = "text-align: right;">(7, 2)</td>
       <td style = "text-align: right;">(7, 3)</td>
-      <td style = "text-align: right;">⋯</td>
+      <td style = "text-align: right;">&ctdot;</td>
     </tr>
   </tbody>
 </table>
@@ -226,13 +226,13 @@
       <th style = "text-align: right;">Column 1</th>
       <th style = "text-align: right;">Column 2</th>
       <th style = "text-align: right;">Column 3</th>
-      <th style = "text-align: right;">⋯</th>
+      <th style = "text-align: right;">&ctdot;</th>
     </tr>
     <tr class = "subheader headerLastRow">
       <th style = "text-align: right;">C1</th>
       <th style = "text-align: right;">C2</th>
       <th style = "text-align: right;">C3</th>
-      <th style = "text-align: right;">⋯</th>
+      <th style = "text-align: right;">&ctdot;</th>
     </tr>
   </thead>
   <tbody>
@@ -240,25 +240,25 @@
       <td style = "text-align: right;">(1, 1)</td>
       <td style = "text-align: right;">(1, 2)</td>
       <td style = "text-align: right;">(1, 3)</td>
-      <td style = "text-align: right;">⋯</td>
+      <td style = "text-align: right;">&ctdot;</td>
     </tr>
     <tr>
       <td style = "text-align: right;">(2, 1)</td>
       <td style = "text-align: right;">(2, 2)</td>
       <td style = "text-align: right;">(2, 3)</td>
-      <td style = "text-align: right;">⋯</td>
+      <td style = "text-align: right;">&ctdot;</td>
     </tr>
     <tr>
-      <td style = "text-align: right;">⋮</td>
-      <td style = "text-align: right;">⋮</td>
-      <td style = "text-align: right;">⋮</td>
-      <td style = "text-align: right;">⋱</td>
+      <td style = "text-align: right;">&vellip;</td>
+      <td style = "text-align: right;">&vellip;</td>
+      <td style = "text-align: right;">&vellip;</td>
+      <td style = "text-align: right;">&dtdot;</td>
     </tr>
     <tr>
       <td style = "text-align: right;">(7, 1)</td>
       <td style = "text-align: right;">(7, 2)</td>
       <td style = "text-align: right;">(7, 3)</td>
-      <td style = "text-align: right;">⋯</td>
+      <td style = "text-align: right;">&ctdot;</td>
     </tr>
   </tbody>
 </table>
@@ -283,13 +283,13 @@
       <th style = "text-align: right;">Column 1</th>
       <th style = "text-align: right;">Column 2</th>
       <th style = "text-align: right;">Column 3</th>
-      <th style = "text-align: right;">⋯</th>
+      <th style = "text-align: right;">&ctdot;</th>
     </tr>
     <tr class = "subheader headerLastRow">
       <th style = "text-align: right;">C1</th>
       <th style = "text-align: right;">C2</th>
       <th style = "text-align: right;">C3</th>
-      <th style = "text-align: right;">⋯</th>
+      <th style = "text-align: right;">&ctdot;</th>
     </tr>
   </thead>
   <tbody>
@@ -297,19 +297,19 @@
       <td style = "text-align: right;">(1, 1)</td>
       <td style = "text-align: right;">(1, 2)</td>
       <td style = "text-align: right;">(1, 3)</td>
-      <td style = "text-align: right;">⋯</td>
+      <td style = "text-align: right;">&ctdot;</td>
     </tr>
     <tr>
-      <td style = "text-align: right;">⋮</td>
-      <td style = "text-align: right;">⋮</td>
-      <td style = "text-align: right;">⋮</td>
-      <td style = "text-align: right;">⋱</td>
+      <td style = "text-align: right;">&vellip;</td>
+      <td style = "text-align: right;">&vellip;</td>
+      <td style = "text-align: right;">&vellip;</td>
+      <td style = "text-align: right;">&dtdot;</td>
     </tr>
     <tr>
       <td style = "text-align: right;">(7, 1)</td>
       <td style = "text-align: right;">(7, 2)</td>
       <td style = "text-align: right;">(7, 3)</td>
-      <td style = "text-align: right;">⋯</td>
+      <td style = "text-align: right;">&ctdot;</td>
     </tr>
   </tbody>
 </table>
@@ -369,13 +369,13 @@
       <td style = "text-align: right;">(2, 7)</td>
     </tr>
     <tr>
-      <td style = "text-align: right;">⋮</td>
-      <td style = "text-align: right;">⋮</td>
-      <td style = "text-align: right;">⋮</td>
-      <td style = "text-align: right;">⋮</td>
-      <td style = "text-align: right;">⋮</td>
-      <td style = "text-align: right;">⋮</td>
-      <td style = "text-align: right;">⋮</td>
+      <td style = "text-align: right;">&vellip;</td>
+      <td style = "text-align: right;">&vellip;</td>
+      <td style = "text-align: right;">&vellip;</td>
+      <td style = "text-align: right;">&vellip;</td>
+      <td style = "text-align: right;">&vellip;</td>
+      <td style = "text-align: right;">&vellip;</td>
+      <td style = "text-align: right;">&vellip;</td>
     </tr>
     <tr>
       <td style = "text-align: right;">(7, 1)</td>
@@ -422,13 +422,13 @@ end
       <th style = "text-align: right;">Column 1</th>
       <th style = "text-align: right;">Column 2</th>
       <th style = "text-align: right;">Column 3</th>
-      <th style = "text-align: right;">⋯</th>
+      <th style = "text-align: right;">&ctdot;</th>
     </tr>
     <tr class = "subheader headerLastRow">
       <th style = "text-align: right;">C1</th>
       <th style = "text-align: right;">C2</th>
       <th style = "text-align: right;">C3</th>
-      <th style = "text-align: right;">⋯</th>
+      <th style = "text-align: right;">&ctdot;</th>
     </tr>
   </thead>
   <tbody>
@@ -436,25 +436,25 @@ end
       <td style = "text-align: right;">(1, 1)</td>
       <td style = "text-align: right;">(1, 2)</td>
       <td style = "text-align: right;">(1, 3)</td>
-      <td style = "text-align: right;">⋯</td>
+      <td style = "text-align: right;">&ctdot;</td>
     </tr>
     <tr>
       <td style = "text-align: right;">(2, 1)</td>
       <td style = "text-align: right;">(2, 2)</td>
       <td style = "text-align: right;">(2, 3)</td>
-      <td style = "text-align: right;">⋯</td>
+      <td style = "text-align: right;">&ctdot;</td>
     </tr>
     <tr>
       <td style = "text-align: right;">(3, 1)</td>
       <td style = "text-align: right;">(3, 2)</td>
       <td style = "text-align: right;">(3, 3)</td>
-      <td style = "text-align: right;">⋯</td>
+      <td style = "text-align: right;">&ctdot;</td>
     </tr>
     <tr>
-      <td style = "text-align: right;">⋮</td>
-      <td style = "text-align: right;">⋮</td>
-      <td style = "text-align: right;">⋮</td>
-      <td style = "text-align: right;">⋱</td>
+      <td style = "text-align: right;">&vellip;</td>
+      <td style = "text-align: right;">&vellip;</td>
+      <td style = "text-align: right;">&vellip;</td>
+      <td style = "text-align: right;">&dtdot;</td>
     </tr>
   </tbody>
 </table>
@@ -484,13 +484,13 @@ end
       <th style = "text-align: right;">Column 1</th>
       <th style = "text-align: right;">Column 2</th>
       <th style = "text-align: right;">Column 3</th>
-      <th style = "text-align: right;">⋯</th>
+      <th style = "text-align: right;">&ctdot;</th>
     </tr>
     <tr class = "subheader headerLastRow">
       <th style = "text-align: right;">C1</th>
       <th style = "text-align: right;">C2</th>
       <th style = "text-align: right;">C3</th>
-      <th style = "text-align: right;">⋯</th>
+      <th style = "text-align: right;">&ctdot;</th>
     </tr>
   </thead>
   <tbody>
@@ -498,25 +498,25 @@ end
       <td style = "text-align: right;">(1, 1)</td>
       <td style = "text-align: right;">(1, 2)</td>
       <td style = "text-align: right;">(1, 3)</td>
-      <td style = "text-align: right;">⋯</td>
+      <td style = "text-align: right;">&ctdot;</td>
     </tr>
     <tr>
       <td style = "text-align: right;">(2, 1)</td>
       <td style = "text-align: right;">(2, 2)</td>
       <td style = "text-align: right;">(2, 3)</td>
-      <td style = "text-align: right;">⋯</td>
+      <td style = "text-align: right;">&ctdot;</td>
     </tr>
     <tr>
-      <td style = "text-align: right;">⋮</td>
-      <td style = "text-align: right;">⋮</td>
-      <td style = "text-align: right;">⋮</td>
-      <td style = "text-align: right;">⋱</td>
+      <td style = "text-align: right;">&vellip;</td>
+      <td style = "text-align: right;">&vellip;</td>
+      <td style = "text-align: right;">&vellip;</td>
+      <td style = "text-align: right;">&dtdot;</td>
     </tr>
     <tr>
       <td style = "text-align: right;">(7, 1)</td>
       <td style = "text-align: right;">(7, 2)</td>
       <td style = "text-align: right;">(7, 3)</td>
-      <td style = "text-align: right;">⋯</td>
+      <td style = "text-align: right;">&ctdot;</td>
     </tr>
   </tbody>
 </table>
