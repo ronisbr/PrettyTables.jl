@@ -42,10 +42,6 @@ passed as keywords when calling the function [`pretty_table`](@ref):
     bar. (**Default** = "")
 - `top_left_str_decoration::HtmlDecoration`: Decoration used to print the
     top-left string (see `top_left_str`). (**Default** = `HtmlDecoration()`)
-- `top_center_str::String`: String to be printed at the center position of the
-    top bar. (**Default** = "")
-- `top_center_str_decoration::HtmlDecoration`: Decoration used to print the
-    top-center string (see `top_center_str`). (**Default** = `HtmlDecoration()`)
 - `top_right_str::String`: String to be printed at the right position of the
     top bar. Notice that this string will be replaced with the omitted cell
     summary if it must be displayed. (**Default** = "")
