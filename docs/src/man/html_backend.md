@@ -21,6 +21,9 @@ end
 The following options are available when the HTML backend is used. Those can be
 passed as keywords when calling the function [`pretty_table`](@ref):
 
+- `continuation_row_alignment::Symbol`: A symbol that defines the alignment of
+    the cells in the continuation row. This row is printed if the table is
+    vertically cropped. (**Default** = `:n`)
 - `highlighters::Union{HTMLHighlighter, Tuple}`: An instance of
     [`HTMLHighlighter`](@ref) or a tuple with a list of HTML highlighters (see
     the section [HTML highlighters](@ref)).

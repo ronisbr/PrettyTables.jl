@@ -425,6 +425,9 @@ This backend produces HTML tables. This backend can be used by selecting
     is `true`, then the escape algorithm **will not** be applied, allowing HTML
     code inside all the cells. In this case, the user must ensure that the
     output code is valid. (**Default** = `false`)
+- `continuation_row_alignment::Symbol`: A symbol that defines the alignment of
+    the cells in the continuation row. This row is printed if the table is
+    vertically cropped. (**Default** = `:n`)
 - `highlighters::Union{HTMLHighlighter, Tuple}`: An instance of
     [`HTMLHighlighter`](@ref) or a tuple with a list of HTML highlighters (see
     the section `HTML highlighters`).

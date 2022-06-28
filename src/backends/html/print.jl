@@ -13,6 +13,7 @@ function _pt_html(
     pinfo::PrintInfo;
     tf::HTMLTableFormat = tf_html_default,
     allow_html_in_cells::Bool = false,
+    continuation_row_alignment::Symbol = :n,
     highlighters::Union{HTMLHighlighter, Tuple} = (),
     linebreaks::Bool = false,
     minify::Bool = false,
@@ -181,7 +182,7 @@ function _pt_html(
     # --------------------------------------------------------------------------
 
     if length(title) > 0
-        style = Dict{String,String}("text-align" => _html_alignment[title_alignment])
+        style = Dict("text-align" => _html_alignment[title_alignment])
         _aprintln(buf, _styled_html("caption", title, style), il, ns, minify)
     end
 
@@ -308,6 +309,7 @@ function _pt_html(
 
                 # Check if we need to draw the continuation character.
                 if (j == num_columns) && hidden_columns_at_end
+                    style = _html_text_alignment_dict(continuation_row_alignment)
                     _aprintln(
                         buf,
                         _styled_html(
@@ -364,6 +366,8 @@ function _pt_html(
 
                 # Check if we need to draw the continuation character.
                 if (j == num_columns) && hidden_columns_at_end
+                    style = _html_text_alignment_dict(continuation_row_alignment)
+
                     _aprintln(
                         buf,
                         _styled_html(
