@@ -65,7 +65,7 @@
         backend = Val(:html),
         highlighters = HTMLHighlighter(
             (data, i, j) -> data[i, j] > 4,
-            HTMLDecoration(color = "red")
+            HtmlDecoration(color = "red")
         ),
         standalone = true
     )
@@ -131,8 +131,8 @@ end
         data;
         backend = Val(:html),
         highlighters = (
-            hl_cell(2, 2, HTMLDecoration(background = "blue")),
-            hl_cell(3, 3, HTMLDecoration(background = "blue"))
+            hl_cell(2, 2, HtmlDecoration(background = "blue")),
+            hl_cell(3, 3, HtmlDecoration(background = "blue"))
         ),
         standalone = false
     )
@@ -145,7 +145,7 @@ end
         backend = Val(:html),
         highlighters = hl_cell(
             [(2, 2), (3, 3)],
-            HTMLDecoration(background = "blue")
+            HtmlDecoration(background = "blue")
         ),
         standalone = false
     )
@@ -209,8 +209,8 @@ end
         data;
         backend = Val(:html),
         highlighters = (
-            hl_col(1, HTMLDecoration(font_weight = "bold")),
-            hl_col(4, HTMLDecoration(font_weight = "bold"))
+            hl_col(1, HtmlDecoration(font_weight = "bold")),
+            hl_col(4, HtmlDecoration(font_weight = "bold"))
         ),
         standalone = false
     )
@@ -221,7 +221,7 @@ end
         String,
         data;
         backend = Val(:html),
-        highlighters = hl_col([1, 4], HTMLDecoration(font_weight = "bold")),
+        highlighters = hl_col([1, 4], HtmlDecoration(font_weight = "bold")),
         standalone = false
     )
 
@@ -286,9 +286,9 @@ end
         data;
         backend = Val(:html),
         highlighters = (
-            hl_row(1, HTMLDecoration(font_family = "monospace")),
-            hl_row(3, HTMLDecoration(font_family = "monospace")),
-            hl_row(5, HTMLDecoration(font_family = "monospace"))
+            hl_row(1, HtmlDecoration(font_family = "monospace")),
+            hl_row(3, HtmlDecoration(font_family = "monospace")),
+            hl_row(5, HtmlDecoration(font_family = "monospace"))
         ),
         standalone = false
     )
@@ -301,7 +301,7 @@ end
         backend = Val(:html),
         highlighters = hl_row(
             [1, 3, 5],
-            HTMLDecoration(font_family = "monospace")
+            HtmlDecoration(font_family = "monospace")
         ),
         standalone = false
     )
@@ -368,7 +368,7 @@ end
         backend = Val(:html),
         highlighters = hl_lt(
             3,
-            HTMLDecoration(color = "white",
+            HtmlDecoration(color = "white",
             background = "black")
         ),
         standalone = false
@@ -436,7 +436,7 @@ end
         backend = Val(:html),
         highlighters = hl_leq(
             3,
-            HTMLDecoration(color = "white",
+            HtmlDecoration(color = "white",
             background = "black")
         ),
         standalone = false
@@ -504,7 +504,7 @@ end
         backend = Val(:html),
         highlighters = hl_gt(
             3,
-            HTMLDecoration(color = "white",
+            HtmlDecoration(color = "white",
             background = "black")
         ),
         standalone = false
@@ -572,7 +572,7 @@ end
         backend = Val(:html),
         highlighters = hl_geq(
             3,
-            HTMLDecoration(color = "white",
+            HtmlDecoration(color = "white",
             background = "black")
         ),
         standalone = false
@@ -639,7 +639,7 @@ end
         backend = Val(:html),
         highlighters = hl_value(
             3,
-            HTMLDecoration(text_decoration = "line-through")
+            HtmlDecoration(text_decoration = "line-through")
         ),
         standalone = false
     )

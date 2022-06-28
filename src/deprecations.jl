@@ -24,3 +24,5 @@ end
 function _rm_nosubheader(; nosubheader::Bool, kwargs...)
     return kwargs
 end
+
+@deprecate HTMLDecoration(args...; kwargs...) HtmlDecoration(args...; kwargs...)

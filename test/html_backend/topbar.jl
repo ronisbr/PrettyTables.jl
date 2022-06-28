@@ -73,9 +73,9 @@
         data;
         backend = Val(:html),
         top_left_str = "Top left",
-        top_left_str_decoration = HTMLDecoration(color = "black"),
+        top_left_str_decoration = HtmlDecoration(color = "black"),
         top_right_str = "Top right",
-        top_right_str_decoration = HTMLDecoration(color = "yellow")
+        top_right_str_decoration = HtmlDecoration(color = "yellow")
     )
 
     expected = """
@@ -146,9 +146,9 @@
         backend = Val(:html),
         table_div_class = "tableClass",
         top_left_str = "Top left",
-        top_left_str_decoration = HTMLDecoration(color = "black"),
+        top_left_str_decoration = HtmlDecoration(color = "black"),
         top_right_str = "Top right",
-        top_right_str_decoration = HTMLDecoration(color = "yellow"),
+        top_right_str_decoration = HtmlDecoration(color = "yellow"),
         wrap_table_in_div = true,
     )
 

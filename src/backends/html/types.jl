@@ -7,14 +7,14 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-export HTMLDecoration, HTMLHighlighter, HTMLTableFormat
+export HtmlDecoration, HTMLHighlighter, HTMLTableFormat
 
 """
-    HTMLDecoration
+    HtmlDecoration
 
 Structure that defines parameters to decorate a table cell.
 """
-@kwdef struct HTMLDecoration
+@kwdef struct HtmlDecoration
     color::String               = ""
     background::String          = ""
     font_family::String         = ""
@@ -24,9 +24,9 @@ Structure that defines parameters to decorate a table cell.
     style::Dict{String, String} = Dict{String, String}()
 end
 
-HTMLDecoration(color::String) = HTMLDecoration(color = color)
+HtmlDecoration(color::String) = HtmlDecoration(color = color)
 
-function Dict(d::HTMLDecoration)
+function Dict(d::HtmlDecoration)
     style = d.style
 
     !isempty(d.color)           && (style["color"]           = d.color)
@@ -121,16 +121,16 @@ Defines the default highlighter of a table when using the html backend.
     return `true` if the element `(i,j)` in `data` must be highlighter, or
     `false` otherwise.
 - `fd::Function`: Function with the signature `f(h,data,i,j)` in which `h` is
-    the highlighter. This function must return the `HTMLDecoration` to be
+    the highlighter. This function must return the `HtmlDecoration` to be
     applied to the cell that must be highlighted.
-- `decoration::HTMLDecoration`: The `HTMLDecoration` to be applied to the
+- `decoration::HtmlDecoration`: The `HtmlDecoration` to be applied to the
     highlighted cell if the default `fd` is used.
 
 # Remarks
 
 This structure can be constructed using two helpers:
 
-    HTMLHighlighter(f::Function, decoration::HTMLDecoration)
+    HTMLHighlighter(f::Function, decoration::HtmlDecoration)
 
     HTMLHighlighter(f::Function, fd::Function)
 
@@ -144,11 +144,11 @@ specifying the function `fd`.
     fd::Function = (h, data, i, j)->h.decoration
 
     # Private
-    decoration::HTMLDecoration = HTMLDecoration()
+    decoration::HtmlDecoration = HtmlDecoration()
 end
 
 # Helper function to construct HTMLHighlighter.
-function HTMLHighlighter(f::Function, decoration::HTMLDecoration)
+function HTMLHighlighter(f::Function, decoration::HtmlDecoration)
     return HTMLHighlighter(f = f, decoration = decoration)
 end
 

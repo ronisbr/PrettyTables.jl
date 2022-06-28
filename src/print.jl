@@ -443,17 +443,17 @@ This backend produces HTML tables. This backend can be used by selecting
     that defines the general format of the HTML table.
 - `top_left_str::String`: String to be printed at the left position of the top
     bar. (**Default** = "")
-- `top_left_str_decoration::HTMLDecoration`: Decoration used to print the
-    top-left string (see `top_left_str`). (**Default** = `HTMLDecoration()`)
+- `top_left_str_decoration::HtmlDecoration`: Decoration used to print the
+    top-left string (see `top_left_str`). (**Default** = `HtmlDecoration()`)
 - `top_center_str::String`: String to be printed at the center position of the
     top bar. (**Default** = "")
-- `top_center_str_decoration::HTMLDecoration`: Decoration used to print the
-    top-center string (see `top_center_str`). (**Default** = `HTMLDecoration()`)
+- `top_center_str_decoration::HtmlDecoration`: Decoration used to print the
+    top-center string (see `top_center_str`). (**Default** = `HtmlDecoration()`)
 - `top_right_str::String`: String to be printed at the right position of the
     top bar. Notice that this string will be replaced with the omitted cell
     summary if it must be displayed. (**Default** = "")
-- `top_right_str_decoration::HTMLDecoration`: Decoration used to print the
-    top-right string (see `top_right_str`). (**Default** = `HTMLDecoration()`)
+- `top_right_str_decoration::HtmlDecoration`: Decoration used to print the
+    top-right string (see `top_right_str`). (**Default** = `HtmlDecoration()`)
 
 ## HTML highlighters
 
@@ -465,7 +465,7 @@ contains the following two public fields:
     return `true` if the element `(i,j)` in `data` must be highlighted, or
     `false` otherwise.
 - `fd::Function`: Function with the signature `f(h, data, i, j)` in which `h` is
-    the highlighter. This function must return the `HTMLDecoration` to be
+    the highlighter. This function must return the `HtmlDecoration` to be
     applied to the cell that must be highlighted.
 
 The function `f` has the following signature:
@@ -478,12 +478,12 @@ in which `data` is a reference to the data that is being printed, and `i` and
 Otherwise, the default style will be used.
 
 If the function `f` returns true, then the function `fd(h, data, i, j)` will be
-called and must return an element of type [`HTMLDecoration`](@ref) that contains
+called and must return an element of type [`HtmlDecoration`](@ref) that contains
 the decoration to be applied to the cell.
 
 A HTML highlighter can be constructed using two helpers:
 
-    HTMLHighlighter(f::Function, decoration::HTMLDecoration)
+    HTMLHighlighter(f::Function, decoration::HtmlDecoration)
 
     HTMLHighlighter(f::Function, fd::Function)
 

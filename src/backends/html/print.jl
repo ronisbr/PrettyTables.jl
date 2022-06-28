@@ -21,9 +21,9 @@ function _pt_html(
     standalone::Bool = false,
     table_div_class::String = "",
     top_left_str::String = "",
-    top_left_str_decoration::HTMLDecoration = HTMLDecoration(),
+    top_left_str_decoration::HtmlDecoration = HtmlDecoration(),
     top_right_str::String = "",
-    top_right_str_decoration::HTMLDecoration = HTMLDecoration(),
+    top_right_str_decoration::HtmlDecoration = HtmlDecoration(),
     vcrop_mode::Symbol = :bottom,
     wrap_table_in_div::Bool = false
 )

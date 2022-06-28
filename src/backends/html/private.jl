@@ -69,9 +69,9 @@ end
 function _print_top_bar(
     buf::IO,
     top_left_str::String,
-    top_left_str_decoration::HTMLDecoration,
+    top_left_str_decoration::HtmlDecoration,
     top_right_str::String,
-    top_right_str_decoration::HTMLDecoration,
+    top_right_str_decoration::HtmlDecoration,
     il::Int,
     ns::Int,
     minify::Bool
