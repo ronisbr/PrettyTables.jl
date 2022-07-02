@@ -104,7 +104,11 @@ function _print_top_bar(
 
             _aprintln(
                 buf,
-                _styled_html("span", top_left_str, Dict(top_left_str_decoration)),
+                _styled_html(
+                    "span",
+                    _str_html_escaped(top_left_str),
+                    Dict(top_left_str_decoration)
+                ),
                 il,
                 ns,
                 minify
@@ -129,7 +133,11 @@ function _print_top_bar(
 
             _aprintln(
                 buf,
-                _styled_html("span", top_right_str, Dict(top_right_str_decoration)),
+                _styled_html(
+                    "span",
+                    _str_html_escaped(top_right_str),
+                    Dict(top_right_str_decoration)
+                ),
                 il,
                 ns,
                 minify
