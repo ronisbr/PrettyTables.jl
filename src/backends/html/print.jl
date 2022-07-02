@@ -11,7 +11,7 @@
 function _pt_html(
     io::IO,
     pinfo::PrintInfo;
-    tf::HTMLTableFormat = tf_html_default,
+    tf::HtmlTableFormat = tf_html_default,
     allow_html_in_cells::Bool = false,
     continuation_row_alignment::Symbol = :r,
     highlighters::Union{HTMLHighlighter, Tuple} = (),

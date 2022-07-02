@@ -26,3 +26,4 @@ function _rm_nosubheader(; nosubheader::Bool, kwargs...)
 end
 
 @deprecate HTMLDecoration(args...; kwargs...) HtmlDecoration(args...; kwargs...)
+@deprecate HTMLTableFormat(args...; kwargs...) HtmlTableFormat(args...; kwargs...)

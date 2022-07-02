@@ -7,7 +7,7 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-export HtmlDecoration, HTMLHighlighter, HTMLTableFormat
+export HtmlDecoration, HTMLHighlighter, HtmlTableFormat
 
 """
     HtmlDecoration
@@ -40,7 +40,7 @@ function Dict(d::HtmlDecoration)
 end
 
 """
-    HTMLTableFormat
+    HtmlTableFormat
 
 Format that will be used to print the HTML table. All parameters are strings
 compatible with the corresponding HTML property.
@@ -65,7 +65,7 @@ the variable `css`.
     the row number header can be styled using `th.rowNumber` and the
     row numbers cells can be styled using `td.rowNumber`.
 """
-@kwdef struct HTMLTableFormat
+@kwdef struct HtmlTableFormat
     css::String = """
     table, td, th {
         border-collapse: collapse;

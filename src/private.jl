@@ -357,7 +357,7 @@ function _pt(
 
             if tf isa TextFormat
                 backend = Val(:text)
-            elseif tf isa HTMLTableFormat
+            elseif tf isa HtmlTableFormat
                 backend = Val(:html)
             elseif tf isa LatexTableFormat
                 backend = Val(:latex)
@@ -365,7 +365,7 @@ function _pt(
                 throw(
                     TypeError(
                         :_pt,
-                        Union{TextFormat, HTMLTableFormat, LatexTableFormat},
+                        Union{TextFormat, HtmlTableFormat, LatexTableFormat},
                         typeof(tf)
                     )
                 )

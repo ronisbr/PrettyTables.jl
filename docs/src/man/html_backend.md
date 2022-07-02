@@ -36,7 +36,7 @@ passed as keywords when calling the function [`pretty_table`](@ref):
     is `:bottom`, then the data, if required, will be cropped in the bottom. On
     the other hand, if it is `:middle`, then the data will be cropped in the
     middle if necessary. (**Default** = `:bottom`)
-- `tf::HTMLTableFormat`: An instance of the structure [`HTMLTableFormat`](@ref)
+- `tf::HtmlTableFormat`: An instance of the structure [`HtmlTableFormat`](@ref)
     that defines the general format of the HTML table.
 - `top_left_str::String`: String to be printed at the left position of the top
     bar. (**Default** = "")
