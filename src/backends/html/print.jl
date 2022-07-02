@@ -23,11 +23,14 @@ function _pt_html(
     table_div_class::String = "",
     table_class::String = "",
     top_left_str::String = "",
-    top_left_str_decoration::HtmlDecoration = HtmlDecoration(),
     top_right_str::String = "",
-    top_right_str_decoration::HtmlDecoration = HtmlDecoration(),
     vcrop_mode::Symbol = :bottom,
-    wrap_table_in_div::Bool = false
+    wrap_table_in_div::Bool = false,
+    # Decorations
+    row_name_decoration::HtmlDecoration = HtmlDecoration(font_weight = "bold"),
+    row_number_decoration::HtmlDecoration = HtmlDecoration(font_weight = "bold"),
+    top_left_str_decoration::HtmlDecoration = HtmlDecoration(),
+    top_right_str_decoration::HtmlDecoration = HtmlDecoration(),
 )
     # Unpack fields of `pinfo`.
     ptable               = pinfo.ptable
@@ -300,8 +303,10 @@ function _pt_html(
 
             if column_id == :row_number
                 cell_class = "rowNumber"
+                merge!(style, Dict(row_number_decoration))
             elseif column_id == :row_name
                 cell_class = "rowName"
+                merge!(style, Dict(row_name_decoration))
             end
 
             if _is_header_row(row_id)

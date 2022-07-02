@@ -259,33 +259,33 @@ end
 <table>
   <thead>
     <tr class = "header headerLastRow">
-      <th class = "rowNumber" style = "text-align: right;">Row</th>
+      <th class = "rowNumber" style = "font-weight: bold; text-align: right;">Row</th>
       <th style = "text-align: center;">Col. 1</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td class = "rowNumber" style = "text-align: right;">1</td>
+      <td class = "rowNumber" style = "font-weight: bold; text-align: right;">1</td>
       <td style = "text-align: center;">0</td>
     </tr>
     <tr>
-      <td class = "rowNumber" style = "text-align: right;">2</td>
+      <td class = "rowNumber" style = "font-weight: bold; text-align: right;">2</td>
       <td style = "text-align: center;">1</td>
     </tr>
     <tr>
-      <td class = "rowNumber" style = "text-align: right;">3</td>
+      <td class = "rowNumber" style = "font-weight: bold; text-align: right;">3</td>
       <td style = "text-align: center;">2</td>
     </tr>
     <tr>
-      <td class = "rowNumber" style = "text-align: right;">4</td>
+      <td class = "rowNumber" style = "font-weight: bold; text-align: right;">4</td>
       <td style = "text-align: center;">3</td>
     </tr>
     <tr>
-      <td class = "rowNumber" style = "text-align: right;">5</td>
+      <td class = "rowNumber" style = "font-weight: bold; text-align: right;">5</td>
       <td style = "text-align: center;">4</td>
     </tr>
     <tr>
-      <td class = "rowNumber" style = "text-align: right;">6</td>
+      <td class = "rowNumber" style = "font-weight: bold; text-align: right;">6</td>
       <td style = "text-align: center;">5</td>
     </tr>
   </tbody>
