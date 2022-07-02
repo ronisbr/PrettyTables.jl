@@ -63,7 +63,7 @@
         String,
         data;
         backend = Val(:html),
-        highlighters = HTMLHighlighter(
+        highlighters = HtmlHighlighter(
             (data, i, j) -> data[i, j] > 4,
             HtmlDecoration(color = "red")
         ),

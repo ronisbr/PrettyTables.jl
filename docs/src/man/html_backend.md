@@ -31,8 +31,8 @@ passed as keywords when calling the function [`pretty_table`](@ref):
 - `continuation_row_alignment::Symbol`: A symbol that defines the alignment of
     the cells in the continuation row. This row is printed if the table is
     vertically cropped. (**Default** = `:r`)
-- `highlighters::Union{HTMLHighlighter, Tuple}`: An instance of
-    [`HTMLHighlighter`](@ref) or a tuple with a list of HTML highlighters (see
+- `highlighters::Union{HtmlHighlighter, Tuple}`: An instance of
+    [`HtmlHighlighter`](@ref) or a tuple with a list of HTML highlighters (see
     the section [HTML highlighters](@ref)).
 - `linebreaks::Bool`: If `true`, then `\\n` will be replaced by `<br>`.
     (**Default** = `false`)
@@ -58,7 +58,7 @@ passed as keywords when calling the function [`pretty_table`](@ref):
 ## HTML highlighters
 
 A set of highlighters can be passed as a `Tuple` to the `highlighters` keyword.
-Each highlighter is an instance of the structure [`HTMLHighlighter`](@ref). It
+Each highlighter is an instance of the structure [`HtmlHighlighter`](@ref). It
 contains the following two public fields:
 
 - `f::Function`: Function with the signature `f(data, i, j)` in which should
@@ -84,8 +84,8 @@ the decoration to be applied to the cell.
 A HTML highlighter can be constructed using two helpers:
 
 ```julia
-HTMLHighlighter(f::Function, decoration::HtmlDecoration)
-HTMLHighlighter(f::Function, fd::Function)
+HtmlHighlighter(f::Function, decoration::HtmlDecoration)
+HtmlHighlighter(f::Function, fd::Function)
 ```
 
 The first will apply a fixed decoration to the highlighted cell specified in
@@ -119,11 +119,11 @@ julia> data = hcat(t, ones(length(t)) * 1, 1 * t, 0.5 .* t.^2);
 julia> header = (["Time", "Acceleration", "Velocity", "Distance"],
                  [ "[s]",       "[m/s²]",    "[m/s]",      "[m]"]);
 
-julia> hl_v = HTMLHighlighter((data, i, j) -> (j == 3) && data[i, 3] > 9, HtmlDecoration(color = "blue", font_weight = "bold"));
+julia> hl_v = HtmlHighlighter((data, i, j) -> (j == 3) && data[i, 3] > 9, HtmlDecoration(color = "blue", font_weight = "bold"));
 
-julia> hl_p = HTMLHighlighter((data, i, j) -> (j == 4) && data[i, 4] > 10, HtmlDecoration(color = "red"));
+julia> hl_p = HtmlHighlighter((data, i, j) -> (j == 4) && data[i, 4] > 10, HtmlDecoration(color = "red"));
 
-julia> hl_e = HTMLHighlighter((data, i, j) -> data[i, 1] == 10, HtmlDecoration(background = "black", color = "white"))
+julia> hl_e = HtmlHighlighter((data, i, j) -> data[i, 1] == 10, HtmlDecoration(background = "black", color = "white"))
 
 julia> pretty_table(data; backend = Val(:html), header = header, highlighters = (hl_e, hl_p, hl_v), standalone = true)
 ```

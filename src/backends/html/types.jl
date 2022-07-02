@@ -7,7 +7,7 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-export HtmlCell, HtmlDecoration, HTMLHighlighter, HtmlTableFormat
+export HtmlCell, HtmlDecoration, HtmlHighlighter, HtmlTableFormat
 export @html_cell_str
 
 """
@@ -138,7 +138,7 @@ end
 # ==============================================================================
 
 """
-    HTMLHighlighter
+    HtmlHighlighter
 
 Defines the default highlighter of a table when using the html backend.
 
@@ -157,15 +157,15 @@ Defines the default highlighter of a table when using the html backend.
 
 This structure can be constructed using two helpers:
 
-    HTMLHighlighter(f::Function, decoration::HtmlDecoration)
+    HtmlHighlighter(f::Function, decoration::HtmlDecoration)
 
-    HTMLHighlighter(f::Function, fd::Function)
+    HtmlHighlighter(f::Function, fd::Function)
 
 The first will apply a fixed decoration to the highlighted cell specified in
 `decoration` whereas the second let the user select the desired decoration by
 specifying the function `fd`.
 """
-@kwdef struct HTMLHighlighter
+@kwdef struct HtmlHighlighter
     # API
     f::Function
     fd::Function = (h, data, i, j)->h.decoration
@@ -174,9 +174,9 @@ specifying the function `fd`.
     decoration::HtmlDecoration = HtmlDecoration()
 end
 
-# Helper function to construct HTMLHighlighter.
-function HTMLHighlighter(f::Function, decoration::HtmlDecoration)
-    return HTMLHighlighter(f = f, decoration = decoration)
+# Helper function to construct HtmlHighlighter.
+function HtmlHighlighter(f::Function, decoration::HtmlDecoration)
+    return HtmlHighlighter(f = f, decoration = decoration)
 end
 
-HTMLHighlighter(f::Function, fd::Function) = HTMLHighlighter(f = f, fd = fd)
+HtmlHighlighter(f::Function, fd::Function) = HtmlHighlighter(f = f, fd = fd)

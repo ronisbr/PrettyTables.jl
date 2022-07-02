@@ -429,8 +429,8 @@ This backend produces HTML tables. This backend can be used by selecting
 - `continuation_row_alignment::Symbol`: A symbol that defines the alignment of
     the cells in the continuation row. This row is printed if the table is
     vertically cropped. (**Default** = `:r`)
-- `highlighters::Union{HTMLHighlighter, Tuple}`: An instance of
-    [`HTMLHighlighter`](@ref) or a tuple with a list of HTML highlighters (see
+- `highlighters::Union{HtmlHighlighter, Tuple}`: An instance of
+    [`HtmlHighlighter`](@ref) or a tuple with a list of HTML highlighters (see
     the section `HTML highlighters`).
 - `linebreaks::Bool`: If `true`, then `\\n` will be replaced by `<br>`.
     (**Default** = `false`)
@@ -458,7 +458,7 @@ This backend produces HTML tables. This backend can be used by selecting
 ## HTML highlighters
 
 A set of highlighters can be passed as a `Tuple` to the `highlighters` keyword.
-Each highlighter is an instance of the structure [`HTMLHighlighter`](@ref). It
+Each highlighter is an instance of the structure [`HtmlHighlighter`](@ref). It
 contains the following two public fields:
 
 - `f::Function`: Function with the signature `f(data, i, j)` in which should
@@ -483,9 +483,9 @@ the decoration to be applied to the cell.
 
 A HTML highlighter can be constructed using two helpers:
 
-    HTMLHighlighter(f::Function, decoration::HtmlDecoration)
+    HtmlHighlighter(f::Function, decoration::HtmlDecoration)
 
-    HTMLHighlighter(f::Function, fd::Function)
+    HtmlHighlighter(f::Function, fd::Function)
 
 The first will apply a fixed decoration to the highlighted cell specified in
 `decoration` whereas the second let the user select the desired decoration by
