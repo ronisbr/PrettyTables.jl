@@ -424,7 +424,8 @@ This backend produces HTML tables. This backend can be used by selecting
     algorithm blocks the usage of HTML code inside of the cells. If this keyword
     is `true`, then the escape algorithm **will not** be applied, allowing HTML
     code inside all the cells. In this case, the user must ensure that the
-    output code is valid. (**Default** = `false`)
+    output code is valid. If only few cells have HTML code, wrap then in a
+    [`HtmlCell`](@ref) object instead. (**Default** = `false`)
 - `continuation_row_alignment::Symbol`: A symbol that defines the alignment of
     the cells in the continuation row. This row is printed if the table is
     vertically cropped. (**Default** = `:r`)

@@ -7,7 +7,34 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-export HtmlDecoration, HTMLHighlighter, HtmlTableFormat
+export HtmlCell, HtmlDecoration, HTMLHighlighter, HtmlTableFormat
+export @html_cell_str
+
+"""
+    struct HtmlCell
+
+Defines a table cell that contains HTML code. It can be created using the macro
+[`@html_cell_str`](@ref).
+"""
+struct HtmlCell{T}
+    data::T
+end
+
+"""
+    @html_cell_str(str)
+
+Create a table cell with HTML code.
+
+# Examples
+
+```julia
+julia> html_cell"<i>Italic text</i>"
+HtmlCell{String}("<i>Italic text</i>")
+```
+"""
+macro html_cell_str(str)
+    return :(HtmlCell($str))
+end
 
 """
     HtmlDecoration

@@ -482,6 +482,50 @@ end
     )
 
     @test result == expected
+
+    header = [
+        html_cell"<span style = \"color: blue;\">1</span>",
+        "<span style = \"color: blue;\">2</span>"
+    ]
+
+    matrix = [
+        1 html_cell"<b>Bold</b>"
+        2 html_cell"<em>Italics</em>"
+        3 "<p class=\"myClass\">Paragraph</p>"
+    ]
+
+    expected = """
+<table>
+  <thead>
+    <tr class = "header headerLastRow">
+      <th style = "text-align: right;"><span style = "color: blue;">1</span></th>
+      <th style = "text-align: right;">&lt;span style = &quot;color: blue;&quot;&gt;2&lt;/span&gt;</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style = "text-align: right;">1</td>
+      <td style = "text-align: right;"><b>Bold</b></td>
+    </tr>
+    <tr>
+      <td style = "text-align: right;">2</td>
+      <td style = "text-align: right;"><em>Italics</em></td>
+    </tr>
+    <tr>
+      <td style = "text-align: right;">3</td>
+      <td style = "text-align: right;">&lt;p class=&quot;myClass&quot;&gt;Paragraph&lt;/p&gt;</td>
+    </tr>
+  </tbody>
+</table>
+"""
+
+    result = pretty_table(
+        String,
+        matrix;
+        backend = Val(:html),
+        header = header,
+        standalone = false
+    )
 end
 
 @testset "Table class" begin

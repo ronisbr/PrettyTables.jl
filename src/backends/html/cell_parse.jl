@@ -24,6 +24,65 @@ This function must return a string that will be printed to the IO.
     renderer::Union{Val{:print}, Val{:show}} = Val(:print),
     kwargs...
 )
+    cell_str = _render_cell_html(
+        cell;
+        compact_printing = compact_printing,
+        limit_printing = limit_printing,
+        renderer = renderer
+    )
+
+    # Check if we need to replace `\n` with `<br>`.
+    replace_newline = !cell_first_line_only && linebreaks
+
+    if cell_first_line_only
+        cell_str = split(cell_str, '\n')[1]
+    end
+
+    # If the user wants HTML code inside cell, then we must not escape the HTML
+    # characters.
+    return _str_html_escaped(cell_str, replace_newline, !allow_html_in_cells)
+end
+
+@inline function _parse_cell_html(
+    cell::HtmlCell;
+    cell_first_line_only::Bool = false,
+    compact_printing::Bool = true,
+    limit_printing::Bool = true,
+    linebreaks::Bool = false,
+    renderer::Union{Val{:print}, Val{:show}} = Val(:print),
+    kwargs...
+)
+    cell_str = _render_cell_html(
+        cell.data;
+        compact_printing = compact_printing,
+        limit_printing = limit_printing,
+        renderer = renderer
+    )
+
+    # Check if we need to replace `\n` with `<br>`.
+    replace_newline = !cell_first_line_only && linebreaks
+
+    if cell_first_line_only
+        cell_str = split(cell_str, '\n')[1]
+    end
+
+    return _str_html_escaped(cell_str, replace_newline, false)
+end
+
+@inline function _parse_cell_html(cell::Markdown.MD; kwargs...)
+    return replace(sprint(show, MIME("text/html"), cell),"\n"=>"")
+end
+
+@inline _parse_cell_html(cell::Missing; kwargs...) = "missing"
+@inline _parse_cell_html(cell::Nothing; kwargs...) = "nothing"
+@inline _parse_cell_html(cell::UndefInitializer; kwargs...) = "#undef"
+
+function _render_cell_html(
+    cell;
+    compact_printing::Bool = true,
+    limit_printing::Bool = true,
+    renderer::Union{Val{:print}, Val{:show}} = Val(:print),
+)
     # Create the context that will be used when rendering the cell. Notice that
     # the `IOBuffer` will be neglected.
     context = IOContext(stdout, :compact => compact_printing, :limit => limit_printing)
@@ -41,22 +100,5 @@ This function must return a string that will be printed to the IO.
         cell_str = sprint(print, cell; context = context)
     end
 
-    # Check if we need to replace `\n` with `<br>`.
-    replace_newline = !cell_first_line_only && linebreaks
-
-    if cell_first_line_only
-        cell_str = split(cell_str, '\n')[1]
-    end
-
-    # If the user wants HTML code inside cell, then we must not escape the HTML
-    # characters.
-    return _str_html_escaped(cell_str, replace_newline, !allow_html_in_cells)
+    return cell_str
 end
-
-@inline function _parse_cell_html(cell::Markdown.MD; kwargs...)
-    return replace(sprint(show, MIME("text/html"), cell),"\n"=>"")
-end
-
-@inline _parse_cell_html(cell::Missing; kwargs...) = "missing"
-@inline _parse_cell_html(cell::Nothing; kwargs...) = "nothing"
-@inline _parse_cell_html(cell::UndefInitializer; kwargs...) = "#undef"
