@@ -14,6 +14,7 @@ function _pt_html(
     tf::HtmlTableFormat = tf_html_default,
     allow_html_in_cells::Bool = false,
     continuation_row_alignment::Symbol = :r,
+    header_cell_titles::Union{Nothing, Tuple} = nothing,
     highlighters::Union{HtmlHighlighter, Tuple} = (),
     linebreaks::Bool = false,
     minify::Bool = false,
@@ -68,6 +69,19 @@ function _pt_html(
     # Make sure that `highlighters` is always a Tuple.
     if !(highlighters isa Tuple)
         highlighters = (highlighters,)
+    end
+
+    # Check the dimensions of header cell titles.
+    if !isnothing(header_cell_titles)
+        if length(header_cell_titles) != num_header_rows
+            error("The number of vectors in `header_cell_titles` must match that of `header`.")
+        end
+
+        for k in 1:num_header_rows
+            if !isnothing(header_cell_titles[k]) && (length(header_cell_titles[k]) != num_data_columns)
+                error("The number of elements in each row of `header_cell_titles` must match the number of columns in the table.")
+            end
+        end
     end
 
     # Variables to store information about indentation
@@ -298,6 +312,9 @@ function _pt_html(
             # The class of the cell.
             cell_class = ""
 
+            # The title of the cell (used only for the header).
+            cell_title = ""
+
             # Style of the cell.
             style = _html_text_alignment_dict(cell_alignment)
 
@@ -310,6 +327,17 @@ function _pt_html(
             end
 
             if _is_header_row(row_id)
+
+                # Check if the user wants to add a title to this header cell.
+                if column_id == :__ORIGINAL_DATA__
+                    # TODO: This code only works because the header is always at top.
+
+                    if !isnothing(header_cell_titles) && !isnothing(header_cell_titles[i])
+                        jh = _get_data_column_index(ptable, j)
+                        cell_title = string(header_cell_titles[i][jh])
+                    end
+                end
+
                 cell_str = _parse_cell_html(
                     cell_data,
                     allow_html_in_cells = allow_html_in_cells,
@@ -324,7 +352,8 @@ function _pt_html(
                         html_row_tag,
                         cell_str,
                         style;
-                        class = cell_class
+                        class = cell_class,
+                        title = cell_title
                     ),
                     il,
                     ns,

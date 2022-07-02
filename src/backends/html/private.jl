@@ -30,13 +30,15 @@ function _styled_html(
     tag::String,
     text::String,
     style::Dict{String, String} = Dict{String, String}();
-    class::String = ""
+    class::String = "",
+    title::String = ""
 )
     str_class = isempty(class) ? "" : " class = \"" * class * "\""
+    str_title = isempty(title) ? "" : " title = \"" * title * "\""
 
     # If there is no keys in the style dictionary, just return the tag.
     if isempty(style)
-        return "<" * tag * str_class * ">" * text * "</" * tag * ">"
+        return "<" * tag * str_class * str_title * ">" * text * "</" * tag * ">"
     else
         # Create the style string.
         style_str = ""
@@ -61,7 +63,7 @@ function _styled_html(
             i != num_styles && (style_str *= " ")
         end
 
-        return "<" * tag * str_class * " style = \"" * style_str * "\">" * text * "</" * tag * ">"
+        return "<" * tag * str_class * str_title * " style = \"" * style_str * "\">" * text * "</" * tag * ">"
     end
 end
 
