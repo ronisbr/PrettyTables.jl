@@ -21,6 +21,7 @@ function _pt_html(
     show_omitted_cell_summary::Bool = false,
     standalone::Bool = false,
     table_div_class::String = "",
+    table_class::String = "",
     top_left_str::String = "",
     top_left_str_decoration::HtmlDecoration = HtmlDecoration(),
     top_right_str::String = "",
@@ -167,15 +168,33 @@ function _pt_html(
     # ==========================================================================
 
     if wrap_table_in_div
-        div_str = isempty(table_div_class) ?
-            "<div style=\"overflow-x: scroll\">" :
-            "<div class=\"" * table_div_class * "\" style=\"overflow-x: scroll\">"
+        if !isempty(table_div_class)
+            _aprintln(
+                buf,
+                "<div class=\"" * table_div_class * "\" style=\"overflow-x: scroll\">",
+                il,
+                ns,
+                minify
+            )
+        else
+            _aprintln(
+                buf,
+                "<div style=\"overflow-x: scroll\">",
+                il,
+                ns,
+                minify
+            )
+        end
 
-        _aprintln(buf, div_str, il, ns, minify)
         il += 1
     end
 
-    _aprintln(buf, "<table>", il, ns, minify)
+    if !isempty(table_class)
+        _aprintln(buf, "<table class=\"" * table_class * "\">", il, ns, minify)
+    else
+        _aprintln(buf, "<table>", il, ns, minify)
+    end
+
     il += 1
 
     # Table title
