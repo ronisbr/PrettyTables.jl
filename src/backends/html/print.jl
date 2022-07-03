@@ -334,7 +334,7 @@ function _pt_html(
 
                     if !isnothing(header_cell_titles) && !isnothing(header_cell_titles[i])
                         jh = _get_data_column_index(ptable, j)
-                        cell_title = string(header_cell_titles[i][jh])
+                        cell_title = _str_html_escaped(string(header_cell_titles[i][jh]))
                     end
                 end
 
