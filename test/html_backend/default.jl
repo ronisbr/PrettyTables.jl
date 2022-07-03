@@ -530,7 +530,7 @@ end
 
 @testset "Table class" begin
     expected = """
-<table class="tableClass">
+<table class = "tableClass">
   <thead>
     <tr class = "header headerLastRow">
       <th style = "text-align: right;">Col. 1</th>
@@ -559,8 +559,8 @@ end
     @test result == expected
 
 expected = """
-<div class="tableDivClass" style="overflow-x: scroll">
-  <table class="tableClass">
+<div class = "tableDivClass" style = "overflow-x: scroll;">
+  <table class = "tableClass">
     <thead>
       <tr class = "header headerLastRow">
         <th style = "text-align: right;">Col. 1</th>

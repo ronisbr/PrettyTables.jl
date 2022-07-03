@@ -10,13 +10,13 @@
 @testset "Top bar" begin
     expected = """
 <div>
-  <div style="float: left">
+  <div style = "float: left;">
     <span style = "color: black;">Top left</span>
   </div>
-  <div style="float: right">
+  <div style = "float: right;">
     <span style = "color: yellow;">Top right</span>
   </div>
-  <div style="clear: both"></div>
+  <div style = "clear: both;"></div>
 </div>
 <table>
   <thead>
@@ -80,15 +80,15 @@
 
     expected = """
 <div>
-  <div style="float: left">
+  <div style = "float: left;">
     <span style = "color: black;">Top left</span>
   </div>
-  <div style="float: right">
+  <div style = "float: right;">
     <span style = "color: yellow;">Top right</span>
   </div>
-  <div style="clear: both"></div>
+  <div style = "clear: both;"></div>
 </div>
-<div class="tableClass" style="overflow-x: scroll">
+<div class = "tableClass" style = "overflow-x: scroll;">
   <table>
     <thead>
       <tr class = "header headerLastRow">

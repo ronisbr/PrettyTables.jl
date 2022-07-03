@@ -13,7 +13,7 @@ data = Any[1    false      1.0     0x01 ;
 println("Text backend")
 println("============")
 println()
-include("./text_backend.jl")
+# include("./text_backend.jl")
 println()
 
 println("HTML backend")
@@ -25,12 +25,12 @@ println()
 println("LaTeX backend")
 println("=============")
 println()
-include("./latex_backend.jl")
+# include("./latex_backend.jl")
 println()
 
 println("General")
 println("=======")
 println()
 
-include("./general.jl")
+# include("./general.jl")
 println()

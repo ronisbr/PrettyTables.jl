@@ -84,6 +84,11 @@ function _pt_html(
         end
     end
 
+    # Create dictionaries to store properties and styles to decrease the number
+    # of allocations.
+    properties = Dict{String, String}()
+    style      = Dict{String, String}()
+
     # Variables to store information about indentation
     # ==========================================================================
 
@@ -185,32 +190,21 @@ function _pt_html(
     # ==========================================================================
 
     if wrap_table_in_div
-        if !isempty(table_div_class)
-            _aprintln(
-                buf,
-                "<div class=\"" * table_div_class * "\" style=\"overflow-x: scroll\">",
-                il,
-                ns,
-                minify
-            )
-        else
-            _aprintln(
-                buf,
-                "<div style=\"overflow-x: scroll\">",
-                il,
-                ns,
-                minify
-            )
-        end
+        empty!(properties)
+        properties["class"] = table_div_class
+
+        empty!(style)
+        style["overflow-x"] = "scroll"
+
+        _aprintln(buf, _open_html_tag("div"; properties, style), il, ns, minify)
 
         il += 1
     end
 
-    if !isempty(table_class)
-        _aprintln(buf, "<table class=\"" * table_class * "\">", il, ns, minify)
-    else
-        _aprintln(buf, "<table>", il, ns, minify)
-    end
+    empty!(properties)
+    properties["class"] = table_class
+
+    _aprintln(buf, _open_html_tag("table"; properties), il, ns, minify)
 
     il += 1
 
@@ -218,8 +212,10 @@ function _pt_html(
     # --------------------------------------------------------------------------
 
     if length(title) > 0
-        style = Dict("text-align" => _html_alignment[title_alignment])
-        _aprintln(buf, _styled_html("caption", title, style), il, ns, minify)
+        empty!(style)
+        style["text-align"] = _html_alignment[title_alignment]
+
+        _aprintln(buf, _create_html_tag( "caption", title; style), il, ns, minify)
     end
 
     # If there is no column or row to be printed, then just exit.
@@ -257,7 +253,7 @@ function _pt_html(
         row_class = ""
 
         if (num_header_rows == 0) && (i == 1)
-            _aprintln(buf, "<tbody>", il, ns, minify)
+            _aprintln(buf, _open_html_tag("tbody"), il, ns, minify)
             il += 1
         end
 
@@ -268,7 +264,7 @@ function _pt_html(
             # header. We can do this because the header is always at the
             # beginning of the table.
             if i == 1
-                _aprintln(buf, "<thead>", il, ns, minify)
+                _aprintln(buf, _open_html_tag("thead"), il, ns, minify)
                 il += 1
             end
 
@@ -288,11 +284,9 @@ function _pt_html(
 
         end
 
-        if isempty(row_class)
-            _aprintln(buf, "<tr>", il, ns, minify)
-        else
-            _aprintln(buf, "<tr class = \"" * row_class * "\">", il, ns, minify)
-        end
+        empty!(properties)
+        properties["class"] = row_class
+        _aprintln(buf, _open_html_tag("tr"; properties), il, ns, minify)
         il += 1
 
         @inbounds for j in 1:num_columns
@@ -316,7 +310,8 @@ function _pt_html(
             cell_title = ""
 
             # Style of the cell.
-            style = _html_text_alignment_dict(cell_alignment)
+            empty!(style)
+            _add_text_alignment_to_style!(style, cell_alignment)
 
             if column_id == :row_number
                 cell_class = "rowNumber"
@@ -346,15 +341,13 @@ function _pt_html(
                     renderer = Val(:print)
                 )
 
+                empty!(properties)
+                properties["class"] = cell_class
+                properties["title"] = cell_title
+
                 _aprintln(
                     buf,
-                    _styled_html(
-                        html_row_tag,
-                        cell_str,
-                        style;
-                        class = cell_class,
-                        title = cell_title
-                    ),
+                    _create_html_tag(html_row_tag, cell_str; properties, style),
                     il,
                     ns,
                     minify
@@ -362,15 +355,12 @@ function _pt_html(
 
                 # Check if we need to draw the continuation character.
                 if (j == num_columns) && hidden_columns_at_end
-                    style = _html_text_alignment_dict(continuation_row_alignment)
+                    empty!(style)
+                    _add_text_alignment_to_style!(style, continuation_row_alignment)
+
                     _aprintln(
                         buf,
-                        _styled_html(
-                            html_row_tag,
-                            "&ctdot;",
-                            style;
-                            class = cell_class
-                        ),
+                        _create_html_tag(html_row_tag, "&ctdot;"; properties, style),
                         il,
                         ns,
                         minify
@@ -399,6 +389,9 @@ function _pt_html(
                     renderer = renderer
                 )
 
+                empty!(properties)
+                properties["class"] = cell_class
+
                 if is_original_data
                     # Apply highlighters.
                     for h in highlighters
@@ -411,7 +404,7 @@ function _pt_html(
 
                 _aprintln(
                     buf,
-                    _styled_html(html_row_tag, cell_str, style; class = cell_class),
+                    _create_html_tag(html_row_tag, cell_str; properties, style),
                     il,
                     ns,
                     minify
@@ -419,16 +412,12 @@ function _pt_html(
 
                 # Check if we need to draw the continuation character.
                 if (j == num_columns) && hidden_columns_at_end
-                    style = _html_text_alignment_dict(continuation_row_alignment)
+                    empty!(style)
+                    _add_text_alignment_to_style!(style, continuation_row_alignment)
 
                     _aprintln(
                         buf,
-                        _styled_html(
-                            html_row_tag,
-                            "&ctdot;",
-                            style;
-                            class = cell_class
-                        ),
+                        _create_html_tag(html_row_tag, "&ctdot;"; properties, style),
                         il,
                         ns,
                         minify
@@ -438,25 +427,28 @@ function _pt_html(
         end
 
         il -= 1
-        _aprintln(buf, "</tr>", il, ns, minify)
+        _aprintln(buf, _close_html_tag("tr"), il, ns, minify)
 
         if i == num_header_rows
             il -= 1
-            _aprintln(buf, "</thead>", il, ns, minify)
-            _aprintln(buf, "<tbody>", il, ns, minify)
+            _aprintln(buf, _close_html_tag("thead"), il, ns, minify)
+            _aprintln(buf, _open_html_tag("tbody"),  il, ns, minify)
             il += 1
         end
 
         # If we have hidden rows, we need to print an additional row with the
         # continuation characters.
         if i == continuation_line_id
-            _aprintln(buf, "<tr>", il, ns, minify)
+            _aprintln(buf, _open_html_tag("tr"), il, ns, minify)
             il += 1
+
+            empty!(style)
+            _add_text_alignment_to_style!(style, continuation_row_alignment)
 
             for j in 1:num_columns
                 _aprintln(
                     buf,
-                    _styled_html(html_row_tag, "&vellip;", style),
+                    _create_html_tag(html_row_tag, "&vellip;"; style),
                     il,
                     ns,
                     minify
@@ -465,7 +457,7 @@ function _pt_html(
                 if (j == num_columns) && hidden_columns_at_end
                     _aprintln(
                         buf,
-                        _styled_html(html_row_tag, "&dtdot;", style),
+                        _create_html_tag(html_row_tag, "&dtdot;"; style),
                         il,
                         ns,
                         minify
@@ -474,7 +466,7 @@ function _pt_html(
             end
 
             il -= 1
-            _aprintln(buf, "</tr>", il, ns, minify)
+            _aprintln(buf, _close_html_tag("tr"), il, ns, minify)
 
             # Apply the offset in case we are using middle cropping.
             Δr = _total_size(ptable)[1] - num_rows
@@ -482,7 +474,7 @@ function _pt_html(
     end
 
     il -= 1
-    _aprintln(buf, "</tbody>", il, ns, minify)
+    _aprintln(buf, _close_html_tag("tbody"), il, ns, minify)
 
     @label print_to_output
 
@@ -490,7 +482,7 @@ function _pt_html(
     # ==========================================================================
 
     il -= 1
-    _aprintln(buf, "</table>", il, ns, minify)
+    _aprintln(buf, _close_html_tag("table"), il, ns, minify)
     if standalone
         _aprintln(
             buf,
@@ -505,7 +497,7 @@ function _pt_html(
 
     if wrap_table_in_div
         il -= 1
-        _aprintln(buf, "</div>", il, ns, minify)
+        _aprintln(buf, _close_html_tag("div"), il, ns, minify)
     end
 
     # Print the buffer into the io.

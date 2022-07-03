@@ -411,10 +411,10 @@ end
 
     expected = """
 <div>
-  <div style="float: right">
+  <div style = "float: right;">
     <span>4 columns and 4 rows omitted</span>
   </div>
-  <div style="clear: both"></div>
+  <div style = "clear: both;"></div>
 </div>
 <table>
   <thead>
@@ -473,10 +473,10 @@ end
 
     expected = """
 <div>
-  <div style="float: right">
+  <div style = "float: right;">
     <span>4 columns and 4 rows omitted</span>
   </div>
-  <div style="clear: both"></div>
+  <div style = "clear: both;"></div>
 </div>
 <table>
   <thead>
