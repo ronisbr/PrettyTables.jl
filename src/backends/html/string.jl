@@ -27,7 +27,7 @@ function _str_html_escaped(
             c == '>'           ? (escape_html_chars ? print(io, "&gt;")   : print(io, c)) :
             c == '"'           ? (escape_html_chars ? print(io, "&quot;") : print(io, c)) :
             c == '\''          ? (escape_html_chars ? print(io, "&apos;") : print(io, c)) :
-            c == '\0'          ? print(io, escape_nul(peek(a))) :
+            c == '\0'          ? print(io, Base.escape_nul(peek(a))) :
             c == '\e'          ? print(io, "\\e") :
             c == '\\'          ? print(io, "\\\\") :
             '\a' <= c <= '\r'  ? print(io, '\\', "abtnvfr"[Int(c)-6]) :
