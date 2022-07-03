@@ -99,4 +99,13 @@ struct PrettyTablesConf
     confs::Dict{Symbol, Any}
 end
 
+"""
+    struct UndefinedCell
+
+Internal structure to indicate that a cell has an undefined reference.
+"""
+struct UndefinedCell end
+
+const _UNDEFINED_CELL = UndefinedCell()
+
 PrettyTablesConf() = PrettyTablesConf(Dict{Symbol, Any}())

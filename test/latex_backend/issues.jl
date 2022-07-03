@@ -171,3 +171,54 @@ end
 
     @test result == expected
 end
+
+# Issue #170
+# ==============================================================================
+
+@testset "Issue #170 - Pringint of UndefInitializer()" begin
+    v = Vector{Any}(undef, 5)
+    v[1] = undef
+    v[2] = "String"
+    v[5] = π
+
+    expected = """
+\\begin{tabular}{r}
+  \\hline
+  \\textbf{Col. 1} \\\\\\hline
+  UndefInitializer() \\\\
+  String \\\\
+  \\#undef \\\\
+  \\#undef \\\\
+  π \\\\\\hline
+\\end{tabular}
+"""
+
+    result = pretty_table(
+        String,
+        v;
+        backend = Val(:latex)
+    )
+
+    @test result == expected
+
+    expected = """
+\\begin{tabular}{r}
+  \\hline
+  \\textbf{Col. 1} \\\\\\hline
+  UndefInitializer() \\\\
+  String \\\\
+  \\#undef \\\\
+  \\#undef \\\\
+  π \\\\\\hline
+\\end{tabular}
+"""
+
+    result = pretty_table(
+        String,
+        v;
+        backend = Val(:latex),
+        renderer = :show
+    )
+
+    @test result == expected
+end

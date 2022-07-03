@@ -75,7 +75,7 @@ end
 
 @inline _parse_cell_html(cell::Missing; kwargs...) = "missing"
 @inline _parse_cell_html(cell::Nothing; kwargs...) = "nothing"
-@inline _parse_cell_html(cell::UndefInitializer; kwargs...) = "#undef"
+@inline _parse_cell_html(cell::UndefinedCell; kwargs...) = "#undef"
 
 function _render_cell_html(
     cell;

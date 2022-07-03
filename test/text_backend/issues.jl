@@ -804,3 +804,49 @@ end
         maximum_columns_width = 8
     )
 end
+
+@testset "Issue #170 - Pringint of UndefInitializer()" begin
+    v = Vector{Any}(undef, 5)
+    v[1] = undef
+    v[2] = "String"
+    v[5] = π
+
+    expected = """
+┌────────────────────┐
+│             Col. 1 │
+├────────────────────┤
+│ UndefInitializer() │
+│             String │
+│             #undef │
+│             #undef │
+│                  π │
+└────────────────────┘
+"""
+
+    result = pretty_table(
+        String,
+        v
+    )
+
+    @test result == expected
+
+    expected = """
+┌────────────────────┐
+│             Col. 1 │
+├────────────────────┤
+│ UndefInitializer() │
+│           "String" │
+│             #undef │
+│             #undef │
+│                  π │
+└────────────────────┘
+"""
+
+    result = pretty_table(
+        String,
+        v;
+        renderer = :show
+    )
+
+    @test result == expected
+end

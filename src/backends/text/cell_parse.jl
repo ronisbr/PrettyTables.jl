@@ -107,4 +107,4 @@ end
 
 @inline _parse_cell_text(cell::Missing; kwargs...) = ["missing"]
 @inline _parse_cell_text(cell::Nothing; kwargs...) = ["nothing"]
-@inline _parse_cell_text(cell::UndefInitializer; kwargs...) = ["#undef"]
+@inline _parse_cell_text(cell::UndefinedCell; kwargs...) = ["#undef"]

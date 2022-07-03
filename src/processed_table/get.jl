@@ -171,7 +171,7 @@ function _get_element(ptable::ProcessedTable, i::Int, j::Int)
             if isassigned(ptable_additional_data_columns_j, id)
                 return ptable_additional_data_columns_j[id]
             else
-                return undef
+                return _UNDEFINED_CELL
             end
         end
     else
@@ -185,7 +185,7 @@ function _get_element(ptable::ProcessedTable, i::Int, j::Int)
             if isassigned(ptable.data, id, jd)
                 return ptable.data[id, jd]
             else
-                return undef
+                return _UNDEFINED_CELL
             end
         end
     end

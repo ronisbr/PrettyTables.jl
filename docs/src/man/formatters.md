@@ -59,7 +59,7 @@ julia> pretty_table(data; formatters = formatter)
 
 !!! note
     The user can check if a value is undefined (`#undef`) inside a formatter by
-    using the comparison `v == undef`.
+    using the comparison `v isa PrettyTables.UndefinedCell`.
 
 ## Predefined formatters
 

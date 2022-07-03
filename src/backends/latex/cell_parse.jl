@@ -94,4 +94,4 @@ end
 
 @inline _parse_cell_latex(cell::Missing; kwargs...) = "missing"
 @inline _parse_cell_latex(cell::Nothing; kwargs...) = "nothing"
-@inline _parse_cell_latex(cell::UndefInitializer; kwargs...) = "\\#undef"
+@inline _parse_cell_latex(cell::UndefinedCell; kwargs...) = "\\#undef"
