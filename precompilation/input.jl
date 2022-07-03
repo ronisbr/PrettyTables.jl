@@ -22,9 +22,10 @@ function precompilation_input()
 
     # Pre-compile the most common types.
     #
-    # The functions that parse the cells (`_parse_cell_text`) could not be
-    # despecialized because it degraded too much the performance. Hence, there
-    # will be a small precompilation for each different cell type.
+    # The functions that parse the cells (`_parse_cell_text`,
+    # `_parse_cell_html`) could not be despecialized because it degraded too
+    # much the performance. Hence, there will be a small precompilation for each
+    # different cell type.
     types = [Int8(1),
              Int16(1),
              Int32(1),
@@ -68,11 +69,8 @@ function precompilation_input()
              ["S" "S"; "S" "S"],
              ['C' 'C'; 'C' 'C']]
 
-    pretty_table(
-        types;
-        alignment = :l,
-        crop = :none
-    )
+    pretty_table(types; alignment = :l, crop = :none)
+    pretty_table(types; backend = Val(:html))
 
     # Input: Tables.jl
     # ==========================================================================
@@ -137,6 +135,16 @@ function precompilation_input()
     ]
 
     pretty_table(ansi_table)
+
+    # Input: Data with HtmlCell
+    # ==========================================================================
+
+    html_table = [
+        html_cell"<b>Bold cell</b>"
+        html_cell"<i>Italic cell</b>"
+    ]
+
+    pretty_table(html_table, backend = Val(:html))
 
     # Input: Data with LatexCell
     # ==========================================================================
