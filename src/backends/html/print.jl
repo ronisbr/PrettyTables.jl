@@ -505,7 +505,7 @@ function _pt_html(
 
     # If we are printing to `stdout`, then wrap the output in a `HTML` object.
     if (io == stdout) || ( (io isa IOContext) && (io.io == stdout) )
-        display("text/html", HTML(String(take!(buf_io))))
+        display(MIME("text/html"), HTML(String(take!(buf_io))))
     else
         print(io, String(take!(buf_io)))
     end
