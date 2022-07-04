@@ -100,6 +100,33 @@ function precompilation_input()
                  vlines                      = [1])
     println()
 
+    # This example is created based on DataFrames.jl options.
+    pretty_table(
+        table;
+        alignment                 = [:l, :c, :r],
+        backend                   = Val(:html),
+        compact_printing          = false,
+        header_alignment          = :l,
+        header_cell_titles        = (nothing, ["A", "B", "C"]),
+        max_num_of_columns        = 2,
+        max_num_of_rows           = 5,
+        minify                    = true,
+        row_name_column_title     = "Row",
+        row_names                 = ["row" for i = 1:10],
+        row_number_alignment      = :r,
+        row_number_column_title   = "Row",
+        show_omitted_cell_summary = true,
+        show_row_number           = true,
+        standalone                = false,
+        table_class               = "data-frame",
+        table_div_class           = "data-frame",
+        top_left_str              = "Test table",
+        top_right_str_decoration  = HtmlDecoration(font_style = "italic"),
+        vcrop_mode                = :middle,
+        wrap_table_in_div         = true
+    )
+    println()
+
     # Input: Dictionary
     # ==========================================================================
 
