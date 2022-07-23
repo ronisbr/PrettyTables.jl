@@ -51,7 +51,7 @@ function _pt_text(
     title_crayon::Crayon = Crayon(bold = true),
 )
     # Unpack fields of `pinfo`.
-    ptable                    = pinfo.ptable
+    ptable               = pinfo.ptable
     formatters           = pinfo.formatters
     compact_printing     = pinfo.compact_printing
     title                = pinfo.title
