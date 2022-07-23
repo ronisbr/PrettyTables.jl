@@ -73,8 +73,8 @@ function _pt_html(
 
     # Check the dimensions of header cell titles.
     if !isnothing(header_cell_titles)
-        if length(header_cell_titles) != num_header_rows
-            error("The number of vectors in `header_cell_titles` must match that of `header`.")
+        if length(header_cell_titles) < num_header_rows
+            error("The number of vectors in `header_cell_titles` must be equal or greater than that in `header`.")
         end
 
         for k in 1:num_header_rows
