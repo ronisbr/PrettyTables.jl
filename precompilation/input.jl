@@ -136,14 +136,14 @@ function precompilation_input()
 
     pretty_table(dict, sortkeys = true)
 
-    # Input: Data with URLTextCell
+    # Input: Data with UrlTextCell
     # ==========================================================================
 
     custom_cells = [
-        1 "Ronan Arraes Jardim Chagas" URLTextCell("Ronan Arraes Jardim Chagas", "https://ronanarraes.com")
-        2 "Google" URLTextCell("Google", "https://google.com")
-        3 "Apple" URLTextCell("Apple", "https://apple.com")
-        4 "Emojis!" URLTextCell("😃"^20, "https://emojipedia.org/github/")
+        1 "Ronan Arraes Jardim Chagas" UrlTextCell("Ronan Arraes Jardim Chagas", "https://ronanarraes.com")
+        2 "Google" UrlTextCell("Google", "https://google.com")
+        3 "Apple" UrlTextCell("Apple", "https://apple.com")
+        4 "Emojis!" UrlTextCell("😃"^20, "https://emojipedia.org/github/")
     ]
 
     pretty_table(custom_cells)

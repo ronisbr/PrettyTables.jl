@@ -701,26 +701,26 @@ Reset all fields in the custom text cell `c`.
     The `reset!` function is not required for the API. It is called before
     parsing the custom text cell.
 
-### URLTextCell
+### UrlTextCell
 
 There is one custom text cell bundled with **PrettyTables.jl** called
-[`URLTextCell`](@ref). This type adds support for rendering [implicit
+[`UrlTextCell`](@ref). This type adds support for rendering [implicit
 hyperlinks](https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda)
 using the escape sequence `\e]8`. Hence, the user can render a text that has a
 hyperlink associated with it.
 
-A [`URLTextCell`](@ref) can be created with the following function:
+A [`UrlTextCell`](@ref) can be created with the following function:
 
-    URLTextCell(text::String, url::String
+    UrlTextCell(text::String, url::String
 
 which creates a URL cell with a specific `text` that points to an `url`.
 
 ```
 julia> table = [
-        1 "Ronan Arraes Jardim Chagas" URLTextCell("Ronan Arraes Jardim Chagas", "https://ronanarraes.com")
-        2 "Google" URLTextCell("Google", "https://google.com")
-        3 "Apple" URLTextCell("Apple", "https://apple.com")
-        4 "Emojis!" URLTextCell("😃"^20, "https://emojipedia.org/github/")
+        1 "Ronan Arraes Jardim Chagas" UrlTextCell("Ronan Arraes Jardim Chagas", "https://ronanarraes.com")
+        2 "Google" UrlTextCell("Google", "https://google.com")
+        3 "Apple" UrlTextCell("Apple", "https://apple.com")
+        4 "Emojis!" UrlTextCell("😃"^20, "https://emojipedia.org/github/")
     ]
 
 julia> pretty_table(table)

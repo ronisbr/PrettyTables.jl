@@ -28,3 +28,4 @@ end
 @deprecate HTMLDecoration(args...; kwargs...) HtmlDecoration(args...; kwargs...)
 @deprecate HTMLTableFormat(args...; kwargs...) HtmlTableFormat(args...; kwargs...)
 @deprecate HTMLHighlighter(args...; kwargs...) HtmlHighlighter(args...; kwargs...)
+@deprecate URLTextCell(args...; kwargs...) UrlTextCell(args...; kwargs...)

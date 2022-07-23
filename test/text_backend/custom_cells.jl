@@ -9,10 +9,10 @@
 
 @testset "Custom cells - URL text cell" begin
     table = [
-        1 "Ronan Arraes Jardim Chagas" URLTextCell("Ronan Arraes Jardim Chagas", "https://ronanarraes.com")
-        2 "Google" URLTextCell("Google", "https://google.com")
-        3 "Apple" URLTextCell("Apple", "https://apple.com")
-        4 "Emojis!" URLTextCell("😃"^20, "https://emojipedia.org/github/")
+        1 "Ronan Arraes Jardim Chagas" UrlTextCell("Ronan Arraes Jardim Chagas", "https://ronanarraes.com")
+        2 "Google" UrlTextCell("Google", "https://google.com")
+        3 "Apple" UrlTextCell("Apple", "https://apple.com")
+        4 "Emojis!" UrlTextCell("😃"^20, "https://emojipedia.org/github/")
     ]
 
     # Default
@@ -237,10 +237,10 @@
     # --------------------------------------------------------------------------
 
     table = [
-        1 "Website\nRonan Arraes Jardim Chagas" URLTextCell("Ronan Arraes Jardim Chagas", "https://ronanarraes.com")
-        2 "Website\nGoogle" URLTextCell("Google", "https://google.com")
-        3 "Website\nApple" URLTextCell("Apple", "https://apple.com")
-        4 "Website\nEmojis!" URLTextCell("😃"^20, "https://emojipedia.org/github/")
+        1 "Website\nRonan Arraes Jardim Chagas" UrlTextCell("Ronan Arraes Jardim Chagas", "https://ronanarraes.com")
+        2 "Website\nGoogle" UrlTextCell("Google", "https://google.com")
+        3 "Website\nApple" UrlTextCell("Apple", "https://apple.com")
+        4 "Website\nEmojis!" UrlTextCell("😃"^20, "https://emojipedia.org/github/")
     ]
 
     expected = """

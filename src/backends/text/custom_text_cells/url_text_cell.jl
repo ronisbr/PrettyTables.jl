@@ -7,10 +7,10 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-export URLTextCell
+export UrlTextCell
 
 """
-    URLTextCell
+    UrlTextCell
 
 A text cell that contains a URL and is rendered using the ANSI escape sequence
 `\\e8]`.
@@ -36,7 +36,7 @@ A text cell that contains a URL and is rendered using the ANSI escape sequence
     rendering the URL.
 - `_suffix::String`: Suffix to be appended to the text when rendering the URL.
 """
-mutable struct URLTextCell <: CustomTextCell
+mutable struct UrlTextCell <: CustomTextCell
     # Public
     text::String
     url::String
@@ -48,15 +48,15 @@ mutable struct URLTextCell <: CustomTextCell
     _suffix::String
 end
 
-function URLTextCell(text::String, url::String)
-    return URLTextCell(text, url, 0, 0, 0, "")
+function UrlTextCell(text::String, url::String)
+    return UrlTextCell(text, url, 0, 0, 0, "")
 end
 
 ################################################################################
 #                                     API
 ################################################################################
 
-function get_printable_cell_line(c::URLTextCell, l::Int)
+function get_printable_cell_line(c::UrlTextCell, l::Int)
     if l == 1
         return " "^c._left_pad * c.text * " "^c._right_pad
     else
@@ -64,7 +64,7 @@ function get_printable_cell_line(c::URLTextCell, l::Int)
     end
 end
 
-function get_rendered_line(c::URLTextCell, l::Int)
+function get_rendered_line(c::UrlTextCell, l::Int)
     if l == 1
         url_text_width = textwidth(c.text)
         printable_size = c._left_pad + url_text_width + c._right_pad
@@ -104,12 +104,12 @@ function get_rendered_line(c::URLTextCell, l::Int)
     end
 end
 
-function append_suffix_to_line!(c::URLTextCell, l::Int, suffix::String)
+function append_suffix_to_line!(c::UrlTextCell, l::Int, suffix::String)
     l == 1 && (c._suffix = suffix)
     return nothing
 end
 
-function apply_line_padding!(c::URLTextCell, l::Int, left_pad::Int, right_pad::Int)
+function apply_line_padding!(c::UrlTextCell, l::Int, left_pad::Int, right_pad::Int)
     if l == 1
         c._left_pad = left_pad
         c._right_pad = right_pad
@@ -118,14 +118,14 @@ function apply_line_padding!(c::URLTextCell, l::Int, left_pad::Int, right_pad::I
     return nothing
 end
 
-function crop_line!(c::URLTextCell, l::Int, num::Int)
+function crop_line!(c::UrlTextCell, l::Int, num::Int)
     l == 1 && (c._crop = num)
     return nothing
 end
 
-parse_cell_text(c::URLTextCell; kwargs...) = [c.text]
+parse_cell_text(c::UrlTextCell; kwargs...) = [c.text]
 
-function reset!(c::URLTextCell)
+function reset!(c::UrlTextCell)
     c._crop = 0
     c._left_pad = 0
     c._right_pad = 0
