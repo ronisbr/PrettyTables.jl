@@ -17,6 +17,7 @@ function _pt_html(
     header_cell_titles::Union{Nothing, Tuple} = nothing,
     highlighters::Union{HtmlHighlighter, Tuple} = (),
     linebreaks::Bool = false,
+    maximum_columns_width::String = "",
     minify::Bool = false,
     sortkeys::Bool = false,
     show_omitted_cell_summary::Bool = false,
@@ -312,6 +313,13 @@ function _pt_html(
             # Style of the cell.
             empty!(style)
             _add_text_alignment_to_style!(style, cell_alignment)
+
+            if !isempty(maximum_columns_width)
+                style["max-width"]     = maximum_columns_width
+                style["overflow"]      = "hidden"
+                style["text-overflow"] = "ellipsis"
+                style["white-space"]   = "nowrap"
+            end
 
             if column_id == :row_number
                 cell_class = "rowNumber"

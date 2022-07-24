@@ -434,6 +434,14 @@ This backend produces HTML tables. This backend can be used by selecting
     the section `HTML highlighters`).
 - `linebreaks::Bool`: If `true`, then `\\n` will be replaced by `<br>`.
     (**Default** = `false`)
+- `maximum_columns_width::String`: A string with the maximum width of each
+    columns. This string must contain a size that is valid in HTML. If it is not
+    empty, then each cell will have the following style:
+    - `"max-width": <value of maximum_column_width>`
+    - `"overflow": "hidden"`
+    - `"text-overflow": "ellipsis"`
+    - `"white-space": "nowrap"`
+    If it is empty, no additional style is applied. (**Default** = "")
 - `minify::Bool`: If `true`, then output will be displayed minified, *i.e.*
     without unnecessary indentation or newlines. (**Default** = `false`)
 - `standalone::Bool`: If `true`, then a complete HTML page will be generated.

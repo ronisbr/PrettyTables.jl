@@ -36,6 +36,14 @@ passed as keywords when calling the function [`pretty_table`](@ref):
     the section [HTML highlighters](@ref)).
 - `linebreaks::Bool`: If `true`, then `\\n` will be replaced by `<br>`.
     (**Default** = `false`)
+- `maximum_columns_width::String`: A string with the maximum width of each
+    columns. This string must contain a size that is valid in HTML. If it is not
+    empty, then each cell will have the following style:
+    - `"max-width": <value of maximum_column_width>`
+    - `"overflow": "hidden"`
+    - `"text-overflow": "ellipsis"`
+    - `"white-space": "nowrap"`
+    If it is empty, no additional style is applied. (**Default** = "")
 - `standalone::Bool`: If `true`, then a complete HTML page will be generated.
     Otherwise, only the content between the tags `<table>` and `</table>` will
     be printed (with the tags included). (**Default** = `false`)

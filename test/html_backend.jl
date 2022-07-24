@@ -11,6 +11,10 @@
     include("./html_backend/alignments.jl")
 end
 
+@testset "Column width" begin
+    include("./html_backend/column_width.jl")
+end
+
 @testset "Cropping" begin
     include("./html_backend/crop.jl")
 end
