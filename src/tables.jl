@@ -75,10 +75,13 @@ function getindex(rtable::RowTable, inds...)
     # Get the column name.
     column_name = rtable.column_names[j]
 
-    # Get the element.
-    it, ~ = iterate(rtable.table, i)
+    # Get the i-th row by iterating the row table.
+    it, state = iterate(rtable.table)
 
-    it === nothing && error("The row `i` does not exist.")
+    for _ in 2:i
+        it, state = iterate(rtable.table, state)
+        it === nothing && error("The row `i` does not exist.")
+    end
 
     element = it[column_name]
 
@@ -96,10 +99,13 @@ function isassigned(rtable::RowTable, inds...)
     # Get the column name.
     column_name = rtable.column_names[j]
 
-    # Get the element.
-    it, ~ = iterate(rtable.table, i)
+    # Get the i-th row by iterating the row table.
+    it, state = iterate(rtable.table)
 
-    it === nothing && error("The row `i` does not exist.")
+    for _ in 2:i
+        it, state = iterate(rtable.table, state)
+        it === nothing && error("The row `i` does not exist.")
+    end
 
     try
         element = it[column_name]
