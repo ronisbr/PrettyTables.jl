@@ -96,12 +96,15 @@ function _compute_continuation_row_in_middle_vcrop(
     show_omitted_cell_summary::Bool,
     Δdisplay_lines::Int
 )
+    # Get size information from the processed table.
+    num_rows = _size(ptable)[1]
+
     if display.size[1] > 0
         available_display_lines = display.size[1] - Δdisplay_lines
 
         if table_height > available_display_lines - need_omitted_cell_summary
-            # Count the number of lines in the header considering that lines before
-            # and after it.
+            # Count the number of lines in the header considering that lines
+            # before and after it.
             num_header_lines = _count_header_lines(
                 ptable,
                 hlines,
@@ -110,12 +113,20 @@ function _compute_continuation_row_in_middle_vcrop(
             )
 
             # Number of rows available to draw table data. In this case, we will
-            # have to save one line to print the omitted cell summary.
+            # have to save one line to print the omitted cell summary. In this
+            # case, the horizontal lines are also considered table data.
+            # However, we must remove the last line, if it must be printed,
+            # because it is always printing regardeless the display size.
+            draw_last_hline = _check_hline(ptable, hlines, body_hlines, num_rows)
+
             available_rows_for_data =
-                available_display_lines - num_header_lines - show_omitted_cell_summary
+                available_display_lines -
+                num_header_lines -
+                show_omitted_cell_summary -
+                draw_last_hline
 
             continuation_row_line = div(
-                available_rows_for_data,
+                available_rows_for_data + 1,
                 2,
                 RoundUp
             ) + num_header_lines
