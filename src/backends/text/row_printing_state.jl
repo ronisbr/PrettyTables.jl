@@ -17,7 +17,7 @@ function _iterate_row_printing_state!(
     hlines::Union{Symbol, AbstractVector},
     body_hlines::Vector{Int},
     draw_last_hline::Bool,
-    num_lines_after_table::Int,
+    num_lines_around_table::Int,
     continuation_row_line::Int
 )
     # Loop until we find a state that must generate an action.
@@ -78,7 +78,7 @@ function _iterate_row_printing_state!(
             # Notice that here we must not consider the number of lines in the
             # title here because it is taken into account in the display (it was
             # already printed).
-            Δrows = _available_rows(display) - num_lines_after_table
+            Δrows = _available_rows(display) - num_lines_around_table
             Δi = 0
             new_l = 0
             total_lines = 0
