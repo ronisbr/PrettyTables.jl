@@ -15,7 +15,7 @@ function _print_table_data!(
     actual_columns_width::Vector{Int},
     continuation_row_line::Int,
     num_lines_in_row::Vector{Int},
-    Δdisplay_lines::Int,
+    num_lines_after_table::Int,
     # Configurations.
     body_hlines::Vector{Int},
     body_hlines_format::NTuple{4, Char},
@@ -55,7 +55,7 @@ function _print_table_data!(
             hlines,
             body_hlines,
             draw_last_hline,
-            Δdisplay_lines,
+            num_lines_after_table,
             continuation_row_line
         )
 

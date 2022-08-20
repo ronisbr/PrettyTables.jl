@@ -381,6 +381,9 @@ function _pt_text(
         Δdisplay_lines
     )
 
+    # Number of lines required after printing the table.
+    num_lines_after_table = need_omitted_cell_summary + newline_at_end
+
     # Print the table.
     _print_table_data!(
         display,
@@ -389,7 +392,7 @@ function _pt_text(
         actual_columns_width,
         continuation_row_line,
         num_lines_in_row,
-        Δdisplay_lines,
+        num_lines_after_table,
         # Configurations.
         body_hlines,
         body_hlines_format,

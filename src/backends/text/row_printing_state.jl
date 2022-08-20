@@ -17,7 +17,7 @@ function _iterate_row_printing_state!(
     hlines::Union{Symbol, AbstractVector},
     body_hlines::Vector{Int},
     draw_last_hline::Bool,
-    Δdisplay_lines::Int,
+    num_lines_after_table::Int,
     continuation_row_line::Int
 )
     # Loop until we find a state that must generate an action.
@@ -74,7 +74,11 @@ function _iterate_row_printing_state!(
             # indices to continue printing.
 
             num_rows = _size(ptable)[1]
-            Δrows = _available_rows(display) - Δdisplay_lines
+
+            # Notice that here we must not consider the number of lines in the
+            # title here because it is taken into account in the display (it was
+            # already printed).
+            Δrows = _available_rows(display) - num_lines_after_table
             Δi = 0
             new_l = 0
             total_lines = 0
@@ -90,7 +94,7 @@ function _iterate_row_printing_state!(
                 break
             end
 
-            while (Δrows - total_lines) > 0
+            while (Δrows - total_lines) ≥ 0
                 if _check_hline(ptable, hlines, body_hlines, num_rows - Δi)
                     total_lines += 1
 
