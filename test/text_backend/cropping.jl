@@ -347,6 +347,52 @@
     )
 
     @test result == expected
+
+    # Reserved lines before the table
+    # --------------------------------------------------------------------------
+
+    expected = """
+┌────────┬────────┬────────┬──
+│ Col. 1 │ Col. 2 │ Col. 3 │ ⋯
+├────────┼────────┼────────┼──
+│      1 │  false │    1.0 │ ⋯
+│      2 │   true │    2.0 │ ⋯
+│      3 │  false │    3.0 │ ⋯
+│      4 │   true │    4.0 │ ⋯
+│   ⋮    │   ⋮    │   ⋮    │ ⋱
+└────────┴────────┴────────┴──
+   1 column and 2 rows omitted
+"""
+
+    result = pretty_table(
+        String,
+        data;
+        crop = :both,
+        display_size = (14, 30),
+        crop_num_lines_at_beginning = 2
+    )
+
+    expected = """
+Title
+Subtitle
+┌────────┬────────┬────────┬──
+│ Col. 1 │ Col. 2 │ Col. 3 │ ⋯
+├────────┼────────┼────────┼──
+│      1 │  false │    1.0 │ ⋯
+│      2 │   true │    2.0 │ ⋯
+│   ⋮    │   ⋮    │   ⋮    │ ⋱
+└────────┴────────┴────────┴──
+   1 column and 4 rows omitted
+"""
+
+    result = pretty_table(
+        String,
+        data;
+        crop = :both,
+        display_size = (14, 30),
+        crop_num_lines_at_beginning = 2,
+        title = "Title\nSubtitle"
+    )
 end
 
 @testset "Table cropping - middle vertical cropping" begin
@@ -709,6 +755,78 @@ end
     )
 
     @test result == expected
+
+    # Reserved lines before the table
+    # --------------------------------------------------------------------------
+
+    expected = """
+┌────────┬────────┬────────┬──
+│ Col. 1 │ Col. 2 │ Col. 3 │ ⋯
+├────────┼────────┼────────┼──
+│      1 │  false │    1.0 │ ⋯
+│      2 │   true │    2.0 │ ⋯
+│   ⋮    │   ⋮    │   ⋮    │ ⋱
+│      5 │  false │    5.0 │ ⋯
+│      6 │   true │    6.0 │ ⋯
+└────────┴────────┴────────┴──
+   1 column and 2 rows omitted
+"""
+
+    result = pretty_table(
+        String,
+        data;
+        crop = :both,
+        display_size = (14, 30),
+        crop_num_lines_at_beginning = 2,
+        vcrop_mode = :middle
+    )
+
+    expected = """
+Title
+Subtitle
+┌────────┬────────┬────────┬──
+│ Col. 1 │ Col. 2 │ Col. 3 │ ⋯
+├────────┼────────┼────────┼──
+│      1 │  false │    1.0 │ ⋯
+│   ⋮    │   ⋮    │   ⋮    │ ⋱
+│      6 │   true │    6.0 │ ⋯
+└────────┴────────┴────────┴──
+   1 column and 4 rows omitted
+"""
+
+    result = pretty_table(
+        String,
+        data;
+        crop = :both,
+        display_size = (14, 30),
+        crop_num_lines_at_beginning = 2,
+        title = "Title\nSubtitle",
+        vcrop_mode = :middle
+    )
+
+    expected = """
+Title
+Subtitle
+┌────────┬────────┬────────┬──
+│ Col. 1 │ Col. 2 │ Col. 3 │ ⋯
+├────────┼────────┼────────┼──
+│      1 │  false │    1.0 │ ⋯
+│      2 │   true │    2.0 │ ⋯
+│   ⋮    │   ⋮    │   ⋮    │ ⋱
+│      6 │   true │    6.0 │ ⋯
+└────────┴────────┴────────┴──
+   1 column and 4 rows omitted
+"""
+
+    result = pretty_table(
+        String,
+        data;
+        crop = :both,
+        display_size = (15, 30),
+        crop_num_lines_at_beginning = 2,
+        title = "Title\nSubtitle",
+        vcrop_mode = :middle
+    )
 end
 
 @testset "Cell cropping" begin
