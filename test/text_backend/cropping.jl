@@ -369,7 +369,7 @@
         data;
         crop = :both,
         display_size = (14, 30),
-        crop_num_lines_at_beginning = 2
+        reserved_display_lines = 2
     )
 
     expected = """
@@ -390,7 +390,7 @@ Subtitle
         data;
         crop = :both,
         display_size = (14, 30),
-        crop_num_lines_at_beginning = 2,
+        reserved_display_lines = 2,
         title = "Title\nSubtitle"
     )
 end
@@ -777,7 +777,7 @@ end
         data;
         crop = :both,
         display_size = (14, 30),
-        crop_num_lines_at_beginning = 2,
+        reserved_display_lines = 2,
         vcrop_mode = :middle
     )
 
@@ -799,7 +799,7 @@ Subtitle
         data;
         crop = :both,
         display_size = (14, 30),
-        crop_num_lines_at_beginning = 2,
+        reserved_display_lines = 2,
         title = "Title\nSubtitle",
         vcrop_mode = :middle
     )
@@ -823,7 +823,7 @@ Subtitle
         data;
         crop = :both,
         display_size = (15, 30),
-        crop_num_lines_at_beginning = 2,
+        reserved_display_lines = 2,
         title = "Title\nSubtitle",
         vcrop_mode = :middle
     )

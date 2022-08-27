@@ -59,10 +59,6 @@ passed as keywords when calling the function `pretty_table`:
     direction, `:vertical` to crop only on vertical direction, or `:none` to do
     not crop the data at all. If the `io` has `:limit => true`, then `crop` is
     set to `:both` by default. Otherwise, it is set to `:none` by default.
-- `crop_num_lines_at_beginning::Int`: Number of lines to be left at the
-    beginning of the printing when vertically cropping the output. Notice that
-    the lines required to show the title are automatically computed.
-    (**Default** = 0)
 - `crop_subheader::Bool`: If `true`, then the sub-header size will not be taken
     into account when computing the column size. Hence, the print algorithm can
     crop it to save space. This has no effect if the user selects a fixed column
@@ -122,6 +118,9 @@ passed as keywords when calling the function `pretty_table`:
 - `overwrite::Bool`: If `true`, then the same number of lines in the printed
     table will be deleted from the output `io`. This can be used to update the
     table in the display continuously. (**Default** = `false`)
+- `reserved_display_lines::Int`: Number of lines to be left at the beginning of
+    the printing when vertically cropping the output. Notice that the lines
+    required to show the title are automatically computed. (**Default** = 0)
 - `row_number_alignment::Symbol`: Select the alignment of the row number column
     (see the section [Alignment](@ref)). (**Default** = `:r`)
 - `show_omitted_cell_summary::Bool`: If `true`, then a summary will be printed

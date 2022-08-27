@@ -20,7 +20,6 @@ function _pt_text(
     continuation_row_alignment::Symbol = :c,
     crop::Symbol = get(io, :limit, false) ? :both : :none,
     crop_subheader::Bool = false,
-    crop_num_lines_at_beginning::Int = 0,
     columns_width::Union{Int, AbstractVector{Int}} = 0,
     display_size::Tuple{Int, Int} = displaysize(io),
     equal_columns_width::Bool = false,
@@ -32,6 +31,7 @@ function _pt_text(
     minimum_columns_width::Union{Int, AbstractVector{Int}} = 0,
     newline_at_end::Bool = true,
     overwrite::Bool = false,
+    reserved_display_lines::Int = 0,
     show_omitted_cell_summary::Bool = true,
     sortkeys::Bool = false,
     tf::TextFormat = tf_unicode,
@@ -87,7 +87,7 @@ function _pt_text(
     # Make sure that `vcrop_mode` is valid.
     vcrop_mode ∉ [:bottom, :middle] && (vcrop_mode = :bottom)
 
-    crop_num_lines_at_beginning < 0 && (crop_num_lines_at_beginning = 0)
+    reserved_display_lines < 0 && (reserved_display_lines = 0)
 
     # Make sure that `highlighters` is always a Ref{Any}(Tuple).
     if !(highlighters isa Tuple)
@@ -319,7 +319,7 @@ function _pt_text(
     Δdisplay_lines =
         1 +
         newline_at_end +
-        crop_num_lines_at_beginning +
+        reserved_display_lines +
         length(title_tokens)
 
     # Compute the number of omitted columns. We need this information to check
@@ -386,7 +386,7 @@ function _pt_text(
     num_lines_around_table =
         need_omitted_cell_summary +
         newline_at_end +
-        crop_num_lines_at_beginning
+        reserved_display_lines
 
     # Print the table.
     _print_table_data!(
