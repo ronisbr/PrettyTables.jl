@@ -58,8 +58,8 @@ end
     include("text_backend/renderers.jl")
 end
 
-@testset "Row names" begin
-    include("text_backend/row_names.jl")
+@testset "Row labels" begin
+    include("text_backend/row_labels.jl")
 end
 
 @testset "Row numbers" begin

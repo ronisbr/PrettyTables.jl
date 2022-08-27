@@ -169,9 +169,9 @@ function _print_info(
     max_num_of_columns::Int = -1,
     max_num_of_rows::Int = -1,
     renderer::Symbol = :print,
-    row_names::Union{Nothing, AbstractVector} = nothing,
-    row_name_alignment::Symbol = :r,
-    row_name_column_title::AbstractString = "",
+    row_labels::Union{Nothing, AbstractVector} = nothing,
+    row_label_alignment::Symbol = :r,
+    row_label_column_title::AbstractString = "",
     row_number_alignment::Symbol = :r,
     row_number_column_title::AbstractString = "Row",
     show_header::Bool = true,
@@ -209,13 +209,13 @@ function _print_info(
         )
     end
 
-    if row_names !== nothing
+    if row_labels !== nothing
         _add_column!(
             ptable,
-            row_names,
-            [row_name_column_title];
-            alignment = row_name_alignment,
-            id = :row_name
+            row_labels,
+            [row_label_column_title];
+            alignment = row_label_alignment,
+            id = :row_label
         )
     end
 
@@ -304,9 +304,9 @@ function _pt(
     max_num_of_columns::Int = -1,
     max_num_of_rows::Int = -1,
     renderer::Symbol = :print,
-    row_names::Union{Nothing, AbstractVector} = nothing,
-    row_name_alignment::Symbol = :r,
-    row_name_column_title::AbstractString = "",
+    row_labels::Union{Nothing, AbstractVector} = nothing,
+    row_label_alignment::Symbol = :r,
+    row_label_column_title::AbstractString = "",
     row_number_alignment::Symbol = :r,
     row_number_column_title::AbstractString = "Row",
     show_header::Bool = true,
@@ -390,9 +390,9 @@ function _pt(
         max_num_of_rows         = max_num_of_rows,
         limit_printing          = limit_printing,
         renderer                = renderer,
-        row_names               = row_names,
-        row_name_alignment      = row_name_alignment,
-        row_name_column_title   = row_name_column_title,
+        row_labels              = row_labels,
+        row_label_alignment     = row_label_alignment,
+        row_label_column_title  = row_label_column_title,
         row_number_alignment    = row_number_alignment,
         row_number_column_title = row_number_column_title,
         show_header             = show_header,

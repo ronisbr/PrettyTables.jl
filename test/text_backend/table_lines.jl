@@ -206,17 +206,17 @@ end
     @test result == expected
 
     expected = """
-┌─────┬───────────┬────────────────────────┐
-│ Row │ Row names │  C1     C2     C3   C4 │
-│     │           │ Int   Bool  Float  Hex │
-├─────┼───────────┼────────────────────────┤
-│   1 │   Row 1   │   1  false    1.0    1 │
-│   2 │   Row 2   │   2   true    2.0    2 │
-│   3 │   Row 3   │   3  false    3.0    3 │
-│   4 │   Row 4   │   4   true    4.0    4 │
-│   5 │   Row 5   │   5  false    5.0    5 │
-│   6 │   Row 6   │   6   true    6.0    6 │
-└─────┴───────────┴────────────────────────┘
+┌─────┬────────────┬────────────────────────┐
+│ Row │ Row labels │  C1     C2     C3   C4 │
+│     │            │ Int   Bool  Float  Hex │
+├─────┼────────────┼────────────────────────┤
+│   1 │   Row 1    │   1  false    1.0    1 │
+│   2 │   Row 2    │   2   true    2.0    2 │
+│   3 │   Row 3    │   3  false    3.0    3 │
+│   4 │   Row 4    │   4   true    4.0    4 │
+│   5 │   Row 5    │   5  false    5.0    5 │
+│   6 │   Row 6    │   6   true    6.0    6 │
+└─────┴────────────┴────────────────────────┘
 """
 
     result = pretty_table(
@@ -228,22 +228,22 @@ end
         ),
         vlines = [:begin, 1, 2, :end],
         show_row_number = true,
-        row_names = ["Row $i" for i in 1:6],
-        row_name_column_title = "Row names",
-        row_name_alignment = :c
+        row_labels = ["Row $i" for i in 1:6],
+        row_label_column_title = "Row labels",
+        row_label_alignment = :c
     )
     @test result == expected
 
     expected = """
-┌─────┬───────────┬────────────┬───
-│ Row │ Row names │  C1     C2 │  ⋯
-│     │           │ Int   Bool │  ⋯
-├─────┼───────────┼────────────┼───
-│   1 │   Row 1   │   1  false │  ⋯
-│   2 │   Row 2   │   2   true │  ⋯
-│   3 │   Row 3   │   3  false │  ⋯
-│  ⋮  │     ⋮     │  ⋮     ⋮   │  ⋱
-└─────┴───────────┴────────────┴───
+┌─────┬────────────┬────────────┬──
+│ Row │ Row labels │  C1     C2 │ ⋯
+│     │            │ Int   Bool │ ⋯
+├─────┼────────────┼────────────┼──
+│   1 │   Row 1    │   1  false │ ⋯
+│   2 │   Row 2    │   2   true │ ⋯
+│   3 │   Row 3    │   3  false │ ⋯
+│  ⋮  │     ⋮      │  ⋮     ⋮   │ ⋱
+└─────┴────────────┴────────────┴──
        2 columns and 3 rows omitted
 """
 
@@ -257,9 +257,9 @@ end
         crop = :both,
         display_size = (12, 35),
         show_row_number = true,
-        row_names = ["Row $i" for i in 1:6],
-        row_name_column_title = "Row names",
-        row_name_alignment = :c,
+        row_labels = ["Row $i" for i in 1:6],
+        row_label_column_title = "Row labels",
+        row_label_alignment = :c,
         vlines = [:begin, 1, 2, 4, :end]
     )
     @test result == expected

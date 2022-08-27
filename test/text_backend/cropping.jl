@@ -271,41 +271,41 @@
     # --------------------------------------------------------------------------
 
     expected = """
-┌─────┬──────────┬────────┬────────
-│ Row │ Row name │ Col. 1 │ Col.  ⋯
-├─────┼──────────┼────────┼────────
-│   1 │    Row 1 │      1 │  fals ⋯
-│   2 │    Row 2 │      2 │   tru ⋯
-│   3 │    Row 3 │      3 │  fals ⋯
-│   4 │    Row 4 │      4 │   tru ⋯
-│  ⋮  │    ⋮     │   ⋮    │   ⋮   ⋱
-└─────┴──────────┴────────┴────────
-       3 columns and 2 rows omitted
+┌─────┬───────────┬────────┬────────
+│ Row │ Row label │ Col. 1 │ Col.  ⋯
+├─────┼───────────┼────────┼────────
+│   1 │     Row 1 │      1 │  fals ⋯
+│   2 │     Row 2 │      2 │   tru ⋯
+│   3 │     Row 3 │      3 │  fals ⋯
+│   4 │     Row 4 │      4 │   tru ⋯
+│  ⋮  │     ⋮     │   ⋮    │   ⋮   ⋱
+└─────┴───────────┴────────┴────────
+        3 columns and 2 rows omitted
 """
 
     result = pretty_table(
         String,
         data;
         crop = :both,
-        display_size = (12, 35),
+        display_size = (12, 36),
         linebreaks = true,
         show_row_number = true,
-        row_names = ["Row $i" for i in 1:6],
-        row_name_column_title = "Row name"
+        row_labels = ["Row $i" for i in 1:6],
+        row_label_column_title = "Row label"
     )
 
     @test result == expected
 
     expected = """
-┌─────┬──────────┬───────
-│ Row │ Row name │ Col. ⋯
-├─────┼──────────┼───────
-│   1 │    Row 1 │      ⋯
-│   2 │    Row 2 │      ⋯
-│   3 │    Row 3 │      ⋯
-│   4 │    Row 4 │      ⋯
-│  ⋮  │    ⋮     │   ⋮  ⋱
-└─────┴──────────┴───────
+┌─────┬───────────┬───────
+│ Row │ Row label │ Col. ⋯
+├─────┼───────────┼───────
+│   1 │     Row 1 │      ⋯
+│   2 │     Row 2 │      ⋯
+│   3 │     Row 3 │      ⋯
+│   4 │     Row 4 │      ⋯
+│  ⋮  │     ⋮     │   ⋮  ⋱
+└─────┴───────────┴───────
 4 columns and 2 rows omitted
 """
 
@@ -313,24 +313,24 @@
         String,
         data;
         crop = :both,
-        display_size = (12, 25),
+        display_size = (12, 26),
         linebreaks = true,
         show_row_number = true,
-        row_names = ["Row $i" for i in 1:6],
-        row_name_column_title = "Row name"
+        row_labels = ["Row $i" for i in 1:6],
+        row_label_column_title = "Row label"
     )
 
     @test result == expected
 
     expected = """
 ┌─────┬────────
-│ Row │ Row n ⋯
+│ Row │ Row l ⋯
 ├─────┼────────
-│   1 │    Ro ⋯
-│   2 │    Ro ⋯
-│   3 │    Ro ⋯
-│   4 │    Ro ⋯
-│  ⋮  │    ⋮  ⋱
+│   1 │     R ⋯
+│   2 │     R ⋯
+│   3 │     R ⋯
+│   4 │     R ⋯
+│  ⋮  │     ⋮ ⋱
 └─────┴────────
 4 columns and 2 rows omitted
 """
@@ -342,8 +342,8 @@
         display_size = (12, 15),
         linebreaks = true,
         show_row_number = true,
-        row_names = ["Row $i" for i in 1:6],
-        row_name_column_title = "Row name"
+        row_labels = ["Row $i" for i in 1:6],
+        row_label_column_title = "Row label"
     )
 
     @test result == expected

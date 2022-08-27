@@ -3,11 +3,11 @@
 # Description
 # ==============================================================================
 #
-#    Tests of row name column.
+#    Tests of row label column.
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-@testset "Show row names" begin
+@testset "Show row labels" begin
     expected = """
 \\begin{tabular}{rrrrr}
   \\hline
@@ -30,7 +30,7 @@
             ["C1",  "C2",   "C3",    "C4"],
             ["Int", "Bool", "Float", "Hex"]
         ),
-        row_names = ["Row $i" for i in 1:6]
+        row_labels = ["Row $i" for i in 1:6]
     )
 
     @test result == expected
@@ -38,7 +38,7 @@
     expected = """
 \\begin{tabular}{rrrrr}
   \\hline
-  \\textbf{Row names} & \\textbf{C1} & \\textbf{C2} & \\textbf{C3} & \\textbf{C4} \\\\
+  \\textbf{Row labels} & \\textbf{C1} & \\textbf{C2} & \\textbf{C3} & \\textbf{C4} \\\\
    & \\texttt{Int} & \\texttt{Bool} & \\texttt{Float} & \\texttt{Hex} \\\\\\hline
   Row 1 & 1 & false & 1.0 & 1 \\\\
   Row 2 & 2 & true & 2.0 & 2 \\\\
@@ -57,8 +57,8 @@
             ["C1",  "C2",   "C3",    "C4"],
             ["Int", "Bool", "Float", "Hex"]
         ),
-        row_names = ["Row $i" for i in 1:6],
-        row_name_column_title = "Row names"
+        row_labels = ["Row $i" for i in 1:6],
+        row_label_column_title = "Row labels"
     )
 
     @test result == expected
@@ -66,7 +66,7 @@
     expected = """
 \\begin{tabular}{rcrrrr}
   \\hline
-  \\textbf{Row} & \\textbf{Row names} & \\textbf{C1} & \\textbf{C2} & \\textbf{C3} & \\textbf{C4} \\\\
+  \\textbf{Row} & \\textbf{Row labels} & \\textbf{C1} & \\textbf{C2} & \\textbf{C3} & \\textbf{C4} \\\\
    &  & \\texttt{Int} & \\texttt{Bool} & \\texttt{Float} & \\texttt{Hex} \\\\\\hline
   1 & Row 1 & 1 & false & 1.0 & 1 \\\\
   2 & Row 2 & 2 & true & 2.0 & 2 \\\\
@@ -85,9 +85,9 @@
             ["C1",  "C2",   "C3",    "C4"],
             ["Int", "Bool", "Float", "Hex"]
         ),
-        row_names = ["Row $i" for i in 1:6],
-        row_name_column_title = "Row names",
-        row_name_alignment = :c,
+        row_labels = ["Row $i" for i in 1:6],
+        row_label_column_title = "Row labels",
+        row_label_alignment = :c,
         show_row_number = true
     )
 

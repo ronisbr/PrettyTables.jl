@@ -27,6 +27,6 @@ end
     include("latex_backend/issues.jl")
 end
 
-@testset "Row names" begin
-    include("latex_backend/row_names.jl")
+@testset "Row labels" begin
+    include("latex_backend/row_labels.jl")
 end

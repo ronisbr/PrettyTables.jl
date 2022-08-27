@@ -151,7 +151,7 @@ passed as keywords when calling the function `pretty_table`:
         after the columns in the vector. Notice that the top line will be drawn
         if `0` is in `vlines`. Furthermore, it is important to mention that the
         column number in this variable is related to the **printed column**.
-        Thus, it is affected by the options `row_names` and `show_row_number`.
+        Thus, it is affected by the options `row_labels` and `show_row_number`.
         Finally, for convenience, the left and right vertical lines can be drawn
         by adding the symbols `:begin` and `:end` to this vector, respectively,
         and the line after the header can be drawn by adding the symbol
@@ -164,9 +164,9 @@ decoration:
 - `header_crayon::Union{Crayon, Vector{Crayon}}`: Crayon to print the header.
 - `omitted_cell_summary_crayon::Crayon`: Crayon used to print the omitted cell
     summary.
-- `row_name_crayon::Crayon`: Crayon to print the row names.
-- `row_name_header_crayon::Crayon`: Crayon to print the header of the column
-    with the row names.
+- `row_label_crayon::Crayon`: Crayon to print the row labels.
+- `row_label_header_crayon::Crayon`: Crayon to print the header of the column
+    with the row labels.
 - `row_number_header_crayon::Crayon`: Crayon for the header of the column with
     the row numbers.
 - `subheader_crayon::Union{Crayon, Vector{Crayon}}`: Crayon to print

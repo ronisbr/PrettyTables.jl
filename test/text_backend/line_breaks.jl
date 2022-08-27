@@ -295,15 +295,15 @@ end
 
     result = pretty_table(
         String, table;
-        header                = header,
-        alignment             = :l,
-        autowrap              = true,
-        linebreaks            = true,
-        body_hlines           = [1, 2],
-        columns_width         = [-1, 30],
-        show_row_number       = true,
-        row_names             = ["Primeiro", "Segundo", "Terceiro"],
-        row_name_column_title = "Verso"
+        header                 = header,
+        alignment              = :l,
+        autowrap               = true,
+        linebreaks             = true,
+        body_hlines            = [1, 2],
+        columns_width          = [-1, 30],
+        show_row_number        = true,
+        row_labels             = ["Primeiro", "Segundo", "Terceiro"],
+        row_label_column_title = "Verso"
     )
 
     @test result == expected

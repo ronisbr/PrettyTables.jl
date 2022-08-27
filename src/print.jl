@@ -103,14 +103,15 @@ is not compliant, then only the following types are supported:
     `print` or `:show` to use the function `show`. Notice that this selection is
     applicable only to the table data. Headers, sub-headers, and row name column
     are always rendered with print. (**Default** = `:print`)
-- `row_names::Union{Nothing, AbstractVector}`: A vector containing the row names
-    that will be appended to the left of the table. If it is `nothing`, then the
-    column with the row names will not be shown. Notice that the size of this
-    vector must match the number of rows in the table. (**Default** = `nothing`)
-- `row_name_alignment::Symbol`: Alignment of the column with the rows name (see
-    the section `Alignment`).
-- `row_name_column_title::AbstractString`: Title of the column with the row
-    names. (**Default** = "")
+- `row_labels::Union{Nothing, AbstractVector}`: A vector containing the row
+    labels that will be appended to the left of the table. If it is `nothing`,
+    then the column with the row labels will not be shown. Notice that the size
+    of this vector must match the number of rows in the table.
+    (**Default** = `nothing`)
+- `row_label_alignment::Symbol`: Alignment of the column with the row labels
+    (see the section `Alignment`).
+- `row_label_column_title::AbstractString`: Title of the column with the row
+    labels. (**Default** = "")
 - `row_number_column_title::AbstractString`: Title of the column with the row
     numbers. (**Default** = "Row")
 - `show_header::Bool`: If `true`, then the header will be printed. Notice that
@@ -307,7 +308,7 @@ This back-end produces text tables. This back-end can be used by selecting
         after the columns in the vector. Notice that the top line will be drawn
         if `0` is in `vlines`. Furthermore, it is important to mention that the
         column number in this variable is related to the **printed column**.
-        Thus, it is affected by the options `row_names` and `show_row_number`.
+        Thus, it is affected by the options `row_labels` and `show_row_number`.
         Finally, for convenience, the left and right vertical lines can be drawn
         by adding the symbols `:begin` and `:end` to this vector, respectively,
         and the line after the header can be drawn by adding the symbol
@@ -320,9 +321,9 @@ decoration:
 - `header_crayon::Union{Crayon, Vector{Crayon}}`: Crayon to print the header.
 - `omitted_cell_summary_crayon::Crayon`: Crayon used to print the omitted cell
     summary.
-- `row_name_crayon::Crayon`: Crayon to print the row names.
-- `row_name_header_crayon::Crayon`: Crayon to print the header of the column
-    with the row names.
+- `row_label_crayon::Crayon`: Crayon to print the row labels.
+- `row_label_header_crayon::Crayon`: Crayon to print the header of the column
+    with the row labels.
 - `row_number_header_crayon::Crayon`: Crayon for the header of the column with
     the row numbers.
 - `subheader_crayon::Union{Crayon, Vector{Crayon}}`: Crayon to print

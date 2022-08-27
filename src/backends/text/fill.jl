@@ -97,7 +97,7 @@ function _fill_matrix_data!(
                     renderer = Val(:print)
                 )
 
-            elseif (column_id == :row_name)
+            elseif (column_id == :row_label)
                 cell_str = _parse_cell_text(
                     cell_data;
                     autowrap = false,

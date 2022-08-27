@@ -320,11 +320,11 @@ function _select_default_cell_crayon(
         else
             return text_crayons.text_crayon
         end
-    elseif column_id == :row_name
+    elseif column_id == :row_label
         if row_id == :__HEADER__
-            return text_crayons.row_name_header_crayon
+            return text_crayons.row_label_header_crayon
         else
-            return text_crayons.row_name_crayon
+            return text_crayons.row_label_crayon
         end
     elseif row_id == :__HEADER__
         if text_crayons.header_crayon isa Crayon

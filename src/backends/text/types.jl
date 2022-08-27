@@ -190,8 +190,8 @@ struct TextCrayons{
     border_crayon::Crayon
     header_crayon::Thc
     omitted_cell_summary_crayon::Crayon
-    row_name_crayon::Crayon
-    row_name_header_crayon::Crayon
+    row_label_crayon::Crayon
+    row_label_header_crayon::Crayon
     row_number_header_crayon::Crayon
     subheader_crayon::Tsc
     text_crayon::Crayon

@@ -75,26 +75,26 @@ end
     @test result == expected
 end
 
-@testset "Row name" begin
+@testset "Row label" begin
     expected = """
-┌──────┬────────┬────────┬────────┬────────┐
-│\e[1m Name \e[0m│\e[1m Col. 1 \e[0m│\e[1m Col. 2 \e[0m│\e[1m Col. 3 \e[0m│\e[1m Col. 4 \e[0m│
-├──────┼────────┼────────┼────────┼────────┤
-│\e[1m    A \e[0m│      1 │  false │    1.0 │      1 │
-│\e[1m    B \e[0m│      2 │   true │    2.0 │      2 │
-│\e[1m    C \e[0m│      3 │  false │    3.0 │      3 │
-│\e[1m    D \e[0m│      4 │   true │    4.0 │      4 │
-│\e[1m    E \e[0m│      5 │  false │    5.0 │      5 │
-│\e[1m    F \e[0m│      6 │   true │    6.0 │      6 │
-└──────┴────────┴────────┴────────┴────────┘
+┌───────┬────────┬────────┬────────┬────────┐
+│\e[1m Label \e[0m│\e[1m Col. 1 \e[0m│\e[1m Col. 2 \e[0m│\e[1m Col. 3 \e[0m│\e[1m Col. 4 \e[0m│
+├───────┼────────┼────────┼────────┼────────┤
+│\e[1m     A \e[0m│      1 │  false │    1.0 │      1 │
+│\e[1m     B \e[0m│      2 │   true │    2.0 │      2 │
+│\e[1m     C \e[0m│      3 │  false │    3.0 │      3 │
+│\e[1m     D \e[0m│      4 │   true │    4.0 │      4 │
+│\e[1m     E \e[0m│      5 │  false │    5.0 │      5 │
+│\e[1m     F \e[0m│      6 │   true │    6.0 │      6 │
+└───────┴────────┴────────┴────────┴────────┘
 """
 
-    row_names = ['A'+i for i = 0:5]
+    row_labels = ['A'+i for i = 0:5]
     result = sprint((io)->pretty_table(
         io,
         data,
-        row_names = row_names,
-        row_name_column_title = "Name"
+        row_labels = row_labels,
+        row_label_column_title = "Label"
     ), context = :color => true)
 
     @test result == expected

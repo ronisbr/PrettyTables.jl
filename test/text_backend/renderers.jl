@@ -16,7 +16,7 @@
     header = (["C1", "C2", "C3", "C4"],
               ["S1", "S2", "S3", "S4"])
 
-    row_names = [1, 2, "3", '4']
+    row_labels = [1, 2, "3", '4']
 
     # Print
     # --------------------------------------------------------------------------
@@ -40,8 +40,8 @@
         matrix;
         header = header,
         linebreaks = true,
-        row_names = row_names,
-        row_name_column_title = "Test",
+        row_labels = row_labels,
+        row_label_column_title = "Test",
         row_number_column_title = "#",
         show_row_number = true
     )
@@ -68,8 +68,8 @@
         header = header,
         compact_printing = false,
         linebreaks = true,
-        row_names = row_names,
-        row_name_column_title = "Test",
+        row_labels = row_labels,
+        row_label_column_title = "Test",
         row_number_column_title = "#",
         show_row_number = true
     )
@@ -123,7 +123,7 @@ end
         ["S1", "S2", "S3", "S4"]
     )
 
-    row_names = [1, 2, "3", '4']
+    row_labels = [1, 2, "3", '4']
 
     # Show
     # --------------------------------------------------------------------------
@@ -148,8 +148,8 @@ end
         header = header,
         linebreaks = true,
         renderer = :show,
-        row_names = row_names,
-        row_name_column_title = "Test",
+        row_labels = row_labels,
+        row_label_column_title = "Test",
         row_number_column_title = "#",
         show_row_number = true
     )
@@ -177,8 +177,8 @@ end
         compact_printing = false,
         linebreaks = true,
         renderer = :show,
-        row_names = row_names,
-        row_name_column_title = "Test",
+        row_labels = row_labels,
+        row_label_column_title = "Test",
         row_number_column_title = "#",
         show_row_number = true
     )

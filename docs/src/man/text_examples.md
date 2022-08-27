@@ -211,7 +211,7 @@ julia> hl = Highlighter((data, i, j) -> true,
 
 julia> pretty_table(data;
                     header = ["x = $(x)°" for x = 0:10:180],
-                    row_names = ["y = $(y)°" for y = 0:10:180],
+                    row_labels = ["y = $(y)°" for y = 0:10:180],
                     highlighters = hl,
                     formatters = ft_printf("%.2f"))
 ```

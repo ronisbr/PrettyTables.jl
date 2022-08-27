@@ -154,7 +154,7 @@ end
 end
 
 @testset "Issue #24 - Tables compatibility" begin
-    # Named tuple of vectors (satisfies Tables interface).
+    # Labeld tuple of vectors (satisfies Tables interface).
     ctable = (x = Int64[1, 2, 3, 4], y = ["a", "b", "c", "d"])
 
     cresult = sprint(pretty_table, ctable)
@@ -175,7 +175,7 @@ end
 end
 
 @testset "Issue #28 - Tables.jl API must have priority when printing" begin
-    # A NamedTuple is compliant with Tables.jl API.
+    # A LabeldTuple is compliant with Tables.jl API.
     table = (x = Int64(1):Int64(3),
              y = 'a':'c',
              z = ["String 1";"String 2";"String 3"]);
@@ -324,7 +324,7 @@ end
         alignment_anchor_regex = Dict(i => [r"\."] for i in vcat(1, 3:1000)),
         crop = :both,
         display_size = (20, 50),
-        row_names = ["NAME" for i in 1:30],
+        row_labels = ["NAME" for i in 1:30],
         show_row_number = true
     )
 
@@ -430,7 +430,7 @@ end
         crop = :both,
         body_hlines = collect(0:5:100),
         display_size = (20, 35),
-        row_names = 0:1:100,
+        row_labels = 0:1:100,
         show_row_number = true
     )
 
@@ -463,7 +463,7 @@ end
         crop = :both,
         body_hlines = collect(0:5:100),
         display_size = (20, 35),
-        row_names = 0:1:100,
+        row_labels = 0:1:100,
         show_row_number = true,
         vcrop_mode = :middle
     )

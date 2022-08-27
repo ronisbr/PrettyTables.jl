@@ -265,7 +265,7 @@ end
         String,
         matrix,
         alignment_anchor_regex = Dict(4 => [r"\.", r"^"]),
-        row_names = ["a" for i in 1:7],
+        row_labels = ["a" for i in 1:7],
         show_row_number = true
     )
 

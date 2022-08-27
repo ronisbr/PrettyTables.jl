@@ -29,7 +29,7 @@ function _pt_html(
     vcrop_mode::Symbol = :bottom,
     wrap_table_in_div::Bool = false,
     # Decorations
-    row_name_decoration::HtmlDecoration = HtmlDecoration(font_weight = "bold"),
+    row_label_decoration::HtmlDecoration = HtmlDecoration(font_weight = "bold"),
     row_number_decoration::HtmlDecoration = HtmlDecoration(font_weight = "bold"),
     top_left_str_decoration::HtmlDecoration = HtmlDecoration(),
     top_right_str_decoration::HtmlDecoration = HtmlDecoration(),
@@ -324,9 +324,9 @@ function _pt_html(
             if column_id == :row_number
                 cell_class = "rowNumber"
                 merge!(style, Dict(row_number_decoration))
-            elseif column_id == :row_name
-                cell_class = "rowName"
-                merge!(style, Dict(row_name_decoration))
+            elseif column_id == :row_label
+                cell_class = "rowLabel"
+                merge!(style, Dict(row_label_decoration))
             end
 
             if _is_header_row(row_id)

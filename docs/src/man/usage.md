@@ -111,14 +111,15 @@ Each back-end defines its own configuration keywords that can be passed using
     `print` or `:show` to use the function `show`. Notice that this selection is
     applicable only to the table data. Headers, sub-headers, and row name column
     are always rendered with print. (**Default** = `:print`)
-- `row_names::Union{Nothing, AbstractVector}`: A vector containing the row names
-    that will be appended to the left of the table. If it is `nothing`, then the
-    column with the row names will not be shown. Notice that the size of this
-    vector must match the number of rows in the table. (**Default** = `nothing`)
-- `row_name_alignment::Symbol`: Alignment of the column with the rows name (see
-    the section [Alignment](@ref)).
-- `row_name_column_title::AbstractString`: Title of the column with the row
-    names. (**Default** = "")
+- `row_labels::Union{Nothing, AbstractVector}`: A vector containing the row
+    labels that will be appended to the left of the table. If it is `nothing`,
+    then the column with the row labels will not be shown. Notice that the size
+    of this vector must match the number of rows in the table.
+    (**Default** = `nothing`)
+- `row_label_alignment::Symbol`: Alignment of the column with the rows label
+    (see the section [Alignment](@ref)).
+- `row_label_column_title::AbstractString`: Title of the column with the row
+    labels. (**Default** = "")
 - `row_number_column_title::AbstractString`: Title of the column with the row
     numbers. (**Default** = "Row")
 - `show_header::Bool`: If `true`, then the header will be printed. Notice that
