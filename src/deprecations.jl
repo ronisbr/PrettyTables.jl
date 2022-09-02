@@ -10,8 +10,8 @@
 #                               Auxiliary macros
 # ==============================================================================
 
-# Macro to help declare functions to remove keywords.
-macro decl_rm_kwarg(kwarg)
+# Macro to declare functions to remove keywords.
+macro decl_rm_kw(kwarg)
     local fn_name = Symbol("_rm_" * string(kwarg))
 
     expr = quote
@@ -21,8 +21,12 @@ macro decl_rm_kwarg(kwarg)
     return esc(expr)
 end
 
-# Macro to help checking deprecated keywords.
-macro deprecate_kwarg_and_push(old, new, fn = identity)
+# Macros to check deprecated keywords
+# ------------------------------------------------------------------------------
+
+# This macro mark `old` deprecated in favor of `new`. It also pushes `new` to
+# `kwargs` using the conversion function `fn`.
+macro deprecate_kw_and_push(old, new, fn = identity)
     local rm_kwarg = Symbol("_rm_" * string(old))
     local sym_old = Meta.quot(Symbol(old))
     local sym_new = Meta.quot(Symbol(new))
@@ -41,7 +45,9 @@ macro deprecate_kwarg_and_push(old, new, fn = identity)
     return esc(expr)
 end
 
-macro deprecate_kwarg_and_return(old, new, fn = identity)
+# This macro mark `old` deprecated in favor of `new`. It also assigns `new` to
+# `kwargs` using the conversion function `fn`.
+macro deprecate_kw_and_return(old, new, fn = identity)
     local rm_kwarg = Symbol("_rm_" * string(old))
     local sym_old = Meta.quot(Symbol(old))
     local sym_new = Meta.quot(Symbol(new))
@@ -64,10 +70,13 @@ end
 #                       Deprecations introduced in v2.0
 # ==============================================================================
 
-@decl_rm_kwarg(rownum_header_crayon)
-@decl_rm_kwarg(noheader)
-@decl_rm_kwarg(nosubheader)
-@decl_rm_kwarg(crop_num_lines_at_beginning)
+@decl_rm_kw(crop_num_lines_at_beginning)
+@decl_rm_kw(noheader)
+@decl_rm_kw(nosubheader)
+@decl_rm_kw(rownum_header_crayon)
+@decl_rm_kw(row_names)
+@decl_rm_kw(row_name_alignment)
+@decl_rm_kw(row_name_column_title)
 
 @deprecate HTMLDecoration(args...; kwargs...) HtmlDecoration(args...; kwargs...)
 @deprecate HTMLTableFormat(args...; kwargs...) HtmlTableFormat(args...; kwargs...)

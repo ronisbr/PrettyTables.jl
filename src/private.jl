@@ -317,13 +317,13 @@ function _pt(
     kwargs...
 )
     # Check for deprecations.
-    @deprecate_kwarg_and_push(rownum_header_crayon, row_number_header_crayon)
-    @deprecate_kwarg_and_push(crop_num_lines_at_beginning, reserved_display_lines)
-    @deprecate_kwarg_and_return(noheader, show_header, !)
-    @deprecate_kwarg_and_return(nosubheader, show_subheader, !)
-    @deprecate_kwarg_and_return(row_names, row_labels)
-    @deprecate_kwarg_and_return(row_name_alignment, row_label_alignment)
-    @deprecate_kwarg_and_return(row_name_columns_title, row_label_column_title)
+    @deprecate_kw_and_push(crop_num_lines_at_beginning, reserved_display_lines)
+    @deprecate_kw_and_push(rownum_header_crayon, row_number_header_crayon)
+    @deprecate_kw_and_return(noheader, show_header, !)
+    @deprecate_kw_and_return(nosubheader, show_subheader, !)
+    @deprecate_kw_and_return(row_name_alignment, row_label_alignment)
+    @deprecate_kw_and_return(row_name_column_title, row_label_column_title)
+    @deprecate_kw_and_return(row_names, row_labels)
 
     if backend === Val(:auto)
         # In this case, if we do not have the `tf` keyword, then we just
