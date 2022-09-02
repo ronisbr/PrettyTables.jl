@@ -318,6 +318,9 @@ function _pt(
 )
     # Check for deprecations.
     @deprecate_kw_and_push(crop_num_lines_at_beginning, reserved_display_lines)
+    @deprecate_kw_and_push(row_name_crayon, row_label_crayon)
+    @deprecate_kw_and_push(row_name_decoration, row_label_decoration)
+    @deprecate_kw_and_push(row_name_header_crayon, row_label_header_crayon)
     @deprecate_kw_and_push(rownum_header_crayon, row_number_header_crayon)
     @deprecate_kw_and_return(noheader, show_header, !)
     @deprecate_kw_and_return(nosubheader, show_subheader, !)
