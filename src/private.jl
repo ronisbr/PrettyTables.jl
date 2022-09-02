@@ -317,37 +317,12 @@ function _pt(
     kwargs...
 )
     # Check for deprecations.
-    if haskey(kwargs, :rownum_header_crayon)
-        Base.depwarn(
-            "The option `rownum_header_crayon` is deprecated. Use `row_number_header_crayon` instead.",
-            :rownum_header_crayon
-        )
-
-        kwargs = _rm_rownum_header_crayon(;
-            row_number_header_crayon = kwargs[:rownum_header_crayon],
-            kwargs...
-        )
-    end
-
-    if haskey(kwargs, :noheader)
-        Base.depwarn(
-            "The option `noheader` is deprecated. Use `show_header` instead.",
-            :noheader
-        )
-
-        show_header = !kwargs[:noheader]
-        kwargs = _rm_noheader(; kwargs...)
-    end
-
-    if haskey(kwargs, :nosubheader)
-        Base.depwarn(
-            "The option `nosubheader` is deprecated. Use `show_subheader` instead.",
-            :nosubheader
-        )
-
-        show_subheader = !kwargs[:nosubheader]
-        kwargs = _rm_nosubheader(; kwargs...)
-    end
+    @deprecate_kwarg_and_push(rownum_header_crayon, row_number_header_crayon)
+    @deprecate_kwarg_and_return(noheader, show_header, !)
+    @deprecate_kwarg_and_return(nosubheader, show_subheader, !)
+    @deprecate_kwarg_and_return(row_names, row_labels)
+    @deprecate_kwarg_and_return(row_name_alignment, row_label_alignment)
+    @deprecate_kwarg_and_return(row_name_columns_title, row_label_column_title)
 
     if backend === Val(:auto)
         # In this case, if we do not have the `tf` keyword, then we just
