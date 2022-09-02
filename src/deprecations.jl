@@ -67,6 +67,7 @@ end
 @decl_rm_kwarg(rownum_header_crayon)
 @decl_rm_kwarg(noheader)
 @decl_rm_kwarg(nosubheader)
+@decl_rm_kwarg(crop_num_lines_at_beginning)
 
 @deprecate HTMLDecoration(args...; kwargs...) HtmlDecoration(args...; kwargs...)
 @deprecate HTMLTableFormat(args...; kwargs...) HtmlTableFormat(args...; kwargs...)
