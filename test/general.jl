@@ -7,30 +7,30 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-@testset "Back-ends" begin
+@testset "Back-ends" verbose = true begin
     include("./general/backend.jl")
 end
 
-@testset "Configurations" begin
+@testset "Configurations" verbose = true begin
     include("./general/configurations.jl")
 end
 
-@testset "Compact types" begin
+@testset "Compact types" verbose = true begin
     include("./general/compact_types.jl")
 end
 
-@testset "Errors" begin
+@testset "Errors" verbose = true begin
     include("./general/errors.jl")
 end
 
-@testset "Table to file" begin
+@testset "Table to file" verbose = true begin
     include("./general/files.jl")
 end
 
-@testset "Table to string" begin
+@testset "Table to string" verbose = true begin
     include("./general/string.jl")
 end
 
-@testset "Tables.jl API" begin
+@testset "Tables.jl API" verbose = true begin
     include("./general/tables.jl")
 end

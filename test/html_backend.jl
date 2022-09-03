@@ -7,58 +7,58 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-@testset "Alignment" begin
+@testset "Alignment" verbose = true begin
     include("./html_backend/alignments.jl")
 end
 
-@testset "Column width" begin
+@testset "Column width" verbose = true begin
     include("./html_backend/column_width.jl")
 end
 
-@testset "Cropping" begin
+@testset "Cropping" verbose = true begin
     include("./html_backend/crop.jl")
 end
 
-@testset "Default" begin
+@testset "Default" verbose = true begin
     include("./html_backend/default.jl")
 end
 
-@testset "Formatters" begin
+@testset "Formatters" verbose = true begin
     include("./html_backend/formatters.jl")
 end
 
-@testset "Headers" begin
+@testset "Headers" verbose = true begin
     include("./html_backend/headers.jl")
 end
 
-@testset "Highlighters" begin
+@testset "Highlighters" verbose = true begin
     include("./html_backend/highlighters.jl")
 end
 
-@testset "Linebreaks" begin
+@testset "Linebreaks" verbose = true begin
     include("./html_backend/linebreaks.jl")
 end
 
-@testset "Markdown" begin
+@testset "Markdown" verbose = true begin
     include("./html_backend/markdown.jl")
 end
 
-@testset "OffsetArrays" begin
+@testset "OffsetArrays" verbose = true begin
     include("./html_backend/offset_arrays.jl")
 end
 
-@testset "Renderers" begin
+@testset "Renderers" verbose = true begin
     include("./html_backend/renderers.jl")
 end
 
-@testset "Row numbers" begin
+@testset "Row numbers" verbose = true begin
     include("./html_backend/row_numbers.jl")
 end
 
-@testset "Titles" begin
+@testset "Titles" verbose = true begin
     include("./html_backend/titles.jl")
 end
 
-@testset "Top bar" begin
+@testset "Top bar" verbose = true begin
     include("./html_backend/topbar.jl")
 end

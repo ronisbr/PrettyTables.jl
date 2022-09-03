@@ -7,30 +7,30 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-@testset "Default" begin
+@testset "Default" verbose = true begin
     include("latex_backend/default.jl")
 end
 
-@testset "Cropping"  begin
+@testset "Cropping"  verbose = true begin
     include("latex_backend/crop.jl")
 end
 
-@testset "Formatters" begin
+@testset "Formatters" verbose = true begin
     include("latex_backend/formatters.jl")
 end
 
-@testset "Highlighters" begin
+@testset "Highlighters" verbose = true begin
     include("latex_backend/highlighters.jl")
 end
 
-@testset "Issues" begin
+@testset "Issues" verbose = true begin
     include("latex_backend/issues.jl")
 end
 
-@testset "OffsetArrays" begin
+@testset "OffsetArrays" verbose = true begin
     include("latex_backend/offset_arrays.jl")
 end
 
-@testset "Row labels" begin
+@testset "Row labels" verbose = true begin
     include("latex_backend/row_labels.jl")
 end
