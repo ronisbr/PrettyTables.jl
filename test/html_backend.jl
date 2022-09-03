@@ -43,6 +43,10 @@ end
     include("./html_backend/markdown.jl")
 end
 
+@testset "OffsetArrays" begin
+    include("./html_backend/offset_arrays.jl")
+end
+
 @testset "Renderers" begin
     include("./html_backend/renderers.jl")
 end

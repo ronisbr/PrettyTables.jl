@@ -1,5 +1,6 @@
 using Test
 using PrettyTables
+using OffsetArrays
 using Tables
 using Markdown
 
@@ -9,6 +10,8 @@ data = Any[1    false      1.0     0x01 ;
            4     true      4.0     0x04 ;
            5    false      5.0     0x05 ;
            6     true      6.0     0x06 ;]
+
+odata = OffsetArray(data, -4:1, -2:1)
 
 println("Text backend")
 println("============")

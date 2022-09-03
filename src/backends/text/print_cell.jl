@@ -102,10 +102,15 @@ function _process_data_cell_text(
     alignment::Symbol,
     (@nospecialize highlighters::Ref{Any})
 )
+    # Notice that `(i, j)` are the indices of the printed data. It means that it
+    # refers to the ith data row and jth data column that will be printed. We
+    # need to convert those indices to the actual indices in the input table.
+    ti, tj = _convert_axes(ptable.data, i, j)
+
     # Check for highlighters.
     for h in highlighters.x
-        if h.f(_getdata(ptable), i, j)
-            crayon = h.fd(h, _getdata(ptable), i, j)::Crayon
+        if h.f(_getdata(ptable), ti, tj)
+            crayon = h.fd(h, _getdata(ptable), ti, tj)::Crayon
             break
         end
     end

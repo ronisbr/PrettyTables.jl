@@ -19,7 +19,7 @@ function _preprocess_vec_or_mat(
     header::Union{Nothing, AbstractVector, Tuple}
 )
     if header === nothing
-        pheader = (["Col. " * string(i) for i = 1:size(data,2)],)
+        pheader = (["Col. " * string(i) for i in axes(data, 2)],)
     elseif header isa AbstractVector
         pheader = (header,)
     else
@@ -202,7 +202,7 @@ function _print_info(
     if show_row_number
         _add_column!(
             ptable,
-            1:size(data)[1],
+            axes(data)[1] |> collect,
             [row_number_column_title];
             alignment = row_number_alignment,
             id = :row_number

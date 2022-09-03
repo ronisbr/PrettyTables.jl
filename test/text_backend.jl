@@ -54,6 +54,10 @@ end
     include("text_backend/markdown.jl")
 end
 
+@testset "OffsetArrays" begin
+    include("text_backend/offset_arrays.jl")
+end
+
 @testset "Renderers" begin
     include("text_backend/renderers.jl")
 end

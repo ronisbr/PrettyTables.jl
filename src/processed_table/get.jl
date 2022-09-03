@@ -8,6 +8,35 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 """
+    _convert_axes(data::Any, i::Int)
+
+Convert the axes from the printed table data `i` to the axes in `data`.
+
+!!! note
+    `i` refers to the i-th element that will be printed.
+
+    _convert_axes(data::Any, i::Int, j::Int)
+
+Convert the axes from the printed table data `(i, j)` to the axes in `data`.
+
+!!! note
+    `(i, j)` refers to the i-th data row and j-th data column that will be
+    printed.
+"""
+function _convert_axes(data::Any, i::Int)
+    ax  = axes(data)
+    ti = first(ax[1]) + i - 1
+    return ti
+end
+
+function _convert_axes(data::Any, i::Int, j::Int)
+    ax  = axes(data)
+    ti = first(ax[1]) + i - 1
+    tj = (length(ax) == 1) ? 1 : first(ax[2]) + j - 1
+    return ti, tj
+end
+
+"""
     _get_cell_alignemnt(ptable::ProcessedTable, i::Int, j::Int)
 
 Get the alignment of the `ptable` cell in `i`th row and `j`th column.
@@ -23,12 +52,15 @@ function _get_cell_alignment(ptable::ProcessedTable, i::Int, j::Int)
             header_alignment_override = nothing
 
             # Get the cell index in the original table.
-            jr = _get_data_column_index(ptable, j)
+            jr  = _get_data_column_index(ptable, j)
+
+            # Get the data index inside the header.
+            ajr = _convert_axes(ptable.header[i], jr)
 
             # Search for alignment overrides in this cell.
             for f in ptable._header_cell_alignment
                 header_alignment_override =
-                    f(ptable.header, i, jr)::Union{Nothing, Symbol}
+                    f(ptable.header, i, ajr)::Union{Nothing, Symbol}
 
                 if _is_alignment_valid(header_alignment_override)
                     return header_alignment_override
@@ -71,10 +103,13 @@ function _get_cell_alignment(ptable::ProcessedTable, i::Int, j::Int)
             ir = _get_data_row_index(ptable, i)
             jr = _get_data_column_index(ptable, j)
 
+            # Get the data index inside the table.
+            air, ajr = _convert_axes(ptable.data, ir, jr)
+
             # Search for alignment overrides in this cell.
             for f in ptable._data_cell_alignment
                 alignment_override =
-                    f(_getdata(ptable.data), ir, jr)::Union{Nothing, Symbol}
+                    f(_getdata(ptable.data), air, ajr)::Union{Nothing, Symbol}
 
                 if _is_alignment_valid(alignment_override)
                     return alignment_override
@@ -149,27 +184,35 @@ _getdata(ptable::ProcessedTable) = _getdata(ptable.data)
 
 Get the element `(i, j)` if `ptable`. This function always considers the
 additional columns and the header.
+
+Notice that `i` and `j` must be related to the row and column that will be
+printed. The actual index inside the data is handle internally in this function.
 """
 function _get_element(ptable::ProcessedTable, i::Int, j::Int)
     Δc = length(ptable._additional_data_columns)
 
     # Check if we need to return an additional column or the real data.
     if j ≤ Δc
+
         if i ≤ ptable._num_header_rows
-            l = length(ptable._additional_header_columns[j])
+            aj = _convert_axes(ptable._additional_header_columns, j)
+            hj = ptable._additional_header_columns[aj]
+            l  = length(hj)
 
             if i ≤ l
-                return ptable._additional_header_columns[j][i]
+                ai = _convert_axes(hj, i)
+                return hj[ai]
             else
                 return ""
             end
         else
-            id = _get_data_row_index(ptable, i)
+            aj  = _convert_axes(ptable._additional_data_columns, j)
+            dj  = ptable._additional_data_columns[aj]
+            id  = _get_data_row_index(ptable, i)
+            aid = _convert_axes(dj, id)
 
-            ptable_additional_data_columns_j = ptable._additional_data_columns[j]
-
-            if isassigned(ptable_additional_data_columns_j, id)
-                return ptable_additional_data_columns_j[id]
+            if isassigned(dj, aid)
+                return dj[aid]
             else
                 return _UNDEFINED_CELL
             end
@@ -178,12 +221,20 @@ function _get_element(ptable::ProcessedTable, i::Int, j::Int)
         jd = _get_data_column_index(ptable, j)
 
         if i ≤ ptable._num_header_rows
-            return ptable.header[i][jd]
+            hi = ptable.header[i]
+
+            # Get the data index inside the header.
+            ajd = _convert_axes(hi, jd)
+
+            return hi[ajd]
         else
             id = _get_data_row_index(ptable, i)
 
-            if isassigned(ptable.data, id, jd)
-                return ptable.data[id, jd]
+            # Get the data index inside the table.
+            aid, ajd = _convert_axes(ptable.data, id, jd)
+
+            if isassigned(ptable.data, aid, ajd)
+                return ptable.data[aid, ajd]
             else
                 return _UNDEFINED_CELL
             end
@@ -204,8 +255,11 @@ function _get_header_element(ptable::ProcessedTable, j::Int)
     if j ≤ Δc
         return ptable._additional_header_columns[j]
     else
-        jd = _get_data_column_index(ptable, j - Δc)
-        return ptable.header[jd]
+        # Get the data index inside the header.
+        jd  = _get_data_column_index(ptable, j - Δc)
+        ajd = _convert_axes(first(ptable.header), jd)
+
+        return ptable.header[ajd]
     end
 end
 

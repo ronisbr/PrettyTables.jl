@@ -27,6 +27,10 @@ end
     include("latex_backend/issues.jl")
 end
 
+@testset "OffsetArrays" begin
+    include("latex_backend/offset_arrays.jl")
+end
+
 @testset "Row labels" begin
     include("latex_backend/row_labels.jl")
 end

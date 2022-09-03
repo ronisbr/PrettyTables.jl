@@ -228,9 +228,15 @@ function _pt_latex(
                 jr = _get_data_column_index(ptable, j)
 
                 if column_id == :__ORIGINAL_DATA__
+                    # Notice that `(ir, jr)` are the indices of the printed
+                    # data. It means that it refers to the ir-th data row and
+                    # jr-th data column that will be printed. We need to convert
+                    # those indices to the actual indices in the input table.
+                    tir, tjr = _convert_axes(ptable.data, ir, jr)
+
                     # Apply the formatters.
                     for f in formatters.x
-                        cell_data = f(cell_data, ir, jr)
+                        cell_data = f(cell_data, tir, tjr)
                     end
 
                     cell_str = _parse_cell_latex(
@@ -243,8 +249,8 @@ function _pt_latex(
 
                     # Apply highlighters.
                     for h in highlighters
-                        if h.f(_getdata(ptable), ir, jr)
-                            cell_str = h.fd(_getdata(ptable), ir, jr, cell_str)::String
+                        if h.f(_getdata(ptable), tir, tjr)
+                            cell_str = h.fd(_getdata(ptable), tir, tjr, cell_str)::String
                             break
                         end
                     end
