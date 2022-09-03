@@ -24,14 +24,14 @@ function _pt_latex(
     wrap_table_environment::Union{Nothing, String} = nothing
 )
     # Unpack fields of `pinfo`.
-    ptable                    = pinfo.ptable
-    cell_first_line_only      = pinfo.cell_first_line_only
-    compact_printing          = pinfo.compact_printing
-    formatters                = pinfo.formatters
-    limit_printing            = pinfo.limit_printing
-    renderer                  = pinfo.renderer
-    title                     = pinfo.title
-    title_alignment           = pinfo.title_alignment
+    ptable               = pinfo.ptable
+    cell_first_line_only = pinfo.cell_first_line_only
+    compact_printing     = pinfo.compact_printing
+    formatters           = pinfo.formatters
+    limit_printing       = pinfo.limit_printing
+    renderer             = pinfo.renderer
+    title                = pinfo.title
+    title_alignment      = pinfo.title_alignment
 
     hidden_rows_at_end = _get_num_of_hidden_rows(ptable) > 0
     hidden_columns_at_end = _get_num_of_hidden_columns(ptable) > 0
