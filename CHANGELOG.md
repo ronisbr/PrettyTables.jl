@@ -1,6 +1,56 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 2.0.0
+-------------
+
+- ![BREAKING][badge-breaking] The default option of `standalone` in HTML backend
+  is new `false` instead of `true`.
+- ![BREAKING][badge-breaking] The filters were removed to improve the code
+  maintainability. Table filtering must be done now before calling
+  `pretty_table`.
+- ![BREAKING][badge-breaking] The cells with undefined reference is now handled
+  differently to avoid confusion with cells that contains `undef`. (Issue
+  [#170][gh-issue-170])
+- ![BREAKING][badge-breaking] The support of Julia 1.0 was dropped.
+- ![Deprecation][badge-deprecation] The following options and structures were
+  renamed (the old versions are now deprecated):
+  - `HTMLDecoration => HtmlDecoration`
+  - `HTMLHighlighter => HtmlHighlighter`
+  - `HTMLTableFormat => HtmlTableFormat`
+  - `URLTextCell => UrlTextCell`
+  - `crop_num_lines_at_beginning => reserved_display_lines`
+  - `noheader => show_header`
+  - `nosubheader => show_subheader`
+  - `row_name* => row_label*`
+  - `rownum_header_crayon => row_number_header_crayon`
+- ![Bugfix][badge-bugfix] Many bugs in LaTeX escaping were fixed.
+- ![Feature][badge-feature] Two new options were added to limit the number of
+  rows and columns that will be printed in all backends: `max_num_of_columns`
+  and `max_num_of_rows`.
+- ![Feature][badge-feature] The HTML backend now shows the omitted cell summary.
+- ![Feature][badge-feature] The HTML backend now have vertical cropping.
+- ![Feature][badge-feature] The HTML backend now have a top bar where the user
+  can print information.
+- ![Feature][badge-feature] The HTML highlight now has an option to change the
+  font style.
+- ![Feature][badge-feature] The type `HtmlCell` can now be used to add raw HTML
+  code to a table cell. (Issue [#166][gh-issue-166])
+- ![Feature][badge-feature] The row number and label can now be decorated in
+  HTML.
+- ![Feature][badge-feature] The option `maximum_columns_width` can be used in
+  HTML to limit the maximum width of the cells.
+- ![Feature][badge-feature] The option `title` can now be customized for the
+  header cells in HTML (`header_cell_titles`).
+- ![Enhancement][badge-enhancement] Many internal changes allowed to
+  drastically increase the performance. The input tables are now wrapped in a
+  new structure that is responsible to merge the data to be printed (header,
+  additional columns, etc.).
+- ![Enhancement][badge-enhancement] The algorithm to obtain the cells from
+  tables with row access (Tables.jl) were improved. (Issue [#174][gh-issue-174])
+- ![Enhancement][badge-enhancement] OffsetArrays.jl is now supported. (Issue
+  [#110][gh-issue-110])
+
 Version 1.3.1
 -------------
 
@@ -584,6 +634,7 @@ Version 0.1.0
 [gh-issue-103]: https://github.com/ronisbr/PrettyTables.jl/issues/103
 [gh-issue-105]: https://github.com/ronisbr/PrettyTables.jl/issues/105
 [gh-issue-107]: https://github.com/ronisbr/PrettyTables.jl/issues/107
+[gh-issue-110]: https://github.com/ronisbr/PrettyTables.jl/issues/110
 [gh-issue-112]: https://github.com/ronisbr/PrettyTables.jl/issues/112
 [gh-issue-116]: https://github.com/ronisbr/PrettyTables.jl/issues/116
 [gh-issue-118]: https://github.com/ronisbr/PrettyTables.jl/issues/118
@@ -598,6 +649,9 @@ Version 0.1.0
 [gh-issue-150]: https://github.com/ronisbr/PrettyTables.jl/issues/150
 [gh-issue-153]: https://github.com/ronisbr/PrettyTables.jl/issues/153
 [gh-issue-154]: https://github.com/ronisbr/PrettyTables.jl/issues/154
+[gh-issue-166]: https://github.com/ronisbr/PrettyTables.jl/issues/166
+[gh-issue-170]: https://github.com/ronisbr/PrettyTables.jl/issues/170
+[gh-issue-174]: https://github.com/ronisbr/PrettyTables.jl/issues/174
 
 [gh-pr-5]: https://github.com/ronisbr/PrettyTables.jl/pull/5
 [gh-pr-8]: https://github.com/ronisbr/PrettyTables.jl/pull/8
