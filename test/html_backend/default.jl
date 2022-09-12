@@ -591,3 +591,40 @@ expected = """
     )
     @test result == expected
 end
+
+@testset "Table style" begin
+
+    expected = """
+<div class = "tableDivClass" style = "overflow-x: scroll;">
+  <table class = "tableClass" style = "margin-bottom: 10px; margin-top: 10px;">
+    <thead>
+      <tr class = "header headerLastRow">
+        <th style = "text-align: right;">Col. 1</th>
+        <th style = "text-align: right;">Col. 2</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style = "text-align: right;">1</td>
+        <td style = "text-align: right;">false</td>
+      </tr>
+      <tr>
+        <td style = "text-align: right;">2</td>
+        <td style = "text-align: right;">true</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+"""
+
+    result = pretty_table(
+        String,
+        data[1:2, 1:2];
+        backend = Val(:html),
+        table_style = Dict("margin-bottom" => "10px", "margin-top" => "10px"),
+        table_class = "tableClass",
+        table_div_class = "tableDivClass",
+        wrap_table_in_div = true,
+    )
+    @test result == expected
+end
