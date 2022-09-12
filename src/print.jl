@@ -451,6 +451,12 @@ This backend produces HTML tables. This backend can be used by selecting
     is `:bottom`, then the data, if required, will be cropped in the bottom. On
     the other hand, if it is `:middle`, then the data will be cropped in the
     middle if necessary. (**Default** = `:bottom`)
+- `table_div_class::String`: The class name for the table `div`. It is only used
+    if `wrap_table_in_div` is `true`. (**Default** = "")
+- `table_class::String`: The class name for the table. (**Default** = "")
+- `table_style::Dict{String, String}`: A dictionary containing the CSS
+    properties and their values to be added to the table `style`.
+    (**Default** = `Dict{String, String}()`)
 - `tf::HtmlTableFormat`: An instance of the structure [`HtmlTableFormat`](@ref)
     that defines the general format of the HTML table.
 - `top_left_str::String`: String to be printed at the left position of the top
@@ -462,6 +468,8 @@ This backend produces HTML tables. This backend can be used by selecting
     summary if it must be displayed. (**Default** = "")
 - `top_right_str_decoration::HtmlDecoration`: Decoration used to print the
     top-right string (see `top_right_str`). (**Default** = `HtmlDecoration()`)
+- `wrap_table_in_div::Bool`: If `true`, the table will be wrapped in a `div`.
+    (**Default**: `false`)
 
 ## HTML highlighters
 
