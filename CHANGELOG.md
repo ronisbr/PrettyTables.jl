@@ -1,6 +1,16 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 2.1.0
+-------------
+
+- ![Bugfix][badge-bugfix] The minimum Julia version was bumped to v1.6. Notice
+  that this is not breaking because
+  [StringManipulation.jl](https://github.com/ronisbr/StringManipulation.jl)
+  already requires Julia 1.6.
+- ![Feature][badge-feature] The table style (CSS) can be customized in HTML
+  output using the keyword `table_style`.
+
 Version 2.0.0
 -------------
 
