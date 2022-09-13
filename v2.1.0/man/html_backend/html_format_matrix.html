@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<meta charset="UTF-8">
+<style>
+table {
+    position: relative;
+}
+
+table::before,
+table::after {
+    border: 1px solid #000;
+    content: "";
+    height: 100%;
+    position: absolute;
+    top: 0;
+    width: 6px;
+}
+
+table::before {
+    border-right: 0px;
+    left: -6px;
+}
+
+table::after {
+    border-left: 0px;
+    right: -6px;
+}
+
+td {
+    padding: 5px;
+    text-align: center;
+}
+
+</style>
+<body>
+<table>
+<tr>
+<td style = "text-align: right; ">true</td>
+<td style = "text-align: right; ">100.0</td>
+<td style = "text-align: right; ">32896</td>
+<td style = "text-align: right; ">String</td>
+</tr>
+<tr>
+<td style = "text-align: right; ">false</td>
+<td style = "text-align: right; ">200.0</td>
+<td style = "text-align: right; ">2056</td>
+<td style = "text-align: right; ">String</td>
+</tr>
+<tr>
+<td style = "text-align: right; ">true</td>
+<td style = "text-align: right; ">300.0</td>
+<td style = "text-align: right; ">6534</td>
+<td style = "text-align: right; ">String</td>
+</tr>
+<tr>
+<td style = "text-align: right; ">false</td>
+<td style = "text-align: right; ">400.0</td>
+<td style = "text-align: right; ">6535</td>
+<td style = "text-align: right; ">String</td>
+</tr>
+</table>
+</body>
+</html>
