@@ -1,6 +1,11 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 2.1.1
+-------------
+
+- ![Bugfix][badge-bugfix] The header must always be printed regardless of the display size. This bug was leading to access of undefined memory if the number of rows in the display was smaller than that in the header. (Issue [#179][gh-issue-179])
+
 Version 2.1.0
 -------------
 
@@ -662,6 +667,7 @@ Version 0.1.0
 [gh-issue-166]: https://github.com/ronisbr/PrettyTables.jl/issues/166
 [gh-issue-170]: https://github.com/ronisbr/PrettyTables.jl/issues/170
 [gh-issue-174]: https://github.com/ronisbr/PrettyTables.jl/issues/174
+[gh-issue-179]: https://github.com/ronisbr/PrettyTables.jl/issues/179
 
 [gh-pr-5]: https://github.com/ronisbr/PrettyTables.jl/pull/5
 [gh-pr-8]: https://github.com/ronisbr/PrettyTables.jl/pull/8
