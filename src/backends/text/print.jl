@@ -164,6 +164,9 @@ function _pt_text(
 
     if display.size[1] > 0
         num_rendered_rows = min(num_rows, display.size[1])
+
+        # We must render at least the header.
+        num_rendered_rows = max(num_header_rows, num_rendered_rows)
     end
 
     if display.size[2] > 0

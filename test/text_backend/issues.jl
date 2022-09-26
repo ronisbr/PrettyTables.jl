@@ -852,3 +852,148 @@ end
 
     @test result == expected
 end
+
+@testset "Issue #179 - Header does not fit into the display" begin
+    header = (
+        ["Column 1", "Column 2", "Column 3", "Column 4"],
+        ["Int", "Bool", "Float", "Hex"]
+    )
+
+    expected = """
+┌──────────┬──────────┬──────────┬──────────┐
+│ Column 1 │ Column 2 │ Column 3 │ Column 4 │
+│      Int │     Bool │    Float │      Hex │
+│    ⋮     │    ⋮     │    ⋮     │    ⋮     │
+└──────────┴──────────┴──────────┴──────────┘
+                               6 rows omitted
+"""
+
+    for r in 1:8
+        result = pretty_table(
+            String,
+            data;
+            crop = :both,
+            display_size = (r, -1),
+            header = header,
+        )
+
+        @test expected == result
+
+
+        result = pretty_table(
+            String,
+            data;
+            crop = :both,
+            display_size = (r, -1),
+            header = header,
+            vcrop_mode = :middle,
+        )
+    end
+
+    expected = """
+┌──────────┬──────────┬──────────┬──────────┐
+│ Column 1 │ Column 2 │ Column 3 │ Column 4 │
+│      Int │     Bool │    Float │      Hex │
+├──────────┼──────────┼──────────┼──────────┤
+│    ⋮     │    ⋮     │    ⋮     │    ⋮     │
+└──────────┴──────────┴──────────┴──────────┘
+                               6 rows omitted
+"""
+
+    result = pretty_table(
+        String,
+        data;
+        crop = :both,
+        display_size = (9, -1),
+        header = header,
+    )
+
+    @test expected == result
+
+    result = pretty_table(
+        String,
+        data;
+        crop = :both,
+        display_size = (9, -1),
+        header = header,
+        vcrop_mode = :middle,
+    )
+
+    @test expected == result
+
+    expected = """
+┌──────────┬──────────┬──────────┬──────────┐
+│ Column 1 │ Column 2 │ Column 3 │ Column 4 │
+│      Int │     Bool │    Float │      Hex │
+├──────────┼──────────┼──────────┼──────────┤
+│        1 │    false │      1.0 │        1 │
+│    ⋮     │    ⋮     │    ⋮     │    ⋮     │
+└──────────┴──────────┴──────────┴──────────┘
+                               5 rows omitted
+"""
+
+    result = pretty_table(
+        String,
+        data;
+        crop = :both,
+        display_size = (10, -1),
+        header = header,
+    )
+
+    @test expected == result
+
+    result = pretty_table(
+        String,
+        data;
+        crop = :both,
+        display_size = (10, -1),
+        header = header,
+        vcrop_mode = :middle,
+    )
+
+    @test expected == result
+
+    expected = """
+┌──────────┬──────────┬──────────┬──────────┐
+│ Column 1 │ Column 2 │ Column 3 │ Column 4 │
+│      Int │     Bool │    Float │      Hex │
+├──────────┼──────────┼──────────┼──────────┤
+│        1 │    false │      1.0 │        1 │
+│        2 │     true │      2.0 │        2 │
+│    ⋮     │    ⋮     │    ⋮     │    ⋮     │
+└──────────┴──────────┴──────────┴──────────┘
+                               4 rows omitted
+"""
+
+    result = pretty_table(
+        String,
+        data;
+        crop = :both,
+        display_size = (11, -1),
+        header = header,
+    )
+
+    @test expected == result
+
+    expected = """
+┌──────────┬──────────┬──────────┬──────────┐
+│ Column 1 │ Column 2 │ Column 3 │ Column 4 │
+│      Int │     Bool │    Float │      Hex │
+├──────────┼──────────┼──────────┼──────────┤
+│        1 │    false │      1.0 │        1 │
+│    ⋮     │    ⋮     │    ⋮     │    ⋮     │
+│        6 │     true │      6.0 │        6 │
+└──────────┴──────────┴──────────┴──────────┘
+                               4 rows omitted
+"""
+    result = pretty_table(
+        String,
+        data;
+        crop = :both,
+        display_size = (11, -1),
+        header = header,
+        vcrop_mode = :middle,
+    )
+
+    @test expected == result
+end

@@ -178,15 +178,18 @@ function _fill_matrix_data!(
             num_processed_lines += num_lines
             num_lines_in_row[i_ts] = max(num_lines_in_row[i_ts], num_lines)
 
-            # If the crop mode if `:middle`, then we need to always process a
-            # row in the top and in another in the bottom before stopping due to
-            # display size. This is required to avoid printing from a cell that
-            # is undefined. Notice that due to the printing order in `jvec` we
-            # just need to check if `k` is even.
-            if ((vcrop_mode == :bottom) || ((vcrop_mode == :middle))) &&
-                (display.size[1] > 0) &&
-                (num_processed_lines ≥ display.size[1])
-                break
+            # We must ensure that all header lines are processed.
+            if !_is_header_row(row_id)
+                # If the crop mode if `:middle`, then we need to always process
+                # a row in the top and in another in the bottom before stopping
+                # due to display size. This is required to avoid printing from a
+                # cell that is undefined. Notice that due to the printing order
+                # in `jvec` we just need to check if `k` is even.
+                if ((vcrop_mode == :bottom) || ((vcrop_mode == :middle))) &&
+                    (display.size[1] > 0) &&
+                    (num_processed_lines ≥ display.size[1])
+                    break
+                end
             end
         end
 

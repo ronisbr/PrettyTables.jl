@@ -69,10 +69,7 @@ function _compute_continuation_row_in_bottom_vcrop(
                 available_display_lines - draw_last_hline - show_omitted_cell_summary
 
             # We must print at least the header.
-            continuation_row_line = max(
-                continuation_row_line,
-                num_header_lines
-            )
+            continuation_row_line = max(continuation_row_line, num_header_lines)
         else
             continuation_row_line = -1
         end
@@ -125,11 +122,18 @@ function _compute_continuation_row_in_middle_vcrop(
                 show_omitted_cell_summary -
                 draw_last_hline
 
-            continuation_row_line = div(
-                available_rows_for_data + 1,
-                2,
-                RoundUp
-            ) + num_header_lines
+            # If there is no available rows for data, we need to print at least
+            # the header.
+            if available_rows_for_data > 0
+                continuation_row_line = div(
+                    available_rows_for_data + 1,
+                    2,
+                    RoundUp
+                ) + num_header_lines
+            else
+                # We must print at least the header.
+                continuation_row_line = num_header_lines
+            end
         else
             continuation_row_line = -1
         end
