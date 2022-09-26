@@ -803,6 +803,8 @@ end
         display_size = (-1, 20),
         maximum_columns_width = 8
     )
+
+    @test expected == result
 end
 
 @testset "Issue #170 - Pringint of UndefInitializer()" begin
