@@ -1,10 +1,20 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 2.1.2
+-------------
+
+- ![Bugfix][badge-bugfix] The first row when accessing a Table.jl table with row
+  access must be obtained using `first` instead of assuming that the first row
+  state is 1. (PR [#182][gh-pr-182])
+
 Version 2.1.1
 -------------
 
-- ![Bugfix][badge-bugfix] The header must always be printed regardless of the display size. This bug was leading to access of undefined memory if the number of rows in the display was smaller than that in the header. (Issue [#179][gh-issue-179])
+- ![Bugfix][badge-bugfix] The header must always be printed regardless of the
+  display size. This bug was leading to access of undefined memory if the number
+  of rows in the display was smaller than that in the header. (Issue
+  [#179][gh-issue-179])
 
 Version 2.1.0
 -------------
@@ -682,3 +692,4 @@ Version 0.1.0
 [gh-pr-135]: https://github.com/ronisbr/PrettyTables.jl/pull/135
 [gh-pr-140]: https://github.com/ronisbr/PrettyTables.jl/pull/140
 [gh-pr-143]: https://github.com/ronisbr/PrettyTables.jl/pull/143
+[gh-pr-182]: https://github.com/ronisbr/PrettyTables.jl/pull/182
