@@ -170,6 +170,31 @@ julia> pretty_table(data, backend = Val(:latex), header = header, highlighters =
     The following LaTeX packages are required to render this example:
     `colortbl` and `xcolor`.
 
+
+
+## PrettyTables and Latexify (LaTeXStrings)
+ 
+To work with `LaTeXString`s, you must wrap them in `LatexCell`s.
+(This will prevent PrettyTables from converting `\\` into `\textbackslash`.)
+For example:
+
+```julia
+julia> using PrettyTables, Latexify
+
+julia> c1 = LatexCell.([latexify("α"), latexify("β")]);
+
+julia> c2 = [0.0, 1.0];
+
+julia> pretty_table([c1 c2], backend = Val(:latex))
+\begin{tabular}{rr}
+  \hline
+  \textbf{Col. 1} & \textbf{Col. 2} \\\hline
+  $\alpha$ & 0.0 \\
+  $\beta$ & 1.0 \\\hline
+```
+
+
+
 ## LaTeX table formats
 
 The following table formats are available when using the LaTeX back-end:
