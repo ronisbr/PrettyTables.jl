@@ -104,7 +104,7 @@ function _preprocess_Tables_row(
     table = Tables.rows(data)
 
     # We need to fetch the first row to get information about the columns.
-    row₁, ~ = iterate(table, 1)
+    row₁ = first(table)
 
     # Get the column names.
     names = collect(Symbol, Tables.columnnames(row₁))
