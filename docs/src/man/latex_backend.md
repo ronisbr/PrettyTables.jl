@@ -188,6 +188,7 @@ julia> pretty_table([c1 c2], backend = Val(:latex))
   \textbf{Col. 1} & \textbf{Col. 2} \\\hline
   $\alpha$ & 0.0 \\
   $\beta$ & 1.0 \\\hline
+\end{tabular}
 ```
 
 ## LaTeX table formats
