@@ -52,7 +52,7 @@ This function must return a string that will be printed to the IO.
 end
 
 @inline function _parse_cell_latex(
-    cell::LatexCell;
+    cell::Union{LaTeXString,LatexCell};
     cell_first_line_only::Bool = false,
     compact_printing::Bool = true,
     limit_printing::Bool = true,
