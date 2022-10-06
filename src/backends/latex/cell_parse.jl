@@ -52,7 +52,7 @@ This function must return a string that will be printed to the IO.
 end
 
 @inline function _parse_cell_latex(
-    cell::Union{LaTeXString,LatexCell};
+    cell::Union{LaTeXString, LatexCell};
     cell_first_line_only::Bool = false,
     compact_printing::Bool = true,
     limit_printing::Bool = true,
@@ -69,7 +69,7 @@ end
     )
 
     # Convert to string using the desired renderer.
-    data = _data(cell)
+    data = _get_latex_cell_data(cell)
     if renderer === Val(:show)
         if showable(MIME("text/latex"), data)
             cell_str = sprint(show, MIME("text/latex"), data; context = context)
@@ -96,5 +96,5 @@ end
 @inline _parse_cell_latex(cell::Missing; kwargs...) = "missing"
 @inline _parse_cell_latex(cell::Nothing; kwargs...) = "nothing"
 @inline _parse_cell_latex(cell::UndefinedCell; kwargs...) = "\\#undef"
-@inline _data(cell::LatexCell) = cell.data
-@inline _data(cell::LaTeXString) = cell
+@inline _get_latex_cell_data(cell::LatexCell) = cell.data
+@inline _get_latex_cell_data(cell::LaTeXString) = cell
