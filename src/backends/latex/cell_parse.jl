@@ -33,7 +33,7 @@ This function must return a string that will be printed to the IO.
 
     # Convert to string using the desired renderer.
     if renderer === Val(:show)
-        if cell isa AbstractString
+        if !(cell isa LaTeXString) && cell isa AbstractString
             cell_str = cell
         elseif showable(MIME("text/latex"), cell)
             cell_str = sprint(show, MIME("text/latex"), cell; context = context)
@@ -52,7 +52,7 @@ This function must return a string that will be printed to the IO.
 end
 
 @inline function _parse_cell_latex(
-    cell::LatexCell;
+    cell::Union{LaTeXString, LatexCell};
     cell_first_line_only::Bool = false,
     compact_printing::Bool = true,
     limit_printing::Bool = true,
@@ -69,16 +69,17 @@ end
     )
 
     # Convert to string using the desired renderer.
+    data = _get_latex_cell_data(cell)
     if renderer === Val(:show)
-        if cell.data isa AbstractString
-            cell_str = cell.data
-        elseif showable(MIME("text/latex"), cell.data)
-            cell_str = sprint(show, MIME("text/latex"), cell.data; context = context)
+        if showable(MIME("text/latex"), data)
+            cell_str = sprint(show, MIME("text/latex"), data; context = context)
+        elseif data isa AbstractString
+            cell_str = data
         else
-            cell_str = sprint(show, cell.data; context = context)
+            cell_str = sprint(show, data; context = context)
         end
     else
-        cell_str = sprint(print, cell.data; context = context)
+        cell_str = sprint(print, data; context = context)
     end
 
     if cell_first_line_only
@@ -95,3 +96,5 @@ end
 @inline _parse_cell_latex(cell::Missing; kwargs...) = "missing"
 @inline _parse_cell_latex(cell::Nothing; kwargs...) = "nothing"
 @inline _parse_cell_latex(cell::UndefinedCell; kwargs...) = "\\#undef"
+@inline _get_latex_cell_data(cell::LatexCell) = cell.data
+@inline _get_latex_cell_data(cell::LaTeXString) = cell

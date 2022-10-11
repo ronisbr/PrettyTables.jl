@@ -133,18 +133,19 @@ end
 
 @testset "Escaping" begin
     matrix = Any[
-        latex_cell"$\mathbf{\pi}$"       π
-        latex_cell"\textbf{Character}"   'a'
-        latex_cell"\textbf{Emoji}"       "😅 emoji 😃"
-        latex_cell"\textbf{Float64}"     Float16(1)
-        latex_cell"\texttt{Missing}"     missing
-        latex_cell"\textbf{New line}"    "One line\nAnother line"
-        latex_cell"\emph{Nothing}"       nothing
-        latex_cell"\textbf{Regex}"       r"1"
-        latex_cell"\textbf{String}"      String(UInt8[0, 1, 2, 3])
-        latex_cell"\textbf{Symbol}"      :a
-        latex_cell"\textbf{Sub. string}" s"1"
-        latex_cell"\textbf{UInt64}"      0x1
+        latex_cell"$\mathbf{\pi}$"           π
+        latex_cell"\textbf{Character}"       'a'
+        latex_cell"\textbf{Emoji}"           "😅 emoji 😃"
+        latex_cell"\textbf{Float64}"         Float16(1)
+        latex_cell"\texttt{Missing}"         missing
+        latex_cell"\textbf{New line}"        "One line\nAnother line"
+        LaTeXString("\\emph{Nothing}")       nothing
+        LaTeXString("\\textbf{Regex}")       r"1"
+        LaTeXString("\\textbf{String}")      String(UInt8[0, 1, 2, 3])
+        LaTeXString("\\textbf{Symbol}")      :a
+        LaTeXString("\\textbf{Sub. string}") s"1"
+        LaTeXString("\\textbf{UInt64}")      0x1
+        "Percents"                           "1000%"
     ]
 
     # Renderer = `:printf`
@@ -165,7 +166,8 @@ end
           \\textbf{String} & \\textbackslash{}0\\textbackslash{}x01\\textbackslash{}x02\\textbackslash{}x03 \\\\
           \\textbf{Symbol} & a \\\\
           \\textbf{Sub. string} & 1 \\\\
-          \\textbf{UInt64} & 1 \\\\\\hline
+          \\textbf{UInt64} & 1 \\\\
+          Percents & 1000\\% \\\\\\hline
         \\end{tabular}
         """
 
@@ -190,7 +192,8 @@ end
           \\textbf{String} & \\textbackslash{}0\\textbackslash{}x01\\textbackslash{}x02\\textbackslash{}x03 \\\\
           \\textbf{Symbol} & :a \\\\
           \\textbf{Sub. string} & 1 \\\\
-          \\textbf{UInt64} & 0x01 \\\\\\hline
+          \\textbf{UInt64} & 0x01 \\\\
+          Percents & 1000\\% \\\\\\hline
         \\end{tabular}
         """
 
@@ -261,4 +264,3 @@ end
 
     @test result == expected
 end
-

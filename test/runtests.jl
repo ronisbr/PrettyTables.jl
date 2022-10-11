@@ -3,6 +3,7 @@ using PrettyTables
 using OffsetArrays
 using Tables
 using Markdown
+using LaTeXStrings
 
 data = Any[1    false      1.0     0x01 ;
            2     true      2.0     0x02 ;
