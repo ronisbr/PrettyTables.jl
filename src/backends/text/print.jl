@@ -309,8 +309,8 @@ function _pt_text(
 
     _print_title!(display, title_tokens, text_crayons.title_crayon)
 
-    # If there is no column or row to be printed, then just exit.
-    if (num_rows - num_header_rows == 0) || (num_columns == 0)
+    # If there is no column and no row to be printed, then just exit.
+    if _data_size(ptable) == (0, 0)
         @goto print_to_output
     end
 

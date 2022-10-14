@@ -54,7 +54,12 @@ function ProcessedTable(
     num_header_columns = num_data_columns
 
     if header !== nothing
-        if show_header
+        # Check the corner case where the header is empty.
+        if length(header) == 0
+            num_header_columns = 0
+            num_header_rows = 0
+
+        elseif show_header
             num_header_columns = length(first(header))
 
             if num_data_columns != num_header_columns
@@ -106,6 +111,12 @@ function ProcessedTable(
     # Check if the user does not want to process all the rows and columns.
     if max_num_of_rows > 0
         max_num_of_rows = min(max_num_of_rows, num_data_rows)
+
+        # If the number of hidden rows is only 1, we should not hide any row
+        # because we will need an additional row to show the continuation line.
+        if (num_data_rows - max_num_of_rows) == 1
+            max_num_of_rows = num_data_rows
+        end
     end
 
     if max_num_of_columns > 0

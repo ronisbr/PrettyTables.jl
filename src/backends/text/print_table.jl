@@ -43,6 +43,7 @@ function _print_table_data!(
     rps = RowPrintingState()
 
     while rps.state ≠ :finish
+
         # Row printing state machine
         # ======================================================================
 

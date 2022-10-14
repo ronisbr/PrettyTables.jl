@@ -45,10 +45,15 @@ function _iterate_row_printing_state!(
             end
 
         elseif rps.state == :middle_horizontal_line
-            rps.state = :table_line
-            rps.i += 1
-            rps.i_pt += 1
-            rps.l = 0
+            if rps.i ≤ num_rendered_rows
+                rps.state = :table_line
+                rps.i += 1
+                rps.i_pt += 1
+                rps.l = 0
+            else
+                rps.state = :row_finished
+            end
+
             continue
 
         elseif rps.state == :table_line

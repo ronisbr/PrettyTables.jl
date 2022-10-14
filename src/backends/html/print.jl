@@ -227,7 +227,7 @@ function _pt_html(
     end
 
     # If there is no column or row to be printed, then just exit.
-    if (num_data_rows == 0) || (num_data_columns == 0)
+    if _data_size(ptable) == (0, 0)
         @goto print_to_output
     end
 

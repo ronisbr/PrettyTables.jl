@@ -133,8 +133,8 @@ function _pt_latex(
     buf_io_b = IOBuffer()
     buf_b    = IOContext(buf_io_b)
 
-    # If there is no column or row to be printed, then just exit.
-    if (num_columns == 0) || (num_rows == 0)
+    # If there is no column and no row to be printed, then just exit.
+    if _data_size(ptable) == (0, 0)
         @goto print_to_output
     end
 
