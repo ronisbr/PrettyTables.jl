@@ -103,14 +103,29 @@ function _preprocess_Tables_row(
     # Access the table using the rows.
     table = Tables.rows(data)
 
-    # We need to fetch the first row to get information about the columns.
-    row₁ = first(table)
-
-    # Get the column names.
-    names = collect(Symbol, Tables.columnnames(row₁))
-
-    # Compute the table size.
+    # Compute the number of rows.
     size_i::Int = length(table)
+
+    # If we have at least one row, we can obtain the number of columns by
+    # fetching the row. Otherwise, we try to use the schema.
+    if size_i > 0
+        row₁ = first(table)
+
+        # Get the column names.
+        names = collect(Symbol, Tables.columnnames(row₁))
+    else
+        sch = Tables.schema(data)
+
+        if sch === nothing
+            # In this case, we do not have a row and we do not have a schema.
+            # Thus, we can do nothing. Hence, we assume there is no row or
+            # column.
+            names = Symbol[]
+        else
+            names = [sch.names...]
+        end
+    end
+
     size_j::Int = length(names)
 
     pdata = RowTable(data, table, names, (size_i, size_j))

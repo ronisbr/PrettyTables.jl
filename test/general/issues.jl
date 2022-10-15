@@ -19,6 +19,15 @@ Tables.getcolumn(x::SimpleTable, i::Symbol) = tuple(x.data[parse(Int,string(i)),
 
 table = SimpleTable([10.0^(i+j) for i in 1:10, j in 1:5])
 
+struct NoTable end
+
+Tables.istable(::NoTable) = true
+Tables.rowaccess(::NoTable) = true
+Tables.rows(t::NoTable) = t
+Base.length(t) = 0
+
+notable = NoTable()
+
 @testset "Issue #90 - Tables.jl returning tuples as columns" begin
     expected = """
 ┌──────────┬──────────┬──────────┬──────────┬────────┐
@@ -412,6 +421,27 @@ Title
         title = "Title",
         wrap_table = true
     )
+
+    @test expected == result
+end
+
+@testset "Issue #156 - Empty Tables.jl" begin
+    table = @NamedTuple{x::Int, y::Int}[]
+
+    expected = """
+┌───────┬───────┐
+│     x │     y │
+│ Int64 │ Int64 │
+└───────┴───────┘
+"""
+
+    result = pretty_table(String, table)
+
+    @test expected == result
+
+    expected = ""
+
+    result = pretty_table(String, notable)
 
     @test expected == result
 end
