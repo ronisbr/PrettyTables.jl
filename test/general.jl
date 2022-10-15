@@ -23,6 +23,10 @@ end
     include("./general/errors.jl")
 end
 
+@testset "Issues" verbose = true begin
+    include("./general/issues.jl")
+end
+
 @testset "Table to file" verbose = true begin
     include("./general/files.jl")
 end
