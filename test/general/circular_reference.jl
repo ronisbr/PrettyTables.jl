@@ -1,0 +1,111 @@
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#
+# Description
+# ==============================================================================
+#
+#   Tests related with circular reference.
+#
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+struct CircularRef
+    A1::Vector{Any}
+    A2::Vector{Any}
+    A3::Vector{Any}
+    A4::Vector{Any}
+end
+
+Tables.istable(x::CircularRef) = true
+Tables.columnaccess(::CircularRef) = true
+Tables.columnnames(x::CircularRef) = [:A1, :A2, :A3, :A4]
+Tables.columns(x::CircularRef) = x
+
+function Base.show(io::IO, cf::CircularRef)
+    pretty_table(io, cf)
+    return nothing
+end
+
+function Base.show(io::IO, ::MIME"text/plain", cf::CircularRef)
+    pretty_table(io, cf)
+    return nothing
+end
+
+function Base.show(io::IO, ::MIME"text/html", cf::CircularRef)
+    pretty_table(io, cf; backend = Val(:html))
+    return nothing
+end
+
+function Base.show(io::IO, ::MIME"text/latex", cf::CircularRef)
+    pretty_table(io, cf; backend = Val(:latex))
+    return nothing
+end
+
+@testset "Circular reference" begin
+    a = CircularRef([1, 1], [2, 2], [3, 3], [4, 4])
+    a.A1[1] = a
+
+    # Text backend
+    # ==========================================================================
+
+    expected = """
+┌──────────────────────────┬────┬────┬────┐
+│                       A1 │ A2 │ A3 │ A4 │
+├──────────────────────────┼────┼────┼────┤
+│ #= circular reference =# │  2 │  3 │  4 │
+│                        1 │  2 │  3 │  4 │
+└──────────────────────────┴────┴────┴────┘
+"""
+
+    result = sprint(show, a)
+
+    @test expected == result
+
+    # HTML backend
+    # ==========================================================================
+
+    expected = """
+<table>
+  <thead>
+    <tr class = "header headerLastRow">
+      <th style = "text-align: right;">A1</th>
+      <th style = "text-align: right;">A2</th>
+      <th style = "text-align: right;">A3</th>
+      <th style = "text-align: right;">A4</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style = "text-align: right;">#= circular reference =#</td>
+      <td style = "text-align: right;">2</td>
+      <td style = "text-align: right;">3</td>
+      <td style = "text-align: right;">4</td>
+    </tr>
+    <tr>
+      <td style = "text-align: right;">1</td>
+      <td style = "text-align: right;">2</td>
+      <td style = "text-align: right;">3</td>
+      <td style = "text-align: right;">4</td>
+    </tr>
+  </tbody>
+</table>
+"""
+
+    result = sprint(show, "text/html", a)
+
+    @test expected == result
+
+    # Latex backend
+    # ==========================================================================
+
+    expected = """
+\\begin{tabular}{rrrr}
+  \\hline
+  \\textbf{A1} & \\textbf{A2} & \\textbf{A3} & \\textbf{A4} \\\\\\hline
+  \\#= circular reference =\\# & 2 & 3 & 4 \\\\
+  1 & 2 & 3 & 4 \\\\\\hline
+\\end{tabular}
+"""
+
+    result = sprint(show, "text/latex", a)
+
+    @test expected == result
+end
