@@ -9,7 +9,7 @@
 
 # Low-level function to print the table using the text backend.
 function _pt_text(
-    io::IO,
+    io::IOContext,
     pinfo::PrintInfo;
     alignment_anchor_fallback::Symbol = :l,
     alignment_anchor_fallback_override::Dict{Int, Symbol} = Dict{Int, Symbol}(),
@@ -210,6 +210,7 @@ function _pt_text(
     # the updated number of rendered rows and columns given the user
     # specifications about cropping.
     num_rendered_rows, num_rendered_columns = _fill_matrix_data!(
+        io,
         table_str,
         ptable,
         actual_columns_width,

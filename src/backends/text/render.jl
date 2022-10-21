@@ -30,6 +30,7 @@
 # property `:limit => true`.
 function _render_text(
     ::Val{:print},
+    io::IOContext,
     v::Any;
     compact_printing::Bool = true,
     isstring::Bool = false,
@@ -38,12 +39,17 @@ function _render_text(
 )
     # Create the context that will be used when rendering the cell. Notice that
     # the `IOBuffer` will be neglected.
-    context = IOContext(stdout, :compact => compact_printing, :limit => limit_printing)
+    context = IOContext(
+        io,
+        :compact => compact_printing,
+        :limit => limit_printing
+    )
 
     str = sprint(print, v; context = context)
 
     return _render_text(
         Val(:print),
+        io,
         str;
         compact_printing = compact_printing,
         isstring = isstring,
@@ -53,6 +59,7 @@ end
 
 function _render_text(
     ::Val{:print},
+    io::IOContext,
     str::AbstractString;
     compact_printing::Bool = true,
     isstring::Bool = false,
@@ -74,7 +81,9 @@ function _render_text(
 end
 
 function _render_text(
-    ::Val{:show}, v::Any;
+    ::Val{:show},
+    io::IOContext,
+    v::Any;
     compact_printing::Bool = true,
     linebreaks::Bool = false,
     limit_printing::Bool = true,
@@ -82,7 +91,11 @@ function _render_text(
 )
     # Create the context that will be used when rendering the cell. Notice that
     # the `IOBuffer` will be neglected.
-    context = IOContext(stdout, :compact => compact_printing, :limit => limit_printing)
+    context = IOContext(
+        io,
+        :compact => compact_printing,
+        :limit => limit_printing
+    )
 
     if v isa AbstractString
         aux  = linebreaks ? string.(split(v, '\n')) : [v]

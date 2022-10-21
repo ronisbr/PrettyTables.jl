@@ -9,7 +9,7 @@
 
 # Low-level function to print the table using the LaTeX backend.
 function _pt_latex(
-    io::IO,
+    io::IOContext,
     pinfo::PrintInfo;
     tf::LatexTableFormat = tf_latex_default,
     body_hlines::Vector{Int} = Int[],
@@ -182,7 +182,8 @@ function _pt_latex(
             if _is_header_row(row_id)
                 if column_id == :__ORIGINAL_DATA__
                     cell_str = _parse_cell_latex(
-                        cell_data,
+                        io,
+                        cell_data;
                         compact_printing = compact_printing,
                         limit_printing = limit_printing,
                         renderer = Val(:print)
@@ -240,6 +241,7 @@ function _pt_latex(
                     end
 
                     cell_str = _parse_cell_latex(
+                        io,
                         cell_data;
                         cell_first_line_only = cell_first_line_only,
                         compact_printing = compact_printing,

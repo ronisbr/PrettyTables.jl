@@ -9,7 +9,7 @@
 
 # Low-level function to print the table using the text backend.
 function _pt_html(
-    io::IO,
+    io::IOContext,
     pinfo::PrintInfo;
     tf::HtmlTableFormat = tf_html_default,
     allow_html_in_cells::Bool = false,
@@ -349,11 +349,12 @@ function _pt_html(
                 end
 
                 cell_str = _parse_cell_html(
-                    cell_data,
-                    allow_html_in_cells=allow_html_in_cells,
-                    compact_printing=compact_printing,
-                    limit_printing=limit_printing,
-                    renderer=Val(:print)
+                    io,
+                    cell_data;
+                    allow_html_in_cells = allow_html_in_cells,
+                    compact_printing = compact_printing,
+                    limit_printing = limit_printing,
+                    renderer = Val(:print)
                 )
 
                 empty!(properties)
@@ -409,13 +410,14 @@ function _pt_html(
                 end
 
                 cell_str = _parse_cell_html(
+                    io,
                     cell_data;
-                    allow_html_in_cells=allow_html_in_cells,
-                    cell_first_line_only=cell_first_line_only,
-                    compact_printing=compact_printing,
-                    limit_printing=limit_printing,
-                    linebreaks=linebreaks,
-                    renderer=renderer
+                    allow_html_in_cells = allow_html_in_cells,
+                    cell_first_line_only = cell_first_line_only,
+                    compact_printing = compact_printing,
+                    limit_printing = limit_printing,
+                    linebreaks = linebreaks,
+                    renderer = renderer
                 )
 
                 empty!(properties)
