@@ -89,29 +89,51 @@ function _render_text(
     limit_printing::Bool = true,
     isstring::Bool = false
 )
-    # Create the context that will be used when rendering the cell. Notice that
-    # the `IOBuffer` will be neglected.
+    # Create the context that will be used when rendering the cell.
     context = IOContext(
         io,
         :compact => compact_printing,
         :limit => limit_printing
     )
 
-    if v isa AbstractString
-        aux  = linebreaks ? string.(split(v, '\n')) : [v]
-        vstr = sprint.(show, aux; context = context)
+    str  = sprint(show, v; context = context)
 
-        if !isstring
-            for i in 1:length(vstr)
-                aux_i   = first(vstr[i], length(vstr[i]) - 1)
-                vstr[i] = last(aux_i, length(aux_i) - 1)
-            end
+    return _render_text(
+        Val(:show),
+        io,
+        str;
+        compact_printing = compact_printing,
+        linebreaks = linebreaks,
+        limit_printing = limit_printing,
+        isstring = isstring
+    )
+end
+
+function _render_text(
+    ::Val{:show},
+    io::IOContext,
+    v::AbstractString;
+    compact_printing::Bool = true,
+    linebreaks::Bool = false,
+    limit_printing::Bool = true,
+    isstring::Bool = false
+)
+    # Create the context that will be used when rendering the cell.
+    context = IOContext(
+        io,
+        :compact => compact_printing,
+        :limit => limit_printing
+    )
+
+    aux  = linebreaks ? string.(split(v, '\n')) : [v]
+    vstr = sprint.(show, aux; context = context)
+
+    if !isstring
+        for i in 1:length(vstr)
+            aux_i   = first(vstr[i], length(vstr[i]) - 1)
+            vstr[i] = last(aux_i, length(aux_i) - 1)
         end
-    else
-        str  = sprint(show, v; context = context)
-        vstr = linebreaks ? string.(split(str, '\n')) : [str]
     end
 
     return vstr
 end
-
