@@ -20,12 +20,19 @@ Tables.columnnames(x::CircularRef) = [:A1, :A2, :A3, :A4]
 Tables.columns(x::CircularRef) = x
 
 function Base.show(io::IO, cf::CircularRef)
-    pretty_table(io, cf)
+    context = IOContext(io, :color => false)
+    pretty_table(context, cf; renderer = :show)
     return nothing
 end
 
 function Base.show(io::IO, ::MIME"text/plain", cf::CircularRef)
-    pretty_table(io, cf; renderer = :show)
+    context = IOContext(io, :color => false)
+    pretty_table(
+        context,
+        cf;
+        linebreaks = true,
+        renderer = :show
+    )
     return nothing
 end
 
@@ -107,5 +114,34 @@ end
 
     result = sprint(show, "text/latex", a)
 
+    @test expected == result
+end
+
+@testset "Circular reference with higher degree" begin
+    a = CircularRef([1,   1  ], [2,   2],   [3,   3],   [4,   4])
+    b = CircularRef([1.1, 1.1], [2.1, 2.1], [3.1, 3.1], [4.1, 4.1])
+
+    b.A1[1] = a
+    a.A1[1] = b
+
+    # Text backend
+    # ==========================================================================
+
+    expected = """
+┌─────────────────────────────────────────────┬─────┬─────┬─────┐
+│                                          A1 │  A2 │  A3 │  A4 │
+├─────────────────────────────────────────────┼─────┼─────┼─────┤
+│ ┌──────────────────────────┬────┬────┬────┐ │ 2.1 │ 3.1 │ 4.1 │
+│ │                       A1 │ A2 │ A3 │ A4 │ │     │     │     │
+│ ├──────────────────────────┼────┼────┼────┤ │     │     │     │
+│ │ #= circular reference =# │  2 │  3 │  4 │ │     │     │     │
+│ │                        1 │  2 │  3 │  4 │ │     │     │     │
+│ └──────────────────────────┴────┴────┴────┘ │     │     │     │
+│                                             │     │     │     │
+│                                         1.1 │ 2.1 │ 3.1 │ 4.1 │
+└─────────────────────────────────────────────┴─────┴─────┴─────┘
+"""
+
+    result = sprint(show, "text/plain", b)
     @test expected == result
 end
