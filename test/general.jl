@@ -11,6 +11,10 @@
     include("./general/backend.jl")
 end
 
+@testset "Circular reference" verbose = true begin
+    include("./general/circular_reference.jl")
+end
+
 @testset "Configurations" verbose = true begin
     include("./general/configurations.jl")
 end

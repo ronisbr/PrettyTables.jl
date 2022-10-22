@@ -7,15 +7,10 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-"""
-    _parse_cell_html(cell::T; kwargs...)
-
-Parse the table `cell` of type `T`.
-
-This function must return a string that will be printed to the IO.
-"""
+# Parse the table `cell` of type `T` considering the context `io`.
 @inline function _parse_cell_html(
-    cell;
+    io::IOContext,
+    cell::Any;
     allow_html_in_cells::Bool = false,
     cell_first_line_only::Bool = false,
     compact_printing::Bool = true,
@@ -25,6 +20,7 @@ This function must return a string that will be printed to the IO.
     kwargs...
 )
     cell_str = _render_cell_html(
+        io,
         cell;
         compact_printing = compact_printing,
         limit_printing = limit_printing,
@@ -44,6 +40,7 @@ This function must return a string that will be printed to the IO.
 end
 
 @inline function _parse_cell_html(
+    io::IOContext,
     cell::HtmlCell;
     cell_first_line_only::Bool = false,
     compact_printing::Bool = true,
@@ -53,6 +50,7 @@ end
     kwargs...
 )
     cell_str = _render_cell_html(
+        io,
         cell.data;
         compact_printing = compact_printing,
         limit_printing = limit_printing,
@@ -69,23 +67,27 @@ end
     return _str_html_escaped(cell_str, replace_newline, false)
 end
 
-@inline function _parse_cell_html(cell::Markdown.MD; kwargs...)
+@inline function _parse_cell_html(io::IOContext, cell::Markdown.MD; kwargs...)
     return replace(sprint(show, MIME("text/html"), cell),"\n"=>"")
 end
 
-@inline _parse_cell_html(cell::Missing; kwargs...) = "missing"
-@inline _parse_cell_html(cell::Nothing; kwargs...) = "nothing"
-@inline _parse_cell_html(cell::UndefinedCell; kwargs...) = "#undef"
+@inline _parse_cell_html(io::IOContext, cell::Missing; kwargs...) = "missing"
+@inline _parse_cell_html(io::IOContext, cell::Nothing; kwargs...) = "nothing"
+@inline _parse_cell_html(io::IOContext, cell::UndefinedCell; kwargs...) = "#undef"
 
 function _render_cell_html(
-    cell;
+    io::IOContext,
+    cell::Any;
     compact_printing::Bool = true,
     limit_printing::Bool = true,
     renderer::Union{Val{:print}, Val{:show}} = Val(:print),
 )
-    # Create the context that will be used when rendering the cell. Notice that
-    # the `IOBuffer` will be neglected.
-    context = IOContext(stdout, :compact => compact_printing, :limit => limit_printing)
+    # Create the context that will be used when rendering the cell.
+    context = IOContext(
+        io,
+        :compact => compact_printing,
+        :limit => limit_printing
+    )
 
     # Convert to string using the desired renderer.
     if renderer === Val(:show)

@@ -331,6 +331,7 @@ function _pt(
     title_alignment::Symbol = :l,
     kwargs...
 )
+
     # Check for deprecations.
     @deprecate_kw_and_push(crop_num_lines_at_beginning, reserved_display_lines)
     @deprecate_kw_and_push(row_name_crayon, row_label_crayon)
@@ -369,6 +370,36 @@ function _pt(
         end
     end
 
+    # Verify if we have a circular reference.
+    ptd = get(io, :__PRETTY_TABLES_DATA__, nothing)
+
+    if ptd !== nothing
+        context = IOContext(io)
+
+        # In this case, `ptd` is a vector with the data printed by
+        # PrettyTables.jl. Hence, we need to search if the current one is inside
+        # this vector. If true, we have a circular dependency.
+        for d in ptd
+            if d === _getdata(data)
+
+                if backend === Val(:text)
+                    _pt_text_circular_reference(context)
+                elseif backend === Val(:html)
+                    _pt_html_circular_reference(context)
+                elseif backend === Val(:latex)
+                    _pt_latex_circular_reference(context)
+                end
+
+                return nothing
+            end
+        end
+
+        # Otherwise, we must push the current data to the vector.
+        push!(ptd, _getdata(data))
+    else
+        context = IOContext(io, :__PRETTY_TABLES_DATA__ => Any[_getdata(data)])
+    end
+
     # Create the structure that stores the print information.
     pinfo = _print_info(
         data;
@@ -398,11 +429,11 @@ function _pt(
 
     # Select the appropriate backend.
     if backend === Val(:text)
-        _pt_text(io, pinfo; kwargs...)
+        _pt_text(context, pinfo; kwargs...)
     elseif backend === Val(:html)
-        _pt_html(io, pinfo; kwargs...)
+        _pt_html(context, pinfo; kwargs...)
     elseif backend === Val(:latex)
-        _pt_latex(io, pinfo; kwargs...)
+        _pt_latex(context, pinfo; kwargs...)
     end
 
     return nothing

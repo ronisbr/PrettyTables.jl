@@ -56,6 +56,7 @@ include("./processed_table/size.jl")
 # Text backend
 include("backends/text/alignment.jl")
 include("backends/text/cell_parse.jl")
+include("backends/text/circular_reference.jl")
 include("backends/text/display.jl")
 include("backends/text/fill.jl")
 include("backends/text/misc.jl")
@@ -75,6 +76,7 @@ include("backends/text/custom_text_cells/ansi_text_cell.jl")
 
 # HTML backend
 include("backends/html/cell_parse.jl")
+include("backends/html/circular_reference.jl")
 include("backends/html/predefined_formats.jl")
 include("backends/html/predefined_highlighters.jl")
 include("backends/html/print.jl")
@@ -83,6 +85,7 @@ include("backends/html/string.jl")
 
 # LaTeX backend
 include("backends/latex/cell_parse.jl")
+include("backends/latex/circular_reference.jl")
 include("backends/latex/predefined_formats.jl")
 include("backends/latex/private.jl")
 include("backends/latex/print.jl")

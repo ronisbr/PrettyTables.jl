@@ -9,6 +9,7 @@
 
 # Fill the the string matrix table.
 function _fill_matrix_data!(
+    io::IOContext,
     table_str::Matrix{Vector{String}},
     ptable::ProcessedTable,
     actual_columns_width::Vector{Int},
@@ -86,6 +87,7 @@ function _fill_matrix_data!(
 
             if (row_id == :__HEADER__) || (row_id == :__SUBHEADER__)
                 cell_str = _parse_cell_text(
+                    io,
                     cell_data;
                     autowrap = false,
                     cell_first_line_only = false,
@@ -99,6 +101,7 @@ function _fill_matrix_data!(
 
             elseif (column_id == :row_label)
                 cell_str = _parse_cell_text(
+                    io,
                     cell_data;
                     autowrap = false,
                     cell_first_line_only = false,
@@ -135,6 +138,7 @@ function _fill_matrix_data!(
 
                 # Render the cell.
                 cell_str = _parse_cell_text(
+                    io,
                     cell_data,
                     autowrap = autowrap && fixed_column_width,
                     cell_data_type = cell_data_type,

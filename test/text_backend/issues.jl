@@ -7,6 +7,9 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
+struct NewLineObject end
+Base.show(io::IO, ::NewLineObject) = print(io, "a\nb\nc")
+
 @testset "Issue #4 - Header with escape sequences" begin
 
     expected = """
@@ -996,4 +999,64 @@ end
     )
 
     @test expected == result
+end
+
+@testset "Issue #194 - Newlines in object that is not string" begin
+    nlo = NewLineObject()
+    table = [nlo nlo; nlo nlo]
+
+    expected = """
+┌─────────┬─────────┐
+│  Col. 1 │  Col. 2 │
+├─────────┼─────────┤
+│ a\\nb\\nc │ a\\nb\\nc │
+│ a\\nb\\nc │ a\\nb\\nc │
+└─────────┴─────────┘
+"""
+
+    result = pretty_table(
+        String,
+        table
+    )
+
+    @test result === expected
+
+    result = pretty_table(
+        String,
+        table;
+        renderer = :show
+    )
+
+    @test result === expected
+
+
+    expected = """
+┌────────┬────────┐
+│ Col. 1 │ Col. 2 │
+├────────┼────────┤
+│      a │      a │
+│      b │      b │
+│      c │      c │
+│      a │      a │
+│      b │      b │
+│      c │      c │
+└────────┴────────┘
+"""
+
+    result = pretty_table(
+        String,
+        table;
+        linebreaks = true
+    )
+
+    @test result === expected
+
+    result = pretty_table(
+        String,
+        table;
+        linebreaks = true,
+        renderer = :show
+    )
+
+    @test result === expected
 end

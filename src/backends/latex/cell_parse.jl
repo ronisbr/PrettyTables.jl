@@ -7,15 +7,10 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-"""
-    _parse_cell_latex(cell::T; kwargs...)
-
-Parse the table `cell` of type `T`.
-
-This function must return a string that will be printed to the IO.
-"""
+# Parse the table `cell` of type `T` considering the context `io`.
 @inline function _parse_cell_latex(
-    cell;
+    io::IOContext,
+    cell::Any;
     cell_first_line_only::Bool = false,
     compact_printing::Bool = true,
     limit_printing::Bool = true,
@@ -23,10 +18,9 @@ This function must return a string that will be printed to the IO.
     kwargs...,
 )
 
-    # Create the context that will be used when rendering the cell. Notice that
-    # the `IOBuffer` will be neglected.
+    # Create the context that will be used when rendering the cell.
     context = IOContext(
-        stdout,
+        io,
         :compact => compact_printing,
         :limit => limit_printing
     )
@@ -52,6 +46,7 @@ This function must return a string that will be printed to the IO.
 end
 
 @inline function _parse_cell_latex(
+    io::IOContext,
     cell::Union{LaTeXString, LatexCell};
     cell_first_line_only::Bool = false,
     compact_printing::Bool = true,
@@ -60,10 +55,9 @@ end
     kwargs...,
 )
 
-    # Create the context that will be used when rendering the cell. Notice that
-    # the `IOBuffer` will be neglected.
+    # Create the context that will be used when rendering the cell.
     context = IOContext(
-        stdout,
+        io,
         :compact => compact_printing,
         :limit => limit_printing
     )
@@ -89,12 +83,12 @@ end
     return _str_latex_cell_escaped(cell_str)
 end
 
-@inline function _parse_cell_latex(cell::Markdown.MD; kwargs...)
+@inline function _parse_cell_latex(io::IOContext, cell::Markdown.MD; kwargs...)
     return replace(sprint(show, MIME("text/latex"), cell), "\n" => "")
 end
 
-@inline _parse_cell_latex(cell::Missing; kwargs...) = "missing"
-@inline _parse_cell_latex(cell::Nothing; kwargs...) = "nothing"
-@inline _parse_cell_latex(cell::UndefinedCell; kwargs...) = "\\#undef"
+@inline _parse_cell_latex(io::IOContext, cell::Missing; kwargs...) = "missing"
+@inline _parse_cell_latex(io::IOContext, cell::Nothing; kwargs...) = "nothing"
+@inline _parse_cell_latex(io::IOContext, cell::UndefinedCell; kwargs...) = "\\#undef"
 @inline _get_latex_cell_data(cell::LatexCell) = cell.data
 @inline _get_latex_cell_data(cell::LaTeXString) = cell
