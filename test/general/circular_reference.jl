@@ -25,17 +25,17 @@ function Base.show(io::IO, cf::CircularRef)
 end
 
 function Base.show(io::IO, ::MIME"text/plain", cf::CircularRef)
-    pretty_table(io, cf)
+    pretty_table(io, cf; renderer = :show)
     return nothing
 end
 
 function Base.show(io::IO, ::MIME"text/html", cf::CircularRef)
-    pretty_table(io, cf; backend = Val(:html))
+    pretty_table(io, cf; backend = Val(:html), renderer = :show)
     return nothing
 end
 
 function Base.show(io::IO, ::MIME"text/latex", cf::CircularRef)
-    pretty_table(io, cf; backend = Val(:latex))
+    pretty_table(io, cf; backend = Val(:latex), renderer = :show)
     return nothing
 end
 
