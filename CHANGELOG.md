@@ -1,6 +1,19 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 2.2.0
+-------------
+
+- ![Bugfix][badge-bugfix] The rendered `show` was not escaping the newline
+  character when the object was not a string. ([#194][gh-issue-194])
+- ![Enhancement][badge-enhancement] PrettyTables.jl can now handle tables with
+  no row or column. In this case, it shows only the header or the row label, if
+  available. ([#156][gh-issue-156])
+- ![Enhancement][badge-enhancement] PrettyTables.jl can now detect circular
+  dependency when showing an object.
+- ![Feature][badge-feature] PrettyTables.jl now supports LaTexStrings.
+  ([#186][gh-pr-186])
+
 Version 2.1.2
 -------------
 
@@ -674,6 +687,7 @@ Version 0.1.0
 [gh-issue-150]: https://github.com/ronisbr/PrettyTables.jl/issues/150
 [gh-issue-153]: https://github.com/ronisbr/PrettyTables.jl/issues/153
 [gh-issue-154]: https://github.com/ronisbr/PrettyTables.jl/issues/154
+[gh-issue-156]: https://github.com/ronisbr/PrettyTables.jl/issues/156
 [gh-issue-166]: https://github.com/ronisbr/PrettyTables.jl/issues/166
 [gh-issue-170]: https://github.com/ronisbr/PrettyTables.jl/issues/170
 [gh-issue-174]: https://github.com/ronisbr/PrettyTables.jl/issues/174
@@ -693,3 +707,4 @@ Version 0.1.0
 [gh-pr-140]: https://github.com/ronisbr/PrettyTables.jl/pull/140
 [gh-pr-143]: https://github.com/ronisbr/PrettyTables.jl/pull/143
 [gh-pr-182]: https://github.com/ronisbr/PrettyTables.jl/pull/182
+[gh-pr-186]: https://github.com/ronisbr/PrettyTables.jl/pull/186
