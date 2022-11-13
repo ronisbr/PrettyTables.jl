@@ -1,6 +1,13 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 2.2.1
+-------------
+
+- ![Bugfix][badge-bugfix] The algorithm to check whether `io` is `stdout` in
+  HTML backend was not working in Jupyter after the commit that implemented
+  circular reference check. This commit fixed this bug.
+
 Version 2.2.0
 -------------
 
