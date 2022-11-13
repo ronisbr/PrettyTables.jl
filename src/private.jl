@@ -431,7 +431,11 @@ function _pt(
     if backend === Val(:text)
         _pt_text(context, pinfo; kwargs...)
     elseif backend === Val(:html)
-        _pt_html(context, pinfo; kwargs...)
+        # When wrapping `stdout` in `IOContext` in Jupyter, `io.io` is not equal
+        # to `stdout` anymore. Hence, we need to check if `io` is `stdout`
+        # before calling `_pt_html`.
+        is_stdout = (io === stdout) || ((io isa IOContext) && (io.io === stdout))
+        _pt_html(context, pinfo; is_stdout = is_stdout, kwargs...)
     elseif backend === Val(:latex)
         _pt_latex(context, pinfo; kwargs...)
     end

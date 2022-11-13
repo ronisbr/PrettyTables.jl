@@ -16,6 +16,7 @@ function _pt_html(
     continuation_row_alignment::Symbol = :r,
     header_cell_titles::Union{Nothing, Tuple} = nothing,
     highlighters::Union{HtmlHighlighter, Tuple} = (),
+    is_stdout::Bool = false,
     linebreaks::Bool = false,
     maximum_columns_width::String = "",
     minify::Bool = false,
@@ -525,7 +526,7 @@ function _pt_html(
     # ==========================================================================
 
     # If we are printing to `stdout`, then wrap the output in a `HTML` object.
-    if (io === stdout) || ( (io isa IOContext) && (io.io === stdout) )
+    if is_stdout
         display(MIME("text/html"), HTML(String(take!(buf_io))))
     else
         print(io, String(take!(buf_io)))
