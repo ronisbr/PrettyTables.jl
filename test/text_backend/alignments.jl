@@ -489,4 +489,57 @@ end
     )
 
     @test result == expected
+
+    # With row labels and row numbers
+    # ==========================================================================
+
+    expected = """
+┌─────┬──────────┬──────────┬───────────┬─────────────┬────────────────┬────────────┬────────────┐
+│ Row │   Col. 1 │   Col. 2 │    Col. 3 │      Col. 4 │         Col. 5 │     Col. 6 │     Col. 7 │
+├─────┼──────────┼──────────┼───────────┼─────────────┼────────────────┼────────────┼────────────┤
+│   1 │  -1.0    │  10.0    │ -100.0    │    1000.0   │ -10000.0       │ 100000.0   │     -1.0e6 │
+│   2 │ missing  │ missing  │  missing  │ missing     │        missing │    missing │    missing │
+│   3 │  -0.01   │   0.1    │   -1.0    │      10.0   │   -100.0       │   1000.0   │ -10000.0   │
+│   4 │  -0.001  │   0.01   │   -0.1    │       1.0   │    -10.0       │    100.0   │  -1000.0   │
+│   5 │ nothing  │ nothing  │  nothing  │ nothing     │        nothing │    nothing │    nothing │
+│   6 │  -1.0e-5 │   0.0001 │   -0.001  │       0.01  │     -0.1       │      1.0   │    -10.0   │
+│   7 │  -1.0e-6 │   1.0e-5 │   -0.0001 │       0.001 │     -0.01      │      0.1   │     -1.0   │
+└─────┴──────────┴──────────┴───────────┴─────────────┴────────────────┴────────────┴────────────┘
+"""
+
+    result = pretty_table(
+        String,
+        matrix;
+        alignment_anchor_regex = Dict(0 => [r"\."]),
+        alignment_anchor_fallback = :c,
+        alignment_anchor_fallback_override = Dict(2 => :c, 4 => :r, 5 => :l),
+        show_row_number = true
+    )
+
+    @test result == expected
+
+    expected = """
+┌───────┬──────────┬──────────┬───────────┬─────────────┬────────────────┬────────────┬────────────┐
+│       │   Col. 1 │   Col. 2 │    Col. 3 │      Col. 4 │         Col. 5 │     Col. 6 │     Col. 7 │
+├───────┼──────────┼──────────┼───────────┼─────────────┼────────────────┼────────────┼────────────┤
+│ First │  -1.0    │  10.0    │ -100.0    │    1000.0   │ -10000.0       │ 100000.0   │     -1.0e6 │
+│     B │ missing  │ missing  │  missing  │ missing     │        missing │    missing │    missing │
+│     C │  -0.01   │   0.1    │   -1.0    │      10.0   │   -100.0       │   1000.0   │ -10000.0   │
+│     D │  -0.001  │   0.01   │   -0.1    │       1.0   │    -10.0       │    100.0   │  -1000.0   │
+│     E │ nothing  │ nothing  │  nothing  │ nothing     │        nothing │    nothing │    nothing │
+│     F │  -1.0e-5 │   0.0001 │   -0.001  │       0.01  │     -0.1       │      1.0   │    -10.0   │
+│  Last │  -1.0e-6 │   1.0e-5 │   -0.0001 │       0.001 │     -0.01      │      0.1   │     -1.0   │
+└───────┴──────────┴──────────┴───────────┴─────────────┴────────────────┴────────────┴────────────┘
+"""
+
+    result = pretty_table(
+        String,
+        matrix;
+        alignment_anchor_regex = Dict(0 => [r"\."]),
+        alignment_anchor_fallback = :c,
+        alignment_anchor_fallback_override = Dict(2 => :c, 4 => :r, 5 => :l),
+        row_labels = ["First", "B", "C", "D", "E", "F", "Last"]
+    )
+
+    @test result == expected
 end

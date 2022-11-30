@@ -40,6 +40,10 @@ function _apply_alignment_anchor_regex!(
         end
 
         for j in column_vector
+            # We must not process a columns that is not part of the data, i.e.,
+            # the row labels or the row numbers.
+            _get_column_id(ptable, j) !== :__ORIGINAL_DATA__ && continue
+
             # Store in which column we must align the match.
             alignment_column = 0
 
@@ -170,10 +174,11 @@ function _apply_alignment_anchor_regex!(
                 end
             end
 
-            # Since the alignemnt can change the column size, we need to recompute
-            # it considering the user's configuration. Notice that the old value in
-            # `cols_width` must be considered here because the header width is not
-            # taken into account when calculating `largest_cell_width`.
+            # Since the alignemnt can change the column size, we need to
+            # recompute it considering the user's configuration. Notice that the
+            # old value in `cols_width` must be considered here because the
+            # header width is not taken into account when calculating
+            # `largest_cell_width`.
             actual_column_width[j] = _update_column_width(
                 actual_column_width[j],
                 largest_cell_width,
