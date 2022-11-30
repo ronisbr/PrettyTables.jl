@@ -502,7 +502,7 @@ end
     data = [1 a
             2 a]
 
-    if VERSION < v"1.10.0-DEV.77"
+    if VERSION < v"1.10.0-DEV"
         expected = """
 ┌────────┬────────────────────────┐
 │\e[1m Col. 1 \e[0m│\e[1m                 Col. 2 \e[0m│

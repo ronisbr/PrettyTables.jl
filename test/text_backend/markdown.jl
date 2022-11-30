@@ -16,7 +16,7 @@
                           code
                    """]
 
-    if VERSION < v"1.10.0-DEV.77"
+    if VERSION < v"1.10.0-DEV"
         expected = """
 ┌────────┬────────────────────────────────────────────────┐
 │ Col. 1 │                                         Col. 2 │
@@ -39,7 +39,7 @@
     result = pretty_table(String, data_md)
     @test result == expected
 
-    if VERSION < v"1.10.0-DEV.77"
+    if VERSION < v"1.10.0-DEV"
         expected = """
 ┌────────┬─────────────┐
 │ Col. 1 │      Col. 2 │
