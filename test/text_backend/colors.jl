@@ -502,7 +502,8 @@ end
     data = [1 a
             2 a]
 
-    expected = """
+    if VERSION < v"1.10.0-DEV.77"
+        expected = """
 ┌────────┬────────────────────────┐
 │\e[1m Col. 1 \e[0m│\e[1m                 Col. 2 \e[0m│
 ├────────┼────────────────────────┤
@@ -525,6 +526,31 @@ end
 │        │ \e[36m  end\e[39m\e[0m                  │
 └────────┴────────────────────────┘
 """
+    else
+        expected = """
+┌────────┬────────────────────────┐
+│\e[1m Col. 1 \e[0m│\e[1m                 Col. 2 \e[0m│
+├────────┼────────────────────────┤
+│      1 │ \e[1m  Header\e[22m\e[0m               │
+│        │ \e[1m  ≡≡≡≡≡≡\e[22m\e[0m               │
+│        │ \e[0m                       │
+│        │   This is a paragraph.\e[0m │
+│        │ \e[0m                       │
+│        │ \e[36m  function test()\e[39m\e[0m      │
+│        │ \e[36m      return 1\e[39m\e[0m         │
+│        │ \e[36m  end\e[39m\e[0m                  │
+├────────┼────────────────────────┤
+│      2 │ \e[1m  Header\e[22m\e[0m               │
+│        │ \e[1m  ≡≡≡≡≡≡\e[22m\e[0m               │
+│        │ \e[0m                       │
+│        │   This is a paragraph.\e[0m │
+│        │ \e[0m                       │
+│        │ \e[36m  function test()\e[39m\e[0m      │
+│        │ \e[36m      return 1\e[39m\e[0m         │
+│        │ \e[36m  end\e[39m\e[0m                  │
+└────────┴────────────────────────┘
+"""
+    end
 
     result = sprint((io)->pretty_table(
         io,
