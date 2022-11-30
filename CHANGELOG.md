@@ -1,6 +1,12 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 2.2.2
+-------------
+
+- ![Bugfix][badge-bugfix] `pretty_table` was locking when using a regex with key
+  0 together with row labels in text backend.
+
 Version 2.2.1
 -------------
 
