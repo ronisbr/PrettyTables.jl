@@ -108,6 +108,7 @@ function _pt_html(
             <!DOCTYPE html>
             <html>
             <meta charset=\"UTF-8\">
+            <head>
             <style>""",
             il,
             ns,
@@ -135,6 +136,7 @@ function _pt_html(
         _aprintln(
             buf,
             """
+            </head>
             </style>
             <body>""",
             il,
