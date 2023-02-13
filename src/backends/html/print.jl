@@ -136,8 +136,8 @@ function _pt_html(
         _aprintln(
             buf,
             """
-            </head>
             </style>
+            </head>
             <body>""",
             il,
             ns,
