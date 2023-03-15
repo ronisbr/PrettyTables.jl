@@ -1,6 +1,12 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 2.2.3
+-------------
+
+- ![Bugfix][badge-bugfix] Fix the horizontal lines when the header is omitted.
+  ([#194][gh-issue-194])
+
 Version 2.2.2
 -------------
 
@@ -705,6 +711,7 @@ Version 0.1.0
 [gh-issue-170]: https://github.com/ronisbr/PrettyTables.jl/issues/170
 [gh-issue-174]: https://github.com/ronisbr/PrettyTables.jl/issues/174
 [gh-issue-179]: https://github.com/ronisbr/PrettyTables.jl/issues/179
+[gh-issue-201]: https://github.com/ronisbr/PrettyTables.jl/issues/201
 
 [gh-pr-5]: https://github.com/ronisbr/PrettyTables.jl/pull/5
 [gh-pr-8]: https://github.com/ronisbr/PrettyTables.jl/pull/8
