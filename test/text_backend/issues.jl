@@ -1060,3 +1060,88 @@ end
 
     @test result === expected
 end
+
+@testset "Issues #201 - Wrong horizontal line when headers is omitted" begin
+    matrix = [1 2; 3 4]
+
+    expected = """
+ 1  2
+ 3  4
+"""
+
+    result = pretty_table(
+        String,
+        matrix;
+        hlines = :none,
+        vlines = :none,
+        show_header = false
+    )
+
+    @test result == expected
+
+    expected = """
+──────
+ 1  2
+ 3  4
+"""
+
+    result = pretty_table(
+        String,
+        matrix;
+        hlines = [0],
+        vlines = :none,
+        show_header = false
+    )
+
+    @test result == expected
+
+    expected = """
+ 1  2
+──────
+ 3  4
+"""
+
+    result = pretty_table(
+        String,
+        matrix;
+        hlines = [1],
+        vlines = :none,
+        show_header = false
+    )
+
+    @test result == expected
+
+    expected = """
+──────
+ 1  2
+──────
+ 3  4
+"""
+
+    result = pretty_table(
+        String,
+        matrix;
+        hlines = [0, 1],
+        vlines = :none,
+        show_header = false
+    )
+
+    @test result == expected
+
+    expected = """
+──────
+ 1  2
+ 3  4
+──────
+"""
+
+    result = pretty_table(
+        String,
+        matrix;
+        hlines = [0, :end],
+        vlines = :none,
+        show_header = false
+    )
+
+    @test result == expected
+end

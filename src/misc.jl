@@ -158,7 +158,7 @@ function _check_hline(
     if (i == 0) && (0 ∈ hlines)
         return true
 
-    elseif (i <= num_header_rows)
+    elseif (num_header_rows > 0) && (i <= num_header_rows)
         if (i == num_header_rows)
             if 1 ∈ hlines
                 return true
