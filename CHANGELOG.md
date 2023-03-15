@@ -5,7 +5,7 @@ Version 2.2.3
 -------------
 
 - ![Bugfix][badge-bugfix] Fix the horizontal lines when the header is omitted.
-  ([#194][gh-issue-194])
+  ([#201][gh-issue-201])
 
 Version 2.2.2
 -------------
