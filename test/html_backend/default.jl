@@ -66,6 +66,7 @@
 <!DOCTYPE html>
 <html>
 <meta charset="UTF-8">
+<head>
 <style>
   table, td, th {
       border-collapse: collapse;
@@ -105,6 +106,7 @@
   }
 
 </style>
+</head>
 <body>
 <table>
   <thead>
