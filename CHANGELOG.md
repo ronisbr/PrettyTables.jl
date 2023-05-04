@@ -1,6 +1,12 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 2.2.4
+-------------
+
+- ![Bugfix][badge-bugfix] Add `<head>` block in standalone HTML printing.
+  ([#198][gh-issue-198], [#199][gh-pr-199])
+
 Version 2.2.3
 -------------
 
@@ -711,6 +717,7 @@ Version 0.1.0
 [gh-issue-170]: https://github.com/ronisbr/PrettyTables.jl/issues/170
 [gh-issue-174]: https://github.com/ronisbr/PrettyTables.jl/issues/174
 [gh-issue-179]: https://github.com/ronisbr/PrettyTables.jl/issues/179
+[gh-issue-198]: https://github.com/ronisbr/PrettyTables.jl/issues/198
 [gh-issue-201]: https://github.com/ronisbr/PrettyTables.jl/issues/201
 
 [gh-pr-5]: https://github.com/ronisbr/PrettyTables.jl/pull/5
@@ -728,3 +735,4 @@ Version 0.1.0
 [gh-pr-143]: https://github.com/ronisbr/PrettyTables.jl/pull/143
 [gh-pr-182]: https://github.com/ronisbr/PrettyTables.jl/pull/182
 [gh-pr-186]: https://github.com/ronisbr/PrettyTables.jl/pull/186
+[gh-pr-199]: https://github.com/ronisbr/PrettyTables.jl/pull/199
