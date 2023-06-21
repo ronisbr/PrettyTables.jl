@@ -63,7 +63,7 @@ function ProcessedTable(
             num_header_columns = length(first(header))
 
             if num_data_columns != num_header_columns
-                error("The number of columns in the header must be equal to that of the table.")
+                error("The number of columns in the header ($num_header_columns) must be equal to that of the table ($num_data_columns).")
             end
 
             num_header_rows = show_subheader ? length(header) : 1
