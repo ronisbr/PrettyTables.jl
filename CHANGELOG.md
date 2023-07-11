@@ -1,6 +1,12 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 2.2.5
+-------------
+
+- ![Bugfix][badge-bugfix] Fix the algorithm that obtains the cell data type and
+  alignment when using middle vertical crop mode. ([#207][gh-issue-207])
+
 Version 2.2.4
 -------------
 
@@ -719,6 +725,7 @@ Version 0.1.0
 [gh-issue-179]: https://github.com/ronisbr/PrettyTables.jl/issues/179
 [gh-issue-198]: https://github.com/ronisbr/PrettyTables.jl/issues/198
 [gh-issue-201]: https://github.com/ronisbr/PrettyTables.jl/issues/201
+[gh-issue-207]: https://github.com/ronisbr/PrettyTables.jl/issues/207
 
 [gh-pr-5]: https://github.com/ronisbr/PrettyTables.jl/pull/5
 [gh-pr-8]: https://github.com/ronisbr/PrettyTables.jl/pull/8
