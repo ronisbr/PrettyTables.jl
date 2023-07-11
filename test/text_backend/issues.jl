@@ -1145,3 +1145,41 @@ end
 
     @test result == expected
 end
+
+@testset "Issue #207 - Wrong cell type and alignment with vcrop_mode = :middle" begin
+    data = Dict(
+        "B" => collect(1:100),
+        "A" => [AnsiTextCell(string(x)) for x in collect(1:100)]
+    )
+
+    expected = """
+┌─────┬───────┬──────────────┐
+│ Row │     B │            A │
+│     │ Int64 │ AnsiTextCell │
+├─────┼───────┼──────────────┤
+│   1 │     1 │            1 │
+│   2 │     2 │            2 │
+│   3 │     3 │            3 │
+│  ⋮  │   ⋮   │      ⋮       │
+│  98 │    98 │           98 │
+│  99 │    99 │      99      │
+│ 100 │ 100   │          100 │
+└─────┴───────┴──────────────┘
+               94 rows omitted
+"""
+
+    result = pretty_table(
+        String,
+        data;
+        cell_alignment = Dict(
+            (99,  2) => :c,
+            (100, 1) => :l
+        ),
+        crop = :both,
+        display_size = (15, -1),
+        show_row_number = true,
+        vcrop_mode = :middle
+    )
+
+    @test result == expected
+end

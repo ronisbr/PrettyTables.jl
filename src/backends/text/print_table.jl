@@ -203,7 +203,7 @@ function _print_table_data!(
                     )
 
                     # Get the alignment for this cell.
-                    cell_alignment = _get_cell_alignment(ptable, i, j)
+                    cell_alignment = _get_cell_alignment(ptable, rps.i_pt, j)
 
                     # Select the rendering algorithm based on the type of the
                     # cell.
@@ -248,7 +248,7 @@ function _print_table_data!(
                         # In this case, we need to process the cell to apply the
                         # correct alignment and highlighters before rendering
                         # it.
-                        cell_data = _get_element(ptable, i, j)
+                        cell_data = _get_element(ptable, rps.i_pt, jr)
 
                         cell_processed_str, cell_crayon = _process_data_cell_text(
                             ptable,
