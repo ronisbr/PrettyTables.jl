@@ -248,7 +248,7 @@ function _print_table_data!(
                         # In this case, we need to process the cell to apply the
                         # correct alignment and highlighters before rendering
                         # it.
-                        cell_data = _get_element(ptable, rps.i_pt, jr)
+                        cell_data = _get_element(ptable, rps.i_pt, j)
 
                         cell_processed_str, cell_crayon = _process_data_cell_text(
                             ptable,

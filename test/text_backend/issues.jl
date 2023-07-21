@@ -1157,13 +1157,13 @@ end
 │ Row │     B │            A │
 │     │ Int64 │ AnsiTextCell │
 ├─────┼───────┼──────────────┤
-│   1 │     1 │            1 │
-│   2 │     2 │            2 │
-│   3 │     3 │            3 │
+│   1 │     1 │            1\e[0m │
+│   2 │     2 │            2\e[0m │
+│   3 │     3 │            3\e[0m │
 │  ⋮  │   ⋮   │      ⋮       │
-│  98 │    98 │           98 │
-│  99 │    99 │      99      │
-│ 100 │ 100   │          100 │
+│  98 │    98 │           98\e[0m │
+│  99 │    99 │      99     \e[0m │
+│ 100 │ 100   │          100\e[0m │
 └─────┴───────┴──────────────┘
                94 rows omitted
 """
@@ -1180,6 +1180,26 @@ end
         show_row_number = true,
         vcrop_mode = :middle
     )
+
+    @test result == expected
+end
+
+@testset "Issue #208 - Wrong cell type with custom cells and showing row numbers" begin
+    table = Dict(
+        :x => ["totally not an a"],
+        :xx => [AnsiTextCell("a")],
+    )
+
+    expected = """
+┌─────┬──────────────┬──────────────────┐
+│ Row │           xx │                x │
+│     │ AnsiTextCell │           String │
+├─────┼──────────────┼──────────────────┤
+│   1 │            a\e[0m │ totally not an a │
+└─────┴──────────────┴──────────────────┘
+"""
+
+    result = pretty_table(String, table; show_row_number = true)
 
     @test result == expected
 end
