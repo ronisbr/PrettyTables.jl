@@ -12,8 +12,7 @@ export ft_printf, ft_round, ft_latex_sn, ft_nomissing, ft_nonothing
 """
     ft_printf(ftv_str, [columns])
 
-Apply the formats `ftv_str` (see the function `sprintf1` of the package
-**Formatting.jl**) to the elements in the columns `columns`.
+Apply the formats `ftv_str` (see the `Printf` standard library) to the elements in the columns `columns`.
 
 If `ftv_str` is a `Vector`, then `columns` must be also be a `Vector` with the
 same number of elements. If `ftv_str` is a `String`, and `columns` is not
@@ -42,19 +41,19 @@ function ft_printf(ftv_str::Vector{String}, columns::AbstractVector{Int} = Int[]
         error("The vector columns must have the same number of elements of the vector ftv_str.")
     end
 
-    # By using the function `sprintf1` from the package Formatting.jl, it was
-    # possible to reduce the time to print a 100x5 table of `Float64`s from 25s
-    # to 0.04s. Thanks to @RalphAS for the tip!
-
     if lc == 0
+        # for efficiency, compute the `Format` object outside
+        fmt = Printf.Format(ftv_str[1])
         return (v, i, j) -> begin
-            return typeof(v) <: Number ? sprintf1(ftv_str[1], v) : v
+            return typeof(v) <: Number ? sprintf1(fmt, v) : v
         end
     else
+        # likewise, precompute Format objects
+        fmts = [Printf.Format(ftv_str[k]) for k = 1:length(columns)]
         return (v, i, j) -> begin
             @inbounds for k = 1:length(columns)
                 if j == columns[k]
-                    return typeof(v) <: Number ? sprintf1(ftv_str[k], v) : v
+                    return typeof(v) <: Number ? sprintf1(fmts[k], v) : v
                 end
             end
 
@@ -121,7 +120,7 @@ end
     ft_latex_sn(m_digits, [columns])
 
 Format the numbers of the elements in the `columns` to a scientific notation
-using LaTeX. The number is first printed using `sprintf1` functions with the `g`
+using LaTeX. The number is first printed using `Printf` functions with the `g`
 modifier and then converted to the LaTeX format. The number of digits in the
 mantissa can be selected by the argument `m_digits`.
 
@@ -155,10 +154,11 @@ function ft_latex_sn(
     end
 
     if lc == 0
+        # precompute Format object
+        fmt = Printf.Format("%." * string(m_digits[1]) * "g")
         return (v, i, j) -> begin
             if typeof(v) <: Number
-                str = sprintf1("%." * string(m_digits[1]) * "g", v)
-
+                str = sprintf1(fmt, v)
                 # Check if we have scientific notation.
                 aux = match(r"e[+,-][0-9]+", str)
                 if aux !== nothing
@@ -173,11 +173,13 @@ function ft_latex_sn(
             end
         end
     else
+        # precompute Format objects
+        fmts = [Printf.Format("%." * string(m_digits[k]) * "g") for k = 1:length(columns)]
         return (v, i, j) -> begin
             @inbounds for k = 1:length(columns)
                 if j == columns[k]
                     if typeof(v) <: Number
-                        str = sprintf1("%." * string(m_digits[k]) * "g", v)
+                        str = sprintf1(fmts[k], v)
 
                         # Check if we have scientific notation.
                         aux = match(r"e[+,-][0-9]+", str)
