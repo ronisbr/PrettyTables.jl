@@ -1,10 +1,10 @@
 module PrettyTables
 
-using Formatting
 using Reexport
 using Tables
 using Markdown
 using StringManipulation
+using Printf
 
 @reexport using Crayons
 

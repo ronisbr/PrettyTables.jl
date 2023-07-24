@@ -107,12 +107,6 @@ julia> pretty_table(data; formatters = ft_printf("%5.3f", [1,3]))
 └────────┴──────────┴────────┘
 ```
 
-!!! note
-    Now, this formatter uses the function `sprintf1` from the package
-    [Formatting.jl](https://github.com/JuliaIO/Formatting.jl) that drastically
-    improved the performance compared to the case with the macro `@sprintf`.
-    Thanks to @RalphAS for the information!
-
 ```
 function ft_round(digits, [columns])
 ```

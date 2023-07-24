@@ -145,3 +145,12 @@ macro pt(expr...)
 
     return Expr(:block, exprs...)
 end
+
+# Similar API to Formatting.jl, but using the Printf stdlib
+# (requires Julia 1.6+).
+function sprintf1(fmt::AbstractString, x)
+    return sprintf1(Printf.Format(fmt), x)
+end
+function sprintf1(fmt::Printf.Format, x)
+    Printf.format(fmt, x)
+end
