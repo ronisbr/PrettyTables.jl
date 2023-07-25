@@ -1,6 +1,15 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 2.2.7
+-------------
+
+- ![Bugfix][badge-bugfix] We were not able to overwrite the header when printing
+  dictionaries that are not Tables.jl. ([#212][gh-issue-212])
+- ![Enhancement][badge-enhancement] PrettyTables.jl switched from Formatting.jl
+  to Printf to print formatted text. The former was providing wrong output in
+  some scenarios as it can be seen [here][gh-issue-210]. ([#211][gh-pr-211])
+
 Version 2.2.6
 -------------
 
@@ -733,6 +742,8 @@ Version 0.1.0
 [gh-issue-201]: https://github.com/ronisbr/PrettyTables.jl/issues/201
 [gh-issue-207]: https://github.com/ronisbr/PrettyTables.jl/issues/207
 [gh-issue-208]: https://github.com/ronisbr/PrettyTables.jl/issues/208
+[gh-issue-210]: https://github.com/ronisbr/PrettyTables.jl/issues/210
+[gh-issue-212]: https://github.com/ronisbr/PrettyTables.jl/issues/212
 
 [gh-pr-5]: https://github.com/ronisbr/PrettyTables.jl/pull/5
 [gh-pr-8]: https://github.com/ronisbr/PrettyTables.jl/pull/8
@@ -750,3 +761,4 @@ Version 0.1.0
 [gh-pr-182]: https://github.com/ronisbr/PrettyTables.jl/pull/182
 [gh-pr-186]: https://github.com/ronisbr/PrettyTables.jl/pull/186
 [gh-pr-199]: https://github.com/ronisbr/PrettyTables.jl/pull/199
+[gh-pr-211]: https://github.com/ronisbr/PrettyTables.jl/pull/211
