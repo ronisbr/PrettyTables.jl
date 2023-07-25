@@ -445,3 +445,50 @@ end
 
     @test expected == result
 end
+
+@testset "Issue #212 - Header is ignored for Dict" begin
+    dict = Dict(:a => 1, :b => 2)
+
+    expected = """
+┌────────┬────────┐
+│   Keys │ Values │
+│ Symbol │  Int64 │
+├────────┼────────┤
+│      a │      1 │
+│      b │      2 │
+└────────┴────────┘
+"""
+
+    result = pretty_table(String, dict; sortkeys = true)
+    @test result == expected
+
+    expected = """
+┌───┬───┐
+│ A │ B │
+├───┼───┤
+│ a │ 1 │
+│ b │ 2 │
+└───┴───┘
+"""
+
+    result = pretty_table(String, dict; header = ["A", "B"], sortkeys = true)
+    @test result == expected
+
+    expected = """
+┌───┬───┐
+│ A │ B │
+│ C │ D │
+├───┼───┤
+│ a │ 1 │
+│ b │ 2 │
+└───┴───┘
+"""
+
+    result = pretty_table(
+        String,
+        dict;
+        header = (["A", "B"], ["C", "D"]),
+        sortkeys = true
+    )
+    @test result == expected
+end

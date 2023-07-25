@@ -30,13 +30,20 @@ function _preprocess_vec_or_mat(
 end
 
 function _preprocess_dict(
-    dict::AbstractDict{K, V};
+    dict::AbstractDict{K, V},
+    header::Union{Nothing, AbstractVector, Tuple};
     sortkeys::Bool = false
 ) where {K, V}
-    pheader = (
-        ["Keys", "Values"],
-        [compact_type_str(K), compact_type_str(V)]
-    )
+    if header === nothing
+        pheader = (
+            ["Keys", "Values"],
+            [compact_type_str(K), compact_type_str(V)]
+        )
+    elseif header isa AbstractVector
+        pheader = (header,)
+    else
+        pheader = header
+    end
 
     k = collect(keys(dict))
     v = collect(values(dict))
@@ -268,8 +275,8 @@ function _pretty_table(
     header::Union{Nothing, AbstractVector, Tuple} = nothing,
     kwargs...
 )
-
-    if Tables.istable(data)
+    istable = Tables.istable(data)
+    if istable
         if Tables.columnaccess(data)
             pdata, pheader = _preprocess_Tables_column(data, header)
         elseif Tables.rowaccess(data)
@@ -278,11 +285,11 @@ function _pretty_table(
             error("The object does not have a valid Tables.jl implementation.")
         end
 
-    elseif typeof(data) <: AbstractVecOrMat
+    elseif data isa AbstractVecOrMat
         pdata, pheader = _preprocess_vec_or_mat(data, header)
-    elseif typeof(data) <: AbstractDict
+    elseif data isa AbstractDict
         sortkeys = get(kwargs, :sortkeys, false)
-        pdata, pheader = _preprocess_dict(data; sortkeys = sortkeys)
+        pdata, pheader = _preprocess_dict(data, header; sortkeys = sortkeys)
     else
         error("The type $(typeof(data)) is not supported.")
     end
