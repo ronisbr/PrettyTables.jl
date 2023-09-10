@@ -93,7 +93,7 @@ function ft_round(digits::AbstractVector{Int}, columns::AbstractVector{Int} = In
 
     if lc == 0
         return (v, i, j) -> begin
-            if applicable(round, v)
+            if applicable(round, v, RoundNearest)
                 return round(v, digits = digits[1])
             else
                 return v
@@ -103,7 +103,7 @@ function ft_round(digits::AbstractVector{Int}, columns::AbstractVector{Int} = In
         return (v, i, j) -> begin
             @inbounds for k = 1:length(columns)
                 if j == columns[k]
-                    if applicable(round, v)
+                    if applicable(round, v, RoundNearest)
                         return round(v, digits = digits[k])
                     else
                         return v
