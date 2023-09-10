@@ -699,14 +699,14 @@ compatible.
 """
 @inline function pretty_table(data; kwargs...)
     io = stdout isa Base.TTY ? IOContext(stdout, :limit => true) : stdout
-    _pretty_table(io, data; kwargs...)
+    pretty_table(io, data; kwargs...)
 end
 
 pretty_table(io::IO, data; kwargs...) = _pretty_table(io, data; kwargs...)
 
 function pretty_table(::Type{String}, data; color::Bool = false, kwargs...)
     io = IOContext(IOBuffer(), :color => color)
-    _pretty_table(io, data; kwargs...)
+    pretty_table(io, data; kwargs...)
     return String(take!(io.io))
 end
 
