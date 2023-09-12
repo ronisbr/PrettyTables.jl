@@ -304,14 +304,12 @@ This back-end produces text tables. This back-end can be used by selecting
     - If it is `:all`, then all vertical lines will be drawn.
     - If it is `:none`, then no vertical line will be drawn.
     - If it is a vector of integers, then the vertical lines will be drawn only
-        after the columns in the vector. Notice that the top line will be drawn
+        after the columns in the vector. Notice that the left line will be drawn
         if `0` is in `vlines`. Furthermore, it is important to mention that the
         column number in this variable is related to the **printed column**.
         Thus, it is affected by the options `row_labels` and `show_row_number`.
         Finally, for convenience, the left and right vertical lines can be drawn
-        by adding the symbols `:begin` and `:end` to this vector, respectively,
-        and the line after the header can be drawn by adding the symbol
-        `:header`.
+        by adding the symbols `:begin` and `:end` to this vector, respectively.
 
 The following keywords related to crayons are available to customize the output
 decoration:
