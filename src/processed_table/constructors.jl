@@ -1,11 +1,11 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Constructors for the `ProcessedTable`.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 """
     ProcessedTable(data::Any, header::Any; kwargs...)
@@ -34,17 +34,19 @@ function ProcessedTable(
     show_header::Bool = true,
     show_subheader::Bool = true
 )
-    # Get information about the table we have to print based on the format of
-    # `data`, which must be an `AbstractMatrix` or an `AbstractVector`.
+    # Get information about the table we have to print based on the format of `data`, which
+    # must be an `AbstractMatrix` or an `AbstractVector`.
     dims     = size(data)
     num_dims = length(dims)
 
     if num_dims == 1
         num_data_rows = dims[1]
         num_data_columns = 1
+
     elseif num_dims == 2
         num_data_rows = dims[1]
         num_data_columns = dims[2]
+
     else
         throw(ArgumentError("`data` must not have more than 2 dimensions."))
     end
@@ -73,10 +75,10 @@ function ProcessedTable(
     # Make sure that `cell_alignment` is a tuple.
     if cell_alignment === nothing
         cell_alignment = ()
+
     elseif typeof(cell_alignment) <: Dict
-        # If it is a `Dict`, then `cell_alignment[(i,j)]` contains the desired
-        # alignment for the cell `(i,j)`. Thus, we need to create a wrapper
-        # function.
+        # If it is a `Dict`, then `cell_alignment[(i,j)]` contains the desired alignment for
+        # the cell `(i,j)`. Thus, we need to create a wrapper function.
         cell_alignment_dict = copy(cell_alignment)
         cell_alignment = ((data, i, j) -> begin
             if haskey(cell_alignment_dict, (i, j))
@@ -85,6 +87,7 @@ function ProcessedTable(
                 return nothing
             end
         end,)
+
     elseif typeof(cell_alignment) <: Function
         cell_alignment = (cell_alignment,)
     end
@@ -92,10 +95,10 @@ function ProcessedTable(
     # Make sure that `header_cell_alignment` is a tuple.
     if header_cell_alignment === nothing
         header_cell_alignment = ()
+
     elseif typeof(header_cell_alignment) <: Dict
-        # If it is a `Dict`, then `header_cell_alignment[(i,j)]` contains the
-        # desired alignment for the cell `(i,j)`. Thus, we need to create a
-        # wrapper function.
+        # If it is a `Dict`, then `header_cell_alignment[(i,j)]` contains the desired
+        # alignment for the cell `(i,j)`. Thus, we need to create a wrapper function.
         header_cell_alignment_dict = copy(header_cell_alignment)
         header_cell_alignment = ((data, i, j) -> begin
             if haskey(header_cell_alignment_dict, (i, j))
@@ -104,6 +107,7 @@ function ProcessedTable(
                 return nothing
             end
         end,)
+
     elseif typeof(header_cell_alignment) <: Function
         header_cell_alignment = (header_cell_alignment,)
     end
@@ -112,8 +116,8 @@ function ProcessedTable(
     if max_num_of_rows > 0
         max_num_of_rows = min(max_num_of_rows, num_data_rows)
 
-        # If the number of hidden rows is only 1, we should not hide any row
-        # because we will need an additional row to show the continuation line.
+        # If the number of hidden rows is only 1, we should not hide any row because we will
+        # need an additional row to show the continuation line.
         if (num_data_rows - max_num_of_rows) == 1
             max_num_of_rows = num_data_rows
         end

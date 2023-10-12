@@ -1,11 +1,11 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Tests related to the LaTeX backend.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 @testset "Default" verbose = true begin
     include("latex_backend/default.jl")
@@ -31,6 +31,6 @@ end
     include("latex_backend/offset_arrays.jl")
 end
 
-@testset "Row labels" verbose = true begin
+@testset "Row Labels" verbose = true begin
     include("latex_backend/row_labels.jl")
 end

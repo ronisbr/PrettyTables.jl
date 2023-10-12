@@ -1,13 +1,13 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #    Tests of offset arrays.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-@testset "Default printing" begin
+@testset "Default Printing" begin
     expected = """
 <table>
   <thead>
@@ -250,7 +250,7 @@ end
     )
 end
 
-@testset "Row labels" begin
+@testset "Row Labels" begin
     expected = """
 <table>
   <thead>
@@ -328,7 +328,7 @@ end
     @test result == expected
 end
 
-@testset "Row numbers" begin
+@testset "Row Numbers" begin
     expected = """
 <table>
   <thead>

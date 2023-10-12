@@ -1,17 +1,17 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Tests of back-end interface.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-@testset "Back-end auto selection" begin
+@testset "Back-end Auto Selection" begin
     data = rand(3,3)
 
     # Text
-    # ==========================================================================
+    # ======================================================================================
 
     auto   = pretty_table(String, data, tf = tf_unicode)
     manual = pretty_table(String, data, tf = tf_unicode, backend = Val(:text))
@@ -19,7 +19,7 @@
     @test auto == manual
 
     # HTML
-    # ==========================================================================
+    # ======================================================================================
 
     auto   = pretty_table(String, data, tf = tf_html_simple)
     manual = pretty_table(String, data, tf = tf_html_simple, backend = Val(:html))
@@ -27,7 +27,7 @@
     @test auto == manual
 
     # LaTeX
-    # ==========================================================================
+    # ======================================================================================
 
     auto   = pretty_table(String, data, tf = tf_latex_default)
     manual = pretty_table(String, data, tf = tf_latex_default, backend = Val(:latex))
@@ -35,8 +35,9 @@
     @test auto == manual
 
     # Error
-    # ==========================================================================
+    # ======================================================================================
 
+    # TODO: REMOVE! We do not support Julia 1.1 anymore.
     if VERSION < v"1.1"
         @test_throws MethodError pretty_table(data, tf = [])
     else

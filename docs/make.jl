@@ -12,7 +12,7 @@ makedocs(
     pages = [
         "Home"               => "index.md",
         "Usage"              => "man/usage.md",
-        "Back-ends"          => Any[
+        "Back Ends"          => Any[
             "Text"           => "man/text_backend.md",
             "HTML"           => "man/html_backend.md",
             "LaTeX"          => "man/latex_backend.md",
@@ -20,8 +20,8 @@ makedocs(
         "Alignment"          => "man/alignment.md",
         "Formatters"         => "man/formatters.md",
         "Examples"           => Any[
-            "Text back-end"  => "man/text_examples.md",
-            "HTML back-end"  => "man/html_examples.md",
+            "Text Back End"  => "man/text_examples.md",
+            "HTML Back End"  => "man/html_examples.md",
         ],
         "Library"            => "lib/library.md",
     ]

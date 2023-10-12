@@ -1,23 +1,22 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Text cell to render an URL.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 export UrlTextCell
 
 """
     UrlTextCell
 
-A text cell that contains a URL and is rendered using the ANSI escape sequence
-`\\e8]`.
+A text cell that contains a URL and is rendered using the ANSI escape sequence `\\e8]`.
 
 !!! warning
-    Some terminals **do not** support this feature, leading to a layout problem
-    in the printed table.
+    Some terminals **do not** support this feature, leading to a layout problem in the
+    printed table.
 
 # Fields
 
@@ -28,12 +27,12 @@ A text cell that contains a URL and is rendered using the ANSI escape sequence
 
 **Private**
 
-- `_crop::Int`: Number of characters in the text that must be cropped when
-    rendering the URL.
-- `_left_pad::Int`: Number of spaces to be added to the left of the text when
-    rendering the URL.
-- `_right_pad::Int`: Number of spaces to be added to the right of the text when
-    rendering the URL.
+- `_crop::Int`: Number of characters in the text that must be cropped when rendering the
+    URL.
+- `_left_pad::Int`: Number of spaces to be added to the left of the text when rendering the
+    URL.
+- `_right_pad::Int`: Number of spaces to be added to the right of the text when rendering
+    the URL.
 - `_suffix::String`: Suffix to be appended to the text when rendering the URL.
 """
 mutable struct UrlTextCell <: CustomTextCell
@@ -52,9 +51,9 @@ function UrlTextCell(text::String, url::String)
     return UrlTextCell(text, url, 0, 0, 0, "")
 end
 
-################################################################################
-#                                     API
-################################################################################
+############################################################################################
+#                                           API
+############################################################################################
 
 function get_printable_cell_line(c::UrlTextCell, l::Int)
     if l == 1
@@ -70,16 +69,16 @@ function get_rendered_line(c::UrlTextCell, l::Int)
         printable_size = c._left_pad + url_text_width + c._right_pad
         rem_chars = printable_size - c._crop
 
-        # Left padding
-        # ======================================================================
+        # Left Padding
+        # ======================================================================cccccccccccc
 
         Δ = clamp(rem_chars, 0, c._left_pad)
         str = " " ^ Δ
         rem_chars ≤ c._left_pad && return str * c._suffix
         rem_chars -= c._left_pad
 
-        # URL text
-        # ======================================================================
+        # URL Text
+        # ==================================================================================
 
         Δ = clamp(rem_chars, 0, url_text_width)
 
@@ -93,8 +92,8 @@ function get_rendered_line(c::UrlTextCell, l::Int)
         rem_chars ≤ url_text_width && return str * c._suffix
         rem_chars -= url_text_width
 
-        # Right padding
-        # ======================================================================
+        # Right Padding
+        # ==================================================================================
 
         Δ = clamp(rem_chars, 0, c._right_pad)
         str *= " " ^ Δ

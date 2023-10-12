@@ -1,11 +1,11 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
-#   Print function of the html backend.
+#   Print function of the HTML back end.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # Low-level function to print the table using the text backend.
 function _pt_html(
@@ -92,14 +92,14 @@ function _pt_html(
     properties = Dict{String, String}()
     style      = Dict{String, String}()
 
-    # Variables to store information about indentation
-    # ==========================================================================
+    # Variables to Store Information About Indentation
+    # ======================================================================================
 
-    il = 0 # ......................................... Current indentation level
-    ns = 2 # ........................ Number of spaces in each indentation level
+    il = 0 # ..................................................... Current indentation level
+    ns = 2 # .................................... Number of spaces in each indentation level
 
-    # Print HTML header
-    # ==========================================================================
+    # Print HTML Header
+    # ======================================================================================
 
     if standalone
         _aprintln(
@@ -145,8 +145,8 @@ function _pt_html(
         )
     end
 
-    # Omitte cell summary
-    # ==========================================================================
+    # Omitte Cell Summary
+    # ======================================================================================
 
     # Check if the user wants the omitted cell summary.
     if show_omitted_cell_summary
@@ -171,14 +171,14 @@ function _pt_html(
         if !isempty(str)
             str *= " omitted"
 
-            # If we reached this point, we need to show the omitted cell
-            # summary. Hence, we replace whatever it in the top right string.
+            # If we reached this point, we need to show the omitted cell summary. Hence, we
+            # replace whatever it in the top right string.
             top_right_str = str
         end
     end
 
-    # Top bar
-    # ==========================================================================
+    # Top Bar
+    # ======================================================================================
 
     _print_top_bar(
         buf,
@@ -192,7 +192,7 @@ function _pt_html(
     )
 
     # Table
-    # ==========================================================================
+    # ======================================================================================
 
     if wrap_table_in_div
         empty!(properties)
@@ -219,8 +219,8 @@ function _pt_html(
 
     il += 1
 
-    # Table title
-    # --------------------------------------------------------------------------
+    # Table Title
+    # --------------------------------------------------------------------------------------
 
     if length(title) > 0
         empty!(style)
@@ -234,8 +234,8 @@ function _pt_html(
         @goto print_to_output
     end
 
-    # Vertical cropping mode
-    # ==========================================================================
+    # Vertical Cropping Mode
+    # ======================================================================================
 
     if hidden_rows_at_end
         continuation_line_id = vcrop_mode == :middle ?
@@ -245,12 +245,11 @@ function _pt_html(
         continuation_line_id = 0
     end
 
-    # Print the table
-    # ==========================================================================
+    # Print the Table
+    # ======================================================================================
 
-    # Offset in the rows used when we have middle cropping. In this case, after
-    # drawing the continuation line, we use this variable to render the bottom
-    # part of the table.
+    # Offset in the rows used when we have middle cropping. In this case, after drawing the
+    # continuation line, we use this variable to render the bottom part of the table.
     Δr = 0
 
     @inbounds for i in 1:num_rows
@@ -271,9 +270,8 @@ function _pt_html(
         if _is_header_row(row_id)
             html_row_tag = "th"
 
-            # If we have a header row and `i = 1`, then we need to start the
-            # header. We can do this because the header is always at the
-            # beginning of the table.
+            # If we have a header row and `i = 1`, then we need to start the header. We can
+            # do this because the header is always at the beginning of the table.
             if i == 1
                 _aprintln(buf, _open_html_tag("thead"), il, ns, minify)
                 il += 1
@@ -310,8 +308,8 @@ function _pt_html(
             # Get the cell data.
             cell_data = _get_element(ptable, i + Δr, j)
 
-            # If we do not annotate the type here, then we get type instability
-            # due to `_parse_cell_text`.
+            # If we do not annotate the type here, we get type instability due to
+            # `_parse_cell_text`.
             cell_str::String = ""
 
             # The class of the cell.
@@ -393,10 +391,10 @@ function _pt_html(
                     ir = _get_data_row_index(ptable, i)
                     jr = _get_data_column_index(ptable, j)
 
-                    # Notice that `(ir, jr)` are the indices of the printed
-                    # data. It means that it refers to the ir-th data row and
-                    # jr-th data column that will be printed. We need to convert
-                    # those indices to the actual indices in the input table.
+                    # Notice that `(ir, jr)` are the indices of the printed data. It means
+                    # that it refers to the ir-th data row and jr-th data column that will
+                    # be printed. We need to convert those indices to the actual indices in
+                    # the input table.
                     tir, tjr = _convert_axes(ptable.data, ir, jr)
 
                     for f in formatters.x
@@ -460,8 +458,8 @@ function _pt_html(
             il += 1
         end
 
-        # If we have hidden rows, we need to print an additional row with the
-        # continuation characters.
+        # If we have hidden rows, we need to print an additional row with the continuation
+        # characters.
         if i == continuation_line_id
             _aprintln(buf, _open_html_tag("tr"), il, ns, minify)
             il += 1
@@ -502,8 +500,8 @@ function _pt_html(
 
     @label print_to_output
 
-    # Print HTML footer
-    # ==========================================================================
+    # Print HTML Footer
+    # ======================================================================================
 
     il -= 1
     _aprintln(buf, _close_html_tag("table"), il, ns, minify)
@@ -524,10 +522,10 @@ function _pt_html(
         _aprintln(buf, _close_html_tag("div"), il, ns, minify)
     end
 
-    # Print the buffer into the io.
-    # ==========================================================================
+    # Print the Buffer Into the IO.
+    # ======================================================================================
 
-    # If we are printing to `stdout`, then wrap the output in a `HTML` object.
+    # If we are printing to `stdout`, wrap the output in a `HTML` object.
     if is_stdout
         display(MIME("text/html"), HTML(String(take!(buf_io))))
     else

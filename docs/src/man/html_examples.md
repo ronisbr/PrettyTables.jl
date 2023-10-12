@@ -1,4 +1,4 @@
-HTML back-end examples
+HTML Back End examples
 ======================
 
 ```@meta

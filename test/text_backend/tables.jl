@@ -1,14 +1,14 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #    Tests of Tables.jl compatibility.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-# These structures must not be defined inside a @testset. Otherwise, the test
-# will fail for Julia 1.0.
+# These structures must not be defined inside a @testset. Otherwise, the test will fail for
+# Julia 1.0.
 struct MyColumnTable{T <: AbstractMatrix}
     names::Vector{Symbol}
     lookup::Dict{Symbol, Int}
@@ -26,7 +26,7 @@ struct MyMatrixRow{T} <: Tables.AbstractRow
     source::MyRowTable{T}
 end
 
-@testset "Tables.jl compatibility" begin
+@testset "Tables.jl Compatibility" begin
     # A NamedTuple is compliant with Tables.jl API.
     table = (
         x = Int64(1):Int64(3),
@@ -90,8 +90,8 @@ end
 └───┴───────┴─────┴───┘
 """
 
-    # Column table
-    # --------------------------------------------------------------------------
+    # Column Table
+    # ======================================================================================
 
     Tables.istable(::Type{<:MyColumnTable}) = true
     names(m::MyColumnTable) = getfield(m, :names)
@@ -116,11 +116,11 @@ end
     @test Tables.schema(table) == nothing
     @test result == expected
 
-    # Row table
-    # --------------------------------------------------------------------------
+    # Row Table
+    # ======================================================================================
 
-    # First, we need to create a object that complies with Tables.jl and that
-    # does not have a schema. This is based on Tables.jl documentation.
+    # First, we need to create a object that complies with Tables.jl and that does not have
+    # a schema. This is based on Tables.jl documentation.
 
     Tables.istable(::Type{<:MyRowTable}) = true
     names(m::MyRowTable) = getfield(m, :names)

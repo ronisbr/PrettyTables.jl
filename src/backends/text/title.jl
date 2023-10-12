@@ -1,11 +1,11 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Functions to process and print the table title.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # Print the table title to the display.
 function _print_title!(
@@ -21,9 +21,8 @@ function _print_title!(
     @inbounds for i in 1:num_tokens
         _write_to_display!(display, title_crayon, string(rstrip(title_tokens[i])), "")
 
-        # In the last line we must not add the new line character
-        # because we need to reset the crayon first if the display
-        # supports colors.
+        # In the last line we must not add the new line character because we need to reset
+        # the crayon first if the display supports colors.
         i != num_tokens && _nl!(display)
     end
 
@@ -49,8 +48,7 @@ function _tokenize_title(
         # Compute the title width.
         title_width = title_same_width_as_table ? table_width : display_width
 
-        # If the title width is not higher than 0, then we should only print the
-        # title.
+        # If the title width is not higher than 0, then we should only print the title.
         if title_width ≤ 0
             push!(title_tokens, title)
 

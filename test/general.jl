@@ -1,17 +1,17 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Tests related to general functions.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-@testset "Back-ends" verbose = true begin
+@testset "Back Ends" verbose = true begin
     include("./general/backend.jl")
 end
 
-@testset "Circular reference" verbose = true begin
+@testset "Circular Reference" verbose = true begin
     include("./general/circular_reference.jl")
 end
 
@@ -19,7 +19,7 @@ end
     include("./general/configurations.jl")
 end
 
-@testset "Compact types" verbose = true begin
+@testset "Compact Types" verbose = true begin
     include("./general/compact_types.jl")
 end
 
@@ -31,11 +31,11 @@ end
     include("./general/issues.jl")
 end
 
-@testset "Table to file" verbose = true begin
+@testset "Table to File" verbose = true begin
     include("./general/files.jl")
 end
 
-@testset "Table to string" verbose = true begin
+@testset "Table to String" verbose = true begin
     include("./general/string.jl")
 end
 

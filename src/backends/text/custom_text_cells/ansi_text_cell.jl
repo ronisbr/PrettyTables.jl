@@ -1,41 +1,35 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Text cell with ANSI escape sequences.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 export AnsiTextCell
 
 """
     AnsiTextCell
 
-A text cell that supports rendering ANSI escape sequences without interfering
-with the table layout.
+A text cell that supports rendering ANSI escape sequences without interfering with the table
+layout.
 
 # Fields
 
 **Public**
 
-- `string::String`: The string with the cell text that can contain ANSI escape
-    sequences.
+- `string::String`: The string with the cell text that can contain ANSI escape sequences.
 
 **Private**
 
-- `_rendered_lines::Union{Nothing, Vector{String}}`: The lines with the rendered
-    strings.
-- `_stripped_lines::Union{Nothing, Vector{String}}`: The lines with the
-    printable text.
-- `_crops::Union{Nothing, Vector{Int}}`: Vector with the number of characters
-    that must be cropped at each line.
-- `_left_pads::Union{Nothing, Vector{Int}}`: Left padding to be applied to each
-    line.
-- `_right_pads::Union{Nothing, Vector{Int}}`: Right padding to be applied to
-    each line.
-- `_suffixes::Union{Nothing, Vector{String}}`: Suffixed to be applied to each
-    line.
+- `_rendered_lines::Union{Nothing, Vector{String}}`: The lines with the rendered strings.
+- `_stripped_lines::Union{Nothing, Vector{String}}`: The lines with the printable text.
+- `_crops::Union{Nothing, Vector{Int}}`: Vector with the number of characters that must be
+    cropped at each line.
+- `_left_pads::Union{Nothing, Vector{Int}}`: Left padding to be applied to each line.
+- `_right_pads::Union{Nothing, Vector{Int}}`: Right padding to be applied to each line.
+- `_suffixes::Union{Nothing, Vector{String}}`: Suffixed to be applied to each line.
 """
 mutable struct AnsiTextCell <: CustomTextCell
     string::String
@@ -64,16 +58,15 @@ Create an [`AnsiTextCell`](@ref) using a render function.
 
 that renders a string that can contain ANSI sequences into `io`.
 
-`context` is a tuple of context arguments passed to an `IOContext` that
-`renderfn` receives. See [`IOContext`](@ref) for details on what arguments are
-available.
+`context` is a tuple of context arguments passed to an `IOContext` that `renderfn` receives.
+See `IOContext` for details on what arguments are available.
 
 Useful for supporting packages that have rich terminal outputs.
 
 ## Examples
 
-Below are examples for wrappers around `AnsiTextCell` to print rich data into
-tables that make use of packages with rich terminal output.
+Below are examples for wrappers around `AnsiTextCell` to print rich data into tables that
+make use of packages with rich terminal output.
 
 ### Crayons.jl
 
@@ -164,9 +157,9 @@ function AnsiTextCell(renderfn::Function; context::Tuple = ())
     return AnsiTextCell(rendered)
 end
 
-################################################################################
-#                                     API
-################################################################################
+############################################################################################
+#                                           API
+############################################################################################
 
 function get_printable_cell_line(cell::AnsiTextCell, l::Int)
     cell_stripped_lines = cell._stripped_lines
@@ -242,8 +235,8 @@ function get_rendered_line(cell::AnsiTextCell, l::Int)
         # Create the rendered line.
         line = " "^lpad * cell_rendered_lines[l] * " "^rpad
 
-        # Crop the rendered line. Notice that we can discard the remaining ANSI
-        # sequence because we reset everything after printing the cell.
+        # Crop the rendered line. Notice that we can discard the remaining ANSI sequence
+        # because we reset everything after printing the cell.
         cropped_line = fit_string_in_field(
             line,
             line_width - cell_crops[l];
@@ -252,8 +245,8 @@ function get_rendered_line(cell::AnsiTextCell, l::Int)
             printable_string_width = line_width
         )
 
-        # We must reset everything after rendering the cell to avoid messing
-        # with the decoration of the table.
+        # We must reset everything after rendering the cell to avoid messing with the
+        # decoration of the table.
         return cropped_line * "\e[0m" * suffix
     end
 end

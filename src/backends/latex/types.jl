@@ -1,11 +1,11 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Types and structures for the LaTeX backend.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 export LatexCell, LatexTableFormat, LatexHighlighter
 export @latex_cell_str
@@ -37,7 +37,7 @@ macro latex_cell_str(str)
 end
 
 """
-    LatexTableFormat
+    struct LatexTableFormat
 
 This structure defines the format of the LaTeX table.
 
@@ -50,19 +50,16 @@ This structure defines the format of the LaTeX table.
 - `left_vline::String`: Left vertical line of the table.
 - `mid_vline::String`: Vertical line in the middle of the table.
 - `right_vline::String`: Right vertical line of the table.
-- `header_envs::Vector{String}`: LaTeX environments that will be used in each
-    header cell.
-- `subheader_envs::Vector{String}`: LaTeX environments that will be used in each
-    sub-header cell.
+- `header_envs::Vector{String}`: LaTeX environments that will be used in each header cell.
+- `subheader_envs::Vector{String}`: LaTeX environments that will be used in each sub-header
+    cell.
 - `hlines::Vector{Symbol}`: Horizontal lines that must be drawn by default.
-- `vlines::Union{Symbol, Vector{Symbol}}`: Vertical lines that must be drawn by
-    default.
-- `table_type::Symbol`: Select the type of table that should be used for this
-    format.
-- `wrap_table::Bool`: Select if the table must be wrapped inside the environment
-    defined by `wrap_table_environment`.
-- `wrap_table_environment::String`: Environment in which the table will be
-    wrapped if `wrap_table` is true.
+- `vlines::Union{Symbol, Vector{Symbol}}`: Vertical lines that must be drawn by default.
+- `table_type::Symbol`: Select the type of table that should be used for this format.
+- `wrap_table::Bool`: Select if the table must be wrapped inside the environment defined by
+    `wrap_table_environment`.
+- `wrap_table_environment::String`: Environment in which the table will be wrapped if
+    `wrap_table` is true.
 """
 @kwdef struct LatexTableFormat
     top_line::String                      = "\\hline"
@@ -88,13 +85,11 @@ Defines the default highlighter of a table when using the LaTeX backend.
 
 # Fields
 
-- `f::Function`: Function with the signature `f(data, i, j)` in which should
-    return `true` if the element `(i, j)` in `data` must be highlighted, or
-    `false` otherwise.
-- `fd`: A function with the signature `f(data, i, j, str)::String` in which
-    `data` is the matrix, `(i, j)` is the element position in the table, and
-    `str` is the data converted to string. This function must return a string
-    that will be placed in the cell.
+- `f::Function`: Function with the signature `f(data, i, j)` in which should return `true`
+    if the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
+- `fd`: A function with the signature `f(data, i, j, str)::String` in which `data` is the
+    matrix, `(i, j)` is the element position in the table, and `str` is the data converted
+    to string. This function must return a string that will be placed in the cell.
 
 # Remarks
 
@@ -104,9 +99,9 @@ This structure can be constructed using two helpers:
 
     LatexHighlighter(f::Function, fd::Function)
 
-The first will apply recursively all the LaTeX environments in `envs` to the
-highlighted text whereas the second let the user select the desired decoration
-by specifying the function `fd`.
+The first will apply recursively all the LaTeX environments in `envs` to the highlighted
+text whereas the second let the user select the desired decoration by specifying the
+function `fd`.
 
 Thus, for example:
 

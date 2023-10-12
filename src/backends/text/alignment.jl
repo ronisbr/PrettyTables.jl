@@ -1,14 +1,13 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Functions related to cell alignment.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-# Apply the column alignment obtained from regex to the data after conversion to
-# string.
+# Apply the column alignment obtained from regex to the data after conversion to string.
 function _apply_alignment_anchor_regex!(
     ptable::ProcessedTable,
     table_str::Matrix{Vector{String}},
@@ -40,8 +39,8 @@ function _apply_alignment_anchor_regex!(
         end
 
         for j in column_vector
-            # We must not process a columns that is not part of the data, i.e.,
-            # the row labels or the row numbers.
+            # We must not process a columns that is not part of the data, i.e., the row
+            # labels or the row numbers.
             _get_column_id(ptable, j) !== :__ORIGINAL_DATA__ && continue
 
             # Store in which column we must align the match.
@@ -49,8 +48,8 @@ function _apply_alignment_anchor_regex!(
 
             jr = _get_data_column_index(ptable, j)
 
-            # We need to pass through the entire row searching for matches to
-            # compute in which column we need to align the matches.
+            # We need to pass through the entire row searching for matches to compute in
+            # which column we need to align the matches.
             for i in 1:num_rendered_rows
                 # We must not process a row that is a header.
                 _get_row_id(ptable, i) != :__ORIGINAL_DATA__ && continue
@@ -74,8 +73,8 @@ function _apply_alignment_anchor_regex!(
                     if m !== nothing
                         alignment_column_i = textwidth(@views(line[1:first(m)]))
                     else
-                        # If a match is not found, then the alignment column
-                        # depends on the user selection.
+                        # If a match is not found, the alignment column depends on the user
+                        # selection.
 
                         fallback = haskey(alignment_anchor_fallback_override, jr) ?
                             alignment_anchor_fallback_override[jr] :
@@ -84,9 +83,11 @@ function _apply_alignment_anchor_regex!(
                         if fallback == :c
                             line_len = textwidth(line)
                             alignment_column_i = cld(line_len, 2)
+
                         elseif fallback == :r
                             line_len = textwidth(line)
                             alignment_column_i = line_len + 1
+
                         else
                             alignment_column_i = 0
                         end
@@ -126,8 +127,8 @@ function _apply_alignment_anchor_regex!(
                         match_column_k = textwidth(@views(line[1:first(m)]))
                         pad = alignment_column - match_column_k
                     else
-                        # If a match is not found, then the alignment column
-                        # depends on the user selection.
+                        # If a match is not found, the alignment column depends on the user
+                        # selection.
 
                         fallback = haskey(alignment_anchor_fallback_override, jr) ?
                             alignment_anchor_fallback_override[jr] :
@@ -158,8 +159,8 @@ function _apply_alignment_anchor_regex!(
                 end
             end
 
-            # The third pass aligns the elements correctly. This is performed by
-            # adding spaces to the right so that all the cells have the same width.
+            # The third pass aligns the elements correctly. This is performed by adding
+            # spaces to the right so that all the cells have the same width.
             for i in 1:num_rendered_rows
                 # We must not process a row that is a header.
                 _get_row_id(ptable, i) != :__ORIGINAL_DATA__ && continue
@@ -174,11 +175,10 @@ function _apply_alignment_anchor_regex!(
                 end
             end
 
-            # Since the alignemnt can change the column size, we need to
-            # recompute it considering the user's configuration. Notice that the
-            # old value in `cols_width` must be considered here because the
-            # header width is not taken into account when calculating
-            # `largest_cell_width`.
+            # Since the alignemnt can change the column size, we need to recompute it
+            # considering the user's configuration. Notice that the old value in
+            # `cols_width` must be considered here because the header width is not taken
+            # into account when calculating `largest_cell_width`.
             actual_column_width[j] = _update_column_width(
                 actual_column_width[j],
                 largest_cell_width,

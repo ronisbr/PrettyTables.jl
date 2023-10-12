@@ -1,14 +1,14 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Deprecations.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-#                               Auxiliary macros
-# ==============================================================================
+#                                     Auxiliary macros
+# ==========================================================================================
 
 # Macro to declare functions to remove keywords.
 macro decl_rm_kw(kwarg)
@@ -21,11 +21,11 @@ macro decl_rm_kw(kwarg)
     return esc(expr)
 end
 
-# Macros to check deprecated keywords
-# ------------------------------------------------------------------------------
+# Macros to Check Deprecated Keywords
+# ------------------------------------------------------------------------------------------
 
-# This macro mark `old` deprecated in favor of `new`. It also pushes `new` to
-# `kwargs` using the conversion function `fn`.
+# This macro mark `old` deprecated in favor of `new`. It also pushes `new` to `kwargs` using
+# the conversion function `fn`.
 macro deprecate_kw_and_push(old, new, fn = identity)
     local rm_kwarg = Symbol("_rm_" * string(old))
     local sym_old = Meta.quot(Symbol(old))
@@ -45,8 +45,8 @@ macro deprecate_kw_and_push(old, new, fn = identity)
     return esc(expr)
 end
 
-# This macro mark `old` deprecated in favor of `new`. It also assigns `new` to
-# `kwargs` using the conversion function `fn`.
+# This macro mark `old` deprecated in favor of `new`. It also assigns `new` to `kwargs`
+# using the conversion function `fn`.
 macro deprecate_kw_and_return(old, new, fn = identity)
     local rm_kwarg = Symbol("_rm_" * string(old))
     local sym_old = Meta.quot(Symbol(old))
@@ -67,8 +67,8 @@ macro deprecate_kw_and_return(old, new, fn = identity)
     return esc(expr)
 end
 
-#                       Deprecations introduced in v2.0
-# ==============================================================================
+#                             Deprecations introduced in v2.0
+# ==========================================================================================
 
 @decl_rm_kw(crop_num_lines_at_beginning)
 @decl_rm_kw(noheader)

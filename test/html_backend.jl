@@ -1,17 +1,17 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Tests related to the text backend.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 @testset "Alignment" verbose = true begin
     include("./html_backend/alignments.jl")
 end
 
-@testset "Column width" verbose = true begin
+@testset "Column Width" verbose = true begin
     include("./html_backend/column_width.jl")
 end
 
@@ -59,6 +59,6 @@ end
     include("./html_backend/titles.jl")
 end
 
-@testset "Top bar" verbose = true begin
+@testset "Top Bar" verbose = true begin
     include("./html_backend/topbar.jl")
 end

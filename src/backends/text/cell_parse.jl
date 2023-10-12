@@ -1,14 +1,14 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
-#   Functions to parse the table cells in text back-end.
+#   Functions to parse the table cells in text back end.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-# Parse the table `cell` of type `T` and return a vector of `String` with the
-# parsed cell text, one component per line.
+# Parse the table `cell` of type `T` and return a vector of `String` with the parsed cell
+# text, one component per line.
 function _parse_cell_text(
     io::IOContext,
     cell::Any;
@@ -26,9 +26,8 @@ function _parse_cell_text(
 
     # Convert to string using the desired renderer.
     #
-    # Due to the non-specialization of `data`, `cell` here is inferred as `Any`.
-    # However, we know that the output of `_render_text` must be a vector of
-    # String.
+    # Due to the non-specialization of `data`, `cell` here is inferred as `Any`. However,
+    # we know that the output of `_render_text` must be a vector of String.
     cell_vstr::Vector{String} = _render_text(
         renderer,
         io,
@@ -60,7 +59,7 @@ function _parse_cell_text(
     column_width ≤ 0 && (column_width = 80)
 
     # Render Markdown
-    # ==========================================================================
+    # ======================================================================================
 
     # First, we need to render the Markdown with all the colors.
     str = sprint(Markdown.term, cell, column_width; context = :color => true)
@@ -80,15 +79,15 @@ function _parse_cell_text(
         if !has_color
             return remove_decorations.(tokens)
         else
-            # Here, we need to take the composed decoration at the end of line
-            # and apply it to the next one because we need to reset the entire
-            # decoration after printing the cell.
+            # Here, we need to take the composed decoration at the end of line and apply it
+            # to the next one because we need to reset the entire decoration after printing
+            # the cell.
             processed_tokens = similar(tokens)
             decoration = Decoration()
 
             for l = 1:length(tokens)
-                # If a property of the last decoration was inactive, we should
-                # drop it to avoid unnecessary escape sequences.
+                # If a property of the last decoration was inactive, we should drop it to
+                # avoid unnecessary escape sequences.
                 decoration = drop_inactive_properties(decoration)
 
                 processed_tokens[l] = convert(String, decoration) * tokens[l] * "\e[0m"

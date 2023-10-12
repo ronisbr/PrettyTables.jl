@@ -1,11 +1,11 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Tests of the configuration framework.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 @testset "Configurations" begin
     data = [1 2 3
@@ -48,7 +48,7 @@ end
     @ptconf sortkeys = true
 
     # Test 1
-    # --------------------------------------------------------------------------
+    # ======================================================================================
 
     expected = """
 .......................
@@ -70,7 +70,7 @@ end
     @test result == expected
 
     # Test 2
-    # --------------------------------------------------------------------------
+    # ======================================================================================
 
     expected = """
 ╭────────┬────────┬────────┬────────╮
@@ -93,7 +93,7 @@ end
     @test result == expected
 
     # Test 3
-    # --------------------------------------------------------------------------
+    # ======================================================================================
 
     expected = """
 .----------.----------.
@@ -116,7 +116,7 @@ header = (["Column 1", "Column 2"], ["Sub. 1", "Sub. 2"])
     @test result == expected
 
     # Test 4
-    # --------------------------------------------------------------------------
+    # ======================================================================================
 
     expected = """
 .-------.---------------------.
@@ -145,15 +145,14 @@ header = (["Column 1", "Column 2"], ["Sub. 1", "Sub. 2"])
     close(out)
     redirect_stdout(old_stdout)
 
-    # The expression after `@pt` must be evaluated. Hence, `d` must be a dict
-    # with the defined elements.
+    # The expression after `@pt` must be evaluated. Hence, `d` must be a dict with the
+    # defined elements.
     @test d isa Dict
     @test d[1] == "São José dos Campos"
     @test d[2] == "SP"
     @test d[3] == "Brasil"
 
-    # Clean configurations to avoid test failures if this is run in the same
-    # section.
+    # Clean configurations to avoid test failures if this is run in the same section.
     @ptconfclean
 end
 

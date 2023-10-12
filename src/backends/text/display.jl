@@ -1,14 +1,14 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Functions related to display printing and manipulation.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-# Return the available rows in `display`. If there is no row limit, then this
-# function returns -1.
+# Return the available rows in `display`. If there is no row limit, this function returns
+# -1.
 function _available_rows(display::Display)
     if display.size[1] > 0
         return display.size[1] - display.row
@@ -17,9 +17,8 @@ function _available_rows(display::Display)
     end
 end
 
-# Draw the continuation row when the table has filled the vertical space
-# available. This function prints in each column the character `⋮` with the
-# alignment in `alignment`.
+# Draw the continuation row when the table has filled the vertical space available. This
+# function prints in each column the character `⋮` with the alignment in `alignment`.
 function _draw_continuation_line(
     display::Display,
     ptable::ProcessedTable,
@@ -30,9 +29,8 @@ function _draw_continuation_line(
     vlines::Union{Symbol, Vector{Int}},
     alignment::Symbol
 )
-    # In case of a continuation row, we want the last character to indicate that
-    # the table continues both vertically and horizontally in case the text is
-    # cropped.
+    # In case of a continuation row, we want the last character to indicate that the table
+    # continues both vertically and horizontally in case the text is cropped.
     old_cont_char = display.cont_char
     display.cont_char = '⋱'
 
@@ -58,8 +56,7 @@ function _draw_continuation_line(
     return nothing
 end
 
-# Draw a vertical line in internal line buffer of `display` and then flush to
-# the `io`.
+# Draw a vertical line in internal line buffer of `display` and then flush to the `io`.
 function _draw_line!(
     display::Display,
     ptable::ProcessedTable,
@@ -109,15 +106,15 @@ function _eol(display::Display)
     return (display.size[2] > 0) && (display.column >= display.size[2])
 end
 
-# Return the string and the suffix to be printed in the display. It ensures that
-# the return data will fit the `display`.
+# Return the string and the suffix to be printed in the display. It ensures that the return
+# data will fit the `display`.
 #
-# The parameter `final_line_print` must be set to `true` if this is the last
-# string that will be printed in the line. This is necessary for the algorithm
-# to select whether or not to include the continuation character.
+# The parameter `final_line_print` must be set to `true` if this is the last string that
+# will be printed in the line. This is necessary for the algorithm to select whether or not
+# to include the continuation character.
 #
-# The size of the string can be passed to `lstr` to save computational burden.
-# If `lstr = -1`, then the string length will be computed inside the function.
+# The size of the string can be passed to `lstr` to save computational burden.  If
+# `lstr = -1`, then the string length will be computed inside the function.
 #
 # The line buffer can be flushed to an `io` using the function `_nl!`.
 #
@@ -136,9 +133,8 @@ function _fit_string_in_display(
     lstr < 0 && (lstr = textwidth(str))
 
     @inbounds if display.size[2] > 0
-        # We need to check the continuation string that the user wants to
-        # display. The width of this string must be used as a margin to the
-        # cropping algorithm.
+        # We need to check the continuation string that the user wants to display. The width
+        # of this string must be used as a margin to the cropping algorithm.
         cont_str     = string(display.cont_space_char) * string(display.cont_char)
         field_margin = textwidth(cont_str)
 
@@ -153,14 +149,13 @@ function _fit_string_in_display(
 
         # There are two situations in which we do not need to crop the string:
         #
-        #   1. If the number of characters that must be cropped is 0, it means
-        #      that we have enough size to display the string plus the
-        #      continuation characters. Thus, we just print the current string
-        #      now. If the continuation characters are needed, they will be
-        #      printed in the next cell.
-        #   2. If the number of characters that must be cropped equals the size
-        #      of the continuation string and we are at the final line print, we
-        #      just need to print the string.
+        #   1. If the number of characters that must be cropped is 0, it means that we have
+        #      enough size to display the string plus the continuation characters. Thus, we
+        #      just print the current string now. If the continuation characters are needed,
+        #      they will be printed in the next cell.
+        #   2. If the number of characters that must be cropped equals the size of the
+        #      continuation string and we are at the final line print, we just need to print
+        #      the string.
 
         if (final_line_print && (crop ≤ field_margin)) || (crop == 0)
             suffix = ""
@@ -196,8 +191,8 @@ function _flush_display!(
     newline_at_end::Bool,
     num_displayed_rows::Int
 )
-    # If `overwrite` is `true`, then delete the exact number of lines of the
-    # table. This can be used to replace the table in the display continuously.
+    # If `overwrite` is `true`, then delete the exact number of lines of the table. This can
+    # be used to replace the table in the display continuously.
     str_overwrite = overwrite ? "\e[1F\e[2K"^(num_displayed_rows - 1) : ""
 
     output_str = String(take!(display.buf))
@@ -210,8 +205,7 @@ function _flush_display!(
     return nothing
 end
 
-# Flush the internal line buffer of `display`. It correspond to a new line in
-# the buffer.
+# Flush the internal line buffer of `display`. It correspond to a new line in the buffer.
 function _nl!(display::Display)
     # Update the information about the current columns and row of the display.
     display.row += 1
@@ -224,14 +218,13 @@ function _nl!(display::Display)
     return nothing
 end
 
-# Print `str` into the internal line buffer of `display` using the Crayon
-# `crayon` with the display information in `display`. The parameter
-# `final_line_print` must be set to `true` if this is the last string that will
-# be printed in the line. This is necessary for the algorithm to select whether
-# or not to include the continuation character.
+# Print `str` into the internal line buffer of `display` using the Crayon `crayon` with the
+# display information in `display`. The parameter `final_line_print` must be set to `true`
+# if this is the last string that will be printed in the line. This is necessary for the
+# algorithm to select whether or not to include the continuation character.
 #
-# The size of the string can be passed to `lstr` to save computational burden.
-# If `lstr = -1`, then the string length will be computed inside the function.
+# The size of the string can be passed to `lstr` to save computational burden.  If `lstr =
+# -1`, then the string length will be computed inside the function.
 #
 # The line buffer can be flushed to an `io` using the function `_nl!`.
 function _p!(
@@ -264,8 +257,8 @@ function _p!(
     return _write_to_display!(display, crayon, str, suffix, num_columns)
 end
 
-# Write the string `str` to the display considering the decoration in `crayon`.
-# It also appends a `suffix` after reseting the crayon if necessary.
+# Write the string `str` to the display considering the decoration in `crayon`. It also
+# appends a `suffix` after reseting the crayon if necessary.
 function _write_to_display!(
     display::Display,
     crayon::Crayon,
@@ -282,15 +275,14 @@ function _write_to_display!(
 
     # Print the with correct formating.
     #
-    # Notice that all text printed with crayon is reset right after the string.
-    # Hence, if the crayon is empty (`_default_crayon`) or if it is a reset,
-    # then we can just print as if the terminal does not support color.
+    # Notice that all text printed with crayon is reset right after the string. Hence, if
+    # the crayon is empty (`_default_crayon`) or if it is a reset, then we can just print as
+    # if the terminal does not support color.
     buf_line = display.buf_line
 
     if (crayon != _default_crayon) && (crayon != _reset_crayon) && display.has_color
-        # If we convert the crayon to string using `string`, it calls `print`
-        # which checks if the Base has colors, leading to inference problems.
-        # For more information, see:
+        # If we convert the crayon to string using `string`, it calls `print` which checks
+        # if the Base has colors, leading to inference problems. For more information, see:
         #
         #   https://github.com/KristofferC/Crayons.jl/issues/62
         write(buf_line, Crayons.CSI)

@@ -1,22 +1,21 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Functions to add additional data into a `ProcessedTable`.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 """
-    _add_column!(ptable::ProcessedTable, new_column::AbstractVector, new_header::Vector{String} = String[""]; kwargs...)
+    _add_column!(ptable::ProcessedTable, new_column::AbstractVector, new_header::Vector{String} = String[""]; kwargs...) -> Nothing
 
 Add a new column `new_column` with header `new_header` to `ptable`.
 
 # Keywords
 
 - `alignment::Symbol`: Alignment for the new column. (**Default** = `:r`)
-- `header_alignment::Symbol`: Alignment for the new column header.
-    (**Default** = `:s`)
+- `header_alignment::Symbol`: Alignment for the new column header. (**Default** = `:s`)
 - `id::Symbol`: Identification symbol for the new column.
     (**Default** = `:additional_column`)
 """

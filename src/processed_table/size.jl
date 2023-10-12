@@ -1,14 +1,14 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Functions to compute sizes related to `ProcessedTable`.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 """
-    _data_size(ptable::ProcessedTable)
+    _data_size(ptable::ProcessedTable) -> Int, Int
 
 Return a tuple with the original data size.
 """
@@ -17,7 +17,7 @@ function _data_size(ptable::ProcessedTable)
 end
 
 """
-    _header_size(ptable::ProcessedTable)
+    _header_size(ptable::ProcessedTable) -> Int, Int
 
 Return a tuple with the header size.
 """
@@ -27,7 +27,7 @@ function _header_size(ptable::ProcessedTable)
 end
 
 """
-    _num_additional_columns(ptable::ProcessedTable)
+    _num_additional_columns(ptable::ProcessedTable) -> Int
 
 Return the number of additional columns.
 """
@@ -36,11 +36,10 @@ function _num_additional_columns(ptable::ProcessedTable)
 end
 
 """
-    _size(ptable::ProcessedTable)
+    _size(ptable::ProcessedTable) -> Int, Int
 
-Return a tuple with the current size of the table, considering the header, and
-the additional columns, but also the maximum number of rows and columns that
-user wants.
+Return a tuple with the current size of the table, considering the header, and the
+additional columns, but also the maximum number of rows and columns that user wants.
 """
 function _size(ptable::ProcessedTable)
     total_columns = ptable._max_num_of_columns > 0 ?
@@ -59,7 +58,7 @@ function _size(ptable::ProcessedTable)
 end
 
 """
-    _total_size(ptable::ProcessedTable)
+    _total_size(ptable::ProcessedTable) -> Int
 
 Return the total table size neglecting the options `max_num_of_columns` and
 `max_num_of_rows`.

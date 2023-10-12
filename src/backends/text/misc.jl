@@ -1,11 +1,11 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
-#   Miscellaneous functions related to the Text backend.
+#   Miscellaneous functions related to the Text back end.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # Compute the table height.
 function _compute_table_height(
@@ -36,8 +36,8 @@ function _compute_table_width(
     return table_width
 end
 
-# Compute the position of the continuation row if the vertical crop is selected
-# with the bottom crop mode.
+# Compute the position of the continuation row if the vertical crop is selected with the
+# bottom crop mode.
 function _compute_continuation_row_in_bottom_vcrop(
     ptable::ProcessedTable,
     display::Display,
@@ -54,8 +54,8 @@ function _compute_continuation_row_in_bottom_vcrop(
         available_display_lines = display.size[1] - Δdisplay_lines
 
         if table_height > available_display_lines - need_omitted_cell_summary
-            # Count the number of lines in the header considering that lines before
-            # and after it.
+            # Count the number of lines in the header considering that lines before and
+            # after it.
             num_header_lines = _count_header_lines(
                 ptable,
                 hlines,
@@ -63,8 +63,7 @@ function _compute_continuation_row_in_bottom_vcrop(
                 num_lines_in_row
             )
 
-            # In this case, we will have to save one line to print the omitted
-            # cell summary.
+            # In this case, we will have to save one line to print the omitted cell summary.
             continuation_row_line =
                 available_display_lines - draw_last_hline - show_omitted_cell_summary
 
@@ -80,8 +79,8 @@ function _compute_continuation_row_in_bottom_vcrop(
     return continuation_row_line
 end
 
-# Compute the position of the continuation row if the vertical crop is selected
-# with the middle crop mode.
+# Compute the position of the continuation row if the vertical crop is selected with the
+# middle crop mode.
 function _compute_continuation_row_in_middle_vcrop(
     ptable::ProcessedTable,
     display::Display,
@@ -109,11 +108,11 @@ function _compute_continuation_row_in_middle_vcrop(
                 num_lines_in_row
             )
 
-            # Number of rows available to draw table data. In this case, we will
-            # have to save one line to print the omitted cell summary. In this
-            # case, the horizontal lines are also considered table data.
-            # However, we must remove the last line, if it must be printed,
-            # because it is always printing regardeless the display size.
+            # Number of rows available to draw table data. In this case, we will have to
+            # save one line to print the omitted cell summary. In this case, the horizontal
+            # lines are also considered table data. However, we must remove the last line,
+            # if it must be printed, because it is always printing regardeless the display
+            # size.
             draw_last_hline = _check_hline(ptable, hlines, body_hlines, num_rows)
 
             available_rows_for_data =
@@ -122,8 +121,7 @@ function _compute_continuation_row_in_middle_vcrop(
                 show_omitted_cell_summary -
                 draw_last_hline
 
-            # If there is no available rows for data, we need to print at least
-            # the header.
+            # If there is no available rows for data, we need to print at least the header.
             if available_rows_for_data > 0
                 continuation_row_line = div(
                     available_rows_for_data + 1,
@@ -165,20 +163,18 @@ function _compute_omitted_columns(
         end
 
         for j = 1:num_rendered_columns
-            # Take into account the column width plus the padding before the
-            # column.
+            # Take into account the column width plus the padding before the column.
             available_display_columns -= columns_width[j] + 1
 
             available_display_columns < 2 && break
 
-            # We should neglect the additional columns when computing the number
-            # of fully printed columns.
+            # We should neglect the additional columns when computing the number of fully
+            # printed columns.
             if j > num_additional_columns
                 fully_printed_columns += 1
             end
 
-            # Take into account the column width plus the padding after the
-            # column.
+            # Take into account the column width plus the padding after the column.
             available_display_columns -= 1
 
             # Take into account a vertical line after the columns
@@ -212,11 +208,10 @@ function _compute_omitted_rows(
     num_rendered_rows = length(num_lines_in_row)
 
     @views if continuation_row_line > 0
-        # If we have a continuation line, then we just need to pass the table
-        # from the beginning to end until we reach this line. Then we pass the
-        # table from end to the continuation line. In those passes, we count the
-        # number of fully displayed rows. This algorithm works for both bottom
-        # and middle cropping.
+        # If we have a continuation line, we just need to pass the table from the beginning
+        # to end until we reach this line. Then we pass the table from end to the
+        # continuation line. In those passes, we count the number of fully displayed rows.
+        # This algorithm works for both bottom and middle cropping.
 
         # Number of available line.
         available_display_lines = display.size[1] - Δdisplay_lines
@@ -235,8 +230,7 @@ function _compute_omitted_rows(
         fully_printed_rows = 0
         current_line = num_header_lines
 
-        # First pass: go from the beginning of the table to the continuation
-        # line.
+        # First pass: go from the beginning of the table to the continuation line.
         for i = (num_header_rows + 1):num_rendered_rows
             current_line += num_lines_in_row[i]
 
@@ -255,9 +249,9 @@ function _compute_omitted_rows(
             end
         end
 
-        # Second pass: go from the end of the table to the continuationl line.
-        # Notice that we know rows are cropped, hence we must reserve a line for
-        # the omitted cell summary if the user wants.
+        # Second pass: go from the end of the table to the continuationl line. Notice that
+        # we know rows are cropped, hence we must reserve a line for the omitted cell
+        # summary if the user wants.
 
         available_display_lines -= need_omitted_cell_summary
 
@@ -282,8 +276,8 @@ function _compute_omitted_rows(
     return num_omitted_rows
 end
 
-# Count the number of lines in the header. It contains the first horizontal line
-# and the line after the last subheader.
+# Count the number of lines in the header. It contains the first horizontal line and the
+# line after the last subheader.
 function _count_header_lines(
     ptable::ProcessedTable,
     hlines::Union{Symbol, Vector{Int}},
@@ -309,9 +303,9 @@ function _count_header_lines(
     return num_header_lines
 end
 
-# Return the default crayon for a cell in a row with identification `row_id` and
-# in a column with identification `column_id`. It is also necessary to pass the
-# data column index `jr` in case the header or subheader crayons are a vector.
+# Return the default crayon for a cell in a row with identification `row_id` and in a column
+# with identification `column_id`. It is also necessary to pass the data column index `jr`
+# in case the header or subheader crayons are a vector.
 function _select_default_cell_crayon(
     row_id::Symbol,
     column_id::Symbol,
@@ -347,10 +341,10 @@ function _select_default_cell_crayon(
     end
 end
 
-# Compute the column width `column_width` considering the largest cell width in
-# the column `largest_cell_width`, the user specification in
-# `column_width_specification`, and the maximum and minimum allowed column width
-# in `maximum_column_width` and `minimum_column_width`, respectively.
+# Compute the column width `column_width` considering the largest cell width in the column
+# `largest_cell_width`, the user specification in `column_width_specification`, and the
+# maximum and minimum allowed column width in `maximum_column_width` and
+# `minimum_column_width`, respectively.
 function _update_column_width(
     column_width::Int,
     largest_cell_width::Int,
@@ -378,8 +372,7 @@ function _update_column_width(
     return column_width
 end
 
-# Return the indices in the `table_str` and `ptable` related to the `i`th
-# processed row.
+# Return the indices in the `table_str` and `ptable` related to the `i`th processed row.
 function _vcrop_row_number(
     vcrop_mode::Symbol,
     num_rows::Int,

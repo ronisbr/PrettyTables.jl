@@ -1,11 +1,11 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Functions related to the row printing state machine.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # Iterate the row printing state machine.
 function _iterate_row_printing_state!(
@@ -74,15 +74,14 @@ function _iterate_row_printing_state!(
             end
 
         elseif rps.state == :continuation_line
-            # If we reached the continuation line, then we must search backwards
-            # how much lines we can print and select the correct row/line
-            # indices to continue printing.
+            # If we reached the continuation line, then we must search backwards how much
+            # lines we can print and select the correct row/line indices to continue
+            # printing.
 
             num_rows = _size(ptable)[1]
 
-            # Notice that here we must not consider the number of lines in the
-            # title here because it is taken into account in the display (it was
-            # already printed).
+            # Notice that here we must not consider the number of lines in the title here
+            # because it is taken into account in the display (it was already printed).
             Δrows = _available_rows(display) - num_lines_around_table
             Δi = 0
             new_l = 0

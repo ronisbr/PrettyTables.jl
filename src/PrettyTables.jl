@@ -11,25 +11,24 @@ using Printf
 import Base: Dict, ismalformed, isoverlong, @kwdef, getindex, size
 import LaTeXStrings: LaTeXString
 
-# The performance of PrettyTables.jl does not increase by a lot of optimizations
-# that is performed by the compiler. Hence, we disable then to improve compile
-# time.
+# The performance of PrettyTables.jl does not increase by a lot of optimizations that is
+# performed by the compiler. Hence, we disable then to improve compile time.
 if isdefined(Base, :Experimental) && isdefined(Base.Experimental, Symbol("@optlevel"))
        @eval Base.Experimental.@optlevel 1
 end
 
-################################################################################
-#                                    Types
-################################################################################
+############################################################################################
+#                                          Types
+############################################################################################
 
 include("types.jl")
 include("backends/text/types.jl")
 include("backends/html/types.jl")
 include("backends/latex/types.jl")
 
-################################################################################
-#                                  Includes
-################################################################################
+############################################################################################
+#                                         Includes
+############################################################################################
 
 include("configuration.jl")
 include("deprecations.jl")
@@ -41,8 +40,8 @@ include("print.jl")
 include("private.jl")
 include("tables.jl")
 
-# Processed table
-# ===============
+# Processed Table
+# ==========================================================================================
 
 include("./processed_table/addtional_data.jl")
 include("./processed_table/constructors.jl")
@@ -51,9 +50,11 @@ include("./processed_table/misc.jl")
 include("./processed_table/size.jl")
 
 # Backends
-# ========
+# ==========================================================================================
 
-# Text backend
+# Text Backend
+# ------------------------------------------------------------------------------------------
+
 include("backends/text/alignment.jl")
 include("backends/text/cell_parse.jl")
 include("backends/text/circular_reference.jl")
@@ -75,6 +76,8 @@ include("backends/text/custom_text_cells/url_text_cell.jl")
 include("backends/text/custom_text_cells/ansi_text_cell.jl")
 
 # HTML backend
+# ------------------------------------------------------------------------------------------
+
 include("backends/html/cell_parse.jl")
 include("backends/html/circular_reference.jl")
 include("backends/html/predefined_formats.jl")
@@ -84,6 +87,8 @@ include("backends/html/private.jl")
 include("backends/html/string.jl")
 
 # LaTeX backend
+# ------------------------------------------------------------------------------------------
+
 include("backends/latex/cell_parse.jl")
 include("backends/latex/circular_reference.jl")
 include("backends/latex/predefined_formats.jl")
@@ -91,13 +96,12 @@ include("backends/latex/private.jl")
 include("backends/latex/print.jl")
 include("backends/latex/string.jl")
 
-# The environment variable `PRETTY_TABLES_NO_PRECOMPILATION` is used to disable
-# the precompilation directives. This option must only be used inside Github
-# Actions to improve the coverage results.
+# The environment variable `PRETTY_TABLES_NO_PRECOMPILATION` is used to disable the
+# precompilation directives. This option must only be used inside Github Actions to improve
+# the coverage results.
 if Base.VERSION >= v"1.4.2" && !haskey(ENV, "PRETTY_TABLES_NO_PRECOMPILATION")
-    # This try/catch is necessary in case the precompilation statements do not
-    # exists. In this case, PrettyTables.jl will work correctly but without the
-    # optimizations.
+    # This try/catch is necessary in case the precompilation statements do not exists. In
+    # this case, PrettyTables.jl will work correctly but without the optimizations.
     try
         include("../precompilation/precompile_PrettyTables.jl")
         _precompile_()

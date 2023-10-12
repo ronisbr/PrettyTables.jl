@@ -1,11 +1,11 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Auxiliary functions to print cells.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # Print the custom rext cell to the display.
 #
@@ -54,8 +54,8 @@ function _print_custom_text_cell!(
         new_lstr + textwidth(suffix)
     )
 
-    # Print the padding character after the cell and return if the display has
-    # reached end-of-line.
+    # Print the padding character after the cell and return if the display has reached
+    # end-of-line.
     return _p!(display, _default_crayon, " ", false, 1)
 end
 
@@ -88,8 +88,7 @@ function _print_omitted_cell_summary(
     return nothing
 end
 
-# Process the cell by applying the correct alignment and also verifying the
-# highlighters.
+# Process the cell by applying the correct alignment and also verifying the highlighters.
 function _process_data_cell_text(
     ptable::ProcessedTable,
     cell_data::Any,
@@ -102,9 +101,9 @@ function _process_data_cell_text(
     alignment::Symbol,
     (@nospecialize highlighters::Ref{Any})
 )
-    # Notice that `(i, j)` are the indices of the printed data. It means that it
-    # refers to the ith data row and jth data column that will be printed. We
-    # need to convert those indices to the actual indices in the input table.
+    # Notice that `(i, j)` are the indices of the printed data. It means that it refers to
+    # the ith data row and jth data column that will be printed. We need to convert those
+    # indices to the actual indices in the input table.
     ti, tj = _convert_axes(ptable.data, i, j)
 
     # Check for highlighters.
@@ -125,8 +124,8 @@ function _process_data_cell_text(
     end
 
     if cell_data isa CustomTextCell
-        # To align a custom text cell, we need to compute the alignment and
-        # cropping data and apply it using the API functions.
+        # To align a custom text cell, we need to compute the alignment and cropping data
+        # and apply it using the API functions.
         padding = get_padding_for_string_alignment(
             cell_str,
             column_width,
@@ -168,8 +167,8 @@ function _process_data_cell_text(
             printable_string_width = lstr
         )
 
-        # If this is not a custom cell, we ensure it does not have any ANSI
-        # escape sequence. Hence, we do not need to keep it after the cropping.
+        # If this is not a custom cell, we ensure it does not have any ANSI escape sequence.
+        # Hence, we do not need to keep it after the cropping.
         cell_str = fit_string_in_field(
             cell_str,
             column_width;

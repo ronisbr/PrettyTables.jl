@@ -1,33 +1,32 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Functions related to text rendering.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-# Render the value `v` to strings using the rendered `T` to be displayed in the
-# text back-end.
+# Render the value `v` to strings using the rendered `T` to be displayed in the text
+# back-end.
 #
 # The first argument can be:
 #
 # - `Val(:print)`: the function `print` will be used.
 # - `Val(:show)`: the function `show` will be used.
 #
-# This function must return a vector of strings in which each element is a line
-# inside the rendered cell.
+# This function must return a vector of strings in which each element is a line inside the
+# rendered cell.
 #
-# If `linebreaks` is `true`, then the rendered should split the created string
-# into multiple tokens.
+# If `linebreaks` is `true`, the rendered should split the created string into multiple
+# tokens.
 #
-# In case `show` is used, if `isstring` is `false`, then it means that the
-# original data is not a string even if `v` is a string. Hence, the surrounding
-# quotes added by `show` will be removed. This is required to correctly handle
-# formatters.
+# In case `show` is used, if `isstring` is `false`, it means that the original data is not a
+# string even if `v` is a string. Hence, the surrounding quotes added by `show` will be
+# removed. This is required to correctly handle formatters.
 #
-# If `limit_printing` is `true`, then `v` will be converted to string using the
-# property `:limit => true`.
+# If `limit_printing` is `true`, then `v` will be converted to string using the property
+# `:limit => true`.
 function _render_text(
     ::Val{:print},
     io::IOContext,
@@ -37,8 +36,8 @@ function _render_text(
     limit_printing::Bool = true,
     linebreaks::Bool = false
 )
-    # Create the context that will be used when rendering the cell. Notice that
-    # the `IOBuffer` will be neglected.
+    # Create the context that will be used when rendering the cell. Notice that the
+    # `IOBuffer` will be neglected.
     context = IOContext(
         io,
         :compact => compact_printing,
@@ -68,8 +67,8 @@ function _render_text(
 )
     vstr = linebreaks ? string.(split(str, '\n')) : [str]
 
-    # NOTE: Here we cannot use `escape_string(str)` because it also adds the
-    # character `"` to the list of characters to be escaped.
+    # NOTE: Here we cannot use `escape_string(str)` because it also adds the character `"`
+    # to the list of characters to be escaped.
     output_str = Vector{String}(undef, length(vstr))
 
     @inbounds for i in 1:length(vstr)

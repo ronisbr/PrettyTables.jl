@@ -1,19 +1,18 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
-#   Pre-defined highlighters for the HTML backend.
+#   Pre-defined highlighters for the HTML back end.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 export hl_cell
 
 """
     hl_cell(i::Number, j::Number, decoration::HtmlDecoration)
 
-Highlight the cell `(i, j)` with the `decoration` (see
-[`HtmlDecoration`](@ref)).
+Highlight the cell `(i, j)` with the `decoration` (see [`HtmlDecoration`](@ref)).
 
     hl_cell(cells::AbstractVector{NTuple(2,Int)}, decoration::HtmlDecoration)
 

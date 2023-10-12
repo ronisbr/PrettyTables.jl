@@ -1,22 +1,23 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Miscellaneous functions used by all back-ends.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 export compact_type_str
 
 """
-    compact_type_str(T)
+    compact_type_str(T) -> String
 
 Return a string with a compact representation of type `T`.
 """
 compact_type_str(T) = string(T)
 
 function compact_type_str(T::Union)
+    # TODO: REMOVE! We do not support 1.3 anymore.
     if VERSION < v"1.3.0"
         str = if T >: Missing
             string(Core.Compiler.typesubtract(T, Missing)) * "?"
@@ -31,18 +32,18 @@ function compact_type_str(T::Union)
     return str
 end
 
-################################################################################
-#                              Private functions
-################################################################################
+############################################################################################
+#                                    Private Functions
+############################################################################################
 
 """
-    _aprint(buf::IO, [v,] indentation = 0, nspace = 2, minify = false)
+    _aprint(buf::IO[, v]; indentation = 0, nspace = 2, minify = false) -> Nothing
 
-Print the variable `v` to the buffer `buf` at the indentation level
-`indentation`. Each level has `nspaces` spaces. If `minify` is `true`, then the
-text is printed without breaklines or padding.
+Print the variable `v` to the buffer `buf` at the indentation level `indentation`. Each
+level has `nspaces` spaces. If `minify` is `true`, then the text is printed without
+breaklines or padding.
 
-If `v` is not present, then only the indentation spaces will be printed.
+If `v` is not present, only the indentation spaces will be printed.
 """
 function _aprint(
     buf::IO,
@@ -58,8 +59,7 @@ function _aprint(
         padding = " "^(indentation * nspaces)
 
         @inbounds for i in 1:ntokens
-            # If the token is empty, then we do nothing to avoid unnecessary
-            # white spaces.
+            # If the token is empty, then we do nothing to avoid unnecessary white spaces.
             if length(tokens[i]) != 0
                 print(buf, padding)
                 print(buf, tokens[i])
@@ -77,12 +77,7 @@ function _aprint(
     return nothing
 end
 
-function _aprint(
-    buf::IO,
-    indentation::Int = 0,
-    nspaces::Int = 2,
-    minify::Bool = false
-)
+function _aprint(buf::IO, indentation::Int = 0, nspaces::Int = 2, minify::Bool = false)
     if !minify
         padding = " "^(indentation*nspaces)
         print(buf, padding)
@@ -92,11 +87,10 @@ function _aprint(
 end
 
 """
-    _aprintln(buf::IO, [v,] indentation = 0, nspaces = 2, minify = false)
+    _aprintln(buf::IO, [v,] indentation = 0, nspaces = 2, minify = false) -> Nothing
 
-Same as `_aprint`, but a new line will be added at the end. Notice that this
-newline is not added if `minify` is `true` Notice that this newline is not added
-if `minify` is `true`.
+Same as `_aprint`, but a new line will be added at the end. Notice that this newline is not
+added if `minify` is `true` Notice that this newline is not added if `minify` is `true`.
 """
 function _aprintln(
     buf::IO,
@@ -127,12 +121,7 @@ function _aprintln(
     return nothing
 end
 
-function _aprintln(
-    buf::IO,
-    indentation::Int = 0,
-    nspaces::Int = 2,
-    minify::Bool = false
-)
+function _aprintln(buf::IO, indentation::Int = 0, nspaces::Int = 2, minify::Bool = false)
     if !minify
         padding = " "^(indentation*nspaces)
         println(buf, padding)
@@ -142,10 +131,10 @@ function _aprintln(
 end
 
 """
-    _check_hline(ptable::ProcessedTable, hlines, body_hlines::AbstractVector, i::Int)
+    _check_hline(ptable::ProcessedTable, hlines, body_hlines::AbstractVector, i::Int) -> Bool
 
-Check if there is a horizontal line after the `i`th row of `ptable` considering
-the options `hlines` and `body_hlines`.
+Check if there is a horizontal line after the `i`th row of `ptable` considering the options
+`hlines` and `body_hlines`.
 """
 function _check_hline(
     ptable::ProcessedTable,
@@ -198,13 +187,12 @@ function _check_hline(
 end
 
 """
-    _check_vline(ptable::ProcessedTable, vlines::AbstractVector, j::Int)
+    _check_vline(ptable::ProcessedTable, vlines::AbstractVector, j::Int) -> Bool
 
-Check if there is a vertical line after the `j`th column of `ptable` considering
-the option `vlines`.
+Check if there is a vertical line after the `j`th column of `ptable` considering the option
+`vlines`.
 """
 function _check_vline(ptable::ProcessedTable, vlines::AbstractVector, j::Int)
-
     num_printed_columns = _size(ptable)[2]
 
     if (j == 0) && (:begin ∈ vlines)
@@ -229,15 +217,11 @@ function _check_vline(ptable::ProcessedTable, vlines::Symbol, j::Int)
 end
 
 """
-    _count_hlines(ptable::ProcessedTable, hlines::Vector{Int}, body_hlines::Vector{Int})
+    _count_hlines(ptable::ProcessedTable, hlines::Vector{Int}, body_hlines::Vector{Int}) -> Int
 
 Count the number of horizontal lines.
 """
-function _count_hlines(
-    ptable::ProcessedTable,
-    hlines::Vector{Int},
-    body_hlines::Vector{Int}
-)
+function _count_hlines(ptable::ProcessedTable, hlines::Vector{Int}, body_hlines::Vector{Int})
     num_header_lines = _header_size(ptable)[1]
     num_rows = _size(ptable)[1]
     Δ = num_header_lines > 0 ? 1 : 0
@@ -255,11 +239,7 @@ function _count_hlines(
     return total_hlines
 end
 
-function _count_hlines(
-    ptable::ProcessedTable,
-    hlines::Symbol,
-    body_hlines::Vector{Int}
-)
+function _count_hlines(ptable::ProcessedTable, hlines::Symbol, body_hlines::Vector{Int})
     num_rows = _size(ptable)[1]
 
     if hlines == :all
@@ -282,7 +262,7 @@ function _count_hlines(
 end
 
 """
-    _count_vlines(ptable::ProcessedTable, vlines::Vector{Int})
+    _count_vlines(ptable::ProcessedTable, vlines::Vector{Int}) -> Int
 
 Count the number of vertical lines.
 """
@@ -312,10 +292,7 @@ function _count_vlines(ptable::ProcessedTable, vlines::Symbol)
 end
 
 # Return the string with the information about the number of omitted cells.
-function _get_omitted_cell_string(
-    num_omitted_rows::Int,
-    num_omitted_columns::Int
-)
+function _get_omitted_cell_string(num_omitted_rows::Int, num_omitted_columns::Int)
     cs_str_col = ""
     cs_str_and = ""
     cs_str_row = ""
@@ -338,17 +315,17 @@ function _get_omitted_cell_string(
 end
 
 """
-    _process_hlines(ptable::ProcessedTable, hlines)
+    _process_hlines(ptable::ProcessedTable, hlines) -> Union{Symbol, Vector{Int}}
 
-Process the horizontal lines `hlines` considerering the processed table `ptable`.
+Process the horizontal lines `hlines` considering the processed table `ptable`.
 """
 @inline function _process_hlines(ptable::ProcessedTable, hlines::Symbol)
     return hlines
 end
 
 @inline function _process_hlines(ptable::ProcessedTable, hlines::AbstractVector)
-    # The symbol `:begin` is replaced by 0, the symbol `:header` by the line
-    # after the header, and the symbol `:end` is replaced by the last row.
+    # The symbol `:begin` is replaced by 0, the symbol `:header` by the line after the
+    # header, and the symbol `:end` is replaced by the last row.
     num_header_rows = _header_size(ptable)[1]
     num_rows = _size(ptable)[1]
     Δ  = num_header_rows > 0 ? 1 : 0
@@ -364,17 +341,17 @@ end
 end
 
 """
-    _process_vlines(ptable::ProcessedTable, vlines)
+    _process_vlines(ptable::ProcessedTable, vlines) -> Union{Symbol, Vector{Int}}
 
-Process the vertical lines `vlines` considerering the processed table `ptable`.
+Process the vertical lines `vlines` considering the processed table `ptable`.
 """
 @inline function _process_vlines(ptable::ProcessedTable, vlines::Symbol)
     return vlines
 end
 
 function _process_vlines(ptable::ProcessedTable, vlines::AbstractVector)
-    # The symbol `:begin` is replaced by 0 and the symbol `:end` is replaced by
-    # the last column.
+    # The symbol `:begin` is replaced by 0 and the symbol `:end` is replaced by the last
+    # column.
     vlines = replace(
         vlines,
         :begin => 0,

@@ -1,27 +1,26 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Functions to get the index of data in a `ProcessedTable`.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 """
-    _convert_axes(data::Any, i::Int)
+    _convert_axes(data::Any, i::Int) -> Int
 
 Convert the axes from the printed table data `i` to the axes in `data`.
 
 !!! note
     `i` refers to the i-th element that will be printed.
 
-    _convert_axes(data::Any, i::Int, j::Int)
+    _convert_axes(data::Any, i::Int, j::Int) -> Int
 
 Convert the axes from the printed table data `(i, j)` to the axes in `data`.
 
 !!! note
-    `(i, j)` refers to the i-th data row and j-th data column that will be
-    printed.
+    `(i, j)` refers to the i-th data row and j-th data column that will be printed.
 """
 function _convert_axes(data::Any, i::Int)
     ax  = axes(data)
@@ -37,7 +36,7 @@ function _convert_axes(data::Any, i::Int, j::Int)
 end
 
 """
-    _get_cell_alignemnt(ptable::ProcessedTable, i::Int, j::Int)
+    _get_cell_alignemnt(ptable::ProcessedTable, i::Int, j::Int) -> Symbol
 
 Get the alignment of the `ptable` cell in `i`th row and `j`th column.
 """
@@ -132,7 +131,7 @@ function _get_cell_alignment(ptable::ProcessedTable, i::Int, j::Int)
 end
 
 """
-    _get_column_alignment(ptable::ProcessedTable, j::Int)
+    _get_column_alignment(ptable::ProcessedTable, j::Int) -> Symbol
 
 Return the alignment of the `j`th column in `ptable`.
 """
@@ -160,10 +159,10 @@ function _get_column_alignment(ptable::ProcessedTable, j::Int)
 end
 
 """
-    _get_column_id(ptable::ProcessedTable, j::Int)
+    _get_column_id(ptable::ProcessedTable, j::Int) -> Symbol
 
-Return the identification symbol of the column `j` of `ptable`. If the column is
-from the original data, then `:__ORIGINAL_DATA__` is returned.
+Return the identification symbol of the column `j` of `ptable`. If the column is from the
+original data, `:__ORIGINAL_DATA__` is returned.
 """
 function _get_column_id(ptable::ProcessedTable, j::Int)
     Δc = length(ptable._additional_data_columns)
@@ -180,13 +179,13 @@ end
 _getdata(ptable::ProcessedTable) = _getdata(ptable.data)
 
 """
-    _get_element(ptable::ProcessedTable, i::Int, j::Int)
+    _get_element(ptable::ProcessedTable, i::Int, j::Int) -> Any
 
-Get the element `(i, j)` if `ptable`. This function always considers the
-additional columns and the header.
+Get the element `(i, j)` if `ptable`. This function always considers the additional columns
+and the header.
 
-Notice that `i` and `j` must be related to the row and column that will be
-printed. The actual index inside the data is handle internally in this function.
+Notice that `i` and `j` must be related to the row and column that will be printed. The
+actual index inside the data is handle internally in this function.
 """
 function _get_element(ptable::ProcessedTable, i::Int, j::Int)
     Δc = length(ptable._additional_data_columns)
@@ -243,10 +242,10 @@ function _get_element(ptable::ProcessedTable, i::Int, j::Int)
 end
 
 """
-    _get_header_element(ptable::ProcessedTable, j::Int)
+    _get_header_element(ptable::ProcessedTable, j::Int) -> Any
 
-Get the `j`th header element in `ptable`. This function always considers the
-additional columns.
+Get the `j`th header element in `ptable`. This function always considers the additional
+columns.
 """
 function _get_header_element(ptable::ProcessedTable, j::Int)
     Δc = length(ptable._additional_data_columns)
@@ -264,7 +263,7 @@ function _get_header_element(ptable::ProcessedTable, j::Int)
 end
 
 """
-    _get_data_column_index(ptable::ProcessedTable, j::Int)
+    _get_data_column_index(ptable::ProcessedTable, j::Int) -> Int
 
 Get the index of the `j`th data column in `ptable`.
 """
@@ -274,7 +273,7 @@ function _get_data_column_index(ptable::ProcessedTable, j::Int)
 end
 
 """
-    _get_data_row_index(ptable::ProcessedTable, i::Int)
+    _get_data_row_index(ptable::ProcessedTable, i::Int) -> Int
 
 Get the index of the `i`th data row in `ptable`.
 """
@@ -283,7 +282,7 @@ function _get_data_row_index(ptable::ProcessedTable, i::Int)
 end
 
 """
-    _get_num_of_hidden_columns(ptable::ProcessedTable)
+    _get_num_of_hidden_columns(ptable::ProcessedTable) -> Int
 
 Return the number of hidden columns (see option `max_num_of_columns`).
 """
@@ -296,7 +295,7 @@ function _get_num_of_hidden_columns(ptable::ProcessedTable)
 end
 
 """
-    _get_num_of_hidden_rows(ptable::ProcessedTable)
+    _get_num_of_hidden_rows(ptable::ProcessedTable) -> Int
 
 Return the number of hidden rows (see option `max_num_of_rows`).
 """
@@ -309,12 +308,11 @@ function _get_num_of_hidden_rows(ptable::ProcessedTable)
 end
 
 """
-    _get_row_id(ptable::ProcessedTable, j::Int)
+    _get_row_id(ptable::ProcessedTable, j::Int) -> Symbol
 
-Return the identification symbol of the row `i` of `ptable`. If the row is part
-of the header, then it returns `:__HEADER__:` or `:__SUBHEADER__`, otherwise it
-returns `:__ORIGINAL_DATA__` because we do not have the functionality to add new
-rows yet.
+Return the identification symbol of the row `i` of `ptable`. If the row is part of the
+header, it returns `:__HEADER__:` or `:__SUBHEADER__`. Otherwise it returns
+`:__ORIGINAL_DATA__` because we do not have the functionality to add new rows yet.
 """
 function _get_row_id(ptable::ProcessedTable, j::Int)
     # Check if we are in the header columns.
@@ -330,7 +328,7 @@ function _get_row_id(ptable::ProcessedTable, j::Int)
 end
 
 """
-    _get_table_column_index(ptable::ProcessedTable, jr::Int)
+    _get_table_column_index(ptable::ProcessedTable, jr::Int) -> Union{Nothing, Int}
 
 Get the table column index related to a data table index `jr` in `ptable`.
 """

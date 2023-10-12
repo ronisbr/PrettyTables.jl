@@ -1,11 +1,11 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Auxiliary functions to pretty print tables.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 export @ptconfclean, @ptconf, @pt
 
@@ -31,13 +31,12 @@ The expression format must be:
 
     keyword1 = value1 keyword2 = value2 ...
 
-in which the keywords can be any other possible keyword that can be used in the
-function `pretty_table`.
+in which the keywords can be any other possible keyword that can be used in the function
+`pretty_table`.
 
 !!! warning
-    If a keyword is not supported by the function `pretty_table`, then no error
-    message is printed when calling `@ptconf`. However, an error will be thrown
-    when `@pt` is called.
+    If a keyword is not supported by the function `pretty_table`, then no error message is
+    printed when calling `@ptconf`. However, an error will be thrown when `@pt` is called.
 """
 macro ptconf(expr...)
     kws = Expr[]
@@ -58,8 +57,8 @@ end
 """
     @pt(expr...)
 
-Pretty print tables in `expr` to `stdout` using the global configurations
-selected with the macro `@ptconf`.
+Pretty print tables in `expr` to `stdout` using the global configurations selected with the
+macro `@ptconf`.
 
 Multiple tables can be printed by passing multiple expressions like:
 
@@ -73,13 +72,13 @@ Notice that the header is valid only for the next printed table. Hence:
 
     @pt :header = header1 table1 :header = header2 table2 table3
 
-will print `table1` using `header1`, `table2` using `header2`, and `table3`
-using the default header.
+will print `table1` using `header1`, `table2` using `header2`, and `table3` using the
+default header.
 
 !!! info
-    When more than one table is passed to this macro, then multiple calls to
-    `pretty_table` will occur. Hence, the cropping algorithm will behave exactly
-    the same as printing the tables separately.
+    When more than one table is passed to this macro, then multiple calls to `pretty_table`
+    will occur. Hence, the cropping algorithm will behave exactly the same as printing the
+    tables separately.
 
 # Examples
 
@@ -146,11 +145,11 @@ macro pt(expr...)
     return Expr(:block, exprs...)
 end
 
-# Similar API to Formatting.jl, but using the Printf stdlib
-# (requires Julia 1.6+).
+# Similar API to Formatting.jl, but using the Printf stdlib (requires Julia 1.6+).
 function sprintf1(fmt::AbstractString, x)
     return sprintf1(Printf.Format(fmt), x)
 end
+
 function sprintf1(fmt::Printf.Format, x)
     Printf.format(fmt, x)
 end

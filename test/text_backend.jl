@@ -1,13 +1,13 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Tests related to the text backend.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-@testset "Default tests" verbose = true begin
+@testset "Default Tests" verbose = true begin
     include("text_backend/default.jl")
 end
 
@@ -15,7 +15,7 @@ end
     include("text_backend/alignments.jl")
 end
 
-@testset "Column width" verbose = true begin
+@testset "Column Width" verbose = true begin
     include("text_backend/column_width.jl")
 end
 
@@ -30,7 +30,7 @@ end
     include("text_backend/cropping.jl")
 end
 
-@testset "Custom text cell" verbose = true begin
+@testset "Custom Text Cell" verbose = true begin
     include("text_backend/custom_cells.jl")
 end
 
@@ -46,7 +46,7 @@ end
     include("text_backend/headers.jl")
 end
 
-@testset "Line breaks" verbose = true begin
+@testset "Line Breaks" verbose = true begin
     include("text_backend/line_breaks.jl")
 end
 
@@ -62,19 +62,19 @@ end
     include("text_backend/renderers.jl")
 end
 
-@testset "Row labels" verbose = true begin
+@testset "Row Labels" verbose = true begin
     include("text_backend/row_labels.jl")
 end
 
-@testset "Row numbers" verbose = true begin
+@testset "Row Numbers" verbose = true begin
     include("text_backend/row_numbers.jl")
 end
 
-@testset "Table lines" verbose = true begin
+@testset "Table Lines" verbose = true begin
     include("text_backend/table_lines.jl")
 end
 
-@testset "Table.jl compatibility" verbose = true begin
+@testset "Table.jl Compatibility" verbose = true begin
     include("text_backend/tables.jl")
 end
 

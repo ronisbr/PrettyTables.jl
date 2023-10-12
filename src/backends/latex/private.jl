@@ -1,11 +1,11 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Private functions and macros.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # Dictionary that translates table type to environment.
 const _latex_table_env = Dict(
@@ -27,14 +27,12 @@ function _latex_apply_cell_alignment(
 )
     a = _latex_alignment(alignment)
 
-    # We only need to add left vertical line if it is the first
-    # column.
+    # We only need to add left vertical line if it is the first column.
     lvline = ((j == 0) && (_check_vline(ptable, vlines, 0))) ?
         left_vline :
         ""
 
-    # For the right vertical line, we must check if it is a mid line
-    # or right line.
+    # For the right vertical line, we must check if it is a mid line or right line.
     if _check_vline(ptable, vlines, j)
         num_printed_columns = _size(ptable)[2]
         rvline = (j == num_printed_columns) ? right_vline : mid_vline
@@ -88,8 +86,8 @@ function _latex_table_description(
         end
     end
 
-    # If we have hidden columns at the end, we need an additional column to show
-    # the continuation characters.
+    # If we have hidden columns at the end, we need an additional column to show the
+    # continuation characters.
     if hidden_columns_at_end
         str *= "c"
 
@@ -125,4 +123,3 @@ function _latex_envs(text::AbstractString, envs::Vector{String}, i::Int)
 
     return text
 end
-

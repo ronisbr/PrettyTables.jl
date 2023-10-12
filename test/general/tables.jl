@@ -1,11 +1,11 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Tests of Tables.jl API.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 struct TestVec{T} <: AbstractArray{T,1}
     data::Array{T,1}
@@ -28,7 +28,7 @@ Base.getindex(x::MinimalTable, i1, i2) = getindex(getfield(x, :data), i1, i2)
 Base.getproperty(x::MinimalTable, s::Symbol) = getindex(x, :, findfirst(==(s), Tables.columnnames(x)))
 Base.convert(::Type{<:TestVec}, x::Array) = TestVec(x)
 
-@testset "Tables.jl with custom column name vector" begin
+@testset "Tables.jl with Custom Column Name Vector" begin
     data     = [10.0^(i + j) for i in 1:10, j in 1:5]
     mintable = MinimalTable(data, [:C1, :C2, :C3, :C4, :C5])
 

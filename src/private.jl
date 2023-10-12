@@ -1,15 +1,15 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Private functions.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-################################################################################
-#                                Preprocessing
-################################################################################
+############################################################################################
+#                                      Preprocessing
+############################################################################################
 
 # Those functions apply a preprocessing to the data that will be printed
 # depending on its type.
@@ -81,10 +81,9 @@ function _preprocess_Tables_column(
     # For the header, we have the following priority:
     #
     #     1. If the user passed a vector `header`, then use it.
-    #     2. Otherwise, check if the table defines a schema to create the
-    #        header.
-    #     3. If the table does not have a schema, then build a default header
-    #        based on the column name and type.
+    #     2. Otherwise, check if the table defines a schema to create the header.
+    #     3. If the table does not have a schema, then build a default header based on the
+    #        column name and type.
     if header === nothing
         sch = Tables.schema(data)
 
@@ -113,8 +112,8 @@ function _preprocess_Tables_row(
     # Compute the number of rows.
     size_i::Int = length(table)
 
-    # If we have at least one row, we can obtain the number of columns by
-    # fetching the row. Otherwise, we try to use the schema.
+    # If we have at least one row, we can obtain the number of columns by fetching the row.
+    # Otherwise, we try to use the schema.
     if size_i > 0
         row₁ = first(table)
 
@@ -124,9 +123,8 @@ function _preprocess_Tables_row(
         sch = Tables.schema(data)
 
         if sch === nothing
-            # In this case, we do not have a row and we do not have a schema.
-            # Thus, we can do nothing. Hence, we assume there is no row or
-            # column.
+            # In this case, we do not have a row and we do not have a schema.  Thus, we can
+            # do nothing. Hence, we assume there is no row or column.
             names = Symbol[]
         else
             names = [sch.names...]
@@ -140,10 +138,9 @@ function _preprocess_Tables_row(
     # For the header, we have the following priority:
     #
     #     1. If the user passed a vector `header`, then use it.
-    #     2. Otherwise, check if the table defines a schema to create the
-    #        header.
-    #     3. If the table does not have a schema, then build a default header
-    #        based on the column name and type.
+    #     2. Otherwise, check if the table defines a schema to create the header.
+    #     3. If the table does not have a schema, then build a default header based on the
+    #        column name and type.
     if header === nothing
         sch = Tables.schema(data)
 
@@ -162,9 +159,9 @@ function _preprocess_Tables_row(
     return pdata, pheader
 end
 
-################################################################################
-#                              Print information
-################################################################################
+############################################################################################
+#                                    Print Information
+############################################################################################
 
 # This function creates the structure that holds the global print information.
 function _print_info(
@@ -205,8 +202,8 @@ function _print_info(
 
     _header = header isa Tuple ? header : (header,)
 
-    # Create the processed table, which holds information about the additonal
-    # columns, etc.
+    # Create the processed table, which holds additional information about how we must print
+    # the table.
     ptable = ProcessedTable(
         data,
         _header;
@@ -263,12 +260,12 @@ function _print_info(
     return pinfo
 end
 
-################################################################################
-#                                   Printing
-################################################################################
+############################################################################################
+#                                         Printing
+############################################################################################
 
-# This is a middleware function to apply the preprocess step to the data that
-# will be printed.
+# This is a middleware function to apply the preprocess step to the data that will be
+# printed.
 function _pretty_table(
     (@nospecialize io::IO),
     data::Any;
@@ -287,9 +284,11 @@ function _pretty_table(
 
     elseif data isa AbstractVecOrMat
         pdata, pheader = _preprocess_vec_or_mat(data, header)
+
     elseif data isa AbstractDict
         sortkeys = get(kwargs, :sortkeys, false)
         pdata, pheader = _preprocess_dict(data, header; sortkeys = sortkeys)
+
     else
         error("The type $(typeof(data)) is not supported.")
     end
@@ -297,9 +296,9 @@ function _pretty_table(
     return _pt(io, pdata; header = pheader, kwargs...)
 end
 
-# This is the low level function that prints the table. In this case, `data`
-# must be accessed by `[i,j]` and the size of the `header` must be equal to the
-# number of columns in `data`.
+# This is the low level function that prints the table. In this case, `data` must be
+# accessed by `[i, j]` and the size of the `header` must be equal to the number of columns
+# in `data`.
 function _pt(
     (@nospecialize io::IO),
     data::Any;
@@ -352,8 +351,8 @@ function _pt(
     @deprecate_kw_and_return(row_names, row_labels)
 
     if backend === Val(:auto)
-        # In this case, if we do not have the `tf` keyword, then we just
-        # fallback to the text backend. Otherwise, check if the type of `tf`.
+        # In this case, if we do not have the `tf` keyword, then we just fallback to the
+        # text back end. Otherwise, check if the type of `tf`.
         if haskey(kwargs, :tf)
             tf = kwargs[:tf]
 
@@ -383,9 +382,9 @@ function _pt(
     if ptd !== nothing
         context = IOContext(io)
 
-        # In this case, `ptd` is a vector with the data printed by
-        # PrettyTables.jl. Hence, we need to search if the current one is inside
-        # this vector. If true, we have a circular dependency.
+        # In this case, `ptd` is a vector with the data printed by PrettyTables.jl. Hence,
+        # we need to search if the current one is inside this vector. If true, we have a
+        # circular dependency.
         for d in ptd
             if d === _getdata(data)
 
@@ -434,15 +433,16 @@ function _pt(
         title_alignment         = title_alignment
     )
 
-    # Select the appropriate backend.
+    # Select the appropriate back end.
     if backend === Val(:text)
         _pt_text(context, pinfo; kwargs...)
+
     elseif backend === Val(:html)
-        # When wrapping `stdout` in `IOContext` in Jupyter, `io.io` is not equal
-        # to `stdout` anymore. Hence, we need to check if `io` is `stdout`
-        # before calling `_pt_html`.
+        # When wrapping `stdout` in `IOContext` in Jupyter, `io.io` is not equal to `stdout`
+        # anymore. Hence, we need to check if `io` is `stdout` before calling `_pt_html`.
         is_stdout = (io === stdout) || ((io isa IOContext) && (io.io === stdout))
         _pt_html(context, pinfo; is_stdout = is_stdout, kwargs...)
+
     elseif backend === Val(:latex)
         _pt_latex(context, pinfo; kwargs...)
     end

@@ -1,32 +1,30 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Functions to handle the configuration objects of PrettyTables
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 export pretty_table_with_conf, clear_pt_conf!, set_pt_conf, set_pt_conf!
 
-################################################################################
-#                                   Printing
-################################################################################
+############################################################################################
+#                                         Printing
+############################################################################################
 
 """
-    pretty_table_with_conf(conf::PrettyTablesConf, args...; kwargs...)
+    pretty_table_with_conf(conf::PrettyTablesConf, args...; kwargs...) -> Nothing
 
-Call `pretty_table` using the default configuration in `conf`. The `args...` and
-`kwargs...` can be the same as those passed to `pretty_tables`. Notice that all
-the configurations in `kwargs...` will overwrite the ones in `conf`.
+Call `pretty_table` using the default configuration in `conf`. The `args...` and `kwargs...`
+can be the same as those passed to `pretty_tables`. Notice that all the configurations in
+`kwargs...` will overwrite the ones in `conf`.
 
-The object `conf` can be created by the function `set_pt_conf` in which the
-keyword parameters can be any one supported by the function `pretty_table` as
-shown in the following.
-
+The object `conf` can be created by the function `set_pt_conf` in which the keyword
+parameters can be any one supported by the function `pretty_table` as shown in the
+following.
 """
 function pretty_table_with_conf(conf::PrettyTablesConf, args...; kwargs...)
-
     # Copy the configuration so that the user object is not modified.
     _local_conf = deepcopy(conf)
 
@@ -37,18 +35,17 @@ function pretty_table_with_conf(conf::PrettyTablesConf, args...; kwargs...)
     nt = _conf_to_nt(_local_conf)
 
     # Print the table.
-    pretty_table(args...; nt...)
+    return pretty_table(args...; nt...)
 end
 
-################################################################################
-#                                Set and clear
-################################################################################
+############################################################################################
+#                                      Set and Clear
+############################################################################################
 
 """
-    clear_pt_conf!(conf::PrettyTablesConf)
+    clear_pt_conf!(conf::PrettyTablesConf) -> Nothing
 
 Clear all configurations in `conf`.
-
 """
 function clear_pt_conf!(conf::PrettyTablesConf)
     empty!(conf.confs)
@@ -56,10 +53,9 @@ function clear_pt_conf!(conf::PrettyTablesConf)
 end
 
 """
-    set_pt_conf(;kwargs...)
+    set_pt_conf(; kwargs...) -> Nothing
 
 Create a new configuration object based on the arguments in `kwargs`.
-
 """
 @inline function set_pt_conf(;kwargs...)
     conf = PrettyTablesConf()
@@ -68,10 +64,9 @@ Create a new configuration object based on the arguments in `kwargs`.
 end
 
 """
-    set_pt_conf!(conf; kwargs...)
+    set_pt_conf!(conf; kwargs...) -> Nothing
 
 Apply the configurations in `kwargs` to the object `conf`.
-
 """
 @inline function set_pt_conf!(conf::PrettyTablesConf; kwargs...)
     for kw in kwargs
@@ -80,20 +75,21 @@ Apply the configurations in `kwargs` to the object `conf`.
     return nothing
 end
 
-################################################################################
-#                              Private functions
-################################################################################
+############################################################################################
+#                                    Private Functions
+############################################################################################
 
 """
-    _conf_to_nt(conf::PrettyTablesConf)
+    _conf_to_nt(conf::PrettyTablesConf) -> NamedTuple
 
-Convert the configuration object `conf` to a named tuple so that it can be
-passed to `pretty_table`.
-
+Convert the configuration object `conf` to a named tuple so that it can be passed to
+`pretty_table`.
 """
 @inline function _conf_to_nt(conf::PrettyTablesConf)
     # Get the named tuple with the configurations.
     dictkeys = (collect(keys(conf.confs))...,)
     dictvals = (collect(values(conf.confs))...,)
     nt = NamedTuple{dictkeys}(dictvals)
+
+    return nt
 end

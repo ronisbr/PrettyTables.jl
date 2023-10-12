@@ -1,17 +1,17 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
-#   Functions related to string processing in HTML backend.
+#   Functions related to string processing in HTML back end.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-# This was adapted from Julia `escape_string` function. In case of HTML, we
-# should replace some special characters like `<` and `>`.
+# This was adapted from Julia `escape_string` function. In case of HTML, we should replace
+# some special characters like `<` and `>`.
 #
-# If `replace_newline` is `true`, then `\n` is replaced with `<br>`. Otherwise,
-# it is escaped, leading to `\\n`.
+# If `replace_newline` is `true`, then `\n` is replaced with `<br>`. Otherwise, it is
+# escaped, leading to `\\n`.
 function _str_html_escaped(
     io::IO,
     s::AbstractString,

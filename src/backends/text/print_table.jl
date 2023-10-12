@@ -1,11 +1,11 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Auxiliary functions to print the table.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # Print the entire table data.
 function _print_table_data!(
@@ -31,8 +31,8 @@ function _print_table_data!(
     num_rows = _size(ptable)[1]
     num_rendered_rows, num_rendered_columns = size(table_str)
 
-    # Check if the last horizontal line must be drawn, which must happen
-    # **after** the continuation line in `vcrop_mode = :bottom`.
+    # Check if the last horizontal line must be drawn, which must happen **after** the
+    # continuation line in `vcrop_mode = :bottom`.
     draw_last_hline = _check_hline(ptable, hlines, body_hlines, num_rows)
 
     # This variable is used to decide whether to print the continuation
@@ -44,8 +44,8 @@ function _print_table_data!(
 
     while rps.state ≠ :finish
 
-        # Row printing state machine
-        # ======================================================================
+        # Row Printing State Machine
+        # ==================================================================================
 
         action = _iterate_row_printing_state!(
             rps,
@@ -60,8 +60,8 @@ function _print_table_data!(
             continuation_row_line
         )
 
-        # Render the top line
-        # ======================================================================
+        # Render the Top Line
+        # ==================================================================================
 
         if action == :top_horizontal_line
             _draw_line!(
@@ -76,13 +76,12 @@ function _print_table_data!(
                 vlines
             )
 
-        # Render the middle line
-        # ======================================================================
+        # Render the Middle Line
+        # ==================================================================================
 
         elseif action == :middle_horizontal_line
-            # If the row is from the header, we must draw the line from the
-            # table format. Otherwise, we must use the user configuration in
-            # `body_hlines_format`.
+            # If the row is from the header, we must draw the line from the table format.
+            # Otherwise, we must use the user configuration in `body_hlines_format`.
             if _is_header_row(ptable, rps.i)
                 _draw_line!(
                     display,
@@ -106,8 +105,8 @@ function _print_table_data!(
                 )
             end
 
-        # Render the bottom line
-        # ======================================================================
+        # Render the Bottom Line
+        # ==================================================================================
 
         elseif action == :bottom_horizontal_line
             _draw_line!(
@@ -122,8 +121,8 @@ function _print_table_data!(
                 vlines
             )
 
-        # Render the continuation line
-        # ======================================================================
+        # Render the Continuation Line
+        # ==================================================================================
 
         elseif action == :continuation_line
             _draw_continuation_line(
@@ -137,8 +136,8 @@ function _print_table_data!(
                 continuation_row_alignment
             )
 
-        # Render a table line
-        # ======================================================================
+        # Render a Table Line
+        # ==================================================================================
 
         elseif (action == :table_line) || (action == :table_line_row_finished)
             i = rps.i
@@ -159,21 +158,19 @@ function _print_table_data!(
                 line_count += 1
             end
 
-            # Check if we need to print a vertical line at the beginning of the
-            # line.
+            # Check if we need to print a vertical line at the beginning of the line.
             if _check_vline(ptable, vlines, 0)
                 _p!(display, text_crayons.border_crayon, tf.column, false, 1)
             end
 
-            # Render the cells in each column
-            # ------------------------------------------------------------------
+            # Render the Cells in Each Column
+            # ------------------------------------------------------------------------------
 
             for j in 1:num_rendered_columns
                 has_vline = _check_vline(ptable, vlines, j)
                 final_line_print = j == num_rendered_columns && !has_vline
 
-                # If this cell has less than `l` lines, then we just need to
-                # align it.
+                # If this cell has less than `l` lines, then we just need to align it.
                 if length(table_str[i, j]) < l
                     # Align the text in the column.
                     cell_processed_str = " "^actual_columns_width[j]
@@ -211,9 +208,8 @@ function _print_table_data!(
                         table_str_ij_l = table_str[i, j][l]
                         actual_columns_width_j = actual_columns_width[j]
 
-                        # Get the string printable width. Notice that, in this
-                        # case, we know that we do not have any invisible
-                        # characters inside the string.
+                        # Get the string printable width. Notice that, in this case, we know
+                        # that we do not have any invisible characters inside the string.
                         str_printable_width = textwidth(table_str_ij_l)
 
                         # Align the text in the column.
@@ -225,9 +221,8 @@ function _print_table_data!(
                             printable_string_width = str_printable_width
                         )
 
-                        # Crop the string the make sure it fits the cell. Notice
-                        # that we ensure that there is not ANSI escape sequences
-                        # inside this string.
+                        # Crop the string the make sure it fits the cell. Notice that we
+                        # ensure that there is not ANSI escape sequences inside this string.
                         cell_processed_str = fit_string_in_field(
                             cell_processed_str,
                             actual_columns_width_j;
@@ -245,9 +240,8 @@ function _print_table_data!(
                         ) && break
 
                     else
-                        # In this case, we need to process the cell to apply the
-                        # correct alignment and highlighters before rendering
-                        # it.
+                        # In this case, we need to process the cell to apply the correct
+                        # alignment and highlighters before rendering it.
                         cell_data = _get_element(ptable, rps.i_pt, j)
 
                         cell_processed_str, cell_crayon = _process_data_cell_text(
@@ -272,8 +266,7 @@ function _print_table_data!(
                                 actual_columns_width[j] + 2
                             ) && break
                         else
-                            # If we have a custom cell, we need a custom
-                            # printing function.
+                            # If we have a custom cell, we need a custom printing function.
                             _print_custom_text_cell!(
                                 display,
                                 cell_data,
@@ -301,8 +294,8 @@ function _print_table_data!(
 
             _nl!(display)
 
-        # End state
-        # ======================================================================
+        # End State
+        # ==================================================================================
 
         elseif action == :finish
             break

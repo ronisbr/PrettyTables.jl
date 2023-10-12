@@ -8,8 +8,8 @@ DocTestSetup = quote
 end
 ```
 
-In the following, it is presented how the following matrix can be printed using
-the text back-end.
+In the following, it is presented how the following matrix can be printed using the text
+back end.
 
 ```julia-repl
 julia> data = Any[ 1    false      1.0     0x01 ;
@@ -44,8 +44,7 @@ julia> pretty_table(data, tf = tf_markdown, show_row_number = true)
 
 ![](../assets/ex_00004.png)
 
-The following example shows how `formatters` can be used to change how elements
-are printed.
+The following example shows how `formatters` can be used to change how elements are printed.
 
 ```julia-repl
 julia> formatter = (v, i, j) -> begin
@@ -61,8 +60,8 @@ julia> pretty_table(data, tf = tf_ascii_rounded, formatters = formatter)
 
 ![](../assets/ex_00005.png)
 
-The following example indicates how `highlighters` can be used to highlight the
-lowest and highest element in the data considering the columns 1, 3, and 5:
+The following example indicates how `highlighters` can be used to highlight the lowest and
+highest element in the data considering the columns 1, 3, and 5:
 
 ```julia-repl
 julia> h1 = Highlighter((data, i, j) -> j in (1, 3, 4) && data[i, j] == maximum(data[2:end, [1, 3, 4]]),
@@ -79,9 +78,8 @@ julia> pretty_table(data, highlighters = (h1, h2))
 ![](../assets/ex_00006.png)
 
 Since this package has support to the API defined by
-[Tables.jl](https://github.com/JuliaData/Tables.jl), then many formats, *e.g*
-[DataFrames.jl](https://github.com/JuliaData/DataFrames.jl), can be pretty
-printed:
+[Tables.jl](https://github.com/JuliaData/Tables.jl), many formats, *e.g*
+[DataFrames.jl](https://github.com/JuliaData/DataFrames.jl), can be pretty printed:
 
 ```julia-repl
 julia> using DataFrames
@@ -101,9 +99,8 @@ julia> pretty_table(data, body_hlines = [2, 4])
 
 ![](../assets/ex_00008.png)
 
-If you want to break lines inside the cells, then you can set the keyword
-`linebreaks` to `true`. Hence, the characters `\n` will cause a line break
-inside the cell.
+If you want to break lines inside the cells, you can set the keyword `linebreaks` to `true`.
+Hence, the characters `\n` will cause a line break inside the cell.
 
 ```julia-repl
 julia> text = ["This line contains\nthe velocity [m/s]" 10.0;
@@ -115,8 +112,8 @@ julia> pretty_table(text, linebreaks = true, body_hlines = [1, 2, 3])
 
 ![](../assets/ex_00009.png)
 
-The keyword `show_header` can be used to suppres the header, which leads to a
-very simplistic, compact format.
+The keyword `show_header` can be used to suppres the header, which leads to a very
+simplistic, compact format.
 
 ```julia-repl
 julia> pretty_table(data, tf = tf_borderless, show_header = false)
@@ -124,8 +121,8 @@ julia> pretty_table(data, tf = tf_borderless, show_header = false)
 
 ![](../assets/ex_00010.png)
 
-By default, if the data is larger than the display, then it will be cropped to
-fit it. This can be changed by using the keywords `crop` and `display_size`.
+By default, if the data is larger than the display, it will be cropped to fit it. This can
+be changed by using the keywords `crop` and `display_size`.
 
 ```julia
 julia> data = rand(100, 10); pretty_table(data, highlighters = (hl_gt(0.5),))
@@ -133,8 +130,8 @@ julia> data = rand(100, 10); pretty_table(data, highlighters = (hl_gt(0.5),))
 
 ![](../assets/ex_00012.png)
 
-You can use the keyword `columns_width` to select the width of each column, so
-that the data is cropped to fit the available space.
+You can use the keyword `columns_width` to select the width of each column, so that the data
+is cropped to fit the available space.
 
 ```julia-repl
 julia> mat = rand(100, 4)
@@ -190,11 +187,10 @@ julia> pretty_table(
 
 ![](../assets/ex_00013.png)
 
-The highlighters API can be used to dynamically highlight cells. In the next
-example, it is shown how the package
-[ColorSchemes.jl](https://github.com/JuliaGraphics/ColorSchemes.jl) can be
-integrated to build a table with a color map (the following example will be
-displayed better in a terminal that supports 24-bit color):
+The highlighters API can be used to dynamically highlight cells. In the next example, it is
+shown how the package [ColorSchemes.jl](https://github.com/JuliaGraphics/ColorSchemes.jl)
+can be integrated to build a table with a color map (the following example will be displayed
+better in a terminal that supports 24-bit color):
 
 ```julia-repl
 julia> using ColorSchemes

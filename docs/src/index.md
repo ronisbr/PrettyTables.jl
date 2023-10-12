@@ -8,10 +8,9 @@ DocTestSetup = quote
 end
 ```
 
-The Julia package [PrettyTables.jl](https://github.com/ronisbr/PrettyTables.jl)
-has the purpose to print data in matrices in a human-readable
-format. It was inspired in the functionality provided by
-[ASCII Table Generator](https://ozh.github.io/ascii-tables/).
+The Julia package [PrettyTables.jl](https://github.com/ronisbr/PrettyTables.jl) has the
+purpose to print data in matrices in a human-readable format. It was inspired in the
+functionality provided by [ASCII Table Generator](https://ozh.github.io/ascii-tables/).
 
 ![](./assets/welcome_figure.png)
 

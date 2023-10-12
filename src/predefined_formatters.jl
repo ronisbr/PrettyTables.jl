@@ -1,24 +1,24 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Pre-defined formatters.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 export ft_printf, ft_round, ft_latex_sn, ft_nomissing, ft_nonothing
 
 """
-    ft_printf(ftv_str, [columns])
+    ft_printf(ftv_str::Union{String, Vector{String}}, [columns::AbstractVector{Int}]) -> Function
 
-Apply the formats `ftv_str` (see the `Printf` standard library) to the elements in the columns `columns`.
+Apply the formats `ftv_str` (see the `Printf` standard library) to the elements in the
+columns `columns`.
 
-If `ftv_str` is a `Vector`, then `columns` must be also be a `Vector` with the
-same number of elements. If `ftv_str` is a `String`, and `columns` is not
-specified (or is empty), then the format will be applied to the entire table.
-Otherwise, if `ftv_str` is a `String` and `columns` is a `Vector`, then the
-format will be applied only to the columns in `columns`.
+If `ftv_str` is a `Vector`, `columns` must be also be a `Vector` with the same number of
+elements. If `ftv_str` is a `String`, and `columns` is not specified (or is empty), the
+format will be applied to the entire table.  Otherwise, if `ftv_str` is a `String` and
+`columns` is a `Vector`, the format will be applied only to the columns in `columns`.
 
 !!! info
     This formatter will be applied only to the cells that are of type `Number`.
@@ -34,21 +34,21 @@ function ft_printf(ftv_str::Vector{String}, columns::AbstractVector{Int} = Int[]
     lc = length(columns)
 
     if lc == 0 && (length(ftv_str) != 1)
-        error("If columns is empty, then ftv_str must have only one element.")
+        error("If `columns` is empty, `ftv_str` must have only one element.")
     end
 
     if lc > 0 && (length(ftv_str) != lc)
-        error("The vector columns must have the same number of elements of the vector ftv_str.")
+        error("The vector `columns` must have the same number of elements of the vector `ftv_str`.")
     end
 
     if lc == 0
-        # for efficiency, compute the `Format` object outside
+        # For efficiency, compute the `Format` object outside.
         fmt = Printf.Format(ftv_str[1])
         return (v, i, j) -> begin
             return typeof(v) <: Number ? sprintf1(fmt, v) : v
         end
     else
-        # likewise, precompute Format objects
+        # Likewise, precompute Format objects.
         fmts = [Printf.Format(ftv_str[k]) for k = 1:length(columns)]
         return (v, i, j) -> begin
             @inbounds for k = 1:length(columns)
@@ -63,16 +63,15 @@ function ft_printf(ftv_str::Vector{String}, columns::AbstractVector{Int} = Int[]
 end
 
 """
-    ft_round(digits, [columns])
+    ft_round(digits::Union{Int, AbstractVector{Int}}, [columns::AbstractVector{Int}]) -> Function
 
 Round the elements in the `columns` to the number of `digits`.
 
-If `digits` is a `Vector`, then `columns` must be also be a `Vector` with the
-same number of elements. If `digits` is a `Number`, and `columns` is not
-specified (or is empty), then the rounding will be applied to the entire table.
-Otherwise, if `digits` is a `Number` and `columns` is a `Vector`, then the
-elements in the columns `columns` will be rounded to the number of digits
-`digits`.
+If `digits` is a `Vector`, `columns` must be also be a `Vector` with the same number of
+elements. If `digits` is a `Number`, and `columns` is not specified (or is empty), the
+rounding will be applied to the entire table.  Otherwise, if `digits` is a `Number` and
+`columns` is a `Vector`, the elements in the columns `columns` will be rounded to the number
+of digits `digits`.
 """
 ft_round(digits::Int) = ft_round([digits])
 
@@ -84,11 +83,11 @@ function ft_round(digits::AbstractVector{Int}, columns::AbstractVector{Int} = In
     lc = length(columns)
 
     if lc == 0 && (length(digits) != 1)
-        error("If columns is empty, then digits must have only one element.")
+        error("If `columns` is empty, `digits` must have only one element.")
     end
 
     if lc > 0 && (length(digits) != lc)
-        error("The vector columns must have the same number of elements of the vector digits.")
+        error("The vector `columns` must have the same number of elements of the vector `digits`.")
     end
 
     if lc == 0
@@ -117,18 +116,17 @@ function ft_round(digits::AbstractVector{Int}, columns::AbstractVector{Int} = In
 end
 
 """
-    ft_latex_sn(m_digits, [columns])
+    ft_latex_sn(m_digits::Int, [columns::AbstractVector{Int}]) -> Function
 
-Format the numbers of the elements in the `columns` to a scientific notation
-using LaTeX. The number is first printed using `Printf` functions with the `g`
-modifier and then converted to the LaTeX format. The number of digits in the
-mantissa can be selected by the argument `m_digits`.
+Format the numbers of the elements in the `columns` to a scientific notation using LaTeX.
+The number is first printed using `Printf` functions with the `g` modifier and then
+converted to the LaTeX format. The number of digits in the mantissa can be selected by the
+argument `m_digits`.
 
-If `m_digits` is a `Vector`, then `columns` must be also be a `Vector` with the
-same number of elements. If `m_digits` is a `Integer`, and `columns` is not
-specified (or is empty), then the format will be applied to the entire table.
-Otherwise, if `m_digits` is a `String` and `columns` is a `Vector`, then the
-format will be applied only to the columns in `columns`.
+If `m_digits` is a `Vector`, `columns` must be also be a `Vector` with the same number of
+elements. If `m_digits` is a `Integer`, and `columns` is not specified (or is empty), the
+format will be applied to the entire table.  Otherwise, if `m_digits` is a `String` and
+`columns` is a `Vector`, the format will be applied only to the columns in `columns`.
 
 !!! info
     This formatter will be applied only to the cells that are of type `Number`.
@@ -139,22 +137,19 @@ function ft_latex_sn(m_digits::Int, columns::AbstractVector{Int})
     return ft_latex_sn([m_digits for i = 1:length(columns)], columns)
 end
 
-function ft_latex_sn(
-    m_digits::AbstractVector{Int},
-    columns::AbstractVector{Int} = Int[]
-)
+function ft_latex_sn(m_digits::AbstractVector{Int}, columns::AbstractVector{Int} = Int[])
     lc = length(columns)
 
     if lc == 0 && (length(m_digits) != 1)
-        error("If columns is empty, then `m_digits` must have only one element.")
+        error("If `columns` is empty, `m_digits` must have only one element.")
     end
 
     if lc > 0 && (length(m_digits) != lc)
-        error("The vector columns must have the same number of elements of the vector `m_digits`.")
+        error("The vector `columns` must have the same number of elements of the vector `m_digits`.")
     end
 
     if lc == 0
-        # precompute Format object
+        # Precompute Format object.
         fmt = Printf.Format("%." * string(m_digits[1]) * "g")
         return (v, i, j) -> begin
             if typeof(v) <: Number
@@ -173,7 +168,7 @@ function ft_latex_sn(
             end
         end
     else
-        # precompute Format objects
+        # Precompute Format objects.
         fmts = [Printf.Format("%." * string(m_digits[k]) * "g") for k = 1:length(columns)]
         return (v, i, j) -> begin
             @inbounds for k = 1:length(columns)
@@ -203,19 +198,17 @@ function ft_latex_sn(
 end
 
 """
-    ft_nomissing(v, i::Int, j::Int)
+    ft_nomissing(v::Any, i::Int, j::Int) -> Any
 
-Replace `missing` with an empty string. If `v` is not `Missing`, then `v` is
-returned.
+Replace `missing` with an empty string. If `v` is not `Missing`, `v` is returned.
 """
 ft_nomissing(v::Missing, i::Int, j::Int) = ""
 ft_nomissing(v, i::Int, j::Int) = v
 
 """
-    ft_nonothing(v, i::Int, j::Int)
+    ft_nonothing(v, i::Int, j::Int) -> Any
 
-Replace `nothing` with an empty string. If `v` is not `Nothing`, then `v` is
-returned.
+Replace `nothing` with an empty string. If `v` is not `Nothing`, `v` is returned.
 """
 ft_nonothing(v::Nothing, i::Int, j::Int) = ""
 ft_nonothing(v, i::Int, j::Int) = v

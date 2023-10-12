@@ -1,11 +1,11 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Miscellaneous functions related to the processed tables.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # Return `true` if the `alignment` is valid. Otherwise, return `false`.
 function _is_alignment_valid(alignment::Symbol)
@@ -16,10 +16,10 @@ end
 _is_alignment_valid(alignment) = false
 
 """
-    _is_cell_alignment_overridden(ptable::ProcessedTable, i::Int, j::Int)
+    _is_cell_alignment_overridden(ptable::ProcessedTable, i::Int, j::Int) -> Bool
 
-Return `true` is the alignment of the cell `(i, j)` is overridden using the
-keyword option `cell_alignment`.
+Return `true` is the alignment of the cell `(i, j)` is overridden using the keyword option
+`cell_alignment`.
 """
 function _is_cell_alignment_overridden(ptable::ProcessedTable, i::Int, j::Int)
 

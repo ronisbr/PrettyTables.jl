@@ -1,11 +1,11 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #    Tests of table titles.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 @testset "Titles" begin
     title = "This is a very very long title that will be displayed above the table."
@@ -119,10 +119,10 @@ will be displayed above the table.
     @test result == expected
 end
 
-@testset "Title with table cropping" begin
+@testset "Title With Table Cropping" begin
 
     # Cropping
-    # --------------------------------------------------------------------------
+    # ======================================================================================
 
     expected = """
 This is a long long long long long…

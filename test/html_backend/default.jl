@@ -1,11 +1,11 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Tests of default printing.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 @testset "Default" begin
     expected = """
@@ -402,7 +402,7 @@ end
     @test result == expected
 end
 
-@testset "HTML escaping" begin
+@testset "HTML Escaping" begin
     header = [
         "<span style = \"color: blue;\">1</span>",
         "<span style = \"color: blue;\">2</span>"
@@ -530,7 +530,7 @@ end
     )
 end
 
-@testset "Table class" begin
+@testset "Table Class" begin
     expected = """
 <table class = "tableClass">
   <thead>
@@ -594,7 +594,7 @@ expected = """
     @test result == expected
 end
 
-@testset "Table style" begin
+@testset "Table Style" begin
 
     expected = """
 <div class = "tableDivClass" style = "overflow-x: scroll;">

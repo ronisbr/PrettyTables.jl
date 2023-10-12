@@ -1,25 +1,24 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Functions to define interfaces with Tables.jl.
 #
-#   This file contains some overloads related to the structures `ColumnTable`
-#   `RowTable` so that an element can be accessed by `table[i,j]`. This is
-#   required for the low-level interface of PrettyTables.jl when printing.
+#   This file contains some overloads related to the structures `ColumnTable` `RowTable` so
+#   that an element can be accessed by `table[i,j]`. This is required for the low-level
+#   interface of PrettyTables.jl when printing.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 import Base: getindex, isassigned, length, size
 
-#                       Functions related to ColumnTable
-# ==============================================================================
+############################################################################################
+#                             Functions Related to ColumnTable
+############################################################################################
 
 function getindex(ctable::ColumnTable, inds...)
-    if length(inds) != 2
-        error("A element of type `ColumnTable` must be accesses using 2 indices.")
-    end
+    length(inds) != 2 && error("A element of type `ColumnTable` must be accesses using 2 indices.")
 
     # Access index.
     i, j = inds[1], inds[2]
@@ -34,9 +33,7 @@ function getindex(ctable::ColumnTable, inds...)
 end
 
 function isassigned(ctable::ColumnTable, inds...)
-    if length(inds) != 2
-        error("A element of type `ColumnTable` must be accesses using 2 indices.")
-    end
+    length(inds) != 2 && error("A element of type `ColumnTable` must be accesses using 2 indices.")
 
     # Access index.
     i, j = inds[1], inds[2]
@@ -61,13 +58,12 @@ size(ctable::ColumnTable) = ctable.size
 
 _getdata(ctable::ColumnTable) = ctable.data
 
-#                         Functions related to RowTable
-# ==============================================================================
+############################################################################################
+#                              Functions Related to RowTable
+############################################################################################
 
 function getindex(rtable::RowTable, inds...)
-    if length(inds) != 2
-        error("A element of type `RowTable` must be accesses using 2 indices.")
-    end
+    length(inds) != 2 && error("A element of type `RowTable` must be accesses using 2 indices.")
 
     # Access index.
     i, j = inds[1], inds[2]
@@ -89,9 +85,7 @@ function getindex(rtable::RowTable, inds...)
 end
 
 function isassigned(rtable::RowTable, inds...)
-    if length(inds) != 2
-        error("A element of type `RowTable` must be accesses using 2 indices.")
-    end
+    length(inds) != 2 && error("A element of type `RowTable` must be accesses using 2 indices.")
 
     # Access index.
     i, j = inds[1], inds[2]
@@ -125,12 +119,12 @@ size(rtable::RowTable) = rtable.size
 
 _getdata(rtable::RowTable) = rtable.data
 
-#                               Other overloads
-# ==============================================================================
+############################################################################################
+#                                     Other Overloads
+############################################################################################
 
-# `_getdata` is a function that returns the original matrix passed to
-# `pretty_table` function. This is required because when printing something
-# compliant with Tables.jl, we modify its type to be `ColumnTable` or
-# `RowTable`. In this case, functions like highlighters must receive the
-# original data, not the transformed one.
+# `_getdata` is a function that returns the original matrix passed to `pretty_table`
+# function. This is required because when printing something compliant with Tables.jl, we
+# modify its type to be `ColumnTable` or `RowTable`. In this case, functions like
+# highlighters must receive the original data, not the transformed one.
 _getdata(data) = data

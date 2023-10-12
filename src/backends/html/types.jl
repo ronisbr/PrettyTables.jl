@@ -1,11 +1,11 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
-#   Types and structures for the html backend.
+#   Types and structures for the HTML back end.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 export HtmlCell, HtmlDecoration, HtmlHighlighter, HtmlTableFormat
 export @html_cell_str
@@ -69,8 +69,8 @@ end
 """
     HtmlTableFormat
 
-Format that will be used to print the HTML table. All parameters are strings
-compatible with the corresponding HTML property.
+Format that will be used to print the HTML table. All parameters are strings compatible with
+the corresponding HTML property.
 
 # Fields
 
@@ -79,18 +79,16 @@ compatible with the corresponding HTML property.
 
 # Remarks
 
-Besides the usual HTML tags related to the tables (`table`, `td, `th`, `tr`,
-etc.), there are three important classes that can be used to format tables using
-the variable `css`.
+Besides the usual HTML tags related to the tables (`table`, `td, `th`, `tr`, etc.), there
+are three important classes that can be used to format tables using the variable `css`.
 
 - `header`: This is the class of the header (first line).
-- `subheader`: This is the class of the sub-headers (all the rest of the lines
-    in the header section).
-- `headerLastRow`: The last row of the header section has additionally this
-    class.
-- `rowNumber`: All the cells related to the row number have this class. Thus,
-    the row number header can be styled using `th.rowNumber` and the
-    row numbers cells can be styled using `td.rowNumber`.
+- `subheader`: This is the class of the sub-headers (all the rest of the lines in the header
+    section).
+- `headerLastRow`: The last row of the header section has additionally this class.
+- `rowNumber`: All the cells related to the row number have this class. Thus, the row number
+    header can be styled using `th.rowNumber` and the row numbers cells can be styled using
+    `td.rowNumber`.
 """
 @kwdef struct HtmlTableFormat
     css::String = """
@@ -134,8 +132,9 @@ the variable `css`.
     table_width::String = ""
 end
 
-#                                 Highlighters
-# ==============================================================================
+############################################################################################
+#                                       Highlighters
+############################################################################################
 
 """
     HtmlHighlighter
@@ -144,14 +143,13 @@ Defines the default highlighter of a table when using the html backend.
 
 # Fields
 
-- `f::Function`: Function with the signature `f(data,i,j)` in which should
-    return `true` if the element `(i,j)` in `data` must be highlighter, or
-    `false` otherwise.
-- `fd::Function`: Function with the signature `f(h,data,i,j)` in which `h` is
-    the highlighter. This function must return the `HtmlDecoration` to be
-    applied to the cell that must be highlighted.
-- `decoration::HtmlDecoration`: The `HtmlDecoration` to be applied to the
-    highlighted cell if the default `fd` is used.
+- `f::Function`: Function with the signature `f(data,i,j)` in which should return `true` if
+    the element `(i,j)` in `data` must be highlighter, or `false` otherwise.
+- `fd::Function`: Function with the signature `f(h,data,i,j)` in which `h` is the
+    highlighter. This function must return the `HtmlDecoration` to be applied to the cell
+    that must be highlighted.
+- `decoration::HtmlDecoration`: The `HtmlDecoration` to be applied to the highlighted cell
+    if the default `fd` is used.
 
 # Remarks
 
@@ -161,9 +159,9 @@ This structure can be constructed using two helpers:
 
     HtmlHighlighter(f::Function, fd::Function)
 
-The first will apply a fixed decoration to the highlighted cell specified in
-`decoration` whereas the second let the user select the desired decoration by
-specifying the function `fd`.
+The first will apply a fixed decoration to the highlighted cell specified in `decoration`
+whereas the second let the user select the desired decoration by specifying the function
+`fd`.
 """
 @kwdef struct HtmlHighlighter
     # API

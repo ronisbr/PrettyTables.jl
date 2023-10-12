@@ -1,11 +1,11 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Private functions and macros.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 const _html_alignment = Dict(
     :l => "left",
@@ -31,8 +31,8 @@ function _add_text_alignment_to_style!(
     return nothing
 end
 
-# Create the string to be used in the HTML `style` property given a set of
-# `style`s passed in a dictionary.
+# Create the string to be used in the HTML `style` property given a set of `style`s passed
+# in a dictionary.
 function _create_html_style(style::Dict{String, String})
     # If there is no keys in the style dictionary, just return the tag.
     if isempty(style)
@@ -132,8 +132,8 @@ function _print_top_bar(
         )
         il += 1
 
-        # Top left
-        # ----------------------------------------------------------------------
+        # Top Left
+        # ----------------------------------------------------------------------------------
 
         if !isempty(top_left_str)
             empty!(style)
@@ -157,8 +157,8 @@ function _print_top_bar(
             _aprintln(buf, _close_html_tag("div"), il, ns, minify)
         end
 
-        # Top right
-        # ----------------------------------------------------------------------
+        # Top Right
+        # ----------------------------------------------------------------------------------
 
         if !isempty(top_right_str)
             empty!(style)
@@ -182,8 +182,7 @@ function _print_top_bar(
             _aprintln(buf, _close_html_tag("div"), il, ns, minify)
         end
 
-        # We need to clear the floats so that the table is rendered below the
-        # top bar.
+        # We need to clear the floats so that the table is rendered below the top bar.
         empty!(style)
         style["clear"] = "both"
         _aprintln(buf, _create_html_tag("div", ""; style), il, ns, minify)

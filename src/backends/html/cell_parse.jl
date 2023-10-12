@@ -1,11 +1,11 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
-#   Functions to parse the table cells in HTML back-end.
+#   Functions to parse the table cells in HTML back end.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # Parse the table `cell` of type `T` considering the context `io`.
 @inline function _parse_cell_html(
@@ -34,8 +34,7 @@
         cell_str = split(cell_str, '\n')[1]
     end
 
-    # If the user wants HTML code inside cell, then we must not escape the HTML
-    # characters.
+    # If the user wants HTML code inside cell, we must not escape the HTML characters.
     return _str_html_escaped(cell_str, replace_newline, !allow_html_in_cells)
 end
 

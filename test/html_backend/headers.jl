@@ -1,13 +1,13 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Tests of headers and sub-headers.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-@testset "Headers and sub-headers" begin
+@testset "Headers and Sub-headers" begin
     expected = """
 <table>
   <thead>
@@ -210,7 +210,7 @@
     @test result == expected
 end
 
-@testset "Header cell titles" begin
+@testset "Header Cell Titles" begin
     expected = """
 <table>
   <thead>

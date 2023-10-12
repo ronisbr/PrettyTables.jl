@@ -1,13 +1,13 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Print function of the text backend.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-# Low-level function to print the table using the text backend.
+# Low-level function to print the table using the text back end.
 function _pt_text(
     io::IOContext,
     pinfo::PrintInfo;
@@ -64,8 +64,8 @@ function _pt_text(
     num_rows, num_columns = _data_size(ptable)
     num_header_rows, ~ = _header_size(ptable)
 
-    # Input variables verification and initial setup
-    # ==========================================================================
+    # Input Variables Verification and Initial Setup
+    # ======================================================================================
 
     # Let's create a `IOBuffer` to write everything and then transfer to `io`.
     io_has_color = get(io, :color, false)::Bool
@@ -79,8 +79,7 @@ function _pt_text(
     elseif crop == :horizontal
         display.size = (-1, display_size[2])
     else
-        # If the table will not be cropped, then we should never show an omitted
-        # cell summary.
+        # If the table will not be cropped, we should never show an omitted cell summary.
         show_omitted_cell_summary = false
     end
 
@@ -142,8 +141,8 @@ function _pt_text(
     # Get the number of rows and columns in the processed table.
     num_rows, num_columns = _size(ptable)
 
-    # Process lines
-    # ==========================================================================
+    # Process Lines
+    # ======================================================================================
 
     if hlines === nothing
         hlines = tf.hlines
@@ -156,8 +155,8 @@ function _pt_text(
     vlines = _process_vlines(ptable, vlines)
 
 
-    # Number of rows and columns that must be rendered
-    # ==========================================================================
+    # Number of Rows and Columns that Must be Rendered
+    # ======================================================================================
 
     num_rendered_rows = num_rows
     num_rendered_columns = num_columns
@@ -176,12 +175,12 @@ function _pt_text(
         )
     end
 
-    # Create the string matrix that with the rendered cells
-    # ==========================================================================
+    # Create the String Matrix with the Rendered Cells
+    # ======================================================================================
 
-    # In text backend, we must convert all the matrix to text before printing.
-    # This procedure is necessary to obtain the column width for example so that
-    # we can align the table lines.
+    # In text back end, we must convert all the matrix to text before printing. This
+    # procedure is necessary to obtain the column width for example so that we can align the
+    # table lines.
     table_str = Matrix{Vector{String}}(
         undef,
         num_rendered_rows,
@@ -196,19 +195,17 @@ function _pt_text(
     num_lines_in_row = zeros(Int, num_rendered_rows)
 
     # NOTE: Algorithm to compute the table size and number of lines in the rows.
-    # Previously, the algorithm to compute the table size and the number of
-    # lines in the rows was a function called after the conversion of the input
-    # matrix to the string matrix. Although this approach was cleaner, we had
-    # problems when computing how many columns we can fit on the display to
-    # avoid unnecessary processing. Hence, the functions that fill the data are
-    # also responsible to compute the size of each column.
+    # Previously, the algorithm to compute the table size and the number of lines in the
+    # rows was a function called after the conversion of the input matrix to the string
+    # matrix. Although this approach was cleaner, we had problems when computing how many
+    # columns we can fit on the display to avoid unnecessary processing. Hence, the
+    # functions that fill the data are also responsible to compute the size of each column.
 
-    # Table data
-    # --------------------------------------------------------------------------
+    # Table Data
+    # --------------------------------------------------------------------------------------
 
-    # Fill the string matrix with the rendered cells. This function also returns
-    # the updated number of rendered rows and columns given the user
-    # specifications about cropping.
+    # Fill the string matrix with the rendered cells. This function also returns the updated
+    # number of rendered rows and columns given the user specifications about cropping.
     num_rendered_rows, num_rendered_columns = _fill_matrix_data!(
         io,
         table_str,
@@ -231,8 +228,8 @@ function _pt_text(
         vcrop_mode
     )
 
-    # Column alignment regex
-    # --------------------------------------------------------------------------
+    # Column Alignment Regex
+    # --------------------------------------------------------------------------------------
 
     _apply_alignment_anchor_regex!(
         ptable,
@@ -247,8 +244,7 @@ function _pt_text(
         minimum_columns_width
     )
 
-    # If the user wants all the columns with the same size, then select the
-    # larger.
+    # If the user wants all the columns with the same size, select the larger.
     if equal_columns_width
         actual_columns_width = fill(
             maximum(actual_columns_width),
@@ -256,8 +252,8 @@ function _pt_text(
         )
     end
 
-    # Compute where the horizontal and vertical lines must be drawn
-    # --------------------------------------------------------------------------
+    # Compute Where the Horizontal and Vertical Lines Must be Drawn
+    # --------------------------------------------------------------------------------------
 
     # Create the format of the horizontal lines.
     if body_hlines_format === nothing
@@ -269,12 +265,12 @@ function _pt_text(
         )
     end
 
-    # Check if the last horizontal line must be drawn. This is required when
-    # computing the moment that the display will be cropped.
+    # Check if the last horizontal line must be drawn. This is required when computing the
+    # moment that the display will be cropped.
     draw_last_hline = _check_hline(ptable, hlines, body_hlines, num_rows)
 
-    # Compute the table width and height
-    # --------------------------------------------------------------------------
+    # Compute the Table Width and Height
+    # --------------------------------------------------------------------------------------
 
     table_width = _compute_table_width(
         ptable,
@@ -289,8 +285,8 @@ function _pt_text(
         num_lines_in_row
     )
 
-    # Process the title
-    # --------------------------------------------------------------------------
+    # Process the Title
+    # --------------------------------------------------------------------------------------
 
     title_tokens = _tokenize_title(
         title,
@@ -302,33 +298,31 @@ function _pt_text(
         title_same_width_as_table
     )
 
-    #                           Print the table
-    # ==========================================================================
+    #                                 Print the Table
+    # ======================================================================================
 
     # Title
-    # ==========================================================================
+    # ======================================================================================
 
     _print_title!(display, title_tokens, text_crayons.title_crayon)
 
-    # If there is no column and no row to be printed, then just exit.
+    # If there is no column and no row to be printed, just exit.
     if _data_size(ptable) == (0, 0)
         @goto print_to_output
     end
 
     # Table
-    # ==========================================================================
+    # ======================================================================================
 
-    # Number of additional lines that must be consider to crop the display
-    # vertically.
+    # Number of additional lines that must be consider to crop the display vertically.
     Δdisplay_lines =
         1 +
         newline_at_end +
         reserved_display_lines +
         length(title_tokens)
 
-    # Compute the number of omitted columns. We need this information to check
-    # if we need to reserve a line after the table to print the omitted cell
-    # summary
+    # Compute the number of omitted columns. We need this information to check if we need to
+    # reserve a line after the table to print the omitted cell summary
     num_omitted_columns = _compute_omitted_columns(
         ptable,
         display,
@@ -336,11 +330,9 @@ function _pt_text(
         vlines
     )
 
-    need_omitted_cell_summary =
-        show_omitted_cell_summary && (num_omitted_columns > 0)
+    need_omitted_cell_summary = show_omitted_cell_summary && (num_omitted_columns > 0)
 
-    # Compute the position of the continuation line with respect to the printed
-    # table line.
+    # Compute the position of the continuation line with respect to the printed table line.
     if vcrop_mode != :middle
         continuation_row_line = _compute_continuation_row_in_bottom_vcrop(
             ptable,
@@ -372,8 +364,8 @@ function _pt_text(
         show_omitted_cell_summary &&
         ((num_omitted_columns > 0) || (continuation_row_line > 0))
 
-    # Now we can compute the number of omitted rows because we already computed
-    # the continuation line.
+    # Now we can compute the number of omitted rows because we already computed the
+    # continuation line.
     num_omitted_rows = _compute_omitted_rows(
         ptable,
         display,
@@ -385,8 +377,7 @@ function _pt_text(
         Δdisplay_lines
     )
 
-    # Number of lines that must be saved before the title and after printing the
-    # table.
+    # Number of lines that must be saved before the title and after printing the table.
     num_lines_around_table =
         need_omitted_cell_summary +
         newline_at_end +
@@ -413,8 +404,8 @@ function _pt_text(
         vlines
     )
 
-    # Summary of the omitted cells
-    # ==========================================================================
+    # Summary of the Omitted Cells
+    # ======================================================================================
 
     _print_omitted_cell_summary(
         display,
@@ -427,11 +418,10 @@ function _pt_text(
 
     @label print_to_output
 
-    # Print the buffer
-    # ==========================================================================
+    # Print the Buffer
+    # ======================================================================================
 
     _flush_display!(io, display, overwrite, newline_at_end, display.row)
-
 
     return nothing
 end
