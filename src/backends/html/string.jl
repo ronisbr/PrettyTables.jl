@@ -13,7 +13,7 @@
 # If `replace_newline` is `true`, then `\n` is replaced with `<br>`. Otherwise, it is
 # escaped, leading to `\\n`.
 function _str_html_escaped(
-    io::IO,
+    (@nospecialize io::IO),
     s::AbstractString,
     replace_newline::Bool = false,
     escape_html_chars::Bool = true,

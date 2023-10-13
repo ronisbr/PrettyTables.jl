@@ -639,7 +639,7 @@ Thus, the user must be ensure that the type of `v` between the calls are compati
     pretty_table(io, data; kwargs...)
 end
 
-pretty_table(io::IO, data; kwargs...) = _pretty_table(io, data; kwargs...)
+pretty_table((@nospecialize io::IO), data; kwargs...) = _pretty_table(io, data; kwargs...)
 
 function pretty_table(::Type{String}, data; color::Bool = false, kwargs...)
     io = IOContext(IOBuffer(), :color => color)

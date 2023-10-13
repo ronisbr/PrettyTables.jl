@@ -9,7 +9,6 @@
 
 # Low-level function to print the table using the LaTeX backend.
 function _pt_latex(
-    io::IOContext,
     pinfo::PrintInfo;
     tf::LatexTableFormat = tf_latex_default,
     body_hlines::Vector{Int} = Int[],
@@ -28,6 +27,7 @@ function _pt_latex(
     cell_first_line_only = pinfo.cell_first_line_only
     compact_printing     = pinfo.compact_printing
     formatters           = pinfo.formatters
+    io                   = pinfo.io
     limit_printing       = pinfo.limit_printing
     renderer             = pinfo.renderer
     title                = pinfo.title

@@ -9,7 +9,6 @@
 
 # Low-level function to print the table using the text backend.
 function _pt_html(
-    io::IOContext,
     pinfo::PrintInfo;
     tf::HtmlTableFormat = tf_html_default,
     allow_html_in_cells::Bool = false,
@@ -41,6 +40,7 @@ function _pt_html(
     cell_first_line_only = pinfo.cell_first_line_only
     compact_printing     = pinfo.compact_printing
     formatters           = pinfo.formatters
+    io                   = pinfo.io
     limit_printing       = pinfo.limit_printing
     renderer             = pinfo.renderer
     title                = pinfo.title

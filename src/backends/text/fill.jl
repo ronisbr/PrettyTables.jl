@@ -9,7 +9,7 @@
 
 # Fill the the string matrix table.
 function _fill_matrix_data!(
-    io::IOContext,
+    (@nospecialize io::IOContext),
     table_str::Matrix{Vector{String}},
     ptable::ProcessedTable,
     actual_columns_width::Vector{Int},

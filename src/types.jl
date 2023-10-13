@@ -75,10 +75,11 @@ end
 """
     struct PrintInfo
 
-This structure stores the information required so that the backends can print the tables.
+This structure stores the information required so that the back ends can print the tables.
 """
 struct PrintInfo
     ptable::ProcessedTable
+    io::IOContext
     formatters::Ref{Any}
     compact_printing::Bool
     title::String

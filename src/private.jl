@@ -165,7 +165,8 @@ end
 
 # This function creates the structure that holds the global print information.
 function _print_info(
-    data::Any;
+    data::Any,
+    (@nospecialize io::IOContext);
     alignment::Union{Symbol, Vector{Symbol}} = :r,
     cell_alignment::Union{
         Nothing,
@@ -248,6 +249,7 @@ function _print_info(
     # Create the structure that stores the print information.
     pinfo = PrintInfo(
         ptable,
+        io,
         formatters,
         compact_printing,
         title,
@@ -408,7 +410,8 @@ function _pt(
 
     # Create the structure that stores the print information.
     pinfo = _print_info(
-        data;
+        data,
+        context;
         alignment               = alignment,
         cell_alignment          = cell_alignment,
         cell_first_line_only    = cell_first_line_only,
@@ -435,16 +438,16 @@ function _pt(
 
     # Select the appropriate back end.
     if backend === Val(:text)
-        _pt_text(context, pinfo; kwargs...)
+        _pt_text(pinfo; kwargs...)
 
     elseif backend === Val(:html)
         # When wrapping `stdout` in `IOContext` in Jupyter, `io.io` is not equal to `stdout`
         # anymore. Hence, we need to check if `io` is `stdout` before calling `_pt_html`.
         is_stdout = (io === stdout) || ((io isa IOContext) && (io.io === stdout))
-        _pt_html(context, pinfo; is_stdout = is_stdout, kwargs...)
+        _pt_html(pinfo; is_stdout = is_stdout, kwargs...)
 
     elseif backend === Val(:latex)
-        _pt_latex(context, pinfo; kwargs...)
+        _pt_latex(pinfo; kwargs...)
     end
 
     return nothing

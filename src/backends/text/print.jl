@@ -9,7 +9,6 @@
 
 # Low-level function to print the table using the text back end.
 function _pt_text(
-    io::IOContext,
     pinfo::PrintInfo;
     alignment_anchor_fallback::Symbol = :l,
     alignment_anchor_fallback_override::Dict{Int, Symbol} = Dict{Int, Symbol}(),
@@ -18,10 +17,10 @@ function _pt_text(
     body_hlines::Vector{Int} = Int[],
     body_hlines_format::Union{Nothing, NTuple{4, Char}} = nothing,
     continuation_row_alignment::Symbol = :c,
-    crop::Symbol = get(io, :limit, false) ? :both : :none,
+    crop::Symbol = get(pinfo.io, :limit, false) ? :both : :none,
     crop_subheader::Bool = false,
     columns_width::Union{Int, AbstractVector{Int}} = 0,
-    display_size::Tuple{Int, Int} = displaysize(io),
+    display_size::Tuple{Int, Int} = displaysize(pinfo.io),
     equal_columns_width::Bool = false,
     ellipsis_line_skip::Integer = 0,
     highlighters::Union{Highlighter, Tuple} = (),
@@ -52,13 +51,14 @@ function _pt_text(
 )
     # Unpack fields of `pinfo`.
     ptable               = pinfo.ptable
-    formatters           = pinfo.formatters
+    cell_first_line_only = pinfo.cell_first_line_only
     compact_printing     = pinfo.compact_printing
+    formatters           = pinfo.formatters
+    io                   = pinfo.io
+    limit_printing       = pinfo.limit_printing
+    renderer             = pinfo.renderer
     title                = pinfo.title
     title_alignment      = pinfo.title_alignment
-    cell_first_line_only = pinfo.cell_first_line_only
-    renderer             = pinfo.renderer
-    limit_printing       = pinfo.limit_printing
 
     # Get size information from the processed table.
     num_rows, num_columns = _data_size(ptable)
