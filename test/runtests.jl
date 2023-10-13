@@ -14,26 +14,26 @@ data = Any[1    false      1.0     0x01 ;
 
 odata = OffsetArray(data, -4:1, -2:1)
 
-println("Text Back end")
-println("=============")
+println("Text Back End")
+println("============================================================================================")
 println()
 include("./text_backend.jl")
 println()
 
 println("HTML Back End")
-println("=============")
+println("============================================================================================")
 println()
 include("./html_backend.jl")
 println()
 
 println("LaTeX Back End")
-println("==============")
+println("============================================================================================")
 println()
 include("./latex_backend.jl")
 println()
 
 println("General")
-println("=======")
+println("============================================================================================")
 println()
 
 include("./general.jl")
