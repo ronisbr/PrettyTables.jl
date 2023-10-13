@@ -634,18 +634,18 @@ each element `v` in the table (i-th row and j-th column) will be formatted by:
 
 Thus, the user must be ensure that the type of `v` between the calls are compatible.
 """
-function pretty_table(data; kwargs...)
+function pretty_table(@nospecialize(data::Any); kwargs...)
     io = stdout isa Base.TTY ? IOContext(stdout, :limit => true) : stdout
     pretty_table(io, data; kwargs...)
 end
 
-function pretty_table(::Type{String}, data; color::Bool = false, kwargs...)
+function pretty_table(::Type{String}, @nospecialize(data::Any); color::Bool = false, kwargs...)
     io = IOContext(IOBuffer(), :color => color)
     pretty_table(io, data; kwargs...)
     return String(take!(io.io))
 end
 
-function pretty_table(::Type{HTML}, data; kwargs...)
+function pretty_table(::Type{HTML}, @nospecialize(data::Any); kwargs...)
     # If the keywords does not set the back end or the table format, use the HTML back end
     # by default.
     if !haskey(kwargs, :backend) && !haskey(kwargs, :tf)
@@ -659,7 +659,7 @@ end
 
 function pretty_table(
     @nospecialize(io::IO),
-    data;
+    @nospecialize(data::Any);
     header::Union{Nothing, AbstractVector, Tuple} = nothing,
     kwargs...
 )
@@ -693,7 +693,7 @@ end
 
 # This function creates the structure that holds the global print information.
 function _print_info(
-    data::Any,
+    @nospecialize(data::Any),
     @nospecialize(io::IOContext);
     alignment::Union{Symbol, Vector{Symbol}} = :r,
     cell_alignment::Union{
@@ -795,7 +795,7 @@ end
 # in `data`.
 function _print_table(
     @nospecialize(io::IO),
-    data::Any;
+    @nospecialize(data::Any);
     alignment::Union{Symbol, Vector{Symbol}} = :r,
     backend::T_BACKENDS = Val(:auto),
     cell_alignment::Union{
