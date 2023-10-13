@@ -8,7 +8,7 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # Low-level function to print the table using the text backend.
-function _pt_html(
+function _print_table_with_html_back_end(
     pinfo::PrintInfo;
     tf::HtmlTableFormat = tf_html_default,
     allow_html_in_cells::Bool = false,

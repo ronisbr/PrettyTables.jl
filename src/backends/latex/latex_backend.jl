@@ -8,7 +8,7 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # Low-level function to print the table using the LaTeX backend.
-function _pt_latex(
+function _print_table_with_latex_back_end(
     pinfo::PrintInfo;
     tf::LatexTableFormat = tf_latex_default,
     body_hlines::Vector{Int} = Int[],

@@ -8,7 +8,7 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # Low-level function to print the table using the text back end.
-function _pt_text(
+function _print_table_with_text_back_end(
     pinfo::PrintInfo;
     alignment_anchor_fallback::Symbol = :l,
     alignment_anchor_fallback_override::Dict{Int, Symbol} = Dict{Int, Symbol}(),

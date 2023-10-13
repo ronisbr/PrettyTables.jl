@@ -918,16 +918,16 @@ function _print_table(
 
     # Select the appropriate back end.
     if backend === Val(:text)
-        _pt_text(pinfo; kwargs...)
+        _print_table_with_text_back_end(pinfo; kwargs...)
 
     elseif backend === Val(:html)
         # When wrapping `stdout` in `IOContext` in Jupyter, `io.io` is not equal to `stdout`
         # anymore. Hence, we need to check if `io` is `stdout` before calling `_pt_html`.
         is_stdout = (io === stdout) || ((io isa IOContext) && (io.io === stdout))
-        _pt_html(pinfo; is_stdout = is_stdout, kwargs...)
+        _print_table_with_html_back_end(pinfo; is_stdout = is_stdout, kwargs...)
 
     elseif backend === Val(:latex)
-        _pt_latex(pinfo; kwargs...)
+        _print_table_with_latex_back_end(pinfo; kwargs...)
     end
 
     return nothing
