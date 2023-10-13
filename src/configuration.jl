@@ -57,7 +57,7 @@ end
 
 Create a new configuration object based on the arguments in `kwargs`.
 """
-@inline function set_pt_conf(;kwargs...)
+function set_pt_conf(;kwargs...)
     conf = PrettyTablesConf()
     set_pt_conf!(conf; kwargs...)
     return conf
@@ -68,7 +68,7 @@ end
 
 Apply the configurations in `kwargs` to the object `conf`.
 """
-@inline function set_pt_conf!(conf::PrettyTablesConf; kwargs...)
+function set_pt_conf!(conf::PrettyTablesConf; kwargs...)
     for kw in kwargs
         conf.confs[kw[1]] = kw[2]
     end
@@ -85,7 +85,7 @@ end
 Convert the configuration object `conf` to a named tuple so that it can be passed to
 `pretty_table`.
 """
-@inline function _conf_to_nt(conf::PrettyTablesConf)
+function _conf_to_nt(conf::PrettyTablesConf)
     # Get the named tuple with the configurations.
     dictkeys = (collect(keys(conf.confs))...,)
     dictvals = (collect(values(conf.confs))...,)

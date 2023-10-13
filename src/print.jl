@@ -634,7 +634,7 @@ each element `v` in the table (i-th row and j-th column) will be formatted by:
 
 Thus, the user must be ensure that the type of `v` between the calls are compatible.
 """
-@inline function pretty_table(data; kwargs...)
+function pretty_table(data; kwargs...)
     io = stdout isa Base.TTY ? IOContext(stdout, :limit => true) : stdout
     pretty_table(io, data; kwargs...)
 end

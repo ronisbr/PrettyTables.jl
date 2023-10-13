@@ -8,8 +8,8 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # Parse the table `cell` of type `T` considering the context `io`.
-@inline function _parse_cell_html(
-    (@nospecialize io::IOContext),
+function _parse_cell_html(
+    @nospecialize(io::IOContext),
     cell::Any;
     allow_html_in_cells::Bool = false,
     cell_first_line_only::Bool = false,
@@ -38,8 +38,8 @@
     return _str_html_escaped(cell_str, replace_newline, !allow_html_in_cells)
 end
 
-@inline function _parse_cell_html(
-    (@nospecialize io::IOContext),
+function _parse_cell_html(
+    @nospecialize(io::IOContext),
     cell::HtmlCell;
     cell_first_line_only::Bool = false,
     compact_printing::Bool = true,
@@ -66,16 +66,16 @@ end
     return _str_html_escaped(cell_str, replace_newline, false)
 end
 
-@inline function _parse_cell_html((@nospecialize io::IOContext), cell::Markdown.MD; kwargs...)
+function _parse_cell_html(@nospecialize(io::IOContext), cell::Markdown.MD; kwargs...)
     return replace(sprint(show, MIME("text/html"), cell),"\n"=>"")
 end
 
-@inline _parse_cell_html((@nospecialize io::IOContext), cell::Missing; kwargs...) = "missing"
-@inline _parse_cell_html((@nospecialize io::IOContext), cell::Nothing; kwargs...) = "nothing"
-@inline _parse_cell_html((@nospecialize io::IOContext), cell::UndefinedCell; kwargs...) = "#undef"
+_parse_cell_html(@nospecialize(io::IOContext), cell::Missing; kwargs...) = "missing"
+_parse_cell_html(@nospecialize(io::IOContext), cell::Nothing; kwargs...) = "nothing"
+_parse_cell_html(@nospecialize(io::IOContext), cell::UndefinedCell; kwargs...) = "#undef"
 
 function _render_cell_html(
-    (@nospecialize io::IOContext),
+    @nospecialize(io::IOContext),
     cell::Any;
     compact_printing::Bool = true,
     limit_printing::Bool = true,

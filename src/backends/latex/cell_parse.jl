@@ -8,7 +8,7 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # Parse the table `cell` of type `T` considering the context `io`.
-@inline function _parse_cell_latex(
+function _parse_cell_latex(
     (@nospecialize io::IOContext),
     cell::Any;
     cell_first_line_only::Bool = false,
@@ -45,7 +45,7 @@
     return _str_latex_escaped(cell_str)
 end
 
-@inline function _parse_cell_latex(
+function _parse_cell_latex(
     (@nospecialize io::IOContext),
     cell::Union{LaTeXString, LatexCell};
     cell_first_line_only::Bool = false,
@@ -83,12 +83,12 @@ end
     return _str_latex_cell_escaped(cell_str)
 end
 
-@inline function _parse_cell_latex((@nospecialize io::IOContext), cell::Markdown.MD; kwargs...)
+function _parse_cell_latex((@nospecialize io::IOContext), cell::Markdown.MD; kwargs...)
     return replace(sprint(show, MIME("text/latex"), cell), "\n" => "")
 end
 
-@inline _parse_cell_latex((@nospecialize io::IOContext), cell::Missing; kwargs...) = "missing"
-@inline _parse_cell_latex((@nospecialize io::IOContext), cell::Nothing; kwargs...) = "nothing"
-@inline _parse_cell_latex((@nospecialize io::IOContext), cell::UndefinedCell; kwargs...) = "\\#undef"
-@inline _get_latex_cell_data(cell::LatexCell) = cell.data
-@inline _get_latex_cell_data(cell::LaTeXString) = cell
+_parse_cell_latex(@nospecialize(io::IOContext), cell::Missing; kwargs...) = "missing"
+_parse_cell_latex(@nospecialize(io::IOContext), cell::Nothing; kwargs...) = "nothing"
+_parse_cell_latex(@nospecialize(io::IOContext), cell::UndefinedCell; kwargs...) = "\\#undef"
+_get_latex_cell_data(cell::LatexCell) = cell.data
+_get_latex_cell_data(cell::LaTeXString) = cell

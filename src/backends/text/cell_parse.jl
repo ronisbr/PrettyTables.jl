@@ -101,13 +101,13 @@ function _parse_cell_text(
     end
 end
 
-function _parse_cell_text((@nospecialize io::IOContext), cell::CustomTextCell; kwargs...)
+function _parse_cell_text(@nospecialize(io::IOContext), cell::CustomTextCell; kwargs...)
     # Call the API function to reset all the fields in the custom text cell.
     reset!(cell)
     cell_vstr = parse_cell_text(cell; kwargs...)
     return cell_vstr
 end
 
-@inline _parse_cell_text((@nospecialize io::IOContext), cell::Missing; kwargs...) = ["missing"]
-@inline _parse_cell_text((@nospecialize io::IOContext), cell::Nothing; kwargs...) = ["nothing"]
-@inline _parse_cell_text((@nospecialize io::IOContext), cell::UndefinedCell; kwargs...) = ["#undef"]
+_parse_cell_text(@nospecialize(io::IOContext), cell::Missing; kwargs...) = ["missing"]
+_parse_cell_text(@nospecialize(io::IOContext), cell::Nothing; kwargs...) = ["nothing"]
+_parse_cell_text(@nospecialize(io::IOContext), cell::UndefinedCell; kwargs...) = ["#undef"]
