@@ -1,11 +1,11 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
 # Description
-# ==============================================================================
+# ==========================================================================================
 #
 #   Print function of the LaTeX backend.
 #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # Low-level function to print the table using the LaTeX backend.
 function _print_table_with_latex_back_end(
@@ -88,14 +88,14 @@ function _print_table_with_latex_back_end(
     # Get the number of lines and columns in the table.
     num_rows, num_columns = _size(ptable)
 
-    # Variables to store information about indentation
-    # ==========================================================================
+    # Variables to Store Information About Indentation
+    # ======================================================================================
 
-    il = 0 # ......................................... Current indentation level
-    ns = 2 # ........................ Number of spaces in each indentation level
+    il = 0 # ..................................................... Current indentation level
+    ns = 2 # .................................... Number of spaces in each indentation level
 
-    # Print LaTeX header
-    # ==========================================================================
+    # Print LaTeX Header
+    # ======================================================================================
 
     if table_type != :longtable && wrap_table == true
         _aprintln(buf, "\\begin{" * wrap_table_environment * "}", il, ns)
@@ -123,9 +123,9 @@ function _print_table_with_latex_back_end(
         length(title) > 0 && _aprintln(buf, "\\caption{$title}\\\\", il, ns)
     end
 
-    # We use a separate buffer because if `:longtable` is used, then we need to
-    # repeat the header. Otherwise the caption is repeated in every page and it
-    # is also added to the TOC (see issue #95).
+    # We use a separate buffer because if `:longtable` is used, then we need to repeat the
+    # header. Otherwise the caption is repeated in every page and it is also added to the
+    # TOC (see issue #95).
 
     buf_io_h = IOBuffer()
     buf_h    = IOContext(buf_io_h)
@@ -142,11 +142,11 @@ function _print_table_with_latex_back_end(
         _aprintln(buf_h, top_line, il, ns)
     end
 
-    # Print the table
-    # ==========================================================================
+    # Print the Table
+    # ======================================================================================
 
-    # If the line is part of the header, we need to write to `buf_h`.
-    # Otherwise, we must switch to `buf_b`.
+    # If the line is part of the header, we need to write to `buf_h`. Otherwise, we must
+    # switch to `buf_b`.
     buf_aux = buf_h
 
     @inbounds for i in 1:num_rows
@@ -229,10 +229,10 @@ function _print_table_with_latex_back_end(
                 jr = _get_data_column_index(ptable, j)
 
                 if column_id == :__ORIGINAL_DATA__
-                    # Notice that `(ir, jr)` are the indices of the printed
-                    # data. It means that it refers to the ir-th data row and
-                    # jr-th data column that will be printed. We need to convert
-                    # those indices to the actual indices in the input table.
+                    # Notice that `(ir, jr)` are the indices of the printed data. It means
+                    # that it refers to the ir-th data row and jr-th data column that will
+                    # be printed. We need to convert those indices to the actual indices in
+                    # the input table.
                     tir, tjr = _convert_axes(ptable.data, ir, jr)
 
                     # Apply the formatters.
@@ -257,8 +257,8 @@ function _print_table_with_latex_back_end(
                         end
                     end
 
-                    # Check if the cell alignment must be changed with respect to
-                    # the column alignment.
+                    # Check if the cell alignment must be changed with respect to the column
+                    # alignment.
                     if cell_alignment != column_alignment
                         cell_str = _latex_apply_cell_alignment(
                             ptable,
@@ -272,8 +272,7 @@ function _print_table_with_latex_back_end(
                         )
                     end
                 else
-                    # For the additional cells, we just need to convert to
-                    # string.
+                    # For the additional cells, we just need to convert to string.
                     cell_str = string(cell_data)
                 end
 
@@ -308,9 +307,9 @@ function _print_table_with_latex_back_end(
             print(buf_aux, " \\\\")
         end
 
-        # After the last line, we need to check if we are printing all the rows
-        # or not. In the latter, we need to pass the last row index to check if
-        # the last horizontal line must be drawn.
+        # After the last line, we need to check if we are printing all the rows or not. In
+        # the latter, we need to pass the last row index to check if the last horizontal
+        # line must be drawn.
         i_hline = i == num_rows ? num_rows : i
 
         if _check_hline(ptable, hlines, body_hlines, i_hline)
@@ -358,8 +357,8 @@ function _print_table_with_latex_back_end(
 
     print(buf, body_dump)
 
-    # Print LaTeX footer
-    # ==========================================================================
+    # Print LaTeX Footer
+    # ======================================================================================
 
     # If available, add the label to the table if we are using `longtable`.
     if table_type == :longtable && !isempty(label)
@@ -377,8 +376,8 @@ function _print_table_with_latex_back_end(
         _aprintln(buf, "\\end{" * wrap_table_environment * "}", il, ns)
     end
 
-    # Print the buffer into the io.
-    # ==========================================================================
+    # Print the Buffer Into The IO.
+    # ======================================================================================
 
     print(io, String(take!(buf_io)))
 
