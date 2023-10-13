@@ -110,7 +110,7 @@ end
 
 # Print the HTML top bar.
 function _print_top_bar(
-    (@nospecialize buf::IO),
+    @nospecialize(buf::IO),
     top_left_str::String,
     top_left_str_decoration::HtmlDecoration,
     top_right_str::String,

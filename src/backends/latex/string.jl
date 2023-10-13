@@ -8,7 +8,7 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # This was adapted from Julia `escape_string` function.
-function _str_latex_escaped((@nospecialize io::IO), s::AbstractString, esc::String = "")
+function _str_latex_escaped(@nospecialize(io::IO), s::AbstractString, esc::String = "")
     a = Iterators.Stateful(s)
     for c in a
         if c in esc
@@ -48,7 +48,7 @@ function _str_latex_escaped(s::AbstractString, esc::String = "")
     return sprint(_str_latex_escaped, s, esc, sizehint=lastindex(s))
 end
 
-function _str_latex_cell_escaped((@nospecialize io::IO), s::AbstractString, esc::String = "")
+function _str_latex_cell_escaped(@nospecialize(io::IO), s::AbstractString, esc::String = "")
     a = Iterators.Stateful(s)
     for c in a
         if c in esc

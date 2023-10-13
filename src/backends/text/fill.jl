@@ -9,12 +9,12 @@
 
 # Fill the the string matrix table.
 function _fill_matrix_data!(
-    (@nospecialize io::IOContext),
+    @nospecialize(io::IOContext),
     table_str::Matrix{Vector{String}},
     ptable::ProcessedTable,
     actual_columns_width::Vector{Int},
     display::Display,
-    (@nospecialize formatters::Ref{Any}),
+    @nospecialize(formatters::Ref{Any}),
     num_lines_in_row::Vector{Int},
     # Configuration options.
     autowrap::Bool,

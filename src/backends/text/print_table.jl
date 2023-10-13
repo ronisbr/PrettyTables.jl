@@ -21,7 +21,7 @@ function _print_table_data!(
     body_hlines_format::NTuple{4, Char},
     continuation_row_alignment::Symbol,
     ellipsis_line_skip::Integer,
-    (@nospecialize highlighters::Ref{Any}),
+    @nospecialize(highlighters::Ref{Any}),
     hlines::Union{Symbol, AbstractVector},
     tf::TextFormat,
     text_crayons::TextCrayons,

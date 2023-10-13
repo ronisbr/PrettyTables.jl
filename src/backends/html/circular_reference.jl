@@ -7,6 +7,6 @@
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-function _pt_html_circular_reference((@nospecialize io::IOContext))
+function _pt_html_circular_reference(@nospecialize(io::IOContext))
     print(io, "#= circular reference =#")
 end

@@ -166,7 +166,7 @@ end
 # This function creates the structure that holds the global print information.
 function _print_info(
     data::Any,
-    (@nospecialize io::IOContext);
+    @nospecialize(io::IOContext);
     alignment::Union{Symbol, Vector{Symbol}} = :r,
     cell_alignment::Union{
         Nothing,
@@ -269,7 +269,7 @@ end
 # This is a middleware function to apply the preprocess step to the data that will be
 # printed.
 function _pretty_table(
-    (@nospecialize io::IO),
+    @nospecialize(io::IO),
     data::Any;
     header::Union{Nothing, AbstractVector, Tuple} = nothing,
     kwargs...
@@ -302,7 +302,7 @@ end
 # accessed by `[i, j]` and the size of the `header` must be equal to the number of columns
 # in `data`.
 function _pt(
-    (@nospecialize io::IO),
+    @nospecialize(io::IO),
     data::Any;
     alignment::Union{Symbol, Vector{Symbol}} = :r,
     backend::T_BACKENDS = Val(:auto),

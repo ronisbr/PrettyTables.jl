@@ -16,7 +16,7 @@ function _print_custom_text_cell!(
     cell_processed_str::String,
     cell_crayon::Crayon,
     l::Int,
-    (@nospecialize highlighters::Ref{Any}),
+    @nospecialize(highlighters::Ref{Any}),
 )
     cell_printable_textwidth = printable_textwidth(cell_processed_str)
 
@@ -99,7 +99,7 @@ function _process_data_cell_text(
     column_width::Int,
     crayon::Crayon,
     alignment::Symbol,
-    (@nospecialize highlighters::Ref{Any})
+    @nospecialize(highlighters::Ref{Any})
 )
     # Notice that `(i, j)` are the indices of the printed data. It means that it refers to
     # the ith data row and jth data column that will be printed. We need to convert those

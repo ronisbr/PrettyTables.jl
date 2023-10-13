@@ -9,7 +9,7 @@
 
 # Parse the table `cell` of type `T` considering the context `io`.
 function _parse_cell_latex(
-    (@nospecialize io::IOContext),
+    @nospecialize(io::IOContext),
     cell::Any;
     cell_first_line_only::Bool = false,
     compact_printing::Bool = true,
@@ -46,7 +46,7 @@ function _parse_cell_latex(
 end
 
 function _parse_cell_latex(
-    (@nospecialize io::IOContext),
+    @nospecialize(io::IOContext),
     cell::Union{LaTeXString, LatexCell};
     cell_first_line_only::Bool = false,
     compact_printing::Bool = true,
@@ -83,7 +83,7 @@ function _parse_cell_latex(
     return _str_latex_cell_escaped(cell_str)
 end
 
-function _parse_cell_latex((@nospecialize io::IOContext), cell::Markdown.MD; kwargs...)
+function _parse_cell_latex(@nospecialize(io::IOContext), cell::Markdown.MD; kwargs...)
     return replace(sprint(show, MIME("text/latex"), cell), "\n" => "")
 end
 

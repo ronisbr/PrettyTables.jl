@@ -10,7 +10,7 @@
 # Parse the table `cell` of type `T` and return a vector of `String` with the parsed cell
 # text, one component per line.
 function _parse_cell_text(
-    (@nospecialize io::IOContext),
+    @nospecialize(io::IOContext),
     cell::Any;
     autowrap::Bool = true,
     cell_data_type::DataType = Nothing,
@@ -48,7 +48,7 @@ function _parse_cell_text(
 end
 
 function _parse_cell_text(
-    (@nospecialize io::IOContext),
+    @nospecialize(io::IOContext),
     cell::Markdown.MD;
     column_width::Integer = -1,
     linebreaks::Bool = false,

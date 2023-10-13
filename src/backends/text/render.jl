@@ -29,7 +29,7 @@
 # `:limit => true`.
 function _render_text(
     ::Val{:print},
-    (@nospecialize io::IOContext),
+    @nospecialize(io::IOContext),
     v::Any;
     compact_printing::Bool = true,
     isstring::Bool = false,
@@ -58,7 +58,7 @@ end
 
 function _render_text(
     ::Val{:print},
-    (@nospecialize io::IOContext),
+    @nospecialize(io::IOContext),
     str::AbstractString;
     compact_printing::Bool = true,
     isstring::Bool = false,
@@ -81,7 +81,7 @@ end
 
 function _render_text(
     ::Val{:show},
-    (@nospecialize io::IOContext),
+    @nospecialize(io::IOContext),
     v::Any;
     compact_printing::Bool = true,
     linebreaks::Bool = false,
@@ -110,7 +110,7 @@ end
 
 function _render_text(
     ::Val{:show},
-    (@nospecialize io::IOContext),
+    @nospecialize(io::IOContext),
     v::AbstractString;
     compact_printing::Bool = true,
     linebreaks::Bool = false,
