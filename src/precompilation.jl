@@ -221,6 +221,11 @@ PrecompileTools.@setup_workload begin
             header_crayon = [crayon"yellow bold" for _ in 1:4],
             subheader_crayon = [crayon"yellow bold" for _ in 1:4]
         )
+
+        # Helpers
+        # ==================================================================================
+
+        @pt data
     end
 
     # Restore stdout.
