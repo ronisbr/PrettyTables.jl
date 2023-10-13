@@ -94,25 +94,27 @@ PrecompileTools.@setup_workload begin
         # ==================================================================================
 
         # This example is created based on DataFrames.jl options.
-        pretty_table(table,
-                    alignment                   = [:l, :c, :r],
-                    crop                        = :both,
-                    crop_num_lines_at_beginning = 2,
-                    display_size                = (15, 34),
-                    ellipsis_line_skip          = 3,
-                    header_alignment            = :l,
-                    hlines                      = [:header],
-                    newline_at_end              = false,
-                    row_name_alignment          = :r,
-                    row_name_crayon             = Crayon(),
-                    row_name_column_title       = "Name",
-                    row_names                   = ["row" for i = 1:10],
-                    row_number_alignment        = :r,
-                    row_number_column_title     = "Row",
-                    show_row_number             = true,
-                    title                       = "Test table",
-                    vcrop_mode                  = :middle,
-                    vlines                      = [1])
+        pretty_table(
+            table,
+            alignment               = [:l, :c, :r],
+            crop                    = :both,
+            reserved_display_lines  = 2,
+            display_size            = (15, 34),
+            ellipsis_line_skip      = 3,
+            header_alignment        = :l,
+            hlines                  = [:header],
+            newline_at_end          = false,
+            row_label_alignment     = :r,
+            row_label_crayon        = Crayon(),
+            row_label_column_title  = "Name",
+            row_labels              = ["row" for i = 1:10],
+            row_number_alignment    = :r,
+            row_number_column_title = "Row",
+            show_row_number         = true,
+            title                   = "Test table",
+            vcrop_mode              = :middle,
+            vlines                  = [1]
+        )
 
         # This example is created based on DataFrames.jl options.
         pretty_table(
@@ -126,8 +128,8 @@ PrecompileTools.@setup_workload begin
             max_num_of_columns        = 2,
             max_num_of_rows           = 5,
             minify                    = true,
-            row_name_column_title     = "Row",
-            row_names                 = ["row" for i = 1:10],
+            row_label_column_title    = "Row",
+            row_labels                = ["row" for i = 1:10],
             row_number_alignment      = :r,
             row_number_column_title   = "Row",
             show_omitted_cell_summary = true,

@@ -66,22 +66,3 @@ macro deprecate_kw_and_return(old, new, fn = identity)
 
     return esc(expr)
 end
-
-#                             Deprecations introduced in v2.0
-# ==========================================================================================
-
-@decl_rm_kw(crop_num_lines_at_beginning)
-@decl_rm_kw(noheader)
-@decl_rm_kw(nosubheader)
-@decl_rm_kw(row_name_alignment)
-@decl_rm_kw(row_name_column_title)
-@decl_rm_kw(row_name_crayon)
-@decl_rm_kw(row_name_decoration)
-@decl_rm_kw(row_name_header_crayon)
-@decl_rm_kw(row_names)
-@decl_rm_kw(rownum_header_crayon)
-
-@deprecate HTMLDecoration(args...; kwargs...) HtmlDecoration(args...; kwargs...)
-@deprecate HTMLTableFormat(args...; kwargs...) HtmlTableFormat(args...; kwargs...)
-@deprecate HTMLHighlighter(args...; kwargs...) HtmlHighlighter(args...; kwargs...)
-@deprecate URLTextCell(args...; kwargs...) UrlTextCell(args...; kwargs...)
