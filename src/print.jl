@@ -639,8 +639,6 @@ function pretty_table(data; kwargs...)
     pretty_table(io, data; kwargs...)
 end
 
-pretty_table(@nospecialize(io::IO), data; kwargs...) = _pretty_table(io, data; kwargs...)
-
 function pretty_table(::Type{String}, data; color::Bool = false, kwargs...)
     io = IOContext(IOBuffer(), :color => color)
     pretty_table(io, data; kwargs...)
@@ -657,4 +655,292 @@ function pretty_table(::Type{HTML}, data; kwargs...)
     end
 
     return HTML(str)
+end
+
+function pretty_table(
+    @nospecialize(io::IO),
+    data;
+    header::Union{Nothing, AbstractVector, Tuple} = nothing,
+    kwargs...
+)
+    istable = Tables.istable(data)
+    if istable
+        if Tables.columnaccess(data)
+            pdata, pheader = _preprocess_column_tables_jl(data, header)
+        elseif Tables.rowaccess(data)
+            pdata, pheader = _preprocess_row_tables_jl(data, header)
+        else
+            error("The object does not have a valid Tables.jl implementation.")
+        end
+
+    elseif data isa AbstractVecOrMat
+        pdata, pheader = _preprocess_vec_or_mat(data, header)
+
+    elseif data isa AbstractDict
+        sortkeys = get(kwargs, :sortkeys, false)
+        pdata, pheader = _preprocess_dict(data, header; sortkeys = sortkeys)
+
+    else
+        error("The type $(typeof(data)) is not supported.")
+    end
+
+    return _print_table(io, pdata; header = pheader, kwargs...)
+end
+
+############################################################################################
+#                                    Private Functions
+############################################################################################
+
+# This function creates the structure that holds the global print information.
+function _print_info(
+    data::Any,
+    @nospecialize(io::IOContext);
+    alignment::Union{Symbol, Vector{Symbol}} = :r,
+    cell_alignment::Union{
+        Nothing,
+        Dict{Tuple{Int, Int}, Symbol},
+        Function,
+        Tuple
+    } = nothing,
+    cell_first_line_only::Bool = false,
+    compact_printing::Bool = true,
+    formatters::Union{Nothing, Function, Tuple} = nothing,
+    header::Union{Nothing, AbstractVector, Tuple} = nothing,
+    header_alignment::Union{Symbol, Vector{Symbol}} = :s,
+    header_cell_alignment::Union{
+        Nothing,
+        Dict{Tuple{Int, Int}, Symbol},
+        Function,
+        Tuple
+    } = nothing,
+    limit_printing::Bool = true,
+    max_num_of_columns::Int = -1,
+    max_num_of_rows::Int = -1,
+    renderer::Symbol = :print,
+    row_labels::Union{Nothing, AbstractVector} = nothing,
+    row_label_alignment::Symbol = :r,
+    row_label_column_title::AbstractString = "",
+    row_number_alignment::Symbol = :r,
+    row_number_column_title::AbstractString = "Row",
+    show_header::Bool = true,
+    show_row_number::Bool = false,
+    show_subheader::Bool = true,
+    title::AbstractString = "",
+    title_alignment::Symbol = :l
+)
+
+    _header = header isa Tuple ? header : (header,)
+
+    # Create the processed table, which holds additional information about how we must print
+    # the table.
+    ptable = ProcessedTable(
+        data,
+        _header;
+        alignment             = alignment,
+        cell_alignment        = cell_alignment,
+        header_alignment      = header_alignment,
+        header_cell_alignment = header_cell_alignment,
+        max_num_of_columns    = max_num_of_columns,
+        max_num_of_rows       = max_num_of_rows,
+        show_header           = show_header,
+        show_subheader        = show_subheader,
+    )
+
+    # Add the additional columns if requested.
+    if show_row_number
+        _add_column!(
+            ptable,
+            axes(data)[1] |> collect,
+            [row_number_column_title];
+            alignment = row_number_alignment,
+            id = :row_number
+        )
+    end
+
+    if row_labels !== nothing
+        _add_column!(
+            ptable,
+            row_labels,
+            [row_label_column_title];
+            alignment = row_label_alignment,
+            id = :row_label
+        )
+    end
+
+    # Make sure that `formatters` is a tuple.
+    formatters === nothing  && (formatters = ())
+    typeof(formatters) <: Function && (formatters = (formatters,))
+
+    # Render.
+    renderer_val = renderer == :show ? Val(:show) : Val(:print)
+
+    # Create the structure that stores the print information.
+    pinfo = PrintInfo(
+        ptable,
+        io,
+        formatters,
+        compact_printing,
+        title,
+        title_alignment,
+        cell_first_line_only,
+        renderer_val,
+        limit_printing,
+    )
+
+    return pinfo
+end
+
+# This is the low level function that prints the table. In this case, `data` must be
+# accessed by `[i, j]` and the size of the `header` must be equal to the number of columns
+# in `data`.
+function _print_table(
+    @nospecialize(io::IO),
+    data::Any;
+    alignment::Union{Symbol, Vector{Symbol}} = :r,
+    backend::T_BACKENDS = Val(:auto),
+    cell_alignment::Union{
+        Nothing,
+        Dict{Tuple{Int, Int}, Symbol},
+        Function,
+        Tuple
+    } = nothing,
+    cell_first_line_only::Bool = false,
+    compact_printing::Bool = true,
+    formatters::Union{Nothing, Function, Tuple} = nothing,
+    header::Union{Nothing, AbstractVector, Tuple} = nothing,
+    header_alignment::Union{Symbol, Vector{Symbol}} = :s,
+    header_cell_alignment::Union{
+        Nothing,
+        Dict{Tuple{Int, Int}, Symbol},
+        Function,
+        Tuple
+    } = nothing,
+    limit_printing::Bool = true,
+    max_num_of_columns::Int = -1,
+    max_num_of_rows::Int = -1,
+    renderer::Symbol = :print,
+    row_labels::Union{Nothing, AbstractVector} = nothing,
+    row_label_alignment::Symbol = :r,
+    row_label_column_title::AbstractString = "",
+    row_number_alignment::Symbol = :r,
+    row_number_column_title::AbstractString = "Row",
+    show_header::Bool = true,
+    show_row_number::Bool = false,
+    show_subheader::Bool = true,
+    title::AbstractString = "",
+    title_alignment::Symbol = :l,
+    kwargs...
+)
+
+    # Check for deprecations.
+    @deprecate_kw_and_push(crop_num_lines_at_beginning, reserved_display_lines)
+    @deprecate_kw_and_push(row_name_crayon, row_label_crayon)
+    @deprecate_kw_and_push(row_name_decoration, row_label_decoration)
+    @deprecate_kw_and_push(row_name_header_crayon, row_label_header_crayon)
+    @deprecate_kw_and_push(rownum_header_crayon, row_number_header_crayon)
+    @deprecate_kw_and_return(noheader, show_header, !)
+    @deprecate_kw_and_return(nosubheader, show_subheader, !)
+    @deprecate_kw_and_return(row_name_alignment, row_label_alignment)
+    @deprecate_kw_and_return(row_name_column_title, row_label_column_title)
+    @deprecate_kw_and_return(row_names, row_labels)
+
+    if backend === Val(:auto)
+        # In this case, if we do not have the `tf` keyword, then we just fallback to the
+        # text back end. Otherwise, check if the type of `tf`.
+        if haskey(kwargs, :tf)
+            tf = kwargs[:tf]
+
+            if tf isa TextFormat
+                backend = Val(:text)
+            elseif tf isa HtmlTableFormat
+                backend = Val(:html)
+            elseif tf isa LatexTableFormat
+                backend = Val(:latex)
+            else
+                throw(
+                    TypeError(
+                        :_pt,
+                        Union{TextFormat, HtmlTableFormat, LatexTableFormat},
+                        typeof(tf)
+                    )
+                )
+            end
+        else
+            backend = Val(:text)
+        end
+    end
+
+    # Verify if we have a circular reference.
+    ptd = get(io, :__PRETTY_TABLES_DATA__, nothing)
+
+    if ptd !== nothing
+        context = IOContext(io)
+
+        # In this case, `ptd` is a vector with the data printed by PrettyTables.jl. Hence,
+        # we need to search if the current one is inside this vector. If true, we have a
+        # circular dependency.
+        for d in ptd
+            if d === _getdata(data)
+
+                if backend === Val(:text)
+                    _pt_text_circular_reference(context)
+                elseif backend === Val(:html)
+                    _pt_html_circular_reference(context)
+                elseif backend === Val(:latex)
+                    _pt_latex_circular_reference(context)
+                end
+
+                return nothing
+            end
+        end
+
+        # Otherwise, we must push the current data to the vector.
+        push!(ptd, _getdata(data))
+    else
+        context = IOContext(io, :__PRETTY_TABLES_DATA__ => Any[_getdata(data)])
+    end
+
+    # Create the structure that stores the print information.
+    pinfo = _print_info(
+        data,
+        context;
+        alignment               = alignment,
+        cell_alignment          = cell_alignment,
+        cell_first_line_only    = cell_first_line_only,
+        compact_printing        = compact_printing,
+        formatters              = formatters,
+        header                  = header,
+        header_alignment        = header_alignment,
+        header_cell_alignment   = header_cell_alignment,
+        max_num_of_columns      = max_num_of_columns,
+        max_num_of_rows         = max_num_of_rows,
+        limit_printing          = limit_printing,
+        renderer                = renderer,
+        row_labels              = row_labels,
+        row_label_alignment     = row_label_alignment,
+        row_label_column_title  = row_label_column_title,
+        row_number_alignment    = row_number_alignment,
+        row_number_column_title = row_number_column_title,
+        show_header             = show_header,
+        show_row_number         = show_row_number,
+        show_subheader          = show_subheader,
+        title                   = title,
+        title_alignment         = title_alignment
+    )
+
+    # Select the appropriate back end.
+    if backend === Val(:text)
+        _pt_text(pinfo; kwargs...)
+
+    elseif backend === Val(:html)
+        # When wrapping `stdout` in `IOContext` in Jupyter, `io.io` is not equal to `stdout`
+        # anymore. Hence, we need to check if `io` is `stdout` before calling `_pt_html`.
+        is_stdout = (io === stdout) || ((io isa IOContext) && (io.io === stdout))
+        _pt_html(pinfo; is_stdout = is_stdout, kwargs...)
+
+    elseif backend === Val(:latex)
+        _pt_latex(pinfo; kwargs...)
+    end
+
+    return nothing
 end

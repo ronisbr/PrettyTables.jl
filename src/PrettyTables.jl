@@ -36,8 +36,8 @@ include("files.jl")
 include("helpers.jl")
 include("misc.jl")
 include("predefined_formatters.jl")
+include("preprocess.jl")
 include("print.jl")
-include("private.jl")
 include("tables.jl")
 
 # Processed Table
