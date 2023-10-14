@@ -96,6 +96,15 @@ include("backends/latex/predefined_formats.jl")
 include("backends/latex/private.jl")
 include("backends/latex/string.jl")
 
+# Markdown backend
+# ------------------------------------------------------------------------------------------
+
+include("backends/markdown/fill.jl")
+include("backends/markdown/markdown_backend.jl")
+include("backends/markdown/misc.jl")
+include("backends/markdown/parse_cell.jl")
+include("backends/markdown/render_cell.jl")
+
 # Precompilation
 # ==========================================================================================
 

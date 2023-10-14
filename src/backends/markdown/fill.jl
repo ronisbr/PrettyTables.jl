@@ -1,0 +1,107 @@
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#
+# Description
+# ==========================================================================================
+#
+#   Fill the string matrix that will be printed in the markdown back end.
+#
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+function _markdown_fill_string_matrix!(
+    @nospecialize(io::IOContext),
+    table_str::Matrix{String},
+    ptable::ProcessedTable,
+    actual_columns_width::Vector{Int},
+    @nospecialize(formatters::Ref{Any}),
+    # Configuration options.
+    compact_printing::Bool,
+    limit_printing::Bool,
+    renderer::Union{Val{:print}, Val{:show}},
+)
+    num_rows, num_columns = _size(ptable)
+    num_header_rows, ~ = _header_size(ptable)
+
+    @inbounds for j in 1:num_columns
+        # Get the identification of the current column.
+        column_id = _get_column_id(ptable, j)
+
+        # Get the column index in the original data. Notice that this is ignored if the
+        # column is not from the original data.
+        jr = _get_data_column_index(ptable, j)
+
+        # Store the largest cell width in this column.
+        largest_cell_width = 0
+
+        for i in 1:num_rows
+            # We need to force `cell_str` to `String` to avoid type instabilities.
+            local cell_str::String
+
+            # Get the identification of the current row.
+            row_id = _get_row_id(ptable, i)
+
+            # Get the cell data.
+            cell_data = _get_element(ptable, i, j);
+
+            if (row_id == :__HEADER__) || (row_id == :__SUBHEADER__)
+                cell_str = _markdown_parse_cell(
+                    io,
+                    cell_data;
+                    compact_printing = compact_printing,
+                    limit_printing = limit_printing,
+                    renderer = Val(:print)
+                )
+
+            elseif (column_id == :row_label)
+                cell_str = _markdown_parse_cell(
+                    io,
+                    cell_data;
+                    compact_printing = compact_printing,
+                    limit_printing = limit_printing,
+                    renderer = Val(:print)
+                )
+
+            elseif (column_id == :__ORIGINAL_DATA__) && (row_id == :__ORIGINAL_DATA__)
+                # Get the row index in the original data.
+                ir = _get_data_row_index(ptable, i)
+
+                # Get the original type of the cell, which is used in some special cases in
+                # the renderers.
+                cell_data_type = typeof(cell_data)
+
+                # Apply the formatters.
+
+                # Notice that `(ir, jr)` are the indices of the printed data. It means that
+                # it refers to the ir-th data row and jr-th data column that will be
+                # printed. We need to convert those indices to the actual indices in the
+                # input table.
+                tir, tjr = _convert_axes(ptable.data, ir, jr)
+
+                for f in formatters.x
+                    cell_data = f(cell_data, tir, tjr)
+                end
+
+                # Render the cell.
+                cell_str = _markdown_parse_cell(
+                    io,
+                    cell_data;
+                    cell_data_type = cell_data_type,
+                    compact_printing = compact_printing,
+                    limit_printing = limit_printing,
+                    renderer = renderer
+                )
+
+            else
+                cell_str = string(cell_data)
+
+            end
+
+            table_str[i, j] = cell_str
+
+            largest_cell_width = max(largest_cell_width, textwidth.(cell_str))
+        end
+
+        actual_columns_width[j] = largest_cell_width
+    end
+
+    return nothing
+end

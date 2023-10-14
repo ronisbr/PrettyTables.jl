@@ -928,6 +928,9 @@ function _print_table(
 
     elseif backend === Val(:latex)
         _print_table_with_latex_back_end(pinfo; kwargs...)
+
+    elseif backend === Val(:markdown)
+        return _print_table_with_markdown_back_end(pinfo; kwargs...)
     end
 
     return nothing

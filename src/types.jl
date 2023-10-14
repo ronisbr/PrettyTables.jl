@@ -14,7 +14,7 @@ export PrettyTablesConf
 
 Types that define the supported back ends.
 """
-const T_BACKENDS = Union{Val{:auto}, Val{:text}, Val{:html}, Val{:latex}}
+const T_BACKENDS = Union{Val{:auto}, Val{:text}, Val{:html}, Val{:latex}, Val{:markdown}}
 
 """
     struct ColumnTable
