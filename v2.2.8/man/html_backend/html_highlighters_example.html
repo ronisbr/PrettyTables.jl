@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<meta charset="UTF-8">
+<style>
+table, td, th {
+    border-collapse: collapse;
+    font-family: sans-serif;
+}
+
+td, th {
+    border-bottom: 0;
+    padding: 4px
+}
+
+tr:nth-child(odd) {
+    background: #eee;
+}
+
+tr:nth-child(even) {
+    background: #fff;
+}
+
+tr.header {
+    background: navy !important;
+    color: white;
+    font-weight: bold;
+}
+
+tr.subheader {
+    background: lightgray !important;
+    color: black;
+}
+
+tr.headerLastRow {
+    border-bottom: 2px solid black;
+}
+
+th.rowNumber, td.rowNumber {
+    text-align: right;
+}
+
+</style>
+<body>
+<table>
+
+<tr class = header>
+<th style = "text-align: right; ">Time</th>
+<th style = "text-align: right; ">Acceleration</th>
+<th style = "text-align: right; ">Velocity</th>
+<th style = "text-align: right; ">Distance</th>
+</tr>
+<tr class = "subheader headerLastRow">
+<th style = "text-align: right; ">[s]</th>
+<th style = "text-align: right; ">[m/s²]</th>
+<th style = "text-align: right; ">[m/s]</th>
+<th style = "text-align: right; ">[m]</th>
+</tr>
+<tr>
+<td style = "text-align: right; ">0.0</td>
+<td style = "text-align: right; ">1.0</td>
+<td style = "text-align: right; ">0.0</td>
+<td style = "text-align: right; ">0.0</td>
+</tr>
+<tr>
+<td style = "text-align: right; ">1.0</td>
+<td style = "text-align: right; ">1.0</td>
+<td style = "text-align: right; ">1.0</td>
+<td style = "text-align: right; ">0.5</td>
+</tr>
+<tr>
+<td style = "text-align: right; ">2.0</td>
+<td style = "text-align: right; ">1.0</td>
+<td style = "text-align: right; ">2.0</td>
+<td style = "text-align: right; ">2.0</td>
+</tr>
+<tr>
+<td style = "text-align: right; ">3.0</td>
+<td style = "text-align: right; ">1.0</td>
+<td style = "text-align: right; ">3.0</td>
+<td style = "text-align: right; ">4.5</td>
+</tr>
+<tr>
+<td style = "text-align: right; ">4.0</td>
+<td style = "text-align: right; ">1.0</td>
+<td style = "text-align: right; ">4.0</td>
+<td style = "text-align: right; ">8.0</td>
+</tr>
+<tr>
+<td style = "text-align: right; ">5.0</td>
+<td style = "text-align: right; ">1.0</td>
+<td style = "text-align: right; ">5.0</td>
+<td style = "color: red; text-align: right; ">12.5</td>
+</tr>
+<tr>
+<td style = "text-align: right; ">6.0</td>
+<td style = "text-align: right; ">1.0</td>
+<td style = "text-align: right; ">6.0</td>
+<td style = "color: red; text-align: right; ">18.0</td>
+</tr>
+<tr>
+<td style = "text-align: right; ">7.0</td>
+<td style = "text-align: right; ">1.0</td>
+<td style = "text-align: right; ">7.0</td>
+<td style = "color: red; text-align: right; ">24.5</td>
+</tr>
+<tr>
+<td style = "text-align: right; ">8.0</td>
+<td style = "text-align: right; ">1.0</td>
+<td style = "text-align: right; ">8.0</td>
+<td style = "color: red; text-align: right; ">32.0</td>
+</tr>
+<tr>
+<td style = "text-align: right; ">9.0</td>
+<td style = "text-align: right; ">1.0</td>
+<td style = "text-align: right; ">9.0</td>
+<td style = "color: red; text-align: right; ">40.5</td>
+</tr>
+<tr>
+<td style = "background: black; color: white; text-align: right; ">10.0</td>
+<td style = "background: black; color: white; text-align: right; ">1.0</td>
+<td style = "background: black; color: white; text-align: right; ">10.0</td>
+<td style = "background: black; color: white; text-align: right; ">50.0</td>
+</tr>
+<tr>
+<td style = "text-align: right; ">11.0</td>
+<td style = "text-align: right; ">1.0</td>
+<td style = "color: blue; font-weight: bold; text-align: right; ">11.0</td>
+<td style = "color: red; text-align: right; ">60.5</td>
+</tr>
+<tr>
+<td style = "text-align: right; ">12.0</td>
+<td style = "text-align: right; ">1.0</td>
+<td style = "color: blue; font-weight: bold; text-align: right; ">12.0</td>
+<td style = "color: red; text-align: right; ">72.0</td>
+</tr>
+<tr>
+<td style = "text-align: right; ">13.0</td>
+<td style = "text-align: right; ">1.0</td>
+<td style = "color: blue; font-weight: bold; text-align: right; ">13.0</td>
+<td style = "color: red; text-align: right; ">84.5</td>
+</tr>
+<tr>
+<td style = "text-align: right; ">14.0</td>
+<td style = "text-align: right; ">1.0</td>
+<td style = "color: blue; font-weight: bold; text-align: right; ">14.0</td>
+<td style = "color: red; text-align: right; ">98.0</td>
+</tr>
+<tr>
+<td style = "text-align: right; ">15.0</td>
+<td style = "text-align: right; ">1.0</td>
+<td style = "color: blue; font-weight: bold; text-align: right; ">15.0</td>
+<td style = "color: red; text-align: right; ">112.5</td>
+</tr>
+<tr>
+<td style = "text-align: right; ">16.0</td>
+<td style = "text-align: right; ">1.0</td>
+<td style = "color: blue; font-weight: bold; text-align: right; ">16.0</td>
+<td style = "color: red; text-align: right; ">128.0</td>
+</tr>
+<tr>
+<td style = "text-align: right; ">17.0</td>
+<td style = "text-align: right; ">1.0</td>
+<td style = "color: blue; font-weight: bold; text-align: right; ">17.0</td>
+<td style = "color: red; text-align: right; ">144.5</td>
+</tr>
+<tr>
+<td style = "text-align: right; ">18.0</td>
+<td style = "text-align: right; ">1.0</td>
+<td style = "color: blue; font-weight: bold; text-align: right; ">18.0</td>
+<td style = "color: red; text-align: right; ">162.0</td>
+</tr>
+<tr>
+<td style = "text-align: right; ">19.0</td>
+<td style = "text-align: right; ">1.0</td>
+<td style = "color: blue; font-weight: bold; text-align: right; ">19.0</td>
+<td style = "color: red; text-align: right; ">180.5</td>
+</tr>
+<tr>
+<td style = "text-align: right; ">20.0</td>
+<td style = "text-align: right; ">1.0</td>
+<td style = "color: blue; font-weight: bold; text-align: right; ">20.0</td>
+<td style = "color: red; text-align: right; ">200.0</td>
+</tr>
+</table></body></html>
