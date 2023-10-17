@@ -534,3 +534,102 @@ end
     )
     @test result == expected
 end
+
+@testset "Formatters after Middle Cropping" begin
+    matrix = OffsetArray(
+        vcat(ones(10, 11), fill(missing, 1, 11)),
+        -5:5, -5:5
+    )
+
+    expected = """
+<table>
+  <thead>
+    <tr class = "header headerLastRow">
+      <th style = "text-align: right;">Col. -5</th>
+      <th style = "text-align: right;">Col. -4</th>
+      <th style = "text-align: right;">&ctdot;</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style = "text-align: right;">1.0</td>
+      <td style = "text-align: right;">1.0</td>
+      <td style = "text-align: right;">&ctdot;</td>
+    </tr>
+    <tr>
+      <td style = "text-align: right;">&vellip;</td>
+      <td style = "text-align: right;">&vellip;</td>
+      <td style = "text-align: right;">&dtdot;</td>
+    </tr>
+    <tr>
+      <td style = "text-align: right;">M</td>
+      <td style = "text-align: right;">M</td>
+      <td style = "text-align: right;">&ctdot;</td>
+    </tr>
+  </tbody>
+</table>
+"""
+
+    result = pretty_table(
+        String,
+        matrix;
+        backend = Val(:html),
+        formatters = ((v, i, j) -> i == 5 ? "M" : v),
+        max_num_of_rows = 2,
+        max_num_of_columns = 2,
+        vcrop_mode = :middle
+    )
+
+    @test result == expected
+end
+
+@testset "Highlighters after Middle Cropping" begin
+    matrix = OffsetArray(
+        vcat(ones(10, 11), fill(missing, 1, 11)),
+        -5:5, -5:5
+    )
+
+    expected = """
+<table>
+  <thead>
+    <tr class = "header headerLastRow">
+      <th style = "text-align: right;">Col. -5</th>
+      <th style = "text-align: right;">Col. -4</th>
+      <th style = "text-align: right;">&ctdot;</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style = "text-align: right;">1.0</td>
+      <td style = "text-align: right;">1.0</td>
+      <td style = "text-align: right;">&ctdot;</td>
+    </tr>
+    <tr>
+      <td style = "text-align: right;">&vellip;</td>
+      <td style = "text-align: right;">&vellip;</td>
+      <td style = "text-align: right;">&dtdot;</td>
+    </tr>
+    <tr>
+      <td style = "font-style: italic; text-align: right;">missing</td>
+      <td style = "font-style: italic; text-align: right;">missing</td>
+      <td style = "text-align: right;">&ctdot;</td>
+    </tr>
+  </tbody>
+</table>
+"""
+
+    result = pretty_table(
+        String,
+        matrix;
+        backend = Val(:html),
+        highlighters = HtmlHighlighter(
+            (data, i, j) -> data[i, j] === missing,
+            HtmlDecoration(font_style = "italic"),
+        ),
+        max_num_of_rows = 2,
+        max_num_of_columns = 2,
+        vcrop_mode = :middle
+    )
+
+    @test result == expected
+end
