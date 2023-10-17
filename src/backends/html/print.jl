@@ -390,7 +390,7 @@ function _pt_html(
                 is_original_data = column_id == :__ORIGINAL_DATA__
 
                 if is_original_data
-                    ir = _get_data_row_index(ptable, i)
+                    ir = _get_data_row_index(ptable, i + Δr)
                     jr = _get_data_column_index(ptable, j)
 
                     # Notice that `(ir, jr)` are the indices of the printed
