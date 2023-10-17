@@ -1,6 +1,12 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 2.2.8
+-------------
+
+- ![Bugfix][badge-bugfix] The print function was passing the wrong cell reference for
+  formatters and highlighters after the middle cropping in HTML back end.
+
 Version 2.2.7
 -------------
 
