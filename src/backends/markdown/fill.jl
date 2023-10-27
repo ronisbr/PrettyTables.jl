@@ -40,7 +40,7 @@ function _markdown_fill_string_matrix!(
             row_id = _get_row_id(ptable, i)
 
             # Get the cell data.
-            cell_data = _get_element(ptable, i, j);
+            cell_data = _get_element(ptable, i, j)
 
             if (row_id == :__HEADER__) || (row_id == :__SUBHEADER__)
                 cell_str = _markdown_parse_cell(
@@ -101,6 +101,23 @@ function _markdown_fill_string_matrix!(
         end
 
         actual_columns_width[j] = largest_cell_width
+    end
+
+    # Since markdown does not support multiple header lines, we need to merge them.
+    @inbounds for i in 1:num_rows
+        # Get the identification of the current row.
+        row_id = _get_row_id(ptable, i)
+
+        row_id == :__HEADER__ && continue
+        row_id != :__SUBHEADER__ && break
+
+        for j in 1:num_columns
+            table_str[1, j] *= "<br>$(table_str[i, j])"
+        end
+    end
+
+    @inbounds for j in 1:num_columns
+        actual_columns_width[j] = max(actual_columns_width[j], textwidth(table_str[1, j]))
     end
 
     return nothing

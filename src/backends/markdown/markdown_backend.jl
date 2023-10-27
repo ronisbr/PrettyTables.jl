@@ -67,6 +67,9 @@ function _print_table_with_markdown_back_end(
         # Get the identification of the current row.
         row_id = _get_row_id(ptable, i)
 
+        # We should skip if we find sub-headers because they were merged into the headers.
+        row_id == :__SUBHEADER__ && continue
+
         print(buf, "|")
 
         @inbounds for j in 1:num_columns
@@ -95,7 +98,7 @@ function _print_table_with_markdown_back_end(
                 actual_columns_width,
                 hidden_columns_at_end
             )
-       end
+        end
     end
 
     # Print the continuation row if we have hidden rows.
