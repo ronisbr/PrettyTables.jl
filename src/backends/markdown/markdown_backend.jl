@@ -10,6 +10,10 @@
 # Low-level function to print the table using the markdown backend.
 function _print_table_with_markdown_back_end(
     pinfo::PrintInfo;
+    header_decoration::MarkdownDecoration = MarkdownDecoration(bold = true),
+    row_label_decoration::MarkdownDecoration = MarkdownDecoration(),
+    row_number_decoration::MarkdownDecoration = MarkdownDecoration(bold = true),
+    subheader_decoration::MarkdownDecoration = MarkdownDecoration(code = true),
     sortkeys::Bool = false,
 )
     # Unpack fields of `pinfo`.
@@ -58,6 +62,10 @@ function _print_table_with_markdown_back_end(
         compact_printing,
         limit_printing,
         renderer,
+        header_decoration,
+        row_label_decoration,
+        row_number_decoration,
+        subheader_decoration,
     )
 
     # Print the Table

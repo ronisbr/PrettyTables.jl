@@ -17,6 +17,11 @@ function _markdown_fill_string_matrix!(
     compact_printing::Bool,
     limit_printing::Bool,
     renderer::Union{Val{:print}, Val{:show}},
+    # Decorations.
+    header_decoration::MarkdownDecoration,
+    row_label_decoration::MarkdownDecoration,
+    row_number_decoration::MarkdownDecoration,
+    subheader_decoration::MarkdownDecoration,
 )
     num_rows, num_columns = _size(ptable)
     num_header_rows, ~ = _header_size(ptable)
@@ -51,13 +56,23 @@ function _markdown_fill_string_matrix!(
                     renderer = Val(:print)
                 )
 
-            elseif (column_id == :row_label)
+                cell_str = _apply_markdown_decoration(
+                    cell_str,
+                    row_id == :__HEADER__ ? header_decoration : subheader_decoration
+                )
+
+            elseif (column_id == :row_number) || (column_id == :row_label)
                 cell_str = _markdown_parse_cell(
                     io,
                     cell_data;
                     compact_printing = compact_printing,
                     limit_printing = limit_printing,
                     renderer = Val(:print)
+                )
+
+                cell_str = _apply_markdown_decoration(
+                    cell_str, 
+                    column_id == :row_number ? row_number_decoration : row_label_decoration
                 )
 
             elseif (column_id == :__ORIGINAL_DATA__) && (row_id == :__ORIGINAL_DATA__)
@@ -112,6 +127,7 @@ function _markdown_fill_string_matrix!(
         row_id != :__SUBHEADER__ && break
 
         for j in 1:num_columns
+            isempty(table_str[i ,j]) && continue
             table_str[1, j] *= "<br>$(table_str[i, j])"
         end
     end
