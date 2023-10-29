@@ -59,6 +59,7 @@ function _print_table_with_markdown_back_end(
         ptable,
         actual_columns_width,
         formatters,
+        allow_markdown_in_cells,
         compact_printing,
         limit_printing,
         renderer,

@@ -106,6 +106,7 @@ include("backends/markdown/misc.jl")
 include("backends/markdown/parse_cell.jl")
 include("backends/markdown/private.jl")
 include("backends/markdown/render_cell.jl")
+include("backends/markdown/string.jl")
 
 # Precompilation
 # ==========================================================================================

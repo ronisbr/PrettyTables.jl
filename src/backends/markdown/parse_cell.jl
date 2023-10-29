@@ -12,6 +12,7 @@
 function _markdown_parse_cell(
     @nospecialize(io::IOContext),
     cell::Any;
+    allow_markdown_in_cells::Bool = false,
     cell_data_type::DataType = Nothing,
     compact_printing::Bool = true,
     limit_printing::Bool = true,
@@ -33,7 +34,7 @@ function _markdown_parse_cell(
         limit_printing = limit_printing,
     )
 
-    return cell_str
+    return _escape_markdown_str(cell_str, !allow_markdown_in_cells)
 end
 
 _markdown_parse_cell(@nospecialize(io::IOContext), cell::Missing; kwargs...) = ["missing"]

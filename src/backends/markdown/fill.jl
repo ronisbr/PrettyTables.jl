@@ -14,6 +14,7 @@ function _markdown_fill_string_matrix!(
     actual_columns_width::Vector{Int},
     @nospecialize(formatters::Ref{Any}),
     # Configuration options.
+    allow_markdown_in_cells::Bool,
     compact_printing::Bool,
     limit_printing::Bool,
     renderer::Union{Val{:print}, Val{:show}},
@@ -51,6 +52,7 @@ function _markdown_fill_string_matrix!(
                 cell_str = _markdown_parse_cell(
                     io,
                     cell_data;
+                    allow_markdown_in_cells = allow_markdown_in_cells,
                     compact_printing = compact_printing,
                     limit_printing = limit_printing,
                     renderer = Val(:print)
@@ -65,6 +67,7 @@ function _markdown_fill_string_matrix!(
                 cell_str = _markdown_parse_cell(
                     io,
                     cell_data;
+                    allow_markdown_in_cells = allow_markdown_in_cells,
                     compact_printing = compact_printing,
                     limit_printing = limit_printing,
                     renderer = Val(:print)
@@ -99,6 +102,7 @@ function _markdown_fill_string_matrix!(
                 cell_str = _markdown_parse_cell(
                     io,
                     cell_data;
+                    allow_markdown_in_cells = allow_markdown_in_cells,
                     cell_data_type = cell_data_type,
                     compact_printing = compact_printing,
                     limit_printing = limit_printing,
