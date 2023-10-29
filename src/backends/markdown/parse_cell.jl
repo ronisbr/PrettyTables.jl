@@ -16,6 +16,7 @@ function _markdown_parse_cell(
     cell_data_type::DataType = Nothing,
     compact_printing::Bool = true,
     limit_printing::Bool = true,
+    linebreaks::Bool = false,
     renderer::Union{Val{:print}, Val{:show}} = Val(:print),
     kwargs...
 )
@@ -34,7 +35,7 @@ function _markdown_parse_cell(
         limit_printing = limit_printing,
     )
 
-    return _escape_markdown_str(cell_str, !allow_markdown_in_cells)
+    return _escape_markdown_str(cell_str, !allow_markdown_in_cells, linebreaks)
 end
 
 _markdown_parse_cell(@nospecialize(io::IOContext), cell::Missing; kwargs...) = "missing"

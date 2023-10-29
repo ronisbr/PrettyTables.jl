@@ -8,10 +8,16 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # This function was adapted from `escape_string`.
-function _escape_markdown_str(@nospecialize(io::IO), s::AbstractString, escape_markdown::Bool)
+function _escape_markdown_str(
+    @nospecialize(io::IO),
+    s::AbstractString,
+    escape_markdown::Bool,
+    replace_newline::Bool
+)
     a = Iterators.Stateful(s)
     for c in a
         if isascii(c)
+            c == '\n'          ? print(io, replace_newline ? "<br>" : "\\n") :
             c == '*'           ? print(io, escape_markdown ? "\\*" : "*") :
             c == '_'           ? print(io, escape_markdown ? "\\_" : "_") :
             c == '~'           ? print(io, escape_markdown ? "\\~" : "~") :
@@ -35,11 +41,12 @@ function _escape_markdown_str(@nospecialize(io::IO), s::AbstractString, escape_m
     end
 end
 
-function _escape_markdown_str(s::AbstractString, escape_markdown::Bool)
+function _escape_markdown_str(s::AbstractString, escape_markdown::Bool, replace_newline::Bool)
     return sprint(
         _escape_markdown_str,
         s,
-        escape_markdown;
+        escape_markdown,
+        replace_newline;
         sizehint = lastindex(s)
     )
 end

@@ -18,6 +18,7 @@ function _markdown_fill_string_matrix!(
     allow_markdown_in_cells::Bool,
     compact_printing::Bool,
     limit_printing::Bool,
+    linebreaks::Bool,
     renderer::Union{Val{:print}, Val{:show}},
     # Decorations.
     header_decoration::MarkdownDecoration,
@@ -107,6 +108,7 @@ function _markdown_fill_string_matrix!(
                     cell_data_type = cell_data_type,
                     compact_printing = compact_printing,
                     limit_printing = limit_printing,
+                    linebreaks = linebreaks,
                     renderer = renderer
                 )
 

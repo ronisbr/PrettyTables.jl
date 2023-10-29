@@ -12,6 +12,7 @@ function _print_table_with_markdown_back_end(
     pinfo::PrintInfo;
     allow_markdown_in_cells::Bool = false,
     highlighters::Union{MarkdownHighlighter, Tuple} = (),
+    linebreaks::Bool = false,
     show_omitted_cell_summary::Bool = false,
     ## Decorations #########################################################################
     header_decoration::MarkdownDecoration = MarkdownDecoration(bold = true),
@@ -74,6 +75,7 @@ function _print_table_with_markdown_back_end(
         allow_markdown_in_cells,
         compact_printing,
         limit_printing,
+        linebreaks,
         renderer,
         header_decoration,
         row_label_decoration,

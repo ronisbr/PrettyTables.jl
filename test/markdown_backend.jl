@@ -31,6 +31,10 @@ end
     include("./markdown_backend/highlighters.jl")
 end
 
+@testset "Linebreaks" verbose = true begin
+    include("./markdown_backend/linebreaks.jl")
+end
+
 @testset "OffsetArrays" verbose = true begin
     include("./markdown_backend/offset_arrays.jl")
 end

@@ -618,6 +618,7 @@ This back end produces Markdown tables. This back end can be used by selecting
 - `highlighters::Union{MarkdownHighlighter, Tuple}`: An instance of `MarkdownHighlighter` or
     a tuple with a list of Markdown highlighters (see the section
     [Markdown Highlighters](@ref)).
+- `linebreaks::Bool`: If `true`, `\\n` will be replaced by `<br>`. (**Default** = `false`)
 - `show_omitted_cell_summary::Bool`: If `true`, a summary will be printed after the table
     with the number of columns and rows that were omitted. (**Default** = `false`)
 
