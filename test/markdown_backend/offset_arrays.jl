@@ -78,20 +78,27 @@ end
 end
 
 @testset "Highlighters" begin
-
     expected = """
+| **Col. -2** | **Col. -1** | **Col. 0** | **Col. 1** |
+|------------:|------------:|-----------:|-----------:|
+| 1           | false       | 1.0        | **1**      |
+| 2           | true        | 2.0        | **2**      |
+| 3           | false       | 3.0        | **3**      |
+| **4**       | **true**    | **4.0**    | **4**      |
+| 5           | false       | 5.0        | **5**      |
+| 6           | true        | 6.0        | **6**      |
 """
 
-    #= c = MarkdownDecoration(font_weight = "bold") =#
-    #= result = pretty_table( =#
-    #=     String, =#
-    #=     odata; =#
-    #=     backend = Val(:html), =#
-    #=     highlighters = ( =#
-    #=         hl_row(-1, c), =#
-    #=         hl_col(1, c) =#
-    #=     ) =#
-    #= ) =#
+    c = MarkdownDecoration(bold = true)
+    result = pretty_table(
+        String,
+        odata;
+        backend = Val(:markdown),
+        highlighters = (
+            hl_row(-1, c),
+            hl_col(1, c)
+        )
+    )
 end
 
 @testset "Row Labels" begin

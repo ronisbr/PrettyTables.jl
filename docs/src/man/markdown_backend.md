@@ -73,6 +73,8 @@ whereas the second let the user select the desired decoration by specifying the 
     **will not** affect the parameter `data` passed to the highlighter function `f`. It will
     always receive the original, unformatted value.
 
+There are a set of pre-defined highlighters (with names `hl_*`) to make the usage simpler.
+They are defined in the file `./src/backends/markdown/predefined_highlighters.jl`.
 ```julia
 julia> t = 0:1:20;
 
