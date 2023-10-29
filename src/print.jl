@@ -622,6 +622,17 @@ This back end produces Markdown tables. This back end can be used by selecting
 - `show_omitted_cell_summary::Bool`: If `true`, a summary will be printed after the table
     with the number of columns and rows that were omitted. (**Default** = `false`)
 
+The following keywords are available to customize the output decoration:
+
+- `header_decoration::MarkdownDecoration`: Decoration applied to the header.
+    (**Default** = `MarkdownDecoration(bold = true)`)
+- `row_label_decoration::MarkdownDecoration`: Decoration applied to the row label column.
+    (**Default** = `MarkdownDecoration()`)
+- `row_number_decoration::MarkdownDecoration`: Decoration applied to the row number column.
+    (**Default** = `MarkdownDecoration(bold = true)`)
+- `subheader_decoration::MarkdownDecoration`: Decoration applied to the sub-header.
+    (**Default** = `MarkdownDecoration(code = true)`)
+
 ## Markdown Highlighters
 
 A set of highlighters can be passed as a `Tuple` to the `highlighters` keyword.  Each
