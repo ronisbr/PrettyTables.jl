@@ -29,6 +29,7 @@ Pages = [
     "man/text_backend.md"
     "man/html_backend.md"
     "man/latex_backend.md"
+    "man/markdown_backend.md"
     "man/alignment.md"
     "man/formatters.md"
     "man/text_examples.md"

@@ -16,6 +16,7 @@ makedocs(
             "Text"           => "man/text_backend.md",
             "HTML"           => "man/html_backend.md",
             "LaTeX"          => "man/latex_backend.md",
+            "Markdown"       => "man/markdown.md",
         ],
         "Alignment"          => "man/alignment.md",
         "Formatters"         => "man/formatters.md",

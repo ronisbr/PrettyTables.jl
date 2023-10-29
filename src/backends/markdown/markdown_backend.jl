@@ -12,7 +12,7 @@ function _print_table_with_markdown_back_end(
     pinfo::PrintInfo;
     allow_markdown_in_cells::Bool = false,
     highlighters::Union{MarkdownHighlighter, Tuple} = (),
-    show_omitted_cell_summary::Bool = false,
+    show_omitted_cell_summary::Bool = true,
     ## Decorations #########################################################################
     header_decoration::MarkdownDecoration = MarkdownDecoration(bold = true),
     row_label_decoration::MarkdownDecoration = MarkdownDecoration(),
