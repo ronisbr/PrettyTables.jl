@@ -15,6 +15,7 @@ function _escape_markdown_str(@nospecialize(io::IO), s::AbstractString, escape_m
             c == '*'           ? print(io, escape_markdown ? "\\*" : "*") :
             c == '_'           ? print(io, escape_markdown ? "\\_" : "_") :
             c == '~'           ? print(io, escape_markdown ? "\\~" : "~") :
+            c == '`'           ? print(io, escape_markdown ? "\\`" : "`") :
             c == '|'           ? print(io, escape_markdown ? "\\|" : "|") :
             '\a' <= c <= '\r'  ? print(io, "\\", "abtnvfr"[Int(c)-6]) :
             isprint(c)         ? print(io, c) :
