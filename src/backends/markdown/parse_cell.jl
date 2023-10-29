@@ -37,6 +37,6 @@ function _markdown_parse_cell(
     return _escape_markdown_str(cell_str, !allow_markdown_in_cells)
 end
 
-_markdown_parse_cell(@nospecialize(io::IOContext), cell::Missing; kwargs...) = ["missing"]
-_markdown_parse_cell(@nospecialize(io::IOContext), cell::Nothing; kwargs...) = ["nothing"]
-_markdown_parse_cell(@nospecialize(io::IOContext), cell::UndefinedCell; kwargs...) = ["#undef"]
+_markdown_parse_cell(@nospecialize(io::IOContext), cell::Missing; kwargs...) = "missing"
+_markdown_parse_cell(@nospecialize(io::IOContext), cell::Nothing; kwargs...) = "nothing"
+_markdown_parse_cell(@nospecialize(io::IOContext), cell::UndefinedCell; kwargs...) = "#undef"
