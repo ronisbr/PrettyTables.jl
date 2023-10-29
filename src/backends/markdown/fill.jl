@@ -13,6 +13,7 @@ function _markdown_fill_string_matrix!(
     ptable::ProcessedTable,
     actual_columns_width::Vector{Int},
     @nospecialize(formatters::Ref{Any}),
+    @nospecialize(highlighters::Ref{Any}),
     # Configuration options.
     allow_markdown_in_cells::Bool,
     compact_printing::Bool,
@@ -108,6 +109,16 @@ function _markdown_fill_string_matrix!(
                     limit_printing = limit_printing,
                     renderer = renderer
                 )
+
+                # The highlighting in markdown involves adding text to the cell. Hence, we
+                # must apply it here.
+                for h in highlighters.x
+                    if h.f(_getdata(ptable), tir, tjr)
+                        decoration = h.fd(h, _getdata(ptable), tir, tjr)::MarkdownDecoration
+                        cell_str = _apply_markdown_decoration(cell_str, decoration)
+                        break
+                    end
+                end
 
             else
                 cell_str = string(cell_data)

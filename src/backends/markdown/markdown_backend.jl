@@ -10,6 +10,9 @@
 # Low-level function to print the table using the markdown backend.
 function _print_table_with_markdown_back_end(
     pinfo::PrintInfo;
+    allow_markdown_in_cells::Bool = false,
+    highlighters::Union{MarkdownHighlighter, Tuple} = (),
+    ## Decorations #########################################################################
     header_decoration::MarkdownDecoration = MarkdownDecoration(bold = true),
     row_label_decoration::MarkdownDecoration = MarkdownDecoration(),
     row_number_decoration::MarkdownDecoration = MarkdownDecoration(bold = true),
@@ -42,6 +45,13 @@ function _print_table_with_markdown_back_end(
         @goto print_to_output
     end
 
+    # Make sure that `highlighters` is always a Ref{Any}(Tuple).
+    if !(highlighters isa Tuple)
+        highlighters = Ref{Any}((highlighters,))
+    else
+        highlighters = Ref{Any}(highlighters)
+    end
+
     # Create the String Matrix with the Rendered Cells
     # ======================================================================================
 
@@ -59,6 +69,7 @@ function _print_table_with_markdown_back_end(
         ptable,
         actual_columns_width,
         formatters,
+        highlighters,
         allow_markdown_in_cells,
         compact_printing,
         limit_printing,
