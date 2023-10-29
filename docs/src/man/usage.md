@@ -40,6 +40,7 @@ argument `backend`. Currently, the following back ends are supported:
     selection if the keyword `backend` is absent.
 2. **HTML** (`backend = Val(:html)`): prints the table in HTML.
 3. **LaTeX** (`backend = Val(:latex)`): prints the table in LaTeX format.
+4. **Markdown** (`backend = Val(:markdown)`): prints the table in Markdown format.
 
 Each back end defines its own configuration keywords that can be passed using `kwargs`.
 However, the following keywords are valid for all back ends:

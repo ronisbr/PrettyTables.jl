@@ -25,6 +25,7 @@ include("types.jl")
 include("backends/text/types.jl")
 include("backends/html/types.jl")
 include("backends/latex/types.jl")
+include("backends/markdown/types.jl")
 
 ############################################################################################
 #                                         Includes
@@ -95,6 +96,18 @@ include("backends/latex/latex_backend.jl")
 include("backends/latex/predefined_formats.jl")
 include("backends/latex/private.jl")
 include("backends/latex/string.jl")
+
+# Markdown backend
+# ------------------------------------------------------------------------------------------
+
+include("backends/markdown/fill.jl")
+include("backends/markdown/markdown_backend.jl")
+include("backends/markdown/misc.jl")
+include("backends/markdown/parse_cell.jl")
+include("backends/markdown/predefined_highlighters.jl")
+include("backends/markdown/private.jl")
+include("backends/markdown/render_cell.jl")
+include("backends/markdown/string.jl")
 
 # Precompilation
 # ==========================================================================================

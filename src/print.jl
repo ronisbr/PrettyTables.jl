@@ -602,6 +602,86 @@ will wrap all the cells in the table in the following environment:
 
 ---
 
+# Markdown Back End
+
+This back end produces Markdown tables. This back end can be used by selecting
+`backend = Val(:markdown)`.
+
+## Keywords
+
+- `allow_markdown_in_cells::Bool`: By default, special markdown characters like `*`, `_`,
+    `~`, etc. are escaped in markdown back end to generate valid output. However, this
+    algorithm blocks the usage of markdown code inside of the cells. If this keyword is
+    `true`, the escape algorithm **will not** be applied, allowing markdown code inside all
+    the cells. In this case, the user must ensure that the output code is valid.
+    (**Default** = `false`)
+- `highlighters::Union{MarkdownHighlighter, Tuple}`: An instance of `MarkdownHighlighter` or
+    a tuple with a list of Markdown highlighters (see the section
+    [Markdown Highlighters](@ref)).
+- `linebreaks::Bool`: If `true`, `\\n` will be replaced by `<br>`. (**Default** = `false`)
+- `show_omitted_cell_summary::Bool`: If `true`, a summary will be printed after the table
+    with the number of columns and rows that were omitted. (**Default** = `false`)
+
+The following keywords are available to customize the output decoration:
+
+- `header_decoration::MarkdownDecoration`: Decoration applied to the header.
+    (**Default** = `MarkdownDecoration(bold = true)`)
+- `row_label_decoration::MarkdownDecoration`: Decoration applied to the row label column.
+    (**Default** = `MarkdownDecoration()`)
+- `row_number_decoration::MarkdownDecoration`: Decoration applied to the row number column.
+    (**Default** = `MarkdownDecoration(bold = true)`)
+- `subheader_decoration::MarkdownDecoration`: Decoration applied to the sub-header.
+    (**Default** = `MarkdownDecoration(code = true)`)
+
+## Markdown Highlighters
+
+A set of highlighters can be passed as a `Tuple` to the `highlighters` keyword.  Each
+highlighter is an instance of the structure [`MarkdownHighlighter`](@ref). It contains the
+following two public fields:
+
+- `f::Function`: Function with the signature `f(data, i, j)` in which should return `true`
+    if the element `(i,j)` in `data` must be highlighted, or `false` otherwise.
+- `fd::Function`: Function with the signature `fd(h, data, i, j)` in which `h` is the
+    highlighter. This function must return the [`MarkdownDecoration`](@ref) to be applied to
+    the cell that must be highlighted.
+
+The function `f` has the following signature:
+
+    f(data, i, j)
+
+in which `data` is a reference to the data that is being printed, and `i` and `j` are the
+element coordinates that are being tested. If this function returns `true`, the highlight
+style will be applied to the `(i, j)` element. Otherwise, the default style will be used.
+
+If the function `f` returns true, the function `fd(h, data, i, j)` will be called and must
+return an element of type [`MarkdownDecoration`](@ref) that contains the decoration to be
+applied to the cell.
+
+A markdown highlighter can be constructed using two helpers:
+
+    MarkdownHighlighter(f::Function, decoration::MarkdownDecoration)
+
+    MarkdownHighlighter(f::Function, fd::Function)
+
+The first will apply a fixed decoration to the highlighted cell specified in `decoration`
+whereas the second let the user select the desired decoration by specifying the function
+`fd`.
+
+!!! info
+    If only a single highlighter is wanted, it can be passed directly to the keyword
+    `highlighter` without being inside a `Tuple`.
+
+!!! note
+    If multiple highlighters are valid for the element `(i, j)`, the applied style will be
+    equal to the first match considering the order in the tuple `highlighters`.
+
+!!! note
+    If the highlighters are used together with [Formatters](@ref), the change in the format
+    **will not** affect the parameter `data` passed to the highlighter function `f`. It will
+    always receive the original, unformatted value.
+
+---
+
 # Formatters
 
 The keyword `formatters` can be used to pass functions to format the values in the columns.
@@ -928,6 +1008,9 @@ function _print_table(
 
     elseif backend === Val(:latex)
         _print_table_with_latex_back_end(pinfo; kwargs...)
+
+    elseif backend === Val(:markdown)
+        return _print_table_with_markdown_back_end(pinfo; kwargs...)
     end
 
     return nothing
