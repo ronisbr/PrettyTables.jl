@@ -20,7 +20,7 @@ as keywords when calling the function [`pretty_table`](@ref):
     a tuple with a list of Markdown highlighters (see the section
     [Markdown Highlighters](@ref)).
 - `show_omitted_cell_summary::Bool`: If `true`, a summary will be printed after the table
-    with the number of columns and rows that were omitted. (**Default** = `true`)
+    with the number of columns and rows that were omitted. (**Default** = `false`)
 
 ## Markdown Highlighters
 
