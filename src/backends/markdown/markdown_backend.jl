@@ -12,6 +12,7 @@ function _print_table_with_markdown_back_end(
     pinfo::PrintInfo;
     allow_markdown_in_cells::Bool = false,
     highlighters::Union{MarkdownHighlighter, Tuple} = (),
+    show_omitted_cell_summary::Bool = false,
     ## Decorations #########################################################################
     header_decoration::MarkdownDecoration = MarkdownDecoration(bold = true),
     row_label_decoration::MarkdownDecoration = MarkdownDecoration(),
@@ -30,8 +31,8 @@ function _print_table_with_markdown_back_end(
     title                = pinfo.title
     title_alignment      = pinfo.title_alignment
 
-    hidden_rows_at_end = _get_num_of_hidden_rows(ptable) > 0
-    hidden_columns_at_end = _get_num_of_hidden_columns(ptable) > 0
+    num_hidden_rows_at_end = _get_num_of_hidden_rows(ptable)
+    num_hidden_columns_at_end = _get_num_of_hidden_columns(ptable)
 
     # Let's create a `IOBuffer` to write everything and then transfer to `io`.
     buf_io = IOBuffer()
@@ -105,7 +106,7 @@ function _print_table_with_markdown_back_end(
         end
 
         # Check if we have hidden columns.
-        if hidden_columns_at_end
+        if num_hidden_columns_at_end > 0
             print(buf, " ⋯ |")
         end
 
@@ -116,13 +117,13 @@ function _print_table_with_markdown_back_end(
                 buf,
                 ptable,
                 actual_columns_width,
-                hidden_columns_at_end
+                num_hidden_columns_at_end > 0
             )
         end
     end
 
     # Print the continuation row if we have hidden rows.
-    if hidden_rows_at_end
+    if num_hidden_rows_at_end > 0
         print(buf, "|")
 
         @inbounds for j in 1:num_columns
@@ -131,11 +132,42 @@ function _print_table_with_markdown_back_end(
             print(buf, "|")
         end
 
-        if hidden_columns_at_end
+        if num_hidden_columns_at_end > 0
             print(buf, " ⋱ |")
         end
 
         println(buf)
+    end
+
+    # Omitted Cell Summary
+    # ======================================================================================
+
+    if show_omitted_cell_summary
+        str = ""
+
+        if num_hidden_columns_at_end > 1
+            str *= "$(num_hidden_columns_at_end) columns"
+        elseif num_hidden_columns_at_end == 1
+            str *= "1 column"
+        end
+
+        if !isempty(str) && (num_hidden_rows_at_end > 0)
+            str *= " and "
+        end
+
+        if num_hidden_rows_at_end > 1
+            str *= "$(num_hidden_rows_at_end) rows"
+        elseif num_hidden_rows_at_end == 1
+            str *= "1 row"
+        end
+
+        if !isempty(str)
+            str *= " omitted"
+
+            # If we reached this point, we need to show the omitted cell summary.
+            println(buf_io)
+            println(buf_io, "_$(str)_")
+        end
     end
 
     # Print the Buffer Into The IO.
