@@ -77,7 +77,7 @@ function _open_html_tag(
     if !isnothing(properties)
         for (k, v) in properties
             if !isempty(v)
-                properties_str *= " " * k * " = \"" * _str_html_escaped(v) * "\""
+                properties_str *= " " * k * " = \"" * _escape_html_str(v) * "\""
             end
         end
     end
@@ -145,7 +145,7 @@ function _print_top_bar(
                 buf,
                 _create_html_tag(
                     "span",
-                    _str_html_escaped(top_left_str);
+                    _escape_html_str(top_left_str);
                     style = Dict(top_left_str_decoration)
                 ),
                 il,
@@ -170,7 +170,7 @@ function _print_top_bar(
                 buf,
                 _create_html_tag(
                     "span",
-                    _str_html_escaped(top_right_str);
+                    _escape_html_str(top_right_str);
                     style = Dict(top_right_str_decoration)
                 ),
                 il,
