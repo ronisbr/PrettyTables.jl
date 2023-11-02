@@ -22,10 +22,9 @@ function precompilation_input()
 
     # Pre-compile the most common types.
     #
-    # The functions that parse the cells (`_parse_cell_text`,
-    # `_parse_cell_html`) could not be despecialized because it degraded too
-    # much the performance. Hence, there will be a small precompilation for each
-    # different cell type.
+    # The functions that parse the cells (`_text_parse_cell`, `_html_parse_cell`) could not
+    # be despecialized because it degraded too much the performance. Hence, there will be a
+    # small precompilation for each different cell type.
     types = [Int8(1),
              Int16(1),
              Int32(1),

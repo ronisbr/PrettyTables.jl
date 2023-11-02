@@ -12,7 +12,7 @@
 #
 # If `replace_newline` is `true`, then `\n` is replaced with `<br>`. Otherwise, it is
 # escaped, leading to `\\n`.
-function _str_html_escaped(
+function _escape_html_str(
     @nospecialize(io::IO),
     s::AbstractString,
     replace_newline::Bool = false,
@@ -48,13 +48,13 @@ function _str_html_escaped(
     end
 end
 
-function _str_html_escaped(
+function _escape_html_str(
     s::AbstractString,
     replace_newline::Bool = false,
     escape_html_chars::Bool = true
 )
     return sprint(
-        _str_html_escaped,
+        _escape_html_str,
         s,
         replace_newline,
         escape_html_chars;

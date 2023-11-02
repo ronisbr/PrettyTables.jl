@@ -309,7 +309,7 @@ function _print_table_with_html_back_end(
             cell_data = _get_element(ptable, i + Δr, j)
 
             # If we do not annotate the type here, we get type instability due to
-            # `_parse_cell_text`.
+            # `_html_parse_cell`.
             cell_str::String = ""
 
             # The class of the cell.
@@ -345,11 +345,11 @@ function _print_table_with_html_back_end(
 
                     if !isnothing(header_cell_titles) && !isnothing(header_cell_titles[i])
                         jh = _get_data_column_index(ptable, j)
-                        cell_title = _str_html_escaped(string(header_cell_titles[i][jh]))
+                        cell_title = _escape_html_str(string(header_cell_titles[i][jh]))
                     end
                 end
 
-                cell_str = _parse_cell_html(
+                cell_str = _html_parse_cell(
                     io,
                     cell_data;
                     allow_html_in_cells = allow_html_in_cells,
@@ -410,7 +410,7 @@ function _print_table_with_html_back_end(
                     end
                 end
 
-                cell_str = _parse_cell_html(
+                cell_str = _html_parse_cell(
                     io,
                     cell_data;
                     allow_html_in_cells = allow_html_in_cells,

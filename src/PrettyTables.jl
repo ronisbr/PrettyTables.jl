@@ -79,9 +79,9 @@ include("backends/text/custom_text_cells/ansi_text_cell.jl")
 # HTML backend
 # ------------------------------------------------------------------------------------------
 
-include("backends/html/cell_parse.jl")
 include("backends/html/circular_reference.jl")
 include("backends/html/html_backend.jl")
+include("backends/html/parse_cell.jl")
 include("backends/html/predefined_formats.jl")
 include("backends/html/predefined_highlighters.jl")
 include("backends/html/private.jl")

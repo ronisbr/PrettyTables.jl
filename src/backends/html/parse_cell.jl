@@ -8,7 +8,7 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # Parse the table `cell` of type `T` considering the context `io`.
-function _parse_cell_html(
+function _html_parse_cell(
     @nospecialize(io::IOContext),
     cell::Any;
     allow_html_in_cells::Bool = false,
@@ -19,7 +19,7 @@ function _parse_cell_html(
     renderer::Union{Val{:print}, Val{:show}} = Val(:print),
     kwargs...
 )
-    cell_str = _render_cell_html(
+    cell_str = _html_render_cell(
         io,
         cell;
         compact_printing = compact_printing,
@@ -35,10 +35,10 @@ function _parse_cell_html(
     end
 
     # If the user wants HTML code inside cell, we must not escape the HTML characters.
-    return _str_html_escaped(cell_str, replace_newline, !allow_html_in_cells)
+    return _escape_html_str(cell_str, replace_newline, !allow_html_in_cells)
 end
 
-function _parse_cell_html(
+function _html_parse_cell(
     @nospecialize(io::IOContext),
     cell::HtmlCell;
     cell_first_line_only::Bool = false,
@@ -48,7 +48,7 @@ function _parse_cell_html(
     renderer::Union{Val{:print}, Val{:show}} = Val(:print),
     kwargs...
 )
-    cell_str = _render_cell_html(
+    cell_str = _html_render_cell(
         io,
         cell.data;
         compact_printing = compact_printing,
@@ -63,18 +63,18 @@ function _parse_cell_html(
         cell_str = split(cell_str, '\n')[1]
     end
 
-    return _str_html_escaped(cell_str, replace_newline, false)
+    return _escape_html_str(cell_str, replace_newline, false)
 end
 
-function _parse_cell_html(@nospecialize(io::IOContext), cell::Markdown.MD; kwargs...)
+function _html_parse_cell(@nospecialize(io::IOContext), cell::Markdown.MD; kwargs...)
     return replace(sprint(show, MIME("text/html"), cell),"\n"=>"")
 end
 
-_parse_cell_html(@nospecialize(io::IOContext), cell::Missing; kwargs...) = "missing"
-_parse_cell_html(@nospecialize(io::IOContext), cell::Nothing; kwargs...) = "nothing"
-_parse_cell_html(@nospecialize(io::IOContext), cell::UndefinedCell; kwargs...) = "#undef"
+_html_parse_cell(@nospecialize(io::IOContext), cell::Missing; kwargs...) = "missing"
+_html_parse_cell(@nospecialize(io::IOContext), cell::Nothing; kwargs...) = "nothing"
+_html_parse_cell(@nospecialize(io::IOContext), cell::UndefinedCell; kwargs...) = "#undef"
 
-function _render_cell_html(
+function _html_render_cell(
     @nospecialize(io::IOContext),
     cell::Any;
     compact_printing::Bool = true,
