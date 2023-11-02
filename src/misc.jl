@@ -17,19 +17,8 @@ Return a string with a compact representation of type `T`.
 compact_type_str(T) = string(T)
 
 function compact_type_str(T::Union)
-    # TODO: REMOVE! We do not support 1.3 anymore.
-    if VERSION < v"1.3.0"
-        str = if T >: Missing
-            string(Core.Compiler.typesubtract(T, Missing)) * "?"
-        else
-            string(T)
-        end
-    else
-        str = T >: Missing ? string(nonmissingtype(T)) * "?" : string(T)
-    end
-
-    str = replace(str, "Union" => "U")
-    return str
+    str = T >: Missing ? string(nonmissingtype(T)) * "?" : string(T)
+    return replace(str, "Union" => "U")
 end
 
 ############################################################################################
