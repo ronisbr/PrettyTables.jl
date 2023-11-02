@@ -8,7 +8,7 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # Print the entire table data.
-function _print_table_data!(
+function _text_print_table!(
     display::Display,
     ptable::ProcessedTable,
     table_str::Matrix{Vector{String}},
@@ -244,7 +244,7 @@ function _print_table_data!(
                         # alignment and highlighters before rendering it.
                         cell_data = _get_element(ptable, rps.i_pt, j)
 
-                        cell_processed_str, cell_crayon = _process_data_cell_text(
+                        cell_processed_str, cell_crayon = _text_process_data_cell(
                             ptable,
                             cell_data,
                             table_str[i, j][l],

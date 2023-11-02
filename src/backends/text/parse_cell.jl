@@ -9,7 +9,7 @@
 
 # Parse the table `cell` of type `T` and return a vector of `String` with the parsed cell
 # text, one component per line.
-function _parse_cell_text(
+function _text_parse_cell(
     @nospecialize(io::IOContext),
     cell::Any;
     autowrap::Bool = true,
@@ -27,8 +27,8 @@ function _parse_cell_text(
     # Convert to string using the desired renderer.
     #
     # Due to the non-specialization of `data`, `cell` here is inferred as `Any`. However,
-    # we know that the output of `_render_text` must be a vector of String.
-    cell_vstr::Vector{String} = _render_text(
+    # we know that the output of `_text_render_cell` must be a vector of String.
+    cell_vstr::Vector{String} = _text_render_cell(
         renderer,
         io,
         cell,
@@ -47,7 +47,7 @@ function _parse_cell_text(
     return cell_vstr
 end
 
-function _parse_cell_text(
+function _text_parse_cell(
     @nospecialize(io::IOContext),
     cell::Markdown.MD;
     column_width::Integer = -1,
@@ -101,13 +101,13 @@ function _parse_cell_text(
     end
 end
 
-function _parse_cell_text(@nospecialize(io::IOContext), cell::CustomTextCell; kwargs...)
+function _text_parse_cell(@nospecialize(io::IOContext), cell::CustomTextCell; kwargs...)
     # Call the API function to reset all the fields in the custom text cell.
     reset!(cell)
     cell_vstr = parse_cell_text(cell; kwargs...)
     return cell_vstr
 end
 
-_parse_cell_text(@nospecialize(io::IOContext), cell::Missing; kwargs...) = ["missing"]
-_parse_cell_text(@nospecialize(io::IOContext), cell::Nothing; kwargs...) = ["nothing"]
-_parse_cell_text(@nospecialize(io::IOContext), cell::UndefinedCell; kwargs...) = ["#undef"]
+_text_parse_cell(@nospecialize(io::IOContext), cell::Missing; kwargs...) = ["missing"]
+_text_parse_cell(@nospecialize(io::IOContext), cell::Nothing; kwargs...) = ["nothing"]
+_text_parse_cell(@nospecialize(io::IOContext), cell::UndefinedCell; kwargs...) = ["#undef"]

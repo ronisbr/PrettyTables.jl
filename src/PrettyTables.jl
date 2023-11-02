@@ -57,11 +57,11 @@ include("./processed_table/size.jl")
 # ------------------------------------------------------------------------------------------
 
 include("backends/text/alignment.jl")
-include("backends/text/cell_parse.jl")
 include("backends/text/circular_reference.jl")
 include("backends/text/display.jl")
 include("backends/text/fill.jl")
 include("backends/text/misc.jl")
+include("backends/text/parse_cell.jl")
 include("backends/text/predefined_formats.jl")
 include("backends/text/predefined_highlighters.jl")
 include("backends/text/print_cell.jl")

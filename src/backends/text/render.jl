@@ -27,7 +27,7 @@
 #
 # If `limit_printing` is `true`, then `v` will be converted to string using the property
 # `:limit => true`.
-function _render_text(
+function _text_render_cell(
     ::Val{:print},
     @nospecialize(io::IOContext),
     v::Any;
@@ -46,7 +46,7 @@ function _render_text(
 
     str = sprint(print, v; context = context)
 
-    return _render_text(
+    return _text_render_cell(
         Val(:print),
         io,
         str;
@@ -56,7 +56,7 @@ function _render_text(
     )
 end
 
-function _render_text(
+function _text_render_cell(
     ::Val{:print},
     @nospecialize(io::IOContext),
     str::AbstractString;
@@ -79,7 +79,7 @@ function _render_text(
     return output_str
 end
 
-function _render_text(
+function _text_render_cell(
     ::Val{:show},
     @nospecialize(io::IOContext),
     v::Any;
@@ -97,7 +97,7 @@ function _render_text(
 
     str  = sprint(show, v; context = context)
 
-    return _render_text(
+    return _text_render_cell(
         Val(:show),
         io,
         str;
@@ -108,7 +108,7 @@ function _render_text(
     )
 end
 
-function _render_text(
+function _text_render_cell(
     ::Val{:show},
     @nospecialize(io::IOContext),
     v::AbstractString;

@@ -206,7 +206,7 @@ function _print_table_with_text_back_end(
 
     # Fill the string matrix with the rendered cells. This function also returns the updated
     # number of rendered rows and columns given the user specifications about cropping.
-    num_rendered_rows, num_rendered_columns = _fill_matrix_data!(
+    num_rendered_rows, num_rendered_columns = _text_fill_string_matrix!(
         io,
         table_str,
         ptable,
@@ -384,7 +384,7 @@ function _print_table_with_text_back_end(
         reserved_display_lines
 
     # Print the table.
-    _print_table_data!(
+    _text_print_table!(
         display,
         ptable,
         table_str,
