@@ -176,12 +176,12 @@ function _print_table_with_latex_back_end(
             cell_data = _get_element(ptable, i, j)
 
             # If we do not annotate the type here, then we get type instability
-            # due to `_parse_cell_text`.
+            # due to `_latex_parse_cell`.
             cell_str::String = ""
 
             if _is_header_row(row_id)
                 if column_id == :__ORIGINAL_DATA__
-                    cell_str = _parse_cell_latex(
+                    cell_str = _latex_parse_cell(
                         io,
                         cell_data;
                         compact_printing = compact_printing,
@@ -203,7 +203,7 @@ function _print_table_with_latex_back_end(
                 # Check if the cell alignment must be changed with respect to
                 # the column alignment.
                 if cell_alignment != column_alignment
-                    cell_str = _latex_apply_cell_alignment(
+                    cell_str = _latex_cell_alignment(
                         ptable,
                         cell_str,
                         cell_alignment,
@@ -240,7 +240,7 @@ function _print_table_with_latex_back_end(
                         cell_data = f(cell_data, tir, tjr)
                     end
 
-                    cell_str = _parse_cell_latex(
+                    cell_str = _latex_parse_cell(
                         io,
                         cell_data;
                         cell_first_line_only = cell_first_line_only,
@@ -260,7 +260,7 @@ function _print_table_with_latex_back_end(
                     # Check if the cell alignment must be changed with respect to the column
                     # alignment.
                     if cell_alignment != column_alignment
-                        cell_str = _latex_apply_cell_alignment(
+                        cell_str = _latex_cell_alignment(
                             ptable,
                             cell_str,
                             cell_alignment,
