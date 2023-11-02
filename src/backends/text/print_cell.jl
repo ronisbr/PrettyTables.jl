@@ -89,7 +89,7 @@ function _print_omitted_cell_summary(
 end
 
 # Process the cell by applying the correct alignment and also verifying the highlighters.
-function _process_data_cell_text(
+function _text_process_data_cell(
     ptable::ProcessedTable,
     cell_data::Any,
     cell_str::String,

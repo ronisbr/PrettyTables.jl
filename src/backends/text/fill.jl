@@ -3,12 +3,12 @@
 # Description
 # ==========================================================================================
 #
-#   Functions to fill data in the table that will be printed.
+#   Fill the string matrix that will be printed in the text back end.
 #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # Fill the the string matrix table.
-function _fill_matrix_data!(
+function _text_fill_string_matrix!(
     @nospecialize(io::IOContext),
     table_str::Matrix{Vector{String}},
     ptable::ProcessedTable,
@@ -81,7 +81,7 @@ function _fill_matrix_data!(
             cell_data = _get_element(ptable, i_pt, j);
 
             if (row_id == :__HEADER__) || (row_id == :__SUBHEADER__)
-                cell_str = _parse_cell_text(
+                cell_str = _text_parse_cell(
                     io,
                     cell_data;
                     autowrap = false,
@@ -95,7 +95,7 @@ function _fill_matrix_data!(
                 )
 
             elseif (column_id == :row_label)
-                cell_str = _parse_cell_text(
+                cell_str = _text_parse_cell(
                     io,
                     cell_data;
                     autowrap = false,
@@ -132,7 +132,7 @@ function _fill_matrix_data!(
                 end
 
                 # Render the cell.
-                cell_str = _parse_cell_text(
+                cell_str = _text_parse_cell(
                     io,
                     cell_data,
                     autowrap = autowrap && fixed_column_width,
