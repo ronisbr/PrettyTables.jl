@@ -90,9 +90,9 @@ include("backends/html/string.jl")
 # LaTeX backend
 # ------------------------------------------------------------------------------------------
 
-include("backends/latex/cell_parse.jl")
 include("backends/latex/circular_reference.jl")
 include("backends/latex/latex_backend.jl")
+include("backends/latex/parse_cell.jl")
 include("backends/latex/predefined_formats.jl")
 include("backends/latex/private.jl")
 include("backends/latex/string.jl")

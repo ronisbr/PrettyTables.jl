@@ -14,8 +14,21 @@ const _latex_table_env = Dict(
     :tabular   => "tabular"
 )
 
+# Convert the alignment symbol into a LaTeX alignment string.
+function _latex_alignment(s::Symbol)
+    if (s == :l) || (s == :L)
+        return "l"
+    elseif (s == :c) || (s == :C)
+        return "c"
+    elseif (s == :r) || (s == :R)
+        return "r"
+    else
+        error("Invalid LaTeX alignment symbol: $s.")
+    end
+end
+
 # Apply an alignment to a LaTeX table cell.
-function _latex_apply_cell_alignment(
+function _latex_cell_alignment(
     ptable::ProcessedTable,
     str::String,
     alignment::Symbol,
@@ -42,19 +55,6 @@ function _latex_apply_cell_alignment(
 
     # Wrap the data into the multicolumn environment.
     return _latex_envs(str, "multicolumn{1}{$(lvline)$(a)$(rvline)}")
-end
-
-# Convert the alignment symbol into a LaTeX alignment string.
-function _latex_alignment(s::Symbol)
-    if (s == :l) || (s == :L)
-        return "l"
-    elseif (s == :c) || (s == :C)
-        return "c"
-    elseif (s == :r) || (s == :R)
-        return "r"
-    else
-        error("Invalid LaTeX alignment symbol: $s.")
-    end
 end
 
 # Get the LaTeX table description (alignment and vertical columns).
