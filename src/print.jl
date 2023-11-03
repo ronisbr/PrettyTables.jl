@@ -744,13 +744,17 @@ function pretty_table(
     kwargs...
 )
     istable = Tables.istable(data)
+
     if istable
         if Tables.columnaccess(data)
             pdata, pheader = _preprocess_column_tables_jl(data, header)
-        elseif Tables.rowaccess(data)
-            pdata, pheader = _preprocess_row_tables_jl(data, header)
+
         else
-            error("The object does not have a valid Tables.jl implementation.")
+            # If we do not have column access, let's just assume row access as indicated
+            # here:
+            #
+            #   https://github.com/ronisbr/PrettyTables.jl/issues/220
+            pdata, pheader = _preprocess_row_tables_jl(data, header)
         end
 
     elseif data isa AbstractVecOrMat
