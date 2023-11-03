@@ -71,38 +71,34 @@ function getindex(rtable::RowTable, inds...)
     # Get the column name.
     column_name = rtable.column_names[j]
 
-    # Get the i-th row by iterating the row table.
-    it, state = iterate(rtable.table)
+    # If we have `Tables.subset`, let's use it. Otherwise, we fallback to the row iteration
+    # as indicated here:
+    #
+    #   https://github.com/ronisbr/PrettyTables.jl/issues/220
 
-    for _ in 2:i
-        it, state = iterate(rtable.table, state)
-        it === nothing && error("The row `i` does not exist.")
+    try
+        row = Tables.subset(rtable.data, i; viewhint = true)
+        element = Tables.getcolumn(row, column_name)
+        return element
+
+    catch e
+        # Get the i-th row by iterating the row table.
+        it, state = iterate(rtable.table)
+
+        for _ in 2:i
+            it, state = iterate(rtable.table, state)
+            it === nothing && error("The row `i` does not exist.")
+        end
+
+        element = Tables.getcolumn(it, column_name)
+
+        return element
     end
-
-    element = it[column_name]
-
-    return element
 end
 
 function isassigned(rtable::RowTable, inds...)
-    length(inds) != 2 && error("A element of type `RowTable` must be accesses using 2 indices.")
-
-    # Access index.
-    i, j = inds[1], inds[2]
-
-    # Get the column name.
-    column_name = rtable.column_names[j]
-
-    # Get the i-th row by iterating the row table.
-    it, state = iterate(rtable.table)
-
-    for _ in 2:i
-        it, state = iterate(rtable.table, state)
-        it === nothing && error("The row `i` does not exist.")
-    end
-
     try
-        element = it[column_name]
+        getindex(rtable, inds...)
         return true
     catch e
         if isa(e, UndefRefError)

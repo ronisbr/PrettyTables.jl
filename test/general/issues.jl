@@ -492,3 +492,24 @@ end
     )
     @test result == expected
 end
+
+@testset "Issue #220 - Matrix with NamedTuples" begin
+    table = [
+        (a = 1, b = 2) (a = 3, b = 4)
+        (a = 5, b = 6) (a = 7, b = 8)
+    ]
+
+    expected = """
+┌───┬───┐
+│ a │ b │
+├───┼───┤
+│ 1 │ 2 │
+│ 5 │ 6 │
+│ 3 │ 4 │
+│ 7 │ 8 │
+└───┴───┘
+"""
+
+    result = pretty_table(String, table)
+    @test result == expected
+end

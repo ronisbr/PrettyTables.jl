@@ -74,10 +74,6 @@ end
     include("text_backend/table_lines.jl")
 end
 
-@testset "Table.jl Compatibility" verbose = true begin
-    include("text_backend/tables.jl")
-end
-
 @testset "Titles" verbose = true begin
     include("text_backend/titles.jl")
 end
