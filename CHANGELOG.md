@@ -1,6 +1,22 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 2.3.0
+-------------
+
+- ![Bugfix][badge-bugfix] The function `ft_round` was broken on Julia 1.11.
+- ![Feature][badge-feature] PrettyTables.jl now have a true Markdown back end.
+- ![Enhancement][badge-enhancement] Custom types can now dispatch easier in `pretty_table`.
+  ([#219][gh-pr-219])
+- ![Enhancement][badge-enhancement] We now use
+  [PrecompileTools.jl](https://github.com/JuliaLang/PrecompileTools.jl) to generate the
+  precompilation statements.
+- ![Enhancement][badge-enhancement] We improved how we handle Tables.jl objects.
+  ([#220][gh-issue-220])
+- ![Info][badge-info] We improved the internal code style. The line width was changed from
+  80 characters to 92 characters, and internal function naming was modified to enhance the
+  readability.
+
 Version 2.2.8
 -------------
 
@@ -750,6 +766,7 @@ Version 0.1.0
 [gh-issue-208]: https://github.com/ronisbr/PrettyTables.jl/issues/208
 [gh-issue-210]: https://github.com/ronisbr/PrettyTables.jl/issues/210
 [gh-issue-212]: https://github.com/ronisbr/PrettyTables.jl/issues/212
+[gh-issue-220]: https://github.com/ronisbr/PrettyTables.jl/issues/220
 
 [gh-pr-5]: https://github.com/ronisbr/PrettyTables.jl/pull/5
 [gh-pr-8]: https://github.com/ronisbr/PrettyTables.jl/pull/8
@@ -768,3 +785,4 @@ Version 0.1.0
 [gh-pr-186]: https://github.com/ronisbr/PrettyTables.jl/pull/186
 [gh-pr-199]: https://github.com/ronisbr/PrettyTables.jl/pull/199
 [gh-pr-211]: https://github.com/ronisbr/PrettyTables.jl/pull/211
+[gh-pr-219]: https://github.com/ronisbr/PrettyTables.jl/pull/219
