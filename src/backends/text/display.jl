@@ -290,8 +290,8 @@ function _write_to_display!(
         write(buf_line, Crayons.END_ANSI)
 
         write(buf_line, str)
-        write(buf_line, _reset_crayon_str)
         write(buf_line, suffix)
+        write(buf_line, _reset_crayon_str)
     else
         write(buf_line, str, suffix)
     end
