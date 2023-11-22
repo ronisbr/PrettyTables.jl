@@ -121,6 +121,7 @@ Store the information of the display and the current cursor position.
     column::Int           = 0
     has_color::Bool       = false
     cont_char::Char       = '⋯'
+    cont_reset::Bool      = true
     cont_space_char::Char = ' '
 
     # Buffer that stores the current line.
