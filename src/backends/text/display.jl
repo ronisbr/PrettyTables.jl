@@ -98,6 +98,7 @@ function _draw_line!(
 
     display.cont_char       = old_cont_char
     display.cont_space_char = old_cont_space_char
+    display.cont_reset      = true
 
     return nothing
 end
