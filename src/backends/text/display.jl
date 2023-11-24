@@ -73,6 +73,7 @@ function _draw_line!(
     old_cont_space_char     = display.cont_space_char
     display.cont_char       = row
     display.cont_space_char = row
+    display.cont_reset      = false
 
     num_cols = length(columns_width)
 
@@ -97,6 +98,7 @@ function _draw_line!(
 
     display.cont_char       = old_cont_char
     display.cont_space_char = old_cont_space_char
+    display.cont_reset      = true
 
     return nothing
 end
@@ -290,8 +292,9 @@ function _write_to_display!(
         write(buf_line, Crayons.END_ANSI)
 
         write(buf_line, str)
-        write(buf_line, _reset_crayon_str)
+        display.cont_reset && write(buf_line, _reset_crayon_str)
         write(buf_line, suffix)
+        display.cont_reset || write(buf_line, _reset_crayon_str)
     else
         write(buf_line, str, suffix)
     end
