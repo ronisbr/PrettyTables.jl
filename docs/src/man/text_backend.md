@@ -28,7 +28,7 @@ keywords when calling the function `pretty_table`:
     line, the alignment of this line depends on the options `alignment_anchor_fallback` and
     `alignment_anchor_fallback_override`. If the key `0` is present, the related regexes
     will be used to align all the columns. In this case, all the other keys will be
-    neglected. Example: `Dict(2 => [r"\\."])` aligns the decimal point of the cells in the
+    neglected. Example: `Dict(2 => [r"\."])` aligns the decimal point of the cells in the
     second column. (**Default** = `Dict{Int, Vector{Regex}}()`)
 - `autowrap::Bool`: If `true`, the text will be wrapped on spaces to fit the column. Notice
     that this function requires `linebreaks = true` and the column must have a fixed size
