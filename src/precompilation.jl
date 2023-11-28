@@ -68,7 +68,7 @@ PrecompileTools.@setup_workload begin
     # We will redirect the `stdout` and `stdin` so that we can execute the pager and input
     # some commands without making visible changes to the user.
     old_stdout = Base.stdout
-    new_stdout = redirect_stdout()
+    new_stdout = redirect_stdout(devnull)
 
     # In HTML, we use `display` if we are rendering to `stdout`. However, even if we are
     # redirecting it, the text is still begin shown in the display. Thus, we create a buffer
