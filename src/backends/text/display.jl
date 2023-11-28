@@ -260,7 +260,7 @@ function _p!(
 end
 
 # Write the string `str` to the display considering the decoration in `crayon`. It also
-# appends a `suffix` after reseting the crayon if necessary.
+# appends a `suffix`, resetting the decoration if required.
 function _write_to_display!(
     display::Display,
     crayon::Crayon,

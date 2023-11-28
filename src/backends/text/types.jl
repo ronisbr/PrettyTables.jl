@@ -113,6 +113,9 @@ Store the information of the display and the current cursor position.
 - `column::Int`: Current column.
 - `has_color::Bool`: Indicates if the display has color support.
 - `cont_char::Char`: The character that indicates the line is cropped.
+- `cont_reset::Bool`: If `true`, the decoration will be reseted before printing the
+    continuation character. Otherwise, the decoration will be reseted after printing the
+    continuation character.
 - `cont_space_char::Char`: Space character to be printed before `cont_char`.
 """
 @kwdef mutable struct Display
