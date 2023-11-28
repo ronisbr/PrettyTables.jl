@@ -1,6 +1,14 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 2.3.1
+-------------
+
+- ![Bugfix][badge-bugfix] `hline` suffix decoration is now handled properly in the text back
+  end when the lines are cropped. ([#228][gh-pr-228])
+- ![Bugfix][badge-bugfix] We now redirect `stdout` to `devnull` during precompilation to
+  avoid hanging in some scenarios. ([#231][gh-pr-231])
+
 Version 2.3.0
 -------------
 
@@ -786,3 +794,5 @@ Version 0.1.0
 [gh-pr-199]: https://github.com/ronisbr/PrettyTables.jl/pull/199
 [gh-pr-211]: https://github.com/ronisbr/PrettyTables.jl/pull/211
 [gh-pr-219]: https://github.com/ronisbr/PrettyTables.jl/pull/219
+[gh-pr-228]: https://github.com/ronisbr/PrettyTables.jl/pull/228
+[gh-pr-231]: https://github.com/ronisbr/PrettyTables.jl/pull/231
