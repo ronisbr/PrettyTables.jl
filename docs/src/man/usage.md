@@ -117,8 +117,8 @@ However, the following keywords are valid for all back ends:
 - `show_row_number::Bool`: If `true`, a new column will be printed showing the row number.
     (**Default** = `false`)
 - `show_subheader::Bool`: If `true`, the sub-header will be printed, *i.e.*  the header will
-    contain only one line. Notice that this option has no effect if `show_header = false`.
-    (**Default** = `false`)
+    contain both the header and subheader. Notice that this option has no effect if `show_header = false`.
+    (**Default** = `true`)
 - `title::AbstractString`: The title of the table. If it is empty, no title will be printed.
     (**Default** = "")
 - `title_alignment::Symbol`: Alignment of the title, which must be a symbol as explained in
