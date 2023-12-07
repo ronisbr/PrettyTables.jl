@@ -108,7 +108,7 @@ following types are supported:
     (**Default** = `false`)
 - `show_subheader::Bool`: If `true`, the sub-header will be printed, *i.e.* the header will
     contain only one line. Notice that this option has no effect if `show_header = false`.
-    (**Default** = `false`)
+    (**Default** = `true`)
 - `title::AbstractString`: The title of the table. If it is empty, no title will be printed.
     (**Default** = "")
 - `title_alignment::Symbol`: Alignment of the title, which must be a symbol as
