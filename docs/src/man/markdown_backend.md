@@ -73,7 +73,7 @@ whereas the second let the user select the desired decoration by specifying the 
 
 !!! info
     If only a single highlighter is wanted, it can be passed directly to the keyword
-    `highlighter` without being inside a `Tuple`.
+    `highlighters` without being inside a `Tuple`.
 
 !!! note
     If multiple highlighters are valid for the element `(i, j)`, the applied style will be
