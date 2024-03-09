@@ -26,8 +26,6 @@ export TextFormat, Highlighter, CustomTextCell
 - `bottom_intersection::Char`: Character in the intersection of the lines in the bottom
     part.
 - `column::Char`: Character in a vertical line inside the table.
-- `left_border::Char`: Character used as the left border.
-- `right_border::Char`: Character used as the right border.
 - `row::Char`: Character in a horizontal line inside the table.
 - `hlines::Vector{Symbol}`: Horizontal lines that must be drawn by default.
 - `vlines::Union{Symbol, Vector{Symbol}}`: Vertical lines that must be drawn by default.
