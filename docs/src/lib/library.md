@@ -1,5 +1,4 @@
-Library
-=======
+# Library
 
 Documentation for `PrettyTables.jl`.
 

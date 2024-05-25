@@ -1,18 +1,14 @@
-PrettyTables.jl
-===============
+# PrettyTables.jl
 
 ```@meta
 CurrentModule = PrettyTables
-DocTestSetup = quote
-    using PrettyTables
-end
 ```
 
 The Julia package [PrettyTables.jl](https://github.com/ronisbr/PrettyTables.jl) has the
 purpose to print data in matrices in a human-readable format. It was inspired in the
 functionality provided by [ASCII Table Generator](https://ozh.github.io/ascii-tables/).
 
-![](./assets/welcome_figure.png)
+![Welcome figure](./assets/welcome_figure.png)
 
 ## Installation
 

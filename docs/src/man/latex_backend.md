@@ -1,11 +1,7 @@
-LaTeX Back End
-==============
+# LaTeX Back End
 
 ```@meta
 CurrentModule = PrettyTables
-DocTestSetup = quote
-    using PrettyTables
-end
 ```
 
 The following options are available when the LaTeX back end is used. Those can be passed as
@@ -16,12 +12,14 @@ keywords when calling the function [`pretty_table`](@ref):
     1 and equal or higher than the number of printed rows will be neglected. This vector
     will be appended to the one in `hlines`, but the indices here are related to the printed
     rows of the body. Thus, if `1` is added to `body_hlines`, a horizontal line will be
-    drawn after the first data row. (**Default** = `Int[]`)
+    drawn after the first data row.
+    (**Default** = `Int[]`)
 - `highlighters::Union{LatexHighlighter, Tuple}`: An instance of `LatexHighlighter` or a
     tuple with a list of LaTeX highlighters (see the section [LaTeX Highlighters](@ref)).
 - `hlines::Union{Nothing, Symbol, AbstractVector}`: This variable controls where the
     horizontal lines will be drawn. It can be `nothing`, `:all`, `:none` or a vector of
-    integers. (**Default** = `nothing`)
+    integers.
+    (**Default** = `nothing`)
     - If it is `nothing`, which is the default, the configuration will be obtained from the
         table format in the variable `tf` (see [`LatexTableFormat`](@ref)).
     - If it is `:all`, all horizontal lines will be drawn.
@@ -36,6 +34,7 @@ keywords when calling the function [`pretty_table`](@ref):
         by adding the symbol `:header`.
 
 !!! info
+
     The values of `body_hlines` will be appended to this vector. Thus, horizontal lines can
     be drawn even if `hlines` is `:none`.
 
@@ -43,9 +42,11 @@ keywords when calling the function [`pretty_table`](@ref):
     (**Default** = "")
 - `longtable_footer::Union{Nothing, AbstractString}`: The string that will be drawn in the
     footer of the tables before a page break. This only works if `table_type` is
-    `:longtable`. If it is `nothing`, no footer will be used. (**Default** = `nothing`)
+    `:longtable`. If it is `nothing`, no footer will be used.
+    (**Default** = `nothing`)
 - `row_number_alignment::Symbol`: Select the alignment of the row number column (see the
-    section [Alignment](@ref)). (**Default** = `:r`)
+    section [Alignment](@ref)).
+    (**Default** = `:r`)
 - `table_type::Union{Nothing, Symbol}`: Select which LaTeX environment will be used to print
     the table. Currently supported options are `:tabular` for `tabular` or `:longtable` for
     `longtable`. If it is `nothing`, the default option of the table format will be used.
@@ -61,15 +62,18 @@ keywords when calling the function [`pretty_table`](@ref):
     variable is related to the **printed columns**. Thus, it is affected by the columns
     added using the variable `show_row_number`. Finally, for convenience, the left and right
     border can be drawn by adding the symbols `:begin` and `:end` to this vector,
-    respectively.  (**Default** = `:none`)
+    respectively.
+    (**Default** = `:none`)
 - `wrap_table::Union{Nothing, String}`: This variable controls whether to wrap the table in
     a environment defined by the variable `wrap_table_environment`.  Defaults to `true`.
     When `false`, the printed table begins with `\\begin{tabular}`. This option does not
     work with `:longtable`. If it is `nothing`, the default option of the table format will
-    be used.  (**Default** = `nothing`)
+    be used.
+    (**Default** = `nothing`)
 - `wrap_table_environment::Union{Nothing, String}`: Environment that will be used to wrap
     the table if the option `wrap_table` is `true`. If it is `nothing`, the default option
-    of the table format will be used.  (**Default** = `nothing`)
+    of the table format will be used.
+    (**Default** = `nothing`)
 
 ## LaTeX Highlighters
 
@@ -121,14 +125,17 @@ will wrap all the cells in the table in the following environment:
     \textbf{\small{<Cell text>}}
 
 !!! info
+
     If only a single highlighter is wanted, it can be passed directly to the keyword
     `highlighter` without being inside a `Tuple`.
 
 !!! note
+
     If multiple highlighters are valid for the element `(i, j)`, the applied style will be
     equal to the first match considering the order in the tuple `highlighters`.
 
 !!! note
+
     If the highlighters are used together with [Formatters](@ref), the change in the format
     **will not** affect the parameter `data` passed to the highlighter function `f`. It will
     always receive the original, unformatted value.
@@ -157,7 +164,7 @@ julia> pretty_table(data, backend = Val(:latex), header = header, highlighters =
     `xcolor`.
 
 ## PrettyTables and Latexify (LaTeXStrings)
- 
+
 To work with `LaTeXString`s, you must wrap them in `LatexCell`s. Otherwise, special LaTeX
 characters are converted or escaped.
 
@@ -194,6 +201,7 @@ The following table formats are available when using the LaTeX back end:
 ![](./latex_backend/format_modern.png)
 
 !!! note
+
     You need the LaTeX package `array` to use the vertical divisions with this
     format.
 
@@ -202,4 +210,5 @@ The following table formats are available when using the LaTeX back end:
 ![](./latex_backend/format_booktabs.png)
 
 !!! note
+
     You need the LaTeX package `booktabs` to render this format.

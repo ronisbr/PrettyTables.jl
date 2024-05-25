@@ -3,9 +3,6 @@ Text back-end examples
 
 ```@meta
 CurrentModule = PrettyTables
-DocTestSetup = quote
-    using PrettyTables
-end
 ```
 
 In the following, it is presented how the following matrix can be printed using the text

@@ -1,11 +1,11 @@
-Text Back end
-=============
+# Text Back end
 
 ```@meta
 CurrentModule = PrettyTables
-DocTestSetup = quote
-    using PrettyTables
-end
+```
+
+```@setup text
+using PrettyTables
 ```
 
 The following options are available when the text back end is used. Those can be passed as
@@ -29,7 +29,8 @@ keywords when calling the function `pretty_table`:
     `alignment_anchor_fallback_override`. If the key `0` is present, the related regexes
     will be used to align all the columns. In this case, all the other keys will be
     neglected. Example: `Dict(2 => [r"\."])` aligns the decimal point of the cells in the
-    second column. (**Default** = `Dict{Int, Vector{Regex}}()`)
+    second column.
+    (**Default** = `Dict{Int, Vector{Regex}}()`)
 - `autowrap::Bool`: If `true`, the text will be wrapped on spaces to fit the column. Notice
     that this function requires `linebreaks = true` and the column must have a fixed size
     (see `columns_width`).
@@ -38,7 +39,8 @@ keywords when calling the function `pretty_table`:
     0 and equal or higher than the number of printed rows will be neglected. This vector
     will be appended to the one in `hlines`, but the indices here are related to the printed
     rows of the body. Thus, if `1` is added to `body_hlines`, a horizontal line will be
-    drawn after the first data row. (**Default** = `Int[]`)
+    drawn after the first data row.
+    (**Default** = `Int[]`)
 - `body_hlines_format::Union{Nothing, NTuple{4, Char}}`: A tuple of 4 characters specifying
     the format of the horizontal lines that will be drawn by `body_hlines`. The characters
     must be the left intersection, the middle intersection, the right intersection, and the
@@ -47,7 +49,8 @@ keywords when calling the function `pretty_table`:
 - `columns_width::Union{Int, AbstractVector{Int}}`: A set of integers specifying the width
     of each column. If the width is equal or lower than 0, it will be automatically computed
     to fit the large cell in the column. If it is a single integer, this number will be used
-    as the size of all columns.  (**Default** = 0)
+    as the size of all columns.
+    (**Default** = 0)
 - `crop::Symbol`: Select the printing behavior when the data is bigger than the available
     display size (see `display_size`). It can be `:both` to crop on vertical and horizontal
     direction, `:horizontal` to crop only on horizontal direction, `:vertical` to crop only
@@ -56,23 +59,27 @@ keywords when calling the function `pretty_table`:
     by default.
 - `crop_subheader::Bool`: If `true`, the sub-header size will not be taken into account when
     computing the column size. Hence, the print algorithm can crop it to save space. This
-    has no effect if the user selects a fixed column width. (**Default** = `false`)
+    has no effect if the user selects a fixed column width.
+    (**Default** = `false`)
 - `continuation_row_alignment::Symbol`: A symbol that defines the alignment of the cells in
     the continuation row. This row is printed if the table is vertically cropped.
     (**Default** = `:c`)
 - `display_size::Tuple{Int, Int}`: A tuple of two integers that defines the display size
     (num. of rows, num. of columns) that is available to print the table. It is used to crop
     the data depending on the value of the keyword `crop`. Notice that if a dimension is not
-    positive, it will be treated as unlimited. (**Default** = `displaysize(io)`)
+    positive, it will be treated as unlimited.
+    (**Default** = `displaysize(io)`)
 - `ellipsis_line_skip::Integer`: An integer defining how many lines will be skipped from
-    showing the ellipsis that indicates the text was cropped.  (**Default** = 0)
+    showing the ellipsis that indicates the text was cropped.
+    (**Default** = 0)
 - `equal_columns_width::Bool`: If `true`, all the columns will have the same width.
     (**Default** = `false`)
 - `highlighters::Union{Highlighter, Tuple}`: An instance of `Highlighter` or a tuple with a
     list of text highlighters (see the section [Text Highlighters](@ref)).
 - `hlines::Union{Nothing, Symbol, AbstractVector}`: This variable controls where the
     horizontal lines will be drawn. It can be `nothing`, `:all`, `:none` or a vector of
-    integers. (**Default** = `nothing`)
+    integers.
+    (**Default** = `nothing`)
     - If it is `nothing`, which is the default, the configuration will be obtained from the
         table format in the variable `tf` (see [`TextFormat`](@ref)).
     - If it is `:all`, all horizontal lines will be drawn.
@@ -87,6 +94,7 @@ keywords when calling the function `pretty_table`:
         be drawn by adding the symbol `:header`.
 
 !!! info
+
     The values of `body_hlines` will be appended to this vector. Thus, horizontal lines can
     be drawn even if `hlines` is `:none`.
 
@@ -106,14 +114,18 @@ keywords when calling the function `pretty_table`:
     (**Default** = `true`)
 - `overwrite::Bool`: If `true`, the same number of lines in the printed table will be
     deleted from the output `io`. This can be used to update the table in the display
-    continuously. (**Default** = `false`)
+    continuously.
+    (**Default** = `false`)
 - `reserved_display_lines::Int`: Number of lines to be left at the beginning of the printing
     when vertically cropping the output. Notice that the lines required to show the title
-    are automatically computed. (**Default** = 0)
+    are automatically computed.
+    (**Default** = 0)
 - `row_number_alignment::Symbol`: Select the alignment of the row number column (see the
-    section [Alignment](@ref)). (**Default** = `:r`)
+    section [Alignment](@ref)).
+    (**Default** = `:r`)
 - `show_omitted_cell_summary::Bool`: If `true`, a summary will be printed after the table
-    with the number of columns and rows that were omitted. (**Default** = `true`)
+    with the number of columns and rows that were omitted.
+    (**Default** = `true`)
 - `tf::TextFormat`: Table format used to print the table (see [`TextFormat`](@ref)).
     (**Default** = `tf_unicode`)
 - `title_autowrap::Bool`: If `true`, the title text will be wrapped considering the title
@@ -128,7 +140,8 @@ keywords when calling the function `pretty_table`:
     (**Default** = `:bottom`)
 - `vlines::Union{Nothing, Symbol, AbstractVector}`: This variable controls where the
     vertical lines will be drawn. It can be `nothing`, `:all`, `:none` or a vector of
-    integers. (**Default** = `nothing`)
+    integers.
+    (**Default** = `nothing`)
     - If it is `nothing`, which is the default, the configuration will be obtained from the
         table format in the variable `tf` (see [`TextFormat`](@ref)).
     - If it is `:all`, all vertical lines will be drawn.
@@ -162,6 +175,7 @@ element can have its own crayon, but the length of the vector must be equal to t
 columns in the data.
 
 !!! note
+
     If the renderer `show` is used, all strings will be printed with surrounding quotes.
     However, if a formatter modifies a value and return a string, those surrounding quotes
     will be removed if the original value is not a string.
@@ -185,6 +199,7 @@ For more information, see the [Crayon.jl
 documentation](https://github.com/KristofferC/Crayons.jl/blob/master/README.md).
 
 !!! info
+
     The Crayon.jl package is re-exported by PrettyTables.jl. Hence, you do not need `using
     Crayons` to create a `Crayon`.
 
@@ -202,89 +217,60 @@ The display size can be configured by the keyword `display_size`, which is a tup
 `Int` with the number of rows and columns, respectively. If this keyword is not specified,
 it is automatically obtained using the function `displaysize(io)`.
 
-```julia-repl
-julia> data = Any[1    false      1.0     0x01 ;
-                  2     true      2.0     0x02 ;
-                  3    false      3.0     0x03 ;
-                  4     true      4.0     0x04 ;
-                  5    false      5.0     0x05 ;
-                  6     true      6.0     0x06 ;];
+```@repl text
+data = Any[
+    1    false      1.0     0x01
+    2     true      2.0     0x02
+    3    false      3.0     0x03
+    4     true      4.0     0x04
+    5    false      5.0     0x05
+    6     true      6.0     0x06
+];
 
-julia> pretty_table(data, display_size = (11, 30))
-┌────────┬────────┬────────┬──
-│ Col. 1 │ Col. 2 │ Col. 3 │ ⋯
-├────────┼────────┼────────┼──
-│      1 │  false │    1.0 │ ⋯
-│      2 │   true │    2.0 │ ⋯
-│      3 │  false │    3.0 │ ⋯
-│   ⋮    │   ⋮    │   ⋮    │ ⋱
-└────────┴────────┴────────┴──
-   1 column and 3 rows omitted
+pretty_table(data, display_size = (11, 30))
 
-julia> pretty_table(data, display_size = (11, 30), crop = :none)
-┌────────┬────────┬────────┬────────┐
-│ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
-├────────┼────────┼────────┼────────┤
-│      1 │  false │    1.0 │      1 │
-│      2 │   true │    2.0 │      2 │
-│      3 │  false │    3.0 │      3 │
-│      4 │   true │    4.0 │      4 │
-│      5 │  false │    5.0 │      5 │
-│      6 │   true │    6.0 │      6 │
-└────────┴────────┴────────┴────────┘
+pretty_table(data, display_size = (11, 30), crop = :none)
 ```
 
 !!! note
+
     In vertical cropping, the header and the first table row is **always** printed.
 
 !!! note
+
     The highlighters will work even in partially printed data.
 
 If the user selects a fixed size for the columns (using the keyword `columns_width`),
 enables line breaks (using the keyword `linebreaks`), and sets `autowrap = true`, the
 algorithm wraps the text on spaces to automatically fit the space.
 
-```jldoctest
-julia> data = ["One very very very big long long line"; "Another very very very big big long long line"];
+```@repl text
+data = ["One very very very big long long line"; "Another very very very big big long long line"]
 
-julia> pretty_table(data, columns_width = 10, autowrap = true, linebreaks = true, show_row_number = true)
-┌─────┬────────────┐
-│ Row │     Col. 1 │
-├─────┼────────────┤
-│   1 │   One very │
-│     │  very very │
-│     │   big long │
-│     │  long line │
-│   2 │    Another │
-│     │  very very │
-│     │   very big │
-│     │   big long │
-│     │  long line │
-└─────┴────────────┘
+pretty_table(
+    data;
+    autowrap = true,
+    columns_width = 10,
+    linebreaks = true,
+    show_row_number = true
+)
 ```
 
 It is also possible to change the vertical cropping behavior to crop the table in the middle
 instead of the bottom. This can be accomplished by passing the option `vcrop_mode = :middle`
 to `pretty_table`:
 
-```julia-repl
-julia> data = Any[1    false      1.0     0x01 ;
-                  2     true      2.0     0x02 ;
-                  3    false      3.0     0x03 ;
-                  4     true      4.0     0x04 ;
-                  5    false      5.0     0x05 ;
-                  6     true      6.0     0x06 ;];
+```@repl text
+data = Any[
+    1    false      1.0     0x01
+    2     true      2.0     0x02
+    3    false      3.0     0x03
+    4     true      4.0     0x04
+    5    false      5.0     0x05
+    6     true      6.0     0x06
+]
 
-julia> pretty_table(data, display_size = (11, 30), vcrop_mode = :middle)
-┌────────┬────────┬────────┬──
-│ Col. 1 │ Col. 2 │ Col. 3 │ ⋯
-├────────┼────────┼────────┼──
-│      1 │  false │    1.0 │ ⋯
-│      2 │   true │    2.0 │ ⋯
-│   ⋮    │   ⋮    │   ⋮    │ ⋱
-│      6 │   true │    6.0 │ ⋯
-└────────┴────────┴────────┴──
-   1 column and 3 rows omitted
+pretty_table(data, display_size = (11, 30), vcrop_mode = :middle)
 ```
 
 ## Text Highlighters
@@ -334,14 +320,17 @@ where it will apply the `Crayon` returned by the function `fd` to the
 highlighted cell.
 
 !!! info
+
     If only a single highlighter is wanted, it can be passed directly to the keyword
     `highlighter` without being inside a `Tuple`.
 
 !!! note
+
     If multiple highlighters are valid for the element `(i, j)`, the applied style will be
     equal to the first match considering the order in the tuple `highlighters`.
 
 !!! note
+
     If the highlighters are used together with [Formatters](@ref), the change in the format
     **will not** affect the parameter `data` passed to the highlighter function `f`. It will
     always receive the original, unformatted value.
@@ -384,7 +373,7 @@ The following table formats are available when using the text back end:
 
 `tf_unicode` (**Default**)
 
-```
+```text
 ┌────────┬────────┬────────┬────────┐
 │ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
 ├────────┼────────┼────────┼────────┤
@@ -396,7 +385,7 @@ The following table formats are available when using the text back end:
 
 `tf_ascii_dots`
 
-```
+```text
 .....................................
 : Col. 1 : Col. 2 : Col. 3 : Col. 4 :
 :........:........:........:........:
@@ -408,7 +397,7 @@ The following table formats are available when using the text back end:
 
 `tf_ascii_rounded`
 
-```
+```text
 .--------.--------.--------.--------.
 | Col. 1 | Col. 2 | Col. 3 | Col. 4 |
 :--------+--------+--------+--------:
@@ -420,7 +409,7 @@ The following table formats are available when using the text back end:
 
 `tf_borderless`
 
-```
+```text
   Col. 1   Col. 2   Col. 3   Col. 4
 
        1    false      1.0        1
@@ -430,7 +419,7 @@ The following table formats are available when using the text back end:
 
 `tf_compact`
 
-```
+```text
  -------- -------- -------- --------
   Col. 1   Col. 2   Col. 3   Col. 4
  -------- -------- -------- --------
@@ -442,7 +431,7 @@ The following table formats are available when using the text back end:
 
 `tf_markdown`
 
-```
+```text
 | Col. 1 | Col. 2 | Col. 3 | Col. 4 |
 |--------|--------|--------|--------|
 |      1 |  false |    1.0 |      1 |
@@ -452,7 +441,7 @@ The following table formats are available when using the text back end:
 
 `tf_matrix`
 
-```
+```text
 ┌                     ┐
 │ 1   false   1.0   1 │
 │ 2    true   2.0   2 │
@@ -467,7 +456,7 @@ The following table formats are available when using the text back end:
 
 `tf_mysql`
 
-```
+```text
 +--------+--------+--------+--------+
 | Col. 1 | Col. 2 | Col. 3 | Col. 4 |
 +--------+--------+--------+--------+
@@ -479,7 +468,7 @@ The following table formats are available when using the text back end:
 
 `tf_simple`
 
-```
+```text
 ========= ======== ======== =========
   Col. 1   Col. 2   Col. 3   Col. 4
 ========= ======== ======== =========
@@ -491,7 +480,7 @@ The following table formats are available when using the text back end:
 
 `tf_unicode_rounded`
 
-```
+```text
 ╭────────┬────────┬────────┬────────╮
 │ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │
 ├────────┼────────┼────────┼────────┤
@@ -506,99 +495,60 @@ The following table formats are available when using the text back end:
     The format `unicode_rounded` should look awful on your browser, but it
     should be printed fine on your terminal.
 
-```jldoctest
-julia> data = Any[f(a) for a = 0:15:90, f in (sind, cosd, tand)];
+```@repl text
+data = Any[f(a) for a = 0:15:90, f in (sind, cosd, tand)]
 
-julia> pretty_table(data, tf = tf_ascii_dots)
-..................................
-:   Col. 1 :   Col. 2 :   Col. 3 :
-:..........:..........:..........:
-:      0.0 :      1.0 :      0.0 :
-: 0.258819 : 0.965926 : 0.267949 :
-:      0.5 : 0.866025 :  0.57735 :
-: 0.707107 : 0.707107 :      1.0 :
-: 0.866025 :      0.5 :  1.73205 :
-: 0.965926 : 0.258819 :  3.73205 :
-:      1.0 :      0.0 :      Inf :
-:..........:..........:..........:
+pretty_table(data, tf = tf_ascii_dots)
 
-julia> pretty_table(data, tf = tf_compact)
- ---------- ---------- ----------
-    Col. 1     Col. 2     Col. 3
- ---------- ---------- ----------
-       0.0        1.0        0.0
-  0.258819   0.965926   0.267949
-       0.5   0.866025    0.57735
-  0.707107   0.707107        1.0
-  0.866025        0.5    1.73205
-  0.965926   0.258819    3.73205
-       1.0        0.0        Inf
- ---------- ---------- ----------
+pretty_table(data, tf = tf_compact)
 ```
 
 It is also possible to define you own custom table by creating a new instance of the
 structure [`TextFormat`](@ref). For example, let's say that you want a table like `simple`
 that does not print the bottom line:
 
-```jldoctest
-julia> data = Any[f(a) for a = 0:15:90, f in (sind, cosd, tand)];
+```@repl text
+data = Any[f(a) for a = 0:15:90, f in (sind, cosd, tand)]
 
-julia> tf = TextFormat(up_right_corner     = '=',
-                       up_left_corner      = '=',
-                       bottom_left_corner  = '=',
-                       bottom_right_corner = '=',
-                       up_intersection     = ' ',
-                       left_intersection   = '=',
-                       right_intersection  = '=',
-                       middle_intersection = ' ',
-                       bottom_intersection = ' ',
-                       column              = ' ',
-                       row                 = '=',
-                       hlines              = [:begin, :header]);
+tf = TextFormat(
+    up_right_corner     = '=',
+    up_left_corner      = '=',
+    bottom_left_corner  = '=',
+    bottom_right_corner = '=',
+    up_intersection     = ' ',
+    left_intersection   = '=',
+    right_intersection  = '=',
+    middle_intersection = ' ',
+    bottom_intersection = ' ',
+    column              = ' ',
+    row                 = '=',
+    hlines              = [:begin, :header]
+)
 
-julia> pretty_table(data, tf = tf)
-=========== ========== ===========
-    Col. 1     Col. 2     Col. 3
-=========== ========== ===========
-       0.0        1.0        0.0
-  0.258819   0.965926   0.267949
-       0.5   0.866025    0.57735
-  0.707107   0.707107        1.0
-  0.866025        0.5    1.73205
-  0.965926   0.258819    3.73205
-       1.0        0.0        Inf
-
+pretty_table(data, tf = tf)
 ```
 
 or that does not print the header line:
 
-```jldoctest
-julia> data = Any[f(a) for a = 0:15:90, f in (sind, cosd, tand)];
+```@repl text
+data = Any[f(a) for a = 0:15:90, f in (sind, cosd, tand)]
 
-julia> tf = TextFormat(up_right_corner     = '=',
-                       up_left_corner      = '=',
-                       bottom_left_corner  = '=',
-                       bottom_right_corner = '=',
-                       up_intersection     = ' ',
-                       left_intersection   = '=',
-                       right_intersection  = '=',
-                       middle_intersection = ' ',
-                       bottom_intersection = ' ',
-                       column              = ' ',
-                       row                 = '=',
-                       hlines              = [:begin, :end]);
+tf = TextFormat(
+    up_right_corner     = '=',
+    up_left_corner      = '=',
+    bottom_left_corner  = '=',
+    bottom_right_corner = '=',
+    up_intersection     = ' ',
+    left_intersection   = '=',
+    right_intersection  = '=',
+    middle_intersection = ' ',
+    bottom_intersection = ' ',
+    column              = ' ',
+    row                 = '=',
+    hlines              = [:begin, :end]
+)
 
-julia> pretty_table(data, tf = tf)
-=========== ========== ===========
-    Col. 1     Col. 2     Col. 3
-       0.0        1.0        0.0
-  0.258819   0.965926   0.267949
-       0.5   0.866025    0.57735
-  0.707107   0.707107        1.0
-  0.866025        0.5    1.73205
-  0.965926   0.258819    3.73205
-       1.0        0.0        Inf
-=========== ========== ===========
+pretty_table(data, tf = tf)
 ```
 
 For more information, see the documentation of the structure
@@ -616,28 +566,40 @@ A custom text cell is an object of a type derived from [`CustomTextCell`](@ref).
 suppose that we want to create a custom cell called `MyTextCell`. This object must comply
 with the API by defining the following functions:
 
-    append_suffix_to_line!(c::MyTextCell, l::Int, suffix::String)
+```julia
+append_suffix_to_line!(c::MyTextCell, l::Int, suffix::String)
+```
 
 Append the `suffix` to the line `l` of the custom cell text `c`.
 
-    apply_line_padding!(c::MyTextCell, l::Int, left_pad::Int, right_pad::Int)
+```julia
+apply_line_padding!(c::MyTextCell, l::Int, left_pad::Int, right_pad::Int)
+```
 
 Apply to the line `l` of the custom text cell `c` the padding with `left_pad` spaces in the
 left and `right_pad` spaces in the right.
 
-    crop_line!(c::MyTextCell, l::Int, num::Int)
+```julia
+crop_line!(c::MyTextCell, l::Int, num::Int)
+```
 
 Crop `num` characters from the line `l` of the custom text cell `c`.
 
-    get_printable_cell_line(c::MyTextCell, l::Int)
+```julia
+get_printable_cell_line(c::MyTextCell, l::Int)
+```
 
 Return the printable line `l` of the custom text cell `c`.
 
-    get_rendered_line(c::MyTextCell, l::Int)
+```julia
+get_rendered_line(c::MyTextCell, l::Int)
+```
 
 Return the rendered line `l` of the custom text cell `l`.
 
-    parse_cell_text(c::CustomTextCell; kwargs...)
+```julia
+parse_cell_text(c::CustomTextCell; kwargs...)
+```
 
 Parse the cell text and return a vector of `String` with the printable cell text, where each
 element in the vector is a new line.
@@ -661,12 +623,14 @@ the user must choose whether or not support them.
 - `renderer::Union{Val{:print}, Val{:show}}`: The render that the user wants to convert the
     cells to strings.
 
-
-    reset!(c::CustomTextCell)
+```julia
+reset!(c::CustomTextCell)
+```
 
 Reset all fields in the custom text cell `c`.
 
 !!! info
+
     The `reset!` function is not required for the API. It is called before parsing the
     custom text cell.
 
@@ -680,17 +644,19 @@ with it.
 
 A [`UrlTextCell`](@ref) can be created with the following function:
 
-    UrlTextCell(text::String, url::String
+```julia
+UrlTextCell(text::String, url::String
+```
 
 which creates a URL cell with a specific `text` that points to an `url`.
 
-```
+```julia-repl
 julia> table = [
-        1 "Ronan Arraes Jardim Chagas" UrlTextCell("Ronan Arraes Jardim Chagas", "https://ronanarraes.com")
-        2 "Google" UrlTextCell("Google", "https://google.com")
-        3 "Apple" UrlTextCell("Apple", "https://apple.com")
-        4 "Emojis!" UrlTextCell("😃"^20, "https://emojipedia.org/github/")
-    ]
+      1 "Ronan Arraes Jardim Chagas" UrlTextCell("Ronan Arraes Jardim Chagas", "https://ronanarraes.com")
+      2 "Google" UrlTextCell("Google", "https://google.com")
+      3 "Apple" UrlTextCell("Apple", "https://apple.com")
+      4 "Emojis!" UrlTextCell("😃"^20, "https://emojipedia.org/github/")
+  ]
 
 julia> pretty_table(table)
 ```
@@ -698,4 +664,5 @@ julia> pretty_table(table)
 ![](../assets/ex_UrlTextCell.png)
 
 !!! warning
+
     This feature is not supported by all terminal emulators.

@@ -1,11 +1,7 @@
-HTML Back End
-=============
+# HTML Back End
 
 ```@meta
 CurrentModule = PrettyTables
-DocTestSetup = quote
-    using PrettyTables
-end
 ```
 
 ```@raw html
@@ -26,13 +22,15 @@ keywords when calling the function [`pretty_table`](@ref):
     usage of HTML code inside of the cells. If this keyword is `true`, the escape algorithm
     **will not** be applied, allowing HTML code inside all the cells. In this case, the user
     must ensure that the output code is valid. If only few cells have HTML code, wrap them
-    in a [`HtmlCell`](@ref) object instead. (**Default** = `false`)
+    in a [`HtmlCell`](@ref) object instead.
+    (**Default** = `false`)
 - `continuation_row_alignment::Symbol`: A symbol that defines the alignment of the cells in
     the continuation row. This row is printed if the table is vertically cropped.
     (**Default** = `:r`)
 - `highlighters::Union{HtmlHighlighter, Tuple}`: An instance of [`HtmlHighlighter`](@ref) or
     a tuple with a list of HTML highlighters (see the section [HTML Highlighters](@ref)).
-- `linebreaks::Bool`: If `true`, `\\n` will be replaced by `<br>`.  (**Default** = `false`)
+- `linebreaks::Bool`: If `true`, `\\n` will be replaced by `<br>`.
+    (**Default** = `false`)
 - `maximum_columns_width::String`: A string with the maximum width of each columns. This
     string must contain a size that is valid in HTML. If it is not empty, each cell will
     have the following style:
@@ -40,32 +38,39 @@ keywords when calling the function [`pretty_table`](@ref):
     - `"overflow": "hidden"`
     - `"text-overflow": "ellipsis"`
     - `"white-space": "nowrap"`
-    If it is empty, no additional style is applied. (**Default** = "")
+    If it is empty, no additional style is applied.
+    (**Default** = "")
 - `standalone::Bool`: If `true`, a complete HTML page will be generated.  Otherwise, only
     the content between the tags `<table>` and `</table>` will be printed (with the tags
-    included). (**Default** = `false`)
+    included).
+    (**Default** = `false`)
 - `vcrop_mode::Symbol`: This variable defines the vertical crop behavior. If it is
     `:bottom`, the data, if required, will be cropped in the bottom. On the other hand, if
     it is `:middle`, the data will be cropped in the middle if necessary.
     (**Default** = `:bottom`)
 - `table_div_class::String`: The class name for the table `div`. It is only used if
-    `wrap_table_in_div` is `true`. (**Default** = "")
-- `table_class::String`: The class name for the table. (**Default** = "")
+    `wrap_table_in_div` is `true`.
+    (**Default** = "")
+- `table_class::String`: The class name for the table.
+    (**Default** = "")
 - `table_style::Dict{String, String}`: A dictionary containing the CSS properties and their
-    values to be added to the table `style`.  (**Default** = `Dict{String, String}()`)
+    values to be added to the table `style`.
+    (**Default** = `Dict{String, String}()`)
 - `tf::HtmlTableFormat`: An instance of the structure [`HtmlTableFormat`](@ref) that defines
     the general format of the HTML table.
 - `top_left_str::String`: String to be printed at the left position of the top bar.
     (**Default** = "")
 - `top_left_str_decoration::HtmlDecoration`: Decoration used to print the top-left string
-    (see `top_left_str`). (**Default** = `HtmlDecoration()`)
+    (see `top_left_str`).
+    (**Default** = `HtmlDecoration()`)
 - `top_right_str::String`: String to be printed at the right position of the top bar. Notice
     that this string will be replaced with the omitted cell summary if it must be displayed.
     (**Default** = "")
 - `top_right_str_decoration::HtmlDecoration`: Decoration used to print the top-right string
-    (see `top_right_str`). (**Default** = `HtmlDecoration()`)
+    (see `top_right_str`).
+    (**Default** = `HtmlDecoration()`)
 - `wrap_table_in_div::Bool`: If `true`, the table will be wrapped in a `div`. 
-  (**Default**: `false`)
+    (**Default**: `false`)
 
 ## HTML Highlighters
 
@@ -103,14 +108,17 @@ whereas the second let the user select the desired decoration by specifying the 
 `fd`.
 
 !!! info
+
     If only a single highlighter is wanted, it can be passed directly to the keyword
     `highlighter` without being inside a `Tuple`.
 
 !!! note
+
     If multiple highlighters are valid for the element `(i, j)`, the applied style will be
     equal to the first match considering the order in the tuple `highlighters`.
 
 !!! note
+
     If the highlighters are used together with [Formatters](@ref), the change in the format
     **will not** affect the parameter `data` passed to the highlighter function `f`. It will
     always receive the original, unformatted value.
@@ -118,7 +126,7 @@ whereas the second let the user select the desired decoration by specifying the 
 There are a set of pre-defined highlighters (with names `hl_*`) to make the usage simpler.
 They are defined in the file `./src/backends/html/predefined_highlighters.jl`.
 
-```julia
+```julia-repl
 julia> t = 0:1:20;
 
 julia> data = hcat(t, ones(length(t)) * 1, 1 * t, 0.5 .* t.^2);
@@ -178,6 +186,7 @@ The following table formats are available when using the HTML back end:
 ```
 
 !!! info
+
     In this case, the table format `html_matrix` was printed with the option
     `noheader = true`.
 

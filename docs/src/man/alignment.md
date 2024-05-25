@@ -1,11 +1,11 @@
-Alignment
-=========
+# Alignment
 
 ```@meta
 CurrentModule = PrettyTables
-DocTestSetup = quote
-    using PrettyTables
-end
+```
+
+```@setup alignment
+using PrettyTables
 ```
 
 The keyword `alignment` can be a `Symbol` or a vector of `Symbol`.
@@ -21,29 +21,14 @@ If it is a vector, it must have the same number of symbols as the number of colu
 `data`. The *i*-th symbol in the vector specify the alignment of the *i*-th column using the
 same symbols as described previously.
 
-```jldoctest
-julia> data = Any[ f(a) for a = 0:30:90, f in (sind, cosd, tand)];
+```@repl alignment
+data = Any[f(a) for a = 0:30:90, f in (sind, cosd, tand)]
 
-julia> pretty_table(data; alignment=:l)
-┌──────────┬──────────┬─────────┐
-│ Col. 1   │ Col. 2   │ Col. 3  │
-├──────────┼──────────┼─────────┤
-│ 0.0      │ 1.0      │ 0.0     │
-│ 0.5      │ 0.866025 │ 0.57735 │
-│ 0.866025 │ 0.5      │ 1.73205 │
-│ 1.0      │ 0.0      │ Inf     │
-└──────────┴──────────┴─────────┘
+pretty_table(data; alignment=:l)
 
-julia> pretty_table(data; alignment=[:l, :c, :r])
-┌──────────┬──────────┬─────────┐
-│ Col. 1   │  Col. 2  │  Col. 3 │
-├──────────┼──────────┼─────────┤
-│ 0.0      │   1.0    │     0.0 │
-│ 0.5      │ 0.866025 │ 0.57735 │
-│ 0.866025 │   0.5    │ 1.73205 │
-│ 1.0      │   0.0    │     Inf │
-└──────────┴──────────┴─────────┘
+pretty_table(data; alignment=[:l, :c, :r])
 ```
 
 !!! note
+
     The `alignment` keyword is supported in all back ends.

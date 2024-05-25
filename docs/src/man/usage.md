@@ -1,11 +1,11 @@
-Usage
-=====
+# Usage
 
 ```@meta
 CurrentModule = PrettyTables
-DocTestSetup = quote
-    using PrettyTables
-end
+```
+
+```@setup usage
+using PrettyTables
 ```
 
 The following function can be used to print data.
@@ -58,9 +58,11 @@ However, the following keywords are valid for all back ends:
     alignment symbol as shown in section [Alignment](@ref), it will be discarded. For
     convenience, it can also be a dictionary of type `(i, j) => a` that overrides the
     alignment of the cell `(i, j)` to `a`. `a` must be a symbol like specified in the
-    section [Alignment](@ref). (**Default** = `nothing`)
+    section [Alignment](@ref).
+    (**Default** = `nothing`)
 
 !!! note
+
     If more than one alignment function is passed to `cell_alignment`,  the functions will
     be evaluated in the same order of the tuple. The first one that returns a valid
     alignment symbol for each cell is applied, and the rest is discarded.
@@ -68,43 +70,52 @@ However, the following keywords are valid for all back ends:
 - `cell_first_line_only::Bool`: If `true`, only the first line of each cell will be printed.
     (**Default** = `false`)
 - `compact_printing::Bool`: Select if the option `:compact` will be used when printing the
-    data. (**Default** = `true`)
+    data.
+    (**Default** = `true`)
 - `formatters::Union{Nothing, Function, Tuple}`: See the section [Formatters](@ref).
 - `header::Union{Symbol, Vector{Symbol}}`: The header must be a tuple of vectors. Each one
     must have the number of elements equal to the number of columns in the table. The first
     vector is considered the header and the others are the subheaders. If it is `nothing`, a
     default value based on the type will be used. If a single vector is passed, it will be
-    considered the header. (**Default** = `nothing`)
+    considered the header.
+    (**Default** = `nothing`)
 - `header_alignment::Union{Symbol, Vector{Symbol}}`: Select the alignment of the header
     columns (see the section [Alignment](@ref)). If the symbol that specifies the alignment
     is `:s` for a specific column, the same alignment in the keyword `alignment` for that
-    column will be used.  (**Default** = `:s`)
+    column will be used.
+    (**Default** = `:s`)
 - `header_cell_alignment::Union{Nothing, Dict{Tuple{Int, Int}, Symbol}, Function, Tuple}`:
     This keyword has the same structure of `cell_alignment` but in this case it operates in
     the header. Thus, `(i, j)` will be a cell in the header matrix that contains the header
     and sub-headers. This means that the `data` field in the functions will be the same
-    value passed in the keyword `header`.  (**Default** = `nothing`)
+    value passed in the keyword `header`.
+    (**Default** = `nothing`)
 
 !!! note
+
       If more than one alignment function is passed to `header_cell_alignment`, the
       functions will be evaluated in the same order of the tuple. The first one that returns
       a valid alignment symbol for each cell is applied, and the rest is discarded.
 
 - `limit_printing::Bool`: If `true`, the cells will be converted using the property `:limit
-    => true` of `IOContext`. (**Default** = `true`)
+    => true` of `IOContext`.
+    (**Default** = `true`)
 - `max_num_of_columns`::Int: The maximum number of table columns that will be rendered. If
-    it is lower than 0, all columns will be rendered.  (**Default** = -1)
+    it is lower than 0, all columns will be rendered.
+    (**Default** = -1)
 - `max_num_of_rows`::Int: The maximum number of table rows that will be rendered. If it is
-    lower than 0, all rows will be rendered.  (**Default** = -1)
+    lower than 0, all rows will be rendered.
+    (**Default** = -1)
 - `renderer::Symbol`: A symbol that indicates which function should be used to convert an
     object to a string. It can be `:print` to use the function `print` or `:show` to use the
     function `show`. Notice that this selection is applicable only to the table data.
-    Headers, sub-headers, and row name column are always rendered with print. (**Default** =
-    `:print`)
+    Headers, sub-headers, and row name column are always rendered with print.
+    (**Default** = `:print`)
 - `row_labels::Union{Nothing, AbstractVector}`: A vector containing the row labels that will
     be appended to the left of the table. If it is `nothing`, the column with the row labels
     will not be shown. Notice that the size of this vector must match the number of rows in
-    the table.  (**Default** = `nothing`)
+    the table.
+    (**Default** = `nothing`)
 - `row_label_alignment::Symbol`: Alignment of the column with the rows label (see the
     section [Alignment](@ref)).
 - `row_label_column_title::AbstractString`: Title of the column with the row labels.
@@ -112,8 +123,8 @@ However, the following keywords are valid for all back ends:
 - `row_number_column_title::AbstractString`: Title of the column with the row numbers.
     (**Default** = "Row")
 - `show_header::Bool`: If `true`, the header will be printed. Notice that all keywords and
-    parameters related to the header and sub-headers will be ignored. (**Default** =
-    `false`)
+    parameters related to the header and sub-headers will be ignored.
+    (**Default** = `false`)
 - `show_row_number::Bool`: If `true`, a new column will be printed showing the row number.
     (**Default** = `false`)
 - `show_subheader::Bool`: If `true`, the sub-header will be printed, *i.e.*  the header will
@@ -126,6 +137,7 @@ However, the following keywords are valid for all back ends:
     (**Default** = :l)
 
 !!! note
+
     Notice that all back ends have the keyword `tf` to specify the table printing format.
     Thus, if the keyword `backend` is not present or if it is `nothing`, the back end will
     be automatically inferred from the type of the keyword `tf`. In this case, if `tf` is
@@ -141,71 +153,27 @@ has effect in text backend.
 In the following, it is possible to see some examples for a quick start using the text back
 end.
 
-```jldoctest
-julia> data = [1 2 3; 4 5 6];
+```@repl usage
+data = [1 2 3; 4 5 6];
 
-julia> pretty_table(data; header = ["Column 1", "Column 2", "Column 3"])
-┌──────────┬──────────┬──────────┐
-│ Column 1 │ Column 2 │ Column 3 │
-├──────────┼──────────┼──────────┤
-│        1 │        2 │        3 │
-│        4 │        5 │        6 │
-└──────────┴──────────┴──────────┘
+pretty_table(data; header = ["Column 1", "Column 2", "Column 3"])
 
-julia> pretty_table(data;
-                    header = (["Column 1", "Column 2", "Column 3"],
-                              ["A", "B", "C"]))
-┌──────────┬──────────┬──────────┐
-│ Column 1 │ Column 2 │ Column 3 │
-│        A │        B │        C │
-├──────────┼──────────┼──────────┤
-│        1 │        2 │        3 │
-│        4 │        5 │        6 │
-└──────────┴──────────┴──────────┘
+pretty_table(data; header = (["Column 1", "Column 2", "Column 3"], ["A", "B", "C"]))
 
-julia> str = pretty_table(String, data;
-                          header = ["Column 1", "Column 2", "Column 3"]);
+str = pretty_table(String, data; header = ["Column 1", "Column 2", "Column 3"])
 
-julia> print(str)
-┌──────────┬──────────┬──────────┐
-│ Column 1 │ Column 2 │ Column 3 │
-├──────────┼──────────┼──────────┤
-│        1 │        2 │        3 │
-│        4 │        5 │        6 │
-└──────────┴──────────┴──────────┘
+print(str)
 ```
 
-```julia
-julia> dict = Dict(1 => "Jan", 2 => "Feb", 3 => "Mar", 4 => "Apr", 5 => "May", 6 => "Jun");
+```@repl usage
+dict = Dict(1 => "Jan", 2 => "Feb", 3 => "Mar", 4 => "Apr", 5 => "May", 6 => "Jun")
 
-julia> pretty_table(dict)
-┌───────┬────────┐
-│  Keys │ Values │
-│ Int64 │ String │
-├───────┼────────┤
-│     4 │    Apr │
-│     2 │    Feb │
-│     3 │    Mar │
-│     5 │    May │
-│     6 │    Jun │
-│     1 │    Jan │
-└───────┴────────┘
+pretty_table(dict)
 
-julia> pretty_table(dict, sortkeys = true)
-┌───────┬────────┐
-│  Keys │ Values │
-│ Int64 │ String │
-├───────┼────────┤
-│     1 │    Jan │
-│     2 │    Feb │
-│     3 │    Mar │
-│     4 │    Apr │
-│     5 │    May │
-│     6 │    Jun │
-└───────┴────────┘
+pretty_table(dict, sortkeys = true)
 ```
 
-# Configuration
+## Configuration
 
 The following function can be used to print a table changing the default configurations of
 **PrettyTables.jl**:
@@ -222,18 +190,14 @@ The object `conf` can be created by the function `set_pt_conf` in which the keyw
 parameters can be any one supported by the function `pretty_table` as shown in the
 following.
 
-```jldoctest
-julia> conf = set_pt_conf(tf = tf_markdown, alignment = :c);
+```@repl usage
+conf = set_pt_conf(tf = tf_markdown, alignment = :c)
 
-julia> data = [1 2 3; 4 5 6];
+data = [1 2 3; 4 5 6]
 
-julia> header = ["Column 1", "Column 2", "Column 3"];
+header = ["Column 1", "Column 2", "Column 3"]
 
-julia> pretty_table_with_conf(conf, data; header = header)
-| Column 1 | Column 2 | Column 3 |
-|----------|----------|----------|
-|    1     |    2     |    3     |
-|    4     |    5     |    6     |
+pretty_table_with_conf(conf, data; header = header)
 ```
 
 A configuration object can be modified by the function `set_pt_conf!` and cleared by the
@@ -256,14 +220,14 @@ where the expression list `expr` contains the tables that should be printed like
 
 The user can select the table header by passing the expression:
 
-```
+```text
 :header = [<Vector with the header>]
 ```
 
 Notice that the header is valid only for the next printed table. Hence:
 
 ```julia
-    @pt :header = header1 table1 :header = header2 table2 table3
+@pt :header = header1 table1 :header = header2 table2 table3
 ```
 
 will print `table1` using `header1`, `table2` using `header2`, and `table3` using the
@@ -277,66 +241,37 @@ macro ptconf(expr...)
 
 where `expr` format must be:
 
-```
+```text
 keyword1 = value1 keyword2 = value2 ...
 ```
 
 The keywords can be any possible keyword that can be used in the function `pretty_table`.
 
-All the configurations can be reseted by calling `@ptconfclean`.
+All the configurations can be rested by calling `@ptconfclean`.
 
 !!! warning
+
     If a keyword is not supported by the function `pretty_table`, no error message is
     printed when calling `@ptconf`. However, an error will be thrown when `@pt` is called.
 
 !!! info
+
     When more than one table is passed to the macro `@pt`, multiple calls to `pretty_table`
     will occur. Hence, the cropping algorithm will behave exactly the same as printing the
     tables separately.
 
-```jldoctest
-julia> data = [1 2 3; 4 5 6];
+```@repl usage
+data = [1 2 3; 4 5 6];
 
-julia> @pt data
-┌────────┬────────┬────────┐
-│ Col. 1 │ Col. 2 │ Col. 3 │
-├────────┼────────┼────────┤
-│      1 │      2 │      3 │
-│      4 │      5 │      6 │
-└────────┴────────┴────────┘
+@pt data
 
-julia> @pt :header = ["Column 1", "Column 2", "Column 3"] data :header = (["Column 1", "Column 2", "Column 3"], ["A", "B", "C"]) data
-┌──────────┬──────────┬──────────┐
-│ Column 1 │ Column 2 │ Column 3 │
-├──────────┼──────────┼──────────┤
-│        1 │        2 │        3 │
-│        4 │        5 │        6 │
-└──────────┴──────────┴──────────┘
-┌──────────┬──────────┬──────────┐
-│ Column 1 │ Column 2 │ Column 3 │
-│        A │        B │        C │
-├──────────┼──────────┼──────────┤
-│        1 │        2 │        3 │
-│        4 │        5 │        6 │
-└──────────┴──────────┴──────────┘
+@pt :header = ["Column 1", "Column 2", "Column 3"] data :header = (["Column 1", "Column 2", "Column 3"], ["A", "B", "C"]) data
 
-julia> @ptconf tf = tf_ascii_dots alignment = :c
+@ptconf tf = tf_ascii_dots alignment = :c
 
-julia> @pt data
-............................
-: Col. 1 : Col. 2 : Col. 3 :
-:........:........:........:
-:   1    :   2    :   3    :
-:   4    :   5    :   6    :
-:........:........:........:
+@pt data
 
-julia> @ptconfclean
+@ptconfclean
 
-julia> @pt data
-┌────────┬────────┬────────┐
-│ Col. 1 │ Col. 2 │ Col. 3 │
-├────────┼────────┼────────┤
-│      1 │      2 │      3 │
-│      4 │      5 │      6 │
-└────────┴────────┴────────┘
+@pt data
 ```
