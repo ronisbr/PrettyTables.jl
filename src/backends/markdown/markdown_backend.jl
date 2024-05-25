@@ -1,11 +1,8 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Print function of the markdown backend.
 #
-#   Print function of the markdown backend.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 # Low-level function to print the table using the markdown backend.
 function _print_table_with_markdown_back_end(
@@ -14,7 +11,7 @@ function _print_table_with_markdown_back_end(
     highlighters::Union{MarkdownHighlighter, Tuple} = (),
     linebreaks::Bool = false,
     show_omitted_cell_summary::Bool = false,
-    ## Decorations #########################################################################
+    # == Decorations =======================================================================
     header_decoration::MarkdownDecoration = MarkdownDecoration(bold = true),
     row_label_decoration::MarkdownDecoration = MarkdownDecoration(),
     row_number_decoration::MarkdownDecoration = MarkdownDecoration(bold = true),
@@ -54,8 +51,7 @@ function _print_table_with_markdown_back_end(
         highlighters = Ref{Any}(highlighters)
     end
 
-    # Create the String Matrix with the Rendered Cells
-    # ======================================================================================
+    # == Create the String Matrix with the Rendered Cells ==================================
 
     # In markdown back end, we must convert all the matrix to text before printing. This
     # procedure is necessary to obtain the column width so that we can align the table
@@ -83,8 +79,7 @@ function _print_table_with_markdown_back_end(
         subheader_decoration,
     )
 
-    # Print the Table
-    # ======================================================================================
+    # == Print the Table ===================================================================
 
     @inbounds for i in 1:num_rows
         # Get the identification of the current row.
@@ -141,8 +136,7 @@ function _print_table_with_markdown_back_end(
         println(buf)
     end
 
-    # Omitted Cell Summary
-    # ======================================================================================
+    # == Omitted Cell Summary ==============================================================
 
     if show_omitted_cell_summary
         str = ""
@@ -172,8 +166,7 @@ function _print_table_with_markdown_back_end(
         end
     end
 
-    # Print the Buffer Into The IO.
-    # ======================================================================================
+    # == Print the Buffer Into The IO ======================================================
 
     @label print_to_output
 

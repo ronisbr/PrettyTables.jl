@@ -1,11 +1,8 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Functions to parse the table cells in markdown back end.
 #
-#   Functions to parse the table cells in markdown back end.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 # Parse the table `cell` of type `T` and return a `String` with the parsed cell text, one
 # component per line.

@@ -1,11 +1,8 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Print function of the HTML back end.
 #
-#   Print function of the HTML back end.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 # Low-level function to print the table using the text backend.
 function _print_table_with_html_back_end(
@@ -92,14 +89,12 @@ function _print_table_with_html_back_end(
     properties = Dict{String, String}()
     style      = Dict{String, String}()
 
-    # Variables to Store Information About Indentation
-    # ======================================================================================
+    # == Variables to Store Information About Indentation ==================================
 
     il = 0 # ..................................................... Current indentation level
     ns = 2 # .................................... Number of spaces in each indentation level
 
-    # Print HTML Header
-    # ======================================================================================
+    # == Print HTML Header =================================================================
 
     if standalone
         _aprintln(
@@ -145,8 +140,7 @@ function _print_table_with_html_back_end(
         )
     end
 
-    # Omitte Cell Summary
-    # ======================================================================================
+    # == Omitted Cell Summary ==============================================================
 
     # Check if the user wants the omitted cell summary.
     if show_omitted_cell_summary
@@ -177,8 +171,7 @@ function _print_table_with_html_back_end(
         end
     end
 
-    # Top Bar
-    # ======================================================================================
+    # == Top Bar ===========================================================================
 
     _print_top_bar(
         buf,
@@ -191,8 +184,7 @@ function _print_table_with_html_back_end(
         minify
     )
 
-    # Table
-    # ======================================================================================
+    # == Table =============================================================================
 
     if wrap_table_in_div
         empty!(properties)
@@ -219,8 +211,7 @@ function _print_table_with_html_back_end(
 
     il += 1
 
-    # Table Title
-    # --------------------------------------------------------------------------------------
+    # -- Table Title -----------------------------------------------------------------------
 
     if length(title) > 0
         empty!(style)
@@ -234,8 +225,7 @@ function _print_table_with_html_back_end(
         @goto print_to_output
     end
 
-    # Vertical Cropping Mode
-    # ======================================================================================
+    # == Vertical Cropping Mode ============================================================
 
     if hidden_rows_at_end
         continuation_line_id = vcrop_mode == :middle ?
@@ -245,8 +235,7 @@ function _print_table_with_html_back_end(
         continuation_line_id = 0
     end
 
-    # Print the Table
-    # ======================================================================================
+    # == Print the Table ===================================================================
 
     # Offset in the rows used when we have middle cropping. In this case, after drawing the
     # continuation line, we use this variable to render the bottom part of the table.
@@ -500,8 +489,7 @@ function _print_table_with_html_back_end(
 
     @label print_to_output
 
-    # Print HTML Footer
-    # ======================================================================================
+    # == Print HTML Footer =================================================================
 
     il -= 1
     _aprintln(buf, _close_html_tag("table"), il, ns, minify)
@@ -522,8 +510,7 @@ function _print_table_with_html_back_end(
         _aprintln(buf, _close_html_tag("div"), il, ns, minify)
     end
 
-    # Print the Buffer Into the IO.
-    # ======================================================================================
+    # == Print the Buffer Into the IO ======================================================
 
     # If we are printing to `stdout`, wrap the output in a `HTML` object.
     if is_stdout

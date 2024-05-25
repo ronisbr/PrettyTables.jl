@@ -1,11 +1,8 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Fill the string matrix that will be printed in the markdown back end.
 #
-#   Fill the string matrix that will be printed in the markdown back end.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 function _markdown_fill_string_matrix!(
     @nospecialize(io::IOContext),

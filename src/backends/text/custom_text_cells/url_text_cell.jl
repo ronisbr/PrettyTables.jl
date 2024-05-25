@@ -1,11 +1,8 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Text cell to render an URL.
 #
-#   Text cell to render an URL.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 export UrlTextCell
 
@@ -52,7 +49,7 @@ function UrlTextCell(text::String, url::String)
 end
 
 ############################################################################################
-#                                           API
+#                                           API                                            #
 ############################################################################################
 
 function get_printable_cell_line(c::UrlTextCell, l::Int)
@@ -69,16 +66,14 @@ function get_rendered_line(c::UrlTextCell, l::Int)
         printable_size = c._left_pad + url_text_width + c._right_pad
         rem_chars = printable_size - c._crop
 
-        # Left Padding
-        # ======================================================================cccccccccccc
+        # == Left Padding ==================================================================
 
         Δ = clamp(rem_chars, 0, c._left_pad)
         str = " " ^ Δ
         rem_chars ≤ c._left_pad && return str * c._suffix
         rem_chars -= c._left_pad
 
-        # URL Text
-        # ==================================================================================
+        # == URL Text ======================================================================
 
         Δ = clamp(rem_chars, 0, url_text_width)
 
@@ -92,8 +87,7 @@ function get_rendered_line(c::UrlTextCell, l::Int)
         rem_chars ≤ url_text_width && return str * c._suffix
         rem_chars -= url_text_width
 
-        # Right Padding
-        # ==================================================================================
+        # == Right Padding =================================================================
 
         Δ = clamp(rem_chars, 0, c._right_pad)
         str *= " " ^ Δ

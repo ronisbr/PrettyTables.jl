@@ -1,11 +1,8 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Functions to parse the table cells in text back end.
 #
-#   Functions to parse the table cells in text back end.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 # Parse the table `cell` of type `T` and return a vector of `String` with the parsed cell
 # text, one component per line.
@@ -58,8 +55,7 @@ function _text_parse_cell(
     # The maximum size for Markdowns cells is 80.
     column_width ≤ 0 && (column_width = 80)
 
-    # Render Markdown
-    # ======================================================================================
+    # == Render Markdown ===================================================================
 
     # First, we need to render the Markdown with all the colors.
     str = sprint(Markdown.term, cell, column_width; context = :color => true)

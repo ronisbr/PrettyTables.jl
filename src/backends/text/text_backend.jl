@@ -1,11 +1,8 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Print function of the text backend.
 #
-#   Print function of the text backend.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 # Low-level function to print the table using the text back end.
 function _print_table_with_text_back_end(
@@ -64,8 +61,7 @@ function _print_table_with_text_back_end(
     num_rows, num_columns = _data_size(ptable)
     num_header_rows, ~ = _header_size(ptable)
 
-    # Input Variables Verification and Initial Setup
-    # ======================================================================================
+    # == Input Variables Verification and Initial Setup ====================================
 
     # Let's create a `IOBuffer` to write everything and then transfer to `io`.
     io_has_color = get(io, :color, false)::Bool
@@ -141,8 +137,7 @@ function _print_table_with_text_back_end(
     # Get the number of rows and columns in the processed table.
     num_rows, num_columns = _size(ptable)
 
-    # Process Lines
-    # ======================================================================================
+    # == Process Lines =====================================================================
 
     if hlines === nothing
         hlines = tf.hlines
@@ -154,9 +149,7 @@ function _print_table_with_text_back_end(
     end
     vlines = _process_vlines(ptable, vlines)
 
-
-    # Number of Rows and Columns that Must be Rendered
-    # ======================================================================================
+    # == Number of Rows and Columns that Must be Rendered ==================================
 
     num_rendered_rows = num_rows
     num_rendered_columns = num_columns
@@ -175,8 +168,7 @@ function _print_table_with_text_back_end(
         )
     end
 
-    # Create the String Matrix with the Rendered Cells
-    # ======================================================================================
+    # == Create the String Matrix with the Rendered Cells ==================================
 
     # In text back end, we must convert all the matrix to text before printing. This
     # procedure is necessary to obtain the column width for example so that we can align the
@@ -201,8 +193,7 @@ function _print_table_with_text_back_end(
     # columns we can fit on the display to avoid unnecessary processing. Hence, the
     # functions that fill the data are also responsible to compute the size of each column.
 
-    # Table Data
-    # --------------------------------------------------------------------------------------
+    # -- Table Data ------------------------------------------------------------------------
 
     # Fill the string matrix with the rendered cells. This function also returns the updated
     # number of rendered rows and columns given the user specifications about cropping.
@@ -228,8 +219,7 @@ function _print_table_with_text_back_end(
         vcrop_mode
     )
 
-    # Column Alignment Regex
-    # --------------------------------------------------------------------------------------
+    # -- Column Alignment Regex ------------------------------------------------------------
 
     _apply_alignment_anchor_regex!(
         ptable,
@@ -252,8 +242,7 @@ function _print_table_with_text_back_end(
         )
     end
 
-    # Compute Where the Horizontal and Vertical Lines Must be Drawn
-    # --------------------------------------------------------------------------------------
+    # -- Compute Where the Horizontal and Vertical Lines Must be Drawn ---------------------
 
     # Create the format of the horizontal lines.
     if body_hlines_format === nothing
@@ -269,8 +258,7 @@ function _print_table_with_text_back_end(
     # moment that the display will be cropped.
     draw_last_hline = _check_hline(ptable, hlines, body_hlines, num_rows)
 
-    # Compute the Table Width and Height
-    # --------------------------------------------------------------------------------------
+    # -- Compute the Table Width and Height ------------------------------------------------
 
     table_width = _compute_table_width(
         ptable,
@@ -285,8 +273,7 @@ function _print_table_with_text_back_end(
         num_lines_in_row
     )
 
-    # Process the Title
-    # --------------------------------------------------------------------------------------
+    # -- Process the Title -----------------------------------------------------------------
 
     title_tokens = _tokenize_title(
         title,
@@ -298,11 +285,9 @@ function _print_table_with_text_back_end(
         title_same_width_as_table
     )
 
-    #                                 Print the Table
-    # ======================================================================================
+    # == Print the Table ===================================================================
 
-    # Title
-    # ======================================================================================
+    # -- Title -----------------------------------------------------------------------------
 
     _print_title!(display, title_tokens, text_crayons.title_crayon)
 
@@ -311,8 +296,7 @@ function _print_table_with_text_back_end(
         @goto print_to_output
     end
 
-    # Table
-    # ======================================================================================
+    # -- Table -----------------------------------------------------------------------------
 
     # Number of additional lines that must be consider to crop the display vertically.
     Δdisplay_lines =
@@ -404,8 +388,7 @@ function _print_table_with_text_back_end(
         vlines
     )
 
-    # Summary of the Omitted Cells
-    # ======================================================================================
+    # -- Summary of the Omitted Cells ------------------------------------------------------
 
     _print_omitted_cell_summary(
         display,
@@ -418,8 +401,7 @@ function _print_table_with_text_back_end(
 
     @label print_to_output
 
-    # Print the Buffer
-    # ======================================================================================
+    # -- Print the Buffer ------------------------------------------------------------------
 
     _flush_display!(io, display, overwrite, newline_at_end, display.row)
 

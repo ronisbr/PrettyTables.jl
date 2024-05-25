@@ -1,17 +1,13 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Functions to pre-process the supported objects to be printed.
 #
-#   Functions to pre-process the supported objects to be printed.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 # Those functions apply some pre-processing algorithms to the supported data types in
 # PrettyTables.jl.
 
-# Vector or Matrices
-# ==========================================================================================
+# == Vector or Matrices ====================================================================
 
 function _preprocess_vec_or_mat(
     data::AbstractVecOrMat,
@@ -28,8 +24,7 @@ function _preprocess_vec_or_mat(
     return data, pheader
 end
 
-# Dictionaries
-# ==========================================================================================
+# == Dictionaries ==========================================================================
 
 function _preprocess_dict(
     dict::AbstractDict{K, V},
@@ -64,11 +59,9 @@ function _preprocess_dict(
     return pdata, pheader
 end
 
-# Tables.jl
-# ==========================================================================================
+# == Tables.jl =============================================================================
 
-# Tables.jl with Column Access
-# ------------------------------------------------------------------------------------------
+# -- Tables.jl with Column Access ----------------------------------------------------------
 
 function _preprocess_column_tables_jl(data::Any, header::Union{Nothing, AbstractVector, Tuple})
     # Access the table using the columns.
@@ -107,8 +100,7 @@ function _preprocess_column_tables_jl(data::Any, header::Union{Nothing, Abstract
     return pdata, pheader
 end
 
-# Tables.jl with Row Access
-# ------------------------------------------------------------------------------------------
+# -- Tables.jl with Row Access -------------------------------------------------------------
 
 function _preprocess_row_tables_jl(data::Any, header::Union{Nothing, AbstractVector, Tuple})
     # Access the table using the rows.

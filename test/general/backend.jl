@@ -1,41 +1,34 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Tests of back-end interface.
 #
-#   Tests of back-end interface.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 @testset "Back-end Auto Selection" begin
     data = rand(3,3)
 
-    # Text
-    # ======================================================================================
+    # == Text ==============================================================================
 
     auto   = pretty_table(String, data, tf = tf_unicode)
     manual = pretty_table(String, data, tf = tf_unicode, backend = Val(:text))
 
     @test auto == manual
 
-    # HTML
-    # ======================================================================================
+    # == HTML ==============================================================================
 
     auto   = pretty_table(String, data, tf = tf_html_simple)
     manual = pretty_table(String, data, tf = tf_html_simple, backend = Val(:html))
 
     @test auto == manual
 
-    # LaTeX
-    # ======================================================================================
+    # == LaTeX =============================================================================
 
     auto   = pretty_table(String, data, tf = tf_latex_default)
     manual = pretty_table(String, data, tf = tf_latex_default, backend = Val(:latex))
 
     @test auto == manual
 
-    # Error
-    # ======================================================================================
+    # == Error =============================================================================
 
     # TODO: REMOVE! We do not support Julia 1.1 anymore.
     if VERSION < v"1.1"

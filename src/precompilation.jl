@@ -1,11 +1,8 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Precompilation.
 #
-#   Precompilation.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 import PrecompileTools
 
@@ -76,8 +73,7 @@ PrecompileTools.@setup_workload begin
     html_buf = IOBuffer()
 
     PrecompileTools.@compile_workload begin
-        # Input: Array
-        # ==================================================================================
+        # == Input: Array ==================================================================
 
         pretty_table(data)
 
@@ -89,8 +85,7 @@ PrecompileTools.@setup_workload begin
         pretty_table(types; alignment = :l, crop = :none)
         pretty_table(html_buf, types; backend = Val(:html))
 
-        # Input: Tables.jl
-        # ==================================================================================
+        # == Input: Tables.jl ==============================================================
 
         # This example is created based on DataFrames.jl options.
         pretty_table(
@@ -142,13 +137,11 @@ PrecompileTools.@setup_workload begin
             wrap_table_in_div         = true
         )
 
-        # Input: Dictionary
-        # ==================================================================================
+        # == Input: Dictionary =============================================================
 
         pretty_table(dict, sortkeys = true)
 
-        # Input: Data with UrlTextCell
-        # ==================================================================================
+        # == Input: Data with UrlTextCell ==================================================
 
         custom_cells = [
             1 "Ronan Arraes Jardim Chagas" UrlTextCell("Ronan Arraes Jardim Chagas", "https://ronanarraes.com")
@@ -159,8 +152,7 @@ PrecompileTools.@setup_workload begin
 
         pretty_table(custom_cells)
 
-        # Input: Data with AnsiCellText
-        # ==================================================================================
+        # == Input: Data with AnsiCellText =================================================
 
         b = crayon"blue bold"
         y = crayon"yellow bold"
@@ -174,8 +166,7 @@ PrecompileTools.@setup_workload begin
 
         pretty_table(ansi_table)
 
-        # Input: Data with HtmlCell
-        # ==================================================================================
+        # == Input: Data with HtmlCell =====================================================
 
         html_table = [
             html_cell"<b>Bold cell</b>"
@@ -184,8 +175,7 @@ PrecompileTools.@setup_workload begin
 
         pretty_table(html_buf, html_table; backend = Val(:html))
 
-        # Input: Data with LatexCell
-        # ==================================================================================
+        # == Input: Data with LatexCell ====================================================
 
         latex_table = [
             latex_cell"\textbf{a}"
@@ -194,8 +184,7 @@ PrecompileTools.@setup_workload begin
 
         pretty_table(latex_table; backend = Val(:latex))
 
-        # Combination of types in `header_crayon` and `subheader_crayon`
-        # ==================================================================================
+        # == Combination of Types in `header_crayon` and `subheader_crayon` ================
 
         header = (
             ["Column $i" for i in 1:4],
@@ -221,8 +210,7 @@ PrecompileTools.@setup_workload begin
             subheader_crayon = [crayon"yellow bold" for _ in 1:4]
         )
 
-        # Helpers
-        # ==================================================================================
+        # == Helpers =======================================================================
 
         @pt data
     end

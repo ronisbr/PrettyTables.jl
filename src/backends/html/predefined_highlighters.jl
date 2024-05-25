@@ -1,24 +1,22 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Pre-defined highlighters for the HTML back end.
 #
-#   Pre-defined highlighters for the HTML back end.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 export hl_cell
 
 """
-    hl_cell(i::Number, j::Number, decoration::HtmlDecoration)
+    hl_cell(i::Number, j::Number, decoration::HtmlDecoration) -> HtmlHighlighter
 
 Highlight the cell `(i, j)` with the `decoration` (see [`HtmlDecoration`](@ref)).
 
-    hl_cell(cells::AbstractVector{NTuple(2,Int)}, decoration::HtmlDecoration)
+    hl_cell(cells::AbstractVector{NTuple(2,Int)}, decoration::HtmlDecoration) -> HtmlHighlighter
 
 Highlights all the `cells` with the `decoration` (see [`HtmlDecoration`](@ref)).
 
 !!! info
+
     Those functions return a `HtmlHighlighter` to be used with the HTML backend.
 """
 hl_cell(i::Number, j::Number, decoration::HtmlDecoration) = HtmlHighlighter(
@@ -38,15 +36,16 @@ function hl_cell(cells::AbstractVector{NTuple{2,Int}}, decoration::HtmlDecoratio
 end
 
 """
-    hl_col(i::Number, decoration::HtmlDecoration)
+    hl_col(i::Number, decoration::HtmlDecoration) -> HtmlHighlighter
 
 Highlight the entire column `i` with the `decoration`.
 
-    hl_col(cols::AbstractVector{Int}, decoration::HtmlDecoration)
+    hl_col(cols::AbstractVector{Int}, decoration::HtmlDecoration) -> HtmlHighlighter
 
 Highlights all the columns in `cols` with the `decoration`.
 
 !!! info
+
     Those functions return a `HtmlHighlighter` to be used with the HTML backend.
 """
 hl_col(j::Number, decoration::HtmlDecoration) = HtmlHighlighter(
@@ -64,15 +63,16 @@ hl_col(cols::AbstractVector{Int}, decoration::HtmlDecoration) = HtmlHighlighter(
 )
 
 """
-    hl_row(i::Number, decoration::HtmlDecoration)
+    hl_row(i::Number, decoration::HtmlDecoration) -> HtmlHighlighter
 
 Highlight the entire row `i` with the `decoration`.
 
-    hl_row(rows::AbstractVector{Int}, decoration::HtmlDecoration)
+    hl_row(rows::AbstractVector{Int}, decoration::HtmlDecoration) -> HtmlHighlighter
 
 Highlights all the rows in `rows` with the `decoration`.
 
 !!! info
+
     Those functions return a `HtmlHighlighter` to be used with the HTML backend.
 """
 hl_row(i::Number, decoration::HtmlDecoration) = HtmlHighlighter(
@@ -90,11 +90,12 @@ hl_row(rows::AbstractVector{Int}, decoration::HtmlDecoration) = HtmlHighlighter(
 )
 
 """
-    hl_lt(n::Number, decoration::HtmlDecoration)
+    hl_lt(n::Number, decoration::HtmlDecoration) -> HtmlHighlighter
 
 Highlight all elements that are `< n` using the `decoration`.
 
 !!! info
+
     This function returns a `HtmlHighlighter` to be used with the text backend.
 """
 hl_lt(n::Number, decoration::HtmlDecoration) = HtmlHighlighter(
@@ -109,11 +110,12 @@ hl_lt(n::Number, decoration::HtmlDecoration) = HtmlHighlighter(
 )
 
 """
-    hl_leq(n::Number, decoration::HtmlDecoration)
+    hl_leq(n::Number, decoration::HtmlDecoration) -> HtmlHighlighter
 
 Highlight all elements that are `≤ n` using the `decoration`.
 
 !!! info
+
     This function returns a `HtmlHighlighter` to be used with the text backend.
 """
 hl_leq(n::Number, decoration::HtmlDecoration) = HtmlHighlighter(
@@ -128,11 +130,12 @@ hl_leq(n::Number, decoration::HtmlDecoration) = HtmlHighlighter(
 )
 
 """
-    hl_gt(n::Number, decoration::HtmlDecoration)
+    hl_gt(n::Number, decoration::HtmlDecoration) -> HtmlHighlighter
 
 Highlight all elements that are `> n` using the `decoration`.
 
 !!! info
+
     This function returns a `HtmlHighlighter` to be used with the text backend.
 """
 hl_gt(n::Number, decoration::HtmlDecoration) = HtmlHighlighter(
@@ -147,11 +150,12 @@ hl_gt(n::Number, decoration::HtmlDecoration) = HtmlHighlighter(
 )
 
 """
-    hl_geq(n::Number, decoration::HtmlDecoration)
+    hl_geq(n::Number, decoration::HtmlDecoration) -> HtmlHighlighter
 
 Highlight all elements that are `≥ n` using the `decoration`.
 
 !!! info
+
     This function returns a `HtmlHighlighter` to be used with the text backend.
 """
 hl_geq(n::Number, decoration::HtmlDecoration) = HtmlHighlighter(
@@ -166,11 +170,12 @@ hl_geq(n::Number, decoration::HtmlDecoration) = HtmlHighlighter(
 )
 
 """
-    hl_value(v::Any, decoration::HtmlDecoration)
+    hl_value(v::Any, decoration::HtmlDecoration) -> HtmlHighlighter
 
 Highlight all the values that matches `data[i,j] == v` using the `decoration`.
 
 !!! info
+
     This function returns a `HtmlHighlighter` to be used with the text backend.
 """
 hl_value(v, decoration::HtmlDecoration) = HtmlHighlighter(

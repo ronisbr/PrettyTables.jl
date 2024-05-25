@@ -1,11 +1,8 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Functions related to string processing in HTML back end.
 #
-#   Functions related to string processing in HTML back end.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 # This was adapted from Julia `escape_string` function. In case of HTML, we should replace
 # some special characters like `<` and `>`.

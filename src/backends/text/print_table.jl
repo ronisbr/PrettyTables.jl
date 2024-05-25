@@ -1,11 +1,8 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Auxiliary functions to print the table.
 #
-#   Auxiliary functions to print the table.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 # Print the entire table data.
 function _text_print_table!(
@@ -44,8 +41,7 @@ function _text_print_table!(
 
     while rps.state ≠ :finish
 
-        # Row Printing State Machine
-        # ==================================================================================
+        # == Row Printing State Machine ====================================================
 
         action = _iterate_row_printing_state!(
             rps,
@@ -60,8 +56,7 @@ function _text_print_table!(
             continuation_row_line
         )
 
-        # Render the Top Line
-        # ==================================================================================
+        # == Render the Top Line ===========================================================
 
         if action == :top_horizontal_line
             _draw_line!(
@@ -76,8 +71,7 @@ function _text_print_table!(
                 vlines
             )
 
-        # Render the Middle Line
-        # ==================================================================================
+        # == Render the Middle Line ========================================================
 
         elseif action == :middle_horizontal_line
             # If the row is from the header, we must draw the line from the table format.
@@ -105,8 +99,7 @@ function _text_print_table!(
                 )
             end
 
-        # Render the Bottom Line
-        # ==================================================================================
+        # == Render the Bottom Line ========================================================
 
         elseif action == :bottom_horizontal_line
             _draw_line!(
@@ -121,8 +114,7 @@ function _text_print_table!(
                 vlines
             )
 
-        # Render the Continuation Line
-        # ==================================================================================
+        # == Render the Continuation Line ==================================================
 
         elseif action == :continuation_line
             _draw_continuation_line(
@@ -136,8 +128,7 @@ function _text_print_table!(
                 continuation_row_alignment
             )
 
-        # Render a Table Line
-        # ==================================================================================
+        # == Render a Table Line ===========================================================
 
         elseif (action == :table_line) || (action == :table_line_row_finished)
             i = rps.i
@@ -163,8 +154,7 @@ function _text_print_table!(
                 _p!(display, text_crayons.border_crayon, tf.column, false, 1)
             end
 
-            # Render the Cells in Each Column
-            # ------------------------------------------------------------------------------
+            # -- Render the Cells in Each Column -------------------------------------------
 
             for j in 1:num_rendered_columns
                 has_vline = _check_vline(ptable, vlines, j)
@@ -294,8 +284,7 @@ function _text_print_table!(
 
             _nl!(display)
 
-        # End State
-        # ==================================================================================
+        # == End State =====================================================================
 
         elseif action == :finish
             break

@@ -1,11 +1,8 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Pre-defined formatters.
 #
-#   Pre-defined formatters.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 export ft_printf, ft_round, ft_latex_sn, ft_nomissing, ft_nonothing
 
@@ -21,6 +18,7 @@ format will be applied to the entire table.  Otherwise, if `ftv_str` is a `Strin
 `columns` is a `Vector`, the format will be applied only to the columns in `columns`.
 
 !!! info
+
     This formatter will be applied only to the cells that are of type `Number`.
 """
 ft_printf(ftv_str::String) = ft_printf([ftv_str])
@@ -129,6 +127,7 @@ format will be applied to the entire table.  Otherwise, if `m_digits` is a `Stri
 `columns` is a `Vector`, the format will be applied only to the columns in `columns`.
 
 !!! info
+
     This formatter will be applied only to the cells that are of type `Number`.
 """
 ft_latex_sn(m_digits::Int) = ft_latex_sn([m_digits])

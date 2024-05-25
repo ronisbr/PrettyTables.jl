@@ -1,20 +1,17 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Functions to define interfaces with Tables.jl.
 #
-#   Functions to define interfaces with Tables.jl.
+# This file contains some overloads related to the structures `ColumnTable` `RowTable` so
+# that an element can be accessed by `table[i,j]`. This is required for the low-level
+# interface of PrettyTables.jl when printing.
 #
-#   This file contains some overloads related to the structures `ColumnTable` `RowTable` so
-#   that an element can be accessed by `table[i,j]`. This is required for the low-level
-#   interface of PrettyTables.jl when printing.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 import Base: getindex, isassigned, length, size
 
 ############################################################################################
-#                             Functions Related to ColumnTable
+#                             Functions Related to ColumnTable                             #
 ############################################################################################
 
 function getindex(ctable::ColumnTable, inds...)
@@ -59,7 +56,7 @@ size(ctable::ColumnTable) = ctable.size
 _getdata(ctable::ColumnTable) = ctable.data
 
 ############################################################################################
-#                              Functions Related to RowTable
+#                              Functions Related to RowTable                               #
 ############################################################################################
 
 function getindex(rtable::RowTable, inds...)
@@ -116,7 +113,7 @@ size(rtable::RowTable) = rtable.size
 _getdata(rtable::RowTable) = rtable.data
 
 ############################################################################################
-#                                     Other Overloads
+#                                     Other Overloads                                      #
 ############################################################################################
 
 # `_getdata` is a function that returns the original matrix passed to `pretty_table`

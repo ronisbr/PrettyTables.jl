@@ -1,11 +1,8 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Functions to add additional data into a `ProcessedTable`.
 #
-#   Functions to add additional data into a `ProcessedTable`.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 """
     _add_column!(ptable::ProcessedTable, new_column::AbstractVector, new_header::Vector{String} = String[""]; kwargs...) -> Nothing

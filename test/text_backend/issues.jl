@@ -1,11 +1,8 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+#  Tests of reported issues.
 #
-#    Tests of reported issues.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 struct NewLineObject end
 Base.show(io::IO, ::NewLineObject) = print(io, "a\nb\nc")
@@ -560,8 +557,7 @@ end
 
     @test result == expected
 
-    # Using Alignment Regex with Big Headers
-    # ======================================================================================
+    # == Using Alignment Regex with Big Headers ============================================
 
     # This test is not directly related to the bug, but describes a bug introduced in the
     # first version of the algorithm to fix the issue.

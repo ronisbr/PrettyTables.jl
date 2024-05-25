@@ -1,24 +1,22 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Pre-defined highlighters for the markdown back end.
 #
-#   Pre-defined highlighters for the markdown back end.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 export hl_cell
 
 """
-    hl_cell(i::Number, j::Number, decoration::MarkdownDecoration)
+    hl_cell(i::Number, j::Number, decoration::MarkdownDecoration) -> MarkdownHighlighter
 
 Highlight the cell `(i, j)` with the `decoration` (see [`MarkdownDecoration`](@ref)).
 
-    hl_cell(cells::AbstractVector{NTuple(2,Int)}, decoration::MarkdownDecoration)
+    hl_cell(cells::AbstractVector{NTuple(2,Int)}, decoration::MarkdownDecoration) -> MarkdownHighlighter
 
 Highlights all the `cells` with the `decoration` (see [`MarkdownDecoration`](@ref)).
 
 !!! info
+
     Those functions return a `MarkdownHighlighter` to be used with the HTML backend.
 """
 hl_cell(i::Number, j::Number, decoration::MarkdownDecoration) = MarkdownHighlighter(
@@ -38,15 +36,16 @@ function hl_cell(cells::AbstractVector{NTuple{2,Int}}, decoration::MarkdownDecor
 end
 
 """
-    hl_col(i::Number, decoration::MarkdownDecoration)
+    hl_col(i::Number, decoration::MarkdownDecoration) -> MarkdownHighlighter
 
 Highlight the entire column `i` with the `decoration`.
 
-    hl_col(cols::AbstractVector{Int}, decoration::MarkdownDecoration)
+    hl_col(cols::AbstractVector{Int}, decoration::MarkdownDecoration) -> MarkdownHighlighter
 
 Highlights all the columns in `cols` with the `decoration`.
 
 !!! info
+
     Those functions return a `MarkdownHighlighter` to be used with the HTML backend.
 """
 hl_col(j::Number, decoration::MarkdownDecoration) = MarkdownHighlighter(
@@ -64,15 +63,16 @@ hl_col(cols::AbstractVector{Int}, decoration::MarkdownDecoration) = MarkdownHigh
 )
 
 """
-    hl_row(i::Number, decoration::MarkdownDecoration)
+    hl_row(i::Number, decoration::MarkdownDecoration) -> MarkdownHighlighter
 
 Highlight the entire row `i` with the `decoration`.
 
-    hl_row(rows::AbstractVector{Int}, decoration::MarkdownDecoration)
+    hl_row(rows::AbstractVector{Int}, decoration::MarkdownDecoration) -> MarkdownHighlighter
 
 Highlights all the rows in `rows` with the `decoration`.
 
 !!! info
+
     Those functions return a `MarkdownHighlighter` to be used with the HTML backend.
 """
 hl_row(i::Number, decoration::MarkdownDecoration) = MarkdownHighlighter(
@@ -90,11 +90,12 @@ hl_row(rows::AbstractVector{Int}, decoration::MarkdownDecoration) = MarkdownHigh
 )
 
 """
-    hl_lt(n::Number, decoration::MarkdownDecoration)
+    hl_lt(n::Number, decoration::MarkdownDecoration) -> MarkdownHighlighter
 
 Highlight all elements that are `< n` using the `decoration`.
 
 !!! info
+
     This function returns a `MarkdownHighlighter` to be used with the text backend.
 """
 hl_lt(n::Number, decoration::MarkdownDecoration) = MarkdownHighlighter(
@@ -109,11 +110,12 @@ hl_lt(n::Number, decoration::MarkdownDecoration) = MarkdownHighlighter(
 )
 
 """
-    hl_leq(n::Number, decoration::MarkdownDecoration)
+    hl_leq(n::Number, decoration::MarkdownDecoration) -> MarkdownHighlighter
 
 Highlight all elements that are `≤ n` using the `decoration`.
 
 !!! info
+
     This function returns a `MarkdownHighlighter` to be used with the text backend.
 """
 hl_leq(n::Number, decoration::MarkdownDecoration) = MarkdownHighlighter(
@@ -128,11 +130,12 @@ hl_leq(n::Number, decoration::MarkdownDecoration) = MarkdownHighlighter(
 )
 
 """
-    hl_gt(n::Number, decoration::MarkdownDecoration)
+    hl_gt(n::Number, decoration::MarkdownDecoration) -> MarkdownHighlighter
 
 Highlight all elements that are `> n` using the `decoration`.
 
 !!! info
+
     This function returns a `MarkdownHighlighter` to be used with the text backend.
 """
 hl_gt(n::Number, decoration::MarkdownDecoration) = MarkdownHighlighter(
@@ -147,11 +150,12 @@ hl_gt(n::Number, decoration::MarkdownDecoration) = MarkdownHighlighter(
 )
 
 """
-    hl_geq(n::Number, decoration::MarkdownDecoration)
+    hl_geq(n::Number, decoration::MarkdownDecoration) -> MarkdownHighlighter
 
 Highlight all elements that are `≥ n` using the `decoration`.
 
 !!! info
+
     This function returns a `MarkdownHighlighter` to be used with the text backend.
 """
 hl_geq(n::Number, decoration::MarkdownDecoration) = MarkdownHighlighter(
@@ -166,11 +170,12 @@ hl_geq(n::Number, decoration::MarkdownDecoration) = MarkdownHighlighter(
 )
 
 """
-    hl_value(v::Any, decoration::MarkdownDecoration)
+    hl_value(v::Any, decoration::MarkdownDecoration) -> MarkdownHighlighter
 
 Highlight all the values that matches `data[i,j] == v` using the `decoration`.
 
 !!! info
+
     This function returns a `MarkdownHighlighter` to be used with the text backend.
 """
 hl_value(v, decoration::MarkdownDecoration) = MarkdownHighlighter(

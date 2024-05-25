@@ -1,11 +1,8 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Print function of the LaTeX backend.
 #
-#   Print function of the LaTeX backend.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 # Low-level function to print the table using the LaTeX backend.
 function _print_table_with_latex_back_end(
@@ -88,14 +85,12 @@ function _print_table_with_latex_back_end(
     # Get the number of lines and columns in the table.
     num_rows, num_columns = _size(ptable)
 
-    # Variables to Store Information About Indentation
-    # ======================================================================================
+    # == Variables to Store Information About Indentation ==================================
 
     il = 0 # ..................................................... Current indentation level
     ns = 2 # .................................... Number of spaces in each indentation level
 
-    # Print LaTeX Header
-    # ======================================================================================
+    # == Print LaTeX Header ================================================================
 
     if table_type != :longtable && wrap_table == true
         _aprintln(buf, "\\begin{" * wrap_table_environment * "}", il, ns)
@@ -142,8 +137,7 @@ function _print_table_with_latex_back_end(
         _aprintln(buf_h, top_line, il, ns)
     end
 
-    # Print the Table
-    # ======================================================================================
+    # == Print the Table ===================================================================
 
     # If the line is part of the header, we need to write to `buf_h`. Otherwise, we must
     # switch to `buf_b`.
@@ -357,8 +351,7 @@ function _print_table_with_latex_back_end(
 
     print(buf, body_dump)
 
-    # Print LaTeX Footer
-    # ======================================================================================
+    # == Print LaTeX Footer ================================================================
 
     # If available, add the label to the table if we are using `longtable`.
     if table_type == :longtable && !isempty(label)
@@ -376,8 +369,7 @@ function _print_table_with_latex_back_end(
         _aprintln(buf, "\\end{" * wrap_table_environment * "}", il, ns)
     end
 
-    # Print the Buffer Into The IO.
-    # ======================================================================================
+    # == Print the Buffer Into The IO ======================================================
 
     print(io, String(take!(buf_io)))
 

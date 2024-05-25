@@ -1,11 +1,8 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Functions related to string processing.
 #
-#   Functions related to string processing.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 # This was adapted from Julia `escape_string` function.
 function _escape_latex_str(@nospecialize(io::IO), s::AbstractString, esc::String = "")

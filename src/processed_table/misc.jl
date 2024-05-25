@@ -1,11 +1,8 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Miscellaneous functions related to the processed tables.
 #
-#   Miscellaneous functions related to the processed tables.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 # Return `true` if the `alignment` is valid. Otherwise, return `false`.
 function _is_alignment_valid(alignment::Symbol)

@@ -1,11 +1,8 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Functions related to string processing.
 #
-#   Functions related to string processing.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 # Autowrap the tokens in `tokens_raw` considering a field with a specific `width`. It
 # returns a new vector with the new wrapped tokens.

@@ -1,11 +1,8 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Auxiliary functions to pretty print tables.
 #
-#   Auxiliary functions to pretty print tables.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 export @ptconfclean, @ptconf, @pt
 
@@ -35,6 +32,7 @@ in which the keywords can be any other possible keyword that can be used in the 
 `pretty_table`.
 
 !!! warning
+
     If a keyword is not supported by the function `pretty_table`, then no error message is
     printed when calling `@ptconf`. However, an error will be thrown when `@pt` is called.
 """
@@ -76,6 +74,7 @@ will print `table1` using `header1`, `table2` using `header2`, and `table3` usin
 default header.
 
 !!! info
+
     When more than one table is passed to this macro, then multiple calls to `pretty_table`
     will occur. Hence, the cropping algorithm will behave exactly the same as printing the
     tables separately.

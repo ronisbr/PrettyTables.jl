@@ -1,16 +1,13 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Functions to print the tables.
 #
-#   Functions to print the tables.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 export pretty_table
 
 ############################################################################################
-#                                     Public Functions
+#                                     Public Functions                                     #
 ############################################################################################
 
 """
@@ -52,6 +49,7 @@ following types are supported:
     (**Default** = `nothing`)
 
 !!! note
+
     If more than one alignment function is passed to `cell_alignment`, the functions will be
     evaluated in the same order of the tuple. The first one that returns a valid alignment
     symbol for each cell is applied, and the rest is discarded.
@@ -59,34 +57,42 @@ following types are supported:
 - `cell_first_line_only::Bool`: If `true`, only the first line of each cell will be printed.
     (**Default** = `false`)
 - `compact_printing::Bool`: Select if the option `:compact` will be used when printing the
-    data. (**Default** = `true`)
+    data.
+    (**Default** = `true`)
 - `formatters::Union{Nothing, Function, Tuple}`: See the section `Formatters`.
 - `header::Union{Symbol, Vector{Symbol}}`: The header must be a tuple of vectors. Each one
     must have the number of elements equal to the number of columns in the table. The first
     vector is considered the header and the others are the subheaders. If it is `nothing`, a
     default value based on the type will be used. If a single vector is passed, it will be
-    considered the header. (**Default** = `nothing`)
+    considered the header.
+    (**Default** = `nothing`)
 - `header_alignment::Union{Symbol, Vector{Symbol}}`: Select the alignment of the header
     columns (see the section `Alignment`). If the symbol that specifies the alignment is
     `:s` for a specific column, the same alignment in the keyword `alignment` for that
-    column will be used. (**Default** = `:s`)
+    column will be used.
+    (**Default** = `:s`)
 - `header_cell_alignment::Union{Nothing, Dict{Tuple{Int, Int}, Symbol}, Function, Tuple}`:
     This keyword has the same structure of `cell_alignment` but in this case it operates in
     the header. Thus, `(i, j)` will be a cell in the header matrix that contains the header
     and sub-headers. This means that the `data` field in the functions will be the same
-    value passed in the keyword `header`. (**Default** = `nothing`)
+    value passed in the keyword `header`.
+    (**Default** = `nothing`)
 
 !!! note
+
       If more than one alignment function is passed to `header_cell_alignment`, the
       functions will be evaluated in the same order of the tuple. The first one that returns
       a valid alignment symbol for each cell is applied, and the rest is discarded.
 
 - `limit_printing::Bool`: If `true`, the cells will be converted using the property `:limit
-    => true` of `IOContext`. (**Default** = `true`)
+    => true` of `IOContext`.
+    (**Default** = `true`)
 - `max_num_of_columns`::Int: The maximum number of table columns that will be rendered. If
-    it is lower than 0, all columns will be rendered.  (**Default** = -1)
+    it is lower than 0, all columns will be rendered.
+    (**Default** = -1)
 - `max_num_of_rows`::Int: The maximum number of table rows that will be rendered. If it is
-    lower than 0, all rows will be rendered. (**Default** = -1)
+    lower than 0, all rows will be rendered.
+    (**Default** = -1)
 - `renderer::Symbol`: A symbol that indicates which function should be used to convert an
     object to a string. It can be `:print` to use the function `print` or `:show` to use the
     function `show`. Notice that this selection is applicable only to the table data.
@@ -95,7 +101,8 @@ following types are supported:
 - `row_labels::Union{Nothing, AbstractVector}`: A vector containing the row labels that will
     be appended to the left of the table. If it is `nothing`, the column with the row labels
     will not be shown. Notice that the size of this vector must match the number of rows in
-    the table. (**Default** = `nothing`)
+    the table.
+    (**Default** = `nothing`)
 - `row_label_alignment::Symbol`: Alignment of the column with the row labels (see the
     section `Alignment`).
 - `row_label_column_title::AbstractString`: Title of the column with the row labels.
@@ -103,17 +110,20 @@ following types are supported:
 - `row_number_column_title::AbstractString`: Title of the column with the row numbers.
     (**Default** = "Row")
 - `show_header::Bool`: If `true`, the header will be printed. Notice that all keywords and
-    parameters related to the header and sub-headers will be ignored. (**Default** = `false`)
+    parameters related to the header and sub-headers will be ignored.
+    (**Default** = `false`)
 - `show_row_number::Bool`: If `true`, a new column will be printed showing the row number.
     (**Default** = `false`)
 - `show_subheader::Bool`: If `true`, the sub-header will be printed, *i.e.* the header will
-    contain both the header and subheader. Notice that this option has no effect if `show_header = false`.
+    contain both the header and subheader. Notice that this option has no effect if
+    `show_header = false`.
     (**Default** = `true`)
 - `title::AbstractString`: The title of the table. If it is empty, no title will be printed.
     (**Default** = "")
 - `title_alignment::Symbol`: Alignment of the title, which must be a symbol as
     explained in the section `Alignment`. This argument is ignored in the
-    LaTeX back end. (**Default** = :l)
+    LaTeX back end.
+    (**Default** = :l)
 
 !!! note
     Notice that all back ends have the keyword `tf` to specify the table printing format.
@@ -173,7 +183,8 @@ This back end produces text tables. This back end can be used by selecting
     `alignment_anchor_fallback` and `alignment_anchor_fallback_override`. If the key `0` is
     present, the related regexes will be used to align all the columns. In this case, all
     the other keys will be neglected. Example: `Dict(2 => [r"\\."])` aligns the decimal
-    point of the cells in the second column. (**Default** = `Dict{Int, Vector{Regex}}()`)
+    point of the cells in the second column.
+    (**Default** = `Dict{Int, Vector{Regex}}()`)
 - `autowrap::Bool`: If `true`, the text will be wrapped on spaces to fit the column. Notice
     that this function requires `linebreaks = true` and the column must have a fixed size
     (see `columns_width`).
@@ -182,7 +193,8 @@ This back end produces text tables. This back end can be used by selecting
     0 and equal or higher than the number of printed rows will be neglected. This vector
     will be appended to the one in `hlines`, but the indices here are related to the printed
     rows of the body. Thus, if `1` is added to `body_hlines`, a horizontal line will be
-    drawn after the first data row. (**Default** = `Int[]`)
+    drawn after the first data row.
+    (**Default** = `Int[]`)
 - `body_hlines_format::Union{Nothing, NTuple{4, Char}}`: A tuple of 4 characters specifying
     the format of the horizontal lines that will be drawn by `body_hlines`. The characters
     must be the left intersection, the middle intersection, the right intersection, and the
@@ -191,7 +203,8 @@ This back end produces text tables. This back end can be used by selecting
 - `columns_width::Union{Int, AbstractVector{Int}}`: A set of integers specifying the width
     of each column. If the width is equal or lower than 0, it will be automatically computed
     to fit the large cell in the column. If it is a single integer, this number will be used
-    as the size of all columns. (**Default** = 0)
+    as the size of all columns.
+    (**Default** = 0)
 - `crop::Symbol`: Select the printing behavior when the data is bigger than the available
     display size (see `display_size`). It can be `:both` to crop on vertical and horizontal
     direction, `:horizontal` to crop only on horizontal direction, `:vertical` to crop only
@@ -200,23 +213,27 @@ This back end produces text tables. This back end can be used by selecting
     by default.
 - `crop_subheader::Bool`: If `true`, the sub-header size will not be taken into account when
     computing the column size. Hence, the print algorithm can crop it to save space. This
-    has no effect if the user selects a fixed column width. (**Default** = `false`)
+    has no effect if the user selects a fixed column width.
+    (**Default** = `false`)
 - `continuation_row_alignment::Symbol`: A symbol that defines the alignment of the cells in
     the continuation row. This row is printed if the table is vertically cropped.
     (**Default** = `:c`)
 - `display_size::Tuple{Int, Int}`: A tuple of two integers that defines the display size
     (num. of rows, num. of columns) that is available to print the table. It is used to crop
     the data depending on the value of the keyword `crop`. Notice that if a dimension is not
-    positive, it will be treated as unlimited. (**Default** = `displaysize(io)`)
+    positive, it will be treated as unlimited.
+    (**Default** = `displaysize(io)`)
 - `ellipsis_line_skip::Integer`: An integer defining how many lines will be skipped from
-    showing the ellipsis that indicates the text was cropped.  (**Default** = 0)
+    showing the ellipsis that indicates the text was cropped.
+    (**Default** = 0)
 - `equal_columns_width::Bool`: If `true`, all the columns will have the same width.
     (**Default** = `false`)
 - `highlighters::Union{Highlighter, Tuple}`: An instance of `Highlighter` or a tuple with a
     list of text highlighters (see the section `Text highlighters`).
 - `hlines::Union{Nothing, Symbol, AbstractVector}`: This variable controls where the
     horizontal lines will be drawn. It can be `nothing`, `:all`, `:none` or a vector of
-    integers. (**Default** = `nothing`)
+    integers.
+    (**Default** = `nothing`)
     - If it is `nothing`, which is the default, the configuration will be obtained from the
         table format in the variable `tf` (see [`TextFormat`](@ref)).
     - If it is `:all`, all horizontal lines will be drawn.
@@ -231,6 +248,7 @@ This back end produces text tables. This back end can be used by selecting
         be drawn by adding the symbol `:header`.
 
 !!! info
+
     The values of `body_hlines` will be appended to this vector. Thus, horizontal lines can
     be drawn even if `hlines` is `:none`.
 
@@ -250,14 +268,18 @@ This back end produces text tables. This back end can be used by selecting
     (**Default** = `true`)
 - `overwrite::Bool`: If `true`, the same number of lines in the printed table will be
     deleted from the output `io`. This can be used to update the table in the display
-    continuously. (**Default** = `false`)
+    continuously.
+    (**Default** = `false`)
 - `reserved_display_lines::Int`: Number of lines to be left at the beginning of the printing
     when vertically cropping the output. Notice that the lines required to show the title
-    are automatically computed. (**Default** = 0)
+    are automatically computed.
+    (**Default** = 0)
 - `row_number_alignment::Symbol`: Select the alignment of the row number column (see the
-    section `Alignment`). (**Default** = `:r`)
+    section `Alignment`).
+    (**Default** = `:r`)
 - `show_omitted_cell_summary::Bool`: If `true`, a summary will be printed after the table
-    with the number of columns and rows that were omitted.  (**Default** = `true`)
+    with the number of columns and rows that were omitted.
+    (**Default** = `true`)
 - `tf::TextFormat`: Table format used to print the table (see [`TextFormat`](@ref)).
     (**Default** = `tf_unicode`)
 - `title_autowrap::Bool`: If `true`, the title text will be wrapped considering the title
@@ -272,7 +294,8 @@ This back end produces text tables. This back end can be used by selecting
     (**Default** = `:bottom`)
 - `vlines::Union{Nothing, Symbol, AbstractVector}`: This variable controls where the
     vertical lines will be drawn. It can be `nothing`, `:all`, `:none` or a vector of
-    integers. (**Default** = `nothing`)
+    integers.
+    (**Default** = `nothing`)
     - If it is `nothing`, which is the default, the configuration will be obtained from the
         table format in the variable `tf` (see [`TextFormat`](@ref)).
     - If it is `:all`, all vertical lines will be drawn.
@@ -360,14 +383,17 @@ where it will apply the `crayon` to the highlighted cell, and
 where it will apply the `Crayon` returned by the function `fd` to the highlighted cell.
 
 !!! info
+
     If only a single highlighter is wanted, it can be passed directly to the keyword
     `highlighter` without being inside a `Tuple`.
 
 !!! note
+
     If multiple highlighters are valid for the element `(i, j)`, the applied style will be
     equal to the first match considering the order in the tuple `highlighters`.
 
 !!! note
+
     If the highlighters are used together with [Formatters](@ref), the change in the format
     **will not** affect the parameter `data` passed to the highlighter function `f`. It will
     always receive the original, unformatted value.
@@ -386,7 +412,8 @@ This back end produces HTML tables. This back end can be used by selecting
     usage of HTML code inside of the cells. If this keyword is `true`, the escape algorithm
     **will not** be applied, allowing HTML code inside all the cells. In this case, the user
     must ensure that the output code is valid. If only few cells have HTML code, wrap in a
-    [`HtmlCell`](@ref) object instead. (**Default** = `false`)
+    [`HtmlCell`](@ref) object instead.
+    (**Default** = `false`)
 - `continuation_row_alignment::Symbol`: A symbol that defines the alignment of the cells in
     the continuation row. This row is printed if the table is vertically cropped.
     (**Default** = `:r`)
@@ -400,32 +427,40 @@ This back end produces HTML tables. This back end can be used by selecting
     - `"overflow": "hidden"`
     - `"text-overflow": "ellipsis"`
     - `"white-space": "nowrap"`
-    If it is empty, no additional style is applied. (**Default** = "")
+    If it is empty, no additional style is applied.
+    (**Default** = "")
 - `minify::Bool`: If `true`, output will be displayed minified, *i.e.* without unnecessary
-    indentation or newlines. (**Default** = `false`)
+    indentation or newlines.
+    (**Default** = `false`)
 - `standalone::Bool`: If `true`, a complete HTML page will be generated. Otherwise, only
     the content between the tags `<table>` and `</table>` will be printed (with the tags
-    included). (**Default** = `false`)
+    included).
+    (**Default** = `false`)
 - `vcrop_mode::Symbol`: This variable defines the vertical crop behavior. If it is
     `:bottom`, the data, if required, will be cropped in the bottom. On the other hand, if
     it is `:middle`, the data will be cropped in the middle if necessary.
     (**Default** = `:bottom`)
 - `table_div_class::String`: The class name for the table `div`. It is only used if
-    `wrap_table_in_div` is `true`. (**Default** = "")
-- `table_class::String`: The class name for the table. (**Default** = "")
+    `wrap_table_in_div` is `true`.
+    (**Default** = "")
+- `table_class::String`: The class name for the table.
+    (**Default** = "")
 - `table_style::Dict{String, String}`: A dictionary containing the CSS properties and their
-    values to be added to the table `style`. (**Default** = `Dict{String, String}()`)
+    values to be added to the table `style`.
+    (**Default** = `Dict{String, String}()`)
 - `tf::HtmlTableFormat`: An instance of the structure [`HtmlTableFormat`](@ref) that defines
     the general format of the HTML table.
 - `top_left_str::String`: String to be printed at the left position of the top bar.
     (**Default** = "")
 - `top_left_str_decoration::HtmlDecoration`: Decoration used to print the top-left string
-    (see `top_left_str`). (**Default** = `HtmlDecoration()`)
+    (see `top_left_str`).
+    (**Default** = `HtmlDecoration()`)
 - `top_right_str::String`: String to be printed at the right position of the top bar. Notice
     that this string will be replaced with the omitted cell summary if it must be displayed.
     (**Default** = "")
 - `top_right_str_decoration::HtmlDecoration`: Decoration used to print the top-right string
-    (see `top_right_str`). (**Default** = `HtmlDecoration()`)
+    (see `top_right_str`).
+    (**Default** = `HtmlDecoration()`)
 - `wrap_table_in_div::Bool`: If `true`, the table will be wrapped in a `div`.
     (**Default**: `false`)
 
@@ -464,14 +499,17 @@ whereas the second let the user select the desired decoration by specifying the 
 `fd`.
 
 !!! info
+
     If only a single highlighter is wanted, it can be passed directly to the keyword
     `highlighter` without being inside a `Tuple`.
 
 !!! note
+
     If multiple highlighters are valid for the element `(i, j)`, the applied style will be
     equal to the first match considering the order in the tuple `highlighters`.
 
 !!! note
+
     If the highlighters are used together with [Formatters](@ref), the change in the format
     **will not** affect the parameter `data` passed to the highlighter function `f`. It will
     always receive the original, unformatted value.
@@ -490,12 +528,14 @@ This back end produces LaTeX tables. This back end can be used by selecting
     1 and equal or higher than the number of printed rows will be neglected. This vector
     will be appended to the one in `hlines`, but the indices here are related to the printed
     rows of the body. Thus, if `1` is added to `body_hlines`, a horizontal line will be
-    drawn after the first data row. (**Default** = `Int[]`)
+    drawn after the first data row.
+    (**Default** = `Int[]`)
 - `highlighters::Union{LatexHighlighter, Tuple}`: An instance of `LatexHighlighter` or a
     tuple with a list of LaTeX highlighters (see the section `LaTeX highlighters`).
 - `hlines::Union{Nothing, Symbol, AbstractVector}`: This variable controls where the
     horizontal lines will be drawn. It can be `nothing`, `:all`, `:none` or a vector of
-    integers. (**Default** = `nothing`)
+    integers.
+    (**Default** = `nothing`)
     - If it is `nothing`, which is the default, the configuration will be obtained from the
         table format in the variable `tf` (see [`LatexTableFormat`](@ref)).
     - If it is `:all`, all horizontal lines will be drawn.
@@ -510,6 +550,7 @@ This back end produces LaTeX tables. This back end can be used by selecting
         be drawn by adding the symbol `:header`.
 
 !!! info
+
     The values of `body_hlines` will be appended to this vector. Thus, horizontal lines can
     be drawn even if `hlines` is `:none`.
 
@@ -517,9 +558,11 @@ This back end produces LaTeX tables. This back end can be used by selecting
     (**Default** = "")
 - `longtable_footer::Union{Nothing, AbstractString}`: The string that will be drawn in the
     footer of the tables before a page break. This only works if `table_type` is
-    `:longtable`. If it is `nothing`, no footer will be used. (**Default** = `nothing`)
+    `:longtable`. If it is `nothing`, no footer will be used.
+    (**Default** = `nothing`)
 - `row_number_alignment::Symbol`: Select the alignment of the row number column (see the
-    section `Alignment`). (**Default** = `:r`)
+    section `Alignment`).
+    (**Default** = `:r`)
 - `table_type::Union{Nothing, Symbol}`: Select which LaTeX environment will be used to print
     the table. Currently supported options are `:tabular` for `tabular` or `:longtable` for
     `longtable`. If it is `nothing` the default option of the table format will be used.
@@ -535,15 +578,18 @@ This back end produces LaTeX tables. This back end can be used by selecting
     variable is related to the **printed columns**. Thus, it is affected by the columns
     added using the variable `show_row_number`. Finally, for convenience, the left and right
     border can be drawn by adding the symbols `:begin` and `:end` to this vector,
-    respectively.  (**Default** = `:none`)
+    respectively.
+    (**Default** = `:none`)
 - `wrap_table::Union{Nothing, String}`: This variable controls whether to wrap the table in
     a environment defined by the variable `wrap_table_environment`.  Defaults to `true`.
     When `false`, the printed table begins with `\\begin{tabular}`. This option does not
     work with `:longtable`. If it is `nothing` the default option of the table format will
-    be used.  (**Default** = `nothing`)
+    be used.
+    (**Default** = `nothing`)
 - `wrap_table_environment::Union{Nothing, String}`: Environment that will be used to wrap
     the table if the option `wrap_table` is `true`. If it is `nothing` the default option of
-    the table format will be used.  (**Default** = `nothing`)
+    the table format will be used.
+    (**Default** = `nothing`)
 
 ## LaTeX highlighters
 
@@ -588,14 +634,17 @@ will wrap all the cells in the table in the following environment:
     \\textbf{\\small{<Cell text>}}
 
 !!! info
+
     If only a single highlighter is wanted, it can be passed directly to the keyword
     `highlighter` without being inside a `Tuple`.
 
 !!! note
+
     If multiple highlighters are valid for the element `(i, j)`, the applied style will be
     equal to the first match considering the order in the tuple `highlighters`.
 
 !!! note
+
     If the highlighters are used together with [Formatters](@ref), the change in the format
     **will not** affect the parameter `data` passed to the highlighter function `f`. It will
     always receive the original, unformatted value.
@@ -618,9 +667,11 @@ This back end produces Markdown tables. This back end can be used by selecting
 - `highlighters::Union{MarkdownHighlighter, Tuple}`: An instance of `MarkdownHighlighter` or
     a tuple with a list of Markdown highlighters (see the section
     [Markdown Highlighters](@ref)).
-- `linebreaks::Bool`: If `true`, `\\n` will be replaced by `<br>`. (**Default** = `false`)
+- `linebreaks::Bool`: If `true`, `\\n` will be replaced by `<br>`.
+    (**Default** = `false`)
 - `show_omitted_cell_summary::Bool`: If `true`, a summary will be printed after the table
-    with the number of columns and rows that were omitted. (**Default** = `false`)
+    with the number of columns and rows that were omitted.
+    (**Default** = `false`)
 
 The following keywords are available to customize the output decoration:
 
@@ -668,14 +719,17 @@ whereas the second let the user select the desired decoration by specifying the 
 `fd`.
 
 !!! info
+
     If only a single highlighter is wanted, it can be passed directly to the keyword
     `highlighter` without being inside a `Tuple`.
 
 !!! note
+
     If multiple highlighters are valid for the element `(i, j)`, the applied style will be
     equal to the first match considering the order in the tuple `highlighters`.
 
 !!! note
+
     If the highlighters are used together with [Formatters](@ref), the change in the format
     **will not** affect the parameter `data` passed to the highlighter function `f`. It will
     always receive the original, unformatted value.
@@ -772,7 +826,7 @@ function pretty_table(
 end
 
 ############################################################################################
-#                                    Private Functions
+#                                    Private Functions                                     #
 ############################################################################################
 
 # This function creates the structure that holds the global print information.

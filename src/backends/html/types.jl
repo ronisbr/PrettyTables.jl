@@ -1,11 +1,8 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Types and structures for the HTML back end.
 #
-#   Types and structures for the HTML back end.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 export HtmlCell, HtmlDecoration, HtmlHighlighter, HtmlTableFormat
 export @html_cell_str
@@ -133,7 +130,7 @@ are three important classes that can be used to format tables using the variable
 end
 
 ############################################################################################
-#                                       Highlighters
+#                                       Highlighters                                       #
 ############################################################################################
 
 """

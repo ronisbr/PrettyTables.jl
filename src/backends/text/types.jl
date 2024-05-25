@@ -1,11 +1,8 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Types and structures for the text backend.
 #
-#   Types and structures for the text backend.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 export TextFormat, Highlighter, CustomTextCell
 
@@ -101,6 +98,7 @@ Highlighter(f::Function, fd::Function) = Highlighter(f = f, fd = fd)
 Store the information of the display and the current cursor position.
 
 !!! note
+
     This is not the real cursor position with respect to the display, but with respect to
     the point in which the table is printed.
 
@@ -192,7 +190,7 @@ struct TextCrayons{
 end
 
 ############################################################################################
-#                                        Constants
+#                                        Constants                                         #
 ############################################################################################
 
 # Crayon used to reset all the styling.

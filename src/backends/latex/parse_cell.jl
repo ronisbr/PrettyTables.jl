@@ -1,11 +1,8 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Functions to parse the table cells in LaTeX back end.
 #
-#   Functions to parse the table cells in LaTeX back end.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 # Parse the table `cell` of type `T` considering the context `io`.
 function _latex_parse_cell(

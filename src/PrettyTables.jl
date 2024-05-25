@@ -18,7 +18,7 @@ if isdefined(Base, :Experimental) && isdefined(Base.Experimental, Symbol("@optle
 end
 
 ############################################################################################
-#                                          Types
+#                                          Types                                           #
 ############################################################################################
 
 include("types.jl")
@@ -28,7 +28,7 @@ include("backends/latex/types.jl")
 include("backends/markdown/types.jl")
 
 ############################################################################################
-#                                         Includes
+#                                         Includes                                         #
 ############################################################################################
 
 include("configuration.jl")
@@ -41,8 +41,7 @@ include("preprocess.jl")
 include("print.jl")
 include("tables.jl")
 
-# Processed Table
-# ==========================================================================================
+# == Processed Table =======================================================================
 
 include("./processed_table/addtional_data.jl")
 include("./processed_table/constructors.jl")
@@ -50,11 +49,9 @@ include("./processed_table/get.jl")
 include("./processed_table/misc.jl")
 include("./processed_table/size.jl")
 
-# Backends
-# ==========================================================================================
+# == Backends ==============================================================================
 
-# Text Backend
-# ------------------------------------------------------------------------------------------
+# -- Text Backend --------------------------------------------------------------------------
 
 include("backends/text/alignment.jl")
 include("backends/text/circular_reference.jl")
@@ -76,8 +73,7 @@ include("backends/text/custom_text_cells/custom_text_cell.jl")
 include("backends/text/custom_text_cells/url_text_cell.jl")
 include("backends/text/custom_text_cells/ansi_text_cell.jl")
 
-# HTML backend
-# ------------------------------------------------------------------------------------------
+# -- HTML backend --------------------------------------------------------------------------
 
 include("backends/html/circular_reference.jl")
 include("backends/html/html_backend.jl")
@@ -87,8 +83,7 @@ include("backends/html/predefined_highlighters.jl")
 include("backends/html/private.jl")
 include("backends/html/string.jl")
 
-# LaTeX backend
-# ------------------------------------------------------------------------------------------
+# -- LaTeX backend -------------------------------------------------------------------------
 
 include("backends/latex/circular_reference.jl")
 include("backends/latex/latex_backend.jl")
@@ -97,8 +92,7 @@ include("backends/latex/predefined_formats.jl")
 include("backends/latex/private.jl")
 include("backends/latex/string.jl")
 
-# Markdown backend
-# ------------------------------------------------------------------------------------------
+# -- Markdown backend ----------------------------------------------------------------------
 
 include("backends/markdown/fill.jl")
 include("backends/markdown/markdown_backend.jl")
@@ -109,8 +103,7 @@ include("backends/markdown/private.jl")
 include("backends/markdown/render_cell.jl")
 include("backends/markdown/string.jl")
 
-# Precompilation
-# ==========================================================================================
+# == Precompilation ========================================================================
 
 include("precompilation.jl")
 

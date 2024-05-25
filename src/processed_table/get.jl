@@ -1,11 +1,8 @@
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+## Description #############################################################################
 #
-# Description
-# ==========================================================================================
+# Functions to get the index of data in a `ProcessedTable`.
 #
-#   Functions to get the index of data in a `ProcessedTable`.
-#
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+############################################################################################
 
 """
     _convert_axes(data::Any, i::Int) -> Int
@@ -13,13 +10,17 @@
 Convert the axes from the printed table data `i` to the axes in `data`.
 
 !!! note
+
     `i` refers to the i-th element that will be printed.
+
+---
 
     _convert_axes(data::Any, i::Int, j::Int) -> Int
 
 Convert the axes from the printed table data `(i, j)` to the axes in `data`.
 
 !!! note
+
     `(i, j)` refers to the i-th data row and j-th data column that will be printed.
 """
 function _convert_axes(data::Any, i::Int)
