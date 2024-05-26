@@ -20,7 +20,7 @@ for this project:
 
 The commit message must have the following structure:
 
-```
+```text
 <EMOJI> Short summary of changes
                          -- BLANK LINE -- 
 More detailed explanatory text, if necessary.  Wrap it to 67
@@ -49,11 +49,11 @@ Notice that:
 3. If the summary indicates an action, then if **must** be written in imperative
    form. Hence, write "Fix ...", "Change ...", and "Add ...", instead of "Fixed
    ...", "Changed ...", or "Added ...".
-3. It is preferred that only one emoji is used per commit.
-4. All the phrases in the explanatory text **must** be punctuated.
-5. If there is an explanatory text, a blank line **must** exist between the
+4. It is preferred that only one emoji is used per commit.
+5. All the phrases in the explanatory text **must** be punctuated.
+6. If there is an explanatory text, a blank line **must** exist between the
    short summary of changes and the explanatory text.
-6. The is no limit for the detailed explanatory text, but it must be wrap to 72
+7. The is no limit for the detailed explanatory text, but it must be wrap to 72
    characters.
 
 ## Commit emojis
@@ -80,4 +80,6 @@ commit does. The following table describe some situations:
 | Warning                | :warning: `:warning:`                                          |
 | Other                  | [See here](https://www.webpagefx.com/tools/emoji-cheat-sheet/) |
 
-**Note**: If the commit contains an important warning, such as a breaking change, then the emoji :warning: `:warning:` must be added to the commit title. In this case, two emojis can be used.
+**Note**: If the commit contains an important warning, such as a breaking change, then the
+emoji :warning: `:warning:` must be added to the commit title. In this case, two emojis
+can be used.
