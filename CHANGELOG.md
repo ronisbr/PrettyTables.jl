@@ -1,6 +1,13 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 2.3.2
+-------------
+
+- ![Enhancement][badge-enhancement] Minor source-code updates.
+- ![Enhancement][badge-enhancement] We updated the documentation. We now generate almost all
+  the figures with examples programmatically.
+
 Version 2.3.1
 -------------
 
