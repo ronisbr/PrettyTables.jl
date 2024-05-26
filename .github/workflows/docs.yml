@@ -12,6 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install ansitoimg
+        run: |
+          sudo apt-get install pipx
+          pipx ensurepath
+          sudo pipx ensurepath --global
+          pipx install ansitoimg
       - name: Install Luatex
         run: |
           sudo apt-get install -y \
