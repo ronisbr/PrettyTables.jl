@@ -11,12 +11,20 @@ jobs:
     name: Documenter
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Install Luatex
-        run: sudo apt-get install -y ghostscript texlive texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-luatex
-      - uses: julia-actions/setup-julia@v1
+        run: |
+          sudo apt-get install -y \
+            ghostscript \
+            texlive
+            texlive-latex-base \
+            texlive-latex-recommended \
+            texlive-latex-extra \
+            texlive-luatex
+      - uses: julia-actions/setup-julia@v2
         with:
           version: '1'
+      - uses: julia-actions/cache@v2
       - uses: julia-actions/julia-buildpkg@v1
       - uses: julia-actions/julia-docdeploy@releases/v1
         env:
