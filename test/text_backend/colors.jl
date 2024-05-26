@@ -514,7 +514,7 @@ end
 │        │ \e[36m  end\e[39m\e[0m                  │
 └────────┴────────────────────────┘
 """
-    else
+    elseif VERSION < v"1.11.0-DEV"
         expected = """
 ┌────────┬────────────────────────┐
 │\e[1m Col. 1 \e[0m│\e[1m                 Col. 2 \e[0m│
@@ -536,6 +536,30 @@ end
 │        │ \e[36m  function test()\e[39m\e[0m      │
 │        │ \e[36m      return 1\e[39m\e[0m         │
 │        │ \e[36m  end\e[39m\e[0m                  │
+└────────┴────────────────────────┘
+"""
+    else
+        expected = """
+┌────────┬────────────────────────┐
+│\e[1m Col. 1 \e[0m│\e[1m                 Col. 2 \e[0m│
+├────────┼────────────────────────┤
+│      1 │ \e[1m  Header\e[22m\e[0m               │
+│        │   \e[1m≡≡≡≡≡≡\e[22m\e[0m               │
+│        │ \e[0m                       │
+│        │   This is a paragraph.\e[0m │
+│        │ \e[0m                       │
+│        │   \e[31mfunction\e[39m \e[36mtest\e[92m()\e[39m\e[0m      │
+│        │       \e[31mreturn\e[39m \e[91m1\e[39m\e[0m         │
+│        │   \e[31mend\e[39m\e[0m                  │
+├────────┼────────────────────────┤
+│      2 │ \e[1m  Header\e[22m\e[0m               │
+│        │   \e[1m≡≡≡≡≡≡\e[22m\e[0m               │
+│        │ \e[0m                       │
+│        │   This is a paragraph.\e[0m │
+│        │ \e[0m                       │
+│        │   \e[31mfunction\e[39m \e[36mtest\e[92m()\e[39m\e[0m      │
+│        │       \e[31mreturn\e[39m \e[91m1\e[39m\e[0m         │
+│        │   \e[31mend\e[39m\e[0m                  │
 └────────┴────────────────────────┘
 """
     end
