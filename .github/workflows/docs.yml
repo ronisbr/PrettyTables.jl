@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install Luatex
-        run: sudo apt-get install -y ghostscript texlive
+        run: sudo apt-get install -y ghostscript texlive texlive-luatex
       - uses: julia-actions/setup-julia@v1
         with:
           version: '1'
