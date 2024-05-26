@@ -4,6 +4,12 @@
 CurrentModule = PrettyTables
 ```
 
+```@setup latex
+using PrettyTables
+using LaTeXStrings
+using Latexify
+```
+
 The following options are available when the LaTeX back end is used. Those can be passed as
 keywords when calling the function [`pretty_table`](@ref):
 
@@ -90,7 +96,9 @@ following two fields:
 
 The function `f` has the following signature:
 
-    f(data, i, j)
+```julia
+f(data, i, j)
+```
 
 in which `data` is a reference to the data that is being printed, `i` and `j` are the
 element coordinates that are being tested. If this function returns `true`, the highlight
@@ -118,11 +126,15 @@ function `fd`.
 
 Thus, for example:
 
-    LatexHighlighter((data,i,j)->true, ["textbf", "small"])
+```julia
+LatexHighlighter((data,i,j)->true, ["textbf", "small"])
+```
 
 will wrap all the cells in the table in the following environment:
 
-    \textbf{\small{<Cell text>}}
+```tex
+\textbf{\small{<Cell text>}}
+```
 
 !!! info
 
@@ -140,26 +152,47 @@ will wrap all the cells in the table in the following environment:
     **will not** affect the parameter `data` passed to the highlighter function `f`. It will
     always receive the original, unformatted value.
 
-```julia-repl
-julia> t = 0:1:20;
+```@repl latex
+t = 0:1:20
 
-julia> data = hcat(t, ones(length(t)) * 1, 1 * t, 0.5 .* t.^2);
+data = hcat(t, ones(length(t)) * 1, 1 * t, 0.5 .* t.^2)
 
-julia> header = (["Time", "Acceleration", "Velocity", "Distance"],
-                 [ "[s]",  "[m/s\$^2\$]",    "[m/s]",      "[m]"]);
+header = (
+    ["Time", "Acceleration",         "Velocity", "Distance"],
+    [ "[s]",  latex_cell"[m/s$^2$]", "[m/s]",    "[m]"]
+)
 
-julia> hl_v = LatexHighlighter((data, i, j) -> (j == 3) && data[i, 3] > 9, ["color{blue}","textbf"]);
+hl_v = LatexHighlighter((data, i, j) -> (j == 3) && data[i, 3] > 9, ["color{blue}","textbf"]);
 
-julia> hl_p = LatexHighlighter((data, i, j) -> (j == 4) && data[i, 4] > 10, ["color{red}", "textbf"])
+hl_p = LatexHighlighter((data, i, j) -> (j == 4) && data[i, 4] > 10, ["color{red}", "textbf"])
 
-julia> hl_e = LatexHighlighter((data, i, j) -> (i == 10), ["cellcolor{black}", "color{white}", "textbf"])
+hl_e = LatexHighlighter((data, i, j) -> (i == 10), ["cellcolor{black}", "color{white}", "textbf"])
 
-julia> pretty_table(data, backend = Val(:latex), header = header, highlighters = (hl_e, hl_p, hl_v))
+pretty_table(data; backend = Val(:latex), header = header, highlighters = (hl_e, hl_p, hl_v))
 ```
 
-![](./latex_backend/latex_highlighter.png)
+```@setup latex
+str = pretty_table(
+    String,
+    data;
+    backend = Val(:latex),
+    header = header,
+    highlighters = (hl_e, hl_p, hl_v)
+)
+
+render(
+    LaTeXString(str),
+    MIME("image/png");
+    name = "latex_highlighter",
+    packages = ("colortbl", "xcolor"),
+    open = false
+)
+```
+
+![LaTeX highlighter example](./latex_highlighter.png)
 
 !!! note
+
     The following LaTeX packages are required to render this example: `colortbl` and
     `xcolor`.
 
@@ -168,46 +201,81 @@ julia> pretty_table(data, backend = Val(:latex), header = header, highlighters =
 To work with `LaTeXString`s, you must wrap them in `LatexCell`s. Otherwise, special LaTeX
 characters are converted or escaped.
 
-```julia
-julia> using PrettyTables, Latexify
+```@repl latex
+using PrettyTables, Latexify
 
-julia> c1 = LatexCell.([latexify("α"), latexify("β")]);
+c1 = LatexCell.([latexify("α"), latexify("β")]);
 
-julia> c2 = [0.0, 1.0];
+c2 = [0.0, 1.0];
 
-julia> pretty_table([c1 c2], backend = Val(:latex))
-\begin{tabular}{rr}
-  \hline
-  \textbf{Col. 1} & \textbf{Col. 2} \\\hline
-  $\alpha$ & 0.0 \\
-  $\beta$ & 1.0 \\\hline
-\end{tabular}
+pretty_table([c1 c2], backend = Val(:latex))
 ```
 
 ## LaTeX Table Formats
 
 The following table formats are available when using the LaTeX back end:
 
-`tf_latex_default` (**Default**)
+```@setup latex
+header = [
+  "Header 1" "Header 2" "Header 3" "Header 4"
+  "Sub 1"    "Sub 2"    "Sub 3"    "Sub 4"
+]
 
-![](./latex_backend/format_default.png)
+data = [
+    true  100.0 0x8080 "String"
+    false 200.0 0x0808 "String"
+    true  300.0 0x1986 "String"
+    false 400.0 0x1987 "String"
+]
 
-`tf_latex_double`
+for prefix in (
+    "default",
+    "double",
+    "modern",
+    "booktabs",
+)
+    local str
 
-![](./latex_backend/format_double.png)
+    filename = "latex_format_$prefix"
+    tf       = Symbol("tf_latex_" * prefix)
 
-`tf_latex_modern`
+    str = pretty_table(
+        String,
+        data;
+        backend = Val(:latex),
+        tf = @eval($tf),
+    )
 
-![](./latex_backend/format_modern.png)
+    render(
+      LaTeXString(str),
+      MIME("image/png");
+      name = filename,
+      packages = ("array", "booktabs"),
+      open = false
+    )
+end
+```
+
+### `tf_latex_default` (**Default**)
+
+![`tf_latex_default`](./latex_format_default.png)
+
+### `tf_latex_double`
+
+![`tf_latex_double`](./latex_format_double.png)
+
+### `tf_latex_modern`
+
+![`tf_latex_modern`](./latex_format_modern.png)
 
 !!! note
 
     You need the LaTeX package `array` to use the vertical divisions with this
     format.
 
-`tf_latex_booktabs`
+### `tf_latex_booktabs`
 
-![](./latex_backend/format_booktabs.png)
+![`tf_latex_booktabs`](./latex_format_booktabs.png)
 
 !!! note
 

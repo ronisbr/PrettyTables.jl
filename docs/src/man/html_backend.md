@@ -4,6 +4,10 @@
 CurrentModule = PrettyTables
 ```
 
+```@setup html
+using PrettyTables
+```
+
 ```@raw html
 <script language="javascript" type="text/javascript">
  function resizeIframe(obj)
@@ -126,26 +130,60 @@ whereas the second let the user select the desired decoration by specifying the 
 There are a set of pre-defined highlighters (with names `hl_*`) to make the usage simpler.
 They are defined in the file `./src/backends/html/predefined_highlighters.jl`.
 
-```julia-repl
-julia> t = 0:1:20;
+```@repl html
+t = 0:1:20
 
-julia> data = hcat(t, ones(length(t)) * 1, 1 * t, 0.5 .* t.^2);
+data = hcat(t, ones(length(t)) * 1, 1 * t, 0.5 .* t.^2)
 
-julia> header = (["Time", "Acceleration", "Velocity", "Distance"],
-                 [ "[s]",       "[m/s²]",    "[m/s]",      "[m]"]);
+header = (
+    ["Time", "Acceleration", "Velocity", "Distance"],
+    [ "[s]",       "[m/s²]",    "[m/s]",      "[m]"]
+)
 
-julia> hl_v = HtmlHighlighter((data, i, j) -> (j == 3) && data[i, 3] > 9, HtmlDecoration(color = "blue", font_weight = "bold"));
+hl_v = HtmlHighlighter(
+    (data, i, j) -> (j == 3) && data[i, 3] > 9,
+    HtmlDecoration(color = "blue", font_weight = "bold")
+)
 
-julia> hl_p = HtmlHighlighter((data, i, j) -> (j == 4) && data[i, 4] > 10, HtmlDecoration(color = "red"));
+hl_p = HtmlHighlighter(
+    (data, i, j) -> (j == 4) && data[i, 4] > 10,
+    HtmlDecoration(color = "red")
+)
 
-julia> hl_e = HtmlHighlighter((data, i, j) -> data[i, 1] == 10, HtmlDecoration(background = "black", color = "white"))
+hl_e = HtmlHighlighter(
+    (data, i, j) -> data[i, 1] == 10,
+    HtmlDecoration(background = "black", color = "white")
+)
 
-julia> pretty_table(data; backend = Val(:html), header = header, highlighters = (hl_e, hl_p, hl_v), standalone = true)
+pretty_table(
+    data;
+    backend = Val(:html),
+    header = header,
+    highlighters = (hl_e, hl_p, hl_v),
+    standalone = true
+)
+```
+
+```@setup html
+mkpath("html_backend")
+
+str = pretty_table(
+    String,
+    data;
+    backend = Val(:html),
+    header = header,
+    highlighters = (hl_e, hl_p, hl_v),
+    standalone = true
+)
+
+open("html_backend/html_highlighter_example.html", "w") do f
+  write(f, str)
+end
 ```
 
 ```@raw html
-<iframe src="html_highlighters_example.html" frameborder="0" scrolling="no" onload="javascript:resizeIframe(this)">
-  <p>Your browser does not support iframes. Click <a href="html_highlighters_example.html>here</a> to see the table.</p>
+<iframe src="html_highlighter_example.html" frameborder="0" scrolling="no" onload="javascript:resizeIframe(this)">
+  <p>Your browser does not support iframes. Click <a href="html_highlighter_example.html>here</a> to see the table.</p>
 </iframe>
 ```
 
@@ -153,7 +191,49 @@ julia> pretty_table(data; backend = Val(:html), header = header, highlighters = 
 
 The following table formats are available when using the HTML back end:
 
-`tf_html_default` (**Default**)
+```@setup html
+mkpath("html_backend")
+
+header = [
+  "Header 1" "Header 2" "Header 3" "Header 4"
+  "Sub 1"    "Sub 2"    "Sub 3"    "Sub 4"
+]
+
+data = [
+    true  100.0 0x8080 "String"
+    false 200.0 0x0808 "String"
+    true  300.0 0x1986 "String"
+    false 400.0 0x1987 "String"
+]
+
+for prefix in (
+    "default",
+    "dark",
+    "minimalist",
+    "matrix",
+    "simple"
+)
+    local str
+
+    filename = "html_format_$prefix.html"
+    tf       = Symbol("tf_html_" * prefix)
+
+    str = pretty_table(
+        String,
+        data;
+        backend = Val(:html),
+        standalone = true,
+        show_header = prefix == "matrix" ? false : true,
+        tf = @eval($tf),
+    )
+
+    open("html_backend/$filename", "w") do f
+      write(f, str)
+    end
+end
+```
+
+### `tf_html_default` (**Default**)
 
 ```@raw html
 <iframe src="html_format_default.html" frameborder="0" scrolling="no" onload="javascript:resizeIframe(this)">
@@ -161,7 +241,7 @@ The following table formats are available when using the HTML back end:
 </iframe>
 ```
 
-`tf_html_dark`
+### `tf_html_dark`
 
 ```@raw html
 <iframe src="html_format_dark.html" frameborder="0" scrolling="no" onload="javascript:resizeIframe(this)">
@@ -169,7 +249,7 @@ The following table formats are available when using the HTML back end:
 </iframe>
 ```
 
-`tf_html_minimalist`
+### `tf_html_minimalist`
 
 ```@raw html
 <iframe src="html_format_minimalist.html" frameborder="0" scrolling="no" onload="javascript:resizeIframe(this)">
@@ -177,7 +257,7 @@ The following table formats are available when using the HTML back end:
 </iframe>
 ```
 
-`tf_html_matrix`
+### `tf_html_matrix`
 
 ```@raw html
 <iframe src="html_format_matrix.html" frameborder="0" scrolling="no" onload="javascript:resizeIframe(this)">
@@ -188,9 +268,9 @@ The following table formats are available when using the HTML back end:
 !!! info
 
     In this case, the table format `html_matrix` was printed with the option
-    `noheader = true`.
+    `show_header = false`.
 
-`tf_html_simple`
+### `tf_html_simple`
 
 ```@raw html
 <iframe src="html_format_simple.html" frameborder="0" scrolling="no" onload="javascript:resizeIframe(this)">
