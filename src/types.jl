@@ -1,17 +1,67 @@
 ## Description #############################################################################
 #
-# Types and structures.
+# Define types for PrettyTables.jl
 #
 ############################################################################################
 
-export PrettyTablesConf
+@kwdef struct TableData
+    data::Any
 
-"""
-    T_BACKENDS
+    # ==  Table Header =====================================================================
 
-Types that define the supported back ends.
-"""
-const T_BACKENDS = Union{Val{:auto}, Val{:text}, Val{:html}, Val{:latex}, Val{:markdown}}
+    title::String = ""
+    subtitle::String = ""
+
+    # == Labels ============================================================================
+
+    # -- Columns ---------------------------------------------------------------------------
+
+    column_labels::Vector{Vector{Any}}
+    stubhead_label::String = ""
+    show_row_number_column::Bool = false
+    row_number_column_label::String = ""
+
+    # -- Rows ------------------------------------------------------------------------------
+
+    row_labels::Union{Nothing, Vector{String}} = nothing
+    row_group_labels::Union{Nothing, Dict{Int, String}} = nothing
+    summary_row_label::String = ""
+    summary_cell::Union{Nothing, Function} = nothing
+
+    # == Table Footer ======================================================================
+
+    footnotes::String = ""
+    source_notes::String = ""
+
+    # == Alignments ========================================================================
+
+    cell_alignment::Vector{Function} = []
+    column_label_alignment::Union{Symbol, Vector{Symbol}} = :r
+    continuation_row_alignment::Union{Nothing, Symbol} = nothing
+    data_alignment::Union{Symbol, Vector{Symbol}} = :r
+    row_number_column_alignment::Symbol = :r
+    row_label_alignment::Symbol = :r
+
+    # == Formatters ========================================================================
+
+    formatters::Union{Nothing, Vector{Any}} = nothing
+
+    # == Auxiliary Variables ===============================================================
+
+    # Since `data` can be any object, `size` is type unstable. Hence, we store this
+    # information here to improve the performance.
+    num_rows::Int
+    num_columns::Int
+
+    # Maxium number of rows and columns we must print.
+    maximum_number_of_columns::Int = 0
+    maximum_number_of_rows::Int = 0
+
+    # How we should vertically crop the table.
+    vertical_crop_mode::Symbol = :bottom
+end
+
+# == Tables.jl API =========================================================================
 
 """
     struct ColumnTable
@@ -39,68 +89,41 @@ struct RowTable
     size::Tuple{Int, Int}        # ....................................... Size of the table
 end
 
+# == Print Table State =====================================================================
+
+const _INITIALIZE          = 0
+const _TITLE               = 1
+const _SUBTITLE            = 2
+const _NEW_ROW             = 3
+const _ROW_NUMBER_COLUMN   = 4
+const _ROW_LABEL_COLUMN    = 5
+const _DATA                = 6
+const _CONTINUATION_COLUMN = 7
+const _END_ROW             = 8
+const _FOOTNOTES           = 9
+const _SOURCENOTES         = 10
+const _END_PRINTING        = 11
+
+const _VERTICAL_CONTINUATION_CELL_ACTIONS = (
+    :vertical_continuation_cell,
+    :row_number_vertical_continuation_cell,
+    :row_label_vertical_continuation_cell
+)
+
 """
-    struct ProcessedTable
-
-This struct contains the processed table, which handles additional columns, etc.  All the
-backend functions have access to this object.
 """
-Base.@kwdef mutable struct ProcessedTable
-    data::Any
-    header::Any
-
-    # == Private Fields ====================================================================
-
-    _additional_column_id::Vector{Symbol} = Symbol[]
-    _additional_data_columns::Vector{Any} = Any[]
-    _additional_header_columns::Vector{Vector{String}} = Vector{String}[]
-    _additional_column_alignment::Vector{Symbol} = Symbol[]
-    _additional_column_header_alignment::Vector{Symbol} = Symbol[]
-    _data_alignment::Union{Symbol, Vector{Symbol}} = :r
-    _data_cell_alignment::Tuple = ()
-    _header_alignment::Union{Symbol, Vector{Symbol}} = :s
-    _header_cell_alignment::Tuple = ()
-    _max_num_of_rows::Int = -1
-    _max_num_of_columns::Int = -1
-    _num_data_rows::Int = -1
-    _num_data_columns::Int = -1
-    _num_header_rows::Int = -1
-    _num_header_columns::Int = -1
+@kwdef struct PrintingTableState
+    state::Int = _INITIALIZE
+    i::Int = 0
+    j::Int = 0
+    row_section::Symbol = :column_labels
 end
 
-"""
-    struct PrintInfo
+# == Printing Specification ================================================================
 
-This structure stores the information required so that the back ends can print the tables.
-"""
-struct PrintInfo
-    ptable::ProcessedTable
-    io::IOContext
-    formatters::Ref{Any}
-    compact_printing::Bool
-    title::String
-    title_alignment::Symbol
-    cell_first_line_only::Bool
-    renderer::Union{Val{:print}, Val{:show}}
-    limit_printing::Bool
+@kwdef struct PrintingSpec
+    context::IOContext
+    table_data::TableData
+    renderer::Symbol
+    show_omitted_cell_summary::Bool
 end
-
-"""
-    struct PrettyTablesConf
-
-Type of the object that holds a pre-defined set of configurations for PrettyTables.jl.
-"""
-struct PrettyTablesConf
-    confs::Dict{Symbol, Any}
-end
-
-"""
-    struct UndefinedCell
-
-Internal structure to indicate that a cell has an undefined reference.
-"""
-struct UndefinedCell end
-
-const _UNDEFINED_CELL = UndefinedCell()
-
-PrettyTablesConf() = PrettyTablesConf(Dict{Symbol, Any}())

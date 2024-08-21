@@ -10,9 +10,23 @@
 
 import Base: getindex, isassigned, length, size
 
-############################################################################################
+##########return ==  ##################################################################################
 #                             Functions Related to ColumnTable                             #
 ############################################################################################
+
+function ColumnTable(data::Any)
+    # Access the table using the columns.
+    table = Tables.columns(data)
+
+    # Get the column names.
+    names = collect(Symbol, Tables.columnnames(table))
+
+    # Compute the table size and get the column types.
+    size_j = length(names)::Int
+    size_i = Tables.rowcount(table)::Int
+
+    return ColumnTable(data, table, names, (size_i, size_j))
+end
 
 function getindex(ctable::ColumnTable, inds...)
     length(inds) != 2 && error("A element of type `ColumnTable` must be accesses using 2 indices.")
@@ -58,6 +72,37 @@ _getdata(ctable::ColumnTable) = ctable.data
 ############################################################################################
 #                              Functions Related to RowTable                               #
 ############################################################################################
+
+function RowTable(data::Any)
+    # Access the table using the rows.
+    table = Tables.rows(data)
+
+    # Compute the number of rows.
+    size_i = length(table)::Int
+
+    # If we have at least one row, we can obtain the number of columns by fetching the row.
+    # Otherwise, we try to use the schema.
+    if size_i > 0
+        row₁ = first(table)
+
+        # Get the column names.
+        names = collect(Symbol, Tables.columnnames(row₁))
+    else
+        sch = Tables.schema(data)
+
+        if sch === nothing
+            # In this case, we do not have a row and we do not have a schema.  Thus, we can
+            # do nothing. Hence, we assume there is no row or column.
+            names = Symbol[]
+        else
+            names = [sch.names...]
+        end
+    end
+
+    size_j = length(names)::Int
+
+    return RowTable(data, table, names, (size_i, size_j))
+end
 
 function getindex(rtable::RowTable, inds...)
     length(inds) != 2 && error("A element of type `RowTable` must be accesses using 2 indices.")
