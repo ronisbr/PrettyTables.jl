@@ -183,6 +183,11 @@ function _html__print(
                 il += 1
             end
 
+            if (ps.i == 1) && (rs == :data)
+                _aprintln(buf, "<tbody>", il, ns; minify)
+                il += 1
+            end
+
             empty!(properties)
             properties["class"] = if rs == :column_labels
                 "columnLabelRow"
@@ -218,12 +223,6 @@ function _html__print(
             if (rs == :column_labels) && (ps.row_section != :column_labels)
                 il -= 1
                 _aprintln(buf, "</thead>", il, ns; minify)
-                _aprintln(buf, "<tbody>", il, ns; minify)
-                il += 1
-
-            elseif ps.row_section == :table_footer
-                il -= 1
-                _aprintln(buf, "</tbody>", il, ns; minify)
             end
 
         else
@@ -306,6 +305,11 @@ function _html__print(
                 properties["class"] = "summaryCell"
                 merge!(style, tf.summary_cell_decoration)
 
+            elseif action == :source_notes
+                properties["class"] = "sourceNotes"
+                properties["colspan"] = string(_number_of_printed_columns(table_data))
+                merge!(style, tf.source_note_decoration)
+
             else
                 properties["class"] = ""
             end
@@ -321,6 +325,9 @@ function _html__print(
             )
         end
     end
+
+    il -= 1
+    _aprintln(buf, "</tbody>", il, ns; minify)
 
     il -= 1
     _aprintln(buf, _html__close_tag("table"), il, ns; minify)

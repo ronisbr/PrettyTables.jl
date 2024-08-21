@@ -53,6 +53,10 @@ function _current_cell(
 
     elseif action == :summary_cell
         return table_data.summary_cell(table_data.data, state.j)
+
+    elseif action == :source_notes
+        return table_data.source_notes
+
     else
         throw(ArgumentError("Invalid action found: `$action`!"))
     end
@@ -111,6 +115,9 @@ function _current_cell_alignment(
         end
 
         return _current_cell_alignment(new_action, state, table_data)
+
+    elseif action == :source_notes
+        return :l
 
     else
         throw(ArgumentError("Invalid action found: `$action`!"))
@@ -302,9 +309,29 @@ function _next(state::PrintingTableState, table_data::TableData)
     end
 
     if ps < _SOURCENOTES
-        !isempty(table_data.footnotes) &&
+        !isempty(table_data.source_notes) &&
             return :source_notes, :table_footer, PrintingTableState(_SOURCENOTES, 0, 0, rs)
     end
 
     return :end_printing, :end_printing, PrintingTableState(_END_PRINTING, 0, 0, rs)
+end
+
+"""
+    _number_of_printed_columns(table_data::TableData) -> Int
+
+Return the number of printed columns in `table_data`.
+"""
+function _number_of_printed_columns(table_data::TableData)
+    data_columns = table_data.maximum_number_of_columns > 0 ?
+        # If we are cropping the table, we have one additional column for the continuation
+        # characters.
+        min(table_data.maximum_number_of_columns + 1, table_data.num_columns) :
+        table_data.num_columns
+
+    total_columns =
+        data_columns +
+        table_data.show_row_number_column +
+        !isnothing(table_data.row_labels)
+
+    return total_columns
 end
