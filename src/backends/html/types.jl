@@ -4,6 +4,12 @@
 #
 ############################################################################################
 
+export HtmlHighlighter, HtmlTableFormat
+
+############################################################################################
+#                                       Highlighters                                       #
+############################################################################################
+
 """
     struct HtmlHighlighter
 
@@ -66,6 +72,15 @@ function HtmlHighlighter(f::Function, decoration::Pair{String, String})
     )
 end
 
+############################################################################################
+#                                       Table Format                                       #
+############################################################################################
+
+# Create some default decorations to reduce allocations.
+const _HTML__NO_DECORATION = Dict{String, String}()
+const _HTML__BOLD = Dict{String, String}("font-weight" => "bold")
+const _HTML__ITALIC = Dict{String, String}("font-style" => "italic")
+
 """
     HtmlTableFormat
 
@@ -87,14 +102,44 @@ TODO: Add the classes.
 @kwdef struct HtmlTableFormat
     css::String = """
     table, td, th {
-        border-collapse: collapse;
-        font-family: sans-serif;
+      border-collapse: collapse;
+      font-family: sans-serif;
+    }
+
+    thead {
+      border-top: 2px solid black;
+      border-bottom: 1px solid black;
+    }
+
+    tbody {
+      border-top: 1px solid black;
+      border-bottom: 2px solid black;
     }
 
     td, th {
-        border-bottom: 0;
-        padding: 4px
-    }
-    """
+      padding: 4px
+    }"""
+
     table_width::String = ""
+
+    table_style::Dict{String, String} = _HTML__NO_DECORATION
+
+    # == Decorations of Table Sections =====================================================
+
+    top_left_string_decoration::Dict{String, String}    = _HTML__BOLD
+    top_right_string_decoration::Dict{String, String}   = _HTML__ITALIC
+    title_decoration::Dict{String, String}              = _HTML__BOLD
+    subtitle_decoration::Dict{String, String}           = _HTML__NO_DECORATION
+    row_number_label_decoration::Dict{String, String}   = _HTML__BOLD
+    row_number_decoration::Dict{String, String}         = _HTML__BOLD
+    stubhead_label_decoration::Dict{String, String}     = _HTML__BOLD
+    row_label_decoration::Dict{String, String}          = _HTML__BOLD
+    first_column_label_decoration::Dict{String, String} = _HTML__BOLD
+    column_label_decoration::Dict{String, String}       = _HTML__NO_DECORATION
+    summary_cell_decoration::Dict{String, String}       = _HTML__NO_DECORATION
+    footnote_decoration::Dict{String, String}           = _HTML__NO_DECORATION
+    sourcenote_decoration::Dict{String, String}         = _HTML__NO_DECORATION
 end
+
+# Default HTML format.
+const _HTML__DEFAULT_TABLE_FORMAT = HtmlTableFormat()
