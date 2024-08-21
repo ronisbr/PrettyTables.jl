@@ -4,63 +4,66 @@
 #
 ############################################################################################
 
-export HtmlCell, HtmlDecoration, HtmlHighlighter, HtmlTableFormat
-export @html_cell_str
-
 """
-    struct HtmlCell
+    struct HtmlHighlighter
 
-Defines a table cell that contains HTML code. It can be created using the macro
-[`@html_cell_str`](@ref).
+Define the default highlighter of a table when using the HTML back end.
+
+# Fields
+
+- `f::Function`: Function with the signature `f(data, i, j)` in which should return `true`
+    if the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
+- `fd::Function`: Function with the signature `f(h, data, i, j)` in which `h` is the
+    highlighter. This function must return a `Dict{String, String}` with properties
+    compatible with the `style` field that will be applied to the highlighted cell.
+- `_decoration::Dict{String, String}`: The decoration to be applied to the highlighted cell
+    if the default `fd` is used.
+
+# Remarks
+
+This structure can be constructed using three helpers:
+
+    HtmlHighlighter(f::Function, decoration::Dict{String, String})
+
+    HtmlHighlighter(f::Function, decorations::NTuple{N, Pair{String, String})
+
+    HtmlHighlighter(f::Function, fd::Function)
+
+The first will apply a fixed decoration to the highlighted cell specified in `decoration`,
+whereas the second let the user select the desired decoration by specifying the function
+`fd`.
 """
-struct HtmlCell{T}
-    data::T
+@kwdef struct HtmlHighlighter
+    f::Function
+    fd::Function
+
+    # == Private Fields ====================================================================
+    _decoration::Dict{String, String} = Dict{String, String}()
 end
 
-"""
-    @html_cell_str(str)
+_html__default_html_highlighter_fd(h::HtmlHighlighter, ::Any, ::Int, ::Int) = h._decoration
 
-Create a table cell with HTML code.
-
-# Examples
-
-```julia
-julia> html_cell"<i>Italic text</i>"
-HtmlCell{String}("<i>Italic text</i>")
-```
-"""
-macro html_cell_str(str)
-    return :(HtmlCell($str))
+# Helper function to construct highlighters.
+function HtmlHighlighter(f::Function, decoration::Pair{String, String}, args...)
+    return HtmlHighlighter(
+        f,
+        _html__default_html_highlighter_fd,
+        Dict{String, String}(decoration, args...)
+    )
 end
 
-"""
-    HtmlDecoration
-
-Structure that defines parameters to decorate a table cell.
-"""
-@kwdef struct HtmlDecoration
-    color::String               = ""
-    background::String          = ""
-    font_family::String         = ""
-    font_style::String          = ""
-    font_weight::String         = ""
-    text_decoration::String     = ""
-    style::Dict{String, String} = Dict{String, String}()
+function HtmlHighlighter(f::Function, decoration::Dict{String, String})
+    return HtmlHighlighter(f, _html__default_html_highlighter_fd, decoration)
 end
 
-HtmlDecoration(color::String) = HtmlDecoration(color = color)
+HtmlHighlighter(f::Function, fd::Function) = HtmlHighlighter(f, fd, Dict{String, String}())
 
-function Dict(d::HtmlDecoration)
-    style = d.style
-
-    !isempty(d.color)           && (style["color"]           = d.color)
-    !isempty(d.background)      && (style["background"]      = d.background)
-    !isempty(d.font_family)     && (style["font-family"]     = d.font_family)
-    !isempty(d.font_weight)     && (style["font-weight"]     = d.font_weight)
-    !isempty(d.font_style)      && (style["font-style"]      = d.font_style)
-    !isempty(d.text_decoration) && (style["text-decoration"] = d.text_decoration)
-
-    return style
+function HtmlHighlighter(f::Function, decoration::Pair{String, String})
+    return HtmlHighlighter(
+        f,
+        _html__default_html_highlighter_fd,
+        Dict{String, String}(decoration)
+    )
 end
 
 """
@@ -79,13 +82,7 @@ the corresponding HTML property.
 Besides the usual HTML tags related to the tables (`table`, `td, `th`, `tr`, etc.), there
 are three important classes that can be used to format tables using the variable `css`.
 
-- `header`: This is the class of the header (first line).
-- `subheader`: This is the class of the sub-headers (all the rest of the lines in the header
-    section).
-- `headerLastRow`: The last row of the header section has additionally this class.
-- `rowNumber`: All the cells related to the row number have this class. Thus, the row number
-    header can be styled using `th.rowNumber` and the row numbers cells can be styled using
-    `td.rowNumber`.
+TODO: Add the classes.
 """
 @kwdef struct HtmlTableFormat
     css::String = """
@@ -98,80 +95,6 @@ are three important classes that can be used to format tables using the variable
         border-bottom: 0;
         padding: 4px
     }
-
-    tr:nth-child(odd) {
-        background: #eee;
-    }
-
-    tr:nth-child(even) {
-        background: #fff;
-    }
-
-    tr.header {
-        background: navy !important;
-        color: white;
-        font-weight: bold;
-    }
-
-    tr.subheader {
-        background: lightgray !important;
-        color: black;
-    }
-
-    tr.headerLastRow {
-        border-bottom: 2px solid black;
-    }
-
-    th.rowNumber, td.rowNumber {
-        text-align: right;
-    }
     """
     table_width::String = ""
 end
-
-############################################################################################
-#                                       Highlighters                                       #
-############################################################################################
-
-"""
-    HtmlHighlighter
-
-Defines the default highlighter of a table when using the html backend.
-
-# Fields
-
-- `f::Function`: Function with the signature `f(data,i,j)` in which should return `true` if
-    the element `(i,j)` in `data` must be highlighter, or `false` otherwise.
-- `fd::Function`: Function with the signature `f(h,data,i,j)` in which `h` is the
-    highlighter. This function must return the `HtmlDecoration` to be applied to the cell
-    that must be highlighted.
-- `decoration::HtmlDecoration`: The `HtmlDecoration` to be applied to the highlighted cell
-    if the default `fd` is used.
-
-# Remarks
-
-This structure can be constructed using two helpers:
-
-    HtmlHighlighter(f::Function, decoration::HtmlDecoration)
-
-    HtmlHighlighter(f::Function, fd::Function)
-
-The first will apply a fixed decoration to the highlighted cell specified in `decoration`
-whereas the second let the user select the desired decoration by specifying the function
-`fd`.
-"""
-@kwdef struct HtmlHighlighter
-    # API
-    f::Function
-    fd::Function = (h, data, i, j)->h.decoration
-
-    # Private
-    decoration::HtmlDecoration = HtmlDecoration()
-end
-
-# Helper function to construct HtmlHighlighter.
-function HtmlHighlighter(f::Function, decoration::HtmlDecoration)
-    return HtmlHighlighter(f = f, decoration = decoration)
-end
-
-HtmlHighlighter(f::Function, fd::Function) = HtmlHighlighter(f = f, fd = fd)
