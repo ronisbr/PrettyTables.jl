@@ -11,7 +11,7 @@ end
 
 function _html__print(
     pspec::PrintingSpec;
-    tf::HtmlTableFormat = HtmlTableFormat(),
+    tf::HtmlTableFormat = _HTML__DEFAULT_TABLE_FORMAT,
     allow_html_in_cells::Bool = false,
     highlighters::Vector{HtmlHighlighter} = HtmlHighlighter[],
     is_stdout::Bool = false,
@@ -25,9 +25,6 @@ function _html__print(
     top_left_string::AbstractString = "",
     top_right_string::AbstractString = "",
     wrap_table_in_div::Bool = false,
-    # == Decorations =======================================================================
-    top_left_string_decoration::Dict{String, String} = Dict{String, String}(),
-    top_right_string_decoration::Dict{String, String} = Dict{String, String}()
 )
     context    = pspec.context
     table_data = pspec.table_data
@@ -76,7 +73,7 @@ function _html__print(
             minify
         )
 
-        _aprintln(buf, tf.css, il, ns; minify)
+        _aprint(buf, tf.css, il, ns; minify)
         il -= 1
 
         _aprintln(
@@ -117,7 +114,7 @@ function _html__print(
                 buf,
                 "left",
                 top_left_string,
-                top_left_string_decoration,
+                tf.top_left_string_decoration,
                 il,
                 ns;
                 minify,
@@ -130,7 +127,7 @@ function _html__print(
                 buf,
                 "right",
                 top_right_string,
-                top_right_string_decoration,
+                tf.top_right_string_decoration,
                 il,
                 ns;
                 minify,
@@ -266,28 +263,51 @@ function _html__print(
                 end
             end
 
-            # Obtain the cell class.
+            # Obtain the cell class and style.
             empty!(properties)
-            properties["class"] = if action == :row_number_label
-                "rowNumberLabel"
+
+            if action == :row_number_label
+                properties["class"] = "rowNumberLabel"
+                merge!(style, tf.row_number_label_decoration)
+
             elseif action == :row_number
-                "rowNumber"
+                properties["class"] = "rowNumber"
+                merge!(style, tf.row_number_decoration)
+
             elseif action == :summary_row_number
-                "summaryRowNumber"
+                properties["class"] = "summaryRowNumber"
+                merge!(style, tf.row_number_decoration)
+
             elseif action == :stubhead_label
-                "stubheadLabel"
+                properties["class"] = "stubheadLabel"
+                merge!(style, tf.stubhead_label_decoration)
+
             elseif action == :row_label
-                "rowLabel"
+                properties["class"] = "rowLabel"
+                merge!(style, tf.row_label_decoration)
+
             elseif action == :summary_row_label
-                "summaryRowLabel"
+                properties["class"] = "summaryRowLabel"
+                merge!(style, tf.row_label_decoration)
+
             elseif action == :column_label
-                "columnLabel"
+                properties["class"] = "columnLabel"
+
+                if ps.i == 1
+                    merge!(style, tf.first_column_label_decoration)
+                else
+                    merge!(style, tf.column_label_decoration)
+                end
+
             elseif action == :data
-                ""
+                properties["class"] = ""
+
             elseif action == :summary_cell
-                "summaryCell"
+                properties["class"] = "summaryCell"
+                merge!(style, tf.summary_cell_decoration)
+
             else
-                ""
+                properties["class"] = ""
             end
 
             # Create the row tag with the content.

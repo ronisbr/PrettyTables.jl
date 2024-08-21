@@ -86,12 +86,6 @@ PrecompileTools.@setup_workload begin
 
         pretty_table(html_buf, table; table_style = Dict("border" => "1px solid"))
 
-        pretty_table(
-            html_buf,
-            matrix;
-            top_left_string_decoration = Dict("font-style" => "italic"),
-        )
-
         pretty_table(html_buf, types)
 
         # == Input: Tables.jl ==============================================================
