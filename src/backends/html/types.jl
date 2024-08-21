@@ -80,6 +80,7 @@ end
 const _HTML__NO_DECORATION = Dict{String, String}()
 const _HTML__BOLD = Dict{String, String}("font-weight" => "bold")
 const _HTML__ITALIC = Dict{String, String}("font-style" => "italic")
+const _HTML__SMALL_ITALIC = Dict{String, String}("font-size" => "smaller", "font-style" => "italic")
 
 """
     HtmlTableFormat
@@ -118,6 +119,11 @@ TODO: Add the classes.
 
     td, th {
       padding: 4px
+    }
+
+    td.sourceNotes {
+      border-top: 1px solid black;
+      border-bottom: 1px solid black;
     }"""
 
     table_width::String = ""
@@ -138,7 +144,7 @@ TODO: Add the classes.
     column_label_decoration::Dict{String, String}       = _HTML__NO_DECORATION
     summary_cell_decoration::Dict{String, String}       = _HTML__NO_DECORATION
     footnote_decoration::Dict{String, String}           = _HTML__NO_DECORATION
-    sourcenote_decoration::Dict{String, String}         = _HTML__NO_DECORATION
+    source_note_decoration::Dict{String, String}        = _HTML__SMALL_ITALIC
 end
 
 # Default HTML format.
