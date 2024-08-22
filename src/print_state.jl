@@ -91,9 +91,11 @@ function _current_cell_alignment(
         end
     elseif (action == :data) || (action == :summary_cell)
         # First, we check if we have a special cell alignment.
-        for f in table_data.cell_alignment
-            fa = f(_getdata(table_data.data), state.i, state.j)::Union{Nothing, Symbol}
-            !isnothing(fa) && return fa
+        if !isnothing(table_data.cell_alignment)
+            for f in table_data.cell_alignment
+                fa = f(_getdata(table_data.data), state.i, state.j)::Union{Nothing, Symbol}
+                !isnothing(fa) && return fa
+            end
         end
 
         a = table_data.data_alignment

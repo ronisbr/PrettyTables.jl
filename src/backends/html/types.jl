@@ -6,6 +6,9 @@
 
 export HtmlHighlighter, HtmlTableFormat
 
+# Pair that defines HTML properties.
+const HtmlPair = Pair{String, String}
+
 ############################################################################################
 #                                       Highlighters                                       #
 ############################################################################################
@@ -29,7 +32,7 @@ Define the default highlighter of a table when using the HTML back end.
 
 This structure can be constructed using three helpers:
 
-    HtmlHighlighter(f::Function, decoration::Dict{String, String})
+    HtmlHighlighter(f::Function, decoration::Vector{Pair{String, String}})
 
     HtmlHighlighter(f::Function, decorations::NTuple{N, Pair{String, String})
 
@@ -44,31 +47,31 @@ whereas the second let the user select the desired decoration by specifying the 
     fd::Function
 
     # == Private Fields ====================================================================
-    _decoration::Dict{String, String} = Dict{String, String}()
+    _decoration::Vector{HtmlPair} = HtmlPair[]
 end
 
 _html__default_html_highlighter_fd(h::HtmlHighlighter, ::Any, ::Int, ::Int) = h._decoration
 
 # Helper function to construct highlighters.
-function HtmlHighlighter(f::Function, decoration::Pair{String, String}, args...)
+function HtmlHighlighter(f::Function, decoration::HtmlPair, args...)
     return HtmlHighlighter(
         f,
         _html__default_html_highlighter_fd,
-        Dict{String, String}(decoration, args...)
+        [decoration, args...]
     )
 end
 
-function HtmlHighlighter(f::Function, decoration::Dict{String, String})
+function HtmlHighlighter(f::Function, decoration::Vector{HtmlPair})
     return HtmlHighlighter(f, _html__default_html_highlighter_fd, decoration)
 end
 
-HtmlHighlighter(f::Function, fd::Function) = HtmlHighlighter(f, fd, Dict{String, String}())
+HtmlHighlighter(f::Function, fd::Function) = HtmlHighlighter(f, fd, HtmlPair[])
 
-function HtmlHighlighter(f::Function, decoration::Pair{String, String})
+function HtmlHighlighter(f::Function, decoration::HtmlPair)
     return HtmlHighlighter(
         f,
         _html__default_html_highlighter_fd,
-        Dict{String, String}(decoration)
+        [decoration]
     )
 end
 
@@ -77,10 +80,10 @@ end
 ############################################################################################
 
 # Create some default decorations to reduce allocations.
-const _HTML__NO_DECORATION = Dict{String, String}()
-const _HTML__BOLD = Dict{String, String}("font-weight" => "bold")
-const _HTML__ITALIC = Dict{String, String}("font-style" => "italic")
-const _HTML__SMALL_ITALIC = Dict{String, String}("font-size" => "smaller", "font-style" => "italic")
+const _HTML__NO_DECORATION = HtmlPair[]
+const _HTML__BOLD = ["font-weight" => "bold"]
+const _HTML__ITALIC = ["font-style" => "italic"]
+const _HTML__SMALL_ITALIC = ["font-size" => "smaller", "font-style" => "italic"]
 
 """
     HtmlTableFormat
@@ -133,23 +136,23 @@ TODO: Add the classes.
 
     table_width::String = ""
 
-    table_style::Dict{String, String} = _HTML__NO_DECORATION
+    table_style::Vector{HtmlPair} = _HTML__NO_DECORATION
 
     # == Decorations of Table Sections =====================================================
 
-    top_left_string_decoration::Dict{String, String}    = _HTML__BOLD
-    top_right_string_decoration::Dict{String, String}   = _HTML__ITALIC
-    title_decoration::Dict{String, String}              = _HTML__BOLD
-    subtitle_decoration::Dict{String, String}           = _HTML__NO_DECORATION
-    row_number_label_decoration::Dict{String, String}   = _HTML__BOLD
-    row_number_decoration::Dict{String, String}         = _HTML__BOLD
-    stubhead_label_decoration::Dict{String, String}     = _HTML__BOLD
-    row_label_decoration::Dict{String, String}          = _HTML__BOLD
-    first_column_label_decoration::Dict{String, String} = _HTML__BOLD
-    column_label_decoration::Dict{String, String}       = _HTML__NO_DECORATION
-    summary_cell_decoration::Dict{String, String}       = _HTML__NO_DECORATION
-    footnote_decoration::Dict{String, String}           = _HTML__NO_DECORATION
-    source_note_decoration::Dict{String, String}        = _HTML__SMALL_ITALIC
+    top_left_string_decoration::Vector{HtmlPair}    = _HTML__BOLD
+    top_right_string_decoration::Vector{HtmlPair}   = _HTML__ITALIC
+    title_decoration::Vector{HtmlPair}              = _HTML__BOLD
+    subtitle_decoration::Vector{HtmlPair}           = _HTML__NO_DECORATION
+    row_number_label_decoration::Vector{HtmlPair}   = _HTML__BOLD
+    row_number_decoration::Vector{HtmlPair}         = _HTML__BOLD
+    stubhead_label_decoration::Vector{HtmlPair}     = _HTML__BOLD
+    row_label_decoration::Vector{HtmlPair}          = _HTML__BOLD
+    first_column_label_decoration::Vector{HtmlPair} = _HTML__BOLD
+    column_label_decoration::Vector{HtmlPair}       = _HTML__NO_DECORATION
+    summary_cell_decoration::Vector{HtmlPair}       = _HTML__NO_DECORATION
+    footnote_decoration::Vector{HtmlPair}           = _HTML__NO_DECORATION
+    source_note_decoration::Vector{HtmlPair}        = _HTML__SMALL_ITALIC
 end
 
 # Default HTML format.

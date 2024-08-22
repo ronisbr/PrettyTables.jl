@@ -21,7 +21,6 @@ function _html__print(
     stand_alone::Bool = false,
     table_class::String = "",
     table_div_class::String = "",
-    table_style::Dict{String, String} = Dict{String, String}(),
     top_left_string::AbstractString = "",
     top_right_string::AbstractString = "",
     wrap_table_in_div::Bool = false,
@@ -36,8 +35,8 @@ function _html__print(
 
     # Create dictionaries to store properties and styles to decrease the number of
     # allocations.
-    properties = Dict{String, String}()
-    style      = Dict{String, String}()
+    properties = Pair{String, String}[]
+    style      = Pair{String, String}[]
 
     # == Variables to Store Information About Indentation ==================================
 
@@ -136,7 +135,7 @@ function _html__print(
 
         # We need to clear the floats so that the table is rendered below the top bar.
         empty!(style)
-        style["clear"] = "both"
+        push!(style, "clear" => "both")
         _aprintln(buf, _html__create_tag("div", ""; style), il, ns; minify)
 
         il -= 1
@@ -147,10 +146,10 @@ function _html__print(
 
     if wrap_table_in_div
         empty!(properties)
-        properties["class"] = table_div_class
+        push!(properties, "class" => table_div_class)
 
         empty!(style)
-        style["overflow-x"] = "scroll"
+        push!(properties, "overflow-x" => "scroll")
 
         _aprintln(buf, _html__open_tag("div"; properties, style), il, ns; minify)
 
@@ -158,11 +157,11 @@ function _html__print(
     end
 
     empty!(properties)
-    properties["class"] = table_class
+    push!(properties, "class" => table_class)
 
     _aprintln(
         buf,
-        _html__open_tag("table"; properties, style = table_style),
+        _html__open_tag("table"; properties, style = tf.table_style),
         il,
         ns;
         minify
@@ -194,7 +193,7 @@ function _html__print(
             end
 
             empty!(properties)
-            properties["class"] = if rs == :column_labels
+            class = if rs == :column_labels
                 "columnLabelRow"
             elseif rs == :data
                 "dataRow"
@@ -205,6 +204,7 @@ function _html__print(
             else
                 ""
             end
+            push!(properties, "class" => class)
 
             _aprintln(buf, _html__open_tag("tr"; properties), il, ns; minify)
             il += 1
@@ -259,10 +259,13 @@ function _html__print(
 
             # Check if the user wants to limit the column width.
             if !isempty(maximum_column_width)
-                style["max-width"]     = maximum_column_width
-                style["overflow"]      = "hidden"
-                style["text-overflow"] = "ellipsis"
-                style["white-space"]   = "nowrap"
+                push!(
+                    style,
+                    "max-width"     => maximum_column_width,
+                    "overflow"      => "hidden",
+                    "text-overflow" => "ellipsis",
+                    "white-space"   => "nowrap",
+                )
             end
 
             # If we are in a data cell, we must check for highlighters.
@@ -272,7 +275,7 @@ function _html__print(
                 if !isnothing(highlighters)
                     for h in highlighters
                         if h.f(orig_data, ps.i, ps.j)
-                            merge!(style, Dict{String, String}(h.fd(h, orig_data, ps.i, ps.j)))
+                            append!(style, h.fd(h, orig_data, ps.i, ps.j))
                             break
                         end
                     end
@@ -297,50 +300,50 @@ function _html__print(
             empty!(properties)
 
             if action == :row_number_label
-                properties["class"] = "rowNumberLabel"
-                merge!(style, tf.row_number_label_decoration)
+                push!(properties, "class" => "rowNumberLabel")
+                append!(style, tf.row_number_label_decoration)
 
             elseif action == :row_number
-                properties["class"] = "rowNumber"
-                merge!(style, tf.row_number_decoration)
+                push!(properties, "class" => "rowNumber")
+                append!(style, tf.row_number_decoration)
 
             elseif action == :summary_row_number
-                properties["class"] = "summaryRowNumber"
-                merge!(style, tf.row_number_decoration)
+                push!(properties, "class" => "summaryRowNumber")
+                append!(style, tf.row_number_decoration)
 
             elseif action == :stubhead_label
-                properties["class"] = "stubheadLabel"
-                merge!(style, tf.stubhead_label_decoration)
+                push!(properties, "class" => "stubheadLabel")
+                append!(style, tf.stubhead_label_decoration)
 
             elseif action == :row_label
-                properties["class"] = "rowLabel"
-                merge!(style, tf.row_label_decoration)
+                push!(properties, "class" => "rowLabel")
+                append!(style, tf.row_label_decoration)
 
             elseif action == :summary_row_label
-                properties["class"] = "summaryRowLabel"
-                merge!(style, tf.row_label_decoration)
+                push!(properties, "class" => "summaryRowLabel")
+                append!(style, tf.row_label_decoration)
 
             elseif action == :column_label
                 if ps.i == 1
-                    merge!(style, tf.first_column_label_decoration)
+                    append!(style, tf.first_column_label_decoration)
                 else
-                    merge!(style, tf.column_label_decoration)
+                    append!(style, tf.column_label_decoration)
                 end
 
             elseif action == :summary_cell
-                merge!(style, tf.summary_cell_decoration)
+                append!(style, tf.summary_cell_decoration)
 
             elseif action == :footnote
                 # The footnote must be a cell that span the entire printed table.
-                properties["colspan"] = string(_number_of_printed_columns(table_data))
+                push!(properties, "colspan" => string(_number_of_printed_columns(table_data)))
                 rendered_cell = "<sup>$(ps.i)</sup> " * rendered_cell
 
             elseif action == :source_notes
                 # The source notes must be a cell that span the entire printed table.
-                properties["colspan"] = string(_number_of_printed_columns(table_data))
+                push!(properties, "colspan" => string(_number_of_printed_columns(table_data)))
 
             else
-                properties["class"] = ""
+                push!(properties, "class" => "")
             end
 
             # Create the row tag with the content.

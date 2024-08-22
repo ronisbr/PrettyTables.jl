@@ -29,7 +29,7 @@ function pretty_table(
     stubhead_label::String = "",
     row_number_column_label::String = "Row",
     row_labels::Union{Nothing, Vector{String}} = nothing,
-    row_group_labels::Union{Nothing, Dict{Int, String}} = nothing,
+    row_group_labels::Union{Nothing, Vector{Pair{Int, String}}} = nothing,
     summary_cell::Union{Nothing, Function, AbstractVector{Any}} = nothing,
     summary_row_label::String = "",
     footnotes::Union{Nothing, Vector{Pair{NTuple{2, Int}, String}}} = nothing,
@@ -117,9 +117,7 @@ function pretty_table(
         error("The length of vector `alignment` ($(length(alignment))) must be equal to the number of columns ($num_columns).")
     end
 
-    if isnothing(cell_alignment)
-        cell_alignment = Function[]
-    elseif cell_alignment isa Dict
+    if cell_alignment isa Dict
         # If it is a `Dict`, `cell_alignment[(i,j)]` contains the desired alignment for the
         # cell `(i,j)`. Thus, we need to create a wrapper function.
         cell_alignment_dict = copy(cell_alignment)
