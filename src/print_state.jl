@@ -15,7 +15,13 @@ function _current_cell(
     state::PrintingTableState,
     table_data::TableData
 )
-    if action == :row_number_label
+    if action == :title
+        return table_data.title
+
+    elseif action == :subtitle
+        return table_data.subtitle
+
+    elseif action == :row_number_label
         # We should not print anything if we are not at the first line of column labels.
         if state.i == 1
             return table_data.row_number_column_label
@@ -76,12 +82,21 @@ function _current_cell_alignment(
     state::PrintingTableState,
     table_data::TableData
 )
-    if (action == :row_number_label) || (action == :row_number)
+    if (action == :title)
+        return table_data.title_alignment
+
+    elseif (action == :subtitle)
+        return table_data.subtitle_alignment
+
+    elseif (action == :row_number_label) || (action == :row_number)
         return table_data.row_number_column_alignment
+
     elseif action == :summary_row_number
         return table_data.row_number_column_alignment
+
     elseif (action == :stubhead_label) || (action == :row_label) || (action == :summary_row_label)
         return table_data.row_label_alignment
+
     elseif action == :column_label
         a = table_data.column_label_alignment
         if a isa Symbol
@@ -89,6 +104,7 @@ function _current_cell_alignment(
         else
             return a[state.j]
         end
+
     elseif (action == :data) || (action == :summary_cell)
         # First, we check if we have a special cell alignment.
         if !isnothing(table_data.cell_alignment)
@@ -122,10 +138,10 @@ function _current_cell_alignment(
         return _current_cell_alignment(new_action, state, table_data)
 
     elseif action == :footnote
-        return :l
+        return table_data.footnote_alignment
 
     elseif action == :source_notes
-        return :l
+        return table_data.source_note_alignment
 
     else
         throw(ArgumentError("Invalid action found: `$action`!"))
@@ -181,14 +197,28 @@ function _next(state::PrintingTableState, table_data::TableData)
     # == Table Header ======================================================================
 
     if ps < _TITLE
-        if !isempty(table_data.title)
-            return :title, :table_header, PrintingTableState(_TITLE, 0, 0, rs)
+        isempty(table_data.title) &&
+            return _next(PrintingTableState(_TITLE, 0, 0, rs), table_data)
+
+        if j == 0
+            return :new_row, :table_header, PrintingTableState(ps, 1, j + 1, rs)
+        elseif j == 1
+            return :title, :table_header, PrintingTableState(ps, 1, j + 1, rs)
+        else
+            return :end_row, :table_header, PrintingTableState(_TITLE, 0, 0, rs)
         end
     end
 
     if ps < _SUBTITLE
-        if !isempty(table_data.subtitle)
-            return :subtitle, :table_header, PrintingTableState(_SUBTITLE, 0, 0, rs)
+        isempty(table_data.subtitle) &&
+            return _next(PrintingTableState(_SUBTITLE, 0, 0, :column_labels), table_data)
+
+        if j == 0
+            return :new_row, :table_header, PrintingTableState(ps, 1, j + 1, rs)
+        elseif j == 1
+            return :subtitle, :table_header, PrintingTableState(ps, 1, j + 1, rs)
+        else
+            return :end_row, :table_header, PrintingTableState(_SUBTITLE, 0, 0, :column_labels)
         end
     end
 
@@ -352,7 +382,7 @@ function _next(state::PrintingTableState, table_data::TableData)
 
     if ps < _SOURCENOTES && !isempty(table_data.source_notes)
         if j == 0
-            return :new_row, :table_footer, PrintingTableState(ps, i, j + 1, rs)
+            return :new_row, :table_footer, PrintingTableState(ps, i + 1, j + 1, rs)
         elseif j == 1
             return :source_notes, :table_footer, PrintingTableState(ps, i, j + 1, rs)
         else
