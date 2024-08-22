@@ -268,6 +268,21 @@ function _html__print(
                 )
             end
 
+            # Check for footnotes.
+            footnotes = _current_cell_footnotes(table_data, action, ps.i, ps.j)
+
+            if !isnothing(footnotes) && !isempty(footnotes)
+                rendered_cell *= "<sup>"
+                for i in eachindex(footnotes)
+                    f = footnotes[i]
+                    if i != last(eachindex(footnotes))
+                        rendered_cell *= "$f,"
+                    else
+                        rendered_cell *= "$f</sup>"
+                    end
+                end
+            end
+
             # If we are in a data cell, we must check for highlighters.
             if action == :data
                 orig_data = _getdata(table_data.data)
@@ -280,21 +295,9 @@ function _html__print(
                         end
                     end
                 end
-
-                footnotes = _current_cell_footnotes(table_data, ps.i, ps.j)
-
-                if !isnothing(footnotes) && !isempty(footnotes)
-                    rendered_cell *= "<sup>"
-                    for i in eachindex(footnotes)
-                        f = footnotes[i]
-                        if i != last(eachindex(footnotes))
-                            rendered_cell *= "$f,"
-                        else
-                            rendered_cell *= "$f</sup>"
-                        end
-                    end
-                end
             end
+
+
 
             # Obtain the cell class and style.
             empty!(properties)
