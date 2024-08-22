@@ -11,7 +11,7 @@ end
 
 function _html__print(
     pspec::PrintingSpec;
-    tf::HtmlTableFormat = _HTML__DEFAULT_TABLE_FORMAT,
+    tf::HtmlTableFormat = HtmlTableFormat(),
     allow_html_in_cells::Bool = false,
     highlighters::Vector{HtmlHighlighter} = HtmlHighlighter[],
     is_stdout::Bool = false,
@@ -188,6 +188,11 @@ function _html__print(
                 il += 1
             end
 
+            if (ps.i == 1) && (rs == :table_footer)
+                _aprintln(buf, "<tfoot>", il, ns; minify)
+                il += 1
+            end
+
             empty!(properties)
             properties["class"] = if rs == :column_labels
                 "columnLabelRow"
@@ -195,6 +200,8 @@ function _html__print(
                 "dataRow"
             elseif rs == :summary_row
                 "summaryRow"
+            elseif rs == :table_footer
+                ps.state < _FOOTNOTES ? "footnote" : "sourceNotes"
             else
                 ""
             end
@@ -223,6 +230,16 @@ function _html__print(
             if (rs == :column_labels) && (ps.row_section != :column_labels)
                 il -= 1
                 _aprintln(buf, "</thead>", il, ns; minify)
+            end
+
+            if (rs ∈ (:data, :summary_row)) && (ps.row_section == :table_footer)
+                il -= 1
+                _aprintln(buf, "</tbody>", il, ns; minify)
+            end
+
+            if (rs == :table_footer) && (ps.row_section == :end_printing)
+                il -= 1
+                _aprintln(buf, "</tfoot>", il, ns; minify)
             end
 
         else
@@ -260,6 +277,20 @@ function _html__print(
                         end
                     end
                 end
+
+                footnotes = _current_cell_footnotes(table_data, ps.i, ps.j)
+
+                if !isnothing(footnotes) && !isempty(footnotes)
+                    rendered_cell *= "<sup>"
+                    for i in eachindex(footnotes)
+                        f = footnotes[i]
+                        if i != last(eachindex(footnotes))
+                            rendered_cell *= "$f,"
+                        else
+                            rendered_cell *= "$f</sup>"
+                        end
+                    end
+                end
             end
 
             # Obtain the cell class and style.
@@ -290,25 +321,23 @@ function _html__print(
                 merge!(style, tf.row_label_decoration)
 
             elseif action == :column_label
-                properties["class"] = "columnLabel"
-
                 if ps.i == 1
                     merge!(style, tf.first_column_label_decoration)
                 else
                     merge!(style, tf.column_label_decoration)
                 end
 
-            elseif action == :data
-                properties["class"] = ""
-
             elseif action == :summary_cell
-                properties["class"] = "summaryCell"
                 merge!(style, tf.summary_cell_decoration)
 
-            elseif action == :source_notes
-                properties["class"] = "sourceNotes"
+            elseif action == :footnote
+                # The footnote must be a cell that span the entire printed table.
                 properties["colspan"] = string(_number_of_printed_columns(table_data))
-                merge!(style, tf.source_note_decoration)
+                rendered_cell = "<sup>$(ps.i)</sup> " * rendered_cell
+
+            elseif action == :source_notes
+                # The source notes must be a cell that span the entire printed table.
+                properties["colspan"] = string(_number_of_printed_columns(table_data))
 
             else
                 properties["class"] = ""
@@ -325,9 +354,6 @@ function _html__print(
             )
         end
     end
-
-    il -= 1
-    _aprintln(buf, "</tbody>", il, ns; minify)
 
     il -= 1
     _aprintln(buf, _html__close_tag("table"), il, ns; minify)

@@ -25,7 +25,7 @@
         row_labels                  = ["Row 1", "Row 2", "Row 3"],
         summary_cell                = (data, j) -> 20j,
         summary_row_label           = "Summary",
-        footnotes                   = "Footnotes",
+        footnotes                   = [(1, 1) => "Footnote", (2, 2) => "Footnote"],
         source_notes                = "Source Notes",
         data_alignment              = [:l, :c, :r, :l],
         column_label_alignment      = [:r, :r, :l, :c],
