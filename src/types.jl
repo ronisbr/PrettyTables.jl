@@ -4,6 +4,9 @@
 #
 ############################################################################################
 
+# Tuple that defined a footnote.
+const FootnoteTuple = Tuple{Symbol, Int, Int}
+
 @kwdef struct TableData
     data::Any
 
@@ -30,7 +33,7 @@
 
     # == Table Footer ======================================================================
 
-    footnotes::Union{Nothing, Vector{Pair{NTuple{2, Int}, String}}} = nothing
+    footnotes::Union{Nothing, Vector{Pair{FootnoteTuple, String}}} = nothing
     source_notes::String = ""
 
     # == Alignments ========================================================================

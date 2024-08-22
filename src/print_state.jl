@@ -133,20 +133,30 @@ function _current_cell_alignment(
 end
 
 """
-    _current_cell_footnotes(table_data::TableData, i::Int, j::Int) -> Vector{Int}
+    _current_cell_footnotes(table_data::TableData, cell_type::Symbol, i::Int, j::Int) -> Union{Nothing, Vector{Int}}
 
-Return an array of integers with the current cell footnotes.
+Return an array of integers with the footnotes defined in `table_data` for the `cell_type`
+at position `(i, j)`.
 """
-function _current_cell_footnotes(table_data::TableData, i::Int, j::Int)
+function _current_cell_footnotes(table_data::TableData, cell_type::Symbol, i::Int, j::Int)
     isnothing(table_data.footnotes) && return nothing
 
     current_footnotes = Int[]
 
     for k in 1:length(table_data.footnotes)
-        f = table_data.footnotes[k - 1 + begin]
+        f, _ = table_data.footnotes[k - 1 + begin]
+        ct, fi, fj = f
 
-        if (f[1][1] == i) && (f[1][2] == j)
-            push!(current_footnotes, i)
+        if ct == cell_type
+            if (
+                # Cell types that only requires testing the row index.
+                ((ct ∈ (:row_number, :row_label, :summary_row_number)) && (fi == i)) ||
+                # Cell types that only requires testing the column index.
+                ((ct == :summary_cell) && (fj == j)) ||
+                ((fi == i) && (fj == j))
+            )
+                push!(current_footnotes, k)
+            end
         end
     end
 

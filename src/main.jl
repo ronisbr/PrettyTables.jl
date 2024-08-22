@@ -32,7 +32,7 @@ function pretty_table(
     row_group_labels::Union{Nothing, Vector{Pair{Int, String}}} = nothing,
     summary_cell::Union{Nothing, Function, AbstractVector{Any}} = nothing,
     summary_row_label::String = "",
-    footnotes::Union{Nothing, Vector{Pair{NTuple{2, Int}, String}}} = nothing,
+    footnotes::Union{Nothing, Vector{Pair{FootnoteTuple, String}}} = nothing,
     source_notes::String = "",
 
     # == Alignments ========================================================================
