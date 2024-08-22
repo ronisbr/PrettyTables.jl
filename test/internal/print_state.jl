@@ -20,7 +20,7 @@
             row_labels              = ["Row 1", "Row 2", "Row 3"],
             summary_cell            = (data, i) -> i,
             summary_row_label       = "Summary",
-            footnotes               = [(1, 1) => "Footnote", (2, 2) => "Footnote"],
+            footnotes               = [(:data, 1, 1) => "Footnote", (:data, 2, 2) => "Footnote"],
             source_notes            = "Source Notes",
             num_rows                = 3,
             num_columns             = 4,
@@ -32,13 +32,19 @@
 
         # -- Table Header ------------------------------------------------------------------
 
-        action, rs, ps = PrettyTables._next(ps, td)
-        @test action == :title
-        @test rs     == :table_header
+        for a in (:title, :subtitle)
+            action, rs, ps = PrettyTables._next(ps, td)
+            @test action == :new_row
+            @test rs     == :table_header
 
-        action, rs, ps = PrettyTables._next(ps, td)
-        @test action == :subtitle
-        @test rs     == :table_header
+            action, rs, ps = PrettyTables._next(ps, td)
+            @test action == a
+            @test rs     == :table_header
+
+            action, rs, ps = PrettyTables._next(ps, td)
+            @test action == :end_row
+            @test rs     == :table_header
+        end
 
         # -- Column Labels -----------------------------------------------------------------
 
@@ -246,7 +252,7 @@
                 row_labels                = ["Row 1", "Row 2", "Row 3"],
                 summary_cell              = (data, i) -> i,
                 summary_row_label         = "Summary",
-                footnotes                 = [(1, 1) => "Footnote", (2, 2) => "Footnote"],
+                footnotes                 = [(:data, 1, 1) => "Footnote", (:data, 2, 2) => "Footnote"],
                 source_notes              = "Source Notes",
                 num_rows                  = 6,
                 num_columns               = 4,
@@ -261,13 +267,19 @@
 
             # -- Table Header --------------------------------------------------------------
 
-            action, rs, ps = PrettyTables._next(ps, td)
-            @test action == :title
-            @test rs     == :table_header
+            for a in (:title, :subtitle)
+                action, rs, ps = PrettyTables._next(ps, td)
+                @test action == :new_row
+                @test rs     == :table_header
 
-            action, rs, ps = PrettyTables._next(ps, td)
-            @test action == :subtitle
-            @test rs     == :table_header
+                action, rs, ps = PrettyTables._next(ps, td)
+                @test action == a
+                @test rs     == :table_header
+
+                action, rs, ps = PrettyTables._next(ps, td)
+                @test action == :end_row
+                @test rs     == :table_header
+            end
 
             # -- Column Labels -------------------------------------------------------------
 
@@ -449,7 +461,7 @@
                 row_labels                = ["Row 1", "Row 2", "Row 3"],
                 summary_cell              = (data, i) -> i,
                 summary_row_label         = "Summary",
-                footnotes                 = [(1, 1) => "Footnote", (2, 2) => "Footnote"],
+                footnotes                 = [(:data, 1, 1) => "Footnote", (:data, 2, 2) => "Footnote"],
                 source_notes              = "Source Notes",
                 num_rows                  = 6,
                 num_columns               = 4,
@@ -464,13 +476,19 @@
 
             # -- Table Header --------------------------------------------------------------
 
-            action, rs, ps = PrettyTables._next(ps, td)
-            @test action == :title
-            @test rs     == :table_header
+            for a in (:title, :subtitle)
+                action, rs, ps = PrettyTables._next(ps, td)
+                @test action == :new_row
+                @test rs     == :table_header
 
-            action, rs, ps = PrettyTables._next(ps, td)
-            @test action == :subtitle
-            @test rs     == :table_header
+                action, rs, ps = PrettyTables._next(ps, td)
+                @test action == a
+                @test rs     == :table_header
+
+                action, rs, ps = PrettyTables._next(ps, td)
+                @test action == :end_row
+                @test rs     == :table_header
+            end
 
             # -- Column Labels -------------------------------------------------------------
 
@@ -690,7 +708,7 @@
                 row_labels                = ["Row 1", "Row 2", "Row 3"],
                 summary_cell              = (data, i) -> i,
                 summary_row_label         = "Summary",
-                footnotes                 = [(1, 1) => "Footnote", (2, 2) => "Footnote"],
+                footnotes                 = [(:data, 1, 1) => "Footnote", (:data, 2, 2) => "Footnote"],
                 source_notes              = "Source Notes",
                 num_rows                  = 3,
                 num_columns               = 4,
@@ -704,13 +722,19 @@
 
             # -- Table Header --------------------------------------------------------------
 
-            action, rs, ps = PrettyTables._next(ps, td)
-            @test action == :title
-            @test rs     == :table_header
+            for a in (:title, :subtitle)
+                action, rs, ps = PrettyTables._next(ps, td)
+                @test action == :new_row
+                @test rs     == :table_header
 
-            action, rs, ps = PrettyTables._next(ps, td)
-            @test action == :subtitle
-            @test rs     == :table_header
+                action, rs, ps = PrettyTables._next(ps, td)
+                @test action == a
+                @test rs     == :table_header
+
+                action, rs, ps = PrettyTables._next(ps, td)
+                @test action == :end_row
+                @test rs     == :table_header
+            end
 
             # -- Column Labels -------------------------------------------------------------
 

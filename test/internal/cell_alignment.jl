@@ -20,13 +20,17 @@
             row_labels                  = ["Row 1", "Row 2", "Row 3"],
             summary_cell                = (data, i) -> i,
             summary_row_label           = "Summary",
-            footnotes                   = [(1, 1) => "Footnote", (2, 2) => "Footnote"],
+            footnotes                   = [(:data, 1, 1) => "Footnote", (:data, 2, 2) => "Footnote"],
             source_notes                = "Source Notes",
+            title_alignment             = :r,
+            subtitle_alignment          = :l,
             cell_alignment              = [(data, i, j) -> (i == 2 && j == 3) ? :c : nothing],
             data_alignment              = [:l, :c, :r, :l],
             column_label_alignment      = [:r, :r, :l, :c],
             row_label_alignment         = :r,
             row_number_column_alignment = :c,
+            footnote_alignment          = :c,
+            source_note_alignment       = :r,
             num_rows                    = 6,
             num_columns                 = 4,
             maximum_number_of_rows      = 3,
@@ -39,7 +43,24 @@
 
         # -- Table Header ------------------------------------------------------------------
 
+        # .. Table Title ...................................................................
+
         action, rs, ps = PrettyTables._next(ps, td)
+
+        action, rs, ps = PrettyTables._next(ps, td)
+        alignment = PrettyTables._current_cell_alignment(action, ps, td)
+        @test alignment == :r
+
+        action, rs, ps = PrettyTables._next(ps, td)
+
+        # .. Table Subtitle ................................................................
+
+        action, rs, ps = PrettyTables._next(ps, td)
+
+        action, rs, ps = PrettyTables._next(ps, td)
+        alignment = PrettyTables._current_cell_alignment(action, ps, td)
+        @test alignment == :l
+
         action, rs, ps = PrettyTables._next(ps, td)
 
         # -- Column Labels -----------------------------------------------------------------
@@ -163,6 +184,28 @@
         action, rs, ps = PrettyTables._next(ps, td)
         alignment = PrettyTables._current_cell_alignment(action, ps, td)
         @test alignment == :l
+
+        action, rs, ps = PrettyTables._next(ps, td)
+
+        # -- Footnotes ---------------------------------------------------------------------
+
+        for _ in 1:2
+            action, rs, ps = PrettyTables._next(ps, td)
+
+            action, rs, ps = PrettyTables._next(ps, td)
+            alignment = PrettyTables._current_cell_alignment(action, ps, td)
+            @test alignment == :c
+
+            action, rs, ps = PrettyTables._next(ps, td)
+        end
+
+        # -- Source Notes ------------------------------------------------------------------
+
+        action, rs, ps = PrettyTables._next(ps, td)
+
+        action, rs, ps = PrettyTables._next(ps, td)
+        alignment = PrettyTables._current_cell_alignment(action, ps, td)
+        @test alignment == :r
 
         action, rs, ps = PrettyTables._next(ps, td)
     end
@@ -182,14 +225,18 @@
             row_labels                  = ["Row 1", "Row 2", "Row 3"],
             summary_cell                = (data, i) -> i,
             summary_row_label           = "Summary",
-            footnotes                   = [(1, 1) => "Footnote", (2, 2) => "Footnote"],
+            footnotes                   = [(:data, 1, 1) => "Footnote", (:data, 2, 2) => "Footnote"],
             source_notes                = "Source Notes",
+            title_alignment             = :r,
+            subtitle_alignment          = :l,
             cell_alignment              = [(data, i, j) -> (i == 2 && j == 3) ? :c : nothing],
             data_alignment              = [:l, :c, :r, :l],
             column_label_alignment      = [:r, :r, :l, :c],
             continuation_row_alignment  = :c,
             row_label_alignment         = :r,
             row_number_column_alignment = :c,
+            footnote_alignment          = :c,
+            source_note_alignment       = :r,
             num_rows                    = 6,
             num_columns                 = 4,
             maximum_number_of_rows      = 3,
@@ -202,7 +249,24 @@
 
         # -- Table Header ------------------------------------------------------------------
 
+        # .. Table Title ...................................................................
+
         action, rs, ps = PrettyTables._next(ps, td)
+
+        action, rs, ps = PrettyTables._next(ps, td)
+        alignment = PrettyTables._current_cell_alignment(action, ps, td)
+        @test alignment == :r
+
+        action, rs, ps = PrettyTables._next(ps, td)
+
+        # .. Table Subtitle ................................................................
+
+        action, rs, ps = PrettyTables._next(ps, td)
+
+        action, rs, ps = PrettyTables._next(ps, td)
+        alignment = PrettyTables._current_cell_alignment(action, ps, td)
+        @test alignment == :l
+
         action, rs, ps = PrettyTables._next(ps, td)
 
         # -- Column Labels -----------------------------------------------------------------
@@ -326,6 +390,28 @@
         action, rs, ps = PrettyTables._next(ps, td)
         alignment = PrettyTables._current_cell_alignment(action, ps, td)
         @test alignment == :l
+
+        action, rs, ps = PrettyTables._next(ps, td)
+
+        # -- Footnotes ---------------------------------------------------------------------
+
+        for _ in 1:2
+            action, rs, ps = PrettyTables._next(ps, td)
+
+            action, rs, ps = PrettyTables._next(ps, td)
+            alignment = PrettyTables._current_cell_alignment(action, ps, td)
+            @test alignment == :c
+
+            action, rs, ps = PrettyTables._next(ps, td)
+        end
+
+        # -- Source Notes ------------------------------------------------------------------
+
+        action, rs, ps = PrettyTables._next(ps, td)
+
+        action, rs, ps = PrettyTables._next(ps, td)
+        alignment = PrettyTables._current_cell_alignment(action, ps, td)
+        @test alignment == :r
 
         action, rs, ps = PrettyTables._next(ps, td)
     end
