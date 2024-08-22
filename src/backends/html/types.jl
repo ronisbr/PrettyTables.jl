@@ -83,7 +83,11 @@ end
 const _HTML__NO_DECORATION = HtmlPair[]
 const _HTML__BOLD = ["font-weight" => "bold"]
 const _HTML__ITALIC = ["font-style" => "italic"]
-const _HTML__SMALL_ITALIC = ["font-size" => "smaller", "font-style" => "italic"]
+const _HTML__XLARGE_BOLD = ["font-size" => "x-large", "font-weight" => "bold"]
+const _HTML__LARGE_ITALIC = ["font-size" => "large", "font-style" => "italic"]
+const _HTML__SMALL = ["font-size" => "small"]
+const _HTML__SMALL_ITALIC = ["font-size" => "small", "font-style" => "italic"]
+const _HTML__SMALL_ITALIC_GRAY = ["color" => "gray", "font-size" => "small", "font-style" => "italic"]
 
 """
     HtmlTableFormat
@@ -111,7 +115,26 @@ TODO: Add the classes.
     }
 
     td, th {
-      padding: 4px
+      padding-bottom: 4px !important;
+      padding-left: 8px !important;
+      padding-right: 8px !important;
+      padding-top: 4px !important;
+    }
+
+    tr.title td {
+      padding-bottom: 2px !important;
+    }
+
+    tr.summaryRow td {
+      border-top: 1px solid black;
+    }
+
+    tr.footnote td {
+      padding-bottom: 2px !important;
+    }
+
+    tr.sourceNotes td {
+      padding-bottom: 2px !important;
     }
 
     table > *:first-child > tr:first-child {
@@ -127,15 +150,15 @@ TODO: Add the classes.
     }
 
     thead tr:last-child {
-        border-bottom: 1px solid black;
+      border-bottom: 1px solid black;
     }
 
     tbody tr:last-child {
-        border-bottom: 1px solid black;
+      border-bottom: 1px solid black;
     }
 
     tfoot tr:nth-last-child(1 of .footnote) {
-        border-bottom: 1px solid black;
+      border-bottom: 1px solid black;
     }"""
 
     table_width::String = ""
@@ -146,8 +169,8 @@ TODO: Add the classes.
 
     top_left_string_decoration::Vector{HtmlPair}    = _HTML__BOLD
     top_right_string_decoration::Vector{HtmlPair}   = _HTML__ITALIC
-    title_decoration::Vector{HtmlPair}              = _HTML__BOLD
-    subtitle_decoration::Vector{HtmlPair}           = _HTML__NO_DECORATION
+    title_decoration::Vector{HtmlPair}              = _HTML__XLARGE_BOLD
+    subtitle_decoration::Vector{HtmlPair}           = _HTML__LARGE_ITALIC
     row_number_label_decoration::Vector{HtmlPair}   = _HTML__BOLD
     row_number_decoration::Vector{HtmlPair}         = _HTML__BOLD
     stubhead_label_decoration::Vector{HtmlPair}     = _HTML__BOLD
@@ -155,8 +178,8 @@ TODO: Add the classes.
     first_column_label_decoration::Vector{HtmlPair} = _HTML__BOLD
     column_label_decoration::Vector{HtmlPair}       = _HTML__NO_DECORATION
     summary_cell_decoration::Vector{HtmlPair}       = _HTML__NO_DECORATION
-    footnote_decoration::Vector{HtmlPair}           = _HTML__NO_DECORATION
-    source_note_decoration::Vector{HtmlPair}        = _HTML__SMALL_ITALIC
+    footnote_decoration::Vector{HtmlPair}           = _HTML__SMALL
+    source_note_decoration::Vector{HtmlPair}        = _HTML__SMALL_ITALIC_GRAY
 end
 
 # Default HTML format.
