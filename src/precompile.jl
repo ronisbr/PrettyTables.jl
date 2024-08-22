@@ -80,11 +80,9 @@ PrecompileTools.@setup_workload begin
             html_buf,
             matrix;
             highlighters = [
-                HtmlHighlighter((data, i, j) -> i == 1, Dict("font-weight" => "bold"))
+                HtmlHighlighter((data, i, j) -> i == 1, ["font-weight" => "bold"])
             ]
         )
-
-        pretty_table(html_buf, table; table_style = Dict("border" => "1px solid"))
 
         pretty_table(html_buf, types)
 

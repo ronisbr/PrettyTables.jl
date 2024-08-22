@@ -24,7 +24,7 @@
     # -- Rows ------------------------------------------------------------------------------
 
     row_labels::Union{Nothing, Vector{String}} = nothing
-    row_group_labels::Union{Nothing, Dict{Int, String}} = nothing
+    row_group_labels::Union{Nothing, Vector{Pair{Int, String}}} = nothing
     summary_row_label::String = ""
     summary_cell::Union{Nothing, Function} = nothing
 
@@ -35,7 +35,7 @@
 
     # == Alignments ========================================================================
 
-    cell_alignment::Vector{Function} = []
+    cell_alignment::Union{Nothing, Vector{Any}} = nothing
     column_label_alignment::Union{Symbol, Vector{Symbol}} = :r
     continuation_row_alignment::Union{Nothing, Symbol} = nothing
     data_alignment::Union{Symbol, Vector{Symbol}} = :r

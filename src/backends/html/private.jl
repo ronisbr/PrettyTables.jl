@@ -81,48 +81,42 @@ const _HTML__ALIGNMENT_MAP = Dict(
 )
 
 """
-    _html__add_alignment_to_style!(style::Dict{String, String}, alignment::Symbol) -> Nothing
+    _html__add_alignment_to_style!(style::Vector{HtmlPair}, alignment::Symbol) -> Nothing
 
 Add the HTML alignment property to `style` according to the `alignment` symbol.
 """
-function _html__add_alignment_to_style!(style::Dict{String, String}, alignment::Symbol)
+function _html__add_alignment_to_style!(style::Vector{HtmlPair}, alignment::Symbol)
     if (alignment == :n) || (alignment == :N)
         return nothing
     elseif haskey(_HTML__ALIGNMENT_MAP, alignment)
-        return style["text-align"] = _HTML__ALIGNMENT_MAP[alignment]
+        return push!(style, "text-align" => _HTML__ALIGNMENT_MAP[alignment])
     else
-        return style["text-align"] = _HTML__ALIGNMENT_MAP[:r]
+        return push!(style, "text-align" => _HTML__ALIGNMENT_MAP[:r])
     end
 
     return nothing
 end
 
 """
-    _html__create_style(style::Dict{String, String}) -> String
+    _html__create_style(style::Vector{HtmlPair}) -> String
 
 Create the HTML style string using the information in the dictionary `style`.
 """
-function _html__create_style(style::Dict{String, String})
+function _html__create_style(style::Vector{HtmlPair})
     # If there is no keys in the style dictionary, just return the tag.
     isempty(style) && return ""
 
     # Create the style string.
     style_str = " style = \""
 
-    # We must sort the keys so that we can provide stable outputs.
-    v   = collect(values(style))
-    k   = collect(keys(style))
-    ind = sortperm(k)
-
-    @inbounds for i in eachindex(ind)
-        value = v[ind[i]]
-        key   = k[ind[i]]
+    @inbounds for i in eachindex(style)
+        key, value = style[i]
 
         # If the value is empty, then just continue.
         isempty(value) && continue
 
-        style_str *= "$(key): $value;"
-        i != last(eachindex(ind)) && (style_str *= " ")
+        style_str *= "$key: $value;"
+        i != last(eachindex(style)) && (style_str *= " ")
     end
 
     return style_str * "\""
@@ -139,15 +133,15 @@ Create the string that opens the HTML `tag`.
 
 # Keywords
 
-- `properties::Union{Nothing, Dict{String, String}}`: Tag properties.
+- `properties::Union{Nothing, Vector{HtmlPair}}`: Tag properties.
     (**Default**: `nothing`)
-- `style::Union{Nothing, Dict{String, String}}`: Tag style.
+- `style::Union{Nothing, Vector{HtmlPair}}`: Tag style.
     (**Default**: `nothing`)
 """
 function _html__open_tag(
     tag::String;
-    properties::Union{Nothing, Dict{String, String}} = nothing,
-    style::Union{Nothing, Dict{String, String}} = nothing
+    properties::Union{Nothing, Vector{HtmlPair}} = nothing,
+    style::Union{Nothing, Vector{HtmlPair}} = nothing
 )
     # Compile the text with the properties.
     properties_str = ""
@@ -182,16 +176,16 @@ Create an HTML `tag` with the `content`.
 
 # Keywords
 
-- `properties::Union{Nothing, Dict{String, String}}`: Tag properties.
+- `properties::Union{Nothing, Vector{HtmlPair}}`: Tag properties.
     (**Default**: `nothing`)
-- `style::Union{Nothing, Dict{String, String}}`: Tag style.
+- `style::Union{Nothing, Vector{HtmlPair}}`: Tag style.
     (**Default**: `nothing`)
 """
 function _html__create_tag(
     tag::String,
     content::String;
-    properties::Union{Nothing, Dict{String, String}} = nothing,
-    style::Union{Nothing, Dict{String, String}} = nothing
+    properties::Union{Nothing, Vector{HtmlPair}} = nothing,
+    style::Union{Nothing, Vector{HtmlPair}} = nothing
 )
     return _html__open_tag(tag; properties, style) * content * _html__close_tag(tag)
 end
@@ -199,7 +193,7 @@ end
 # == Top Bar ===============================================================================
 
 """
-    _html__print_top_bar_section(buf::IOContext, position::String, text::String, decoration::Union{Nothing, Dict{String, String}}, il::Int, ns::Int; kwargs...)
+    _html__print_top_bar_section(buf::IOContext, position::String, text::String, decoration::Union{Nothing, Vector{HtmlPair}}, il::Int, ns::Int; kwargs...)
 
 Print the HTML top bar section.
 
@@ -208,7 +202,7 @@ Print the HTML top bar section.
 - `buf::IOContext`: Buffer to which the top bar will be printed.
 - `position::String`: Buffer position. It can be "left" or "right".
 - `text::String`: Text to be printed in the selected position.
-- `decoration::Union{Nothing, Dict{String, String}}`: Text decoration.
+- `decoration::Union{Nothing, Vector{HtmlPair}}`: Text decoration.
 - `il::Int`: Indentation level.
 - `ns::Int`: Number of space per indentation level.
 
@@ -221,13 +215,13 @@ function _html__print_top_bar_section(
     buf::IOContext,
     position::String,
     text::String,
-    decoration::Union{Nothing, Dict{String, String}},
+    decoration::Union{Nothing, Vector{HtmlPair}},
     il::Int,
     ns::Int;
     minify::Bool = false
 )
-    style = isnothing(decoration) ? Dict{String, String}() : copy(decoration)
-    style["float"] = position
+    style = isnothing(decoration) ? HtmlPair[] : copy(decoration)
+    push!(style, "float" => position)
 
     _aprintln(buf, _html__open_tag("div"; style), il, ns; minify)
     il += 1
