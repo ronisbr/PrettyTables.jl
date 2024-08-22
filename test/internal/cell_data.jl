@@ -25,7 +25,7 @@
         row_labels                  = ["Row 1", "Row 2", "Row 3"],
         summary_cell                = (data, j) -> 20j,
         summary_row_label           = "Summary",
-        footnotes                   = [(1, 1) => "Footnote", (2, 2) => "Footnote"],
+        footnotes                   = [(:data, 1, 1) => "Footnote 1", (:data, 2, 2) => "Footnote 2"],
         source_notes                = "Source Notes",
         data_alignment              = [:l, :c, :r, :l],
         column_label_alignment      = [:r, :r, :l, :c],
@@ -42,7 +42,24 @@
 
     # -- Table Header ----------------------------------------------------------------------
 
+    # .. Table Title .......................................................................
+
     action, rs, ps = PrettyTables._next(ps, td)
+
+    action, rs, ps = PrettyTables._next(ps, td)
+    cell = PrettyTables._current_cell(action, ps, td)
+    @test cell == "Table Title"
+
+    action, rs, ps = PrettyTables._next(ps, td)
+
+    # .. Table Subtitle ....................................................................
+
+    action, rs, ps = PrettyTables._next(ps, td)
+
+    action, rs, ps = PrettyTables._next(ps, td)
+    cell = PrettyTables._current_cell(action, ps, td)
+    @test cell == "Table Subtitle"
+
     action, rs, ps = PrettyTables._next(ps, td)
 
     # -- Column Labels ---------------------------------------------------------------------
@@ -107,4 +124,28 @@
         cell = PrettyTables._current_cell(action, ps, td)
         @test cell == 20j
     end
+
+    action, rs, ps = PrettyTables._next(ps, td)
+
+    # -- Footnotes -------------------------------------------------------------------------
+
+    for i in 1:2
+        action, rs, ps = PrettyTables._next(ps, td)
+
+        action, rs, ps = PrettyTables._next(ps, td)
+        cell = PrettyTables._current_cell(action, ps, td)
+        @test cell == "Footnote $i"
+
+        action, rs, ps = PrettyTables._next(ps, td)
+    end
+
+    # -- Source Notes ----------------------------------------------------------------------
+
+    action, rs, ps = PrettyTables._next(ps, td)
+
+    action, rs, ps = PrettyTables._next(ps, td)
+    cell = PrettyTables._current_cell(action, ps, td)
+    @test cell == "Source Notes"
+
+    action, rs, ps = PrettyTables._next(ps, td)
 end
