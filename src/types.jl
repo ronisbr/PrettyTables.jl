@@ -30,7 +30,7 @@
 
     # == Table Footer ======================================================================
 
-    footnotes::String = ""
+    footnotes::Union{Nothing, Vector{Pair{NTuple{2, Int}, String}}} = nothing
     source_notes::String = ""
 
     # == Alignments ========================================================================

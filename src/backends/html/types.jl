@@ -107,23 +107,28 @@ TODO: Add the classes.
       font-family: sans-serif;
     }
 
-    thead {
-      border-top: 2px solid black;
-      border-bottom: 1px solid black;
-    }
-
-    tbody {
-      border-top: 1px solid black;
-      border-bottom: 2px solid black;
-    }
-
     td, th {
       padding: 4px
     }
 
-    td.sourceNotes {
-      border-top: 1px solid black;
-      border-bottom: 1px solid black;
+    table > *:first-child > tr:first-child {
+      border-top: 2px solid black;
+    }
+
+    table > *:last-child > tr:last-child {
+      border-bottom: 2px solid black;
+    }
+
+    thead tr:last-child {
+        border-bottom: 1px solid black;
+    }
+
+    tbody tr:last-child {
+        border-bottom: 1px solid black;
+    }
+
+    tfoot tr:nth-last-child(1 of .footnote) {
+        border-bottom: 1px solid black;
     }"""
 
     table_width::String = ""

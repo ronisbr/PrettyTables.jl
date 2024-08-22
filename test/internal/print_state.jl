@@ -20,7 +20,7 @@
             row_labels              = ["Row 1", "Row 2", "Row 3"],
             summary_cell            = (data, i) -> i,
             summary_row_label       = "Summary",
-            footnotes               = "Footnotes",
+            footnotes               = [(1, 1) => "Footnote", (2, 2) => "Footnote"],
             source_notes            = "Source Notes",
             num_rows                = 3,
             num_columns             = 4,
@@ -128,23 +128,40 @@
 
         # -- Table Footer ------------------------------------------------------------------
 
+        for i in 1:2
+            action, rs, ps = PrettyTables._next(ps, td)
+            @test action == :new_row
+            @test rs     == :table_footer
+
+            action, rs, ps = PrettyTables._next(ps, td)
+            @test action == :footnote
+            @test ps.i   == i
+            @test rs     == :table_footer
+
+            action, rs, ps = PrettyTables._next(ps, td)
+            @test action == :end_row
+            @test rs     == :table_footer
+        end
+
         action, rs, ps = PrettyTables._next(ps, td)
-        @test action == :footnotes
+        @test action == :new_row
         @test rs     == :table_footer
 
         action, rs, ps = PrettyTables._next(ps, td)
         @test action == :source_notes
         @test rs     == :table_footer
 
+        action, rs, ps = PrettyTables._next(ps, td)
+        @test action == :end_row
+        @test rs     == :table_footer
+
         # -- End Printing ------------------------------------------------------------------
 
         action, rs, ps = PrettyTables._next(ps, td)
         @test action == :end_printing
-        @test rs     == :end_printing
 
         action, rs, ps = PrettyTables._next(ps, td)
         @test action == :end_printing
-        @test rs     == :end_printing
     end
 
     @testset "Without Optional Fields" begin
@@ -208,11 +225,9 @@
 
         action, rs, ps = PrettyTables._next(ps, td)
         @test action == :end_printing
-        @test rs     == :end_printing
 
         action, rs, ps = PrettyTables._next(ps, td)
         @test action == :end_printing
-        @test rs     == :end_printing
     end
 
     @testset "With Cropping" verbose = true begin
@@ -221,23 +236,23 @@
 
             td = PrettyTables.TableData(
                 ;
-                data                        = rand(6, 4),
-                title                       = "Table Title",
-                subtitle                    = "Table Subtitle",
-                column_labels               = [["1", "2", "3", "4"], ["1", "2", "3", "4"]],
-                stubhead_label              = "Stubhead Label",
-                show_row_number_column      = true,
-                row_number_column_label     = "Row Number",
-                row_labels                  = ["Row 1", "Row 2", "Row 3"],
-                summary_cell                = (data, i) -> i,
-                summary_row_label           = "Summary",
-                footnotes                   = "Footnotes",
-                source_notes                = "Source Notes",
-                num_rows                    = 6,
-                num_columns                 = 4,
-                maximum_number_of_columns   = 2,
-                maximum_number_of_rows      = 3,
-                vertical_crop_mode          = :bottom,
+                data                      = rand(6, 4),
+                title                     = "Table Title",
+                subtitle                  = "Table Subtitle",
+                column_labels             = [["1", "2", "3", "4"], ["1", "2", "3", "4"]],
+                stubhead_label            = "Stubhead Label",
+                show_row_number_column    = true,
+                row_number_column_label   = "Row Number",
+                row_labels                = ["Row 1", "Row 2", "Row 3"],
+                summary_cell              = (data, i) -> i,
+                summary_row_label         = "Summary",
+                footnotes                 = [(1, 1) => "Footnote", (2, 2) => "Footnote"],
+                source_notes              = "Source Notes",
+                num_rows                  = 6,
+                num_columns               = 4,
+                maximum_number_of_columns = 2,
+                maximum_number_of_rows    = 3,
+                vertical_crop_mode        = :bottom,
             )
 
             # == Iterate the Printing Table State ==========================================
@@ -383,23 +398,40 @@
 
             # -- Table Footer --------------------------------------------------------------
 
+            for i in 1:2
+                action, rs, ps = PrettyTables._next(ps, td)
+                @test action == :new_row
+                @test rs     == :table_footer
+
+                action, rs, ps = PrettyTables._next(ps, td)
+                @test action == :footnote
+                @test ps.i   == i
+                @test rs     == :table_footer
+
+                action, rs, ps = PrettyTables._next(ps, td)
+                @test action == :end_row
+                @test rs     == :table_footer
+            end
+
             action, rs, ps = PrettyTables._next(ps, td)
-            @test action == :footnotes
+            @test action == :new_row
             @test rs     == :table_footer
 
             action, rs, ps = PrettyTables._next(ps, td)
             @test action == :source_notes
             @test rs     == :table_footer
 
+            action, rs, ps = PrettyTables._next(ps, td)
+            @test action == :end_row
+            @test rs     == :table_footer
+
             # -- End Printing --------------------------------------------------------------
 
             action, rs, ps = PrettyTables._next(ps, td)
             @test action == :end_printing
-            @test rs     == :end_printing
 
             action, rs, ps = PrettyTables._next(ps, td)
             @test action == :end_printing
-            @test rs     == :end_printing
         end
 
         @testset "Middle Vertical Cropping" begin
@@ -417,7 +449,7 @@
                 row_labels                = ["Row 1", "Row 2", "Row 3"],
                 summary_cell              = (data, i) -> i,
                 summary_row_label         = "Summary",
-                footnotes                 = "Footnotes",
+                footnotes                 = [(1, 1) => "Footnote", (2, 2) => "Footnote"],
                 source_notes              = "Source Notes",
                 num_rows                  = 6,
                 num_columns               = 4,
@@ -604,23 +636,40 @@
 
             # -- Table Footer --------------------------------------------------------------
 
+            for i in 1:2
+                action, rs, ps = PrettyTables._next(ps, td)
+                @test action == :new_row
+                @test rs     == :table_footer
+
+                action, rs, ps = PrettyTables._next(ps, td)
+                @test action == :footnote
+                @test ps.i   == i
+                @test rs     == :table_footer
+
+                action, rs, ps = PrettyTables._next(ps, td)
+                @test action == :end_row
+                @test rs     == :table_footer
+            end
+
             action, rs, ps = PrettyTables._next(ps, td)
-            @test action == :footnotes
+            @test action == :new_row
             @test rs     == :table_footer
 
             action, rs, ps = PrettyTables._next(ps, td)
             @test action == :source_notes
             @test rs     == :table_footer
 
+            action, rs, ps = PrettyTables._next(ps, td)
+            @test action == :end_row
+            @test rs     == :table_footer
+
             # -- End Printing --------------------------------------------------------------
 
             action, rs, ps = PrettyTables._next(ps, td)
             @test action == :end_printing
-            @test rs     == :end_printing
 
             action, rs, ps = PrettyTables._next(ps, td)
             @test action == :end_printing
-            @test rs     == :end_printing
         end
 
         @testset "Corner Cases of Vertical Cropping" begin
@@ -641,7 +690,7 @@
                 row_labels                = ["Row 1", "Row 2", "Row 3"],
                 summary_cell              = (data, i) -> i,
                 summary_row_label         = "Summary",
-                footnotes                 = "Footnotes",
+                footnotes                 = [(1, 1) => "Footnote", (2, 2) => "Footnote"],
                 source_notes              = "Source Notes",
                 num_rows                  = 3,
                 num_columns               = 4,
@@ -751,23 +800,40 @@
 
             # -- Table Footer --------------------------------------------------------------
 
+            for i in 1:2
+                action, rs, ps = PrettyTables._next(ps, td)
+                @test action == :new_row
+                @test rs     == :table_footer
+
+                action, rs, ps = PrettyTables._next(ps, td)
+                @test action == :footnote
+                @test ps.i   == i
+                @test rs     == :table_footer
+
+                action, rs, ps = PrettyTables._next(ps, td)
+                @test action == :end_row
+                @test rs     == :table_footer
+            end
+
             action, rs, ps = PrettyTables._next(ps, td)
-            @test action == :footnotes
+            @test action == :new_row
             @test rs     == :table_footer
 
             action, rs, ps = PrettyTables._next(ps, td)
             @test action == :source_notes
             @test rs     == :table_footer
 
+            action, rs, ps = PrettyTables._next(ps, td)
+            @test action == :end_row
+            @test rs     == :table_footer
+
             # -- End Printing --------------------------------------------------------------
 
             action, rs, ps = PrettyTables._next(ps, td)
             @test action == :end_printing
-            @test rs     == :end_printing
 
             action, rs, ps = PrettyTables._next(ps, td)
             @test action == :end_printing
-            @test rs     == :end_printing
         end
     end
 end

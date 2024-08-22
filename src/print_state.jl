@@ -54,6 +54,9 @@ function _current_cell(
     elseif action == :summary_cell
         return table_data.summary_cell(table_data.data, state.j)
 
+    elseif action == :footnote
+        return table_data.footnotes[state.i].second
+
     elseif action == :source_notes
         return table_data.source_notes
 
@@ -116,12 +119,36 @@ function _current_cell_alignment(
 
         return _current_cell_alignment(new_action, state, table_data)
 
+    elseif action == :footnote
+        return :l
+
     elseif action == :source_notes
         return :l
 
     else
         throw(ArgumentError("Invalid action found: `$action`!"))
     end
+end
+
+"""
+    _current_cell_footnotes(table_data::TableData, i::Int, j::Int) -> Vector{Int}
+
+Return an array of integers with the current cell footnotes.
+"""
+function _current_cell_footnotes(table_data::TableData, i::Int, j::Int)
+    isnothing(table_data.footnotes) && return nothing
+
+    current_footnotes = Int[]
+
+    for k in 1:length(table_data.footnotes)
+        f = table_data.footnotes[k - 1 + begin]
+
+        if (f[1][1] == i) && (f[1][2] == j)
+            push!(current_footnotes, i)
+        end
+    end
+
+    return current_footnotes
 end
 
 """
@@ -149,19 +176,14 @@ function _next(state::PrintingTableState, table_data::TableData)
 
     if ps < _SUBTITLE
         if !isempty(table_data.subtitle)
-            return :subtitle, :table_header, PrintingTableState(_SUBTITLE, 1, 0, rs)
+            return :subtitle, :table_header, PrintingTableState(_SUBTITLE, 0, 0, rs)
         end
     end
 
     # == Column Labels and Table Body ======================================================
 
-    if i <= 0
-        i = 1
-        j = 0
-    end
-
     if ps < _NEW_ROW
-        return :new_row, rs, PrintingTableState(_NEW_ROW, i, 0, rs)
+        return :new_row, rs, PrintingTableState(_NEW_ROW, i + 1, 0, rs)
     end
 
     if ps < _ROW_NUMBER_COLUMN && table_data.show_row_number_column
@@ -237,10 +259,10 @@ function _next(state::PrintingTableState, table_data::TableData)
 
             if i >= num_column_labels
                 # If we reached the number of column labels, we must go to the data.
-                return :end_row, rs, PrintingTableState(_NEW_ROW - 1, 1, 0, :data)
+                return :end_row, rs, PrintingTableState(_NEW_ROW - 1, 0, 0, :data)
             else
                 # Otherwise, print the next line with column labels.
-                return :end_row, rs, PrintingTableState(_NEW_ROW - 1, i + 1, 0, rs)
+                return :end_row, rs, PrintingTableState(_NEW_ROW - 1, i, 0, rs)
             end
 
         elseif rs == :data
@@ -264,13 +286,13 @@ function _next(state::PrintingTableState, table_data::TableData)
                 # If we reached the number of data lines, we must go to the summary row if
                 # the user wants it.
                 if !isnothing(table_data.summary_cell)
-                    return :end_row, rs, PrintingTableState(_NEW_ROW - 1, i + 1, 0, :summary_row)
+                    return :end_row, rs, PrintingTableState(_NEW_ROW - 1, i, 0, :summary_row)
                 else
-                    return :end_row, rs, PrintingTableState(_END_ROW, 1, 0, :table_footer)
+                    return :end_row, rs, PrintingTableState(_END_ROW, 0, 0, :table_footer)
                 end
             else
                 # Otherwise, print the next data line.
-                return :end_row, rs, PrintingTableState(_NEW_ROW - 1, i + 1, 0, rs)
+                return :end_row, rs, PrintingTableState(_NEW_ROW - 1, i, 0, rs)
             end
 
         elseif rs == :continuation_row
@@ -281,7 +303,7 @@ function _next(state::PrintingTableState, table_data::TableData)
 
                 # Check if we have more rows to be printed.
                 next_i <= max_i &&
-                    return :end_row, rs, PrintingTableState(_NEW_ROW - 1, next_i, 0, :data)
+                    return :end_row, rs, PrintingTableState(_NEW_ROW - 1, next_i - 1, 0, :data)
 
                 # If there is no more rows to be printed, we can treat as we are in a bottom
                 # cropping.
@@ -290,30 +312,43 @@ function _next(state::PrintingTableState, table_data::TableData)
             # After the continuation row, we must check if we need to print the summary
             # cell.
             if !isnothing(table_data.summary_cell)
-                return :end_row, rs, PrintingTableState(_NEW_ROW - 1, max_i + 1, 0, :summary_row)
+                return :end_row, rs, PrintingTableState(_NEW_ROW - 1, max_i, 0, :summary_row)
             else
-                return :end_row, rs, PrintingTableState(_END_ROW, 1, 0, :table_footer)
+                return :end_row, rs, PrintingTableState(_END_ROW, 0, 0, :table_footer)
             end
 
         else
             # We support only one data line. Hence, we must move to the table footer.
-            return :end_row, rs, PrintingTableState(_END_ROW, 1, 0, :table_footer)
+            return :end_row, rs, PrintingTableState(_END_ROW, 0, 0, :table_footer)
         end
     end
 
     # ==  Table Footer =====================================================================
 
-    if ps < _FOOTNOTES
-        !isempty(table_data.footnotes) &&
-            return :footnotes, :table_footer, PrintingTableState(_FOOTNOTES, 0, 0, rs)
+    if ps < _FOOTNOTES && !isnothing(table_data.footnotes)
+        if j == 0
+            i >= length(table_data.footnotes) &&
+                return _next(PrintingTableState(_FOOTNOTES, 0, 0, rs), table_data)
+
+            return :new_row, :table_footer, PrintingTableState(ps, i + 1, j + 1, rs)
+        elseif j == 1
+            return :footnote, :table_footer, PrintingTableState(ps, i, j + 1, rs)
+        else
+            return :end_row, :table_footer, PrintingTableState(ps, i, 0, rs)
+        end
     end
 
-    if ps < _SOURCENOTES
-        !isempty(table_data.source_notes) &&
-            return :source_notes, :table_footer, PrintingTableState(_SOURCENOTES, 0, 0, rs)
+    if ps < _SOURCENOTES && !isempty(table_data.source_notes)
+        if j == 0
+            return :new_row, :table_footer, PrintingTableState(ps, i, j + 1, rs)
+        elseif j == 1
+            return :source_notes, :table_footer, PrintingTableState(ps, i, j + 1, rs)
+        else
+            return :end_row, :table_footer, PrintingTableState(_SOURCENOTES, i, 0, :end_printing)
+        end
     end
 
-    return :end_printing, :end_printing, PrintingTableState(_END_PRINTING, 0, 0, rs)
+    return :end_printing, rs, PrintingTableState(_END_PRINTING, 0, 0, :end_printing)
 end
 
 """
