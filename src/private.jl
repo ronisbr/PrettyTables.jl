@@ -51,9 +51,10 @@ end
 # placed at the beginning to call the function.
 
 """
-    _table_data(pdata::Any; kwargs...) -> TableData
+    _table_data(pdata::Any; kwargs...) -> TableData, kwargs...
 
-Create the table data considering the pre-processed object `pdata`.
+Create the table data considering the pre-processed object `pdata`. It returns the
+`TableData` object and the unused keyword arguments.
 """
 function _table_data(
     ref_pdata::Ref{Any};
@@ -182,5 +183,5 @@ function _table_data(
         vertical_crop_mode
     )
 
-    return table_data
+    return table_data, kwargs
 end
