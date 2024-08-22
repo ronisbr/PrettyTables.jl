@@ -75,7 +75,9 @@ function pretty_table(
 
     # == Printing Specification ============================================================
 
-    table_data = _table_data(Ref{Any}(pdata); kwargs...)
+    # `back_end_kwargs` contains the keyword arguments that were not used yet. Hence, they
+    # are targeted to the back end.
+    table_data, back_end_kwargs = _table_data(Ref{Any}(pdata); kwargs...)
 
     pspec = PrintingSpec(
         context,
@@ -87,7 +89,7 @@ function pretty_table(
     # When wrapping `stdout` in `IOContext` in Jupyter, `io.io` is not equal to `stdout`
     # anymore. Hence, we need to check if `io` is `stdout` before calling the HTML back end.
     is_stdout = (io === stdout) || ((io isa IOContext) && (io.io === stdout))
-    _html__print(pspec; is_stdout, kwargs...)
+    _html__print(pspec; is_stdout, back_end_kwargs...)
 
     return nothing
 end
