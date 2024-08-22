@@ -312,6 +312,11 @@ function _html__print(
 
             if action == :title
                 push!(properties, "colspan" => string(_number_of_printed_columns(table_data)))
+                append!(style, tf.title_decoration)
+
+            elseif action == :subtitle
+                push!(properties, "colspan" => string(_number_of_printed_columns(table_data)))
+                append!(style, tf.subtitle_decoration)
 
             elseif action == :row_number_label
                 push!(properties, "class" => "rowNumberLabel")
@@ -350,11 +355,13 @@ function _html__print(
             elseif action == :footnote
                 # The footnote must be a cell that span the entire printed table.
                 push!(properties, "colspan" => string(_number_of_printed_columns(table_data)))
+                append!(style, tf.footnote_decoration)
                 rendered_cell = "<sup>$(ps.i)</sup> " * rendered_cell
 
             elseif action == :source_notes
                 # The source notes must be a cell that span the entire printed table.
                 push!(properties, "colspan" => string(_number_of_printed_columns(table_data)))
+                append!(style, tf.source_note_decoration)
 
             else
                 push!(properties, "class" => "")
