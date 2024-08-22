@@ -38,12 +38,16 @@ const FootnoteTuple = Tuple{Symbol, Int, Int}
 
     # == Alignments ========================================================================
 
+    title_alignment::Symbol = :c
+    subtitle_alignment::Symbol = :c
     cell_alignment::Union{Nothing, Vector{Any}} = nothing
     column_label_alignment::Union{Symbol, Vector{Symbol}} = :r
     continuation_row_alignment::Union{Nothing, Symbol} = nothing
     data_alignment::Union{Symbol, Vector{Symbol}} = :r
     row_number_column_alignment::Symbol = :r
     row_label_alignment::Symbol = :r
+    footnote_alignment::Symbol = :l
+    source_note_alignment::Symbol = :l
 
     # == Formatters ========================================================================
 
@@ -119,7 +123,7 @@ const _VERTICAL_CONTINUATION_CELL_ACTIONS = (
     state::Int = _INITIALIZE
     i::Int = 0
     j::Int = 0
-    row_section::Symbol = :column_labels
+    row_section::Symbol = :table_header
 end
 
 # == Printing Specification ================================================================

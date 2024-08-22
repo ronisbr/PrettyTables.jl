@@ -23,6 +23,7 @@ include("./types.jl")
 include("./main.jl")
 include("./misc.jl")
 include("./print_state.jl")
+include("./private.jl")
 include("./tables.jl")
 
 include("./backends/html/types.jl")

@@ -122,6 +122,10 @@ TODO: Add the classes.
       border-bottom: 2px solid black;
     }
 
+    thead > tr:nth-child(1 of .columnLabelRow) {
+      border-top: 1px solid black;
+    }
+
     thead tr:last-child {
         border-bottom: 1px solid black;
     }

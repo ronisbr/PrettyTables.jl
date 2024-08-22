@@ -171,29 +171,54 @@ function _html__print(
 
     action = :initialize
 
+    # Some internal states to help printing.
+    head_opened = false
+    body_opened = false
+    foot_opened = false
+
     while action != :end_printing
         action, rs, ps = _next(ps, table_data)
 
         action == :end_printing && break
 
         if action == :new_row
-            if (ps.i == 1) && (rs == :column_labels)
+
+            if (ps.i == 1) && (rs == :table_header) && !head_opened
                 _aprintln(buf, "<thead>", il, ns; minify)
                 il += 1
-            end
+                head_opened = true
 
-            if (ps.i == 1) && (rs == :data)
+            elseif (ps.i == 1) && (rs ∈ (:data, :summary_row))
+                if head_opened
+                    il -= 1
+                    _aprintln(buf, "</thead>", il, ns; minify)
+                    head_opened = false
+                end
+
                 _aprintln(buf, "<tbody>", il, ns; minify)
+                body_opened = true
                 il += 1
-            end
 
-            if (ps.i == 1) && (rs == :table_footer)
+            elseif (ps.i == 1) && (rs == :table_footer) && !foot_opened
+                if head_opened
+                    il -= 1
+                    _aprintln(buf, "</thead>", il, ns; minify)
+                    head_opened = false
+                elseif body_opened
+                    il -= 1
+                    _aprintln(buf, "</tbody>", il, ns; minify)
+                    head_opened = false
+                end
+
                 _aprintln(buf, "<tfoot>", il, ns; minify)
+                foot_opened = true
                 il += 1
             end
 
             empty!(properties)
-            class = if rs == :column_labels
+            class = if rs == :table_header
+                ps.state < _TITLE ? "title" : "subtitle"
+            elseif rs == :column_labels
                 "columnLabelRow"
             elseif rs == :data
                 "dataRow"
@@ -226,21 +251,6 @@ function _html__print(
         elseif action == :end_row
             il -= 1
             _aprintln(buf, "</tr>", il, ns; minify)
-
-            if (rs == :column_labels) && (ps.row_section != :column_labels)
-                il -= 1
-                _aprintln(buf, "</thead>", il, ns; minify)
-            end
-
-            if (rs ∈ (:data, :summary_row)) && (ps.row_section == :table_footer)
-                il -= 1
-                _aprintln(buf, "</tbody>", il, ns; minify)
-            end
-
-            if (rs == :table_footer) && (ps.row_section == :end_printing)
-                il -= 1
-                _aprintln(buf, "</tfoot>", il, ns; minify)
-            end
 
         else
             cell = _current_cell(action, ps, table_data)
@@ -297,12 +307,13 @@ function _html__print(
                 end
             end
 
-
-
             # Obtain the cell class and style.
             empty!(properties)
 
-            if action == :row_number_label
+            if action == :title
+                push!(properties, "colspan" => string(_number_of_printed_columns(table_data)))
+
+            elseif action == :row_number_label
                 push!(properties, "class" => "rowNumberLabel")
                 append!(style, tf.row_number_label_decoration)
 
@@ -359,6 +370,18 @@ function _html__print(
                 minify
             )
         end
+    end
+
+    # Close the section that was left opened.
+    if head_opened
+        il -= 1
+        _aprintln(buf, "</thead>", il, ns; minify)
+    elseif body_opened
+        il -= 1
+        _aprintln(buf, "</tbody>", il, ns; minify)
+    elseif foot_opened
+        il -= 1
+        _aprintln(buf, "</tfoot>", il, ns; minify)
     end
 
     il -= 1
