@@ -31,7 +31,7 @@ function _current_cell(
     elseif action == :row_number
         return state.i
     elseif action == :summary_row_number
-        return state.i
+        return ""
     elseif action == :stubhead_label
         # We should not print anything if we are not at the first line of column labels.
         if state.i == 1
@@ -43,7 +43,7 @@ function _current_cell(
         rl = table_data.row_labels
         return isnothing(rl) ? "" : table_data.row_labels[state.i]
     elseif action == :summary_row_label
-        return table_data.summary_row_label
+        return table_data.summary_row_labels[state.i]
     elseif action == :column_label
         # Check if this cell must be merged or if is is part of a merged cell.
         if !isnothing(table_data.merge_cells)
@@ -71,7 +71,8 @@ function _current_cell(
         return cell_data
 
     elseif action == :summary_cell
-        return table_data.summary_cell(table_data.data, state.j)
+        f = table_data.summary_rows[state.i]
+        return f(table_data.data, state.j)
 
     elseif action == :footnote
         return table_data.footnotes[state.i].second
@@ -120,7 +121,7 @@ function _current_cell_alignment(
 
     elseif (action == :data) || (action == :summary_cell)
         # First, we check if we have a special cell alignment.
-        if !isnothing(table_data.cell_alignment)
+        if (action == :data) && !isnothing(table_data.cell_alignment)
             for f in table_data.cell_alignment
                 fa = f(_getdata(table_data.data), state.i, state.j)::Union{Nothing, Symbol}
                 !isnothing(fa) && return fa
@@ -180,8 +181,6 @@ function _current_cell_footnotes(table_data::TableData, cell_type::Symbol, i::In
             if (
                 # Cell types that only requires testing the row index.
                 ((ct ∈ (:row_number, :row_label, :summary_row_number)) && (fi == i)) ||
-                # Cell types that only requires testing the column index.
-                ((ct == :summary_cell) && (fj == j)) ||
                 ((fi == i) && (fj == j))
             )
                 push!(current_footnotes, k)
@@ -257,7 +256,7 @@ function _next(state::PrintingTableState, table_data::TableData)
     end
 
     if (ps < _ROW_LABEL_COLUMN) &&
-        (!isnothing(table_data.row_labels) || !isempty(table_data.summary_row_label))
+        (!isnothing(table_data.row_labels) || !isnothing(table_data.summary_row_labels))
 
         action = if rs == :column_labels
             :stubhead_label
@@ -340,8 +339,8 @@ function _next(state::PrintingTableState, table_data::TableData)
             elseif i >= max_i
                 # If we reached the number of data lines, we must go to the summary row if
                 # the user wants it.
-                if !isnothing(table_data.summary_cell)
-                    return :end_row, rs, PrintingTableState(_NEW_ROW - 1, i, 0, :summary_row)
+                if !isnothing(table_data.summary_rows)
+                    return :end_row, rs, PrintingTableState(_NEW_ROW - 1, 0, 0, :summary_row)
                 else
                     return :end_row, rs, PrintingTableState(_END_ROW, 0, 0, :table_footer)
                 end
@@ -366,15 +365,17 @@ function _next(state::PrintingTableState, table_data::TableData)
 
             # After the continuation row, we must check if we need to print the summary
             # cell.
-            if !isnothing(table_data.summary_cell)
-                return :end_row, rs, PrintingTableState(_NEW_ROW - 1, max_i, 0, :summary_row)
+            if !isnothing(table_data.summary_rows)
+                return :end_row, rs, PrintingTableState(_NEW_ROW - 1, 0, 0, :summary_row)
             else
                 return :end_row, rs, PrintingTableState(_END_ROW, 0, 0, :table_footer)
             end
 
         else
-            # We support only one data line. Hence, we must move to the table footer.
-            return :end_row, rs, PrintingTableState(_END_ROW, 0, 0, :table_footer)
+            i >= length(table_data.summary_rows) &&
+                return :end_row, rs, PrintingTableState(_END_ROW, 0, 0, :table_footer)
+
+            return :end_row, rs, PrintingTableState(_NEW_ROW - 1, i, 0, rs)
         end
     end
 

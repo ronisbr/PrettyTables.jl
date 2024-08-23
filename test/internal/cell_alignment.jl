@@ -18,8 +18,8 @@
             show_row_number_column      = true,
             row_number_column_label     = "Row Number",
             row_labels                  = ["Row 1", "Row 2", "Row 3"],
-            summary_cell                = (data, i) -> i,
-            summary_row_label           = "Summary",
+            summary_rows                = [(data, i) -> i, (data, i) -> 2i],
+            summary_row_labels          = ["Summary 1", "Summary 2"],
             footnotes                   = [(:data, 1, 1) => "Footnote", (:data, 2, 2) => "Footnote"],
             source_notes                = "Source Notes",
             title_alignment             = :r,
@@ -74,21 +74,26 @@
 
             action, rs, ps = PrettyTables._next(ps, td)
             alignment = PrettyTables._current_cell_alignment(action, ps, td)
-            @test alignment == :r
-
-            action, rs, ps = PrettyTables._next(ps, td)
             alignment = PrettyTables._current_cell_alignment(action, ps, td)
             @test alignment == :r
 
             action, rs, ps = PrettyTables._next(ps, td)
             alignment = PrettyTables._current_cell_alignment(action, ps, td)
+            alignment = PrettyTables._current_cell_alignment(action, ps, td)
             @test alignment == :r
 
             action, rs, ps = PrettyTables._next(ps, td)
+            alignment = PrettyTables._current_cell_alignment(action, ps, td)
+            alignment = PrettyTables._current_cell_alignment(action, ps, td)
+            @test alignment == :r
+
+            action, rs, ps = PrettyTables._next(ps, td)
+            alignment = PrettyTables._current_cell_alignment(action, ps, td)
             alignment = PrettyTables._current_cell_alignment(action, ps, td)
             @test alignment == :l
 
             action, rs, ps = PrettyTables._next(ps, td)
+            alignment = PrettyTables._current_cell_alignment(action, ps, td)
             alignment = PrettyTables._current_cell_alignment(action, ps, td)
             @test alignment == :c
 
@@ -159,33 +164,35 @@
 
         # -- Table Summary -----------------------------------------------------------------
 
-        action, rs, ps = PrettyTables._next(ps, td)
+        for _ in 1:2
+            action, rs, ps = PrettyTables._next(ps, td)
 
-        action, rs, ps = PrettyTables._next(ps, td)
-        alignment = PrettyTables._current_cell_alignment(action, ps, td)
-        @test alignment == :c
+            action, rs, ps = PrettyTables._next(ps, td)
+            alignment = PrettyTables._current_cell_alignment(action, ps, td)
+            @test alignment == :c
 
-        action, rs, ps = PrettyTables._next(ps, td)
-        alignment = PrettyTables._current_cell_alignment(action, ps, td)
-        @test alignment == :r
+            action, rs, ps = PrettyTables._next(ps, td)
+            alignment = PrettyTables._current_cell_alignment(action, ps, td)
+            @test alignment == :r
 
-        action, rs, ps = PrettyTables._next(ps, td)
-        alignment = PrettyTables._current_cell_alignment(action, ps, td)
-        @test alignment == :l
+            action, rs, ps = PrettyTables._next(ps, td)
+            alignment = PrettyTables._current_cell_alignment(action, ps, td)
+            @test alignment == :l
 
-        action, rs, ps = PrettyTables._next(ps, td)
-        alignment = PrettyTables._current_cell_alignment(action, ps, td)
-        @test alignment == :c
+            action, rs, ps = PrettyTables._next(ps, td)
+            alignment = PrettyTables._current_cell_alignment(action, ps, td)
+            @test alignment == :c
 
-        action, rs, ps = PrettyTables._next(ps, td)
-        alignment = PrettyTables._current_cell_alignment(action, ps, td)
-        @test alignment == :r
+            action, rs, ps = PrettyTables._next(ps, td)
+            alignment = PrettyTables._current_cell_alignment(action, ps, td)
+            @test alignment == :r
 
-        action, rs, ps = PrettyTables._next(ps, td)
-        alignment = PrettyTables._current_cell_alignment(action, ps, td)
-        @test alignment == :l
+            action, rs, ps = PrettyTables._next(ps, td)
+            alignment = PrettyTables._current_cell_alignment(action, ps, td)
+            @test alignment == :l
 
-        action, rs, ps = PrettyTables._next(ps, td)
+            action, rs, ps = PrettyTables._next(ps, td)
+        end
 
         # -- Footnotes ---------------------------------------------------------------------
 
@@ -223,8 +230,8 @@
             show_row_number_column      = true,
             row_number_column_label     = "Row Number",
             row_labels                  = ["Row 1", "Row 2", "Row 3"],
-            summary_cell                = (data, i) -> i,
-            summary_row_label           = "Summary",
+            summary_rows                = [(data, i) -> i, (data, i) -> 2i],
+            summary_row_labels          = ["Summary 1", "Summary 2"],
             footnotes                   = [(:data, 1, 1) => "Footnote", (:data, 2, 2) => "Footnote"],
             source_notes                = "Source Notes",
             title_alignment             = :r,
@@ -365,33 +372,35 @@
 
         # -- Table Summary -----------------------------------------------------------------
 
-        action, rs, ps = PrettyTables._next(ps, td)
+        for _ in 1:2
+            action, rs, ps = PrettyTables._next(ps, td)
 
-        action, rs, ps = PrettyTables._next(ps, td)
-        alignment = PrettyTables._current_cell_alignment(action, ps, td)
-        @test alignment == :c
+            action, rs, ps = PrettyTables._next(ps, td)
+            alignment = PrettyTables._current_cell_alignment(action, ps, td)
+            @test alignment == :c
 
-        action, rs, ps = PrettyTables._next(ps, td)
-        alignment = PrettyTables._current_cell_alignment(action, ps, td)
-        @test alignment == :r
+            action, rs, ps = PrettyTables._next(ps, td)
+            alignment = PrettyTables._current_cell_alignment(action, ps, td)
+            @test alignment == :r
 
-        action, rs, ps = PrettyTables._next(ps, td)
-        alignment = PrettyTables._current_cell_alignment(action, ps, td)
-        @test alignment == :l
+            action, rs, ps = PrettyTables._next(ps, td)
+            alignment = PrettyTables._current_cell_alignment(action, ps, td)
+            @test alignment == :l
 
-        action, rs, ps = PrettyTables._next(ps, td)
-        alignment = PrettyTables._current_cell_alignment(action, ps, td)
-        @test alignment == :c
+            action, rs, ps = PrettyTables._next(ps, td)
+            alignment = PrettyTables._current_cell_alignment(action, ps, td)
+            @test alignment == :c
 
-        action, rs, ps = PrettyTables._next(ps, td)
-        alignment = PrettyTables._current_cell_alignment(action, ps, td)
-        @test alignment == :r
+            action, rs, ps = PrettyTables._next(ps, td)
+            alignment = PrettyTables._current_cell_alignment(action, ps, td)
+            @test alignment == :r
 
-        action, rs, ps = PrettyTables._next(ps, td)
-        alignment = PrettyTables._current_cell_alignment(action, ps, td)
-        @test alignment == :l
+            action, rs, ps = PrettyTables._next(ps, td)
+            alignment = PrettyTables._current_cell_alignment(action, ps, td)
+            @test alignment == :l
 
-        action, rs, ps = PrettyTables._next(ps, td)
+            action, rs, ps = PrettyTables._next(ps, td)
+        end
 
         # -- Footnotes ---------------------------------------------------------------------
 

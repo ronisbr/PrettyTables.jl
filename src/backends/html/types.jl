@@ -126,10 +126,6 @@ TODO: Add the classes.
       padding-bottom: 2px !important;
     }
 
-    tr.summaryRow td {
-      border-top: 1px solid black;
-    }
-
     tr.footnote td {
       padding-bottom: 2px !important;
     }
@@ -155,6 +151,14 @@ TODO: Add the classes.
     }
 
     tbody tr:last-child {
+      border-bottom: 1px solid black;
+    }
+
+    tbody > tr:nth-child(1 of .summaryRow) {
+      border-top: 1px solid black;
+    }
+
+    tbody > tr:nth-last-child(1 of .summaryRow) {
       border-bottom: 1px solid black;
     }
 

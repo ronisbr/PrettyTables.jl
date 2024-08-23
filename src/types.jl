@@ -49,8 +49,8 @@ const _IGNORE_CELL = __IGNORE_CELL__()
 
     row_labels::Union{Nothing, AbstractVector} = nothing
     row_group_labels::Union{Nothing, Vector{Pair{Int, String}}} = nothing
-    summary_row_label::String = ""
-    summary_cell::Union{Nothing, Function} = nothing
+    summary_rows::Union{Nothing, Vector{Any}} = nothing
+    summary_row_labels::Union{Nothing, Vector{String}} = nothing
 
     # -- Cell Merging ----------------------------------------------------------------------
 
@@ -159,3 +159,13 @@ end
     renderer::Symbol
     show_omitted_cell_summary::Bool
 end
+
+# == Auxiliary =============================================================================
+
+# Type to lazily construct the summary row label if the user does not pass this information.
+struct SummaryRowLabelIterator <: AbstractVector{String}
+    length::Int
+end
+
+Base.size(s::SummaryRowLabelIterator) = (s.length,)
+Base.getindex(::SummaryRowLabelIterator, i::Int) = "Summary $i"

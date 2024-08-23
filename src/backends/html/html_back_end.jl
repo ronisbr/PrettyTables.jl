@@ -188,7 +188,7 @@ function _html__print(
                 il += 1
                 head_opened = true
 
-            elseif (ps.i == 1) && (rs ∈ (:data, :summary_row))
+            elseif (ps.i == 1) && (rs ∈ (:data, :summary_row)) && !body_opened
                 if head_opened
                     il -= 1
                     _aprintln(buf, "</thead>", il, ns; minify)
