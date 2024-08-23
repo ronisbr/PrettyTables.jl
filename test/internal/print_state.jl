@@ -18,8 +18,8 @@
             show_row_number_column  = true,
             row_number_column_label = "Row Number",
             row_labels              = ["Row 1", "Row 2", "Row 3"],
-            summary_cell            = (data, i) -> i,
-            summary_row_label       = "Summary",
+            summary_rows            = [(data, i) -> i, (data, i) -> 2i],
+            summary_row_labels      = ["Summary 1", "Summary 2"],
             footnotes               = [(:data, 1, 1) => "Footnote", (:data, 2, 2) => "Footnote"],
             source_notes            = "Source Notes",
             num_rows                = 3,
@@ -109,28 +109,30 @@
 
         # -- Table Summary -----------------------------------------------------------------
 
-        action, rs, ps = PrettyTables._next(ps, td)
-        @test action == :new_row
-        @test rs     == :summary_row
-
-        action, rs, ps = PrettyTables._next(ps, td)
-        @test action == :summary_row_number
-        @test rs     == :summary_row
-
-        action, rs, ps = PrettyTables._next(ps, td)
-        @test action == :summary_row_label
-        @test rs     == :summary_row
-
-        for j in 1:4
+        for _ in 1:2
             action, rs, ps = PrettyTables._next(ps, td)
-            @test action == :summary_cell
+            @test action == :new_row
             @test rs     == :summary_row
-            @test ps.j   == j
-        end
 
-        action, rs, ps = PrettyTables._next(ps, td)
-        @test action == :end_row
-        @test rs     == :summary_row
+            action, rs, ps = PrettyTables._next(ps, td)
+            @test action == :summary_row_number
+            @test rs     == :summary_row
+
+            action, rs, ps = PrettyTables._next(ps, td)
+            @test action == :summary_row_label
+            @test rs     == :summary_row
+
+            for j in 1:4
+                action, rs, ps = PrettyTables._next(ps, td)
+                @test action == :summary_cell
+                @test rs     == :summary_row
+                @test ps.j   == j
+            end
+
+            action, rs, ps = PrettyTables._next(ps, td)
+            @test action == :end_row
+            @test rs     == :summary_row
+        end
 
         # -- Table Footer ------------------------------------------------------------------
 
@@ -250,8 +252,8 @@
                 show_row_number_column    = true,
                 row_number_column_label   = "Row Number",
                 row_labels                = ["Row 1", "Row 2", "Row 3"],
-                summary_cell              = (data, i) -> i,
-                summary_row_label         = "Summary",
+                summary_rows              = [(data, i) -> i, (data, i) -> 2i],
+                summary_row_labels        = PrettyTables.SummaryRowLabelIterator(2),
                 footnotes                 = [(:data, 1, 1) => "Footnote", (:data, 2, 2) => "Footnote"],
                 source_notes              = "Source Notes",
                 num_rows                  = 6,
@@ -381,32 +383,34 @@
 
             # -- Table Summary -------------------------------------------------------------
 
-            action, rs, ps = PrettyTables._next(ps, td)
-            @test action == :new_row
-            @test rs     == :summary_row
-
-            action, rs, ps = PrettyTables._next(ps, td)
-            @test action == :summary_row_number
-            @test rs     == :summary_row
-
-            action, rs, ps = PrettyTables._next(ps, td)
-            @test action == :summary_row_label
-            @test rs     == :summary_row
-
-            for j in 1:2
+            for _ in 1:2
                 action, rs, ps = PrettyTables._next(ps, td)
-                @test action == :summary_cell
+                @test action == :new_row
                 @test rs     == :summary_row
-                @test ps.j   == j
+
+                action, rs, ps = PrettyTables._next(ps, td)
+                @test action == :summary_row_number
+                @test rs     == :summary_row
+
+                action, rs, ps = PrettyTables._next(ps, td)
+                @test action == :summary_row_label
+                @test rs     == :summary_row
+
+                for j in 1:2
+                    action, rs, ps = PrettyTables._next(ps, td)
+                    @test action == :summary_cell
+                    @test rs     == :summary_row
+                    @test ps.j   == j
+                end
+
+                action, rs, ps = PrettyTables._next(ps, td)
+                @test action == :horizontal_continuation_cell
+                @test rs     == :summary_row
+
+                action, rs, ps = PrettyTables._next(ps, td)
+                @test action == :end_row
+                @test rs     == :summary_row
             end
-
-            action, rs, ps = PrettyTables._next(ps, td)
-            @test action == :horizontal_continuation_cell
-            @test rs     == :summary_row
-
-            action, rs, ps = PrettyTables._next(ps, td)
-            @test action == :end_row
-            @test rs     == :summary_row
 
             # -- Table Footer --------------------------------------------------------------
 
@@ -459,8 +463,8 @@
                 show_row_number_column    = true,
                 row_number_column_label   = "Row Number",
                 row_labels                = ["Row 1", "Row 2", "Row 3"],
-                summary_cell              = (data, i) -> i,
-                summary_row_label         = "Summary",
+                summary_rows              = [(data, i) -> i, (data, i) -> 2i],
+                summary_row_labels        = PrettyTables.SummaryRowLabelIterator(2),
                 footnotes                 = [(:data, 1, 1) => "Footnote", (:data, 2, 2) => "Footnote"],
                 source_notes              = "Source Notes",
                 num_rows                  = 6,
@@ -625,32 +629,34 @@
 
             # -- Table Summary -------------------------------------------------------------
 
-            action, rs, ps = PrettyTables._next(ps, td)
-            @test action == :new_row
-            @test rs     == :summary_row
-
-            action, rs, ps = PrettyTables._next(ps, td)
-            @test action == :summary_row_number
-            @test rs     == :summary_row
-
-            action, rs, ps = PrettyTables._next(ps, td)
-            @test action == :summary_row_label
-            @test rs     == :summary_row
-
-            for j in 1:2
+            for _ in 1:2
                 action, rs, ps = PrettyTables._next(ps, td)
-                @test action == :summary_cell
+                @test action == :new_row
                 @test rs     == :summary_row
-                @test ps.j   == j
+
+                action, rs, ps = PrettyTables._next(ps, td)
+                @test action == :summary_row_number
+                @test rs     == :summary_row
+
+                action, rs, ps = PrettyTables._next(ps, td)
+                @test action == :summary_row_label
+                @test rs     == :summary_row
+
+                for j in 1:2
+                    action, rs, ps = PrettyTables._next(ps, td)
+                    @test action == :summary_cell
+                    @test rs     == :summary_row
+                    @test ps.j   == j
+                end
+
+                action, rs, ps = PrettyTables._next(ps, td)
+                @test action == :horizontal_continuation_cell
+                @test rs     == :summary_row
+
+                action, rs, ps = PrettyTables._next(ps, td)
+                @test action == :end_row
+                @test rs     == :summary_row
             end
-
-            action, rs, ps = PrettyTables._next(ps, td)
-            @test action == :horizontal_continuation_cell
-            @test rs     == :summary_row
-
-            action, rs, ps = PrettyTables._next(ps, td)
-            @test action == :end_row
-            @test rs     == :summary_row
 
             # -- Table Footer --------------------------------------------------------------
 
@@ -706,8 +712,8 @@
                 show_row_number_column    = true,
                 row_number_column_label   = "Row Number",
                 row_labels                = ["Row 1", "Row 2", "Row 3"],
-                summary_cell              = (data, i) -> i,
-                summary_row_label         = "Summary",
+                summary_rows              = [(data, i) -> i, (data, i) -> 2i],
+                summary_row_labels        = ["Summary 1", "Summary 2"],
                 footnotes                 = [(:data, 1, 1) => "Footnote", (:data, 2, 2) => "Footnote"],
                 source_notes              = "Source Notes",
                 num_rows                  = 3,
@@ -799,28 +805,30 @@
 
             # -- Table Summary -------------------------------------------------------------
 
-            action, rs, ps = PrettyTables._next(ps, td)
-            @test action == :new_row
-            @test rs     == :summary_row
-
-            action, rs, ps = PrettyTables._next(ps, td)
-            @test action == :summary_row_number
-            @test rs     == :summary_row
-
-            action, rs, ps = PrettyTables._next(ps, td)
-            @test action == :summary_row_label
-            @test rs     == :summary_row
-
-            for j in 1:4
+            for _ in 1:2
                 action, rs, ps = PrettyTables._next(ps, td)
-                @test action == :summary_cell
+                @test action == :new_row
                 @test rs     == :summary_row
-                @test ps.j   == j
-            end
 
-            action, rs, ps = PrettyTables._next(ps, td)
-            @test action == :end_row
-            @test rs     == :summary_row
+                action, rs, ps = PrettyTables._next(ps, td)
+                @test action == :summary_row_number
+                @test rs     == :summary_row
+
+                action, rs, ps = PrettyTables._next(ps, td)
+                @test action == :summary_row_label
+                @test rs     == :summary_row
+
+                for j in 1:4
+                    action, rs, ps = PrettyTables._next(ps, td)
+                    @test action == :summary_cell
+                    @test rs     == :summary_row
+                    @test ps.j   == j
+                end
+
+                action, rs, ps = PrettyTables._next(ps, td)
+                @test action == :end_row
+                @test rs     == :summary_row
+            end
 
             # -- Table Footer --------------------------------------------------------------
 

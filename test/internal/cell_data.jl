@@ -23,8 +23,8 @@
         show_row_number_column      = true,
         row_number_column_label     = "Row Number",
         row_labels                  = ["Row 1", "Row 2", "Row 3"],
-        summary_cell                = (data, j) -> 20j,
-        summary_row_label           = "Summary",
+        summary_rows                = [(data, j) -> 20j, (data, j) -> 30j],
+        summary_row_labels          = PrettyTables.SummaryRowLabelIterator(2),
         footnotes                   = [(:data, 1, 1) => "Footnote 1", (:data, 2, 2) => "Footnote 2"],
         source_notes                = "Source Notes",
         data_alignment              = [:l, :c, :r, :l],
@@ -109,23 +109,25 @@
 
     # -- Table Summary ---------------------------------------------------------------------
 
-    action, rs, ps = PrettyTables._next(ps, td)
+    for i in 1:2
+        action, rs, ps = PrettyTables._next(ps, td)
 
-    action, rs, ps = PrettyTables._next(ps, td)
-    cell = PrettyTables._current_cell(action, ps, td)
-    @test cell == 4
-
-    action, rs, ps = PrettyTables._next(ps, td)
-    cell = PrettyTables._current_cell(action, ps, td)
-    @test cell == "Summary"
-
-    for j in 1:4
         action, rs, ps = PrettyTables._next(ps, td)
         cell = PrettyTables._current_cell(action, ps, td)
-        @test cell == 20j
-    end
+        @test cell == ""
 
-    action, rs, ps = PrettyTables._next(ps, td)
+        action, rs, ps = PrettyTables._next(ps, td)
+        cell = PrettyTables._current_cell(action, ps, td)
+        @test cell == "Summary $i"
+
+        for j in 1:4
+            action, rs, ps = PrettyTables._next(ps, td)
+            cell = PrettyTables._current_cell(action, ps, td)
+            @test cell == (10i  + 10) * j
+        end
+
+        action, rs, ps = PrettyTables._next(ps, td)
+    end
 
     # -- Footnotes -------------------------------------------------------------------------
 

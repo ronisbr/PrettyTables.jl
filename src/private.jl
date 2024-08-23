@@ -68,8 +68,8 @@ function _table_data(
     row_number_column_label::String = "Row",
     row_labels::Union{Nothing, AbstractVector} = nothing,
     row_group_labels::Union{Nothing, Vector{Pair{Int, String}}} = nothing,
-    summary_cell::Union{Nothing, Function, AbstractVector{Any}} = nothing,
-    summary_row_label::String = "",
+    summary_rows::Union{Nothing, Vector{T} where T <: Any} = nothing,
+    summary_row_labels::Union{Nothing, Vector{String}} = nothing,
     footnotes::Union{Nothing, Vector{Pair{FootnoteTuple, String}}} = nothing,
     source_notes::String = "",
 
@@ -144,10 +144,14 @@ function _table_data(
         column_label_alignment = alignment
     end
 
-    if summary_cell isa AbstractVector
-        summary_cell_func = (data::Any, j::Int) -> summary_cell[j + begin]
-    else
-        summary_cell_func = summary_cell
+    if !isnothing(summary_rows) && !isnothing(summary_row_labels)
+        length(summary_rows) != length(summary_row_labels) && throw(ArgumentError(
+            "The length of `summary_rows` ($length(summary_rows)) must be equal to the length of `summary_row_labels` ($length(summary_row_labels))."
+        ))
+    end
+
+    if !isnothing(summary_rows) && isnothing(summary_row_labels)
+        summary_row_labels = SummaryRowLabelIterator(length(summary_rows))
     end
 
     # == Table Data and Printing Specification =============================================
@@ -162,8 +166,8 @@ function _table_data(
         row_number_column_label,
         row_labels,
         row_group_labels,
-        summary_row_label,
-        summary_cell_func,
+        summary_rows,
+        summary_row_labels,
         merge_cells,
         footnotes,
         source_notes,
