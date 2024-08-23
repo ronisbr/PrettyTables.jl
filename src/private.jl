@@ -66,7 +66,7 @@ function _table_data(
     column_labels::Union{Nothing, AbstractVector} = nothing,
     stubhead_label::String = "",
     row_number_column_label::String = "Row",
-    row_labels::Union{Nothing, Vector{String}} = nothing,
+    row_labels::Union{Nothing, AbstractVector} = nothing,
     row_group_labels::Union{Nothing, Vector{Pair{Int, String}}} = nothing,
     summary_cell::Union{Nothing, Function, AbstractVector{Any}} = nothing,
     summary_row_label::String = "",
@@ -91,6 +91,7 @@ function _table_data(
     formatters::Union{Nothing, Vector{T} where T <: Any} = nothing,
     maximum_number_of_columns::Int = -1,
     maximum_number_of_rows::Int = -1,
+    merge_cells::Union{Nothing, Vector{MergeCells}} = nothing,
     show_row_number_column::Bool = false,
     vertical_crop_mode::Symbol = :bottom,
     kwargs...
@@ -163,6 +164,7 @@ function _table_data(
         row_group_labels,
         summary_row_label,
         summary_cell_func,
+        merge_cells,
         footnotes,
         source_notes,
         title_alignment,
@@ -183,5 +185,66 @@ function _table_data(
         vertical_crop_mode
     )
 
+    _validate_merge_cell_specification(table_data)
+
     return table_data, kwargs
+end
+
+"""
+    _validate_merge_cell_specification(table_data::TableData) -> Nothing
+
+Validate the merge cell specification in `table_data`. If something is wrong, this function
+throws an error.
+"""
+function _validate_merge_cell_specification(table_data::TableData)
+    isnothing(table_data.merge_cells) && return nothing
+
+    mc = table_data.merge_cells
+
+    for i in eachindex(mc)
+        mi = mc[i]
+
+        mi_beg = mi.j
+        mi_end = mi.j + mi.column_span - 1
+
+        mi.column_span < 2 && throw(ArgumentError(
+            "The specification #$i has a column span lower than 2."
+        ))
+
+
+        mi.i < 0 && throw(ArgumentError(
+            "The row index is negative in the specification #$i for merging cells."
+        ))
+
+        mi.i > table_data.num_rows && throw(ArgumentError(
+            "The row index is larger than the number of column label rows in the specification #$i for merging cells."
+        ))
+
+        mi.j < 0 && throw(ArgumentError(
+            "The column index is negative in the specification #$i for merging cells."
+        ))
+
+        mi.j > table_data.num_columns && throw(ArgumentError(
+            "The column index is larger than the number of table columns in the specification #$i for merging cells."
+        ))
+
+        mi_end > table_data.num_columns && throw(ArgumentError(
+            "The specification #$i for merging cells references a cell outside the table column range."
+        ))
+
+        for j in eachindex(mc)
+            i == j && continue
+
+            mj = mc[j]
+
+            mj_beg = mj.j
+            mj_end = mj.j + mj.column_span - 1
+
+            ((mi_end >= mj_beg) && (mj_end >= mi_beg)) && throw(ArgumentError(
+                "The specifications #$i and #$j for merging cells overlap."
+            ))
+        end
+    end
+
+    return nothing
 end

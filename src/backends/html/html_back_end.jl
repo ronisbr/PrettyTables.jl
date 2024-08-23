@@ -253,18 +253,41 @@ function _html__print(
             _aprintln(buf, "</tr>", il, ns; minify)
 
         else
+            empty!(properties)
+            empty!(style)
+
             cell = _current_cell(action, ps, table_data)
-            rendered_cell = _html__render_cell(
-                cell,
-                buf,
-                renderer;
-                allow_html_in_cells,
-                line_breaks
-            )
+
+            cell === _IGNORE_CELL && continue
+
+            # If we are in a column label, check if we must merge the cell.
+            if (action == :column_label) && (cell isa MergeCells)
+                push!(properties, "colspan" => string(cell.column_span))
+                rendered_cell = _html__render_cell(
+                    cell.data,
+                    buf,
+                    renderer;
+                    allow_html_in_cells,
+                    line_breaks
+                )
+
+                alignment = cell.alignment
+
+                append!(style, tf.merged_cell_decoration)
+
+            else
+                rendered_cell = _html__render_cell(
+                    cell,
+                    buf,
+                    renderer;
+                    allow_html_in_cells,
+                    line_breaks
+                )
+
+                alignment = _current_cell_alignment(action, ps, table_data)
+            end
 
             # Obtain the cell alignment.
-            empty!(style)
-            alignment = _current_cell_alignment(action, ps, table_data)
             _html__add_alignment_to_style!(style, alignment)
 
             # Check if the user wants to limit the column width.
@@ -308,7 +331,6 @@ function _html__print(
             end
 
             # Obtain the cell class and style.
-            empty!(properties)
 
             if action == :title
                 push!(properties, "colspan" => string(_number_of_printed_columns(table_data)))

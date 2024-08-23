@@ -88,6 +88,7 @@ const _HTML__LARGE_ITALIC = ["font-size" => "large", "font-style" => "italic"]
 const _HTML__SMALL = ["font-size" => "small"]
 const _HTML__SMALL_ITALIC = ["font-size" => "small", "font-style" => "italic"]
 const _HTML__SMALL_ITALIC_GRAY = ["color" => "gray", "font-size" => "small", "font-style" => "italic"]
+const _HTML__MERGED_CELL = ["border-bottom" => "1px solid black"]
 
 """
     HtmlTableFormat
@@ -115,10 +116,10 @@ TODO: Add the classes.
     }
 
     td, th {
-      padding-bottom: 4px !important;
+      padding-bottom: 6px !important;
       padding-left: 8px !important;
       padding-right: 8px !important;
-      padding-top: 4px !important;
+      padding-top: 6px !important;
     }
 
     tr.title td {
@@ -180,6 +181,7 @@ TODO: Add the classes.
     summary_cell_decoration::Vector{HtmlPair}       = _HTML__NO_DECORATION
     footnote_decoration::Vector{HtmlPair}           = _HTML__SMALL
     source_note_decoration::Vector{HtmlPair}        = _HTML__SMALL_ITALIC_GRAY
+    merged_cell_decoration::Vector{HtmlPair}        = _HTML__MERGED_CELL
 end
 
 # Default HTML format.

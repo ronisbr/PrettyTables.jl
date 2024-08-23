@@ -4,8 +4,29 @@
 #
 ############################################################################################
 
+export MergeCells
+
 # Tuple that defined a footnote.
 const FootnoteTuple = Tuple{Symbol, Int, Int}
+
+@kwdef struct MergeCells
+    i::Int
+    j::Int
+    column_span::Int
+    data::Any
+    alignment::Symbol = :c
+
+    function MergeCells(i::Int, j::Int, column_span::Int, data::Any)
+        return new(i, j, column_span, data, :c)
+    end
+
+    function MergeCells(i::Int, j::Int, column_span::Int, data::Any, alignment::Symbol)
+        return new(i, j, column_span, data, alignment)
+    end
+end
+
+struct __IGNORE_CELL__ end
+const _IGNORE_CELL = __IGNORE_CELL__()
 
 @kwdef struct TableData
     data::Any
@@ -26,10 +47,14 @@ const FootnoteTuple = Tuple{Symbol, Int, Int}
 
     # -- Rows ------------------------------------------------------------------------------
 
-    row_labels::Union{Nothing, Vector{String}} = nothing
+    row_labels::Union{Nothing, AbstractVector} = nothing
     row_group_labels::Union{Nothing, Vector{Pair{Int, String}}} = nothing
     summary_row_label::String = ""
     summary_cell::Union{Nothing, Function} = nothing
+
+    # -- Cell Merging ----------------------------------------------------------------------
+
+    merge_cells::Union{Nothing, Vector{MergeCells}} = nothing
 
     # == Table Footer ======================================================================
 
