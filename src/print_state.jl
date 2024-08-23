@@ -45,6 +45,19 @@ function _current_cell(
     elseif action == :summary_row_label
         return table_data.summary_row_label
     elseif action == :column_label
+        # Check if this cell must be merged or if is is part of a merged cell.
+        if !isnothing(table_data.merge_cells)
+            for mc in table_data.merge_cells
+                if (mc.i == state.i)
+                    if (mc.j == state.j)
+                        return mc
+                    elseif (mc.j <= state.j <= mc.j + mc.column_span - 1)
+                        return _IGNORE_CELL
+                    end
+                end
+            end
+        end
+
         return table_data.column_labels[state.i][state.j]
     elseif action == :data
         cell_data = table_data.data[state.i, state.j]
