@@ -40,10 +40,12 @@ const _IGNORE_CELL = __IGNORE_CELL__()
 
     # -- Columns ---------------------------------------------------------------------------
 
-    column_labels::Vector{Vector{Any}}
     stubhead_label::String = ""
     show_row_number_column::Bool = false
     row_number_column_label::String = ""
+    column_labels::Vector{Vector{Any}}
+    summary_columns::Union{Nothing, Vector{Any}} = nothing
+    summary_column_labels::Union{Nothing, Vector{String}} = nothing
 
     # -- Rows ------------------------------------------------------------------------------
 
@@ -71,6 +73,8 @@ const _IGNORE_CELL = __IGNORE_CELL__()
     data_alignment::Union{Symbol, Vector{Symbol}} = :r
     row_number_column_alignment::Symbol = :r
     row_label_alignment::Symbol = :r
+    summary_column_alignment::Union{Symbol, Vector{Symbol}} = :r
+    summary_column_label_alignment::Union{Symbol, Vector{Symbol}} = :r
     footnote_alignment::Symbol = :l
     source_note_alignment::Symbol = :l
 
@@ -131,10 +135,11 @@ const _ROW_NUMBER_COLUMN   = 4
 const _ROW_LABEL_COLUMN    = 5
 const _DATA                = 6
 const _CONTINUATION_COLUMN = 7
-const _END_ROW             = 8
-const _FOOTNOTES           = 9
-const _SOURCENOTES         = 10
-const _END_PRINTING        = 11
+const _SUMMARY_COLUMNS     = 8
+const _END_ROW             = 9
+const _FOOTNOTES           = 10
+const _SOURCENOTES         = 11
+const _END_PRINTING        = 12
 
 const _VERTICAL_CONTINUATION_CELL_ACTIONS = (
     :vertical_continuation_cell,
@@ -162,10 +167,11 @@ end
 
 # == Auxiliary =============================================================================
 
-# Type to lazily construct the summary row label if the user does not pass this information.
-struct SummaryRowLabelIterator <: AbstractVector{String}
+# Type to lazily construct the summary row / column label if the user does not pass this
+# information.
+struct SummaryLabelIterator <: AbstractVector{String}
     length::Int
 end
 
-Base.size(s::SummaryRowLabelIterator) = (s.length,)
-Base.getindex(::SummaryRowLabelIterator, i::Int) = "Summary $i"
+Base.size(s::SummaryLabelIterator) = (s.length,)
+Base.getindex(::SummaryLabelIterator, i::Int) = "Summary $i"

@@ -23,8 +23,10 @@
         show_row_number_column      = true,
         row_number_column_label     = "Row Number",
         row_labels                  = ["Row 1", "Row 2", "Row 3"],
+        summary_columns             = [(data, i) -> 3i, (data, j) -> 4j],
+        summary_column_labels       = ["Sum. Col. 1", "Sum. Col. 2"],
         summary_rows                = [(data, j) -> 20j, (data, j) -> 30j],
-        summary_row_labels          = PrettyTables.SummaryRowLabelIterator(2),
+        summary_row_labels          = PrettyTables.SummaryLabelIterator(2),
         footnotes                   = [(:data, 1, 1) => "Footnote 1", (:data, 2, 2) => "Footnote 2"],
         source_notes                = "Source Notes",
         data_alignment              = [:l, :c, :r, :l],
@@ -81,6 +83,12 @@
             @test cell == "$i-$j"
         end
 
+        for j in 1:2
+            action, rs, ps = PrettyTables._next(ps, td)
+            cell = PrettyTables._current_cell(action, ps, td)
+            @test cell == (i == 1 ? "Sum. Col. $j" : "")
+        end
+
         action, rs, ps = PrettyTables._next(ps, td)
     end
 
@@ -104,6 +112,12 @@
             @test cell == (i - 1) * 4 + j + ((i == 2) ? 10 : 0)
         end
 
+        for j in 1:2
+            action, rs, ps = PrettyTables._next(ps, td)
+            cell = PrettyTables._current_cell(action, ps, td)
+            @test cell == (j == 1 ? 3i : 4i)
+        end
+
         action, rs, ps = PrettyTables._next(ps, td)
     end
 
@@ -125,6 +139,10 @@
             cell = PrettyTables._current_cell(action, ps, td)
             @test cell == (10i  + 10) * j
         end
+
+        # Empty cells.
+        action, rs, ps = PrettyTables._next(ps, td)
+        action, rs, ps = PrettyTables._next(ps, td)
 
         action, rs, ps = PrettyTables._next(ps, td)
     end

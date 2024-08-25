@@ -262,7 +262,16 @@ function _html__print(
 
             # If we are in a column label, check if we must merge the cell.
             if (action == :column_label) && (cell isa MergeCells)
-                push!(properties, "colspan" => string(cell.column_span))
+                # Check if we have enough data columns to merge the cell.
+                num_data_columns = _number_of_printed_data_columns(table_data)
+
+                cs = if (ps.j + cell.column_span - 1) > num_data_columns
+                    num_data_columns - ps.j + 1
+                else
+                    cell.column_span
+                end
+
+                push!(properties, "colspan" => string(cs))
                 rendered_cell = _html__render_cell(
                     cell.data,
                     buf,
@@ -371,7 +380,7 @@ function _html__print(
                     append!(style, tf.column_label_decoration)
                 end
 
-            elseif action == :summary_cell
+            elseif action == :summary_row_cell
                 append!(style, tf.summary_cell_decoration)
 
             elseif action == :footnote

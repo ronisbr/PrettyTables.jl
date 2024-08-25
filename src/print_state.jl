@@ -28,10 +28,13 @@ function _current_cell(
         else
             return ""
         end
+
     elseif action == :row_number
         return state.i
+
     elseif action == :summary_row_number
         return ""
+
     elseif action == :stubhead_label
         # We should not print anything if we are not at the first line of column labels.
         if state.i == 1
@@ -39,11 +42,14 @@ function _current_cell(
         else
             return ""
         end
+
     elseif action == :row_label
         rl = table_data.row_labels
         return isnothing(rl) ? "" : table_data.row_labels[state.i]
+
     elseif action == :summary_row_label
         return table_data.summary_row_labels[state.i]
+
     elseif action == :column_label
         # Check if this cell must be merged or if is is part of a merged cell.
         if !isnothing(table_data.merge_cells)
@@ -59,6 +65,15 @@ function _current_cell(
         end
 
         return table_data.column_labels[state.i][state.j]
+
+    elseif action == :summary_column_label
+        # We should not print anything if we are not at the first line of column labels.
+        if state.i == 1
+            return table_data.summary_column_labels[state.j]
+        else
+            return ""
+        end
+
     elseif action == :data
         cell_data = table_data.data[state.i, state.j]
 
@@ -70,7 +85,11 @@ function _current_cell(
 
         return cell_data
 
-    elseif action == :summary_cell
+    elseif action == :summary_column_cell
+        f = table_data.summary_columns[state.j]
+        return f(table_data.data, state.i)
+
+    elseif action == :summary_row_cell
         f = table_data.summary_rows[state.i]
         return f(table_data.data, state.j)
 
@@ -79,6 +98,9 @@ function _current_cell(
 
     elseif action == :source_notes
         return table_data.source_notes
+
+    elseif action == :empty_cell
+        return ""
 
     else
         throw(ArgumentError("Invalid action found: `$action`!"))
@@ -119,7 +141,15 @@ function _current_cell_alignment(
             return a[state.j]
         end
 
-    elseif (action == :data) || (action == :summary_cell)
+    elseif action == :summary_column_label
+        a = table_data.summary_column_label_alignment
+        if a isa Symbol
+            return a
+        else
+            return a[state.j]
+        end
+
+    elseif (action == :data) || (action == :summary_row_cell)
         # First, we check if we have a special cell alignment.
         if (action == :data) && !isnothing(table_data.cell_alignment)
             for f in table_data.cell_alignment
@@ -129,6 +159,15 @@ function _current_cell_alignment(
         end
 
         a = table_data.data_alignment
+        if a isa Symbol
+            return a
+        else
+            return a[state.j]
+        end
+
+    elseif action == :summary_column_cell
+        a = table_data.summary_column_alignment
+
         if a isa Symbol
             return a
         else
@@ -156,6 +195,9 @@ function _current_cell_alignment(
 
     elseif action == :source_notes
         return table_data.source_note_alignment
+
+    elseif action == :empty_cell
+        return :r
 
     else
         throw(ArgumentError("Invalid action found: `$action`!"))
@@ -286,7 +328,7 @@ function _next(state::PrintingTableState, table_data::TableData)
         elseif rs == :continuation_row
             :vertical_continuation_cell
         else
-            :summary_cell
+            :summary_row_cell
         end
 
         return action, rs, PrintingTableState(ps, i, j + 1, rs)
@@ -294,8 +336,8 @@ function _next(state::PrintingTableState, table_data::TableData)
 
     if ps < _CONTINUATION_COLUMN
         # Check if a continuation cell is necessary.
-        if (j >= max_j)
-            return _next(PrintingTableState(_CONTINUATION_COLUMN, i, j, rs), table_data)
+        if j >= max_j
+            return _next(PrintingTableState(_CONTINUATION_COLUMN, i, 0, rs), table_data)
         else
             mr = table_data.maximum_number_of_rows
 
@@ -304,6 +346,21 @@ function _next(state::PrintingTableState, table_data::TableData)
                 :horizontal_continuation_cell
 
             return action, rs, PrintingTableState(_CONTINUATION_COLUMN, i, 0, rs)
+        end
+    end
+
+    if ps < _SUMMARY_COLUMNS && !isnothing(table_data.summary_columns)
+        j >= length(table_data.summary_columns) &&
+            return _next(PrintingTableState(_SUMMARY_COLUMNS, i, 0, rs), table_data)
+
+        if rs == :column_labels
+            return :summary_column_label, rs, PrintingTableState(ps, i, j + 1, rs)
+        elseif rs == :data
+            return :summary_column_cell, rs, PrintingTableState(ps, i, j + 1, rs)
+        elseif rs == :continuation_row
+            return :vertical_continuation_cell, rs, PrintingTableState(ps, i, j + 1, rs)
+        else
+            return :empty_cell, rs, PrintingTableState(ps, i, j + 1, rs)
         end
     end
 
@@ -422,7 +479,23 @@ function _number_of_printed_columns(table_data::TableData)
     total_columns =
         data_columns +
         table_data.show_row_number_column +
-        !isnothing(table_data.row_labels)
+        (!isnothing(table_data.row_labels) || !isnothing(table_data.summary_row_labels)) +
+        (!isnothing(table_data.summary_columns) ? length(table_data.summary_columns) : 0)
 
     return total_columns
+end
+
+"""
+    _number_of_printed_data_columns(table_data::TableData) -> Int
+
+Return the number of printed data columns.
+"""
+function _number_of_printed_data_columns(table_data::TableData)
+    data_columns = table_data.maximum_number_of_columns > 0 ?
+        # If we are cropping the table, we have one additional column for the continuation
+        # characters.
+        min(table_data.maximum_number_of_columns, table_data.num_columns) :
+        table_data.num_columns
+
+    return data_columns
 end
