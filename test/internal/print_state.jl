@@ -18,6 +18,7 @@
             show_row_number_column  = true,
             row_number_column_label = "Row Number",
             row_labels              = ["Row 1", "Row 2", "Row 3"],
+            row_group_labels        = [2 => "Row Group"],
             summary_columns         = [(data, i) -> 3i, (data, j) -> 4j],
             summary_column_labels   = ["Sum. Col. 1", "Sum. Col. 2"],
             summary_rows            = [(data, j) ->  j, (data, j) -> 2j],
@@ -89,6 +90,24 @@
         # -- Table Data --------------------------------------------------------------------
 
         for i in 1:3
+
+            if i == 2
+                action, rs, ps = PrettyTables._next(ps, td)
+                @test action == :new_row
+                @test rs     == :data
+                @test ps.i   == i
+
+                action, rs, ps = PrettyTables._next(ps, td)
+                @test action == :row_group_label
+                @test rs     == :data
+                @test ps.i   == i
+
+                action, rs, ps = PrettyTables._next(ps, td)
+                @test action == :end_row
+                @test rs     == :data
+                @test ps.i   == i
+            end
+
             action, rs, ps = PrettyTables._next(ps, td)
             @test action == :new_row
             @test rs     == :data
@@ -282,6 +301,7 @@
                 show_row_number_column    = true,
                 row_number_column_label   = "Row Number",
                 row_labels                = ["Row 1", "Row 2", "Row 3"],
+                row_group_labels          = [2 => "Row Group 1", 4 => "Row Group 1"],
                 summary_columns           = [(data, i) -> 3i, (data, j) -> 4j],
                 summary_column_labels     = ["Sum. Col. 1", "Sum. Col. 2"],
                 summary_rows              = [(data, i) -> i, (data, i) -> 2i],
@@ -360,6 +380,23 @@
             # -- Table Data ----------------------------------------------------------------
 
             for i in 1:3
+                if i == 2
+                    action, rs, ps = PrettyTables._next(ps, td)
+                    @test action == :new_row
+                    @test rs     == :data
+                    @test ps.i   == i
+
+                    action, rs, ps = PrettyTables._next(ps, td)
+                    @test action == :row_group_label
+                    @test rs     == :data
+                    @test ps.i   == i
+
+                    action, rs, ps = PrettyTables._next(ps, td)
+                    @test action == :end_row
+                    @test rs     == :data
+                    @test ps.i   == i
+                end
+
                 action, rs, ps = PrettyTables._next(ps, td)
                 @test action == :new_row
                 @test rs     == :data
@@ -530,6 +567,7 @@
                 show_row_number_column    = true,
                 row_number_column_label   = "Row Number",
                 row_labels                = ["Row 1", "Row 2", "Row 3"],
+                row_group_labels          = [2 => "Row Group 1", 6 => "Row Group 2"],
                 summary_columns           = [(data, i) -> 3i, (data, j) -> 4j],
                 summary_column_labels     = ["Sum. Col. 1", "Sum. Col. 2"],
                 summary_rows              = [(data, i) -> i, (data, i) -> 2i],
@@ -608,6 +646,23 @@
             # -- Table Data ----------------------------------------------------------------
 
             for i in 1:2
+                if i == 2
+                    action, rs, ps = PrettyTables._next(ps, td)
+                    @test action == :new_row
+                    @test rs     == :data
+                    @test ps.i   == i
+
+                    action, rs, ps = PrettyTables._next(ps, td)
+                    @test action == :row_group_label
+                    @test rs     == :data
+                    @test ps.i   == i
+
+                    action, rs, ps = PrettyTables._next(ps, td)
+                    @test action == :end_row
+                    @test rs     == :data
+                    @test ps.i   == i
+                end
+
                 action, rs, ps = PrettyTables._next(ps, td)
                 @test action == :new_row
                 @test rs     == :data
@@ -687,6 +742,21 @@
             # -- Table Data (Remaining Rows) -----------------------------------------------
 
             let i = 6
+                action, rs, ps = PrettyTables._next(ps, td)
+                @test action == :new_row
+                @test rs     == :data
+                @test ps.i   == i
+
+                action, rs, ps = PrettyTables._next(ps, td)
+                @test action == :row_group_label
+                @test rs     == :data
+                @test ps.i   == i
+
+                action, rs, ps = PrettyTables._next(ps, td)
+                @test action == :end_row
+                @test rs     == :data
+                @test ps.i   == i
+
                 action, rs, ps = PrettyTables._next(ps, td)
                 @test action == :new_row
                 @test rs     == :data

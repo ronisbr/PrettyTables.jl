@@ -18,6 +18,7 @@
             show_row_number_column         = true,
             row_number_column_label        = "Row Number",
             row_labels                     = ["Row 1", "Row 2", "Row 3"],
+            row_group_labels               = [2 => "Row Group"],
             summary_columns                = [(data, i) -> 3i, (data, j) -> 4j],
             summary_column_labels          = ["Sum. Col. 1", "Sum. Col. 2"],
             summary_rows                   = [(data, i) -> i, (data, i) -> 2i],
@@ -30,6 +31,7 @@
             data_alignment                 = [:l, :c, :r, :l],
             column_label_alignment         = [:r, :r, :l, :c],
             row_label_alignment            = :r,
+            row_group_label_alignment      = :r,
             row_number_column_alignment    = :c,
             summary_column_alignment       = [:l, :c],
             summary_column_label_alignment = [:c, :r],
@@ -110,6 +112,16 @@
         # -- Table Data --------------------------------------------------------------------
 
         for i in 1:3
+            if i == 2
+                action, rs, ps = PrettyTables._next(ps, td)
+
+                action, rs, ps = PrettyTables._next(ps, td)
+                alignment = PrettyTables._current_cell_alignment(action, ps, td)
+                @test alignment == :r
+
+                action, rs, ps = PrettyTables._next(ps, td)
+            end
+
             action, rs, ps = PrettyTables._next(ps, td)
 
             action, rs, ps = PrettyTables._next(ps, td)
