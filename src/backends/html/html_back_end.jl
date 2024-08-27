@@ -220,6 +220,8 @@ function _html__print(
                 ps.state < _TITLE ? "title" : "subtitle"
             elseif rs == :column_labels
                 "columnLabelRow"
+            elseif rs == :row_group_label
+                "rowGroupLabel"
             elseif rs == :data
                 "dataRow"
             elseif rs == :summary_row
@@ -364,6 +366,10 @@ function _html__print(
             elseif action == :stubhead_label
                 push!(properties, "class" => "stubheadLabel")
                 append!(style, tf.stubhead_label_decoration)
+
+            elseif action == :row_group_label
+                push!(properties, "colspan" => string(_number_of_printed_columns(table_data)))
+                append!(style, tf.row_group_label_decoration)
 
             elseif action == :row_label
                 push!(properties, "class" => "rowLabel")

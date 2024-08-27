@@ -53,6 +53,15 @@ function _next(state::PrintingTableState, table_data::TableData)
         return :new_row, rs, PrintingTableState(_NEW_ROW, i + 1, 0, rs)
     end
 
+    if ps < _ROW_GROUP && (rs == :data) && !isnothing(table_data.row_group_labels)
+        # TODO: Improve row group detection. Looping through all the possible options every
+        # show seems slow.
+        for g in table_data.row_group_labels
+            g.first == i &&
+                return :row_group_label, rs, PrintingTableState(_END_ROW_AFTER_GROUP - 1, i, 0, rs)
+        end
+    end
+
     if ps < _ROW_NUMBER_COLUMN && table_data.show_row_number_column
         # TODO: Check if the user wants the row number.
         action = if rs == :column_labels
@@ -232,6 +241,19 @@ function _next(state::PrintingTableState, table_data::TableData)
         end
     end
 
-    return :end_printing, rs, PrintingTableState(_END_PRINTING, 0, 0, :end_printing)
+    # == End Printing ======================================================================
+
+    ps < _END_PRINTING &&
+        return :end_printing, rs, PrintingTableState(_END_PRINTING - 1, 0, 0, :end_printing)
+
+    # == Row Groups ========================================================================
+
+    # We must have special states for new and end line actions after row groups since they
+    # will provide different row numbering increase and state compared to the default ones.
+    ps < _END_ROW_AFTER_GROUP &&
+        return :end_row, rs, PrintingTableState(_END_ROW_AFTER_GROUP, i, 0, rs)
+
+    ps < _NEW_ROW_AFTER_GROUP &&
+        return :new_row, rs, PrintingTableState(_ROW_GROUP, i, 0, rs)
 end
 

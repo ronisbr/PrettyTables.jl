@@ -46,6 +46,9 @@ function _current_cell_alignment(
             return a[state.j]
         end
 
+    elseif action == :row_group_label
+        return table_data.row_group_label_alignment
+
     elseif (action == :data) || (action == :summary_row_cell)
         # First, we check if we have a special cell alignment.
         if (action == :data) && !isnothing(table_data.cell_alignment)

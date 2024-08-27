@@ -43,6 +43,13 @@ function _current_cell(
             return ""
         end
 
+    elseif action == :row_group_label
+        for g in table_data.row_group_labels
+            g.first == state.i && return g.second
+        end
+
+        return ""
+
     elseif action == :row_label
         rl = table_data.row_labels
         return isnothing(rl) ? "" : table_data.row_labels[state.i]
