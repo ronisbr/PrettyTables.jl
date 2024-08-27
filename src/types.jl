@@ -73,6 +73,7 @@ const _IGNORE_CELL = __IGNORE_CELL__()
     data_alignment::Union{Symbol, Vector{Symbol}} = :r
     row_number_column_alignment::Symbol = :r
     row_label_alignment::Symbol = :r
+    row_group_label_alignment::Symbol = :l
     summary_column_alignment::Union{Symbol, Vector{Symbol}} = :r
     summary_column_label_alignment::Union{Symbol, Vector{Symbol}} = :r
     footnote_alignment::Symbol = :l
@@ -131,15 +132,18 @@ const _INITIALIZE          = 0
 const _TITLE               = 1
 const _SUBTITLE            = 2
 const _NEW_ROW             = 3
-const _ROW_NUMBER_COLUMN   = 4
-const _ROW_LABEL_COLUMN    = 5
-const _DATA                = 6
-const _CONTINUATION_COLUMN = 7
-const _SUMMARY_COLUMNS     = 8
-const _END_ROW             = 9
-const _FOOTNOTES           = 10
-const _SOURCENOTES         = 11
-const _END_PRINTING        = 12
+const _ROW_GROUP           = 4
+const _ROW_NUMBER_COLUMN   = 5
+const _ROW_LABEL_COLUMN    = 6
+const _DATA                = 7
+const _CONTINUATION_COLUMN = 8
+const _SUMMARY_COLUMNS     = 9
+const _END_ROW             = 10
+const _FOOTNOTES           = 11
+const _SOURCENOTES         = 12
+const _END_PRINTING        = 13
+const _END_ROW_AFTER_GROUP = 14
+const _NEW_ROW_AFTER_GROUP = 15
 
 const _VERTICAL_CONTINUATION_CELL_ACTIONS = (
     :vertical_continuation_cell,
@@ -149,11 +153,24 @@ const _VERTICAL_CONTINUATION_CELL_ACTIONS = (
 
 """
 """
-@kwdef struct PrintingTableState
-    state::Int = _INITIALIZE
-    i::Int = 0
-    j::Int = 0
-    row_section::Symbol = :table_header
+struct PrintingTableState
+    state::Int
+    i::Int
+    j::Int
+    row_section::Symbol
+
+    function PrintingTableState(
+        state::Int,
+        i::Int,
+        j::Int,
+        row_section::Symbol
+    )
+        return new(state, i, j, row_section)
+    end
+
+    function PrintingTableState()
+        return new(_INITIALIZE, 0, 0, :table_header)
+    end
 end
 
 # == Printing Specification ================================================================

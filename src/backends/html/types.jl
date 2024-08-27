@@ -180,6 +180,7 @@ TODO: Add the classes.
     row_number_decoration::Vector{HtmlPair}         = _HTML__BOLD
     stubhead_label_decoration::Vector{HtmlPair}     = _HTML__BOLD
     row_label_decoration::Vector{HtmlPair}          = _HTML__BOLD
+    row_group_label_decoration::Vector{HtmlPair}    = _HTML__BOLD
     first_column_label_decoration::Vector{HtmlPair} = _HTML__BOLD
     column_label_decoration::Vector{HtmlPair}       = _HTML__NO_DECORATION
     summary_cell_decoration::Vector{HtmlPair}       = _HTML__NO_DECORATION
