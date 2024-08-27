@@ -22,7 +22,6 @@ include("./types.jl")
 
 include("./main.jl")
 include("./misc.jl")
-include("./print_state.jl")
 include("./private.jl")
 include("./tables.jl")
 
@@ -30,6 +29,11 @@ include("./backends/html/types.jl")
 include("./backends/html/html_back_end.jl")
 include("./backends/html/private.jl")
 include("./backends/html/render_cell.jl")
+
+include("./printing_state/alignment.jl")
+include("./printing_state/data.jl")
+include("./printing_state/information.jl")
+include("./printing_state/iterator.jl")
 
 ############################################################################################
 #                                      Precompilation                                      #
