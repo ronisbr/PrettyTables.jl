@@ -60,3 +60,14 @@ function _html__render_cell(
     # If the user wants HTML code inside cell, we must not escape the HTML characters.
     return _html__escape_str(cell_str, replace_newline, !allow_html_in_cells)
 end
+
+# For Markdown cells, we must render always using `show` to obtain the correct decoration.
+function _html__render_cell(
+    cell::Markdown.MD,
+    context::IOContext,
+    renderer::Union{Val{:print}, Val{:show}};
+    allow_html_in_cells::Bool = false,
+    line_breaks::Bool = false,
+)
+    return replace(sprint(show, MIME("text/html"), cell), "\n" => "")
+end

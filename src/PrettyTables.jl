@@ -1,5 +1,6 @@
 module PrettyTables
 
+using Markdown
 using Tables
 
 import Base: @kwdef, getindex
