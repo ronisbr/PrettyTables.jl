@@ -18,13 +18,6 @@ function _html__cell_to_str(cell::Any, context::IOContext, ::Val{:print})
     return sprint(print, cell; context)
 end
 
-function _html__cell_to_str(cell::AbstractString, context::IOContext, ::Val{:show})
-    return string(cell)
-end
-
-_html__cell_to_str(cell::HTML, context::IOContext, ::Val{:print}) = cell.content
-_html__cell_to_str(cell::HTML, context::IOContext, ::Val{:show}) = cell.content
-
 function _html__cell_to_str(cell::Any, context::IOContext, ::Val{:show})
     if showable(MIME("text/html"), cell)
         cell_str = sprint(show, MIME("text/html"), cell; context)
@@ -34,6 +27,16 @@ function _html__cell_to_str(cell::Any, context::IOContext, ::Val{:show})
 
     return cell_str
 end
+
+function _html__cell_to_str(cell::AbstractString, context::IOContext, ::Val{:show})
+    return string(cell)
+end
+
+_html__cell_to_str(cell::HTML, context::IOContext, ::Val{:print}) = cell.content
+_html__cell_to_str(cell::HTML, context::IOContext, ::Val{:show}) = cell.content
+
+_html__cell_to_str(cell::UndefinedCell, context::IOContext, ::Val{:print}) = "#undef"
+_html__cell_to_str(cell::UndefinedCell, context::IOContext, ::Val{:show}) = "#undef"
 
 """
     _html__render_cell(cell::Any, context::IOContext, renderer::Union{Val{:print}, Val{:show}}; kwargs...) -> String
