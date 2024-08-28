@@ -329,7 +329,7 @@ function _html__print(
 
             # If we are in a data cell, we must check for highlighters.
             if action == :data
-                orig_data = _getdata(table_data.data)
+                orig_data = _get_data(table_data.data)
 
                 if !isnothing(highlighters)
                     for h in highlighters
