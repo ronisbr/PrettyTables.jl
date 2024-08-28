@@ -67,7 +67,7 @@ length(ctable::ColumnTable) = ctable.size[1] * ctable.size[2]
 
 size(ctable::ColumnTable) = ctable.size
 
-_getdata(ctable::ColumnTable) = ctable.data
+_get_data(ctable::ColumnTable) = ctable.data
 
 ############################################################################################
 #                              Functions Related to RowTable                               #
@@ -155,7 +155,7 @@ length(rtable::RowTable) = rtable.size[1] * rtable.size[2]
 
 size(rtable::RowTable) = rtable.size
 
-_getdata(rtable::RowTable) = rtable.data
+_get_data(rtable::RowTable) = rtable.data
 
 ############################################################################################
 #                                     Other Overloads                                      #
@@ -165,4 +165,4 @@ _getdata(rtable::RowTable) = rtable.data
 # function. This is required because when printing something compliant with Tables.jl, we
 # modify its type to be `ColumnTable` or `RowTable`. In this case, functions like
 # highlighters must receive the original data, not the transformed one.
-_getdata(data) = data
+_get_data(data) = data

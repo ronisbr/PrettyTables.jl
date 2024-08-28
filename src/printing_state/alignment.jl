@@ -53,7 +53,7 @@ function _current_cell_alignment(
         # First, we check if we have a special cell alignment.
         if (action == :data) && !isnothing(table_data.cell_alignment)
             for f in table_data.cell_alignment
-                fa = f(_getdata(table_data.data), state.i, state.j)::Union{Nothing, Symbol}
+                fa = f(_get_data(table_data.data), state.i, state.j)::Union{Nothing, Symbol}
                 !isnothing(fa) && return fa
             end
         end
