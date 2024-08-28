@@ -82,7 +82,9 @@ function _current_cell(
         end
 
     elseif action == :data
-        cell_data = table_data.data[state.i, state.j]
+        cell_data = isassigned(table_data.data, state.i, state.j) ?
+            table_data.data[state.i, state.j] :
+            _UNDEFINED_CELL
 
         if !isnothing(table_data.formatters)
             for f in table_data.formatters

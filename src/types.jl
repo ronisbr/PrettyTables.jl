@@ -28,6 +28,9 @@ end
 struct __IGNORE_CELL__ end
 const _IGNORE_CELL = __IGNORE_CELL__()
 
+struct UndefinedCell end
+const _UNDEFINED_CELL = UndefinedCell()
+
 @kwdef struct TableData
     data::Any
 
