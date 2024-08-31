@@ -42,38 +42,46 @@ The first will apply a fixed decoration to the highlighted cell specified in `de
 whereas the second let the user select the desired decoration by specifying the function
 `fd`.
 """
-@kwdef struct HtmlHighlighter
+struct HtmlHighlighter
     f::Function
     fd::Function
 
     # == Private Fields ====================================================================
-    _decoration::Vector{HtmlPair} = HtmlPair[]
+
+    _decoration::Vector{HtmlPair}
+
+    # == Constructors ======================================================================
+
+    function HtmlHighlighter(f::Function, fd::Function)
+        return new(f, fd, HtmlPair[])
+    end
+
+    function HtmlHighlighter(f::Function, decoration::Vector{HtmlPair})
+        return new(
+            f,
+            _html__default_highlighter_fd,
+            decoration
+        )
+    end
+
+    function HtmlHighlighter(f::Function, decoration::HtmlHighlighter)
+        return new(
+            f,
+            _html__default_highlighter_fd,
+            [decoration]
+        )
+    end
+
+    function HtmlHighlighter(f::Function, decoration::HtmlHighlighter, args...)
+        return new(
+            f,
+            _html__default_highlighter_fd,
+            [decoration, args...]
+        )
+    end
 end
 
-_html__default_html_highlighter_fd(h::HtmlHighlighter, ::Any, ::Int, ::Int) = h._decoration
-
-# Helper function to construct highlighters.
-function HtmlHighlighter(f::Function, decoration::HtmlPair, args...)
-    return HtmlHighlighter(
-        f,
-        _html__default_html_highlighter_fd,
-        [decoration, args...]
-    )
-end
-
-function HtmlHighlighter(f::Function, decoration::Vector{HtmlPair})
-    return HtmlHighlighter(f, _html__default_html_highlighter_fd, decoration)
-end
-
-HtmlHighlighter(f::Function, fd::Function) = HtmlHighlighter(f, fd, HtmlPair[])
-
-function HtmlHighlighter(f::Function, decoration::HtmlPair)
-    return HtmlHighlighter(
-        f,
-        _html__default_html_highlighter_fd,
-        [decoration]
-    )
-end
+_html__default_highlighter_fd(h::HtmlHighlighter, ::Any, ::Int, ::Int) = h._decoration
 
 ############################################################################################
 #                                       Table Format                                       #
