@@ -16,7 +16,7 @@ omitted, the escaped string is returned.
 If `replace_newline` is `true`, `\n` is replaced with `<br>`. Otherwise, it is escaped,
 leading to `\\n`.
 
-If `replace_html_chars` is `true`, `&`, `<`, `>`, `"`, and `'`  will be replaced by HTML
+If `escape_html_chars` is `true`, `&`, `<`, `>`, `"`, and `'`  will be replaced by HTML
 sequences.
 """
 function _html__escape_str(
