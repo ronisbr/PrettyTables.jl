@@ -47,8 +47,6 @@ const _UNDEFINED_CELL = UndefinedCell()
     show_row_number_column::Bool = false
     row_number_column_label::String = ""
     column_labels::Vector{Vector{Any}}
-    summary_columns::Union{Nothing, Vector{Any}} = nothing
-    summary_column_labels::Union{Nothing, Vector{String}} = nothing
 
     # -- Rows ------------------------------------------------------------------------------
 
@@ -77,8 +75,6 @@ const _UNDEFINED_CELL = UndefinedCell()
     row_number_column_alignment::Symbol = :r
     row_label_alignment::Symbol = :r
     row_group_label_alignment::Symbol = :l
-    summary_column_alignment::Union{Symbol, Vector{Symbol}} = :r
-    summary_column_label_alignment::Union{Symbol, Vector{Symbol}} = :r
     footnote_alignment::Symbol = :l
     source_note_alignment::Symbol = :l
 
@@ -140,13 +136,12 @@ const _ROW_NUMBER_COLUMN   = 5
 const _ROW_LABEL_COLUMN    = 6
 const _DATA                = 7
 const _CONTINUATION_COLUMN = 8
-const _SUMMARY_COLUMNS     = 9
-const _END_ROW             = 10
-const _FOOTNOTES           = 11
-const _SOURCENOTES         = 12
-const _END_PRINTING        = 13
-const _END_ROW_AFTER_GROUP = 14
-const _NEW_ROW_AFTER_GROUP = 15
+const _END_ROW             = 9
+const _FOOTNOTES           = 10
+const _SOURCENOTES         = 11
+const _END_PRINTING        = 12
+const _END_ROW_AFTER_GROUP = 13
+const _NEW_ROW_AFTER_GROUP = 14
 
 const _VERTICAL_CONTINUATION_CELL_ACTIONS = (
     :vertical_continuation_cell,

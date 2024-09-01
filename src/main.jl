@@ -44,8 +44,6 @@ function pretty_table(
     row_labels::Union{Nothing, AbstractVector} = nothing,
     row_group_labels::Union{Nothing, Vector{Pair{Int, String}}} = nothing,
     column_labels::Union{Nothing, AbstractVector} = nothing,
-    summary_columns::Union{Nothing, Vector{T} where T <: Any} = nothing,
-    summary_column_labels::Union{Nothing, Vector{String}} = nothing,
     summary_rows::Union{Nothing, Vector{T} where T <: Any} = nothing,
     summary_row_labels::Union{Nothing, Vector{String}} = nothing,
     footnotes::Union{Nothing, Vector{Pair{FootnoteTuple, String}}} = nothing,
@@ -60,8 +58,6 @@ function pretty_table(
     row_label_alignment::Symbol = :r,
     row_group_label_alignment::Symbol = :l,
     row_number_column_alignment::Symbol = :r,
-    summary_column_alignment::Union{Symbol, Vector{Symbol}} = :r,
-    summary_column_label_alignment::Union{Symbol, Vector{Symbol}} = :r,
     source_note_alignment::Symbol = :l,
     subtitle_alignment::Symbol = :c,
     title_alignment::Symbol = :c,
@@ -100,8 +96,6 @@ function pretty_table(
         row_labels,
         row_group_labels,
         column_labels,
-        summary_columns,
-        summary_column_labels,
         summary_rows,
         summary_row_labels,
         footnotes,
@@ -116,8 +110,6 @@ function pretty_table(
         row_label_alignment,
         row_group_label_alignment,
         row_number_column_alignment,
-        summary_column_alignment,
-        summary_column_label_alignment,
         source_note_alignment,
         subtitle_alignment,
         title_alignment,
@@ -167,8 +159,6 @@ function _pretty_table(
     row_labels::Union{Nothing, AbstractVector},
     row_group_labels::Union{Nothing, Vector{Pair{Int, String}}},
     column_labels::Union{Nothing, AbstractVector},
-    summary_columns::Union{Nothing, Vector{T} where T <: Any},
-    summary_column_labels::Union{Nothing, Vector{String}},
     summary_rows::Union{Nothing, Vector{T} where T <: Any},
     summary_row_labels::Union{Nothing, Vector{String}},
     footnotes::Union{Nothing, Vector{Pair{FootnoteTuple, String}}},
@@ -183,8 +173,6 @@ function _pretty_table(
     row_label_alignment::Symbol,
     row_group_label_alignment::Symbol,
     row_number_column_alignment::Symbol,
-    summary_column_alignment::Union{Symbol, Vector{Symbol}},
-    summary_column_label_alignment::Union{Symbol, Vector{Symbol}},
     source_note_alignment::Symbol,
     subtitle_alignment::Symbol,
     title_alignment::Symbol,
@@ -295,16 +283,6 @@ function _pretty_table(
         summary_row_labels = SummaryLabelIterator(length(summary_rows))
     end
 
-    if !isnothing(summary_columns) && !isnothing(summary_column_labels)
-        length(summary_columns) != length(summary_column_labels) && throw(ArgumentError(
-            "The length of `summary_columns` ($length(summary_columns)) must be equal to the length of `summary_column_labels` ($length(summary_column_labels))."
-        ))
-    end
-
-    if !isnothing(summary_columns) && isnothing(summary_column_labels)
-        summary_column_labels = SummaryLabelIterator(length(summary_columns))
-    end
-
     # == Table Data and Printing Specification =============================================
 
     table_data = TableData(
@@ -315,8 +293,6 @@ function _pretty_table(
         show_row_number_column,
         row_number_column_label,
         column_labels,
-        summary_columns,
-        summary_column_labels,
         row_labels,
         row_group_labels,
         summary_rows,
@@ -333,8 +309,6 @@ function _pretty_table(
         row_number_column_alignment,
         row_label_alignment,
         row_group_label_alignment,
-        summary_column_alignment,
-        summary_column_label_alignment,
         footnote_alignment,
         source_note_alignment,
         formatters,
@@ -358,6 +332,8 @@ function _pretty_table(
     # anymore. Hence, we need to check if `io` is `stdout` before calling the HTML back end.
     is_stdout = (io === stdout) || ((io isa IOContext) && (io.io === stdout))
     _html__print(pspec; is_stdout, kwargs...)
+    # return table_data
+    # _markdown__print(pspec; kwargs...)
 
     return nothing
 end
