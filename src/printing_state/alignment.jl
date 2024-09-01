@@ -38,14 +38,6 @@ function _current_cell_alignment(
             return a[state.j]
         end
 
-    elseif action == :summary_column_label
-        a = table_data.summary_column_label_alignment
-        if a isa Symbol
-            return a
-        else
-            return a[state.j]
-        end
-
     elseif action == :row_group_label
         return table_data.row_group_label_alignment
 
@@ -59,15 +51,6 @@ function _current_cell_alignment(
         end
 
         a = table_data.data_alignment
-        if a isa Symbol
-            return a
-        else
-            return a[state.j]
-        end
-
-    elseif action == :summary_column_cell
-        a = table_data.summary_column_alignment
-
         if a isa Symbol
             return a
         else

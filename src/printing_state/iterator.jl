@@ -129,21 +129,6 @@ function _next(state::PrintingTableState, table_data::TableData)
         end
     end
 
-    if ps < _SUMMARY_COLUMNS && !isnothing(table_data.summary_columns)
-        j >= length(table_data.summary_columns) &&
-            return _next(PrintingTableState(_SUMMARY_COLUMNS, i, 0, rs), table_data)
-
-        if rs == :column_labels
-            return :summary_column_label, rs, PrintingTableState(ps, i, j + 1, rs)
-        elseif rs == :data
-            return :summary_column_cell, rs, PrintingTableState(ps, i, j + 1, rs)
-        elseif rs == :continuation_row
-            return :vertical_continuation_cell, rs, PrintingTableState(ps, i, j + 1, rs)
-        else
-            return :empty_cell, rs, PrintingTableState(ps, i, j + 1, rs)
-        end
-    end
-
     if ps < _END_ROW
         if rs == :column_labels
             num_column_labels = length(table_data.column_labels)

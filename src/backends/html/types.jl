@@ -191,7 +191,7 @@ TODO: Add the classes.
     row_group_label_decoration::Vector{HtmlPair}    = _HTML__BOLD
     first_column_label_decoration::Vector{HtmlPair} = _HTML__BOLD
     column_label_decoration::Vector{HtmlPair}       = _HTML__NO_DECORATION
-    summary_cell_decoration::Vector{HtmlPair}       = _HTML__NO_DECORATION
+    summary_row_cell_decoration::Vector{HtmlPair}   = _HTML__NO_DECORATION
     footnote_decoration::Vector{HtmlPair}           = _HTML__SMALL
     source_note_decoration::Vector{HtmlPair}        = _HTML__SMALL_ITALIC_GRAY
     merged_cell_decoration::Vector{HtmlPair}        = _HTML__MERGED_CELL

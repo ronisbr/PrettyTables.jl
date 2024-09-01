@@ -387,7 +387,7 @@ function _html__print(
                 end
 
             elseif action == :summary_row_cell
-                append!(style, tf.summary_cell_decoration)
+                append!(style, tf.summary_row_cell_decoration)
 
             elseif action == :footnote
                 # The footnote must be a cell that span the entire printed table.

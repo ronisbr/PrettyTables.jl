@@ -73,14 +73,6 @@ function _current_cell(
 
         return table_data.column_labels[state.i][state.j]
 
-    elseif action == :summary_column_label
-        # We should not print anything if we are not at the first line of column labels.
-        if state.i == 1
-            return table_data.summary_column_labels[state.j]
-        else
-            return ""
-        end
-
     elseif action == :data
         cell_data = isassigned(table_data.data, state.i, state.j) ?
             table_data.data[state.i, state.j] :
@@ -93,10 +85,6 @@ function _current_cell(
         end
 
         return cell_data
-
-    elseif action == :summary_column_cell
-        f = table_data.summary_columns[state.j]
-        return f(table_data.data, state.i)
 
     elseif action == :summary_row_cell
         f = table_data.summary_rows[state.i]
