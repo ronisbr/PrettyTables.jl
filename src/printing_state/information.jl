@@ -5,6 +5,40 @@
 ############################################################################################
 
 """
+    _has_row_labels(table_data::TableData) -> Bool
+
+Return whether `table_data` has row labels
+"""
+function _has_row_labels(table_data::TableData)
+    return !isnothing(table_data.row_labels) || _has_summary_rows(table_data)
+end
+
+"""
+    _has_summary_rows(table_data::TableData) -> Bool
+
+Return whether `table_data` has summary rows.
+"""
+_has_summary_rows(table_data::TableData) = !isnothing(table_data.summary_rows)
+
+function _is_horizontally_cropped(table_data::TableData)
+    return table_data.maximum_number_of_columns > 0 ?
+        table_data.num_columns > table_data.maximum_number_of_columns :
+        false
+end
+
+"""
+    _is_vertically_cropped(table_data::TableData) -> Bool
+
+Return whether `table_data` is vertically cropped, meaning that a continuation row must be
+printed.
+"""
+function _is_vertically_cropped(table_data::TableData)
+    return table_data.maximum_number_of_rows > 0 ?
+        table_data.num_rows > table_data.maximum_number_of_rows :
+        false
+end
+
+"""
     _number_of_printed_columns(table_data::TableData) -> Int
 
 Return the number of printed columns in `table_data`, which includes the continuation row.
@@ -35,4 +69,17 @@ function _number_of_printed_data_columns(table_data::TableData)
         table_data.num_columns
 
     return data_columns
+end
+
+"""
+    _number_of_printed_data_rows(table_data::TableData) -> Int
+
+Return the number of printed data rows.
+"""
+function _number_of_printed_data_rows(table_data::TableData)
+    data_rows = table_data.maximum_number_of_rows > 0 ?
+        min(table_data.maximum_number_of_rows, table_data.num_rows) :
+        table_data.num_rows
+
+    return data_rows
 end

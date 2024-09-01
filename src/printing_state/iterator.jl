@@ -242,3 +242,37 @@ function _next(state::PrintingTableState, table_data::TableData)
         return :new_row, rs, PrintingTableState(_ROW_GROUP, i, 0, rs)
 end
 
+function _update_data_cell_indices(
+    action::Symbol,
+    row_section::Symbol,
+    state::PrintingTableState,
+    i::Int,
+    j::Int
+)
+    if (action == :new_row) && (row_section != :continuation_row)
+        i += 1
+        j  = 0
+
+    elseif (action ∈ (
+        :row_number_vertical_continuation_cell,
+        :row_label_vertical_continuation_cell,
+        :row_label,
+        :row_number
+    ))
+        j = 0
+
+    elseif (action == :column_label) ||
+        (action == :data) ||
+        (action == :summary_row_cell) ||
+        (action == :vertical_continuation_cell)
+        j += 1
+
+    elseif (action == :end_row) &&
+        (row_section != state.row_section) &&
+        (row_section != :continuation_row) &&
+        (state.row_section != :continuation_row)
+        i = j = 0
+    end
+
+    return i, j
+end

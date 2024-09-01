@@ -87,3 +87,31 @@ function _current_cell_alignment(
     end
 end
 
+"""
+    _data_column_alignment(table_data::TableData, i::Int) -> Symbol
+
+Return the alignment of the `i`th column.
+"""
+function _data_column_alignment(table_data::TableData, i::Int)
+    a = table_data.data_alignment
+    return a isa Symbol ? a : a[i]
+end
+
+"""
+    _row_number_column_alignment(table_data::TableData) -> Symbol
+
+Return the row number column alignment.
+"""
+function _row_number_column_alignment(table_data::TableData)
+    return table_data.row_number_column_alignment
+end
+
+"""
+    _row_label_column_alignment(table_data::TableData) -> Symbol
+
+Return the row label column alignment.
+"""
+function _row_label_column_alignment(table_data::TableData)
+    return table_data.row_label_alignment
+end
+
