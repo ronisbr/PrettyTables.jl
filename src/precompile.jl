@@ -74,21 +74,21 @@ PrecompileTools.@setup_workload begin
 
         matrix = randn(10, 10)
 
-        pretty_table(html_buf, matrix)
-
-        pretty_table(
-            html_buf,
-            matrix;
-            highlighters = [
-                HtmlHighlighter((data, i, j) -> i == 1, ["font-weight" => "bold"])
-            ]
-        )
-
-        pretty_table(html_buf, types)
+        # pretty_table(html_buf, matrix)
+        #
+        # pretty_table(
+        #     html_buf,
+        #     matrix;
+        #     highlighters = [
+        #         HtmlHighlighter((data, i, j) -> i == 1, ["font-weight" => "bold"])
+        #     ]
+        # )
+        #
+        # pretty_table(html_buf, types)
 
         # == Input: Tables.jl ==============================================================
 
-        pretty_table(html_buf, table)
+        # pretty_table(html_buf, table)
     end
 
     # Restore stdout.

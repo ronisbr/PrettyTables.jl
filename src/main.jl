@@ -331,9 +331,9 @@ function _pretty_table(
     # When wrapping `stdout` in `IOContext` in Jupyter, `io.io` is not equal to `stdout`
     # anymore. Hence, we need to check if `io` is `stdout` before calling the HTML back end.
     is_stdout = (io === stdout) || ((io isa IOContext) && (io.io === stdout))
-    _html__print(pspec; is_stdout, kwargs...)
+    # _html__print(pspec; is_stdout, kwargs...)
     # return table_data
-    # _markdown__print(pspec; kwargs...)
+    _markdown__print(pspec; kwargs...)
 
     return nothing
 end
