@@ -7,17 +7,17 @@
 # == Alignment =============================================================================
 
 """
-    _markdown__build_column_alignment(column_width::Int, alignment::Symbol) -> String
+    _markdown__column_alignment_str(column_width::Int, alignment::Symbol) -> String
 
-Build the markdown `alignment` string given a column with width `column_width`. The possible
-values for `alignment` are:
+Compose the markdown `alignment` string given a column with width `column_width`. The
+possible values for `alignment` are:
 
 - `:l`: Left alignment.
 - `:c`: Center alignment.
 - `:r`: Right alignment.
 - `:n`: No alignment information will be added to the string.
 """
-function _markdown__build_column_alignment(column_width::Int, alignment::Symbol)
+function _markdown__column_alignment_str(column_width::Int, alignment::Symbol)
     if alignment == :l
         return ":" * "-"^(column_width - 1)
     elseif alignment == :c
@@ -53,10 +53,9 @@ function _markdown__print_header_separator(
 
     # == Row Number Column =================================================================
 
-
     if table_data.show_row_number_column
         a = _row_number_column_alignment(table_data)
-        print(buf, _markdown__build_column_alignment(row_number_column_width + 2, a))
+        print(buf, _markdown__column_alignment_str(row_number_column_width + 2, a))
         print(buf, "|")
     end
 
@@ -64,7 +63,7 @@ function _markdown__print_header_separator(
 
     if _has_row_labels(table_data)
         a = _row_label_column_alignment(table_data)
-        print(buf, _markdown__build_column_alignment(row_label_column_width + 2, a))
+        print(buf, _markdown__column_alignment_str(row_label_column_width + 2, a))
         print(buf, "|")
     end
 
@@ -72,16 +71,144 @@ function _markdown__print_header_separator(
 
     for i in eachindex(printed_data_column_widths)
         a = _data_column_alignment(table_data, i)
-        print(buf, _markdown__build_column_alignment(printed_data_column_widths[i] + 2, a))
+        print(buf, _markdown__column_alignment_str(printed_data_column_widths[i] + 2, a))
         print(buf, "|")
     end
 
     # == Continuation Column ===============================================================
 
-    if _is_vertically_cropped(table_data)
-        print(buf, _markdown__build_column_alignment(3, :n))
+    if _is_horizontally_cropped(table_data)
+        print(buf, _markdown__column_alignment_str(3, :n))
         print(buf, "|")
     end
+
+    println(buf)
+
+    return nothing
+end
+
+# == Rows ==================================================================================
+
+"""
+    _markdown__row_group_line(buf::IOContext, row_group_label::String, table_data::TableData, row_number_column_width::Int, row_label_column_width::Int, printed_data_column_widths::Vector{Int}) -> Nothing
+
+Print the row group line to `buf`.
+
+# Arguments
+
+- `buf::IOContext`: Buffer where the separator will be printed.
+- `row_group_label::String`: Row group label.
+- `table_data::TableData`: Table data.
+- `row_number_column_width::Int`: Row number column width.
+- `row_label_column_width::Int`: Row label column width.
+- `printed_data_column_widths::Vector{Int}`: Widths of the printed data columns.
+"""
+function _markdown__print_row_group_line(
+    buf::IOContext,
+    row_group_label::String,
+    table_data::TableData,
+    row_number_column_width::Int,
+    row_label_column_width::Int,
+    printed_data_column_widths::Vector{Int}
+)
+
+    # Check the initial column.
+    cell_width = if table_data.show_row_number_column
+        row_number_column_width
+    elseif _has_row_labels(table_data)
+        row_label_column_width
+    else
+        first(printed_data_column_widths)
+    end
+
+    # == Row Group Label ===================================================================
+
+    print(buf, " ")
+    print(buf, rpad(row_group_label, cell_width))
+    print(buf, " |")
+
+    # == Fill the Rest of the Cells ========================================================
+
+    if table_data.show_row_number_column
+        if _has_row_labels(table_data)
+            print(buf, " ")
+            print(buf, "-"^row_label_column_width)
+            print(buf, " |")
+        end
+
+        print(buf, " ")
+        print(buf, "-"^first(printed_data_column_widths))
+        print(buf, " |")
+
+    elseif _has_row_labels(table_data)
+        print(buf, " ")
+        print(buf, "-"^first(printed_data_column_widths))
+        print(buf, " |")
+
+    end
+
+    for i in eachindex(printed_data_column_widths)[2:end]
+        print(buf, " ")
+        print(buf, "-"^printed_data_column_widths[i])
+        print(buf, " |")
+    end
+
+    # == Continuation Column ===============================================================
+
+    _is_horizontally_cropped(table_data) && print(buf, " ⋯ |")
+
+    return nothing
+end
+
+"""
+    _markdown__row_separation_line(buf::IOContext, table_data::TableData, row_number_column_width::Int, row_label_column_width::Int, printed_data_column_widths::Vector{Int}) -> Nothing
+
+Print a row separation line to `buf`.
+
+# Arguments
+
+- `buf::IOContext`: Buffer where the separator will be printed.
+- `table_data::TableData`: Table data.
+- `row_number_column_width::Int`: Row number column width.
+- `row_label_column_width::Int`: Row label column width.
+- `printed_data_column_widths::Vector{Int}`: Widths of the printed data columns.
+"""
+function _markdown__print_separation_line(
+    buf::IOContext,
+    table_data::TableData,
+    row_number_column_width::Int,
+    row_label_column_width::Int,
+    printed_data_column_widths::Vector{Int}
+)
+    print(buf, "|")
+
+    # == Row Number Column =================================================================
+
+    if table_data.show_row_number_column
+        print(buf, " ")
+        print(buf, "-"^row_number_column_width)
+        print(buf, " |")
+    end
+
+    # == Row Label Column ==================================================================
+
+    if _has_row_labels(table_data)
+        print(buf, " ")
+        print(buf, "-"^row_label_column_width)
+        print(buf, " |")
+    end
+
+    # == Data ==============================================================================
+
+    for w in printed_data_column_widths
+        print(buf, " ")
+        print(buf, "-"^w)
+        print(buf, " |")
+    end
+
+    # == Continuation Column ===============================================================
+
+    _is_horizontally_cropped(table_data) && print(buf, " ⋯ |")
 
     println(buf)
 
