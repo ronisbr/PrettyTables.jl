@@ -25,6 +25,8 @@ function pretty_table(
     io::IO,
     data::Any;
 
+    back_end::Symbol = :markdown,
+
     # == Arguments for the IOContext =======================================================
 
     compact_printing::Bool = true,
@@ -76,6 +78,8 @@ function pretty_table(
     return _pretty_table(
         io,
         data,
+
+        back_end,
 
         # == Arguments for the IOContext ===================================================
 
@@ -139,6 +143,8 @@ end
 function _pretty_table(
     @nospecialize(io::IO),
     @nospecialize(data::Any),
+
+    back_end::Symbol,
 
     # == Arguments for the IOContext =======================================================
 
@@ -328,12 +334,15 @@ function _pretty_table(
         show_omitted_cell_summary
     )
 
-    # When wrapping `stdout` in `IOContext` in Jupyter, `io.io` is not equal to `stdout`
-    # anymore. Hence, we need to check if `io` is `stdout` before calling the HTML back end.
-    is_stdout = (io === stdout) || ((io isa IOContext) && (io.io === stdout))
-    # _html__print(pspec; is_stdout, kwargs...)
-    # return table_data
-    _markdown__print(pspec; kwargs...)
+    if back_end == :html
+        # When wrapping `stdout` in `IOContext` in Jupyter, `io.io` is not equal to `stdout`
+        # anymore. Hence, we need to check if `io` is `stdout` before calling the HTML back
+        # end.
+        is_stdout = (io === stdout) || ((io isa IOContext) && (io.io === stdout))
+        return _html__print(pspec; is_stdout, kwargs...)
+    else
+        return _markdown__print(pspec; kwargs...)
+    end
 
     return nothing
 end
