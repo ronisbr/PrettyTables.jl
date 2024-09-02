@@ -51,11 +51,11 @@ function _markdown__print(
     ir = jr = 0
 
     while action != :end_printing
-        action, rs, ps = _next(ps, table_data)
+        @show action, rs, ps = _next(ps, table_data)
 
         action == :end_printing && break
 
-        ir, jr = _update_data_cell_indices(action, rs, ps, ir, jr)
+        @show ir, jr = _update_data_cell_indices(action, rs, ps, ir, jr)
 
         action ∉ (:column_label, :data, :summary_row_cell, :row_label) && continue
 
@@ -119,6 +119,27 @@ function _markdown__print(
         printed_data_column_widths[j] = m
     end
 
+    # Markdown does not support merging rows. Hence, if we have a row group, we must add the
+    # information in the first column. Thus, we need to possibly increase this cell
+    # accordingly.
+    if _has_row_groups(table_data)
+        m = maximum(x -> textwidth(last(x)),table_data.row_group_labels)
+
+        if table_data.show_row_number_column
+            row_number_column_width = max(row_number_column_width, m)
+
+        elseif _has_row_labels(table_data)
+            row_label_column_width = max(row_label_column_width, m)
+
+        else
+            printed_data_column_widths[1] = max(
+                printed_data_column_widths[1],
+                maximum(x -> textwidth(last(x)),table_data.row_group_labels)
+            )
+        end
+
+    end
+
     # == Print the Table ===================================================================
 
     ps     = PrintingTableState()
@@ -173,7 +194,31 @@ function _markdown__print(
                     row_label_column_width,
                     printed_data_column_widths
                 )
+
+            elseif (rs == :data) && (ps.row_section == :summary_row)
+                _markdown__print_separation_line(
+                    buf,
+                    table_data,
+                    row_number_column_width,
+                    row_label_column_width,
+                    printed_data_column_widths
+                )
             end
+
+        elseif action == :row_group_label
+            row_group_label = _current_cell(action, ps, table_data)
+
+            # In this case, we write the row group to the first cell and fill the entire
+            # table with empty data.
+            _markdown__print_row_group_line(
+                buf,
+                row_group_label,
+                table_data,
+                row_number_column_width,
+                row_label_column_width,
+                printed_data_column_widths
+            )
+
         else
             cell_width = 10
             rendered_cell = "UNSUP"

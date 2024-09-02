@@ -261,17 +261,20 @@ function _update_data_cell_indices(
     ))
         j = 0
 
+    elseif action == :row_group_label
+        i -= 1
+
     elseif (action == :column_label) ||
         (action == :data) ||
         (action == :summary_row_cell) ||
         (action == :vertical_continuation_cell)
         j += 1
 
-    elseif (action == :end_row) &&
-        (row_section != state.row_section) &&
-        (row_section != :continuation_row) &&
-        (state.row_section != :continuation_row)
-        i = j = 0
+    elseif (action == :end_row) && (row_section != state.row_section)
+        if ((row_section != :continuation_row) && (state.row_section != :continuation_row)) ||
+            (state.row_section == :summary_row)
+            i = j = 0
+        end
     end
 
     return i, j

@@ -5,9 +5,18 @@
 ############################################################################################
 
 """
+    _has_row_groups(table_data::TableData)
+
+Return whether `table_data` has row group lables.
+"""
+function _has_row_groups(table_data::TableData)
+    return !isnothing(table_data.row_group_labels)
+end
+
+"""
     _has_row_labels(table_data::TableData) -> Bool
 
-Return whether `table_data` has row labels
+Return whether `table_data` has row labels.
 """
 function _has_row_labels(table_data::TableData)
     return !isnothing(table_data.row_labels) || _has_summary_rows(table_data)
