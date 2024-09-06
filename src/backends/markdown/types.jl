@@ -94,6 +94,7 @@ const _MARKDOWN__CODE          = MarkdownDecoration(code   = true)
 @kwdef struct MarkdownTableFormat
     title_heading_level::Int       = 1
     subtitle_heading_level::Int    = 2
+    horizontal_line_char::Char     = '─'
     line_before_summary_rows::Bool = true
 
     # == Row Decorations ===================================================================

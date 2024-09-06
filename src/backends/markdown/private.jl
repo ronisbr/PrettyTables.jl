@@ -150,7 +150,7 @@ end
 # == Rows ==================================================================================
 
 """
-    _markdown__row_group_line(buf::IOContext, row_group_label::String, table_data::TableData, row_number_column_width::Int, row_label_column_width::Int, printed_data_column_widths::Vector{Int}) -> Nothing
+    _markdown__row_group_line(buf::IOContext, row_group_label::String, table_data::TableData, char::Char, row_number_column_width::Int, row_label_column_width::Int, printed_data_column_widths::Vector{Int}) -> Nothing
 
 Print the row group line to `buf`.
 
@@ -159,6 +159,7 @@ Print the row group line to `buf`.
 - `buf::IOContext`: Buffer where the separator will be printed.
 - `row_group_label::String`: Row group label.
 - `table_data::TableData`: Table data.
+- `char::Char`: Character used for the separation line.
 - `row_number_column_width::Int`: Row number column width.
 - `row_label_column_width::Int`: Row label column width.
 - `printed_data_column_widths::Vector{Int}`: Widths of the printed data columns.
@@ -167,10 +168,12 @@ function _markdown__print_row_group_line(
     buf::IOContext,
     row_group_label::String,
     table_data::TableData,
+    char::Char,
     row_number_column_width::Int,
     row_label_column_width::Int,
     printed_data_column_widths::Vector{Int}
 )
+    s = string(char)
 
     # Check the initial column.
     cell_width = if table_data.show_row_number_column
@@ -192,24 +195,24 @@ function _markdown__print_row_group_line(
     if table_data.show_row_number_column
         if _has_row_labels(table_data)
             print(buf, " ")
-            print(buf, "-"^row_label_column_width)
+            print(buf, s^row_label_column_width)
             print(buf, " |")
         end
 
         print(buf, " ")
-        print(buf, "-"^first(printed_data_column_widths))
+        print(buf, s^first(printed_data_column_widths))
         print(buf, " |")
 
     elseif _has_row_labels(table_data)
         print(buf, " ")
-        print(buf, "-"^first(printed_data_column_widths))
+        print(buf, s^first(printed_data_column_widths))
         print(buf, " |")
 
     end
 
     for i in eachindex(printed_data_column_widths)[2:end]
         print(buf, " ")
-        print(buf, "-"^printed_data_column_widths[i])
+        print(buf, s^printed_data_column_widths[i])
         print(buf, " |")
     end
 
@@ -221,7 +224,7 @@ function _markdown__print_row_group_line(
 end
 
 """
-    _markdown__row_separation_line(buf::IOContext, table_data::TableData, row_number_column_width::Int, row_label_column_width::Int, printed_data_column_widths::Vector{Int}) -> Nothing
+    _markdown__row_separation_line(buf::IOContext, table_data::TableData, char::Char, row_number_column_width::Int, row_label_column_width::Int, printed_data_column_widths::Vector{Int}) -> Nothing
 
 Print a row separation line to `buf`.
 
@@ -229,6 +232,7 @@ Print a row separation line to `buf`.
 
 - `buf::IOContext`: Buffer where the separator will be printed.
 - `table_data::TableData`: Table data.
+- `char::Char`: Character used for the separation line.
 - `row_number_column_width::Int`: Row number column width.
 - `row_label_column_width::Int`: Row label column width.
 - `printed_data_column_widths::Vector{Int}`: Widths of the printed data columns.
@@ -236,17 +240,19 @@ Print a row separation line to `buf`.
 function _markdown__print_separation_line(
     buf::IOContext,
     table_data::TableData,
+    char::Char,
     row_number_column_width::Int,
     row_label_column_width::Int,
     printed_data_column_widths::Vector{Int}
 )
+    s = string(char)
     print(buf, "|")
 
     # == Row Number Column =================================================================
 
     if table_data.show_row_number_column
         print(buf, " ")
-        print(buf, "-"^row_number_column_width)
+        print(buf, s^row_number_column_width)
         print(buf, " |")
     end
 
@@ -254,7 +260,7 @@ function _markdown__print_separation_line(
 
     if _has_row_labels(table_data)
         print(buf, " ")
-        print(buf, "-"^row_label_column_width)
+        print(buf, s^row_label_column_width)
         print(buf, " |")
     end
 
@@ -262,7 +268,7 @@ function _markdown__print_separation_line(
 
     for w in printed_data_column_widths
         print(buf, " ")
-        print(buf, "-"^w)
+        print(buf, s^w)
         print(buf, " |")
     end
 
