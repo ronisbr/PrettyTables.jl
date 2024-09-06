@@ -29,6 +29,14 @@ end
 _markdown__cell_to_str(cell::UndefinedCell, context::IOContext, ::Val{:print}) = "#undef"
 _markdown__cell_to_str(cell::UndefinedCell, context::IOContext, ::Val{:show}) = "#undef"
 
+function _markdown__cell_to_str(cell::MergeCells, context::IOContext, ::Val{:print})
+    return _markdown__cell_to_str(cell.data, context, Val(:print))
+end
+
+function _markdown__cell_to_str(cell::MergeCells, context::IOContext, ::Val{:show})
+    return _markdown__cell_to_str(cell.data, context, Val(:show))
+end
+
 """
     _markdown__render_cell(cell::Any, context::IOContext, renderer::Union{Val{:print}, Val{:show}}; kwargs...) -> String
 
