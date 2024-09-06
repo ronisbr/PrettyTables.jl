@@ -13,6 +13,7 @@ function _markdown__print(
     pspec::PrintingSpec;
     tf::MarkdownTableFormat = MarkdownTableFormat(),
     allow_markdown_in_cells::Bool = false,
+    highlighters::Vector{MarkdownHighlighter} = MarkdownHighlighter[],
     line_breaks::Bool = false,
 )
     context    = pspec.context
@@ -51,11 +52,11 @@ function _markdown__print(
     ir = jr = 0
 
     while action != :end_printing
-        @show action, rs, ps = _next(ps, table_data)
+        action, rs, ps = _next(ps, table_data)
 
         action == :end_printing && break
 
-        @show ir, jr = _update_data_cell_indices(action, rs, ps, ir, jr)
+        ir, jr = _update_data_cell_indices(action, rs, ps, ir, jr)
 
         action ∉ (:column_label, :data, :summary_row_cell, :row_label) && continue
 
@@ -73,6 +74,19 @@ function _markdown__print(
 
         elseif (action == :data)
             # TODO: Add footnotes.
+
+            # Check if we must apply highlighters.
+            if !isempty(highlighters)
+                orig_data = _get_data(table_data.data)
+
+                for h in highlighters
+                    if h.f(orig_data, ps.i, ps.j)
+                        d = h.fd(h, orig_data, ps.i, ps.j)
+                        rendered_cell = _markdown__apply_decoration(d, rendered_cell)
+                    end
+                end
+            end
+
             table_str[ir, jr] = rendered_cell
 
         elseif !isnothing(summary_rows) && (action == :summary_row_cell)

@@ -87,6 +87,22 @@ function _markdown__print_header_separator(
     return nothing
 end
 
+# == Decoration ============================================================================
+
+"""
+    _markdown__apply_decoration(d::MarkdownDecoration, str::String) -> String
+
+Apply the markdown decoration `d` to `str`.
+"""
+function _markdown__apply_decoration(d::MarkdownDecoration, str::String)
+    d.bold          && (str = "**" * str * "**")
+    d.italic        && (str = "*"  * str * "*")
+    d.strikethrough && (str = "~~" * str * "~~")
+    d.code          && (str = "`"  * str * "`")
+
+    return str
+end
+
 # == Rows ==================================================================================
 
 """
