@@ -30,6 +30,34 @@ function _markdown__column_alignment_str(column_width::Int, alignment::Symbol)
 end
 
 """
+    _markdown__print_aligned(buf::IOContext, str::String, cell_width::Int, alignment::Symbol) -> Nothing
+
+Print `str` to the buffer `buf` with `alignment` considering the `cell_width`.
+"""
+function _markdown__print_aligned(
+    buf::IOContext,
+    str::String,
+    cell_width::Int,
+    alignment::Symbol
+)
+    if alignment == :r
+        print(buf, lpad(str, cell_width))
+
+    elseif alignment == :c
+        tw = textwidth(str)
+        Δ = max(div(cell_width - tw, 2), 0)
+        print(buf, " "^Δ)
+        print(buf, str)
+        print(buf, " "^(cell_width - tw - Δ))
+
+    else
+        print(buf, rpad(str, cell_width))
+    end
+
+    return nothing
+end
+
+"""
     _markdown__print_header_separator(buf::IOContext, table_data::TableData, row_number_column_width::Int, row_label_column_width::Int, printed_data_column_widths::Vector{Int}) -> Nothing
 
 Print the markdown header separator with the column alignment information.
@@ -95,12 +123,28 @@ end
 Apply the markdown decoration `d` to `str`.
 """
 function _markdown__apply_decoration(d::MarkdownDecoration, str::String)
+    isempty(str)    && return str
     d.bold          && (str = "**" * str * "**")
     d.italic        && (str = "*"  * str * "*")
     d.strikethrough && (str = "~~" * str * "~~")
     d.code          && (str = "`"  * str * "`")
 
     return str
+end
+
+"""
+    _markdown__decoration_textwidth(d::MarkdownDecoration) -> Int
+
+Return the additional textwidth required to apply the markdown decoration `d`.
+"""
+function _markdown__decoration_textwidth(d::MarkdownDecoration)
+    Δ = 0
+    d.bold          && (Δ += 4)
+    d.italic        && (Δ += 2)
+    d.strikethrough && (Δ += 4)
+    d.code          && (Δ += 2)
+
+    return Δ
 end
 
 # == Rows ==================================================================================

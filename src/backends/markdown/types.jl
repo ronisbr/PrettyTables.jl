@@ -85,5 +85,28 @@ _markdown__default_highlighter_fd(h::MarkdownHighlighter, ::Any, ::Int, ::Int) =
 #                                       Table Format                                       #
 ############################################################################################
 
+# Create some default decorations to reduce allocations.
+const _MARKDOWN__NO_DECORATION = MarkdownDecoration()
+const _MARKDOWN__BOLD          = MarkdownDecoration(bold   = true)
+const _MARKDOWN__ITALIC        = MarkdownDecoration(italic = true)
+const _MARKDOWN__CODE          = MarkdownDecoration(code   = true)
+
 @kwdef struct MarkdownTableFormat
+    title_heading_level::Int       = 1
+    subtitle_heading_level::Int    = 2
+    line_before_summary_rows::Bool = true
+
+    # == Row Decorations ===================================================================
+
+    row_number_label_decoration::MarkdownDecoration   = _MARKDOWN__BOLD
+    row_number_decoration::MarkdownDecoration         = _MARKDOWN__BOLD
+    stubhead_label_decoration::MarkdownDecoration     = _MARKDOWN__BOLD
+    row_label_decoration::MarkdownDecoration          = _MARKDOWN__BOLD
+    row_group_label_decoration::MarkdownDecoration    = _MARKDOWN__BOLD
+    first_column_label_decoration::MarkdownDecoration = _MARKDOWN__BOLD
+    column_label_decoration::MarkdownDecoration       = _MARKDOWN__CODE
+    summary_row_label_decoration::MarkdownDecoration  = _MARKDOWN__BOLD
+    summary_row_cell_decoration::MarkdownDecoration   = _MARKDOWN__NO_DECORATION
+    footnote_decoration::MarkdownDecoration           = _MARKDOWN__NO_DECORATION
+    source_note_decoration::MarkdownDecoration        = _MARKDOWN__NO_DECORATION
 end
