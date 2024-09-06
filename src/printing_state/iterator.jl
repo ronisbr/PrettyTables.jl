@@ -249,7 +249,7 @@ function _update_data_cell_indices(
     i::Int,
     j::Int
 )
-    if (action == :new_row) && (row_section != :continuation_row)
+    if (action == :new_row) && (row_section ∉ (:table_header, :continuation_row))
         i += 1
         j  = 0
 
@@ -271,9 +271,13 @@ function _update_data_cell_indices(
         j += 1
 
     elseif (action == :end_row) && (row_section != state.row_section)
-        if ((row_section != :continuation_row) && (state.row_section != :continuation_row)) ||
-            (state.row_section == :summary_row)
+        if (
+            (row_section != :continuation_row) &&
+            (state.row_section != :continuation_row)
+        ) || (state.row_section == :summary_row)
             i = j = 0
+        elseif state.row_section == :continuation_row
+            j = 0
         end
     end
 
