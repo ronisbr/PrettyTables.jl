@@ -377,7 +377,7 @@ function _html__print(
 
             elseif action == :summary_row_label
                 push!(properties, "class" => "summaryRowLabel")
-                append!(style, tf.row_label_decoration)
+                append!(style, tf.summary_row_label_decoration)
 
             elseif action == :column_label
                 if ps.i == 1
