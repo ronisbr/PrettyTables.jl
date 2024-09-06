@@ -37,10 +37,13 @@ function _markdown__print(
 
     # Let's allocate all the sections.
     column_labels = Matrix{String}(undef, num_column_label_lines, num_printed_data_columns)
+
     row_labels = _has_row_labels(table_data) ?
         Vector{String}(undef, num_printed_data_rows) :
         nothing
+
     table_str = Matrix{String}(undef, num_printed_data_rows, num_printed_data_columns)
+
     summary_rows = _has_summary_rows(table_data) ?
         Matrix{String}(undef, num_summary_rows, num_printed_data_columns) :
         nothing
@@ -61,13 +64,18 @@ function _markdown__print(
         action ∉ (:column_label, :data, :summary_row_cell, :row_label) && continue
 
         cell = _current_cell(action, ps, table_data)
-        rendered_cell = _markdown__render_cell(
-            cell,
-            buf,
-            renderer;
-            allow_markdown_in_cells,
-            line_breaks
-        )
+
+        rendered_cell = if cell !== _IGNORE_CELL
+            _markdown__render_cell(
+                cell,
+                buf,
+                renderer;
+                allow_markdown_in_cells,
+                line_breaks
+            )
+        else
+            ""
+        end
 
         # Check for footnotes.
         footnotes = _current_cell_footnotes(table_data, action, ps.i, ps.j)
@@ -231,7 +239,7 @@ function _markdown__print(
             l <= 0 && continue
 
             print(buf, "#"^l)
-            print(buf, ' ')
+            print(buf, " ")
             println(buf, _current_cell(action, ps, table_data))
             println(buf)
             continue
@@ -338,8 +346,8 @@ function _markdown__print(
             )
 
         else
-            alignment = _current_cell_alignment(action, ps, table_data)
-            cell_width = 1
+            alignment     = _current_cell_alignment(action, ps, table_data)
+            cell_width    = 1
             rendered_cell = ""
 
             print(buf, " ")
@@ -368,8 +376,13 @@ function _markdown__print(
                 )
 
             elseif action == :column_label
-                cell_width    = printed_data_column_widths[jr]
-                rendered_cell = column_labels[ir, jr]
+                cell_width = printed_data_column_widths[jr]
+
+                # If need to check if we are in a cell that should be merged. Since Markdown
+                # does not support such an operation, we only fill the field with `-`.
+                rendered_cell = _current_cell(action, ps, table_data) === _IGNORE_CELL ?
+                    "-"^cell_width :
+                    column_labels[ir, jr]
 
             elseif action == :row_number
                 cell          = _current_cell(action, ps, table_data)
