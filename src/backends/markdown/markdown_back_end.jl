@@ -69,6 +69,16 @@ function _markdown__print(
             line_breaks
         )
 
+        # Check for footnotes.
+        footnotes = _current_cell_footnotes(table_data, action, ps.i, ps.j)
+
+        if !isnothing(footnotes) && !isempty(footnotes)
+            for i in eachindex(footnotes)
+                f = footnotes[i]
+                rendered_cell *= "[^$f]"
+            end
+        end
+
         if (action == :column_label)
             # Apply the decoration to the column label.
             rendered_cell = _markdown__apply_decoration(
@@ -79,16 +89,6 @@ function _markdown__print(
             column_labels[ir, jr] = rendered_cell
 
         elseif (action == :data)
-            # Check for footnotes.
-            footnotes = _current_cell_footnotes(table_data, action, ps.i, ps.j)
-
-            if !isnothing(footnotes) && !isempty(footnotes)
-                for i in eachindex(footnotes)
-                    f = footnotes[i]
-                    rendered_cell *= "[^$f]"
-                end
-            end
-
             # Check if we must apply highlighters.
             if !isempty(highlighters)
                 orig_data = _get_data(table_data.data)
@@ -260,7 +260,8 @@ function _markdown__print(
 
                 println(buf)
                 println(buf, _markdown__apply_decoration(
-                    tf._decoration, rendered_cell
+                    tf.source_note_decoration,
+                    rendered_cell
                 ))
                 continue
             end
