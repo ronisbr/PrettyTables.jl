@@ -322,6 +322,7 @@ function _markdown__print(
                 _markdown__print_separation_line(
                     buf,
                     table_data,
+                    tf.horizontal_line_char,
                     row_number_column_width,
                     row_label_column_width,
                     printed_data_column_widths
@@ -340,6 +341,7 @@ function _markdown__print(
                 buf,
                 row_group_label,
                 table_data,
+                tf.horizontal_line_char,
                 row_number_column_width,
                 row_label_column_width,
                 printed_data_column_widths
@@ -381,7 +383,7 @@ function _markdown__print(
                 # If need to check if we are in a cell that should be merged. Since Markdown
                 # does not support such an operation, we only fill the field with `-`.
                 rendered_cell = _current_cell(action, ps, table_data) === _IGNORE_CELL ?
-                    "-"^cell_width :
+                    string(tf.horizontal_line_char)^cell_width :
                     column_labels[ir, jr]
 
             elseif action == :row_number
