@@ -74,5 +74,5 @@ function _markdown__render_cell(
     allow_markdown_in_cells::Bool = false,
     line_breaks::Bool = false,
 )
-    return replace(sprint(show, MIME("text/plain"), cell), "\n" => "")
+    return replace(sprint(show, MIME("text/markdown"), cell), "\n" => "")
 end
