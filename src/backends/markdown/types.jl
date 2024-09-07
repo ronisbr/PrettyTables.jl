@@ -99,15 +99,16 @@ const _MARKDOWN__CODE          = MarkdownDecoration(code   = true)
 
     # == Row Decorations ===================================================================
 
-    row_number_label_decoration::MarkdownDecoration   = _MARKDOWN__BOLD
-    row_number_decoration::MarkdownDecoration         = _MARKDOWN__BOLD
-    stubhead_label_decoration::MarkdownDecoration     = _MARKDOWN__BOLD
-    row_label_decoration::MarkdownDecoration          = _MARKDOWN__BOLD
-    row_group_label_decoration::MarkdownDecoration    = _MARKDOWN__BOLD
-    first_column_label_decoration::MarkdownDecoration = _MARKDOWN__BOLD
-    column_label_decoration::MarkdownDecoration       = _MARKDOWN__CODE
-    summary_row_label_decoration::MarkdownDecoration  = _MARKDOWN__BOLD
-    summary_row_cell_decoration::MarkdownDecoration   = _MARKDOWN__NO_DECORATION
-    footnote_decoration::MarkdownDecoration           = _MARKDOWN__NO_DECORATION
-    source_note_decoration::MarkdownDecoration        = _MARKDOWN__NO_DECORATION
+    row_number_label_decoration::MarkdownDecoration     = _MARKDOWN__BOLD
+    row_number_decoration::MarkdownDecoration           = _MARKDOWN__BOLD
+    stubhead_label_decoration::MarkdownDecoration       = _MARKDOWN__BOLD
+    row_label_decoration::MarkdownDecoration            = _MARKDOWN__BOLD
+    row_group_label_decoration::MarkdownDecoration      = _MARKDOWN__BOLD
+    first_column_label_decoration::MarkdownDecoration   = _MARKDOWN__BOLD
+    column_label_decoration::MarkdownDecoration         = _MARKDOWN__CODE
+    summary_row_label_decoration::MarkdownDecoration    = _MARKDOWN__BOLD
+    summary_row_cell_decoration::MarkdownDecoration     = _MARKDOWN__NO_DECORATION
+    footnote_decoration::MarkdownDecoration             = _MARKDOWN__NO_DECORATION
+    source_note_decoration::MarkdownDecoration          = _MARKDOWN__NO_DECORATION
+    omitted_cell_summary_decoration::MarkdownDecoration = _MARKDOWN__ITALIC
 end
