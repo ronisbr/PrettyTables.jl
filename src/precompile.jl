@@ -74,12 +74,12 @@ PrecompileTools.@setup_workload begin
 
         # -- HTML --------------------------------------------------------------------------
 
-        pretty_table(html_buf, matrix; back_end = :html)
+        pretty_table(html_buf, matrix; backend = :html)
 
         pretty_table(
             html_buf,
             matrix;
-            back_end = :html,
+            backend = :html,
             highlighters = [
                 HtmlHighlighter((data, i, j) -> i == 1, ["font-weight" => "bold"])
             ]
@@ -89,13 +89,13 @@ PrecompileTools.@setup_workload begin
 
         # -- Markdown ----------------------------------------------------------------------
 
-        pretty_table(matrix; back_end = :markdown)
-        pretty_table(types; back_end = :markdown)
+        pretty_table(matrix; backend = :markdown)
+        pretty_table(types; backend = :markdown)
 
         # == Input: Tables.jl ==============================================================
 
-        pretty_table(html_buf, table; back_end = :html)
-        pretty_table(table; back_end = :markdown)
+        pretty_table(html_buf, table; backend = :html)
+        pretty_table(table; backend = :markdown)
     end
 
     # Restore stdout.
