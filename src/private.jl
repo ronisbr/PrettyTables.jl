@@ -13,7 +13,7 @@ _guess_column_labels(data::ColumnTable) = [string.(data.column_names)]
 _guess_column_labels(data::RowTable) = [string.(data.column_names)]
 
 function _guess_column_labels(data::AbstractVecOrMat)
-    return [["Col. " * string(i) for i in axes(data, 2)]]
+    return [parent(["Col. $(string(i))" for i in axes(data, 2)])]
 end
 
 function _guess_column_labels(::AbstractDict{K, V}) where {K, V}

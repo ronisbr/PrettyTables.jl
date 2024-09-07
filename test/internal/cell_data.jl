@@ -34,6 +34,8 @@
         row_number_column_alignment = :c,
         num_rows                    = 3,
         num_columns                 = 4,
+        first_row_index             = 1,
+        first_column_index          = 1,
         formatters                  = [(v, i, j) -> i == 2 ? v + 10 : v,],
     )
 

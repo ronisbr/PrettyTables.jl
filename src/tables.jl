@@ -63,6 +63,13 @@ function isassigned(ctable::ColumnTable, inds...)
     end
 end
 
+axes(ctable::ColumnTable) = (Base.OneTo(ctable.size[1]), Base.OneTo(ctable.size[2]))
+
+function axes(ctable::ColumnTable, dim::Int)
+    dim == 1 && return Base.OneTo(ctable.size[1])
+    return Base.OneTo(ctable.size[2])
+end
+
 length(ctable::ColumnTable) = ctable.size[1] * ctable.size[2]
 
 size(ctable::ColumnTable) = ctable.size
@@ -149,6 +156,13 @@ function isassigned(rtable::RowTable, inds...)
             throw(e)
         end
     end
+end
+
+axes(rtable::RowTable) = (Base.OneTo(rtable.size[1]), Base.OneTo(rtable.size[2]))
+
+function axes(rtable::RowTable, dim::Int)
+    dim == 1 && return Base.OneTo(rtable.size[1])
+    return Base.OneTo(rtable.size[2])
 end
 
 length(rtable::RowTable) = rtable.size[1] * rtable.size[2]

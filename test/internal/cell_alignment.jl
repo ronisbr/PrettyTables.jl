@@ -35,6 +35,8 @@
             source_note_alignment          = :r,
             num_rows                       = 6,
             num_columns                    = 4,
+            first_row_index                = 1,
+            first_column_index             = 1,
             maximum_number_of_rows         = 3,
             vertical_crop_mode             = :bottom,
         )
@@ -253,6 +255,8 @@
             source_note_alignment          = :r,
             num_rows                       = 6,
             num_columns                    = 4,
+            first_row_index                = 1,
+            first_column_index             = 1,
             maximum_number_of_rows         = 3,
             vertical_crop_mode             = :bottom,
         )

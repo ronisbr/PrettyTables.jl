@@ -56,6 +56,14 @@ struct HtmlHighlighter
         return new(f, fd, HtmlPair[])
     end
 
+    function HtmlHighlighter(f::Function, decoration::HtmlPair)
+        return new(
+            f,
+            _html__default_highlighter_fd,
+            [decoration]
+        )
+    end
+
     function HtmlHighlighter(f::Function, decoration::Vector{HtmlPair})
         return new(
             f,
@@ -64,15 +72,7 @@ struct HtmlHighlighter
         )
     end
 
-    function HtmlHighlighter(f::Function, decoration::HtmlHighlighter)
-        return new(
-            f,
-            _html__default_highlighter_fd,
-            [decoration]
-        )
-    end
-
-    function HtmlHighlighter(f::Function, decoration::HtmlHighlighter, args...)
+    function HtmlHighlighter(f::Function, decoration::Vector{HtmlPair}, args...)
         return new(
             f,
             _html__default_highlighter_fd,
