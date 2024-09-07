@@ -101,6 +101,8 @@
             summary_rows = [(data, i) -> 10i, (data, i) -> 20i],
             title = "Table Title",
         )
+
+        @test result == expected
     end
 
     @testset "With Bottom Cropping" begin
@@ -198,6 +200,8 @@
             summary_rows = [(data, i) -> 10i, (data, i) -> 20i],
             title = "Table Title",
         )
+
+        @test result == expected
     end
 
     @testset "With Middle Cropping" begin

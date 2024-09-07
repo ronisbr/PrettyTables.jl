@@ -53,7 +53,7 @@
             maximum_number_of_columns = 3
         )
 
-        @testset result == expected
+        @test result == expected
     end
 
     @testset "Middle Cropping" begin
@@ -103,7 +103,7 @@
             vertical_crop_mode = :middle
         )
 
-        @testset result == expected
+        @test result == expected
     end
 
     @testset "Omitted Cell Summary" begin
