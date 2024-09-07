@@ -30,7 +30,7 @@ function _current_cell(
         end
 
     elseif action == :row_number
-        return state.i
+        return state.i - 1 + firstindex(table_data.data, 1)
 
     elseif action == :summary_row_number
         return ""
@@ -52,10 +52,10 @@ function _current_cell(
 
     elseif action == :row_label
         rl = table_data.row_labels
-        return isnothing(rl) ? "" : table_data.row_labels[state.i]
+        return isnothing(rl) ? "" : table_data.row_labels[state.i - 1 + begin]
 
     elseif action == :summary_row_label
-        return table_data.summary_row_labels[state.i]
+        return table_data.summary_row_labels[state.i - 1 + begin]
 
     elseif action == :column_label
         # Check if this cell must be merged or if is is part of a merged cell.
@@ -71,12 +71,21 @@ function _current_cell(
             end
         end
 
-        return table_data.column_labels[state.i][state.j]
+        return table_data.column_labels[state.i - 1 + begin][state.j - 1 + begin]
 
     elseif action == :data
-        cell_data = isassigned(table_data.data, state.i, state.j) ?
-            table_data.data[state.i, state.j] :
+        i₀ = table_data.first_row_index
+        j₀ = table_data.first_column_index
+
+        cell_data = if isassigned(
+            table_data.data,
+            state.i - 1 + i₀,
+            state.j - 1 + j₀
+        )
+            table_data.data[state.i - 1 + i₀, state.j - 1 + j₀]
+        else
             _UNDEFINED_CELL
+        end
 
         if !isnothing(table_data.formatters)
             for f in table_data.formatters
@@ -87,11 +96,11 @@ function _current_cell(
         return cell_data
 
     elseif action == :summary_row_cell
-        f = table_data.summary_rows[state.i]
+        f = table_data.summary_rows[state.i - 1 + begin]
         return f(table_data.data, state.j)
 
     elseif action == :footnote
-        return table_data.footnotes[state.i].second
+        return table_data.footnotes[state.i - 1 + begin].second
 
     elseif action == :source_notes
         return table_data.source_notes

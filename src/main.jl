@@ -236,8 +236,14 @@ function _pretty_table(
     if length(ax) == 1
         num_columns = 1
         num_rows = length(pdata)
+
+        first_row_index = first(first(ax))
+        first_column_index = 1
     elseif length(ax) == 2
         num_rows, num_columns = size(pdata)
+
+        first_row_index = first(first(ax))
+        first_column_index = first(last(ax))
     else
         throw(ArgumentError("`pretty_table` does not support data with more than 2 dimensions."))
     end
@@ -320,6 +326,8 @@ function _pretty_table(
         formatters,
         num_rows,
         num_columns,
+        first_row_index,
+        first_column_index,
         maximum_number_of_columns,
         maximum_number_of_rows,
         vertical_crop_mode

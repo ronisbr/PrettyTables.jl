@@ -25,6 +25,8 @@
             source_notes            = "Source Notes",
             num_rows                = 3,
             num_columns             = 4,
+            first_row_index         = 1,
+            first_column_index      = 1,
         )
 
         # == Iterate the Printing Table State ==============================================
@@ -200,10 +202,12 @@
 
         td = PrettyTables.TableData(
             ;
-            data          = rand(3, 4),
-            column_labels = [["1", "2", "3", "4"], ["1", "2", "3", "4"]],
-            num_rows      = 3,
-            num_columns   = 4,
+            data               = rand(3, 4),
+            column_labels      = [["1", "2", "3", "4"], ["1", "2", "3", "4"]],
+            num_rows           = 3,
+            num_columns        = 4,
+            first_row_index    = 1,
+            first_column_index = 1,
         )
 
         # == Iterate the Printing Table State ==============================================
@@ -282,6 +286,8 @@
                 source_notes              = "Source Notes",
                 num_rows                  = 6,
                 num_columns               = 4,
+                first_row_index           = 1,
+                first_column_index        = 1,
                 maximum_number_of_columns = 2,
                 maximum_number_of_rows    = 3,
                 vertical_crop_mode        = :bottom,
@@ -515,6 +521,8 @@
                 source_notes              = "Source Notes",
                 num_rows                  = 6,
                 num_columns               = 4,
+                first_row_index           = 1,
+                first_column_index        = 1,
                 maximum_number_of_columns = 2,
                 maximum_number_of_rows    = 3,
                 vertical_crop_mode        = :middle,
@@ -800,6 +808,8 @@
                 source_notes              = "Source Notes",
                 num_rows                  = 3,
                 num_columns               = 4,
+                first_row_index           = 1,
+                first_column_index        = 1,
                 maximum_number_of_rows    = 3,
                 maximum_number_of_columns = 4,
             )

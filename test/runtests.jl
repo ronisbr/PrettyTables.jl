@@ -1,6 +1,8 @@
 using Test
-using Tables
 using PrettyTables
+
+using OffsetArrays
+using Tables
 
 ############################################################################################
 #                                   Types and Structures                                   #
@@ -27,6 +29,7 @@ end
     include("./backends/html/full.jl")
     include("./backends/html/highlighters.jl")
     include("./backends/html/minify.jl")
+    include("./backends/html/offset_arrays.jl")
     include("./backends/html/renderers.jl")
     include("./backends/html/special_cells.jl")
     include("./backends/html/stand_alone.jl")

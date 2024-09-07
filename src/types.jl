@@ -90,6 +90,12 @@ const _UNDEFINED_CELL = UndefinedCell()
     num_rows::Int
     num_columns::Int
 
+    # We need to store the first index in both direction to reduce the number of
+    # allocations. Notice that `data` is stores using `Any`, meaning that using functions
+    # like `axes`, `firstindex`, and `begin` inside `getindex` will allocate.
+    first_row_index::Int
+    first_column_index::Int
+
     # Maxium number of rows and columns we must print.
     maximum_number_of_columns::Int = 0
     maximum_number_of_rows::Int = 0

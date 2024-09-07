@@ -276,6 +276,7 @@
 """
 
         result = pretty_table(
+            String,
             matrix;
             backend = :html,
             footnotes = [(:column_label, 1, 2) => "Footnote in column label", (:data, 2, 2) => "Footnote in data"],
@@ -292,5 +293,7 @@
             title = "Table Title",
             vertical_crop_mode = :middle
         )
+
+        @test result == expected
     end
 end
