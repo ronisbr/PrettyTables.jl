@@ -25,7 +25,7 @@ function pretty_table(
     io::IO,
     data::Any;
 
-    back_end::Symbol = :markdown,
+    backend::Symbol = :markdown,
 
     # == Arguments for the IOContext =======================================================
 
@@ -79,7 +79,7 @@ function pretty_table(
         io,
         data,
 
-        back_end,
+        backend,
 
         # == Arguments for the IOContext ===================================================
 
@@ -144,7 +144,7 @@ function _pretty_table(
     @nospecialize(io::IO),
     @nospecialize(data::Any),
 
-    back_end::Symbol,
+    backend::Symbol,
 
     # == Arguments for the IOContext =======================================================
 
@@ -334,7 +334,7 @@ function _pretty_table(
         show_omitted_cell_summary
     )
 
-    if back_end == :html
+    if backend == :html
         # When wrapping `stdout` in `IOContext` in Jupyter, `io.io` is not equal to `stdout`
         # anymore. Hence, we need to check if `io` is `stdout` before calling the HTML back
         # end.
