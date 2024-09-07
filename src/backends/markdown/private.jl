@@ -274,7 +274,7 @@ function _markdown__print_separation_line(
 
     # == Continuation Column ===============================================================
 
-    _is_horizontally_cropped(table_data) && print(buf, " ⋯ |")
+    _is_horizontally_cropped(table_data) && print(buf, " $s |")
 
     println(buf)
 

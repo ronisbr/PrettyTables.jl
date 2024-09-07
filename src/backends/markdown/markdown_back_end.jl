@@ -317,7 +317,7 @@ function _markdown__print(
                 )
 
             elseif tf.line_before_summary_rows &&
-                (rs == :data) &&
+                (rs != :summary_row) &&
                 (ps.row_section == :summary_row)
                 _markdown__print_separation_line(
                     buf,
