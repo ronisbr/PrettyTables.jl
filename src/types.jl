@@ -57,7 +57,7 @@ const _UNDEFINED_CELL = UndefinedCell()
 
     # -- Cell Merging ----------------------------------------------------------------------
 
-    merge_cells::Union{Nothing, Vector{MergeCells}} = nothing
+    merge_column_label_cells::Union{Nothing, Vector{MergeCells}} = nothing
 
     # == Table Footer ======================================================================
 

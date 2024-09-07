@@ -70,7 +70,7 @@ function pretty_table(
     formatters::Union{Nothing, Vector{T} where T <: Any} = nothing,
     maximum_number_of_columns::Int = -1,
     maximum_number_of_rows::Int = -1,
-    merge_cells::Union{Nothing, Vector{MergeCells}} = nothing,
+    merge_column_label_cells::Union{Nothing, Vector{MergeCells}} = nothing,
     show_row_number_column::Bool = false,
     vertical_crop_mode::Symbol = :bottom,
     kwargs...
@@ -124,7 +124,7 @@ function pretty_table(
         formatters,
         maximum_number_of_columns,
         maximum_number_of_rows,
-        merge_cells,
+        merge_column_label_cells,
         show_row_number_column,
         vertical_crop_mode;
 
@@ -189,7 +189,7 @@ function _pretty_table(
     formatters::Union{Nothing, Vector{T} where T <: Any},
     maximum_number_of_columns::Int,
     maximum_number_of_rows::Int,
-    merge_cells::Union{Nothing, Vector{MergeCells}},
+    merge_column_label_cells::Union{Nothing, Vector{MergeCells}},
     show_row_number_column::Bool,
     vertical_crop_mode::Symbol;
     kwargs...
@@ -309,7 +309,7 @@ function _pretty_table(
         row_group_labels,
         summary_rows,
         summary_row_labels,
-        merge_cells,
+        merge_column_label_cells,
         footnotes,
         source_notes,
         title_alignment,
