@@ -51,9 +51,9 @@ Validate the merge cell specification in `table_data`. If something is wrong, th
 throws an error.
 """
 function _validate_merge_cell_specification(table_data::TableData)
-    isnothing(table_data.merge_cells) && return nothing
+    isnothing(table_data.merge_column_label_cells) && return nothing
 
-    mc = table_data.merge_cells
+    mc = table_data.merge_column_label_cells
 
     for i in eachindex(mc)
         mi = mc[i]

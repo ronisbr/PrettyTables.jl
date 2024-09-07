@@ -59,8 +59,8 @@ function _current_cell(
 
     elseif action == :column_label
         # Check if this cell must be merged or if is is part of a merged cell.
-        if !isnothing(table_data.merge_cells)
-            for mc in table_data.merge_cells
+        if !isnothing(table_data.merge_column_label_cells)
+            for mc in table_data.merge_column_label_cells
                 if (mc.i == state.i)
                     if (mc.j == state.j)
                         return mc
