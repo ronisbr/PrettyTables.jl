@@ -66,7 +66,7 @@ function pretty_table(
 
     # == Other Configurations ==============================================================
 
-    cell_alignment::Union{Nothing, Dict{NTuple{2, Int}, Symbol}, Vector{Function}} = nothing,
+    cell_alignment::Union{Nothing, Vector{Pair{NTuple{2, Int}, Symbol}}, Vector{Function}} = nothing,
     formatters::Union{Nothing, Vector{T} where T <: Any} = nothing,
     maximum_number_of_columns::Int = -1,
     maximum_number_of_rows::Int = -1,
@@ -185,7 +185,7 @@ function _pretty_table(
 
     # == Other Configurations ==============================================================
 
-    cell_alignment::Union{Nothing, Dict{NTuple{2, Int}, Symbol}, Vector{Function}},
+    cell_alignment::Union{Nothing, Vector{Pair{NTuple{2, Int}, Symbol}}, Vector{Function}},
     formatters::Union{Nothing, Vector{T} where T <: Any},
     maximum_number_of_columns::Int,
     maximum_number_of_rows::Int,
@@ -265,18 +265,20 @@ function _pretty_table(
         error("The length of vector `alignment` ($(length(alignment))) must be equal to the number of columns ($num_columns).")
     end
 
-    if cell_alignment isa Dict
-        # If it is a `Dict`, `cell_alignment[(i,j)]` contains the desired alignment for the
-        # cell `(i,j)`. Thus, we need to create a wrapper function.
-        cell_alignment_dict = copy(cell_alignment)
+    if cell_alignment isa Vector
+        # If it is a `Vector`, it contains a set of `(i, j) => alignment` with the desired
+        # `alignment` for the cell `(i, j)`. Thus, we need to create a wrapper function.
+        cell_alignment_vect = copy(cell_alignment)
 
         cell_alignment = [
             (_, i, j) -> begin
-                if haskey(cell_alignment_dict, (i, j))
-                    return cell_alignment_dict[(i, j)]
-                else
-                    return nothing
+                for p in cell_alignment_vect
+                    if first(p) == (i, j)
+                        return last(p)
+                    end
                 end
+
+                return nothing
             end
         ]
     end
