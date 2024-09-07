@@ -253,7 +253,7 @@ function _markdown__print(
                 )
 
                 ps.i == 1 && println(buf)
-                print(buf, "[^$(ps.i)] ")
+                print(buf, "[^$(ps.i)]: ")
                 println(buf, _markdown__apply_decoration(
                     tf.footnote_decoration, rendered_cell
                 ))
