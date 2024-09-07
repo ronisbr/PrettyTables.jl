@@ -72,7 +72,7 @@ function _html__print(
             minify
         )
 
-        _aprint(buf, tf.css, il, ns; minify)
+        _aprintln(buf, tf.css, il, ns; minify)
         il -= 1
 
         _aprintln(
