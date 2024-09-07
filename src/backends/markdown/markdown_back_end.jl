@@ -327,6 +327,17 @@ function _markdown__print(
                     row_label_column_width,
                     printed_data_column_widths
                 )
+            elseif ps.row_section == :table_footer
+                # We reach this point only once because the Markdown table ends here. Thus,
+                # we need to check if we must print the omitted cell summary.
+                if pspec.show_omitted_cell_summary
+                    ocs = _omitted_cell_summary(table_data, pspec)
+                    println(buf)
+                    println(buf, _markdown__apply_decoration(
+                        tf.omitted_cell_summary_decoration,
+                        ocs
+                    ))
+                end
             end
 
         elseif action == :row_group_label
@@ -406,9 +417,12 @@ function _markdown__print(
         end
     end
 
+    # == Omitted Cell Summary ===============================================================
+
     # == Print the Buffer Into the IO ======================================================
 
     print(context, String(take!(buf_io)))
+
 
     return nothing
 end
