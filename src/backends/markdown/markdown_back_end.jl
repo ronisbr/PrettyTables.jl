@@ -332,11 +332,14 @@ function _markdown__print(
                 # we need to check if we must print the omitted cell summary.
                 if pspec.show_omitted_cell_summary
                     ocs = _omitted_cell_summary(table_data, pspec)
-                    println(buf)
-                    println(buf, _markdown__apply_decoration(
-                        tf.omitted_cell_summary_decoration,
-                        ocs
-                    ))
+
+                    if !isempty(ocs)
+                        println(buf)
+                        println(buf, _markdown__apply_decoration(
+                            tf.omitted_cell_summary_decoration,
+                            ocs
+                        ))
+                    end
                 end
             end
 
@@ -417,12 +420,9 @@ function _markdown__print(
         end
     end
 
-    # == Omitted Cell Summary ===============================================================
-
     # == Print the Buffer Into the IO ======================================================
 
     print(context, String(take!(buf_io)))
-
 
     return nothing
 end
