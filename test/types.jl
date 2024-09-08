@@ -44,3 +44,8 @@ function Base.show(io::IO, ::MIME"text/latex", cf::CircularRef)
     pretty_table(io, cf; backend = :latex, renderer = :show)
     return nothing
 end
+
+function Base.show(io::IO, ::MIME"text/markdown", cf::CircularRef)
+    pretty_table(io, cf; backend = :markdown, renderer = :show)
+    return nothing
+end
