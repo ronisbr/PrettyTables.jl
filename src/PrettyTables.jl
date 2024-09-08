@@ -27,12 +27,12 @@ include("./private.jl")
 include("./tables.jl")
 
 include("./backends/html/types.jl")
-include("./backends/html/html_back_end.jl")
+include("./backends/html/html_backend.jl")
 include("./backends/html/private.jl")
 include("./backends/html/render_cell.jl")
 
 include("./backends/markdown/types.jl")
-include("./backends/markdown/markdown_back_end.jl")
+include("./backends/markdown/markdown_backend.jl")
 include("./backends/markdown/private.jl")
 include("./backends/markdown/render_cell.jl")
 
