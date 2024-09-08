@@ -313,7 +313,7 @@ function _markdown__escape_str(
             '\a' <= c <= '\r'  ? print(io, "\\", "abtnvfr"[Int(c)-6]) :
             isprint(c)         ? print(io, c) :
                                  print(io, "\\x", string(UInt32(c), base = 16, pad = 2))
-        elseif !isoverlong(c) && !ismalformed(c)
+        elseif !Base.isoverlong(c) && !Base.ismalformed(c)
             isprint(c)         ? print(io, c) :
             c <= '\x7f'        ? print(io, "\\x", string(UInt32(c), base = 16, pad = 2)) :
             c <= '\uffff'      ? print(io, "\\u", string(UInt32(c), base = 16, pad = Base.need_full_hex(peek(a)) ? 4 : 2)) :
