@@ -105,6 +105,7 @@ function _markdown__print(
                     if h.f(orig_data, ps.i, ps.j)
                         d = h.fd(h, orig_data, ps.i, ps.j)
                         rendered_cell = _markdown__apply_decoration(d, rendered_cell)
+                        break
                     end
                 end
             end
