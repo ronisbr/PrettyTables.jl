@@ -4,6 +4,8 @@
 #
 ############################################################################################
 
+export TextTableFormat
+
 ############################################################################################
 #                                         Display                                          #
 ############################################################################################
@@ -59,6 +61,20 @@ end
     bottom_intersection::Char  = '┴'
     column::Char               = '│'
     row::Char                  = '─'
+
+    # == Configuration for the Horizontal and Vertical Lines ===============================
+
+    horizontal_line_at_beginning::Bool = true
+    horizontal_line_after_column_labels::Bool = true
+    horizontal_lines_at_data_rows::Union{Symbol, Vector{Int}} = :none
+    horizontal_line_before_summary_rows::Bool = true
+    horizontal_line_at_end::Bool = true
+
+    vertical_line_at_beginning::Bool = true
+    vertical_line_after_row_number_column::Bool = true
+    vertical_line_after_row_label_column::Bool = true
+    vertical_lines_at_data_columns::Union{Symbol, Vector{Int}} = :all
+    vertical_line_at_end::Bool = true
 
     # == Other Configurations ==============================================================
 
