@@ -9,7 +9,7 @@ function _text__circular_reference(io::IOContext)
     return nothing
 end
 
-function _text__print(
+function _text__print_table(
     pspec::PrintingSpec;
     tf::TextTableFormat = TextTableFormat(),
     display_size::NTuple{2, Int} = displaysize(pspec.context),
@@ -41,19 +41,38 @@ function _text__print(
         IOBuffer()
     )
 
+    # Process the vertical lines at data columns.
+    if tf.vertical_lines_at_data_columns isa Symbol
+        vertical_lines_at_data_columns = tf.vertical_lines_at_data_columns == :all ?
+            (1:table_data.num_columns) :
+            Int[]
+    else
+        vertical_lines_at_data_columns = tf.vertical_lines_at_data_columns
+    end
+
+    # Process the horizontal lines at data rows.
+    if tf.horizontal_lines_at_data_rows isa Symbol
+        horizontal_lines_at_data_rows = tf.horizontal_lines_at_data_rows == :all ?
+            (1:table_data.num_rows) :
+            Int[]
+    else
+        horizontal_lines_at_data_rows = tf.horizontal_lines_at_data_rows
+    end
+
     # Limit the number of rendered cells given the display size if the user wants.
     if fit_table_in_display_horizontally
         table_data.maximum_number_of_columns = div(display.size[2], 5, RoundUp)
     end
 
     if fit_table_in_display_vertically
-        table_data.maximum_number_of_rows = max(
-            display.size[1] -
-            length(table_data.column_labels) -
-            (_has_summary_rows(table_data) ? length(table_data.summary_rows) : 0) -
-            4,
-            1
-        )
+        table_data.maximum_number_of_rows, suppress_vline_before_continuation_row =
+            _text__design_vertical_cropping(
+                table_data,
+                tf,
+                horizontal_lines_at_data_rows,
+                pspec.show_omitted_cell_summary,
+                display.size[1]
+            )
     end
 
     # Obtain general information about the table.
@@ -165,6 +184,21 @@ function _text__print(
     # actual table indices due to cropping.
     ir = jr = 0
 
+    if tf.horizontal_line_at_beginning
+        _text__print_horizontal_line(
+            display,
+            tf,
+            table_data,
+            vertical_lines_at_data_columns,
+            row_number_column_width,
+            row_label_column_width,
+            printed_data_column_widths,
+            true
+        )
+
+        _text__flush_line(display, false)
+    end
+
     while action != :end_printing
         action, rs, ps = _next(ps, table_data)
         ir, jr = _update_data_cell_indices(action, rs, ps, ir, jr)
@@ -181,7 +215,23 @@ function _text__print(
         end
 
         if action == :new_row
-            _text__print(display, tf.column)
+
+            # Check if we need to draw a horizontal line before the summary rows.
+            if (rs == :summary_row) && (ps.i == 1) && tf.horizontal_line_before_summary_rows
+                _text__print_horizontal_line(
+                    display,
+                    tf,
+                    table_data,
+                    vertical_lines_at_data_columns,
+                    row_number_column_width,
+                    row_label_column_width,
+                    printed_data_column_widths
+                )
+
+                _text__flush_line(display, false)
+            end
+
+            tf.vertical_line_at_beginning && _text__print(display, tf.column)
 
         elseif action == :diagonal_continuation_cell
             _text__print(display, " ⋱ $(tf.column)")
@@ -192,23 +242,58 @@ function _text__print(
         elseif action ∈ _VERTICAL_CONTINUATION_CELL_ACTIONS
             alignment = _current_cell_alignment(action, ps, table_data)
 
-            cell_width = if action == :row_number_vertical_continuation_cell
-                row_number_column_width
+            if action == :row_number_vertical_continuation_cell
+                cell_width = row_number_column_width
+                vline      = tf.vertical_line_after_row_number_column
             elseif action == :row_label_vertical_continuation_cell
-                row_label_column_width
+                cell_width = row_label_column_width
+                vline      = tf.vertical_line_after_row_label_column
             else
-                printed_data_column_widths[jr]
+                cell_width = printed_data_column_widths[jr]
+                vline =
+                    (jr ∈ vertical_lines_at_data_columns) ||
+                    ((jr == num_printed_data_columns) && tf.vertical_line_at_end)
             end
 
             _text__print(display, " ")
             _text__aligned_print(display, "⋮", cell_width, alignment)
-            _text__print(display, " $(tf.column)")
+            _text__print(display, " ")
+            vline && _text__print(display, "$(tf.column)")
 
         elseif action == :end_row
             _text__flush_line(display)
 
-            if (rs == :column_labels)
-                header_printed = true
+            if (rs == :column_labels) &&
+                (ps.row_section != :column_labels) &&
+                tf.horizontal_line_after_column_labels
+
+                _text__print_horizontal_line(
+                    display,
+                    tf,
+                    table_data,
+                    vertical_lines_at_data_columns,
+                    row_number_column_width,
+                    row_label_column_width,
+                    printed_data_column_widths
+                )
+
+                _text__flush_line(display, false)
+
+            elseif (rs == :data) && (ps.i ∈ horizontal_lines_at_data_rows)
+
+                if (ps.row_section != :continuation_row) || !suppress_vline_before_continuation_row
+                    _text__print_horizontal_line(
+                        display,
+                        tf,
+                        table_data,
+                        vertical_lines_at_data_columns,
+                        row_number_column_width,
+                        row_label_column_width,
+                        printed_data_column_widths
+                    )
+
+                    _text__flush_line(display, false)
+                end
 
             elseif ps.row_section == :table_footer
                 # We reach this point only once because the Markdown table ends here. Thus,
@@ -232,28 +317,39 @@ function _text__print(
             alignment     = _current_cell_alignment(action, ps, table_data)
             cell_width    = 1
             rendered_cell = ""
+            vline         = false
 
             if action == :row_number_label
                 cell          = _current_cell(action, ps, table_data)
                 cell_width    = row_number_column_width
                 rendered_cell = _text__render_cell(cell, buf, renderer)
 
+                tf.vertical_line_after_row_number_column && (vline = true)
+
             elseif action == :stubhead_label
                 cell          = _current_cell(action, ps, table_data)
                 cell_width    = row_label_column_width
                 rendered_cell = _text__render_cell(cell, buf, renderer)
 
+                tf.vertical_line_after_row_label_column && (vline = true)
+
             elseif action == :row_label
                 cell_width    = row_label_column_width
                 rendered_cell = row_labels[ir]
+
+                tf.vertical_line_after_row_label_column && (vline = true)
 
             elseif action == :summary_row_number
                 cell_width    = row_number_column_width
                 rendered_cell = ""
 
+                tf.vertical_line_after_row_number_column && (vline = true)
+
             elseif action == :summary_row_label
                 cell_width    = row_label_column_width
                 rendered_cell = table_data.summary_row_labels[ir]
+
+                tf.vertical_line_after_row_label_column && (vline = true)
 
             elseif action == :column_label
                 cell_width = printed_data_column_widths[jr]
@@ -262,24 +358,77 @@ function _text__print(
                 # does not support such an operation, we only fill the field with `-`.
                 rendered_cell = column_labels[ir, jr]
 
+                if jr ∈ vertical_lines_at_data_columns
+                    vline = true
+                end
+
+                if (jr == num_printed_data_columns) && tf.vertical_line_at_end
+                    vline = true
+                end
+
             elseif action == :row_number
                 cell          = _current_cell(action, ps, table_data)
                 cell_width    = row_number_column_width
                 rendered_cell = _text__render_cell(cell, buf, renderer)
 
+                tf.vertical_line_after_row_number_column && (vline = true)
+
             elseif action == :data
                 cell_width    = printed_data_column_widths[jr]
                 rendered_cell = table_str[ir, jr]
+
+                if jr ∈ vertical_lines_at_data_columns
+                    vline = true
+                end
+
+                if (jr == num_printed_data_columns) && tf.vertical_line_at_end
+                    vline = true
+                end
 
             elseif action == :summary_row_cell
                 cell_width    = printed_data_column_widths[jr]
                 rendered_cell = summary_rows[ir, jr]
 
+                if jr ∈ vertical_lines_at_data_columns
+                    vline = true
+                end
+
+                if (jr == num_printed_data_columns) && tf.vertical_line_at_end
+                    vline = true
+                end
             end
 
             _text__print(display, " ")
             _text__aligned_print(display, rendered_cell, cell_width, alignment)
-            _text__print(display, " $(tf.column)")
+            _text__print(display, " ")
+            vline && _text__print(display, tf.column)
+        end
+    end
+
+    if tf.horizontal_line_at_end
+        _text__print_horizontal_line(
+            display,
+            tf,
+            table_data,
+            vertical_lines_at_data_columns,
+            row_number_column_width,
+            row_label_column_width,
+            printed_data_column_widths,
+            false,
+            true
+        )
+
+        _text__flush_line(display, false)
+    end
+
+    # == Omitted Cell Summary ==============================================================
+
+    if pspec.show_omitted_cell_summary
+        ocs = _omitted_cell_summary(table_data, pspec)
+
+        if !isempty(ocs)
+            _text__print(display, align_string(ocs, display_size[2], :r))
+            _text__flush_line(display)
         end
     end
 
