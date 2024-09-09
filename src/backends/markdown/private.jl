@@ -40,20 +40,7 @@ function _markdown__print_aligned(
     cell_width::Int,
     alignment::Symbol
 )
-    if alignment == :r
-        print(buf, lpad(str, cell_width))
-
-    elseif alignment == :c
-        tw = textwidth(str)
-        Δ = max(div(cell_width - tw, 2), 0)
-        print(buf, " "^Δ)
-        print(buf, str)
-        print(buf, " "^(cell_width - tw - Δ))
-
-    else
-        print(buf, rpad(str, cell_width))
-    end
-
+    print(buf, align_string(str, cell_width, alignment; fill = true))
     return nothing
 end
 
