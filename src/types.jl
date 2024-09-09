@@ -31,7 +31,7 @@ const _IGNORE_CELL = __IGNORE_CELL__()
 struct UndefinedCell end
 const _UNDEFINED_CELL = UndefinedCell()
 
-@kwdef struct TableData
+@kwdef mutable struct TableData
     data::Any
 
     # ==  Table Header =====================================================================

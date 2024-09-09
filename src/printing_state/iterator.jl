@@ -63,7 +63,6 @@ function _next(state::PrintingTableState, table_data::TableData)
     end
 
     if ps < _ROW_NUMBER_COLUMN && table_data.show_row_number_column
-        # TODO: Check if the user wants the row number.
         action = if rs == :column_labels
             :row_number_label
         elseif rs == :data
