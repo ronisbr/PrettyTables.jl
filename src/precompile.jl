@@ -85,11 +85,20 @@ PrecompileTools.@setup_workload begin
             ]
         )
 
-        pretty_table(html_buf, types)
+        pretty_table(html_buf, types; backend = :html)
 
         # -- Markdown ----------------------------------------------------------------------
 
         pretty_table(matrix; backend = :markdown)
+
+        pretty_table(
+            matrix;
+            backend = :markdown,
+            highlighters = [
+                MarkdownHighlighter((data, i, j) -> i == 1, MarkdownDecoration(bold = :true))
+            ]
+        )
+
         pretty_table(types; backend = :markdown)
 
         # == Input: Tables.jl ==============================================================

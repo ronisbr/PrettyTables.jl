@@ -1,6 +1,7 @@
 module PrettyTables
 
 using Markdown
+using StringManipulation
 using Tables
 
 import Base: @kwdef, axes, getindex
@@ -35,6 +36,11 @@ include("./backends/markdown/types.jl")
 include("./backends/markdown/markdown_backend.jl")
 include("./backends/markdown/private.jl")
 include("./backends/markdown/render_cell.jl")
+
+include("./backends/text/types.jl")
+include("./backends/text/display.jl")
+include("./backends/text/render_cell.jl")
+include("./backends/text/text_backend.jl")
 
 include("./printing_state/alignment.jl")
 include("./printing_state/data.jl")
