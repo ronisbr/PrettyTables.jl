@@ -12,6 +12,9 @@ end
 function _text__print(
     pspec::PrintingSpec;
     tf::TextTableFormat = TextTableFormat(),
+    display_size::NTuple{2, Int} = displaysize(pspec.context),
+    fit_table_in_display_horizontally::Bool = true,
+    fit_table_in_display_vertically::Bool = true,
 )
     context    = pspec.context
     table_data = pspec.table_data
@@ -21,9 +24,15 @@ function _text__print(
     buf_io = IOBuffer()
     buf    = IOContext(buf_io, context)
 
+    # If the user does not want to crop the table horizontally, we set the display width to
+    # -1, meaning that we do not have a limit.
+    if !fit_table_in_display_horizontally
+        display_size = (display_size[1], -1)
+    end
+
     # Create the structure that holds the display information.
     display = Display(
-        displaysize(context),
+        display_size,
         1,
         0,
         get(context, :color, false),
@@ -32,13 +41,20 @@ function _text__print(
         IOBuffer()
     )
 
-    # Limit the number of rendered cells given the display size.
-    table_data.maximum_number_of_columns = div(display.size[2], 5, RoundUp)
-    table_data.maximum_number_of_rows =
-        display.size[1] -
-        length(table_data.column_labels) -
-        (_has_summary_rows(table_data) ? length(table_data.summary_rows) : 0) -
-        4
+    # Limit the number of rendered cells given the display size if the user wants.
+    if fit_table_in_display_horizontally
+        table_data.maximum_number_of_columns = div(display.size[2], 5, RoundUp)
+    end
+
+    if fit_table_in_display_vertically
+        table_data.maximum_number_of_rows = max(
+            display.size[1] -
+            length(table_data.column_labels) -
+            (_has_summary_rows(table_data) ? length(table_data.summary_rows) : 0) -
+            4,
+            1
+        )
+    end
 
     # Obtain general information about the table.
     num_column_label_lines   = length(table_data.column_labels)

@@ -4,7 +4,10 @@
 #
 ############################################################################################
 
-_text__check_eol(display::Display) = display.row >= display.size[2]
+function _text__check_eol(display::Display)
+    w = display.size[2]
+    return (w > 0) && (display.column > display.size[2])
+end
 
 _text__print(display::Display, char::Char) = _text__print(display, string(char))
 
@@ -16,11 +19,12 @@ function _text__print(display::Display, str::AbstractString)
 end
 
 function _text__flush_line(display::Display)
+    dw   = display.size[2]
     line = String(take!(display.buf_line))
 
-    if display.column > display.size[2]
+    if (dw > 0) && (display.column > dw)
         line =
-            first(right_crop(line, display.column - display.size[2] + 2)) *
+            first(right_crop(line, display.column - dw + 2)) *
             " $(display.continuation_char)"
     end
 
