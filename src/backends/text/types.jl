@@ -47,6 +47,14 @@ end
 #                                       Table Format                                       #
 ############################################################################################
 
+# Create some default decorations to reduce allocations.
+const _TEXT__RESET = crayon"reset"
+const _TEXT__BOLD = crayon"bold"
+const _TEXT__DRAK_GRAY = crayon"fg:dark_gray"
+
+# Convert the reset crayon to string to reduce allocations.
+const _TEXT__STRING_RESET = string(_TEXT__RESET)
+
 @kwdef struct TextTableFormat
     # == Border and Lines ==================================================================
 
@@ -75,6 +83,11 @@ end
     vertical_line_after_row_label_column::Bool = true
     vertical_lines_at_data_columns::Union{Symbol, Vector{Int}} = :all
     vertical_line_at_end::Bool = true
+
+    # == Decorations =======================================================================
+
+    first_column_label_decoration::Crayon = _TEXT__BOLD
+    column_label_decoration::Crayon = _TEXT__DRAK_GRAY
 
     # == Other Configurations ==============================================================
 
