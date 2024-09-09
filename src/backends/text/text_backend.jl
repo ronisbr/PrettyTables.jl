@@ -356,6 +356,7 @@ function _text__print_table(
         else
             alignment     = _current_cell_alignment(action, ps, table_data)
             cell_width    = 1
+            decoration    = _TEXT__RESET
             rendered_cell = ""
             vline         = false
 
@@ -393,6 +394,10 @@ function _text__print_table(
 
             elseif action == :column_label
                 cell_width = printed_data_column_widths[jr]
+
+                decoration = ir == 1 ?
+                    tf.first_column_label_decoration :
+                    tf.column_label_decoration
 
                 # If need to check if we are in a cell that should be merged. Since Markdown
                 # does not support such an operation, we only fill the field with `-`.
@@ -438,9 +443,13 @@ function _text__print_table(
                 end
             end
 
-            _text__print(display, " ")
-            _text__aligned_print(display, rendered_cell, cell_width, alignment)
-            _text__print(display, " ")
+            _text__aligned_print(
+                display,
+                " " * rendered_cell * " " ,
+                cell_width,
+                alignment,
+                decoration
+            )
             vline && _text__print(display, tf.column)
         end
     end

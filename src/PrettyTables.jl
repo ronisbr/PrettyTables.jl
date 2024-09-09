@@ -1,5 +1,6 @@
 module PrettyTables
 
+using Crayons
 using Markdown
 using StringManipulation
 using Tables

@@ -14,7 +14,7 @@ _text__print(display::Display, char::Char) = _text__print(display, string(char))
 function _text__print(display::Display, str::AbstractString)
     _text__check_eol(display) && return nothing
     print(display.buf_line, str)
-    display.column += textwidth(str)
+    display.column += printable_textwidth(str)
     return nothing
 end
 
@@ -26,7 +26,8 @@ function _text__flush_line(display::Display, add_continuation_char::Bool = true)
         if add_continuation_char
             line =
                 first(right_crop(line, display.column - dw + 2)) *
-                " $(display.continuation_char)"
+                " $(display.continuation_char)" *
+                (display.has_color ? _TEXT__STRING_RESET : "")
         else
             line = first(right_crop(line, display.column - dw))
         end
@@ -42,20 +43,14 @@ function _text__aligned_print(
     display::Display,
     str::AbstractString,
     cell_width::Int,
-    alignment::Symbol
+    alignment::Symbol,
+    decoration::Crayon = _TEXT__RESET
 )
-    if alignment == :r
-        _text__print(display, lpad(str, cell_width))
-
-    elseif alignment == :c
-        tw = textwidth(str)
-        Δ = max(div(cell_width - tw, 2), 0)
-        _text__print(display, " "^Δ * str * " "^(cell_width - tw - Δ))
-
-    else
-        _text__print(display, rpad(str, cell_width))
+    if display.has_color && (decoration !== _TEXT__RESET)
+        str = "$(decoration)$(str)$(_TEXT__STRING_RESET)"
     end
 
+    _text__print(display, align_string(str, cell_width, alignment))
     return nothing
 end
 
