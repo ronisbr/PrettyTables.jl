@@ -4,6 +4,25 @@
 #
 ############################################################################################
 
+# == Footnotes =============================================================================
+
+const _TEXT__EXPONENTS = ("⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹")
+
+function _text__render_footnote_superscript(number::Int)
+    aux = abs(number)
+    str = ""
+
+    while aux ≥ 1
+        i = aux % 10
+        str = _TEXT__EXPONENTS[i + 1] * str
+        aux = floor(aux / 10)
+    end
+
+    return str
+end
+
+# == Vertical Cropping =====================================================================
+
 """
     _text__number_of_required_lines(table_data::TableData, tf::TextTableFormat, horizontal_lines_at_data_rows::AbstractVector{Int},) -> NTuple{4, Int}
 
@@ -42,6 +61,9 @@ function _text__number_of_required_lines(
                 0
         ) +
         tf.horizontal_line_at_end +
+        (
+            _has_footnotes(table_data) ? length(table_data.footnotes) : 0
+        ) +
         2 # ................................................................ Margin at bottom
 
     # Count how many horizontal table lines we must draw.

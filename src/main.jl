@@ -349,11 +349,11 @@ function _pretty_table(
         # anymore. Hence, we need to check if `io` is `stdout` before calling the HTML back
         # end.
         is_stdout = (io === stdout) || ((io isa IOContext) && (io.io === stdout))
-        return _html__print(pspec; is_stdout, kwargs...)
+        _html__print(pspec; is_stdout, kwargs...)
     elseif backend == :markdown
-        return _markdown__print(pspec; kwargs...)
+        _markdown__print(pspec; kwargs...)
     elseif backend == :text
-        return _text__print(pspec; kwargs...)
+        _text__print_table(pspec; kwargs...)
     end
 
     return nothing
