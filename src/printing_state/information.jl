@@ -5,6 +5,15 @@
 ############################################################################################
 
 """
+    _has_footnotes(table_data::TableData) -> Bool
+
+Return whether `table_data` has footnotes.
+"""
+function _has_footnotes(table_data::TableData)
+    return !isnothing(table_data.footnotes)
+end
+
+"""
     _has_row_groups(table_data::TableData)
 
 Return whether `table_data` has row group lables.

@@ -80,6 +80,7 @@ function _text__print_table(
     num_printed_data_columns = _number_of_printed_data_columns(table_data)
     num_printed_data_rows    = _number_of_printed_data_rows(table_data)
     num_summary_rows         = _has_summary_rows(table_data) ? length(table_data.summary_rows) : 0
+    num_footnotes            = _has_footnotes(table_data) ? length(table_data.footnotes) : 0
 
     # == Render the Table ==================================================================
 
@@ -99,6 +100,8 @@ function _text__print_table(
         Matrix{String}(undef, num_summary_rows, num_printed_data_columns) :
         nothing
 
+    footnotes = _has_footnotes(table_data) ? Vector{String}(undef, num_footnotes) : nothing
+
     action = :initialize
 
     # We must store the index related to the rendered tables. These indices differ from the
@@ -112,7 +115,7 @@ function _text__print_table(
 
         ir, jr = _update_data_cell_indices(action, rs, ps, ir, jr)
 
-        action ∉ (:column_label, :data, :summary_row_cell, :row_label) && continue
+        action ∉ (:column_label, :data, :summary_row_cell, :row_label, :footnote) && continue
 
         cell = _current_cell(action, ps, table_data)
 
@@ -120,6 +123,17 @@ function _text__print_table(
             _text__render_cell(cell, buf, renderer)
         else
             ""
+        end
+
+        # Check for footnotes.
+        cell_footnotes = _current_cell_footnotes(table_data, action, ps.i, ps.j)
+
+        if !isnothing(cell_footnotes) && !isempty(cell_footnotes)
+            for i in eachindex(cell_footnotes)
+                f = cell_footnotes[i]
+                rendered_cell *= _text__render_footnote_superscript(f)
+                (i != last(eachindex(cell_footnotes))) && (rendered_cell *= "ʼ")
+            end
         end
 
         if (action == :column_label)
@@ -133,6 +147,10 @@ function _text__print_table(
 
         elseif !isnothing(row_labels) && (action == :row_label)
             row_labels[ir] = rendered_cell
+
+        elseif !isnothing(footnotes) && (action == :footnote)
+            id = ps.i
+            footnotes[id] = _text__render_footnote_superscript(id) * ": " * rendered_cell
         end
     end
 
@@ -141,6 +159,7 @@ function _text__print_table(
     row_number_column_width    = 0
     row_label_column_width     = 0
     printed_data_column_widths = zeros(Int, num_printed_data_columns)
+    footnote_column_width      = 0
 
     if table_data.show_row_number_column
         m = (_is_vertically_cropped(table_data) && (table_data.vertical_crop_mode == :bottom)) ?
@@ -210,6 +229,10 @@ function _text__print_table(
             continue
 
         elseif rs == :table_footer
+            if action == :footnote
+                _text__aligned_print(display, footnotes[ps.i], footnote_column_width, :l)
+                _text__flush_line(display)
+            end
 
             continue
         end
@@ -296,22 +319,39 @@ function _text__print_table(
                 end
 
             elseif ps.row_section == :table_footer
-                # We reach this point only once because the Markdown table ends here. Thus,
-                # we need to check if we must print the omitted cell summary.
+                # If the next section is the table footer, we must draw the last table line.
+                if tf.horizontal_line_at_end
+                    _text__print_horizontal_line(
+                        display,
+                        tf,
+                        table_data,
+                        vertical_lines_at_data_columns,
+                        row_number_column_width,
+                        row_label_column_width,
+                        printed_data_column_widths,
+                        false,
+                        true
+                    )
+
+                    _text__flush_line(display, false)
+                end
+
+                # We also must show the omitted cell summary if the user requested it.
                 if pspec.show_omitted_cell_summary
                     ocs = _omitted_cell_summary(table_data, pspec)
 
-                    # if !isempty(ocs)
-                    #     println(buf)
-                    #     println(buf, _markdown__apply_decoration(
-                    #         tf.omitted_cell_summary_decoration,
-                    #         ocs
-                    #     ))
-                    # end
+                    if !isempty(ocs)
+                        _text__print(display, align_string(ocs, display_size[2], :r))
+                        _text__flush_line(display)
+                    end
                 end
             end
 
         elseif action == :row_group_label
+
+        elseif action == :footnote
+            _text__aligned_print(display, footnotes[ps.i], footnote_column_width, :l)
+            tf.vertical_line_at_end && _text__print(display, tf.column)
 
         else
             alignment     = _current_cell_alignment(action, ps, table_data)
@@ -402,33 +442,6 @@ function _text__print_table(
             _text__aligned_print(display, rendered_cell, cell_width, alignment)
             _text__print(display, " ")
             vline && _text__print(display, tf.column)
-        end
-    end
-
-    if tf.horizontal_line_at_end
-        _text__print_horizontal_line(
-            display,
-            tf,
-            table_data,
-            vertical_lines_at_data_columns,
-            row_number_column_width,
-            row_label_column_width,
-            printed_data_column_widths,
-            false,
-            true
-        )
-
-        _text__flush_line(display, false)
-    end
-
-    # == Omitted Cell Summary ==============================================================
-
-    if pspec.show_omitted_cell_summary
-        ocs = _omitted_cell_summary(table_data, pspec)
-
-        if !isempty(ocs)
-            _text__print(display, align_string(ocs, display_size[2], :r))
-            _text__flush_line(display)
         end
     end
 
