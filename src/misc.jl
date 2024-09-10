@@ -222,26 +222,37 @@ function _omitted_cell_summary(table_data::TableData, pspec::PrintingSpec)
     max_rows    = table_data.maximum_number_of_rows
     max_columns = table_data.maximum_number_of_columns
 
-    # Compute the number of hidden rows and columns.
-    num_hidden_columns = (max_columns > 0) ? num_columns - max_columns : 0
-    num_hidden_rows    = (max_rows > 0)    ? num_rows    - max_rows    : 0
-    has_hidden_columns = num_hidden_columns > 0
-    has_hidden_rows    = num_hidden_rows > 0
+    # Compute the number of omitted rows and columns.
+    num_omitted_columns = (max_columns > 0) ? num_columns - max_columns : 0
+    num_omitted_rows    = (max_rows > 0)    ? num_rows    - max_rows    : 0
 
-    (has_hidden_columns || has_hidden_rows) || return ""
+    return _omitted_cell_summary(num_omitted_rows, num_omitted_columns)
+end
+
+"""
+    _omitted_cell_summary(num_omitted_rows::Int, num_omitted_columns::Int) -> String
+
+Return the omitted cell summary string when there are `num_omitted_rows` omitted data rows
+and `num_omitted_columns` omitted data columns.
+"""
+function _omitted_cell_summary(num_omitted_rows::Int, num_omitted_columns::Int)
+    has_omitted_columns = num_omitted_columns > 0
+    has_omitted_rows    = num_omitted_rows > 0
+
+    (has_omitted_columns || has_omitted_rows) || return ""
 
     buf = IOBuffer()
 
-    if has_hidden_columns
-        print(buf, num_hidden_columns)
-        print(buf, num_hidden_columns == 1 ? " column" : " columns")
+    if has_omitted_columns
+        print(buf, num_omitted_columns)
+        print(buf, num_omitted_columns == 1 ? " column" : " columns")
     end
 
-    (has_hidden_columns && has_hidden_rows) && print(buf, " and ")
+    (has_omitted_columns && has_omitted_rows) && print(buf, " and ")
 
-    if has_hidden_rows
-        print(buf, num_hidden_rows)
-        print(buf, num_hidden_rows == 1 ? " row" : " rows")
+    if has_omitted_rows
+        print(buf, num_omitted_rows)
+        print(buf, num_omitted_rows == 1 ? " row" : " rows")
     end
 
     print(buf, " omitted")
