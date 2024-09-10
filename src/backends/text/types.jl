@@ -45,6 +45,27 @@ end
 #                                       Table Format                                       #
 ############################################################################################
 
+"""
+    struct TextTableBorders
+
+Define the format of the borders in the tables printed with the text back end.
+
+# Fields
+
+- `up_right_corner::Char`: Character in the up right corner.
+- `up_left_corner::Char`: Character in the up left corner.
+- `bottom_left_corner::Char`: Character in the bottom left corner.
+- `bottom_right_corner::Char`: Character in the bottom right corner.
+- `up_intersection::Char`: Character in the intersection of lines in the up part.
+- `left_intersection::Char`: Character in the intersection of lines in the left part.
+- `right_intersection::Char`: Character in the intersection of lines in the right part.
+- `middle_intersection::Char`: Character in the intersection of lines in the middle of the
+    table.
+- `bottom_intersection::Char`: Character in the intersection of the lines in the bottom
+    part.
+- `column::Char`: Character in a vertical line inside the table.
+- `row::Char`: Character in a horizontal line inside the table.
+"""
 @kwdef struct TextTableBorders
     up_right_corner::Char      = '┐'
     up_left_corner::Char       = '┌'
@@ -69,6 +90,64 @@ const _TEXT__CYAN = crayon"fg:cyan"
 # Convert the reset crayon to string to reduce allocations.
 const _TEXT__STRING_RESET = string(_TEXT__RESET)
 
+"""
+    struct TextTableFormat
+
+Define the format of the tables printed with the text back end.
+
+# Fields
+
+- `borders::TextTableBorders`: Format of the borders.
+- `horizontal_line_at_beginning::Bool`: If `true`, a horizontal line will be drawn at the
+    beginning of the table.
+- `horizontal_line_after_column_labels::Bool`: If `true`, a horizontal line will be drawn
+    after the colum labels.
+- `horizontal_lines_at_data_rows::Union{Symbol, Vector{Int}}`: A horizontal line will be
+    drawn after each data row index listed in this vector. If the symbol `:all` is passed, a
+    horizontal line will be drawn after every data column. If the symbol `:none` is passed,
+    no horizontal lines will be drawn after the data rows.
+- `horizontal_line_before_summary_rows::Bool`: If `true`, a horizontal line will be drawn
+    before the summary rows.
+- `horizontal_line_at_end::Bool`: If `true`, a horizontal line will be drawn at the end of
+    the table.
+- `right_vertical_lines_at_data_columns::Union{Symbol, Vector{Int}}`: A vertical line will
+    be drawn after each data column index listed in this vector. If the symbol `:all` is
+    passed, a vertical line will be drawn after every data column. If the symbol `:none` is
+    passed, no vertical lines will be drawn after the data columns.
+- `vertical_line_at_beginning::Bool`: If `true`, a vertical line will be drawn at the
+    beginning of the table.
+- `vertical_line_after_row_number_column::Bool`: If `true`, a vertical line will be drawn
+    after the row number column.
+- `vertical_line_after_row_label_column::Bool`: If `true`, a vertical line will be drawn
+    after the row label column.
+- `vertical_line_after_data_columns::Bool`: If `true`, a vertical line will be drawn after
+    the data columns.
+- `vertical_line_after_continuation_column::Bool`: If `true`, a vertical line will be
+    drawn after the continuation column.
+- `title_decoration::Crayon`: Crayon with the decoration for the title.
+- `subtitle_decoration::Crayon`: Crayon with the decoration for the subtitle.
+- `row_number_label_decoration::Crayon`: Crayon with the decoration for the row number
+    label.
+- `row_number_decoration::Crayon`: Crayon with the decoration for the row numbers.
+- `stubhead_label_decoration::Crayon`:  Crayon with the decoration for the stubhead label.
+- `row_label_decoration::Crayon`: Crayon with the decoration for the row labels.
+- `row_group_label_decoration::Crayon`: Crayon with the decoration for the row group label.
+- `first_column_label_decoration::Crayon`: Crayon with the decoration for the first
+    column labels.
+- `column_label_decoration::Crayon`: Crayon with the decoration for the rest of the column
+    labels.
+- `summary_row_cell_decoration::Crayon`: Crayon with the decoration for the summary row
+    cell.
+- `summary_row_label_decoration::Crayon`: Crayon with the decoration for the summary row
+    label.
+- `footnote_decoration::Crayon`: Crayon with the decoration for the footnotes.
+- `source_note_decoration::Crayon`: Crayon with the decoration for the source notes.
+- `merged_cell_decoration::Crayon`: Crayon with the decoration for the merged cells.
+- `omitted_cell_summary_decoration::Crayon`: Crayon with the decoration for the omitted
+    cell summary.
+- `ellipsis_line_skip::Integer`: Number of lines to skip when printing an ellipsis.
+- `new_line_at_end::Bool`: If `true`, a new line will be added at the end of the table.
+"""
 @kwdef struct TextTableFormat
     # == Border and Lines ==================================================================
 
