@@ -29,7 +29,6 @@ function Base.show(io::IO, ::MIME"text/plain", cf::CircularRef)
     pretty_table(
         context,
         cf;
-        line_breaks = true,
         renderer = :show
     )
     return nothing
