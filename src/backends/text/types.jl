@@ -103,7 +103,7 @@ const _TEXT__STRING_RESET = string(_TEXT__RESET)
     summary_row_cell_decoration::Crayon     = _TEXT__BOLD
     summary_row_label_decoration::Crayon    = _TEXT__BOLD
     footnote_decoration::Crayon             = _TEXT__DEFAULT
-    source_note_decoration::Crayon          = _TEXT__DEFAULT
+    source_note_decoration::Crayon          = _TEXT__DARK_GRAY
     merged_cell_decoration::Crayon          = _TEXT__BOLD
     omitted_cell_summary_decoration::Crayon = _TEXT__CYAN
 
