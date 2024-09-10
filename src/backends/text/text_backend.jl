@@ -49,11 +49,13 @@ function _text__print_table(
 
     # Process the vertical lines at data columns.
     if tf.right_vertical_lines_at_data_columns isa Symbol
-        right_vertical_lines_at_data_columns = tf.right_vertical_lines_at_data_columns == :all ?
-            (1:table_data.num_columns) :
-            (1:0)
+        right_vertical_lines_at_data_columns =
+            tf.right_vertical_lines_at_data_columns == :all ?
+                (1:table_data.num_columns) :
+                (1:0)
     else
-        right_vertical_lines_at_data_columns = tf.right_vertical_lines_at_data_columns::Vector{Int}
+        right_vertical_lines_at_data_columns =
+            tf.right_vertical_lines_at_data_columns::Vector{Int}
     end
 
     # Process the horizontal lines at data rows.
@@ -117,7 +119,6 @@ function _text__print_table(
     row_number_column_width    = 0
     row_label_column_width     = 0
     printed_data_column_widths = zeros(Int, num_printed_data_columns)
-    footnote_column_width      = 0
 
     if table_data.show_row_number_column
         m = (_is_vertically_cropped(table_data) && (table_data.vertical_crop_mode == :bottom)) ?
@@ -133,11 +134,15 @@ function _text__print_table(
     if _has_row_labels(table_data)
         row_label_column_width = max(
             textwidth(table_data.stubhead_label),
-            maximum(textwidth, row_labels),
-            _has_summary_rows(table_data) ? maximum(
-                textwidth,
-                table_data.summary_row_labels
-            ) : 0
+
+            num_printed_data_rows > 0 ? maximum(textwidth, row_labels) : 0,
+
+            _has_summary_rows(table_data) ?
+                maximum(
+                    textwidth,
+                    table_data.summary_row_labels
+                ) :
+                0
         )
     end
 
@@ -146,10 +151,10 @@ function _text__print_table(
 
         if num_printed_data_rows > 0
             m = max(maximum(textwidth, table_str[:, j]), m)
-        end
 
-        if _has_summary_rows(table_data)
-            m = max(maximum(textwidth, summary_rows[:, j]), m)
+            if _has_summary_rows(table_data)
+                m = max(maximum(textwidth, summary_rows[:, j]), m)
+            end
         end
 
         printed_data_column_widths[j] = m
@@ -270,9 +275,32 @@ function _text__print_table(
         if rs == :table_header
             continue
 
-        elseif rs == :table_footer
+        elseif (rs == :table_footer)
             if action == :footnote
-                _text__print_aligned(display, footnotes[ps.i], footnote_column_width, :l)
+                alignment = _current_cell_alignment(action, ps, table_data)
+                decoration = tf.footnote_decoration
+                _text__print_aligned(
+                    display,
+                    footnotes[ps.i],
+                    display_size[2],
+                    alignment,
+                    decoration
+                )
+                _text__flush_line(display)
+
+            elseif action == :source_notes
+                alignment = _current_cell_alignment(action, ps, table_data)
+                cell = _current_cell(action, ps, table_data)
+                rendered_cell = _text__render_cell(cell, buf, renderer)
+                decoration = tf.source_note_decoration
+
+                _text__print_aligned(
+                    display,
+                    rendered_cell,
+                    display_size[2],
+                    alignment,
+                    decoration
+                )
                 _text__flush_line(display)
             end
 
@@ -453,10 +481,6 @@ function _text__print_table(
             end
 
         elseif action == :row_group_label
-
-        elseif action == :footnote
-            _text__print_aligned(display, footnotes[ps.i], footnote_column_width, :l)
-            tf.vertical_line_at_end && _text__print(display, tf.column)
 
         else
             # Here, we treat all normal cells in the table.

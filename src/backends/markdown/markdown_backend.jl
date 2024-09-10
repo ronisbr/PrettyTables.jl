@@ -168,11 +168,15 @@ function _markdown__print(
     if _has_row_labels(table_data)
         row_label_column_width = max(
             textwidth(decorated_stubhead_label),
-            maximum(textwidth, row_labels),
-            _has_summary_rows(table_data) ? maximum(
-                textwidth,
-                table_data.summary_row_labels
-            ) + _markdown__decoration_textwidth(tf.summary_row_label_decoration) : 0
+
+            num_printed_data_rows > 0 ? maximum(textwidth, row_labels) : 0,
+
+            _has_summary_rows(table_data) ? 
+                maximum(
+                    textwidth,
+                    table_data.summary_row_labels
+                ) + _markdown__decoration_textwidth(tf.summary_row_label_decoration) :
+                0
         )
     end
 
@@ -181,10 +185,10 @@ function _markdown__print(
 
         if num_printed_data_rows > 0
             m = max(maximum(textwidth, table_str[:, j]), m)
-        end
 
-        if _has_summary_rows(table_data)
-            m = max(maximum(textwidth, summary_rows[:, j]), m)
+            if _has_summary_rows(table_data)
+                m = max(maximum(textwidth, summary_rows[:, j]), m)
+            end
         end
 
         printed_data_column_widths[j] = m
