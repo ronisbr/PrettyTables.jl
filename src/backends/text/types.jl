@@ -4,7 +4,7 @@
 #
 ############################################################################################
 
-export TextTableFormat, TextHighlighter
+export TextTableBorders, TextTableFormat, TextHighlighter
 
 ############################################################################################
 #                                         Display                                          #
