@@ -50,11 +50,13 @@ function _text__print_aligned(
     alignment::Symbol,
     decoration::Crayon = _TEXT__DEFAULT
 )
+    aligned_str = align_string(str, cell_width, alignment; fill = true)
+
     if display.has_color && (decoration != _TEXT__DEFAULT)
-        str = "$(decoration)$(str)$(_TEXT__STRING_RESET)"
+        aligned_str = "$(decoration)$(aligned_str)$(_TEXT__STRING_RESET)"
     end
 
-    _text__print(display, align_string(str, cell_width, alignment; fill = true))
+    _text__print(display, aligned_str)
     return nothing
 end
 
