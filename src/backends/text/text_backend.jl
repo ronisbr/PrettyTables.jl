@@ -356,6 +356,10 @@ function _text__print_table(
                 (ps.row_section != :column_labels) &&
                 tf.horizontal_line_after_column_labels
 
+                # We must handle that case where there is no data rows. In this case, the
+                # next section after the column labels will be the table footer.
+                bottom = ps.row_section == :table_footer
+
                 _text__print_horizontal_line(
                     display,
                     tf,
@@ -364,6 +368,8 @@ function _text__print_table(
                     row_number_column_width,
                     row_label_column_width,
                     printed_data_column_widths,
+                    false,
+                    bottom
                 )
 
                 _text__flush_line(display, false)

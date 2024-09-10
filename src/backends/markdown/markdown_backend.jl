@@ -178,7 +178,10 @@ function _markdown__print(
 
     @views for j in last(axes(table_str))
         m = maximum(textwidth, column_labels[:, j])
-        m = max(maximum(textwidth, table_str[:, j]), m)
+
+        if num_printed_data_rows > 0
+            m = max(maximum(textwidth, table_str[:, j]), m)
+        end
 
         if _has_summary_rows(table_data)
             m = max(maximum(textwidth, summary_rows[:, j]), m)
