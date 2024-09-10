@@ -16,6 +16,7 @@ function _text__print_table(
     display_size::NTuple{2, Int} = displaysize(pspec.context),
     fit_table_in_display_horizontally::Bool = true,
     fit_table_in_display_vertically::Bool = true,
+    highlighters::Vector{TextHighlighter} = TextHighlighter[],
 )
     context    = pspec.context
     table_data = pspec.table_data
@@ -533,6 +534,18 @@ function _text__print_table(
             elseif action == :data
                 cell_width    = printed_data_column_widths[jr]
                 rendered_cell = table_str[ir, jr]
+
+                # Check if we must apply highlighters.
+                if !isempty(highlighters)
+                    orig_data = _get_data(table_data.data)
+
+                    for h in highlighters
+                        if h.f(orig_data, ps.i, ps.j)
+                            decoration = h.fd(h, orig_data, ps.i, ps.j)::Crayon
+                            break
+                        end
+                    end
+                end
 
             elseif action == :summary_row_cell
                 cell_width    = printed_data_column_widths[jr]
