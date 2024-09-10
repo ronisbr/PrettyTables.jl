@@ -118,8 +118,6 @@ function _next(state::PrintingTableState, table_data::TableData)
         if j >= max_j
             return _next(PrintingTableState(_CONTINUATION_COLUMN, i, 0, rs), table_data)
         else
-            mr = table_data.maximum_number_of_rows
-
             action = rs == :continuation_row ?
                 :diagonal_continuation_cell :
                 :horizontal_continuation_cell
@@ -133,6 +131,12 @@ function _next(state::PrintingTableState, table_data::TableData)
             num_column_labels = length(table_data.column_labels)
 
             if i >= num_column_labels
+                # If the maximum number of row is 0, we must go to the continuation row.
+                mr = table_data.maximum_number_of_rows
+
+                mr == 0 &&
+                    return :end_row, rs, PrintingTableState(_NEW_ROW - 1, i, 0, :continuation_row)
+
                 # If we reached the number of column labels, we must go to the data.
                 return :end_row, rs, PrintingTableState(_NEW_ROW - 1, 0, 0, :data)
             else

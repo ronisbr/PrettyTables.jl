@@ -172,7 +172,7 @@ function _text__design_vertical_cropping(
 
     # Check if we can draw the entire table, meaning that a continuation line is not
     # necessary.
-    (total_table_lines <= display_number_of_rows) && return num_data_rows, false, false
+    (total_table_lines <= display_number_of_rows) && return table_data.num_rows, false, false
 
     # We need one additional line to show the omitted row summary, if required, since we
     # must crop the table here.
@@ -210,18 +210,18 @@ function _text__design_vertical_cropping(
         end
 
     else
-        # Compute how many lines we must draw before the continuation line.
-        #
-        # NOTE: Notice that we subtract the vertical line at end from the number of lines
-        # after data. This procedure is necessary because we want to consider this line to
-        # obtain the middle point of the table.
-        cont_line_id = num_lines_before_data + div(
+        # Obtain the table middle line, where we will try to put the continuation line.
+        # Notice that sometimes it is not possible because the iterator counts only the data
+        # lines to select the position of the continuation line and here we can also have
+        # horizontal table lines.
+        middle_line_id = num_lines_before_data + div(
             display_number_of_rows -
             num_lines_before_data -
-            (num_lines_after_data - tf.vertical_line_at_end),
+            num_lines_after_data -
+            1,
             2,
             RoundUp
-        )
+        ) + 1
 
         # == Process Data Rows Before Continuation Line ====================================
 
@@ -230,7 +230,7 @@ function _text__design_vertical_cropping(
         # We will compute the number of data lines before the continuation line.
         for i in 1:table_data.num_rows
             Δ = 1
-            num_remaining_lines = cont_line_id - current_line - 1
+            num_remaining_lines = middle_line_id - current_line - 1
 
             if i ∈ horizontal_lines_at_data_rows
                 Δ += 1
@@ -295,7 +295,6 @@ end
 # == Table Dimensions ======================================================================
 
 function _text__total_table_width(
-    display_width::Int,
     table_data::TableData,
     tf::TextTableFormat,
     vertical_lines_at_data_columns::AbstractVector{Int},
@@ -322,9 +321,5 @@ function _text__total_table_width(
             2 + printed_data_column_widths[j] + (j ∈ vertical_lines_at_data_columns)
     end
 
-    total_table_width = display_width > 0 ?
-        min(display_width, current_column) :
-        current_column
-
-    return total_table_width
+    return current_column
 end

@@ -97,8 +97,8 @@ const _UNDEFINED_CELL = UndefinedCell()
     first_column_index::Int
 
     # Maxium number of rows and columns we must print.
-    maximum_number_of_columns::Int = 0
-    maximum_number_of_rows::Int = 0
+    maximum_number_of_columns::Int = -1
+    maximum_number_of_rows::Int = -1
 
     # How we should vertically crop the table.
     vertical_crop_mode::Symbol = :bottom

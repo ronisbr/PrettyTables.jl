@@ -67,7 +67,7 @@ function _text__print_horizontal_line(
     row_label_column_width::Int,
     printed_data_column_widths::Vector{Int},
     top::Bool = false,
-    bottom::Bool = false
+    bottom::Bool = false,
 )
     # == Auxiliary Variables ===============================================================
 
@@ -99,6 +99,8 @@ function _text__print_horizontal_line(
     end
 
     row = string(tf.row)
+
+    table_continuation_column = _is_horizontally_cropped(table_data)
 
     # == Print the Horizontal Line =========================================================
 
@@ -137,15 +139,27 @@ function _text__print_horizontal_line(
         _text__print(display, row^(cw + 2))
 
         if (j == last(eachindex(printed_data_column_widths)))
-            tf.vertical_line_at_end && _text__horizontal_line_intersection(
+            tf.vertical_line_after_data_columns && _text__horizontal_line_intersection(
                 display,
-                ri,
+                table_continuation_column ? mi : ri,
                 row,
-                true
+                !table_continuation_column
             )
         elseif j ∈ vertical_lines_at_data_columns
             _text__horizontal_line_intersection(display, mi, row, false)
         end
+    end
+
+    # -- Table Continuation Column ---------------------------------------------------------
+
+    if table_continuation_column
+        _text__print(display, row^3)
+        tf.vertical_line_after_continuation_column && _text__horizontal_line_intersection(
+            display,
+            ri,
+            row,
+            true
+        )
     end
 
     return nothing
@@ -165,6 +179,13 @@ function _text__horizontal_line_intersection(
     row::String,
     final_intersection::Bool
 )
+    # If the display size is negative, it means we do not have a limite. Hence, just print
+    # the intersection.
+    if display.size[2] < 0
+        _text__print(display, intersection)
+        return nothing
+    end
+
     # If the display has only two characters and we are not at the final intersection, we
     # should use the row character because the other lines will be cropped.
     num_remaining_chars = display.size[2] - display.column
