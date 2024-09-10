@@ -348,15 +348,17 @@ function _text__print_table(
                 _text__flush_line(display, false)
             end
 
-            tf.vertical_line_at_beginning && _text__print(display, tf.column)
+            tf.vertical_line_at_beginning && _text__print(display, tf.borders.column)
 
         elseif action == :diagonal_continuation_cell
             _text__print(display, " ⋱ ")
-            tf.vertical_line_after_continuation_column && _text__print(display, tf.column)
+            tf.vertical_line_after_continuation_column &&
+                _text__print(display, tf.borders.column)
 
         elseif action == :horizontal_continuation_cell
             _text__print(display, " ⋯ ")
-            tf.vertical_line_after_continuation_column && _text__print(display, tf.column)
+            tf.vertical_line_after_continuation_column &&
+                _text__print(display, tf.borders.column)
 
         elseif action ∈ _VERTICAL_CONTINUATION_CELL_ACTIONS
             alignment = _current_cell_alignment(action, ps, table_data)
@@ -381,7 +383,7 @@ function _text__print_table(
             _text__print(display, " ")
             _text__print_aligned(display, "⋮", cell_width, alignment)
             _text__print(display, " ")
-            vline && _text__print(display, tf.column)
+            vline && _text__print(display, tf.borders.column)
 
         elseif action == :end_row
             (rs == :data) && (num_data_lines += 1)
@@ -601,7 +603,7 @@ function _text__print_table(
                 alignment,
                 decoration
             )
-            vline && _text__print(display, tf.column)
+            vline && _text__print(display, tf.borders.column)
         end
     end
 
