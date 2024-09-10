@@ -63,7 +63,7 @@ end
 const _TEXT__RESET = crayon"reset"
 const _TEXT__DEFAULT = crayon"default"
 const _TEXT__BOLD = crayon"bold"
-const _TEXT__DRAK_GRAY = crayon"fg:dark_gray"
+const _TEXT__DARK_GRAY = crayon"fg:dark_gray"
 const _TEXT__CYAN = crayon"fg:cyan"
 
 # Convert the reset crayon to string to reduce allocations.
@@ -99,7 +99,7 @@ const _TEXT__STRING_RESET = string(_TEXT__RESET)
     row_label_decoration::Crayon            = _TEXT__BOLD
     row_group_label_decoration::Crayon      = _TEXT__BOLD
     first_column_label_decoration::Crayon   = _TEXT__BOLD
-    column_label_decoration::Crayon         = _TEXT__DRAK_GRAY
+    column_label_decoration::Crayon         = _TEXT__DARK_GRAY
     summary_row_cell_decoration::Crayon     = _TEXT__BOLD
     summary_row_label_decoration::Crayon    = _TEXT__BOLD
     footnote_decoration::Crayon             = _TEXT__DEFAULT
