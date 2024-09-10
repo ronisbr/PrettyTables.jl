@@ -45,6 +45,20 @@ end
 #                                       Table Format                                       #
 ############################################################################################
 
+@kwdef struct TextTableBorders
+    up_right_corner::Char      = '┐'
+    up_left_corner::Char       = '┌'
+    bottom_left_corner::Char   = '└'
+    bottom_right_corner::Char  = '┘'
+    up_intersection::Char      = '┬'
+    left_intersection::Char    = '├'
+    right_intersection::Char   = '┤'
+    middle_intersection::Char  = '┼'
+    bottom_intersection::Char  = '┴'
+    column::Char               = '│'
+    row::Char                  = '─'
+end
+
 # Create some default decorations to reduce allocations.
 const _TEXT__RESET = crayon"reset"
 const _TEXT__DEFAULT = crayon"default"
@@ -58,17 +72,7 @@ const _TEXT__STRING_RESET = string(_TEXT__RESET)
 @kwdef struct TextTableFormat
     # == Border and Lines ==================================================================
 
-    up_right_corner::Char      = '┐'
-    up_left_corner::Char       = '┌'
-    bottom_left_corner::Char   = '└'
-    bottom_right_corner::Char  = '┘'
-    up_intersection::Char      = '┬'
-    left_intersection::Char    = '├'
-    right_intersection::Char   = '┤'
-    middle_intersection::Char  = '┼'
-    bottom_intersection::Char  = '┴'
-    column::Char               = '│'
-    row::Char                  = '─'
+    borders::TextTableBorders = TextTableBorders()
 
     # == Configuration for the Horizontal and Vertical Lines ===============================
 

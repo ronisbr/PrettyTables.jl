@@ -73,34 +73,36 @@ function _text__print_horizontal_line(
 )
     # == Auxiliary Variables ===============================================================
 
+    tb = tf.borders
+
     # Here, we obtain the characters for the left, middle, and right intersections. We also
     # convert them to string.
 
     li = if top
-        string(tf.up_left_corner)
+        string(tb.up_left_corner)
     elseif bottom
-        string(tf.bottom_left_corner)
+        string(tb.bottom_left_corner)
     else
-        string(tf.left_intersection)
+        string(tb.left_intersection)
     end
 
     mi = if top
-        string(tf.up_intersection)
+        string(tb.up_intersection)
     elseif bottom
-        string(tf.bottom_intersection)
+        string(tb.bottom_intersection)
     else
-        string(tf.middle_intersection)
+        string(tb.middle_intersection)
     end
 
     ri = if top
-        string(tf.up_right_corner)
+        string(tb.up_right_corner)
     elseif bottom
-        string(tf.bottom_right_corner)
+        string(tb.bottom_right_corner)
     else
-        string(tf.right_intersection)
+        string(tb.right_intersection)
     end
 
-    row = string(tf.row)
+    row = string(tb.row)
 
     table_continuation_column = _is_horizontally_cropped(table_data)
 
