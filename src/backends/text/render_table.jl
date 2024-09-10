@@ -4,6 +4,19 @@
 #
 ############################################################################################
 
+"""
+    _text__render_table(table_data::TableData, context::IOContext, renderer::Union{Val{:print}, Val{:show}})
+
+Render the table using the specification in `table_data`. When the cells are converted to
+`String`, we use the `context`, and the `renderer`.
+
+# Returns
+
+- `Union{Nothing, Vector{String}}`: Rendered row labels.
+- `Matrix{String}`: Rendered data cells.
+- `Union{Nothing, Vector{String}}`: Rendered summary rows.
+- `Vector{String}`: Rendered footnotes.
+"""
 function _text__render_table(
     table_data::TableData,
     context::IOContext,
