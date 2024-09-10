@@ -60,8 +60,11 @@ function _current_cell_alignment(
     elseif action ∈ _VERTICAL_CONTINUATION_CELL_ACTIONS
         # Check if the continuation cell has a custom alignment. Otherwise, use the current
         # column alignment.
+        #
+        # NOTE: If we do not add `Symbol(...)` here, this function return type becomes
+        # `Union{Nothing, Symbol}` instead of `Symbol`.
         !isnothing(table_data.continuation_row_alignment) &&
-            return table_data.continuation_row_alignment
+            return Symbol(table_data.continuation_row_alignment)
 
         new_action = if action == :row_number_vertical_continuation_cell
             :row_number

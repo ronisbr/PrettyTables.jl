@@ -42,6 +42,7 @@ include("./backends/text/types.jl")
 include("./backends/text/display.jl")
 include("./backends/text/private.jl")
 include("./backends/text/render_cell.jl")
+include("./backends/text/render_table.jl")
 include("./backends/text/text_backend.jl")
 
 include("./printing_state/alignment.jl")

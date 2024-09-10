@@ -239,6 +239,9 @@ function _next(state::PrintingTableState, table_data::TableData)
 
     ps < _NEW_ROW_AFTER_GROUP &&
         return :new_row, rs, PrintingTableState(_ROW_GROUP, i, 0, rs)
+
+    # We must never reach this point.
+    return :internal_error, rs, state
 end
 
 function _update_data_cell_indices(

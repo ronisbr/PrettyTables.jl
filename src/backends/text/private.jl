@@ -21,6 +21,50 @@ function _text__render_footnote_superscript(number::Int)
     return str
 end
 
+# == Horizontal Cropping ===================================================================
+
+function _text__number_of_printed_data_columns(
+    display_width::Int,
+    table_data::TableData,
+    tf::TextTableFormat,
+    vertical_lines_at_data_columns::AbstractVector{Int},
+    row_number_column_width::Int,
+    row_label_column_width::Int,
+    printed_data_column_widths::Vector{Int}
+)
+    display_width <= 0 && return table_data.num_columns
+
+    current_column  = 0
+    current_column +=
+        tf.vertical_line_at_beginning +
+        (
+            table_data.show_row_number_column ?
+                row_number_column_width + tf.vertical_line_after_row_number_column + 2 :
+                0
+        ) +
+        (
+            _has_row_labels(table_data) ?
+                row_label_column_width + tf.vertical_line_after_row_label_column + 2 :
+                0
+        )
+
+    num_printed_data_rows = 0
+
+    for j in eachindex(printed_data_column_widths)
+        current_column += 1 + printed_data_column_widths[j]
+        num_remaining_columns = display_width - current_column
+
+        if (num_remaining_columns <= 1)
+            break
+        end
+
+        num_printed_data_rows += 1
+        current_column += (j ∈ vertical_lines_at_data_columns) + 1
+    end
+
+    return num_printed_data_rows
+end
+
 # == Vertical Cropping =====================================================================
 
 """
@@ -48,7 +92,6 @@ function _text__number_of_required_lines(
 )
     # Compute the number of lines we must have before printing the data.
     num_lines_before_data =
-        1 + # ................................................................ Margin at top
         tf.horizontal_line_at_beginning +
         length(table_data.column_labels) +
         tf.horizontal_line_after_column_labels
@@ -64,7 +107,8 @@ function _text__number_of_required_lines(
         (
             _has_footnotes(table_data) ? length(table_data.footnotes) : 0
         ) +
-        2 # ................................................................ Margin at bottom
+        tf.new_line_at_end +
+        1 # ................................................................ Margin at bottom
 
     # Count how many horizontal table lines we must draw.
     num_horizontal_lines = 0
@@ -113,7 +157,14 @@ function _text__design_vertical_cropping(
     display_number_of_rows::Int
 )
     num_data_rows = 0
+
+    # This variable indicates if we must suppress the horizontal line before the
+    # continuation row if it exists.
     suppress_vline_before_continuation_row = false
+
+    # This variable indicates if we must suppress the horizontal line after the
+    # continuation row if it exists.
+    suppress_vline_after_continuation_row = false
 
     # Compute the number of required lines to print the table.
     total_table_lines, num_lines_before_data, num_lines_after_data, _ =
@@ -121,7 +172,7 @@ function _text__design_vertical_cropping(
 
     # Check if we can draw the entire table, meaning that a continuation line is not
     # necessary.
-    (total_table_lines <= display_number_of_rows) && return num_data_rows, false
+    (total_table_lines <= display_number_of_rows) && return num_data_rows, false, false
 
     # We need one additional line to show the omitted row summary, if required, since we
     # must crop the table here.
@@ -160,10 +211,14 @@ function _text__design_vertical_cropping(
 
     else
         # Compute how many lines we must draw before the continuation line.
+        #
+        # NOTE: Notice that we subtract the vertical line at end from the number of lines
+        # after data. This procedure is necessary because we want to consider this line to
+        # obtain the middle point of the table.
         cont_line_id = num_lines_before_data + div(
             display_number_of_rows -
             num_lines_before_data -
-            num_lines_after_data,
+            (num_lines_after_data - tf.vertical_line_at_end),
             2,
             RoundUp
         )
@@ -175,7 +230,7 @@ function _text__design_vertical_cropping(
         # We will compute the number of data lines before the continuation line.
         for i in 1:table_data.num_rows
             Δ = 1
-            num_remaining_lines = cont_line_id - current_line
+            num_remaining_lines = cont_line_id - current_line - 1
 
             if i ∈ horizontal_lines_at_data_rows
                 Δ += 1
@@ -216,7 +271,7 @@ function _text__design_vertical_cropping(
                     break
 
                 elseif num_remaining_lines <= 2
-                    suppress_vline_before_continuation_row = num_remaining_lines == 1
+                    suppress_vline_after_continuation_row = num_remaining_lines == 1
                     num_data_rows += 1
                     break
                 end
@@ -230,5 +285,46 @@ function _text__design_vertical_cropping(
         end
     end
 
-    return num_data_rows, suppress_vline_before_continuation_row
+    return (
+        num_data_rows,
+        suppress_vline_before_continuation_row,
+        suppress_vline_after_continuation_row
+    )
+end
+
+# == Table Dimensions ======================================================================
+
+function _text__total_table_width(
+    display_width::Int,
+    table_data::TableData,
+    tf::TextTableFormat,
+    vertical_lines_at_data_columns::AbstractVector{Int},
+    row_number_column_width::Int,
+    row_label_column_width::Int,
+    printed_data_column_widths::Vector{Int}
+)
+    current_column  = 0
+    current_column +=
+        tf.vertical_line_at_beginning +
+        (
+            table_data.show_row_number_column ?
+                row_number_column_width + tf.vertical_line_after_row_number_column + 2 :
+                0
+        ) +
+        (
+            _has_row_labels(table_data) ?
+                row_label_column_width + tf.vertical_line_after_row_label_column + 2 :
+                0
+        )
+
+    for j in eachindex(printed_data_column_widths)
+        current_column +=
+            2 + printed_data_column_widths[j] + (j ∈ vertical_lines_at_data_columns)
+    end
+
+    total_table_width = display_width > 0 ?
+        min(display_width, current_column) :
+        current_column
+
+    return total_table_width
 end

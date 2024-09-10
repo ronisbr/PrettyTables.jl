@@ -1,5 +1,6 @@
 ## Description #############################################################################
 #
+using Markdown: horizontalrule
 # Text back end for PrettyTables.jl.
 #
 ############################################################################################
@@ -30,13 +31,18 @@ function _text__print_table(
         display_size = (display_size[1], -1)
     end
 
+    # If the user does not want to crop the table vertically, we set the display length to
+    # -1, meaning that we do not have a limit.
+    if !fit_table_in_display_vertically
+        display_size = (-1, display_size[2])
+    end
+
     # Create the structure that holds the display information.
     display = Display(
         display_size,
         1,
         0,
         get(context, :color, false),
-        tf.continuation_char,
         buf_io,
         IOBuffer()
     )
@@ -45,18 +51,18 @@ function _text__print_table(
     if tf.vertical_lines_at_data_columns isa Symbol
         vertical_lines_at_data_columns = tf.vertical_lines_at_data_columns == :all ?
             (1:table_data.num_columns) :
-            Int[]
+            (1:0)
     else
-        vertical_lines_at_data_columns = tf.vertical_lines_at_data_columns
+        vertical_lines_at_data_columns = tf.vertical_lines_at_data_columns::Vector{Int}
     end
 
     # Process the horizontal lines at data rows.
     if tf.horizontal_lines_at_data_rows isa Symbol
         horizontal_lines_at_data_rows = tf.horizontal_lines_at_data_rows == :all ?
             (1:table_data.num_rows) :
-            Int[]
+            (1:0)
     else
-        horizontal_lines_at_data_rows = tf.horizontal_lines_at_data_rows
+        horizontal_lines_at_data_rows = tf.horizontal_lines_at_data_rows::Vector{Int}
     end
 
     # Limit the number of rendered cells given the display size if the user wants.
@@ -65,7 +71,9 @@ function _text__print_table(
     end
 
     if fit_table_in_display_vertically
-        table_data.maximum_number_of_rows, suppress_vline_before_continuation_row =
+        table_data.maximum_number_of_rows,
+            suppress_vline_before_continuation_row,
+            suppress_vline_after_continuation_row =
             _text__design_vertical_cropping(
                 table_data,
                 tf,
@@ -75,84 +83,18 @@ function _text__print_table(
             )
     end
 
-    # Obtain general information about the table.
-    num_column_label_lines   = length(table_data.column_labels)
-    num_printed_data_columns = _number_of_printed_data_columns(table_data)
-    num_printed_data_rows    = _number_of_printed_data_rows(table_data)
-    num_summary_rows         = _has_summary_rows(table_data) ? length(table_data.summary_rows) : 0
-    num_footnotes            = _has_footnotes(table_data) ? length(table_data.footnotes) : 0
-
     # == Render the Table ==================================================================
 
-    # For the text backend, we need to render the entire table before printing to take into
+    # For the text back end, we need to render the entire table before printing to take into
     # account the required column width.
 
-    # Let's allocate all the sections.
-    column_labels = Matrix{String}(undef, num_column_label_lines, num_printed_data_columns)
+    row_labels, column_labels, table_str, summary_rows, footnotes = _text__render_table(
+        table_data,
+        context,
+        renderer,
+    )
 
-    row_labels = _has_row_labels(table_data) ?
-        Vector{String}(undef, num_printed_data_rows) :
-        nothing
-
-    table_str = Matrix{String}(undef, num_printed_data_rows, num_printed_data_columns)
-
-    summary_rows = _has_summary_rows(table_data) ?
-        Matrix{String}(undef, num_summary_rows, num_printed_data_columns) :
-        nothing
-
-    footnotes = _has_footnotes(table_data) ? Vector{String}(undef, num_footnotes) : nothing
-
-    action = :initialize
-
-    # We must store the index related to the rendered tables. These indices differ from the
-    # actual table indices due to cropping.
-    ir = jr = 0
-
-    while action != :end_printing
-        action, rs, ps = _next(ps, table_data)
-
-        action == :end_printing && break
-
-        ir, jr = _update_data_cell_indices(action, rs, ps, ir, jr)
-
-        action ∉ (:column_label, :data, :summary_row_cell, :row_label, :footnote) && continue
-
-        cell = _current_cell(action, ps, table_data)
-
-        rendered_cell = if cell !== _IGNORE_CELL
-            _text__render_cell(cell, buf, renderer)
-        else
-            ""
-        end
-
-        # Check for footnotes.
-        cell_footnotes = _current_cell_footnotes(table_data, action, ps.i, ps.j)
-
-        if !isnothing(cell_footnotes) && !isempty(cell_footnotes)
-            for i in eachindex(cell_footnotes)
-                f = cell_footnotes[i]
-                rendered_cell *= _text__render_footnote_superscript(f)
-                (i != last(eachindex(cell_footnotes))) && (rendered_cell *= "ʼ")
-            end
-        end
-
-        if (action == :column_label)
-            column_labels[ir, jr] = rendered_cell
-
-        elseif (action == :data)
-            table_str[ir, jr] = rendered_cell
-
-        elseif !isnothing(summary_rows) && (action == :summary_row_cell)
-            summary_rows[ir, jr] = rendered_cell
-
-        elseif !isnothing(row_labels) && (action == :row_label)
-            row_labels[ir] = rendered_cell
-
-        elseif !isnothing(footnotes) && (action == :footnote)
-            id = ps.i
-            footnotes[id] = _text__render_footnote_superscript(id) * ": " * rendered_cell
-        end
-    end
+    num_printed_data_rows, num_printed_data_columns = size(table_str)
 
     # == Compute the Column Width ==========================================================
 
@@ -194,6 +136,24 @@ function _text__print_table(
         printed_data_column_widths[j] = m
     end
 
+    # Now we can obtain the true number of omitted rows and columns.
+    num_printed_data_columns = _text__number_of_printed_data_columns(
+        display_size[2],
+        table_data,
+        tf,
+        vertical_lines_at_data_columns,
+        row_number_column_width,
+        row_label_column_width,
+        printed_data_column_widths
+    )
+
+    num_omitted_data_columns = table_data.num_columns - num_printed_data_columns
+    num_omitted_data_rows    = table_data.num_rows - num_printed_data_rows
+
+    # We can update the table data to avoid unnecessary processing.
+    table_data.maximum_number_of_columns =
+        table_data.num_columns - num_omitted_data_columns + 1
+
     # == Print the Table ===================================================================
 
     ps     = PrintingTableState()
@@ -202,6 +162,9 @@ function _text__print_table(
     # We must store the index related to the rendered tables. These indices differ from the
     # actual table indices due to cropping.
     ir = jr = 0
+
+    # Variable to store how many data lines were printed.
+    num_data_lines = 0
 
     if tf.horizontal_line_at_beginning
         _text__print_horizontal_line(
@@ -230,7 +193,7 @@ function _text__print_table(
 
         elseif rs == :table_footer
             if action == :footnote
-                _text__aligned_print(display, footnotes[ps.i], footnote_column_width, :l)
+                _text__print_aligned(display, footnotes[ps.i], footnote_column_width, :l)
                 _text__flush_line(display)
             end
 
@@ -275,17 +238,35 @@ function _text__print_table(
                 cell_width = printed_data_column_widths[jr]
                 vline =
                     (jr ∈ vertical_lines_at_data_columns) ||
-                    ((jr == num_printed_data_columns) && tf.vertical_line_at_end)
+                    ((ps.j == table_data.num_columns) && tf.vertical_line_at_end)
             end
 
             _text__print(display, " ")
-            _text__aligned_print(display, "⋮", cell_width, alignment)
+            _text__print_aligned(display, "⋮", cell_width, alignment)
             _text__print(display, " ")
             vline && _text__print(display, "$(tf.column)")
 
         elseif action == :end_row
-            _text__flush_line(display)
+            (rs == :data) && (num_data_lines += 1)
 
+            # == Flush the Line ============================================================
+
+            if rs == :continuation_row
+                _text__flush_line(display, true, '⋱')
+
+            elseif rs == :data
+                _text__flush_line(
+                    display,
+                    true,
+                    (num_data_lines - 1) % (tf.ellipsis_line_skip + 1) == 0 ? '⋯' : ' '
+                )
+            else
+                _text__flush_line(display)
+            end
+
+            # == Handle the Table Horizontal Line ==========================================
+
+            # Print the horizontal line after the column labels.
             if (rs == :column_labels) &&
                 (ps.row_section != :column_labels) &&
                 tf.horizontal_line_after_column_labels
@@ -302,8 +283,11 @@ function _text__print_table(
 
                 _text__flush_line(display, false)
 
+            # Check if we must print an horizontal line after the current data row.
             elseif (rs == :data) && (ps.i ∈ horizontal_lines_at_data_rows)
 
+                # We should only print this line if the next state is not the continuation
+                # row or if we do not need to suppress the line before the continuation row.
                 if (ps.row_section != :continuation_row) || !suppress_vline_before_continuation_row
                     _text__print_horizontal_line(
                         display,
@@ -318,6 +302,24 @@ function _text__print_table(
                     _text__flush_line(display, false)
                 end
 
+            # Check if we must print an horizontal line after the continuation row.
+            elseif (rs == :continuation_row) &&
+                (ps.i ∈ horizontal_lines_at_data_rows) &&
+                !suppress_vline_after_continuation_row
+
+                _text__print_horizontal_line(
+                    display,
+                    tf,
+                    table_data,
+                    vertical_lines_at_data_columns,
+                    row_number_column_width,
+                    row_label_column_width,
+                    printed_data_column_widths
+                )
+
+                _text__flush_line(display, false)
+
+            # Check if the must print the horizontal line at the end of the table.
             elseif ps.row_section == :table_footer
                 # If the next section is the table footer, we must draw the last table line.
                 if tf.horizontal_line_at_end
@@ -335,28 +337,51 @@ function _text__print_table(
 
                     _text__flush_line(display, false)
                 end
+            end
 
-                # We also must show the omitted cell summary if the user requested it.
-                if pspec.show_omitted_cell_summary
-                    ocs = _omitted_cell_summary(table_data, pspec)
+            # == Omitted Cell Summary ======================================================
 
-                    if !isempty(ocs)
-                        _text__print(display, align_string(ocs, display_size[2], :r))
-                        _text__flush_line(display)
-                    end
-                end
+            # We also must show the omitted cell summary if the user requested it.
+            if (ps.row_section == :table_footer) && pspec.show_omitted_cell_summary
+                ocs = _omitted_cell_summary(
+                    num_omitted_data_rows,
+                    num_omitted_data_columns
+                )
+
+                isempty(ocs) && continue
+
+                # Compute the total table width to properly align the string.
+                total_table_width = _text__total_table_width(
+                    display_size[2],
+                    table_data,
+                    tf,
+                    vertical_lines_at_data_columns,
+                    row_number_column_width,
+                    row_label_column_width,
+                    printed_data_column_widths
+                )
+
+                _text__print_aligned(
+                    display,
+                    ocs,
+                    total_table_width,
+                    :r,
+                    tf.omitted_cell_summary_decoration
+                )
+
+                _text__flush_line(display)
             end
 
         elseif action == :row_group_label
 
         elseif action == :footnote
-            _text__aligned_print(display, footnotes[ps.i], footnote_column_width, :l)
+            _text__print_aligned(display, footnotes[ps.i], footnote_column_width, :l)
             tf.vertical_line_at_end && _text__print(display, tf.column)
 
         else
             alignment     = _current_cell_alignment(action, ps, table_data)
             cell_width    = 1
-            decoration    = _TEXT__RESET
+            decoration    = _TEXT__DEFAULT
             rendered_cell = ""
             vline         = false
 
@@ -407,7 +432,7 @@ function _text__print_table(
                     vline = true
                 end
 
-                if (jr == num_printed_data_columns) && tf.vertical_line_at_end
+                if (ps.j == table_data.num_columns) && tf.vertical_line_at_end
                     vline = true
                 end
 
@@ -443,10 +468,10 @@ function _text__print_table(
                 end
             end
 
-            _text__aligned_print(
+            _text__print_aligned(
                 display,
                 " " * rendered_cell * " " ,
-                cell_width,
+                cell_width + 2,
                 alignment,
                 decoration
             )
@@ -456,7 +481,13 @@ function _text__print_table(
 
     # == Print the Buffer Into the IO ======================================================
 
-    print(context, String(take!(buf_io)))
+    output_str = String(take!(buf_io))
+
+    if !tf.new_line_at_end
+        output_str = chomp(output_str)
+    end
+
+    print(context, output_str)
 
     return nothing
 end

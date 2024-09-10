@@ -18,7 +18,11 @@ function _text__print(display::Display, str::AbstractString)
     return nothing
 end
 
-function _text__flush_line(display::Display, add_continuation_char::Bool = true)
+function _text__flush_line(
+    display::Display,
+    add_continuation_char::Bool = true,
+    continuation_char::Char = '⋯'
+)
     dw   = display.size[2]
     line = String(take!(display.buf_line))
 
@@ -26,7 +30,7 @@ function _text__flush_line(display::Display, add_continuation_char::Bool = true)
         if add_continuation_char
             line =
                 first(right_crop(line, display.column - dw + 2)) *
-                " $(display.continuation_char)" *
+                " $(continuation_char)" *
                 (display.has_color ? _TEXT__STRING_RESET : "")
         else
             line = first(right_crop(line, display.column - dw))
@@ -39,18 +43,18 @@ function _text__flush_line(display::Display, add_continuation_char::Bool = true)
     return nothing
 end
 
-function _text__aligned_print(
+function _text__print_aligned(
     display::Display,
     str::AbstractString,
     cell_width::Int,
     alignment::Symbol,
-    decoration::Crayon = _TEXT__RESET
+    decoration::Crayon = _TEXT__DEFAULT
 )
-    if display.has_color && (decoration !== _TEXT__RESET)
+    if display.has_color && (decoration != _TEXT__DEFAULT)
         str = "$(decoration)$(str)$(_TEXT__STRING_RESET)"
     end
 
-    _text__print(display, align_string(str, cell_width, alignment))
+    _text__print(display, align_string(str, cell_width, alignment; fill = true))
     return nothing
 end
 
@@ -106,14 +110,24 @@ function _text__print_horizontal_line(
 
     if table_data.show_row_number_column
         _text__print(display, row^(row_number_column_width + 2))
-        tf.vertical_line_after_row_number_column && _text__print(display, mi)
+        tf.vertical_line_after_row_number_column && _text__horizontal_line_intersection(
+            display,
+            mi,
+            row,
+            false
+        )
     end
 
     # -- Row Label Column ------------------------------------------------------------------
 
     if _has_row_labels(table_data)
         _text__print(display, row^(row_label_column_width + 2))
-        tf.vertical_line_after_row_label_column && _text__print(display, mi)
+        tf.vertical_line_after_row_label_column && _text__horizontal_line_intersection(
+            display,
+            mi,
+            row,
+            false
+        )
     end
 
     # -- Data ------------------------------------------------------------------------------
@@ -123,10 +137,44 @@ function _text__print_horizontal_line(
         _text__print(display, row^(cw + 2))
 
         if (j == last(eachindex(printed_data_column_widths)))
-            tf.vertical_line_at_end && _text__print(display, ri)
+            tf.vertical_line_at_end && _text__horizontal_line_intersection(
+                display,
+                ri,
+                row,
+                true
+            )
         elseif j ∈ vertical_lines_at_data_columns
-            _text__print(display, mi)
+            _text__horizontal_line_intersection(display, mi, row, false)
         end
+    end
+
+    return nothing
+end
+
+"""
+    _text__horizontal_line_intersection(display::Display, intersection::String, row::String, final_intersection::Bool) -> Nothing
+
+Print to `display` the horizontal line `intersection` if we have enough space. Otherwise,
+print `row`. The argument `final_intersection` indicates that we are printing the final
+intersection of the table. In that case, we print `intersection` if we have at least two
+remaning spaces.
+"""
+function _text__horizontal_line_intersection(
+    display::Display,
+    intersection::String,
+    row::String,
+    final_intersection::Bool
+)
+    # If the display has only two characters and we are not at the final intersection, we
+    # should use the row character because the other lines will be cropped.
+    num_remaining_chars = display.size[2] - display.column
+
+    if num_remaining_chars > 2
+        _text__print(display, intersection)
+    elseif (num_remaining_chars >= 1) && final_intersection
+        _text__print(display, intersection)
+    else
+        _text__print(display, row)
     end
 
     return nothing
