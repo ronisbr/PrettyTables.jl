@@ -134,8 +134,12 @@ function _next(state::PrintingTableState, table_data::TableData)
                 # If the maximum number of row is 0, we must go to the continuation row.
                 mr = table_data.maximum_number_of_rows
 
-                mr == 0 &&
+                ((mr == 0) && (max_i > 0)) &&
                     return :end_row, rs, PrintingTableState(_NEW_ROW - 1, i, 0, :continuation_row)
+
+                # If we have no data rows, we can go to the table footer.
+                (max_i == 0) &&
+                    return :end_row, rs, PrintingTableState(_END_ROW, 0, 0, :table_footer)
 
                 # If we reached the number of column labels, we must go to the data.
                 return :end_row, rs, PrintingTableState(_NEW_ROW - 1, 0, 0, :data)
