@@ -48,12 +48,12 @@ function _text__print_table(
     )
 
     # Process the vertical lines at data columns.
-    if tf.vertical_lines_at_data_columns isa Symbol
-        vertical_lines_at_data_columns = tf.vertical_lines_at_data_columns == :all ?
+    if tf.right_vertical_lines_at_data_columns isa Symbol
+        right_vertical_lines_at_data_columns = tf.right_vertical_lines_at_data_columns == :all ?
             (1:table_data.num_columns) :
             (1:0)
     else
-        vertical_lines_at_data_columns = tf.vertical_lines_at_data_columns::Vector{Int}
+        right_vertical_lines_at_data_columns = tf.right_vertical_lines_at_data_columns::Vector{Int}
     end
 
     # Process the horizontal lines at data rows.
@@ -167,7 +167,7 @@ function _text__print_table(
     total_table_width = _text__total_table_width(
         table_data,
         tf,
-        vertical_lines_at_data_columns,
+        right_vertical_lines_at_data_columns,
         row_number_column_width,
         row_label_column_width,
         printed_data_column_widths,
@@ -203,7 +203,7 @@ function _text__print_table(
             display.size[2],
             table_data,
             tf,
-            vertical_lines_at_data_columns,
+            right_vertical_lines_at_data_columns,
             row_number_column_width,
             row_label_column_width,
             printed_data_column_widths,
@@ -250,7 +250,7 @@ function _text__print_table(
             display,
             tf,
             table_data,
-            vertical_lines_at_data_columns,
+            right_vertical_lines_at_data_columns,
             row_number_column_width,
             row_label_column_width,
             printed_data_column_widths,
@@ -287,7 +287,7 @@ function _text__print_table(
                     display,
                     tf,
                     table_data,
-                    vertical_lines_at_data_columns,
+                    right_vertical_lines_at_data_columns,
                     row_number_column_width,
                     row_label_column_width,
                     printed_data_column_widths,
@@ -321,7 +321,7 @@ function _text__print_table(
 
                 if (jr == last_printed_column_index)
                     tf.vertical_line_after_data_columns && (vline = true)
-                elseif ps.j ∈ vertical_lines_at_data_columns
+                elseif ps.j ∈ right_vertical_lines_at_data_columns
                     vline = true
                 end
             end
@@ -364,7 +364,7 @@ function _text__print_table(
                     display,
                     tf,
                     table_data,
-                    vertical_lines_at_data_columns,
+                    right_vertical_lines_at_data_columns,
                     row_number_column_width,
                     row_label_column_width,
                     printed_data_column_widths,
@@ -384,7 +384,7 @@ function _text__print_table(
                         display,
                         tf,
                         table_data,
-                        vertical_lines_at_data_columns,
+                        right_vertical_lines_at_data_columns,
                         row_number_column_width,
                         row_label_column_width,
                         printed_data_column_widths,
@@ -402,7 +402,7 @@ function _text__print_table(
                     display,
                     tf,
                     table_data,
-                    vertical_lines_at_data_columns,
+                    right_vertical_lines_at_data_columns,
                     row_number_column_width,
                     row_label_column_width,
                     printed_data_column_widths,
@@ -418,7 +418,7 @@ function _text__print_table(
                         display,
                         tf,
                         table_data,
-                        vertical_lines_at_data_columns,
+                        right_vertical_lines_at_data_columns,
                         row_number_column_width,
                         row_label_column_width,
                         printed_data_column_widths,
@@ -473,32 +473,22 @@ function _text__print_table(
                 cell_width    = row_number_column_width
                 rendered_cell = _text__render_cell(cell, buf, renderer)
 
-                tf.vertical_line_after_row_number_column && (vline = true)
-
             elseif action == :stubhead_label
                 cell          = _current_cell(action, ps, table_data)
                 cell_width    = row_label_column_width
                 rendered_cell = _text__render_cell(cell, buf, renderer)
 
-                tf.vertical_line_after_row_label_column && (vline = true)
-
             elseif action == :row_label
                 cell_width    = row_label_column_width
                 rendered_cell = row_labels[ir]
-
-                tf.vertical_line_after_row_label_column && (vline = true)
 
             elseif action == :summary_row_number
                 cell_width    = row_number_column_width
                 rendered_cell = ""
 
-                tf.vertical_line_after_row_number_column && (vline = true)
-
             elseif action == :summary_row_label
                 cell_width    = row_label_column_width
                 rendered_cell = table_data.summary_row_labels[ir]
-
-                tf.vertical_line_after_row_label_column && (vline = true)
 
             elseif action == :column_label
                 cell_width = printed_data_column_widths[jr]
@@ -511,38 +501,19 @@ function _text__print_table(
                 # does not support such an operation, we only fill the field with `-`.
                 rendered_cell = column_labels[ir, jr]
 
-                if (jr == last_printed_column_index)
-                    tf.vertical_line_after_data_columns && (vline = true)
-                elseif ps.j ∈ vertical_lines_at_data_columns
-                    vline = true
-                end
-
             elseif action == :row_number
                 cell          = _current_cell(action, ps, table_data)
                 cell_width    = row_number_column_width
                 rendered_cell = _text__render_cell(cell, buf, renderer)
 
-                tf.vertical_line_after_row_number_column && (vline = true)
-
             elseif action == :data
                 cell_width    = printed_data_column_widths[jr]
                 rendered_cell = table_str[ir, jr]
-
-                if (jr == last_printed_column_index)
-                    tf.vertical_line_after_data_columns && (vline = true)
-                elseif ps.j ∈ vertical_lines_at_data_columns
-                    vline = true
-                end
 
             elseif action == :summary_row_cell
                 cell_width    = printed_data_column_widths[jr]
                 rendered_cell = summary_rows[ir, jr]
 
-                if (jr == last_printed_column_index)
-                    tf.vertical_line_after_data_columns && (vline = true)
-                elseif ps.j ∈ vertical_lines_at_data_columns
-                    vline = true
-                end
             end
 
             # == Vertical Line After the Cell ==============================================
@@ -558,7 +529,7 @@ function _text__print_table(
             elseif action ∈ (:column_label, :data, :summary_row_cell)
                 if (jr == last_printed_column_index)
                     tf.vertical_line_after_data_columns && (vline = true)
-                elseif ps.j ∈ vertical_lines_at_data_columns
+                elseif ps.j ∈ right_vertical_lines_at_data_columns
                     vline = true
                 end
             end

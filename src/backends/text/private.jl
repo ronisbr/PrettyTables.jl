@@ -27,7 +27,7 @@ function _text__number_of_printed_data_columns(
     display_width::Int,
     table_data::TableData,
     tf::TextTableFormat,
-    vertical_lines_at_data_columns::AbstractVector{Int},
+    right_vertical_lines_at_data_columns::AbstractVector{Int},
     row_number_column_width::Int,
     row_label_column_width::Int,
     printed_data_column_widths::Vector{Int}
@@ -59,7 +59,7 @@ function _text__number_of_printed_data_columns(
         end
 
         num_printed_data_rows += 1
-        current_column += (j ∈ vertical_lines_at_data_columns) + 1
+        current_column += (j ∈ right_vertical_lines_at_data_columns) + 1
     end
 
     return num_printed_data_rows
@@ -297,7 +297,7 @@ end
 function _text__total_table_width(
     table_data::TableData,
     tf::TextTableFormat,
-    vertical_lines_at_data_columns::AbstractVector{Int},
+    right_vertical_lines_at_data_columns::AbstractVector{Int},
     row_number_column_width::Int,
     row_label_column_width::Int,
     printed_data_column_widths::Vector{Int}
@@ -318,7 +318,7 @@ function _text__total_table_width(
 
     for j in eachindex(printed_data_column_widths)
         current_column +=
-            2 + printed_data_column_widths[j] + (j ∈ vertical_lines_at_data_columns)
+            2 + printed_data_column_widths[j] + (j ∈ right_vertical_lines_at_data_columns)
     end
 
     return current_column
