@@ -109,6 +109,7 @@ function _text__number_of_required_lines(
         (
             _has_footnotes(table_data) ? length(table_data.footnotes) : 0
         ) +
+        !isempty(table_data.source_notes) +
         tf.new_line_at_end +
         1 # ................................................................ Margin at bottom
 
