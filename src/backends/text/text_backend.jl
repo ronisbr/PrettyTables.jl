@@ -221,6 +221,7 @@ function _text__print_table(
         )
     end
 
+    # If this is the very first row, we must check if a horizontal line must be printed.
     num_omitted_data_columns = table_data.num_columns - num_printed_data_columns
     num_omitted_data_rows    = table_data.num_rows - num_printed_data_rows
 
@@ -251,20 +252,7 @@ function _text__print_table(
     # Variable to store how many data lines were printed.
     num_data_lines = 0
 
-    if tf.horizontal_line_at_beginning
-        _text__print_horizontal_line(
-            display,
-            tf,
-            table_data,
-            right_vertical_lines_at_data_columns,
-            row_number_column_width,
-            row_label_column_width,
-            printed_data_column_widths,
-            true
-        )
-
-        _text__flush_line(display, false)
-    end
+    top_line_printed = false
 
     while action != :end_printing
         action, rs, ps = _next(ps, table_data)
@@ -274,6 +262,22 @@ function _text__print_table(
 
         # Special treatment for table header and footer.
         if rs == :table_header
+            if action ∈ (:title, :subtitle)
+                alignment     = _current_cell_alignment(action, ps, table_data)
+                cell          = _current_cell(action, ps, table_data)
+                decoration    = action == :title ? tf.title_decoration : tf.subtitle_decoration
+                rendered_cell = _text__render_cell(cell, buf, renderer)
+
+                _text__print_aligned(
+                    display,
+                    rendered_cell,
+                    printed_table_width,
+                    alignment,
+                    decoration
+                )
+                _text__flush_line(display)
+            end
+
             continue
 
         elseif (rs == :table_footer)
@@ -283,7 +287,7 @@ function _text__print_table(
                 _text__print_aligned(
                     display,
                     footnotes[ps.i],
-                    display_size[2],
+                    printed_table_width,
                     alignment,
                     decoration
                 )
@@ -298,7 +302,7 @@ function _text__print_table(
                 _text__print_aligned(
                     display,
                     rendered_cell,
-                    display_size[2],
+                    printed_table_width,
                     alignment,
                     decoration
                 )
@@ -309,6 +313,25 @@ function _text__print_table(
         end
 
         if action == :new_row
+
+            # If this is the very first row, we must check if a horizontal line must be
+            # printed.
+            if tf.horizontal_line_at_beginning && !top_line_printed
+                _text__print_horizontal_line(
+                    display,
+                    tf,
+                    table_data,
+                    right_vertical_lines_at_data_columns,
+                    row_number_column_width,
+                    row_label_column_width,
+                    printed_data_column_widths,
+                    true
+                )
+
+                _text__flush_line(display, false)
+
+                top_line_printed = true
+            end
 
             # Check if we need to draw a horizontal line before the summary rows.
             if (rs == :summary_row) && (ps.i == 1) && tf.horizontal_line_before_summary_rows
