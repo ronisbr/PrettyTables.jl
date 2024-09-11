@@ -14,11 +14,11 @@ function _has_footnotes(table_data::TableData)
 end
 
 """
-    _has_row_groups(table_data::TableData)
+    _has_row_group_labels(table_data::TableData)
 
 Return whether `table_data` has row group lables.
 """
-function _has_row_groups(table_data::TableData)
+function _has_row_group_labels(table_data::TableData)
     return !isnothing(table_data.row_group_labels)
 end
 

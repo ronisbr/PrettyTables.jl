@@ -38,15 +38,19 @@ function _markdown__print(
     # Let's allocate all the sections.
     column_labels = Matrix{String}(undef, num_column_label_lines, num_printed_data_columns)
 
-    row_labels = _has_row_labels(table_data) ?
-        Vector{String}(undef, num_printed_data_rows) :
+    row_labels = if _has_row_labels(table_data)
+        Vector{String}(undef, num_printed_data_rows)
+    else
         nothing
+    end
 
     table_str = Matrix{String}(undef, num_printed_data_rows, num_printed_data_columns)
 
-    summary_rows = _has_summary_rows(table_data) ?
-        Matrix{String}(undef, num_summary_rows, num_printed_data_columns) :
+    summary_rows = if _has_summary_rows(table_data)
+        Matrix{String}(undef, num_summary_rows, num_printed_data_columns)
+    else
         nothing
+    end
 
     action = :initialize
 
@@ -61,6 +65,7 @@ function _markdown__print(
 
         ir, jr = _update_data_cell_indices(action, rs, ps, ir, jr)
 
+        # Here, we only want actions related to table cells.
         action ∉ (:column_label, :data, :summary_row_cell, :row_label) && continue
 
         cell = _current_cell(action, ps, table_data)
@@ -87,7 +92,7 @@ function _markdown__print(
             end
         end
 
-        if (action == :column_label)
+        if action == :column_label
             # Apply the decoration to the column label.
             rendered_cell = _markdown__apply_decoration(
                 ir == 1 ? tf.first_column_label_decoration : tf.column_label_decoration,
@@ -96,7 +101,7 @@ function _markdown__print(
 
             column_labels[ir, jr] = rendered_cell
 
-        elseif (action == :data)
+        elseif action == :data
             # Check if we must apply highlighters.
             if !isempty(highlighters)
                 orig_data = _get_data(table_data.data)
@@ -117,6 +122,7 @@ function _markdown__print(
                 tf.summary_row_cell_decoration,
                 rendered_cell
             )
+
             summary_rows[ir, jr] = rendered_cell
 
         elseif !isnothing(row_labels) && (action == :row_label)
@@ -124,6 +130,7 @@ function _markdown__print(
                 tf.row_label_decoration,
                 rendered_cell
             )
+
             row_labels[ir] = rendered_cell
         end
     end
@@ -194,10 +201,10 @@ function _markdown__print(
         printed_data_column_widths[j] = m
     end
 
-    # Markdown does not support merging rows. Hence, if we have a row group, we must add the
-    # information in the first column. Thus, we need to possibly increase this cell
+    # Markdown does not support merging rows. Hence, if we have a row group label, we must
+    # add the information in the first column. Thus, we need to possibly increase this cell
     # accordingly.
-    if _has_row_groups(table_data)
+    if _has_row_group_labels(table_data)
         m = maximum(x -> textwidth(last(x)), table_data.row_group_labels) +
             _markdown__decoration_textwidth(tf.row_group_label_decoration)
 
@@ -265,7 +272,6 @@ function _markdown__print(
                 println(buf, _markdown__apply_decoration(
                     tf.footnote_decoration, rendered_cell
                 ))
-                continue
 
             elseif action == :source_notes
                 rendered_cell = _markdown__escape_str(
@@ -279,7 +285,6 @@ function _markdown__print(
                     tf.source_note_decoration,
                     rendered_cell
                 ))
-                continue
             end
 
             continue
@@ -327,9 +332,9 @@ function _markdown__print(
                     printed_data_column_widths
                 )
 
-            elseif tf.line_before_summary_rows &&
-                (rs != :summary_row) &&
+            elseif tf.line_before_summary_rows && (rs != :summary_row) &&
                 (next_rs == :summary_row)
+
                 _markdown__print_separation_line(
                     buf,
                     table_data,
@@ -408,9 +413,11 @@ function _markdown__print(
 
                 # If need to check if we are in a cell that should be merged. Since Markdown
                 # does not support such an operation, we only fill the field with `-`.
-                rendered_cell = _current_cell(action, ps, table_data) === _IGNORE_CELL ?
-                    string(tf.horizontal_line_char)^cell_width :
+                rendered_cell = if _current_cell(action, ps, table_data) === _IGNORE_CELL
+                    string(tf.horizontal_line_char)^cell_width
+                else
                     column_labels[ir, jr]
+                end
 
             elseif action == :row_number
                 cell          = _current_cell(action, ps, table_data)
