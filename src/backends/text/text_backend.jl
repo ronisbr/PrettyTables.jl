@@ -430,23 +430,29 @@ function _text__print_table(
                 (ps.row_section != :column_labels) &&
                 tf.horizontal_line_after_column_labels
 
-                # We must handle that case where there is no data rows. In this case, the
-                # next section after the column labels will be the table footer.
-                bottom = ps.row_section == :table_footer
+                # We should skip this line if we have a row group label at the first column.
+                psc = ps
+                _, rsc, _ = _next(psc, table_data)
 
-                _text__print_horizontal_line(
-                    display,
-                    tf,
-                    table_data,
-                    right_vertical_line_at_data_columns,
-                    row_number_column_width,
-                    row_label_column_width,
-                    printed_data_column_widths,
-                    false,
-                    bottom
-                )
+                if rsc != :row_group_label
+                    # We must handle that case where there is no data rows. In this case, the
+                    # next section after the column labels will be the table footer.
+                    bottom = ps.row_section == :table_footer
 
-                _text__flush_line(display, false)
+                    _text__print_horizontal_line(
+                        display,
+                        tf,
+                        table_data,
+                        right_vertical_line_at_data_columns,
+                        row_number_column_width,
+                        row_label_column_width,
+                        printed_data_column_widths,
+                        false,
+                        bottom
+                    )
+
+                    _text__flush_line(display, false)
+                end
 
             # Check if we must print an horizontal line after the current data row.
             elseif (rs == :data) && (ps.i ∈ horizontal_lines_at_data_rows)
