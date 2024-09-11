@@ -14,30 +14,47 @@
 
 Convert the `cell` to a string using a specific `context` and `renderer`.
 """
-function _text__cell_to_str(cell::Any, context::IOContext, ::Val{:print})
+function _text__cell_to_str(cell::Any, @nospecialize(context::IOContext), ::Val{:print})
     return sprint(print, cell; context)
 end
 
-function _text__cell_to_str(cell::Any, context::IOContext, ::Val{:show})
+function _text__cell_to_str(cell::Any, @nospecialize(context::IOContext), ::Val{:show})
     return sprint(show, cell; context)
 end
 
-function _text__cell_to_str(cell::AbstractString, context::IOContext, ::Val{:show})
+function _text__cell_to_str(
+    cell::AbstractString,
+    @nospecialize(::IOContext),
+    ::Val{:show}
+)
     return string(cell)
 end
 
-_text__cell_to_str(cell::UndefinedCell, context::IOContext, ::Val{:print}) = "#undef"
-_text__cell_to_str(cell::UndefinedCell, context::IOContext, ::Val{:show}) = "#undef"
+function _text__cell_to_str(
+    ::UndefinedCell,
+    @nospecialize(::IOContext),
+    ::Val{:print}
+)
+    return "#undef"
+end
+
+function _text__cell_to_str(
+    ::UndefinedCell,
+    @nospecialize(::IOContext),
+    ::Val{:show}
+)
+    return "#undef"
+end
 
 """
-    _text__render_cell(cell::Any, context::IOContext, renderer::Union{Val{:print}, Val{:show}}; kwargs...) -> String
+    _text__render_cell(cell::Any, @nospecialize(context::IOContext), renderer::Union{Val{:print}, Val{:show}}; kwargs...) -> String
 
 Render the `cell` in markdown back end using a specific `context` and `renderer`.
 
 """
 function _text__render_cell(
     cell::Any,
-    context::IOContext,
+    @nospecialize(context::IOContext),
     renderer::Union{Val{:print}, Val{:show}}
 )
     cell_str = _text__cell_to_str(cell, context, renderer)

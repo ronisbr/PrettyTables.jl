@@ -72,6 +72,19 @@ PrecompileTools.@setup_workload begin
 
         matrix = randn(10, 10)
 
+        # -- Text --------------------------------------------------------------------------
+
+        pretty_table(matrix)
+
+        pretty_table(
+            matrix;
+            highlighters = [
+                TextHighlighter((data, i, j) -> i == 1, crayon"bold")
+            ]
+        )
+
+        pretty_table(types)
+
         # -- HTML --------------------------------------------------------------------------
 
         pretty_table(html_buf, matrix; backend = :html)
@@ -103,6 +116,7 @@ PrecompileTools.@setup_workload begin
 
         # == Input: Tables.jl ==============================================================
 
+        pretty_table(html_buf, table)
         pretty_table(html_buf, table; backend = :html)
         pretty_table(table; backend = :markdown)
     end
