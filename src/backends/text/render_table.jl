@@ -19,7 +19,7 @@ Render the table using the specification in `table_data`. When the cells are con
 """
 function _text__render_table(
     table_data::TableData,
-    context::IOContext,
+    @nospecialize(context::IOContext),
     renderer::Union{Val{:print}, Val{:show}}
 )
     num_column_label_lines   = length(table_data.column_labels)
