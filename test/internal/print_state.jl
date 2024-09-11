@@ -86,17 +86,17 @@
             if i == 2
                 action, rs, ps = PrettyTables._next(ps, td)
                 @test action == :new_row
-                @test rs     == :data
+                @test rs     == :row_group_label
                 @test ps.i   == i
 
                 action, rs, ps = PrettyTables._next(ps, td)
                 @test action == :row_group_label
-                @test rs     == :data
+                @test rs     == :row_group_label
                 @test ps.i   == i
 
                 action, rs, ps = PrettyTables._next(ps, td)
                 @test action == :end_row
-                @test rs     == :data
+                @test rs     == :row_group_label
                 @test ps.i   == i
             end
 
@@ -353,17 +353,17 @@
                 if i == 2
                     action, rs, ps = PrettyTables._next(ps, td)
                     @test action == :new_row
-                    @test rs     == :data
+                    @test rs     == :row_group_label
                     @test ps.i   == i
 
                     action, rs, ps = PrettyTables._next(ps, td)
                     @test action == :row_group_label
-                    @test rs     == :data
+                    @test rs     == :row_group_label
                     @test ps.i   == i
 
                     action, rs, ps = PrettyTables._next(ps, td)
                     @test action == :end_row
-                    @test rs     == :data
+                    @test rs     == :row_group_label
                     @test ps.i   == i
                 end
 
@@ -588,17 +588,17 @@
                 if i == 2
                     action, rs, ps = PrettyTables._next(ps, td)
                     @test action == :new_row
-                    @test rs     == :data
+                    @test rs     == :row_group_label
                     @test ps.i   == i
 
                     action, rs, ps = PrettyTables._next(ps, td)
                     @test action == :row_group_label
-                    @test rs     == :data
+                    @test rs     == :row_group_label
                     @test ps.i   == i
 
                     action, rs, ps = PrettyTables._next(ps, td)
                     @test action == :end_row
-                    @test rs     == :data
+                    @test rs     == :row_group_label
                     @test ps.i   == i
                 end
 
@@ -668,17 +668,17 @@
             let i = 6
                 action, rs, ps = PrettyTables._next(ps, td)
                 @test action == :new_row
-                @test rs     == :data
+                @test rs     == :row_group_label
                 @test ps.i   == i
 
                 action, rs, ps = PrettyTables._next(ps, td)
                 @test action == :row_group_label
-                @test rs     == :data
+                @test rs     == :row_group_label
                 @test ps.i   == i
 
                 action, rs, ps = PrettyTables._next(ps, td)
                 @test action == :end_row
-                @test rs     == :data
+                @test rs     == :row_group_label
                 @test ps.i   == i
 
                 action, rs, ps = PrettyTables._next(ps, td)

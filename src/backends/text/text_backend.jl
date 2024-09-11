@@ -169,8 +169,9 @@ function _text__print_table(
     # that we also must analyze if the table continuation column is required since in text
     # back end we also have the continuation caused by the display end-of-line.
 
-    # Compute the required width to display the table using the user specification.
-    total_table_width = _text__total_table_width(
+    # Compute the required width to display the table using the user specification without
+    # the continuation column.
+    table_width_wo_cont_col = _text__table_width_wo_cont_column(
         table_data,
         tf,
         right_vertical_line_at_data_columns,
@@ -196,7 +197,7 @@ function _text__print_table(
         #   3. We can show the continuation column, meaning that the table is horizontally
         #      cropped by the user specification.
 
-        num_remaining_columns = display_size[2] - total_table_width
+        num_remaining_columns = display_size[2] - table_width_wo_cont_col
 
         horizontally_limited_by_display =
             num_remaining_columns < (3 + tf.vertical_line_after_continuation_column)
@@ -227,10 +228,12 @@ function _text__print_table(
 
     # We must compute what will be the last printed column index to draw the correct
     # vertical lines. Notice that, at this point, we might be printing a column partially.
-    last_printed_column_index = table_data.maximum_number_of_columns
+    last_printed_column_index = horizontally_limited_by_display ?
+        table_data.maximum_number_of_columns :
+        num_printed_data_columns
 
     # Finally, we can compute the printed table width.
-    printed_table_width = total_table_width
+    printed_table_width = table_width_wo_cont_col
 
     if _is_horizontally_cropped(table_data)
         printed_table_width += 3 + tf.vertical_line_after_continuation_column
@@ -343,6 +346,23 @@ function _text__print_table(
                     row_number_column_width,
                     row_label_column_width,
                     printed_data_column_widths,
+                )
+
+                _text__flush_line(display, false)
+            end
+
+            if (rs == :row_group_label)
+                _text__print_horizontal_line(
+                    display,
+                    tf,
+                    table_data,
+                    right_vertical_line_at_data_columns,
+                    row_number_column_width,
+                    row_label_column_width,
+                    printed_data_column_widths,
+                    true,
+                    false,
+                    true
                 )
 
                 _text__flush_line(display, false)
@@ -464,6 +484,22 @@ function _text__print_table(
 
                 _text__flush_line(display, false)
 
+            elseif (rs == :row_group_label)
+                _text__print_horizontal_line(
+                    display,
+                    tf,
+                    table_data,
+                    right_vertical_line_at_data_columns,
+                    row_number_column_width,
+                    row_label_column_width,
+                    printed_data_column_widths,
+                    false,
+                    true,
+                    true
+                )
+
+                _text__flush_line(display, false)
+
             # Check if the must print the horizontal line at the end of the table.
             elseif ps.row_section == :table_footer
                 # If the next section is the table footer, we must draw the last table line.
@@ -505,8 +541,6 @@ function _text__print_table(
 
                 _text__flush_line(display)
             end
-
-        elseif action == :row_group_label
 
         else
             # Here, we treat all normal cells in the table.
@@ -576,6 +610,12 @@ function _text__print_table(
                 cell_width    = printed_data_column_widths[jr]
                 rendered_cell = summary_rows[ir, jr]
 
+            elseif action == :row_group_label
+                alignment     = _current_cell_alignment(action, ps, table_data)
+                cell          = _current_cell(action, ps, table_data)
+                cell_width    = printed_table_width - 4
+                decoration    = tf.row_group_label_decoration
+                rendered_cell = _text__render_cell(cell, buf, renderer)
             end
 
             # == Vertical Line After the Cell ==============================================
@@ -592,6 +632,11 @@ function _text__print_table(
                 if (jr == last_printed_column_index)
                     tf.vertical_line_after_data_columns && (vline = true)
                 elseif ps.j ∈ right_vertical_line_at_data_columns
+                    vline = true
+                end
+
+            elseif action == :row_group_label
+                if tf.vertical_line_after_data_columns && !horizontally_limited_by_display
                     vline = true
                 end
             end

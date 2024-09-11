@@ -70,6 +70,7 @@ function _text__print_horizontal_line(
     printed_data_column_widths::Vector{Int},
     top::Bool = false,
     bottom::Bool = false,
+    row_group_label::Bool = false
 )
     # == Auxiliary Variables ===============================================================
 
@@ -78,26 +79,42 @@ function _text__print_horizontal_line(
     # Here, we obtain the characters for the left, middle, and right intersections. We also
     # convert them to string.
 
-    li = if top
-        string(tb.up_left_corner)
-    elseif bottom
-        string(tb.bottom_left_corner)
+    li = if !row_group_label
+        if top
+            string(tb.up_left_corner)
+        elseif bottom
+            string(tb.bottom_left_corner)
+        else
+            string(tb.left_intersection)
+        end
     else
         string(tb.left_intersection)
     end
 
-    mi = if top
-        string(tb.up_intersection)
-    elseif bottom
-        string(tb.bottom_intersection)
+    mi = if !row_group_label
+        if top
+            string(tb.up_intersection)
+        elseif bottom
+            string(tb.bottom_intersection)
+        else
+            string(tb.middle_intersection)
+        end
     else
-        string(tb.middle_intersection)
+        if top
+            string(tb.bottom_intersection)
+        else
+            string(tb.up_intersection)
+        end
     end
 
-    ri = if top
-        string(tb.up_right_corner)
-    elseif bottom
-        string(tb.bottom_right_corner)
+    ri = if !row_group_label
+        if top
+            string(tb.up_right_corner)
+        elseif bottom
+            string(tb.bottom_right_corner)
+        else
+            string(tb.right_intersection)
+        end
     else
         string(tb.right_intersection)
     end
