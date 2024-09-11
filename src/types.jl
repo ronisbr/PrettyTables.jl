@@ -157,6 +157,23 @@ const _VERTICAL_CONTINUATION_CELL_ACTIONS = (
 )
 
 """
+    struct PrintingTableState
+
+This structure stores the current state of the printing process.
+
+# Fields
+
+- `state::Int`: The current state of the printing process.
+- `i::Int`: The current row index.
+- `j::Int`: The current column index.
+- `row_section::Symbol`: The current or the next row section.
+
+!!! warning
+
+    The field `row_section` is used to determine the next state of the printing process. It
+    must not be used to verify the current or the next row section as the meaning can change
+    depending on the current state. Instead, always used the function `_next` to obtain the
+    next row section.
 """
 struct PrintingTableState
     state::Int
