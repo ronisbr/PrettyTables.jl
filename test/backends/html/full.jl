@@ -39,7 +39,7 @@
       <td style = "text-align: right;">(1, 2)</td>
       <td style = "text-align: right;">(1, 3)</td>
     </tr>
-    <tr class = "dataRow">
+    <tr class = "rowGroupLabel">
       <td colspan = "5" style = "text-align: left; font-weight: bold;">Row Group</td>
     </tr>
     <tr class = "dataRow">
@@ -137,7 +137,7 @@
       <td style = "text-align: right;">(1, 2)</td>
       <td>&ctdot;</td>
     </tr>
-    <tr class = "dataRow">
+    <tr class = "rowGroupLabel">
       <td colspan = "5" style = "text-align: left; font-weight: bold;">Row Group</td>
     </tr>
     <tr class = "dataRow">

@@ -50,16 +50,21 @@ function _next(state::PrintingTableState, table_data::TableData)
     # == Column Labels and Table Body ======================================================
 
     if ps < _NEW_ROW
-        return :new_row, rs, PrintingTableState(_NEW_ROW, i + 1, 0, rs)
+        new_i = i + 1
+
+        # Check if we are starting a row group label.
+        if (rs == :data) && !isnothing(table_data.row_group_labels)
+            for g in table_data.row_group_labels
+                g.first == new_i &&
+                    return :new_row, :row_group_label, PrintingTableState(_NEW_ROW, new_i, 0, :row_group_label)
+            end
+        end
+
+        return :new_row, rs, PrintingTableState(_NEW_ROW, new_i, 0, rs)
     end
 
-    if ps < _ROW_GROUP && (rs == :data) && !isnothing(table_data.row_group_labels)
-        # TODO: Improve row group detection. Looping through all the possible options every
-        # show seems slow.
-        for g in table_data.row_group_labels
-            g.first == i &&
-                return :row_group_label, rs, PrintingTableState(_END_ROW_AFTER_GROUP - 1, i, 0, rs)
-        end
+    if ps < _ROW_GROUP && (rs == :row_group_label)
+        return :row_group_label, rs, PrintingTableState(_END_ROW_AFTER_GROUP - 1, i, 0, rs)
     end
 
     if ps < _ROW_NUMBER_COLUMN && table_data.show_row_number_column
@@ -245,8 +250,10 @@ function _next(state::PrintingTableState, table_data::TableData)
     ps < _END_ROW_AFTER_GROUP &&
         return :end_row, rs, PrintingTableState(_END_ROW_AFTER_GROUP, i, 0, rs)
 
+    # After the row group label, we must change the row section to `:data`. Notice that
+    # there is not possibility to have a row group label outside the data rows.
     ps < _NEW_ROW_AFTER_GROUP &&
-        return :new_row, rs, PrintingTableState(_ROW_GROUP, i, 0, rs)
+        return :new_row, :data, PrintingTableState(_ROW_GROUP, i, 0, :data)
 
     # We must never reach this point.
     return :internal_error, rs, state
