@@ -60,11 +60,36 @@ function _text__print_aligned(
     return nothing
 end
 
+"""
+    _text__print_horizontal_line(display::Display, tf::TextTableFormat, table_data::TableData, vertical_lines_at_data_columns::AbstractVector{Int}, row_number_column_width::Int, row_label_column_width::Int, printed_data_column_widths::Vector{Int}, top::Bool = false, bottom::Bool = false, row_group_label::Bool = false) -> Nothing
+
+Print a horizontal line to `display`.
+
+# Arguments
+
+- `display::Display`: Display where the horizontal line will be printed.
+- `tf::TextTableFormat`: Table format.
+- `table_data::TableData`: Table data.
+- `vertical_lines_at_data_columns::AbstractVector{Int}`: Location of the right vertical
+    lines at the data columns.
+- `row_number_column_width::Int`: Row number column width.
+- `row_label_column_width::Int`: Row label column width.
+- `printed_data_column_widths::Vector{Int}`: Printed data column widths.
+- `top::Bool`: If `true`, a top horizontal line will be drawn.
+    (**Default**: false)
+- `bottom::Bool`: If `true`, a bottom horizontal line will be drawn.
+    (**Default**: false)
+- `row_group_label::Bool`: If `true`, a row group label horizontal line will be drawn. In
+    this case, the horizontal line type is also modified by the keyword `top`, whereas the
+    keyword `bottom` is neglected. To draw the bottom row label horizontal line, set `top`to
+    `false`.
+    (**Default**: false)
+"""
 function _text__print_horizontal_line(
     display::Display,
     tf::TextTableFormat,
     table_data::TableData,
-    vertical_lines_at_data_columns::AbstractVector{Int},
+    right_vertical_line_at_data_columns::AbstractVector{Int},
     row_number_column_width::Int,
     row_label_column_width::Int,
     printed_data_column_widths::Vector{Int},
@@ -79,36 +104,26 @@ function _text__print_horizontal_line(
     # Here, we obtain the characters for the left, middle, and right intersections. We also
     # convert them to string.
 
-    li = if !row_group_label
-        if top
+    local li, mi, ri
+
+    if !row_group_label
+        li = if top
             string(tb.up_left_corner)
         elseif bottom
             string(tb.bottom_left_corner)
         else
             string(tb.left_intersection)
         end
-    else
-        string(tb.left_intersection)
-    end
 
-    mi = if !row_group_label
-        if top
+        mi = if top
             string(tb.up_intersection)
         elseif bottom
             string(tb.bottom_intersection)
         else
             string(tb.middle_intersection)
         end
-    else
-        if top
-            string(tb.bottom_intersection)
-        else
-            string(tb.up_intersection)
-        end
-    end
 
-    ri = if !row_group_label
-        if top
+        ri = if top
             string(tb.up_right_corner)
         elseif bottom
             string(tb.bottom_right_corner)
@@ -116,7 +131,9 @@ function _text__print_horizontal_line(
             string(tb.right_intersection)
         end
     else
-        string(tb.right_intersection)
+        li = string(tb.left_intersection)
+        mi = top ? string(tb.bottom_intersection) : string(tb.up_intersection)
+        ri = string(tb.right_intersection)
     end
 
     row = string(tb.row)
@@ -166,7 +183,7 @@ function _text__print_horizontal_line(
                 row,
                 !table_continuation_column
             )
-        elseif j ∈ vertical_lines_at_data_columns
+        elseif j ∈ right_vertical_line_at_data_columns
             _text__horizontal_line_intersection(display, mi, row, false)
         end
     end
