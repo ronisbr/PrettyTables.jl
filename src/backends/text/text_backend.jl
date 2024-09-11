@@ -555,15 +555,18 @@ function _text__print_table(
             if action == :row_number_label
                 cell          = _current_cell(action, ps, table_data)
                 cell_width    = row_number_column_width
+                decoration    = tf.row_number_label_decoration
                 rendered_cell = _text__render_cell(cell, buf, renderer)
 
             elseif action == :stubhead_label
                 cell          = _current_cell(action, ps, table_data)
                 cell_width    = row_label_column_width
+                decoration    = tf.stubhead_label_decoration
                 rendered_cell = _text__render_cell(cell, buf, renderer)
 
             elseif action == :row_label
                 cell_width    = row_label_column_width
+                decoration    = tf.row_label_decoration
                 rendered_cell = row_labels[ir]
 
             elseif action == :summary_row_number
@@ -572,6 +575,7 @@ function _text__print_table(
 
             elseif action == :summary_row_label
                 cell_width    = row_label_column_width
+                decoration    = tf.summary_row_label_decoration
                 rendered_cell = table_data.summary_row_labels[ir]
 
             elseif action == :column_label
@@ -588,6 +592,7 @@ function _text__print_table(
             elseif action == :row_number
                 cell          = _current_cell(action, ps, table_data)
                 cell_width    = row_number_column_width
+                decoration    = tf.row_number_decoration
                 rendered_cell = _text__render_cell(cell, buf, renderer)
 
             elseif action == :data
@@ -608,6 +613,7 @@ function _text__print_table(
 
             elseif action == :summary_row_cell
                 cell_width    = printed_data_column_widths[jr]
+                decoration    = tf.summary_row_cell_decoration
                 rendered_cell = summary_rows[ir, jr]
 
             elseif action == :row_group_label

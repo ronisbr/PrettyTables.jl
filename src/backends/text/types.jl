@@ -179,7 +179,7 @@ Define the format of the tables printed with the text back end.
     row_group_label_decoration::Crayon      = _TEXT__BOLD
     first_column_label_decoration::Crayon   = _TEXT__BOLD
     column_label_decoration::Crayon         = _TEXT__DARK_GRAY
-    summary_row_cell_decoration::Crayon     = _TEXT__BOLD
+    summary_row_cell_decoration::Crayon     = _TEXT__DEFAULT
     summary_row_label_decoration::Crayon    = _TEXT__BOLD
     footnote_decoration::Crayon             = _TEXT__DEFAULT
     source_note_decoration::Crayon          = _TEXT__DARK_GRAY
