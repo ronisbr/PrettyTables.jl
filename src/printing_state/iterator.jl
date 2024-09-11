@@ -241,7 +241,7 @@ function _next(state::PrintingTableState, table_data::TableData)
     # == End Printing ======================================================================
 
     ps < _END_PRINTING &&
-        return :end_printing, rs, PrintingTableState(_END_PRINTING - 1, 0, 0, :end_printing)
+        return :end_printing, :end_printing, PrintingTableState(_END_PRINTING - 1, 0, 0, :end_printing)
 
     # == Row Groups ========================================================================
 

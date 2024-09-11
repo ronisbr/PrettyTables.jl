@@ -310,6 +310,9 @@ function _markdown__print(
             print(buf, " |")
 
         elseif action == :end_row
+            # Obtain the next row section since some actions depends on it.
+            _, next_rs, _ = _next(ps, table_data)
+
             println(buf)
 
             if (rs == :column_labels)
@@ -326,7 +329,7 @@ function _markdown__print(
 
             elseif tf.line_before_summary_rows &&
                 (rs != :summary_row) &&
-                (ps.row_section == :summary_row)
+                (next_rs == :summary_row)
                 _markdown__print_separation_line(
                     buf,
                     table_data,
@@ -335,7 +338,8 @@ function _markdown__print(
                     row_label_column_width,
                     printed_data_column_widths
                 )
-            elseif ps.row_section == :table_footer
+
+            elseif next_rs ∈ (:table_footer, :end_printing)
                 # We reach this point only once because the Markdown table ends here. Thus,
                 # we need to check if we must print the omitted cell summary.
                 if pspec.show_omitted_cell_summary
