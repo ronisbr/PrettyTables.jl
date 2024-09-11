@@ -126,6 +126,7 @@ function _text__number_of_required_lines(
         num_horizontal_lines +
         num_lines_after_data
 
+
     return (
         total_table_lines,
         num_lines_before_data,
@@ -297,7 +298,7 @@ end
 
 # == Table Dimensions ======================================================================
 
-function _text__total_table_width(
+function _text__table_width_wo_cont_column(
     table_data::TableData,
     tf::TextTableFormat,
     right_vertical_line_at_data_columns::AbstractVector{Int},
@@ -320,9 +321,17 @@ function _text__total_table_width(
         )
 
     for j in eachindex(printed_data_column_widths)
-        current_column +=
-            2 + printed_data_column_widths[j] + (j ∈ right_vertical_line_at_data_columns)
+        current_column += 2 + printed_data_column_widths[j]
+
+        # We should not add the last printed column vertical line because it is taken into
+        # account afterwards.
+        if (j != last(eachindex(printed_data_column_widths))) &&
+            (j ∈ right_vertical_line_at_data_columns)
+            current_column += 1
+        end
     end
+
+    current_column += tf.vertical_line_after_data_columns
 
     return current_column
 end
