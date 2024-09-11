@@ -1,9 +1,11 @@
 module PrettyTables
 
-using Crayons
 using Markdown
+using Reexport
 using StringManipulation
 using Tables
+
+@reexport using Crayons
 
 import Base: @kwdef, axes, getindex
 
