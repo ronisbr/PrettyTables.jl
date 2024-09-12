@@ -30,10 +30,10 @@ Store the information of the display and the current cursor position.
 - `buf::IOBuffer`: Buffer that stores the entire output.
 """
 @kwdef mutable struct Display
-    size::Tuple{Int,Int}    = (-1, -1)
-    row::Int                = 1
-    column::Int             = 0
-    has_color::Bool         = false
+    size::NTuple{2, Int} = (-1, -1)
+    row::Int             = 1
+    column::Int          = 0
+    has_color::Bool      = false
 
     # Buffer that stores the entire output.
     buf::IOBuffer = IOBuffer()
@@ -81,11 +81,11 @@ Define the format of the borders in the tables printed with the text back end.
 end
 
 # Create some default decorations to reduce allocations.
-const _TEXT__RESET = crayon"reset"
-const _TEXT__DEFAULT = crayon"default"
-const _TEXT__BOLD = crayon"bold"
+const _TEXT__RESET     = crayon"reset"
+const _TEXT__DEFAULT   = crayon"default"
+const _TEXT__BOLD      = crayon"bold"
 const _TEXT__DARK_GRAY = crayon"fg:dark_gray"
-const _TEXT__CYAN = crayon"fg:cyan"
+const _TEXT__CYAN      = crayon"fg:cyan"
 
 # Convert the reset crayon to string to reduce allocations.
 const _TEXT__STRING_RESET = string(_TEXT__RESET)

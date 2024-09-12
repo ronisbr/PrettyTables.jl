@@ -50,9 +50,11 @@ function _text__print_table(
     # Process the vertical lines at data columns.
     if tf.right_vertical_lines_at_data_columns isa Symbol
         right_vertical_lines_at_data_columns =
-            tf.right_vertical_lines_at_data_columns == :all ?
-                (1:table_data.num_columns) :
-                (1:0)
+            if tf.right_vertical_lines_at_data_columns == :all
+                1:table_data.num_columns
+            else
+                1:0
+            end
     else
         right_vertical_lines_at_data_columns =
             tf.right_vertical_lines_at_data_columns::Vector{Int}
@@ -60,9 +62,11 @@ function _text__print_table(
 
     # Process the horizontal lines at data rows.
     if tf.horizontal_lines_at_data_rows isa Symbol
-        horizontal_lines_at_data_rows = tf.horizontal_lines_at_data_rows == :all ?
-            (1:table_data.num_rows) :
-            (1:0)
+        horizontal_lines_at_data_rows = if tf.horizontal_lines_at_data_rows == :all
+            1:table_data.num_rows
+        else
+            1:0
+        end
     else
         horizontal_lines_at_data_rows = tf.horizontal_lines_at_data_rows::Vector{Int}
     end
@@ -92,10 +96,7 @@ function _text__print_table(
             )
 
         if table_data.maximum_number_of_rows >= 0
-            table_data.maximum_number_of_rows = min(
-                table_data.maximum_number_of_rows,
-                mr
-            )
+            table_data.maximum_number_of_rows = min(table_data.maximum_number_of_rows, mr)
         else
             table_data.maximum_number_of_rows = mr
         end
@@ -137,12 +138,11 @@ function _text__print_table(
 
             num_printed_data_rows > 0 ? maximum(textwidth, row_labels) : 0,
 
-            _has_summary_rows(table_data) ?
-                maximum(
-                    textwidth,
-                    table_data.summary_row_labels
-                ) :
+            if _has_summary_rows(table_data)
+                maximum(textwidth, table_data.summary_row_labels)
+            else
                 0
+            end
         )
     end
 
@@ -183,8 +183,7 @@ function _text__print_table(
     # user specification.
     horizontally_limited_by_display = false
 
-    if fit_table_in_display_horizontally &&
-        (display.size[2] > 0) &&
+    if fit_table_in_display_horizontally && (display.size[2] > 0) &&
         _is_horizontally_cropped(table_data)
 
         # Here we have three possibilities:
@@ -227,9 +226,11 @@ function _text__print_table(
 
     # We must compute what will be the last printed column index to draw the correct
     # vertical lines. Notice that, at this point, we might be printing a column partially.
-    last_printed_column_index = horizontally_limited_by_display ?
-        table_data.maximum_number_of_columns :
+    last_printed_column_index = if horizontally_limited_by_display
+        table_data.maximum_number_of_columns
+    else
         num_printed_data_columns
+    end
 
     # Finally, we can compute the printed table width.
     printed_table_width = table_width_wo_cont_col
@@ -262,7 +263,8 @@ function _text__print_table(
 
         action == :end_printing && break
 
-        # Special treatment for table header and footer.
+        # == Table Header and Footer =======================================================
+
         if rs == :table_header
             if action ∈ (:title, :subtitle)
                 alignment     = _current_cell_alignment(action, ps, table_data)
@@ -282,10 +284,11 @@ function _text__print_table(
 
             continue
 
-        elseif (rs == :table_footer)
+        elseif rs == :table_footer
             if action == :footnote
-                alignment = _current_cell_alignment(action, ps, table_data)
+                alignment  = _current_cell_alignment(action, ps, table_data)
                 decoration = tf.footnote_decoration
+
                 _text__print_aligned(
                     display,
                     footnotes[ps.i],
@@ -296,10 +299,10 @@ function _text__print_table(
                 _text__flush_line(display)
 
             elseif action == :source_notes
-                alignment = _current_cell_alignment(action, ps, table_data)
-                cell = _current_cell(action, ps, table_data)
+                alignment     = _current_cell_alignment(action, ps, table_data)
+                cell          = _current_cell(action, ps, table_data)
+                decoration    = tf.source_note_decoration
                 rendered_cell = _text__render_cell(cell, buf, renderer)
-                decoration = tf.source_note_decoration
 
                 _text__print_aligned(
                     display,
@@ -313,6 +316,8 @@ function _text__print_table(
 
             continue
         end
+
+        # == New Row =======================================================================
 
         if action == :new_row
 
@@ -350,11 +355,12 @@ function _text__print_table(
                 _text__flush_line(display, false)
             end
 
-            if (rs == :row_group_label)
+            if rs == :row_group_label
                 # We must draw the horizontal line here if the user requested or if the last
                 # row has a horizontal line due to the intersections.
                 if tf.horizontal_line_before_row_group_label ||
                     (ir - 1 ∈ horizontal_lines_at_data_rows)
+
                     _text__print_horizontal_line(
                         display,
                         tf,
@@ -374,15 +380,22 @@ function _text__print_table(
 
             tf.vertical_line_at_beginning && _text__print(display, tf.borders.column)
 
-        elseif action == :diagonal_continuation_cell
+            continue
+        end
+
+        # == Continuation Row ==============================================================
+
+        if action == :diagonal_continuation_cell
             _text__print(display, " ⋱ ")
             tf.vertical_line_after_continuation_column &&
                 _text__print(display, tf.borders.column)
+            continue
 
         elseif action == :horizontal_continuation_cell
             _text__print(display, " ⋯ ")
             tf.vertical_line_after_continuation_column &&
                 _text__print(display, tf.borders.column)
+            continue
 
         elseif action ∈ _VERTICAL_CONTINUATION_CELL_ACTIONS
             alignment = _current_cell_alignment(action, ps, table_data)
@@ -390,14 +403,16 @@ function _text__print_table(
             if action == :row_number_vertical_continuation_cell
                 cell_width = row_number_column_width
                 vline      = tf.vertical_line_after_row_number_column
+
             elseif action == :row_label_vertical_continuation_cell
                 cell_width = row_label_column_width
                 vline      = tf.vertical_line_after_row_label_column
+
             else
                 cell_width = printed_data_column_widths[jr]
                 vline = false
 
-                if (jr == last_printed_column_index)
+                if jr == last_printed_column_index
                     tf.vertical_line_after_data_columns && (vline = true)
                 elseif ps.j ∈ right_vertical_lines_at_data_columns
                     vline = true
@@ -409,8 +424,15 @@ function _text__print_table(
             _text__print(display, " ")
             vline && _text__print(display, tf.borders.column)
 
-        elseif action == :end_row
-            (rs == :data) && (num_data_lines += 1)
+            continue
+        end
+
+        # == End Row =======================================================================
+
+        if action == :end_row
+            if rs == :data
+                num_data_lines += 1
+            end
 
             # == Flush the Line ============================================================
 
@@ -423,15 +445,15 @@ function _text__print_table(
                     true,
                     (num_data_lines - 1) % (tf.ellipsis_line_skip + 1) == 0 ? '⋯' : ' '
                 )
+
             else
                 _text__flush_line(display)
             end
 
-            # == Handle the Table Horizontal Line ==========================================
+            # == Handle the Horizontal Lines ===============================================
 
             # Print the horizontal line after the column labels.
-            if (rs == :column_labels) &&
-                (ps.row_section != :column_labels) &&
+            if (rs == :column_labels) && (ps.row_section != :column_labels) &&
                 tf.horizontal_line_after_column_labels
 
                 # We should skip this line if we have a row group label at the first column.
@@ -565,120 +587,123 @@ function _text__print_table(
                 _text__flush_line(display)
             end
 
-        else
-            # Here, we treat all normal cells in the table.
-            alignment     = _current_cell_alignment(action, ps, table_data)
+            continue
+        end
 
-            # == Width, Decoration, and Rendered String ====================================
+        # == Table Cells ===================================================================
 
-            cell_width    = 1
-            decoration    = _TEXT__DEFAULT
+        # If we reach this point, we are processing table cells.
+
+        alignment     = _current_cell_alignment(action, ps, table_data)
+        cell_width    = 1
+        decoration    = _TEXT__DEFAULT
+        rendered_cell = ""
+        vline         = false
+
+        # -- Width, Decoration, and Rendered String ----------------------------------------
+
+        if action == :row_number_label
+            cell          = _current_cell(action, ps, table_data)
+            cell_width    = row_number_column_width
+            decoration    = tf.row_number_label_decoration
+            rendered_cell = _text__render_cell(cell, buf, renderer)
+
+        elseif action == :stubhead_label
+            cell          = _current_cell(action, ps, table_data)
+            cell_width    = row_label_column_width
+            decoration    = tf.stubhead_label_decoration
+            rendered_cell = _text__render_cell(cell, buf, renderer)
+
+        elseif action == :row_label
+            cell_width    = row_label_column_width
+            decoration    = tf.row_label_decoration
+            rendered_cell = row_labels[ir]
+
+        elseif action == :summary_row_number
+            cell_width    = row_number_column_width
             rendered_cell = ""
 
-            if action == :row_number_label
-                cell          = _current_cell(action, ps, table_data)
-                cell_width    = row_number_column_width
-                decoration    = tf.row_number_label_decoration
-                rendered_cell = _text__render_cell(cell, buf, renderer)
+        elseif action == :summary_row_label
+            cell_width    = row_label_column_width
+            decoration    = tf.summary_row_label_decoration
+            rendered_cell = table_data.summary_row_labels[ir]
 
-            elseif action == :stubhead_label
-                cell          = _current_cell(action, ps, table_data)
-                cell_width    = row_label_column_width
-                decoration    = tf.stubhead_label_decoration
-                rendered_cell = _text__render_cell(cell, buf, renderer)
+        elseif action == :column_label
+            cell_width = printed_data_column_widths[jr]
 
-            elseif action == :row_label
-                cell_width    = row_label_column_width
-                decoration    = tf.row_label_decoration
-                rendered_cell = row_labels[ir]
+            decoration = ir == 1 ?
+                tf.first_column_label_decoration :
+                tf.column_label_decoration
 
-            elseif action == :summary_row_number
-                cell_width    = row_number_column_width
-                rendered_cell = ""
+            # If need to check if we are in a cell that should be merged. Since Markdown
+            # does not support such an operation, we only fill the field with `-`.
+            rendered_cell = column_labels[ir, jr]
 
-            elseif action == :summary_row_label
-                cell_width    = row_label_column_width
-                decoration    = tf.summary_row_label_decoration
-                rendered_cell = table_data.summary_row_labels[ir]
+        elseif action == :row_number
+            cell          = _current_cell(action, ps, table_data)
+            cell_width    = row_number_column_width
+            decoration    = tf.row_number_decoration
+            rendered_cell = _text__render_cell(cell, buf, renderer)
 
-            elseif action == :column_label
-                cell_width = printed_data_column_widths[jr]
+        elseif action == :data
+            cell_width    = printed_data_column_widths[jr]
+            rendered_cell = table_str[ir, jr]
 
-                decoration = ir == 1 ?
-                    tf.first_column_label_decoration :
-                    tf.column_label_decoration
+            # Check if we must apply highlighters.
+            if !isempty(highlighters)
+                orig_data = _get_data(table_data.data)
 
-                # If need to check if we are in a cell that should be merged. Since Markdown
-                # does not support such an operation, we only fill the field with `-`.
-                rendered_cell = column_labels[ir, jr]
-
-            elseif action == :row_number
-                cell          = _current_cell(action, ps, table_data)
-                cell_width    = row_number_column_width
-                decoration    = tf.row_number_decoration
-                rendered_cell = _text__render_cell(cell, buf, renderer)
-
-            elseif action == :data
-                cell_width    = printed_data_column_widths[jr]
-                rendered_cell = table_str[ir, jr]
-
-                # Check if we must apply highlighters.
-                if !isempty(highlighters)
-                    orig_data = _get_data(table_data.data)
-
-                    for h in highlighters
-                        if h.f(orig_data, ps.i, ps.j)
-                            decoration = h.fd(h, orig_data, ps.i, ps.j)::Crayon
-                            break
-                        end
+                for h in highlighters
+                    if h.f(orig_data, ps.i, ps.j)
+                        decoration = h.fd(h, orig_data, ps.i, ps.j)::Crayon
+                        break
                     end
                 end
-
-            elseif action == :summary_row_cell
-                cell_width    = printed_data_column_widths[jr]
-                decoration    = tf.summary_row_cell_decoration
-                rendered_cell = summary_rows[ir, jr]
-
-            elseif action == :row_group_label
-                alignment     = _current_cell_alignment(action, ps, table_data)
-                cell          = _current_cell(action, ps, table_data)
-                cell_width    = printed_table_width - 4
-                decoration    = tf.row_group_label_decoration
-                rendered_cell = _text__render_cell(cell, buf, renderer)
             end
 
-            # == Vertical Line After the Cell ==============================================
+        elseif action == :summary_row_cell
+            cell_width    = printed_data_column_widths[jr]
+            decoration    = tf.summary_row_cell_decoration
+            rendered_cell = summary_rows[ir, jr]
 
-            vline = false
-
-            if action ∈ (:row_number_label, :summary_row_label, :row_number, :summary_row_number)
-                tf.vertical_line_after_row_number_column && (vline = true)
-
-            elseif action ∈ (:stubhead_label, :row_label, :summary_row_label)
-                tf.vertical_line_after_row_label_column && (vline = true)
-
-            elseif action ∈ (:column_label, :data, :summary_row_cell)
-                if (jr == last_printed_column_index)
-                    tf.vertical_line_after_data_columns && (vline = true)
-                elseif ps.j ∈ right_vertical_lines_at_data_columns
-                    vline = true
-                end
-
-            elseif action == :row_group_label
-                if tf.vertical_line_after_data_columns && !horizontally_limited_by_display
-                    vline = true
-                end
-            end
-
-            _text__print_aligned(
-                display,
-                " " * rendered_cell * " " ,
-                cell_width + 2,
-                alignment,
-                decoration
-            )
-            vline && _text__print(display, tf.borders.column)
+        elseif action == :row_group_label
+            alignment     = _current_cell_alignment(action, ps, table_data)
+            cell          = _current_cell(action, ps, table_data)
+            cell_width    = printed_table_width - 4
+            decoration    = tf.row_group_label_decoration
+            rendered_cell = _text__render_cell(cell, buf, renderer)
         end
+
+        # -- Vertical Line After the Cell --------------------------------------------------
+
+        if action ∈ (:row_number_label, :summary_row_label, :row_number, :summary_row_number)
+            tf.vertical_line_after_row_number_column && (vline = true)
+
+        elseif action ∈ (:stubhead_label, :row_label, :summary_row_label)
+            tf.vertical_line_after_row_label_column && (vline = true)
+
+        elseif action ∈ (:column_label, :data, :summary_row_cell)
+            if jr == last_printed_column_index
+                tf.vertical_line_after_data_columns && (vline = true)
+            elseif ps.j ∈ right_vertical_lines_at_data_columns
+                vline = true
+            end
+
+        elseif action == :row_group_label
+            if tf.vertical_line_after_data_columns && !horizontally_limited_by_display
+                vline = true
+            end
+        end
+
+        _text__print_aligned(
+            display,
+            " " * rendered_cell * " " ,
+            cell_width + 2,
+            alignment,
+            decoration
+        )
+
+        vline && _text__print(display, tf.borders.column)
     end
 
     # == Print the Buffer Into the IO ======================================================
