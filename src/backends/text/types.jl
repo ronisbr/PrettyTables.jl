@@ -106,12 +106,16 @@ Define the format of the tables printed with the text back end.
     drawn after each data row index listed in this vector. If the symbol `:all` is passed, a
     horizontal line will be drawn after every data column. If the symbol `:none` is passed,
     no horizontal lines will be drawn after the data rows.
+- `horizontal_line_before_row_group_label::Bool`: If `true`, a horizontal line will be
+    drawn before the row group label.
+- `horizontal_line_after_row_group_label::Bool`: If `true`, a horizontal line will be
+    drawn after the row group label.
 - `horizontal_line_before_summary_rows::Bool`: If `true`, a horizontal line will be drawn
     before the summary rows.
 - `horizontal_line_at_end::Bool`: If `true`, a horizontal line will be drawn at the end of
     the table.
-- `right_vertical_line_at_data_columns::Union{Symbol, Vector{Int}}`: A vertical line will be
-    drawn after each data column index listed in this vector. If the symbol `:all` is
+- `right_vertical_lines_at_data_columns::Union{Symbol, Vector{Int}}`: A vertical line will
+    be drawn after each data column index listed in this vector. If the symbol `:all` is
     passed, a vertical line will be drawn after every data column. If the symbol `:none` is
     passed, no vertical lines will be drawn after the data columns.
 - `vertical_line_at_beginning::Bool`: If `true`, a vertical line will be drawn at the
@@ -169,7 +173,7 @@ Define the format of the tables printed with the text back end.
     vertical_line_after_data_columns::Bool = true
     vertical_line_after_continuation_column::Bool = true
 
-    right_vertical_line_at_data_columns::Union{Symbol, Vector{Int}} = :all
+    right_vertical_lines_at_data_columns::Union{Symbol, Vector{Int}} = :all
 
     # == Decorations =======================================================================
 

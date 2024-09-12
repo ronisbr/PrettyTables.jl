@@ -61,7 +61,7 @@ function _text__print_aligned(
 end
 
 """
-    _text__print_horizontal_line(display::Display, tf::TextTableFormat, table_data::TableData, vertical_lines_at_data_columns::AbstractVector{Int}, row_number_column_width::Int, row_label_column_width::Int, printed_data_column_widths::Vector{Int}, top::Bool = false, bottom::Bool = false, row_group_label::Bool = false) -> Nothing
+    _text__print_horizontal_line(display::Display, tf::TextTableFormat, table_data::TableData, right_vertical_lines_at_data_columns::AbstractVector{Int}, row_number_column_width::Int, row_label_column_width::Int, printed_data_column_widths::Vector{Int}, top::Bool = false, bottom::Bool = false, row_group_label::Bool = false) -> Nothing
 
 Print a horizontal line to `display`.
 
@@ -70,7 +70,7 @@ Print a horizontal line to `display`.
 - `display::Display`: Display where the horizontal line will be printed.
 - `tf::TextTableFormat`: Table format.
 - `table_data::TableData`: Table data.
-- `vertical_lines_at_data_columns::AbstractVector{Int}`: Location of the right vertical
+- `right_vertical_lines_at_data_columns::AbstractVector{Int}`: Location of the right vertical
     lines at the data columns.
 - `row_number_column_width::Int`: Row number column width.
 - `row_label_column_width::Int`: Row label column width.
@@ -89,7 +89,7 @@ function _text__print_horizontal_line(
     display::Display,
     tf::TextTableFormat,
     table_data::TableData,
-    right_vertical_line_at_data_columns::AbstractVector{Int},
+    right_vertical_lines_at_data_columns::AbstractVector{Int},
     row_number_column_width::Int,
     row_label_column_width::Int,
     printed_data_column_widths::Vector{Int},
@@ -183,7 +183,7 @@ function _text__print_horizontal_line(
                 row,
                 !table_continuation_column
             )
-        elseif j ∈ right_vertical_line_at_data_columns
+        elseif j ∈ right_vertical_lines_at_data_columns
             _text__horizontal_line_intersection(display, mi, row, false)
         end
     end

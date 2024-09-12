@@ -27,7 +27,7 @@ function _text__number_of_printed_data_columns(
     display_width::Int,
     table_data::TableData,
     tf::TextTableFormat,
-    right_vertical_line_at_data_columns::AbstractVector{Int},
+    right_vertical_lines_at_data_columns::AbstractVector{Int},
     row_number_column_width::Int,
     row_label_column_width::Int,
     printed_data_column_widths::Vector{Int}
@@ -59,7 +59,7 @@ function _text__number_of_printed_data_columns(
         end
 
         num_printed_data_columns += 1
-        current_column += (j ∈ right_vertical_line_at_data_columns) + 1
+        current_column += (j ∈ right_vertical_lines_at_data_columns) + 1
     end
 
     return num_printed_data_columns
@@ -332,7 +332,7 @@ end
 function _text__table_width_wo_cont_column(
     table_data::TableData,
     tf::TextTableFormat,
-    right_vertical_line_at_data_columns::AbstractVector{Int},
+    right_vertical_lines_at_data_columns::AbstractVector{Int},
     row_number_column_width::Int,
     row_label_column_width::Int,
     printed_data_column_widths::Vector{Int}
@@ -357,7 +357,7 @@ function _text__table_width_wo_cont_column(
         # We should not add the last printed column vertical line because it is taken into
         # account afterwards.
         if (j != last(eachindex(printed_data_column_widths))) &&
-            (j ∈ right_vertical_line_at_data_columns)
+            (j ∈ right_vertical_lines_at_data_columns)
             current_column += 1
         end
     end
