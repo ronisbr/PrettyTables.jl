@@ -158,15 +158,18 @@ Define the format of the tables printed with the text back end.
     horizontal_line_at_beginning::Bool = true
     horizontal_line_after_column_labels::Bool = true
     horizontal_lines_at_data_rows::Union{Symbol, Vector{Int}} = :none
+    horizontal_line_before_row_group_label::Bool = true
+    horizontal_line_after_row_group_label::Bool = true
     horizontal_line_before_summary_rows::Bool = true
     horizontal_line_at_end::Bool = true
 
-    right_vertical_line_at_data_columns::Union{Symbol, Vector{Int}} = :all
     vertical_line_at_beginning::Bool = true
     vertical_line_after_row_number_column::Bool = true
     vertical_line_after_row_label_column::Bool = true
     vertical_line_after_data_columns::Bool = true
     vertical_line_after_continuation_column::Bool = true
+
+    right_vertical_line_at_data_columns::Union{Symbol, Vector{Int}} = :all
 
     # == Decorations =======================================================================
 

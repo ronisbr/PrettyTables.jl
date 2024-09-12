@@ -101,3 +101,18 @@ function _number_of_printed_data_rows(table_data::TableData)
 
     return data_rows
 end
+
+"""
+    _print_row_group_label(table_data::TableData, i::Int) -> Bool
+
+Return whether we must print a row group label of `table_data` in line `i`.
+"""
+function _print_row_group_label(table_data::TableData, i::Int)
+    !_has_row_group_labels(table_data) && return false
+
+    for rg in table_data.row_group_labels
+        first(rg) == i && return true
+    end
+
+    return false
+end

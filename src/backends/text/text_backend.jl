@@ -1,6 +1,5 @@
 ## Description #############################################################################
 #
-using Markdown: horizontalrule
 # Text back end for PrettyTables.jl.
 #
 ############################################################################################
@@ -352,20 +351,25 @@ function _text__print_table(
             end
 
             if (rs == :row_group_label)
-                _text__print_horizontal_line(
-                    display,
-                    tf,
-                    table_data,
-                    right_vertical_line_at_data_columns,
-                    row_number_column_width,
-                    row_label_column_width,
-                    printed_data_column_widths,
-                    true,
-                    false,
-                    true
-                )
+                # We must draw the horizontal line here if the user requested or if the last
+                # row has a horizontal line due to the intersections.
+                if tf.horizontal_line_before_row_group_label ||
+                    (ir - 1 ∈ horizontal_lines_at_data_rows)
+                    _text__print_horizontal_line(
+                        display,
+                        tf,
+                        table_data,
+                        right_vertical_line_at_data_columns,
+                        row_number_column_width,
+                        row_label_column_width,
+                        printed_data_column_widths,
+                        true,
+                        false,
+                        true
+                    )
 
-                _text__flush_line(display, false)
+                    _text__flush_line(display, false)
+                end
             end
 
             tf.vertical_line_at_beginning && _text__print(display, tf.borders.column)
@@ -431,13 +435,14 @@ function _text__print_table(
                 tf.horizontal_line_after_column_labels
 
                 # We should skip this line if we have a row group label at the first column.
-                psc = ps
-                _, rsc, _ = _next(psc, table_data)
+                _, next_rs, _ = _next(ps, table_data)
 
-                if rsc != :row_group_label
-                    # We must handle that case where there is no data rows. In this case, the
-                    # next section after the column labels will be the table footer.
-                    bottom = ps.row_section == :table_footer
+                if next_rs != :row_group_label
+                    # We must handle that case where there is no data rows. In this case,
+                    # the next section after the column labels will be the table footer or
+                    # the end of printing.
+                    _, next_rs, _ = _next(ps, table_data)
+                    bottom = next_rs ∈ (:table_footer, :end_printing)
 
                     _text__print_horizontal_line(
                         display,
@@ -456,10 +461,20 @@ function _text__print_table(
 
             # Check if we must print an horizontal line after the current data row.
             elseif (rs == :data) && (ps.i ∈ horizontal_lines_at_data_rows)
+                _, next_rs, _ = _next(ps, table_data)
+
+                vline = true
 
                 # We should only print this line if the next state is not the continuation
                 # row or if we do not need to suppress the line before the continuation row.
-                if (ps.row_section != :continuation_row) || !suppress_vline_before_continuation_row
+                if (next_rs == :continuation_row) && suppress_vline_before_continuation_row
+                    vline = false
+
+                elseif _print_row_group_label(table_data, ir + 1)
+                    vline = false
+                end
+
+                if vline
                     _text__print_horizontal_line(
                         display,
                         tf,
@@ -491,20 +506,22 @@ function _text__print_table(
                 _text__flush_line(display, false)
 
             elseif (rs == :row_group_label)
-                _text__print_horizontal_line(
-                    display,
-                    tf,
-                    table_data,
-                    right_vertical_line_at_data_columns,
-                    row_number_column_width,
-                    row_label_column_width,
-                    printed_data_column_widths,
-                    false,
-                    true,
-                    true
-                )
+                if tf.horizontal_line_after_row_group_label
+                    _text__print_horizontal_line(
+                        display,
+                        tf,
+                        table_data,
+                        right_vertical_line_at_data_columns,
+                        row_number_column_width,
+                        row_label_column_width,
+                        printed_data_column_widths,
+                        false,
+                        true,
+                        true
+                    )
 
-                _text__flush_line(display, false)
+                    _text__flush_line(display, false)
+                end
 
             # Check if the must print the horizontal line at the end of the table.
             elseif ps.row_section == :table_footer
