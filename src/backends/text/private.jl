@@ -166,6 +166,7 @@ if we must suppress the horizontal line before the continuation line.
 
 - `Int`: Number of data rows we can print.
 - `Bool`: If `true`, we must suppress the horizontal line before the continuation line.
+- `Bool`: If `true`, we must suppress the horizontal line after the continuation line.
 """
 function _text__design_vertical_cropping(
     table_data::TableData,
@@ -178,11 +179,11 @@ function _text__design_vertical_cropping(
 
     # This variable indicates if we must suppress the horizontal line before the
     # continuation row if it exists.
-    suppress_vline_before_continuation_row = false
+    suppress_hline_before_continuation_row = false
 
     # This variable indicates if we must suppress the horizontal line after the
     # continuation row if it exists.
-    suppress_vline_after_continuation_row = false
+    suppress_hline_after_continuation_row = false
 
     # Compute the number of required lines to print the table.
     total_table_lines, num_lines_before_data, num_lines_after_data =
@@ -288,7 +289,7 @@ function _text__design_vertical_cropping(
             # remove horizontal line before the continuation line to make it fit.
             if num_remaining_lines < Δ
                 if hline && (Δ - num_remaining_lines == 1)
-                    suppress_vline_before_continuation_row = true
+                    suppress_hline_before_continuation_row = true
                     num_data_rows += 1
                 end
 
@@ -314,7 +315,7 @@ function _text__design_vertical_cropping(
             # remove horizontal line before the continuation line to make it fit.
             if num_remaining_lines < Δ
                 if hline && (Δ - num_remaining_lines == 1)
-                    suppress_vline_after_continuation_row = true
+                    suppress_hline_after_continuation_row = true
                     num_data_rows += 1
                 end
 
@@ -329,8 +330,8 @@ function _text__design_vertical_cropping(
 
     return (
         num_data_rows,
-        suppress_vline_before_continuation_row,
-        suppress_vline_after_continuation_row
+        suppress_hline_before_continuation_row,
+        suppress_hline_after_continuation_row
     )
 end
 

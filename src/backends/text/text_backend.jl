@@ -88,7 +88,7 @@ function _text__print_table(
     end
 
     if fit_table_in_display_vertically && (display_size[1] > 0)
-        mr, suppress_vline_before_continuation_row, suppress_vline_after_continuation_row =
+        mr, suppress_hline_before_continuation_row, suppress_hline_after_continuation_row =
             _text__design_vertical_cropping(
                 table_data,
                 tf,
@@ -498,7 +498,7 @@ function _text__print_table(
 
                 # We should only print this line if the next state is not the continuation
                 # row or if we do not need to suppress the line before the continuation row.
-                if (next_rs == :continuation_row) && suppress_vline_before_continuation_row
+                if (next_rs == :continuation_row) && suppress_hline_before_continuation_row
                     hline = false
 
                 elseif _print_row_group_label(table_data, ir + 1)
@@ -538,7 +538,7 @@ function _text__print_table(
                 _text__flush_line(display, false)
 
             # Check if we must print an horizontal line after the continuation row.
-            elseif (rs == :continuation_row) && !suppress_vline_after_continuation_row
+            elseif (rs == :continuation_row) && !suppress_hline_after_continuation_row
 
                 hline = false
 
