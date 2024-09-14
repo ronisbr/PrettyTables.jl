@@ -12,7 +12,7 @@ end
 function _text__print_table(
     pspec::PrintingSpec;
     tf::TextTableFormat = TextTableFormat(),
-    crop_additional_column_labels::Bool = false,
+    column_label_width_based_on_first_line_only::Bool = false,
     display_size::NTuple{2, Int} = displaysize(pspec.context),
     fit_table_in_display_horizontally::Bool = true,
     fit_table_in_display_vertically::Bool = true,
@@ -152,7 +152,7 @@ function _text__print_table(
     @views for j in last(axes(table_str))
         # If the user wants to crop the additional column labels, we must consider only the
         # first one here when computing the column width.
-        m = if !crop_additional_column_labels
+        m = if !column_label_width_based_on_first_line_only
             maximum(textwidth, column_labels[:, j])
         else
             textwidth(column_labels[1, j])
@@ -170,10 +170,10 @@ function _text__print_table(
     end
 
     # Now, we crop the additional column labels if the user wants to do so.
-    if crop_additional_column_labels
+    if column_label_width_based_on_first_line_only
         for j in eachindex(printed_data_column_widths)
             cw  = printed_data_column_widths[j]
-            cls = @views column_labels[j, :]
+            cls = @views column_labels[:, j]
 
             for i in eachindex(cls)
                 str = cls[i]

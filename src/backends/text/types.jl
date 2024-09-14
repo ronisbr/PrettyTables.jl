@@ -195,7 +195,7 @@ Define the format of the tables printed with the text back end.
 
     # == Other Configurations ==============================================================
 
-    ellipsis_line_skip::Integer = 0
+    ellipsis_line_skip::Int = 0
     new_line_at_end::Bool = true
 end
 
