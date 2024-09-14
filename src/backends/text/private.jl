@@ -103,14 +103,14 @@ function _text__number_of_required_lines(
 
     # Compute the number of lines we must have after printing the data.
     num_lines_after_data =
+        tf.horizontal_line_after_data_rows +
         (
             if _has_summary_rows(table_data)
-                length(table_data.summary_rows) + tf.horizontal_line_before_summary_rows
+                length(table_data.summary_rows) + tf.horizontal_line_after_summary_rows
             else
                 0
             end
         ) +
-        tf.horizontal_line_at_end +
         (
             _has_footnotes(table_data) ? length(table_data.footnotes) : 0
         ) +
