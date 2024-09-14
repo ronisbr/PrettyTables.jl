@@ -20,7 +20,8 @@ Render the table using the specification in `table_data`. When the cells are con
 function _text__render_table(
     table_data::TableData,
     @nospecialize(context::IOContext),
-    renderer::Union{Val{:print}, Val{:show}}
+    renderer::Union{Val{:print}, Val{:show}},
+    maximum_data_column_widths::Union{Number, Vector{Int}}
 )
     num_column_label_lines   = length(table_data.column_labels)
     num_printed_data_columns = _number_of_printed_data_columns(table_data)
@@ -94,6 +95,41 @@ function _text__render_table(
         elseif !isnothing(footnotes) && (action == :footnote)
             id = ps.i
             footnotes[id] = _text__render_footnote_superscript(id) * ": " * rendered_cell
+        end
+
+        # If the user requested a maximum data column width, check the current size and crop
+        # accordingly.
+        if action in (:column_label, :data, :summary_row_cell)
+            mcw = if maximum_data_column_widths isa Number
+                maximum_data_column_widths
+            else
+                maximum_data_column_widths[ps.j]
+            end
+
+            if mcw > 1
+                str = if action == :column_label
+                    column_labels[ir, jr]
+                elseif action == :data
+                    table_str[ir, jr]
+                else
+                    summary_rows[ir, jr]
+                end
+
+                tw = textwidth(str)
+
+                if tw > mcw
+                    str, _ = right_crop(str, tw - mcw + 1)
+                    str = str * "…"
+
+                    if action == :column_label
+                        column_labels[ir, jr] = str
+                    elseif action == :data
+                        table_str[ir, jr] = str
+                    else
+                        summary_rows[ir, jr] = str
+                    end
+                end
+            end
         end
     end
 

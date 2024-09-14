@@ -16,6 +16,7 @@ function _text__print_table(
     fit_table_in_display_horizontally::Bool = true,
     fit_table_in_display_vertically::Bool = true,
     highlighters::Vector{TextHighlighter} = TextHighlighter[],
+    maximum_data_column_widths::Union{Number, Vector{Int}} = -1,
 )
     context    = pspec.context
     table_data = pspec.table_data
@@ -111,6 +112,7 @@ function _text__print_table(
         table_data,
         context,
         renderer,
+        maximum_data_column_widths
     )
 
     num_printed_data_rows, num_printed_data_columns = size(table_str)
