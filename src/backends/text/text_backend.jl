@@ -12,11 +12,12 @@ end
 function _text__print_table(
     pspec::PrintingSpec;
     tf::TextTableFormat = TextTableFormat(),
+    crop_additional_column_labels::Bool = false,
     display_size::NTuple{2, Int} = displaysize(pspec.context),
     fit_table_in_display_horizontally::Bool = true,
     fit_table_in_display_vertically::Bool = true,
     highlighters::Vector{TextHighlighter} = TextHighlighter[],
-    maximum_data_column_widths::Union{Number, Vector{Int}} = -1,
+    maximum_data_column_widths::Union{Number, Vector{Int}} = 0,
 )
     context    = pspec.context
     table_data = pspec.table_data
@@ -149,7 +150,13 @@ function _text__print_table(
     end
 
     @views for j in last(axes(table_str))
-        m = maximum(textwidth, column_labels[:, j])
+        # If the user wants to crop the additional column labels, we must consider only the
+        # first one here when computing the column width.
+        m = if !crop_additional_column_labels
+            maximum(textwidth, column_labels[:, j])
+        else
+            textwidth(column_labels[1, j])
+        end
 
         if num_printed_data_rows > 0
             m = max(maximum(textwidth, table_str[:, j]), m)
@@ -160,6 +167,24 @@ function _text__print_table(
         end
 
         printed_data_column_widths[j] = m
+    end
+
+    # Now, we crop the additional column labels if the user wants to do so.
+    if crop_additional_column_labels
+        for j in eachindex(printed_data_column_widths)
+            cw  = printed_data_column_widths[j]
+            cls = @views column_labels[j, :]
+
+            for i in eachindex(cls)
+                str = cls[i]
+                tw  = textwidth(str)
+
+                tw <= cw && continue
+
+                str, _ = right_crop(str, tw - printed_data_column_widths[j] + 1)
+                cls[i] = str * "…"
+            end
+        end
     end
 
     # == Omitted Columns ===================================================================
