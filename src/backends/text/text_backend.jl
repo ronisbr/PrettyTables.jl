@@ -367,21 +367,6 @@ function _text__print_table(
                 top_line_printed = true
             end
 
-            # Check if we need to draw a horizontal line before the summary rows.
-            if (rs == :summary_row) && (ps.i == 1) && tf.horizontal_line_before_summary_rows
-                _text__print_horizontal_line(
-                    display,
-                    tf,
-                    table_data,
-                    right_vertical_lines_at_data_columns,
-                    row_number_column_width,
-                    row_label_column_width,
-                    printed_data_column_widths,
-                )
-
-                _text__flush_line(display, false)
-            end
-
             if rs == :row_group_label
                 # We must draw the horizontal line here if the user requested or if the last
                 # row has a horizontal line due to the intersections.
@@ -429,27 +414,27 @@ function _text__print_table(
 
             if action == :row_number_vertical_continuation_cell
                 cell_width = row_number_column_width
-                vline      = tf.vertical_line_after_row_number_column
+                hline      = tf.vertical_line_after_row_number_column
 
             elseif action == :row_label_vertical_continuation_cell
                 cell_width = row_label_column_width
-                vline      = tf.vertical_line_after_row_label_column
+                hline      = tf.vertical_line_after_row_label_column
 
             else
                 cell_width = printed_data_column_widths[jr]
-                vline = false
+                hline = false
 
                 if jr == last_printed_column_index
-                    tf.vertical_line_after_data_columns && (vline = true)
+                    tf.vertical_line_after_data_columns && (hline = true)
                 elseif ps.j ∈ right_vertical_lines_at_data_columns
-                    vline = true
+                    hline = true
                 end
             end
 
             _text__print(display, " ")
             _text__print_aligned(display, "⋮", cell_width, alignment)
             _text__print(display, " ")
-            vline && _text__print(display, tf.borders.column)
+            hline && _text__print(display, tf.borders.column)
 
             continue
         end
@@ -457,6 +442,8 @@ function _text__print_table(
         # == End Row =======================================================================
 
         if action == :end_row
+            _, next_rs, _ = _next(ps, table_data)
+
             if rs == :data
                 num_data_lines += 1
             end
@@ -484,13 +471,10 @@ function _text__print_table(
                 tf.horizontal_line_after_column_labels
 
                 # We should skip this line if we have a row group label at the first column.
-                _, next_rs, _ = _next(ps, table_data)
-
                 if next_rs != :row_group_label
                     # We must handle that case where there is no data rows. In this case,
                     # the next section after the column labels will be the table footer or
                     # the end of printing.
-                    _, next_rs, _ = _next(ps, table_data)
                     bottom = next_rs ∈ (:table_footer, :end_printing)
 
                     _text__print_horizontal_line(
@@ -510,20 +494,18 @@ function _text__print_table(
 
             # Check if we must print an horizontal line after the current data row.
             elseif (rs == :data) && (ps.i ∈ horizontal_lines_at_data_rows)
-                _, next_rs, _ = _next(ps, table_data)
-
-                vline = true
+                hline = true
 
                 # We should only print this line if the next state is not the continuation
                 # row or if we do not need to suppress the line before the continuation row.
                 if (next_rs == :continuation_row) && suppress_vline_before_continuation_row
-                    vline = false
+                    hline = false
 
                 elseif _print_row_group_label(table_data, ir + 1)
-                    vline = false
+                    hline = false
                 end
 
-                if vline
+                if hline
                     _text__print_horizontal_line(
                         display,
                         tf,
@@ -537,10 +519,9 @@ function _text__print_table(
                     _text__flush_line(display, false)
                 end
 
-            # Check if we must print an horizontal line after the continuation row.
-            elseif (rs == :continuation_row) &&
-                (ps.i ∈ horizontal_lines_at_data_rows) &&
-                !suppress_vline_after_continuation_row
+            elseif (rs == :data) && (next_rs != :data) && tf.horizontal_line_after_data_rows
+
+                bottom = next_rs ∈ (:table_footer, :end_printing)
 
                 _text__print_horizontal_line(
                     display,
@@ -550,9 +531,38 @@ function _text__print_table(
                     row_number_column_width,
                     row_label_column_width,
                     printed_data_column_widths,
+                    false,
+                    bottom
                 )
 
                 _text__flush_line(display, false)
+
+            # Check if we must print an horizontal line after the continuation row.
+            elseif (rs == :continuation_row) && !suppress_vline_after_continuation_row
+
+                hline = false
+
+                if ps.i ∈ horizontal_lines_at_data_rows
+                    hline = true
+                end
+
+                if (next_rs !== :data) && tf.horizontal_line_after_data_rows
+                    hline = true
+                end
+
+                if hline
+                    _text__print_horizontal_line(
+                        display,
+                        tf,
+                        table_data,
+                        right_vertical_lines_at_data_columns,
+                        row_number_column_width,
+                        row_label_column_width,
+                        printed_data_column_widths,
+                    )
+
+                    _text__flush_line(display, false)
+                end
 
             elseif (rs == :row_group_label)
                 if tf.horizontal_line_after_row_group_label
@@ -573,9 +583,9 @@ function _text__print_table(
                 end
 
             # Check if the must print the horizontal line at the end of the table.
-            elseif ps.row_section == :table_footer
+            elseif (rs == :summary_row) && (next_rs != :summary_row)
                 # If the next section is the table footer, we must draw the last table line.
-                if tf.horizontal_line_at_end
+                if tf.horizontal_line_after_summary_rows
                     _text__print_horizontal_line(
                         display,
                         tf,
@@ -625,7 +635,7 @@ function _text__print_table(
         cell_width    = 1
         decoration    = _TEXT__DEFAULT
         rendered_cell = ""
-        vline         = false
+        hline         = false
 
         # -- Width, Decoration, and Rendered String ----------------------------------------
 
@@ -704,21 +714,21 @@ function _text__print_table(
         # -- Vertical Line After the Cell --------------------------------------------------
 
         if action ∈ (:row_number_label, :summary_row_label, :row_number, :summary_row_number)
-            tf.vertical_line_after_row_number_column && (vline = true)
+            tf.vertical_line_after_row_number_column && (hline = true)
 
         elseif action ∈ (:stubhead_label, :row_label, :summary_row_label)
-            tf.vertical_line_after_row_label_column && (vline = true)
+            tf.vertical_line_after_row_label_column && (hline = true)
 
         elseif action ∈ (:column_label, :data, :summary_row_cell)
             if jr == last_printed_column_index
-                tf.vertical_line_after_data_columns && (vline = true)
+                tf.vertical_line_after_data_columns && (hline = true)
             elseif ps.j ∈ right_vertical_lines_at_data_columns
-                vline = true
+                hline = true
             end
 
         elseif action == :row_group_label
             if tf.vertical_line_after_data_columns && !horizontally_limited_by_display
-                vline = true
+                hline = true
             end
         end
 
@@ -730,7 +740,7 @@ function _text__print_table(
             decoration
         )
 
-        vline && _text__print(display, tf.borders.column)
+        hline && _text__print(display, tf.borders.column)
     end
 
     # == Print the Buffer Into the IO ======================================================

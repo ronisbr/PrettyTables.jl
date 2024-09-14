@@ -164,8 +164,8 @@ Define the format of the tables printed with the text back end.
     horizontal_lines_at_data_rows::Union{Symbol, Vector{Int}} = :none
     horizontal_line_before_row_group_label::Bool = true
     horizontal_line_after_row_group_label::Bool = true
-    horizontal_line_before_summary_rows::Bool = true
-    horizontal_line_at_end::Bool = true
+    horizontal_line_after_data_rows::Bool = true
+    horizontal_line_after_summary_rows::Bool = true
 
     vertical_line_at_beginning::Bool = true
     vertical_line_after_row_number_column::Bool = true
