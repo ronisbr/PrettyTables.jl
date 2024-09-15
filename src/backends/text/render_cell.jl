@@ -46,6 +46,22 @@ function _text__cell_to_str(
     return "#undef"
 end
 
+function _text__cell_to_str(
+    cell::MergeCells,
+    @nospecialize(context::IOContext),
+    renderer::Val{:print}
+)
+    return _text__cell_to_str(cell.data, context, renderer)
+end
+
+function _text__cell_to_str(
+    cell::MergeCells,
+    @nospecialize(context::IOContext),
+    renderer::Val{:show}
+)
+    return _text__cell_to_str(cell.data, context, renderer)
+end
+
 """
     _text__render_cell(cell::Any, @nospecialize(context::IOContext), renderer::Union{Val{:print}, Val{:show}}; kwargs...) -> String
 

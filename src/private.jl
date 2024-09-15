@@ -53,6 +53,7 @@ throws an error.
 function _validate_merge_cell_specification(table_data::TableData)
     isnothing(table_data.merge_column_label_cells) && return nothing
 
+    num_column_label_rows = length(table_data.column_labels)
     mc = table_data.merge_column_label_cells
 
     for i in eachindex(mc)
@@ -70,7 +71,7 @@ function _validate_merge_cell_specification(table_data::TableData)
             "The row index is negative in the specification #$i for merging cells."
         ))
 
-        mi.i > table_data.num_rows && throw(ArgumentError(
+        mi.i > num_column_label_rows && throw(ArgumentError(
             "The row index is larger than the number of column label rows in the specification #$i for merging cells."
         ))
 
@@ -90,6 +91,8 @@ function _validate_merge_cell_specification(table_data::TableData)
             i == j && continue
 
             mj = mc[j]
+
+            mi.i != mj.i && continue
 
             mj_beg = mj.j
             mj_end = mj.j + mj.column_span - 1
