@@ -81,11 +81,13 @@ Define the format of the borders in the tables printed with the text back end.
 end
 
 # Create some default decorations to reduce allocations.
-const _TEXT__RESET     = crayon"reset"
-const _TEXT__DEFAULT   = crayon"default"
-const _TEXT__BOLD      = crayon"bold"
-const _TEXT__DARK_GRAY = crayon"fg:dark_gray"
-const _TEXT__CYAN      = crayon"fg:cyan"
+const _TEXT__RESET               = crayon"reset"
+const _TEXT__DEFAULT             = crayon"default"
+const _TEXT__BOLD                = crayon"bold"
+const _TEXT__DARK_GRAY           = crayon"fg:dark_gray"
+const _TEXT__CYAN                = crayon"fg:cyan"
+const _TEXT__BOLD_UNDERLINE      = crayon"bold underline"
+const _TEXT__DARK_GRAY_UNDERLINE = crayon"fg:dark_gray underline"
 
 # Convert the reset crayon to string to reduce allocations.
 const _TEXT__STRING_RESET = string(_TEXT__RESET)
@@ -136,10 +138,14 @@ Define the format of the tables printed with the text back end.
 - `stubhead_label_decoration::Crayon`:  Crayon with the decoration for the stubhead label.
 - `row_label_decoration::Crayon`: Crayon with the decoration for the row labels.
 - `row_group_label_decoration::Crayon`: Crayon with the decoration for the row group label.
-- `first_column_label_decoration::Crayon`: Crayon with the decoration for the first
-    column labels.
+- `first_line_column_label_decoration::Crayon`: Crayon with the decoration for the first
+    column label lines.
 - `column_label_decoration::Crayon`: Crayon with the decoration for the rest of the column
     labels.
+- `first_line_merged_column_label_decoration::Crayon`: Crayon with the decoration for
+    the first merged cells at the first column label line.
+- `merged_column_label_decoration::Crayon`: Crayon with the decoration for the merged
+    cells at the rest of the column labels.
 - `summary_row_cell_decoration::Crayon`: Crayon with the decoration for the summary row
     cell.
 - `summary_row_label_decoration::Crayon`: Crayon with the decoration for the summary row
@@ -174,24 +180,27 @@ Define the format of the tables printed with the text back end.
     vertical_line_after_continuation_column::Bool = true
 
     right_vertical_lines_at_data_columns::Union{Symbol, Vector{Int}} = :all
+    suppress_vertical_lines_at_column_labels::Bool = false
 
     # == Decorations =======================================================================
 
-    title_decoration::Crayon                = _TEXT__BOLD
-    subtitle_decoration::Crayon             = _TEXT__DEFAULT
-    row_number_label_decoration::Crayon     = _TEXT__BOLD
-    row_number_decoration::Crayon           = _TEXT__DEFAULT
-    stubhead_label_decoration::Crayon       = _TEXT__BOLD
-    row_label_decoration::Crayon            = _TEXT__BOLD
-    row_group_label_decoration::Crayon      = _TEXT__BOLD
-    first_column_label_decoration::Crayon   = _TEXT__BOLD
-    column_label_decoration::Crayon         = _TEXT__DARK_GRAY
-    summary_row_cell_decoration::Crayon     = _TEXT__DEFAULT
-    summary_row_label_decoration::Crayon    = _TEXT__BOLD
-    footnote_decoration::Crayon             = _TEXT__DEFAULT
-    source_note_decoration::Crayon          = _TEXT__DARK_GRAY
-    merged_cell_decoration::Crayon          = _TEXT__BOLD
-    omitted_cell_summary_decoration::Crayon = _TEXT__CYAN
+    title_decoration::Crayon                          = _TEXT__BOLD
+    subtitle_decoration::Crayon                       = _TEXT__DEFAULT
+    row_number_label_decoration::Crayon               = _TEXT__BOLD
+    row_number_decoration::Crayon                     = _TEXT__DEFAULT
+    stubhead_label_decoration::Crayon                 = _TEXT__BOLD
+    row_label_decoration::Crayon                      = _TEXT__BOLD
+    row_group_label_decoration::Crayon                = _TEXT__BOLD
+    first_line_column_label_decoration::Crayon        = _TEXT__BOLD
+    column_label_decoration::Crayon                   = _TEXT__DARK_GRAY
+    first_line_merged_column_label_decoration::Crayon = _TEXT__BOLD_UNDERLINE
+    merged_column_label_decoration::Crayon            = _TEXT__DARK_GRAY_UNDERLINE
+    summary_row_cell_decoration::Crayon               = _TEXT__DEFAULT
+    summary_row_label_decoration::Crayon              = _TEXT__BOLD
+    footnote_decoration::Crayon                       = _TEXT__DEFAULT
+    source_note_decoration::Crayon                    = _TEXT__DARK_GRAY
+    merged_cell_decoration::Crayon                    = _TEXT__BOLD
+    omitted_cell_summary_decoration::Crayon           = _TEXT__CYAN
 
     # == Other Configurations ==============================================================
 

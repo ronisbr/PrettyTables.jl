@@ -45,6 +45,26 @@ function _is_horizontally_cropped(table_data::TableData)
 end
 
 """
+    _is_column_label_cell_merged(table_data::TableData, i::Int, j::Int) -> Bool
+
+Return whether the cell at `(i, j)` is a merged column label cell. Notice that this function
+returns `true` only if `(i, j)` is in the middle of the merged cell. If the merged cell
+starts at `(i, j)`, this function returns `false`.
+"""
+function _is_column_label_cell_merged(table_data::TableData, i::Int, j::Int)
+    isnothing(table_data.merge_column_label_cells) && return false
+
+    # Check if this cell must be merged or if is is part of a merged cell.
+    for mc in table_data.merge_column_label_cells
+        if mc.i == i && (mc.j < j <= mc.j + mc.column_span - 1)
+            return true
+        end
+    end
+
+    return false
+end
+
+"""
     _is_vertically_cropped(table_data::TableData) -> Bool
 
 Return whether `table_data` is vertically cropped, meaning that a continuation row must be

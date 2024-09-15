@@ -158,6 +158,8 @@ function _text__print_table(
             textwidth(column_labels[1, j])
         end
 
+        # TODO: Compute the column width considering the merged cells.
+
         if num_printed_data_rows > 0
             m = max(maximum(textwidth, table_str[:, j]), m)
 
@@ -351,10 +353,11 @@ function _text__print_table(
             # If this is the very first row, we must check if a horizontal line must be
             # printed.
             if tf.horizontal_line_at_beginning && !top_line_printed
-                _text__print_horizontal_line(
+                _text__print_column_label_horizontal_line(
                     display,
                     tf,
                     table_data,
+                    ir - 1,
                     right_vertical_lines_at_data_columns,
                     row_number_column_width,
                     row_label_column_width,
@@ -477,10 +480,11 @@ function _text__print_table(
                     # the end of printing.
                     bottom = next_rs ∈ (:table_footer, :end_printing)
 
-                    _text__print_horizontal_line(
+                    _text__print_column_label_horizontal_line(
                         display,
                         tf,
                         table_data,
+                        length(table_data.column_labels),
                         right_vertical_lines_at_data_columns,
                         row_number_column_width,
                         row_label_column_width,
@@ -635,7 +639,10 @@ function _text__print_table(
         cell_width    = 1
         decoration    = _TEXT__DEFAULT
         rendered_cell = ""
-        hline         = false
+        vline         = false
+        vline_char    = tf.borders.column
+        merged_cell   = false
+        mc_last_index = 0
 
         # -- Width, Decoration, and Rendered String ----------------------------------------
 
@@ -666,15 +673,55 @@ function _text__print_table(
             rendered_cell = table_data.summary_row_labels[ir]
 
         elseif action == :column_label
-            cell_width = printed_data_column_widths[jr]
-
-            decoration = ir == 1 ?
-                tf.first_column_label_decoration :
-                tf.column_label_decoration
-
-            # If need to check if we are in a cell that should be merged. Since Markdown
-            # does not support such an operation, we only fill the field with `-`.
+            cell          = _current_cell(action, ps, table_data)
+            cell_width    = printed_data_column_widths[jr]
             rendered_cell = column_labels[ir, jr]
+            decoration    = if ir == 1
+                tf.first_line_column_label_decoration
+            else
+                tf.column_label_decoration
+            end
+
+
+            cell === _IGNORE_CELL && continue
+
+            if cell isa MergeCells
+                alignment = cell.alignment
+
+                j₀ = jr
+                j₁ = min(jr + cell.column_span - 1, num_printed_data_columns)
+
+                cell_width = 0
+
+                for j in j₀:j₁
+                    cell_width += printed_data_column_widths[j] + 2
+
+                    # We must add a space if we have a vertical line in the merged cells.
+                    if (j != j₁) && (j ∈ right_vertical_lines_at_data_columns)
+                        cell_width += 1
+                    end
+                end
+
+                # We already take into account 2 characters for the margin below.
+                cell_width -= 2
+
+                rendered_cell = _text__render_cell(cell.data, buf, renderer)
+
+                # We must store that this is a merged cell and also what is the last column
+                # index of it. It is necessary when drawing the vertical lines. The user
+                # can ask to suppress all the vertical lines in the column labels. In
+                # this case, we will draw only the very last one if necessary. Thus, we must
+                # know if we are at the last cell when drawing a merged cell.
+                merged_cell   = true
+                mc_last_index = j₁
+
+                # Apply the correct decoration.
+                decoration = if ir == 1
+                    tf.first_line_merged_column_label_decoration
+                else
+                    tf.merged_column_label_decoration
+                end
+            end
 
         elseif action == :row_number
             cell          = _current_cell(action, ps, table_data)
@@ -714,21 +761,34 @@ function _text__print_table(
         # -- Vertical Line After the Cell --------------------------------------------------
 
         if action ∈ (:row_number_label, :summary_row_label, :row_number, :summary_row_number)
-            tf.vertical_line_after_row_number_column && (hline = true)
+            tf.vertical_line_after_row_number_column && (vline = true)
 
         elseif action ∈ (:stubhead_label, :row_label, :summary_row_label)
-            tf.vertical_line_after_row_label_column && (hline = true)
+            tf.vertical_line_after_row_label_column && (vline = true)
+
+        elseif action == :column_label
+            if (!merged_cell && (jr == last_printed_column_index)) ||
+                (merged_cell && (mc_last_index == last_printed_column_index))
+                tf.vertical_line_after_data_columns && (vline = true)
+            elseif ps.j ∈ right_vertical_lines_at_data_columns
+                vline = true
+                tf.suppress_vertical_lines_at_column_labels && (vline_char = " ")
+            end
 
         elseif action ∈ (:column_label, :data, :summary_row_cell)
             if jr == last_printed_column_index
-                tf.vertical_line_after_data_columns && (hline = true)
+                tf.vertical_line_after_data_columns && (vline = true)
             elseif ps.j ∈ right_vertical_lines_at_data_columns
-                hline = true
+                vline = true
+
+                if (action == :column_label) && tf.suppress_vertical_lines_at_column_labels
+                    vline_char = " "
+                end
             end
 
         elseif action == :row_group_label
             if tf.vertical_line_after_data_columns && !horizontally_limited_by_display
-                hline = true
+                vline = true
             end
         end
 
@@ -740,7 +800,7 @@ function _text__print_table(
             decoration
         )
 
-        hline && _text__print(display, tf.borders.column)
+        vline && _text__print(display, vline_char)
     end
 
     # == Print the Buffer Into the IO ======================================================
