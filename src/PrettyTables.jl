@@ -41,6 +41,7 @@ include("./backends/markdown/private.jl")
 include("./backends/markdown/render_cell.jl")
 
 include("./backends/text/types.jl")
+include("./backends/text/column_widths.jl")
 include("./backends/text/display.jl")
 include("./backends/text/private.jl")
 include("./backends/text/render_cell.jl")

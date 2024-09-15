@@ -30,8 +30,9 @@ function _text__flush_line(
         if add_continuation_char
             line =
                 first(right_crop(line, display.column - dw + 2)) *
-                " $(continuation_char)" *
-                (display.has_color ? _TEXT__STRING_RESET : "")
+                " " *
+                (display.has_color ? _TEXT__STRING_RESET : "") *
+                continuation_char
         else
             line = first(right_crop(line, display.column - dw))
         end

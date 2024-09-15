@@ -120,58 +120,19 @@ function _text__print_table(
 
     # == Compute the Column Width ==========================================================
 
-    row_number_column_width    = 0
-    row_label_column_width     = 0
-    printed_data_column_widths = zeros(Int, num_printed_data_columns)
-
-    if table_data.show_row_number_column
-        m = (_is_vertically_cropped(table_data) && (table_data.vertical_crop_mode == :bottom)) ?
-            table_data.maximum_number_of_rows :
-            table_data.num_rows
-
-        row_number_column_width = max(
-            textwidth(table_data.row_number_column_label),
-            floor(Int, log10(m) + 1)
+    row_number_column_width, row_label_column_width, printed_data_column_widths =
+        _text__printed_column_widths(
+            table_data,
+            row_labels,
+            column_labels,
+            summary_rows,
+            table_str,
+            right_vertical_lines_at_data_columns,
+            column_label_width_based_on_first_line_only,
         )
-    end
-
-    if _has_row_labels(table_data)
-        row_label_column_width = max(
-            textwidth(table_data.stubhead_label),
-
-            num_printed_data_rows > 0 ? maximum(textwidth, row_labels) : 0,
-
-            if _has_summary_rows(table_data)
-                maximum(textwidth, table_data.summary_row_labels)
-            else
-                0
-            end
-        )
-    end
-
-    @views for j in last(axes(table_str))
-        # If the user wants to crop the additional column labels, we must consider only the
-        # first one here when computing the column width.
-        m = if !column_label_width_based_on_first_line_only
-            maximum(textwidth, column_labels[:, j])
-        else
-            textwidth(column_labels[1, j])
-        end
-
-        # TODO: Compute the column width considering the merged cells.
-
-        if num_printed_data_rows > 0
-            m = max(maximum(textwidth, table_str[:, j]), m)
-
-            if _has_summary_rows(table_data)
-                m = max(maximum(textwidth, summary_rows[:, j]), m)
-            end
-        end
-
-        printed_data_column_widths[j] = m
-    end
 
     # Now, we crop the additional column labels if the user wants to do so.
+    # TODO: What we should do with the merged column labels?
     if column_label_width_based_on_first_line_only
         for j in eachindex(printed_data_column_widths)
             cw  = printed_data_column_widths[j]
@@ -371,10 +332,12 @@ function _text__print_table(
             end
 
             if rs == :row_group_label
-                # We must draw the horizontal line here if the user requested or if the last
-                # row has a horizontal line due to the intersections.
+                # We must draw the horizontal line here if the user requested, if the last
+                # row has a horizontal line due to the intersections, or if the last row was
+                # a column label and the user wants a line after it.
                 if tf.horizontal_line_before_row_group_label ||
-                    (ir - 1 ∈ horizontal_lines_at_data_rows)
+                    (ir - 1 ∈ horizontal_lines_at_data_rows) ||
+                    (ir == 1 && tf.horizontal_line_after_column_labels)
 
                     _text__print_horizontal_line(
                         display,
@@ -523,7 +486,9 @@ function _text__print_table(
                     _text__flush_line(display, false)
                 end
 
-            elseif (rs == :data) && (next_rs != :data) && tf.horizontal_line_after_data_rows
+            elseif (rs == :data) &&
+                (next_rs ∈ (:summary_row, :table_footer, :end_printing)) &&
+                tf.horizontal_line_after_data_rows
 
                 bottom = next_rs ∈ (:table_footer, :end_printing)
 
@@ -543,8 +508,8 @@ function _text__print_table(
 
             # Check if we must print an horizontal line after the continuation row.
             elseif (rs == :continuation_row) && !suppress_hline_after_continuation_row
-
                 hline = false
+                bottom = next_rs ∈ (:table_footer, :end_printing)
 
                 if ps.i ∈ horizontal_lines_at_data_rows
                     hline = true
@@ -563,6 +528,8 @@ function _text__print_table(
                         row_number_column_width,
                         row_label_column_width,
                         printed_data_column_widths,
+                        false,
+                        bottom
                     )
 
                     _text__flush_line(display, false)
@@ -682,14 +649,13 @@ function _text__print_table(
                 tf.column_label_decoration
             end
 
-
             cell === _IGNORE_CELL && continue
 
             if cell isa MergeCells
                 alignment = cell.alignment
 
                 j₀ = jr
-                j₁ = min(jr + cell.column_span - 1, num_printed_data_columns)
+                j₁ = min(jr + cell.column_span - 1, last_printed_column_index)
 
                 cell_width = 0
 
@@ -704,8 +670,6 @@ function _text__print_table(
 
                 # We already take into account 2 characters for the margin below.
                 cell_width -= 2
-
-                rendered_cell = _text__render_cell(cell.data, buf, renderer)
 
                 # We must store that this is a merged cell and also what is the last column
                 # index of it. It is necessary when drawing the vertical lines. The user
@@ -760,7 +724,7 @@ function _text__print_table(
 
         # -- Vertical Line After the Cell --------------------------------------------------
 
-        if action ∈ (:row_number_label, :summary_row_label, :row_number, :summary_row_number)
+        if action ∈ (:row_number_label, :row_number, :summary_row_number)
             tf.vertical_line_after_row_number_column && (vline = true)
 
         elseif action ∈ (:stubhead_label, :row_label, :summary_row_label)
