@@ -4,10 +4,41 @@
 #
 ############################################################################################
 
-export MergeCells
+export MultiColumn, MergeCells
 
 # Tuple that defined a footnote.
 const FootnoteTuple = Tuple{Symbol, Int, Int}
+
+"""
+    struct MultiColumn
+
+Specification for merging columns at the column label rows.
+
+# Fields
+
+- `column_span`::Int: Number of columns to merge (must be greater than 1).
+- `data`::Any: Merged cell data.
+- `alignment`::Symbol: Merge cell alignment.
+"""
+struct MultiColumn
+    column_span::Int
+    data::Any
+    alignment::Symbol
+
+    function MultiColumn(column_span::Int, data::Any)
+        column_span < 2 && throw(ArgumentError(
+            "The `column_span` of `MultiColumn` must be greater than 1."
+        ))
+        return new(column_span, data, :c)
+    end
+
+    function MultiColumn(column_span::Int, data::Any, alignment::Symbol)
+        column_span < 2 && throw(ArgumentError(
+            "The `column_span` of `MultiColumn` must be greater than 1."
+        ))
+        return new(column_span, data, alignment)
+    end
+end
 
 @kwdef struct MergeCells
     i::Int

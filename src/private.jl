@@ -45,6 +45,51 @@ function _preprocess_data(@nospecialize(data::Any))
 end
 
 """
+    _process_merge_column_label_specification(column_labels::Vector{Vector{Any}}) -> Vector{Vector{Any}}, Vector{MergeCells}
+
+Process the column label specification by replacing `MultiColumn` objects in `column_labels`
+and adding the correct specification to `merge_column_label_cells`. This function returns
+the new objects that must replace the olds `column_labels` and the
+`merge_column_label_cells`.
+"""
+function _process_merge_column_label_specification(column_labels::Vector{Vector{Any}})
+    processed_column_labels = similar(column_labels)
+
+    merge_column_label_cells = MergeCells[]
+
+    for l in eachindex(column_labels)
+        column_label_line = Any[]
+        line = column_labels[l]
+
+        for c in eachindex(line)
+            column = line[c]
+
+            if column isa MultiColumn
+                push!(merge_column_label_cells, MergeCells(
+                    l,
+                    length(column_label_line) + 1,
+                    column.column_span,
+                    column.data,
+                    column.alignment
+                ))
+
+                for _ in 1:column.column_span
+                    push!(column_label_line, "")
+                end
+
+                continue
+            end
+
+            push!(column_label_line, column)
+        end
+
+        processed_column_labels[l] = column_label_line
+    end
+
+    return processed_column_labels, merge_column_label_cells
+end
+
+"""
     _validate_merge_cell_specification(table_data::TableData) -> Nothing
 
 Validate the merge cell specification in `table_data`. If something is wrong, this function

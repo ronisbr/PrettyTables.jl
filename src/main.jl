@@ -70,7 +70,7 @@ function pretty_table(
     formatters::Union{Nothing, Vector{T} where T <: Any} = nothing,
     maximum_number_of_columns::Int = -1,
     maximum_number_of_rows::Int = -1,
-    merge_column_label_cells::Union{Nothing, Vector{MergeCells}} = nothing,
+    merge_column_label_cells::Union{Nothing, Symbol, Vector{MergeCells}} = nothing,
     show_first_column_label_only::Bool = false,
     show_row_number_column::Bool = false,
     vertical_crop_mode::Symbol = :bottom,
@@ -191,7 +191,7 @@ function _pretty_table(
     formatters::Union{Nothing, Vector{T} where T <: Any},
     maximum_number_of_columns::Int,
     maximum_number_of_rows::Int,
-    merge_column_label_cells::Union{Nothing, Vector{MergeCells}},
+    merge_column_label_cells::Union{Nothing, Symbol, Vector{MergeCells}},
     show_first_column_label_only::Bool,
     show_row_number_column::Bool,
     vertical_crop_mode::Symbol;
@@ -251,21 +251,47 @@ function _pretty_table(
         throw(ArgumentError("`pretty_table` does not support data with more than 2 dimensions."))
     end
 
+    # If the user provided the `column_labels` and set `merge_column_label_cells` to
+    # `:auto`, we will rebuild those two parameters to take into account the merged columns.
+    local _merge_column_label_cells
+
+    if isnothing(column_labels) && (merge_column_label_cells isa Symbol)
+        throw(ArgumentError(
+            "`merge_column_label_cells = :auto` requires `column_labels` to be provided."
+         ))
+
+    elseif !isnothing(column_labels) && (merge_column_label_cells isa Symbol)
+        merge_column_label_cells != :auto &&
+            throw(ArgumentError(
+                "`merge_column_label_cells` has an undefined value (:$(merge_column_label_cells))."
+            ))
+
+        column_labels, _merge_column_label_cells =
+            _process_merge_column_label_specification(column_labels)
+
+    else
+        _merge_column_label_cells = merge_column_label_cells
+    end
+
+    # If we reach this point and `column_labels` is nothing, we must guess it.
     if isnothing(column_labels)
         column_labels = _guess_column_labels(pdata)
     else
         for cl in column_labels
-            length(cl) != num_columns &&
-                error("Each vector in `column_labels` must have the same number of elements as the table columns ($num_columns).")
+            length(cl) != num_columns && throw(ArgumentError(
+                "Each vector in `column_labels` must have the same number of elements as the table columns ($num_columns)."
+            ))
         end
     end
 
     if (renderer != :print) && (renderer != :show)
-        error("The renderer must be `:print` or `:show`.")
+        throw(ArgumentError("The renderer must be `:print` or `:show`."))
     end
 
     if (alignment isa AbstractVector) && (length(alignment) != num_columns)
-        error("The length of vector `alignment` ($(length(alignment))) must be equal to the number of columns ($num_columns).")
+        throw(ArgumentError(
+            "The length of vector `alignment` ($(length(alignment))) must be equal to the number of columns ($num_columns)."
+        ))
     end
 
     if cell_alignment isa Vector
@@ -318,7 +344,7 @@ function _pretty_table(
         row_group_labels,
         summary_rows,
         summary_row_labels,
-        merge_column_label_cells,
+        _merge_column_label_cells,
         footnotes,
         source_notes,
         title_alignment,
