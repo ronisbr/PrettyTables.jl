@@ -183,12 +183,16 @@ function _html__print(
 
         if action == :new_row
 
-            if (ps.i == 1) && (rs == :table_header) && !head_opened
+            if (ps.i == 1) && (rs ∈ (:table_header, :column_label)) && !head_opened
                 _aprintln(buf, "<thead>", il, ns; minify)
                 il += 1
                 head_opened = true
 
-            elseif (ps.i == 1) && (rs ∈ (:data, :summary_row)) && !body_opened
+            elseif !body_opened && (
+                    ((ps.i == 1) && (rs ∈ (:data, :summary_row))) ||
+                    (rs == :row_group_label)
+                )
+
                 if head_opened
                     il -= 1
                     _aprintln(buf, "</thead>", il, ns; minify)
