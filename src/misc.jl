@@ -209,6 +209,30 @@ function _compact_type_str(T::Union)
 end
 
 """
+    _maximum_textwidth_per_line(str::AbstractString) -> Int
+
+Compute the maximum textwidth per line of the string `str`.
+"""
+function _maximum_textwidth_per_line(str::AbstractString)
+    max_tw = 0
+    line_tw = 0
+
+    for c in str
+        if c == '\n'
+            max_tw = max(max_tw, line_tw)
+            line_tw = 0
+        else
+            line_tw += textwidth(c)
+        end
+    end
+
+    # Take into account the last line.
+    max_tw = max(max_tw, line_tw)
+
+    return max_tw
+end
+
+"""
     _omitted_cell_summary(table_data::TableData, pspec::PrintingSpec) -> String
 
 Return the omitted cell summary related to the `table_data` and printing specification

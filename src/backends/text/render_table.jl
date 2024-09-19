@@ -10,6 +10,8 @@
 Render the table using the specification in `table_data`. When the cells are converted to
 `String`, we use the `context`, and the `renderer`.
 
+TODO: Update docstring.
+
 # Returns
 
 - `Union{Nothing, Vector{String}}`: Rendered row labels.
@@ -21,6 +23,7 @@ function _text__render_table(
     table_data::TableData,
     @nospecialize(context::IOContext),
     renderer::Union{Val{:print}, Val{:show}},
+    line_breaks::Bool,
     maximum_data_column_widths::Union{Number, Vector{Int}}
 )
     num_column_label_lines   = length(table_data.column_labels)
@@ -61,10 +64,13 @@ function _text__render_table(
 
         action ∉ (:column_label, :data, :summary_row_cell, :row_label, :footnote) && continue
 
+        # We should only break lines if we are in a data cell.
+        lb = (action == :data) && line_breaks
+
         cell = _current_cell(action, ps, table_data)
 
         rendered_cell = if cell !== _IGNORE_CELL
-            _text__render_cell(cell, context, renderer)
+            _text__render_cell(cell, context, renderer, lb)
         else
             ""
         end

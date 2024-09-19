@@ -5,7 +5,7 @@
 ############################################################################################
 
 """
-    _text__printed_column_widths(table_data::TableData, row_labels::Union{Nothing, Vector{String}}, column_labels::Matrix{String}, summary_rows::Union{Nothing, Vector{String}}, table_str::Matrix{String}, right_vertical_lines_at_data_columns::AbstractVector{Int}, column_label_width_based_on_first_line_only::Bool) -> Int, Int, Vector{Int}
+    _text__printed_column_widths(table_data::TableData, row_labels::Union{Nothing, Vector{String}}, column_labels::Matrix{String}, summary_rows::Union{Nothing, Vector{String}}, table_str::Matrix{String}, right_vertical_lines_at_data_columns::AbstractVector{Int}, column_label_width_based_on_first_line_only::Bool, line_breaks::Bool) -> Int, Int, Vector{Int}
 
 Compute the printed column widths.
 
@@ -20,6 +20,8 @@ Compute the printed column widths.
     vertical lines at the data columns.
 - `column_label_width_based_on_first_line_only::Bool`: If `true`, the column label width
     will be computed based on the first line only.
+- `line_breaks::Bool`: If `true`, the cells will be split into multiple lines if needed.
+    Hence, the textwidth of each line is used to compute the column width.
 
 # Returns
 
@@ -34,7 +36,8 @@ function _text__printed_column_widths(
     summary_rows::Union{Nothing, Matrix{String}},
     table_str::Matrix{String},
     right_vertical_lines_at_data_columns::AbstractVector{Int},
-    column_label_width_based_on_first_line_only::Bool
+    column_label_width_based_on_first_line_only::Bool,
+    line_breaks::Bool
 )
     num_printed_data_rows, num_printed_data_columns = size(table_str)
 
@@ -88,7 +91,13 @@ function _text__printed_column_widths(
         end
 
         if num_printed_data_rows > 0
-            m = max(maximum(textwidth, table_str[:, j]), m)
+            if !line_breaks
+                m = max(maximum(textwidth, table_str[:, j]), m)
+            else
+                for cell in table_str[:, j]
+                    m = max(m, _maximum_textwidth_per_line(cell))
+                end
+            end
 
             if _has_summary_rows(table_data)
                 m = max(maximum(textwidth, summary_rows[:, j]), m)
