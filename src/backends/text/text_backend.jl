@@ -16,6 +16,7 @@ function _text__print_table(
     display_size::NTuple{2, Int} = displaysize(pspec.context),
     fit_table_in_display_horizontally::Bool = true,
     fit_table_in_display_vertically::Bool = true,
+    line_breaks::Bool = false,
     highlighters::Vector{TextHighlighter} = TextHighlighter[],
     maximum_data_column_widths::Union{Number, Vector{Int}} = 0,
 )
@@ -73,7 +74,7 @@ function _text__print_table(
         horizontal_lines_at_data_rows = tf.horizontal_lines_at_data_rows::Vector{Int}
     end
 
-    # Limit the number of rendered cells given the display size if the user wants.
+    # Limit the number of rendered columns given the display size if the user wants.
     if fit_table_in_display_horizontally && (display_size[2] > 0)
         mc = div(display.size[2], 5, RoundUp)
 
@@ -87,7 +88,26 @@ function _text__print_table(
         end
     end
 
+    # Limit the number of rendered rows given the display size if the user wants.
+    vertically_limited_by_display          = false
+    suppress_hline_before_continuation_row = false
+    suppress_hline_after_continuation_row  = false
+
     if fit_table_in_display_vertically && (display_size[1] > 0)
+        # We do not support middle cropping when using line breaks since it will required a
+        # much more complex algorithm, decreasing the maintainability.
+        if line_breaks
+            table_data.vertical_crop_mode = :bottom
+        end
+
+        # NOTE: In case we have line breaks, this design is only preliminary. In this case,
+        # we perform the following actions:
+        #
+        #   1. Design the number of rendered rows assuming one line per row.
+        #   2. Render the table.
+        #   2. Compute the number of rendered columns.
+        #   3. Re-design the number of rendered rows considering the actual number of lines.
+
         mr, suppress_hline_before_continuation_row, suppress_hline_after_continuation_row =
             _text__design_vertical_cropping(
                 table_data,
@@ -98,8 +118,10 @@ function _text__print_table(
             )
 
         if table_data.maximum_number_of_rows >= 0
+            vertically_limited_by_display = mr < table_data.maximum_number_of_rows
             table_data.maximum_number_of_rows = min(table_data.maximum_number_of_rows, mr)
         else
+            vertically_limited_by_display = mr < table_data.num_rows
             table_data.maximum_number_of_rows = mr
         end
     end
@@ -113,7 +135,8 @@ function _text__print_table(
         table_data,
         context,
         renderer,
-        maximum_data_column_widths
+        line_breaks,
+        maximum_data_column_widths,
     )
 
     num_printed_data_rows, num_printed_data_columns = size(table_str)
@@ -129,6 +152,7 @@ function _text__print_table(
             table_str,
             right_vertical_lines_at_data_columns,
             column_label_width_based_on_first_line_only,
+            line_breaks
         )
 
     # Now, we crop the additional column labels if the user wants to do so.
@@ -173,9 +197,7 @@ function _text__print_table(
     # user specification.
     horizontally_limited_by_display = false
 
-    if fit_table_in_display_horizontally && (display.size[2] > 0) &&
-        _is_horizontally_cropped(table_data)
-
+    if fit_table_in_display_horizontally && (display.size[2] > 0)
         # Here we have three possibilities:
         #
         #   1. We cannot show the table continuation column, meaning that the table is
@@ -233,6 +255,50 @@ function _text__print_table(
         printed_table_width = display_size[2]
     end
 
+    # == Vertical Cropping Design with Line Breaks =========================================
+
+    # Up to now, we consider that each table row has only one line. Now that we know how
+    # many columns we must print, we can redesign the vertical cropping if the user wants
+    # line breaks. In this case, we will analyze each line and check how many data rows we
+    # can print considering the multiple lines.
+
+    if fit_table_in_display_vertically && line_breaks
+        # Notice that `mr` contains the number of fully printed data rows. Furthermore, if
+        # `lrc` is `true`, the last row is cropped, meaning that we need to print `mr + 1`
+        # rows from the rendered table.
+        mr, lrc, supress_hline_before_continuation_row =
+            _text__design_vertical_cropping_with_line_breaks(
+                table_data,
+                table_str,
+                tf,
+                horizontal_lines_at_data_rows,
+                pspec.show_omitted_cell_summary,
+                display.size[1],
+                num_printed_data_columns,
+            )
+
+        if table_data.maximum_number_of_rows >= 0
+            vertically_limited_by_display =
+                vertically_limited_by_display || (mr < table_data.maximum_number_of_rows)
+
+            table_data.maximum_number_of_rows = min(
+                table_data.maximum_number_of_rows,
+                mr + lrc
+            )
+        else
+            vertically_limited_by_display =
+                vertically_limited_by_display ||
+                (num_fully_printed_data_rows < table_data.num_rows)
+
+            table_data.maximum_number_of_rows = mr + lrc
+        end
+
+        # Now that we have the number of fully printed data rows, we must update those
+        # variables.
+        num_printed_data_rows = table_data.maximum_number_of_rows
+        num_omitted_data_rows = table_data.num_rows - mr
+    end
+
     # == Print the Table ===================================================================
 
     ps     = PrintingTableState()
@@ -247,11 +313,66 @@ function _text__print_table(
 
     top_line_printed = false
 
+    # Those variables are used to process rows with multiple lines.
+    #
+    # Number of lines in the current row. It is computed by the maximum number of lines
+    # inside a data cell in a specific row.
+    num_lines_in_row = 0
+
+    # Number of lines available in the display for the data section. Notice that it only
+    # makes sense if the display are limiting the table.
+    num_available_data_section_lines = if vertically_limited_by_display
+        total_table_lines, num_lines_before_data, num_lines_after_data =
+            _text__number_of_required_lines(table_data, tf, horizontal_lines_at_data_rows)
+
+        (
+            display.size[1] -
+            num_lines_before_data -
+            num_lines_after_data -
+            pspec.show_omitted_cell_summary -
+            1 # ........................................................... Continuation row
+        )
+    else
+        0
+    end
+
+    # Number of lines printed in data section, including horizontal lines and row group
+    # labels.
+    num_printed_data_section_lines = 0
+
+    # Stored state at the beginning of the row with multiple lines. We used those values to
+    # reiterate the printing state until we have no more new rows.
+    saved_ps = PrintingTableState()
+    saved_ir = 0
+
+    # Current row line that is being printed. If it is 0, the current row does not have
+    # multiple lines.
+    current_row_line = 0
+
+    tokens = if !line_breaks
+        nothing
+    else
+        Vector{Vector{SubString}}(undef, last_printed_column_index)
+    end
+
     while action != :end_printing
+        if current_row_line == 0
+            saved_ps = ps
+            saved_ir = ir
+        end
+
         action, rs, ps = _next(ps, table_data)
         ir, jr = _update_data_cell_indices(action, rs, ps, ir, jr)
 
         action == :end_printing && break
+
+        # If we already printed the number of available lines in data section, skip
+        # everything until we exit the data section.
+        if line_breaks && (rs == :data) && (num_available_data_section_lines > 0) &&
+            (num_printed_data_section_lines >= num_available_data_section_lines)
+            current_row_line = 0
+            continue
+        end
 
         # == Table Header and Footer =======================================================
 
@@ -353,6 +474,18 @@ function _text__print_table(
                     )
 
                     _text__flush_line(display, false)
+                    num_printed_data_section_lines += 1
+                end
+            end
+
+            # Check if we need to start processing multiple row lines.
+            if line_breaks && (rs == :data) && (current_row_line == 0)
+                num_lines_in_row = maximum(count.(==('\n'), table_str[ir, :])) + 1
+                current_row_line = 1
+
+                # Obtain the tokens for each line.
+                for jt in eachindex(tokens)
+                    tokens[jt] = split(table_str[ir, jt], '\n')
                 end
             end
 
@@ -412,6 +545,9 @@ function _text__print_table(
 
             if rs == :data
                 num_data_lines += 1
+                num_printed_data_section_lines += 1
+            elseif rs == :row_group_label
+                num_printed_data_section_lines += 1
             end
 
             # == Flush the Line ============================================================
@@ -428,6 +564,26 @@ function _text__print_table(
 
             else
                 _text__flush_line(display)
+            end
+
+            # Check if we must render another line for this row or if we should go to the
+            # next row.
+            if current_row_line > 0
+                current_row_line += 1
+
+                if current_row_line <= num_lines_in_row
+                    # We if reached this point, we must render another line of the same row.
+                    # Hence, we will restore that saved state at the beginning of the line,
+                    # and render it again. Since we increased `current_row_line`, we will
+                    # render the
+                    # next row.
+                    ps = saved_ps
+                    ir = saved_ir
+                    continue
+                end
+
+                # If we reached this point, we finished rendering the row.
+                current_row_line = 0
             end
 
             # == Handle the Horizontal Lines ===============================================
@@ -484,6 +640,7 @@ function _text__print_table(
                     )
 
                     _text__flush_line(display, false)
+                    num_printed_data_section_lines += 1
                 end
 
             elseif (rs == :data) &&
@@ -505,6 +662,7 @@ function _text__print_table(
                 )
 
                 _text__flush_line(display, false)
+                num_printed_data_section_lines += 1
 
             # Check if we must print an horizontal line after the continuation row.
             elseif (rs == :continuation_row) && !suppress_hline_after_continuation_row
@@ -551,6 +709,7 @@ function _text__print_table(
                     )
 
                     _text__flush_line(display, false)
+                    num_printed_data_section_lines += 1
                 end
 
             # Check if the must print the horizontal line at the end of the table.
@@ -608,8 +767,9 @@ function _text__print_table(
         rendered_cell = ""
         vline         = false
         vline_char    = tf.borders.column
-        merged_cell   = false
+
         mc_last_index = 0
+        merged_cell   = false
 
         # -- Width, Decoration, and Rendered String ----------------------------------------
 
@@ -695,7 +855,17 @@ function _text__print_table(
 
         elseif action == :data
             cell_width    = printed_data_column_widths[jr]
-            rendered_cell = table_str[ir, jr]
+            rendered_cell = if line_breaks
+                tokens_jr = tokens[jr]
+
+                if current_row_line <= length(tokens_jr)
+                    string(tokens_jr[current_row_line])
+                else
+                    ""
+                end
+            else
+                table_str[ir, jr]
+            end
 
             # Check if we must apply highlighters.
             if !isempty(highlighters)
@@ -720,6 +890,12 @@ function _text__print_table(
             cell_width    = printed_table_width - 4
             decoration    = tf.row_group_label_decoration
             rendered_cell = _text__render_cell(cell, buf, renderer)
+        end
+
+        # If we have multiple lines and we are not rendering a data cell, we must only
+        # render it at the first line.
+        if (current_row_line >= 2) && (action != :data)
+            rendered_cell = ""
         end
 
         # -- Vertical Line After the Cell --------------------------------------------------

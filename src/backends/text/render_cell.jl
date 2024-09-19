@@ -71,11 +71,14 @@ Render the `cell` in markdown back end using a specific `context` and `renderer`
 function _text__render_cell(
     cell::Any,
     @nospecialize(context::IOContext),
-    renderer::Union{Val{:print}, Val{:show}}
+    renderer::Union{Val{:print}, Val{:show}},
+    line_breaks::Bool = false
 )
     cell_str = _text__cell_to_str(cell, context, renderer)
 
-    # If the user wants markdown code inside cell, we must not escape the markdown characters.
-    return escape_string(cell_str)
+    # We the user wants line breaks, we should not escape the character `\n`.
+    keep = line_breaks ? '\n' : ()
+
+    return escape_string(cell_str; keep)
 end
 
