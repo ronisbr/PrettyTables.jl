@@ -28,6 +28,22 @@ end
 
 # == Horizontal Cropping ===================================================================
 
+"""
+    _text__number_of_printed_data_columns(display_width::Int, table_data::TableData, tf::TextTableFormat, right_vertical_lines_at_data_columns::AbstractVector{Int}, row_number_column_width::Int, row_label_column_width::Int, printed_data_column_widths::Vector{Int}) -> Int
+
+Compute the number of printed data columns.
+
+# Arguments
+
+- `display_width::Int`: Display width.
+- `table_data::TableData`: Table data.
+- `tf::TextTableFormat`: Table format.
+- `right_vertical_lines_at_data_columns::AbstractVector{Int}`: Right vertical lines at data
+    columns.
+- `row_number_column_width::Int`: Row number column width.
+- `row_label_column_width::Int`: Row label column width.
+- `printed_data_column_widths::Vector{Int}`: Printed data column widths.
+"""
 function _text__number_of_printed_data_columns(
     display_width::Int,
     table_data::TableData,
@@ -443,6 +459,21 @@ end
 
 # == Table Dimensions ======================================================================
 
+"""
+    _text__table_width_wo_cont_column(table_data::TableData, tf::TextTableFormat, right_vertical_lines_at_data_columns::AbstractVector{Int}, row_number_column_width::Int, row_label_column_width::Int, printed_data_column_widths::Vector{Int}) -> Int
+
+Compute the width of the table without the continuation column.
+
+# Arguments
+
+- `table_data::TableData`: Table data.
+- `tf::TextTableFormat`: Table format.
+- `right_vertical_lines_at_data_columns::AbstractVector{Int}`: Right vertical lines at data
+    columns.
+- `row_number_column_width::Int`: Row number column width.
+- `row_label_column_width::Int`: Row label column width.
+- `printed_data_column_widths::Vector{Int}`: Printed data column widths.
+"""
 function _text__table_width_wo_cont_column(
     table_data::TableData,
     tf::TextTableFormat,
