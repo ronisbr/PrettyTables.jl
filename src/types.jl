@@ -4,10 +4,31 @@
 #
 ############################################################################################
 
-export MultiColumn, MergeCells
+export EmptyCells, MultiColumn, MergeCells
 
 # Tuple that defined a footnote.
 const FootnoteTuple = Tuple{Symbol, Int, Int}
+
+"""
+    struct EmptyCells
+
+Specification for adding a set of empty cells at the column label rows.
+
+# Fields
+
+- `column_span::Int`: Number of cells to add (must be greater than 0).
+"""
+struct EmptyCells
+    column_span::Int
+
+    function EmptyCells(column_span::Int)
+        column_span < 1 && throw(ArgumentError(
+            "The `column_span` of `EmptyCells` must be greater than 0."
+        ))
+
+        return new(column_span)
+    end
+end
 
 """
     struct MultiColumn
@@ -16,9 +37,9 @@ Specification for merging columns at the column label rows.
 
 # Fields
 
-- `column_span`::Int: Number of columns to merge (must be greater than 1).
-- `data`::Any: Merged cell data.
-- `alignment`::Symbol: Merge cell alignment.
+- `column_span::Int`: Number of columns to merge (must be greater than 1).
+- `data::Any`: Merged cell data.
+- `alignment::Symbol`: Merge cell alignment.
 """
 struct MultiColumn
     column_span::Int
