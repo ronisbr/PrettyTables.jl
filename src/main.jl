@@ -266,8 +266,10 @@ function _pretty_table(
                 "`merge_column_label_cells` has an undefined value (:$(merge_column_label_cells))."
             ))
 
-        column_labels, _merge_column_label_cells =
-            _process_merge_column_label_specification(column_labels)
+        column_labels, _merge_column_label_cells = _process_merge_column_label_specification(
+            column_labels,
+            num_columns
+        )
 
     else
         _merge_column_label_cells = merge_column_label_cells

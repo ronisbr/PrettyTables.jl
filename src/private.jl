@@ -45,14 +45,20 @@ function _preprocess_data(@nospecialize(data::Any))
 end
 
 """
-    _process_merge_column_label_specification(column_labels::Vector{Vector{Any}}) -> Vector{Vector{Any}}, Vector{MergeCells}
+    _process_merge_column_label_specification(column_labels::Vector{T}, num_columns::Int) where T <: AbstractVector -> Vector{Vector{Any}}, Vector{MergeCells}
 
 Process the column label specification by replacing `MultiColumn` objects in `column_labels`
 and adding the correct specification to `merge_column_label_cells`. This function returns
 the new objects that must replace the olds `column_labels` and the
 `merge_column_label_cells`.
+
+The number of columns in the table must be passed in `num_column` so the function can verify
+the correctness of the specification.
 """
-function _process_merge_column_label_specification(column_labels::Vector{Vector{Any}})
+function _process_merge_column_label_specification(
+    column_labels::Vector{T},
+    num_columns::Int
+) where T <: AbstractVector
     processed_column_labels = similar(column_labels)
 
     merge_column_label_cells = MergeCells[]
@@ -78,10 +84,23 @@ function _process_merge_column_label_specification(column_labels::Vector{Vector{
                 end
 
                 continue
+
+            elseif column isa EmptyCells
+                for _ in 1:column.column_span
+                    push!(column_label_line, "")
+                end
+
+                continue
             end
 
             push!(column_label_line, column)
         end
+
+        # Check if the number of processed columns is correct.
+        npc = length(column_label_line)
+        npc != num_columns && throw(ArgumentError(
+            "The number of columns ($npc) obtained from the specifications in the line #$(l) of `column_label` does not match the number of columns in the table ($num_columns)."
+        ))
 
         processed_column_labels[l] = column_label_line
     end
