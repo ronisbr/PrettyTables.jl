@@ -4,7 +4,7 @@
 #
 ############################################################################################
 
-export TextTableBorders, TextTableFormat, TextHighlighter
+export TextTableBorders, TextTableFormat, TextTableStyle, TextHighlighter
 
 ############################################################################################
 #                                         Display                                          #
@@ -182,30 +182,54 @@ Define the format of the tables printed with the text back end.
     right_vertical_lines_at_data_columns::Union{Symbol, Vector{Int}} = :all
     suppress_vertical_lines_at_column_labels::Bool = false
 
-    # == Decorations =======================================================================
-
-    title_decoration::Crayon                          = _TEXT__BOLD
-    subtitle_decoration::Crayon                       = _TEXT__DEFAULT
-    row_number_label_decoration::Crayon               = _TEXT__BOLD
-    row_number_decoration::Crayon                     = _TEXT__DEFAULT
-    stubhead_label_decoration::Crayon                 = _TEXT__BOLD
-    row_label_decoration::Crayon                      = _TEXT__BOLD
-    row_group_label_decoration::Crayon                = _TEXT__BOLD
-    first_line_column_label_decoration::Crayon        = _TEXT__BOLD
-    column_label_decoration::Crayon                   = _TEXT__DARK_GRAY
-    first_line_merged_column_label_decoration::Crayon = _TEXT__BOLD_UNDERLINE
-    merged_column_label_decoration::Crayon            = _TEXT__DARK_GRAY_UNDERLINE
-    summary_row_cell_decoration::Crayon               = _TEXT__DEFAULT
-    summary_row_label_decoration::Crayon              = _TEXT__BOLD
-    footnote_decoration::Crayon                       = _TEXT__DEFAULT
-    source_note_decoration::Crayon                    = _TEXT__DARK_GRAY
-    merged_cell_decoration::Crayon                    = _TEXT__BOLD
-    omitted_cell_summary_decoration::Crayon           = _TEXT__CYAN
-
     # == Other Configurations ==============================================================
 
     ellipsis_line_skip::Int = 0
     new_line_at_end::Bool = true
+end
+
+"""
+    struct TextTableStyle
+
+Define the style of the tables printed with the text back end.
+
+# Fields
+
+- `row_number::Crayon`: Crayon with the style for the row numbers.
+- `stubhead_label::Crayon`:  Crayon with the style for the stubhead label.
+- `row_label::Crayon`: Crayon with the style for the row labels.
+- `row_group_label::Crayon`: Crayon with the style for the row group label.
+- `first_line_column_label::Crayon`: Crayon with the style for the first column label lines.
+- `column_label::Crayon`: Crayon with the style for the rest of the column labels.
+- `first_line_merged_column_label::Crayon`: Crayon with the style for the first merged cells
+    at the first column label line.
+- `merged_column_label::Crayon`: Crayon with the style for the merged cells at the rest of
+    the column labels.
+- `summary_row_cell::Crayon`: Crayon with the style for the summary row cell.
+- `summary_row_label::Crayon`: Crayon with the style for the summary row label.
+- `footnote::Crayon`: Crayon with the style for the footnotes.
+- `source_note::Crayon`: Crayon with the style for the source notes.
+- `merged_cell::Crayon`: Crayon with the style for the merged cells.
+- `omitted_cell_summary::Crayon`: Crayon with the style for the omitted cell summary.
+"""
+@kwdef struct TextTableStyle
+    title::Crayon                          = _TEXT__BOLD
+    subtitle::Crayon                       = _TEXT__DEFAULT
+    row_number_label::Crayon               = _TEXT__BOLD
+    row_number::Crayon                     = _TEXT__DEFAULT
+    stubhead_label::Crayon                 = _TEXT__BOLD
+    row_label::Crayon                      = _TEXT__BOLD
+    row_group_label::Crayon                = _TEXT__BOLD
+    first_line_column_label::Crayon        = _TEXT__BOLD
+    column_label::Crayon                   = _TEXT__DARK_GRAY
+    first_line_merged_column_label::Crayon = _TEXT__BOLD_UNDERLINE
+    merged_column_label::Crayon            = _TEXT__DARK_GRAY_UNDERLINE
+    summary_row_cell::Crayon               = _TEXT__DEFAULT
+    summary_row_label::Crayon              = _TEXT__BOLD
+    footnote::Crayon                       = _TEXT__DEFAULT
+    source_note::Crayon                    = _TEXT__DARK_GRAY
+    merged_cell::Crayon                    = _TEXT__BOLD
+    omitted_cell_summary::Crayon           = _TEXT__CYAN
 end
 
 ############################################################################################
