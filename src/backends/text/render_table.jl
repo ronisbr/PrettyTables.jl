@@ -5,12 +5,16 @@
 ############################################################################################
 
 """
-    _text__render_table(table_data::TableData, context::IOContext, renderer::Union{Val{:print}, Val{:show}})
+    _text__render_table(table_data::TableData, @nospecialize(context::IOContext), renderer::Union{Val{:print}, Val{:show}}, line_breaks::Bool, maximum_data_column_widths::AbstractVector{Int})
 
 Render the table using the specification in `table_data`. When the cells are converted to
 `String`, we use the `context`, and the `renderer`.
 
-TODO: Update docstring.
+If `line_breaks` is `true`, we split each cell into multiple lines at every occurence of
+`\\n`.
+
+`maximum_data_column_widths` must contain the user specification for the maximum data column
+widths.
 
 # Returns
 
@@ -24,7 +28,7 @@ function _text__render_table(
     @nospecialize(context::IOContext),
     renderer::Union{Val{:print}, Val{:show}},
     line_breaks::Bool,
-    maximum_data_column_widths::Union{Number, Vector{Int}}
+    maximum_data_column_widths::AbstractVector{Int}
 )
     num_column_label_lines   = length(table_data.column_labels)
     num_printed_data_columns = _number_of_printed_data_columns(table_data)
@@ -106,11 +110,7 @@ function _text__render_table(
         # If the user requested a maximum data column width, check the current size and crop
         # accordingly.
         if action in (:column_label, :data, :summary_row_cell)
-            mcw = if maximum_data_column_widths isa Number
-                maximum_data_column_widths
-            else
-                maximum_data_column_widths[ps.j]
-            end
+            mcw = maximum_data_column_widths[ps.j]
 
             if mcw > 1
                 str = if action == :column_label

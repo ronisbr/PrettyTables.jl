@@ -12,6 +12,8 @@ end
 function _text__print_table(
     pspec::PrintingSpec;
     tf::TextTableFormat = TextTableFormat(),
+    alignment_anchor_fallback::Symbol = :l,
+    alignment_anchor_regex::Vector{Pair{Int, Vector{Regex}}} = Pair{Int, Vector{Regex}}[],
     column_label_width_based_on_first_line_only::Bool = false,
     display_size::NTuple{2, Int} = displaysize(pspec.context),
     fit_table_in_display_horizontally::Bool = true,
@@ -19,6 +21,7 @@ function _text__print_table(
     line_breaks::Bool = false,
     highlighters::Vector{TextHighlighter} = TextHighlighter[],
     maximum_data_column_widths::Union{Number, Vector{Int}} = 0,
+    fixed_data_column_widths::Union{Number, Vector{Int}} = 0,
     style::TextTableStyle = TextTableStyle(),
 )
     context    = pspec.context
@@ -28,6 +31,8 @@ function _text__print_table(
     ps     = PrintingTableState()
     buf_io = IOBuffer()
     buf    = IOContext(buf_io, context)
+
+    # == Process Input Variables ===========================================================
 
     # If the user does not want to crop the table horizontally, we set the display width to
     # -1, meaning that we do not have a limit.
@@ -64,6 +69,18 @@ function _text__print_table(
             tf.right_vertical_lines_at_data_columns::Vector{Int}
     end
 
+    if maximum_data_column_widths isa Number
+        maximum_data_column_widths = maximum_data_column_widths .+ 0 * (1:table_data.num_columns)
+    end
+
+    has_fixed_data_column_widths = false
+    if (fixed_data_column_widths isa Number) && (fixed_data_column_widths > 0)
+        fixed_data_column_widths = fixed_data_column_widths .+ 0 * (1:table_data.num_columns)
+        has_fixed_data_column_widths = true
+    end
+
+    # == Table Fitting in the Display ======================================================
+
     # Process the horizontal lines at data rows.
     if tf.horizontal_lines_at_data_rows isa Symbol
         horizontal_lines_at_data_rows = if tf.horizontal_lines_at_data_rows == :all
@@ -78,6 +95,19 @@ function _text__print_table(
     # Limit the number of rendered columns given the display size if the user wants.
     if fit_table_in_display_horizontally && (display_size[2] > 0)
         mc = div(display.size[2], 5, RoundUp)
+
+        # If the user provided a fixed data column width, we can use it to check how many
+        # columns we can display.
+        if has_fixed_data_column_widths
+            aux = 0
+            mc = 1
+
+            for j in eachindex(fixed_data_column_widths)
+                aux += fixed_data_column_widths[j]
+                aux > display.size[2] && break
+                mc += 1
+            end
+        end
 
         if table_data.maximum_number_of_columns >= 0
             table_data.maximum_number_of_columns = min(
@@ -142,6 +172,35 @@ function _text__print_table(
 
     num_printed_data_rows, num_printed_data_columns = size(table_str)
 
+    # == Column Alignment Regex ============================================================
+
+    if !isempty(alignment_anchor_regex)
+        # Check of a regex with index 0, meaning that it will be applied to all the columns.
+        id = findfirst(==(0), first.(alignment_anchor_regex))
+        has_global_regex = !isnothing(id)
+
+        if has_global_regex
+            regex = last(alignment_anchor_regex[id])
+
+            @views for j in axes(table_str, 2)
+                _align_column_with_regex!(
+                    table_str[:, j],
+                    regex,
+                    alignment_anchor_fallback
+                )
+            end
+        else
+            @views for r in alignment_anchor_regex
+                j, regex = r
+                _align_column_with_regex!(
+                    table_str[:, j],
+                    regex,
+                    alignment_anchor_fallback
+                )
+            end
+        end
+    end
+
     # == Compute the Column Width ==========================================================
 
     row_number_column_width, row_label_column_width, printed_data_column_widths =
@@ -171,6 +230,33 @@ function _text__print_table(
 
                 str, _ = right_crop(str, tw - printed_data_column_widths[j] + 1)
                 cls[i] = str * "…"
+            end
+        end
+    end
+
+    # If the user wants a fixed column width, we must reprocess all the data columns to crop
+    # to the correct size if necesary.
+    if has_fixed_data_column_widths
+        for j in eachindex(printed_data_column_widths)
+            printed_data_column_widths[j] = fixed_data_column_widths[j - 1 + begin]
+        end
+
+        for table in (column_labels, table_str, summary_rows)
+            isnothing(table) && continue
+
+            for j in axes(table, 2)
+                cw = printed_data_column_widths[j]
+
+                for i in axes(table, 1)
+                    str = table[i, j]
+                    tw = textwidth(str)
+
+                    if tw > cw
+                        str = first(right_crop(str, tw - cw + 1))
+                        str *= "…"
+                        table[i, j] = str
+                    end
+                end
             end
         end
     end

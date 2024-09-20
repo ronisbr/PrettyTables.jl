@@ -180,7 +180,7 @@ function _align_column_with_regex!(
     for i in eachindex(column)
         row = column[i]
         pad = largest_cell_width - textwidth(row)
-        pad = min(pad, 0)
+        pad = max(pad, 0)
 
         column[i] = row * " "^pad
     end
@@ -288,9 +288,9 @@ function _align_column_with_regex!(
         row = column[i]
 
         for l in eachindex(row)
-            line = row[l]
-            pad = largest_cell_width - textwidth(line)
-            pad = min(pad, 0)
+            line   = row[l]
+            pad    = largest_cell_width - textwidth(line)
+            pad    = max(pad, 0)
             row[l] = line * " "^pad
         end
     end
