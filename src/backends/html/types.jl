@@ -4,7 +4,7 @@
 #
 ############################################################################################
 
-export HtmlHighlighter, HtmlTableFormat
+export HtmlHighlighter, HtmlTableFormat, HtmlTableStyle
 
 # Pair that defines HTML properties.
 const HtmlPair = Pair{String, String}
@@ -175,27 +175,52 @@ TODO: Add the classes.
     }"""
 
     table_width::String = ""
+end
 
-    table_style::Vector{HtmlPair} = _HTML__NO_DECORATION
+"""
+    struct HtmlTableStyle
 
-    # == Decorations of Table Sections =====================================================
+Define the style of the tables printed with the HTML back end.
 
-    top_left_string_decoration::Vector{HtmlPair}    = _HTML__BOLD
-    top_right_string_decoration::Vector{HtmlPair}   = _HTML__ITALIC
-    title_decoration::Vector{HtmlPair}              = _HTML__XLARGE_BOLD
-    subtitle_decoration::Vector{HtmlPair}           = _HTML__LARGE_ITALIC
-    row_number_label_decoration::Vector{HtmlPair}   = _HTML__BOLD
-    row_number_decoration::Vector{HtmlPair}         = _HTML__BOLD
-    stubhead_label_decoration::Vector{HtmlPair}     = _HTML__BOLD
-    row_label_decoration::Vector{HtmlPair}          = _HTML__BOLD
-    row_group_label_decoration::Vector{HtmlPair}    = _HTML__BOLD
-    first_column_label_decoration::Vector{HtmlPair} = _HTML__BOLD
-    column_label_decoration::Vector{HtmlPair}       = _HTML__NO_DECORATION
-    summary_row_cell_decoration::Vector{HtmlPair}   = _HTML__NO_DECORATION
-    summary_row_label_decoration::Vector{HtmlPair}  = _HTML__BOLD
-    footnote_decoration::Vector{HtmlPair}           = _HTML__SMALL
-    source_note_decoration::Vector{HtmlPair}        = _HTML__SMALL_ITALIC_GRAY
-    merged_cell_decoration::Vector{HtmlPair}        = _HTML__MERGED_CELL
+# Fields
+
+- `top_left_string::Vector{HtmlPair}`: Style to be applied to the top left string.
+- `top_right_string::Vector{HtmlPair}`: Style to be applied to the top right string.
+- `table::Vector{HtmlPair}`: Style to be applied to the table.
+- `title::Vector{HtmlPair}`: Style to be applied to the title.
+- `subtitle::Vector{HtmlPair}`: Style to be applied to the subtitle.
+- `row_number_label::Vector{HtmlPair}`: Style to be applied to the row number label.
+- `row_number::Vector{HtmlPair}`: Style to be applied to the row number.
+- `stubhead_label::Vector{HtmlPair}`: Style to be applied to the stubhead label.
+- `row_label::Vector{HtmlPair}`: Style to be applied to the row label.
+- `row_group_label::Vector{HtmlPair}`: Style to be applied to the row group label.
+- `first_column_label::Vector{HtmlPair}`: Style to be applied to the first line of the
+    column labels.
+- `column_label::Vector{HtmlPair}`: Style to be applied to the column label.
+- `summary_row_cell::Vector{HtmlPair}`: Style to be applied to the summary row cell.
+- `summary_row_label::Vector{HtmlPair}`: Style to be applied to the summary row label.
+- `footnote::Vector{HtmlPair}`: Style to be applied to the footnote.
+- `source_notes::Vector{HtmlPair}`: Style to be applied to the source notes.
+- `merged_cell::Vector{HtmlPair}`: Style to be applied to the merged cell.
+"""
+@kwdef struct HtmlTableStyle
+    top_left_string::Vector{HtmlPair}    = _HTML__BOLD
+    top_right_string::Vector{HtmlPair}   = _HTML__ITALIC
+    table::Vector{HtmlPair}              = _HTML__NO_DECORATION
+    title::Vector{HtmlPair}              = _HTML__XLARGE_BOLD
+    subtitle::Vector{HtmlPair}           = _HTML__LARGE_ITALIC
+    row_number_label::Vector{HtmlPair}   = _HTML__BOLD
+    row_number::Vector{HtmlPair}         = _HTML__BOLD
+    stubhead_label::Vector{HtmlPair}     = _HTML__BOLD
+    row_label::Vector{HtmlPair}          = _HTML__BOLD
+    row_group_label::Vector{HtmlPair}    = _HTML__BOLD
+    first_column_label::Vector{HtmlPair} = _HTML__BOLD
+    column_label::Vector{HtmlPair}       = _HTML__NO_DECORATION
+    summary_row_cell::Vector{HtmlPair}   = _HTML__NO_DECORATION
+    summary_row_label::Vector{HtmlPair}  = _HTML__BOLD
+    footnote::Vector{HtmlPair}           = _HTML__SMALL
+    source_note::Vector{HtmlPair}        = _HTML__SMALL_ITALIC_GRAY
+    merged_cell::Vector{HtmlPair}        = _HTML__MERGED_CELL
 end
 
 # Default HTML format.
