@@ -74,6 +74,7 @@ function _aprintln(
 end
 
 """
+    _align_column_with_regex!(column::AbstractVector{String}, alignment_anchor_regex::Vector{Regex}, alignment_anchor_fallback::Symbol) -> Int
     _align_column_with_regex!(column::AbstractVector{Vector{String}}, alignment_anchor_regex::Vector{Regex}, alignment_anchor_fallback::Symbol) -> Int
 
 Align the lines in the `column` at the first match obtained by the regex vector
@@ -84,13 +85,114 @@ This function returns the largest cell width.
 
 !!! note
 
-    Each element in `column` must be a vector of `String`s, where each string is a line.
+    In the second signature, each element in `column` must be a vector of `String`s, where
+    each string is a line.
 """
 function _align_column_with_regex!(
-    column::AbstractVector{Vector{String}},
+    column::AbstractVector{String},
     alignment_anchor_regex::Vector{Regex},
     alignment_anchor_fallback::Symbol,
 )
+    # Variable to store in which column we must align the match.
+    alignment_column = 0
+
+    # We need to pass through the entire column searching for matches to compute in which
+    # column we need to align them.
+    for row in column
+        m = nothing
+
+        for r in alignment_anchor_regex
+            m_r = findfirst(r, row)
+            isnothing(m_r) && continue
+            m = m_r
+            break
+        end
+
+        if !isnothing(m)
+            alignment_column_i = textwidth(@views row[1:first(m)])
+        else
+            # If a match is not found, the alignment column depends on the user
+            # selection.
+
+            if alignment_anchor_fallback == :c
+                row_len = textwidth(row)
+                alignment_column_i = cld(row_len, 2)
+
+            elseif alignment_anchor_fallback == :r
+                row_len = textwidth(row)
+                alignment_column_i = row_len + 1
+
+            else
+                alignment_column_i = 0
+            end
+        end
+
+        alignment_column = max(alignment_column, alignment_column_i)
+    end
+
+    # Variable to store the largest cell width after the alignment.
+    largest_cell_width = 0
+
+    # Now, we need to pass again applying the alignments.
+    for i in eachindex(column)
+        row = column[i]
+
+        m = nothing
+
+        for r in alignment_anchor_regex
+            m_r = findfirst(r, row)
+            isnothing(m_r) && continue
+            m = m_r
+            break
+        end
+
+        if !isnothing(m)
+            match_column_k = textwidth(@views(row[1:first(m)]))
+            pad = alignment_column - match_column_k
+        else
+            # If a match is not found, the alignment column depends on the user selection.
+            if alignment_anchor_fallback == :c
+                row_len = textwidth(row)
+                pad = alignment_column - cld(row_len, 2)
+
+            elseif alignment_anchor_fallback == :r
+                row_len = textwidth(row)
+                pad = alignment_column - row_len - 1
+
+            else
+                pad = alignment_column
+            end
+        end
+
+        # `pad` must be positive.
+        pad = max(pad, 0)
+
+        # Apply the alignment to the row.
+        row = " "^pad * row
+        row_len = textwidth(row)
+
+        largest_cell_width = max(largest_cell_width, row_len)
+        column[i] = row
+    end
+
+    # The third pass aligns the elements correctly. This is performed by adding spaces to
+    # the right so that all the cells have the same width.
+    for i in eachindex(column)
+        row = column[i]
+        pad = largest_cell_width - textwidth(row)
+        pad = min(pad, 0)
+
+        column[i] = row * " "^pad
+    end
+
+    return largest_cell_width
+end
+
+function _align_column_with_regex!(
+    column::AbstractVector{Vector{T}},
+    alignment_anchor_regex::Vector{Regex},
+    alignment_anchor_fallback::Symbol,
+) where T <: AbstractString
     # Variable to store in which column we must align the match.
     alignment_column = 0
 
@@ -108,7 +210,7 @@ function _align_column_with_regex!(
             end
 
             if !isnothing(m)
-                @show alignment_column_i = textwidth(@views line[1:first(m)])
+                alignment_column_i = textwidth(@views line[1:first(m)])
             else
                 # If a match is not found, the alignment column depends on the user
                 # selection.
@@ -191,6 +293,33 @@ function _align_column_with_regex!(
             pad = min(pad, 0)
             row[l] = line * " "^pad
         end
+    end
+
+    return largest_cell_width
+end
+
+"""
+    _align_multline_column_with_regex!(column::AbstractVector{String}, alignment_anchor_regex::Vector{Regex}, alignment_anchor_fallback::Symbol,) -> Int
+
+Similar to `_align_column_with_regex!`, but each row will be split into multiple lines at
+`\n` before applying the alignment.
+"""
+function _align_multline_column_with_regex!(
+    column::AbstractVector{String},
+    alignment_anchor_regex::Vector{Regex},
+    alignment_anchor_fallback::Symbol,
+)
+    # In this case, we split each row creating a vector of `Vector{String}`, where each
+    # element is a line. Then, we perform the alignment and re-join the lines.
+    v = split.(column, '\n')
+    largest_cell_width = _align_column_with_regex!(
+        v,
+        alignment_anchor_regex,
+        alignment_anchor_fallback
+    )
+
+    for i in 1:length(column)
+        column[i - 1 + begin] = join(v[i - 1 + begin], '\n')
     end
 
     return largest_cell_width
