@@ -227,6 +227,3 @@ Define the style of the tables printed with the HTML back end.
     footnote::Vector{HtmlPair}                       = _HTML__SMALL
     source_note::Vector{HtmlPair}                    = _HTML__SMALL_ITALIC_GRAY
 end
-
-# Default HTML format.
-const _HTML__DEFAULT_TABLE_FORMAT = HtmlTableFormat()
