@@ -17,9 +17,9 @@
 |        `4` |    ***5*** |        `6` |
 """
 
-    md_bold        = MarkdownDecoration(bold = true)
-    md_code        = MarkdownDecoration(code = true)
-    md_bold_italic = MarkdownDecoration(bold = true, italic = true)
+    md_bold        = MarkdownStyle(bold = true)
+    md_code        = MarkdownStyle(code = true)
+    md_bold_italic = MarkdownStyle(bold = true, italic = true)
 
     result = pretty_table(
         String,

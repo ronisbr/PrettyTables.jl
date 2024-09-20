@@ -94,8 +94,8 @@ function _markdown__print(
         end
 
         if action == :column_label
-            # Apply the decoration to the column label.
-            rendered_cell = _markdown__apply_decoration(
+            # Apply the style to the column label.
+            rendered_cell = _markdown__apply_style(
                 ir == 1 ? style.first_column_label : style.column_label,
                 rendered_cell
             )
@@ -110,7 +110,7 @@ function _markdown__print(
                 for h in highlighters
                     if h.f(orig_data, ps.i, ps.j)
                         d = h.fd(h, orig_data, ps.i, ps.j)
-                        rendered_cell = _markdown__apply_decoration(d, rendered_cell)
+                        rendered_cell = _markdown__apply_style(d, rendered_cell)
                         break
                     end
                 end
@@ -119,7 +119,7 @@ function _markdown__print(
             table_str[ir, jr] = rendered_cell
 
         elseif !isnothing(summary_rows) && (action == :summary_row_cell)
-            rendered_cell = _markdown__apply_decoration(
+            rendered_cell = _markdown__apply_style(
                 style.summary_row_cell,
                 rendered_cell
             )
@@ -127,7 +127,7 @@ function _markdown__print(
             summary_rows[ir, jr] = rendered_cell
 
         elseif !isnothing(row_labels) && (action == :row_label)
-            rendered_cell = _markdown__apply_decoration(
+            rendered_cell = _markdown__apply_style(
                 style.row_label,
                 rendered_cell
             )
@@ -145,13 +145,13 @@ function _markdown__print(
         end
     end
 
-    # Finally, we must apply the decoration to the other fields in the header.
-    decorated_row_number_column_label = _markdown__apply_decoration(
+    # Finally, we must apply the style to the other fields in the header.
+    decorated_row_number_column_label = _markdown__apply_style(
         style.row_number_label,
         table_data.row_number_column_label
     )
 
-    decorated_stubhead_label = _markdown__apply_decoration(
+    decorated_stubhead_label = _markdown__apply_style(
         style.stubhead_label,
         table_data.stubhead_label
     )
@@ -183,7 +183,7 @@ function _markdown__print(
                 maximum(
                     textwidth,
                     table_data.summary_row_labels
-                ) + _markdown__decoration_textwidth(style.summary_row_label) :
+                ) + _markdown__style_textwidth(style.summary_row_label) :
                 0
         )
     end
@@ -207,7 +207,7 @@ function _markdown__print(
     # accordingly.
     if _has_row_group_labels(table_data)
         m = maximum(x -> textwidth(last(x)), table_data.row_group_labels) +
-            _markdown__decoration_textwidth(style.row_group_label)
+            _markdown__style_textwidth(style.row_group_label)
 
         if table_data.show_row_number_column
             row_number_column_width = max(row_number_column_width, m)
@@ -270,7 +270,7 @@ function _markdown__print(
 
                 ps.i == 1 && println(buf)
                 print(buf, "[^$(ps.i)]: ")
-                println(buf, _markdown__apply_decoration(
+                println(buf, _markdown__apply_style(
                     style.footnote, rendered_cell
                 ))
 
@@ -282,7 +282,7 @@ function _markdown__print(
                 )
 
                 println(buf)
-                println(buf, _markdown__apply_decoration(
+                println(buf, _markdown__apply_style(
                     style.source_note,
                     rendered_cell
                 ))
@@ -353,7 +353,7 @@ function _markdown__print(
 
                     if !isempty(ocs)
                         println(buf)
-                        println(buf, _markdown__apply_decoration(
+                        println(buf, _markdown__apply_style(
                             style.omitted_cell_summary,
                             ocs
                         ))
@@ -362,7 +362,7 @@ function _markdown__print(
             end
 
         elseif action == :row_group_label
-            row_group_label = _markdown__apply_decoration(
+            row_group_label = _markdown__apply_style(
                 style.row_group_label,
                 _current_cell(action, ps, table_data)
             )
@@ -404,7 +404,7 @@ function _markdown__print(
 
             elseif action == :summary_row_label
                 cell_width    = row_label_column_width
-                rendered_cell = _markdown__apply_decoration(
+                rendered_cell = _markdown__apply_style(
                     style.summary_row_label,
                     table_data.summary_row_labels[ir]
                 )

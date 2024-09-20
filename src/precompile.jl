@@ -108,7 +108,7 @@ PrecompileTools.@setup_workload begin
             matrix;
             backend = :markdown,
             highlighters = [
-                MarkdownHighlighter((data, i, j) -> i == 1, MarkdownDecoration(bold = :true))
+                MarkdownHighlighter((data, i, j) -> i == 1, MarkdownStyle(bold = :true))
             ]
         )
 
