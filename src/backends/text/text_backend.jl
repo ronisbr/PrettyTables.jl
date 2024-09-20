@@ -19,6 +19,7 @@ function _text__print_table(
     line_breaks::Bool = false,
     highlighters::Vector{TextHighlighter} = TextHighlighter[],
     maximum_data_column_widths::Union{Number, Vector{Int}} = 0,
+    style::TextTableStyle = TextTableStyle(),
 )
     context    = pspec.context
     table_data = pspec.table_data
@@ -380,7 +381,7 @@ function _text__print_table(
             if action ∈ (:title, :subtitle)
                 alignment     = _current_cell_alignment(action, ps, table_data)
                 cell          = _current_cell(action, ps, table_data)
-                decoration    = action == :title ? tf.title_decoration : tf.subtitle_decoration
+                decoration    = action == :title ? style.title : style.subtitle
                 rendered_cell = _text__render_cell(cell, buf, renderer)
 
                 _text__print_aligned(
@@ -398,7 +399,7 @@ function _text__print_table(
         elseif rs == :table_footer
             if action == :footnote
                 alignment  = _current_cell_alignment(action, ps, table_data)
-                decoration = tf.footnote_decoration
+                decoration = style.footnote
 
                 _text__print_aligned(
                     display,
@@ -412,7 +413,7 @@ function _text__print_table(
             elseif action == :source_notes
                 alignment     = _current_cell_alignment(action, ps, table_data)
                 cell          = _current_cell(action, ps, table_data)
-                decoration    = tf.source_note_decoration
+                decoration    = style.source_note
                 rendered_cell = _text__render_cell(cell, buf, renderer)
 
                 _text__print_aligned(
@@ -748,7 +749,7 @@ function _text__print_table(
                     ocs,
                     printed_table_width,
                     :r,
-                    tf.omitted_cell_summary_decoration
+                    style.omitted_cell_summary
                 )
 
                 _text__flush_line(display)
@@ -776,18 +777,18 @@ function _text__print_table(
         if action == :row_number_label
             cell          = _current_cell(action, ps, table_data)
             cell_width    = row_number_column_width
-            decoration    = tf.row_number_label_decoration
+            decoration    = style.row_number_label
             rendered_cell = _text__render_cell(cell, buf, renderer)
 
         elseif action == :stubhead_label
             cell          = _current_cell(action, ps, table_data)
             cell_width    = row_label_column_width
-            decoration    = tf.stubhead_label_decoration
+            decoration    = style.stubhead_label
             rendered_cell = _text__render_cell(cell, buf, renderer)
 
         elseif action == :row_label
             cell_width    = row_label_column_width
-            decoration    = tf.row_label_decoration
+            decoration    = style.row_label
             rendered_cell = row_labels[ir]
 
         elseif action == :summary_row_number
@@ -796,7 +797,7 @@ function _text__print_table(
 
         elseif action == :summary_row_label
             cell_width    = row_label_column_width
-            decoration    = tf.summary_row_label_decoration
+            decoration    = style.summary_row_label
             rendered_cell = table_data.summary_row_labels[ir]
 
         elseif action == :column_label
@@ -804,9 +805,9 @@ function _text__print_table(
             cell_width    = printed_data_column_widths[jr]
             rendered_cell = column_labels[ir, jr]
             decoration    = if ir == 1
-                tf.first_line_column_label_decoration
+                style.first_line_column_label
             else
-                tf.column_label_decoration
+                style.column_label
             end
 
             cell === _IGNORE_CELL && continue
@@ -841,16 +842,16 @@ function _text__print_table(
 
                 # Apply the correct decoration.
                 decoration = if ir == 1
-                    tf.first_line_merged_column_label_decoration
+                    style.first_line_merged_column_label
                 else
-                    tf.merged_column_label_decoration
+                    style.merged_column_label
                 end
             end
 
         elseif action == :row_number
             cell          = _current_cell(action, ps, table_data)
             cell_width    = row_number_column_width
-            decoration    = tf.row_number_decoration
+            decoration    = style.row_number
             rendered_cell = _text__render_cell(cell, buf, renderer)
 
         elseif action == :data
@@ -881,14 +882,14 @@ function _text__print_table(
 
         elseif action == :summary_row_cell
             cell_width    = printed_data_column_widths[jr]
-            decoration    = tf.summary_row_cell_decoration
+            decoration    = style.summary_row_cell
             rendered_cell = summary_rows[ir, jr]
 
         elseif action == :row_group_label
             alignment     = _current_cell_alignment(action, ps, table_data)
             cell          = _current_cell(action, ps, table_data)
             cell_width    = printed_table_width - 4
-            decoration    = tf.row_group_label_decoration
+            decoration    = style.row_group_label
             rendered_cell = _text__render_cell(cell, buf, renderer)
         end
 
