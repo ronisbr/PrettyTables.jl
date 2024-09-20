@@ -102,38 +102,6 @@ function _markdown__print_header_separator(
     return nothing
 end
 
-# == Decoration ============================================================================
-
-"""
-    _markdown__apply_decoration(d::MarkdownDecoration, str::String) -> String
-
-Apply the markdown decoration `d` to `str`.
-"""
-function _markdown__apply_decoration(d::MarkdownDecoration, str::String)
-    isempty(str)    && return str
-    d.bold          && (str = "**" * str * "**")
-    d.italic        && (str = "*"  * str * "*")
-    d.strikethrough && (str = "~~" * str * "~~")
-    d.code          && (str = "`"  * str * "`")
-
-    return str
-end
-
-"""
-    _markdown__decoration_textwidth(d::MarkdownDecoration) -> Int
-
-Return the additional textwidth required to apply the markdown decoration `d`.
-"""
-function _markdown__decoration_textwidth(d::MarkdownDecoration)
-    Δ = 0
-    d.bold          && (Δ += 4)
-    d.italic        && (Δ += 2)
-    d.strikethrough && (Δ += 4)
-    d.code          && (Δ += 2)
-
-    return Δ
-end
-
 # == Rows ==================================================================================
 
 """
@@ -327,4 +295,36 @@ function _markdown__escape_str(
         escape_markdown_chars;
         sizehint = lastindex(s)
     )
+end
+
+# == Style =================================================================================
+
+"""
+    _markdown__apply_style(d::MarkdownStyle, str::String) -> String
+
+Apply the markdown style `s` to `str`.
+"""
+function _markdown__apply_style(s::MarkdownStyle, str::String)
+    isempty(str)    && return str
+    s.bold          && (str = "**" * str * "**")
+    s.italic        && (str = "*"  * str * "*")
+    s.strikethrough && (str = "~~" * str * "~~")
+    s.code          && (str = "`"  * str * "`")
+
+    return str
+end
+
+"""
+    _markdown__style_textwidth(s::MarkdownStyle) -> Int
+
+Return the additional textwidth required to apply the markdown style `s`.
+"""
+function _markdown__style_textwidth(s::MarkdownStyle)
+    Δ = 0
+    s.bold          && (Δ += 4)
+    s.italic        && (Δ += 2)
+    s.strikethrough && (Δ += 4)
+    s.code          && (Δ += 2)
+
+    return Δ
 end

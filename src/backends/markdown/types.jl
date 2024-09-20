@@ -4,12 +4,12 @@
 #
 ############################################################################################
 
-export MarkdownDecoration, MarkdownHighlighter, MarkdownTableFormat, MarkdownTableStyle
+export MarkdownStyle, MarkdownHighlighter, MarkdownTableFormat, MarkdownTableStyle
 
 """
-    struct MarkdownDecoration
+    struct MarkdownStyle
 
-Structure that defines parameters to decorate a table cell in Markdown back end.
+Structure that defines styling parameters to a table cell in the markdown back end.
 
 # Fields
 
@@ -18,7 +18,7 @@ Structure that defines parameters to decorate a table cell in Markdown back end.
 - `strikethrough::Bool`: Strikethrough.
 - `code::Bool`: Code.
 """
-@kwdef struct MarkdownDecoration
+@kwdef struct MarkdownStyle
     bold::Bool = false
     italic::Bool = false
     strikethrough::Bool = false
@@ -39,16 +39,16 @@ Defines the default highlighter of a table when using the markdown backend.
 - `f::Function`: Function with the signature `f(data, i, j)` in which should return `true`
     if the element `(i, j)` in `data` must be highlighter, or `false` otherwise.
 - `fd::Function`: Function with the signature `fd(h, data, i, j)` in which `h` is the
-    highlighter. This function must return the `MarkdownDecoration` to be applied to the
+    highlighter. This function must return the `MarkdownStyle` to be applied to the
     cell that must be highlighted.
-- `_decoration::MarkdownDecoration`: The decoration to be applied to the highlighted cell if
+- `_decoration::MarkdownStyle`: The decoration to be applied to the highlighted cell if
     the default `fd` is used.
 
 # Remarks
 
 This structure can be constructed using two helpers:
 
-    MarkdownHighlighter(f::Function, decoration::MarkdownDecoration)
+    MarkdownHighlighter(f::Function, decoration::MarkdownStyle)
 
     MarkdownHighlighter(f::Function, fd::Function)
 
@@ -62,15 +62,15 @@ struct MarkdownHighlighter
 
     # == Private Fields ====================================================================
 
-    _decoration::MarkdownDecoration
+    _decoration::MarkdownStyle
 
     # == Constructors ======================================================================
 
     function MarkdownHighlighter(f::Function, fd::Function)
-        return new(f, fd, MarkdownDecoration())
+        return new(f, fd, MarkdownStyle())
     end
 
-    function MarkdownHighlighter(f::Function, decoration::MarkdownDecoration)
+    function MarkdownHighlighter(f::Function, decoration::MarkdownStyle)
         return new(
             f,
             _markdown__default_highlighter_fd,
@@ -86,10 +86,10 @@ _markdown__default_highlighter_fd(h::MarkdownHighlighter, ::Any, ::Int, ::Int) =
 ############################################################################################
 
 # Create some default decorations to reduce allocations.
-const _MARKDOWN__NO_DECORATION = MarkdownDecoration()
-const _MARKDOWN__BOLD          = MarkdownDecoration(bold   = true)
-const _MARKDOWN__ITALIC        = MarkdownDecoration(italic = true)
-const _MARKDOWN__CODE          = MarkdownDecoration(code   = true)
+const _MARKDOWN__NO_DECORATION = MarkdownStyle()
+const _MARKDOWN__BOLD          = MarkdownStyle(bold   = true)
+const _MARKDOWN__ITALIC        = MarkdownStyle(italic = true)
+const _MARKDOWN__CODE          = MarkdownStyle(code   = true)
 
 """
     struct MarkdownTableFormat
@@ -117,33 +117,33 @@ Define the style of the tables printed with the markdown back end.
 
 # Fields
 
-- `row_number_label::MarkdownDecoration`: Style for the row number label.
-- `row_number::MarkdownDecoration`: Style for the row number.
-- `stubhead_label::MarkdownDecoration`: Style for the stubhead label.
-- `row_label::MarkdownDecoration`: Style for the row label.
-- `row_group_label::MarkdownDecoration`: Style for the row group label.
-- `first_column_label::MarkdownDecoration`: Style for the first line of the  column
+- `row_number_label::MarkdownStyle`: Style for the row number label.
+- `row_number::MarkdownStyle`: Style for the row number.
+- `stubhead_label::MarkdownStyle`: Style for the stubhead label.
+- `row_label::MarkdownStyle`: Style for the row label.
+- `row_group_label::MarkdownStyle`: Style for the row group label.
+- `first_column_label::MarkdownStyle`: Style for the first line of the  column
     labels.
-- `column_label::MarkdownDecoration`: Style for the column label.
-- `summary_row_label::MarkdownDecoration`: Style for the summary row label.
-- `summary_row_cell::MarkdownDecoration`: Style for the summary row cell.
-- `footnote::MarkdownDecoration`: Style for the footnote.
-- `source_note::MarkdownDecoration`: Style for the source note.
-- `omitted_cell_summary::MarkdownDecoration`: Style for the omitted cell summary.
+- `column_label::MarkdownStyle`: Style for the column label.
+- `summary_row_label::MarkdownStyle`: Style for the summary row label.
+- `summary_row_cell::MarkdownStyle`: Style for the summary row cell.
+- `footnote::MarkdownStyle`: Style for the footnote.
+- `source_note::MarkdownStyle`: Style for the source note.
+- `omitted_cell_summary::MarkdownStyle`: Style for the omitted cell summary.
 """
 @kwdef struct MarkdownTableStyle
-    row_number_label::MarkdownDecoration     = _MARKDOWN__BOLD
-    row_number::MarkdownDecoration           = _MARKDOWN__BOLD
-    stubhead_label::MarkdownDecoration       = _MARKDOWN__BOLD
-    row_label::MarkdownDecoration            = _MARKDOWN__BOLD
-    row_group_label::MarkdownDecoration      = _MARKDOWN__BOLD
-    first_column_label::MarkdownDecoration   = _MARKDOWN__BOLD
-    column_label::MarkdownDecoration         = _MARKDOWN__CODE
-    summary_row_label::MarkdownDecoration    = _MARKDOWN__BOLD
-    summary_row_cell::MarkdownDecoration     = _MARKDOWN__NO_DECORATION
-    footnote::MarkdownDecoration             = _MARKDOWN__NO_DECORATION
-    source_note::MarkdownDecoration          = _MARKDOWN__NO_DECORATION
-    omitted_cell_summary::MarkdownDecoration = _MARKDOWN__ITALIC
+    row_number_label::MarkdownStyle     = _MARKDOWN__BOLD
+    row_number::MarkdownStyle           = _MARKDOWN__BOLD
+    stubhead_label::MarkdownStyle       = _MARKDOWN__BOLD
+    row_label::MarkdownStyle            = _MARKDOWN__BOLD
+    row_group_label::MarkdownStyle      = _MARKDOWN__BOLD
+    first_column_label::MarkdownStyle   = _MARKDOWN__BOLD
+    column_label::MarkdownStyle         = _MARKDOWN__CODE
+    summary_row_label::MarkdownStyle    = _MARKDOWN__BOLD
+    summary_row_cell::MarkdownStyle     = _MARKDOWN__NO_DECORATION
+    footnote::MarkdownStyle             = _MARKDOWN__NO_DECORATION
+    source_note::MarkdownStyle          = _MARKDOWN__NO_DECORATION
+    omitted_cell_summary::MarkdownStyle = _MARKDOWN__ITALIC
 end
 
 # Default markdown table format.
