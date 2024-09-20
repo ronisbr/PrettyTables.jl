@@ -201,8 +201,8 @@ Define the style of the tables printed with the text back end.
 - `row_group_label::Crayon`: Crayon with the style for the row group label.
 - `first_line_column_label::Crayon`: Crayon with the style for the first column label lines.
 - `column_label::Crayon`: Crayon with the style for the rest of the column labels.
-- `first_line_merged_column_label::Crayon`: Crayon with the style for the first merged cells
-    at the first column label line.
+- `first_line_merged_column_label::Crayon`: Crayon with the style for the merged cells at
+    the first column label line.
 - `merged_column_label::Crayon`: Crayon with the style for the merged cells at the rest of
     the column labels.
 - `summary_row_cell::Crayon`: Crayon with the style for the summary row cell.

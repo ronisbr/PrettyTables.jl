@@ -11,10 +11,11 @@ end
 
 function _markdown__print(
     pspec::PrintingSpec;
-    tf::MarkdownTableFormat = MarkdownTableFormat(),
+    tf::MarkdownTableFormat = _MARKDOWN__DEFAULT_TABLE_FORMAT,
     allow_markdown_in_cells::Bool = false,
     highlighters::Vector{MarkdownHighlighter} = MarkdownHighlighter[],
     line_breaks::Bool = false,
+    style::MarkdownTableStyle = _MARKDOWN__DEFAULT_TABLE_STYLE
 )
     context    = pspec.context
     table_data = pspec.table_data
@@ -95,7 +96,7 @@ function _markdown__print(
         if action == :column_label
             # Apply the decoration to the column label.
             rendered_cell = _markdown__apply_decoration(
-                ir == 1 ? tf.first_column_label_decoration : tf.column_label_decoration,
+                ir == 1 ? style.first_column_label : style.column_label,
                 rendered_cell
             )
 
@@ -119,7 +120,7 @@ function _markdown__print(
 
         elseif !isnothing(summary_rows) && (action == :summary_row_cell)
             rendered_cell = _markdown__apply_decoration(
-                tf.summary_row_cell_decoration,
+                style.summary_row_cell,
                 rendered_cell
             )
 
@@ -127,7 +128,7 @@ function _markdown__print(
 
         elseif !isnothing(row_labels) && (action == :row_label)
             rendered_cell = _markdown__apply_decoration(
-                tf.row_label_decoration,
+                style.row_label,
                 rendered_cell
             )
 
@@ -146,12 +147,12 @@ function _markdown__print(
 
     # Finally, we must apply the decoration to the other fields in the header.
     decorated_row_number_column_label = _markdown__apply_decoration(
-        tf.row_number_label_decoration,
+        style.row_number_label,
         table_data.row_number_column_label
     )
 
     decorated_stubhead_label = _markdown__apply_decoration(
-        tf.stubhead_label_decoration,
+        style.stubhead_label,
         table_data.stubhead_label
     )
 
@@ -182,7 +183,7 @@ function _markdown__print(
                 maximum(
                     textwidth,
                     table_data.summary_row_labels
-                ) + _markdown__decoration_textwidth(tf.summary_row_label_decoration) :
+                ) + _markdown__decoration_textwidth(style.summary_row_label) :
                 0
         )
     end
@@ -206,7 +207,7 @@ function _markdown__print(
     # accordingly.
     if _has_row_group_labels(table_data)
         m = maximum(x -> textwidth(last(x)), table_data.row_group_labels) +
-            _markdown__decoration_textwidth(tf.row_group_label_decoration)
+            _markdown__decoration_textwidth(style.row_group_label)
 
         if table_data.show_row_number_column
             row_number_column_width = max(row_number_column_width, m)
@@ -270,7 +271,7 @@ function _markdown__print(
                 ps.i == 1 && println(buf)
                 print(buf, "[^$(ps.i)]: ")
                 println(buf, _markdown__apply_decoration(
-                    tf.footnote_decoration, rendered_cell
+                    style.footnote, rendered_cell
                 ))
 
             elseif action == :source_notes
@@ -282,7 +283,7 @@ function _markdown__print(
 
                 println(buf)
                 println(buf, _markdown__apply_decoration(
-                    tf.source_note_decoration,
+                    style.source_note,
                     rendered_cell
                 ))
             end
@@ -353,7 +354,7 @@ function _markdown__print(
                     if !isempty(ocs)
                         println(buf)
                         println(buf, _markdown__apply_decoration(
-                            tf.omitted_cell_summary_decoration,
+                            style.omitted_cell_summary,
                             ocs
                         ))
                     end
@@ -362,7 +363,7 @@ function _markdown__print(
 
         elseif action == :row_group_label
             row_group_label = _markdown__apply_decoration(
-                tf.row_group_label_decoration,
+                style.row_group_label,
                 _current_cell(action, ps, table_data)
             )
 
@@ -404,7 +405,7 @@ function _markdown__print(
             elseif action == :summary_row_label
                 cell_width    = row_label_column_width
                 rendered_cell = _markdown__apply_decoration(
-                    tf.summary_row_label_decoration,
+                    style.summary_row_label,
                     table_data.summary_row_labels[ir]
                 )
 
