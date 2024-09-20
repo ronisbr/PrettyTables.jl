@@ -307,7 +307,14 @@ function _html__print(
 
                 alignment = cell.alignment
 
-                append!(vstyle, style.merged_cell)
+                append!(
+                    vstyle,
+                    if ps.i == 1
+                        style.first_line_merged_column_label
+                    else
+                        style.merged_column_label
+                    end
+                )
 
             else
                 rendered_cell = _html__render_cell(
