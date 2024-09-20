@@ -163,9 +163,11 @@ function _markdown__print(
     printed_data_column_widths = zeros(Int, num_printed_data_columns)
 
     if table_data.show_row_number_column
-        m = (_is_vertically_cropped(table_data) && (table_data.vertical_crop_mode == :bottom)) ?
-            table_data.maximum_number_of_rows :
+        m = if (_is_vertically_cropped(table_data) && (table_data.vertical_crop_mode == :bottom))
+            table_data.maximum_number_of_rows
+        else
             table_data.num_rows
+        end
 
         row_number_column_width = max(
             textwidth(decorated_row_number_column_label),
@@ -179,12 +181,12 @@ function _markdown__print(
 
             num_printed_data_rows > 0 ? maximum(textwidth, row_labels) : 0,
 
-            _has_summary_rows(table_data) ? 
-                maximum(
-                    textwidth,
-                    table_data.summary_row_labels
-                ) + _markdown__style_textwidth(style.summary_row_label) :
+            if _has_summary_rows(table_data)
+                maximum(textwidth, table_data.summary_row_labels) +
+                _markdown__style_textwidth(style.summary_row_label)
+            else
                 0
+            end
         )
     end
 
@@ -270,9 +272,7 @@ function _markdown__print(
 
                 ps.i == 1 && println(buf)
                 print(buf, "[^$(ps.i)]: ")
-                println(buf, _markdown__apply_style(
-                    style.footnote, rendered_cell
-                ))
+                println(buf, _markdown__apply_style(style.footnote, rendered_cell))
 
             elseif action == :source_notes
                 rendered_cell = _markdown__escape_str(
@@ -282,10 +282,7 @@ function _markdown__print(
                 )
 
                 println(buf)
-                println(buf, _markdown__apply_style(
-                    style.source_note,
-                    rendered_cell
-                ))
+                println(buf, _markdown__apply_style(style.source_note, rendered_cell))
             end
 
             continue
