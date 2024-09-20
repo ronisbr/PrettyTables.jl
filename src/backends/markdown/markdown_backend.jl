@@ -11,11 +11,11 @@ end
 
 function _markdown__print(
     pspec::PrintingSpec;
-    tf::MarkdownTableFormat = _MARKDOWN__DEFAULT_TABLE_FORMAT,
+    tf::MarkdownTableFormat = MarkdownTableFormat(),
     allow_markdown_in_cells::Bool = false,
     highlighters::Vector{MarkdownHighlighter} = MarkdownHighlighter[],
     line_breaks::Bool = false,
-    style::MarkdownTableStyle = _MARKDOWN__DEFAULT_TABLE_STYLE
+    style::MarkdownTableStyle = MarkdownTableStyle()
 )
     context    = pspec.context
     table_data = pspec.table_data

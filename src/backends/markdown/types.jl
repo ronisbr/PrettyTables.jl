@@ -145,9 +145,3 @@ Define the style of the tables printed with the markdown back end.
     source_note::MarkdownStyle          = _MARKDOWN__NO_DECORATION
     omitted_cell_summary::MarkdownStyle = _MARKDOWN__ITALIC
 end
-
-# Default markdown table format.
-const _MARKDOWN__DEFAULT_TABLE_FORMAT = MarkdownTableFormat()
-
-# Default markdown table style.
-const _MARKDOWN__DEFAULT_TABLE_STYLE = MarkdownTableStyle()
