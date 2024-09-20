@@ -197,30 +197,36 @@ Define the style of the tables printed with the HTML back end.
 - `first_column_label::Vector{HtmlPair}`: Style to be applied to the first line of the
     column labels.
 - `column_label::Vector{HtmlPair}`: Style to be applied to the column label.
+- `first_line_merged_column_label::Vector{HtmlPair}`: Style to be applied to the merged
+    cells at the first column label line.
+- `merged_column_label::Vector{HtmlPair}`: Style to be applied to the merged cells at the
+    rest of the column labels.
 - `summary_row_cell::Vector{HtmlPair}`: Style to be applied to the summary row cell.
 - `summary_row_label::Vector{HtmlPair}`: Style to be applied to the summary row label.
 - `footnote::Vector{HtmlPair}`: Style to be applied to the footnote.
 - `source_notes::Vector{HtmlPair}`: Style to be applied to the source notes.
-- `merged_cell::Vector{HtmlPair}`: Style to be applied to the merged cell.
+- `first_line_of_column_labels::Vector{HtmlPair}`: Style to be applied to the first line of
+    the column labels.
 """
 @kwdef struct HtmlTableStyle
-    top_left_string::Vector{HtmlPair}    = _HTML__BOLD
-    top_right_string::Vector{HtmlPair}   = _HTML__ITALIC
-    table::Vector{HtmlPair}              = _HTML__NO_DECORATION
-    title::Vector{HtmlPair}              = _HTML__XLARGE_BOLD
-    subtitle::Vector{HtmlPair}           = _HTML__LARGE_ITALIC
-    row_number_label::Vector{HtmlPair}   = _HTML__BOLD
-    row_number::Vector{HtmlPair}         = _HTML__BOLD
-    stubhead_label::Vector{HtmlPair}     = _HTML__BOLD
-    row_label::Vector{HtmlPair}          = _HTML__BOLD
-    row_group_label::Vector{HtmlPair}    = _HTML__BOLD
-    first_column_label::Vector{HtmlPair} = _HTML__BOLD
-    column_label::Vector{HtmlPair}       = _HTML__NO_DECORATION
-    summary_row_cell::Vector{HtmlPair}   = _HTML__NO_DECORATION
-    summary_row_label::Vector{HtmlPair}  = _HTML__BOLD
-    footnote::Vector{HtmlPair}           = _HTML__SMALL
-    source_note::Vector{HtmlPair}        = _HTML__SMALL_ITALIC_GRAY
-    merged_cell::Vector{HtmlPair}        = _HTML__MERGED_CELL
+    top_left_string::Vector{HtmlPair}                = _HTML__BOLD
+    top_right_string::Vector{HtmlPair}               = _HTML__ITALIC
+    table::Vector{HtmlPair}                          = _HTML__NO_DECORATION
+    title::Vector{HtmlPair}                          = _HTML__XLARGE_BOLD
+    subtitle::Vector{HtmlPair}                       = _HTML__LARGE_ITALIC
+    row_number_label::Vector{HtmlPair}               = _HTML__BOLD
+    row_number::Vector{HtmlPair}                     = _HTML__BOLD
+    stubhead_label::Vector{HtmlPair}                 = _HTML__BOLD
+    row_label::Vector{HtmlPair}                      = _HTML__BOLD
+    row_group_label::Vector{HtmlPair}                = _HTML__BOLD
+    first_column_label::Vector{HtmlPair}             = _HTML__BOLD
+    column_label::Vector{HtmlPair}                   = _HTML__NO_DECORATION
+    first_line_merged_column_label::Vector{HtmlPair} = _HTML__MERGED_CELL
+    merged_column_label::Vector{HtmlPair}            = _HTML__MERGED_CELL
+    summary_row_cell::Vector{HtmlPair}               = _HTML__NO_DECORATION
+    summary_row_label::Vector{HtmlPair}              = _HTML__BOLD
+    footnote::Vector{HtmlPair}                       = _HTML__SMALL
+    source_note::Vector{HtmlPair}                    = _HTML__SMALL_ITALIC_GRAY
 end
 
 # Default HTML format.
