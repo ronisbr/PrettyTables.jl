@@ -19,6 +19,7 @@ function _html__print(
     maximum_column_width::String = "",
     minify::Bool = false,
     stand_alone::Bool = false,
+    style::HtmlTableStyle = HtmlTableStyle(),
     table_class::String = "",
     table_div_class::String = "",
     top_left_string::AbstractString = "",
@@ -35,8 +36,8 @@ function _html__print(
 
     # Create dictionaries to store properties and styles to decrease the number of
     # allocations.
-    properties = Pair{String, String}[]
-    style      = Pair{String, String}[]
+    vproperties = Pair{String, String}[]
+    vstyle      = Pair{String, String}[]
 
     # == Variables to Store Information About Indentation ==================================
 
@@ -113,7 +114,7 @@ function _html__print(
                 buf,
                 "left",
                 top_left_string,
-                tf.top_left_string_decoration,
+                style.top_left_string,
                 il,
                 ns;
                 minify,
@@ -126,7 +127,7 @@ function _html__print(
                 buf,
                 "right",
                 top_right_string,
-                tf.top_right_string_decoration,
+                style.top_right_string,
                 il,
                 ns;
                 minify,
@@ -134,9 +135,9 @@ function _html__print(
         end
 
         # We need to clear the floats so that the table is rendered below the top bar.
-        empty!(style)
-        push!(style, "clear" => "both")
-        _aprintln(buf, _html__create_tag("div", ""; style), il, ns; minify)
+        empty!(vstyle)
+        push!(vstyle, "clear" => "both")
+        _aprintln(buf, _html__create_tag("div", ""; style = vstyle), il, ns; minify)
 
         il -= 1
         _aprintln(buf, _html__close_tag("div"), il, ns; minify)
@@ -145,23 +146,29 @@ function _html__print(
     # == Table =============================================================================
 
     if wrap_table_in_div
-        empty!(properties)
-        push!(properties, "class" => table_div_class)
+        empty!(vproperties)
+        push!(vproperties, "class" => table_div_class)
 
-        empty!(style)
-        push!(properties, "overflow-x" => "scroll")
+        empty!(vstyle)
+        push!(vproperties, "overflow-x" => "scroll")
 
-        _aprintln(buf, _html__open_tag("div"; properties, style), il, ns; minify)
+        _aprintln(
+            buf,
+            _html__open_tag("div"; properties = vproperties, style = vstyle),
+            il,
+            ns;
+            minify
+        )
 
         il += 1
     end
 
-    empty!(properties)
-    push!(properties, "class" => table_class)
+    empty!(vproperties)
+    push!(vproperties, "class" => table_class)
 
     _aprintln(
         buf,
-        _html__open_tag("table"; properties, style = tf.table_style),
+        _html__open_tag("table"; properties = vproperties, style = style.table),
         il,
         ns;
         minify
@@ -219,7 +226,7 @@ function _html__print(
                 il += 1
             end
 
-            empty!(properties)
+            empty!(vproperties)
             class = if rs == :table_header
                 ps.state < _TITLE ? "title" : "subtitle"
             elseif rs == :column_labels
@@ -235,32 +242,44 @@ function _html__print(
             else
                 ""
             end
-            push!(properties, "class" => class)
+            push!(vproperties, "class" => class)
 
-            _aprintln(buf, _html__open_tag("tr"; properties), il, ns; minify)
+            _aprintln(buf, _html__open_tag("tr"; properties = vproperties), il, ns; minify)
             il += 1
 
         elseif action == :diagonal_continuation_cell
-            _aprintln(buf, _html__create_tag("td", "&dtdot;"; style), il, ns; minify)
+            _aprintln(
+                buf,
+                _html__create_tag("td", "&dtdot;"; style = vstyle),
+                il,
+                ns;
+                minify
+            )
 
         elseif action == :horizontal_continuation_cell
             _aprintln(buf, _html__create_tag("td", "&ctdot;"), il, ns; minify)
 
         elseif action ∈ _VERTICAL_CONTINUATION_CELL_ACTIONS
             # Obtain the cell style.
-            empty!(style)
+            empty!(vstyle)
             alignment = _current_cell_alignment(action, ps, table_data)
-            _html__add_alignment_to_style!(style, alignment)
+            _html__add_alignment_to_style!(vstyle, alignment)
 
-            _aprintln(buf, _html__create_tag("td", "&vellip;"; style), il, ns; minify)
+            _aprintln(
+                buf,
+                _html__create_tag("td", "&vellip;"; style = vstyle),
+                il,
+                ns;
+                minify
+            )
 
         elseif action == :end_row
             il -= 1
             _aprintln(buf, "</tr>", il, ns; minify)
 
         else
-            empty!(properties)
-            empty!(style)
+            empty!(vproperties)
+            empty!(vstyle)
 
             cell = _current_cell(action, ps, table_data)
 
@@ -277,7 +296,7 @@ function _html__print(
                     cell.column_span
                 end
 
-                push!(properties, "colspan" => string(cs))
+                push!(vproperties, "colspan" => string(cs))
                 rendered_cell = _html__render_cell(
                     cell.data,
                     buf,
@@ -288,7 +307,7 @@ function _html__print(
 
                 alignment = cell.alignment
 
-                append!(style, tf.merged_cell_decoration)
+                append!(vstyle, style.merged_cell)
 
             else
                 rendered_cell = _html__render_cell(
@@ -303,12 +322,12 @@ function _html__print(
             end
 
             # Obtain the cell alignment.
-            _html__add_alignment_to_style!(style, alignment)
+            _html__add_alignment_to_style!(vstyle, alignment)
 
             # Check if the user wants to limit the column width.
             if !isempty(maximum_column_width)
                 push!(
-                    style,
+                    vstyle,
                     "max-width"     => maximum_column_width,
                     "overflow"      => "hidden",
                     "text-overflow" => "ellipsis",
@@ -338,7 +357,7 @@ function _html__print(
                 if !isnothing(highlighters)
                     for h in highlighters
                         if h.f(orig_data, ps.i, ps.j)
-                            append!(style, h.fd(h, orig_data, ps.i, ps.j))
+                            append!(vstyle, h.fd(h, orig_data, ps.i, ps.j))
                             break
                         end
                     end
@@ -348,71 +367,76 @@ function _html__print(
             # Obtain the cell class and style.
 
             if action == :title
-                push!(properties, "colspan" => string(_number_of_printed_columns(table_data)))
-                append!(style, tf.title_decoration)
+                push!(vproperties, "colspan" => string(_number_of_printed_columns(table_data)))
+                append!(vstyle, style.title)
 
             elseif action == :subtitle
-                push!(properties, "colspan" => string(_number_of_printed_columns(table_data)))
-                append!(style, tf.subtitle_decoration)
+                push!(vproperties, "colspan" => string(_number_of_printed_columns(table_data)))
+                append!(vstyle, style.subtitle)
 
             elseif action == :row_number_label
-                push!(properties, "class" => "rowNumberLabel")
-                append!(style, tf.row_number_label_decoration)
+                push!(vproperties, "class" => "rowNumberLabel")
+                append!(vstyle, style.row_number_label)
 
             elseif action == :row_number
-                push!(properties, "class" => "rowNumber")
-                append!(style, tf.row_number_decoration)
+                push!(vproperties, "class" => "rowNumber")
+                append!(vstyle, style.row_number)
 
             elseif action == :summary_row_number
-                push!(properties, "class" => "summaryRowNumber")
-                append!(style, tf.row_number_decoration)
+                push!(vproperties, "class" => "summaryRowNumber")
+                append!(vstyle, style.row_number)
 
             elseif action == :stubhead_label
-                push!(properties, "class" => "stubheadLabel")
-                append!(style, tf.stubhead_label_decoration)
+                push!(vproperties, "class" => "stubheadLabel")
+                append!(vstyle, style.stubhead_label)
 
             elseif action == :row_group_label
-                push!(properties, "colspan" => string(_number_of_printed_columns(table_data)))
-                append!(style, tf.row_group_label_decoration)
+                push!(vproperties, "colspan" => string(_number_of_printed_columns(table_data)))
+                append!(vstyle, style.row_group_label)
 
             elseif action == :row_label
-                push!(properties, "class" => "rowLabel")
-                append!(style, tf.row_label_decoration)
+                push!(vproperties, "class" => "rowLabel")
+                append!(vstyle, style.row_label)
 
             elseif action == :summary_row_label
-                push!(properties, "class" => "summaryRowLabel")
-                append!(style, tf.summary_row_label_decoration)
+                push!(vproperties, "class" => "summaryRowLabel")
+                append!(vstyle, style.summary_row_label)
 
             elseif action == :column_label
                 if ps.i == 1
-                    append!(style, tf.first_column_label_decoration)
+                    append!(vstyle, style.first_column_label)
                 else
-                    append!(style, tf.column_label_decoration)
+                    append!(vstyle, style.column_label)
                 end
 
             elseif action == :summary_row_cell
-                append!(style, tf.summary_row_cell_decoration)
+                append!(vstyle, style.summary_row_cell)
 
             elseif action == :footnote
                 # The footnote must be a cell that span the entire printed table.
-                push!(properties, "colspan" => string(_number_of_printed_columns(table_data)))
-                append!(style, tf.footnote_decoration)
+                push!(vproperties, "colspan" => string(_number_of_printed_columns(table_data)))
+                append!(vstyle, style.footnote)
                 rendered_cell = "<sup>$(ps.i)</sup> " * rendered_cell
 
             elseif action == :source_notes
                 # The source notes must be a cell that span the entire printed table.
-                push!(properties, "colspan" => string(_number_of_printed_columns(table_data)))
-                append!(style, tf.source_note_decoration)
+                push!(vproperties, "colspan" => string(_number_of_printed_columns(table_data)))
+                append!(vstyle, style.source_note)
 
             else
-                push!(properties, "class" => "")
+                push!(vproperties, "class" => "")
             end
 
             # Create the row tag with the content.
             row_tag = rs == :column_labels ? "th" : "td"
             _aprintln(
                 buf,
-                _html__create_tag(row_tag, rendered_cell; properties, style),
+                _html__create_tag(
+                    row_tag,
+                    rendered_cell;
+                    properties = vproperties,
+                    style = vstyle
+                ),
                 il,
                 ns;
                 minify
