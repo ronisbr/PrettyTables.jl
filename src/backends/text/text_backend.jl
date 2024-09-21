@@ -9,17 +9,23 @@ function _text__circular_reference(io::IOContext)
     return nothing
 end
 
+# Pre-allocate some default values for keywords to avoid allocations. Notice that we must do
+# this only to the values that **are not** modified inside the algorithm. Otherwise, we will
+# not be thread safe.
+const _DEFAULT_ALIGNMENT_ANCHOR_REGEX = Regex[]
+const _DEFAULT_TEXT_HIGHLIGHTER = TextHighlighter[]
+
 function _text__print_table(
     pspec::PrintingSpec;
     alignment_anchor_fallback::Symbol = :l,
-    alignment_anchor_regex::Vector{Pair{Int, Vector{Regex}}} = Pair{Int, Vector{Regex}}[],
+    alignment_anchor_regex::Union{Vector{Regex}, Vector{Pair{Int, Vector{Regex}}}} = _DEFAULT_ALIGNMENT_ANCHOR_REGEX,
     column_label_width_based_on_first_line_only::Bool = false,
     display_size::NTuple{2, Int} = displaysize(pspec.context),
     equal_data_column_widths::Bool = false,
     fit_table_in_display_horizontally::Bool = true,
     fit_table_in_display_vertically::Bool = true,
     fixed_data_column_widths::Union{Number, Vector{Int}} = 0,
-    highlighters::Vector{TextHighlighter} = TextHighlighter[],
+    highlighters::Vector{TextHighlighter} = _DEFAULT_TEXT_HIGHLIGHTER,
     line_breaks::Bool = false,
     maximum_data_column_widths::Union{Number, Vector{Int}} = 0,
     style::TextTableStyle = TextTableStyle(),
@@ -78,6 +84,18 @@ function _text__print_table(
     if (fixed_data_column_widths isa Number) && (fixed_data_column_widths > 0)
         fixed_data_column_widths = fixed_data_column_widths .+ 0 * (1:table_data.num_columns)
         has_fixed_data_column_widths = true
+    end
+
+    if alignment_anchor_regex isa Vector{Pair{Int, Vector{Regex}}}
+        for (j, _) in alignment_anchor_regex
+            (j <= 0) && throw(ArgumentError(
+                "The column index in the alignment anchor regex must be greater than 0."
+            ))
+
+            (j > table_data.num_columns) && throw(ArgumentError(
+                "The column index in the alignment anchor regex must be less than the number of columns ($table_data.num_columns)."
+            ))
+        end
     end
 
     # == Table Fitting in the Display ======================================================
@@ -176,28 +194,43 @@ function _text__print_table(
     # == Column Alignment Regex ============================================================
 
     if !isempty(alignment_anchor_regex)
-        # Check of a regex with index 0, meaning that it will be applied to all the columns.
-        id = findfirst(==(0), first.(alignment_anchor_regex))
-        has_global_regex = !isnothing(id)
-
-        if has_global_regex
-            regex = last(alignment_anchor_regex[id])
+        # Check if we have one set of regexes to be applied to all the columns or if the
+        # user specified regexes for some columns.
+        if alignment_anchor_regex isa Vector{Regex}
+            regex = alignment_anchor_regex
 
             @views for j in axes(table_str, 2)
-                _align_column_with_regex!(
-                    table_str[:, j],
-                    regex,
-                    alignment_anchor_fallback
-                )
+                if !line_breaks
+                    _align_column_with_regex!(
+                        table_str[:, j],
+                        regex,
+                        alignment_anchor_fallback
+                    )
+                else
+                    _align_multline_column_with_regex!(
+                        table_str[:, j],
+                        regex,
+                        alignment_anchor_fallback
+                    )
+                end
             end
         else
             @views for r in alignment_anchor_regex
                 j, regex = r
-                _align_column_with_regex!(
-                    table_str[:, j],
-                    regex,
-                    alignment_anchor_fallback
-                )
+
+                if !line_breaks
+                    _align_column_with_regex!(
+                        table_str[:, j],
+                        regex,
+                        alignment_anchor_fallback
+                    )
+                else
+                    _align_multline_column_with_regex!(
+                        table_str[:, j],
+                        regex,
+                        alignment_anchor_fallback
+                    )
+                end
             end
         end
     end
@@ -237,30 +270,13 @@ function _text__print_table(
 
     # If the user wants a fixed column width, we must reprocess all the data columns to crop
     # to the correct size if necesary.
-    if has_fixed_data_column_widths
-        for j in eachindex(printed_data_column_widths)
-            printed_data_column_widths[j] = fixed_data_column_widths[j - 1 + begin]
-        end
-
-        for table in (column_labels, table_str, summary_rows)
-            isnothing(table) && continue
-
-            for j in axes(table, 2)
-                cw = printed_data_column_widths[j]
-
-                for i in axes(table, 1)
-                    str = table[i, j]
-                    tw = textwidth(str)
-
-                    if tw > cw
-                        str = first(right_crop(str, tw - cw + 1))
-                        str *= "…"
-                        table[i, j] = str
-                    end
-                end
-            end
-        end
-    end
+    has_fixed_data_column_widths && _text__fix_data_column_widths!(
+        printed_data_column_widths,
+        column_labels,
+        table_str,
+        summary_rows,
+        fixed_data_column_widths
+    )
 
     # If the user wants equal data column widths, make every column width equal to the
     # largest one.
