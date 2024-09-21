@@ -5,6 +5,53 @@
 ############################################################################################
 
 """
+    _text__fix_data_column_widths!(printed_data_column_widths::Vector{Int}, column_labels::Matrix{String}, table_str::Matrix{String}, summary_rows::Union{Nothing, Matrix{String}}, fixed_data_column_widths::AbstractVector{Int}) -> Nothing
+
+Fix the data column widths given the user specification. This function also crops the cells
+at the data columns to fit the fixed width.
+
+# Arguments
+
+- `printed_data_column_widths::Vector{Int}`: Printed data column widths.
+- `column_labels::Matrix{String}`: Column labels.
+- `table_str::Matrix{String}`: Rendered data cells.
+- `summary_rows::Union{Nothing, Matrix{String}}`: Summary rows.
+- `fixed_data_column_widths::AbstractVector{Int}`: Fixed data column widths.
+"""
+function _text__fix_data_column_widths!(
+    printed_data_column_widths::Vector{Int},
+    column_labels::Matrix{String},
+    table_str::Matrix{String},
+    summary_rows::Union{Nothing, Matrix{String}},
+    fixed_data_column_widths::AbstractVector{Int}
+)
+    for j in eachindex(printed_data_column_widths)
+        printed_data_column_widths[j] = fixed_data_column_widths[j - 1 + begin]
+    end
+
+    for table in (column_labels, table_str, summary_rows)
+        isnothing(table) && continue
+
+        for j in axes(table, 2)
+            cw = printed_data_column_widths[j]
+
+            for i in axes(table, 1)
+                str = table[i, j]
+                tw = textwidth(str)
+
+                if tw > cw
+                    str = first(right_crop(str, tw - cw + 1))
+                    str *= "…"
+                    table[i, j] = str
+                end
+            end
+        end
+    end
+
+    return nothing
+end
+
+"""
     _text__printed_column_widths(table_data::TableData, row_labels::Union{Nothing, Vector{String}}, column_labels::Matrix{String}, summary_rows::Union{Nothing, Vector{String}}, table_str::Matrix{String}, right_vertical_lines_at_data_columns::AbstractVector{Int}, column_label_width_based_on_first_line_only::Bool, line_breaks::Bool) -> Int, Int, Vector{Int}
 
 Compute the printed column widths.
