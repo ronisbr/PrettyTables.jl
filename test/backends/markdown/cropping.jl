@@ -1,7 +1,7 @@
 ## Description #############################################################################
 #
 # Markdown Back End: Tests related with table cropping.
-# 
+#
 ############################################################################################
 
 @testset "Table Cropping" verbose = true begin

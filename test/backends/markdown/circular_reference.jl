@@ -1,7 +1,7 @@
 ## Description #############################################################################
 #
 # Markdown Back End: Test circular reference.
-# 
+#
 ############################################################################################
 
 @testset "Circular Reference" begin
@@ -24,4 +24,6 @@
 """
 
     result = sprint(show, MIME("text/markdown"), cr)
+
+    @test result == expected
 end

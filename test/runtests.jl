@@ -48,3 +48,10 @@ end
     include("./backends/markdown/renderers.jl")
     include("./backends/markdown/special_cells.jl")
 end
+
+@testset "Text Back End Test" verbose = true begin
+    include("./backends/text/circular_reference.jl")
+    include("./backends/text/cropping.jl")
+    include("./backends/text/default.jl")
+    include("./backends/text/full.jl")
+end
