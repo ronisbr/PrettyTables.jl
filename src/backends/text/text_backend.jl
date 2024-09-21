@@ -11,18 +11,19 @@ end
 
 function _text__print_table(
     pspec::PrintingSpec;
-    tf::TextTableFormat = TextTableFormat(),
     alignment_anchor_fallback::Symbol = :l,
     alignment_anchor_regex::Vector{Pair{Int, Vector{Regex}}} = Pair{Int, Vector{Regex}}[],
     column_label_width_based_on_first_line_only::Bool = false,
     display_size::NTuple{2, Int} = displaysize(pspec.context),
+    equal_data_column_widths::Bool = false,
     fit_table_in_display_horizontally::Bool = true,
     fit_table_in_display_vertically::Bool = true,
-    line_breaks::Bool = false,
-    highlighters::Vector{TextHighlighter} = TextHighlighter[],
-    maximum_data_column_widths::Union{Number, Vector{Int}} = 0,
     fixed_data_column_widths::Union{Number, Vector{Int}} = 0,
+    highlighters::Vector{TextHighlighter} = TextHighlighter[],
+    line_breaks::Bool = false,
+    maximum_data_column_widths::Union{Number, Vector{Int}} = 0,
     style::TextTableStyle = TextTableStyle(),
+    tf::TextTableFormat = TextTableFormat(),
 )
     context    = pspec.context
     table_data = pspec.table_data
@@ -259,6 +260,12 @@ function _text__print_table(
                 end
             end
         end
+    end
+
+    # If the user wants equal data column widths, make every column width equal to the
+    # largest one.
+    if equal_data_column_widths
+        printed_data_column_widths .= maximum(printed_data_column_widths)
     end
 
     # == Omitted Columns ===================================================================
