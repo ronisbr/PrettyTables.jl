@@ -498,7 +498,8 @@ function _text__print_table(
                     rendered_cell,
                     printed_table_width,
                     alignment,
-                    decoration
+                    decoration,
+                    false
                 )
                 _text__flush_line(display)
             end
@@ -515,7 +516,8 @@ function _text__print_table(
                     footnotes[ps.i],
                     printed_table_width,
                     alignment,
-                    decoration
+                    decoration,
+                    false
                 )
                 _text__flush_line(display)
 
@@ -530,7 +532,8 @@ function _text__print_table(
                     rendered_cell,
                     printed_table_width,
                     alignment,
-                    decoration
+                    decoration,
+                    false
                 )
                 _text__flush_line(display)
             end
@@ -548,6 +551,7 @@ function _text__print_table(
                 _text__print_column_label_horizontal_line(
                     display,
                     tf,
+                    style.table_border,
                     table_data,
                     ir - 1,
                     right_vertical_lines_at_data_columns,
@@ -573,6 +577,7 @@ function _text__print_table(
                     _text__print_horizontal_line(
                         display,
                         tf,
+                        style.table_border,
                         table_data,
                         right_vertical_lines_at_data_columns,
                         row_number_column_width,
@@ -599,7 +604,8 @@ function _text__print_table(
                 end
             end
 
-            tf.vertical_line_at_beginning && _text__print(display, tf.borders.column)
+            tf.vertical_line_at_beginning &&
+                _text__styled_print(display, tf.borders.column, style.table_border)
 
             continue
         end
@@ -609,13 +615,13 @@ function _text__print_table(
         if action == :diagonal_continuation_cell
             _text__print(display, " ⋱ ")
             tf.vertical_line_after_continuation_column &&
-                _text__print(display, tf.borders.column)
+                _text__styled_print(display, tf.borders.column, style.table_border)
             continue
 
         elseif action == :horizontal_continuation_cell
             _text__print(display, " ⋯ ")
             tf.vertical_line_after_continuation_column &&
-                _text__print(display, tf.borders.column)
+                _text__styled_print(display, tf.borders.column, style.table_border)
             continue
 
         elseif action ∈ _VERTICAL_CONTINUATION_CELL_ACTIONS
@@ -623,27 +629,27 @@ function _text__print_table(
 
             if action == :row_number_vertical_continuation_cell
                 cell_width = row_number_column_width
-                hline      = tf.vertical_line_after_row_number_column
+                vline      = tf.vertical_line_after_row_number_column
 
             elseif action == :row_label_vertical_continuation_cell
                 cell_width = row_label_column_width
-                hline      = tf.vertical_line_after_row_label_column
+                vline      = tf.vertical_line_after_row_label_column
 
             else
                 cell_width = printed_data_column_widths[jr]
-                hline = false
+                vline = false
 
                 if jr == last_printed_column_index
-                    tf.vertical_line_after_data_columns && (hline = true)
+                    tf.vertical_line_after_data_columns && (vline = true)
                 elseif ps.j ∈ right_vertical_lines_at_data_columns
-                    hline = true
+                    vline = true
                 end
             end
 
             _text__print(display, " ")
             _text__print_aligned(display, "⋮", cell_width, alignment)
             _text__print(display, " ")
-            hline && _text__print(display, tf.borders.column)
+            vline && _text__styled_print(display, tf.borders.column, style.table_border)
 
             continue
         end
@@ -712,6 +718,7 @@ function _text__print_table(
                     _text__print_column_label_horizontal_line(
                         display,
                         tf,
+                        style.table_border,
                         table_data,
                         length(table_data.column_labels),
                         right_vertical_lines_at_data_columns,
@@ -742,6 +749,7 @@ function _text__print_table(
                     _text__print_horizontal_line(
                         display,
                         tf,
+                        style.table_border,
                         table_data,
                         right_vertical_lines_at_data_columns,
                         row_number_column_width,
@@ -762,6 +770,7 @@ function _text__print_table(
                 _text__print_horizontal_line(
                     display,
                     tf,
+                    style.table_border,
                     table_data,
                     right_vertical_lines_at_data_columns,
                     row_number_column_width,
@@ -791,6 +800,7 @@ function _text__print_table(
                     _text__print_horizontal_line(
                         display,
                         tf,
+                        style.table_border,
                         table_data,
                         right_vertical_lines_at_data_columns,
                         row_number_column_width,
@@ -808,6 +818,7 @@ function _text__print_table(
                     _text__print_horizontal_line(
                         display,
                         tf,
+                        style.table_border,
                         table_data,
                         right_vertical_lines_at_data_columns,
                         row_number_column_width,
@@ -829,6 +840,7 @@ function _text__print_table(
                     _text__print_horizontal_line(
                         display,
                         tf,
+                        style.table_border,
                         table_data,
                         right_vertical_lines_at_data_columns,
                         row_number_column_width,
@@ -1050,7 +1062,7 @@ function _text__print_table(
             decoration
         )
 
-        vline && _text__print(display, vline_char)
+        vline && _text__styled_print(display, vline_char, style.table_border)
     end
 
     # == Print the Buffer Into the IO ======================================================

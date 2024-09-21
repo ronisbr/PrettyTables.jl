@@ -18,6 +18,19 @@ function _text__print(display::Display, str::AbstractString)
     return nothing
 end
 
+function _text__styled_print(display::Display, char::Char, crayon::Crayon)
+    return _text__styled_print(display, string(char), crayon)
+end
+
+function _text__styled_print(display::Display, str::AbstractString, crayon::Crayon)
+    (!display.has_color || crayon == _TEXT__DEFAULT) && return _text__print(display, str)
+
+    _text__print(display, string(crayon))
+    _text__print(display, str)
+    _text__print(display, _TEXT__STRING_RESET)
+    return nothing
+end
+
 function _text__flush_line(
     display::Display,
     add_continuation_char::Bool = true,
@@ -49,20 +62,16 @@ function _text__print_aligned(
     str::AbstractString,
     cell_width::Int,
     alignment::Symbol,
-    decoration::Crayon = _TEXT__DEFAULT
+    crayon::Crayon = _TEXT__DEFAULT,
+    fill::Bool = true
 )
-    aligned_str = align_string(str, cell_width, alignment; fill = true)
-
-    if display.has_color && (decoration != _TEXT__DEFAULT)
-        aligned_str = "$(decoration)$(aligned_str)$(_TEXT__STRING_RESET)"
-    end
-
-    _text__print(display, aligned_str)
+    aligned_str = align_string(str, cell_width, alignment; fill)
+    _text__styled_print(display, aligned_str, crayon)
     return nothing
 end
 
 """
-    _text__print_horizontal_line(display::Display, tf::TextTableFormat, table_data::TableData, right_vertical_lines_at_data_columns::AbstractVector{Int}, row_number_column_width::Int, row_label_column_width::Int, printed_data_column_widths::Vector{Int}, top::Bool = false, bottom::Bool = false, row_group_label::Bool = false) -> Nothing
+    _text__print_horizontal_line(display::Display, tf::TextTableFormat, crayon::Crayon, table_data::TableData, right_vertical_lines_at_data_columns::AbstractVector{Int}, row_number_column_width::Int, row_label_column_width::Int, printed_data_column_widths::Vector{Int}, top::Bool = false, bottom::Bool = false, row_group_label::Bool = false) -> Nothing
 
 Print a horizontal line to `display`.
 
@@ -70,6 +79,7 @@ Print a horizontal line to `display`.
 
 - `display::Display`: Display where the horizontal line will be printed.
 - `tf::TextTableFormat`: Table format.
+- `crayon::Crayon`: Crayon used to print the horizontal line.
 - `table_data::TableData`: Table data.
 - `right_vertical_lines_at_data_columns::AbstractVector{Int}`: Location of the right vertical
     lines at the data columns.
@@ -89,6 +99,7 @@ Print a horizontal line to `display`.
 function _text__print_horizontal_line(
     display::Display,
     tf::TextTableFormat,
+    crayon::Crayon,
     table_data::TableData,
     right_vertical_lines_at_data_columns::AbstractVector{Int},
     row_number_column_width::Int,
@@ -142,6 +153,8 @@ function _text__print_horizontal_line(
     table_continuation_column = _is_horizontally_cropped(table_data)
 
     # == Print the Horizontal Line =========================================================
+
+    crayon != _TEXT__DEFAULT && _text__print(display, string(crayon))
 
     # -- Left Intersection -----------------------------------------------------------------
 
@@ -201,11 +214,13 @@ function _text__print_horizontal_line(
         )
     end
 
+    crayon != _TEXT__DEFAULT && _text__print(display, _TEXT__STRING_RESET)
+
     return nothing
 end
 
 """
-    _text__print_column_label_horizontal_line(display::Display, tf::TextTableFormat, table_data::TableData, row_number::Int, right_vertical_lines_at_data_columns::AbstractVector{Int}, row_number_column_width::Int, row_label_column_width::Int, printed_data_column_widths::Vector{Int}, top::Bool = false, bottom::Bool = false)
+    _text__print_column_label_horizontal_line(display::Display, tf::TextTableFormat, crayon::Crayon, table_data::TableData, row_number::Int, right_vertical_lines_at_data_columns::AbstractVector{Int}, row_number_column_width::Int, row_label_column_width::Int, printed_data_column_widths::Vector{Int}, top::Bool = false, bottom::Bool = false)
 
 Print a column label horizontal line to `display`.
 
@@ -213,6 +228,7 @@ Print a column label horizontal line to `display`.
 
 - `display::Display`: Display where the horizontal line will be printed.
 - `tf::TextTableFormat`: Table format.
+- `crayon::Crayon`: Crayon used to print the horizontal line.
 - `table_data::TableData`: Table data.
 - `row_number::Int`: Column label row number before the horizontal line.
 - `right_vertical_lines_at_data_columns::AbstractVector{Int}`: Location of the right vertical
@@ -228,6 +244,7 @@ Print a column label horizontal line to `display`.
 function _text__print_column_label_horizontal_line(
     display::Display,
     tf::TextTableFormat,
+    crayon::Crayon,
     table_data::TableData,
     row_number::Int,
     right_vertical_lines_at_data_columns::AbstractVector{Int},
@@ -279,6 +296,8 @@ function _text__print_column_label_horizontal_line(
     table_continuation_column = _is_horizontally_cropped(table_data)
 
     # == Print the Horizontal Line =========================================================
+
+    crayon != _TEXT__DEFAULT && _text__print(display, string(crayon))
 
     # -- Left Intersection -----------------------------------------------------------------
 
@@ -361,6 +380,8 @@ function _text__print_column_label_horizontal_line(
             true
         )
     end
+
+    crayon != _TEXT__DEFAULT && _text__print(display, _TEXT__STRING_RESET)
 
     return nothing
 end

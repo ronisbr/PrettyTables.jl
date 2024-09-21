@@ -319,7 +319,7 @@ function _text__design_vertical_cropping(
 
             # == Line at the End of the Table ==============================================
 
-            i = table_data.num_rows - row
+            i = table_data.num_rows - row + 1
 
             hline               = i ∈ horizontal_lines_at_data_rows
             row_group_label     = _print_row_group_label(table_data, i)
