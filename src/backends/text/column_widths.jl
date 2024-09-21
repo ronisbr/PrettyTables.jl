@@ -175,7 +175,7 @@ function _text__printed_column_widths(
             mctw = textwidth(column_labels[mc.i, mc.j])
 
             if mctw > total_width
-                Δ = div(mctw - total_width, mc.column_span, RoundUp)
+                Δ = div(mctw - total_width, j₁ - j₀ + 1, RoundUp)
                 printed_data_column_widths[j₀:j₁] .+= Δ
             end
         end

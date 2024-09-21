@@ -211,6 +211,7 @@ Define the style of the tables printed with the text back end.
 - `source_note::Crayon`: Crayon with the style for the source notes.
 - `merged_cell::Crayon`: Crayon with the style for the merged cells.
 - `omitted_cell_summary::Crayon`: Crayon with the style for the omitted cell summary.
+- `table_border::Crayon`: Crayon with the style for the table border.
 """
 @kwdef struct TextTableStyle
     title::Crayon                          = _TEXT__BOLD
@@ -230,6 +231,7 @@ Define the style of the tables printed with the text back end.
     source_note::Crayon                    = _TEXT__DARK_GRAY
     merged_cell::Crayon                    = _TEXT__BOLD
     omitted_cell_summary::Crayon           = _TEXT__CYAN
+    table_border::Crayon                   = _TEXT__DEFAULT
 end
 
 ############################################################################################
