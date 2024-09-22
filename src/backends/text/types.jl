@@ -4,7 +4,17 @@
 #
 ############################################################################################
 
-export TextTableBorders, TextTableFormat, TextTableStyle, TextHighlighter
+export CustomTextCell, TextTableBorders, TextTableFormat, TextTableStyle, TextHighlighter
+
+############################################################################################
+#                                     Custom Text Cell                                     #
+############################################################################################
+
+include("./CustomTextCell/CustomTextCell.jl")
+using .CustomTextCell
+export AbstractCustomTextCell
+
+include("./CustomTextCell/AnsiTextCell.jl")
 
 ############################################################################################
 #                                         Display                                          #
