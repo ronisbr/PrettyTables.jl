@@ -54,4 +54,7 @@ end
     include("./backends/text/cropping.jl")
     include("./backends/text/default.jl")
     include("./backends/text/full.jl")
+    include("./backends/text/highlighters.jl")
+    include("./backends/text/offset_arrays.jl")
+    include("./backends/text/renderers.jl")
 end
