@@ -884,6 +884,8 @@ function _text__print_table(
         # If we reach this point, we are processing table cells.
 
         alignment     = _current_cell_alignment(action, ps, table_data)
+        cell          = _current_cell(action, ps, table_data)
+        cell_printed  = false
         cell_width    = 1
         decoration    = _TEXT__DEFAULT
         rendered_cell = ""
@@ -896,13 +898,11 @@ function _text__print_table(
         # -- Width, Decoration, and Rendered String ----------------------------------------
 
         if action == :row_number_label
-            cell          = _current_cell(action, ps, table_data)
             cell_width    = row_number_column_width
             decoration    = style.row_number_label
             rendered_cell = _text__render_cell(cell, buf, renderer)
 
         elseif action == :stubhead_label
-            cell          = _current_cell(action, ps, table_data)
             cell_width    = row_label_column_width
             decoration    = style.stubhead_label
             rendered_cell = _text__render_cell(cell, buf, renderer)
@@ -922,7 +922,6 @@ function _text__print_table(
             rendered_cell = table_data.summary_row_labels[ir]
 
         elseif action == :column_label
-            cell          = _current_cell(action, ps, table_data)
             cell_width    = printed_data_column_widths[jr]
             rendered_cell = column_labels[ir, jr]
             decoration    = if ir == 1
@@ -970,10 +969,33 @@ function _text__print_table(
             end
 
         elseif action == :row_number
-            cell          = _current_cell(action, ps, table_data)
             cell_width    = row_number_column_width
             decoration    = style.row_number
             rendered_cell = _text__render_cell(cell, buf, renderer)
+
+        elseif (action == :data) && (cell isa AbstractCustomTextCell)
+            cell_width = printed_data_column_widths[jr]
+
+            # We need to manually align the string by adding left and right padding.
+            printable_cell = table_str[ir, jr]
+            tw = textwidth(printable_cell)
+
+            if alignment == :r
+                Δ = cell_width - tw
+                CustomTextCell.left_padding!(cell, Δ)
+            elseif alignment == :c
+                Δ = div(cell_width - tw, 2)
+                CustomTextCell.left_padding!(cell, Δ)
+                CustomTextCell.right_padding!(cell, cell_width - tw - Δ)
+            end
+
+            rendered_cell = CustomTextCell.rendered_cell(cell, context, renderer)
+
+            _text__print(display, " ")
+            _text__print(display, rendered_cell, tw)
+            _text__print(display, " ")
+
+            cell_printed = true
 
         elseif action == :data
             cell_width    = printed_data_column_widths[jr]
@@ -1008,7 +1030,6 @@ function _text__print_table(
 
         elseif action == :row_group_label
             alignment     = _current_cell_alignment(action, ps, table_data)
-            cell          = _current_cell(action, ps, table_data)
             cell_width    = printed_table_width - 4
             decoration    = style.row_group_label
             rendered_cell = _text__render_cell(cell, buf, renderer)
@@ -1054,7 +1075,7 @@ function _text__print_table(
             end
         end
 
-        _text__print_aligned(
+        cell_printed || _text__print_aligned(
             display,
             " " * rendered_cell * " " ,
             cell_width + 2,

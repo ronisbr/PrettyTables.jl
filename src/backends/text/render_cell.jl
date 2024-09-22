@@ -65,8 +65,7 @@ end
 """
     _text__render_cell(cell::Any, @nospecialize(context::IOContext), renderer::Union{Val{:print}, Val{:show}}; kwargs...) -> String
 
-Render the `cell` in markdown back end using a specific `context` and `renderer`.
-
+Render the `cell` in text back end using a specific `context` and `renderer`.
 """
 function _text__render_cell(
     cell::Any,
@@ -82,3 +81,14 @@ function _text__render_cell(
     return escape_string(cell_str; keep)
 end
 
+function _text__render_cell(
+    cell::AbstractCustomTextCell,
+    @nospecialize(context::IOContext),
+    renderer::Union{Val{:print}, Val{:show}},
+    line_breaks::Bool = false
+)
+    # Here, we are rendering the cell for the first time. Hence, we need to reset it.
+    CustomTextCell.reset!(cell)
+
+    return CustomTextCell.printable_cell_text(cell, context, renderer)
+end

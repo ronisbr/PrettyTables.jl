@@ -11,10 +11,10 @@ end
 
 _text__print(display::Display, char::Char) = _text__print(display, string(char))
 
-function _text__print(display::Display, str::AbstractString)
+function _text__print(display::Display, str::AbstractString, str_width::Int = -1)
     _text__check_eol(display) && return nothing
     print(display.buf_line, str)
-    display.column += printable_textwidth(str)
+    display.column += str_width < 0 ? printable_textwidth(str) : str_width
     return nothing
 end
 
