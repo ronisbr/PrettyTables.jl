@@ -1,6 +1,11 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 2.3.3
+-------------
+
+- ![Info][badge-info] Bump StringManipulation.jl version.
+
 Version 2.3.2
 -------------
 
