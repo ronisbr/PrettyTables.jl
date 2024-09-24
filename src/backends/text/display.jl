@@ -138,7 +138,7 @@ function _fit_string_in_display(
         field_margin = textwidth(cont_str)
 
         # Get the number of characters we need to crop to fit the display.
-        crop = get_crop_to_fit_string_in_field(
+        crop = crop_width_to_fit_string_in_field(
             str,
             display.size[2] - display.column - field_margin;
             add_continuation_char = false,

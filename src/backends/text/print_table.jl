@@ -216,7 +216,7 @@ function _text_print_table!(
                         cell_processed_str = fit_string_in_field(
                             cell_processed_str,
                             actual_columns_width_j;
-                            keep_ansi = false,
+                            keep_escape_seq = false,
                             printable_string_width = str_printable_width
                         )
 

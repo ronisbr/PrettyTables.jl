@@ -238,7 +238,7 @@ function get_rendered_line(cell::AnsiTextCell, l::Int)
             line,
             line_width - cell_crops[l];
             add_continuation_char = false,
-            keep_ansi = false,
+            keep_escape_seq = false,
             printable_string_width = line_width
         )
 

@@ -123,7 +123,7 @@ function _text_process_data_cell(
     if cell_data isa CustomTextCell
         # To align a custom text cell, we need to compute the alignment and cropping data
         # and apply it using the API functions.
-        padding = get_padding_for_string_alignment(
+        padding = padding_for_string_alignment(
             cell_str,
             column_width,
             alignment;
@@ -137,7 +137,7 @@ function _text_process_data_cell(
         else
             left_pad, right_pad = 0, 0
 
-            crop_chars = get_crop_to_fit_string_in_field(
+            crop_chars = crop_width_to_fit_string_in_field(
                 cell_str,
                 column_width;
                 add_continuation_char = false,
@@ -169,7 +169,7 @@ function _text_process_data_cell(
         cell_str = fit_string_in_field(
             cell_str,
             column_width;
-            keep_ansi = false,
+            keep_escape_seq = false,
             printable_string_width = lstr
         )
     end
