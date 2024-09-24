@@ -38,6 +38,16 @@ function rendered_cell(
     error("The custom text cell type $(typeof(cell)) does not implement the API function `rendered_cell`.")
 end
 
+function rendered_cell_line(
+    cell::AbstractCustomTextCell,
+    line::Int,
+    context::IOContext,
+    renderer::Union{Val{:print}, Val{:show}}
+)
+    line > 1 && return ""
+    return rendered_cell(cell, context, renderer)
+end
+
 function printable_cell_text(
     cell::AbstractCustomTextCell,
     context::IOContext,

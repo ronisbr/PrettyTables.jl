@@ -989,13 +989,11 @@ function _text__print_table(
                 CustomTextCell.right_padding!(cell, cell_width - tw - Δ)
             end
 
-            rendered_cell = CustomTextCell.rendered_cell(cell, context, renderer)
-
-            _text__print(display, " ")
-            _text__print(display, rendered_cell, tw)
-            _text__print(display, " ")
-
-            cell_printed = true
+            rendered_cell = if !line_breaks
+                CustomTextCell.rendered_cell(cell, context, renderer)
+            else
+                CustomTextCell.rendered_cell_line(cell, current_row_line, context, renderer)
+            end
 
         elseif action == :data
             cell_width    = printed_data_column_widths[jr]
@@ -1075,7 +1073,7 @@ function _text__print_table(
             end
         end
 
-        cell_printed || _text__print_aligned(
+        _text__print_aligned(
             display,
             " " * rendered_cell * " " ,
             cell_width + 2,
