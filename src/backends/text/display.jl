@@ -25,9 +25,7 @@ end
 function _text__styled_print(display::Display, str::AbstractString, crayon::Crayon)
     (!display.has_color || crayon == _TEXT__DEFAULT) && return _text__print(display, str)
 
-    _text__print(display, string(crayon))
-    _text__print(display, str)
-    _text__print(display, _TEXT__STRING_RESET)
+    _text__print(display, string(crayon) * str * _TEXT__STRING_RESET)
     return nothing
 end
 
@@ -40,20 +38,20 @@ function _text__flush_line(
     line = String(take!(display.buf_line))
 
     if (dw > 0) && (display.column > dw)
-        if add_continuation_char
-            line =
-                first(right_crop(line, display.column - dw + 2)) *
-                " " *
-                (display.has_color ? _TEXT__STRING_RESET : "") *
-                continuation_char
-        else
-            line = first(right_crop(line, display.column - dw))
-        end
+        line = fit_string_in_field(
+            line,
+            dw;
+            add_continuation_char,
+            add_space_in_continuation_char = add_continuation_char,
+            crop_side = :right,
+            keep_escape_seq = true
+        )
     end
 
     println(display.buf, line)
     display.column = 0
     display.row += 1
+
     return nothing
 end
 

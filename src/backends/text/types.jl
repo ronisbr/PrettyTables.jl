@@ -15,6 +15,7 @@ using .CustomTextCell
 export AbstractCustomTextCell
 
 include("./CustomTextCell/AnsiTextCell.jl")
+include("./CustomTextCell/UrlTextCell.jl")
 
 ############################################################################################
 #                                         Display                                          #
