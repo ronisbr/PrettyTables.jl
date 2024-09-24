@@ -5,6 +5,7 @@ Version 2.3.3
 -------------
 
 - ![Info][badge-info] Bump StringManipulation.jl version.
+- ![Deprecation][badge-deprecation] Drop support for Julia versions lower than 1.10.
 
 Version 2.3.2
 -------------
