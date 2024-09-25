@@ -990,9 +990,9 @@ function _text__print_table(
             end
 
             rendered_cell = if !line_breaks
-                CustomTextCell.rendered_cell(cell, context, renderer)
+                CustomTextCell.rendered_cell(cell)
             else
-                CustomTextCell.rendered_cell_line(cell, current_row_line, context, renderer)
+                CustomTextCell.rendered_cell_line(cell, current_row_line)
             end
 
         elseif action == :data

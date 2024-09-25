@@ -26,6 +26,17 @@ function CustomTextCell.crop!(cell::AnsiTextCell, field_width::Int)
     return nothing
 end
 
+function CustomTextCell.init!(
+    cell::AnsiTextCell,
+    context::IOContext,
+    renderer::Union{Val{:print}, Val{:show}}
+)
+    cell.left_padding  = 0
+    cell.right_padding = 0
+
+    return nothing
+end
+
 function CustomTextCell.left_padding!(cell::AnsiTextCell, pad::Int)
     cell.left_padding = pad
     return nothing
@@ -36,26 +47,12 @@ function CustomTextCell.right_padding!(cell::AnsiTextCell, pad::Int)
     return nothing
 end
 
-function CustomTextCell.rendered_cell(
-    cell::AnsiTextCell,
-    context::IOContext,
-    renderer::Union{Val{:print}, Val{:show}}
-)
+function CustomTextCell.rendered_cell(cell::AnsiTextCell)
     left_padding_str  = " "^max(cell.left_padding, 0)
     right_padding_str = " "^max(cell.right_padding, 0)
     return left_padding_str * cell.content * _TEXT__STRING_RESET * right_padding_str
 end
 
-function CustomTextCell.printable_cell_text(
-    cell::AnsiTextCell,
-    context::IOContext,
-    renderer::Union{Val{:print}, Val{:show}}
-)
+function CustomTextCell.printable_cell_text(cell::AnsiTextCell)
     return remove_decorations(CustomTextCell.rendered_cell(cell, context, renderer))
-end
-
-function CustomTextCell.reset!(cell::AnsiTextCell)
-    cell.left_padding = 0
-    cell.right_padding = 0
-    return nothing
 end

@@ -87,8 +87,8 @@ function _text__render_cell(
     renderer::Union{Val{:print}, Val{:show}},
     line_breaks::Bool = false
 )
-    # Here, we are rendering the cell for the first time. Hence, we need to reset it.
-    CustomTextCell.reset!(cell)
+    # Here, we are rendering the cell for the first time. Hence, we need to initialize it.
+    CustomTextCell.init!(cell, context, renderer)
 
-    return CustomTextCell.printable_cell_text(cell, context, renderer)
+    return CustomTextCell.printable_cell_text(cell)
 end

@@ -28,6 +28,18 @@ function CustomTextCell.crop!(cell::UrlTextCell, field_width::Int)
     return nothing
 end
 
+function CustomTextCell.init!(
+    cell::UrlTextCell,
+    context::IOContext,
+    renderer::Union{Val{:print}, Val{:show}}
+)
+    cell.crop          = 0
+    cell.left_padding  = 0
+    cell.right_padding = 0
+
+    return nothing
+end
+
 function CustomTextCell.left_padding!(cell::UrlTextCell, pad::Int)
     cell.left_padding = pad
     return nothing
@@ -38,21 +50,13 @@ function CustomTextCell.right_padding!(cell::UrlTextCell, pad::Int)
     return nothing
 end
 
-function CustomTextCell.rendered_cell(
-    cell::UrlTextCell,
-    context::IOContext,
-    renderer::Union{Val{:print}, Val{:show}}
-)
-    text = CustomTextCell.printable_cell_text(cell, context, renderer)
+function CustomTextCell.rendered_cell(cell::UrlTextCell)
+    text = CustomTextCell.printable_cell_text(cell)
     rendered_cell = "\e]8;;$(cell.url)\e\\$(text)\e]8;;\e\\"
     return rendered_cell
 end
 
-function CustomTextCell.printable_cell_text(
-    cell::UrlTextCell,
-    context::IOContext,
-    renderer::Union{Val{:print}, Val{:show}}
-)
+function CustomTextCell.printable_cell_text(cell::UrlTextCell)
     left_padding_str  = " "^max(cell.left_padding, 0)
     right_padding_str = " "^max(cell.right_padding, 0)
     full_str          = left_padding_str * cell.text * right_padding_str
@@ -60,12 +64,3 @@ function CustomTextCell.printable_cell_text(
 
     return cropped_str
 end
-
-function CustomTextCell.reset!(cell::UrlTextCell)
-    cell.crop = 0
-    cell.left_padding = 0
-    cell.right_padding = 0
-    return nothing
-end
-
-
