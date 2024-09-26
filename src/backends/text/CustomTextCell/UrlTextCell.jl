@@ -10,22 +10,28 @@ mutable struct UrlTextCell <: AbstractCustomTextCell
     text::String
     url::String
 
-    # == Crop and Padding ==================================================================
+    # == API Configurations ================================================================
 
     crop::Int
     left_padding::Int
     right_padding::Int
+    suffix::String
 
     # == Constructor =======================================================================
 
     function UrlTextCell(text::String, url::String)
-        return new(text, url, 0, 0, 0)
+        return new(text, url, 0, 0, 0, "")
     end
 end
 
 ############################################################################################
 #                                           API                                            #
 ############################################################################################
+
+function CustomTextCell.add_sufix!(cell::UrlTextCell, sufix::String)
+    cell.suffix = sufix
+    return nothing
+end
 
 function CustomTextCell.crop!(cell::UrlTextCell, field_width::Int)
     cell.crop = field_width
@@ -65,7 +71,7 @@ function CustomTextCell.printable_cell_text(cell::UrlTextCell)
     left_padding_str  = " "^max(cell.left_padding, 0)
     right_padding_str = " "^max(cell.right_padding, 0)
     full_str          = left_padding_str * cell.text * right_padding_str
-    cropped_str       = first(right_crop(full_str, cell.crop))
+    cropped_str       = first(right_crop(full_str, cell.crop)) * cell.suffix
 
     return cropped_str
 end

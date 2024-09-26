@@ -84,6 +84,8 @@ function _text__print_table(
     if (fixed_data_column_widths isa Number) && (fixed_data_column_widths > 0)
         fixed_data_column_widths = fixed_data_column_widths .+ 0 * (1:table_data.num_columns)
         has_fixed_data_column_widths = true
+    elseif fixed_data_column_widths isa AbstractVector
+        has_fixed_data_column_widths = true
     end
 
     if alignment_anchor_regex isa Vector{Pair{Int, Vector{Regex}}}
@@ -122,6 +124,7 @@ function _text__print_table(
             mc = 1
 
             for j in eachindex(fixed_data_column_widths)
+                fixed_data_column_widths[j] < 0 && continue
                 aux += fixed_data_column_widths[j]
                 aux > display.size[2] && break
                 mc += 1
@@ -399,7 +402,7 @@ function _text__print_table(
         else
             vertically_limited_by_display =
                 vertically_limited_by_display ||
-                (num_fully_printed_data_rows < table_data.num_rows)
+                (num_printed_data_rows < table_data.num_rows)
 
             table_data.maximum_number_of_rows = mr + lrc
         end
@@ -975,20 +978,42 @@ function _text__print_table(
             rendered_cell = _text__render_cell(cell, buf, renderer)
 
         elseif (action == :data) && (cell isa AbstractCustomTextCell)
-            # TODO: Crop the custem cell if the column width is smaller.
             cell_width = printed_data_column_widths[jr]
 
+            # If this is a fixed column, we must regenerate the printable cell text.
+            # Otherwise, we will have access to a cropped string and we will not be able to
+            # call the API functions to actually reduce the rendered string width.
+            if has_fixed_data_column_widths && (fixed_data_column_widths[jr] > 0)
+                if !line_breaks || (current_row_line == 1)
+                    table_str[ir, jr] = CustomTextCell.printable_cell_text(cell)
+
+                    # Here, we have line breaks and we are in the first line. Hence, we must
+                    # regenerate the line tokens.
+                    if line_breaks
+                        tokens[jr] = split(table_str[ir, jr], '\n')
+                    end
+                end
+            end
+
             # We need to manually align the string by adding left and right padding.
-            printable_cell = !line_breaks ? table_str[ir, jr] : string(tokens[jr][current_row_line])
+            @show printable_cell = !line_breaks ? table_str[ir, jr] : string(tokens[jr][current_row_line])
             tw = textwidth(printable_cell)
 
-            if alignment == :r
+            if tw > cell_width
+                CustomTextCell.crop!(cell, tw - cell_width + 1)
+                CustomTextCell.add_sufix!(cell, "…")
+                CustomTextCell.left_padding!(cell, 0)
+                CustomTextCell.right_padding!(cell, 0)
+
+            elseif alignment == :r
                 Δ = cell_width - tw
                 CustomTextCell.left_padding!(cell, Δ)
+
             elseif alignment == :c
                 Δ = div(cell_width - tw, 2, RoundUp)
                 CustomTextCell.left_padding!(cell, Δ)
                 CustomTextCell.right_padding!(cell, cell_width - tw - Δ)
+
             else
                 # We must add a right padding because the custom cell must fill the entire
                 # space, leading to a correct cell decoration.
