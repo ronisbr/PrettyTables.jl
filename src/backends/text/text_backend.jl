@@ -1008,6 +1008,7 @@ function _text__print_table(
             elseif alignment == :r
                 Δ = cell_width - tw
                 CustomTextCell.left_padding!(cell, Δ)
+                CustomTextCell.right_padding!(cell, 0)
 
             elseif alignment == :c
                 Δ = div(cell_width - tw, 2, RoundUp)
@@ -1018,6 +1019,7 @@ function _text__print_table(
                 # We must add a right padding because the custom cell must fill the entire
                 # space, leading to a correct cell decoration.
                 Δ = cell_width - tw
+                CustomTextCell.left_padding!(cell, 0)
                 CustomTextCell.right_padding!(cell, Δ)
             end
 
