@@ -9,8 +9,17 @@
 
 Guess the column label associated with `data` in case the user did not pass a default value.
 """
-_guess_column_labels(data::ColumnTable) = [string.(data.column_names)]
-_guess_column_labels(data::RowTable) = [string.(data.column_names)]
+function _guess_column_labels(data::Union{ColumnTable, RowTable})
+    column_labels = [string.(data.column_names)]
+    sch           = Tables.schema(_get_data(data))
+
+    if !isnothing(sch)
+        types::Vector{String} = _compact_type_str.([sch.types...])
+        push!(column_labels, types)
+    end
+
+    return column_labels
+end
 
 function _guess_column_labels(data::AbstractVecOrMat)
     return [parent(["Col. $(string(i))" for i in axes(data, 2)])]
