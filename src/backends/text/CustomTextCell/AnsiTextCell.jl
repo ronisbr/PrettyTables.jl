@@ -9,10 +9,12 @@ export AnsiTextCell
 mutable struct AnsiTextCell <: AbstractCustomTextCell
     content::String
 
-    # == Padding ===========================================================================
+    # == API Configurations ================================================================
 
+    crop::Int
     left_padding::Int
     right_padding::Int
+    suffix::String
 
     # == Line Breaks =======================================================================
 
@@ -23,7 +25,7 @@ mutable struct AnsiTextCell <: AbstractCustomTextCell
     # == Constructor =======================================================================
 
     function AnsiTextCell(content::String)
-        return new(content, 0, 0, false, nothing, nothing)
+        return new(content, 0, 0, 0, "", false, nothing, nothing)
     end
 end
 
@@ -31,8 +33,13 @@ end
 #                                           API                                            #
 ############################################################################################
 
+function CustomTextCell.add_sufix!(cell::AnsiTextCell, sufix::String)
+    cell.suffix = sufix
+    return nothing
+end
+
 function CustomTextCell.crop!(cell::AnsiTextCell, field_width::Int)
-    cell.content = first(right_crop(cell.content, field_width))
+    cell.crop = field_width
     return nothing
 end
 
@@ -42,9 +49,13 @@ function CustomTextCell.init!(
     renderer::Union{Val{:print}, Val{:show}};
     line_breaks::Bool = false
 )
+    cell.crop          = 0
     cell.left_padding  = 0
     cell.right_padding = 0
     cell.line_breaks   = line_breaks
+    cell.suffix        = ""
+    cell.lines         = nothing
+    cell.decorations   = nothing
 
     if line_breaks
         lines     = String.(split(cell.content, '\n'))
@@ -85,7 +96,10 @@ function CustomTextCell.rendered_cell(cell::AnsiTextCell)
         cell.content
     end
 
-    return left_padding_str * line_str * _TEXT__STRING_RESET * right_padding_str
+    cropped_str = first(right_crop(line_str, cell.crop))
+
+    return left_padding_str * cropped_str * right_padding_str * cell.suffix *
+        _TEXT__STRING_RESET
 end
 
 function CustomTextCell.rendered_cell_line(cell::AnsiTextCell, line::Int)
@@ -100,9 +114,13 @@ function CustomTextCell.rendered_cell_line(cell::AnsiTextCell, line::Int)
     right_padding_str = " "^max(cell.right_padding, 0)
     line_str          = cell.lines[line]
     decoration_str    = convert(String, cell.decorations[line])
+    cropped_str       = first(right_crop(line_str, cell.crop))
 
-    return decoration_str * left_padding_str * line_str * right_padding_str *
-        _TEXT__STRING_RESET
+    return decoration_str * left_padding_str * cropped_str * right_padding_str *
+        cell.suffix * _TEXT__STRING_RESET
 end
 
-CustomTextCell.printable_cell_text(cell::AnsiTextCell) = remove_decorations(cell.content)
+function CustomTextCell.printable_cell_text(cell::AnsiTextCell)
+    line = cell.line_breaks ? cell.content : replace(cell.content, '\n' => "\\n")
+    return remove_decorations(line)
+end

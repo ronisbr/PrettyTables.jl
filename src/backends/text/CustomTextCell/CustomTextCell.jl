@@ -18,6 +18,10 @@ abstract type AbstractCustomTextCell end
 #                                        Functions                                         #
 ############################################################################################
 
+function add_sufix!(cell::AbstractCustomTextCell, sufix::String)
+    error("The custom text cell of type `$(typeof(cell))` does not implement the API function `add_sufix!`.")
+end
+
 """
     crop!(cell::AbstractCustomTextCell, field_width::Int) -> Nothing
 
