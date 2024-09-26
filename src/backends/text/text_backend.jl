@@ -275,7 +275,8 @@ function _text__print_table(
         column_labels,
         table_str,
         summary_rows,
-        fixed_data_column_widths
+        fixed_data_column_widths,
+        line_breaks
     )
 
     # If the user wants equal data column widths, make every column width equal to the
@@ -974,6 +975,7 @@ function _text__print_table(
             rendered_cell = _text__render_cell(cell, buf, renderer)
 
         elseif (action == :data) && (cell isa AbstractCustomTextCell)
+            # TODO: Crop the custem cell if the column width is smaller.
             cell_width = printed_data_column_widths[jr]
 
             # We need to manually align the string by adding left and right padding.
@@ -987,6 +989,11 @@ function _text__print_table(
                 Δ = div(cell_width - tw, 2, RoundUp)
                 CustomTextCell.left_padding!(cell, Δ)
                 CustomTextCell.right_padding!(cell, cell_width - tw - Δ)
+            else
+                # We must add a right padding because the custom cell must fill the entire
+                # space, leading to a correct cell decoration.
+                Δ = cell_width - tw
+                CustomTextCell.right_padding!(cell, Δ)
             end
 
             rendered_cell = if !line_breaks
