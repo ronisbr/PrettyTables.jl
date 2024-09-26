@@ -43,6 +43,7 @@ function _text__flush_line(
             dw;
             add_continuation_char,
             add_space_in_continuation_char = add_continuation_char,
+            continuation_char,
             crop_side = :right,
             keep_escape_seq = true
         )
