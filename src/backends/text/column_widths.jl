@@ -23,7 +23,8 @@ function _text__fix_data_column_widths!(
     column_labels::Matrix{String},
     table_str::Matrix{String},
     summary_rows::Union{Nothing, Matrix{String}},
-    fixed_data_column_widths::AbstractVector{Int}
+    fixed_data_column_widths::AbstractVector{Int},
+    line_breaks::Bool
 )
     for j in eachindex(printed_data_column_widths)
         printed_data_column_widths[j] = fixed_data_column_widths[j - 1 + begin]
@@ -37,12 +38,28 @@ function _text__fix_data_column_widths!(
 
             for i in axes(table, 1)
                 str = table[i, j]
-                tw = textwidth(str)
 
-                if tw > cw
+                if !line_breaks
+                    tw = textwidth(str)
+                    tw <= cw && continue
+
                     str = first(right_crop(str, tw - cw + 1))
                     str *= "…"
                     table[i, j] = str
+                else
+                    tokens = split(str, '\n')
+
+                    for l in eachindex(tokens)
+                        line = tokens[l]
+                        tw   = textwidth(line)
+                        tw <= cw && continue
+
+                        line  = first(right_crop(line, tw - cw + 1))
+                        line *= "…"
+                        tokens[l] = line
+                    end
+
+                    table[i, j] = join(tokens, '\n')
                 end
             end
         end
