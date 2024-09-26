@@ -10,9 +10,13 @@ mutable struct UrlTextCell <: AbstractCustomTextCell
     text::String
     url::String
 
+    # == Crop and Padding ==================================================================
+
     crop::Int
     left_padding::Int
     right_padding::Int
+
+    # == Constructor =======================================================================
 
     function UrlTextCell(text::String, url::String)
         return new(text, url, 0, 0, 0)
@@ -31,7 +35,8 @@ end
 function CustomTextCell.init!(
     cell::UrlTextCell,
     context::IOContext,
-    renderer::Union{Val{:print}, Val{:show}}
+    renderer::Union{Val{:print}, Val{:show}};
+    line_breaks::Bool = false
 )
     cell.crop          = 0
     cell.left_padding  = 0

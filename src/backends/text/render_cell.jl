@@ -88,7 +88,7 @@ function _text__render_cell(
     line_breaks::Bool = false
 )
     # Here, we are rendering the cell for the first time. Hence, we need to initialize it.
-    CustomTextCell.init!(cell, context, renderer)
+    CustomTextCell.init!(cell, context, renderer; line_breaks)
 
     return CustomTextCell.printable_cell_text(cell)
 end
