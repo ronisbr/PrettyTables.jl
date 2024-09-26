@@ -105,6 +105,4 @@ function CustomTextCell.rendered_cell_line(cell::AnsiTextCell, line::Int)
         _TEXT__STRING_RESET
 end
 
-function CustomTextCell.printable_cell_text(cell::AnsiTextCell)
-    return remove_decorations(CustomTextCell.rendered_cell(cell))
-end
+CustomTextCell.printable_cell_text(cell::AnsiTextCell) = remove_decorations(cell.content)
