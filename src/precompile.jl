@@ -77,6 +77,13 @@ PrecompileTools.@setup_workload begin
         pretty_table(matrix)
 
         pretty_table(
+            types;
+            alignment = :l,
+            fit_table_in_display_horizontally = false,
+            fit_table_in_display_vertically = false,
+        )
+
+        pretty_table(
             matrix;
             highlighters = [
                 TextHighlighter((data, i, j) -> i == 1, crayon"bold")
@@ -84,6 +91,42 @@ PrecompileTools.@setup_workload begin
         )
 
         pretty_table(types)
+
+        # -- Options Used in DataFrames.jl -------------------------------------------------
+
+        style = TextTableStyle(row_label = Crayon())
+
+        tf = TextTableFormat(
+            ;
+            ellipsis_line_skip                    = 3,
+            horizontal_line_after_data_rows       = false,
+            horizontal_line_at_beginning          = false,
+            new_line_at_end                       = false,
+            vertical_line_at_beginning            = false,
+            vertical_line_after_row_number_column = true,
+            vertical_line_after_row_label_column  = false,
+            right_vertical_lines_at_data_columns  = :none,
+            vertical_line_after_data_columns      = false,
+        )
+
+        pretty_table(
+            table;
+            alignment                   = [:l, :c, :r],
+            column_label_alignment      = :l,
+            display_size                = (15, 33),
+            reserved_display_lines      = 2,
+            row_label_alignment         = :r,
+            row_labels                  = ["row" for i = 1:10],
+            row_number_column_alignment = :r,
+            row_number_column_label     = "Row",
+            show_row_number_column      = true,
+            stubhead_label              = "Name",
+            style                       = style,
+            tf                          = tf,
+            title                       = "Test table",
+            title_alignment             = :l,
+            vertical_crop_mode          = :middle,
+        )
 
         # -- HTML --------------------------------------------------------------------------
 
