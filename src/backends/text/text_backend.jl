@@ -28,6 +28,7 @@ function _text__print_table(
     highlighters::Vector{TextHighlighter} = _DEFAULT_TEXT_HIGHLIGHTER,
     line_breaks::Bool = false,
     maximum_data_column_widths::Union{Number, Vector{Int}} = 0,
+    reserved_display_lines::Int = 0,
     style::TextTableStyle = TextTableStyle(),
     tf::TextTableFormat = TextTableFormat(),
 )
@@ -51,6 +52,11 @@ function _text__print_table(
     # -1, meaning that we do not have a limit.
     if !fit_table_in_display_vertically
         display_size = (-1, display_size[2])
+    end
+
+    # If the user wants to reserve some display lines, remove them from the display size.
+    if (reserved_display_lines > 0) && (display_size[1] > reserved_display_lines)
+        display_size = (display_size[1] - reserved_display_lines, display_size[2])
     end
 
     # Create the structure that holds the display information.
@@ -324,7 +330,11 @@ function _text__print_table(
         num_remaining_columns = display_size[2] - table_width_wo_cont_col
 
         horizontally_limited_by_display =
-            num_remaining_columns < (3 + tf.vertical_line_after_continuation_column)
+            if (num_remaining_columns == 0) && (num_printed_data_columns == table_data.num_columns)
+                false
+            else
+                num_remaining_columns < (3 + tf.vertical_line_after_continuation_column)
+            end
     end
 
     # If we are limited by the display, we need to update the number of printed columns and
@@ -996,7 +1006,7 @@ function _text__print_table(
             end
 
             # We need to manually align the string by adding left and right padding.
-            @show printable_cell = !line_breaks ? table_str[ir, jr] : string(tokens[jr][current_row_line])
+            printable_cell = !line_breaks ? table_str[ir, jr] : string(tokens[jr][current_row_line])
             tw = textwidth(printable_cell)
 
             if tw > cell_width
