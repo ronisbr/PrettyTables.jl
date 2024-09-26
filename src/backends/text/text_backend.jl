@@ -977,14 +977,14 @@ function _text__print_table(
             cell_width = printed_data_column_widths[jr]
 
             # We need to manually align the string by adding left and right padding.
-            printable_cell = table_str[ir, jr]
+            printable_cell = !line_breaks ? table_str[ir, jr] : string(tokens[jr][current_row_line])
             tw = textwidth(printable_cell)
 
             if alignment == :r
                 Δ = cell_width - tw
                 CustomTextCell.left_padding!(cell, Δ)
             elseif alignment == :c
-                Δ = div(cell_width - tw, 2)
+                Δ = div(cell_width - tw, 2, RoundUp)
                 CustomTextCell.left_padding!(cell, Δ)
                 CustomTextCell.right_padding!(cell, cell_width - tw - Δ)
             end
