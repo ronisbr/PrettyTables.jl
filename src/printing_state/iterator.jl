@@ -52,6 +52,11 @@ function _next(state::PrintingTableState, table_data::TableData)
     if ps < _NEW_ROW
         new_i = i + 1
 
+        # If we are started the column labels but the user does not want to show them, we
+        # must skip to the data section.
+        (rs == :column_labels) && !table_data.show_column_labels &&
+            return _next(PrintingTableState(_NEW_ROW - 1, 0, 0, :data), table_data)
+
         # Check if we are starting a row group label.
         if (rs == :data) && !isnothing(table_data.row_group_labels)
             for g in table_data.row_group_labels
@@ -146,7 +151,7 @@ function _next(state::PrintingTableState, table_data::TableData)
                 (max_i == 0) &&
                     return :end_row, rs, PrintingTableState(_END_ROW, 0, 0, :table_footer)
 
-                # If we reached the number of column labels, we must go to the data.
+        # If we reached the number of column labels, we must go to the data.
                 return :end_row, rs, PrintingTableState(_NEW_ROW - 1, 0, 0, :data)
             else
                 # Otherwise, print the next line with column labels.

@@ -99,6 +99,7 @@ const _UNDEFINED_CELL = UndefinedCell()
     show_row_number_column::Bool = false
     row_number_column_label::String = ""
     column_labels::Vector{Vector{Any}}
+    show_column_labels::Bool = true
 
     # -- Rows ------------------------------------------------------------------------------
 

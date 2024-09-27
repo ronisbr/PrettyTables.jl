@@ -1,5 +1,6 @@
 ## Description #############################################################################
 #
+using Base: heads
 # Markdown back end for PrettyTables.jl.
 #
 ############################################################################################
@@ -37,7 +38,11 @@ function _markdown__print(
     # the required column width.
 
     # Let's allocate all the sections.
-    column_labels = Matrix{String}(undef, num_column_label_lines, num_printed_data_columns)
+    column_labels = if table_data.show_column_labels
+        Matrix{String}(undef, num_column_label_lines, num_printed_data_columns)
+    else
+        nothing
+    end
 
     row_labels = if _has_row_labels(table_data)
         Vector{String}(undef, num_printed_data_rows)
@@ -93,7 +98,7 @@ function _markdown__print(
             end
         end
 
-        if action == :column_label
+        if table_data.show_column_labels && (action == :column_label)
             # Apply the style to the column label.
             rendered_cell = _markdown__apply_style(
                 ir == 1 ? style.first_column_label : style.column_label,
@@ -138,10 +143,12 @@ function _markdown__print(
 
     # We now must unify the column labels into one cell because Markdown does not support
     # headers with multiple lines.
-    for j in last(axes(column_labels))
-        for i in first(axes(column_labels))
-            i == first(first(axes(column_labels))) && continue
-            column_labels[1, j] *= "<br>" * column_labels[i, j]
+    if !isnothing(column_labels)
+        for j in last(axes(column_labels))
+            for i in first(axes(column_labels))
+                i == first(first(axes(column_labels))) && continue
+                column_labels[1, j] *= "<br>" * column_labels[i, j]
+            end
         end
     end
 
@@ -191,7 +198,11 @@ function _markdown__print(
     end
 
     @views for j in last(axes(table_str))
-        m = maximum(textwidth, column_labels[:, j])
+        m = if !isnothing(column_labels)
+            maximum(textwidth, column_labels[:, j])
+        else
+            0
+        end
 
         if num_printed_data_rows > 0
             m = max(maximum(textwidth, table_str[:, j]), m)
@@ -289,6 +300,18 @@ function _markdown__print(
         end
 
         if action == :new_row
+            # In case we do not have column labels, we must at least print the header line.
+            if !header_printed && (rs == :data)
+                _markdown__print_header_separator(
+                    buf,
+                    table_data,
+                    row_number_column_width,
+                    row_label_column_width,
+                    printed_data_column_widths
+                )
+                header_printed = true
+            end
+
             print(buf, "|")
 
         elseif action == :diagonal_continuation_cell
