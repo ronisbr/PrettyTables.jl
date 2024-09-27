@@ -37,7 +37,11 @@ function _text__render_table(
     num_footnotes            = _has_footnotes(table_data) ? length(table_data.footnotes) : 0
 
     # Let's allocate all the sections.
-    column_labels = Matrix{String}(undef, num_column_label_lines, num_printed_data_columns)
+    column_labels = if table_data.show_column_labels
+        Matrix{String}(undef, num_column_label_lines, num_printed_data_columns)
+    else
+        nothing
+    end
 
     row_labels = _has_row_labels(table_data) ?
         Vector{String}(undef, num_printed_data_rows) :
@@ -90,7 +94,7 @@ function _text__render_table(
             end
         end
 
-        if (action == :column_label)
+        if !isnothing(column_labels) && (action == :column_label)
             column_labels[ir, jr] = rendered_cell
 
         elseif (action == :data)

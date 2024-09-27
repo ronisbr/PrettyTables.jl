@@ -71,7 +71,7 @@ function _text__fix_data_column_widths!(
 end
 
 """
-    _text__printed_column_widths(table_data::TableData, row_labels::Union{Nothing, Vector{String}}, column_labels::Matrix{String}, summary_rows::Union{Nothing, Vector{String}}, table_str::Matrix{String}, right_vertical_lines_at_data_columns::AbstractVector{Int}, column_label_width_based_on_first_line_only::Bool, line_breaks::Bool) -> Int, Int, Vector{Int}
+    _text__printed_column_widths(table_data::TableData, row_labels::Union{Nothing, Vector{String}}, column_labels::Union{Nothing, Matrix{String}}, summary_rows::Union{Nothing, Matrix{String}}, table_str::Matrix{String}, right_vertical_lines_at_data_columns::AbstractVector{Int}, column_label_width_based_on_first_line_only::Bool, line_breaks::Bool)
 
 Compute the printed column widths.
 
@@ -79,7 +79,7 @@ Compute the printed column widths.
 
 - `table_data::TableData`: Table data.
 - `row_labels::Union{Nothing, Vector{String}}`: Rendered row labels.
-- `column_labels::Matrix{String}`: Rendered column labels.
+- `column_labels::Union{Nothing, Matrix{String}}`: Rendered column labels.
 - `summary_rows::Union{Nothing, Vector{String}}`: Rendered summary rows.
 - `table_str::Matrix{String}`: Rendered data cells.
 - `right_vertical_lines_at_data_columns::AbstractVector{Int}`: Location of the right
@@ -98,7 +98,7 @@ Compute the printed column widths.
 function _text__printed_column_widths(
     table_data::TableData,
     row_labels::Union{Nothing, Vector{String}},
-    column_labels::Matrix{String},
+    column_labels::Union{Nothing, Matrix{String}},
     summary_rows::Union{Nothing, Matrix{String}},
     table_str::Matrix{String},
     right_vertical_lines_at_data_columns::AbstractVector{Int},
@@ -139,20 +139,25 @@ function _text__printed_column_widths(
     @views for j in last(axes(table_str))
         m = 0
 
-        for i in first(axes(column_labels))
-            # If the user wants to crop the additional column labels, we must consider only the
-            # first one here when computing the column width.
-            (column_label_width_based_on_first_line_only && (i > 1)) && break
+        if !isnothing(column_labels)
+            for i in first(axes(column_labels))
+                !table_data.show_column_labels && break
 
-            # At first, we must neglect all the column label merged cells. Its width will be
-            # taken into account at a latter stage.
-            #
-            # Notice that the function `_is_column_label_cell_merged` returns `true` only if
-            # `(i, j)` is in the middle of the merged cell. Since a merged cell spans at
-            # least two columns, if is sufficient to check if `j + 1` is in the merged cell.
-            # At the left most merged column, we are in a `_IGNORE_CELL` that has 0 width.
-            if !_is_column_label_cell_merged(table_data, i, j + 1)
-                m = max(m, textwidth(column_labels[i, j]))
+                # If the user wants to crop the additional column labels, we must consider
+                # only the first one here when computing the column width.
+                (column_label_width_based_on_first_line_only && (i > 1)) && break
+
+                # At first, we must neglect all the column label merged cells. Its width
+                # will be taken into account at a latter stage.
+                #
+                # Notice that the function `_is_column_label_cell_merged` returns `true`
+                # only if `(i, j)` is in the middle of the merged cell. Since a merged cell
+                # spans at least two columns, if is sufficient to check if `j + 1` is in the
+                # merged cell. At the left most merged column, we are in a `_IGNORE_CELL`
+                # that has 0 width.
+                if !_is_column_label_cell_merged(table_data, i, j + 1)
+                    m = max(m, textwidth(column_labels[i, j]))
+                end
             end
         end
 
