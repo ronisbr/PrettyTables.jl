@@ -1,4 +1,3 @@
-## Description #############################################################################
 #
 # Functions to compute the printed column widths.
 #
@@ -17,6 +16,9 @@ at the data columns to fit the fixed width.
 - `table_str::Matrix{String}`: Rendered data cells.
 - `summary_rows::Union{Nothing, Matrix{String}}`: Summary rows.
 - `fixed_data_column_widths::AbstractVector{Int}`: Fixed data column widths.
+- `auto_wrap::Bool`: If `true`, the strings will be auto wrapped at each column with a fixed
+    width.
+- `line_breaks::Bool`: If `true`, the cells will be split into multiple lines if needed.
 """
 function _text__fix_data_column_widths!(
     printed_data_column_widths::Vector{Int},
@@ -24,12 +26,19 @@ function _text__fix_data_column_widths!(
     table_str::Matrix{String},
     summary_rows::Union{Nothing, Matrix{String}},
     fixed_data_column_widths::AbstractVector{Int},
+    auto_wrap::Bool,
     line_breaks::Bool
 )
     for j in eachindex(printed_data_column_widths)
         fcw = fixed_data_column_widths[j - 1 + begin]
         (fcw < 0) && continue
         printed_data_column_widths[j] = fixed_data_column_widths[j - 1 + begin]
+
+        if auto_wrap
+            for i in axes(table_str, 1)
+                table_str[i, j] = _auto_wrap(table_str[i, j], printed_data_column_widths[j])
+            end
+        end
     end
 
     for table in (column_labels, table_str, summary_rows)

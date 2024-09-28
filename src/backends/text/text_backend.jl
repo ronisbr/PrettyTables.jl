@@ -19,6 +19,7 @@ function _text__print_table(
     pspec::PrintingSpec;
     alignment_anchor_fallback::Symbol = :l,
     alignment_anchor_regex::Union{Vector{Regex}, Vector{Pair{Int, Vector{Regex}}}} = _DEFAULT_ALIGNMENT_ANCHOR_REGEX,
+    auto_wrap::Bool = false,
     column_label_width_based_on_first_line_only::Bool = false,
     display_size::NTuple{2, Int} = displaysize(pspec.context),
     equal_data_column_widths::Bool = false,
@@ -41,6 +42,11 @@ function _text__print_table(
     buf    = IOContext(buf_io, context)
 
     # == Process Input Variables ===========================================================
+
+    # Auto wrap implies line breaks.
+    if auto_wrap
+        line_breaks = true
+    end
 
     # If the user does not want to crop the table horizontally, we set the display width to
     # -1, meaning that we do not have a limit.
@@ -285,6 +291,7 @@ function _text__print_table(
         table_str,
         summary_rows,
         fixed_data_column_widths,
+        auto_wrap,
         line_breaks
     )
 

@@ -326,11 +326,11 @@ function _align_multline_column_with_regex!(
 end
 
 """
-    _autowrap(str::AbstractString, field_width::Int) -> String
+    _auto_wrap(str::AbstractString, field_width::Int) -> String
 
 Autowrap the string `str` given a `field_width`.
 """
-function _autowrap(str::AbstractString, field_width::Int)
+function _auto_wrap(str::AbstractString, field_width::Int)
     # Check for errors.
     (field_width <= 0) && throw(ArgumentError("`field_width` must be greater than 0."))
 
@@ -347,54 +347,55 @@ function _autowrap(str::AbstractString, field_width::Int)
 
     for c in str
         state = StringManipulation._next_string_state(c, state)
+        ctw = textwidth(c)
 
-        # If we have a line break, we should reset all the algorithm processing because we
-        # are at a new line.
-        if c == '\n'
-            println(buf, String(take!(line_buf)))
+        if state != :text
+            write(line_buf, c)
+            c_id += ncodeunits(c)
+            continue
+        end
+
+        line_overflow = line_width + ctw > field_width
+
+        @views if (c == '\n') || (line_overflow && ((last_space == 0) || (c == ' ')))
+            # If the characer is a line break, if we have a line overflow and we do not have
+            # any space in this line, or if we have a line overflow and this character is a
+            # space, we only flush the current line buffer to the output buffer.
+            write(buf, take!(line_buf))
+            write(buf, '\n')
+
             c_id       = 0
             line_width = 0
             last_space = 0
-            continue
+
+            (c ∈ (' ', '\n')) && continue
+
+        elseif line_overflow
+            line = take!(line_buf)
+
+            # If we have a last space in this line, break the line at that position, and
+            # move the rest to another line.
+            l₀ = line[1:last_space - 1]
+            l₁ = line[last_space + 1:end]
+
+            write(buf, l₀)
+            write(buf, '\n')
+            write(line_buf, l₁)
+
+            c_id       = length(l₁)
+            line_width = lw_after_space
+            last_space = 0
         end
 
         write(line_buf, c)
         c_id += ncodeunits(c)
 
-        # We only want to process text (printable) characters.
-        state != :text && continue
-
-        ctw            =  textwidth(c)
-        lw_after_space += ctw
         line_width     += textwidth(c)
+        lw_after_space += ctw
 
         if c == ' '
             last_space     = c_id
             lw_after_space = 0
-        end
-
-        if line_width >= field_width
-            line = take!(line_buf)
-
-            # If we have a last space in this line, break the line at that position, and
-            # move the rest to another line.
-            if last_space > 0
-                write(buf, line[1:last_space - 1])
-                write(buf, '\n')
-                write(line_buf, line[last_space + 1:end])
-
-                c_id       = 0
-                line_width = lw_after_space
-                last_space = 0
-
-                continue
-            end
-
-            # Otherwise, we do not have a space to break the string. Hence, just print it.
-            write(buf, line)
-            c_id       = 0
-            line       = ""
-            line_width = 0
         end
     end
 
