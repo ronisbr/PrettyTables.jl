@@ -326,6 +326,85 @@ function _align_multline_column_with_regex!(
 end
 
 """
+    _autowrap(str::AbstractString, field_width::Int) -> String
+
+Autowrap the string `str` given a `field_width`.
+"""
+function _autowrap(str::AbstractString, field_width::Int)
+    # Check for errors.
+    (field_width <= 0) && throw(ArgumentError("`field_width` must be greater than 0."))
+
+    # Buffers.
+    buf      = IOBuffer(sizehint = length(str)) # .......... Buffer to store the entire text
+    line_buf = IOBuffer(sizehint = length(str)) # ......... Buffer to store the current line
+
+    # Auxiliary variables.
+    state          = :text # .................................................. String state
+    c_id           = 0     # ................................... ID of the current character
+    line_width     = 0     # .................................... Total line printable width
+    last_space     = 0     # ................................ ID of the last space character
+    lw_after_space = 0     # ..................... Line width after the last space character
+
+    for c in str
+        state = StringManipulation._next_string_state(c, state)
+
+        # If we have a line break, we should reset all the algorithm processing because we
+        # are at a new line.
+        if c == '\n'
+            println(buf, String(take!(line_buf)))
+            c_id       = 0
+            line_width = 0
+            last_space = 0
+            continue
+        end
+
+        write(line_buf, c)
+        c_id += ncodeunits(c)
+
+        # We only want to process text (printable) characters.
+        state != :text && continue
+
+        ctw            =  textwidth(c)
+        lw_after_space += ctw
+        line_width     += textwidth(c)
+
+        if c == ' '
+            last_space     = c_id
+            lw_after_space = 0
+        end
+
+        if line_width >= field_width
+            line = take!(line_buf)
+
+            # If we have a last space in this line, break the line at that position, and
+            # move the rest to another line.
+            if last_space > 0
+                write(buf, line[1:last_space - 1])
+                write(buf, '\n')
+                write(line_buf, line[last_space + 1:end])
+
+                c_id       = 0
+                line_width = lw_after_space
+                last_space = 0
+
+                continue
+            end
+
+            # Otherwise, we do not have a space to break the string. Hence, just print it.
+            write(buf, line)
+            c_id       = 0
+            line       = ""
+            line_width = 0
+        end
+    end
+
+    # Flush the rest of the line.
+    write(buf, take!(line_buf))
+
+    return String(take!(buf))
+end
+
+"""
     _compact_type_str(T) -> String
 
 Return a string with a compact representation of type `T`.
