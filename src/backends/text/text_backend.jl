@@ -29,6 +29,7 @@ function _text__print_table(
     highlighters::Vector{TextHighlighter} = _DEFAULT_TEXT_HIGHLIGHTER,
     line_breaks::Bool = false,
     maximum_data_column_widths::Union{Number, Vector{Int}} = 0,
+    overwrite_display::Bool = false,
     reserved_display_lines::Int = 0,
     style::TextTableStyle = TextTableStyle(),
     tf::TextTableFormat = TextTableFormat(),
@@ -1141,6 +1142,11 @@ function _text__print_table(
 
     if !tf.new_line_at_end
         output_str = chomp(output_str)
+    end
+
+    if overwrite_display
+        num_new_lines = max(count(==('\n'), output_str), 0)
+        print(context, "\e[1F\e[2K"^num_new_lines)
     end
 
     print(context, output_str)
