@@ -137,8 +137,7 @@ function _text__print_table(
             mc = 1
 
             for j in eachindex(fixed_data_column_widths)
-                fixed_data_column_widths[j] < 0 && continue
-                aux += fixed_data_column_widths[j]
+                aux += fixed_data_column_widths[j] < 0 ? 5 : fixed_data_column_widths[j]
                 aux > display.size[2] && break
                 mc += 1
             end
