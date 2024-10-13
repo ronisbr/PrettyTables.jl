@@ -5,6 +5,13 @@ using Reexport
 using StringManipulation
 using Tables
 
+# We add REPL.jl as dependency only to decrese the enormous precompilation time observed
+# after Julia 1.11. For more information, check:
+#
+#   https://github.com/JuliaLang/julia/issues/56080
+#
+using REPL
+
 @reexport using Crayons
 
 import Base: @kwdef, axes, getindex
