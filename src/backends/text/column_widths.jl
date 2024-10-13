@@ -51,7 +51,7 @@ function _text__fix_data_column_widths!(
                 str = table[i, j]
 
                 if !line_breaks
-                    tw = textwidth(str)
+                    tw = printable_textwidth(str)
                     tw <= cw && continue
 
                     str = first(right_crop(str, tw - cw + 1))
@@ -62,7 +62,7 @@ function _text__fix_data_column_widths!(
 
                     for l in eachindex(tokens)
                         line = tokens[l]
-                        tw   = textwidth(line)
+                        tw   = printable_textwidth(line)
                         tw <= cw && continue
 
                         line  = first(right_crop(line, tw - cw + 1))
@@ -126,19 +126,19 @@ function _text__printed_column_widths(
             table_data.num_rows
 
         row_number_column_width = max(
-            textwidth(table_data.row_number_column_label),
+            printable_textwidth(table_data.row_number_column_label),
             floor(Int, log10(m) + 1)
         )
     end
 
     if !isnothing(row_labels)
         row_label_column_width = max(
-            textwidth(table_data.stubhead_label),
+            printable_textwidth(table_data.stubhead_label),
 
-            num_printed_data_rows > 0 ? maximum(textwidth, row_labels) : 0,
+            num_printed_data_rows > 0 ? maximum(printable_textwidth, row_labels) : 0,
 
             if _has_summary_rows(table_data)
-                maximum(textwidth, table_data.summary_row_labels)
+                maximum(printable_textwidth, table_data.summary_row_labels)
             else
                 0
             end
@@ -165,14 +165,14 @@ function _text__printed_column_widths(
                 # merged cell. At the left most merged column, we are in a `_IGNORE_CELL`
                 # that has 0 width.
                 if !_is_column_label_cell_merged(table_data, i, j + 1)
-                    m = max(m, textwidth(column_labels[i, j]))
+                    m = max(m, printable_textwidth(column_labels[i, j]))
                 end
             end
         end
 
         if num_printed_data_rows > 0
             if !line_breaks
-                m = max(maximum(textwidth, table_str[:, j]), m)
+                m = max(maximum(printable_textwidth, table_str[:, j]), m)
             else
                 for cell in table_str[:, j]
                     m = max(m, _maximum_textwidth_per_line(cell))
@@ -180,7 +180,7 @@ function _text__printed_column_widths(
             end
 
             if _has_summary_rows(table_data)
-                m = max(maximum(textwidth, summary_rows[:, j]), m)
+                m = max(maximum(printable_textwidth, summary_rows[:, j]), m)
             end
         end
 
@@ -205,7 +205,7 @@ function _text__printed_column_widths(
                 end
             end
 
-            mctw = textwidth(column_labels[mc.i, mc.j])
+            mctw = printable_textwidth(column_labels[mc.i, mc.j])
 
             if mctw > total_width
                 Δ = div(mctw - total_width, j₁ - j₀ + 1, RoundUp)

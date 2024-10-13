@@ -125,7 +125,7 @@ function _text__render_table(
                     summary_rows[ir, jr]
                 end
 
-                tw = textwidth(str)
+                tw = printable_textwidth(str)
 
                 if tw > mcw
                     str, _ = right_crop(str, tw - mcw + 1)

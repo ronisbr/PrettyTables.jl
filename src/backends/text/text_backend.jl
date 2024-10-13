@@ -273,7 +273,7 @@ function _text__print_table(
 
             for i in eachindex(cls)
                 str = cls[i]
-                tw  = textwidth(str)
+                tw  = printable_textwidth(str)
 
                 tw <= cw && continue
 
