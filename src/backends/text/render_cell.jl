@@ -19,15 +19,15 @@ function _text__cell_to_str(cell::Any, @nospecialize(context::IOContext), ::Val{
 end
 
 function _text__cell_to_str(cell::Any, @nospecialize(context::IOContext), ::Val{:show})
-    return sprint(show, cell; context)
+    return sprint(show, MIME("text/plain"), cell; context)
 end
 
 function _text__cell_to_str(
     cell::AbstractString,
-    @nospecialize(::IOContext),
+    @nospecialize(context::IOContext),
     ::Val{:show}
 )
-    return string(cell)
+    return sprint(print, cell; context)
 end
 
 function _text__cell_to_str(
@@ -91,4 +91,21 @@ function _text__render_cell(
     CustomTextCell.init!(cell, context, renderer; line_breaks)
 
     return CustomTextCell.printable_cell_text(cell)
+end
+
+@static if VERSION >= v"1.11"
+    function _text__render_cell(
+        cell::Base.AnnotatedString,
+        @nospecialize(context::IOContext),
+        renderer::Union{Val{:print}, Val{:show}},
+        line_breaks::Bool = false
+    )
+        cell_str = _text__cell_to_str(cell, context, renderer)
+
+        if !line_breaks
+            cell_str = replace(cell_str, '\n' => "\\n")
+        end
+
+        return cell_str
+    end
 end
