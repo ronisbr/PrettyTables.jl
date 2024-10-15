@@ -998,10 +998,13 @@ function _text__print_table(
             if cell isa AbstractCustomTextCell
                 cell_width = printed_data_column_widths[jr]
 
-                # If this is a fixed column, we must regenerate the printable cell text.
-                # Otherwise, we will have access to a cropped string and we will not be able
-                # to call the API functions to actually reduce the rendered string width.
-                if has_fixed_data_column_widths && (fixed_data_column_widths[jr] > 0)
+                # If the text on this cell must be cropped, we must regenerate the printable
+                # cell text. It can happen if we have a fixed data column width or an upper
+                # limit for the cell. Otherwise, we will have access to a cropped string and
+                # we will not be able to call the API functions to actually reduce the
+                # rendered string width.
+                if (maximum_data_column_widths[jr] <= cell_width) ||
+                    (has_fixed_data_column_widths && (fixed_data_column_widths[jr] > 0))
                     if !line_breaks || (current_row_line == 1)
                         table_str[ir, jr] = CustomTextCell.printable_cell_text(cell)
 
@@ -1024,7 +1027,7 @@ function _text__print_table(
                     end
                 end
 
-                tw = textwidth(printable_cell)
+                tw = printable_textwidth(printable_cell)
 
                 if tw > cell_width
                     CustomTextCell.crop!(cell, tw - cell_width + 1)
