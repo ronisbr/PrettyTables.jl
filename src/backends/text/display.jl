@@ -59,7 +59,7 @@ function _text__flush_line(
                 printable_string_width = str_width
             )
 
-            line = cropped_str * cont_str * convert(String, parse_decoration(ansi))
+            line = cropped_str * convert(String, parse_decoration(ansi)) * cont_str
         end
     end
 
