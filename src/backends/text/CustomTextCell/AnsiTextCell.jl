@@ -27,6 +27,14 @@ mutable struct AnsiTextCell <: AbstractCustomTextCell
     function AnsiTextCell(content::String)
         return new(content, 0, 0, 0, "", false, nothing, nothing)
     end
+
+    function AnsiTextCell(renderfn::Function; context::Tuple = ())
+        # Render the text and create the text cell.
+        io = IOBuffer()
+        renderfn(IOContext(io, context...))
+        rendered = String(take!(io))
+        return AnsiTextCell(rendered)
+    end
 end
 
 ############################################################################################
