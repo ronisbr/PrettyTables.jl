@@ -5,6 +5,154 @@
 ############################################################################################
 
 @testset "Custom Cells" verbose = true begin
+    @testset "AnsiTextCell" begin
+        b = crayon"blue bold"
+        y = crayon"yellow bold"
+        g = crayon"green bold"
+        r = crayon"reset"
+
+        # == From Strings ==================================================================
+
+        ansi_table = [
+            AnsiTextCell("$(g)This $(y)is $(b)awesome!")
+            AnsiTextCell("$(g)😃😃 $(y)is $(b)awesome!")
+            AnsiTextCell("$(g)σ𝛕θ⍺ $(y)is $(b)awesome!")
+        ]
+
+        # -- No Crop -----------------------------------------------------------------------
+
+        expected = """
+┌──────────────────┐
+│           Col. 1 │
+├──────────────────┤
+│ \e[32;1mThis \e[33;1mis \e[34;1mawesome!\e[0m │
+│ \e[32;1m😃😃 \e[33;1mis \e[34;1mawesome!\e[0m │
+│ \e[32;1mσ𝛕θ⍺ \e[33;1mis \e[34;1mawesome!\e[0m │
+└──────────────────┘
+"""
+
+        result = pretty_table(String, ansi_table)
+
+        @test result == expected
+
+        # -- Cropping ----------------------------------------------------------------------
+
+        expected = """
+┌──────────┐
+│   Col. 1 │
+├──────────┤
+│ \e[32;1mThis \e[33;1mis…\e[0m │
+│ \e[32;1m😃😃 \e[33;1mis…\e[0m │
+│ \e[32;1mσ𝛕θ⍺ \e[33;1mis…\e[0m │
+└──────────┘
+"""
+
+        result = pretty_table(String, ansi_table, maximum_data_column_widths = 8)
+        @test result == expected
+
+        expected = """
+┌─────────
+│        ⋯
+├─────────
+│ \e[32;1mThis \e[33;1mi\e[0m ⋯
+│ \e[32;1m😃😃 \e[33;1mi\e[0m ⋯
+│ \e[32;1mσ𝛕θ⍺ \e[33;1mi\e[0m ⋯
+└─────────
+1 column omitted
+"""
+
+        result = pretty_table(String, ansi_table, display_size = (-1, 10))
+        @test result == expected
+
+        # == From Functions ================================================================
+
+        function f(io)
+            b = crayon"blue bold"
+            y = crayon"yellow bold"
+            g = crayon"green bold"
+            print(io, "$(g)This $(y)is $(b)awesome!")
+            return nothing
+        end
+
+        ansi_table = [
+            AnsiTextCell(f, context = (:color => true,))
+            AnsiTextCell(f, context = (:color => true,))
+            AnsiTextCell(f, context = (:color => true,))
+        ]
+
+        # -- No Crop -----------------------------------------------------------------------
+
+        expected = """
+┌──────────────────┐
+│           Col. 1 │
+├──────────────────┤
+│ \e[32;1mThis \e[33;1mis \e[34;1mawesome!\e[0m │
+│ \e[32;1mThis \e[33;1mis \e[34;1mawesome!\e[0m │
+│ \e[32;1mThis \e[33;1mis \e[34;1mawesome!\e[0m │
+└──────────────────┘
+"""
+
+        result = pretty_table(String, ansi_table)
+
+        @test result == expected
+
+        # -- Cropping ----------------------------------------------------------------------
+
+        expected = """
+┌──────────┐
+│   Col. 1 │
+├──────────┤
+│ \e[32;1mThis \e[33;1mis…\e[0m │
+│ \e[32;1mThis \e[33;1mis…\e[0m │
+│ \e[32;1mThis \e[33;1mis…\e[0m │
+└──────────┘
+"""
+
+        result = pretty_table(String, ansi_table, maximum_data_column_widths = 8)
+        @test result == expected
+
+        expected = """
+┌─────────
+│        ⋯
+├─────────
+│ \e[32;1mThis \e[33;1mi\e[0m ⋯
+│ \e[32;1mThis \e[33;1mi\e[0m ⋯
+│ \e[32;1mThis \e[33;1mi\e[0m ⋯
+└─────────
+1 column omitted
+"""
+
+        result = pretty_table(String, ansi_table, display_size = (-1, 10))
+        @test result == expected
+
+        # -- Newlines ----------------------------------------------------------------------
+
+        ansi_table = [
+            AnsiTextCell("$(g)This$(r)\n$(y)is\n$(b)awesome!")
+            AnsiTextCell("$(g)😃😃\n$(y)is\n$(b)awesome!")
+            AnsiTextCell("$(g)σ𝛕θ⍺\n$(y)is\n$(b)awesome!")
+        ]
+
+        expected = """
+┌──────────┐
+│   Col. 1 │
+├──────────┤
+│     \e[32;1mThis\e[0m │
+│       \e[33;1mis\e[0m │
+│ \e[33m\e[1m\e[34;1mawesome!\e[0m │
+│     \e[32;1m😃😃\e[0m │
+│ \e[32m\e[1m      \e[33;1mis\e[0m │
+│ \e[33m\e[1m\e[34;1mawesome!\e[0m │
+│     \e[32;1mσ𝛕θ⍺\e[0m │
+│ \e[32m\e[1m      \e[33;1mis\e[0m │
+│ \e[33m\e[1m\e[34;1mawesome!\e[0m │
+└──────────┘
+"""
+
+        result = pretty_table(String, ansi_table; line_breaks = true)
+        @test result == expected
+    end
+
     @testset "UrlTextCell" begin
         table = [
             1 "Ronan Arraes Jardim Chagas" UrlTextCell("Ronan Arraes Jardim Chagas", "https://ronanarraes.com")
@@ -122,10 +270,10 @@
 ┌────────┬────────────────────────────┬───────────
 │ Col. 1 │                     Col. 2 │          ⋯
 ├────────┼────────────────────────────┼───────────
-│      1 │ Ronan Arraes Jardim Chagas │ \e]8;;https://ronanarraes.com\e\\         ⋯\e]8;;\e\\
-│      2 │                     Google │ \e]8;;https://google.com\e\\         ⋯\e]8;;\e\\
-│      3 │                      Apple │ \e]8;;https://apple.com\e\\         ⋯\e]8;;\e\\
-│      4 │                    Emojis! │ \e]8;;https://emojipedia.org/github/\e\\😃😃😃😃 ⋯\e]8;;\e\\
+│      1 │ Ronan Arraes Jardim Chagas │ \e]8;;https://ronanarraes.com\e\\        \e]8;;\e\\ ⋯
+│      2 │                     Google │ \e]8;;https://google.com\e\\        \e]8;;\e\\ ⋯
+│      3 │                      Apple │ \e]8;;https://apple.com\e\\        \e]8;;\e\\ ⋯
+│      4 │                    Emojis! │ \e]8;;https://emojipedia.org/github/\e\\😃😃😃😃\e]8;;\e\\ ⋯
 └────────┴────────────────────────────┴───────────
                                   1 column omitted
 """
@@ -141,10 +289,10 @@
 ┌────────┬────────────────────────────┬───────────
 │ Col. 1 │ Col. 2                     │ Col. 3   ⋯
 ├────────┼────────────────────────────┼───────────
-│ 1      │ Ronan Arraes Jardim Chagas │ \e]8;;https://ronanarraes.com\e\\Ronan Ar ⋯\e]8;;\e\\
-│ 2      │ Google                     │ \e]8;;https://google.com\e\\Google   ⋯\e]8;;\e\\
-│ 3      │ Apple                      │ \e]8;;https://apple.com\e\\Apple    ⋯\e]8;;\e\\
-│ 4      │ Emojis!                    │ \e]8;;https://emojipedia.org/github/\e\\😃😃😃😃 ⋯\e]8;;\e\\
+│ 1      │ Ronan Arraes Jardim Chagas │ \e]8;;https://ronanarraes.com\e\\Ronan Ar\e]8;;\e\\ ⋯
+│ 2      │ Google                     │ \e]8;;https://google.com\e\\Google  \e]8;;\e\\ ⋯
+│ 3      │ Apple                      │ \e]8;;https://apple.com\e\\Apple   \e]8;;\e\\ ⋯
+│ 4      │ Emojis!                    │ \e]8;;https://emojipedia.org/github/\e\\😃😃😃😃\e]8;;\e\\ ⋯
 └────────┴────────────────────────────┴───────────
                                   1 column omitted
 """
@@ -161,10 +309,10 @@
 ┌────────┬────────────────────────────┬───
 │ Col. 1 │ Col. 2                     │  ⋯
 ├────────┼────────────────────────────┼───
-│ 1      │ Ronan Arraes Jardim Chagas │  ⋯\e]8;;\e\\
-│ 2      │ Google                     │  ⋯\e]8;;\e\\
-│ 3      │ Apple                      │  ⋯\e]8;;\e\\
-│ 4      │ Emojis!                    │  ⋯\e]8;;\e\\
+│ 1      │ Ronan Arraes Jardim Chagas │ \e]8;;\e\\ ⋯
+│ 2      │ Google                     │ \e]8;;\e\\ ⋯
+│ 3      │ Apple                      │ \e]8;;\e\\ ⋯
+│ 4      │ Emojis!                    │ \e]8;;\e\\ ⋯
 └────────┴────────────────────────────┴───
                           1 column omitted
 """
@@ -181,10 +329,10 @@
 ┌────────┬────────────────────────────┬─────────
 │ Col. 1 │ Col. 2                     │ Col. 3 ⋯
 ├────────┼────────────────────────────┼─────────
-│ 1      │ Ronan Arraes Jardim Chagas │ \e]8;;https://ronanarraes.com\e\\Ronan  ⋯\e]8;;\e\\
-│ 2      │ Google                     │ \e]8;;https://google.com\e\\Google ⋯\e]8;;\e\\
-│ 3      │ Apple                      │ \e]8;;https://apple.com\e\\Apple  ⋯\e]8;;\e\\
-│ 4      │ Emojis!                    │ \e]8;;https://emojipedia.org/github/\e\\😃😃😃 ⋯\e]8;;\e\\
+│ 1      │ Ronan Arraes Jardim Chagas │ \e]8;;https://ronanarraes.com\e\\Ronan \e]8;;\e\\ ⋯
+│ 2      │ Google                     │ \e]8;;https://google.com\e\\Google\e]8;;\e\\ ⋯
+│ 3      │ Apple                      │ \e]8;;https://apple.com\e\\Apple \e]8;;\e\\ ⋯
+│ 4      │ Emojis!                    │ \e]8;;https://emojipedia.org/github/\e\\😃😃😃\e]8;;\e\\ ⋯
 └────────┴────────────────────────────┴─────────
                                 1 column omitted
 """
