@@ -38,15 +38,29 @@ function _text__flush_line(
     line = String(take!(display.buf_line))
 
     if (dw > 0) && (display.column > dw)
-        line = fit_string_in_field(
+        str_width = printable_textwidth(line)
+
+        crop = crop_width_to_fit_string_in_field(
             line,
             dw;
             add_continuation_char,
             add_space_in_continuation_char = add_continuation_char,
             continuation_char,
-            crop_side = :right,
-            keep_escape_seq = true
+            printable_string_width = str_width
         )
+
+        if crop > 0
+            cont_str = add_continuation_char ? (" " * string(continuation_char)) : ""
+
+            cropped_str, ansi = right_crop(
+                line,
+                crop;
+                keep_escape_seq = true,
+                printable_string_width = str_width
+            )
+
+            line = cropped_str * cont_str * convert(String, parse_decoration(ansi))
+        end
     end
 
     println(display.buf, line)
