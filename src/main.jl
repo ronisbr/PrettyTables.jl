@@ -12,7 +12,7 @@ function pretty_table(@nospecialize(data::Any); kwargs...)
 end
 
 function pretty_table(::Type{String}, @nospecialize(data::Any); color::Bool = false, kwargs...)
-    io = IOContext(IOBuffer(), :color => color)
+    io = IOContext(IOBuffer(), :color => color, :displaysize =>  (-1, -1))
     pretty_table(io, data; kwargs...)
     return String(take!(io.io))
 end
