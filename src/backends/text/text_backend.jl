@@ -393,7 +393,7 @@ function _text__print_table(
     # line breaks. In this case, we will analyze each line and check how many data rows we
     # can print considering the multiple lines.
 
-    if fit_table_in_display_vertically && line_breaks
+    if fit_table_in_display_vertically && (display_size[1] > 0) && line_breaks
         # Notice that `mr` contains the number of fully printed data rows. Furthermore, if
         # `lrc` is `true`, the last row is cropped, meaning that we need to print `mr + 1`
         # rows from the rendered table.
@@ -994,70 +994,80 @@ function _text__print_table(
             decoration    = style.row_number
             rendered_cell = _text__render_cell(cell, buf, renderer)
 
-        elseif (action == :data) && (cell isa AbstractCustomTextCell)
-            cell_width = printed_data_column_widths[jr]
+        elseif action == :data
+            if cell isa AbstractCustomTextCell
+                cell_width = printed_data_column_widths[jr]
 
-            # If this is a fixed column, we must regenerate the printable cell text.
-            # Otherwise, we will have access to a cropped string and we will not be able to
-            # call the API functions to actually reduce the rendered string width.
-            if has_fixed_data_column_widths && (fixed_data_column_widths[jr] > 0)
-                if !line_breaks || (current_row_line == 1)
-                    table_str[ir, jr] = CustomTextCell.printable_cell_text(cell)
+                # If this is a fixed column, we must regenerate the printable cell text.
+                # Otherwise, we will have access to a cropped string and we will not be able
+                # to call the API functions to actually reduce the rendered string width.
+                if has_fixed_data_column_widths && (fixed_data_column_widths[jr] > 0)
+                    if !line_breaks || (current_row_line == 1)
+                        table_str[ir, jr] = CustomTextCell.printable_cell_text(cell)
 
-                    # Here, we have line breaks and we are in the first line. Hence, we must
-                    # regenerate the line tokens.
-                    if line_breaks
-                        tokens[jr] = split(table_str[ir, jr], '\n')
+                        # Here, we have line breaks and we are in the first line. Hence, we
+                        # must regenerate the line tokens.
+                        if line_breaks
+                            tokens[jr] = split(table_str[ir, jr], '\n')
+                        end
                     end
                 end
-            end
 
-            # We need to manually align the string by adding left and right padding.
-            printable_cell = !line_breaks ? table_str[ir, jr] : string(tokens[jr][current_row_line])
-            tw = textwidth(printable_cell)
-
-            if tw > cell_width
-                CustomTextCell.crop!(cell, tw - cell_width + 1)
-                CustomTextCell.add_sufix!(cell, "…")
-                CustomTextCell.left_padding!(cell, 0)
-                CustomTextCell.right_padding!(cell, 0)
-
-            elseif alignment == :r
-                Δ = cell_width - tw
-                CustomTextCell.left_padding!(cell, Δ)
-                CustomTextCell.right_padding!(cell, 0)
-
-            elseif alignment == :c
-                Δ = div(cell_width - tw, 2, RoundUp)
-                CustomTextCell.left_padding!(cell, Δ)
-                CustomTextCell.right_padding!(cell, cell_width - tw - Δ)
-
-            else
-                # We must add a right padding because the custom cell must fill the entire
-                # space, leading to a correct cell decoration.
-                Δ = cell_width - tw
-                CustomTextCell.left_padding!(cell, 0)
-                CustomTextCell.right_padding!(cell, Δ)
-            end
-
-            rendered_cell = if !line_breaks
-                CustomTextCell.rendered_cell(cell)
-            else
-                CustomTextCell.rendered_cell_line(cell, current_row_line)
-            end
-
-        elseif action == :data
-            cell_width    = printed_data_column_widths[jr]
-            rendered_cell = if line_breaks
-                tokens_jr = tokens[jr]
-
-                if current_row_line <= length(tokens_jr)
-                    string(tokens_jr[current_row_line])
+                # We need to manually align the string by adding left and right padding.
+                printable_cell = if !line_breaks
+                    table_str[ir, jr]
                 else
-                    ""
+                    if current_row_line <= length(tokens[jr])
+                        tokens[jr][current_row_line]
+                    else
+                        ""
+                    end
+                end
+
+                tw = textwidth(printable_cell)
+
+                if tw > cell_width
+                    CustomTextCell.crop!(cell, tw - cell_width + 1)
+                    CustomTextCell.add_sufix!(cell, "…")
+                    CustomTextCell.left_padding!(cell, 0)
+                    CustomTextCell.right_padding!(cell, 0)
+
+                elseif alignment == :r
+                    Δ = cell_width - tw
+                    CustomTextCell.left_padding!(cell, Δ)
+                    CustomTextCell.right_padding!(cell, 0)
+
+                elseif alignment == :c
+                    Δ = div(cell_width - tw, 2, RoundUp)
+                    CustomTextCell.left_padding!(cell, Δ)
+                    CustomTextCell.right_padding!(cell, cell_width - tw - Δ)
+
+                else
+                    # We must add a right padding because the custom cell must fill the
+                    # entire space, leading to a correct cell decoration.
+                    Δ = cell_width - tw
+                    CustomTextCell.left_padding!(cell, 0)
+                    CustomTextCell.right_padding!(cell, Δ)
+                end
+
+                rendered_cell = if !line_breaks
+                    CustomTextCell.rendered_cell(cell)
+                else
+                    CustomTextCell.rendered_cell_line(cell, current_row_line)
                 end
             else
-                table_str[ir, jr]
+                cell_width    = printed_data_column_widths[jr]
+                rendered_cell = if line_breaks
+                    tokens_jr = tokens[jr]
+
+                    if current_row_line <= length(tokens_jr)
+                        string(tokens_jr[current_row_line])
+                    else
+                        ""
+                    end
+                else
+                    table_str[ir, jr]
+                end
             end
 
             # Check if we must apply highlighters.
