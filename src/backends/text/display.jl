@@ -32,12 +32,13 @@ end
 function _text__flush_line(
     display::Display,
     add_continuation_char::Bool = true,
-    continuation_char::Char = '⋯'
+    continuation_char::Char = '⋯';
+    crop_line::Bool = true
 )
     dw   = display.size[2]
     line = String(take!(display.buf_line))
 
-    if (dw > 0) && (display.column > dw)
+    if crop_line && (dw > 0) && (display.column > dw)
         str_width = printable_textwidth(line)
 
         crop = crop_width_to_fit_string_in_field(
