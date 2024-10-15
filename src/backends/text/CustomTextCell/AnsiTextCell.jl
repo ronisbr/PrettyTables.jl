@@ -67,7 +67,9 @@ function CustomTextCell.init!(
 
         for line in lines
             push!(decorations, current_decoration)
-            current_decoration = update_decoration(current_decoration, line)
+            current_decoration = drop_inactive_properties(
+                update_decoration(current_decoration, line)
+            )
         end
 
         cell.decorations = decorations
