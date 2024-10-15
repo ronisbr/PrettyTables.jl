@@ -52,6 +52,7 @@ end
 @testset "Text Back End Test" verbose = true begin
     include("./backends/text/circular_reference.jl")
     include("./backends/text/cropping.jl")
+    include("./backends/text/custom_cells.jl")
     include("./backends/text/default.jl")
     include("./backends/text/full.jl")
     include("./backends/text/highlighters.jl")
