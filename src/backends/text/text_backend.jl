@@ -894,7 +894,7 @@ function _text__print_table(
                     style.omitted_cell_summary
                 )
 
-                _text__flush_line(display)
+                _text__flush_line(display; crop_line = false)
             end
 
             continue
