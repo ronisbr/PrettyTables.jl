@@ -23,7 +23,7 @@ Define the default highlighter of a table when using the HTML back end.
 - `f::Function`: Function with the signature `f(data, i, j)` in which should return `true`
     if the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
 - `fd::Function`: Function with the signature `f(h, data, i, j)` in which `h` is the
-    highlighter. This function must return a `Dict{String, String}` with properties
+    highlighter. This function must return a `Vector{Pair{String, String}}` with properties
     compatible with the `style` field that will be applied to the highlighted cell.
 - `_decoration::Dict{String, String}`: The decoration to be applied to the highlighted cell
     if the default `fd` is used.
