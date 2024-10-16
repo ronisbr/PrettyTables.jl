@@ -95,7 +95,7 @@ function _process_merge_column_label_specification(
                 continue
 
             elseif column isa EmptyCells
-                for _ in 1:column.column_span
+                for _ in 1:column.number_of_cells
                     push!(column_label_line, "")
                 end
 
