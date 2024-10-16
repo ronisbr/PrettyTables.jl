@@ -32,12 +32,14 @@ include("./types.jl")
 #                                         Includes                                         #
 ############################################################################################
 
+include("./documentation.jl")
 include("./main.jl")
 include("./misc.jl")
 include("./private.jl")
 include("./tables.jl")
 
 include("./backends/html/types.jl")
+include("./backends/html/documentation.jl")
 include("./backends/html/html_backend.jl")
 include("./backends/html/private.jl")
 include("./backends/html/render_cell.jl")
