@@ -16,17 +16,17 @@ Specification for adding a set of empty cells at the column label rows.
 
 # Fields
 
-- `column_span::Int`: Number of cells to add (must be greater than 0).
+- `number_of_cells::Int`: Number of cells to add (must be greater than 0).
 """
 struct EmptyCells
-    column_span::Int
+    number_of_cells::Int
 
-    function EmptyCells(column_span::Int)
-        column_span < 1 && throw(ArgumentError(
-            "The `column_span` of `EmptyCells` must be greater than 0."
+    function EmptyCells(number_of_cells::Int)
+        number_of_cells < 1 && throw(ArgumentError(
+            "The `number_of_cells` of `EmptyCells` must be greater than 0."
         ))
 
-        return new(column_span)
+        return new(number_of_cells)
     end
 end
 
