@@ -17,6 +17,18 @@ function pretty_table(::Type{String}, @nospecialize(data::Any); color::Bool = fa
     return String(take!(io.io))
 end
 
+function pretty_table(::Type{HTML}, @nospecialize(data::Any); kwargs...)
+    # If the keywords does not set the back end or the table format, use the HTML back end
+    # by default.
+    str = if !haskey(kwargs, :backend) && !haskey(kwargs, :tf)
+        pretty_table(String, data; backend = :html, kwargs...)
+    else
+        pretty_table(String, data; kwargs...)
+    end
+
+    return HTML(str)
+end
+
 # We declare this function with all the common keywords and after we call an internal
 # function where all those keywords are arguments. In this case, we can use `@nospecialize`
 # in the first two arguments. The other options would be wrap the keywords inside a
