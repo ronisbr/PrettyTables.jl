@@ -225,8 +225,8 @@ can be specified using a symbol: `:l` for left, `:c` for center, or `:r` for rig
 
 ### Other Arguments
 
-- `formatters::Union{Nothing, Vector{T} where T <: Any}`: Formatters used to modify the
-    rendered output of the cells. For more information, see the section **Formatters**.
+- `formatters::Union{Nothing, Vector{Function}}`: Formatters used to modify the rendered
+    output of the cells. For more information, see the section **Formatters**.
     (**Default**: `nothing`)
 - `maximum_number_of_columns::Int`: Maximum number of columns to be printed. If the table
     has more columns than this value, the table will be truncated. If it is negative, all
@@ -264,6 +264,8 @@ following methods:
     documentation, providing a better organization.
 
 ## Specification of Table Sections
+
+Here, we show how to specify the table sections using the keyword arguments.
 
 ### Column Labels
 
@@ -392,5 +394,40 @@ footnotes = [
 ```
 
 ## Formatters
+
+The keyword `formatters` can be used to pass functions to format the values in the columns.
+It must be a `Vector{Function}` in which each function has the following signature:
+
+    f(v, i, j)
+
+where `v` is the value in the cell, `i` is the row number, and `j` is the column number.
+It must return the formatted value of the cell `(i, j)` that has the value `v`. Notice
+that the returned value will be converted to string after using the function `sprint`.
+
+This keyword can also be `nothing`, meaning that no formatter will be used.
+
+For example, if we want to multiply all values in odd rows of the column 2 by π, the
+formatter should look like:
+
+```julia
+formatters = [(v, i, j) -> (j == 2 && isodd(i)) ? v * π : v]
+```
+
+If multiple formatters are available, they will be applied in the same order as they are
+located in the vector. Thus, for the following `formatters`:
+
+```julia
+formatters = [f1, f2, f3]
+```
+
+each element `v` in the table (`i`th row and `j`th column) will be formatted by:
+
+```julia
+v = f1(v, i, j)
+v = f2(v, i, j)
+v = f3(v, i, j)
+```
+
+Thus, the user must be ensure that the type of `v` between the calls are compatible.
 """
 pretty_table
