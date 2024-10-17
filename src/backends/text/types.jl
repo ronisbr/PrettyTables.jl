@@ -163,7 +163,6 @@ Define the format of the tables printed with the text back end.
     label.
 - `footnote_decoration::Crayon`: Crayon with the decoration for the footnotes.
 - `source_note_decoration::Crayon`: Crayon with the decoration for the source notes.
-- `merged_cell_decoration::Crayon`: Crayon with the decoration for the merged cells.
 - `omitted_cell_summary_decoration::Crayon`: Crayon with the decoration for the omitted
     cell summary.
 - `ellipsis_line_skip::Integer`: Number of lines to skip when printing an ellipsis.
@@ -220,7 +219,6 @@ Define the style of the tables printed with the text back end.
 - `summary_row_label::Crayon`: Crayon with the style for the summary row label.
 - `footnote::Crayon`: Crayon with the style for the footnotes.
 - `source_note::Crayon`: Crayon with the style for the source notes.
-- `merged_cell::Crayon`: Crayon with the style for the merged cells.
 - `omitted_cell_summary::Crayon`: Crayon with the style for the omitted cell summary.
 - `table_border::Crayon`: Crayon with the style for the table border.
 """
@@ -240,7 +238,6 @@ Define the style of the tables printed with the text back end.
     summary_row_label::Crayon              = _TEXT__BOLD
     footnote::Crayon                       = _TEXT__DEFAULT
     source_note::Crayon                    = _TEXT__DARK_GRAY
-    merged_cell::Crayon                    = _TEXT__BOLD
     omitted_cell_summary::Crayon           = _TEXT__CYAN
     table_border::Crayon                   = _TEXT__DEFAULT
 end
