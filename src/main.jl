@@ -78,10 +78,10 @@ function pretty_table(
     source_note_alignment::Symbol = :l,
     subtitle_alignment::Symbol = :c,
     title_alignment::Symbol = :c,
+    cell_alignment::Union{Nothing, Vector{Pair{NTuple{2, Int}, Symbol}}, Vector{Function}} = nothing,
 
     # == Other Configurations ==============================================================
 
-    cell_alignment::Union{Nothing, Vector{Pair{NTuple{2, Int}, Symbol}}, Vector{Function}} = nothing,
     formatters::Union{Nothing, Vector{T} where T <: Any} = nothing,
     maximum_number_of_columns::Int = -1,
     maximum_number_of_rows::Int = -1,

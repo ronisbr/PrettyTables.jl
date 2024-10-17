@@ -72,6 +72,49 @@ Source notes
 
 All those sections can be configured using keyword arguments as described below.
 
+## Quick Start
+
+The following commands prints the table in `matrix` using the text backend with all the
+available sections:
+
+```julia-repl
+julia> matrix = [(i, j) for i in 1:3, j in 1:3];
+
+julia> result = pretty_table(
+    matrix;
+    column_labels            = [["Col. \$i" for i in 1:3], ["\$i" for i in 1:3]],
+    footnotes                = [(:column_label, 1, 2) => "Footnote in column label", (:data, 2, 2) => "Footnote in data"],
+    merge_column_label_cells = [MergeCells(1, 2, 2, "Merged Column", :c)],
+    row_group_labels         = [2                     => "Row Group"],
+    row_labels               = ["Row \$i" for i in 1:5],
+    show_row_number_column   = true,
+    source_notes             = "Source Notes",
+    stubhead_label           = "Rows",
+    subtitle                 = "Table Subtitle",
+    summary_rows             = [(data, i) -> 10i, (data, i) -> 20i],
+    title                    = "Table Title",
+)
+                  Table Title
+                Table Subtitle
+┌─────┬───────────┬────────┬──────────────────┐
+│ Row │      Rows │ Col. 1 │  Merged Column¹  │
+│     │           │      1 │       2 │      3 │
+├─────┼───────────┼────────┼─────────┼────────┤
+│   1 │     Row 1 │ (1, 1) │  (1, 2) │ (1, 3) │
+├─────┴───────────┴────────┴─────────┴────────┤
+│ Row Group                                   │
+├─────┬───────────┬────────┬─────────┬────────┤
+│   2 │     Row 2 │ (2, 1) │ (2, 2)² │ (2, 3) │
+│   3 │     Row 3 │ (3, 1) │  (3, 2) │ (3, 3) │
+├─────┼───────────┼────────┼─────────┼────────┤
+│     │ Summary 1 │     10 │      20 │     30 │
+│     │ Summary 2 │     20 │      40 │     60 │
+└─────┴───────────┴────────┴─────────┴────────┘
+¹: Footnote in column label
+²: Footnote in data
+Source Notes
+```
+
 ## General Keywords
 
 The following keywords are related to table configuration and are available in all backends:
@@ -121,9 +164,9 @@ The following keywords are related to table configuration and are available in a
     (**Default**: `nothing`)
 - `show_column_labels::Bool`: If `true`, the column labels will be printed.
     (**Default**: `true`)
-- `summary_rows::Union{Nothing, Vector{T} where T <: Any}`: Summary rows. If it is
-    `nothing`, no summary rows are printed. For more information on how to specify the
-    summary rows, see the section **Summary Rows**.
+- `summary_rows::Union{Nothing, Vector{Function}}`: Summary rows. If it is `nothing`, no
+    summary rows are printed. For more information on how to specify the summary rows, see
+    the section **Summary Rows**.
     (**Default**: `nothing`)
 - `summary_row_labels::Union{Nothing, Vector{String}}`: Labels of the summary rows. If it is
     `nothing`, the function uses a default value for the summary row labels.
@@ -134,6 +177,77 @@ The following keywords are related to table configuration and are available in a
     (**Default**: `nothing`)
 - `source_notes::String`: Source notes. If it is empty, the source notes will be omitted.
     (**Default**: "")
+
+### Alignment Arguments
+
+The following keyword arguments define the alignment of the table sections. The alignment
+can be specified using a symbol: `:l` for left, `:c` for center, or `:r` for right.
+
+- `alignment::Union{Symbol, Vector{Symbol}}`: Alignment of the table data. It can be a
+    `Symbol`, which will be used for all columns, or a vector of `Symbol`s, one for each
+    column.
+    (**Default**: `:r`)
+- `column_label_alignment::Union{Nothing, Symbol, Vector{Symbol}}`: Alignment of the column
+    labels. It can be a `Symbol`, which will be used for all columns, a vector of `Symbol`s,
+    one for each column, or `nothing`, which will use the value of `alignment`.
+    (**Default**: `nothing`)
+- `continuation_row_alignment::Union{Nothing, Symbol}`: Alignment of the columns in the
+    continuation row. If it is `nothing`, we use the value of `alignment`.
+    (**Default**: `nothing`)
+- `footnote_alignment::Symbol`: Alignment of the footnotes.
+    (**Default**: `:l`)
+- `row_label_alignment::Symbol`: Alignment of the row labels.
+    (**Default**: `:r`)
+- `row_group_label_alignment::Symbol`: Alignment of the row group labels.
+    (**Default**: `:l`)
+- `row_number_column_alignment::Symbol`: Alignment of the row number column.
+    (**Default**: `:r`)
+- `source_note_alignment::Symbol`: Alignment of the source notes.
+    (**Default**: `:l`)
+- `subtitle_alignment::Symbol`: Alignment of the subtitle.
+    (**Default**: `:c`)
+- `title_alignment::Symbol`: Alignment of the title.
+    (**Default**: `:c`)
+- `cell_alignment::Union{Nothing, Vector{Pair{NTuple{2, Int}, Symbol}, Vector{Function}}`: A
+    vector of functions with the signature `f(data, i, j)` that overrides the alignment of
+    the cell `(i, j)` to the value returned by `f`. The function must return a valid
+    alignment symbol or `nothing`. In the latter, the cell alignment will not be modified.
+    If the function returns an invalid data, it will be discarded. For convenience, it can
+    also be a vector of `Pair{NTuple{2, Int}, Symbol}`, *i.e.*
+    `(i::Int, j::Int) => a::Symbol`, that overrides the alignment of the cell `(i, j)` to
+    `a`.
+    (**Default** = `nothing`)
+
+!!! warning
+
+    Some backends does not support all the alignment options. For example, it is impossible
+    to define cell-specific alignment in the markdown backend.
+
+### Other Arguments
+
+- `formatters::Union{Nothing, Vector{T} where T <: Any}`: Formatters used to modify the
+    rendered output of the cells. For more information, see the section **Formatters**.
+    (**Default**: `nothing`)
+- `maximum_number_of_columns::Int`: Maximum number of columns to be printed. If the table
+    has more columns than this value, the table will be truncated. If it is negative, all
+    columns will be printed.
+    (**Default**: `-1`)
+- `maximum_number_of_rows::Int`: Maximum number of rows to be printed. If the table has more
+    rows than this value, the table will be truncated. If it is negative, all rows will be
+    printed.
+    (**Default**: `-1`)
+- `merge_column_label_cells::Union{Nothing, Symbol, Vector{MergeCells}}`: Merged cells in
+    the column labels. For more information, see the section **Column Labels**.
+    (**Default**: `nothing`)
+- `show_first_column_label_only::Bool`: If `true`, only the first row of the column labels
+    will be printed.
+    (**Default**: `false`)
+- `vertical_crop_mode::Symbol`: Vertical crop mode. This option defines how the table will
+    be vertically cropped if it has more rows than the number specified in
+    `maximum_number_of_rows`. The available options are `:bottom`, when the data will be
+    cropped at the bottom of the table, or `:middle`, when the data will be cropped at the
+    middle of the table.
+    (**Default**: `:bottom`)
 
 ## Backend-Specific Keywords
 
@@ -235,7 +349,48 @@ row 3, we have the row group label named "Row Group #1".
 
 ### Summary Rows
 
+The summary rows can be specified by a vector of `Function`s. Each element defines a summary
+row and the function must have the following signature:
+
+```
+f(data, j)
+```
+
+where `data` is the table data and `j` is the column index. It must return the summary cell
+value for the `j`th column. Hence, if we want, for example, to create two summary rows, one
+with the sum the column values and other with their mean, we must define:
+
+```julia
+summary_rows = [
+    (data, j) -> sum(data[:, j]),
+    (data, j) -> sum(data[:, j]) / length(data[:, j])
+]
+```
+
 ### Footnotes
 
+The footnotes are specified by a vector of `Pair{FootnoteTuple, String}`. Each element
+defines a new footnote. The `FootnoteTuple` is a `Tuple` with the following elements:
+
+- `section::Symbol`: Section to which the footnote must be applied. The available options
+    are `:column_label`, `:data`, `:row_label`, `:summary_row_label`, and
+    `:summary_row_cell`.
+- `i::Int`: Row index of the footnote considering the desired section.
+- `j::Int`: Column index of the footnote considering the desired section.
+
+The second element of the `Pair` is the footnote text.
+
+Hence, if we want to apply a foot note to a column label, a data cell, and a summary cell,
+we can define:
+
+```julia
+footnotes = [
+    (:column_label, 1, 2) => "Footnote in column label",
+    (:data, 2, 2) => "Footnote in data",
+    (:summary_row_cell, 1, 2) => "Footnote in summary cell"
+]
+```
+
+## Formatters
 """
 pretty_table
