@@ -8,7 +8,14 @@
 [![DOI](https://zenodo.org/badge/165340490.svg)](https://zenodo.org/doi/10.5281/zenodo.10015722)
 
 This package has the purpose to print data in matrices in a human-readable format. It was
-inspired in the functionality provided by https://ozh.github.io/ascii-tables/
+orizinally inspired in the functionality provided by
+[ASCII Tables](https://ozh.github.io/ascii-tables/).
+
+The current version of the package considers a table with the following sections:
+
+![Table Design](./docs/src/assets/table_design.png)
+
+This design is heavily inspired by the R's package [gt](https://github.com/rstudio/gt/).
 
 ## Installation
 
