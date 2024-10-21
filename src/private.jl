@@ -68,7 +68,7 @@ function _process_merge_column_label_specification(
     column_labels::Vector{T},
     num_columns::Int
 ) where T <: AbstractVector
-    processed_column_labels = similar(column_labels)
+    processed_column_labels = Vector{Any}(undef, length(column_labels))
 
     merge_column_label_cells = MergeCells[]
 
