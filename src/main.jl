@@ -397,7 +397,9 @@ function _pretty_table(
         show_omitted_cell_summary
     )
 
-    if backend == :html
+    if backend == :latex
+        _latex__print(pspec; kwargs...)
+    elseif backend == :html
         # When wrapping `stdout` in `IOContext` in Jupyter, `io.io` is not equal to `stdout`
         # anymore. Hence, we need to check if `io` is `stdout` before calling the HTML back
         # end.
