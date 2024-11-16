@@ -79,6 +79,11 @@ function _latex__print(
 
                 print(buf, tf.borders.header_line)
 
+            # Check if the next line is a row group label and the user request a line before
+            # it.
+            elseif (next_rs == :row_group_label) && tf.horizontal_line_before_row_group_label
+                print(buf, tf.borders.middle_line)
+
             # Check if we must print an horizontal line after the current data row.
             elseif (rs == :data) && (ps.i ∈ horizontal_lines_at_data_rows)
                 print(buf, tf.borders.middle_line)
@@ -102,6 +107,14 @@ function _latex__print(
             end
 
             println(buf)
+        elseif action == :row_group_label
+            cell          = _current_cell(action, ps, table_data)
+
+            alignment     = _current_cell_alignment(action, ps, table_data)
+            rendered_cell = _latex__render_cell(cell, buf, renderer)
+            cs            = _number_of_printed_columns(table_data)
+
+            print(buf, "\\multicolumn{$cs}{$alignment}{$rendered_cell}")
         else
             if action == :diagonal_continuation_cell
                 print(buf, "\$\\ddots\$ ")
