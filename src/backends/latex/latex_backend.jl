@@ -49,6 +49,9 @@ function _latex__print(
     _aprintln(buf, "\\begin{tabular}", il, ns)
     il += 1
 
+    # Print the top line, if required.
+    tf.horizontal_line_at_beginning && _aprintln(buf, tf.borders.top_line, il, ns)
+
     # == Table =============================================================================
 
     action = :initialize
@@ -114,16 +117,31 @@ function _latex__print(
 
                 cell === _IGNORE_CELL && continue
 
-                rendered_cell = _latex__render_cell(
-                    cell,
-                    buf,
-                    renderer
-                )
+                # If we are in a column label, check if we must merge the cell.
+                if (action == :column_label) && (cell isa MergeCells)
+                    # Check if we have enough data columns to merge the cell.
+                    num_data_columns = _number_of_printed_data_columns(table_data)
 
-                alignment = _current_cell_alignment(action, ps, table_data)
+                    cs = if (ps.j + cell.column_span - 1) > num_data_columns
+                        num_data_columns - ps.j + 1
+                    else
+                        cell.column_span
+                    end
+
+                    alignment = cell.alignment
+
+                    rendered_cell = _latex__render_cell(cell.data, buf, renderer)
+                    rendered_cell = "\\multicolumn{$cs}{$alignment}{$rendered_cell}"
+                else
+                    rendered_cell = _latex__render_cell(cell, buf, renderer)
+                    alignment = _current_cell_alignment(action, ps, table_data)
+                end
 
                 # TODO: Check footnotes.
-                !isempty(rendered_cell) && print(buf, rendered_cell * " ")
+                if !isempty(rendered_cell)
+                    print(buf, rendered_cell)
+                    next_action != :end_row && print(buf, " ")
+                end
             end
 
             next_action != :end_row && print(buf, "& ")
