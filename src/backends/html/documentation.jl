@@ -1,6 +1,6 @@
 ## Description #############################################################################
 #
-# Documentation for the function `pretty_table_html_backend`.
+# Documentation the HTML backend.
 #
 ############################################################################################
 
@@ -16,46 +16,36 @@ the output.
 - `allow_html_in_cells::Bool`: If `true`, the content of the cells can contain HTML code.
     This can be useful to render tables with more complex content, but it can also be a
     security risk if the content is not sanitized.
-    (**Default:** `false`)
+    (**Default**: `false`)
 - `highlighters::Vector{HtmlHighlighter}`: Highlighters to apply to the table. For more
     information, see the section **HTML Highlighters** in the **Extended Help**.
 - `line_breaks::Bool`: If `true`, line breaks in the content of the cells (`\\n`) are
     replaced by the HTML tag `<br>`.
-    (**Default:** `false`)
+    (**Default**: `false`)
 - `maximum_column_width::String`: CSS width string for the maximum column width.
-    (**Default:** "")
+    (**Default**: "")
 - `minify::Bool`: If `true`, the output HTML code is minified.
-    (**Default:** `false`)
+    (**Default**: `false`)
 - `stand_alone::Bool`: If `true`, the output HTML code is a complete HTML document.
-    (**Default:** `false`)
+    (**Default**: `false`)
 - `style::HtmlTableStyle`: Style of the table. For more information, see the section
     **HTML Table Style** in the **Extended Help**.
 - `table_class::String`: Class for the table.
-    (**Default:** "")
+    (**Default**: "")
 - `table_div_class::String`: Class for the div containing the table. It is only used if
     `wrap_table_in_div` is `true`.
-    (**Default:** "")
+    (**Default**: "")
 - `table_format::HtmlTableFormat`: HTML table format used to render the table. For more
     information, see the section **HTML Table Format** in the **Extended Help**.
 - `top_left_string::String`: String to put in the top left corner div.
-    (**Default:** "")
+    (**Default**: "")
 - `top_right_string::String`: String to put in the top right corner div. Notice that this
     information is replaced if we are printing the omitted cell summary.
-    (**Default:** "")
+    (**Default**: "")
 - `wrap_table_in_div::Bool`: If `true`, the table is wrapped in a div.
-    (**Default:** `false`)
+    (**Default**: `false`)
 
 # Extended Help
-
-## HTML Table Format
-
-The HTML table format is defined using an object of type [`HtmlTableFormat`](@ref) that
-contains the following fields:
-
-- `css::String`: CSS to be injected at the end of the `<style>` section.
-- `table_width::String`: Table width.
-
-Notice that this format is only applied if `stand_alone = true`.
 
 ## HTML Highlighters
 
@@ -109,6 +99,16 @@ hl_lt5 = HtmlHighlighter(
 highlighters = [hl_gt5, hl_lt5]
 ```
 
+## HTML Table Format
+
+The HTML table format is defined using an object of type [`HtmlTableFormat`](@ref) that
+contains the following fields:
+
+- `css::String`: CSS to be injected at the end of the `<style>` section.
+- `table_width::String`: Table width.
+
+Notice that this format is only applied if `stand_alone = true`.
+
 ## HTML Table Style
 
 The HTML table style is defined using an object of type [`HtmlTableStyle`](@ref) that
@@ -140,7 +140,7 @@ contains the following fields:
 Each field is a vector of [`HtmlPair`](@ref), *i.e.* `Pair{String, String}`, describing
 properties and values compatible with the HTML style attribute.
 
-For example, we if want that the stubhead label is bold and red, we must defined:
+For example, we if want that the stubhead label is bold and red, we must define:
 
 ```julia
 style = HtmlTableStyle(
