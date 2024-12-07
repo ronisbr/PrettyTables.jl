@@ -96,7 +96,7 @@ PrecompileTools.@setup_workload begin
 
         style = TextTableStyle(row_label = Crayon())
 
-        tf = TextTableFormat(
+        table_format = TextTableFormat(
             ;
             ellipsis_line_skip                    = 3,
             horizontal_line_after_data_rows       = false,
@@ -122,7 +122,7 @@ PrecompileTools.@setup_workload begin
             show_row_number_column      = true,
             stubhead_label              = "Name",
             style                       = style,
-            tf                          = tf,
+            table_format                = table_format,
             title                       = "Test table",
             title_alignment             = :l,
             vertical_crop_mode          = :middle,

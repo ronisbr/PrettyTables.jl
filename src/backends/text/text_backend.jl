@@ -32,11 +32,12 @@ function _text__print_table(
     overwrite_display::Bool = false,
     reserved_display_lines::Int = 0,
     style::TextTableStyle = TextTableStyle(),
-    tf::TextTableFormat = TextTableFormat(),
+    table_format::TextTableFormat = TextTableFormat(),
 )
     context    = pspec.context
     table_data = pspec.table_data
     renderer   = Val(pspec.renderer)
+    tf         = table_format
 
     ps     = PrintingTableState()
     buf_io = IOBuffer()
@@ -397,7 +398,7 @@ function _text__print_table(
         # Notice that `mr` contains the number of fully printed data rows. Furthermore, if
         # `lrc` is `true`, the last row is cropped, meaning that we need to print `mr + 1`
         # rows from the rendered table.
-        mr, lrc, supress_hline_before_continuation_row =
+        mr, lrc, suppress_hline_before_continuation_row =
             _text__design_vertical_cropping_with_line_breaks(
                 table_data,
                 table_str,

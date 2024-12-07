@@ -13,8 +13,6 @@ the output.
 
 # Keywords
 
-- `tf::HtmlTableFormat`: HTML table format used to render the table. For more information,
-    see the section **HTML Table Format** in the **Extended Help**.
 - `allow_html_in_cells::Bool`: If `true`, the content of the cells can contain HTML code.
     This can be useful to render tables with more complex content, but it can also be a
     security risk if the content is not sanitized.
@@ -37,6 +35,8 @@ the output.
 - `table_div_class::String`: Class for the div containing the table. It is only used if
     `wrap_table_in_div` is `true`.
     (**Default:** "")
+- `table_format::HtmlTableFormat`: HTML table format used to render the table. For more
+    information, see the section **HTML Table Format** in the **Extended Help**.
 - `top_left_string::String`: String to put in the top left corner div.
     (**Default:** "")
 - `top_right_string::String`: String to put in the top right corner div. Notice that this

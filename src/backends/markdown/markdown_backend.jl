@@ -11,15 +11,16 @@ end
 
 function _markdown__print(
     pspec::PrintingSpec;
-    tf::MarkdownTableFormat = MarkdownTableFormat(),
     allow_markdown_in_cells::Bool = false,
     highlighters::Vector{MarkdownHighlighter} = MarkdownHighlighter[],
     line_breaks::Bool = false,
-    style::MarkdownTableStyle = MarkdownTableStyle()
+    style::MarkdownTableStyle = MarkdownTableStyle(),
+    table_format::MarkdownTableFormat = MarkdownTableFormat(),
 )
     context    = pspec.context
     table_data = pspec.table_data
     renderer   = Val(pspec.renderer)
+    tf         = table_format
 
     ps     = PrintingTableState()
     buf_io = IOBuffer()
