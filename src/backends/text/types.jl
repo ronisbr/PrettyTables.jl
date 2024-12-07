@@ -141,30 +141,6 @@ Define the format of the tables printed with the text back end.
     the data columns.
 - `vertical_line_after_continuation_column::Bool`: If `true`, a vertical line will be
     drawn after the continuation column.
-- `title_decoration::Crayon`: Crayon with the decoration for the title.
-- `subtitle_decoration::Crayon`: Crayon with the decoration for the subtitle.
-- `row_number_label_decoration::Crayon`: Crayon with the decoration for the row number
-    label.
-- `row_number_decoration::Crayon`: Crayon with the decoration for the row numbers.
-- `stubhead_label_decoration::Crayon`:  Crayon with the decoration for the stubhead label.
-- `row_label_decoration::Crayon`: Crayon with the decoration for the row labels.
-- `row_group_label_decoration::Crayon`: Crayon with the decoration for the row group label.
-- `first_line_column_label_decoration::Crayon`: Crayon with the decoration for the first
-    column label lines.
-- `column_label_decoration::Crayon`: Crayon with the decoration for the rest of the column
-    labels.
-- `first_line_merged_column_label_decoration::Crayon`: Crayon with the decoration for
-    the first merged cells at the first column label line.
-- `merged_column_label_decoration::Crayon`: Crayon with the decoration for the merged
-    cells at the rest of the column labels.
-- `summary_row_cell_decoration::Crayon`: Crayon with the decoration for the summary row
-    cell.
-- `summary_row_label_decoration::Crayon`: Crayon with the decoration for the summary row
-    label.
-- `footnote_decoration::Crayon`: Crayon with the decoration for the footnotes.
-- `source_note_decoration::Crayon`: Crayon with the decoration for the source notes.
-- `omitted_cell_summary_decoration::Crayon`: Crayon with the decoration for the omitted
-    cell summary.
 - `ellipsis_line_skip::Integer`: Number of lines to skip when printing an ellipsis.
 - `new_line_at_end::Bool`: If `true`, a new line will be added at the end of the table.
 """

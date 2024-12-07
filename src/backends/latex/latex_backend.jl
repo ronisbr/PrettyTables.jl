@@ -11,12 +11,13 @@ end
 
 function _latex__print(
     pspec::PrintingSpec;
-    tf::LatexTableFormat = LatexTableFormat(),
+    table_format::LatexTableFormat = LatexTableFormat(),
     wrap_table::Bool = false
 )
     context    = pspec.context
     table_data = pspec.table_data
     renderer   = Val(pspec.renderer)
+    tf         = table_format
 
     ps     = PrintingTableState()
     buf_io = IOBuffer()

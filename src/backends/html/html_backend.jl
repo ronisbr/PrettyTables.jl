@@ -11,7 +11,6 @@ end
 
 function _html__print(
     pspec::PrintingSpec;
-    tf::HtmlTableFormat = HtmlTableFormat(),
     allow_html_in_cells::Bool = false,
     highlighters::Vector{HtmlHighlighter} = HtmlHighlighter[],
     is_stdout::Bool = false,
@@ -22,6 +21,7 @@ function _html__print(
     style::HtmlTableStyle = HtmlTableStyle(),
     table_class::String = "",
     table_div_class::String = "",
+    table_format::HtmlTableFormat = HtmlTableFormat(),
     top_left_string::AbstractString = "",
     top_right_string::AbstractString = "",
     wrap_table_in_div::Bool = false,
@@ -29,6 +29,7 @@ function _html__print(
     context    = pspec.context
     table_data = pspec.table_data
     renderer   = Val(pspec.renderer)
+    tf         = table_format
 
     ps     = PrintingTableState()
     buf_io = IOBuffer()

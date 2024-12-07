@@ -22,7 +22,7 @@ end
 function pretty_table(::Type{HTML}, @nospecialize(data::Any); kwargs...)
     # If the keywords does not set the back end or the table format, use the HTML back end
     # by default.
-    str = if !haskey(kwargs, :backend) && !haskey(kwargs, :tf)
+    str = if !haskey(kwargs, :backend) && !haskey(kwargs, :table_format)
         pretty_table(String, data; backend = :html, kwargs...)
     else
         pretty_table(String, data; kwargs...)

@@ -141,7 +141,7 @@
                 String,
                 matrix;
                 display_size = (12, 54),
-                tf = TextTableFormat(horizontal_lines_at_data_rows = :all)
+                table_format = TextTableFormat(horizontal_lines_at_data_rows = :all)
             )
 
             @test result == expected
@@ -164,7 +164,7 @@
                 String,
                 matrix;
                 display_size = (13, 54),
-                tf = TextTableFormat(horizontal_lines_at_data_rows = :all)
+                table_format = TextTableFormat(horizontal_lines_at_data_rows = :all)
             )
 
             @test result == expected
@@ -263,7 +263,7 @@
                 matrix;
                 display_size = (13, 54),
                 row_group_labels = [1 => "Row Group 1"],
-                tf = TextTableFormat(horizontal_lines_at_data_rows = :all)
+                table_format = TextTableFormat(horizontal_lines_at_data_rows = :all)
             )
 
             @test result == expected
@@ -287,7 +287,7 @@
                 matrix;
                 display_size = (13, 54),
                 row_group_labels = [2 => "Row Group 1"],
-                tf = TextTableFormat(horizontal_lines_at_data_rows = :all)
+                table_format = TextTableFormat(horizontal_lines_at_data_rows = :all)
             )
 
             @test result == expected
@@ -309,7 +309,7 @@ expected = """
                 matrix;
                 display_size = (13, 54),
                 row_group_labels = [1 => "Row Group 1", 2 => "Row Group 2"],
-                tf = TextTableFormat(horizontal_lines_at_data_rows = :all)
+                table_format = TextTableFormat(horizontal_lines_at_data_rows = :all)
             )
 
             @test result == expected
@@ -356,7 +356,7 @@ expected = """
                 matrix;
                 display_size = (12, 54),
                 summary_rows = [(data, i) -> "Summary $i"],
-                tf = TextTableFormat(horizontal_lines_at_data_rows = :all),
+                table_format = TextTableFormat(horizontal_lines_at_data_rows = :all),
             )
 
             @test result == expected
@@ -380,7 +380,7 @@ expected = """
                 matrix;
                 display_size = (13, 54),
                 summary_rows = [(data, i) -> "Summary $i"],
-                tf = TextTableFormat(horizontal_lines_at_data_rows = :all),
+                table_format = TextTableFormat(horizontal_lines_at_data_rows = :all),
             )
 
             @test result == expected
@@ -451,7 +451,7 @@ expected = """
                 String,
                 matrix;
                 display_size = (12, 54),
-                tf = TextTableFormat(horizontal_lines_at_data_rows = :all),
+                table_format = TextTableFormat(horizontal_lines_at_data_rows = :all),
                 vertical_crop_mode = :middle
             )
 
@@ -475,7 +475,7 @@ expected = """
                 String,
                 matrix;
                 display_size = (13, 54),
-                tf = TextTableFormat(horizontal_lines_at_data_rows = :all),
+                table_format = TextTableFormat(horizontal_lines_at_data_rows = :all),
                 vertical_crop_mode = :middle
             )
 
@@ -579,7 +579,7 @@ expected = """
                 matrix;
                 display_size = (13, 54),
                 row_group_labels = [1 => "Row Group 1"],
-                tf = TextTableFormat(horizontal_lines_at_data_rows = :all),
+                table_format = TextTableFormat(horizontal_lines_at_data_rows = :all),
                 vertical_crop_mode = :middle
             )
 
@@ -604,7 +604,7 @@ expected = """
                 matrix;
                 display_size = (14, 54),
                 row_group_labels = [1 => "Row Group 1"],
-                tf = TextTableFormat(horizontal_lines_at_data_rows = :all),
+                table_format = TextTableFormat(horizontal_lines_at_data_rows = :all),
                 vertical_crop_mode = :middle
             )
 
@@ -628,7 +628,7 @@ expected = """
                 matrix;
                 display_size = (14, 54),
                 row_group_labels = [1 => "Row Group 1", 100 => "Row Group 100"],
-                tf = TextTableFormat(horizontal_lines_at_data_rows = :all),
+                table_format = TextTableFormat(horizontal_lines_at_data_rows = :all),
                 vertical_crop_mode = :middle
             )
 
@@ -677,7 +677,7 @@ expected = """
                 matrix;
                 display_size = (12, 54),
                 summary_rows = [(data, i) -> "Summary $i"],
-                tf = TextTableFormat(horizontal_lines_at_data_rows = :all),
+                table_format = TextTableFormat(horizontal_lines_at_data_rows = :all),
                 vertical_crop_mode = :middle
             )
 
@@ -702,7 +702,7 @@ expected = """
                 matrix;
                 display_size = (13, 54),
                 summary_rows = [(data, i) -> "Summary $i"],
-                tf = TextTableFormat(horizontal_lines_at_data_rows = :all),
+                table_format = TextTableFormat(horizontal_lines_at_data_rows = :all),
                 vertical_crop_mode = :middle
             )
 
@@ -727,7 +727,7 @@ expected = """
                 matrix;
                 display_size = (13, 54),
                 summary_rows = [(data, i) -> "Summary $i"],
-                tf = TextTableFormat(
+                table_format = TextTableFormat(
                     horizontal_line_after_data_rows = false,
                     horizontal_lines_at_data_rows = :all,
                 ),
