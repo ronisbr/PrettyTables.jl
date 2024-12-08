@@ -37,8 +37,8 @@ contains the following two public fields:
 - `f::Function`: Function with the signature `f(data, i, j)` in which should return `true`
     if the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
 - `fd::Function`: Function with the signature `fd(h, data, i, j)` in which `h` is the
-    highlighter. This function must return the [`MarkdownDecoration`](@ref) to be applied to
-    the cell that must be highlighted.
+    highlighter. This function must return the [`MarkdownStyle`](@ref) to be applied to the
+cell that must be highlighted.
 
 The function `f` has the following signature:
 
@@ -49,12 +49,12 @@ element coordinates that are being tested. If this function returns `true`, the 
 style will be applied to the `(i, j)` element. Otherwise, the default style will be used.
 
 If the function `f` returns true, the function `fd(h, data, i, j)` will be called and must
-return an element of type [`MarkdownDecoration`](@ref) that contains the decoration to be
+return an element of type [`MarkdownStyle`](@ref) that contains the decoration to be
 applied to the cell.
 
 A markdown highlighter can be constructed using two helpers:
 
-    MarkdownHighlighter(f::Function, decoration::MarkdownDecoration)
+    MarkdownHighlighter(f::Function, decoration::MarkdownStyle)
 
     MarkdownHighlighter(f::Function, fd::Function)
 
