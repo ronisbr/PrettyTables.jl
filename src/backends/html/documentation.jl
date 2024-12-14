@@ -61,11 +61,13 @@ contains the following two public fields:
 
 A HTML highlighter can be constructed using three helpers:
 
-    HtmlHighlighter(f::Function, decoration::Vector{Pair{String, String}})
+```julia
+HtmlHighlighter(f::Function, decoration::Vector{Pair{String, String}})
 
-    HtmlHighlighter(f::Function, decorations::NTuple{N, Pair{String, String})
+HtmlHighlighter(f::Function, decorations::NTuple{N, Pair{String, String})
 
-    HtmlHighlighter(f::Function, fd::Function)
+HtmlHighlighter(f::Function, fd::Function)
+```
 
 The first will apply a fixed decoration to the highlighted cell specified in `decoration`,
 whereas the second let the user select the desired decoration by specifying the function
@@ -82,7 +84,7 @@ whereas the second let the user select the desired decoration by specifying the 
     **will not** affect the parameter `data` passed to the highlighter function `f`. It will
     always receive the original, unformatted value.
 
-For example, we if want to highlight the cells with value greater than 5 in red, and 
+For example, we if want to highlight the cells with value greater than 5 in red, and
 all the cells with value less than 5 in blue, we can define:
 
 ```julia

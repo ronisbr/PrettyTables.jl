@@ -42,7 +42,9 @@ cell that must be highlighted.
 
 The function `f` has the following signature:
 
-    f(data, i, j)
+```julia
+f(data, i, j)
+```
 
 in which `data` is a reference to the data that is being printed, and `i` and `j` are the
 element coordinates that are being tested. If this function returns `true`, the highlight
@@ -54,9 +56,11 @@ applied to the cell.
 
 A markdown highlighter can be constructed using two helpers:
 
-    MarkdownHighlighter(f::Function, decoration::MarkdownStyle)
+```julia
+MarkdownHighlighter(f::Function, decoration::MarkdownStyle)
 
-    MarkdownHighlighter(f::Function, fd::Function)
+MarkdownHighlighter(f::Function, fd::Function)
+```
 
 The first will apply a fixed decoration to the highlighted cell specified in `decoration`
 whereas the second let the user select the desired decoration by specifying the function
