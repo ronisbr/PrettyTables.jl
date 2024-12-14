@@ -412,7 +412,7 @@ function _html__print(
 
             elseif action == :column_label
                 if ps.i == 1
-                    append!(vstyle, style.first_column_label)
+                    append!(vstyle, style.first_line_column_label)
                 else
                     append!(vstyle, style.column_label)
                 end
