@@ -194,7 +194,8 @@ Define the style of the tables printed with the HTML back end.
 - `stubhead_label::Vector{HtmlPair}`: Style for the stubhead label.
 - `row_label::Vector{HtmlPair}`: Style for the row label.
 - `row_group_label::Vector{HtmlPair}`: Style for the row group label.
-- `first_column_label::Vector{HtmlPair}`: Style for the first line of the column labels.
+- `first_line_column_label::Vector{HtmlPair}`: Style for the first line of the column
+    labels.
 - `column_label::Vector{HtmlPair}`: Style for the column label.
 - `first_line_merged_column_label::Vector{HtmlPair}`: Style for the merged cells at the
     first column label line.
@@ -204,8 +205,6 @@ Define the style of the tables printed with the HTML back end.
 - `summary_row_label::Vector{HtmlPair}`: Style for the summary row label.
 - `footnote::Vector{HtmlPair}`: Style for the footnote.
 - `source_notes::Vector{HtmlPair}`: Style for the source notes.
-- `first_line_of_column_labels::Vector{HtmlPair}`: Style for the first line of the column
-    labels.
 """
 @kwdef struct HtmlTableStyle
     top_left_string::Vector{HtmlPair}                = _HTML__BOLD
@@ -218,7 +217,7 @@ Define the style of the tables printed with the HTML back end.
     stubhead_label::Vector{HtmlPair}                 = _HTML__BOLD
     row_label::Vector{HtmlPair}                      = _HTML__BOLD
     row_group_label::Vector{HtmlPair}                = _HTML__BOLD
-    first_column_label::Vector{HtmlPair}             = _HTML__BOLD
+    first_line_column_label::Vector{HtmlPair}        = _HTML__BOLD
     column_label::Vector{HtmlPair}                   = _HTML__NO_DECORATION
     first_line_merged_column_label::Vector{HtmlPair} = _HTML__MERGED_CELL
     merged_column_label::Vector{HtmlPair}            = _HTML__MERGED_CELL

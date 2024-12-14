@@ -124,7 +124,8 @@ contains the following fields:
 - `stubhead_label::Vector{HtmlPair}`: Style for the stubhead label.
 - `row_label::Vector{HtmlPair}`: Style for the row label.
 - `row_group_label::Vector{HtmlPair}`: Style for the row group label.
-- `first_column_label::Vector{HtmlPair}`: Style for the first line of the column labels.
+- `first_line_column_label::Vector{HtmlPair}`: Style for the first line of the column
+    labels.
 - `column_label::Vector{HtmlPair}`: Style for the column label.
 - `first_line_merged_column_label::Vector{HtmlPair}`: Style for the merged cells at the
     first column label line.
@@ -134,8 +135,6 @@ contains the following fields:
 - `summary_row_label::Vector{HtmlPair}`: Style for the summary row label.
 - `footnote::Vector{HtmlPair}`: Style for the footnote.
 - `source_notes::Vector{HtmlPair}`: Style for the source notes.
-- `first_line_of_column_labels::Vector{HtmlPair}`: Style for the first line of the column
-    labels.
 
 Each field is a vector of [`HtmlPair`](@ref), *i.e.* `Pair{String, String}`, describing
 properties and values compatible with the HTML style attribute.
