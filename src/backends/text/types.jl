@@ -114,7 +114,7 @@ Define the format of the tables printed with the text back end.
 - `horizontal_line_at_beginning::Bool`: If `true`, a horizontal line will be drawn at the
     beginning of the table.
 - `horizontal_line_after_column_labels::Bool`: If `true`, a horizontal line will be drawn
-    after the colum labels.
+    after the column labels.
 - `horizontal_lines_at_data_rows::Union{Symbol, Vector{Int}}`: A horizontal line will be
     drawn after each data row index listed in this vector. If the symbol `:all` is passed, a
     horizontal line will be drawn after every data column. If the symbol `:none` is passed,
@@ -123,10 +123,10 @@ Define the format of the tables printed with the text back end.
     drawn before the row group label.
 - `horizontal_line_after_row_group_label::Bool`: If `true`, a horizontal line will be
     drawn after the row group label.
-- `horizontal_line_before_summary_rows::Bool`: If `true`, a horizontal line will be drawn
-    before the summary rows.
-- `horizontal_line_at_end::Bool`: If `true`, a horizontal line will be drawn at the end of
-    the table.
+- `horizontal_line_after_data_rows::Bool`: If `true`, a horizontal line will be drawn
+    after the data rows.
+- `horizontal_line_after_summary_rows::Bool`: If `true`, a horizontal line will be drawn
+    after the summary rows.
 - `right_vertical_lines_at_data_columns::Union{Symbol, Vector{Int}}`: A vertical line will
     be drawn after each data column index listed in this vector. If the symbol `:all` is
     passed, a vertical line will be drawn after every data column. If the symbol `:none` is
@@ -181,6 +181,9 @@ Define the style of the tables printed with the text back end.
 
 # Fields
 
+- `title::Crayon`: Crayon with the style for the title.
+- `subtitle::Crayon`: Crayon with the style for the subtitle.
+- `row_number_label::Crayon`: Crayon with the style for the row number label.
 - `row_number::Crayon`: Crayon with the style for the row numbers.
 - `stubhead_label::Crayon`:  Crayon with the style for the stubhead label.
 - `row_label::Crayon`: Crayon with the style for the row labels.
@@ -241,16 +244,22 @@ Defines the default highlighter of a table when using the text backend.
 
 This structure can be constructed using three helpers:
 
-    Highlighter(f::Function; kwargs...)
+```julia
+TextHighlighter(f::Function; kwargs...)
+```
 
 where it will construct a `Crayon` using the keywords in `kwargs` and apply it to the
 highlighted cell,
 
-    Highlighter(f::Function, crayon::Crayon)
+```julia
+TextHighlighter(f::Function, crayon::Crayon)
+```
 
 where it will apply the `crayon` to the highlighted cell, and
 
-    Highlighter(f::Function, fd::Function)
+```julia
+TextHighlighter(f::Function, fd::Function)
+```
 
 where it will apply the `Crayon` returned by the function `fd` to the highlighted cell.
 """
