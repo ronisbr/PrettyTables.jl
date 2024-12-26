@@ -4,28 +4,27 @@
 #
 ############################################################################################
 
-export text__all_horizontal_lines, text__all_vertical_lines
-export text__no_horizontal_lines, text__no_vertical_lines
+export @text__all_horizontal_lines, @text__all_vertical_lines
+export @text__no_horizontal_lines, @text__no_vertical_lines
 
 """
-    text__all_horizontal_lines() -> NamedTuple
+    @text__all_horizontal_lines() -> Keywords for `TextTableFormat`
 
-Return a named tuple with the arguments to be passed to [`TextTableFormat`](@ref) to show
-all horizontal lines.
+Return the keyword arguments to be passed to [`TextTableFormat`](@ref) to show all
+horizontal lines.
 
-We can use the output of this function when creating the text table format object by using
-the splat (`...`) operator. For example, the following code creates a text table format
-with all horizontal lines:
+We can use the output of this function when creating the text table format object. For
+example, the following code creates a text table format with all horizontal lines:
 
 ```julia
-tf = TextTableFormat(; text__all_horizontal_lines()...)
+tf = TextTableFormat(; @text__all_horizontal_lines())
 ```
 
-Any option can be overridden by merging the named tuples. For example, the following code
-shows all the horizontal lines but the first one:
+Any option can be overridden by merging the keyword arguments. For example, the following
+code shows all the horizontal lines but the first one:
 
 ```julia
-tf = TextTableFormat(; (text__all_horizontal_lines()..., horizontal_line_at_beginning = false)...)
+tf = TextTableFormat(; @text__all_horizontal_lines, horizontal_line_at_beginning = false)
 ```
 
 # Extended Help
@@ -35,7 +34,7 @@ tf = TextTableFormat(; (text__all_horizontal_lines()..., horizontal_line_at_begi
 ```julia-repl
 julia> A = ones(3, 3);
 
-julia> pretty_table(A; table_format = TextTableFormat(; text__all_horizontal_lines()...))
+julia> pretty_table(A; table_format = TextTableFormat(; @text__all_horizontal_lines))
 ┌────────┬────────┬────────┐
 │ Col. 1 │ Col. 2 │ Col. 3 │
 ├────────┼────────┼────────┤
@@ -50,10 +49,8 @@ julia> pretty_table(
     A;
     table_format = TextTableFormat(
         ;
-        (
-            text__all_horizontal_lines()...,
-            horizontal_line_after_column_labels = false
-        )...
+        @text__all_horizontal_lines,
+        horizontal_line_after_column_labels = false
     )
 )
 ┌────────┬────────┬────────┐
@@ -66,8 +63,8 @@ julia> pretty_table(
 └────────┴────────┴────────┘
 ```
 """
-function text__all_horizontal_lines()
-    return (
+macro text__all_horizontal_lines()
+    return :((
         horizontal_line_at_beginning           = true,
         horizontal_line_after_column_labels    = true,
         horizontal_lines_at_data_rows          = :all,
@@ -75,28 +72,27 @@ function text__all_horizontal_lines()
         horizontal_line_after_row_group_label  = true,
         horizontal_line_after_data_rows        = true,
         horizontal_line_after_summary_rows     = true,
-    )
+    )...)
 end
 
 """
-    text__all_vertical_lines() -> NamedTuple
+    @text__all_vertical_lines() -> Keywords for `TextTableFormat`
 
-Return a named tuple with the arguments to be passed to [`TextTableFormat`](@ref) to show
-all vertical lines.
+Return the keyword arguments to be passed to [`TextTableFormat`](@ref) to show all vertical
+lines.
 
-We can use the output of this function when creating the text table format object by using
-the splat (`...`) operator. For example, the following code creates a text table format
-with all vertical lines:
+We can use the output of this function when creating the text table format object. For
+example, the following code creates a text table format with all vertical lines:
 
 ```julia
-tf = TextTableFormat(; text__all_vertical_lines()...)
+tf = TextTableFormat(; @text__all_vertical_lines)
 ```
 
-Any option can be overridden by merging the named tuples. For example, the following code
-shows all the vertical lines but the first one:
+Any option can be overridden by merging the keyword arguments. For example, the following
+code shows all the vertical lines but the first one:
 
 ```julia
-tf = TextTableFormat(; (text__all_vertical_lines()..., vertical_line_at_beginning = false)...)
+tf = TextTableFormat(; @text__all_vertical_lines, vertical_line_at_beginning = false)
 ```
 
 # Extended Help
@@ -106,7 +102,7 @@ tf = TextTableFormat(; (text__all_vertical_lines()..., vertical_line_at_beginnin
 ```julia-repl
 julia> A = ones(3, 3);
 
-julia> pretty_table(A; table_format = TextTableFormat(; text__all_vertical_lines()...))
+julia> pretty_table(A; table_format = TextTableFormat(; @text__all_vertical_lines))
 ┌────────┬────────┬────────┐
 │ Col. 1 │ Col. 2 │ Col. 3 │
 ├────────┼────────┼────────┤
@@ -120,10 +116,8 @@ julia> pretty_table(
     show_row_number_column = true,
     table_format = TextTableFormat(
         ;
-        (
-            text__all_vertical_lines()...,
-            vertical_line_after_row_number_column = false
-        )...
+        @text__all_vertical_lines,
+        vertical_line_after_row_number_column = false
     )
 )
 ┌─────────────┬────────┬────────┐
@@ -135,8 +129,8 @@ julia> pretty_table(
 └─────────────┴────────┴────────┘
 ```
 """
-function text__all_vertical_lines()
-    return (
+macro text__all_vertical_lines()
+    return :((
         right_vertical_lines_at_data_columns     = :all,
         suppress_vertical_lines_at_column_labels = false,
         vertical_line_after_continuation_column  = true,
@@ -144,28 +138,27 @@ function text__all_vertical_lines()
         vertical_line_after_row_label_column     = true,
         vertical_line_after_row_number_column    = true,
         vertical_line_at_beginning               = true,
-    )
+    )...)
 end
 
 """
-    text__no_horizontal_lines() -> NamedTuple
+    text__no_horizontal_lines() -> Keywords for `TextTableFormat`
 
-Return a named tuple with the arguments to be passed to [`TextTableFormat`](@ref) to
-suppress all horizontal lines.
+Return the keyword arguments to be passed to [`TextTableFormat`](@ref) to suppress all
+horizontal lines.
 
-We can use the output of this function when creating the text table format object by using
-the splat (`...`) operator. For example, the following code creates a text table format
-without horizontal lines:
+We can use the output of this function when creating the text table format object. For
+example, the following code creates a text table format without horizontal lines:
 
 ```julia
-tf = TextTableFormat(; text__no_horizontal_lines()...)
+tf = TextTableFormat(; @text__no_horizontal_lines)
 ```
 
-Any option can be overridden by merging the named tuples. For example, the following code
-draws only the horizontal line at the beginning of the table:
+Any option can be overridden by merging the keyword arguments. For example, the following
+code draws only the horizontal line at the beginning of the table:
 
 ```julia
-tf = TextTableFormat(; (text__no_horizontal_lines()..., horizontal_line_at_beginning = true)...)
+tf = TextTableFormat(; @text__no_horizontal_lines, horizontal_line_at_beginning = true)
 ```
 
 # Extended Help
@@ -175,7 +168,7 @@ tf = TextTableFormat(; (text__no_horizontal_lines()..., horizontal_line_at_begin
 ```julia-repl
 julia> A = ones(3, 3);
 
-julia> pretty_table(A; table_format = TextTableFormat(; text__no_horizontal_lines()...))
+julia> pretty_table(A; table_format = TextTableFormat(; @text__no_horizontal_lines))
 │ Col. 1 │ Col. 2 │ Col. 3 │
 │    1.0 │    1.0 │    1.0 │
 │    1.0 │    1.0 │    1.0 │
@@ -185,10 +178,8 @@ julia> pretty_table(
     A;
     table_format = TextTableFormat(
         ;
-        (
-            text__no_horizontal_lines()...,
-            horizontal_line_after_column_labels = true
-        )...
+        @text__no_horizontal_lines,
+        horizontal_line_after_column_labels = true
     )
 )
 │ Col. 1 │ Col. 2 │ Col. 3 │
@@ -198,8 +189,8 @@ julia> pretty_table(
 │    1.0 │    1.0 │    1.0 │
 ```
 """
-function text__no_horizontal_lines()
-    return (
+macro text__no_horizontal_lines()
+    return :((
         horizontal_line_at_beginning           = false,
         horizontal_line_after_column_labels    = false,
         horizontal_lines_at_data_rows          = :none,
@@ -207,28 +198,27 @@ function text__no_horizontal_lines()
         horizontal_line_after_row_group_label  = false,
         horizontal_line_after_data_rows        = false,
         horizontal_line_after_summary_rows     = false,
-    )
+    )...)
 end
 
 """
-    text__no_vertical_lines() -> NamedTuple
+    text__no_vertical_lines() -> Keywords for `TextTableFormat`
 
-Return a named tuple with the arguments to be passed to [`TextTableFormat`](@ref) to
-suppress all vertical lines.
+Return the keyword arguments to be passed to [`TextTableFormat`](@ref) to suppress all
+vertical lines.
 
-We can use the output of this function when creating the text table format object by using
-the splat (`...`) operator. For example, the following code creates a text table format
-without vertical lines:
+We can use the output of this function when creating the text table format object. For
+example, the following code creates a text table format without vertical lines:
 
 ```julia
-tf = TextTableFormat(; text__no_vertical_lines()...)
+tf = TextTableFormat(; @text__no_vertical_lines)
 ```
 
-Any option can be overridden by merging the named tuples. For example, the following code
-draws only the vertical line at the beginning of the table:
+Any option can be overridden by merging the keyword arguments. For example, the following
+code draws only the vertical line at the beginning of the table:
 
 ```julia
-tf = TextTableFormat(; (text__no_vertical_lines()..., vertical_line_at_beginning = true)...)
+tf = TextTableFormat(; @text__no_vertical_lines, vertical_line_at_beginning = true)
 ```
 
 # Extended Help
@@ -238,7 +228,7 @@ tf = TextTableFormat(; (text__no_vertical_lines()..., vertical_line_at_beginning
 ```julia-repl
 julia> A = ones(3, 3);
 
-julia> pretty_table(A; table_format = TextTableFormat(; text__no_vertical_lines()...))
+julia> pretty_table(A; table_format = TextTableFormat(; @text__no_vertical_lines))
 ────────────────────────
  Col. 1  Col. 2  Col. 3
 ────────────────────────
@@ -252,10 +242,8 @@ julia> pretty_table(
     show_row_number_column = true,
     table_format = TextTableFormat(
         ;
-        (
-            text__no_vertical_lines()...,
-            vertical_line_after_row_number_column = true
-        )...
+        @text__no_vertical_lines,
+        vertical_line_after_row_number_column = true
     )
 )
 ─────┬────────────────────────
@@ -267,8 +255,8 @@ julia> pretty_table(
 ─────┴────────────────────────
 ```
 """
-function text__no_vertical_lines()
-    return (
+macro text__no_vertical_lines()
+    return :((
         right_vertical_lines_at_data_columns     = :none,
         suppress_vertical_lines_at_column_labels = true,
         vertical_line_after_continuation_column  = false,
@@ -276,5 +264,5 @@ function text__no_vertical_lines()
         vertical_line_after_row_label_column     = false,
         vertical_line_after_row_number_column    = false,
         vertical_line_at_beginning               = false,
-    )
+    )...)
 end
