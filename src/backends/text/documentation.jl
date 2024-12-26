@@ -193,6 +193,14 @@ contains the following fields:
 - `ellipsis_line_skip::Integer`: Number of lines to skip when printing an ellipsis.
 - `new_line_at_end::Bool`: If `true`, a new line will be added at the end of the table.
 
+We provide a few helpers to configure the table format. For more information, see the
+documentation of the following macros:
+
+- [`@text__all_horizontal_lines`](@ref).
+- [`@text__all_vertical_lines`](@ref).
+- [`@text__no_horizontal_lines`](@ref).
+- [`@text__no_vertical_lines`](@ref).
+
 ## Text Table Style
 
 The text table style is defined using an object of type [`TextTableStyle`](@ref) that
