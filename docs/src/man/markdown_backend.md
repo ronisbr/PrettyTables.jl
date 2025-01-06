@@ -1,56 +1,40 @@
-# Markdown Back End
+# Markdown Backend
 
-```@meta
-CurrentModule = PrettyTables
-```
+The markdown backend can be selected by passing the keyword `backend = :markdown` to the
+function [`pretty_table`](@ref). In this case, we have the following additional keywords to
+configure the output.
 
-```@setup markdown
-using PrettyTables
-```
+## Keywords
 
-The following options are available when the markdown back end is used. Those can be passed
-as keywords when calling the function [`pretty_table`](@ref):
-
-- `allow_markdown_in_cells::Bool`: By default, special markdown characters like `*`, `_`,
-    `~`, etc. are escaped in markdown back end to generate valid output. However, this
-    algorithm blocks the usage of markdown code inside of the cells. If this keyword is
-    `true`, the escape algorithm **will not** be applied, allowing markdown code inside all
-    the cells. In this case, the user must ensure that the output code is valid.
-    (**Default** = `false`)
-- `highlighters::Union{MarkdownHighlighter, Tuple}`: An instance of `MarkdownHighlighter` or
-    a tuple with a list of Markdown highlighters (see the section
-    [Markdown Highlighters](@ref)).
-- `show_omitted_cell_summary::Bool`: If `true`, a summary will be printed after the table
-    with the number of columns and rows that were omitted.
-    (**Default** = `false`)
-
-The following keywords are available to customize the output decoration:
-
-- `header_decoration::MarkdownDecoration`: Decoration applied to the header.
-    (**Default** = `MarkdownDecoration(bold = true)`)
-- `row_label_decoration::MarkdownDecoration`: Decoration applied to the row label column.
-    (**Default** = `MarkdownDecoration()`)
-- `row_number_decoration::MarkdownDecoration`: Decoration applied to the row number column.
-    (**Default** = `MarkdownDecoration(bold = true)`)
-- `subheader_decoration::MarkdownDecoration`: Decoration applied to the sub-header.
-    (**Default** = `MarkdownDecoration(code = true)`)
+- `allow_markdown_in_cells::Bool`: If `true`, the content of the cells can contain markdown
+  code.
+  (**Default**: `false`)
+- `highlighters::Vector{MarkdownHighlighter}`: Highlighters to apply to the table. For more
+  information, see the section [Markdown Highlighters](@ref).
+- `line_breaks::Bool`: If `true`, line breaks in the content of the cells (`\\n`) are
+  replaced by `<br>`.
+  (**Default**: `false`)
+- `style::MarkdownTableStyle`: Style of the table. For more information, see the section
+  [Markdown Table Style](@ref).
+- `table_format::MarkdownTableFormat`: Markdown table format used to render the table. For
+  more information, see the section [Markdown Table Format](@ref).
 
 ## Markdown Highlighters
 
-A set of highlighters can be passed as a `Tuple` to the `highlighters` keyword.  Each
-highlighter is an instance of the structure [`MarkdownHighlighter`](@ref). It contains the
-following two public fields:
+A set of highlighters can be passed as a `Vector{MarkdownHighlighter}` to the `highlighters`
+keyword. Each highlighter is an instance of the structure [`MarkdownHighlighter`](@ref). It
+contains the following two public fields:
 
 - `f::Function`: Function with the signature `f(data, i, j)` in which should return `true`
-    if the element `(i,j)` in `data` must be highlighted, or `false` otherwise.
+  if the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
 - `fd::Function`: Function with the signature `fd(h, data, i, j)` in which `h` is the
-    highlighter. This function must return the [`MarkdownDecoration`](@ref) to be applied to
-    the cell that must be highlighted.
+  highlighter. This function must return the [`MarkdownStyle`](@ref) to be applied to the
+  cell that must be highlighted.
 
 The function `f` has the following signature:
 
 ```julia
-f(data, i, j)
+  f(data, i, j)
 ```
 
 in which `data` is a reference to the data that is being printed, and `i` and `j` are the
@@ -58,13 +42,13 @@ element coordinates that are being tested. If this function returns `true`, the 
 style will be applied to the `(i, j)` element. Otherwise, the default style will be used.
 
 If the function `f` returns true, the function `fd(h, data, i, j)` will be called and must
-return an element of type [`MarkdownDecoration`](@ref) that contains the decoration to be
+return an element of type [`MarkdownStyle`](@ref) that contains the decoration to be
 applied to the cell.
 
 A markdown highlighter can be constructed using two helpers:
 
 ```julia
-MarkdownHighlighter(f::Function, decoration::MarkdownDecoration)
+MarkdownHighlighter(f::Function, decoration::MarkdownStyle)
 
 MarkdownHighlighter(f::Function, fd::Function)
 ```
@@ -72,11 +56,6 @@ MarkdownHighlighter(f::Function, fd::Function)
 The first will apply a fixed decoration to the highlighted cell specified in `decoration`
 whereas the second let the user select the desired decoration by specifying the function
 `fd`.
-
-!!! info
-
-    If only a single highlighter is wanted, it can be passed directly to the keyword
-    `highlighters` without being inside a `Tuple`.
 
 !!! note
 
@@ -89,34 +68,41 @@ whereas the second let the user select the desired decoration by specifying the 
     **will not** affect the parameter `data` passed to the highlighter function `f`. It will
     always receive the original, unformatted value.
 
-There are a set of pre-defined highlighters (with names `hl_*`) to make the usage simpler.
-They are defined in the file `./src/backends/markdown/predefined_highlighters.jl`.
+## Markdown Table Format
 
-```@repl markdown
-t = 0:1:20
+The markdown table format is defined using an object of type [`MarkdownTableFormat`](@ref)
+that contains the following fields:
 
-data = hcat(t, ones(length(t)) * 1, 1 * t, 0.5 .* t.^2)
+- `title_heading_level::Int`: Title heading level.
+- `subtitle_heading_level::Int`: Subtitle heading level.
+- `horizontal_line_char::Char`: Character used to draw the horizontal line.
+- `line_before_summary_rows::Bool`: Whether to draw a line before the summary rows.
 
-header = (
-    ["Time", "Acceleration", "Velocity", "Distance"],
-    [ "[s]",       "[m/s²]",    "[m/s]",      "[m]"]
-)
+## Markdown Table Style
 
-hl_v = MarkdownHighlighter(
-    (data, i, j) -> (j == 3) && data[i, 3] > 9,
-    MarkdownDecoration(bold = true)
-)
+The markdown table style is defined using an object of type [`MarkdownTableStyle`](@ref)
+that contains the following fields:
 
-hl_p = MarkdownHighlighter(
-    (data, i, j) -> (j == 4) && data[i, 4] > 10,
-    MarkdownDecoration(italic = true)
-)
+- `row_number_label::MarkdownStyle`: Style for the row number label.
+- `row_number::MarkdownStyle`: Style for the row number.
+- `stubhead_label::MarkdownStyle`: Style for the stubhead label.
+- `row_label::MarkdownStyle`: Style for the row label.
+- `row_group_label::MarkdownStyle`: Style for the row group label.
+- `first_column_label::MarkdownStyle`: Style for the first line of the column labels.
+- `column_label::MarkdownStyle`: Style for the column label.
+- `summary_row_label::MarkdownStyle`: Style for the summary row label.
+- `summary_row_cell::MarkdownStyle`: Style for the summary row cell.
+- `footnote::MarkdownStyle`: Style for the footnote.
+- `source_note::MarkdownStyle`: Style for the source note.
+- `omitted_cell_summary::MarkdownStyle`: Style for the omitted cell summary.
 
-pretty_table(
-    data;
-    alignment = [:c, :r, :c, :l],
-    backend = Val(:markdown),
-    header = header,
-    highlighters = (hl_p, hl_v)
+Each field is an instance of the structure [`MarkdownStyle`](@ref) describing the style to
+be applied to the corresponding element.
+
+For example, if we want that the stubhead label is bold and italic, we must define:
+
+```julia
+style = MarkdownTableStyle(
+    stubhead_label = MarkdownStyle(bold = true, italic = true)
 )
 ```
