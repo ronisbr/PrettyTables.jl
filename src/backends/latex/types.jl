@@ -15,9 +15,11 @@ export LatexHighlighter
 const LatexEnvironments = Vector{String}
 
 # Create some default decorations to reduce allocations.
-const _LATEX__DEFAULT = String[]
-const _LATEX__BOLD    = ["textbf"]
-const _LATEX__ITALIC  = ["textit"]
+const _LATEX__DEFAULT      = String[]
+const _LATEX__BOLD         = ["textbf"]
+const _LATEX__ITALIC       = ["textit"]
+const _LATEX__SMALL        = ["small"]
+const _LATEX__SMALL_ITALIC = ["small", "textit"]
 
 @kwdef struct LatexTableBorders
     top_line::String    = "\\hline"
@@ -134,8 +136,8 @@ Define the style of the tables printed with the latex back end.
     merged_column_label::LatexEnvironments            = _LATEX__BOLD
     summary_row_cell::LatexEnvironments               = _LATEX__DEFAULT
     summary_row_label::LatexEnvironments              = _LATEX__BOLD
-    footnote::LatexEnvironments                       = _LATEX__DEFAULT
-    source_note::LatexEnvironments                    = _LATEX__BOLD
+    footnote::LatexEnvironments                       = _LATEX__SMALL
+    source_note::LatexEnvironments                    = _LATEX__SMALL_ITALIC
     omitted_cell_summary::LatexEnvironments           = _LATEX__DEFAULT
 end
 

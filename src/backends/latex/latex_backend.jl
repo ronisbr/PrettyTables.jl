@@ -155,7 +155,7 @@ function _latex__print(
 
                 cell === _IGNORE_CELL && continue
 
-                # If we are in a column label, check if we must merge the cell.
+                # First, we handle merged cells.
                 if (action == :column_label) && (cell isa MergeCells)
                     # Check if we have enough data columns to merge the cell.
                     num_data_columns = _number_of_printed_data_columns(table_data)
@@ -192,6 +192,24 @@ function _latex__print(
                     rendered_cell = _latex__add_environments(rendered_cell, envs)
 
                     # Merge the cells.
+                    rendered_cell = "\\multicolumn{$cs}{$alignment}{$rendered_cell}"
+
+                # Check if we must merge the cell to render the footnotes or source
+                # notes.
+                elseif (action == :footnote)
+                    alignment     = _latex__alignment_to_str(table_data.footnote_alignment)
+                    cs            = _number_of_printed_columns(table_data)
+                    rendered_cell = "\$^{$(ps.i)}\$" * _latex__render_cell(cell, buf, renderer)
+
+                    rendered_cell = _latex__add_environments(rendered_cell, style.footnote)
+                    rendered_cell = "\\multicolumn{$cs}{$alignment}{$rendered_cell}"
+
+                elseif (action == :source_notes)
+                    alignment     = _latex__alignment_to_str(table_data.footnote_alignment)
+                    cs            = _number_of_printed_columns(table_data)
+                    rendered_cell = _latex__render_cell(cell, buf, renderer)
+
+                    rendered_cell = _latex__add_environments(rendered_cell, style.source_note)
                     rendered_cell = "\\multicolumn{$cs}{$alignment}{$rendered_cell}"
 
                 else
@@ -269,18 +287,9 @@ function _latex__print(
                     end
 
                     rendered_cell = _latex__add_environments(rendered_cell, envs)
-
-                    # Check if we must merge the cell to render the footnotes or source
-                    # notes.
-                    if (action == :footnote)
-                        alignment = _latex__alignment_to_str(table_data.footnote_alignment)
-                        cs = _number_of_printed_columns(table_data)
-                        id = "\$^{$(ps.i)}\$"
-                        rendered_cell = "\\multicolumn{$cs}{$alignment}{$id: $rendered_cell}"
-                    end
                 end
 
-                first_column = ps.j == 1 || (action == :footnote)
+                first_column = ps.j == 1 || (action ∈ (:footnote, :source_notes))
 
                 # TODO: Check footnotes.
                 if !isempty(rendered_cell)
