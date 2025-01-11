@@ -139,6 +139,7 @@ function _latex__print(
             cs            = _number_of_printed_columns(table_data)
 
             print(buf, "\\multicolumn{$cs}{$alignment}{$rendered_cell}")
+
         else
             if action == :diagonal_continuation_cell
                 print(buf, " & \$\\ddots\$")
@@ -192,9 +193,25 @@ function _latex__print(
 
                     # Merge the cells.
                     rendered_cell = "\\multicolumn{$cs}{$alignment}{$rendered_cell}"
+
                 else
                     rendered_cell = _latex__render_cell(cell, buf, renderer)
                     alignment = _current_cell_alignment(action, ps, table_data)
+
+                    # Check for footnotes.
+                    footnotes = _current_cell_footnotes(table_data, action, ps.i, ps.j)
+
+                    if !isnothing(footnotes) && !isempty(footnotes)
+                        rendered_cell *= "\$^{"
+                        for i in eachindex(footnotes)
+                            f = footnotes[i]
+                            if i != last(eachindex(footnotes))
+                                rendered_cell *= "$f,"
+                            else
+                                rendered_cell *= "$f}\$"
+                            end
+                        end
+                    end
 
                     # Apply the style to the cell.
                     envs = nothing
@@ -252,11 +269,22 @@ function _latex__print(
                     end
 
                     rendered_cell = _latex__add_environments(rendered_cell, envs)
+
+                    # Check if we must merge the cell to render the footnotes or source
+                    # notes.
+                    if (action == :footnote)
+                        alignment = _latex__alignment_to_str(table_data.footnote_alignment)
+                        cs = _number_of_printed_columns(table_data)
+                        id = "\$^{$(ps.i)}\$"
+                        rendered_cell = "\\multicolumn{$cs}{$alignment}{$id: $rendered_cell}"
+                    end
                 end
+
+                first_column = ps.j == 1 || (action == :footnote)
 
                 # TODO: Check footnotes.
                 if !isempty(rendered_cell)
-                    ps.j != 1 && print(buf, " & ")
+                    !first_column && print(buf, " & ")
                     print(buf, rendered_cell)
                 end
             end
