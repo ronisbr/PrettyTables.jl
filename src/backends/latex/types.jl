@@ -31,11 +31,11 @@ Define the format of the tables printed with the LaTeX back end.
 
 # Fields
 
-- `borders::TextTableBorders`: Format of the borders.
+- `borders::LatexTableBorders`: Format of the borders.
 - `horizontal_line_at_beginning::Bool`: If `true`, a horizontal line will be drawn at the
     beginning of the table.
 - `horizontal_line_after_column_labels::Bool`: If `true`, a horizontal line will be drawn
-    after the colum labels.
+    after the column labels.
 - `horizontal_lines_at_data_rows::Union{Symbol, Vector{Int}}`: A horizontal line will be
     drawn after each data row index listed in this vector. If the symbol `:all` is passed, a
     horizontal line will be drawn after every data column. If the symbol `:none` is passed,
@@ -44,10 +44,10 @@ Define the format of the tables printed with the LaTeX back end.
     drawn before the row group label.
 - `horizontal_line_after_row_group_label::Bool`: If `true`, a horizontal line will be
     drawn after the row group label.
-- `horizontal_line_before_summary_rows::Bool`: If `true`, a horizontal line will be drawn
-    before the summary rows.
-- `horizontal_line_at_end::Bool`: If `true`, a horizontal line will be drawn at the end of
-    the table.
+- `horizontal_line_after_data_rows::Bool`: If `true`, a horizontal line will be drawn
+    after the data rows.
+- `horizontal_line_after_summary_rows::Bool`: If `true`, a horizontal line will be drawn
+    after the summary rows.
 - `right_vertical_lines_at_data_columns::Union{Symbol, Vector{Int}}`: A vertical line will
     be drawn after each data column index listed in this vector. If the symbol `:all` is
     passed, a vertical line will be drawn after every data column. If the symbol `:none` is
@@ -62,32 +62,6 @@ Define the format of the tables printed with the LaTeX back end.
     the data columns.
 - `vertical_line_after_continuation_column::Bool`: If `true`, a vertical line will be
     drawn after the continuation column.
-- `title_decoration::Crayon`: Crayon with the decoration for the title.
-- `subtitle_decoration::Crayon`: Crayon with the decoration for the subtitle.
-- `row_number_label_decoration::Crayon`: Crayon with the decoration for the row number
-    label.
-- `row_number_decoration::Crayon`: Crayon with the decoration for the row numbers.
-- `stubhead_label_decoration::Crayon`:  Crayon with the decoration for the stubhead label.
-- `row_label_decoration::Crayon`: Crayon with the decoration for the row labels.
-- `row_group_label_decoration::Crayon`: Crayon with the decoration for the row group label.
-- `first_line_column_label_decoration::Crayon`: Crayon with the decoration for the first
-    column label lines.
-- `column_label_decoration::Crayon`: Crayon with the decoration for the rest of the column
-    labels.
-- `first_line_merged_column_label_decoration::Crayon`: Crayon with the decoration for
-    the first merged cells at the first column label line.
-- `merged_column_label_decoration::Crayon`: Crayon with the decoration for the merged
-    cells at the rest of the column labels.
-- `summary_row_cell_decoration::Crayon`: Crayon with the decoration for the summary row
-    cell.
-- `summary_row_label_decoration::Crayon`: Crayon with the decoration for the summary row
-    label.
-- `footnote_decoration::Crayon`: Crayon with the decoration for the footnotes.
-- `source_note_decoration::Crayon`: Crayon with the decoration for the source notes.
-- `omitted_cell_summary_decoration::Crayon`: Crayon with the decoration for the omitted
-    cell summary.
-- `ellipsis_line_skip::Integer`: Number of lines to skip when printing an ellipsis.
-- `new_line_at_end::Bool`: If `true`, a new line will be added at the end of the table.
 """
 @kwdef struct LatexTableFormat
     # == Border and Lines ==================================================================
@@ -111,7 +85,6 @@ Define the format of the tables printed with the LaTeX back end.
     vertical_line_after_continuation_column::Bool = true
 
     right_vertical_lines_at_data_columns::Union{Symbol, Vector{Int}} = :all
-    suppress_vertical_lines_at_column_labels::Bool = false
 end
 
 """

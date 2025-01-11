@@ -46,8 +46,10 @@ function _latex__print(
         il += 1
     end
 
-    # TODO: Create the table description.
-    _aprintln(buf, "\\begin{tabular}", il, ns)
+    # Create the table header description for the current table.
+    desc = _latex__table_header_description(table_data, tf)
+
+    _aprintln(buf, "\\begin{tabular}{$desc}", il, ns)
     il += 1
 
     # Print the top line, if required.

@@ -7,6 +7,21 @@
 # == Strings ===============================================================================
 
 """
+    _latex__alignment_to_str(a::Symbol) -> String
+
+Convert the alignment `a` to the corresponding string for LaTeX.
+"""
+function _latex__alignment_to_str(a::Symbol)
+    return if a ∈ (:l, :L)
+        "l"
+    elseif a ∈ (:c, :C)
+        "c"
+    else
+        "r"
+    end
+end
+
+"""
     _latex__escape_str(@nospecialize(io::IO), s::AbstractString, replace_newline::Bool = false, escape_latex_chars::Bool = true) -> Nothing
     _latex__escape_str(s::AbstractString, replace_newline::Bool = false, escape_latex_chars::Bool = true) -> String
 
@@ -60,10 +75,74 @@ function _latex__escape_str(
 end
 
 function _latex__escape_str(s::AbstractString, esc::String = "")
-    return sprint(
-        _latex__escape_str,
-        s,
-        esc,
-        sizehint = lastindex(s)
-    )
+    return sprint(_latex__escape_str, s, esc; sizehint = lastindex(s))
+end
+
+# == Table =================================================================================
+
+"""
+    _latex__table_header_description(td::TableData, tf::LatexTableFormat) -> String
+
+Create the LaTeX table header description with the column alignments and vertical lines
+considering the table data `td` and table format `tf`.
+"""
+function _latex__table_header_description(td::TableData, tf::LatexTableFormat)
+    num_columns = td.num_columns
+
+    desc = IOBuffer(sizehint = 2num_columns + 3)
+
+    # == Table Beginning ===================================================================
+
+    tf.vertical_line_at_beginning && print(desc, '|')
+
+    # == Row Number Column =================================================================
+
+    if td.show_row_number_column
+        print(desc, _row_number_column_alignment(td) |> _latex__alignment_to_str)
+
+        if tf.vertical_line_after_row_number_column
+            print(desc, '|')
+        end
+    end
+
+    # == Row Labels ========================================================================
+
+    if _has_row_labels(td)
+        print(desc, _row_label_column_alignment(td) |> _latex__alignment_to_str)
+        tf.vertical_line_after_row_label_column && print(desc, '|')
+    end
+
+    # == Data Columns ======================================================================
+
+    nc = if td.maximum_number_of_columns >= 0
+        data_columns = min(td.maximum_number_of_columns, num_columns)
+    else
+        data_columns = num_columns
+    end
+
+    all_vert_lines = tf.right_vertical_lines_at_data_columns == :all
+
+    for i in 1:nc
+        print(desc, _data_column_alignment(td, i) |> _latex__alignment_to_str)
+
+        tf.right_vertical_lines_at_data_columns == :none && continue
+
+        # If we reached this point, the user does not want all the vertical lines, and the
+        # variable `right_vertical_lines_at_data_columns` is a Symbol, it must be an
+        # unsupported one. Hence, we just skip.
+        !all_vert_lines && tf.right_vertical_lines_at_data_columns isa Symbol && continue
+
+        if all_vert_lines || (i in tf.right_vertical_lines_at_data_columns)
+            print(desc, '|')
+        end
+    end
+
+    # == Continuation Column ===============================================================
+
+    if nc < num_columns
+        print(desc, 'c')
+        tf.vertical_line_after_continuation_column && print(desc, '|')
+    end
+
+    return String(take!(desc))
 end
