@@ -91,9 +91,11 @@ function _latex__print(
             elseif (rs == :data) && (ps.i ∈ horizontal_lines_at_data_rows)
                 print(buf, tf.borders.middle_line)
 
-            elseif (rs == :data) &&
-                (next_rs ∈ (:summary_row, :table_footer, :end_printing)) &&
-                tf.horizontal_line_after_data_rows
+            elseif (
+                    (rs ∈ (:data, :continuation_row)) &&
+                    (next_rs ∈ (:summary_row, :table_footer, :end_printing)) &&
+                    tf.horizontal_line_after_data_rows
+                )
 
                 bottom = next_rs ∈ (:table_footer, :end_printing)
 
