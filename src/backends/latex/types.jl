@@ -5,6 +5,7 @@
 ############################################################################################
 
 export LatexTableBorders, LatexTableFormat, LatexTableStyle
+export LatexHighlighter
 
 ############################################################################################
 #                                       Table Format                                       #
@@ -15,7 +16,8 @@ const LatexEnvironments = Vector{String}
 
 # Create some default decorations to reduce allocations.
 const _LATEX__DEFAULT = String[]
-const _LATEX__BOLD    = ["\\textbf"]
+const _LATEX__BOLD    = ["textbf"]
+const _LATEX__ITALIC  = ["textit"]
 
 @kwdef struct LatexTableBorders
     top_line::String    = "\\hline"
@@ -88,28 +90,35 @@ Define the format of the tables printed with the LaTeX back end.
 end
 
 """
-    struct TextTableStyle
+    struct LatextTableStyle
 
-Define the style of the tables printed with the text back end.
+Define the style of the tables printed with the latex back end.
 
 # Fields
 
-- `row_number::Crayon`: Crayon with the style for the row numbers.
-- `stubhead_label::Crayon`:  Crayon with the style for the stubhead label.
-- `row_label::Crayon`: Crayon with the style for the row labels.
-- `row_group_label::Crayon`: Crayon with the style for the row group label.
-- `first_line_column_label::Crayon`: Crayon with the style for the first column label lines.
-- `column_label::Crayon`: Crayon with the style for the rest of the column labels.
-- `first_line_merged_column_label::Crayon`: Crayon with the style for the merged cells at
-    the first column label line.
-- `merged_column_label::Crayon`: Crayon with the style for the merged cells at the rest of
-    the column labels.
-- `summary_row_cell::Crayon`: Crayon with the style for the summary row cell.
-- `summary_row_label::Crayon`: Crayon with the style for the summary row label.
-- `footnote::Crayon`: Crayon with the style for the footnotes.
-- `source_note::Crayon`: Crayon with the style for the source notes.
-- `omitted_cell_summary::Crayon`: Crayon with the style for the omitted cell summary.
-- `table_border::Crayon`: Crayon with the style for the table border.
+- `row_number::LatexEnvironments`: Latex environments with the style for the row numbers.
+- `stubhead_label::LatexEnvironments`:  Latex environments with the style for the stubhead
+    label.
+- `row_label::LatexEnvironments`: Latex environments with the style for the row labels.
+- `row_group_label::LatexEnvironments`: Latex environments with the style for the row group
+    label.
+- `first_line_column_label::LatexEnvironments`: Latex environments with the style for the
+    first column label lines.
+- `column_label::LatexEnvironments`: Latex environments with the style for the rest of the
+    column labels.
+- `first_line_merged_column_label::LatexEnvironments`: Latex environments with the style for
+    the merged cells at the first column label line.
+- `merged_column_label::LatexEnvironments`: Latex environments with the style for the merged
+    cells at the rest of the column labels.
+- `summary_row_cell::LatexEnvironments`: Latex environments with the style for the summary
+    row cell.
+- `summary_row_label::LatexEnvironments`: Latex environments with the style for the summary
+    row label.
+- `footnote::LatexEnvironments`: Latex environments with the style for the footnotes.
+- `source_note::LatexEnvironments`: Latex environments with the style for the source notes.
+- `omitted_cell_summary::LatexEnvironments`: Latex environments with the style for the
+    omitted cell summary.
+- `table_border::LatexEnvironments`: Latex environments with the style for the table border.
 """
 @kwdef struct LatexTableStyle
     title::LatexEnvironments                          = _LATEX__BOLD
@@ -120,7 +129,7 @@ Define the style of the tables printed with the text back end.
     row_label::LatexEnvironments                      = _LATEX__BOLD
     row_group_label::LatexEnvironments                = _LATEX__BOLD
     first_line_column_label::LatexEnvironments        = _LATEX__BOLD
-    column_label::LatexEnvironments                   = _LATEX__BOLD
+    column_label::LatexEnvironments                   = _LATEX__ITALIC
     first_line_merged_column_label::LatexEnvironments = _LATEX__BOLD
     merged_column_label::LatexEnvironments            = _LATEX__BOLD
     summary_row_cell::LatexEnvironments               = _LATEX__DEFAULT
@@ -129,3 +138,71 @@ Define the style of the tables printed with the text back end.
     source_note::LatexEnvironments                    = _LATEX__BOLD
     omitted_cell_summary::LatexEnvironments           = _LATEX__DEFAULT
 end
+
+############################################################################################
+#                                     LatexHighlighter                                     #
+############################################################################################
+
+"""
+    LatexHighlighter
+
+Defines the default highlighter of a table when using the LaTeX backend.
+
+# Fields
+
+- `f::Function`: Function with the signature `f(data, i, j)` in which should return `true`
+    if the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
+- `fd`: A function with the signature `f(h, data, i, j)::Vector{String}` in which `h` is the
+    highlighter object, `data` is the matrix, and `(i, j)` is the element position in the
+    table. This function should return a vector with the LaTeX environments to be applied to
+    the cell.
+
+# Remarks
+
+This structure can be constructed using two helpers:
+
+```julia
+LatexHighlighter(f::Function, envs::Vector{String})
+```
+
+where it will apply recursively all the LaTeX environments in `envs` to the highlighted
+text, and
+
+```julia
+LatexHighlighter(f::Function, fd::Function)
+```
+
+where the user select the desired decoration by specifying the function `fd`.
+
+Thus, for example:
+
+```julia
+LatexHighlighter((data, i, j) -> true, ["textbf", "small"])
+```
+
+will wrap all the cells in the table in the following environment:
+
+```latex
+\\textbf{\\small{<Cell text>}}
+```
+"""
+@kwdef struct LatexHighlighter
+    f::Function
+    fd::Function
+
+    # == Private Fields ====================================================================
+
+    _environments::LatexEnvironments
+
+    # == Constructors ======================================================================
+
+    function LatexHighlighter(f::Function, fd::Function)
+        return new(f, fd, _LATEX__DEFAULT)
+    end
+
+    function LatexHighlighter(f::Function, envs::Vector{String})
+        return new(f, _latex__default_highlighter_fd, envs)
+    end
+end
+
+_latex__default_highlighter_fd(h::LatexHighlighter, ::Any, ::Int, ::Int) = h._environments

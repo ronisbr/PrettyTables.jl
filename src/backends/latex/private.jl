@@ -22,6 +22,25 @@ function _latex__alignment_to_str(a::Symbol)
 end
 
 """
+    _latex__add_environments(str::String, envs::Union{Nothing, Vector{String}}) -> String
+
+Apply the latex environments in `envs` to the string `str`. If `envs` is `nothing`, it
+returns `str` unchanged.
+"""
+function _latex__add_environments(str::String, envs::Vector{String})
+    # Do not apply any environment if the string is empty.
+    isempty(str) && return str
+
+    for env in envs
+        str = "\\$env{$str}"
+    end
+
+    return str
+end
+
+_latex__add_environments(s::String, ::Nothing) = s
+
+"""
     _latex__escape_str(@nospecialize(io::IO), s::AbstractString, replace_newline::Bool = false, escape_latex_chars::Bool = true) -> Nothing
     _latex__escape_str(s::AbstractString, replace_newline::Bool = false, escape_latex_chars::Bool = true) -> String
 
@@ -81,12 +100,17 @@ end
 # == Table =================================================================================
 
 """
-    _latex__table_header_description(td::TableData, tf::LatexTableFormat) -> String
+    _latex__table_header_description(td::TableData, tf::LatexTableFormat, right_vertical_lines_at_data_columns::AbstractVector{Int}) -> String
 
 Create the LaTeX table header description with the column alignments and vertical lines
-considering the table data `td` and table format `tf`.
+considering the table data `td`, table format `tf`, and the processed information about
+right vertical lines at data columns `right_vertical_lines_at_data_columns`.
 """
-function _latex__table_header_description(td::TableData, tf::LatexTableFormat)
+function _latex__table_header_description(
+    td::TableData,
+    tf::LatexTableFormat,
+    right_vertical_lines_at_data_columns::AbstractVector{Int}
+)
     num_columns = td.num_columns
 
     desc = IOBuffer(sizehint = 2num_columns + 3)
@@ -120,21 +144,16 @@ function _latex__table_header_description(td::TableData, tf::LatexTableFormat)
         data_columns = num_columns
     end
 
-    all_vert_lines = tf.right_vertical_lines_at_data_columns == :all
-
     for i in 1:nc
         print(desc, _data_column_alignment(td, i) |> _latex__alignment_to_str)
 
-        tf.right_vertical_lines_at_data_columns == :none && continue
+        vline = i in right_vertical_lines_at_data_columns
 
-        # If we reached this point, the user does not want all the vertical lines, and the
-        # variable `right_vertical_lines_at_data_columns` is a Symbol, it must be an
-        # unsupported one. Hence, we just skip.
-        !all_vert_lines && tf.right_vertical_lines_at_data_columns isa Symbol && continue
-
-        if all_vert_lines || (i in tf.right_vertical_lines_at_data_columns)
-            print(desc, '|')
+        if (i == nc) && tf.vertical_line_after_data_columns
+            vline = true
         end
+
+        vline &&  print(desc, '|')
     end
 
     # == Continuation Column ===============================================================
