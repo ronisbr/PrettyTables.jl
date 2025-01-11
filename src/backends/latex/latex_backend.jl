@@ -11,6 +11,8 @@ end
 
 function _latex__print(
     pspec::PrintingSpec;
+    highlighters::Union{Nothing, Vector{LatexHighlighter}} = nothing,
+    style::LatexTableStyle = LatexTableStyle(),
     table_format::LatexTableFormat = LatexTableFormat(),
     wrap_table::Bool = false
 )
@@ -34,6 +36,19 @@ function _latex__print(
         horizontal_lines_at_data_rows = tf.horizontal_lines_at_data_rows::Vector{Int}
     end
 
+    # Process the vertical lines at data columns.
+    if tf.right_vertical_lines_at_data_columns isa Symbol
+        right_vertical_lines_at_data_columns =
+            if tf.right_vertical_lines_at_data_columns == :all
+                1:table_data.num_columns
+            else
+                1:0
+            end
+    else
+        right_vertical_lines_at_data_columns =
+            tf.right_vertical_lines_at_data_columns::Vector{Int}
+    end
+
     # == Variables to Store Information About Indentation ==================================
 
     il = 0 # ..................................................... Current indentation level
@@ -47,7 +62,11 @@ function _latex__print(
     end
 
     # Create the table header description for the current table.
-    desc = _latex__table_header_description(table_data, tf)
+    desc = _latex__table_header_description(
+        table_data,
+        tf,
+        right_vertical_lines_at_data_columns
+    )
 
     _aprintln(buf, "\\begin{tabular}{$desc}", il, ns)
     il += 1
@@ -122,13 +141,13 @@ function _latex__print(
             print(buf, "\\multicolumn{$cs}{$alignment}{$rendered_cell}")
         else
             if action == :diagonal_continuation_cell
-                print(buf, "\$\\ddots\$ ")
+                print(buf, " & \$\\ddots\$")
 
             elseif action == :horizontal_continuation_cell
-                print(buf, "\$\\cdots\$ ")
+                print(buf, " & \$\\cdots\$")
 
             elseif action ∈ _VERTICAL_CONTINUATION_CELL_ACTIONS
-                print(buf, "\$\\vdots\$ ")
+                print(buf, " & \$\\vdots\$")
 
             else
                 cell = _current_cell(action, ps, table_data)
@@ -146,23 +165,101 @@ function _latex__print(
                         cell.column_span
                     end
 
-                    alignment = cell.alignment
+                    alignment = _latex__alignment_to_str(cell.alignment)
+
+                    # We must check if we have a vertical line after the cell merge.
+                    vline = if (
+                        (ps.j + cs - 1 ∈ right_vertical_lines_at_data_columns) ||
+                        (
+                            (ps.j + cs - 1 == num_data_columns) &&
+                            tf.vertical_line_after_data_columns
+                        )
+                    )
+                        true
+                    else
+                        false
+                    end
+
+                    if vline
+                        alignment *= "|"
+                    end
 
                     rendered_cell = _latex__render_cell(cell.data, buf, renderer)
+
+                    # Apply the style to the text.
+                    envs = ps.j == 1 ? style.first_line_column_label : style.column_label
+                    rendered_cell = _latex__add_environments(rendered_cell, envs)
+
+                    # Merge the cells.
                     rendered_cell = "\\multicolumn{$cs}{$alignment}{$rendered_cell}"
                 else
                     rendered_cell = _latex__render_cell(cell, buf, renderer)
                     alignment = _current_cell_alignment(action, ps, table_data)
+
+                    # Apply the style to the cell.
+                    envs = nothing
+
+                    # Get the environment of the cell, if any.
+                    if action == :title
+                        envs = style.title
+
+                    elseif action == :subtitle
+                        envs = style.subtitle
+
+                    elseif action == :row_number_label
+                        envs = style.row_number_label
+
+                    elseif action == :row_number
+                        envs = style.row_number
+
+                    elseif action == :summary_row_number
+                        envs = style.row_number
+
+                    elseif action == :stubhead_label
+                        envs = style.stubhead_label
+
+                    elseif action == :row_group_label
+                        envs = style.row_group_label
+
+                    elseif action == :row_label
+                        envs = style.row_label
+
+                    elseif action == :summary_row_label
+                        envs = style.summary_row_label
+
+                    elseif action == :column_label
+                        envs = ps.i == 1 ? style.first_line_column_label : style.column_label
+
+                    elseif action == :summary_row_cell
+                        envs = style.summary_row_cell
+
+                    elseif action == :footnote
+                        envs = style.footnote
+
+                    elseif action == :source_notes
+                        envs = style.source_note
+
+                    else
+                        # Here we have a data cell. Hence, let's check if we have a
+                        # highlighter to apply.
+                        if !isnothing(highlighters)
+                            for h in highlighters
+                                if h.f(table_data.data, ps.i, ps.j)
+                                    envs = h.fd(h, table_data.data, ps.i, ps.j)
+                                end
+                            end
+                        end
+                    end
+
+                    rendered_cell = _latex__add_environments(rendered_cell, envs)
                 end
 
                 # TODO: Check footnotes.
                 if !isempty(rendered_cell)
+                    ps.j != 1 && print(buf, " & ")
                     print(buf, rendered_cell)
-                    next_action != :end_row && print(buf, " ")
                 end
             end
-
-            next_action != :end_row && print(buf, "& ")
         end
     end
 
