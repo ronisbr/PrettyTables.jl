@@ -152,14 +152,17 @@ function _latex__print(
             cs            = _number_of_printed_columns(table_data)
 
             # Check for vertical lines.
-            beg_vline = tf.vertical_line_at_beginning ? "|" : ""
-            end_vline = if _is_horizontally_cropped(table_data)
-                tf.vertical_line_after_continuation_column ? "|" : ""
+            vline_before = tf.vertical_line_at_beginning
+            vline_after  = if _is_horizontally_cropped(table_data)
+                tf.vertical_line_after_continuation_column
             else
-                tf.vertical_line_after_data_columns ? "|" : ""
+                tf.vertical_line_after_data_columns
             end
 
-            print(buf, "\\multicolumn{$cs}{$beg_vline$alignment$end_vline}{$rendered_cell}")
+            border₀ = vline_before ? "|" : ""
+            border₁ = vline_after ? "|" : ""
+
+            print(buf, "\\multicolumn{$cs}{$border₀$alignment$border₁}{$rendered_cell}")
 
         else
             rendered_cell = nothing
@@ -274,13 +277,7 @@ function _latex__print(
                     envs = nothing
 
                     # Get the environment of the cell, if any.
-                    if action == :title
-                        envs = style.title
-
-                    elseif action == :subtitle
-                        envs = style.subtitle
-
-                    elseif action == :row_number_label
+                    if action == :row_number_label
                         envs = style.row_number_label
 
                     elseif action == :row_number
@@ -316,7 +313,7 @@ function _latex__print(
                     else
                         # Here we have a data cell. Hence, let's check if we have a
                         # highlighter to apply.
-                        if !isnothing(highlighters)
+                       if !isnothing(highlighters)
                             for h in highlighters
                                 if h.f(table_data.data, ps.i, ps.j)
                                     envs = h.fd(h, table_data.data, ps.i, ps.j)
@@ -327,7 +324,19 @@ function _latex__print(
 
                     rendered_cell = _latex__add_environments(rendered_cell, envs)
 
-                    # TODO: Check footnotes.
+                    # Check if we need to override the alignment.
+                    if (
+                        action == :data &&
+                        alignment != _data_column_alignment(table_data, ps.j)
+                    )
+                        vline_before = (ps.j - 1) ∈ right_vertical_lines_at_data_columns
+                        vline_after  = ps.j ∈ right_vertical_lines_at_data_columns
+
+                        border₀ = vline_before ? "|" : ""
+                        border₁ = vline_after ? "|" : ""
+
+                        rendered_cell = "\\multicolumn{1}{$border₀$alignment$border₁}{$rendered_cell}"
+                    end
                 end
 
                 # If `rendered_cell` is `nothing`, we did not processed the cell. Hence, we
