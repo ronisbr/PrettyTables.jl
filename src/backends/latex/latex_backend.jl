@@ -13,8 +13,7 @@ function _latex__print(
     pspec::PrintingSpec;
     highlighters::Union{Nothing, Vector{LatexHighlighter}} = nothing,
     style::LatexTableStyle = LatexTableStyle(),
-    table_format::LatexTableFormat = LatexTableFormat(),
-    wrap_table::Bool = false
+    table_format::LatexTableFormat = LatexTableFormat()
 )
     context    = pspec.context
     table_data = pspec.table_data
@@ -55,11 +54,6 @@ function _latex__print(
     ns = 2 # .................................... Number of spaces in each indentation level
 
     # == Print LaTeX Header ================================================================
-
-    if wrap_table
-        _aprintln(buf, "\\begin{table}", il, ns)
-        il += 1
-    end
 
     # Create the table header description for the current table.
     desc = _latex__table_header_description(
