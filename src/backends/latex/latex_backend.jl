@@ -71,12 +71,12 @@ function _latex__print(
     _aprintln(buf, "\\begin{tabular}{$desc}", il, ns)
     il += 1
 
-    # Print the top line, if required.
-    tf.horizontal_line_at_beginning && _aprintln(buf, tf.borders.top_line, il, ns)
-
     # == Table =============================================================================
 
     action = :initialize
+
+    first_table_line = true
+    first_element_in_row = true
 
     while action != :end_printing
         action, rs, ps = _next(ps, table_data)
@@ -87,6 +87,15 @@ function _latex__print(
         next_action, next_rs, _ = _next(ps, table_data)
 
         if action == :new_row
+            first_element_in_row = true
+
+            # If we are in the very first row after the title section, we need to check if
+            # the user wants a vertical line before the table.
+            if (rs != :table_header) && first_table_line && tf.horizontal_line_at_beginning
+                _aprintln(buf, tf.borders.top_line, il, ns)
+                first_table_line = false
+            end
+
             # Here, we just need to apply the indentation.
             print(buf, " "^(ns * il))
 
@@ -96,7 +105,11 @@ function _latex__print(
             # == Handle the Horizontal Lines ===============================================
 
             # Print the horizontal line after the column labels.
-            if (rs == :column_labels) && (ps.row_section != :column_labels) &&
+            if (rs == :table_header) && (next_rs != :table_header) && tf.horizontal_line_at_beginning
+                print(buf, tf.borders.header_line)
+                first_table_line = false
+
+            elseif (rs == :column_labels) && (ps.row_section != :column_labels) &&
                 tf.horizontal_line_after_column_labels
 
                 print(buf, tf.borders.header_line)
@@ -131,24 +144,34 @@ function _latex__print(
             end
 
             println(buf)
+
         elseif action == :row_group_label
             cell          = _current_cell(action, ps, table_data)
-
             alignment     = _current_cell_alignment(action, ps, table_data)
             rendered_cell = _latex__render_cell(cell, buf, renderer)
             cs            = _number_of_printed_columns(table_data)
 
-            print(buf, "\\multicolumn{$cs}{$alignment}{$rendered_cell}")
+            # Check for vertical lines.
+            beg_vline = tf.vertical_line_at_beginning ? "|" : ""
+            end_vline = if _is_horizontally_cropped(table_data)
+                tf.vertical_line_after_continuation_column ? "|" : ""
+            else
+                tf.vertical_line_after_data_columns ? "|" : ""
+            end
+
+            print(buf, "\\multicolumn{$cs}{$beg_vline$alignment$end_vline}{$rendered_cell}")
 
         else
+            rendered_cell = nothing
+
             if action == :diagonal_continuation_cell
-                print(buf, " & \$\\ddots\$")
+                rendered_cell = "\$\\ddots\$"
 
             elseif action == :horizontal_continuation_cell
-                print(buf, " & \$\\cdots\$")
+                rendered_cell = "\$\\cdots\$"
 
             elseif action ∈ _VERTICAL_CONTINUATION_CELL_ACTIONS
-                print(buf, " & \$\\vdots\$")
+                rendered_cell = "\$\\vdots\$"
 
             else
                 cell = _current_cell(action, ps, table_data)
@@ -156,7 +179,25 @@ function _latex__print(
                 cell === _IGNORE_CELL && continue
 
                 # First, we handle merged cells.
-                if (action == :column_label) && (cell isa MergeCells)
+                if (action ∈ (:title, :subtitle))
+                    alignment = _latex__alignment_to_str(
+                        action == :title ?
+                            table_data.title_alignment :
+                            table_data.subtitle_alignment
+                    )
+
+                    cs = _number_of_printed_columns(table_data)
+
+                    rendered_cell = _latex__render_cell(cell, buf, renderer)
+
+                    rendered_cell = _latex__add_environments(
+                        rendered_cell,
+                        action == :title ? style.title : style.subtitle
+                    )
+
+                    rendered_cell = "\\multicolumn{$cs}{$alignment}{$rendered_cell}"
+
+                elseif (action == :column_label) && (cell isa MergeCells)
                     # Check if we have enough data columns to merge the cell.
                     num_data_columns = _number_of_printed_data_columns(table_data)
 
@@ -200,7 +241,6 @@ function _latex__print(
                     alignment     = _latex__alignment_to_str(table_data.footnote_alignment)
                     cs            = _number_of_printed_columns(table_data)
                     rendered_cell = "\$^{$(ps.i)}\$" * _latex__render_cell(cell, buf, renderer)
-
                     rendered_cell = _latex__add_environments(rendered_cell, style.footnote)
                     rendered_cell = "\\multicolumn{$cs}{$alignment}{$rendered_cell}"
 
@@ -208,7 +248,6 @@ function _latex__print(
                     alignment     = _latex__alignment_to_str(table_data.footnote_alignment)
                     cs            = _number_of_printed_columns(table_data)
                     rendered_cell = _latex__render_cell(cell, buf, renderer)
-
                     rendered_cell = _latex__add_environments(rendered_cell, style.source_note)
                     rendered_cell = "\\multicolumn{$cs}{$alignment}{$rendered_cell}"
 
@@ -287,15 +326,21 @@ function _latex__print(
                     end
 
                     rendered_cell = _latex__add_environments(rendered_cell, envs)
+
+                    # TODO: Check footnotes.
                 end
 
-                first_column = ps.j == 1 || (action ∈ (:footnote, :source_notes))
+                # If `rendered_cell` is `nothing`, we did not processed the cell. Hence, we
+                # should just skip.
+                isnothing(rendered_cell) && continue
 
-                # TODO: Check footnotes.
-                if !isempty(rendered_cell)
-                    !first_column && print(buf, " & ")
-                    print(buf, rendered_cell)
+                if first_element_in_row
+                    first_element_in_row = false
+                else
+                    print(buf, " & ")
                 end
+
+                print(buf, rendered_cell)
             end
         end
     end
