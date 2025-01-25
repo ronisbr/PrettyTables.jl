@@ -18,6 +18,7 @@ const LatexEnvironments = Vector{String}
 const _LATEX__DEFAULT      = String[]
 const _LATEX__BOLD         = ["textbf"]
 const _LATEX__ITALIC       = ["textit"]
+const _LATEX__LARGE_BOLD   = ["large", "textbf"]
 const _LATEX__SMALL        = ["small"]
 const _LATEX__SMALL_ITALIC = ["small", "textit"]
 
@@ -123,8 +124,8 @@ Define the style of the tables printed with the latex back end.
 - `table_border::LatexEnvironments`: Latex environments with the style for the table border.
 """
 @kwdef struct LatexTableStyle
-    title::LatexEnvironments                          = _LATEX__BOLD
-    subtitle::LatexEnvironments                       = _LATEX__DEFAULT
+    title::LatexEnvironments                          = _LATEX__LARGE_BOLD
+    subtitle::LatexEnvironments                       = _LATEX__ITALIC
     row_number_label::LatexEnvironments               = _LATEX__BOLD
     row_number::LatexEnvironments                     = _LATEX__DEFAULT
     stubhead_label::LatexEnvironments                 = _LATEX__BOLD
