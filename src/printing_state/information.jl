@@ -38,6 +38,12 @@ Return whether `table_data` has summary rows.
 """
 _has_summary_rows(table_data::TableData) = !isnothing(table_data.summary_rows)
 
+"""
+    _is_horizontally_cropped(table_data::TableData) -> Bool
+
+Return whether `table_data` is horizontally cropped, meaning that a continuation column must
+be printed.
+"""
 function _is_horizontally_cropped(table_data::TableData)
     return table_data.maximum_number_of_columns > 0 ?
         table_data.num_columns > table_data.maximum_number_of_columns :
