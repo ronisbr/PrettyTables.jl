@@ -159,6 +159,22 @@ function _latex__print(
             print(buf, "\\multicolumn{$cs}{$border₀$alignment$border₁}{$rendered_cell}")
 
         else
+            # Check for footnotes.
+            footnotes    = _current_cell_footnotes(table_data, action, ps.i, ps.j)
+            footnote_str = ""
+
+            if !isnothing(footnotes) && !isempty(footnotes)
+                footnote_str = "\$^{"
+                for i in eachindex(footnotes)
+                    f = footnotes[i]
+                    if i != last(eachindex(footnotes))
+                        footnote_str *= "$f,"
+                    else
+                        footnote_str *= "$f}\$"
+                    end
+                end
+            end
+
             rendered_cell = nothing
 
             if action == :diagonal_continuation_cell
@@ -192,6 +208,7 @@ function _latex__print(
                         action == :title ? style.title : style.subtitle
                     )
 
+                    rendered_cell = rendered_cell * footnote_str
                     rendered_cell = "\\multicolumn{$cs}{$alignment}{$rendered_cell}"
 
                 elseif (action == :column_label) && (cell isa MergeCells)
@@ -228,6 +245,7 @@ function _latex__print(
                     # Apply the style to the text.
                     envs = ps.j == 1 ? style.first_line_column_label : style.column_label
                     rendered_cell = _latex__add_environments(rendered_cell, envs)
+                    rendered_cell = rendered_cell * footnote_str
 
                     # Merge the cells.
                     rendered_cell = "\\multicolumn{$cs}{$alignment}{$rendered_cell}"
@@ -239,6 +257,7 @@ function _latex__print(
                     cs            = _number_of_printed_columns(table_data)
                     rendered_cell = "\$^{$(ps.i)}\$" * _latex__render_cell(cell, buf, renderer)
                     rendered_cell = _latex__add_environments(rendered_cell, style.footnote)
+                    rendered_cell = rendered_cell * footnote_str
                     rendered_cell = "\\multicolumn{$cs}{$alignment}{$rendered_cell}"
 
                 elseif (action == :source_notes)
@@ -246,26 +265,12 @@ function _latex__print(
                     cs            = _number_of_printed_columns(table_data)
                     rendered_cell = _latex__render_cell(cell, buf, renderer)
                     rendered_cell = _latex__add_environments(rendered_cell, style.source_note)
+                    rendered_cell = rendered_cell * footnote_str
                     rendered_cell = "\\multicolumn{$cs}{$alignment}{$rendered_cell}"
 
                 else
                     rendered_cell = _latex__render_cell(cell, buf, renderer)
                     alignment = _current_cell_alignment(action, ps, table_data)
-
-                    # Check for footnotes.
-                    footnotes = _current_cell_footnotes(table_data, action, ps.i, ps.j)
-
-                    if !isnothing(footnotes) && !isempty(footnotes)
-                        rendered_cell *= "\$^{"
-                        for i in eachindex(footnotes)
-                            f = footnotes[i]
-                            if i != last(eachindex(footnotes))
-                                rendered_cell *= "$f,"
-                            else
-                                rendered_cell *= "$f}\$"
-                            end
-                        end
-                    end
 
                     # Apply the style to the cell.
                     envs = nothing
@@ -317,6 +322,7 @@ function _latex__print(
                     end
 
                     rendered_cell = _latex__add_environments(rendered_cell, envs)
+                    rendered_cell = rendered_cell * footnote_str
 
                     # Check if we need to override the alignment.
                     if (
