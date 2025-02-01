@@ -39,7 +39,7 @@ function pretty_table(
     io::IO,
     data::Any;
 
-    backend::Symbol = :text,
+    backend::Symbol = :auto,
 
     # == Arguments for the IOContext =======================================================
 
@@ -396,6 +396,24 @@ function _pretty_table(
         renderer,
         show_omitted_cell_summary
     )
+
+    # If backend is `:auto`, obtain the backend from the `table_format` keyword. It it does
+    # not exist, use `:text`.
+    if backend == :auto
+        table_format = get(kwargs, :table_format, nothing)
+
+        if isnothing(table_format)
+            backend = :text
+        elseif table_format isa HtmlTableFormat
+            backend = :html
+        elseif table_format isa LatexTableFormat
+            backend = :latex
+        elseif table_format isa MarkdownTableFormat
+            backend = :markdown
+        else
+            backend = :text
+        end
+    end
 
     if backend == :latex
         _latex__print(pspec; kwargs...)
