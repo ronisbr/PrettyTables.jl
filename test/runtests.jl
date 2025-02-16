@@ -37,6 +37,11 @@ end
     include("./backends/html/stand_alone.jl")
 end
 
+@testset "LaTeX Back End Tests" verbose = true begin
+    include("./backends/latex/default.jl")
+    include("./backends/latex/full.jl")
+end
+
 @testset "Markdown Back End Tests" verbose = true begin
     include("./backends/markdown/alignment.jl")
     include("./backends/markdown/circular_reference.jl")
