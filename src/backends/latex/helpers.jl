@@ -61,13 +61,14 @@ julia> pretty_table(
 """
 macro latex__all_horizontal_lines()
     return :((
-        horizontal_line_at_beginning           = true,
-        horizontal_line_after_column_labels    = true,
-        horizontal_lines_at_data_rows          = :all,
-        horizontal_line_before_row_group_label = true,
-        horizontal_line_after_row_group_label  = true,
-        horizontal_line_after_data_rows        = true,
-        horizontal_line_after_summary_rows     = true,
+        horizontal_line_at_beginning            = true,
+        horizontal_line_at_merged_column_labels = true,
+        horizontal_line_after_column_labels     = true,
+        horizontal_lines_at_data_rows           = :all,
+        horizontal_line_before_row_group_label  = true,
+        horizontal_line_after_row_group_label   = true,
+        horizontal_line_after_data_rows         = true,
+        horizontal_line_after_summary_rows      = true,
     )...)
 end
 
@@ -187,13 +188,14 @@ julia> pretty_table(
 """
 macro latex__no_horizontal_lines()
     return :((
-        horizontal_line_at_beginning           = false,
-        horizontal_line_after_column_labels    = false,
-        horizontal_lines_at_data_rows          = :none,
-        horizontal_line_before_row_group_label = false,
-        horizontal_line_after_row_group_label  = false,
-        horizontal_line_after_data_rows        = false,
-        horizontal_line_after_summary_rows     = false,
+        horizontal_line_at_beginning            = false,
+        horizontal_line_at_merged_column_labels = false,
+        horizontal_line_after_column_labels     = false,
+        horizontal_lines_at_data_rows           = :none,
+        horizontal_line_before_row_group_label  = false,
+        horizontal_line_after_row_group_label   = false,
+        horizontal_line_after_data_rows         = false,
+        horizontal_line_after_summary_rows      = false,
     )...)
 end
 
