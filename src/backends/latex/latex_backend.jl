@@ -72,6 +72,10 @@ function _latex__print(
     first_table_line = true
     first_element_in_row = true
 
+    # This variable stores where a merged column label begins and ends. Hence, we are able
+    # to draw a line after them if the user wants.
+    merged_column_labels = Tuple{Int, Int}[]
+
     while action != :end_printing
         action, rs, ps = _next(ps, table_data)
 
@@ -81,6 +85,7 @@ function _latex__print(
         next_action, next_rs, _ = _next(ps, table_data)
 
         if action == :new_row
+            empty!(merged_column_labels)
             first_element_in_row = true
 
             # If we are in the very first row after the title section, we need to check if
@@ -103,10 +108,24 @@ function _latex__print(
                 print(buf, tf.borders.header_line)
                 first_table_line = false
 
-            elseif (rs == :column_labels) && (ps.row_section != :column_labels) &&
-                tf.horizontal_line_after_column_labels
+            elseif (rs == :column_labels)
 
-                print(buf, tf.borders.header_line)
+                if ps.row_section == :column_labels
+
+                    if tf.horizontal_line_at_merged_column_labels
+                        # The specification in `merged_column_labels` refers to the data
+                        # columns. Hence, we need to add the offset regarding the previous
+                        # columns if they exist.
+                        Δc = table_data.show_row_number_column + _has_row_labels(table_data)
+                        for m in merged_column_labels
+                            c₀ = Δc + m[1]
+                            c₁ = Δc + m[2]
+                            print(buf, "\\cline{$c₀-$c₁}")
+                        end
+                    end
+                else
+                    tf.horizontal_line_after_column_labels && print(buf, tf.borders.header_line)
+                end
 
             # Check if the next line is a row group label and the user request a line before
             # it.
@@ -220,6 +239,8 @@ function _latex__print(
                     else
                         cell.column_span
                     end
+
+                    push!(merged_column_labels, (ps.j, ps.j + cs - 1))
 
                     alignment = _latex__alignment_to_str(cell.alignment)
 
