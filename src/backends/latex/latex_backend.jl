@@ -264,7 +264,7 @@ function _latex__print(
                     rendered_cell = _latex__render_cell(cell.data, buf, renderer)
 
                     # Apply the style to the text.
-                    envs = ps.j == 1 ? style.first_line_column_label : style.column_label
+                    envs = ps.i == 1 ? style.first_line_column_label : style.column_label
                     rendered_cell = _latex__add_environments(rendered_cell, envs)
                     rendered_cell = rendered_cell * footnote_str
 
