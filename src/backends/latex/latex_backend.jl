@@ -99,13 +99,15 @@ function _latex__print(
             print(buf, " "^(ns * il))
 
         elseif action == :end_row
-            print(buf, " \\\\")
+            println(buf, " \\\\")
 
             # == Handle the Horizontal Lines ===============================================
 
+            hline_str = ""
+
             # Print the horizontal line after the column labels.
             if (rs == :table_header) && (next_rs != :table_header) && tf.horizontal_line_at_beginning
-                print(buf, tf.borders.header_line)
+                hline_str *= tf.borders.header_line
                 first_table_line = false
 
             elseif (rs == :column_labels)
@@ -120,21 +122,23 @@ function _latex__print(
                         for m in merged_column_labels
                             c₀ = Δc + m[1]
                             c₁ = Δc + m[2]
-                            print(buf, "\\cline{$c₀-$c₁}")
+                            hline_str *= "\\cline{$c₀-$c₁}"
                         end
                     end
                 else
-                    tf.horizontal_line_after_column_labels && print(buf, tf.borders.header_line)
+                    if tf.horizontal_line_after_column_labels
+                        hline_str *= tf.borders.header_line
+                    end
                 end
 
             # Check if the next line is a row group label and the user request a line before
             # it.
             elseif (next_rs == :row_group_label) && tf.horizontal_line_before_row_group_label
-                print(buf, tf.borders.middle_line)
+                hline_str *= tf.borders.middle_line
 
             # Check if we must print an horizontal line after the current data row.
             elseif (rs == :data) && (ps.i ∈ horizontal_lines_at_data_rows)
-                print(buf, tf.borders.middle_line)
+                hline_str *= tf.borders.middle_line
 
             elseif (
                     (rs ∈ (:data, :continuation_row)) &&
@@ -144,19 +148,19 @@ function _latex__print(
 
                 bottom = next_rs ∈ (:table_footer, :end_printing)
 
-                print(buf, bottom ? tf.borders.bottom_line : tf.borders.middle_line)
+                hline_str *= bottom ? tf.borders.bottom_line : tf.borders.middle_line
 
             elseif (rs == :row_group_label) && tf.horizontal_line_after_row_group_label
-                print(buf, tf.borders.header_line)
+                hline_str *= tf.borders.header_line
 
             # Check if the must print the horizontal line at the end of the table.
             elseif (rs == :summary_row) && (next_rs != :summary_row) &&
                 tf.horizontal_line_after_summary_rows
 
-                print(buf, tf.borders.header_line)
+                hline_str *= tf.borders.header_line
             end
 
-            println(buf)
+            !isempty(hline_str) && _aprintln(buf, hline_str, il, ns)
 
         elseif action == :row_group_label
             cell          = _current_cell(action, ps, table_data)
