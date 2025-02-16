@@ -77,6 +77,7 @@ Define the format of the tables printed with the LaTeX back end.
 
     horizontal_line_at_beginning::Bool = true
     horizontal_line_after_column_labels::Bool = true
+    horizontal_line_at_merged_column_labels::Bool = true
     horizontal_lines_at_data_rows::Union{Symbol, Vector{Int}} = :none
     horizontal_line_before_row_group_label::Bool = true
     horizontal_line_after_row_group_label::Bool = true
