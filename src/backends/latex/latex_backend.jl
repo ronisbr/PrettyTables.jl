@@ -251,7 +251,7 @@ function _latex__print(
                     )
 
                     rendered_cell = rendered_cell * footnote_str
-                    rendered_cell = "\\multicolumn{$cs}{$alignment}{$rendered_cell}"
+                    rendered_cell = "\\multicolumn{$cs}{@{}$alignment@{}}{$rendered_cell}"
 
                 elseif (action == :column_label) && (cell isa MergeCells)
                     # Check if we have enough data columns to merge the cell.
@@ -292,7 +292,7 @@ function _latex__print(
                     rendered_cell = rendered_cell * footnote_str
 
                     # Merge the cells.
-                    rendered_cell = "\\multicolumn{$cs}{$alignment}{$rendered_cell}"
+                    rendered_cell = "\\multicolumn{$cs}{@{}$alignment@{}}{$rendered_cell}"
 
                 # Check if we must merge the cell to render the footnotes or source
                 # notes.
@@ -302,7 +302,7 @@ function _latex__print(
                     rendered_cell = "\$^{$(ps.i)}\$" * _latex__render_cell(cell, buf, renderer)
                     rendered_cell = _latex__add_environments(rendered_cell, style.footnote)
                     rendered_cell = rendered_cell * footnote_str
-                    rendered_cell = "\\multicolumn{$cs}{$alignment}{$rendered_cell}"
+                    rendered_cell = "\\multicolumn{$cs}{@{}$alignment@{}}{$rendered_cell}"
 
                 elseif (action == :source_notes)
                     alignment     = _latex__alignment_to_str(table_data.footnote_alignment)
@@ -310,7 +310,7 @@ function _latex__print(
                     rendered_cell = _latex__render_cell(cell, buf, renderer)
                     rendered_cell = _latex__add_environments(rendered_cell, style.source_note)
                     rendered_cell = rendered_cell * footnote_str
-                    rendered_cell = "\\multicolumn{$cs}{$alignment}{$rendered_cell}"
+                    rendered_cell = "\\multicolumn{$cs}{@{}$alignment@{}}{$rendered_cell}"
 
                 else
                     rendered_cell = _latex__render_cell(cell, buf, renderer)
