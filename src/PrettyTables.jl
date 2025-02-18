@@ -41,6 +41,7 @@ include("./tables.jl")
 include("./backends/latex/types.jl")
 include("./backends/latex/helpers.jl")
 include("./backends/latex/latex_backend.jl")
+include("./backends/latex/predefined_formats.jl")
 include("./backends/latex/private.jl")
 include("./backends/latex/render_cell.jl")
 
