@@ -210,3 +210,36 @@ will wrap all the cells in the table in the following environment:
 end
 
 _latex__default_highlighter_fd(h::LatexHighlighter, ::Any, ::Int, ::Int) = h._environments
+
+############################################################################################
+#                                        LaTeX Cell                                        #
+############################################################################################
+
+export LatexCell
+export @latex_cell_str
+
+"""
+    struct LatexCell
+
+Defines a table cell that contains LaTeX code. It can be created using the macro
+[`@latex_cell_str`](@ref).
+"""
+struct LatexCell{T}
+    data::T
+end
+
+"""
+    @latex_cell_str(str)
+
+Create a table cell with LaTeX code.
+
+# Examples
+
+```julia
+julia> latex_cell"\textbf{Bold text}"
+LatexCell{String}("\\textbf{Bold text}")
+```
+"""
+macro latex_cell_str(str)
+    return :(LatexCell($str))
+end

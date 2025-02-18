@@ -50,3 +50,19 @@ function _latex__render_cell(
     # If the user wants latex code inside cell, we must not escape the latex characters.
     return _latex__escape_str(cell_str)
 end
+
+function _latex__render_cell(
+    cell::LatexCell,
+    context::IOContext,
+    renderer::Union{Val{:print}, Val{:show}}
+)
+    return _latex__cell_to_str(cell.data, context, renderer)
+end
+
+function _latex__render_cell(
+    cell::LaTeXString,
+    context::IOContext,
+    renderer::Union{Val{:print}, Val{:show}}
+)
+    return _latex__cell_to_str(cell, context, renderer)
+end
