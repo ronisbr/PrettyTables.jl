@@ -140,7 +140,7 @@ Define the style of the tables printed with the latex back end.
     summary_row_label::LatexEnvironments              = _LATEX__BOLD
     footnote::LatexEnvironments                       = _LATEX__SMALL
     source_note::LatexEnvironments                    = _LATEX__SMALL_ITALIC
-    omitted_cell_summary::LatexEnvironments           = _LATEX__DEFAULT
+    omitted_cell_summary::LatexEnvironments           = _LATEX__SMALL_ITALIC
 end
 
 ############################################################################################

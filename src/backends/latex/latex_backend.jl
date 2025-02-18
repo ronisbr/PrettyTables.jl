@@ -67,6 +67,10 @@ function _latex__print(
 
     # == Table =============================================================================
 
+    # Check if the user wants the omitted cell summary.
+    ocs = _omitted_cell_summary(table_data, pspec)
+    ocs_printed = false
+
     action = :initialize
 
     first_table_line = true
@@ -164,6 +168,18 @@ function _latex__print(
             end
 
             !isempty(hline_str) && _aprintln(buf, hline_str, il, ns)
+
+            # == Omitted Cell Summary ======================================================
+
+            if (
+                !isempty(ocs) &&
+                next_rs ∈ (:table_footer, :end_printing) &&
+                !ocs_printed
+            )
+                cs = _number_of_printed_columns(table_data)
+                ocs_styled = _latex__add_environments(ocs, style.omitted_cell_summary)
+                _aprintln(buf, "\\multicolumn{$cs}{r@{}}{$ocs_styled}", il, ns)
+            end
 
         elseif action == :row_group_label
             cell          = _current_cell(action, ps, table_data)
@@ -366,19 +382,19 @@ function _latex__print(
                         rendered_cell = "\\multicolumn{1}{$border₀$alignment$border₁}{$rendered_cell}"
                     end
                 end
-
-                # If `rendered_cell` is `nothing`, we did not processed the cell. Hence, we
-                # should just skip.
-                isnothing(rendered_cell) && continue
-
-                if first_element_in_row
-                    first_element_in_row = false
-                else
-                    print(buf, " & ")
-                end
-
-                print(buf, rendered_cell)
             end
+
+            # If `rendered_cell` is `nothing`, we did not processed the cell. Hence, we
+            # should just skip.
+            isnothing(rendered_cell) && continue
+
+            if first_element_in_row
+                first_element_in_row = false
+            else
+                print(buf, " & ")
+            end
+
+            print(buf, rendered_cell)
         end
     end
 
