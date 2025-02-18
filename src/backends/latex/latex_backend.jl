@@ -145,10 +145,7 @@ function _latex__print(
                     (next_rs ∈ (:summary_row, :table_footer, :end_printing)) &&
                     tf.horizontal_line_after_data_rows
                 )
-
-                bottom = next_rs ∈ (:table_footer, :end_printing)
-
-                hline_str *= bottom ? tf.borders.bottom_line : tf.borders.middle_line
+                hline_str *= tf.borders.middle_line
 
             elseif (rs == :row_group_label) && tf.horizontal_line_after_row_group_label
                 hline_str *= tf.borders.header_line
@@ -158,6 +155,12 @@ function _latex__print(
                 tf.horizontal_line_after_summary_rows
 
                 hline_str *= tf.borders.header_line
+            end
+
+            # If the next section if the end of the table and we need to draw a horizontal
+            # line, we should change it to the bottom line.
+            if next_rs ∈ (:table_footer, :end_printing) && !isempty(hline_str)
+                hline_str = tf.borders.bottom_line
             end
 
             !isempty(hline_str) && _aprintln(buf, hline_str, il, ns)
