@@ -1,7 +1,7 @@
 ## Description #############################################################################
 #
 # HTML Back End: Tests related with the cell alignment.
-# 
+#
 ############################################################################################
 
 @testset "Alignment" verbose = true begin
