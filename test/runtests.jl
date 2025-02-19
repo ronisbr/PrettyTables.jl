@@ -38,6 +38,7 @@ end
 end
 
 @testset "LaTeX Back End Tests" verbose = true begin
+    include("./backends/latex/alignment.jl")
     include("./backends/latex/circular_reference.jl")
     include("./backends/latex/cropping.jl")
     include("./backends/latex/default.jl")
