@@ -38,8 +38,11 @@ end
 end
 
 @testset "LaTeX Back End Tests" verbose = true begin
+    include("./backends/latex/circular_reference.jl")
+    include("./backends/latex/cropping.jl")
     include("./backends/latex/default.jl")
     include("./backends/latex/full.jl")
+    include("./backends/latex/special_cells.jl")
 end
 
 @testset "Markdown Back End Tests" verbose = true begin

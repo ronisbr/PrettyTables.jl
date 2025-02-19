@@ -10,10 +10,10 @@
 
     expected = """
 \\begin{tabular}{|r|r|r|r|r|}
-  \\multicolumn{5}{c}{\\textbf{\\large{Table Title}}} \\\\
-  \\multicolumn{5}{c}{\\textit{Table Subtitle}} \\\\
+  \\multicolumn{5}{@{}c@{}}{\\textbf{\\large{Table Title}}} \\\\
+  \\multicolumn{5}{@{}c@{}}{\\textit{Table Subtitle}} \\\\
   \\hline
-  \\textbf{Row} & \\textbf{Rows} & \\textbf{Col. 1} & \\multicolumn{2}{c|}{\\textbf{Merged Column}\$^{1}\$} \\\\
+  \\textbf{Row} & \\textbf{Rows} & \\textbf{Col. 1} & \\multicolumn{2}{@{}c|@{}}{\\textbf{Merged Column}\$^{1}\$} \\\\
   \\cline{4-5}
    &  & \\textit{1} & \\textit{2} & \\textit{3} \\\\
   \\hline
@@ -27,9 +27,9 @@
    & \\textbf{Summary 1} & 10 & 20 & 30 \\\\
    & \\textbf{Summary 2} & 20 & 40 & 60 \\\\
   \\hline
-  \\multicolumn{5}{l}{\\small{\$^{1}\$Footnote in column label}} \\\\
-  \\multicolumn{5}{l}{\\small{\$^{2}\$Footnote in data}} \\\\
-  \\multicolumn{5}{l}{\\textit{\\small{Source Notes}}} \\\\
+  \\multicolumn{5}{@{}l@{}}{\\small{\$^{1}\$Footnote in column label}} \\\\
+  \\multicolumn{5}{@{}l@{}}{\\small{\$^{2}\$Footnote in data}} \\\\
+  \\multicolumn{5}{@{}l@{}}{\\textit{\\small{Source Notes}}} \\\\
 \\end{tabular}
 """
 
