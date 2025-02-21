@@ -3,6 +3,7 @@ using PrettyTables
 
 using Markdown
 using OffsetArrays
+using LaTeXStrings
 using Tables
 
 ############################################################################################
@@ -43,6 +44,7 @@ end
     include("./backends/latex/cropping.jl")
     include("./backends/latex/default.jl")
     include("./backends/latex/full.jl")
+    include("./backends/latex/highlighters.jl")
     include("./backends/latex/offset_arrays.jl")
     include("./backends/latex/renderers.jl")
     include("./backends/latex/special_cells.jl")
