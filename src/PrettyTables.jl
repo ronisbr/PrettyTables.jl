@@ -40,6 +40,7 @@ include("./private.jl")
 include("./tables.jl")
 
 include("./backends/latex/types.jl")
+include("./backends/latex/documentation.jl")
 include("./backends/latex/helpers.jl")
 include("./backends/latex/latex_backend.jl")
 include("./backends/latex/predefined_formats.jl")

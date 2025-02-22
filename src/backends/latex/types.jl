@@ -100,6 +100,8 @@ Define the style of the tables printed with the latex back end.
 
 # Fields
 
+- `title::LatexEnvironments`: Latex environments with the style for the title.
+- `subtitle::LatexEnvironments`: Latex environments with the style for the subtitle.
 - `row_number::LatexEnvironments`: Latex environments with the style for the row numbers.
 - `stubhead_label::LatexEnvironments`:  Latex environments with the style for the stubhead
     label.
@@ -122,7 +124,6 @@ Define the style of the tables printed with the latex back end.
 - `source_note::LatexEnvironments`: Latex environments with the style for the source notes.
 - `omitted_cell_summary::LatexEnvironments`: Latex environments with the style for the
     omitted cell summary.
-- `table_border::LatexEnvironments`: Latex environments with the style for the table border.
 """
 @kwdef struct LatexTableStyle
     title::LatexEnvironments                          = _LATEX__LARGE_BOLD
