@@ -6,6 +6,8 @@ makedocs(
     format = Documenter.HTML(
         prettyurls = !("local" in ARGS),
         canonical = "https://ronisbr.github.io/PrettyTables.jl/stable/",
+        size_threshold_warn = 1024 * 1024 * 1024,
+        size_threshold = 10 * 1024 * 1024 * 1024,
     ),
     sitename = "Pretty Tables",
     authors = "Ronan Arraes Jardim Chagas",
@@ -17,11 +19,9 @@ makedocs(
         "Back Ends"          => Any[
             "Text"           => "man/text_backend.md",
             "HTML"           => "man/html_backend.md",
-        #     "LaTeX"          => "man/latex_backend.md",
+            "LaTeX"          => "man/latex_backend.md",
             "Markdown"       => "man/markdown_backend.md",
         ],
-        # "Alignment"          => "man/alignment.md",
-        # "Formatters"         => "man/formatters.md",
         # "Examples"           => Any[
         #     "Text Back End"  => "man/text_examples.md",
         #     "HTML Back End"  => "man/html_examples.md",

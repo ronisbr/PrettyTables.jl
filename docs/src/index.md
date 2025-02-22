@@ -88,21 +88,3 @@ run(`rm tmp`)
 julia> using Pkg
 julia> Pkg.add("PrettyTables")
 ```
-
-<!--## Manual outline-->
-<!---->
-<!--```@contents-->
-<!--Pages = [-->
-<!--    "man/usage.md"-->
-<!--    "man/text_backend.md"-->
-<!--    "man/html_backend.md"-->
-<!--    "man/latex_backend.md"-->
-<!--    "man/markdown_backend.md"-->
-<!--    "man/alignment.md"-->
-<!--    "man/formatters.md"-->
-<!--    "man/text_examples.md"-->
-<!--    "man/html_examples.md"-->
-<!--    "lib/library.md"-->
-<!--]-->
-<!--Depth = 2-->
-<!--```-->
