@@ -228,7 +228,7 @@ contains the following fields:
 
 Each field is a `Crayon` describing the style for the corresponding element in the table.
 
-For example, we if want that the stubhead label is bold and red, we must define:
+For example, if we want that the stubhead label is bold and red, we must define:
 
 ```julia
 style = TextTableStyle(
