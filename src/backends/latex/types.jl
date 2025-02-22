@@ -23,10 +23,11 @@ const _LATEX__SMALL        = ["small"]
 const _LATEX__SMALL_ITALIC = ["small", "textit"]
 
 @kwdef struct LatexTableBorders
-    top_line::String    = "\\hline"
-    header_line::String = "\\hline"
-    middle_line::String    = "\\hline"
-    bottom_line::String = "\\hline"
+    top_line::String                = "\\hline"
+    header_line::String             = "\\hline"
+    merged_header_cell_line::String = "\\cline"
+    middle_line::String             = "\\hline"
+    bottom_line::String             = "\\hline"
 end
 
 """
