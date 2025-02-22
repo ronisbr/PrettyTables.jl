@@ -103,6 +103,8 @@ Define the style of the tables printed with the latex back end.
 
 - `title::LatexEnvironments`: Latex environments with the style for the title.
 - `subtitle::LatexEnvironments`: Latex environments with the style for the subtitle.
+- `row_number_label::LatexEnvironments`: Latex environments with the style for the row
+    number label.
 - `row_number::LatexEnvironments`: Latex environments with the style for the row numbers.
 - `stubhead_label::LatexEnvironments`:  Latex environments with the style for the stubhead
     label.
