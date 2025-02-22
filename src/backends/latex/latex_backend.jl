@@ -126,7 +126,7 @@ function _latex__print(
                         for m in merged_column_labels
                             c₀ = Δc + m[1]
                             c₁ = Δc + m[2]
-                            hline_str *= "\\cline{$c₀-$c₁}"
+                            hline_str *= "$(tf.borders.merged_header_cell_line){$c₀-$c₁}"
                         end
                     end
                 else

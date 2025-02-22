@@ -11,10 +11,11 @@
 export latex_table_borders__booktabs
 
 const latex_table_borders__booktabs = LatexTableBorders(
-    top_line    = "\\toprule",
-    header_line = "\\midrule",
-    middle_line = "\\midrule",
-    bottom_line = "\\bottomrule"
+    top_line                = "\\toprule",
+    header_line             = "\\midrule",
+    merged_header_cell_line = "\\cmidrule",
+    middle_line             = "\\midrule",
+    bottom_line             = "\\bottomrule"
 )
 
 ############################################################################################
