@@ -4,11 +4,6 @@
 #
 ############################################################################################
 
-function _html__circular_reference(io::IOContext)
-    print(io, "#= circular reference =#")
-    return nothing
-end
-
 function _html__print(
     pspec::PrintingSpec;
     allow_html_in_cells::Bool = false,
