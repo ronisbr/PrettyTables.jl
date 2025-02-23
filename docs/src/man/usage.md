@@ -159,9 +159,9 @@ can be specified using a symbol: `:l` for left, `:c` for center, or `:r` for rig
   rows than this value, the table will be truncated. If it is negative, all rows will be
   printed.
   (**Default**: `-1`)
-- `merge_column_label_cells::Union{Nothing, Symbol, Vector{MergeCells}}`: Merged cells in
-  the column labels. For more information, see the section [Column Labels](@ref).
-  (**Default**: `nothing`)
+- `merge_column_label_cells::Union{Symbol, Vector{MergeCells}}`: Merged cells in the column
+  labels. For more information, see the section [Column Labels](@ref).
+  (**Default**: `:auto`)
 - `show_first_column_label_only::Bool`: If `true`, only the first row of the column labels
   will be printed.
   (**Default**: `false`)
@@ -195,6 +195,11 @@ column_labels = [
     ["Subcolumn #1", "Subcolumn #2", "Subcolumn #3"]
 ]
 ```
+
+!!! info
+
+    If the user wants only one row in the column labels, they can pass only a vector with
+    the elements. The algorithm will encapsulate it inside another vector to match the API.
 
 Adjacent column labels can be merged using the keyword `merge_column_label_cells`. It must
 contain a vector of `MergeCells` objects. Each object defines a new merged cell. The
