@@ -72,6 +72,11 @@ PrecompileTools.@setup_workload begin
 
         matrix = randn(10, 10)
 
+        # -- General API -------------------------------------------------------------------
+
+        pretty_table(matrix; column_labels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+        pretty_table(matrix; column_labels = [MultiColumn(5, "A"), EmptyCells(5)])
+
         # -- Text --------------------------------------------------------------------------
 
         pretty_table(matrix)
@@ -142,6 +147,20 @@ PrecompileTools.@setup_workload begin
         )
 
         pretty_table(html_buf, types; backend = :html)
+
+        # -- LaTeX -------------------------------------------------------------------------
+
+        pretty_table(matrix; backend = :latex)
+
+        pretty_table(
+            matrix;
+            backend = :latex,
+            highlighters = [
+                LatexHighlighter((data, i, j) -> i == 1, ["textbf"])
+            ]
+        )
+
+        pretty_table(types; backend = :latex)
 
         # -- Markdown ----------------------------------------------------------------------
 
