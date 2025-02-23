@@ -68,6 +68,24 @@ function _process_merge_column_label_specification(
     column_labels::Vector{T},
     num_columns::Int
 ) where T <: AbstractVector
+    # We only need to process the column labels if we have an elements of type `MultiColumn`
+    # or `EmptyCells` in the column labels. Otherwise, we can return the current column
+    # label, reducing the allocations.
+    need_processing = false
+
+    for line in column_labels
+        for column in line
+            if (column isa MultiColumn) || (column isa EmptyCells)
+                need_processing = true
+                break
+            end
+        end
+
+        need_processing && break
+    end
+
+    !need_processing && return column_labels, nothing
+
     processed_column_labels = Vector{Any}(undef, length(column_labels))
 
     merge_column_label_cells = MergeCells[]
