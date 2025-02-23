@@ -4,11 +4,6 @@
 #
 ############################################################################################
 
-function _markdown__circular_reference(io::IOContext)
-    print(io, "\\#= circular reference =\\#")
-    return nothing
-end
-
 function _markdown__print(
     pspec::PrintingSpec;
     allow_markdown_in_cells::Bool = false,

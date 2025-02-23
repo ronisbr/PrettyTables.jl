@@ -232,7 +232,8 @@ function _pretty_table(
         # circular dependency.
         for d in ptd
             if d === data
-                return _html__circular_reference(context)
+                print(io, "#= circular reference =#")
+                return nothing
             end
         end
 

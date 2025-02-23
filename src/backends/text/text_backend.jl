@@ -4,11 +4,6 @@
 #
 ############################################################################################
 
-function _text__circular_reference(io::IOContext)
-    print(io, "#= circular reference =#")
-    return nothing
-end
-
 # Pre-allocate some default values for keywords to avoid allocations. Notice that we must do
 # this only to the values that **are not** modified inside the algorithm. Otherwise, we will
 # not be thread safe.

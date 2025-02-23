@@ -4,11 +4,6 @@
 #
 ############################################################################################
 
-function _latex__circular_reference(io::IOContext)
-    print(io, "#= circular reference =#")
-    return nothing
-end
-
 function _latex__print(
     pspec::PrintingSpec;
     highlighters::Union{Nothing, Vector{LatexHighlighter}} = nothing,
