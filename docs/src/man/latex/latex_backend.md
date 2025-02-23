@@ -1,22 +1,19 @@
-# PrettyTables.jl LaTeX Backend
+# LaTeX Backend
 
 The LaTeX backend can be selected by passing the keyword `backend = :latex` to the function
 [`pretty_table`](@ref). In this case, we have the following additional keywords to configure
 the output.
 
-# Keywords
+## Keywords
 
 - `highlighters::Vector{LatexHighlighter}`: Highlighters to apply to the table. For more
-    information, see the section **LaTeX Highlighters** in the **Extended Help**.
+    information, see the section [LaTeX Highlighters]@(ref).
 - `style::LatexTableStyle`: Style of the table. For more information, see the section
-    **LaTeX Table Style** in the **Extended Help**.
+    [LaTeX Table Style](@ref).
 - `table_format::LatexTableFormat`: LaTeX table format used to render the table. For more
-    information, see the section **LaTeX Table Format** in the **Extended Help**.
-
-# Extended Help
+    information, see the section [LaTeX Table Format](@ref).
 
 ## LaTeX Highlighters
-
 
 A set of highlighters can be passed as a `Vector{LatexHighlighter}` to the `highlighters`
 keyword. Each highlighter is an instance of the structure [`LatexHighlighter`](@ref). It
@@ -28,7 +25,7 @@ contains the following two public fields:
     highlighter. This function must return a `Vector{String}` with the LaTeX environments to
     be applied to the cell.
 
-A LaTeX highlighter can be constructured using two helpers:
+A LaTeX highlighter can be constructed using two helpers:
 
 ```julia
 LatexHighlighter(f::Function, envs::Vector{String})
