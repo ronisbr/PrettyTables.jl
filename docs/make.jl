@@ -17,10 +17,13 @@ makedocs(
         "Quick Start"        => "man/quick_start.md",
         "Usage"              => "man/usage.md",
         "Back Ends"          => Any[
-            "Text"           => "man/text_backend.md",
-            "HTML"           => "man/html_backend.md",
-            "LaTeX"          => "man/latex_backend.md",
-            "Markdown"       => "man/markdown_backend.md",
+            "Text"           => "man/text/text_backend.md",
+            "HTML"           => "man/html/html_backend.md",
+            "LaTeX"          => "man/latex/latex_backend.md",
+            "Markdown"       => "man/markdown/markdown_backend.md",
+        ],
+        "Examples"           => Any[
+            "LaTeX Back End" => "man/latex/latex_examples.md",
         ],
         # "Examples"           => Any[
         #     "Text Back End"  => "man/text_examples.md",
