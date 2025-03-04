@@ -72,3 +72,7 @@ end
     include("./backends/text/offset_arrays.jl")
     include("./backends/text/renderers.jl")
 end
+
+@testset "Pre-defined Formatters" verbose = true begin
+    include("./predefined_formatters.jl")
+end

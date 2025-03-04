@@ -1,6 +1,7 @@
 module PrettyTables
 
 using Markdown
+using Printf
 using Reexport
 using StringManipulation
 using Tables
@@ -36,6 +37,7 @@ include("./types.jl")
 include("./documentation.jl")
 include("./main.jl")
 include("./misc.jl")
+include("./predefined_formatters.jl")
 include("./private.jl")
 include("./tables.jl")
 
