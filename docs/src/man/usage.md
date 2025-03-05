@@ -1,5 +1,39 @@
 # Usage
 
+```@meta
+CurrentModule = PrettyTables
+```
+
+```@setup usage
+using PrettyTables
+
+function create_latex_example(table, filename)
+    mkdir("tmp")
+    cd("tmp")
+
+    write(
+      "table.tex",
+      """
+      \\documentclass[a4paper, 12pt]{article}
+      \\pagestyle{empty}
+      \\usepackage{color}
+      \\usepackage{booktabs}
+      \\usepackage{xcolor}
+      \\begin{document}
+      $table
+      \\end{document}
+      """
+    )
+
+    run(`lualatex table.tex`)
+    run(`lualatex table.tex`)
+    run(`magick -density 600 table.pdf -flatten -trim $filename`)
+    run(`mv $filename ..`)
+    cd("..")
+    rm("tmp"; recursive = true)
+end
+```
+
 ## Table Sections
 
 **PrettyTables.jl** considers the following table sections when printing a table:
@@ -348,3 +382,88 @@ v = f3(v, i, j)
 ```
 
 Thus, the user must be ensure that the type of `v` between the calls are compatible.
+
+PrettyTables.jl provides some predefined formatters for common tasks as described in the
+next section.
+
+### Predefined Formatters
+
+```julia
+fmt__printf(fmt_str::String[, columns::AbstractVector{Int}]) -> Function
+```
+
+Apply the format `fmt_str` (see the `Printf` standard library) to the elements in the
+columns specified in the vector `columns`. If `columns` is not specified, the format will be
+applied to the entire table.
+
+!!! info
+
+    This formatter will be applied only to the cells that are of type `Number`.
+
+```@repl usage
+data = [f(a) for a = 0:30:90, f in (sind, cosd, tand)]
+
+pretty_table(data; formatters = [fmt__printf("%5.3f")])
+
+pretty_table(data; formatters = [fmt__printf("%5.3f", [1, 3])])
+```
+
+---
+
+```julia
+fmt__round(digits::Int[, columns::AbstractVector{Int}]) -> Function
+```
+
+Round the elements in the columns specified in the vector `columns` to the number of
+`digits`. If `columns` is not specified, the rounding will be applied to the entire table.
+
+```@repl usage
+data = [f(a) for a = 0:30:90, f in (sind, cosd, tand)]
+
+pretty_table(data; formatters = [fmt__round(1)])
+
+pretty_table(data; formatters = [fmt__round(1, [1, 3])])
+```
+
+---
+
+```julia
+fmt__latex_sn(m_digits::Int[, columns::AbstractVector{Int}]) -> Function
+```
+
+Format the numbers of the elements in the `columns` to a scientific notation using LaTeX.
+If `columns` is not present, the formatting will be applied to the entire table.
+
+The number is first printed using `Printf` functions with the `g` modifier and then
+converted to the LaTeX format. The number of digits in the mantissa can be selected by the
+argument `m_digits`.
+
+The formatted number will be wrapped in the object `LatexCell`. Hence, this formatter only
+makes sense if the selected backend is `:latex`.
+
+!!! info
+
+    This formatter will be applied only to the cells that are of type `Number`.
+
+```julia-repl
+julia> data = [10.0^(-i + j) for i in 1:6, j in 1:6]
+6×6 Matrix{Float64}:
+ 1.0     10.0     100.0    1000.0   10000.0  100000.0
+ 0.1      1.0      10.0     100.0    1000.0   10000.0
+ 0.01     0.1       1.0      10.0     100.0    1000.0
+ 0.001    0.01      0.1       1.0      10.0     100.0
+ 0.0001   0.001     0.01      0.1       1.0      10.0
+ 1.0e-5   0.0001    0.001     0.01      0.1       1.0
+
+julia> pretty_table(data; formatters = [fmt__latex_sn(1)], backend = :latex)
+```
+
+```@setup usage
+data = [ 10.0^(-i + j) for i in 1:6, j in 1:6]
+
+table = pretty_table(String, data; formatters = [fmt__latex_sn(1)], backend = :latex)
+
+create_latex_example(table, "fmt__latex_sn.png")
+```
+
+![fmt__latex_sn](./fmt__latex_sn.png)
