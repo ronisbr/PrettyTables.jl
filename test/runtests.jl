@@ -73,6 +73,10 @@ end
     include("./backends/text/renderers.jl")
 end
 
+@testset "Tables.jl" verbose = true begin
+    include("./tables.jl")
+end
+
 @testset "Pre-defined Formatters" verbose = true begin
     include("./predefined_formatters.jl")
 end
