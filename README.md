@@ -1,6 +1,6 @@
 # PrettyTables.jl
 
-[![Build status](https://github.com/ronisbr/PrettyTables.jl/workflows/CI/badge.svg)](https://github.com/ronisbr/PrettyTables.jl/actions)
+[![CI](https://github.com/ronisbr/PrettyTables.jl/actions/workflows/ci.yml/badge.svg)](https://github.com/ronisbr/PrettyTables.jl/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/ronisbr/PrettyTables.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/ronisbr/PrettyTables.jl)
 [![docs-stable](https://img.shields.io/badge/docs-stable-blue.svg)][docs-stable-url]
 [![docs-dev](https://img.shields.io/badge/docs-dev-blue.svg)][docs-dev-url]
