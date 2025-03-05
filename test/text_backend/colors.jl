@@ -514,7 +514,7 @@ end
 │        │ \e[36m  end\e[39m\e[0m                  │
 └────────┴────────────────────────┘
 """
-    elseif VERSION < v"1.11.0-DEV"
+    elseif VERSION < v"1.12.0-DEV"
         expected = """
 ┌────────┬────────────────────────┐
 │\e[1m Col. 1 \e[0m│\e[1m                 Col. 2 \e[0m│
