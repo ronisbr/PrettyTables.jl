@@ -549,7 +549,7 @@ end
 │        │   This is a paragraph.\e[0m │
 │        │ \e[0m                       │
 │        │   \e[31mfunction\e[39m \e[36mtest\e[92m()\e[39m\e[0m      │
-│        │       \e[31mreturn\e[39m \e[91m1\e[39m\e[0m         │
+│        │       \e[31mreturn\e[39m \e[95m1\e[39m\e[0m         │
 │        │   \e[31mend\e[39m\e[0m                  │
 ├────────┼────────────────────────┤
 │      2 │ \e[1m  Header\e[22m\e[0m               │
@@ -558,7 +558,7 @@ end
 │        │   This is a paragraph.\e[0m │
 │        │ \e[0m                       │
 │        │   \e[31mfunction\e[39m \e[36mtest\e[92m()\e[39m\e[0m      │
-│        │       \e[31mreturn\e[39m \e[91m1\e[39m\e[0m         │
+│        │       \e[31mreturn\e[39m \e[95m1\e[39m\e[0m         │
 │        │   \e[31mend\e[39m\e[0m                  │
 └────────┴────────────────────────┘
 """
@@ -582,13 +582,23 @@ end
 
     data = [1 a]
 
-    expected = """
+    if VERSION < v"1.13.0-DEV"
+        expected = """
 ┌────────┬────────────────┐
 │\e[1m Col. 1 \e[0m│\e[1m         Col. 2 \e[0m│
 ├────────┼────────────────┤
 │      1 │   \e[1mbold\e[22m \e[4mitalics\e[24m │
 └────────┴────────────────┘
 """
+    else
+        expected = """
+┌────────┬────────────────┐
+│\e[1m Col. 1 \e[0m│\e[1m         Col. 2 \e[0m│
+├────────┼────────────────┤
+│      1 │   \e[1mbold\e[22m \e[3mitalics\e[23m │
+└────────┴────────────────┘
+"""
+    end
 
     result = sprint((io)->pretty_table(
         io,
