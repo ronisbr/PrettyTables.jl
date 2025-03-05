@@ -434,5 +434,8 @@ v = f3(v, i, j)
 ```
 
 Thus, the user must be ensure that the type of `v` between the calls are compatible.
+
+PrettyTables.jl provides some predefined formatters for common tasks. For more information,
+see [`fmt__printf`](@ref), [`fmt__round`](@ref), and [`fmt__latex_sn`](@ref).
 """
 pretty_table
