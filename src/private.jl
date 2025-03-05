@@ -38,19 +38,21 @@ end
 Preprocess the `data` for printing. This function throws an error if `data` is not supported
 by PrettyTables.jl.
 """
-_preprocess_data(data::AbstractVecOrMat) = data
+function _preprocess_data(data::AbstractVecOrMat)
+    # If the data vector or matrix follows the Tables.jl API, we must use it directly.
+    Tables.istable(data) &&
+        return Tables.columnaccess(data) ? ColumnTable(data) : RowTable(data)
+
+    return data
+end
+
 _preprocess_data(dict::AbstractDict) = dict
 
 function _preprocess_data(@nospecialize(data::Any))
     # This is the fallback action to guess the column label. Hence, if data does not support
     # Tables.jl API, we must throw an error.
     !Tables.istable(data) && error("`pretty_table` does not support objects of type `$(typeof(data))`.")
-
-    if Tables.columnaccess(data)
-        return ColumnTable(data)
-    else
-        return RowTable(data)
-    end
+    return Tables.columnaccess(data) ? ColumnTable(data) : RowTable(data)
 end
 
 """
