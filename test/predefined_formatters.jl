@@ -172,24 +172,24 @@ end
         [ i == 5 ? nothing : "Teste" for i in 1:11]
     )
 
-    expected = raw"""
-\begin{tabular}{|r|r|r|r|}
-  \hline
-  \textbf{Col. 1} & \textbf{Col. 2} & \textbf{Col. 3} & \textbf{Col. 4} \\
-  \hline
-  1 & 1 & $1 \cdot 10^{-5}$ & Teste \\
-  2 & 2 & 0.0001 & Teste \\
-  3 & 3 & 0.001 & Teste \\
-  4 & 4 & 0.01 & Teste \\
-  5 & 5 & 0.1 & nothing \\
-  6 & 6 & 1 & Teste \\
-  7 & 7 & $1 \cdot 10^{1}$ & Teste \\
-  8 & 8 & $1 \cdot 10^{2}$ & Teste \\
-  9 & 9 & $1 \cdot 10^{3}$ & Teste \\
-  $1 \cdot 10^{1}$ & $1 \cdot 10^{1}$ & $1 \cdot 10^{4}$ & Teste \\
-  $1 \cdot 10^{1}$ & $1 \cdot 10^{1}$ & $1 \cdot 10^{5}$ & Teste \\
-  \hline
-\end{tabular}
+    expected = """
+\\begin{tabular}{|r|r|r|r|}
+  \\hline
+  \\textbf{Col. 1} & \\textbf{Col. 2} & \\textbf{Col. 3} & \\textbf{Col. 4} \\\\
+  \\hline
+  1 & 1 & \$1 \\cdot 10^{-5}\$ & Teste \\\\
+  2 & 2 & 0.0001 & Teste \\\\
+  3 & 3 & 0.001 & Teste \\\\
+  4 & 4 & 0.01 & Teste \\\\
+  5 & 5 & 0.1 & nothing \\\\
+  6 & 6 & 1 & Teste \\\\
+  7 & 7 & \$1 \\cdot 10^{1}\$ & Teste \\\\
+  8 & 8 & \$1 \\cdot 10^{2}\$ & Teste \\\\
+  9 & 9 & \$1 \\cdot 10^{3}\$ & Teste \\\\
+  \$1 \\cdot 10^{1}\$ & \$1 \\cdot 10^{1}\$ & \$1 \\cdot 10^{4}\$ & Teste \\\\
+  \$1 \\cdot 10^{1}\$ & \$1 \\cdot 10^{1}\$ & \$1 \\cdot 10^{5}\$ & Teste \\\\
+  \\hline
+\\end{tabular}
 """
 
     result = pretty_table(
@@ -200,24 +200,24 @@ end
     )
     @test result == expected
 
-    expected = raw"""
-\begin{tabular}{|r|r|r|r|}
-  \hline
-  \textbf{Col. 1} & \textbf{Col. 2} & \textbf{Col. 3} & \textbf{Col. 4} \\
-  \hline
-  1 & 1 & $1 \cdot 10^{-5}$ & Teste \\
-  2 & 2 & 0.0001 & Teste \\
-  3 & 3 & 0.001 & Teste \\
-  4 & 4 & 0.01 & Teste \\
-  5 & 5 & 0.1 & nothing \\
-  6 & 6 & 1 & Teste \\
-  7 & 7 & 10 & Teste \\
-  8 & 8 & $1 \cdot 10^{2}$ & Teste \\
-  9 & 9 & $1 \cdot 10^{3}$ & Teste \\
-  10 & 10 & $1 \cdot 10^{4}$ & Teste \\
-  11 & 11 & $1 \cdot 10^{5}$ & Teste \\
-  \hline
-\end{tabular}
+    expected = """
+\\begin{tabular}{|r|r|r|r|}
+  \\hline
+  \\textbf{Col. 1} & \\textbf{Col. 2} & \\textbf{Col. 3} & \\textbf{Col. 4} \\\\
+  \\hline
+  1 & 1 & \$1 \\cdot 10^{-5}\$ & Teste \\\\
+  2 & 2 & 0.0001 & Teste \\\\
+  3 & 3 & 0.001 & Teste \\\\
+  4 & 4 & 0.01 & Teste \\\\
+  5 & 5 & 0.1 & nothing \\\\
+  6 & 6 & 1 & Teste \\\\
+  7 & 7 & 10 & Teste \\\\
+  8 & 8 & \$1 \\cdot 10^{2}\$ & Teste \\\\
+  9 & 9 & \$1 \\cdot 10^{3}\$ & Teste \\\\
+  10 & 10 & \$1 \\cdot 10^{4}\$ & Teste \\\\
+  11 & 11 & \$1 \\cdot 10^{5}\$ & Teste \\\\
+  \\hline
+\\end{tabular}
 """
 
     result = pretty_table(
@@ -228,24 +228,24 @@ end
     )
     @test result == expected
 
-    expected = raw"""
-\begin{tabular}{|r|r|r|r|}
-  \hline
-  \textbf{Col. 1} & \textbf{Col. 2} & \textbf{Col. 3} & \textbf{Col. 4} \\
-  \hline
-  1 & 1.0 & $1 \cdot 10^{-5}$ & Teste \\
-  2 & 2.0 & 0.0001 & Teste \\
-  3 & 3.0 & 0.001 & Teste \\
-  4 & 4.0 & 0.01 & Teste \\
-  5 & 5.0 & 0.1 & nothing \\
-  6 & 6.0 & 1 & Teste \\
-  7 & 7.0 & $1 \cdot 10^{1}$ & Teste \\
-  8 & 8.0 & $1 \cdot 10^{2}$ & Teste \\
-  9 & 9.0 & $1 \cdot 10^{3}$ & Teste \\
-  $1 \cdot 10^{1}$ & 10.0 & $1 \cdot 10^{4}$ & Teste \\
-  $1 \cdot 10^{1}$ & 11.0 & $1 \cdot 10^{5}$ & Teste \\
-  \hline
-\end{tabular}
+    expected = """
+\\begin{tabular}{|r|r|r|r|}
+  \\hline
+  \\textbf{Col. 1} & \\textbf{Col. 2} & \\textbf{Col. 3} & \\textbf{Col. 4} \\\\
+  \\hline
+  1 & 1.0 & \$1 \\cdot 10^{-5}\$ & Teste \\\\
+  2 & 2.0 & 0.0001 & Teste \\\\
+  3 & 3.0 & 0.001 & Teste \\\\
+  4 & 4.0 & 0.01 & Teste \\\\
+  5 & 5.0 & 0.1 & nothing \\\\
+  6 & 6.0 & 1 & Teste \\\\
+  7 & 7.0 & \$1 \\cdot 10^{1}\$ & Teste \\\\
+  8 & 8.0 & \$1 \\cdot 10^{2}\$ & Teste \\\\
+  9 & 9.0 & \$1 \\cdot 10^{3}\$ & Teste \\\\
+  \$1 \\cdot 10^{1}\$ & 10.0 & \$1 \\cdot 10^{4}\$ & Teste \\\\
+  \$1 \\cdot 10^{1}\$ & 11.0 & \$1 \\cdot 10^{5}\$ & Teste \\\\
+  \\hline
+\\end{tabular}
 """
 
     result = pretty_table(
@@ -256,24 +256,24 @@ end
     )
     @test result == expected
 
-    expected = raw"""
-\begin{tabular}{|r|r|r|r|}
-  \hline
-  \textbf{Col. 1} & \textbf{Col. 2} & \textbf{Col. 3} & \textbf{Col. 4} \\
-  \hline
-  1 & 1.0 & $1 \cdot 10^{-5}$ & Teste \\
-  2 & 2.0 & 0.0001 & Teste \\
-  3 & 3.0 & 0.001 & Teste \\
-  4 & 4.0 & 0.01 & Teste \\
-  5 & 5.0 & 0.1 & nothing \\
-  6 & 6.0 & 1 & Teste \\
-  7 & 7.0 & 10 & Teste \\
-  8 & 8.0 & 100 & Teste \\
-  9 & 9.0 & $1 \cdot 10^{3}$ & Teste \\
-  $1 \cdot 10^{1}$ & 10.0 & $1 \cdot 10^{4}$ & Teste \\
-  $1 \cdot 10^{1}$ & 11.0 & $1 \cdot 10^{5}$ & Teste \\
-  \hline
-\end{tabular}
+    expected = """
+\\begin{tabular}{|r|r|r|r|}
+  \\hline
+  \\textbf{Col. 1} & \\textbf{Col. 2} & \\textbf{Col. 3} & \\textbf{Col. 4} \\\\
+  \\hline
+  1 & 1.0 & \$1 \\cdot 10^{-5}\$ & Teste \\\\
+  2 & 2.0 & 0.0001 & Teste \\\\
+  3 & 3.0 & 0.001 & Teste \\\\
+  4 & 4.0 & 0.01 & Teste \\\\
+  5 & 5.0 & 0.1 & nothing \\\\
+  6 & 6.0 & 1 & Teste \\\\
+  7 & 7.0 & 10 & Teste \\\\
+  8 & 8.0 & 100 & Teste \\\\
+  9 & 9.0 & \$1 \\cdot 10^{3}\$ & Teste \\\\
+  \$1 \\cdot 10^{1}\$ & 10.0 & \$1 \\cdot 10^{4}\$ & Teste \\\\
+  \$1 \\cdot 10^{1}\$ & 11.0 & \$1 \\cdot 10^{5}\$ & Teste \\\\
+  \\hline
+\\end{tabular}
 """
 
     result = pretty_table(
