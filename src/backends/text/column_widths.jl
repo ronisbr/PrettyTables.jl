@@ -81,6 +81,51 @@ function _text__fix_data_column_widths!(
 end
 
 """
+    _text__fit_cell_in_maximum_cell_width(cell_str::String, maximum_cell_width::Int, line_breaks::Bool) -> String
+
+Fit the cell with text `cell_str` in a field with a maximum width `maximum_cell_width`. If
+`line_breaks` is `true`, the cell will be split into multiple lines before fitting it.
+"""
+function _text__fit_cell_in_maximum_cell_width(
+    cell_str::String,
+    maximum_cell_width::Int,
+    line_breaks::Bool
+)
+    maximum_cell_width < 1 && return cell_str
+
+    if !line_breaks
+        tw = printable_textwidth(cell_str)
+        tw <= maximum_cell_width && return cell_str
+
+        cell_str, _ = right_crop(cell_str, tw - maximum_cell_width + 1)
+        cell_str *= "…"
+    else
+        tokens = split(cell_str, '\n')
+        str    = ""
+
+        for k in eachindex(tokens)
+            t  = tokens[k]
+            tw = printable_textwidth(t)
+
+            if tw > maximum_cell_width
+                t = first(right_crop(t, tw - maximum_cell_width + 1))
+                t *= "…"
+            end
+
+            str *= t
+
+            if k != last(eachindex(tokens))
+                str *= "\n"
+            end
+        end
+
+        cell_str = str
+    end
+
+    return cell_str
+end
+
+"""
     _text__printed_column_widths(table_data::TableData, row_labels::Union{Nothing, Vector{String}}, column_labels::Union{Nothing, Matrix{String}}, summary_rows::Union{Nothing, Matrix{String}}, table_str::Matrix{String}, right_vertical_lines_at_data_columns::AbstractVector{Int}, column_label_width_based_on_first_line_only::Bool, line_breaks::Bool)
 
 Compute the printed column widths.

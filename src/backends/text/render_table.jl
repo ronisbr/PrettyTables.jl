@@ -113,33 +113,24 @@ function _text__render_table(
 
         # If the user requested a maximum data column width, check the current size and crop
         # accordingly.
-        if action in (:column_label, :data, :summary_row_cell)
-            mcw = maximum_data_column_widths[ps.j]
-
-            if mcw > 1
-                str = if action == :column_label
-                    column_labels[ir, jr]
-                elseif action == :data
-                    table_str[ir, jr]
-                else
-                    summary_rows[ir, jr]
-                end
-
-                tw = printable_textwidth(str)
-
-                if tw > mcw
-                    str, _ = right_crop(str, tw - mcw + 1)
-                    str = str * "…"
-
-                    if action == :column_label
-                        column_labels[ir, jr] = str
-                    elseif action == :data
-                        table_str[ir, jr] = str
-                    else
-                        summary_rows[ir, jr] = str
-                    end
-                end
-            end
+        if action == :column_label
+           column_labels[ir, jr] = _text__fit_cell_in_maximum_cell_width(
+               column_labels[ir, jr],
+               maximum_data_column_widths[ps.j],
+               false
+           )
+        elseif action == :data
+            table_str[ir, jr] = _text__fit_cell_in_maximum_cell_width(
+                table_str[ir, jr],
+                maximum_data_column_widths[ps.j],
+                line_breaks
+            )
+        elseif action == :summary_row_cell
+            summary_rows[ir, jr] = _text__fit_cell_in_maximum_cell_width(
+                summary_rows[ir, jr],
+                maximum_data_column_widths[ps.j],
+                false
+            )
         end
     end
 

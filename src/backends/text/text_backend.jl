@@ -244,6 +244,18 @@ function _text__print_table(
                 end
             end
         end
+
+        # Since we modified the cell width to align the text, we must check if we need
+        # additional cropping to comply with the maximum cell width specification.
+        for j in 1:num_printed_data_columns
+            for i in 1:num_printed_data_rows
+                table_str[i, j] = _text__fit_cell_in_maximum_cell_width(
+                    table_str[i, j],
+                    maximum_data_column_widths[j],
+                    line_breaks
+                )
+            end
+        end
     end
 
     # == Compute the Column Width ==========================================================
