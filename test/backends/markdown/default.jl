@@ -19,8 +19,18 @@
 |          3 |        3.0 |          3 |          c |        ghi |     symbol |
 """
 
-    result = pretty_table(String, matrix; backend = :markdown)
+    result = pretty_table(
+        String,
+        matrix;
+        backend = :markdown
+    )
+    @test result == expected
 
+    result = pretty_table(
+        String,
+        matrix;
+        table_format = MarkdownTableFormat()
+    )
     @test result == expected
 end
 
