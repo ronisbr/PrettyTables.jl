@@ -68,6 +68,7 @@ end
     include("./backends/text/cropping.jl")
     include("./backends/text/custom_cells.jl")
     include("./backends/text/default.jl")
+    include("./backends/text/errors.jl")
     include("./backends/text/full.jl")
     include("./backends/text/highlighters.jl")
     include("./backends/text/line_breaks.jl")
