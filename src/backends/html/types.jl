@@ -76,7 +76,7 @@ struct HtmlHighlighter
         return new(
             f,
             _html__default_highlighter_fd,
-            [decoration, args...]
+            [decoration..., args...]
         )
     end
 end
