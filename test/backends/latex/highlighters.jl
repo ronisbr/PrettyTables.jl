@@ -27,7 +27,7 @@
         backend = :latex,
         color = true,
         highlighters = [
-            LatexHighlighter((data, i, j) -> data[i, j] % 2 == 0, ["textbf"])
+            LatexHighlighter((data, i, j) -> data[i, j] % 2 == 0, (_, _, _, _) -> ["textbf"])
             LatexHighlighter((data, i, j) -> data[i, j] % 2 == 0, ["textit"])
             LatexHighlighter((data, i, j) -> data[i, j] % 2 != 0, ["textbf", "textit"])
         ]
