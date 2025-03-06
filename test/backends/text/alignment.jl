@@ -257,3 +257,68 @@
 
     @test result == expected
 end
+
+@testset "Column Alignment Regex With Multiple Lines" begin
+    matrix = [
+        i == 2 ? missing :
+        i == 5 ? nothing :
+        "$((-1)^j * round(10.0^(-i + j); digits = 3))\n$((-1)^j * round(10.0^(-i + (j + 1)); digits = 3))"
+        for i in 1:4, j in 1:4
+    ]
+
+    expected = """
+┌─────────────┬─────────────┬───────────────┬───────────────┐
+│      Col. 1 │      Col. 2 │        Col. 3 │        Col. 4 │
+├─────────────┼─────────────┼───────────────┼───────────────┤
+│  -1.0       │  10.0       │  -100.0       │  1000.0       │
+│ -10.0       │ 100.0       │ -1000.0       │ 10000.0       │
+├─────────────┼─────────────┼───────────────┼───────────────┤
+│     missing │     missing │       missing │       missing │
+├─────────────┼─────────────┼───────────────┼───────────────┤
+│  -0.01      │   0.1       │    -1.0       │    10.0       │
+│  -0.1       │   1.0       │   -10.0       │   100.0       │
+├─────────────┼─────────────┼───────────────┼───────────────┤
+│  -0.001     │   0.01      │    -0.1       │     1.0       │
+│  -0.01      │   0.1       │    -1.0       │    10.0       │
+└─────────────┴─────────────┴───────────────┴───────────────┘
+"""
+
+    result = pretty_table(
+        String,
+        matrix;
+        alignment_anchor_regex = [r"\."],
+        line_breaks = true,
+        table_format = TextTableFormat(; @text__all_horizontal_lines)
+    )
+
+    @test result == expected
+
+    expected = """
+┌─────┬─────────┬─────────┬───────────┬───────────┐
+│ Row │  Col. 1 │  Col. 2 │    Col. 3 │    Col. 4 │
+├─────┼─────────┼─────────┼───────────┼───────────┤
+│   1 │  -1.0   │  10.0   │  -100.0   │  1000.0   │
+│     │ -10.0   │ 100.0   │ -1000.0   │ 10000.0   │
+├─────┼─────────┼─────────┼───────────┼───────────┤
+│   2 │ missing │ missing │   missing │   missing │
+├─────┼─────────┼─────────┼───────────┼───────────┤
+│   3 │  -0.01  │   0.1   │    -1.0   │    10.0   │
+│     │  -0.1   │   1.0   │   -10.0   │   100.0   │
+├─────┼─────────┼─────────┼───────────┼───────────┤
+│   4 │  -0.001 │   0.01  │    -0.1   │     1.0   │
+│     │  -0.01  │   0.1   │    -1.0   │    10.0   │
+└─────┴─────────┴─────────┴───────────┴───────────┘
+"""
+
+    result = pretty_table(
+        String,
+        matrix;
+        alignment_anchor_fallback = :c,
+        alignment_anchor_regex = [r"\."],
+        line_breaks = true,
+        show_row_number_column = true,
+        table_format = TextTableFormat(; @text__all_horizontal_lines)
+    )
+
+    @test result == expected
+end
