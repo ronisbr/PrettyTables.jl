@@ -38,6 +38,22 @@
         )
 
         @test result == expected
+
+        expected = """
+| **Merged Cell** | ── | **Col. 3** | **Col. 4** | **Col. 5** |
+|----------------:|---:|-----------:|-----------:|-----------:|
+|             'a' | :a |          a |    missing |    nothing |
+"""
+
+        result = pretty_table(
+            String,
+            matrix;
+            backend = :markdown,
+            merge_column_label_cells = [MergeCells(1, 1, 2, "Merged Cell")],
+            renderer = :show
+        )
+
+        @test result == expected
     end
 end
 
