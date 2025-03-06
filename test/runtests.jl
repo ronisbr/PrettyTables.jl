@@ -82,3 +82,7 @@ end
 @testset "Pre-defined Formatters" verbose = true begin
     include("./predefined_formatters.jl")
 end
+
+@testset "Errors" verbose = true begin
+    include("./errors.jl")
+end
