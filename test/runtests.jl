@@ -80,6 +80,10 @@ end
     include("./tables.jl")
 end
 
+@testset "General Tests" verbose = true begin
+    include("./general.jl")
+end
+
 @testset "Pre-defined Formatters" verbose = true begin
     include("./predefined_formatters.jl")
 end
