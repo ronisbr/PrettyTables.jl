@@ -34,6 +34,15 @@
         )
 
         @test result == expected
+
+        result = pretty_table(
+            String,
+            matrix;
+            backend = :html,
+            renderer = :show
+        )
+
+        @test result == expected
     end
 
     @testset "HTML Cells" begin
@@ -62,6 +71,15 @@
             String,
             matrix;
             backend = :html
+        )
+
+        @test result == expected
+
+        result = pretty_table(
+            String,
+            matrix;
+            backend = :html,
+            renderer = :show
         )
 
         @test result == expected
@@ -94,6 +112,16 @@
             matrix;
             backend = :html,
             allow_html_in_cells = true
+        )
+
+        @test result == expected
+
+        result = pretty_table(
+            String,
+            matrix;
+            backend = :html,
+            allow_html_in_cells = true,
+            renderer = :show
         )
 
         @test result == expected
@@ -187,6 +215,51 @@
             backend = :html
         )
 
+        @test result == expected
+
+        result = pretty_table(
+            String,
+            v;
+            backend = :html,
+            renderer = :show
+        )
+
+        @test result == expected
+    end
+
+    @testset "Markdown" begin
+        matrix = [md"**Bold**" md"*Italic*" md"_**Bold and Italic**_"]
+
+        expected = """
+<table>
+  <tr class = "columnLabelRow">
+    <th style = "text-align: right; font-weight: bold;">Col. 1</th>
+    <th style = "text-align: right; font-weight: bold;">Col. 2</th>
+    <th style = "text-align: right; font-weight: bold;">Col. 3</th>
+  </tr>
+  <tbody>
+    <tr class = "dataRow">
+      <td style = "text-align: right;"><div class="markdown"><p><strong>Bold</strong></p></div></td>
+      <td style = "text-align: right;"><div class="markdown"><p><em>Italic</em></p></div></td>
+      <td style = "text-align: right;"><div class="markdown"><p><em><strong>Bold and Italic</strong></em></p></div></td>
+    </tr>
+  </tbody>
+</table>
+"""
+
+        result = pretty_table(
+            String,
+            matrix;
+            backend = :html
+        )
+        @test result == expected
+
+        result = pretty_table(
+            String,
+            matrix;
+            backend = :html,
+            renderer = :show
+        )
         @test result == expected
     end
 end
