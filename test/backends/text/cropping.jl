@@ -760,4 +760,86 @@ expected = """
             @test result == expected
         end
     end
+
+    @testset "With Multiple Lines" begin
+        matrix = ["($i, $j, 1)\n($i, $j, 2)" for i in 1:5, j in 1:5]
+
+        expected = """
+┌───────────┬───────
+│    Col. 1 │    C ⋯
+├───────────┼───────
+│ (1, 1, 1) │ (1,  ⋯
+│ (1, 1, 2) │ (1,  ⋯
+├───────────┼───────
+│ (2, 1, 1) │ (2,  ⋯
+│ (2, 1, 2) │ (2,  ⋯
+├───────────┼───────
+│ (3, 1, 1) │ (3,  ⋯
+│         ⋮ │      ⋱
+└───────────┴───────
+4 columns and 3 rows omitted
+"""
+
+        result = pretty_table(
+            String,
+            matrix;
+            line_breaks = true,
+            display_size = (15, 20),
+            table_format = TextTableFormat(; @text__all_horizontal_lines)
+        )
+        @test result == expected
+
+        expected = """
+┌───────────┬───────
+│    Col. 1 │    C ⋯
+├───────────┼───────
+│ (1, 1, 1) │ (1,  ⋯
+│ (1, 1, 2) │ (1,  ⋯
+├───────────┼───────
+│ (2, 1, 1) │ (2,  ⋯
+│ (2, 1, 2) │ (2,  ⋯
+├───────────┼───────
+│ (3, 1, 1) │ (3,  ⋯
+│ (3, 1, 2) │ (3,  ⋯
+│         ⋮ │      ⋱
+└───────────┴───────
+4 columns and 2 rows omitted
+"""
+
+        result = pretty_table(
+            String,
+            matrix;
+            line_breaks = true,
+            display_size = (16, 20),
+            table_format = TextTableFormat(; @text__all_horizontal_lines)
+        )
+        @test result == expected
+
+        expected = """
+┌───────────┬───────
+│    Col. 1 │    C ⋯
+├───────────┼───────
+│ (1, 1, 1) │ (1,  ⋯
+│ (1, 1, 2) │ (1,  ⋯
+├───────────┼───────
+│ (2, 1, 1) │ (2,  ⋯
+│ (2, 1, 2) │ (2,  ⋯
+├───────────┼───────
+│ (3, 1, 1) │ (3,  ⋯
+│ (3, 1, 2) │ (3,  ⋯
+├───────────┼───────
+│         ⋮ │      ⋱
+└───────────┴───────
+4 columns and 2 rows omitted
+"""
+
+        result = pretty_table(
+            String,
+            matrix;
+            line_breaks = true,
+            display_size = (17, 20),
+            table_format = TextTableFormat(; @text__all_horizontal_lines)
+        )
+        @test result == expected
+    end
 end
