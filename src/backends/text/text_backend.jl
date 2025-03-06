@@ -1039,7 +1039,7 @@ function _text__print_table(
 
                 if tw > cell_width
                     CustomTextCell.crop!(cell, tw - cell_width + 1)
-                    CustomTextCell.add_sufix!(cell, "…")
+                    CustomTextCell.add_suffix!(cell, "…")
                     CustomTextCell.left_padding!(cell, 0)
                     CustomTextCell.right_padding!(cell, 0)
 
