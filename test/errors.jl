@@ -21,3 +21,16 @@ end
     data = [1 2 3 4]
     @test_throws ArgumentError pretty_table(data; renderer = :something)
 end
+
+@testset "Summary Row and Summary Row Label Lengths" begin
+    data = [
+        1 2 3
+        4 5 6
+    ]
+
+    @test_throws ArgumentError pretty_table(
+        data,
+        summary_rows = [(data, i) -> i],
+        summary_row_labels = ["First", "Second"]
+    )
+end
