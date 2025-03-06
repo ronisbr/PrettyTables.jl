@@ -41,8 +41,8 @@ end
 #                                           API                                            #
 ############################################################################################
 
-function CustomTextCell.add_sufix!(cell::AnsiTextCell, sufix::String)
-    cell.suffix = sufix
+function CustomTextCell.add_suffix!(cell::AnsiTextCell, suffix::String)
+    cell.suffix = suffix
     return nothing
 end
 

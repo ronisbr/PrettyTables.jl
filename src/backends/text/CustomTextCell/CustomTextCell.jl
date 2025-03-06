@@ -18,8 +18,13 @@ abstract type AbstractCustomTextCell end
 #                                        Functions                                         #
 ############################################################################################
 
-function add_sufix!(cell::AbstractCustomTextCell, sufix::String)
-    error("The custom text cell of type `$(typeof(cell))` does not implement the API function `add_sufix!`.")
+"""
+    add_suffix!(cell::AbstractCustomTextCell, suffix::String) -> Nothing
+
+Add `suffix` to the custom `cell` rendered text.
+"""
+function add_suffix!(cell::AbstractCustomTextCell, suffix::String)
+    error("The custom text cell of type `$(typeof(cell))` does not implement the API function `add_suffix!`.")
 end
 
 """
