@@ -93,8 +93,6 @@ function _html__add_alignment_to_style!(style::Vector{HtmlPair}, alignment::Symb
     else
         return push!(style, "text-align" => _HTML__ALIGNMENT_MAP[:r])
     end
-
-    return nothing
 end
 
 """
