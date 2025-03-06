@@ -28,6 +28,12 @@
         matrix;
         backend = :latex
     )
+    @test result == expected
 
+    result = pretty_table(
+        String,
+        matrix;
+        table_format = LatexTableFormat()
+    )
     @test result == expected
 end

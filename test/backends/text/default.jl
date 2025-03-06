@@ -39,4 +39,18 @@
         result = pretty_table(String, matrix)
         @test result == expected
     end
+
+    @testset "Automatic Type Detection" begin
+        expected = """
+┌────────┬────────┬────────┬────────┬────────┬─────────┐
+│ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │ Col. 5 │  Col. 6 │
+├────────┼────────┼────────┼────────┼────────┼─────────┤
+│      1 │    1.0 │      1 │      a │    abc │ missing │
+│      2 │    2.0 │      2 │      b │    def │ nothing │
+│      3 │    3.0 │      3 │      c │    ghi │  symbol │
+└────────┴────────┴────────┴────────┴────────┴─────────┘
+"""
+        result = pretty_table(String, matrix; table_format = TextTableFormat())
+        @test result == expected
+    end
 end

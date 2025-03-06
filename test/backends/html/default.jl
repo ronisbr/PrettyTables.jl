@@ -50,8 +50,18 @@
 </table>
 """
 
-    result = pretty_table(String, matrix; backend = :html)
+    result = pretty_table(
+        String,
+        matrix;
+        backend = :html
+    )
+    @test result == expected
 
+    result = pretty_table(
+        String,
+        matrix;
+        table_format = HtmlTableFormat()
+    )
     @test result == expected
 end
 
