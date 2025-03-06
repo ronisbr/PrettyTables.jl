@@ -26,7 +26,7 @@
         matrix;
         backend = :markdown,
         highlighters = [
-            MarkdownHighlighter((data, i, j) -> data[i, j] % 2 == 0, md_code)
+            MarkdownHighlighter((data, i, j) -> data[i, j] % 2 == 0, (_, _, _, _) -> md_code)
             MarkdownHighlighter((data, i, j) -> data[i, j] % 2 == 0, md_bold)
             MarkdownHighlighter((data, i, j) -> data[i, j] % 2 != 0, md_bold_italic)
         ]

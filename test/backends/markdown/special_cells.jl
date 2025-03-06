@@ -23,6 +23,15 @@
         )
 
         @test result == expected
+
+        result = pretty_table(
+            String,
+            matrix;
+            backend = :markdown,
+            renderer = :show
+        )
+
+        @test result == expected
     end
 
     @testset "Markdown Cells" begin
@@ -40,6 +49,15 @@
             String,
             matrix;
             backend = :markdown
+        )
+
+        @test result == expected
+
+        result = pretty_table(
+            String,
+            matrix;
+            backend = :markdown,
+            renderer = :show
         )
 
         @test result == expected
@@ -64,6 +82,16 @@
         )
 
         @test result == expected
+
+        result = pretty_table(
+            String,
+            matrix;
+            backend = :markdown,
+            allow_markdown_in_cells = true,
+            renderer = :show
+        )
+
+        @test result == expected
     end
 
     @testset "Line Breaks" begin
@@ -83,6 +111,15 @@
 
         @test result == expected
 
+        result = pretty_table(
+            String,
+            matrix;
+            backend = :markdown,
+            renderer = :show
+        )
+
+        @test result == expected
+
         expected = """
 |                **Col. 1** |                **Col. 2** |
 |--------------------------:|--------------------------:|
@@ -94,6 +131,16 @@
             matrix;
             backend = :markdown,
             line_breaks = true
+        )
+
+        @test result == expected
+
+        result = pretty_table(
+            String,
+            matrix;
+            backend = :markdown,
+            line_breaks = true,
+            renderer = :show
         )
 
         @test result == expected
@@ -119,6 +166,15 @@
             String,
             v;
             backend = :markdown
+        )
+
+        @test result == expected
+
+        result = pretty_table(
+            String,
+            v;
+            backend = :markdown,
+            renderer = :show
         )
 
         @test result == expected
