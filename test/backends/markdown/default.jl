@@ -32,5 +32,8 @@
         table_format = MarkdownTableFormat()
     )
     @test result == expected
+
+    result = pretty_table_markdown_backend(String, matrix)
+    @test result == expected
 end
 
