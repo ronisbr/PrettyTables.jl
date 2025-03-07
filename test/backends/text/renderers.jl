@@ -40,6 +40,13 @@
         )
 
         @test result == expected
+
+        result = pretty_table(
+            String,
+            matrix;
+            merge_column_label_cells = [MergeCells(1, 1, 2, "Merged Cell")],
+            renderer = :show
+        )
     end
 end
 

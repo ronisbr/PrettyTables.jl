@@ -74,6 +74,7 @@ end
     include("./backends/text/line_breaks.jl")
     include("./backends/text/offset_arrays.jl")
     include("./backends/text/renderers.jl")
+    include("./backends/text/special_cells.jl")
 end
 
 @testset "Tables.jl" verbose = true begin
