@@ -4,6 +4,32 @@
 #
 ############################################################################################
 
+@testset "Automatic Column Label Merge" begin
+    matrix = [1 2 3 4 5; 6 7 8 9 10]
+    column_labels = [
+        MultiColumn(2, "Merged Col. 1"),
+        MultiColumn(2, "Merged Col. 2", :l),
+        EmptyCells(1)
+    ]
+
+    expected = """
+┌───────────────────────────────────┬───────────────────────────────────┬─────────────────┐
+│           Merged Col. 1           │ Merged Col. 2                     │                 │
+├─────────────────┬─────────────────┼─────────────────┬─────────────────┼─────────────────┤
+│               1 │               2 │               3 │               4 │               5 │
+│               6 │               7 │               8 │               9 │              10 │
+└─────────────────┴─────────────────┴─────────────────┴─────────────────┴─────────────────┘
+"""
+
+    result = pretty_table(
+        String,
+        matrix;
+        column_labels,
+        fixed_data_column_widths = 15
+    )
+    @test result == expected
+end
+
 @testset "Merge Column Label Cells" begin
     matrix = [1 2 3; 4 5 6]
     column_labels = [MultiColumn(2, "Test"), "B", "C"]
