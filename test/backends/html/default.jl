@@ -64,9 +64,17 @@
     )
     @test result == expected
 
+    result = pretty_table_html_backend(String, matrix)
+    @test result == expected
+
+    result = pretty_table(HTML, matrix)
+    @test typeof(result) == HTML{String}
+    @test result.content == expected
+
     result = pretty_table(
         HTML,
-        matrix
+        matrix;
+        backend = :html
     )
     @test typeof(result) == HTML{String}
     @test result.content == expected

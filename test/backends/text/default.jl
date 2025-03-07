@@ -24,6 +24,9 @@
 
         result = pretty_table(String, matrix; color = true)
         @test result == expected
+
+        result = pretty_table_text_backend(String, matrix; color = true)
+        @test result == expected
     end
 
     @testset "Without Colors" begin
@@ -38,6 +41,9 @@
 """
         result = pretty_table(String, matrix)
         @test result == expected
+
+        result = pretty_table_text_backend(String, matrix)
+        @test result == expected
     end
 
     @testset "Automatic Type Detection" begin
@@ -51,6 +57,9 @@
 └────────┴────────┴────────┴────────┴────────┴─────────┘
 """
         result = pretty_table(String, matrix; table_format = TextTableFormat())
+        @test result == expected
+
+        result = pretty_table_text_backend(String, matrix)
         @test result == expected
     end
 end

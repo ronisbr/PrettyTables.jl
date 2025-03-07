@@ -36,4 +36,7 @@
         table_format = LatexTableFormat()
     )
     @test result == expected
+
+    result = pretty_table_latex_backend(String, matrix)
+    @test result == expected
 end
