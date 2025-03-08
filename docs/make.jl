@@ -13,23 +13,22 @@ makedocs(
     authors = "Ronan Arraes Jardim Chagas",
     warnonly = [:missing_docs, :cross_references],
     pages = [
-        "Home"               => "index.md",
-        "Quick Start"        => "man/quick_start.md",
-        "Usage"              => "man/usage.md",
-        "Back Ends"          => Any[
-            "Text"           => "man/text/text_backend.md",
-            "HTML"           => "man/html/html_backend.md",
-            "LaTeX"          => "man/latex/latex_backend.md",
-            "Markdown"       => "man/markdown/markdown_backend.md",
+        "Home"                        => "index.md",
+        "Quick Start"                 => "man/quick_start.md",
+        "Usage"                       => "man/usage.md",
+        "Back Ends"                   => Any[
+            "Text"                    => Any[
+                "Text Backend"        => "man/text/text_backend.md",
+                "Pre-defined Formats" => "man/text/predefined_formats.md",
+            ],
+            "HTML"                    => "man/html/html_backend.md",
+            "LaTeX"                   => Any[
+                "LaTeX Backend"       => "man/latex/latex_backend.md",
+                "Examples"            => "man/latex/latex_examples.md",
+            ],
+            "Markdown"                => "man/markdown/markdown_backend.md",
         ],
-        "Examples"           => Any[
-            "LaTeX Back End" => "man/latex/latex_examples.md",
-        ],
-        # "Examples"           => Any[
-        #     "Text Back End"  => "man/text_examples.md",
-        #     "HTML Back End"  => "man/html_examples.md",
-        # ],
-        "Library"            => "lib/library.md",
+        "Library"                     => "lib/library.md",
     ]
 )
 
