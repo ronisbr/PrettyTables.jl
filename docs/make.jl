@@ -20,6 +20,7 @@ makedocs(
             "Text"                    => Any[
                 "Text Backend"        => "man/text/text_backend.md",
                 "Pre-defined Formats" => "man/text/predefined_formats.md",
+                "Examples"            => "man/text/text_examples.md",
             ],
             "HTML"                    => "man/html/html_backend.md",
             "LaTeX"                   => Any[
