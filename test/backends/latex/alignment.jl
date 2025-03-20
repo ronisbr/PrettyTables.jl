@@ -54,7 +54,7 @@
             cell_alignment = [(2, 3) => :r, (4, 5) => :l],
             table_format = LatexTableFormat(
                 ;
-                right_vertical_lines_at_data_columns = [1, 3, 4],
+                vertical_lines_at_data_columns = [1, 3, 4],
                 vertical_line_after_data_columns = false
             )
         )
@@ -107,7 +107,7 @@
             cell_alignment = [(2, 3) => :r, (4, 5) => :l],
             table_format = LatexTableFormat(
                 ;
-                right_vertical_lines_at_data_columns = [1, 3, 4],
+                vertical_lines_at_data_columns = [1, 3, 4],
                 vertical_line_after_data_columns = false
             )
         )

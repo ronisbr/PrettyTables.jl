@@ -107,11 +107,11 @@ PrecompileTools.@setup_workload begin
             horizontal_line_after_data_rows       = false,
             horizontal_line_at_beginning          = false,
             new_line_at_end                       = false,
-            vertical_line_at_beginning            = false,
-            vertical_line_after_row_number_column = true,
-            vertical_line_after_row_label_column  = false,
-            right_vertical_lines_at_data_columns  = :none,
             vertical_line_after_data_columns      = false,
+            vertical_line_after_row_label_column  = false,
+            vertical_line_after_row_number_column = true,
+            vertical_line_at_beginning            = false,
+            vertical_lines_at_data_columns        = :none,
         )
 
         pretty_table(

@@ -85,7 +85,7 @@ function _text__print_aligned(
 end
 
 """
-    _text__print_horizontal_line(display::Display, tf::TextTableFormat, crayon::Crayon, table_data::TableData, right_vertical_lines_at_data_columns::AbstractVector{Int}, row_number_column_width::Int, row_label_column_width::Int, printed_data_column_widths::Vector{Int}, top::Bool = false, bottom::Bool = false, row_group_label::Bool = false) -> Nothing
+    _text__print_horizontal_line(display::Display, tf::TextTableFormat, crayon::Crayon, table_data::TableData, vertical_lines_at_data_columns::AbstractVector{Int}, row_number_column_width::Int, row_label_column_width::Int, printed_data_column_widths::Vector{Int}, top::Bool = false, bottom::Bool = false, row_group_label::Bool = false) -> Nothing
 
 Print a horizontal line to `display`.
 
@@ -95,8 +95,8 @@ Print a horizontal line to `display`.
 - `tf::TextTableFormat`: Table format.
 - `crayon::Crayon`: Crayon used to print the horizontal line.
 - `table_data::TableData`: Table data.
-- `right_vertical_lines_at_data_columns::AbstractVector{Int}`: Location of the right vertical
-    lines at the data columns.
+- `vertical_lines_at_data_columns::AbstractVector{Int}`: List of columns where a vertical
+    line must be drawn after the cell.
 - `row_number_column_width::Int`: Row number column width.
 - `row_label_column_width::Int`: Row label column width.
 - `printed_data_column_widths::Vector{Int}`: Printed data column widths.
@@ -115,7 +115,7 @@ function _text__print_horizontal_line(
     tf::TextTableFormat,
     crayon::Crayon,
     table_data::TableData,
-    right_vertical_lines_at_data_columns::AbstractVector{Int},
+    vertical_lines_at_data_columns::AbstractVector{Int},
     row_number_column_width::Int,
     row_label_column_width::Int,
     printed_data_column_widths::Vector{Int},
@@ -211,7 +211,7 @@ function _text__print_horizontal_line(
                 row,
                 !table_continuation_column
             )
-        elseif j ∈ right_vertical_lines_at_data_columns
+        elseif j ∈ vertical_lines_at_data_columns
             _text__horizontal_line_intersection(display, mi, row, false)
         end
     end
@@ -234,7 +234,7 @@ function _text__print_horizontal_line(
 end
 
 """
-    _text__print_column_label_horizontal_line(display::Display, tf::TextTableFormat, crayon::Crayon, table_data::TableData, row_number::Int, right_vertical_lines_at_data_columns::AbstractVector{Int}, row_number_column_width::Int, row_label_column_width::Int, printed_data_column_widths::Vector{Int}, top::Bool = false, bottom::Bool = false)
+    _text__print_column_label_horizontal_line(display::Display, tf::TextTableFormat, crayon::Crayon, table_data::TableData, row_number::Int, vertical_lines_at_data_columns::AbstractVector{Int}, row_number_column_width::Int, row_label_column_width::Int, printed_data_column_widths::Vector{Int}, top::Bool = false, bottom::Bool = false)
 
 Print a column label horizontal line to `display`.
 
@@ -245,8 +245,8 @@ Print a column label horizontal line to `display`.
 - `crayon::Crayon`: Crayon used to print the horizontal line.
 - `table_data::TableData`: Table data.
 - `row_number::Int`: Column label row number before the horizontal line.
-- `right_vertical_lines_at_data_columns::AbstractVector{Int}`: Location of the right vertical
-    lines at the data columns.
+- `vertical_lines_at_data_columns::AbstractVector{Int}`: List of columns where a vertical
+    line must be drawn after the cell.
 - `row_number_column_width::Int`: Row number column width.
 - `row_label_column_width::Int`: Row label column width.
 - `printed_data_column_widths::Vector{Int}`: Printed data column widths.
@@ -261,7 +261,7 @@ function _text__print_column_label_horizontal_line(
     crayon::Crayon,
     table_data::TableData,
     row_number::Int,
-    right_vertical_lines_at_data_columns::AbstractVector{Int},
+    vertical_lines_at_data_columns::AbstractVector{Int},
     row_number_column_width::Int,
     row_label_column_width::Int,
     printed_data_column_widths::Vector{Int},
@@ -354,7 +354,7 @@ function _text__print_column_label_horizontal_line(
                 row,
                 !table_continuation_column
             )
-        elseif j ∈ right_vertical_lines_at_data_columns
+        elseif j ∈ vertical_lines_at_data_columns
             # We must compute if the cell at the top or at the bottom from the current
             # horizontal line is merged. Notice that if we are at the top of the table, the
             # effect is equal to have a merged cell above it.

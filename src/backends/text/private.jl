@@ -29,7 +29,7 @@ end
 # == Horizontal Cropping ===================================================================
 
 """
-    _text__number_of_printed_data_columns(display_width::Int, table_data::TableData, tf::TextTableFormat, right_vertical_lines_at_data_columns::AbstractVector{Int}, row_number_column_width::Int, row_label_column_width::Int, printed_data_column_widths::Vector{Int}) -> Int
+    _text__number_of_printed_data_columns(display_width::Int, table_data::TableData, tf::TextTableFormat, vertical_lines_at_data_columns::AbstractVector{Int}, row_number_column_width::Int, row_label_column_width::Int, printed_data_column_widths::Vector{Int}) -> Int
 
 Compute the number of printed data columns.
 
@@ -38,8 +38,8 @@ Compute the number of printed data columns.
 - `display_width::Int`: Display width.
 - `table_data::TableData`: Table data.
 - `tf::TextTableFormat`: Table format.
-- `right_vertical_lines_at_data_columns::AbstractVector{Int}`: Right vertical lines at data
-    columns.
+- `vertical_lines_at_data_columns::AbstractVector{Int}`: List of columns where a vertical
+    line must be drawn after the cell.
 - `row_number_column_width::Int`: Row number column width.
 - `row_label_column_width::Int`: Row label column width.
 - `printed_data_column_widths::Vector{Int}`: Printed data column widths.
@@ -48,7 +48,7 @@ function _text__number_of_printed_data_columns(
     display_width::Int,
     table_data::TableData,
     tf::TextTableFormat,
-    right_vertical_lines_at_data_columns::AbstractVector{Int},
+    vertical_lines_at_data_columns::AbstractVector{Int},
     row_number_column_width::Int,
     row_label_column_width::Int,
     printed_data_column_widths::Vector{Int}
@@ -79,7 +79,7 @@ function _text__number_of_printed_data_columns(
         num_remaining_columns <= 1 && break
 
         num_printed_data_columns += 1
-        current_column += (j ∈ right_vertical_lines_at_data_columns) + 1
+        current_column += (j ∈ vertical_lines_at_data_columns) + 1
     end
 
     return num_printed_data_columns
@@ -464,7 +464,7 @@ end
 # == Table Dimensions ======================================================================
 
 """
-    _text__table_width_wo_cont_column(table_data::TableData, tf::TextTableFormat, right_vertical_lines_at_data_columns::AbstractVector{Int}, row_number_column_width::Int, row_label_column_width::Int, printed_data_column_widths::Vector{Int}) -> Int
+    _text__table_width_wo_cont_column(table_data::TableData, tf::TextTableFormat, vertical_lines_at_data_columns::AbstractVector{Int}, row_number_column_width::Int, row_label_column_width::Int, printed_data_column_widths::Vector{Int}) -> Int
 
 Compute the width of the table without the continuation column.
 
@@ -472,8 +472,8 @@ Compute the width of the table without the continuation column.
 
 - `table_data::TableData`: Table data.
 - `tf::TextTableFormat`: Table format.
-- `right_vertical_lines_at_data_columns::AbstractVector{Int}`: Right vertical lines at data
-    columns.
+- `vertical_lines_at_data_columns::AbstractVector{Int}`: List of columns where a vertical
+    line must be drawn after the cell.
 - `row_number_column_width::Int`: Row number column width.
 - `row_label_column_width::Int`: Row label column width.
 - `printed_data_column_widths::Vector{Int}`: Printed data column widths.
@@ -481,7 +481,7 @@ Compute the width of the table without the continuation column.
 function _text__table_width_wo_cont_column(
     table_data::TableData,
     tf::TextTableFormat,
-    right_vertical_lines_at_data_columns::AbstractVector{Int},
+    vertical_lines_at_data_columns::AbstractVector{Int},
     row_number_column_width::Int,
     row_label_column_width::Int,
     printed_data_column_widths::Vector{Int}
@@ -510,7 +510,7 @@ function _text__table_width_wo_cont_column(
         # We should not add the last printed column vertical line because it is taken into
         # account afterwards.
         if (j != last(eachindex(printed_data_column_widths))) &&
-            (j ∈ right_vertical_lines_at_data_columns)
+            (j ∈ vertical_lines_at_data_columns)
             current_column += 1
         end
     end

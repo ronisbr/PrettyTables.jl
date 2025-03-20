@@ -127,16 +127,16 @@ Define the format of the tables printed with the text back end.
     after the data rows.
 - `horizontal_line_after_summary_rows::Bool`: If `true`, a horizontal line will be drawn
     after the summary rows.
-- `right_vertical_lines_at_data_columns::Union{Symbol, Vector{Int}}`: A vertical line will
-    be drawn after each data column index listed in this vector. If the symbol `:all` is
-    passed, a vertical line will be drawn after every data column. If the symbol `:none` is
-    passed, no vertical lines will be drawn after the data columns.
 - `vertical_line_at_beginning::Bool`: If `true`, a vertical line will be drawn at the
     beginning of the table.
 - `vertical_line_after_row_number_column::Bool`: If `true`, a vertical line will be drawn
     after the row number column.
 - `vertical_line_after_row_label_column::Bool`: If `true`, a vertical line will be drawn
     after the row label column.
+- `vertical_lines_at_data_columns::Union{Symbol, Vector{Int}}`: A vertical line will be
+    drawn after each data column index listed in this vector. If the symbol `:all` is
+    passed, a vertical line will be drawn after every data column. If the symbol `:none` is
+    passed, no vertical lines will be drawn after the data columns.
 - `vertical_line_after_data_columns::Bool`: If `true`, a vertical line will be drawn after
     the data columns.
 - `vertical_line_after_continuation_column::Bool`: If `true`, a vertical line will be
@@ -162,10 +162,10 @@ Define the format of the tables printed with the text back end.
     vertical_line_at_beginning::Bool = true
     vertical_line_after_row_number_column::Bool = true
     vertical_line_after_row_label_column::Bool = true
+    vertical_lines_at_data_columns::Union{Symbol, Vector{Int}} = :all
     vertical_line_after_data_columns::Bool = true
     vertical_line_after_continuation_column::Bool = true
 
-    right_vertical_lines_at_data_columns::Union{Symbol, Vector{Int}} = :all
     suppress_vertical_lines_at_column_labels::Bool = false
 
     # == Other Configurations ==============================================================

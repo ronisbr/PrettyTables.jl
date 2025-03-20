@@ -131,9 +131,9 @@ julia> pretty_table(
 """
 macro text__all_vertical_lines()
     return :((
-        right_vertical_lines_at_data_columns     = :all,
         suppress_vertical_lines_at_column_labels = false,
         vertical_line_after_continuation_column  = true,
+        vertical_lines_at_data_columns           = :all,
         vertical_line_after_data_columns         = true,
         vertical_line_after_row_label_column     = true,
         vertical_line_after_row_number_column    = true,
@@ -257,9 +257,9 @@ julia> pretty_table(
 """
 macro text__no_vertical_lines()
     return :((
-        right_vertical_lines_at_data_columns     = :none,
         suppress_vertical_lines_at_column_labels = true,
         vertical_line_after_continuation_column  = false,
+        vertical_lines_at_data_columns           = :none,
         vertical_line_after_data_columns         = false,
         vertical_line_after_row_label_column     = false,
         vertical_line_after_row_number_column    = false,
