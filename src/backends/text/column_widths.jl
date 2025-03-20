@@ -126,7 +126,7 @@ function _text__fit_cell_in_maximum_cell_width(
 end
 
 """
-    _text__printed_column_widths(table_data::TableData, row_labels::Union{Nothing, Vector{String}}, column_labels::Union{Nothing, Matrix{String}}, summary_rows::Union{Nothing, Matrix{String}}, table_str::Matrix{String}, right_vertical_lines_at_data_columns::AbstractVector{Int}, column_label_width_based_on_first_line_only::Bool, line_breaks::Bool)
+    _text__printed_column_widths(table_data::TableData, row_labels::Union{Nothing, Vector{String}}, column_labels::Union{Nothing, Matrix{String}}, summary_rows::Union{Nothing, Matrix{String}}, table_str::Matrix{String}, vertical_lines_at_data_columns::AbstractVector{Int}, column_label_width_based_on_first_line_only::Bool, line_breaks::Bool)
 
 Compute the printed column widths.
 
@@ -137,8 +137,8 @@ Compute the printed column widths.
 - `column_labels::Union{Nothing, Matrix{String}}`: Rendered column labels.
 - `summary_rows::Union{Nothing, Vector{String}}`: Rendered summary rows.
 - `table_str::Matrix{String}`: Rendered data cells.
-- `right_vertical_lines_at_data_columns::AbstractVector{Int}`: Location of the right
-    vertical lines at the data columns.
+- `vertical_lines_at_data_columns::AbstractVector{Int}`: List of columns where a vertical
+    line must be drawn after the cell.
 - `column_label_width_based_on_first_line_only::Bool`: If `true`, the column label width
     will be computed based on the first line only.
 - `line_breaks::Bool`: If `true`, the cells will be split into multiple lines if needed.
@@ -156,7 +156,7 @@ function _text__printed_column_widths(
     column_labels::Union{Nothing, Matrix{String}},
     summary_rows::Union{Nothing, Matrix{String}},
     table_str::Matrix{String},
-    right_vertical_lines_at_data_columns::AbstractVector{Int},
+    vertical_lines_at_data_columns::AbstractVector{Int},
     column_label_width_based_on_first_line_only::Bool,
     line_breaks::Bool
 )
@@ -247,7 +247,7 @@ function _text__printed_column_widths(
                 total_width += printed_data_column_widths[j]
 
                 if j != j₁
-                    total_width += 2 + (j ∈ right_vertical_lines_at_data_columns)
+                    total_width += 2 + (j ∈ vertical_lines_at_data_columns)
                 end
             end
 

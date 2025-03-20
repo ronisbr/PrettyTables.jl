@@ -100,16 +100,16 @@ end
 # == Table =================================================================================
 
 """
-    _latex__table_header_description(td::TableData, tf::LatexTableFormat, right_vertical_lines_at_data_columns::AbstractVector{Int}) -> String
+    _latex__table_header_description(td::TableData, tf::LatexTableFormat, vertical_lines_at_data_columns::AbstractVector{Int}) -> String
 
 Create the LaTeX table header description with the column alignments and vertical lines
 considering the table data `td`, table format `tf`, and the processed information about
-right vertical lines at data columns `right_vertical_lines_at_data_columns`.
+vertical lines at data columns `vertical_lines_at_data_columns`.
 """
 function _latex__table_header_description(
     td::TableData,
     tf::LatexTableFormat,
-    right_vertical_lines_at_data_columns::AbstractVector{Int}
+    vertical_lines_at_data_columns::AbstractVector{Int}
 )
     num_columns = td.num_columns
 
@@ -147,7 +147,7 @@ function _latex__table_header_description(
     for i in 1:nc
         print(desc, _data_column_alignment(td, i) |> _latex__alignment_to_str)
 
-        vline = i in right_vertical_lines_at_data_columns
+        vline = i in vertical_lines_at_data_columns
 
         if (i == nc) && tf.vertical_line_after_data_columns
             vline = true

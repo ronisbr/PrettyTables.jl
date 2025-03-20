@@ -105,7 +105,7 @@ julia> highlighters = [
 
 julia> tf = TextTableFormat(
     # Remove vertical lines.
-    right_vertical_lines_at_data_columns = :none,
+    vertical_lines_at_data_columns       = :none,
     vertical_line_after_data_columns     = false,
     vertical_line_after_row_label_column = false,
     vertical_line_at_beginning           = false,

@@ -31,16 +31,16 @@ function _latex__print(
     end
 
     # Process the vertical lines at data columns.
-    if tf.right_vertical_lines_at_data_columns isa Symbol
-        right_vertical_lines_at_data_columns =
-            if tf.right_vertical_lines_at_data_columns == :all
+    if tf.vertical_lines_at_data_columns isa Symbol
+        vertical_lines_at_data_columns =
+            if tf.vertical_lines_at_data_columns == :all
                 1:table_data.num_columns
             else
                 1:0
             end
     else
-        right_vertical_lines_at_data_columns =
-            tf.right_vertical_lines_at_data_columns::Vector{Int}
+        vertical_lines_at_data_columns =
+            tf.vertical_lines_at_data_columns::Vector{Int}
     end
 
     # == Variables to Store Information About Indentation ==================================
@@ -54,7 +54,7 @@ function _latex__print(
     desc = _latex__table_header_description(
         table_data,
         tf,
-        right_vertical_lines_at_data_columns
+        vertical_lines_at_data_columns
     )
 
     _aprintln(buf, "\\begin{tabular}{$desc}", il, ns)
@@ -264,7 +264,7 @@ function _latex__print(
 
                     # We must check if we have a vertical line after the cell merge.
                     vline = if (
-                        (ps.j + cs - 1 ∈ right_vertical_lines_at_data_columns) ||
+                        (ps.j + cs - 1 ∈ vertical_lines_at_data_columns) ||
                         (
                             (ps.j + cs - 1 == num_data_columns) &&
                             tf.vertical_line_after_data_columns
@@ -368,8 +368,8 @@ function _latex__print(
                         action == :data &&
                         alignment != _data_column_alignment(table_data, ps.j)
                     )
-                        vline_before = (ps.j - 1) ∈ right_vertical_lines_at_data_columns
-                        vline_after  = ps.j ∈ right_vertical_lines_at_data_columns
+                        vline_before = (ps.j - 1) ∈ vertical_lines_at_data_columns
+                        vline_after  = ps.j ∈ vertical_lines_at_data_columns
 
                         border₀ = vline_before ? "|" : ""
                         border₁ = vline_after ? "|" : ""
