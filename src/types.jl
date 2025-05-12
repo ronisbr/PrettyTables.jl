@@ -4,7 +4,7 @@
 #
 ############################################################################################
 
-export EmptyCells, MultiColumn, MergeCells
+export EmptyCells, MultiColumn, MergeCells, PrettyTable
 
 # Tuple that defined a footnote.
 const FootnoteTuple = Tuple{Symbol, Int, Int}
@@ -267,3 +267,25 @@ end
 
 Base.size(s::SummaryLabelIterator) = (s.length,)
 Base.getindex(::SummaryLabelIterator, i::Int) = "Summary $i"
+
+# == PrettyTable ===========================================================================
+
+mutable struct PrettyTable
+    data::Any
+    configurations::Dict{Symbol, Any}
+
+    function PrettyTable(data::Any; kwargs...)
+        return new(data, Dict{Symbol, Any}(kwargs...))
+    end
+end
+
+function Base.getproperty(pt::PrettyTable, field::Symbol)
+    field in fieldnames(PrettyTable) && return getfield(pt, field)
+    return get(getfield(pt, :configurations), field, nothing)
+end
+
+function Base.setproperty!(pt::PrettyTable, field::Symbol, value::Any)
+    field in fieldnames(PrettyTable) && return setfield!(pt, field, value)
+    return getfield(pt, :configurations)[field] = value
+end
+
