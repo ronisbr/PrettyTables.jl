@@ -6,143 +6,7 @@
 
 # TODO: Add support to Dicts.
 
-export pretty_table, PrettyTable
-
-mutable struct PrettyTable
-    data::Any
-    
-    backend::Symbol
-    color::Bool
-    
-    # == Arguments for the IOContext =======================================================
-
-    compact_printing::Bool
-    limit_printing::Bool
-    
-    # == Arguments for the Printing Specification ==========================================
-
-    show_omitted_cell_summary::Bool
-    renderer::Symbol
-    
-    # == Table Sections ====================================================================
-
-    title::String
-    subtitle::String
-    stubhead_label::String
-    row_number_column_label::String
-    row_labels::Union{Nothing, AbstractVector}
-    row_group_labels::Union{Nothing, Vector{Pair{Int, String}}}
-    column_labels::Union{Nothing, AbstractVector}
-    show_column_labels::Bool
-    summary_rows::Union{Nothing, Vector{T} where T <: Any}
-    summary_row_labels::Union{Nothing, Vector{String}}
-    footnotes::Union{Nothing, Vector{Pair{FootnoteTuple, String}}}
-    source_notes::String
-    
-    # == Alignments ========================================================================
-
-    alignment::Union{Symbol, Vector{Symbol}}
-    column_label_alignment::Union{Nothing, Symbol, Vector{Symbol}}
-    continuation_row_alignment::Union{Nothing, Symbol}
-    footnote_alignment::Symbol
-    row_label_alignment::Symbol
-    row_group_label_alignment::Symbol
-    row_number_column_alignment::Symbol
-    source_note_alignment::Symbol
-    subtitle_alignment::Symbol
-    title_alignment::Symbol
-    cell_alignment::Union{Nothing, Vector{Pair{NTuple{2, Int}, Symbol}}, Vector{Function}}
-    
-    # == Other Configurations ==============================================================
-
-    formatters::Union{Nothing, Vector{T} where T <: Any}
-    maximum_number_of_columns::Int
-    maximum_number_of_rows::Int
-    merge_column_label_cells::Union{Symbol, Vector{MergeCells}}
-    show_first_column_label_only::Bool
-    show_row_number_column::Bool
-    vertical_crop_mode::Symbol
-
-    extras::Dict{Symbol, Any}
-end
-
-function Base.getproperty(pt::PrettyTable, field::Symbol)
-    field in fieldnames(PrettyTable) ? getfield(pt, field) : get(getfield(pt, :extras), field, nothing)
-end
-
-function Base.setproperty!(pt::PrettyTable, field::Symbol, value::Any)
-    field in fieldnames(PrettyTable) ? setfield!(pt, field, value) : getfield(pt, :extras)[field] = value
-end
-
-function PrettyTable(;
-    data::Any = [],
-    
-    backend::Symbol = :auto,
-    color::Bool = false,
-    
-    # == Arguments for the IOContext =======================================================
-
-    compact_printing::Bool = true,
-    limit_printing::Bool = true,
-    
-    # == Arguments for the Printing Specification ==========================================
-
-    show_omitted_cell_summary::Bool = true,
-    renderer::Symbol = :print,
-    
-    # == Table Sections ====================================================================
-
-    title::String = "",
-    subtitle::String = "",
-    stubhead_label::String = "",
-    row_number_column_label::String = "Row",
-    row_labels::Union{Nothing, AbstractVector} = nothing,
-    row_group_labels::Union{Nothing, Vector{Pair{Int, String}}} = nothing,
-    column_labels::Union{Nothing, AbstractVector} = nothing,
-    show_column_labels::Bool = true,
-    summary_rows::Union{Nothing, Vector{T} where T <: Any} = nothing,
-    summary_row_labels::Union{Nothing, Vector{String}} = nothing,
-    footnotes::Union{Nothing, Vector{Pair{FootnoteTuple, String}}} = nothing,
-    source_notes::String = "",
-    
-    # == Alignments ========================================================================
-
-    alignment::Union{Symbol, Vector{Symbol}} = :r,
-    column_label_alignment::Union{Nothing, Symbol, Vector{Symbol}} = nothing,
-    continuation_row_alignment::Union{Nothing, Symbol} = nothing,
-    footnote_alignment::Symbol = :l,
-    row_label_alignment::Symbol = :r,
-    row_group_label_alignment::Symbol = :l,
-    row_number_column_alignment::Symbol = :r,
-    source_note_alignment::Symbol = :l,
-    subtitle_alignment::Symbol = :c,
-    title_alignment::Symbol = :c,
-    cell_alignment::Union{Nothing, Vector{Pair{NTuple{2, Int}, Symbol}}, Vector{Function}} = nothing,
-    
-    # == Other Configurations ==============================================================
-
-    formatters::Union{Nothing, Vector{T} where T <: Any} = nothing,
-    maximum_number_of_columns::Int = -1,
-    maximum_number_of_rows::Int = -1,
-    merge_column_label_cells::Union{Symbol, Vector{MergeCells}} = :auto,
-    show_first_column_label_only::Bool = false,
-    show_row_number_column::Bool = false,
-    vertical_crop_mode::Symbol = :bottom,
-    kwargs...
-)
-    PrettyTable(
-        data, backend, color, compact_printing, limit_printing, show_omitted_cell_summary, renderer,
-        title, subtitle, stubhead_label, row_number_column_label, row_labels, row_group_labels, column_labels,
-        show_column_labels, summary_rows, summary_row_labels, footnotes, source_notes,
-        alignment, column_label_alignment, continuation_row_alignment, footnote_alignment, row_label_alignment,
-        row_group_label_alignment, row_number_column_alignment, source_note_alignment, subtitle_alignment,
-        title_alignment, cell_alignment, formatters, maximum_number_of_columns, maximum_number_of_rows,
-        merge_column_label_cells, show_first_column_label_only, show_row_number_column, vertical_crop_mode,
-        Dict(kwargs)
-    )
-end
-
-PrettyTable(data; kwargs...) = PrettyTable(; data, kwargs...)
+export pretty_table
 
 function pretty_table(@nospecialize(data::Any); kwargs...)
     io = stdout isa Base.TTY ? IOContext(stdout, :limit => true) : stdout
@@ -288,140 +152,37 @@ function pretty_table(
     )
 end
 
-function PrettyTables.pretty_table(@nospecialize(io::IO), pt::PrettyTable;
-    data = pt.data,
-    backend = pt.backend,
-    compact_printing = pt.compact_printing,
-    limit_printing = pt.limit_printing,
-    show_omitted_cell_summary = pt.show_omitted_cell_summary,
-    renderer = pt.renderer,
-    title = pt.title,
-    subtitle = pt.subtitle,
-    stubhead_label = pt.stubhead_label,
-    row_number_column_label = pt.row_number_column_label,
-    row_labels = pt.row_labels,
-    row_group_labels = pt.row_group_labels,
-    column_labels = pt.column_labels,
-    show_column_labels = pt.show_column_labels,
-    summary_rows = pt.summary_rows,
-    summary_row_labels = pt.summary_row_labels,
-    footnotes = pt.footnotes,
-    source_notes = pt.source_notes,
-    alignment = pt.alignment,
-    column_label_alignment = pt.column_label_alignment,
-    continuation_row_alignment = pt.continuation_row_alignment,
-    footnote_alignment = pt.footnote_alignment,
-    row_label_alignment = pt.row_label_alignment,
-    row_group_label_alignment = pt.row_group_label_alignment,
-    row_number_column_alignment = pt.row_number_column_alignment,
-    source_note_alignment = pt.source_note_alignment,
-    subtitle_alignment = pt.subtitle_alignment,
-    title_alignment = pt.title_alignment,
-    cell_alignment = pt.cell_alignment,
-    formatters = pt.formatters,
-    maximum_number_of_columns = pt.maximum_number_of_columns,
-    maximum_number_of_rows = pt.maximum_number_of_rows,
-    merge_column_label_cells = pt.merge_column_label_cells,
-    show_first_column_label_only = pt.show_first_column_label_only,
-    show_row_number_column = pt.show_row_number_column,
-    vertical_crop_mode = pt.vertical_crop_mode,
-    kwargs...
-)
-    PrettyTables._pretty_table(io, data, backend, compact_printing, limit_printing,
-        show_omitted_cell_summary, renderer, title, subtitle, stubhead_label,
-        row_number_column_label, row_labels, row_group_labels, column_labels,
-        show_column_labels, summary_rows, summary_row_labels, footnotes,
-        source_notes, alignment, column_label_alignment,
-        continuation_row_alignment, footnote_alignment, row_label_alignment,
-        row_group_label_alignment, row_number_column_alignment,
-        source_note_alignment, subtitle_alignment, title_alignment,
-        cell_alignment, formatters, maximum_number_of_columns,
-        maximum_number_of_rows, merge_column_label_cells,
-        show_first_column_label_only, show_row_number_column,
-        vertical_crop_mode; merge(pt.extras, Dict(kwargs))...)
+# == PrettyTable Structure =================================================================
+
+function pretty_table(pt::PrettyTable; kwargs...)
+    return pretty_table(stdout, pt; kwargs...)
 end
 
-for T in (:String, :HTML)
-    Core.eval(@__MODULE__, quote
-        function PrettyTables.pretty_table(::Type{$T}, pt::PrettyTable;
-            backend = pt.backend,
-            color = pt.color,
-            compact_printing = pt.compact_printing,
-            limit_printing = pt.limit_printing,
-            show_omitted_cell_summary = pt.show_omitted_cell_summary,
-            renderer = pt.renderer,
-            title = pt.title,
-            subtitle = pt.subtitle,
-            stubhead_label = pt.stubhead_label,
-            row_number_column_label = pt.row_number_column_label,
-            row_labels = pt.row_labels,
-            row_group_labels = pt.row_group_labels,
-            column_labels = pt.column_labels,
-            show_column_labels = pt.show_column_labels,
-            summary_rows = pt.summary_rows,
-            summary_row_labels = pt.summary_row_labels,
-            footnotes = pt.footnotes,
-            source_notes = pt.source_notes,
-            alignment = pt.alignment,
-            column_label_alignment = pt.column_label_alignment,
-            continuation_row_alignment = pt.continuation_row_alignment,
-            footnote_alignment = pt.footnote_alignment,
-            row_label_alignment = pt.row_label_alignment,
-            row_group_label_alignment = pt.row_group_label_alignment,
-            row_number_column_alignment = pt.row_number_column_alignment,
-            source_note_alignment = pt.source_note_alignment,
-            subtitle_alignment = pt.subtitle_alignment,
-            title_alignment = pt.title_alignment,
-            cell_alignment = pt.cell_alignment,
-            formatters = pt.formatters,
-            maximum_number_of_columns = pt.maximum_number_of_columns,
-            maximum_number_of_rows = pt.maximum_number_of_rows,
-            merge_column_label_cells = pt.merge_column_label_cells,
-            show_first_column_label_only = pt.show_first_column_label_only,
-            show_row_number_column = pt.show_row_number_column,
-            vertical_crop_mode = pt.vertical_crop_mode,
-            kwargs...
-        )
-            PrettyTables.pretty_table($T, pt.data;
-            backend,
-            color,
-            compact_printing,
-            limit_printing,
-            show_omitted_cell_summary,
-            renderer,
-            title,
-            subtitle,
-            stubhead_label,
-            row_number_column_label,
-            row_labels,
-            row_group_labels,
-            column_labels,
-            show_column_labels,
-            summary_rows,
-            summary_row_labels,
-            footnotes,
-            source_notes,
-            alignment,
-            column_label_alignment,
-            continuation_row_alignment,
-            footnote_alignment,
-            row_label_alignment,
-            row_group_label_alignment,
-            row_number_column_alignment,
-            source_note_alignment,
-            subtitle_alignment,
-            title_alignment,
-            cell_alignment,
-            formatters,
-            maximum_number_of_columns,
-            maximum_number_of_rows,
-            merge_column_label_cells,
-            show_first_column_label_only,
-            show_row_number_column,
-            vertical_crop_mode,
-            merge(pt.extras, Dict(kwargs))...)
-        end
-    end)
+function pretty_table(io::IO, pt::PrettyTable)
+    # Get the named tuple with the configurations.
+    dictkeys = (collect(keys(pt.configurations))...,)
+    dictvals = (collect(values(pt.configurations))...,)
+    nt = NamedTuple{dictkeys}(dictvals)
+
+    return pretty_table(io, pt.data; nt...)
+end
+
+function pretty_table(::Type{String}, pt::PrettyTable; color::Bool = false)
+    # Get the named tuple with the configurations.
+    dictkeys = (collect(keys(pt.configurations))...,)
+    dictvals = (collect(values(pt.configurations))...,)
+    nt = NamedTuple{dictkeys}(dictvals)
+
+    return pretty_table(String, pt.data; color = color, nt...)
+end
+
+function pretty_table(::Type{HTML}, pt::PrettyTable; kwargs...)
+    # Get the named tuple with the configurations.
+    dictkeys = (collect(keys(pt.configurations))...,)
+    dictvals = (collect(values(pt.configurations))...,)
+    nt = NamedTuple{dictkeys}(dictvals)
+
+    return pretty_table(HTML, pt.data; nt...)
 end
 
 ############################################################################################
