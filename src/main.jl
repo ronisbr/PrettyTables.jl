@@ -86,6 +86,7 @@ function pretty_table(
     maximum_number_of_columns::Int = -1,
     maximum_number_of_rows::Int = -1,
     merge_column_label_cells::Union{Symbol, Vector{MergeCells}} = :auto,
+    new_line_at_end::Bool = true,
     show_first_column_label_only::Bool = false,
     show_row_number_column::Bool = false,
     vertical_crop_mode::Symbol = :bottom,
@@ -142,6 +143,7 @@ function pretty_table(
         maximum_number_of_columns,
         maximum_number_of_rows,
         merge_column_label_cells,
+        new_line_at_end,
         show_first_column_label_only,
         show_row_number_column,
         vertical_crop_mode;
@@ -242,6 +244,7 @@ function _pretty_table(
     maximum_number_of_columns::Int,
     maximum_number_of_rows::Int,
     merge_column_label_cells::Union{Nothing, Symbol, Vector{MergeCells}},
+    new_line_at_end::Bool,
     show_first_column_label_only::Bool,
     show_row_number_column::Bool,
     vertical_crop_mode::Symbol;
@@ -429,7 +432,8 @@ function _pretty_table(
         context,
         table_data,
         renderer,
-        show_omitted_cell_summary
+        show_omitted_cell_summary,
+        new_line_at_end
     )
 
     # If backend is `:auto`, obtain the backend from the `table_format` keyword. It it does

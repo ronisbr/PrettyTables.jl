@@ -255,6 +255,7 @@ end
     table_data::TableData
     renderer::Symbol
     show_omitted_cell_summary::Bool
+    new_line_at_end::Bool
 end
 
 # == Auxiliary =============================================================================
