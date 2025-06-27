@@ -187,6 +187,8 @@ function pretty_table(::Type{HTML}, pt::PrettyTable; kwargs...)
     return pretty_table(HTML, pt.data; merge(nt, kwargs)...)
 end
 
+show(io::IO, pt::PrettyTable) = pretty_table(io, pt; new_line_at_end = false)
+
 ############################################################################################
 #                                         Private                                          #
 ############################################################################################
