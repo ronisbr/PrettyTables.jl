@@ -162,12 +162,16 @@ contains the following fields:
 - `borders::TextTableBorders`: Format of the borders.
 - `horizontal_line_at_beginning::Bool`: If `true`, a horizontal line will be drawn at the
     beginning of the table.
+- `horizontal_lines_at_column_labels::Union{Symbol, Vector{Int}}`: A horizontal line will be
+    drawn after each column label row index listed in this vector. If the symbol `:all` is
+    passed, a horizontal line will be drawn after every column label. If the symbol `:none`
+    is passed, no horizontal lines will be drawn.
 - `horizontal_line_after_column_labels::Bool`: If `true`, a horizontal line will be drawn
     after the column labels.
 - `horizontal_lines_at_data_rows::Union{Symbol, Vector{Int}}`: A horizontal line will be
     drawn after each data row index listed in this vector. If the symbol `:all` is passed, a
     horizontal line will be drawn after every data column. If the symbol `:none` is passed,
-    no horizontal lines will be drawn after the data rows.
+    no horizontal lines will be drawn.
 - `horizontal_line_before_row_group_label::Bool`: If `true`, a horizontal line will be
     drawn before the row group label.
 - `horizontal_line_after_row_group_label::Bool`: If `true`, a horizontal line will be
