@@ -158,22 +158,22 @@ function pretty_table(pt::PrettyTable; kwargs...)
     return pretty_table(stdout, pt; kwargs...)
 end
 
-function pretty_table(io::IO, pt::PrettyTable)
+function pretty_table(io::IO, pt::PrettyTable; kwargs...)
     # Get the named tuple with the configurations.
     dictkeys = (collect(keys(pt.configurations))...,)
     dictvals = (collect(values(pt.configurations))...,)
     nt = NamedTuple{dictkeys}(dictvals)
 
-    return pretty_table(io, pt.data; nt...)
+    return pretty_table(io, pt.data; merge(nt, kwargs)...)
 end
 
-function pretty_table(::Type{String}, pt::PrettyTable; color::Bool = false)
+function pretty_table(::Type{String}, pt::PrettyTable; color::Bool = false, kwargs...)
     # Get the named tuple with the configurations.
     dictkeys = (collect(keys(pt.configurations))...,)
     dictvals = (collect(values(pt.configurations))...,)
     nt = NamedTuple{dictkeys}(dictvals)
 
-    return pretty_table(String, pt.data; color = color, nt...)
+    return pretty_table(String, pt.data; color = color, merge(nt, kwargs)...)
 end
 
 function pretty_table(::Type{HTML}, pt::PrettyTable; kwargs...)
@@ -182,7 +182,7 @@ function pretty_table(::Type{HTML}, pt::PrettyTable; kwargs...)
     dictvals = (collect(values(pt.configurations))...,)
     nt = NamedTuple{dictkeys}(dictvals)
 
-    return pretty_table(HTML, pt.data; nt...)
+    return pretty_table(HTML, pt.data; merge(nt, kwargs)...)
 end
 
 ############################################################################################
