@@ -111,6 +111,21 @@ function _text__print_table(
 
     # == Table Fitting in the Display ======================================================
 
+    # Process the horizontal lines at column labels.
+    if tf.horizontal_lines_at_column_labels isa Symbol
+        horizontal_lines_at_column_labels = if tf.horizontal_lines_at_column_labels == :all
+            1:(length(table_data.column_labels) - 1)
+        else
+            1:0
+        end
+    else
+        horizontal_lines_at_column_labels = tf.horizontal_lines_at_column_labels::Vector{Int}
+        filter!(
+            x -> 1 <= x <= length(table_data.column_labels),
+            horizontal_lines_at_column_labels
+        )
+    end
+
     # Process the horizontal lines at data rows.
     if tf.horizontal_lines_at_data_rows isa Symbol
         horizontal_lines_at_data_rows = if tf.horizontal_lines_at_data_rows == :all
@@ -173,6 +188,7 @@ function _text__print_table(
             _text__design_vertical_cropping(
                 table_data,
                 tf,
+                horizontal_lines_at_column_labels,
                 horizontal_lines_at_data_rows,
                 pspec.show_omitted_cell_summary,
                 display.size[1]
@@ -410,6 +426,7 @@ function _text__print_table(
                 table_data,
                 table_str,
                 tf,
+                horizontal_lines_at_column_labels,
                 horizontal_lines_at_data_rows,
                 pspec.show_omitted_cell_summary,
                 display.size[1],
@@ -462,7 +479,12 @@ function _text__print_table(
     # makes sense if the display are limiting the table.
     num_available_data_section_lines = if vertically_limited_by_display
         total_table_lines, num_lines_before_data, num_lines_after_data =
-            _text__number_of_required_lines(table_data, tf, horizontal_lines_at_data_rows)
+            _text__number_of_required_lines(
+                table_data,
+                tf,
+                horizontal_lines_at_column_labels,
+                horizontal_lines_at_data_rows
+            )
 
         (
             display.size[1] -
@@ -733,8 +755,28 @@ function _text__print_table(
 
             # == Handle the Horizontal Lines ===============================================
 
+            if (
+                (rs == :column_labels) &&
+                (ps.row_section == :column_labels) &&
+                (ps.i ∈ horizontal_lines_at_column_labels)
+            )
+                _text__print_column_label_horizontal_line(
+                    display,
+                    tf,
+                    style.table_border,
+                    table_data,
+                    ps.i,
+                    vertical_lines_at_data_columns,
+                    row_number_column_width,
+                    row_label_column_width,
+                    printed_data_column_widths,
+                    false,
+                    false
+                )
+                _text__flush_line(display, false)
+
             # Print the horizontal line after the column labels.
-            if (rs == :column_labels) && (ps.row_section != :column_labels) &&
+            elseif (rs == :column_labels) && (ps.row_section != :column_labels) &&
                 tf.horizontal_line_after_column_labels
 
                 # We should skip this line if we have a row group label at the first column.
