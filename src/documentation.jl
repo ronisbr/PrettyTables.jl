@@ -239,6 +239,8 @@ can be specified using a symbol: `:l` for left, `:c` for center, or `:r` for rig
 - `merge_column_label_cells::Union{Symbol, Vector{MergeCells}}`: Merged cells in the column
     labels. For more information, see the section **Column Labels**.
     (**Default**: `:auto`)
+- `new_line_at_end::Bool`: If `true`, a new line will be printed at the end of the table.
+    (**Default**: `true`)
 - `show_first_column_label_only::Bool`: If `true`, only the first row of the column labels
     will be printed.
     (**Default**: `false`)

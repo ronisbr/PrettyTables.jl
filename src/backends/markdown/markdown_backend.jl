@@ -457,7 +457,13 @@ function _markdown__print(
 
     # == Print the Buffer Into the IO ======================================================
 
-    print(context, String(take!(buf_io)))
+    output_str = String(take!(buf_io))
+
+    if !pspec.new_line_at_end
+        output_str = chomp(output_str)
+    end
+
+    print(context, output_str)
 
     return nothing
 end

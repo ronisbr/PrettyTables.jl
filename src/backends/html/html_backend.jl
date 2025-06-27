@@ -481,11 +481,17 @@ function _html__print(
 
     # == Print the Buffer Into the IO ======================================================
 
+    output_str = String(take!(buf_io))
+
+    if !pspec.new_line_at_end
+        output_str = chomp(output_str)
+    end
+
     # If we are printing to `stdout`, wrap the output in a `HTML` object.
     if is_stdout
-        display(MIME("text/html"), HTML(String(take!(buf_io))))
+        display(MIME("text/html"), HTML(output_str))
     else
-        print(context, String(take!(buf_io)))
+        print(context, output_str)
     end
 
     return nothing

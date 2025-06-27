@@ -191,7 +191,8 @@ function _text__print_table(
                 horizontal_lines_at_column_labels,
                 horizontal_lines_at_data_rows,
                 pspec.show_omitted_cell_summary,
-                display.size[1]
+                display.size[1],
+                pspec.new_line_at_end
             )
 
         if table_data.maximum_number_of_rows >= 0
@@ -430,6 +431,7 @@ function _text__print_table(
                 horizontal_lines_at_data_rows,
                 pspec.show_omitted_cell_summary,
                 display.size[1],
+                pspec.new_line_at_end,
                 num_printed_data_columns,
             )
 
@@ -483,7 +485,8 @@ function _text__print_table(
                 table_data,
                 tf,
                 horizontal_lines_at_column_labels,
-                horizontal_lines_at_data_rows
+                horizontal_lines_at_data_rows,
+                pspec.new_line_at_end
             )
 
         (
@@ -1202,7 +1205,7 @@ function _text__print_table(
 
     output_str = String(take!(buf_io))
 
-    if !tf.new_line_at_end
+    if !pspec.new_line_at_end
         output_str = chomp(output_str)
     end
 

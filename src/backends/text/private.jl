@@ -88,7 +88,7 @@ end
 # == Vertical Cropping =====================================================================
 
 """
-    _text__number_of_required_lines(table_data::TableData, tf::TextTableFormat, horizontal_lines_at_column_lables::AbstractVector{Int}, horizontal_lines_at_data_rows::AbstractVector{Int}) -> NTuple{4, Int}
+    _text__number_of_required_lines(table_data::TableData, tf::TextTableFormat, horizontal_lines_at_column_lables::AbstractVector{Int}, horizontal_lines_at_data_rows::AbstractVector{Int}, new_line_at_end::Bool) -> NTuple{4, Int}
 
 Compute the total number of lines required to print the table.
 
@@ -99,6 +99,7 @@ Compute the total number of lines required to print the table.
 - `horizontal_lines_at_column_labels::AbstractVector{Int}`: Horizontal lines at column
     labels.
 - `horizontal_lines_at_data_rows::AbstractVector{Int}`: Horizontal lines at data rows.
+- `new_line_at_end::Bool`: If `true`, we must add a new line at the end of the table.
 
 # Returns
 
@@ -111,6 +112,7 @@ function _text__number_of_required_lines(
     tf::TextTableFormat,
     horizontal_lines_at_column_lables::AbstractVector{Int},
     horizontal_lines_at_data_rows::AbstractVector{Int},
+    new_line_at_end::Bool
 )
     # Compute the number of lines we must have before printing the data.
     num_lines_before_data =
@@ -135,7 +137,7 @@ function _text__number_of_required_lines(
             _has_footnotes(table_data) ? length(table_data.footnotes) : 0
         ) +
         !isempty(table_data.source_notes) +
-        tf.new_line_at_end +
+        new_line_at_end +
         1 # ............................................................... Margin at bottom
 
     # Count how many non-data lines we must print in data row section. This number includes
@@ -170,7 +172,7 @@ function _text__number_of_required_lines(
 end
 
 """
-    _text__design_vertical_cropping(table_data::TableData, tf::TextTableFormat, horizontal_lines_at_column_labels::AbstractVector{Int}, horizontal_lines_at_data_rows::AbstractVector{Int}, show_omitted_row_summary::Bool, display_number_of_rows::Int) -> Int, Bool
+    _text__design_vertical_cropping(table_data::TableData, tf::TextTableFormat, horizontal_lines_at_column_labels::AbstractVector{Int}, horizontal_lines_at_data_rows::AbstractVector{Int}, show_omitted_row_summary::Bool, display_number_of_rows::Int, new_line_at_end::Bool = true) -> Int, Bool
 
 Design the vertical cropping of the table by computing how many data lines we can print and
 if we must suppress the horizontal line before or after the continuation line.
@@ -184,6 +186,7 @@ if we must suppress the horizontal line before or after the continuation line.
 - `horizontal_lines_at_data_rows::AbstractVector{Int}`: Horizontal lines at data rows.
 - `show_omitted_row_summary::Bool`: If `true`, we must show the omitted row summary.
 - `display_number_of_rows::Int`: Number of rows in the display.
+- `new_line_at_end::Bool`: If `true`, we must add a new line at the end of the table.
 
 # Returns
 
@@ -197,7 +200,8 @@ function _text__design_vertical_cropping(
     horizontal_lines_at_column_labels::AbstractVector{Int},
     horizontal_lines_at_data_rows::AbstractVector{Int},
     show_omitted_row_summary::Bool,
-    display_number_of_rows::Int
+    display_number_of_rows::Int,
+    new_line_at_end::Bool
 )
     num_data_rows = 0
 
@@ -216,6 +220,7 @@ function _text__design_vertical_cropping(
             tf,
             horizontal_lines_at_column_labels,
             horizontal_lines_at_data_rows,
+            new_line_at_end
         )
 
     # Check if we can draw the entire table, meaning that a continuation line is not
@@ -365,7 +370,7 @@ function _text__design_vertical_cropping(
 end
 
 """
-    _text__design_vertical_cropping_with_line_breaks(table_data::TableData, table_str::Matrix{String}, tf::TextTableFormat, horizontal_lines_at_column_labels::AbstractVector{Int}, horizontal_lines_at_data_rows::AbstractVector{Int}, show_omitted_row_summary::Bool, display_number_of_rows::Int, num_printed_data_columns::Int) -> Int, Int, Bool
+    _text__design_vertical_cropping_with_line_breaks(table_data::TableData, table_str::Matrix{String}, tf::TextTableFormat, horizontal_lines_at_column_labels::AbstractVector{Int}, horizontal_lines_at_data_rows::AbstractVector{Int}, show_omitted_row_summary::Bool, display_number_of_rows::Int, new_line_at_end::Bool, num_printed_data_columns::Int) -> Int, Int, Bool
 
 Design the vertical cropping of the table when the user wants line breaks by computing how
 many data lines we can print and if we must suppress the horizontal line before the
@@ -381,6 +386,7 @@ breaks.
 - `horizontal_lines_at_data_rows::AbstractVector{Int}`: Horizontal lines at data rows.
 - `show_omitted_row_summary::Bool`: If `true`, we must show the omitted row summary.
 - `display_number_of_rows::Int`: Number of rows in the display.
+- `new_line_at_end::Bool`: If `true`, we must add a new line at the end of the table.
 - `num_printed_data_columns::Int`: Number of printed data columns.
 
 # Returns
@@ -397,6 +403,7 @@ function _text__design_vertical_cropping_with_line_breaks(
     horizontal_lines_at_data_rows::AbstractVector{Int},
     show_omitted_row_summary::Bool,
     display_number_of_rows::Int,
+    new_line_at_end::Bool,
     num_printed_data_columns::Int
 )
     num_data_rows = 0
@@ -411,7 +418,8 @@ function _text__design_vertical_cropping_with_line_breaks(
             table_data,
             tf,
             horizontal_lines_at_column_labels,
-            horizontal_lines_at_data_rows
+            horizontal_lines_at_data_rows,
+            new_line_at_end
         )
 
     # We need one additional line to show the omitted row summary, if required, since we

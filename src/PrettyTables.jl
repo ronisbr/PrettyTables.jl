@@ -15,7 +15,7 @@ using REPL
 
 @reexport using Crayons
 
-import Base: @kwdef, axes, getindex
+import Base: @kwdef, axes, getindex, show
 import LaTeXStrings: LaTeXString
 
 # The performance of PrettyTables.jl does not increase by a lot of optimizations that is

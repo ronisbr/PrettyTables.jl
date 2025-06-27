@@ -146,7 +146,6 @@ Define the format of the tables printed with the text back end.
 - `vertical_line_after_continuation_column::Bool`: If `true`, a vertical line will be
     drawn after the continuation column.
 - `ellipsis_line_skip::Integer`: Number of lines to skip when printing an ellipsis.
-- `new_line_at_end::Bool`: If `true`, a new line will be added at the end of the table.
 """
 @kwdef struct TextTableFormat
     # == Border and Lines ==================================================================
@@ -176,7 +175,6 @@ Define the format of the tables printed with the text back end.
     # == Other Configurations ==============================================================
 
     ellipsis_line_skip::Int = 0
-    new_line_at_end::Bool = true
 end
 
 """
