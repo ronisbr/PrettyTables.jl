@@ -27,6 +27,8 @@ function create_latex_example(table, filename)
 
     run(`lualatex table.tex`)
     run(`lualatex table.tex`)
+    run(`pwd`)
+    run(`ls -la`)
     run(`magick -density 600 table.pdf -flatten -trim $filename`)
     run(`mv $filename ..`)
     cd("..")
@@ -464,7 +466,7 @@ data = [ 10.0^(-i + j) for i in 1:6, j in 1:6]
 
 table = pretty_table(String, data; formatters = [fmt__latex_sn(1)], backend = :latex)
 
-# create_latex_example(table, "fmt__latex_sn.png")
+create_latex_example(table, "fmt__latex_sn.png")
 ```
 
 ![fmt__latex_sn](./fmt__latex_sn.png)
