@@ -4,210 +4,235 @@
 #
 ############################################################################################
 
-export ft_printf, ft_round, ft_latex_sn, ft_nomissing, ft_nonothing
+export fmt__printf, fmt__round, fmt__latex_sn
 
 """
-    ft_printf(ftv_str::Union{String, Vector{String}}, [columns::AbstractVector{Int}]) -> Function
+    fmt__printf(fmt_str::String[, columns::AbstractVector{Int}]) -> Function
 
-Apply the formats `ftv_str` (see the `Printf` standard library) to the elements in the
-columns `columns`.
-
-If `ftv_str` is a `Vector`, `columns` must be also be a `Vector` with the same number of
-elements. If `ftv_str` is a `String`, and `columns` is not specified (or is empty), the
-format will be applied to the entire table.  Otherwise, if `ftv_str` is a `String` and
-`columns` is a `Vector`, the format will be applied only to the columns in `columns`.
+Apply the format `fmt_str` (see the `Printf` standard library) to the elements in the
+columns specified in the vector `columns`. If `columns` is not specified, the format will be
+applied to the entire table.
 
 !!! info
 
     This formatter will be applied only to the cells that are of type `Number`.
-"""
-ft_printf(ftv_str::String) = ft_printf([ftv_str])
-ft_printf(ftv_str::String, column::Int) = ft_printf(ftv_str, [column])
 
-function ft_printf(ftv_str::String, columns::AbstractVector{Int})
-    return ft_printf([ftv_str for i = 1:length(columns)], columns)
+# Extended Help
+
+## Examples
+
+```julia-repl
+julia> data = [f(a) for a = 0:30:90, f in (sind, cosd, tand)]
+4×3 Matrix{Float64}:
+ 0.0       1.0        0.0
+ 0.5       0.866025   0.57735
+ 0.866025  0.5        1.73205
+ 1.0       0.0       Inf
+
+julia> pretty_table(data; formatters = [fmt__printf("%5.3f")])
+┌────────┬────────┬────────┐
+│ Col. 1 │ Col. 2 │ Col. 3 │
+├────────┼────────┼────────┤
+│  0.000 │  1.000 │  0.000 │
+│  0.500 │  0.866 │  0.577 │
+│  0.866 │  0.500 │  1.732 │
+│  1.000 │  0.000 │    Inf │
+└────────┴────────┴────────┘
+
+julia> pretty_table(data; formatters = [fmt__printf("%5.3f", [1, 3])])
+┌────────┬──────────┬────────┐
+│ Col. 1 │   Col. 2 │ Col. 3 │
+├────────┼──────────┼────────┤
+│  0.000 │      1.0 │  0.000 │
+│  0.500 │ 0.866025 │  0.577 │
+│  0.866 │      0.5 │  1.732 │
+│  1.000 │      0.0 │    Inf │
+└────────┴──────────┴────────┘
+```
+"""
+function fmt__printf(fmt_str::String)
+    # For efficiency, compute the `Format` object outside.
+    fmt = Printf.Format(fmt_str)
+
+    return (v, _, _) -> begin
+        !(v isa Number) && return v
+
+        return Printf.format(fmt, v)
+    end
 end
 
-function ft_printf(ftv_str::Vector{String}, columns::AbstractVector{Int} = Int[])
-    lc = length(columns)
+function fmt__printf(fmt_str::String, columns::AbstractVector{Int})
+    # For efficiency, compute the `Format` object outside.
+    fmt = Printf.Format(fmt_str)
 
-    if lc == 0 && (length(ftv_str) != 1)
-        error("If `columns` is empty, `ftv_str` must have only one element.")
-    end
+    return (v, _, j) -> begin
+        !(v isa Number) && return v
 
-    if lc > 0 && (length(ftv_str) != lc)
-        error("The vector `columns` must have the same number of elements of the vector `ftv_str`.")
-    end
-
-    if lc == 0
-        # For efficiency, compute the `Format` object outside.
-        fmt = Printf.Format(ftv_str[1])
-        return (v, i, j) -> begin
-            return typeof(v) <: Number ? sprintf1(fmt, v) : v
+        for c in columns
+            j == c && return Printf.format(fmt, v)
         end
-    else
-        # Likewise, precompute Format objects.
-        fmts = [Printf.Format(ftv_str[k]) for k = 1:length(columns)]
-        return (v, i, j) -> begin
-            @inbounds for k = 1:length(columns)
-                if j == columns[k]
-                    return typeof(v) <: Number ? sprintf1(fmts[k], v) : v
-                end
-            end
 
+        return v
+    end
+end
+
+"""
+    fmt__round(digits::Int[, columns::AbstractVector{Int}]) -> Function
+
+Round the elements in the columns specified in the vector `columns` to the number of
+`digits`. If `columns` is not specified, the rounding will be applied to the entire table.
+
+# Extended Help
+
+## Examples
+
+```julia-repl
+julia> data = [f(a) for a = 0:30:90, f in (sind, cosd, tand)]
+4×3 Matrix{Float64}:
+ 0.0       1.0        0.0
+ 0.5       0.866025   0.57735
+ 0.866025  0.5        1.73205
+ 1.0       0.0       Inf
+
+julia> pretty_table(data; formatters = [fmt__round(1)])
+┌────────┬────────┬────────┐
+│ Col. 1 │ Col. 2 │ Col. 3 │
+├────────┼────────┼────────┤
+│    0.0 │    1.0 │    0.0 │
+│    0.5 │    0.9 │    0.6 │
+│    0.9 │    0.5 │    1.7 │
+│    1.0 │    0.0 │    Inf │
+└────────┴────────┴────────┘
+
+julia> pretty_table(data; formatters = [fmt__round(1, [1, 3])])
+┌────────┬──────────┬────────┐
+│ Col. 1 │   Col. 2 │ Col. 3 │
+├────────┼──────────┼────────┤
+│    0.0 │      1.0 │    0.0 │
+│    0.5 │ 0.866025 │    0.6 │
+│    0.9 │      0.5 │    1.7 │
+│    1.0 │      0.0 │    Inf │
+└────────┴──────────┴────────┘
+```
+"""
+function fmt__round(digits::Int)
+    return (v, _, _) -> begin
+        try
+            return round(v; digits)
+        catch
             return v
         end
     end
 end
 
-"""
-    ft_round(digits::Union{Int, AbstractVector{Int}}, [columns::AbstractVector{Int}]) -> Function
-
-Round the elements in the `columns` to the number of `digits`.
-
-If `digits` is a `Vector`, `columns` must be also be a `Vector` with the same number of
-elements. If `digits` is a `Number`, and `columns` is not specified (or is empty), the
-rounding will be applied to the entire table.  Otherwise, if `digits` is a `Number` and
-`columns` is a `Vector`, the elements in the columns `columns` will be rounded to the number
-of digits `digits`.
-"""
-ft_round(digits::Int) = ft_round([digits])
-
-function ft_round(digits::Int, columns::AbstractVector{Int})
-    return ft_round([digits for i = 1:length(columns)], columns)
-end
-
-function ft_round(digits::AbstractVector{Int}, columns::AbstractVector{Int} = Int[])
-    lc = length(columns)
-
-    if lc == 0 && (length(digits) != 1)
-        error("If `columns` is empty, `digits` must have only one element.")
-    end
-
-    if lc > 0 && (length(digits) != lc)
-        error("The vector `columns` must have the same number of elements of the vector `digits`.")
-    end
-
-    if lc == 0
-        return (v, i, j) -> begin
-            if applicable(round, v, RoundNearest)
-                return round(v, digits = digits[1])
-            else
-                return v
-            end
-        end
-    else
-        return (v, i, j) -> begin
-            @inbounds for k = 1:length(columns)
-                if j == columns[k]
-                    if applicable(round, v, RoundNearest)
-                        return round(v, digits = digits[k])
-                    else
-                        return v
-                    end
+function fmt__round(digits::Int, columns::AbstractVector{Int})
+    return (v, _, j) -> begin
+        for c in columns
+            if j == c
+                try
+                    return round(v; digits)
+                catch
+                    return v
                 end
             end
-
-            return v
         end
+
+        return v
     end
 end
 
 """
-    ft_latex_sn(m_digits::Int, [columns::AbstractVector{Int}]) -> Function
+    fmt__latex_sn(m_digits::Int[, columns::AbstractVector{Int}]) -> Function
 
 Format the numbers of the elements in the `columns` to a scientific notation using LaTeX.
+If `columns` is not present, the formatting will be applied to the entire table.
+
 The number is first printed using `Printf` functions with the `g` modifier and then
 converted to the LaTeX format. The number of digits in the mantissa can be selected by the
 argument `m_digits`.
 
-If `m_digits` is a `Vector`, `columns` must be also be a `Vector` with the same number of
-elements. If `m_digits` is a `Integer`, and `columns` is not specified (or is empty), the
-format will be applied to the entire table.  Otherwise, if `m_digits` is a `String` and
-`columns` is a `Vector`, the format will be applied only to the columns in `columns`.
+The formatted number will be wrapped in the object `LatexCell`. Hence, this formatter only
+makes sense if the selected backend is `:latex`.
 
 !!! info
 
     This formatter will be applied only to the cells that are of type `Number`.
+
+# Extended Help
+
+## Examples
+
+```julia-repl
+julia> data = [10.0^(-i + j) for i in 1:6, j in 1:6]
+6×6 Matrix{Float64}:
+ 1.0     10.0     100.0    1000.0   10000.0  100000.0
+ 0.1      1.0      10.0     100.0    1000.0   10000.0
+ 0.01     0.1       1.0      10.0     100.0    1000.0
+ 0.001    0.01      0.1       1.0      10.0     100.0
+ 0.0001   0.001     0.01      0.1       1.0      10.0
+ 1.0e-5   0.0001    0.001     0.01      0.1       1.0
+
+julia> pretty_table(data; formatters = [fmt__latex_sn(1)], backend = :latex)
+\\begin{tabular}{|r|r|r|r|r|r|}
+  \\hline
+  \\textbf{Col. 1} & \\textbf{Col. 2} & \\textbf{Col. 3} & \\textbf{Col. 4} & \\textbf{Col. 5} & \\textbf{Col. 6} \\\\
+  \\hline
+  1 & \$1 \\cdot 10^{1}\$ & \$1 \\cdot 10^{2}\$ & \$1 \\cdot 10^{3}\$ & \$1 \\cdot 10^{4}\$ & \$1 \\cdot 10^{5}\$ \\\\
+  0.1 & 1 & \$1 \\cdot 10^{1}\$ & \$1 \\cdot 10^{2}\$ & \$1 \\cdot 10^{3}\$ & \$1 \\cdot 10^{4}\$ \\\\
+  0.01 & 0.1 & 1 & \$1 \\cdot 10^{1}\$ & \$1 \\cdot 10^{2}\$ & \$1 \\cdot 10^{3}\$ \\\\
+  0.001 & 0.01 & 0.1 & 1 & \$1 \\cdot 10^{1}\$ & \$1 \\cdot 10^{2}\$ \\\\
+  0.0001 & 0.001 & 0.01 & 0.1 & 1 & \$1 \\cdot 10^{1}\$ \\\\
+  \$1 \\cdot 10^{-5}\$ & 0.0001 & 0.001 & 0.01 & 0.1 & 1 \\\\
+  \\hline
+\\end{tabular}
+```
 """
-ft_latex_sn(m_digits::Int) = ft_latex_sn([m_digits])
+function fmt__latex_sn(m_digits::Int)
+    # Precompute Format objects.
+    fmts = Printf.Format("%." * string(m_digits) * "g")
 
-function ft_latex_sn(m_digits::Int, columns::AbstractVector{Int})
-    return ft_latex_sn([m_digits for i = 1:length(columns)], columns)
-end
+    return (v, _, _) -> begin
+        !(v isa Number) && return v
 
-function ft_latex_sn(m_digits::AbstractVector{Int}, columns::AbstractVector{Int} = Int[])
-    lc = length(columns)
+        str = Printf.format(fmts, v)
 
-    if lc == 0 && (length(m_digits) != 1)
-        error("If `columns` is empty, `m_digits` must have only one element.")
-    end
+        # Check if we have scientific notation.
+        aux = match(r"e[+,-][0-9]+", str)
 
-    if lc > 0 && (length(m_digits) != lc)
-        error("The vector `columns` must have the same number of elements of the vector `m_digits`.")
-    end
-
-    if lc == 0
-        # Precompute Format object.
-        fmt = Printf.Format("%." * string(m_digits[1]) * "g")
-        return (v, i, j) -> begin
-            if typeof(v) <: Number
-                str = sprintf1(fmt, v)
-                # Check if we have scientific notation.
-                aux = match(r"e[+,-][0-9]+", str)
-                if aux !== nothing
-                    exp_str = " \\cdot 10^{" * string(parse(Int, aux.match[2:end])) * "}"
-                    str = replace(str, r"e.*" => exp_str)
-                    str = "\$" * str * "\$"
-                end
-
-                return str |> LatexCell
-            else
-                return v
-            end
+        if !isnothing(aux)
+            exp_str = " \\cdot 10^{" * string(parse(Int, aux.match[2:end])) * "}"
+            str = replace(str, r"e.*" => exp_str)
+            str = "\$" * str * "\$"
         end
-    else
-        # Precompute Format objects.
-        fmts = [Printf.Format("%." * string(m_digits[k]) * "g") for k = 1:length(columns)]
-        return (v, i, j) -> begin
-            @inbounds for k = 1:length(columns)
-                if j == columns[k]
-                    if typeof(v) <: Number
-                        str = sprintf1(fmts[k], v)
 
-                        # Check if we have scientific notation.
-                        aux = match(r"e[+,-][0-9]+", str)
-                        if aux !== nothing
-                            exp_str =
-                                " \\cdot 10^{" * string(parse(Int, aux.match[2:end])) * "}"
-                            str = replace(str, r"e.*" => exp_str)
-                            str = "\$" * str * "\$"
-                        end
-
-                        return str |> LatexCell
-                    else
-                        return v
-                    end
-                end
-            end
-
-            return v
-        end
+        return LatexCell(str)
     end
 end
 
-"""
-    ft_nomissing(v::Any, i::Int, j::Int) -> Any
+function fmt__latex_sn(m_digits::Int, columns::AbstractVector{Int})
+    # Precompute Format objects.
+    fmts = Printf.Format("%." * string(m_digits) * "g")
 
-Replace `missing` with an empty string. If `v` is not `Missing`, `v` is returned.
-"""
-ft_nomissing(v::Missing, i::Int, j::Int) = ""
-ft_nomissing(v, i::Int, j::Int) = v
+    return (v, _, j) -> begin
+        !(v isa Number) && return v
 
-"""
-    ft_nonothing(v, i::Int, j::Int) -> Any
+        for c in columns
+            j != c && continue
 
-Replace `nothing` with an empty string. If `v` is not `Nothing`, `v` is returned.
-"""
-ft_nonothing(v::Nothing, i::Int, j::Int) = ""
-ft_nonothing(v, i::Int, j::Int) = v
+            str = Printf.format(fmts, v)
+
+            # Check if we have scientific notation.
+            aux = match(r"e[+,-][0-9]+", str)
+
+            if !isnothing(aux)
+                exp_str = " \\cdot 10^{" * string(parse(Int, aux.match[2:end])) * "}"
+                str = replace(str, r"e.*" => exp_str)
+                str = "\$" * str * "\$"
+            end
+
+            return LatexCell(str)
+        end
+
+        return v
+    end
+end

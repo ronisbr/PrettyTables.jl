@@ -6,25 +6,30 @@ makedocs(
     format = Documenter.HTML(
         prettyurls = !("local" in ARGS),
         canonical = "https://ronisbr.github.io/PrettyTables.jl/stable/",
+        size_threshold_warn = 1024 * 1024 * 1024,
+        size_threshold = 10 * 1024 * 1024 * 1024,
     ),
     sitename = "Pretty Tables",
     authors = "Ronan Arraes Jardim Chagas",
+    warnonly = [:missing_docs, :cross_references],
     pages = [
-        "Home"               => "index.md",
-        "Usage"              => "man/usage.md",
-        "Back Ends"          => Any[
-            "Text"           => "man/text_backend.md",
-            "HTML"           => "man/html_backend.md",
-            "LaTeX"          => "man/latex_backend.md",
-            "Markdown"       => "man/markdown_backend.md",
+        "Home"                        => "index.md",
+        "Quick Start"                 => "man/quick_start.md",
+        "Usage"                       => "man/usage.md",
+        "Back Ends"                   => Any[
+            "Text"                    => Any[
+                "Text Backend"        => "man/text/text_backend.md",
+                "Pre-defined Formats" => "man/text/predefined_formats.md",
+                "Examples"            => "man/text/text_examples.md",
+            ],
+            "HTML"                    => "man/html/html_backend.md",
+            "LaTeX"                   => Any[
+                "LaTeX Backend"       => "man/latex/latex_backend.md",
+                "Examples"            => "man/latex/latex_examples.md",
+            ],
+            "Markdown"                => "man/markdown/markdown_backend.md",
         ],
-        "Alignment"          => "man/alignment.md",
-        "Formatters"         => "man/formatters.md",
-        "Examples"           => Any[
-            "Text Back End"  => "man/text_examples.md",
-            "HTML Back End"  => "man/html_examples.md",
-        ],
-        "Library"            => "lib/library.md",
+        "Library"                     => "lib/library.md",
     ]
 )
 

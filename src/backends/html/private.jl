@@ -1,10 +1,77 @@
 ## Description #############################################################################
 #
-# Private functions and macros.
+# Private functions for the HTML back end.
 #
 ############################################################################################
 
-const _html_alignment = Dict(
+# == Strings ===============================================================================
+
+"""
+    _html__escape_str(@nospecialize(io::IO), s::AbstractString, replace_newline::Bool = false, escape_html_chars::Bool = true) -> Nothing
+    _html__escape_str(s::AbstractString, replace_newline::Bool = false, escape_html_chars::Bool = true) -> String
+
+Print the string `s` in `io` escaping the characters for the HTML back end. If `io` is
+omitted, the escaped string is returned.
+
+If `replace_newline` is `true`, `\n` is replaced with `<br>`. Otherwise, it is escaped,
+leading to `\\n`.
+
+If `escape_html_chars` is `true`, `&`, `<`, `>`, `"`, and `'`  will be replaced by HTML
+sequences.
+"""
+function _html__escape_str(
+    io::IO,
+    s::AbstractString,
+    replace_newline::Bool = false,
+    escape_html_chars::Bool = true,
+)
+    a = Iterators.Stateful(s)
+    for c in a
+        if Base.isascii(c)
+            c == '\n'          ? (replace_newline ? print(io, "<br>") : print(io, "\\n")) :
+            c == '&'           ? (escape_html_chars ? print(io, "&amp;")  : print(io, c)) :
+            c == '<'           ? (escape_html_chars ? print(io, "&lt;")   : print(io, c)) :
+            c == '>'           ? (escape_html_chars ? print(io, "&gt;")   : print(io, c)) :
+            c == '"'           ? (escape_html_chars ? print(io, "&quot;") : print(io, c)) :
+            c == '\''          ? (escape_html_chars ? print(io, "&apos;") : print(io, c)) :
+            c == '\0'          ? print(io, Base.escape_nul(peek(a))) :
+            c == '\e'          ? print(io, "\\e") :
+            c == '\\'          ? print(io, "\\\\") :
+            '\a' <= c <= '\r'  ? print(io, '\\', "abtnvfr"[Int(c)-6]) :
+            isprint(c)         ? print(io, c) :
+                                 print(io, "\\x", string(UInt32(c), base = 16, pad = 2))
+        elseif !Base.isoverlong(c) && !Base.ismalformed(c)
+            isprint(c)         ? print(io, c) :
+            c <= '\x7f'        ? print(io, "\\x", string(UInt32(c), base = 16, pad = 2)) :
+            c <= '\uffff'      ? print(io, "\\u", string(UInt32(c), base = 16, pad = Base.need_full_hex(peek(a)) ? 4 : 2)) :
+                                 print(io, "\\U", string(UInt32(c), base = 16, pad = Base.need_full_hex(peek(a)) ? 8 : 4))
+        else # malformed or overlong
+            u = bswap(reinterpret(UInt32, c))
+            while true
+                print(io, "\\x", string(u % UInt8, base = 16, pad = 2))
+                (u >>= 8) == 0 && break
+            end
+        end
+    end
+end
+
+function _html__escape_str(
+    s::AbstractString,
+    replace_newline::Bool = false,
+    escape_html_chars::Bool = true
+)
+    return sprint(
+        _html__escape_str,
+        s,
+        replace_newline,
+        escape_html_chars;
+        sizehint = lastindex(s)
+    )
+end
+
+# == Styles ================================================================================
+
+const _HTML__ALIGNMENT_MAP = Dict(
     :l => "left",
     :L => "left",
     :c => "center",
@@ -13,60 +80,66 @@ const _html_alignment = Dict(
     :R => "right"
 )
 
-function _add_text_alignment_to_style!(
-    style::Dict{String, String},
-    alignment::Symbol
-)
+"""
+    _html__add_alignment_to_style!(style::Vector{HtmlPair}, alignment::Symbol) -> Nothing
+
+Add the HTML alignment property to `style` according to the `alignment` symbol.
+"""
+function _html__add_alignment_to_style!(style::Vector{HtmlPair}, alignment::Symbol)
     if (alignment == :n) || (alignment == :N)
         return nothing
-    elseif haskey(_html_alignment, alignment)
-        return style["text-align"] = _html_alignment[alignment]
+    elseif haskey(_HTML__ALIGNMENT_MAP, alignment)
+        return push!(style, "text-align" => _HTML__ALIGNMENT_MAP[alignment])
     else
-        return style["text-align"] = _html_alignment[:r]
+        return push!(style, "text-align" => _HTML__ALIGNMENT_MAP[:r])
     end
-
-    return nothing
 end
 
-# Create the string to be used in the HTML `style` property given a set of `style`s passed
-# in a dictionary.
-function _create_html_style(style::Dict{String, String})
+"""
+    _html__create_style(style::Vector{HtmlPair}) -> String
+
+Create the HTML style string using the information in the dictionary `style`.
+"""
+function _html__create_style(style::Vector{HtmlPair})
     # If there is no keys in the style dictionary, just return the tag.
-    if isempty(style)
-        return ""
-    else
-        # Create the style string.
-        style_str = " style = \""
+    isempty(style) && return ""
 
-        # We must sort the keys so that we can provide stable outputs.
-        v   = collect(values(style))
-        k   = collect(keys(style))
-        ind = sortperm(collect(keys(style)))
-        vk  = @view k[ind]
-        vv  = @view v[ind]
+    # Create the style string.
+    style_str = " style = \""
 
-        num_styles = length(vk)
+    @inbounds for i in eachindex(style)
+        key, value = style[i]
 
-        @inbounds for i in 1:num_styles
-            # If the value is empty, then just continue.
-            value = vv[i]
-            isempty(value) && continue
+        # If the value is empty, then just continue.
+        isempty(value) && continue
 
-            style_str *= vk[i] * ": "
-            style_str *= value * ";"
-
-            i != num_styles && (style_str *= " ")
-        end
-
-        return style_str * "\""
+        style_str *= "$key: $value;"
+        i != last(eachindex(style)) && (style_str *= " ")
     end
+
+    return style_str * "\""
 end
 
-# Open an HTML `tag` with `properties` and `style`.
-function _open_html_tag(
+_html__create_style(::Nothing) = ""
+
+# == Tags ==================================================================================
+
+"""
+    _html__open_tag(tag::String; kwargs...) -> String
+
+Create the string that opens the HTML `tag`.
+
+# Keywords
+
+- `properties::Union{Nothing, Vector{HtmlPair}}`: Tag properties.
+    (**Default**: `nothing`)
+- `style::Union{Nothing, Vector{HtmlPair}}`: Tag style.
+    (**Default**: `nothing`)
+"""
+function _html__open_tag(
     tag::String;
-    properties::Union{Nothing, Dict{String, String}} = nothing,
-    style::Union{Nothing, Dict{String, String}} = nothing
+    properties::Union{Nothing, Vector{HtmlPair}} = nothing,
+    style::Union{Nothing, Vector{HtmlPair}} = nothing
 )
     # Compile the text with the properties.
     properties_str = ""
@@ -74,115 +147,94 @@ function _open_html_tag(
     if !isnothing(properties)
         for (k, v) in properties
             if !isempty(v)
-                properties_str *= " " * k * " = \"" * _escape_html_str(v) * "\""
+                v_str = _html__escape_str(v)
+                properties_str *= " $k = \"$v_str\""
             end
         end
     end
 
     # Compile the text with the style.
-    style_str = ""
-
-    if !isnothing(style)
-        style_str = _create_html_style(style)
-    end
+    style_str = _html__create_style(style)
 
     # Return the tag.
-    return "<" * tag * properties_str * style_str * ">"
+    return "<$(tag)$(properties_str)$(style_str)>"
 end
 
-# Close an HTML `tag`.
-function _close_html_tag(tag::String)
-    return "</" * tag * ">"
-end
+"""
+    _html__close_tag(tag::String) -> String
 
-# Create an HTML `tag` with a `content`, `properties`, and `style`.
-function _create_html_tag(
+Create the string that closes the HTML `tag`.
+"""
+_html__close_tag(tag::String) = "</$tag>"
+
+"""
+    _html__create_tag(tag::String, content::String; kwargs...) -> String
+
+Create an HTML `tag` with the `content`.
+
+# Keywords
+
+- `properties::Union{Nothing, Vector{HtmlPair}}`: Tag properties.
+    (**Default**: `nothing`)
+- `style::Union{Nothing, Vector{HtmlPair}}`: Tag style.
+    (**Default**: `nothing`)
+"""
+function _html__create_tag(
     tag::String,
     content::String;
-    properties::Union{Nothing, Dict{String, String}} = nothing,
-    style::Union{Nothing, Dict{String, String}} = nothing
+    properties::Union{Nothing, Vector{HtmlPair}} = nothing,
+    style::Union{Nothing, Vector{HtmlPair}} = nothing
 )
-    return _open_html_tag(tag; properties, style) * content * _close_html_tag(tag)
+    return _html__open_tag(tag; properties, style) * content * _html__close_tag(tag)
 end
 
-# Print the HTML top bar.
-function _print_top_bar(
-    @nospecialize(buf::IO),
-    top_left_str::String,
-    top_left_str_decoration::HtmlDecoration,
-    top_right_str::String,
-    top_right_str_decoration::HtmlDecoration,
+# == Top Bar ===============================================================================
+
+"""
+    _html__print_top_bar_section(buf::IOContext, position::String, text::String, decoration::Union{Nothing, Vector{HtmlPair}}, il::Int, ns::Int; kwargs...)
+
+Print the HTML top bar section.
+
+# Arguments
+
+- `buf::IOContext`: Buffer to which the top bar will be printed.
+- `position::String`: Buffer position. It can be "left" or "right".
+- `text::String`: Text to be printed in the selected position.
+- `decoration::Union{Nothing, Vector{HtmlPair}}`: Text decoration.
+- `il::Int`: Indentation level.
+- `ns::Int`: Number of space per indentation level.
+
+# Keywords
+
+- `minify::Bool`: If `true`, the output will be minified.
+    (**Default**: `false`)
+"""
+function _html__print_top_bar_section(
+    buf::IOContext,
+    position::String,
+    text::String,
+    decoration::Union{Nothing, Vector{HtmlPair}},
     il::Int,
-    ns::Int,
-    minify::Bool
+    ns::Int;
+    minify::Bool = false
 )
-    style = Dict{String, String}()
+    style = isnothing(decoration) ? HtmlPair[] : copy(decoration)
+    push!(style, "float" => position)
 
-    # Check if there is information to be displayed in the top bar.
-    if !isempty(top_left_str) || !isempty(top_right_str)
-        _aprintln(
-            buf,
-            _open_html_tag("div"),
-            il,
-            ns,
-            minify
-        )
-        il += 1
+    _aprintln(buf, _html__open_tag("div"; style), il, ns; minify)
+    il += 1
 
-        # -- Top Left ----------------------------------------------------------------------
+    _aprintln(
+        buf,
+        _html__create_tag(
+            "span",
+            _html__escape_str(text)
+        ),
+        il,
+        ns;
+        minify
+    )
 
-        if !isempty(top_left_str)
-            empty!(style)
-            style["float"] = "left"
-            _aprintln(buf, _open_html_tag("div"; style), il, ns, minify)
-            il += 1
-
-            _aprintln(
-                buf,
-                _create_html_tag(
-                    "span",
-                    _escape_html_str(top_left_str);
-                    style = Dict(top_left_str_decoration)
-                ),
-                il,
-                ns,
-                minify
-            )
-
-            il -= 1
-            _aprintln(buf, _close_html_tag("div"), il, ns, minify)
-        end
-
-        # -- Top Right ---------------------------------------------------------------------
-
-        if !isempty(top_right_str)
-            empty!(style)
-            style["float"] = "right"
-            _aprintln(buf, _open_html_tag("div"; style), il, ns, minify)
-            il += 1
-
-            _aprintln(
-                buf,
-                _create_html_tag(
-                    "span",
-                    _escape_html_str(top_right_str);
-                    style = Dict(top_right_str_decoration)
-                ),
-                il,
-                ns,
-                minify
-            )
-
-            il -= 1
-            _aprintln(buf, _close_html_tag("div"), il, ns, minify)
-        end
-
-        # We need to clear the floats so that the table is rendered below the top bar.
-        empty!(style)
-        style["clear"] = "both"
-        _aprintln(buf, _create_html_tag("div", ""; style), il, ns, minify)
-
-        il -= 1
-        _aprintln(buf, _close_html_tag("div"), il, ns, minify)
-    end
+    il -= 1
+    _aprintln(buf, _html__close_tag("div"), il, ns; minify)
 end

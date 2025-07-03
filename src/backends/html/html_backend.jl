@@ -1,93 +1,39 @@
 ## Description #############################################################################
 #
-# Print function of the HTML back end.
+# HTML back end of PrettyTables.jl
 #
 ############################################################################################
 
-# Low-level function to print the table using the text backend.
-function _print_table_with_html_back_end(
-    pinfo::PrintInfo;
-    tf::HtmlTableFormat = tf_html_default,
+function _html__print(
+    pspec::PrintingSpec;
     allow_html_in_cells::Bool = false,
-    continuation_row_alignment::Symbol = :r,
-    header_cell_titles::Union{Nothing, Tuple} = nothing,
-    highlighters::Union{HtmlHighlighter, Tuple} = (),
+    highlighters::Vector{HtmlHighlighter} = HtmlHighlighter[],
     is_stdout::Bool = false,
-    linebreaks::Bool = false,
-    maximum_columns_width::String = "",
+    line_breaks::Bool = false,
+    maximum_column_width::String = "",
     minify::Bool = false,
-    sortkeys::Bool = false,
-    show_omitted_cell_summary::Bool = false,
-    standalone::Bool = false,
-    table_div_class::String = "",
+    stand_alone::Bool = false,
+    style::HtmlTableStyle = HtmlTableStyle(),
     table_class::String = "",
-    table_style::Dict{String, String} = Dict{String, String}(),
-    top_left_str::String = "",
-    top_right_str::String = "",
-    vcrop_mode::Symbol = :bottom,
+    table_div_class::String = "",
+    table_format::HtmlTableFormat = HtmlTableFormat(),
+    top_left_string::AbstractString = "",
+    top_right_string::AbstractString = "",
     wrap_table_in_div::Bool = false,
-    # Decorations
-    row_label_decoration::HtmlDecoration = HtmlDecoration(font_weight = "bold"),
-    row_number_decoration::HtmlDecoration = HtmlDecoration(font_weight = "bold"),
-    top_left_str_decoration::HtmlDecoration = HtmlDecoration(),
-    top_right_str_decoration::HtmlDecoration = HtmlDecoration(),
 )
-    # Unpack fields of `pinfo`.
-    ptable               = pinfo.ptable
-    cell_first_line_only = pinfo.cell_first_line_only
-    compact_printing     = pinfo.compact_printing
-    formatters           = pinfo.formatters
-    io                   = pinfo.io
-    limit_printing       = pinfo.limit_printing
-    renderer             = pinfo.renderer
-    title                = pinfo.title
-    title_alignment      = pinfo.title_alignment
+    context    = pspec.context
+    table_data = pspec.table_data
+    renderer   = Val(pspec.renderer)
+    tf         = table_format
 
-    num_hidden_rows_at_end = _get_num_of_hidden_rows(ptable)
-    num_hidden_columns_at_end = _get_num_of_hidden_columns(ptable)
-
-    hidden_rows_at_end = num_hidden_rows_at_end > 0
-    hidden_columns_at_end = num_hidden_columns_at_end > 0
-
-    # Unpack fields of `tf`.
-    css         = tf.css
-    table_width = tf.table_width
-
-    # Let's create a `IOBuffer` to write everything and then transfer to `io`.
+    ps     = PrintingTableState()
     buf_io = IOBuffer()
-    buf    = IOContext(buf_io)
+    buf    = IOContext(buf_io, context)
 
-    # Get the number of lines and columns.
-    num_rows, num_columns = _size(ptable)
-
-    # Get the number of header rows.
-    num_header_rows, ~ = _header_size(ptable)
-
-    # Get the number of data rows and columns.
-    num_data_rows, num_data_columns = _data_size(ptable)
-
-    # Make sure that `highlighters` is always a Tuple.
-    if !(highlighters isa Tuple)
-        highlighters = (highlighters,)
-    end
-
-    # Check the dimensions of header cell titles.
-    if !isnothing(header_cell_titles)
-        if length(header_cell_titles) < num_header_rows
-            error("The number of vectors in `header_cell_titles` must be equal or greater than that in `header`.")
-        end
-
-        for k in 1:num_header_rows
-            if !isnothing(header_cell_titles[k]) && (length(header_cell_titles[k]) != num_data_columns)
-                error("The number of elements in each row of `header_cell_titles` must match the number of columns in the table.")
-            end
-        end
-    end
-
-    # Create dictionaries to store properties and styles to decrease the number
-    # of allocations.
-    properties = Dict{String, String}()
-    style      = Dict{String, String}()
+    # Create dictionaries to store properties and styles to decrease the number of
+    # allocations.
+    vproperties = Pair{String, String}[]
+    vstyle      = Pair{String, String}[]
 
     # == Variables to Store Information About Indentation ==================================
 
@@ -96,36 +42,34 @@ function _print_table_with_html_back_end(
 
     # == Print HTML Header =================================================================
 
-    if standalone
+    if stand_alone
         _aprintln(
             buf,
             """
             <!DOCTYPE html>
             <html>
-            <meta charset=\"UTF-8\">
+            <meta charset="UTF-8">
             <head>
             <style>""",
             il,
-            ns,
+            ns;
             minify
         )
         il += 1
 
-        if !isempty(table_width)
-            _aprintln(
-                buf,
-                """
-                table {
-                    width: $table_width;
-                }
-                """,
-                il,
-                ns,
-                minify
-            )
-        end
+        !isempty(tf.table_width) && _aprintln(
+            buf,
+            """
+            table {
+                width: $(tf.table_width);
+            }
+            """,
+            il,
+            ns;
+            minify
+        )
 
-        _aprintln(buf, css, il, ns, minify)
+        _aprintln(buf, tf.css, il, ns; minify)
         il -= 1
 
         _aprintln(
@@ -135,388 +79,419 @@ function _print_table_with_html_back_end(
             </head>
             <body>""",
             il,
-            ns,
+            ns;
             minify
         )
     end
 
-    # == Omitted Cell Summary ==============================================================
-
-    # Check if the user wants the omitted cell summary.
-    if show_omitted_cell_summary
-        str = ""
-
-        if num_hidden_columns_at_end > 1
-            str *= string(num_hidden_columns_at_end) * " columns"
-        elseif num_hidden_columns_at_end == 1
-            str *= string(num_hidden_columns_at_end) * " column"
-        end
-
-        if !isempty(str) && hidden_rows_at_end
-            str *= " and "
-        end
-
-        if num_hidden_rows_at_end > 1
-            str *= string(num_hidden_rows_at_end) * " rows"
-        elseif num_hidden_rows_at_end == 1
-            str *= string(num_hidden_rows_at_end) * " row"
-        end
-
-        if !isempty(str)
-            str *= " omitted"
-
-            # If we reached this point, we need to show the omitted cell summary. Hence, we
-            # replace whatever it in the top right string.
-            top_right_str = str
-        end
-    end
-
     # == Top Bar ===========================================================================
 
-    _print_top_bar(
-        buf,
-        top_left_str,
-        top_left_str_decoration,
-        top_right_str,
-        top_right_str_decoration,
-        il,
-        ns,
-        minify
-    )
+    # Check if the user wants the omitted cell summary.
+    ocs = _omitted_cell_summary(table_data, pspec)
+
+    if !isempty(ocs)
+        top_right_string = ocs
+    end
+
+    # Print the top bar if necessary.
+    if !isempty(top_left_string) || !isempty(top_right_string)
+        _aprintln(
+            buf,
+            _html__open_tag("div"),
+            il,
+            ns;
+            minify
+        )
+        il += 1
+
+        # Top left section.
+        if !isempty(top_left_string)
+            _html__print_top_bar_section(
+                buf,
+                "left",
+                top_left_string,
+                style.top_left_string,
+                il,
+                ns;
+                minify,
+            )
+        end
+
+        # Top right section.
+        if !isempty(top_right_string)
+            _html__print_top_bar_section(
+                buf,
+                "right",
+                top_right_string,
+                style.top_right_string,
+                il,
+                ns;
+                minify,
+            )
+        end
+
+        # We need to clear the floats so that the table is rendered below the top bar.
+        empty!(vstyle)
+        push!(vstyle, "clear" => "both")
+        _aprintln(buf, _html__create_tag("div", ""; style = vstyle), il, ns; minify)
+
+        il -= 1
+        _aprintln(buf, _html__close_tag("div"), il, ns; minify)
+    end
 
     # == Table =============================================================================
 
     if wrap_table_in_div
-        empty!(properties)
-        properties["class"] = table_div_class
+        empty!(vproperties)
+        push!(vproperties, "class" => table_div_class)
 
-        empty!(style)
-        style["overflow-x"] = "scroll"
+        empty!(vstyle)
+        push!(vproperties, "overflow-x" => "scroll")
 
-        _aprintln(buf, _open_html_tag("div"; properties, style), il, ns, minify)
+        _aprintln(
+            buf,
+            _html__open_tag("div"; properties = vproperties, style = vstyle),
+            il,
+            ns;
+            minify
+        )
 
         il += 1
     end
 
-    empty!(properties)
-    properties["class"] = table_class
+    empty!(vproperties)
+    push!(vproperties, "class" => table_class)
 
     _aprintln(
         buf,
-        _open_html_tag("table"; properties, style = table_style),
+        _html__open_tag("table"; properties = vproperties, style = style.table),
         il,
-        ns,
+        ns;
         minify
     )
 
     il += 1
 
-    # -- Table Title -----------------------------------------------------------------------
+    action = :initialize
 
-    if length(title) > 0
-        empty!(style)
-        style["text-align"] = _html_alignment[title_alignment]
+    # Some internal states to help printing.
+    head_opened = false
+    body_opened = false
+    foot_opened = false
 
-        _aprintln(buf, _create_html_tag( "caption", title; style), il, ns, minify)
-    end
+    while action != :end_printing
+        action, rs, ps = _next(ps, table_data)
 
-    # If there is no column or row to be printed, then just exit.
-    if _data_size(ptable) == (0, 0)
-        @goto print_to_output
-    end
+        action == :end_printing && break
 
-    # == Vertical Cropping Mode ============================================================
+        if action == :new_row
 
-    if hidden_rows_at_end
-        continuation_line_id = vcrop_mode == :middle ?
-            num_header_rows + div(num_rows - num_header_rows, 2, RoundUp) :
-            num_rows
-    else
-        continuation_line_id = 0
-    end
+            if (ps.i == 1) && (rs ∈ (:table_header, :column_label)) && !head_opened
+                _aprintln(buf, "<thead>", il, ns; minify)
+                il += 1
+                head_opened = true
 
-    # == Print the Table ===================================================================
+            elseif !body_opened && (
+                    ((ps.i == 1) && (rs ∈ (:data, :summary_row))) ||
+                    (rs == :row_group_label)
+                )
 
-    # Offset in the rows used when we have middle cropping. In this case, after drawing the
-    # continuation line, we use this variable to render the bottom part of the table.
-    Δr = 0
+                if head_opened
+                    il -= 1
+                    _aprintln(buf, "</thead>", il, ns; minify)
+                    head_opened = false
+                end
 
-    @inbounds for i in 1:num_rows
-        # Get the identification of the current row.
-        row_id = _get_row_id(ptable, i + Δr)
+                _aprintln(buf, "<tbody>", il, ns; minify)
+                body_opened = true
+                il += 1
 
-        # HTML tag for the row.
-        html_row_tag = ""
+            elseif (ps.i == 1) && (rs == :table_footer) && !foot_opened
+                if head_opened
+                    il -= 1
+                    _aprintln(buf, "</thead>", il, ns; minify)
+                    head_opened = false
+                elseif body_opened
+                    il -= 1
+                    _aprintln(buf, "</tbody>", il, ns; minify)
+                    head_opened = false
+                end
 
-        # Class of the row.
-        row_class = ""
-
-        if (num_header_rows == 0) && (i == 1)
-            _aprintln(buf, _open_html_tag("tbody"), il, ns, minify)
-            il += 1
-        end
-
-        if _is_header_row(row_id)
-            html_row_tag = "th"
-
-            # If we have a header row and `i = 1`, then we need to start the header. We can
-            # do this because the header is always at the beginning of the table.
-            if i == 1
-                _aprintln(buf, _open_html_tag("thead"), il, ns, minify)
+                _aprintln(buf, "<tfoot>", il, ns; minify)
+                foot_opened = true
                 il += 1
             end
 
-            # Check the row class.
-            if (i == 1) && (num_header_rows == 1)
-                row_class = "header headerLastRow"
-            elseif (i == 1)
-                row_class = "header"
-            elseif (i == num_header_rows)
-                row_class = "subheader headerLastRow"
+            empty!(vproperties)
+            class = if rs == :table_header
+                ps.state < _TITLE ? "title" : "subtitle"
+            elseif rs == :column_labels
+                "columnLabelRow"
+            elseif rs == :row_group_label
+                "rowGroupLabel"
+            elseif rs == :data
+                "dataRow"
+            elseif rs == :summary_row
+                "summaryRow"
+            elseif rs == :table_footer
+                ps.state < _FOOTNOTES ? "footnote" : "sourceNotes"
             else
-                row_class = "subheader"
+                ""
             end
+            push!(vproperties, "class" => class)
+
+            _aprintln(buf, _html__open_tag("tr"; properties = vproperties), il, ns; minify)
+            il += 1
+
+        elseif action == :diagonal_continuation_cell
+            _aprintln(
+                buf,
+                _html__create_tag("td", "&dtdot;"; style = vstyle),
+                il,
+                ns;
+                minify
+            )
+
+        elseif action == :horizontal_continuation_cell
+            _aprintln(buf, _html__create_tag("td", "&ctdot;"), il, ns; minify)
+
+        elseif action ∈ _VERTICAL_CONTINUATION_CELL_ACTIONS
+            # Obtain the cell style.
+            empty!(vstyle)
+            alignment = _current_cell_alignment(action, ps, table_data)
+            _html__add_alignment_to_style!(vstyle, alignment)
+
+            _aprintln(
+                buf,
+                _html__create_tag("td", "&vellip;"; style = vstyle),
+                il,
+                ns;
+                minify
+            )
+
+        elseif action == :end_row
+            il -= 1
+            _aprintln(buf, "</tr>", il, ns; minify)
 
         else
-            html_row_tag = "td"
+            empty!(vproperties)
+            empty!(vstyle)
 
-        end
+            cell = _current_cell(action, ps, table_data)
 
-        empty!(properties)
-        properties["class"] = row_class
-        _aprintln(buf, _open_html_tag("tr"; properties), il, ns, minify)
-        il += 1
+            cell === _IGNORE_CELL && continue
 
-        @inbounds for j in 1:num_columns
-            # Get the identification of the current column.
-            column_id = _get_column_id(ptable, j)
+            # If we are in a column label, check if we must merge the cell.
+            if (action == :column_label) && (cell isa MergeCells)
+                # Check if we have enough data columns to merge the cell.
+                num_data_columns = _number_of_printed_data_columns(table_data)
 
-            # Get the alignment for the current cell.
-            cell_alignment = _get_cell_alignment(ptable, i + Δr, j)
-
-            # Get the cell data.
-            cell_data = _get_element(ptable, i + Δr, j)
-
-            # If we do not annotate the type here, we get type instability due to
-            # `_html_parse_cell`.
-            cell_str::String = ""
-
-            # The class of the cell.
-            cell_class = ""
-
-            # The title of the cell (used only for the header).
-            cell_title = ""
-
-            # Style of the cell.
-            empty!(style)
-            _add_text_alignment_to_style!(style, cell_alignment)
-
-            if !isempty(maximum_columns_width)
-                style["max-width"]     = maximum_columns_width
-                style["overflow"]      = "hidden"
-                style["text-overflow"] = "ellipsis"
-                style["white-space"]   = "nowrap"
-            end
-
-            if column_id == :row_number
-                cell_class = "rowNumber"
-                merge!(style, Dict(row_number_decoration))
-            elseif column_id == :row_label
-                cell_class = "rowLabel"
-                merge!(style, Dict(row_label_decoration))
-            end
-
-            if _is_header_row(row_id)
-
-                # Check if the user wants to add a title to this header cell.
-                if column_id == :__ORIGINAL_DATA__
-                    # TODO: This code only works because the header is always at top.
-
-                    if !isnothing(header_cell_titles) && !isnothing(header_cell_titles[i])
-                        jh = _get_data_column_index(ptable, j)
-                        cell_title = _escape_html_str(string(header_cell_titles[i][jh]))
-                    end
+                cs = if (ps.j + cell.column_span - 1) > num_data_columns
+                    num_data_columns - ps.j + 1
+                else
+                    cell.column_span
                 end
 
-                cell_str = _html_parse_cell(
-                    io,
-                    cell_data;
-                    allow_html_in_cells = allow_html_in_cells,
-                    compact_printing = compact_printing,
-                    limit_printing = limit_printing,
-                    renderer = Val(:print)
-                )
-
-                empty!(properties)
-                properties["class"] = cell_class
-                properties["title"] = cell_title
-
-                _aprintln(
+                push!(vproperties, "colspan" => string(cs))
+                rendered_cell = _html__render_cell(
+                    cell.data,
                     buf,
-                    _create_html_tag(html_row_tag, cell_str; properties, style),
-                    il,
-                    ns,
-                    minify
+                    renderer;
+                    allow_html_in_cells,
+                    line_breaks
                 )
 
-                # Check if we need to draw the continuation character.
-                if (j == num_columns) && hidden_columns_at_end
-                    empty!(style)
-                    _add_text_alignment_to_style!(style, continuation_row_alignment)
+                alignment = cell.alignment
 
-                    _aprintln(
-                        buf,
-                        _create_html_tag(html_row_tag, "&ctdot;"; properties, style),
-                        il,
-                        ns,
-                        minify
-                    )
-                end
+                append!(
+                    vstyle,
+                    if ps.i == 1
+                        style.first_line_merged_column_label
+                    else
+                        style.merged_column_label
+                    end
+                )
 
             else
-                is_original_data = column_id == :__ORIGINAL_DATA__
+                rendered_cell = _html__render_cell(
+                    cell,
+                    buf,
+                    renderer;
+                    allow_html_in_cells,
+                    line_breaks
+                )
 
-                if is_original_data
-                    ir = _get_data_row_index(ptable, i + Δr)
-                    jr = _get_data_column_index(ptable, j)
+                alignment = _current_cell_alignment(action, ps, table_data)
+            end
 
-                    # Notice that `(ir, jr)` are the indices of the printed data. It means
-                    # that it refers to the ir-th data row and jr-th data column that will
-                    # be printed. We need to convert those indices to the actual indices in
-                    # the input table.
-                    tir, tjr = _convert_axes(ptable.data, ir, jr)
+            # Obtain the cell alignment.
+            _html__add_alignment_to_style!(vstyle, alignment)
 
-                    for f in formatters.x
-                        cell_data = f(cell_data, tir, tjr)
+            # Check if the user wants to limit the column width.
+            if !isempty(maximum_column_width)
+                push!(
+                    vstyle,
+                    "max-width"     => maximum_column_width,
+                    "overflow"      => "hidden",
+                    "text-overflow" => "ellipsis",
+                    "white-space"   => "nowrap",
+                )
+            end
+
+            # Check for footnotes.
+            footnotes = _current_cell_footnotes(table_data, action, ps.i, ps.j)
+
+            if !isnothing(footnotes) && !isempty(footnotes)
+                rendered_cell *= "<sup>"
+                for i in eachindex(footnotes)
+                    f = footnotes[i]
+                    if i != last(eachindex(footnotes))
+                        rendered_cell *= "$f,"
+                    else
+                        rendered_cell *= "$f</sup>"
                     end
+                end
+            end
 
-                    # Apply highlighters.
+            # If we are in a data cell, we must check for highlighters.
+            if action == :data
+                orig_data = _get_data(table_data.data)
+
+                if !isnothing(highlighters)
                     for h in highlighters
-                        if h.f(_getdata(ptable), tir, tjr)
-                            merge!(style, Dict(h.fd(h, _getdata(ptable), tir, tjr)))
+                        if h.f(orig_data, ps.i, ps.j)
+                            append!(vstyle, h.fd(h, orig_data, ps.i, ps.j))
                             break
                         end
                     end
                 end
-
-                cell_str = _html_parse_cell(
-                    io,
-                    cell_data;
-                    allow_html_in_cells = allow_html_in_cells,
-                    cell_first_line_only = cell_first_line_only,
-                    compact_printing = compact_printing,
-                    limit_printing = limit_printing,
-                    linebreaks = linebreaks,
-                    renderer = renderer
-                )
-
-                empty!(properties)
-                properties["class"] = cell_class
-
-                _aprintln(
-                    buf,
-                    _create_html_tag(html_row_tag, cell_str; properties, style),
-                    il,
-                    ns,
-                    minify
-                )
-
-                # Check if we need to draw the continuation character.
-                if (j == num_columns) && hidden_columns_at_end
-                    empty!(style)
-                    _add_text_alignment_to_style!(style, continuation_row_alignment)
-
-                    _aprintln(
-                        buf,
-                        _create_html_tag(html_row_tag, "&ctdot;"; properties, style),
-                        il,
-                        ns,
-                        minify
-                    )
-                end
-            end
-        end
-
-        il -= 1
-        _aprintln(buf, _close_html_tag("tr"), il, ns, minify)
-
-        if i == num_header_rows
-            il -= 1
-            _aprintln(buf, _close_html_tag("thead"), il, ns, minify)
-            _aprintln(buf, _open_html_tag("tbody"),  il, ns, minify)
-            il += 1
-        end
-
-        # If we have hidden rows, we need to print an additional row with the continuation
-        # characters.
-        if i == continuation_line_id
-            _aprintln(buf, _open_html_tag("tr"), il, ns, minify)
-            il += 1
-
-            empty!(style)
-            _add_text_alignment_to_style!(style, continuation_row_alignment)
-
-            for j in 1:num_columns
-                _aprintln(
-                    buf,
-                    _create_html_tag(html_row_tag, "&vellip;"; style),
-                    il,
-                    ns,
-                    minify
-                )
-
-                if (j == num_columns) && hidden_columns_at_end
-                    _aprintln(
-                        buf,
-                        _create_html_tag(html_row_tag, "&dtdot;"; style),
-                        il,
-                        ns,
-                        minify
-                    )
-                end
             end
 
-            il -= 1
-            _aprintln(buf, _close_html_tag("tr"), il, ns, minify)
+            # Obtain the cell class and style.
 
-            # Apply the offset in case we are using middle cropping.
-            Δr = _total_size(ptable)[1] - num_rows
+            if action == :title
+                push!(vproperties, "colspan" => string(_number_of_printed_columns(table_data)))
+                append!(vstyle, style.title)
+
+            elseif action == :subtitle
+                push!(vproperties, "colspan" => string(_number_of_printed_columns(table_data)))
+                append!(vstyle, style.subtitle)
+
+            elseif action == :row_number_label
+                push!(vproperties, "class" => "rowNumberLabel")
+                append!(vstyle, style.row_number_label)
+
+            elseif action == :row_number
+                push!(vproperties, "class" => "rowNumber")
+                append!(vstyle, style.row_number)
+
+            elseif action == :summary_row_number
+                push!(vproperties, "class" => "summaryRowNumber")
+                append!(vstyle, style.row_number)
+
+            elseif action == :stubhead_label
+                push!(vproperties, "class" => "stubheadLabel")
+                append!(vstyle, style.stubhead_label)
+
+            elseif action == :row_group_label
+                push!(vproperties, "colspan" => string(_number_of_printed_columns(table_data)))
+                append!(vstyle, style.row_group_label)
+
+            elseif action == :row_label
+                push!(vproperties, "class" => "rowLabel")
+                append!(vstyle, style.row_label)
+
+            elseif action == :summary_row_label
+                push!(vproperties, "class" => "summaryRowLabel")
+                append!(vstyle, style.summary_row_label)
+
+            elseif action == :column_label
+                if ps.i == 1
+                    append!(vstyle, style.first_line_column_label)
+                else
+                    append!(vstyle, style.column_label)
+                end
+
+            elseif action == :summary_row_cell
+                append!(vstyle, style.summary_row_cell)
+
+            elseif action == :footnote
+                # The footnote must be a cell that span the entire printed table.
+                push!(vproperties, "colspan" => string(_number_of_printed_columns(table_data)))
+                append!(vstyle, style.footnote)
+                rendered_cell = "<sup>$(ps.i)</sup> " * rendered_cell
+
+            elseif action == :source_notes
+                # The source notes must be a cell that span the entire printed table.
+                push!(vproperties, "colspan" => string(_number_of_printed_columns(table_data)))
+                append!(vstyle, style.source_note)
+
+            else
+                push!(vproperties, "class" => "")
+            end
+
+            # Create the row tag with the content.
+            row_tag = rs == :column_labels ? "th" : "td"
+            _aprintln(
+                buf,
+                _html__create_tag(
+                    row_tag,
+                    rendered_cell;
+                    properties = vproperties,
+                    style = vstyle
+                ),
+                il,
+                ns;
+                minify
+            )
         end
     end
 
+    # Close the section that was left opened.
+    if head_opened
+        il -= 1
+        _aprintln(buf, "</thead>", il, ns; minify)
+    elseif body_opened
+        il -= 1
+        _aprintln(buf, "</tbody>", il, ns; minify)
+    elseif foot_opened
+        il -= 1
+        _aprintln(buf, "</tfoot>", il, ns; minify)
+    end
+
     il -= 1
-    _aprintln(buf, _close_html_tag("tbody"), il, ns, minify)
+    _aprintln(buf, _html__close_tag("table"), il, ns; minify)
 
-    @label print_to_output
-
-    # == Print HTML Footer =================================================================
-
-    il -= 1
-    _aprintln(buf, _close_html_tag("table"), il, ns, minify)
-    if standalone
+    if stand_alone
         _aprintln(
             buf,
             """
             </body>
             </html>""",
             il,
-            ns,
+            ns;
             minify
         )
     end
 
     if wrap_table_in_div
         il -= 1
-        _aprintln(buf, _close_html_tag("div"), il, ns, minify)
+        _aprintln(buf, _html__close_tag("div"), il, ns; minify)
     end
 
     # == Print the Buffer Into the IO ======================================================
 
+    output_str = String(take!(buf_io))
+
+    if !pspec.new_line_at_end
+        output_str = chomp(output_str)
+    end
+
     # If we are printing to `stdout`, wrap the output in a `HTML` object.
     if is_stdout
-        display(MIME("text/html"), HTML(String(take!(buf_io))))
+        display(MIME("text/html"), HTML(output_str))
     else
-        print(io, String(take!(buf_io)))
+        print(context, output_str)
     end
 
     return nothing

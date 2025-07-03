@@ -4,64 +4,99 @@
 #
 ############################################################################################
 
-export HtmlCell, HtmlDecoration, HtmlHighlighter, HtmlTableFormat
-export @html_cell_str
+export HtmlHighlighter, HtmlTableFormat, HtmlTableStyle
+
+# Pair that defines HTML properties.
+const HtmlPair = Pair{String, String}
+
+############################################################################################
+#                                       Highlighters                                       #
+############################################################################################
 
 """
-    struct HtmlCell
+    struct HtmlHighlighter
 
-Defines a table cell that contains HTML code. It can be created using the macro
-[`@html_cell_str`](@ref).
+Define the default highlighter of a table when using the HTML back end.
+
+# Fields
+
+- `f::Function`: Function with the signature `f(data, i, j)` in which should return `true`
+    if the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
+- `fd::Function`: Function with the signature `f(h, data, i, j)` in which `h` is the
+    highlighter. This function must return a `Vector{Pair{String, String}}` with properties
+    compatible with the `style` field that will be applied to the highlighted cell.
+- `_decoration::Dict{String, String}`: The decoration to be applied to the highlighted cell
+    if the default `fd` is used.
+
+# Remarks
+
+This structure can be constructed using three helpers:
+
+    HtmlHighlighter(f::Function, decoration::Vector{Pair{String, String}})
+
+    HtmlHighlighter(f::Function, decorations::NTuple{N, Pair{String, String})
+
+    HtmlHighlighter(f::Function, fd::Function)
+
+The first will apply a fixed decoration to the highlighted cell specified in `decoration`,
+whereas the second let the user select the desired decoration by specifying the function
+`fd`.
 """
-struct HtmlCell{T}
-    data::T
+struct HtmlHighlighter
+    f::Function
+    fd::Function
+
+    # == Private Fields ====================================================================
+
+    _decoration::Vector{HtmlPair}
+
+    # == Constructors ======================================================================
+
+    function HtmlHighlighter(f::Function, fd::Function)
+        return new(f, fd, HtmlPair[])
+    end
+
+    function HtmlHighlighter(f::Function, decoration::HtmlPair)
+        return new(
+            f,
+            _html__default_highlighter_fd,
+            [decoration]
+        )
+    end
+
+    function HtmlHighlighter(f::Function, decoration::Vector{HtmlPair})
+        return new(
+            f,
+            _html__default_highlighter_fd,
+            decoration
+        )
+    end
+
+    function HtmlHighlighter(f::Function, decoration::Vector{HtmlPair}, args...)
+        return new(
+            f,
+            _html__default_highlighter_fd,
+            [decoration..., args...]
+        )
+    end
 end
 
-"""
-    @html_cell_str(str)
+_html__default_highlighter_fd(h::HtmlHighlighter, ::Any, ::Int, ::Int) = h._decoration
 
-Create a table cell with HTML code.
+############################################################################################
+#                                       Table Format                                       #
+############################################################################################
 
-# Examples
-
-```julia
-julia> html_cell"<i>Italic text</i>"
-HtmlCell{String}("<i>Italic text</i>")
-```
-"""
-macro html_cell_str(str)
-    return :(HtmlCell($str))
-end
-
-"""
-    HtmlDecoration
-
-Structure that defines parameters to decorate a table cell.
-"""
-@kwdef struct HtmlDecoration
-    color::String               = ""
-    background::String          = ""
-    font_family::String         = ""
-    font_style::String          = ""
-    font_weight::String         = ""
-    text_decoration::String     = ""
-    style::Dict{String, String} = Dict{String, String}()
-end
-
-HtmlDecoration(color::String) = HtmlDecoration(color = color)
-
-function Dict(d::HtmlDecoration)
-    style = d.style
-
-    !isempty(d.color)           && (style["color"]           = d.color)
-    !isempty(d.background)      && (style["background"]      = d.background)
-    !isempty(d.font_family)     && (style["font-family"]     = d.font_family)
-    !isempty(d.font_weight)     && (style["font-weight"]     = d.font_weight)
-    !isempty(d.font_style)      && (style["font-style"]      = d.font_style)
-    !isempty(d.text_decoration) && (style["text-decoration"] = d.text_decoration)
-
-    return style
-end
+# Create some default decorations to reduce allocations.
+const _HTML__NO_DECORATION = HtmlPair[]
+const _HTML__BOLD = ["font-weight" => "bold"]
+const _HTML__ITALIC = ["font-style" => "italic"]
+const _HTML__XLARGE_BOLD = ["font-size" => "x-large", "font-weight" => "bold"]
+const _HTML__LARGE_ITALIC = ["font-size" => "large", "font-style" => "italic"]
+const _HTML__SMALL = ["font-size" => "small"]
+const _HTML__SMALL_ITALIC = ["font-size" => "small", "font-style" => "italic"]
+const _HTML__SMALL_ITALIC_GRAY = ["color" => "gray", "font-size" => "small", "font-style" => "italic"]
+const _HTML__MERGED_CELL = ["border-bottom" => "1px solid black"]
 
 """
     HtmlTableFormat
@@ -74,104 +109,115 @@ the corresponding HTML property.
 - `css::String`: CSS to be injected at the end of the `<style>` section.
 - `table_width::String`: Table width.
 
-# Remarks
-
-Besides the usual HTML tags related to the tables (`table`, `td, `th`, `tr`, etc.), there
-are three important classes that can be used to format tables using the variable `css`.
-
-- `header`: This is the class of the header (first line).
-- `subheader`: This is the class of the sub-headers (all the rest of the lines in the header
-    section).
-- `headerLastRow`: The last row of the header section has additionally this class.
-- `rowNumber`: All the cells related to the row number have this class. Thus, the row number
-    header can be styled using `th.rowNumber` and the row numbers cells can be styled using
-    `td.rowNumber`.
+Notice that this format is only applied if `stand_alone = true`.
 """
 @kwdef struct HtmlTableFormat
     css::String = """
     table, td, th {
-        border-collapse: collapse;
-        font-family: sans-serif;
+      border-collapse: collapse;
+      font-family: sans-serif;
     }
 
     td, th {
-        border-bottom: 0;
-        padding: 4px
+      padding-bottom: 6px !important;
+      padding-left: 8px !important;
+      padding-right: 8px !important;
+      padding-top: 6px !important;
     }
 
-    tr:nth-child(odd) {
-        background: #eee;
+    tr.title td {
+      padding-bottom: 2px !important;
     }
 
-    tr:nth-child(even) {
-        background: #fff;
+    tr.footnote td {
+      padding-bottom: 2px !important;
     }
 
-    tr.header {
-        background: navy !important;
-        color: white;
-        font-weight: bold;
+    tr.sourceNotes td {
+      padding-bottom: 2px !important;
     }
 
-    tr.subheader {
-        background: lightgray !important;
-        color: black;
+    table > *:first-child > tr:first-child {
+      border-top: 2px solid black;
     }
 
-    tr.headerLastRow {
-        border-bottom: 2px solid black;
+    table > *:last-child > tr:last-child {
+      border-bottom: 2px solid black;
     }
 
-    th.rowNumber, td.rowNumber {
-        text-align: right;
+    thead > tr:nth-child(1 of .columnLabelRow) {
+      border-top: 1px solid black;
     }
-    """
+
+    thead tr:last-child {
+      border-bottom: 1px solid black;
+    }
+
+    tbody tr:last-child {
+      border-bottom: 1px solid black;
+    }
+
+    tbody > tr:nth-child(1 of .summaryRow) {
+      border-top: 1px solid black;
+    }
+
+    tbody > tr:nth-last-child(1 of .summaryRow) {
+      border-bottom: 1px solid black;
+    }
+
+    tfoot tr:nth-last-child(1 of .footnote) {
+      border-bottom: 1px solid black;
+    }"""
+
     table_width::String = ""
 end
 
-############################################################################################
-#                                       Highlighters                                       #
-############################################################################################
-
 """
-    HtmlHighlighter
+    struct HtmlTableStyle
 
-Defines the default highlighter of a table when using the html backend.
+Define the style of the tables printed with the HTML back end.
 
 # Fields
 
-- `f::Function`: Function with the signature `f(data,i,j)` in which should return `true` if
-    the element `(i,j)` in `data` must be highlighter, or `false` otherwise.
-- `fd::Function`: Function with the signature `f(h,data,i,j)` in which `h` is the
-    highlighter. This function must return the `HtmlDecoration` to be applied to the cell
-    that must be highlighted.
-- `decoration::HtmlDecoration`: The `HtmlDecoration` to be applied to the highlighted cell
-    if the default `fd` is used.
-
-# Remarks
-
-This structure can be constructed using two helpers:
-
-    HtmlHighlighter(f::Function, decoration::HtmlDecoration)
-
-    HtmlHighlighter(f::Function, fd::Function)
-
-The first will apply a fixed decoration to the highlighted cell specified in `decoration`
-whereas the second let the user select the desired decoration by specifying the function
-`fd`.
+- `top_left_string::Vector{HtmlPair}`: Style for the top left string.
+- `top_right_string::Vector{HtmlPair}`: Style for the top right string.
+- `table::Vector{HtmlPair}`: Style for the table.
+- `title::Vector{HtmlPair}`: Style for the title.
+- `subtitle::Vector{HtmlPair}`: Style for the subtitle.
+- `row_number_label::Vector{HtmlPair}`: Style for the row number label.
+- `row_number::Vector{HtmlPair}`: Style for the row number.
+- `stubhead_label::Vector{HtmlPair}`: Style for the stubhead label.
+- `row_label::Vector{HtmlPair}`: Style for the row label.
+- `row_group_label::Vector{HtmlPair}`: Style for the row group label.
+- `first_line_column_label::Vector{HtmlPair}`: Style for the first line of the column
+    labels.
+- `column_label::Vector{HtmlPair}`: Style for the column label.
+- `first_line_merged_column_label::Vector{HtmlPair}`: Style for the merged cells at the
+    first column label line.
+- `merged_column_label::Vector{HtmlPair}`: Style for the merged cells at the rest of the
+    column labels.
+- `summary_row_cell::Vector{HtmlPair}`: Style for the summary row cell.
+- `summary_row_label::Vector{HtmlPair}`: Style for the summary row label.
+- `footnote::Vector{HtmlPair}`: Style for the footnote.
+- `source_notes::Vector{HtmlPair}`: Style for the source notes.
 """
-@kwdef struct HtmlHighlighter
-    # API
-    f::Function
-    fd::Function = (h, data, i, j)->h.decoration
-
-    # Private
-    decoration::HtmlDecoration = HtmlDecoration()
+@kwdef struct HtmlTableStyle
+    top_left_string::Vector{HtmlPair}                = _HTML__BOLD
+    top_right_string::Vector{HtmlPair}               = _HTML__ITALIC
+    table::Vector{HtmlPair}                          = _HTML__NO_DECORATION
+    title::Vector{HtmlPair}                          = _HTML__XLARGE_BOLD
+    subtitle::Vector{HtmlPair}                       = _HTML__LARGE_ITALIC
+    row_number_label::Vector{HtmlPair}               = _HTML__BOLD
+    row_number::Vector{HtmlPair}                     = _HTML__BOLD
+    stubhead_label::Vector{HtmlPair}                 = _HTML__BOLD
+    row_label::Vector{HtmlPair}                      = _HTML__BOLD
+    row_group_label::Vector{HtmlPair}                = _HTML__BOLD
+    first_line_column_label::Vector{HtmlPair}        = _HTML__BOLD
+    column_label::Vector{HtmlPair}                   = _HTML__NO_DECORATION
+    first_line_merged_column_label::Vector{HtmlPair} = _HTML__MERGED_CELL
+    merged_column_label::Vector{HtmlPair}            = _HTML__MERGED_CELL
+    summary_row_cell::Vector{HtmlPair}               = _HTML__NO_DECORATION
+    summary_row_label::Vector{HtmlPair}              = _HTML__BOLD
+    footnote::Vector{HtmlPair}                       = _HTML__SMALL
+    source_note::Vector{HtmlPair}                    = _HTML__SMALL_ITALIC_GRAY
 end
-
-# Helper function to construct HtmlHighlighter.
-function HtmlHighlighter(f::Function, decoration::HtmlDecoration)
-    return HtmlHighlighter(f = f, decoration = decoration)
-end
-
-HtmlHighlighter(f::Function, fd::Function) = HtmlHighlighter(f = f, fd = fd)

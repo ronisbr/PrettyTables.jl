@@ -1,41 +1,81 @@
 ## Description #############################################################################
 #
-# Tests related to general functions.
+# General tests.
 #
 ############################################################################################
 
-@testset "Back Ends" verbose = true begin
-    include("./general/backend.jl")
+@testset "Automatic Column Label Merge" begin
+    matrix = [1 2 3 4 5; 6 7 8 9 10]
+    column_labels = [
+        MultiColumn(2, "Merged Col. 1"),
+        MultiColumn(2, "Merged Col. 2", :l),
+        EmptyCells(1)
+    ]
+
+    expected = """
+┌───────────────────────────────────┬───────────────────────────────────┬─────────────────┐
+│           Merged Col. 1           │ Merged Col. 2                     │                 │
+├─────────────────┬─────────────────┼─────────────────┬─────────────────┼─────────────────┤
+│               1 │               2 │               3 │               4 │               5 │
+│               6 │               7 │               8 │               9 │              10 │
+└─────────────────┴─────────────────┴─────────────────┴─────────────────┴─────────────────┘
+"""
+
+    result = pretty_table(
+        String,
+        matrix;
+        column_labels,
+        fixed_data_column_widths = 15
+    )
+    @test result == expected
 end
 
-@testset "Circular Reference" verbose = true begin
-    include("./general/circular_reference.jl")
+@testset "Merge Column Label Cells" begin
+    matrix = [1 2 3; 4 5 6]
+    column_labels = [MultiColumn(2, "Test"), "B", "C"]
+
+    expected = """
+┌──────────────────────────────┬───┬───┐
+│ MultiColumn(2, \\"Test\\", :c) │ B │ C │
+├──────────────────────────────┼───┼───┤
+│                            1 │ 2 │ 3 │
+│                            4 │ 5 │ 6 │
+└──────────────────────────────┴───┴───┘
+"""
+
+    result = pretty_table(
+        String,
+        matrix;
+        column_labels,
+        merge_column_label_cells = :something
+    )
+    @test result == expected
+
+    @test_throws ArgumentError pretty_table(
+        String,
+        matrix;
+        column_labels
+    )
 end
 
-@testset "Configurations" verbose = true begin
-    include("./general/configurations.jl")
-end
+@testset "Show Only First Column Label" begin
+    matrix = [1 2 3; 4 5 6]
+    column_labels = [["A", "B", "C"], ["D", "E", "F"]]
 
-@testset "Compact Types" verbose = true begin
-    include("./general/compact_types.jl")
-end
+    expected = """
+┌───┬───┬───┐
+│ A │ B │ C │
+├───┼───┼───┤
+│ 1 │ 2 │ 3 │
+│ 4 │ 5 │ 6 │
+└───┴───┴───┘
+"""
 
-@testset "Errors" verbose = true begin
-    include("./general/errors.jl")
-end
-
-@testset "Issues" verbose = true begin
-    include("./general/issues.jl")
-end
-
-@testset "Table to File" verbose = true begin
-    include("./general/files.jl")
-end
-
-@testset "Table to String" verbose = true begin
-    include("./general/string.jl")
-end
-
-@testset "Tables.jl API" verbose = true begin
-    include("./general/tables.jl")
+    result = pretty_table(
+        String,
+        matrix;
+        column_labels,
+        show_first_column_label_only = true
+    )
+    @test result == expected
 end

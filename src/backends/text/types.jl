@@ -1,96 +1,25 @@
 ## Description #############################################################################
 #
-# Types and structures for the text backend.
+# Types and structures for the text back end.
 #
 ############################################################################################
 
-export TextFormat, Highlighter, CustomTextCell
+export CustomTextCell, TextTableBorders, TextTableFormat, TextTableStyle, TextHighlighter
 
-"""
-    struct TextFormat
+############################################################################################
+#                                     Custom Text Cell                                     #
+############################################################################################
 
-# Fields
+include("./CustomTextCell/CustomTextCell.jl")
+using .CustomTextCell
+export AbstractCustomTextCell
 
-- `up_right_corner::Char`: Character in the up right corner.
-- `up_left_corner::Char`: Character in the up left corner.
-- `bottom_left_corner::Char`: Character in the bottom left corner.
-- `bottom_right_corner::Char`: Character in the bottom right corner.
-- `up_intersection::Char`: Character in the intersection of lines in the up part.
-- `left_intersection::Char`: Character in the intersection of lines in the left part.
-- `right_intersection::Char`: Character in the intersection of lines in the right part.
-- `middle_intersection::Char`: Character in the intersection of lines in the middle of the
-    table.
-- `bottom_intersection::Char`: Character in the intersection of the lines in the bottom
-    part.
-- `column::Char`: Character in a vertical line inside the table.
-- `row::Char`: Character in a horizontal line inside the table.
-- `hlines::Vector{Symbol}`: Horizontal lines that must be drawn by default.
-- `vlines::Union{Symbol, Vector{Symbol}}`: Vertical lines that must be drawn by default.
+include("./CustomTextCell/AnsiTextCell.jl")
+include("./CustomTextCell/UrlTextCell.jl")
 
-# Pre-defined formats
-
-The following pre-defined formats are available: `unicode` (**default**), `mysql`,
-`compact`, `markdown`, `simple`, `ascii_rounded`, and `ascii_dots`.
-"""
-@kwdef struct TextFormat
-    up_right_corner::Char                  = '┐'
-    up_left_corner::Char                   = '┌'
-    bottom_left_corner::Char               = '└'
-    bottom_right_corner::Char              = '┘'
-    up_intersection::Char                  = '┬'
-    left_intersection::Char                = '├'
-    right_intersection::Char               = '┤'
-    middle_intersection::Char              = '┼'
-    bottom_intersection::Char              = '┴'
-    column::Char                           = '│'
-    row::Char                              = '─'
-    hlines::Vector{Symbol}                 = [:begin, :header, :end]
-    vlines::Union{Symbol, Vector{Symbol}}  = :all
-end
-
-"""
-    struct Highlighter
-
-Defines the default highlighter of a table when using the text backend.
-
-# Fields
-
-- `f::Function`: Function with the signature `f(data, i, j)` in which should return `true`
-    if the element `(i,j)` in `data` must be highlighter, or `false` otherwise.
-- `fd::Function`: Function with the signature `f(h, data, i, j)` in which `h` is the
-    highlighter. This function must return the `Crayon` to be applied to the cell that must
-    be highlighted.
-- `crayon::Crayon`: The `Crayon` to be applied to the highlighted cell if the default `fd`
-    is used.
-
-# Remarks
-
-This structure can be constructed using three helpers:
-
-    Highlighter(f::Function; kwargs...)
-
-where it will construct a `Crayon` using the keywords in `kwargs` and apply it to the
-highlighted cell,
-
-    Highlighter(f::Function, crayon::Crayon)
-
-where it will apply the `crayon` to the highlighted cell, and
-
-    Highlighter(f::Function, fd::Function)
-
-where it will apply the `Crayon` returned by the function `fd` to the highlighted cell.
-"""
-@kwdef struct Highlighter
-    f::Function
-    fd::Function = (h, data, i, j) -> h.crayon
-
-    # Private
-    crayon::Crayon = Crayon()
-end
-
-Highlighter(f; kwargs...) = Highlighter(f = f, crayon = Crayon(;kwargs...))
-Highlighter(f, crayon::Crayon) = Highlighter(f = f, crayon = crayon)
-Highlighter(f::Function, fd::Function) = Highlighter(f = f, fd = fd)
+############################################################################################
+#                                         Display                                          #
+############################################################################################
 
 """
     struct Display
@@ -108,92 +37,256 @@ Store the information of the display and the current cursor position.
 - `row::Int`: Current row.
 - `column::Int`: Current column.
 - `has_color::Bool`: Indicates if the display has color support.
-- `cont_char::Char`: The character that indicates the line is cropped.
-- `cont_reset::Bool`: If `true`, the decoration will be reseted before printing the
-    continuation character. Otherwise, the decoration will be reseted after printing the
-    continuation character.
-- `cont_space_char::Char`: Space character to be printed before `cont_char`.
+- `buf_line::IOBuffer`:  Buffer that stores the current line.
+- `buf::IOBuffer`: Buffer that stores the entire output.
 """
 @kwdef mutable struct Display
-    size::Tuple{Int,Int}  = (-1, -1)
-    row::Int              = 1
-    column::Int           = 0
-    has_color::Bool       = false
-    cont_char::Char       = '⋯'
-    cont_reset::Bool      = true
-    cont_space_char::Char = ' '
+    size::NTuple{2, Int} = (-1, -1)
+    row::Int             = 1
+    column::Int          = 0
+    has_color::Bool      = false
 
-    # Buffer that stores the current line.
-    buf_line::IOBuffer = IOBuffer()
     # Buffer that stores the entire output.
     buf::IOBuffer = IOBuffer()
-end
-
-"""
-    abstract type CustomTextCell
-
-Abstract type of custom cells in the text backend.
-
-Each type must implement the following API:
-
-- `get_printable_cell_text`: A function that must return a vector of strings with the
-    printable text, *i.e.* without any non-printable character.
-- `get_rendered_line`: A function that must return the rendered line that will be printed to
-    the display.
-- `apply_line_padding!`: Apply a certain number of spaces to the left and right of a
-    specific line.
-- `crop_line!`: A function that must crop a certain number of printable characters from the
-    end of the line.
-- `append_suffix_to_line!`: Append a string suffix to a line of the custom cell.
-- `apply_line_padding!`: Apply left and right padding to a line of the custom cell.
-- `crop_line!`: Crop a certain number of characters from a line of the custom cell.
-- `get_printable_cell_line`: Get a printable line of the custom cell.
-- `get_rendered_line`: Get a rendered line of the custom cell.
-- `parse_cell_text`: Parse the cell text and return a `Vector{String}` with the printable
-    lines.
-- `reset!`: Reset all the temporary fields. This function is not required.
-"""
-abstract type CustomTextCell end
-
-"""
-    struct RowPrintingState
-
-Structure that hold the state of the row printing state machine.
-"""
-@kwdef mutable struct RowPrintingState
-    state::Symbol = :top_horizontal_line
-    i::Int = 0
-    l::Int = 0
-    continuation_line_drawn::Bool = false
-    printed_lines::Int = 1
-    i_pt::Int = 0
-end
-
-"""
-    struct TextCrayons
-
-Structure that holds all the crayons in the text backend.
-"""
-struct TextCrayons{
-    Thc<:Union{Crayon, Vector{Crayon}},
-    Tsc<:Union{Crayon, Vector{Crayon}}
-}
-    border_crayon::Crayon
-    header_crayon::Thc
-    omitted_cell_summary_crayon::Crayon
-    row_label_crayon::Crayon
-    row_label_header_crayon::Crayon
-    row_number_header_crayon::Crayon
-    subheader_crayon::Tsc
-    text_crayon::Crayon
-    title_crayon::Crayon
+    # Buffer that stores the current line.
+    buf_line::IOBuffer = IOBuffer()
 end
 
 ############################################################################################
-#                                        Constants                                         #
+#                                       Table Format                                       #
 ############################################################################################
 
-# Crayon used to reset all the styling.
-const _default_crayon   = Crayon()
-const _reset_crayon     = Crayon(reset = true)
-const _reset_crayon_str = string(_reset_crayon)
+"""
+    struct TextTableBorders
+
+Define the format of the borders in the tables printed with the text back end.
+
+# Fields
+
+- `up_right_corner::Char`: Character in the up right corner.
+- `up_left_corner::Char`: Character in the up left corner.
+- `bottom_left_corner::Char`: Character in the bottom left corner.
+- `bottom_right_corner::Char`: Character in the bottom right corner.
+- `up_intersection::Char`: Character in the intersection of lines in the up part.
+- `left_intersection::Char`: Character in the intersection of lines in the left part.
+- `right_intersection::Char`: Character in the intersection of lines in the right part.
+- `middle_intersection::Char`: Character in the intersection of lines in the middle of the
+    table.
+- `bottom_intersection::Char`: Character in the intersection of the lines in the bottom
+    part.
+- `column::Char`: Character in a vertical line inside the table.
+- `row::Char`: Character in a horizontal line inside the table.
+"""
+@kwdef struct TextTableBorders
+    up_right_corner::Char      = '┐'
+    up_left_corner::Char       = '┌'
+    bottom_left_corner::Char   = '└'
+    bottom_right_corner::Char  = '┘'
+    up_intersection::Char      = '┬'
+    left_intersection::Char    = '├'
+    right_intersection::Char   = '┤'
+    middle_intersection::Char  = '┼'
+    bottom_intersection::Char  = '┴'
+    column::Char               = '│'
+    row::Char                  = '─'
+end
+
+# Create some default decorations to reduce allocations.
+const _TEXT__RESET               = crayon"reset"
+const _TEXT__DEFAULT             = crayon"default"
+const _TEXT__BOLD                = crayon"bold"
+const _TEXT__DARK_GRAY           = crayon"fg:dark_gray"
+const _TEXT__CYAN                = crayon"fg:cyan"
+const _TEXT__BOLD_UNDERLINE      = crayon"bold underline"
+const _TEXT__DARK_GRAY_UNDERLINE = crayon"fg:dark_gray underline"
+
+# Convert the reset crayon to string to reduce allocations.
+const _TEXT__STRING_RESET = string(_TEXT__RESET)
+
+"""
+    struct TextTableFormat
+
+Define the format of the tables printed with the text back end.
+
+# Fields
+
+- `borders::TextTableBorders`: Format of the borders.
+- `horizontal_line_at_beginning::Bool`: If `true`, a horizontal line will be drawn at the
+    beginning of the table.
+- `horizontal_lines_at_column_labels::Union{Symbol, Vector{Int}}`: A horizontal line will be
+    drawn after each column label row index listed in this vector. If the symbol `:all` is
+    passed, a horizontal line will be drawn after every column label. If the symbol `:none`
+    is passed, no horizontal lines will be drawn.
+- `horizontal_line_after_column_labels::Bool`: If `true`, a horizontal line will be drawn
+    after the column labels.
+- `horizontal_lines_at_data_rows::Union{Symbol, Vector{Int}}`: A horizontal line will be
+    drawn after each data row index listed in this vector. If the symbol `:all` is passed, a
+    horizontal line will be drawn after every data column. If the symbol `:none` is passed,
+    no horizontal lines will be drawn.
+- `horizontal_line_before_row_group_label::Bool`: If `true`, a horizontal line will be
+    drawn before the row group label.
+- `horizontal_line_after_row_group_label::Bool`: If `true`, a horizontal line will be
+    drawn after the row group label.
+- `horizontal_line_after_data_rows::Bool`: If `true`, a horizontal line will be drawn
+    after the data rows.
+- `horizontal_line_after_summary_rows::Bool`: If `true`, a horizontal line will be drawn
+    after the summary rows.
+- `vertical_line_at_beginning::Bool`: If `true`, a vertical line will be drawn at the
+    beginning of the table.
+- `vertical_line_after_row_number_column::Bool`: If `true`, a vertical line will be drawn
+    after the row number column.
+- `vertical_line_after_row_label_column::Bool`: If `true`, a vertical line will be drawn
+    after the row label column.
+- `vertical_lines_at_data_columns::Union{Symbol, Vector{Int}}`: A vertical line will be
+    drawn after each data column index listed in this vector. If the symbol `:all` is
+    passed, a vertical line will be drawn after every data column. If the symbol `:none` is
+    passed, no vertical lines will be drawn after the data columns.
+- `vertical_line_after_data_columns::Bool`: If `true`, a vertical line will be drawn after
+    the data columns.
+- `vertical_line_after_continuation_column::Bool`: If `true`, a vertical line will be
+    drawn after the continuation column.
+- `ellipsis_line_skip::Integer`: Number of lines to skip when printing an ellipsis.
+"""
+@kwdef struct TextTableFormat
+    # == Border and Lines ==================================================================
+
+    borders::TextTableBorders = TextTableBorders()
+
+    # == Configuration for the Horizontal and Vertical Lines ===============================
+
+    horizontal_line_at_beginning::Bool = true
+    horizontal_lines_at_column_labels::Union{Symbol, Vector{Int}} = :none
+    horizontal_line_after_column_labels::Bool = true
+    horizontal_lines_at_data_rows::Union{Symbol, Vector{Int}} = :none
+    horizontal_line_before_row_group_label::Bool = true
+    horizontal_line_after_row_group_label::Bool = true
+    horizontal_line_after_data_rows::Bool = true
+    horizontal_line_after_summary_rows::Bool = true
+
+    vertical_line_at_beginning::Bool = true
+    vertical_line_after_row_number_column::Bool = true
+    vertical_line_after_row_label_column::Bool = true
+    vertical_lines_at_data_columns::Union{Symbol, Vector{Int}} = :all
+    vertical_line_after_data_columns::Bool = true
+    vertical_line_after_continuation_column::Bool = true
+
+    suppress_vertical_lines_at_column_labels::Bool = false
+
+    # == Other Configurations ==============================================================
+
+    ellipsis_line_skip::Int = 0
+end
+
+"""
+    struct TextTableStyle
+
+Define the style of the tables printed with the text back end.
+
+# Fields
+
+- `title::Crayon`: Crayon with the style for the title.
+- `subtitle::Crayon`: Crayon with the style for the subtitle.
+- `row_number_label::Crayon`: Crayon with the style for the row number label.
+- `row_number::Crayon`: Crayon with the style for the row numbers.
+- `stubhead_label::Crayon`:  Crayon with the style for the stubhead label.
+- `row_label::Crayon`: Crayon with the style for the row labels.
+- `row_group_label::Crayon`: Crayon with the style for the row group label.
+- `first_line_column_label::Crayon`: Crayon with the style for the first column label lines.
+- `column_label::Crayon`: Crayon with the style for the rest of the column labels.
+- `first_line_merged_column_label::Crayon`: Crayon with the style for the merged cells at
+    the first column label line.
+- `merged_column_label::Crayon`: Crayon with the style for the merged cells at the rest of
+    the column labels.
+- `summary_row_cell::Crayon`: Crayon with the style for the summary row cell.
+- `summary_row_label::Crayon`: Crayon with the style for the summary row label.
+- `footnote::Crayon`: Crayon with the style for the footnotes.
+- `source_note::Crayon`: Crayon with the style for the source notes.
+- `omitted_cell_summary::Crayon`: Crayon with the style for the omitted cell summary.
+- `table_border::Crayon`: Crayon with the style for the table border.
+"""
+@kwdef struct TextTableStyle
+    title::Crayon                          = _TEXT__BOLD
+    subtitle::Crayon                       = _TEXT__DEFAULT
+    row_number_label::Crayon               = _TEXT__BOLD
+    row_number::Crayon                     = _TEXT__DEFAULT
+    stubhead_label::Crayon                 = _TEXT__BOLD
+    row_label::Crayon                      = _TEXT__BOLD
+    row_group_label::Crayon                = _TEXT__BOLD
+    first_line_column_label::Crayon        = _TEXT__BOLD
+    column_label::Crayon                   = _TEXT__DARK_GRAY
+    first_line_merged_column_label::Crayon = _TEXT__BOLD_UNDERLINE
+    merged_column_label::Crayon            = _TEXT__DARK_GRAY_UNDERLINE
+    summary_row_cell::Crayon               = _TEXT__DEFAULT
+    summary_row_label::Crayon              = _TEXT__BOLD
+    footnote::Crayon                       = _TEXT__DEFAULT
+    source_note::Crayon                    = _TEXT__DARK_GRAY
+    omitted_cell_summary::Crayon           = _TEXT__CYAN
+    table_border::Crayon                   = _TEXT__DEFAULT
+end
+
+############################################################################################
+#                                     TextHighlighter                                      #
+############################################################################################
+
+"""
+    struct TextHighlighter
+
+Defines the default highlighter of a table when using the text backend.
+
+# Fields
+
+- `f::Function`: Function with the signature `f(data, i, j)` in which should return `true`
+    if the element `(i, j)` in `data` must be highlighter, or `false` otherwise.
+- `fd::Function`: Function with the signature `f(h, data, i, j)` in which `h` is the
+    highlighter. This function must return the `Crayon` to be applied to the cell that must
+    be highlighted.
+- `crayon::Crayon`: The `Crayon` to be applied to the highlighted cell if the default `fd`
+    is used.
+
+# Remarks
+
+This structure can be constructed using three helpers:
+
+```julia
+TextHighlighter(f::Function; kwargs...)
+```
+
+where it will construct a `Crayon` using the keywords in `kwargs` and apply it to the
+highlighted cell,
+
+```julia
+TextHighlighter(f::Function, crayon::Crayon)
+```
+
+where it will apply the `crayon` to the highlighted cell, and
+
+```julia
+TextHighlighter(f::Function, fd::Function)
+```
+
+where it will apply the `Crayon` returned by the function `fd` to the highlighted cell.
+"""
+struct TextHighlighter
+    f::Function
+    fd::Function
+
+    # == Private Fields ====================================================================
+
+    _decoration::Crayon
+
+    # == Constructors ======================================================================
+
+    function TextHighlighter(f::Function, fd::Function)
+        return new(f, fd, _TEXT__DEFAULT)
+    end
+
+    function TextHighlighter(f::Function, decoration::Crayon)
+        return new(
+            f,
+            _text__default_highlighter_fd,
+            decoration
+        )
+    end
+end
+
+_text__default_highlighter_fd(h::TextHighlighter, ::Any, ::Int, ::Int) = h._decoration

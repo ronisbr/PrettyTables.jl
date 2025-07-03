@@ -14,6 +14,20 @@ import Base: getindex, isassigned, length, size
 #                             Functions Related to ColumnTable                             #
 ############################################################################################
 
+function ColumnTable(data::Any)
+    # Access the table using the columns.
+    table = Tables.columns(data)
+
+    # Get the column names.
+    names = collect(Symbol, Tables.columnnames(table))
+
+    # Compute the table size and get the column types.
+    size_j = length(names)::Int
+    size_i = Tables.rowcount(table)::Int
+
+    return ColumnTable(data, table, names, (size_i, size_j))
+end
+
 function getindex(ctable::ColumnTable, inds...)
     length(inds) != 2 && error("A element of type `ColumnTable` must be accesses using 2 indices.")
 
@@ -49,15 +63,53 @@ function isassigned(ctable::ColumnTable, inds...)
     end
 end
 
+axes(ctable::ColumnTable) = (Base.OneTo(ctable.size[1]), Base.OneTo(ctable.size[2]))
+
+function axes(ctable::ColumnTable, dim::Int)
+    dim == 1 && return Base.OneTo(ctable.size[1])
+    return Base.OneTo(ctable.size[2])
+end
+
 length(ctable::ColumnTable) = ctable.size[1] * ctable.size[2]
 
 size(ctable::ColumnTable) = ctable.size
 
-_getdata(ctable::ColumnTable) = ctable.data
+_get_data(ctable::ColumnTable) = ctable.data
 
 ############################################################################################
 #                              Functions Related to RowTable                               #
 ############################################################################################
+
+function RowTable(data::Any)
+    # Access the table using the rows.
+    table = Tables.rows(data)
+
+    # Compute the number of rows.
+    size_i = length(table)::Int
+
+    # If we have at least one row, we can obtain the number of columns by fetching the row.
+    # Otherwise, we try to use the schema.
+    if size_i > 0
+        row₁ = first(table)
+
+        # Get the column names.
+        names = collect(Symbol, Tables.columnnames(row₁))
+    else
+        sch = Tables.schema(data)
+
+        if sch === nothing
+            # In this case, we do not have a row and we do not have a schema.  Thus, we can
+            # do nothing. Hence, we assume there is no row or column.
+            names = Symbol[]
+        else
+            names = [sch.names...]
+        end
+    end
+
+    size_j = length(names)::Int
+
+    return RowTable(data, table, names, (size_i, size_j))
+end
 
 function getindex(rtable::RowTable, inds...)
     length(inds) != 2 && error("A element of type `RowTable` must be accesses using 2 indices.")
@@ -106,11 +158,18 @@ function isassigned(rtable::RowTable, inds...)
     end
 end
 
+axes(rtable::RowTable) = (Base.OneTo(rtable.size[1]), Base.OneTo(rtable.size[2]))
+
+function axes(rtable::RowTable, dim::Int)
+    dim == 1 && return Base.OneTo(rtable.size[1])
+    return Base.OneTo(rtable.size[2])
+end
+
 length(rtable::RowTable) = rtable.size[1] * rtable.size[2]
 
 size(rtable::RowTable) = rtable.size
 
-_getdata(rtable::RowTable) = rtable.data
+_get_data(rtable::RowTable) = rtable.data
 
 ############################################################################################
 #                                     Other Overloads                                      #
@@ -120,4 +179,4 @@ _getdata(rtable::RowTable) = rtable.data
 # function. This is required because when printing something compliant with Tables.jl, we
 # modify its type to be `ColumnTable` or `RowTable`. In this case, functions like
 # highlighters must receive the original data, not the transformed one.
-_getdata(data) = data
+_get_data(data) = data

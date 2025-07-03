@@ -1,89 +1,47 @@
 ## Description #############################################################################
 #
-# Print function of the LaTeX backend.
+# LaTeX back end for PrettyTables.jl.
 #
 ############################################################################################
 
-# Low-level function to print the table using the LaTeX backend.
-function _print_table_with_latex_back_end(
-    pinfo::PrintInfo;
-    tf::LatexTableFormat = tf_latex_default,
-    body_hlines::Vector{Int} = Int[],
-    highlighters::Union{LatexHighlighter, Tuple} = (),
-    hlines::Union{Nothing, Symbol, AbstractVector} = nothing,
-    label::AbstractString = "",
-    longtable_footer::Union{Nothing, AbstractString} = nothing,
-    sortkeys::Bool = false,
-    table_type::Union{Nothing, Symbol} = nothing,
-    vlines::Union{Nothing, Symbol, AbstractVector} = nothing,
-    wrap_table::Union{Nothing, Bool} = false,
-    wrap_table_environment::Union{Nothing, String} = nothing
+function _latex__print(
+    pspec::PrintingSpec;
+    highlighters::Union{Nothing, Vector{LatexHighlighter}} = nothing,
+    style::LatexTableStyle = LatexTableStyle(),
+    table_format::LatexTableFormat = LatexTableFormat()
 )
-    # Unpack fields of `pinfo`.
-    ptable               = pinfo.ptable
-    cell_first_line_only = pinfo.cell_first_line_only
-    compact_printing     = pinfo.compact_printing
-    formatters           = pinfo.formatters
-    io                   = pinfo.io
-    limit_printing       = pinfo.limit_printing
-    renderer             = pinfo.renderer
-    title                = pinfo.title
-    title_alignment      = pinfo.title_alignment
+    context    = pspec.context
+    table_data = pspec.table_data
+    renderer   = Val(pspec.renderer)
+    tf         = table_format
 
-    hidden_rows_at_end = _get_num_of_hidden_rows(ptable) > 0
-    hidden_columns_at_end = _get_num_of_hidden_columns(ptable) > 0
-
-    # Unpack fields of `tf`.
-    top_line       = tf.top_line
-    header_line    = tf.header_line
-    mid_line       = tf.mid_line
-    bottom_line    = tf.bottom_line
-    left_vline     = tf.left_vline
-    mid_vline      = tf.mid_vline
-    right_vline    = tf.right_vline
-    header_envs    = tf.header_envs
-    subheader_envs = tf.subheader_envs
-
-    # Unpack fields of `tf` that depends on the user options.
-    if table_type === nothing
-        table_type = tf.table_type
-    end
-
-    if wrap_table === nothing
-        wrap_table = tf.wrap_table
-    end
-
-    if wrap_table_environment === nothing
-        wrap_table_environment = tf.wrap_table_environment
-    end
-
-    if hlines === nothing
-        hlines = tf.hlines
-    end
-    hlines = _process_hlines(ptable, hlines)
-
-    if vlines === nothing
-        vlines = tf.vlines
-    end
-    vlines = _process_vlines(ptable, vlines)
-
-    # Let's create a `IOBuffer` to write everything and then transfer to `io`.
+    ps     = PrintingTableState()
     buf_io = IOBuffer()
-    buf    = IOContext(buf_io)
+    buf    = IOContext(buf_io, context)
 
-    if !haskey(_latex_table_env, table_type)
-        error("Unknown table type $table_type.")
+    # Process the horizontal lines at data rows.
+    if tf.horizontal_lines_at_data_rows isa Symbol
+        horizontal_lines_at_data_rows = if tf.horizontal_lines_at_data_rows == :all
+            1:table_data.num_rows
+        else
+            1:0
+        end
+    else
+        horizontal_lines_at_data_rows = tf.horizontal_lines_at_data_rows::Vector{Int}
     end
 
-    table_env = _latex_table_env[table_type]
-
-    # Make sure that `highlighters` is always a Tuple.
-    if !(highlighters isa Tuple)
-        highlighters = (highlighters,)
+    # Process the vertical lines at data columns.
+    if tf.vertical_lines_at_data_columns isa Symbol
+        vertical_lines_at_data_columns =
+            if tf.vertical_lines_at_data_columns == :all
+                1:table_data.num_columns
+            else
+                1:0
+            end
+    else
+        vertical_lines_at_data_columns =
+            tf.vertical_lines_at_data_columns::Vector{Int}
     end
-
-    # Get the number of lines and columns in the table.
-    num_rows, num_columns = _size(ptable)
 
     # == Variables to Store Information About Indentation ==================================
 
@@ -92,286 +50,361 @@ function _print_table_with_latex_back_end(
 
     # == Print LaTeX Header ================================================================
 
-    if table_type != :longtable && wrap_table == true
-        _aprintln(buf, "\\begin{" * wrap_table_environment * "}", il, ns)
-        il += 1
-
-        # If available, add the title to the table.
-        length(title) > 0 && _aprintln(buf, "\\caption{$title}", il, ns)
-    end
-
-    # Obtain the table description with the alignments and vertical lines.
-    table_desc = _latex_table_description(
-        ptable,
-        vlines,
-        left_vline,
-        mid_vline,
-        right_vline,
-        hidden_columns_at_end
+    # Create the table header description for the current table.
+    desc = _latex__table_header_description(
+        table_data,
+        tf,
+        vertical_lines_at_data_columns
     )
 
-    _aprintln(buf,"\\begin{$table_env}$table_desc", il, ns)
+    _aprintln(buf, "\\begin{tabular}{$desc}", il, ns)
     il += 1
 
-    if table_type == :longtable
-        # If available, add the title to the table.
-        length(title) > 0 && _aprintln(buf, "\\caption{$title}\\\\", il, ns)
-    end
+    # == Table =============================================================================
 
-    # We use a separate buffer because if `:longtable` is used, then we need to repeat the
-    # header. Otherwise the caption is repeated in every page and it is also added to the
-    # TOC (see issue #95).
+    # Check if the user wants the omitted cell summary.
+    ocs = _omitted_cell_summary(table_data, pspec)
+    ocs_printed = false
 
-    buf_io_h = IOBuffer()
-    buf_h    = IOContext(buf_io_h)
+    action = :initialize
 
-    buf_io_b = IOBuffer()
-    buf_b    = IOContext(buf_io_b)
+    first_table_line = true
+    first_element_in_row = true
 
-    # If there is no column and no row to be printed, then just exit.
-    if _data_size(ptable) == (0, 0)
-        @goto print_to_output
-    end
+    # This variable stores where a merged column label begins and ends. Hence, we are able
+    # to draw a line after them if the user wants.
+    merged_column_labels = Tuple{Int, Int}[]
 
-    if _check_hline(ptable, hlines, body_hlines, 0)
-        _aprintln(buf_h, top_line, il, ns)
-    end
+    while action != :end_printing
+        action, rs, ps = _next(ps, table_data)
 
-    # == Print the Table ===================================================================
+        action == :end_printing && break
 
-    # If the line is part of the header, we need to write to `buf_h`. Otherwise, we must
-    # switch to `buf_b`.
-    buf_aux = buf_h
+        # Obtain the next action since some actions depends on it.
+        next_action, next_rs, _ = _next(ps, table_data)
 
-    @inbounds for i in 1:num_rows
-        # Get the identification of the current row.
-        row_id = _get_row_id(ptable, i)
+        if action == :new_row
+            empty!(merged_column_labels)
+            first_element_in_row = true
 
-        if _is_header_row(row_id)
-            buf_aux = buf_h
-        else
-            buf_aux = buf_b
-        end
+            # If we are in the very first row after the title section, we need to check if
+            # the user wants a vertical line before the table.
+            if (rs != :table_header) && first_table_line && tf.horizontal_line_at_beginning
+                _aprintln(buf, tf.borders.top_line, il, ns)
+                first_table_line = false
+            end
 
-        # Apply the indentation.
-        _aprint(buf_aux, il, ns)
+            # Here, we just need to apply the indentation.
+            print(buf, " "^(ns * il))
 
-        @inbounds for j in 1:num_columns
-            # Get the identification of the current column.
-            column_id = _get_column_id(ptable, j)
+        elseif action == :end_row
+            println(buf, " \\\\")
 
-            # Get the column alignment.
-            column_alignment = _get_column_alignment(ptable, j)
+            # == Handle the Horizontal Lines ===============================================
 
-            # Get the alignment for the current cell.
-            cell_alignment = _get_cell_alignment(ptable, i, j)
+            hline_str = ""
 
-            # Get the cell data.
-            cell_data = _get_element(ptable, i, j)
+            # Print the horizontal line after the column labels.
+            if (rs == :table_header) && (next_rs != :table_header) && tf.horizontal_line_at_beginning
+                hline_str *= tf.borders.header_line
+                first_table_line = false
 
-            # If we do not annotate the type here, then we get type instability
-            # due to `_latex_parse_cell`.
-            cell_str::String = ""
+            elseif (rs == :column_labels)
 
-            if _is_header_row(row_id)
-                if column_id == :__ORIGINAL_DATA__
-                    cell_str = _latex_parse_cell(
-                        io,
-                        cell_data;
-                        compact_printing = compact_printing,
-                        limit_printing = limit_printing,
-                        renderer = Val(:print)
-                    )
+                if ps.row_section == :column_labels
+
+                    if tf.horizontal_line_at_merged_column_labels
+                        # The specification in `merged_column_labels` refers to the data
+                        # columns. Hence, we need to add the offset regarding the previous
+                        # columns if they exist.
+                        Δc = table_data.show_row_number_column + _has_row_labels(table_data)
+                        for m in merged_column_labels
+                            c₀ = Δc + m[1]
+                            c₁ = Δc + m[2]
+                            hline_str *= "$(tf.borders.merged_header_cell_line){$c₀-$c₁}"
+                        end
+                    end
                 else
-                    # For the additional cells, we just need to convert to
-                    # string.
-                    cell_str = string(cell_data)
+                    if tf.horizontal_line_after_column_labels
+                        hline_str *= tf.borders.header_line
+                    end
                 end
 
-                # Get the LaTeX environments for this cell.
-                envs = row_id == :__HEADER__ ? header_envs : subheader_envs
+            # Check if the next line is a row group label and the user request a line before
+            # it.
+            elseif (next_rs == :row_group_label) && tf.horizontal_line_before_row_group_label
+                hline_str *= tf.borders.middle_line
 
-                # Apply the environments to the STR.
-                cell_str = _latex_envs(cell_str, envs)
+            # Check if we must print an horizontal line after the current data row.
+            elseif (rs == :data) && (ps.i ∈ horizontal_lines_at_data_rows)
+                hline_str *= tf.borders.middle_line
 
-                # Check if the cell alignment must be changed with respect to
-                # the column alignment.
-                if cell_alignment != column_alignment
-                    cell_str = _latex_cell_alignment(
-                        ptable,
-                        cell_str,
-                        cell_alignment,
-                        j,
-                        vlines,
-                        left_vline,
-                        mid_vline,
-                        right_vline
-                    )
-                end
+            elseif (
+                    (rs ∈ (:data, :continuation_row)) &&
+                    (next_rs ∈ (:summary_row, :table_footer, :end_printing)) &&
+                    tf.horizontal_line_after_data_rows
+                )
+                hline_str *= tf.borders.middle_line
 
-                print(buf_h, cell_str)
+            elseif (rs == :row_group_label) && tf.horizontal_line_after_row_group_label
+                hline_str *= tf.borders.header_line
 
-                # Check if we need to draw the continuation character.
-                if j != num_columns
-                    print(buf_h, " & ")
-                elseif hidden_columns_at_end
-                    print(buf_h, " & \$\\cdots\$")
-                end
+            # Check if the must print the horizontal line at the end of the table.
+            elseif (rs == :summary_row) && (next_rs != :summary_row) &&
+                tf.horizontal_line_after_summary_rows
+
+                hline_str *= tf.borders.header_line
+            end
+
+            # If the next section if the end of the table and we need to draw a horizontal
+            # line, we should change it to the bottom line.
+            if next_rs ∈ (:table_footer, :end_printing) && !isempty(hline_str)
+                hline_str = tf.borders.bottom_line
+            end
+
+            !isempty(hline_str) && _aprintln(buf, hline_str, il, ns)
+
+            # == Omitted Cell Summary ======================================================
+
+            if (
+                !isempty(ocs) &&
+                next_rs ∈ (:table_footer, :end_printing) &&
+                !ocs_printed
+            )
+                cs = _number_of_printed_columns(table_data)
+                ocs_styled = _latex__add_environments(ocs, style.omitted_cell_summary)
+                _aprintln(buf, "\\multicolumn{$cs}{r@{}}{$ocs_styled}", il, ns)
+            end
+
+        elseif action == :row_group_label
+            cell          = _current_cell(action, ps, table_data)
+            alignment     = _current_cell_alignment(action, ps, table_data)
+            rendered_cell = _latex__render_cell(cell, buf, renderer)
+            cs            = _number_of_printed_columns(table_data)
+
+            # Check for vertical lines.
+            vline_before = tf.vertical_line_at_beginning
+            vline_after  = if _is_horizontally_cropped(table_data)
+                tf.vertical_line_after_continuation_column
             else
+                tf.vertical_line_after_data_columns
+            end
 
-                ir = _get_data_row_index(ptable, i)
-                jr = _get_data_column_index(ptable, j)
+            border₀ = vline_before ? "|" : ""
+            border₁ = vline_after ? "|" : ""
 
-                if column_id == :__ORIGINAL_DATA__
-                    # Notice that `(ir, jr)` are the indices of the printed data. It means
-                    # that it refers to the ir-th data row and jr-th data column that will
-                    # be printed. We need to convert those indices to the actual indices in
-                    # the input table.
-                    tir, tjr = _convert_axes(ptable.data, ir, jr)
+            print(buf, "\\multicolumn{$cs}{$border₀$alignment$border₁}{$rendered_cell}")
 
-                    # Apply the formatters.
-                    for f in formatters.x
-                        cell_data = f(cell_data, tir, tjr)
+        else
+            # Check for footnotes.
+            footnotes    = _current_cell_footnotes(table_data, action, ps.i, ps.j)
+            footnote_str = ""
+
+            if !isnothing(footnotes) && !isempty(footnotes)
+                footnote_str = "\$^{"
+                for i in eachindex(footnotes)
+                    f = footnotes[i]
+                    if i != last(eachindex(footnotes))
+                        footnote_str *= "$f,"
+                    else
+                        footnote_str *= "$f}\$"
+                    end
+                end
+            end
+
+            rendered_cell = nothing
+
+            if action == :diagonal_continuation_cell
+                rendered_cell = "\$\\ddots\$"
+
+            elseif action == :horizontal_continuation_cell
+                rendered_cell = "\$\\cdots\$"
+
+            elseif action ∈ _VERTICAL_CONTINUATION_CELL_ACTIONS
+                rendered_cell = "\$\\vdots\$"
+
+            else
+                cell = _current_cell(action, ps, table_data)
+
+                cell === _IGNORE_CELL && continue
+
+                # First, we handle merged cells.
+                if (action ∈ (:title, :subtitle))
+                    alignment = _latex__alignment_to_str(
+                        action == :title ?
+                            table_data.title_alignment :
+                            table_data.subtitle_alignment
+                    )
+
+                    cs = _number_of_printed_columns(table_data)
+
+                    rendered_cell = _latex__render_cell(cell, buf, renderer)
+
+                    rendered_cell = _latex__add_environments(
+                        rendered_cell,
+                        action == :title ? style.title : style.subtitle
+                    )
+
+                    rendered_cell = rendered_cell * footnote_str
+                    rendered_cell = "\\multicolumn{$cs}{@{}$alignment@{}}{$rendered_cell}"
+
+                elseif (action == :column_label) && (cell isa MergeCells)
+                    # Check if we have enough data columns to merge the cell.
+                    num_data_columns = _number_of_printed_data_columns(table_data)
+
+                    cs = if (ps.j + cell.column_span - 1) > num_data_columns
+                        num_data_columns - ps.j + 1
+                    else
+                        cell.column_span
                     end
 
-                    cell_str = _latex_parse_cell(
-                        io,
-                        cell_data;
-                        cell_first_line_only = cell_first_line_only,
-                        compact_printing = compact_printing,
-                        limit_printing = limit_printing,
-                        renderer = renderer
-                    )
+                    push!(merged_column_labels, (ps.j, ps.j + cs - 1))
 
-                    # Apply highlighters.
-                    for h in highlighters
-                        if h.f(_getdata(ptable), tir, tjr)
-                            cell_str = h.fd(_getdata(ptable), tir, tjr, cell_str)::String
-                            break
+                    alignment = _latex__alignment_to_str(cell.alignment)
+
+                    # We must check if we have a vertical line after the cell merge.
+                    vline = if (
+                        (ps.j + cs - 1 ∈ vertical_lines_at_data_columns) ||
+                        (
+                            (ps.j + cs - 1 == num_data_columns) &&
+                            tf.vertical_line_after_data_columns
+                        )
+                    )
+                        true
+                    else
+                        false
+                    end
+
+                    if vline
+                        alignment *= "|"
+                    end
+
+                    rendered_cell = _latex__render_cell(cell.data, buf, renderer)
+
+                    # Apply the style to the text.
+                    envs = ps.i == 1 ? style.first_line_column_label : style.column_label
+                    rendered_cell = _latex__add_environments(rendered_cell, envs)
+                    rendered_cell = rendered_cell * footnote_str
+
+                    # Merge the cells.
+                    rendered_cell = "\\multicolumn{$cs}{@{}$alignment@{}}{$rendered_cell}"
+
+                # Check if we must merge the cell to render the footnotes or source
+                # notes.
+                elseif (action == :footnote)
+                    alignment     = _latex__alignment_to_str(table_data.footnote_alignment)
+                    cs            = _number_of_printed_columns(table_data)
+                    rendered_cell = "\$^{$(ps.i)}\$" * _latex__render_cell(cell, buf, renderer)
+                    rendered_cell = _latex__add_environments(rendered_cell, style.footnote)
+                    rendered_cell = rendered_cell * footnote_str
+                    rendered_cell = "\\multicolumn{$cs}{@{}$alignment@{}}{$rendered_cell}"
+
+                elseif (action == :source_notes)
+                    alignment     = _latex__alignment_to_str(table_data.footnote_alignment)
+                    cs            = _number_of_printed_columns(table_data)
+                    rendered_cell = _latex__render_cell(cell, buf, renderer)
+                    rendered_cell = _latex__add_environments(rendered_cell, style.source_note)
+                    rendered_cell = rendered_cell * footnote_str
+                    rendered_cell = "\\multicolumn{$cs}{@{}$alignment@{}}{$rendered_cell}"
+
+                else
+                    rendered_cell = _latex__render_cell(cell, buf, renderer)
+                    alignment = _current_cell_alignment(action, ps, table_data)
+
+                    # Apply the style to the cell.
+                    envs = nothing
+
+                    # Get the environment of the cell, if any.
+                    if action == :row_number_label
+                        envs = style.row_number_label
+
+                    elseif action == :row_number
+                        envs = style.row_number
+
+                    elseif action == :summary_row_number
+                        envs = style.row_number
+
+                    elseif action == :stubhead_label
+                        envs = style.stubhead_label
+
+                    elseif action == :row_group_label
+                        envs = style.row_group_label
+
+                    elseif action == :row_label
+                        envs = style.row_label
+
+                    elseif action == :summary_row_label
+                        envs = style.summary_row_label
+
+                    elseif action == :column_label
+                        envs = ps.i == 1 ? style.first_line_column_label : style.column_label
+
+                    elseif action == :summary_row_cell
+                        envs = style.summary_row_cell
+
+                    elseif action == :footnote
+                        envs = style.footnote
+
+                    elseif action == :source_notes
+                        envs = style.source_note
+
+                    else
+                        # Here we have a data cell. Hence, let's check if we have a
+                        # highlighter to apply.
+                       if !isnothing(highlighters)
+                            for h in highlighters
+                                if h.f(table_data.data, ps.i, ps.j)
+                                    envs = h.fd(h, table_data.data, ps.i, ps.j)
+                                end
+                            end
                         end
                     end
 
-                    # Check if the cell alignment must be changed with respect to the column
-                    # alignment.
-                    if cell_alignment != column_alignment
-                        cell_str = _latex_cell_alignment(
-                            ptable,
-                            cell_str,
-                            cell_alignment,
-                            j,
-                            vlines,
-                            left_vline,
-                            mid_vline,
-                            right_vline
-                        )
+                    rendered_cell = _latex__add_environments(rendered_cell, envs)
+                    rendered_cell = rendered_cell * footnote_str
+
+                    # Check if we need to override the alignment.
+                    if (
+                        action == :data &&
+                        alignment != _data_column_alignment(table_data, ps.j)
+                    )
+                        vline_before = (ps.j - 1) ∈ vertical_lines_at_data_columns
+                        vline_after  = ps.j ∈ vertical_lines_at_data_columns
+
+                        border₀ = vline_before ? "|" : ""
+                        border₁ = vline_after ? "|" : ""
+
+                        rendered_cell = "\\multicolumn{1}{$border₀$alignment$border₁}{$rendered_cell}"
                     end
-                else
-                    # For the additional cells, we just need to convert to string.
-                    cell_str = string(cell_data)
-                end
-
-                print(buf_aux, cell_str)
-
-                # Check if we need to draw the continuation character.
-                if j != num_columns
-                    print(buf_aux, " & ")
-                elseif hidden_columns_at_end
-                    print(buf_aux, " & \$\\cdots\$")
-                end
-            end
-        end
-
-        print(buf_aux, " \\\\")
-
-        if (i == num_rows) && hidden_rows_at_end
-            println(buf_aux)
-            _aprint(buf_aux, il, ns)
-
-            for j in 1:num_columns
-                print(buf_aux, "\$\\vdots\$")
-
-                # Check if we need to draw the continuation character.
-                if j != num_columns
-                    print(buf_aux, " & ")
-                elseif hidden_columns_at_end
-                    print(buf_aux, " & \$\\ddots\$")
                 end
             end
 
-            print(buf_aux, " \\\\")
-        end
+            # If `rendered_cell` is `nothing`, we did not processed the cell. Hence, we
+            # should just skip.
+            isnothing(rendered_cell) && continue
 
-        # After the last line, we need to check if we are printing all the rows or not. In
-        # the latter, we need to pass the last row index to check if the last horizontal
-        # line must be drawn.
-        i_hline = i == num_rows ? num_rows : i
-
-        if _check_hline(ptable, hlines, body_hlines, i_hline)
-            if i_hline == num_rows
-                print(buf_aux, bottom_line)
-            elseif _is_header_row(row_id)
-                print(buf_aux, header_line)
+            if first_element_in_row
+                first_element_in_row = false
             else
-                print(buf_aux, mid_line)
+                print(buf, " & ")
             end
+
+            print(buf, rendered_cell)
         end
-
-        println(buf_aux)
-    end
-
-    @label print_to_output
-
-    header_dump = String(take!(buf_io_h))
-    body_dump   = String(take!(buf_io_b))
-
-    print(buf, header_dump)
-
-    # If we are using `longtable`, then we must mark the end of header and also
-    # create the footer before printing the body.
-    if table_type == :longtable
-        _aprintln(buf, "\\endfirsthead", il, ns)
-        print(buf, header_dump)
-        _aprintln(buf, "\\endhead", il, ns)
-        _aprintln(buf, bottom_line, il, ns)
-
-        # Check if the user wants a text on the footer.
-        if longtable_footer !== nothing
-            lvline = _check_vline(ptable, vlines, 0) ? left_vline : ""
-            rvline = _check_vline(ptable, vlines, num_columns) ? right_vline : ""
-
-            env = "multicolumn{" * string(num_columns) * "}" * "{r}"
-
-            _aprintln(buf, _latex_envs(longtable_footer, env) * "\\\\", il, ns)
-            _aprintln(buf, bottom_line, il, ns)
-        end
-
-        _aprintln(buf, "\\endfoot", il, ns)
-        _aprintln(buf, "\\endlastfoot", il, ns)
-    end
-
-    print(buf, body_dump)
-
-    # == Print LaTeX Footer ================================================================
-
-    # If available, add the label to the table if we are using `longtable`.
-    if table_type == :longtable && !isempty(label)
-        _aprintln(buf, "\\label{" * label * "}", il)
     end
 
     il -= 1
-    _aprintln(buf, "\\end{$table_env}", il, ns)
+    _aprintln(buf, "\\end{tabular}", il, ns)
 
-    if table_type != :longtable && wrap_table == true
-        # If available, add the label to the table.
-        !isempty(label) && _aprintln(buf, "\\label{" * label * "}", il)
+    # == Print the Buffer Into the IO ======================================================
 
-        il -= 1
-        _aprintln(buf, "\\end{" * wrap_table_environment * "}", il, ns)
+    output_str = String(take!(buf_io))
+
+    if !pspec.new_line_at_end
+        output_str = chomp(output_str)
     end
 
-    # == Print the Buffer Into The IO ======================================================
-
-    print(io, String(take!(buf_io)))
+    print(context, output_str)
 
     return nothing
 end

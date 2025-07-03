@@ -1,122 +1,167 @@
 ## Description #############################################################################
 #
-# Private functions and macros.
+# Private functions for the LaTeX back end.
 #
 ############################################################################################
 
-# Dictionary that translates table type to environment.
-const _latex_table_env = Dict(
-    :array     => "array",
-    :longtable => "longtable",
-    :tabular   => "tabular"
-)
+# == Strings ===============================================================================
 
-# Convert the alignment symbol into a LaTeX alignment string.
-function _latex_alignment(s::Symbol)
-    if (s == :l) || (s == :L)
-        return "l"
-    elseif (s == :c) || (s == :C)
-        return "c"
-    elseif (s == :r) || (s == :R)
-        return "r"
+"""
+    _latex__alignment_to_str(a::Symbol) -> String
+
+Convert the alignment `a` to the corresponding string for LaTeX.
+"""
+function _latex__alignment_to_str(a::Symbol)
+    return if a ∈ (:l, :L)
+        "l"
+    elseif a ∈ (:c, :C)
+        "c"
     else
-        error("Invalid LaTeX alignment symbol: $s.")
+        "r"
     end
 end
 
-# Apply an alignment to a LaTeX table cell.
-function _latex_cell_alignment(
-    ptable::ProcessedTable,
-    str::String,
-    alignment::Symbol,
-    j::Int,
-    vlines::Union{Nothing, Symbol, Vector{Int}},
-    left_vline::String,
-    mid_vline::String,
-    right_vline::String
-)
-    a = _latex_alignment(alignment)
+"""
+    _latex__add_environments(str::String, envs::Union{Nothing, Vector{String}}) -> String
 
-    # We only need to add left vertical line if it is the first column.
-    lvline = ((j == 0) && (_check_vline(ptable, vlines, 0))) ?
-        left_vline :
-        ""
+Apply the latex environments in `envs` to the string `str`. If `envs` is `nothing`, it
+returns `str` unchanged.
+"""
+function _latex__add_environments(str::String, envs::Vector{String})
+    # Do not apply any environment if the string is empty.
+    isempty(str) && return str
 
-    # For the right vertical line, we must check if it is a mid line or right line.
-    if _check_vline(ptable, vlines, j)
-        num_printed_columns = _size(ptable)[2]
-        rvline = (j == num_printed_columns) ? right_vline : mid_vline
-    else
-        rvline = ""
+    for env in envs
+        str = "\\$env{$str}"
     end
-
-    # Wrap the data into the multicolumn environment.
-    return _latex_envs(str, "multicolumn{1}{$(lvline)$(a)$(rvline)}")
-end
-
-# Get the LaTeX table description (alignment and vertical columns).
-function _latex_table_description(
-    ptable::ProcessedTable,
-    vlines::Union{Symbol, AbstractVector},
-    left_vline::AbstractString,
-    mid_vline::AbstractString,
-    right_vline::AbstractString,
-    hidden_columns_at_end::Bool
-)
-    str = "{"
-    num_columns = _size(ptable)[2]
-
-    if _check_vline(ptable, vlines, 0)
-        str *= left_vline
-    end
-
-    for j in 1:num_columns
-        alignment = _get_column_alignment(ptable, j) |> _latex_alignment
-        str *= alignment
-
-        if _check_vline(ptable, vlines, j)
-            if j != num_columns
-                str *= mid_vline
-            else
-                str *= right_vline
-            end
-        end
-    end
-
-    # If we have hidden columns at the end, we need an additional column to show the
-    # continuation characters.
-    if hidden_columns_at_end
-        str *= "c"
-
-        # Check if we need to draw a line at the end of the table.
-        if _check_vline(ptable, vlines, num_columns)
-            str *= right_vline
-        end
-    end
-
-    str *= "}"
 
     return str
 end
 
-# Wrap the `text` into LaTeX environment(s).
-function _latex_envs(text::AbstractString, envs::Vector{String})
-    return _latex_envs(text, envs, length(envs))
+_latex__add_environments(s::String, ::Nothing) = s
+
+"""
+    _latex__escape_str(@nospecialize(io::IO), s::AbstractString, replace_newline::Bool = false, escape_latex_chars::Bool = true) -> Nothing
+    _latex__escape_str(s::AbstractString, replace_newline::Bool = false, escape_latex_chars::Bool = true) -> String
+
+Print the string `s` in `io` escaping the characters for the latex back end. If `io` is
+omitted, the escaped string is returned.
+
+If `replace_newline` is `true`, `\n` is replaced with `<br>`. Otherwise, it is escaped,
+leading to `\\n`.
+
+If `escape_latex_chars` is `true`, `&`, `<`, `>`, `"`, and `'`  will be replaced by latex
+sequences.
+"""
+function _latex__escape_str(
+    io::IO,
+    s::AbstractString,
+    esc::String = ""
+)
+    a = Iterators.Stateful(s)
+    for c in a
+        if c in esc
+            print(io, '\\', c)
+        elseif isascii(c)
+            c == '\0'          ? print(io, "\\textbackslash{}0") :
+            c == '\e'          ? print(io, "\\textbackslash{}e") :
+            c == '\\'          ? print(io, "\\textbackslash{}") :
+            '\a' <= c <= '\r'  ? print(io, "\\textbackslash{}", "abtnvfr"[Int(c)-6]) :
+            c == '%'           ? print(io, "\\%") :
+            c == '#'           ? print(io, "\\#") :
+            c == '\$'          ? print(io, "\\\$") :
+            c == '&'           ? print(io, "\\&") :
+            c == '_'           ? print(io, "\\_") :
+            c == '^'           ? print(io, "\\^") :
+            c == '{'           ? print(io, "\\{") :
+            c == '}'           ? print(io, "\\}") :
+            c == '~'           ? print(io, "\\textasciitilde{}") :
+            isprint(c)         ? print(io, c) :
+                                 print(io, "\\textbackslash{}x", string(UInt32(c), base = 16, pad = 2))
+        elseif !Base.isoverlong(c) && !Base.ismalformed(c)
+            isprint(c)         ? print(io, c) :
+            c <= '\x7f'        ? print(io, "\\textbackslash{}x", string(UInt32(c), base = 16, pad = 2)) :
+            c <= '\uffff'      ? print(io, "\\textbackslash{}u", string(UInt32(c), base = 16, pad = Base.need_full_hex(peek(a)) ? 4 : 2)) :
+                                 print(io, "\\textbackslash{}U", string(UInt32(c), base = 16, pad = Base.need_full_hex(peek(a)) ? 8 : 4))
+        else # malformed or overlong
+            u = bswap(reinterpret(UInt32, c))
+            while true
+                print(io, "\\textbackslash{}x", string(u % UInt8, base = 16, pad = 2))
+                (u >>= 8) == 0 && break
+            end
+        end
+    end
 end
 
-function _latex_envs(text::AbstractString, env::String)
-    if !isempty(text)
-        return "\\" * string(env) * "{" * text * "}"
+function _latex__escape_str(s::AbstractString, esc::String = "")
+    return sprint(_latex__escape_str, s, esc; sizehint = lastindex(s))
+end
+
+# == Table =================================================================================
+
+"""
+    _latex__table_header_description(td::TableData, tf::LatexTableFormat, vertical_lines_at_data_columns::AbstractVector{Int}) -> String
+
+Create the LaTeX table header description with the column alignments and vertical lines
+considering the table data `td`, table format `tf`, and the processed information about
+vertical lines at data columns `vertical_lines_at_data_columns`.
+"""
+function _latex__table_header_description(
+    td::TableData,
+    tf::LatexTableFormat,
+    vertical_lines_at_data_columns::AbstractVector{Int}
+)
+    num_columns = td.num_columns
+
+    desc = IOBuffer(sizehint = 2num_columns + 3)
+
+    # == Table Beginning ===================================================================
+
+    tf.vertical_line_at_beginning && print(desc, '|')
+
+    # == Row Number Column =================================================================
+
+    if td.show_row_number_column
+        print(desc, _row_number_column_alignment(td) |> _latex__alignment_to_str)
+
+        if tf.vertical_line_after_row_number_column
+            print(desc, '|')
+        end
+    end
+
+    # == Row Labels ========================================================================
+
+    if _has_row_labels(td)
+        print(desc, _row_label_column_alignment(td) |> _latex__alignment_to_str)
+        tf.vertical_line_after_row_label_column && print(desc, '|')
+    end
+
+    # == Data Columns ======================================================================
+
+    nc = if td.maximum_number_of_columns >= 0
+        data_columns = min(td.maximum_number_of_columns, num_columns)
     else
-        return ""
-    end
-end
-
-function _latex_envs(text::AbstractString, envs::Vector{String}, i::Int)
-    @inbounds if i > 0
-        str = _latex_envs(text, envs[i])
-        return _latex_envs(str, envs, i -= 1)
+        data_columns = num_columns
     end
 
-    return text
+    for i in 1:nc
+        print(desc, _data_column_alignment(td, i) |> _latex__alignment_to_str)
+
+        vline = i in vertical_lines_at_data_columns
+
+        if (i == nc) && tf.vertical_line_after_data_columns
+            vline = true
+        end
+
+        vline &&  print(desc, '|')
+    end
+
+    # == Continuation Column ===============================================================
+
+    if nc < num_columns
+        print(desc, 'c')
+        tf.vertical_line_after_continuation_column && print(desc, '|')
+    end
+
+    return String(take!(desc))
 end

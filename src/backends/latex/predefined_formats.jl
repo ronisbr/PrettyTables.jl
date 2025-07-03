@@ -1,45 +1,33 @@
 ## Description #############################################################################
 #
-# Pre-defined formats for LaTeX tables.
+# LaTeX Back End: Pre-defined table formats.
 #
 ############################################################################################
 
-export tf_latex_default, tf_latex_double, tf_latex_modern, tf_latex_booktabs
+############################################################################################
+#                                      Table Borders                                       #
+############################################################################################
 
-const tf_latex_default = LatexTableFormat()
+export latex_table_borders__booktabs
 
-const tf_latex_double = LatexTableFormat(
-    top_line       = "\\hline\\hline",
-    header_line    = "\\hline",
-    mid_line       = "\\hline",
-    bottom_line    = "\\hline\\hline",
-    left_vline     = "|",
-    mid_vline      = "|",
-    right_vline    = "|",
-    header_envs    = ["textbf"],
-    subheader_envs = ["texttt"]
-   )
+const latex_table_borders__booktabs = LatexTableBorders(
+    top_line                = "\\toprule",
+    header_line             = "\\midrule",
+    merged_header_cell_line = "\\cmidrule",
+    middle_line             = "\\midrule",
+    bottom_line             = "\\bottomrule"
+)
 
-const tf_latex_modern = LatexTableFormat(
-    top_line       = "\\noalign{\\hrule height 2pt}",
-    header_line    = "\\noalign{\\hrule height 2pt}",
-    mid_line       = "\\noalign{\\hrule height 1pt}",
-    bottom_line    = "\\noalign{\\hrule height 2pt}",
-    left_vline     = "!{\\vrule width 2pt}",
-    mid_vline      = "!{\\vrule width 1pt}",
-    right_vline    = "!{\\vrule width 2pt}",
-    header_envs    = ["textbf"],
-    subheader_envs = ["texttt"]
-   )
+############################################################################################
+#                                      Table Formats                                       #
+############################################################################################
 
-const tf_latex_booktabs = LatexTableFormat(
-    top_line       = "\\toprule",
-    header_line    = "\\midrule",
-    mid_line       = "\\midrule",
-    bottom_line    = "\\bottomrule",
-    left_vline     = "",
-    mid_vline      = "",
-    right_vline    = "",
-    header_envs    = ["textbf"],
-    subheader_envs = ["texttt"],
-   )
+export latex_table_format__booktabs
+
+const latex_table_format__booktabs = LatexTableFormat(
+    ;
+    borders = latex_table_borders__booktabs,
+    @latex__all_horizontal_lines,
+    @latex__no_vertical_lines,
+    horizontal_lines_at_data_rows = :none,
+)

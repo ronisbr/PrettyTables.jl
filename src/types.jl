@@ -1,17 +1,162 @@
 ## Description #############################################################################
 #
-# Types and structures.
+# Define types for PrettyTables.jl
 #
 ############################################################################################
 
-export PrettyTablesConf
+export EmptyCells, MultiColumn, MergeCells, PrettyTable
+
+# Tuple that defined a footnote.
+const FootnoteTuple = Tuple{Symbol, Int, Int}
 
 """
-    T_BACKENDS
+    struct EmptyCells
 
-Types that define the supported back ends.
+Specification for adding a set of empty cells at the column label rows.
+
+# Fields
+
+- `number_of_cells::Int`: Number of cells to add (must be greater than 0).
 """
-const T_BACKENDS = Union{Val{:auto}, Val{:text}, Val{:html}, Val{:latex}, Val{:markdown}}
+struct EmptyCells
+    number_of_cells::Int
+
+    function EmptyCells(number_of_cells::Int)
+        number_of_cells < 1 && throw(ArgumentError(
+            "The `number_of_cells` of `EmptyCells` must be greater than 0."
+        ))
+
+        return new(number_of_cells)
+    end
+end
+
+"""
+    struct MultiColumn
+
+Specification for merging columns at the column label rows.
+
+# Fields
+
+- `column_span::Int`: Number of columns to merge (must be greater than 1).
+- `data::Any`: Merged cell data.
+- `alignment::Symbol`: Merge cell alignment.
+"""
+struct MultiColumn
+    column_span::Int
+    data::Any
+    alignment::Symbol
+
+    function MultiColumn(column_span::Int, data::Any)
+        column_span < 2 && throw(ArgumentError(
+            "The `column_span` of `MultiColumn` must be greater than 1."
+        ))
+        return new(column_span, data, :c)
+    end
+
+    function MultiColumn(column_span::Int, data::Any, alignment::Symbol)
+        column_span < 2 && throw(ArgumentError(
+            "The `column_span` of `MultiColumn` must be greater than 1."
+        ))
+        return new(column_span, data, alignment)
+    end
+end
+
+@kwdef struct MergeCells
+    i::Int
+    j::Int
+    column_span::Int
+    data::Any
+    alignment::Symbol = :c
+
+    function MergeCells(i::Int, j::Int, column_span::Int, data::Any)
+        return new(i, j, column_span, data, :c)
+    end
+
+    function MergeCells(i::Int, j::Int, column_span::Int, data::Any, alignment::Symbol)
+        return new(i, j, column_span, data, alignment)
+    end
+end
+
+struct __IGNORE_CELL__ end
+const _IGNORE_CELL = __IGNORE_CELL__()
+
+struct UndefinedCell end
+const _UNDEFINED_CELL = UndefinedCell()
+
+@kwdef mutable struct TableData
+    data::Any
+
+    # ==  Table Header =====================================================================
+
+    title::String = ""
+    subtitle::String = ""
+
+    # == Labels ============================================================================
+
+    # -- Columns ---------------------------------------------------------------------------
+
+    stubhead_label::String = ""
+    show_row_number_column::Bool = false
+    row_number_column_label::String = ""
+    column_labels::Vector{Vector{Any}}
+    show_column_labels::Bool = true
+
+    # -- Rows ------------------------------------------------------------------------------
+
+    row_labels::Union{Nothing, AbstractVector} = nothing
+    row_group_labels::Union{Nothing, Vector{Pair{Int, String}}} = nothing
+    summary_rows::Union{Nothing, Vector{Any}} = nothing
+    summary_row_labels::Union{Nothing, Vector{String}} = nothing
+
+    # -- Cell Merging ----------------------------------------------------------------------
+
+    merge_column_label_cells::Union{Nothing, Vector{MergeCells}} = nothing
+
+    # == Table Footer ======================================================================
+
+    footnotes::Union{Nothing, Vector{Pair{FootnoteTuple, String}}} = nothing
+    source_notes::String = ""
+
+    # == Alignments ========================================================================
+
+    title_alignment::Symbol = :c
+    subtitle_alignment::Symbol = :c
+    cell_alignment::Union{Nothing, Vector{Any}} = nothing
+    column_label_alignment::Union{Symbol, Vector{Symbol}} = :r
+    continuation_row_alignment::Union{Nothing, Symbol} = nothing
+    data_alignment::Union{Symbol, Vector{Symbol}} = :r
+    row_number_column_alignment::Symbol = :r
+    row_label_column_alignment::Symbol = :r
+    row_group_label_alignment::Symbol = :l
+    footnote_alignment::Symbol = :l
+    source_note_alignment::Symbol = :l
+
+    # == Formatters ========================================================================
+
+    formatters::Union{Nothing, Vector{Any}} = nothing
+
+    # == Auxiliary Variables ===============================================================
+
+    # Since `data` can be any object, `size` is type unstable. Hence, we store this
+    # information here to improve the performance.
+    num_rows::Int
+    num_columns::Int
+
+    # We need to store the first index in both direction to reduce the number of
+    # allocations. Notice that `data` is stores using `Any`, meaning that using functions
+    # like `axes`, `firstindex`, and `begin` inside `getindex` will allocate.
+    first_row_index::Int
+    first_column_index::Int
+
+    # Maxium number of rows and columns we must print.
+    maximum_number_of_columns::Int = -1
+    maximum_number_of_rows::Int = -1
+
+    # How we should vertically crop the table.
+    vertical_crop_mode::Symbol = :bottom
+end
+
+# == Tables.jl API =========================================================================
 
 """
     struct ColumnTable
@@ -39,68 +184,108 @@ struct RowTable
     size::Tuple{Int, Int}        # ....................................... Size of the table
 end
 
-"""
-    struct ProcessedTable
+# == Print Table State =====================================================================
 
-This struct contains the processed table, which handles additional columns, etc.  All the
-backend functions have access to this object.
+const _INITIALIZE          = 0
+const _TITLE               = 1
+const _SUBTITLE            = 2
+const _NEW_ROW             = 3
+const _ROW_GROUP           = 4
+const _ROW_NUMBER_COLUMN   = 5
+const _ROW_LABEL_COLUMN    = 6
+const _DATA                = 7
+const _CONTINUATION_COLUMN = 8
+const _END_ROW             = 9
+const _FOOTNOTES           = 10
+const _SOURCENOTES         = 11
+const _END_PRINTING        = 12
+const _END_ROW_AFTER_GROUP = 13
+const _NEW_ROW_AFTER_GROUP = 14
+
+const _VERTICAL_CONTINUATION_CELL_ACTIONS = (
+    :vertical_continuation_cell,
+    :row_number_vertical_continuation_cell,
+    :row_label_vertical_continuation_cell
+)
+
 """
-Base.@kwdef mutable struct ProcessedTable
+    struct PrintingTableState
+
+This structure stores the current state of the printing process.
+
+# Fields
+
+- `state::Int`: The current state of the printing process.
+- `i::Int`: The current row index.
+- `j::Int`: The current column index.
+- `row_section::Symbol`: The current or the next row section.
+
+!!! warning
+
+    The field `row_section` is used to determine the next state of the printing process. It
+    must not be used to verify the current or the next row section as the meaning can change
+    depending on the current state. Instead, always used the function `_next` to obtain the
+    next row section.
+"""
+struct PrintingTableState
+    state::Int
+    i::Int
+    j::Int
+    row_section::Symbol
+
+    function PrintingTableState(
+        state::Int,
+        i::Int,
+        j::Int,
+        row_section::Symbol
+    )
+        return new(state, i, j, row_section)
+    end
+
+    function PrintingTableState()
+        return new(_INITIALIZE, 0, 0, :table_header)
+    end
+end
+
+# == Printing Specification ================================================================
+
+@kwdef struct PrintingSpec
+    context::IOContext
+    table_data::TableData
+    renderer::Symbol
+    show_omitted_cell_summary::Bool
+    new_line_at_end::Bool
+end
+
+# == Auxiliary =============================================================================
+
+# Type to lazily construct the summary row / column label if the user does not pass this
+# information.
+struct SummaryLabelIterator <: AbstractVector{String}
+    length::Int
+end
+
+Base.size(s::SummaryLabelIterator) = (s.length,)
+Base.getindex(::SummaryLabelIterator, i::Int) = "Summary $i"
+
+# == PrettyTable ===========================================================================
+
+mutable struct PrettyTable
     data::Any
-    header::Any
+    configurations::Dict{Symbol, Any}
 
-    # == Private Fields ====================================================================
-
-    _additional_column_id::Vector{Symbol} = Symbol[]
-    _additional_data_columns::Vector{Any} = Any[]
-    _additional_header_columns::Vector{Vector{String}} = Vector{String}[]
-    _additional_column_alignment::Vector{Symbol} = Symbol[]
-    _additional_column_header_alignment::Vector{Symbol} = Symbol[]
-    _data_alignment::Union{Symbol, Vector{Symbol}} = :r
-    _data_cell_alignment::Tuple = ()
-    _header_alignment::Union{Symbol, Vector{Symbol}} = :s
-    _header_cell_alignment::Tuple = ()
-    _max_num_of_rows::Int = -1
-    _max_num_of_columns::Int = -1
-    _num_data_rows::Int = -1
-    _num_data_columns::Int = -1
-    _num_header_rows::Int = -1
-    _num_header_columns::Int = -1
+    function PrettyTable(data::Any; kwargs...)
+        return new(data, Dict{Symbol, Any}(kwargs...))
+    end
 end
 
-"""
-    struct PrintInfo
-
-This structure stores the information required so that the back ends can print the tables.
-"""
-struct PrintInfo
-    ptable::ProcessedTable
-    io::IOContext
-    formatters::Ref{Any}
-    compact_printing::Bool
-    title::String
-    title_alignment::Symbol
-    cell_first_line_only::Bool
-    renderer::Union{Val{:print}, Val{:show}}
-    limit_printing::Bool
+function Base.getproperty(pt::PrettyTable, field::Symbol)
+    field in fieldnames(PrettyTable) && return getfield(pt, field)
+    return get(getfield(pt, :configurations), field, nothing)
 end
 
-"""
-    struct PrettyTablesConf
-
-Type of the object that holds a pre-defined set of configurations for PrettyTables.jl.
-"""
-struct PrettyTablesConf
-    confs::Dict{Symbol, Any}
+function Base.setproperty!(pt::PrettyTable, field::Symbol, value::Any)
+    field in fieldnames(PrettyTable) && return setfield!(pt, field, value)
+    return getfield(pt, :configurations)[field] = value
 end
 
-"""
-    struct UndefinedCell
-
-Internal structure to indicate that a cell has an undefined reference.
-"""
-struct UndefinedCell end
-
-const _UNDEFINED_CELL = UndefinedCell()
-
-PrettyTablesConf() = PrettyTablesConf(Dict{Symbol, Any}())
