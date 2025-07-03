@@ -68,7 +68,7 @@ table = pretty_table(
     backend = :latex
 )
 
-# create_latex_example(table, "latex_example_01.png")
+create_latex_example(table, "latex_example_01.png")
 ```
 
 ```@raw html
@@ -150,7 +150,7 @@ table = pretty_table(
     table_format             = latex_table_format__booktabs
 )
 
-# create_latex_example(table, "latex_example_02.png")
+create_latex_example(table, "latex_example_02.png")
 ```
 
 ![LaTeX Example 02](./latex_example_02.png)
@@ -217,7 +217,7 @@ table = pretty_table(
     table_format  = latex_table_format__booktabs
 )
 
-# create_latex_example(table, "latex_example_03.png")
+create_latex_example(table, "latex_example_03.png")
 ```
 
 ```@raw html

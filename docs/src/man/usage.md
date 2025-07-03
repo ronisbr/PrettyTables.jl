@@ -27,8 +27,6 @@ function create_latex_example(table, filename)
 
     run(`lualatex table.tex`)
     run(`lualatex table.tex`)
-    run(`pwd`)
-    run(`ls -la`)
     run(`magick -density 600 table.pdf -flatten -trim $filename`)
     run(`mv $filename ..`)
     cd("..")
