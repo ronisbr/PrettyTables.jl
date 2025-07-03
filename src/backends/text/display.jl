@@ -168,7 +168,7 @@ function _text__print_horizontal_line(
 
     # == Print the Horizontal Line =========================================================
 
-    crayon != _TEXT__DEFAULT && _text__print(display, string(crayon))
+    (display.has_color && crayon != _TEXT__DEFAULT) && _text__print(display, string(crayon))
 
     # -- Left Intersection -----------------------------------------------------------------
 
@@ -311,7 +311,7 @@ function _text__print_column_label_horizontal_line(
 
     # == Print the Horizontal Line =========================================================
 
-    crayon != _TEXT__DEFAULT && _text__print(display, string(crayon))
+    (display.has_color && crayon != _TEXT__DEFAULT) && _text__print(display, string(crayon))
 
     # -- Left Intersection -----------------------------------------------------------------
 
