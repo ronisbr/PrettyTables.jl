@@ -126,8 +126,7 @@ const _UNDEFINED_CELL = UndefinedCell()
     continuation_row_alignment::Union{Nothing, Symbol} = nothing
     data_alignment::Union{Symbol, Vector{Symbol}} = :r
     row_number_column_alignment::Symbol = :r
-    # TODO: Change to row_label_column_alignment.
-    row_label_alignment::Symbol = :r
+    row_label_column_alignment::Symbol = :r
     row_group_label_alignment::Symbol = :l
     footnote_alignment::Symbol = :l
     source_note_alignment::Symbol = :l

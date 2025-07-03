@@ -28,7 +28,7 @@ function _current_cell_alignment(
         return table_data.row_number_column_alignment
 
     elseif (action == :stubhead_label) || (action == :row_label) || (action == :summary_row_label)
-        return table_data.row_label_alignment
+        return table_data.row_label_column_alignment
 
     elseif action == :column_label
         a = table_data.column_label_alignment
@@ -115,6 +115,6 @@ end
 Return the row label column alignment.
 """
 function _row_label_column_alignment(table_data::TableData)
-    return table_data.row_label_alignment
+    return table_data.row_label_column_alignment
 end
 
