@@ -103,12 +103,9 @@ julia> highlighters = [
     TextHighlighter((data, i, j) -> (j == 4) && (data[i, j] > 10), crayon"fg:blue bold")
 ]
 
-julia> tf = TextTableFormat(
+julia> table_format = TextTableFormat(;
     # Remove vertical lines.
-    vertical_lines_at_data_columns       = :none,
-    vertical_line_after_data_columns     = false,
-    vertical_line_after_row_label_column = false,
-    vertical_line_at_beginning           = false,
+    @text__no_vertical_lines
 )
 
 julia> style = TextTableStyle(
@@ -133,7 +130,7 @@ julia> pretty_table(
     subtitle,
     summary_row_labels,
     summary_rows,
-    tf,
+    table_format,
     title,
 )
 ```
