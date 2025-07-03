@@ -1,6 +1,13 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 3.0.0
+-------------
+
+- ![BREAKING][badge-breaking] This new version contains many breaking changes. The API was
+  almost entirely redesigned to improve the package maintainability and to add new features.
+  Please, check the documentation for more details.
+
 Version 2.4.0
 -------------
 
