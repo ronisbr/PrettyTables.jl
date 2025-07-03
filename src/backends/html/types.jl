@@ -109,12 +109,7 @@ the corresponding HTML property.
 - `css::String`: CSS to be injected at the end of the `<style>` section.
 - `table_width::String`: Table width.
 
-# Remarks
-
-Besides the usual HTML tags related to the tables (`table`, `td, `th`, `tr`, etc.), there
-are three important classes that can be used to format tables using the variable `css`.
-
-TODO: Add the classes.
+Notice that this format is only applied if `stand_alone = true`.
 """
 @kwdef struct HtmlTableFormat
     css::String = """
