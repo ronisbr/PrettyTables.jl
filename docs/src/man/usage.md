@@ -154,7 +154,7 @@ can be specified using a symbol: `:l` for left, `:c` for center, or `:r` for rig
   (**Default**: `nothing`)
 - `footnote_alignment::Symbol`: Alignment of the footnotes.
   (**Default**: `:l`)
-- `row_label_alignment::Symbol`: Alignment of the row labels.
+- `row_label_column_alignment::Symbol`: Alignment of the row labels.
   (**Default**: `:r`)
 - `row_group_label_alignment::Symbol`: Alignment of the row group labels.
   (**Default**: `:l`)

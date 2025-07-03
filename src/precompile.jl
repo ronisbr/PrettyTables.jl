@@ -120,7 +120,7 @@ PrecompileTools.@setup_workload begin
             display_size                = (15, 33),
             new_line_at_end             = false,
             reserved_display_lines      = 2,
-            row_label_alignment         = :r,
+            row_label_column_alignment  = :r,
             row_labels                  = ["row" for i = 1:10],
             row_number_column_alignment = :r,
             row_number_column_label     = "Row",
