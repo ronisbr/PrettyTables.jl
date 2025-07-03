@@ -187,7 +187,22 @@ function pretty_table(::Type{HTML}, pt::PrettyTable; kwargs...)
     return pretty_table(HTML, pt.data; merge(nt, kwargs)...)
 end
 
-show(io::IO, pt::PrettyTable) = pretty_table(io, pt; new_line_at_end = false)
+function show(io::IO, pt::PrettyTable)
+    backend = get(pt.configurations, :backend, :auto)
+
+    if backend == :auto
+        # If the backend is `:auto`, we need to resolve it from the `table_format` keyword.
+        backend = _resolve_printing_backend(pt.configurations)
+    end
+
+    # For the text backend, we need to reserve one display line because the `show` function
+    # adds a new line at the end.
+    if backend == :text
+        return pretty_table(io, pt; new_line_at_end = false, reserved_display_lines = 1)
+    else
+        return pretty_table(io, pt; new_line_at_end = false)
+    end
+end
 
 ############################################################################################
 #                                         Private                                          #
@@ -441,19 +456,7 @@ function _pretty_table(
     # If backend is `:auto`, obtain the backend from the `table_format` keyword. It it does
     # not exist, use `:text`.
     if backend == :auto
-        table_format = get(kwargs, :table_format, nothing)
-
-        if isnothing(table_format)
-            backend = :text
-        elseif table_format isa HtmlTableFormat
-            backend = :html
-        elseif table_format isa LatexTableFormat
-            backend = :latex
-        elseif table_format isa MarkdownTableFormat
-            backend = :markdown
-        else
-            backend = :text
-        end
+        backend = _resolve_printing_backend(kwargs)
     end
 
     if backend == :latex
