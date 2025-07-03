@@ -46,7 +46,9 @@ function _preprocess_data(data::AbstractVecOrMat)
     return data
 end
 
-_preprocess_data(dict::AbstractDict) = dict
+function _preprocess_data(dict::AbstractDict)
+    return hcat(collect(keys(dict)), collect(values(dict)))
+end
 
 function _preprocess_data(@nospecialize(data::Any))
     # This is the fallback action to guess the column label. Hence, if data does not support
