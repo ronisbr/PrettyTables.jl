@@ -492,3 +492,27 @@ function _omitted_cell_summary(num_omitted_rows::Int, num_omitted_columns::Int)
 
     return String(take!(buf))
 end
+
+"""
+    _resolve_printing_backend(configurations) -> Symbol
+
+Return the printing backend to be used based on the `configurations` provided. Notice that
+it function must only be used when the user did not specify the backend directly using the
+`backend` keyword.
+"""
+function _resolve_printing_backend(configurations)
+    table_format = get(configurations, :table_format, nothing)
+    backend = :text
+
+    if isnothing(table_format)
+        backend = :text
+    elseif table_format isa HtmlTableFormat
+        backend = :html
+    elseif table_format isa LatexTableFormat
+        backend = :latex
+    elseif table_format isa MarkdownTableFormat
+        backend = :markdown
+    end
+
+    return backend
+end
