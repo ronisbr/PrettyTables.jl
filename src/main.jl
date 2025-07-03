@@ -4,8 +4,6 @@
 #
 ############################################################################################
 
-# TODO: Add support to Dicts.
-
 export pretty_table
 
 function pretty_table(@nospecialize(data::Any); kwargs...)
@@ -324,7 +322,11 @@ function _pretty_table(
 
     # If we reach this point and `column_labels` is nothing, we must guess it.
     if isnothing(column_labels)
-        column_labels = _guess_column_labels(pdata)
+        column_labels = if pdata isa Union{ColumnTable, RowTable}
+            _guess_column_labels(pdata)
+        else
+            _guess_column_labels(data)
+        end
     end
 
     # If the element type of column labels is not an `AbstractVector`, we must wrap it into
