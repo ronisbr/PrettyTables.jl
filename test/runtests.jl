@@ -85,6 +85,10 @@ end
     include("./general.jl")
 end
 
+@testset "PrettyTable Structure" verbose = true begin
+    include("./pretty_table_structure.jl")
+end
+
 @testset "Pre-defined Formatters" verbose = true begin
     include("./predefined_formatters.jl")
 end
