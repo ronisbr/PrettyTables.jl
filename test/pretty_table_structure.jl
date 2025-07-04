@@ -30,6 +30,7 @@
 
     @test result == expected
 
+    pt = PrettyTable(matrix)
     pt.column_labels = ["#1", "#2", "#3", "#4", "#5", "#6"]
 
     expected = """
@@ -90,6 +91,8 @@
     result = pretty_table(String, pt)
     @test result == expected
 
+    pt = PrettyTable(matrix)
+    pt.column_labels = ["#1", "#2", "#3", "#4", "#5", "#6"]
     result = pretty_table(HTML, pt)
 
     @test result isa HTML
