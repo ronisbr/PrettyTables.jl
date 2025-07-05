@@ -173,3 +173,73 @@ create_text_example(table, "text_example_03.svg")
 ```@raw html
 <img src="../text_example_03.svg" alt="Text Example 03">
 ```
+
+---
+
+```julia-repl
+julia> t = 0:1:20
+
+julia> data = hcat(t, ones(length(t) ), t, 0.5.*t.^2);
+
+julia> column_labels = [
+    ["Time", "Acceleration", "Velocity", "Distance"],
+    [ "[s]",     "[m / s²]",  "[m / s]",      "[m]"]
+]
+
+julia> hl_p = TextHighlighter(
+    (data, i, j) -> (j == 4) && (data[i, j] > 9),
+    crayon"bold blue"
+)
+
+julia> hl_v = TextHighlighter(
+    (data, i, j) -> (j == 3) && (data[i, j] > 9),
+    crayon"bold red"
+)
+
+julia> pretty_table(
+    data;
+    column_labels = column_labels,
+    highlighters  = [hl_p, hl_v],
+    style = TextTableStyle(;
+        first_line_column_label = crayon"bold yellow",
+    )
+)
+```
+
+```@setup text_examples
+t = 0:1:20
+
+data = hcat(t, ones(length(t) ), t, 0.5.*t.^2);
+
+column_labels = [
+    ["Time", "Acceleration", "Velocity", "Distance"],
+    [ "[s]",     "[m / s²]",  "[m / s]",      "[m]"]
+]
+
+hl_p = TextHighlighter(
+    (data, i, j) -> (j == 4) && (data[i, j] > 9),
+    crayon"bold blue"
+)
+
+hl_v = TextHighlighter(
+    (data, i, j) -> (j == 3) && (data[i, j] > 9),
+    crayon"bold red"
+)
+
+table = pretty_table(
+    String,
+    data;
+    color = true,
+    column_labels = column_labels,
+    highlighters  = [hl_p, hl_v],
+    style = TextTableStyle(;
+        first_line_column_label = crayon"bold yellow",
+    )
+)
+
+create_text_example(table, "text_example_04.svg")
+```
+
+```@raw html
+<img src="../text_example_04.svg" alt="Text Example 04">
+```
