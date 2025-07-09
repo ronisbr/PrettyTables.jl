@@ -291,8 +291,8 @@ end
 
 _text__default_highlighter_fd(h::TextHighlighter, ::Any, ::Int, ::Int) = h._decoration
 
-HtmlDecoration(; kwargs...) = Pair{String, String}["$k" => "$v" for (k, v) in kwargs]
+# for compatibility with current Version of DataFrames.jl
 
-# compat
 const Highlighter = TextHighlighter
+HtmlDecoration(; kwargs...) = Pair{String, String}["$k" => "$v" for (k, v) in kwargs]
 export Highlighter, HtmlDecoration
