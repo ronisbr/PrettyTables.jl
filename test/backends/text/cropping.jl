@@ -729,6 +729,36 @@ expected = """
                 summary_rows = [(data, i) -> "Summary $i"],
                 table_format = TextTableFormat(
                     horizontal_line_after_data_rows = false,
+                    horizontal_line_before_summary_rows = false,
+                    horizontal_lines_at_data_rows = :all,
+                ),
+                vertical_crop_mode = :middle
+            )
+
+            @test result == expected
+
+            expected = """
+┌───────────┬───────────┬───────────┬───────────┬─────
+│           │    Col. 1 │    Col. 2 │    Col. 3 │    ⋯
+├───────────┼───────────┼───────────┼───────────┼─────
+│           │    (1, 1) │    (1, 2) │    (1, 3) │    ⋯
+├───────────┼───────────┼───────────┼───────────┼─────
+│         ⋮ │         ⋮ │         ⋮ │         ⋮ │    ⋱
+│           │  (100, 1) │  (100, 2) │  (100, 3) │  ( ⋯
+├───────────┼───────────┼───────────┼───────────┼─────
+│ Summary 1 │ Summary 1 │ Summary 2 │ Summary 3 │ Su ⋯
+└───────────┴───────────┴───────────┴───────────┴─────
+                        97 columns and 98 rows omitted
+"""
+
+            result = pretty_table(
+                String,
+                matrix;
+                display_size = (13, 54),
+                summary_rows = [(data, i) -> "Summary $i"],
+                table_format = TextTableFormat(
+                    horizontal_line_after_data_rows = false,
+                    horizontal_line_before_summary_rows = true,
                     horizontal_lines_at_data_rows = :all,
                 ),
                 vertical_crop_mode = :middle
