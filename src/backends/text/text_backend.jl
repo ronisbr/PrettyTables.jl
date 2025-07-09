@@ -246,6 +246,8 @@ function _text__print_table(
             @views for r in alignment_anchor_regex
                 j, regex = r
 
+                j > num_printed_data_columns && continue
+
                 if !line_breaks
                     _align_column_with_regex!(
                         table_str[:, j],
