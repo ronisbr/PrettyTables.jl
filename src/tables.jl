@@ -74,6 +74,8 @@ length(ctable::ColumnTable) = ctable.size[1] * ctable.size[2]
 
 size(ctable::ColumnTable) = ctable.size
 
+Base.maybeview(ctable::ColumnTable, inds...) = Base.maybeview(ctable.data, inds...)
+
 _get_data(ctable::ColumnTable) = ctable.data
 
 ############################################################################################
@@ -168,6 +170,8 @@ end
 length(rtable::RowTable) = rtable.size[1] * rtable.size[2]
 
 size(rtable::RowTable) = rtable.size
+
+Base.maybeview(rtable::RowTable, inds...) = Base.maybeview(rtable.data, inds...)
 
 _get_data(rtable::RowTable) = rtable.data
 

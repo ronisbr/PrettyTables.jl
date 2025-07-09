@@ -98,7 +98,7 @@ function _current_cell(
     elseif action == :summary_row_cell
         f = table_data.summary_rows[state.i - 1 + begin]
 
-        col = @view table_data.data[:, state.j]
+        col = @views table_data.data[:, state.j]
 
         applicable(f, col) && return f(col)
 
