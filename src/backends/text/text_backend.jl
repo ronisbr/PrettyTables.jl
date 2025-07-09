@@ -14,6 +14,7 @@ function _text__print_table(
     pspec::PrintingSpec;
     alignment_anchor_fallback::Symbol = :l,
     alignment_anchor_regex::Union{Vector{Regex}, Vector{Pair{Int, Vector{Regex}}}} = _DEFAULT_ALIGNMENT_ANCHOR_REGEX,
+    apply_alignment_regex_to_summary_rows::Bool = false,
     auto_wrap::Bool = false,
     column_label_width_based_on_first_line_only::Bool = false,
     display_size::NTuple{2, Int} = displaysize(pspec.context),
@@ -222,24 +223,47 @@ function _text__print_table(
     # == Column Alignment Regex ============================================================
 
     if !isempty(alignment_anchor_regex)
+        # We will create a vector to copy each column string that will be aligned. This
+        # procedure is necessary because if the user wants to also apply the alignment to
+        # the summary rows, we need to copy those lines before the alignment process.
+        num_summary_rows = !isnothing(summary_rows) ? size(summary_rows, 1) : 0
+
+        column_str = Vector{String}(
+            undef,
+            num_printed_data_columns +
+            (apply_alignment_regex_to_summary_rows ? num_summary_rows : 0)
+        )
+
         # Check if we have one set of regexes to be applied to all the columns or if the
         # user specified regexes for some columns.
         if alignment_anchor_regex isa Vector{Regex}
             regex = alignment_anchor_regex
 
             @views for j in axes(table_str, 2)
+                column_str[1:num_printed_data_rows] .= table_str[:, j]
+
+                if apply_alignment_regex_to_summary_rows
+                    column_str[(num_printed_data_rows + 1):end] .= summary_rows[:, j]
+                end
+
                 if !line_breaks
                     _align_column_with_regex!(
-                        table_str[:, j],
+                        column_str,
                         regex,
                         alignment_anchor_fallback
                     )
                 else
                     _align_multline_column_with_regex!(
-                        table_str[:, j],
+                        column_str,
                         regex,
                         alignment_anchor_fallback
                     )
+                end
+
+                table_str[:, j] = column_str[1:num_printed_data_rows]
+
+                if apply_alignment_regex_to_summary_rows
+                    summary_rows[:, j] .= column_str[(num_printed_data_rows + 1):end]
                 end
             end
         else
@@ -248,18 +272,30 @@ function _text__print_table(
 
                 j > num_printed_data_columns && continue
 
+                column_str[1:num_printed_data_rows] .= table_str[:, j]
+
+                if apply_alignment_regex_to_summary_rows
+                    column_str[(num_printed_data_rows + 1):end] .= summary_rows[:, j]
+                end
+
                 if !line_breaks
                     _align_column_with_regex!(
-                        table_str[:, j],
+                        column_str,
                         regex,
                         alignment_anchor_fallback
                     )
                 else
                     _align_multline_column_with_regex!(
-                        table_str[:, j],
+                        column_str,
                         regex,
                         alignment_anchor_fallback
                     )
+                end
+
+                table_str[:, j] = column_str[1:num_printed_data_rows]
+
+                if apply_alignment_regex_to_summary_rows
+                    summary_rows[:, j] .= column_str[(num_printed_data_rows + 1):end]
                 end
             end
         end
@@ -270,6 +306,18 @@ function _text__print_table(
             for i in 1:num_printed_data_rows
                 table_str[i, j] = _text__fit_cell_in_maximum_cell_width(
                     table_str[i, j],
+                    maximum_data_column_widths[j],
+                    line_breaks
+                )
+            end
+
+            # Check if the summary rows were modified by the alignment regex.
+            (isnothing(summary_rows) || !apply_alignment_regex_to_summary_rows) &&
+                continue
+
+            for i in 1:size(summary_rows, 1)
+                summary_rows[i, j] = _text__fit_cell_in_maximum_cell_width(
+                    summary_rows[i, j],
                     maximum_data_column_widths[j],
                     line_breaks
                 )

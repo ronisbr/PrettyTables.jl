@@ -21,6 +21,9 @@ the output.
   line, the alignment of this line depends on the options `alignment_anchor_fallback`.
   Example: `[2 => [r"\\."]]` aligns the decimal point of the cells in the second column.
   (**Default** = `Regex[]`)
+- `apply_alignment_regex_to_summary_rows::Bool`: If `true`, the alignment regexes in
+    `alignment_anchor_regex` will also be applied to the summary rows.
+    (**Default** = `false`)
 - `auto_wrap::Bool`: If `true`, the text will be wrapped on spaces to fit the column. Notice
   that this function requires `linebreaks = true` and the column must have a fixed size (see
   `fixed_data_column_widths`).
