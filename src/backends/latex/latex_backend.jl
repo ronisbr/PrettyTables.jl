@@ -146,6 +146,14 @@ function _latex__print(
                 )
                 hline_str *= tf.borders.middle_line
 
+            elseif(
+                    (rs ∈ (:data, :continuation_row)) &&
+                    (next_rs == :summary_row) &&
+                    tf.horizontal_line_before_summary_rows
+                )
+
+                hline_str *= tf.borders.middle_line
+
             elseif (rs == :row_group_label) && tf.horizontal_line_after_row_group_label
                 hline_str *= tf.borders.header_line
 
