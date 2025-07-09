@@ -80,7 +80,7 @@ function pretty_table(
 
     # == Other Configurations ==============================================================
 
-    formatters::Union{Nothing, Vector{T} where T <: Any} = nothing,
+    formatters::Union{Nothing, Vector, Tuple} = nothing,
     maximum_number_of_columns::Int = -1,
     maximum_number_of_rows::Int = -1,
     merge_column_label_cells::Union{Symbol, Vector{MergeCells}} = :auto,
@@ -137,7 +137,7 @@ function pretty_table(
         # == Other Configurations ==========================================================
 
         cell_alignment,
-        formatters,
+        formatters isa Tuple ? collect(formatters) : formatters,
         maximum_number_of_columns,
         maximum_number_of_rows,
         merge_column_label_cells,

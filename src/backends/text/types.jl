@@ -290,3 +290,9 @@ struct TextHighlighter
 end
 
 _text__default_highlighter_fd(h::TextHighlighter, ::Any, ::Int, ::Int) = h._decoration
+
+HtmlDecoration(; kwargs...) = Pair{String, String}["$k" => "$v" for (k, v) in kwargs]
+
+# compat
+const Highlighter = TextHighlighter
+export Highlighter, HtmlDecoration

@@ -13,7 +13,7 @@ const _DEFAULT_TEXT_HIGHLIGHTER = TextHighlighter[]
 function _text__print_table(
     pspec::PrintingSpec;
     alignment_anchor_fallback::Symbol = :l,
-    alignment_anchor_regex::Union{Vector{Regex}, Vector{Pair{Int, Vector{Regex}}}} = _DEFAULT_ALIGNMENT_ANCHOR_REGEX,
+    alignment_anchor_regex::Union{Vector{Regex}, Vector{Pair{Int, Vector{Regex}}}, Dict{Int, Vector{Regex}}} = _DEFAULT_ALIGNMENT_ANCHOR_REGEX,
     auto_wrap::Bool = false,
     column_label_width_based_on_first_line_only::Bool = false,
     display_size::NTuple{2, Int} = displaysize(pspec.context),
@@ -21,13 +21,14 @@ function _text__print_table(
     fit_table_in_display_horizontally::Bool = true,
     fit_table_in_display_vertically::Bool = true,
     fixed_data_column_widths::Union{Int, Vector{Int}} = 0,
-    highlighters::Vector{TextHighlighter} = _DEFAULT_TEXT_HIGHLIGHTER,
+    highlighters::Union{Vector{TextHighlighter}, NTuple{N, TextHighlighter} where N} = _DEFAULT_TEXT_HIGHLIGHTER,
     line_breaks::Bool = false,
     maximum_data_column_widths::Union{Int, Vector{Int}} = 0,
     overwrite_display::Bool = false,
     reserved_display_lines::Int = 0,
     style::TextTableStyle = TextTableStyle(),
     table_format::TextTableFormat = TextTableFormat(),
+    kwargs...
 )
     context    = pspec.context
     table_data = pspec.table_data
@@ -97,6 +98,7 @@ function _text__print_table(
         has_fixed_data_column_widths = true
     end
 
+    alignment_anchor_regex isa Dict && (alignment_anchor_regex = collect(alignment_anchor_regex))
     if alignment_anchor_regex isa Vector{Pair{Int, Vector{Regex}}}
         for (j, _) in alignment_anchor_regex
             (j <= 0) && throw(ArgumentError(

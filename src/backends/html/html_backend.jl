@@ -7,7 +7,7 @@
 function _html__print(
     pspec::PrintingSpec;
     allow_html_in_cells::Bool = false,
-    highlighters::Vector{HtmlHighlighter} = HtmlHighlighter[],
+    highlighters::Union{Vector{HtmlHighlighter}, NTuple{N, HtmlHighlighter} where N} = HtmlHighlighter[],
     is_stdout::Bool = false,
     line_breaks::Bool = false,
     maximum_column_width::String = "",
