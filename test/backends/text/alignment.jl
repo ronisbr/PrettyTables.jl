@@ -281,7 +281,7 @@
         matrix;
         alignment_anchor_regex = [r"\."],
         apply_alignment_regex_to_summary_rows = true,
-        summary_rows = [(data, i) -> "123456.7890", (data, i) -> "0987.654321"]
+        summary_rows = [c -> "123456.7890", c -> "0987.654321"]
     )
 
     expected = """
@@ -307,7 +307,7 @@
         alignment_anchor_fallback = :r,
         alignment_anchor_regex = [r"\."],
         apply_alignment_regex_to_summary_rows = true,
-        summary_rows = [(data, i) -> "123456.7890", (data, i) -> "0987.654321"]
+        summary_rows = [c -> "123456.7890", c -> "0987.654321"]
     )
 
     expected = """
@@ -334,7 +334,7 @@
         alignment_anchor_regex = [r"\."],
         apply_alignment_regex_to_summary_rows = true,
         maximum_data_column_widths = 10,
-        summary_rows = [(data, i) -> "123456.7890", (data, i) -> "0987.654321"]
+        summary_rows = [c -> "123456.7890", c -> "0987.654321"]
     )
 
     expected = """
@@ -360,7 +360,7 @@
         alignment_anchor_fallback = :r,
         alignment_anchor_regex = [3 => [r"\.", r"^"]],
         apply_alignment_regex_to_summary_rows = true,
-        summary_rows = [(data, i) -> "123456.7890", (data, i) -> "0987.654321"]
+        summary_rows = [c -> "123456.7890", c -> "0987.654321"]
     )
 end
 
@@ -456,7 +456,7 @@ end
         alignment_anchor_regex = [r"\."],
         line_breaks = true,
         apply_alignment_regex_to_summary_rows = true,
-        summary_rows = [(data, i) -> "123456.7890", (data, i) -> "0987.654321"],
+        summary_rows = [c -> "123456.7890", c -> "0987.654321"],
         table_format = TextTableFormat(; @text__all_horizontal_lines)
     )
 
@@ -488,7 +488,7 @@ end
         apply_alignment_regex_to_summary_rows = true,
         line_breaks = true,
         show_row_number_column = true,
-        summary_rows = [(data, i) -> "123456.7890", (data, i) -> "0987.654321"],
+        summary_rows = [c -> "123456.7890", c -> "0987.654321"],
         table_format = TextTableFormat(; @text__all_horizontal_lines)
     )
 end

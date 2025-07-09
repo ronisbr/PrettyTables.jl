@@ -305,15 +305,23 @@ row 3, we have the row group label named "Row Group #1".
 ### Summary Rows
 
 The summary rows can be specified by a vector of `Function`s. Each element defines a summary
-row and the function must have the following signature:
+row and the function must have one the following signature:
 
 ```
+f(col)
+
 f(data, j)
 ```
 
-where `data` is the table data and `j` is the column index. It must return the summary cell
-value for the `j`th column. Hence, if we want, for example, to create two summary rows, one
-with the sum the column values and other with their mean, we must define:
+where `col` is the current column, `data` is the table data, and `j` is the column index. In
+the first case, it must return the summary cell value for the referenced column. In the
+second case, it must return the summary cell value for the `j`th column. The algorithm will
+check if there is an applicable method for the first signature and use it if it exists.
+Otherwise, it will use the second signature. This verification is performed using the method
+`applicable` and `col` is obtained by `@view data[:, j]`.
+
+If we want, for example, to create two summary rows, one with the sum of the column values
+and other with their mean, we can define:
 
 ```julia
 summary_rows = [
@@ -321,6 +329,19 @@ summary_rows = [
     (data, j) -> sum(data[:, j]) / length(data[:, j])
 ]
 ```
+
+We can also use the first signature to simplify the code:
+
+```julia
+using Statistics
+summary_rows = [sum, mean]
+```
+
+!!! note
+
+    If both signatures are available, the algorithm will prioritize the first one. To force
+    the usage of the second, we can create an anonymous functions as follows: `(data, i) ->
+    f(data, i)`. This ensures that only the second method is available.
 
 ### Footnotes
 
