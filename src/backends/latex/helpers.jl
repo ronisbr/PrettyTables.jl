@@ -37,10 +37,14 @@ julia> A = ones(3, 3);
 julia> pretty_table(A; table_format = LatexTableFormat(; @latex__all_horizontal_lines))
 \\begin{tabular}{|r|r|r|}
   \\hline
-  \\textbf{Col. 1} & \\textbf{Col. 2} & \\textbf{Col. 3} \\\\hline
-  1.0 & 1.0 & 1.0 \\\\hline
-  1.0 & 1.0 & 1.0 \\\\hline
-  1.0 & 1.0 & 1.0 \\\\hline
+  \\textbf{Col. 1} & \\textbf{Col. 2} & \\textbf{Col. 3} \\
+  \\hline
+  1.0 & 1.0 & 1.0 \\
+  \\hline
+  1.0 & 1.0 & 1.0 \\
+  \\hline
+  1.0 & 1.0 & 1.0 \\
+  \\hline
 \\end{tabular}
 
 julia> pretty_table(
@@ -53,9 +57,12 @@ julia> pretty_table(
 \\begin{tabular}{|r|r|r|}
   \\hline
   \\textbf{Col. 1} & \\textbf{Col. 2} & \\textbf{Col. 3} \\
-  1.0 & 1.0 & 1.0 \\\\hline
-  1.0 & 1.0 & 1.0 \\\\hline
-  1.0 & 1.0 & 1.0 \\\\hline
+  1.0 & 1.0 & 1.0 \\
+  \\hline
+  1.0 & 1.0 & 1.0 \\
+  \\hline
+  1.0 & 1.0 & 1.0 \\
+  \\hline
 \\end{tabular}
 ```
 """
@@ -103,10 +110,12 @@ julia> A = ones(3, 3);
 julia> pretty_table(A; table_format = LatexTableFormat(; @latex__all_vertical_lines))
 \\begin{tabular}{|r|r|r|}
   \\hline
-  \\textbf{Col. 1} & \\textbf{Col. 2} & \\textbf{Col. 3} \\\\\\hline
+  \\textbf{Col. 1} & \\textbf{Col. 2} & \\textbf{Col. 3} \\\\
+  \\hline
   1.0 & 1.0 & 1.0 \\\\
   1.0 & 1.0 & 1.0 \\\\
-  1.0 & 1.0 & 1.0 \\\\\\hline
+  1.0 & 1.0 & 1.0 \\\\
+  \\hline
 \\end{tabular}
 
 julia> pretty_table(
@@ -119,10 +128,12 @@ julia> pretty_table(
        )
 \\begin{tabular}{|rr|r|r|}
   \\hline
-  \\textbf{Row} & \\textbf{Col. 1} & \\textbf{Col. 2} & \\textbf{Col. 3} \\\\\\hline
+  \\textbf{Row} & \\textbf{Col. 1} & \\textbf{Col. 2} & \\textbf{Col. 3} \\\\
+  \\hline
   1 & 1.0 & 1.0 & 1.0 \\\\
   2 & 1.0 & 1.0 & 1.0 \\\\
-  3 & 1.0 & 1.0 & 1.0 \\\\\\hline
+  3 & 1.0 & 1.0 & 1.0 \\\\
+  \\hline
 \\end{tabular}
 ```
 """
@@ -180,7 +191,8 @@ julia> pretty_table(
            )
        )
 \\begin{tabular}{|r|r|r|}
-  \\textbf{Col. 1} & \\textbf{Col. 2} & \\textbf{Col. 3} \\\\\\hline
+  \\textbf{Col. 1} & \\textbf{Col. 2} & \\textbf{Col. 3} \\\\
+  \\hline
   1.0 & 1.0 & 1.0 \\\\
   1.0 & 1.0 & 1.0 \\\\
   1.0 & 1.0 & 1.0 \\\\
@@ -231,10 +243,12 @@ julia> A = ones(3, 3);
 julia> pretty_table(A; table_format = LatexTableFormat(; @latex__no_vertical_lines))
 \\begin{tabular}{rrr}
   \\hline
-  \\textbf{Col. 1} & \\textbf{Col. 2} & \\textbf{Col. 3} \\\\\\hline
+  \\textbf{Col. 1} & \\textbf{Col. 2} & \\textbf{Col. 3} \\\\
+  \\hline
   1.0 & 1.0 & 1.0 \\\\
   1.0 & 1.0 & 1.0 \\\\
-  1.0 & 1.0 & 1.0 \\\\\\hline
+  1.0 & 1.0 & 1.0 \\\\
+  \\hline
 \\end{tabular}
 
 julia> pretty_table(
@@ -247,10 +261,12 @@ julia> pretty_table(
        )
 \\begin{tabular}{r|rrr}
   \\hline
-  \\textbf{Row} & \\textbf{Col. 1} & \\textbf{Col. 2} & \\textbf{Col. 3} \\\\\\hline
+  \\textbf{Row} & \\textbf{Col. 1} & \\textbf{Col. 2} & \\textbf{Col. 3} \\\\
+  \\hline
   1 & 1.0 & 1.0 & 1.0 \\\\
   2 & 1.0 & 1.0 & 1.0 \\\\
-  3 & 1.0 & 1.0 & 1.0 \\\\\\hline
+  3 & 1.0 & 1.0 & 1.0 \\\\
+  \\hline
 \\end{tabular}
 ```
 """
