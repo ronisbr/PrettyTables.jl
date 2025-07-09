@@ -129,6 +129,10 @@ Define the format of the tables printed with the text back end.
     drawn after the row group label.
 - `horizontal_line_after_data_rows::Bool`: If `true`, a horizontal line will be drawn
     after the data rows.
+- `horizontal_line_before_summary_rows::Bool`: If `true`, a horizontal line will be drawn
+    before the summary rows. Notice that this line is the same as the one drawn if
+    `horizontal_line_after_data_rows` is `true`. However, in this case, the line is omitted
+    if there is no summary rows.
 - `horizontal_line_after_summary_rows::Bool`: If `true`, a horizontal line will be drawn
     after the summary rows.
 - `vertical_line_at_beginning::Bool`: If `true`, a vertical line will be drawn at the
@@ -161,6 +165,7 @@ Define the format of the tables printed with the text back end.
     horizontal_line_before_row_group_label::Bool = true
     horizontal_line_after_row_group_label::Bool = true
     horizontal_line_after_data_rows::Bool = true
+    horizontal_line_before_summary_rows::Bool = true
     horizontal_line_after_summary_rows::Bool = true
 
     vertical_line_at_beginning::Bool = true

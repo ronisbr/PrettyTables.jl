@@ -71,6 +71,7 @@ macro text__all_horizontal_lines()
         horizontal_line_before_row_group_label = true,
         horizontal_line_after_row_group_label  = true,
         horizontal_line_after_data_rows        = true,
+        horizontal_line_before_summary_rows    = true,
         horizontal_line_after_summary_rows     = true,
     )...)
 end
@@ -197,6 +198,7 @@ macro text__no_horizontal_lines()
         horizontal_line_before_row_group_label = false,
         horizontal_line_after_row_group_label  = false,
         horizontal_line_after_data_rows        = false,
+        horizontal_line_before_summary_rows    = false,
         horizontal_line_after_summary_rows     = false,
     )...)
 end

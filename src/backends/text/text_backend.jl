@@ -859,6 +859,25 @@ function _text__print_table(
                 _text__flush_line(display, false)
                 num_printed_data_section_lines += 1
 
+            elseif (rs ∈ (:data, :continuation_row)) && (ps.row_section == :summary_row) &&
+                tf.horizontal_line_before_summary_rows
+
+                    _text__print_column_label_horizontal_line(
+                        display,
+                        tf,
+                        style.table_border,
+                        table_data,
+                        length(table_data.column_labels),
+                        vertical_lines_at_data_columns,
+                        row_number_column_width,
+                        row_label_column_width,
+                        printed_data_column_widths,
+                        false,
+                        false
+                    )
+
+                    _text__flush_line(display, false)
+
             # Check if we must print an horizontal line after the continuation row.
             elseif (rs == :continuation_row) && !suppress_hline_after_continuation_row
                 hline = false

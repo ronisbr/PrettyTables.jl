@@ -128,7 +128,10 @@ function _text__number_of_required_lines(
         tf.horizontal_line_after_data_rows +
         (
             if _has_summary_rows(table_data)
-                length(table_data.summary_rows) + tf.horizontal_line_after_summary_rows
+                # The horizontal line after data rows is already counted.
+                (!tf.horizontal_line_after_data_rows && tf.horizontal_line_before_summary_rows) +
+                length(table_data.summary_rows) +
+                tf.horizontal_line_after_summary_rows
             else
                 0
             end
