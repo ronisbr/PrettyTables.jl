@@ -226,7 +226,13 @@ function _text__print_table(
         # We will create a vector to copy each column string that will be aligned. This
         # procedure is necessary because if the user wants to also apply the alignment to
         # the summary rows, we need to copy those lines before the alignment process.
-        num_summary_rows = !isnothing(summary_rows) ? size(summary_rows, 1) : 0
+
+        if isnothing(summary_rows)
+            # We should not apply the alignment regex to the summary rows if there is none.
+            apply_alignment_regex_to_summary_rows = false
+        end
+
+        num_summary_rows = apply_alignment_regex_to_summary_rows ? size(summary_rows, 1) : 0
 
         column_str = Vector{String}(
             undef,
