@@ -270,6 +270,69 @@ Base.getindex(::SummaryLabelIterator, i::Int) = "Summary $i"
 
 # == PrettyTable ===========================================================================
 
+"""
+    mutable struct PrettyTable
+
+This structure stores the data and configuration options required to print a table. The
+table to be displayed is specified by the `data` field, while any additional configuration
+options, corresponding to the keyword arguments accepted by the `pretty_table` function, can
+be set as fields with matching names.
+
+Users can overload the `show` function to customize how the table is printed for different
+MIME types. PrettyTables.jl provides a default `show` method for printing tables to
+`stdout`.
+
+## Fields
+
+- `data::Any`: The table to be displayed.
+- `configurations::Dict{Symbol, Any}`: A dictionary containing configuration options for
+    the table. The keys are symbols corresponding to the keyword arguments accepted by the
+    `pretty_table` function, and the values are the corresponding settings. It is not
+    recommended to add configurations here directly. Use the native Julia syntax to set
+    fields in the `PrettyTable` object instead.
+
+# Extended Help
+
+## Examples
+
+```julia-repl
+julia> pt = PrettyTable(ones(3, 3))
+┌────────┬────────┬────────┐
+│ Col. 1 │ Col. 2 │ Col. 3 │
+├────────┼────────┼────────┤
+│    1.0 │    1.0 │    1.0 │
+│    1.0 │    1.0 │    1.0 │
+│    1.0 │    1.0 │    1.0 │
+└────────┴────────┴────────┘
+
+julia> pt.table_format = TextTableFormat(; @text__no_vertical_lines)
+TextTableFormat(TextTableBorders('┐', '┌', '└', '┘', '┬', '├', '┤', '┼', '┴', '│', '─'), true, :none, true, :none, true, true, true, true, true, false, false, false, :none, false, false, true, 0)
+
+julia> pt
+────────────────────────
+ Col. 1  Col. 2  Col. 3
+────────────────────────
+    1.0     1.0     1.0
+    1.0     1.0     1.0
+    1.0     1.0     1.0
+────────────────────────
+
+julia> pt.data = 2 .* ones(3, 3)
+3×3 Matrix{Float64}:
+ 2.0  2.0  2.0
+ 2.0  2.0  2.0
+ 2.0  2.0  2.0
+
+julia> pt
+────────────────────────
+ Col. 1  Col. 2  Col. 3
+────────────────────────
+    2.0     2.0     2.0
+    2.0     2.0     2.0
+    2.0     2.0     2.0
+────────────────────────
+```
+"""
 mutable struct PrettyTable
     data::Any
     configurations::Dict{Symbol, Any}
