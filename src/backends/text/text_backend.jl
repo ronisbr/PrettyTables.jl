@@ -230,7 +230,7 @@ function _text__print_table(
 
         column_str = Vector{String}(
             undef,
-            num_printed_data_columns +
+            num_printed_data_rows +
             (apply_alignment_regex_to_summary_rows ? num_summary_rows : 0)
         )
 
