@@ -12,9 +12,9 @@ the output.
     anchor. Otherwise, the end of the line will be aligned with the anchor.
   (**Default** = `:l`)
 - `alignment_anchor_regex::Union{Vector{Regex}, Vector{Pair{Int, Vector{Regex}}}}`: This
-  keyword can be used to provide regexes to aligh the data values in the table columns. It
+  This keyword can be used to provide regexes to align the data values in the table columns. If
   it is `Vector{Regex}`, the regexes will be used to align all the columns. If it is
-  `Vector{Pair{Int, Vector{Regex}}}`, the `Int` element specify the column to which the
+  `Vector{Pair{Int, Vector{Regex}}}`, the `Int` element specifies the column to which the
   regexes in `Vector{Regex}` will be applied. The regex match is searched in the same order
   as the regexes appear on the vector. The regex matching is applied after the cell
   conversion to string, which includes the formatters. If no match is found for a specific
@@ -79,7 +79,7 @@ keyword. Each highlighter is an instance of the structure [`TextHighlighter`](@r
 contains three fields:
 
 - `f::Function`: Function with the signature `f(data, i, j)` in which should return `true`
-  if the element `(i, j)` in `data` must be highlighter, or `false` otherwise.
+  if the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
 - `fd::Function`: Function with the signature `f(h, data, i, j)` in which `h` is the
   highlighter. This function must return the `Crayon` to be applied to the cell that must be
   highlighted.
@@ -131,7 +131,7 @@ where it will apply the `Crayon` returned by the function `fd` to the highlighte
     **will not** affect the parameter `data` passed to the highlighter function `f`. It will
     always receive the original, unformatted value.
 
-For example, we if want to highlight the cells with value greater than 5 in red, and all the
+  For example, if we want to highlight the cells with value greater than 5 in red, and all the
 cells with value less than 5 in blue, we can define:
 
 ```julia
@@ -140,7 +140,7 @@ hl_gt5 = TextHighlighter(
     crayon"red"
 )
 
-hl_lt5 = HtmlHighlighter(
+hl_lt5 = TextHighlighter(
     (data, i, j) -> data[i, j] < 5,
     crayon"blue"
 )
@@ -175,7 +175,7 @@ contains the following fields:
 - `horizontal_line_before_summary_rows::Bool`: If `true`, a horizontal line will be drawn
     before the summary rows. Notice that this line is the same as the one drawn if
     `horizontal_line_after_data_rows` is `true`. However, in this case, the line is omitted
-    if there is no summary rows.
+    if there are no summary rows.
 - `horizontal_line_after_summary_rows::Bool`: If `true`, a horizontal line will be drawn
   after the summary rows.
 - `vertical_line_at_beginning::Bool`: If `true`, a vertical line will be drawn at the
@@ -211,7 +211,7 @@ contains the following fields:
 - `subtitle::Crayon`: Crayon with the style for the subtitle.
 - `row_number_label::Crayon`: Crayon with the style for the row number label.
 - `row_number::Crayon`: Crayon with the style for the row numbers.
-- `stubhead_label::Crayon`:  Crayon with the style for the stubhead label.
+- `stubhead_label::Crayon`: Crayon with the style for the stubhead label.
 - `row_label::Crayon`: Crayon with the style for the row labels.
 - `row_group_label::Crayon`: Crayon with the style for the row group label.
 - `first_line_column_label::Crayon`: Crayon with the style for the first column label lines.
@@ -229,7 +229,7 @@ contains the following fields:
 
 Each field is a `Crayon` describing the style for the corresponding element in the table.
 
-For example, we if want that the stubhead label is bold and red, we must define:
+For example, if we want the stubhead label to be bold and red, we must define:
 
 ```julia
 style = TextTableStyle(

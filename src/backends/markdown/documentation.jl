@@ -62,8 +62,8 @@ MarkdownHighlighter(f::Function, decoration::MarkdownStyle)
 MarkdownHighlighter(f::Function, fd::Function)
 ```
 
-The first will apply a fixed decoration to the highlighted cell specified in `decoration`
-whereas the second let the user select the desired decoration by specifying the function
+whereas the second lets the user select the desired decoration by specifying the function
+`fd`.
 `fd`.
 
 !!! note
@@ -94,7 +94,7 @@ that contains the following fields:
 
 - `row_number_label::MarkdownStyle`: Style for the row number label.
 - `row_number::MarkdownStyle`: Style for the row number.
-- `stubhead_label::MarkdownStyle`: Style for the stubhead label.
+- `first_column_label::MarkdownStyle`: Style for the first line of the column labels.
 - `row_label::MarkdownStyle`: Style for the row label.
 - `row_group_label::MarkdownStyle`: Style for the row group label.
 - `first_column_label::MarkdownStyle`: Style for the first line of the  column

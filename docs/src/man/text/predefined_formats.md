@@ -8,7 +8,7 @@ CurrentModule = PrettyTables
 using PrettyTables
 ```
 
-The text backend has some predefined borders and formats to print the tables.
+The text backend has some predefined borders and formats to print tables.
 
 ```@setup text_backend_predefined_formats
 data = Any[
@@ -105,7 +105,7 @@ pretty_table(
 
 ## Formats
 
-The text backend also defined some pre-defined formats to print the tables that can be used
+The text backend also defines some pre-defined formats to print tables that can be used
 through the keyword `table_format` in [`pretty_table`](@ref).
 
 `text_table_format__matrix`

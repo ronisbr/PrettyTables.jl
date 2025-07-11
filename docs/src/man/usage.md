@@ -177,7 +177,7 @@ can be specified using a symbol: `:l` for left, `:c` for center, or `:r` for rig
 
 !!! warning
 
-    Some backends does not support all the alignment options. For example, it is impossible
+    Some backends do not support all the alignment options. For example, it is impossible
     to define cell-specific alignment in the markdown backend.
 
 ### Other Arguments
@@ -403,7 +403,7 @@ v = f2(v, i, j)
 v = f3(v, i, j)
 ```
 
-Thus, the user must be ensure that the type of `v` between the calls are compatible.
+Thus, the user must ensure that the type of `v` between the calls is compatible.
 
 PrettyTables.jl provides some predefined formatters for common tasks as described in the
 next section.

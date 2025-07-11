@@ -1,6 +1,6 @@
 ## Description #############################################################################
 #
-# Documentation the LaTeX backend.
+# Documentation for the LaTeX backend.
 #
 ############################################################################################
 
@@ -35,7 +35,7 @@ contains the following two public fields:
     highlighter. This function must return a `Vector{String}` with the LaTeX environments to
     be applied to the cell.
 
-A LaTeX highlighter can be constructured using two helpers:
+A LaTeX highlighter can be constructed using two helpers:
 
 ```julia
 LatexHighlighter(f::Function, envs::Vector{String})
@@ -61,8 +61,8 @@ where the user select the desired decoration by specifying the function `fd`.
     **will not** affect the parameter `data` passed to the highlighter function `f`. It will
     always receive the original, unformatted value.
 
-For example, we if want to make the cells with value greater than 5 in bold, and all the
-cells with value less than 5 to be small, we can define:
+For example, if we want to make the cells with value greater than 5 bold, and all the cells
+with value less than 5 small, we can define:
 
 ```julia
 hl_gt5 = LatexHighlighter(

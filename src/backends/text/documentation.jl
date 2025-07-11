@@ -1,6 +1,6 @@
 ## Description #############################################################################
 #
-# Documentation the text backend.
+# Documentation for the text backend.
 #
 ############################################################################################
 
@@ -19,24 +19,24 @@ the output.
     anchor. Otherwise, the end of the line will be aligned with the anchor.
     (**Default** = `:l`)
 - `alignment_anchor_regex::Union{Vector{Regex}, Vector{Pair{Int, Vector{Regex}}}}`: This
-    keyword can be used to provide regexes to aligh the data values in the table columns. It
+    keyword can be used to provide regexes to align the data values in the table columns. If
     it is `Vector{Regex}`, the regexes will be used to align all the columns. If it is
-    `Vector{Pair{Int, Vector{Regex}}}`, the `Int` element specify the column to which the
+    `Vector{Pair{Int, Vector{Regex}}}`, the `Int` element specifies the column to which the
     regexes in `Vector{Regex}` will be applied. The regex match is searched in the same
     order as the regexes appear on the vector. The regex matching is applied after the cell
     conversion to string, which includes the formatters. If no match is found for a specific
-    line, the alignment of this line depends on the options `alignment_anchor_fallback`.
+    line, the alignment of this line depends on the option `alignment_anchor_fallback`.
     Example: `[2 => [r"\\."]]` aligns the decimal point of the cells in the second column.
     (**Default** = `Regex[]`)
 - `apply_alignment_regex_to_summary_rows::Bool`: If `true`, the alignment regexes in
     `alignment_anchor_regex` will also be applied to the summary rows.
     (**Default** = `false`)
-- `auto_wrap::Bool`: If `true`, the text will be wrapped on spaces to fit the column. Notice
+- `auto_wrap::Bool`: If `true`, the text will be wrapped on spaces to fit the column. Note
     that this function requires `linebreaks = true` and the column must have a fixed size
     (see `fixed_data_column_widths`).
     (**Default** = `false`)
 - `column_label_width_based_on_first_line_only::Bool`: If `true`, the column label width is
-    based on the first line of the column. Hence, if the other column labels have a text
+    based on the first line of the column. Hence, if the other column labels have text
     width larger than the computed column width, they will be cropped to fit.
     (**Default** = `false`)
 - `display_size::Tuple{Int, Int}`: A tuple of two integers that defines the display size
@@ -54,7 +54,7 @@ the output.
     (**Default** = `true`)
 - `fixed_data_column_widths::Union{Int, Vector{Int}}`: If it is a `Vector{Int}`, this vector
     specifies the width of each column. If it is a `Int`, this number will be used as the
-    width of all columns. If the width is equal or lower than 0, it will be automatically
+    width of all columns. If the width is equal to or lower than 0, it will be automatically
     computed to fit the large cell in the column.
     (**Default** = 0)
 - `highlighters::Vector{TextHighlighter}`: Highlighters to apply to the table. For more
@@ -62,10 +62,10 @@ the output.
 - `line_breaks::Bool`: If `true`, a new line character will break the line inside the cells.
     (**Default** = `false`)
 - `maximum_data_column_widths::Union{Int, Vector{Int}}`: If it is a `Vector{Int}`, this
-    vector specifies the maximum width of each column. If it is a `Int`, this number will be
-    used as the maximum width of all columns. If the maximum width is equal or lower than 0,
-    it will be ignored. Notice that the parameter `fixed_data_column_widths` has precedence
-    over this one.
+    vector specifies the maximum width of each column. If it is an `Int`, this number will
+    be used as the maximum width of all columns. If the maximum width is equal or lower than
+    0, it will be ignored. Notice that the parameter `fixed_data_column_widths` has
+    precedence over this one.
     (**Default** = 0)
 - `overwrite_display::Bool`: If `true`, the same number of lines in the printed table will
     be deleted from the output `io`. This can be used to update the table in the display
@@ -88,8 +88,8 @@ keyword. Each highlighter is an instance of the structure [`TextHighlighter`](@r
 contains three fields:
 
 - `f::Function`: Function with the signature `f(data, i, j)` in which should return `true`
-    if the element `(i, j)` in `data` must be highlighter, or `false` otherwise.
-- `fd::Function`: Function with the signature `f(h, data, i, j)` in which `h` is the
+    if the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
+- `fd::Function`: Function with the signature `fd(h, data, i, j)` in which `h` is the
     highlighter. This function must return the `Crayon` to be applied to the cell that must
     be highlighted.
 - `crayon::Crayon`: The `Crayon` to be applied to the highlighted cell if the default `fd`
@@ -140,7 +140,7 @@ where it will apply the `Crayon` returned by the function `fd` to the highlighte
     **will not** affect the parameter `data` passed to the highlighter function `f`. It will
     always receive the original, unformatted value.
 
-For example, we if want to highlight the cells with value greater than 5 in red, and
+For example, if we want to highlight the cells with value greater than 5 in red, and
 all the cells with value less than 5 in blue, we can define:
 
 ```julia
@@ -149,7 +149,7 @@ hl_gt5 = TextHighlighter(
     crayon"red"
 )
 
-hl_lt5 = HtmlHighlighter(
+hl_lt5 = TextHighlighter(
     (data, i, j) -> data[i, j] < 5,
     crayon"blue"
 )

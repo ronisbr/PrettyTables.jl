@@ -8,7 +8,7 @@ CurrentModule = PrettyTables
 using PrettyTables
 ```
 
-The following commands prints the table in `matrix` using the text backend with all the
+The following command prints the table in `matrix` using the text backend with all the
 available sections:
 
 ```julia-repl

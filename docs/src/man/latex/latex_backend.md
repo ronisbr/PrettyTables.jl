@@ -51,8 +51,8 @@ where the user select the desired decoration by specifying the function `fd`.
     **will not** affect the parameter `data` passed to the highlighter function `f`. It will
     always receive the original, unformatted value.
 
-For example, we if want to make the cells with value greater than 5 in bold, and all the
-cells with value less than 5 to be small, we can define:
+For example, if we want to make the cells with value greater than 5 bold, and all the
+cells with value less than 5 small, we can define:
 
 ```julia
 hl_gt5 = LatexHighlighter(
@@ -91,7 +91,7 @@ contains the following fields:
 - `horizontal_line_before_summary_rows::Bool`: If `true`, a horizontal line will be drawn
     before the summary rows. Notice that this line is the same as the one drawn if
     `horizontal_line_after_data_rows` is `true`. However, in this case, the line is omitted
-    if there is no summary rows.
+    if there are no summary rows.
 - `horizontal_line_after_summary_rows::Bool`: If `true`, a horizontal line will be drawn
     after the summary rows.
 - `vertical_line_at_beginning::Bool`: If `true`, a vertical line will be drawn at the

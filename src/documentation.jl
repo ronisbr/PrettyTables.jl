@@ -26,8 +26,8 @@ following types are supported:
 1. `AbstractVector`: any vector can be printed.
 2. `AbstractMatrix`: any matrix can be printed.
 
-`pretty_table` current supports printing table for four backends: text, markdown, html, and
-latex. The desired backend can be set using the `backend` keyword argument.
+`pretty_table` currently supports printing tables for four backends: text, markdown, html,
+and latex. The desired backend can be set using the `backend` keyword argument.
 
 For more information, see the **Extended Help** section.
 
@@ -220,7 +220,7 @@ can be specified using a symbol: `:l` for left, `:c` for center, or `:r` for rig
 
 !!! warning
 
-    Some backends does not support all the alignment options. For example, it is impossible
+    Some backends do not support all the alignment options. For example, it is impossible
     to define cell-specific alignment in the markdown backend.
 
 ### Other Arguments
@@ -456,7 +456,7 @@ v = f2(v, i, j)
 v = f3(v, i, j)
 ```
 
-Thus, the user must be ensure that the type of `v` between the calls are compatible.
+Thus, the user must ensure that the type of `v` between the calls is compatible.
 
 PrettyTables.jl provides some predefined formatters for common tasks. For more information,
 see [`fmt__printf`](@ref), [`fmt__round`](@ref), and [`fmt__latex_sn`](@ref).

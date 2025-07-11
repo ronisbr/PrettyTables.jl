@@ -61,7 +61,7 @@ HtmlHighlighter(f::Function, fd::Function)
 ```
 
 The first will apply a fixed decoration to the highlighted cell specified in `decoration`,
-whereas the second let the user select the desired decoration by specifying the function
+whereas the second lets the user select the desired decoration by specifying the function
 `fd`.
 
 !!! note
@@ -75,8 +75,8 @@ whereas the second let the user select the desired decoration by specifying the 
     **will not** affect the parameter `data` passed to the highlighter function `f`. It will
     always receive the original, unformatted value.
 
-For example, we if want to highlight the cells with value greater than 5 in red, and all the
-cells with value less than 5 in blue, we can define:
+For example, if we want to highlight the cells with values greater than 5 in red, and all
+the cells with values less than 5 in blue, we can define:
 
 ```julia
 hl_gt5 = HtmlHighlighter(
@@ -134,8 +134,7 @@ contains the following fields:
 Each field is a vector of [`HtmlPair`](@ref), *i.e.* `Pair{String, String}`, describing
 properties and values compatible with the HTML style attribute.
 
-For example, we if want that the stubhead label is bold and red, we must define:
-
+For example, if we want the stubhead label to be bold and red, we must define:
 ```julia
 style = HtmlTableStyle(
     stubhead_label = ["font-weight" => "bold", "color" => "red"]
