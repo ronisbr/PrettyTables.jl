@@ -5,6 +5,28 @@
 ############################################################################################
 
 """
+    _column_label_limits(table_data::TableData, i::Int, j::Int) -> Tuple{Int, Int}
+
+Return the limits of the column label cell at `(i, j)` in `table_data`. If the cell is not
+merged, the limits are just `(j, j)`. If the cell is merged, the limits are the start and
+end of the merged cell, which is defined by the `merge_column_label_cells` field of
+`table_data`.
+"""
+function _column_label_limits(table_data::TableData, i::Int, j::Int)
+    isnothing(table_data.merge_column_label_cells) && return j, j
+
+    # Check if we are in a merged column.
+    for mc in table_data.merge_column_label_cells
+        if mc.i == i && (mc.j <= j <= mc.j + mc.column_span - 1)
+            return mc.j, mc.j + mc.column_span - 1
+        end
+    end
+
+    # If we are not in a merged column, the limits are just the cell itself.
+    return j, j
+end
+
+"""
     _has_footnotes(table_data::TableData) -> Bool
 
 Return whether `table_data` has footnotes.

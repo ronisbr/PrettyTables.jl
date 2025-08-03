@@ -27,6 +27,7 @@ function _text__print_table(
     maximum_data_column_widths::Union{Int, Vector{Int}} = 0,
     overwrite_display::Bool = false,
     reserved_display_lines::Int = 0,
+    shrinkable_data_column::Int = 0,
     style::TextTableStyle = TextTableStyle(),
     table_format::TextTableFormat = TextTableFormat(),
 )
@@ -365,7 +366,7 @@ function _text__print_table(
     end
 
     # If the user wants a fixed column width, we must reprocess all the data columns to crop
-    # to the correct size if necesary.
+    # to the correct size if necessary.
     has_fixed_data_column_widths && _text__fix_data_column_widths!(
         printed_data_column_widths,
         column_labels,
@@ -406,19 +407,23 @@ function _text__print_table(
     horizontally_limited_by_display = false
 
     if fit_table_in_display_horizontally && (display.size[2] > 0)
-        # Here we have three possibilities:
+        # Here we have four possibilities:
         #
-        #   1. We cannot show the table continuation column, meaning that the table is
+        #   1. We can show the entire table. If not, we will have a continuation column.
+        #   2. We cannot show the table continuation column, meaning that the table is
         #      horizontally limited by the display.
-        #   2. We can partially show the continuation column, meaning that the table is
+        #   3. We can partially show the continuation column, meaning that the table is
         #      horizontally limited by the display but there is a continuation column.
-        #   3. We can show the continuation column, meaning that the table is horizontally
+        #   4. We can show the continuation column, meaning that the table is horizontally
         #      cropped by the user specification.
 
         num_remaining_columns = display_size[2] - table_width_wo_cont_col
 
         horizontally_limited_by_display =
-            if (num_remaining_columns == 0) && (num_printed_data_columns == table_data.num_columns)
+            if (
+                (num_remaining_columns > 0) ||
+                ((num_remaining_columns == 0) && (num_printed_data_columns == table_data.num_columns))
+            )
                 false
             else
                 num_remaining_columns < (3 + tf.vertical_line_after_continuation_column)
@@ -428,6 +433,74 @@ function _text__print_table(
     # If we are limited by the display, we need to update the number of printed columns and
     # rows.
     if horizontally_limited_by_display
+        # Check if the user select one visible row to shrink to fit the table in the
+        # display.
+        if (1 <= shrinkable_data_column <= num_printed_data_columns)
+            # Number of characters we should remove from the shrinkable data column to fit
+            # the table in the display.
+            Δc = table_width_wo_cont_col - display_size[2]
+
+            # Compute the new column width.
+            cw = max(1, printed_data_column_widths[shrinkable_data_column] - Δc)
+
+            printed_data_column_widths[shrinkable_data_column] = cw
+
+            # Shrink the column labels.
+            for i in 1:size(column_labels, 1)
+                # Compute the column limits of this column label.
+                j₀, j₁ = _column_label_limits(table_data, i, shrinkable_data_column)
+
+                # Compute the available width.
+                cell_width = 0
+
+                # Make sure we are not accessing a column out of the bounds.
+                j₁ = min(j₁, num_printed_data_columns)
+
+                for j in j₀:j₁
+                    cell_width += printed_data_column_widths[j] + 2
+
+                    # We must add a space if we have a vertical line in the merged cells.
+                    if (j != j₁) && (j ∈ vertical_lines_at_data_columns)
+                        cell_width += 1
+                    end
+                end
+
+                # We already take into account 2 characters for the margin below.
+                cell_width -= 2
+
+                # We need to modify the first field of this column label to take into
+                # account merged labels.
+                column_labels[i, j₀] =
+                    _text__fit_cell_in_maximum_cell_width(
+                        column_labels[i, j₀],
+                        cell_width,
+                        line_breaks
+                    )
+            end
+
+            # Shrink the data cells.
+            for i in 1:num_printed_data_rows
+                table_str[i, shrinkable_data_column] =
+                    _text__fit_cell_in_maximum_cell_width(
+                        table_str[i, shrinkable_data_column],
+                        printed_data_column_widths[shrinkable_data_column],
+                        line_breaks
+                    )
+            end
+
+            # Shrink the summary rows.
+            if !isnothing(summary_rows)
+                for i in 1:size(summary_rows, 1)
+                    summary_rows[i, shrinkable_data_column] =
+                        _text__fit_cell_in_maximum_cell_width(
+                            summary_rows[i, shrinkable_data_column],
+                            printed_data_column_widths[shrinkable_data_column],
+                            line_breaks
+                        )
+                end
+            end
+        end
+
         num_printed_data_columns = _text__number_of_printed_data_columns(
             display.size[2],
             table_data,
