@@ -67,6 +67,9 @@ the output.
 - `reserved_display_lines::Int`: Number of lines to be left at the beginning of the printing
   when vertically cropping the output.
   (**Default** = 0)
+- `shrinkable_column_minimum_width::Int`: If it is a positive integer (> 0), this is the
+  minimum width of the shrinkable column (see `shrinkable_data_column`).
+  (**Default** = 0)
 - `shrinkable_data_column::Int`: If it is a positive integer, this column will be
   shrinkable. This means that if the table does not fit in the display, this column will be
   shrunk to fit the table in the display. If it is `0` or negative, no column will be

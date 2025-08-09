@@ -983,6 +983,29 @@ end
 
     @test result == expected
 
+    expected = """
+┌──────────────────────────────┬────────
+│ HHHHHHHHHHHHHHHHHHHHHHHHHHH… │ Col.  ⋯
+├───────┬──────────────────────┼────────
+│ AAAA… │ AAAAAAAAAA           │ AAAAA ⋯
+│ BBBB… │ BBBBBBBBBBBBBBBBBBBB │ BBBBB ⋯
+│ CCCCC │ CCCCC                │ CCCCC ⋯
+└───────┴──────────────────────┴────────
+                        1 column omitted
+"""
+
+    result = pretty_table(
+        String,
+        matrix;
+        alignment                       = :l,
+        column_labels                   = [MultiColumn(2, "H"^35, :r), "Col. 3"],
+        display_size                    = (-1, 40),
+        shrinkable_column_minimum_width = 5,
+        shrinkable_data_column          = 1,
+    )
+
+    @test result == expected
+
     # == Shrinking Column #2 ===============================================================
 
     expected = """
@@ -1049,6 +1072,29 @@ end
 
     @test result == expected
 
+    expected = """
+┌──────────────────────────────┬────────
+│ HHHHHHHHHHHHHHHHHHHHHHHHHHH… │ Col.  ⋯
+├──────────────────────┬───────┼────────
+│ AAAAAAAAAAAAAAAAAAAA │ AAAA… │ AAAAA ⋯
+│ BBBBBBBBBB           │ BBBB… │ BBBBB ⋯
+│ CCCCC                │ CCCCC │ CCCCC ⋯
+└──────────────────────┴───────┴────────
+                        1 column omitted
+"""
+
+    result = pretty_table(
+        String,
+        matrix;
+        alignment                       = :l,
+        column_labels                   = [MultiColumn(2, "H"^35, :r), "Col. 3"],
+        display_size                    = (-1, 40),
+        shrinkable_column_minimum_width = 5,
+        shrinkable_data_column          = 2,
+    )
+
+    @test result == expected
+
     # == Shrinking Column #3 ===============================================================
 
     expected = """
@@ -1111,6 +1157,18 @@ end
         column_labels          = [MultiColumn(2, "H"^35, :r), "Col. 3"],
         display_size           = (-1, 40),
         shrinkable_data_column = 3,
+    )
+
+    @test result == expected
+
+    result = pretty_table(
+        String,
+        matrix;
+        alignment                       = :l,
+        column_labels                   = [MultiColumn(2, "H"^35, :r), "Col. 3"],
+        display_size                    = (-1, 40),
+        shrinkable_column_minimum_width = 5,
+        shrinkable_data_column          = 3,
     )
 
     @test result == expected

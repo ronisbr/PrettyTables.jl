@@ -28,6 +28,7 @@ function _text__print_table(
     overwrite_display::Bool = false,
     reserved_display_lines::Int = 0,
     shrinkable_data_column::Int = 0,
+    shrinkable_column_minimum_width::Int = 0,
     style::TextTableStyle = TextTableStyle(),
     table_format::TextTableFormat = TextTableFormat(),
 )
@@ -441,7 +442,11 @@ function _text__print_table(
             Δc = table_width_wo_cont_col - display_size[2]
 
             # Compute the new column width.
-            cw = max(1, printed_data_column_widths[shrinkable_data_column] - Δc)
+            cw = max(
+                1,
+                shrinkable_column_minimum_width,
+                printed_data_column_widths[shrinkable_data_column] - Δc
+            )
 
             printed_data_column_widths[shrinkable_data_column] = cw
 
