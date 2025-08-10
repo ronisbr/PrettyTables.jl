@@ -10,9 +10,11 @@
 
         expected = """
 <table>
-  <tr class = "columnLabelRow">
-    <th style = "text-align: right; font-weight: bold;">Col. 1</th>
-  </tr>
+  <thead>
+    <tr class = "columnLabelRow">
+      <th style = "text-align: right; font-weight: bold;">Col. 1</th>
+    </tr>
+  </thead>
   <tbody>
     <tr class = "dataRow">
       <td style = "text-align: right;">&lt;BR&gt;</td>
@@ -50,9 +52,11 @@
 
         expected = """
 <table>
-  <tr class = "columnLabelRow">
-    <th style = "text-align: right; font-weight: bold;">Col. 1</th>
-  </tr>
+  <thead>
+    <tr class = "columnLabelRow">
+      <th style = "text-align: right; font-weight: bold;">Col. 1</th>
+    </tr>
+  </thead>
   <tbody>
     <tr class = "dataRow">
       <td style = "text-align: right;">&lt;BR&gt;</td>
@@ -90,9 +94,11 @@
 
         expected = """
 <table>
-  <tr class = "columnLabelRow">
-    <th style = "text-align: right; font-weight: bold;">Col. 1</th>
-  </tr>
+  <thead>
+    <tr class = "columnLabelRow">
+      <th style = "text-align: right; font-weight: bold;">Col. 1</th>
+    </tr>
+  </thead>
   <tbody>
     <tr class = "dataRow">
       <td style = "text-align: right;"><BR></td>
@@ -132,10 +138,12 @@
 
         expected = """
 <table>
-  <tr class = "columnLabelRow">
-    <th style = "text-align: right; font-weight: bold;">Col. 1</th>
-    <th style = "text-align: right; font-weight: bold;">Col. 2</th>
-  </tr>
+  <thead>
+    <tr class = "columnLabelRow">
+      <th style = "text-align: right; font-weight: bold;">Col. 1</th>
+      <th style = "text-align: right; font-weight: bold;">Col. 2</th>
+    </tr>
+  </thead>
   <tbody>
     <tr class = "dataRow">
       <td style = "text-align: right;">First Line\\nSecond Line</td>
@@ -155,10 +163,12 @@
 
         expected = """
 <table>
-  <tr class = "columnLabelRow">
-    <th style = "text-align: right; font-weight: bold;">Col. 1</th>
-    <th style = "text-align: right; font-weight: bold;">Col. 2</th>
-  </tr>
+  <thead>
+    <tr class = "columnLabelRow">
+      <th style = "text-align: right; font-weight: bold;">Col. 1</th>
+      <th style = "text-align: right; font-weight: bold;">Col. 2</th>
+    </tr>
+  </thead>
   <tbody>
     <tr class = "dataRow">
       <td style = "text-align: right;">First Line<br>Second Line</td>
@@ -186,9 +196,11 @@
 
         expected = """
 <table>
-  <tr class = "columnLabelRow">
-    <th style = "text-align: right; font-weight: bold;">Col. 1</th>
-  </tr>
+  <thead>
+    <tr class = "columnLabelRow">
+      <th style = "text-align: right; font-weight: bold;">Col. 1</th>
+    </tr>
+  </thead>
   <tbody>
     <tr class = "dataRow">
       <td style = "text-align: right;">UndefInitializer()</td>
@@ -232,11 +244,13 @@
 
         expected = """
 <table>
-  <tr class = "columnLabelRow">
-    <th style = "text-align: right; font-weight: bold;">Col. 1</th>
-    <th style = "text-align: right; font-weight: bold;">Col. 2</th>
-    <th style = "text-align: right; font-weight: bold;">Col. 3</th>
-  </tr>
+  <thead>
+    <tr class = "columnLabelRow">
+      <th style = "text-align: right; font-weight: bold;">Col. 1</th>
+      <th style = "text-align: right; font-weight: bold;">Col. 2</th>
+      <th style = "text-align: right; font-weight: bold;">Col. 3</th>
+    </tr>
+  </thead>
   <tbody>
     <tr class = "dataRow">
       <td style = "text-align: right;"><div class="markdown"><p><strong>Bold</strong></p></div></td>

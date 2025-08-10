@@ -10,13 +10,15 @@
     @testset ":print" begin
         expected = """
 <table>
-  <tr class = "columnLabelRow">
-    <th style = "text-align: right; font-weight: bold;">Col. 1</th>
-    <th style = "text-align: right; font-weight: bold;">Col. 2</th>
-    <th style = "text-align: right; font-weight: bold;">Col. 3</th>
-    <th style = "text-align: right; font-weight: bold;">Col. 4</th>
-    <th style = "text-align: right; font-weight: bold;">Col. 5</th>
-  </tr>
+  <thead>
+    <tr class = "columnLabelRow">
+      <th style = "text-align: right; font-weight: bold;">Col. 1</th>
+      <th style = "text-align: right; font-weight: bold;">Col. 2</th>
+      <th style = "text-align: right; font-weight: bold;">Col. 3</th>
+      <th style = "text-align: right; font-weight: bold;">Col. 4</th>
+      <th style = "text-align: right; font-weight: bold;">Col. 5</th>
+    </tr>
+  </thead>
   <tbody>
     <tr class = "dataRow">
       <td style = "text-align: right;">a</td>
@@ -40,13 +42,15 @@
     @testset ":show" begin
         expected = """
 <table>
-  <tr class = "columnLabelRow">
-    <th style = "text-align: right; font-weight: bold;">Col. 1</th>
-    <th style = "text-align: right; font-weight: bold;">Col. 2</th>
-    <th style = "text-align: right; font-weight: bold;">Col. 3</th>
-    <th style = "text-align: right; font-weight: bold;">Col. 4</th>
-    <th style = "text-align: right; font-weight: bold;">Col. 5</th>
-  </tr>
+  <thead>
+    <tr class = "columnLabelRow">
+      <th style = "text-align: right; font-weight: bold;">Col. 1</th>
+      <th style = "text-align: right; font-weight: bold;">Col. 2</th>
+      <th style = "text-align: right; font-weight: bold;">Col. 3</th>
+      <th style = "text-align: right; font-weight: bold;">Col. 4</th>
+      <th style = "text-align: right; font-weight: bold;">Col. 5</th>
+    </tr>
+  </thead>
   <tbody>
     <tr class = "dataRow">
       <td style = "text-align: right;">&apos;a&apos;</td>

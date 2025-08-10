@@ -10,13 +10,15 @@
     @testset "Alignment as a Symbol" verbose = true  begin
         expected = """
 <table>
-  <tr class = "columnLabelRow">
-    <th style = "text-align: center; font-weight: bold;">Col. 1</th>
-    <th style = "text-align: center; font-weight: bold;">Col. 2</th>
-    <th style = "text-align: center; font-weight: bold;">Col. 3</th>
-    <th style = "text-align: center; font-weight: bold;">Col. 4</th>
-    <th style = "text-align: center; font-weight: bold;">Col. 5</th>
-  </tr>
+  <thead>
+    <tr class = "columnLabelRow">
+      <th style = "text-align: center; font-weight: bold;">Col. 1</th>
+      <th style = "text-align: center; font-weight: bold;">Col. 2</th>
+      <th style = "text-align: center; font-weight: bold;">Col. 3</th>
+      <th style = "text-align: center; font-weight: bold;">Col. 4</th>
+      <th style = "text-align: center; font-weight: bold;">Col. 5</th>
+    </tr>
+  </thead>
   <tbody>
     <tr class = "dataRow">
       <td style = "text-align: center;">(1, 1)</td>
@@ -69,13 +71,15 @@
 
         expected = """
 <table>
-  <tr class = "columnLabelRow">
-    <th style = "font-weight: bold;">Col. 1</th>
-    <th style = "font-weight: bold;">Col. 2</th>
-    <th style = "font-weight: bold;">Col. 3</th>
-    <th style = "font-weight: bold;">Col. 4</th>
-    <th style = "font-weight: bold;">Col. 5</th>
-  </tr>
+  <thead>
+    <tr class = "columnLabelRow">
+      <th style = "font-weight: bold;">Col. 1</th>
+      <th style = "font-weight: bold;">Col. 2</th>
+      <th style = "font-weight: bold;">Col. 3</th>
+      <th style = "font-weight: bold;">Col. 4</th>
+      <th style = "font-weight: bold;">Col. 5</th>
+    </tr>
+  </thead>
   <tbody>
     <tr class = "dataRow">
       <td>(1, 1)</td>
@@ -129,13 +133,15 @@
     @testset "Alignment as a Vector" verbose = true  begin
         expected = """
 <table>
-  <tr class = "columnLabelRow">
-    <th style = "text-align: left; font-weight: bold;">Col. 1</th>
-    <th style = "text-align: center; font-weight: bold;">Col. 2</th>
-    <th style = "text-align: right; font-weight: bold;">Col. 3</th>
-    <th style = "text-align: left; font-weight: bold;">Col. 4</th>
-    <th style = "text-align: center; font-weight: bold;">Col. 5</th>
-  </tr>
+  <thead>
+    <tr class = "columnLabelRow">
+      <th style = "text-align: left; font-weight: bold;">Col. 1</th>
+      <th style = "text-align: center; font-weight: bold;">Col. 2</th>
+      <th style = "text-align: right; font-weight: bold;">Col. 3</th>
+      <th style = "text-align: left; font-weight: bold;">Col. 4</th>
+      <th style = "text-align: center; font-weight: bold;">Col. 5</th>
+    </tr>
+  </thead>
   <tbody>
     <tr class = "dataRow">
       <td style = "text-align: left;">(1, 1)</td>
@@ -188,13 +194,15 @@
 
         expected = """
 <table>
-  <tr class = "columnLabelRow">
-    <th style = "text-align: left; font-weight: bold;">Col. 1</th>
-    <th style = "text-align: center; font-weight: bold;">Col. 2</th>
-    <th style = "text-align: right; font-weight: bold;">Col. 3</th>
-    <th style = "font-weight: bold;">Col. 4</th>
-    <th style = "text-align: right; font-weight: bold;">Col. 5</th>
-  </tr>
+  <thead>
+    <tr class = "columnLabelRow">
+      <th style = "text-align: left; font-weight: bold;">Col. 1</th>
+      <th style = "text-align: center; font-weight: bold;">Col. 2</th>
+      <th style = "text-align: right; font-weight: bold;">Col. 3</th>
+      <th style = "font-weight: bold;">Col. 4</th>
+      <th style = "text-align: right; font-weight: bold;">Col. 5</th>
+    </tr>
+  </thead>
   <tbody>
     <tr class = "dataRow">
       <td style = "text-align: left;">(1, 1)</td>

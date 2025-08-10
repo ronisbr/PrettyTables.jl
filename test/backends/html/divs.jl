@@ -8,12 +8,14 @@
     matrix = [1 2]
 
     expected = """
-<div overflow-x = "scroll">
+<div style = "overflow-x: scroll;">
   <table class = "myClass">
-    <tr class = "columnLabelRow">
-      <th style = "text-align: right; font-weight: bold;">Col. 1</th>
-      <th style = "text-align: right; font-weight: bold;">Col. 2</th>
-    </tr>
+    <thead>
+      <tr class = "columnLabelRow">
+        <th style = "text-align: right; font-weight: bold;">Col. 1</th>
+        <th style = "text-align: right; font-weight: bold;">Col. 2</th>
+      </tr>
+    </thead>
     <tbody>
       <tr class = "dataRow">
         <td style = "text-align: right;">1</td>
@@ -36,17 +38,19 @@
 
     expected = """
 <div>
-  <div style = "font-weight: bold; float: left;">
+  <div style = "float: left;">
     <span>Top Left</span>
   </div>
   <div style = "clear: both;"></div>
 </div>
-<div overflow-x = "scroll">
+<div style = "overflow-x: scroll;">
   <table class = "myClass">
-    <tr class = "columnLabelRow">
-      <th style = "text-align: right; font-weight: bold;">Col. 1</th>
-      <th style = "text-align: right; font-weight: bold;">Col. 2</th>
-    </tr>
+    <thead>
+      <tr class = "columnLabelRow">
+        <th style = "text-align: right; font-weight: bold;">Col. 1</th>
+        <th style = "text-align: right; font-weight: bold;">Col. 2</th>
+      </tr>
+    </thead>
     <tbody>
       <tr class = "dataRow">
         <td style = "text-align: right;">1</td>
@@ -70,7 +74,7 @@
 
     expected = """
 <div>
-  <div style = "font-weight: bold; float: left;">
+  <div style = "float: left;">
     <span>Top Left</span>
   </div>
   <div style = "font-style: italic; float: right;">
@@ -78,12 +82,14 @@
   </div>
   <div style = "clear: both;"></div>
 </div>
-<div overflow-x = "scroll">
+<div style = "overflow-x: scroll;">
   <table class = "myClass">
-    <tr class = "columnLabelRow">
-      <th style = "text-align: right; font-weight: bold;">Col. 1</th>
-      <th style = "text-align: right; font-weight: bold;">Col. 2</th>
-    </tr>
+    <thead>
+      <tr class = "columnLabelRow">
+        <th style = "text-align: right; font-weight: bold;">Col. 1</th>
+        <th style = "text-align: right; font-weight: bold;">Col. 2</th>
+      </tr>
+    </thead>
     <tbody>
       <tr class = "dataRow">
         <td style = "text-align: right;">1</td>

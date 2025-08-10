@@ -49,14 +49,16 @@
 
     expected = """
 <table>
-  <tr class = "columnLabelRow">
-    <th style = "text-align: right; font-weight: bold;">#1</th>
-    <th style = "text-align: right; font-weight: bold;">#2</th>
-    <th style = "text-align: right; font-weight: bold;">#3</th>
-    <th style = "text-align: right; font-weight: bold;">#4</th>
-    <th style = "text-align: right; font-weight: bold;">#5</th>
-    <th style = "text-align: right; font-weight: bold;">#6</th>
-  </tr>
+  <thead>
+    <tr class = "columnLabelRow">
+      <th style = "text-align: right; font-weight: bold;">#1</th>
+      <th style = "text-align: right; font-weight: bold;">#2</th>
+      <th style = "text-align: right; font-weight: bold;">#3</th>
+      <th style = "text-align: right; font-weight: bold;">#4</th>
+      <th style = "text-align: right; font-weight: bold;">#5</th>
+      <th style = "text-align: right; font-weight: bold;">#6</th>
+    </tr>
+  </thead>
   <tbody>
     <tr class = "dataRow">
       <td style = "text-align: right;">1</td>
@@ -127,14 +129,16 @@ end
 
     expected = """
 <table>
-  <tr class = "columnLabelRow">
-    <th style = "text-align: right; font-weight: bold;">#1</th>
-    <th style = "text-align: right; font-weight: bold;">#2</th>
-    <th style = "text-align: right; font-weight: bold;">#3</th>
-    <th style = "text-align: right; font-weight: bold;">#4</th>
-    <th style = "text-align: right; font-weight: bold;">#5</th>
-    <th style = "text-align: right; font-weight: bold;">#6</th>
-  </tr>
+  <thead>
+    <tr class = "columnLabelRow">
+      <th style = "text-align: right; font-weight: bold;">#1</th>
+      <th style = "text-align: right; font-weight: bold;">#2</th>
+      <th style = "text-align: right; font-weight: bold;">#3</th>
+      <th style = "text-align: right; font-weight: bold;">#4</th>
+      <th style = "text-align: right; font-weight: bold;">#5</th>
+      <th style = "text-align: right; font-weight: bold;">#6</th>
+    </tr>
+  </thead>
   <tbody>
     <tr class = "dataRow">
       <td style = "text-align: right;">1</td>

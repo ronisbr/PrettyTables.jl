@@ -16,12 +16,14 @@
 
     expected = """
 <table>
-  <tr class = "columnLabelRow">
-    <th class = "rowNumberLabel" style = "text-align: right; font-weight: bold;">Row</th>
-    <th style = "text-align: right; font-weight: bold;">Col. -3</th>
-    <th style = "text-align: right; font-weight: bold;">Col. -2</th>
-    <th style = "text-align: right; font-weight: bold;">Col. -1</th>
-  </tr>
+  <thead>
+    <tr class = "columnLabelRow">
+      <th class = "rowNumberLabel" style = "text-align: right; font-weight: bold;">Row</th>
+      <th style = "text-align: right; font-weight: bold;">Col. -3</th>
+      <th style = "text-align: right; font-weight: bold;">Col. -2</th>
+      <th style = "text-align: right; font-weight: bold;">Col. -1</th>
+    </tr>
+  </thead>
   <tbody>
     <tr class = "dataRow">
       <td class = "rowNumber" style = "text-align: right; font-weight: bold;">-2</td>

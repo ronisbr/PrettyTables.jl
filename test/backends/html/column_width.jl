@@ -9,11 +9,13 @@
 
     expected = """
 <table>
-  <tr class = "columnLabelRow">
-    <th style = "text-align: right; max-width: 30px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: bold;">Col. 1</th>
-    <th style = "text-align: right; max-width: 30px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: bold;">Col. 2</th>
-    <th style = "text-align: right; max-width: 30px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: bold;">Col. 3</th>
-  </tr>
+  <thead>
+    <tr class = "columnLabelRow">
+      <th style = "text-align: right; max-width: 30px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: bold;">Col. 1</th>
+      <th style = "text-align: right; max-width: 30px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: bold;">Col. 2</th>
+      <th style = "text-align: right; max-width: 30px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: bold;">Col. 3</th>
+    </tr>
+  </thead>
   <tbody>
     <tr class = "dataRow">
       <td style = "text-align: right; max-width: 30px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">(1, 1)</td>

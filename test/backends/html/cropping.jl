@@ -16,12 +16,14 @@
   <div style = "clear: both;"></div>
 </div>
 <table>
-  <tr class = "columnLabelRow">
-    <th style = "text-align: right; font-weight: bold;">Col. 1</th>
-    <th style = "text-align: right; font-weight: bold;">Col. 2</th>
-    <th style = "text-align: right; font-weight: bold;">Col. 3</th>
-    <td>&ctdot;</td>
-  </tr>
+  <thead>
+    <tr class = "columnLabelRow">
+      <th style = "text-align: right; font-weight: bold;">Col. 1</th>
+      <th style = "text-align: right; font-weight: bold;">Col. 2</th>
+      <th style = "text-align: right; font-weight: bold;">Col. 3</th>
+      <td>&ctdot;</td>
+    </tr>
+  </thead>
   <tbody>
     <tr class = "dataRow">
       <td style = "text-align: right;">(1, 1)</td>
@@ -65,12 +67,14 @@
   <div style = "clear: both;"></div>
 </div>
 <table>
-  <tr class = "columnLabelRow">
-    <th style = "text-align: right; font-weight: bold;">Col. 1</th>
-    <th style = "text-align: right; font-weight: bold;">Col. 2</th>
-    <th style = "text-align: right; font-weight: bold;">Col. 3</th>
-    <td>&ctdot;</td>
-  </tr>
+  <thead>
+    <tr class = "columnLabelRow">
+      <th style = "text-align: right; font-weight: bold;">Col. 1</th>
+      <th style = "text-align: right; font-weight: bold;">Col. 2</th>
+      <th style = "text-align: right; font-weight: bold;">Col. 3</th>
+      <td>&ctdot;</td>
+    </tr>
+  </thead>
   <tbody>
     <tr class = "dataRow">
       <td style = "text-align: right;">(1, 1)</td>
@@ -109,12 +113,14 @@
     @testset "Omitted Cell Summary" begin
         expected = """
 <table>
-  <tr class = "columnLabelRow">
-    <th style = "text-align: right; font-weight: bold;">Col. 1</th>
-    <th style = "text-align: right; font-weight: bold;">Col. 2</th>
-    <th style = "text-align: right; font-weight: bold;">Col. 3</th>
-    <td>&ctdot;</td>
-  </tr>
+  <thead>
+    <tr class = "columnLabelRow">
+      <th style = "text-align: right; font-weight: bold;">Col. 1</th>
+      <th style = "text-align: right; font-weight: bold;">Col. 2</th>
+      <th style = "text-align: right; font-weight: bold;">Col. 3</th>
+      <td>&ctdot;</td>
+    </tr>
+  </thead>
   <tbody>
     <tr class = "dataRow">
       <td style = "text-align: right;">(1, 1)</td>

@@ -202,7 +202,7 @@ Define the style of the tables printed with the HTML back end.
 - `source_notes::Vector{HtmlPair}`: Style for the source notes.
 """
 @kwdef struct HtmlTableStyle
-    top_left_string::Vector{HtmlPair}                = _HTML__BOLD
+    top_left_string::Vector{HtmlPair}                = _HTML__NO_DECORATION
     top_right_string::Vector{HtmlPair}               = _HTML__ITALIC
     table::Vector{HtmlPair}                          = _HTML__NO_DECORATION
     title::Vector{HtmlPair}                          = _HTML__XLARGE_BOLD

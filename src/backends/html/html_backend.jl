@@ -146,7 +146,7 @@ function _html__print(
         push!(vproperties, "class" => table_div_class)
 
         empty!(vstyle)
-        push!(vproperties, "overflow-x" => "scroll")
+        push!(vstyle, "overflow-x" => "scroll")
 
         _aprintln(
             buf,
@@ -186,7 +186,7 @@ function _html__print(
 
         if action == :new_row
 
-            if (ps.i == 1) && (rs ∈ (:table_header, :column_label)) && !head_opened
+            if (ps.i == 1) && (rs ∈ (:table_header, :column_labels)) && !head_opened
                 _aprintln(buf, "<thead>", il, ns; minify)
                 il += 1
                 head_opened = true
