@@ -358,8 +358,11 @@ function _text__print_column_label_horizontal_line(
             # We must compute if the cell at the top or at the bottom from the current
             # horizontal line is merged. Notice that if we are at the top of the table, the
             # effect is equal to have a merged cell above it.
-            tcm = _is_column_label_cell_merged(table_data, row_number,     j + 1) || top
-            bcm = _is_column_label_cell_merged(table_data, row_number + 1, j + 1)
+            top_j₀,    top_j₁    = _column_label_limits(table_data, row_number,     j + 1)
+            bottom_j₀, bottom_j₁ = _column_label_limits(table_data, row_number + 1, j + 1)
+
+            tcm = (top_j₀    != top_j₁)    && (j + 1 != top_j₀   ) || top
+            bcm = (bottom_j₀ != bottom_j₁) && (j + 1 != bottom_j₀)
 
             if tf.suppress_vertical_lines_at_column_labels
                 bcm = tcm = true
