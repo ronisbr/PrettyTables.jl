@@ -86,6 +86,8 @@ contains the following fields:
 - `borders::LatexTableBorders`: Format of the borders.
 - `horizontal_line_at_beginning::Bool`: If `true`, a horizontal line will be drawn at the
     beginning of the table.
+- `horizontal_line_at_merged_column_labels::Bool`: If `true`, a horizontal line will be
+    drawn on bottom of the merged column labels using `\\cline`.
 - `horizontal_line_after_column_labels::Bool`: If `true`, a horizontal line will be drawn
     after the column labels.
 - `horizontal_lines_at_data_rows::Union{Symbol, Vector{Int}}`: A horizontal line will be
