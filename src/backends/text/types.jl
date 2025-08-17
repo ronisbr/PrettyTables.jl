@@ -117,6 +117,9 @@ Define the format of the tables printed with the text back end.
     drawn after each column label row index listed in this vector. If the symbol `:all` is
     passed, a horizontal line will be drawn after every column label. If the symbol `:none`
     is passed, no horizontal lines will be drawn.
+- `horizontal_line_at_merged_column_labels::Bool`: If `true`, a horizontal line will be
+    drawn at the merged column labels. Notice that the horizontal line drawn using the
+    option `horizontal_lines_at_column_labels` has precedence over this one.
 - `horizontal_line_after_column_labels::Bool`: If `true`, a horizontal line will be drawn
     after the column labels.
 - `horizontal_lines_at_data_rows::Union{Symbol, Vector{Int}}`: A horizontal line will be
@@ -160,6 +163,7 @@ Define the format of the tables printed with the text back end.
 
     horizontal_line_at_beginning::Bool = true
     horizontal_lines_at_column_labels::Union{Symbol, Vector{Int}} = :none
+    horizontal_line_at_merged_column_labels::Bool = false
     horizontal_line_after_column_labels::Bool = true
     horizontal_lines_at_data_rows::Union{Symbol, Vector{Int}} = :none
     horizontal_line_before_row_group_label::Bool = true

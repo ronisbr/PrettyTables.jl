@@ -71,6 +71,7 @@ end
     include("./backends/text/errors.jl")
     include("./backends/text/full.jl")
     include("./backends/text/highlighters.jl")
+    include("./backends/text/horizontal_lines.jl")
     include("./backends/text/line_breaks.jl")
     include("./backends/text/offset_arrays.jl")
     include("./backends/text/renderers.jl")

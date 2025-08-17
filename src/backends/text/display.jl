@@ -404,6 +404,121 @@ function _text__print_column_label_horizontal_line(
 end
 
 """
+    _text__print_column_label_horizontal_line_only_at_merged_labels(display::Display, tf::TextTableFormat, crayon::Crayon, table_data::TableData, row_number::Int, vertical_lines_at_data_columns::AbstractVector{Int}, row_number_column_width::Int, row_label_column_width::Int, printed_data_column_widths::Vector{Int})
+
+Print a column label line to `display` where a horizontal line is drawn only after merged
+column labels.
+
+# Arguments
+
+- `display::Display`: Display where the horizontal line will be printed.
+- `tf::TextTableFormat`: Table format.
+- `crayon::Crayon`: Crayon used to print the horizontal line.
+- `table_data::TableData`: Table data.
+- `row_number::Int`: Column label row number before the horizontal line.
+- `vertical_lines_at_data_columns::AbstractVector{Int}`: List of columns where a vertical
+    line must be drawn after the cell.
+- `row_number_column_width::Int`: Row number column width.
+- `row_label_column_width::Int`: Row label column width.
+- `printed_data_column_widths::Vector{Int}`: Printed data column widths.
+"""
+function _text__print_column_label_horizontal_line_only_at_merged_labels(
+    display::Display,
+    tf::TextTableFormat,
+    crayon::Crayon,
+    table_data::TableData,
+    row_number::Int,
+    vertical_lines_at_data_columns::AbstractVector{Int},
+    row_number_column_width::Int,
+    row_label_column_width::Int,
+    printed_data_column_widths::Vector{Int}
+)
+    # == Auxiliary Variables ===============================================================
+
+    tb  = tf.borders
+    ti  = string(tb.up_intersection)
+    ri  = string(tb.right_intersection)
+    col = string(tb.column)
+    row = string(tb.row)
+
+    table_continuation_column = _is_horizontally_cropped(table_data)
+
+    # == Print the Horizontal Line =========================================================
+
+    (display.has_color && crayon != _TEXT__DEFAULT) && _text__print(display, string(crayon))
+
+    # -- Left Intersection -----------------------------------------------------------------
+
+    tf.vertical_line_at_beginning && _text__print(display, col)
+
+    # -- Row Number Column -----------------------------------------------------------------
+
+    if table_data.show_row_number_column
+        _text__print(display, " "^(row_number_column_width + 2))
+        tf.vertical_line_after_row_number_column && _text__print(display, col)
+    end
+
+    # -- Row Label Column ------------------------------------------------------------------
+
+    if _has_row_labels(table_data)
+        _text__print(display, " "^(row_label_column_width + 2))
+        tf.vertical_line_after_row_label_column && _text__print(display, col)
+    end
+
+    # -- Data ------------------------------------------------------------------------------
+
+    for j in eachindex(printed_data_column_widths)
+        j₀, j₁ = _column_label_limits(table_data, row_number, j)
+        is_merged = j₀ != j₁
+
+        cw = printed_data_column_widths[j]
+
+        if !is_merged
+            _text__print(display, " "^(cw + 2))
+        else
+            _text__print(display, j == j₀ ? " " : row)
+            _text__print(display, row^cw)
+            _text__print(display, j == j₁ ? " " : row)
+        end
+
+        if (j == last(eachindex(printed_data_column_widths)))
+            tf.vertical_line_after_data_columns && _text__print(display, col)
+
+        elseif j ∈ vertical_lines_at_data_columns
+            # Check if we are in the middle of a merged column label.
+            if (j₀ != j₁) && (j₁ != j)
+                # Check if the next column label is merged so that we can print the correct
+                # intersection.
+                bottom_j₀, bottom_j₁ = _column_label_limits(table_data, row_number + 1, j)
+                ci = (bottom_j₀ != bottom_j₁) && (j != bottom_j₁) ? row : ti
+
+                _text__print(display, tf.suppress_vertical_lines_at_column_labels ? row : ci)
+
+                continue
+            end
+
+            _text__print(display, tf.suppress_vertical_lines_at_column_labels ? " " : col)
+        end
+    end
+
+    # -- Table Continuation Column ---------------------------------------------------------
+
+    if table_continuation_column
+        _text__print(display, row^3)
+        tf.vertical_line_after_continuation_column && _text__horizontal_line_intersection(
+            display,
+            ri,
+            row,
+            true
+        )
+    end
+
+    crayon != _TEXT__DEFAULT && _text__print(display, _TEXT__STRING_RESET)
+
+    return nothing
+end
+
+"""
     _text__horizontal_line_intersection(display::Display, intersection::String, row::String, final_intersection::Bool) -> Nothing
 
 Print to `display` the horizontal line `intersection` if we have enough space. Otherwise,

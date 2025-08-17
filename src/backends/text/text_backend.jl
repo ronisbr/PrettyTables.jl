@@ -384,7 +384,7 @@ function _text__print_table(
         printed_data_column_widths .= maximum(printed_data_column_widths)
     end
 
-    # == Omitted Columns ===================================================================
+    # == Horizontal Printing Limit =========================================================
 
     # In text back end, the printed column can be limited either by the user specification
     # or by the display limit. Now, we have access to the width of all candidate columns to
@@ -405,31 +405,14 @@ function _text__print_table(
 
     # We need to check if we are limiting the number of columns by the display or by the
     # user specification.
-    horizontally_limited_by_display = false
-
-    if fit_table_in_display_horizontally && (display.size[2] > 0)
-        # Here we have four possibilities:
-        #
-        #   1. We can show the entire table. If not, we will have a continuation column.
-        #   2. We cannot show the table continuation column, meaning that the table is
-        #      horizontally limited by the display.
-        #   3. We can partially show the continuation column, meaning that the table is
-        #      horizontally limited by the display but there is a continuation column.
-        #   4. We can show the continuation column, meaning that the table is horizontally
-        #      cropped by the user specification.
-
-        num_remaining_columns = display_size[2] - table_width_wo_cont_col
-
-        horizontally_limited_by_display =
-            if (
-                (num_remaining_columns > 0) ||
-                ((num_remaining_columns == 0) && (num_printed_data_columns == table_data.num_columns))
-            )
-                false
-            else
-                num_remaining_columns < (3 + tf.vertical_line_after_continuation_column)
-            end
-    end
+    horizontally_limited_by_display = _text__is_printing_horizontally_limited(
+        table_data,
+        fit_table_in_display_horizontally,
+        display.size[2],
+        num_printed_data_columns,
+        table_width_wo_cont_col,
+        tf.vertical_line_after_continuation_column,
+    )
 
     # If we are limited by the display, we need to update the number of printed columns and
     # rows.
@@ -506,6 +489,7 @@ function _text__print_table(
             end
         end
 
+        # Since the table width has changed, we must recompute the following variables.
         num_printed_data_columns = _text__number_of_printed_data_columns(
             display.size[2],
             table_data,
@@ -520,7 +504,18 @@ function _text__print_table(
             num_printed_data_columns + 1,
             length(column_labels)
         )
+
+        horizontally_limited_by_display = _text__is_printing_horizontally_limited(
+            table_data,
+            fit_table_in_display_horizontally,
+            display.size[2],
+            num_printed_data_columns,
+            table_width_wo_cont_col,
+            tf.vertical_line_after_continuation_column,
+        )
     end
+
+    # == Omitted Columns ===================================================================
 
     # If this is the very first row, we must check if a horizontal line must be printed.
     num_omitted_data_columns = table_data.num_columns - num_printed_data_columns
@@ -892,25 +887,38 @@ function _text__print_table(
 
             # == Handle the Horizontal Lines ===============================================
 
-            if (
-                (rs == :column_labels) &&
-                (ps.row_section == :column_labels) &&
-                (ps.i ∈ horizontal_lines_at_column_labels)
-            )
-                _text__print_column_label_horizontal_line(
-                    display,
-                    tf,
-                    style.table_border,
-                    table_data,
-                    ps.i,
-                    vertical_lines_at_data_columns,
-                    row_number_column_width,
-                    row_label_column_width,
-                    printed_data_column_widths,
-                    false,
-                    false
-                )
-                _text__flush_line(display, false)
+            if (rs == :column_labels) && (ps.row_section == :column_labels)
+                if (ps.i ∈ horizontal_lines_at_column_labels)
+                    _text__print_column_label_horizontal_line(
+                        display,
+                        tf,
+                        style.table_border,
+                        table_data,
+                        ps.i,
+                        vertical_lines_at_data_columns,
+                        row_number_column_width,
+                        row_label_column_width,
+                        printed_data_column_widths,
+                        false,
+                        false
+                    )
+                    _text__flush_line(display, false)
+
+                elseif tf.horizontal_line_at_merged_column_labels && _has_merged_cells(table_data, ps.i)
+                    _text__print_column_label_horizontal_line_only_at_merged_labels(
+                        display,
+                        tf,
+                        style.table_border,
+                        table_data,
+                        ps.i,
+                        vertical_lines_at_data_columns,
+                        row_number_column_width,
+                        row_label_column_width,
+                        printed_data_column_widths
+                    )
+                    _text__flush_line(display, false)
+
+                end
 
             # Print the horizontal line after the column labels.
             elseif (rs == :column_labels) && (ps.row_section != :column_labels) &&

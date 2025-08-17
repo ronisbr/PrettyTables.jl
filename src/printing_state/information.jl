@@ -36,6 +36,21 @@ function _has_footnotes(table_data::TableData)
 end
 
 """
+    _has_merged_cells(table_data::TableData, i::Int) -> Bool
+
+Return whether `table_data` has merged cells in line `i`.
+"""
+function _has_merged_cells(table_data::TableData, i::Int)
+    isnothing(table_data.merge_column_label_cells) && return false
+
+    for mc in table_data.merge_column_label_cells
+        mc.i == i && return true
+    end
+
+    return false
+end
+
+"""
     _has_row_group_labels(table_data::TableData)
 
 Return whether `table_data` has row group lables.
