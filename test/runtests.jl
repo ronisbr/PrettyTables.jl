@@ -25,6 +25,7 @@ end
 @testset "HTML Back End Tests" verbose = true begin
     include("./backends/html/alignment.jl")
     include("./backends/html/circular_reference.jl")
+    include("./backends/html/cell_titles.jl")
     include("./backends/html/column_width.jl")
     include("./backends/html/cropping.jl")
     include("./backends/html/default.jl")

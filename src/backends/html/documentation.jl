@@ -17,6 +17,12 @@ the output.
     This can be useful to render tables with more complex content, but it can also be a
     security risk if the content is not sanitized.
     (**Default**: `false`)
+- `column_label_titles::Union{Nothing, AbstractVector}`: Titles for the column labels. If
+    `nothing`, no titles are added. If a vector is passed, it must have the same length as
+    the number of column label rows. Each element in the vector can be `nothing` (no title
+    for that row) or an element with the title for that row. Notice that this element will
+    be converted to string using the function `string`.
+    (**Default**: `nothing`)
 - `highlighters::Vector{HtmlHighlighter}`: Highlighters to apply to the table. For more
     information, see the section **HTML Highlighters** in the **Extended Help**.
 - `line_breaks::Bool`: If `true`, line breaks in the content of the cells (`\\n`) are

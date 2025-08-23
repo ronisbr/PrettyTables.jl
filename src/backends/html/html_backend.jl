@@ -7,6 +7,7 @@
 function _html__print(
     pspec::PrintingSpec;
     allow_html_in_cells::Bool = false,
+    column_label_titles::Union{Nothing, AbstractVector} = nothing,
     highlighters::Vector{HtmlHighlighter} = HtmlHighlighter[],
     is_stdout::Bool = false,
     line_breaks::Bool = false,
@@ -34,6 +35,22 @@ function _html__print(
     # allocations.
     vproperties = Pair{String, String}[]
     vstyle      = Pair{String, String}[]
+
+    # Check the dimensions of header cell titles.
+    if !isnothing(column_label_titles)
+        num_column_label_rows = length(table_data.column_labels)
+        num_data_columns      = size(table_data.data, 2)
+
+        if length(column_label_titles) < num_column_label_rows
+            error("The number of vectors in `column_label_titles` must be equal or greater than that in `column_labels`.")
+        end
+
+        for k in eachindex(column_label_titles)
+            if !isnothing(column_label_titles[k]) && (length(column_label_titles[k]) != num_data_columns)
+                error("The number of elements in each row of `column_label_titles` must match the number of columns in the table.")
+            end
+        end
+    end
 
     # == Variables to Store Information About Indentation ==================================
 
@@ -280,6 +297,12 @@ function _html__print(
             cell = _current_cell(action, ps, table_data)
 
             cell === _IGNORE_CELL && continue
+
+            # If we are in a column label, check for cell titles.
+            if !isnothing(column_label_titles) && (action == :column_label)
+                title = column_label_titles[ps.i]
+                !isnothing(title) && push!(vproperties, "title" => string(title[ps.j]))
+            end
 
             # If we are in a column label, check if we must merge the cell.
             if (action == :column_label) && (cell isa MergeCells)
