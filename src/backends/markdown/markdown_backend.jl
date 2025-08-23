@@ -160,73 +160,75 @@ function _markdown__print(
 
     # == Compute the Column Width ==========================================================
 
-    row_number_column_width    = 0
-    row_label_column_width     = 0
-    printed_data_column_widths = zeros(Int, num_printed_data_columns)
+    row_number_column_width    = 1
+    row_label_column_width     = 1
+    printed_data_column_widths = ones(Int, num_printed_data_columns)
 
-    if table_data.show_row_number_column
-        m = if (_is_vertically_cropped(table_data) && (table_data.vertical_crop_mode == :bottom))
-            table_data.maximum_number_of_rows
-        else
-            table_data.num_rows
+    # We we are printing in compact mode, we do not need to compute the column widths.
+    if !tf.compact_table
+        if table_data.show_row_number_column
+            m = if (_is_vertically_cropped(table_data) && (table_data.vertical_crop_mode == :bottom))
+                table_data.maximum_number_of_rows
+            else
+                table_data.num_rows
+            end
+
+            row_number_column_width = max(
+                textwidth(decorated_row_number_column_label),
+                floor(Int, log10(m) + 1)
+            )
         end
 
-        row_number_column_width = max(
-            textwidth(decorated_row_number_column_label),
-            floor(Int, log10(m) + 1)
-        )
-    end
+        if _has_row_labels(table_data)
+            row_label_column_width = max(
+                textwidth(decorated_stubhead_label),
 
-    if _has_row_labels(table_data)
-        row_label_column_width = max(
-            textwidth(decorated_stubhead_label),
+                num_printed_data_rows > 0 ? maximum(textwidth, row_labels) : 0,
 
-            num_printed_data_rows > 0 ? maximum(textwidth, row_labels) : 0,
+                if _has_summary_rows(table_data)
+                    maximum(textwidth, table_data.summary_row_labels) +
+                    _markdown__style_textwidth(style.summary_row_label)
+                else
+                    0
+                end
+            )
+        end
 
-            if _has_summary_rows(table_data)
-                maximum(textwidth, table_data.summary_row_labels) +
-                _markdown__style_textwidth(style.summary_row_label)
+        @views for j in last(axes(table_str))
+            m = if !isnothing(column_labels)
+                maximum(textwidth, column_labels[:, j])
             else
                 0
             end
-        )
-    end
 
-    @views for j in last(axes(table_str))
-        m = if !isnothing(column_labels)
-            maximum(textwidth, column_labels[:, j])
-        else
-            0
+            if num_printed_data_rows > 0
+                m = max(maximum(textwidth, table_str[:, j]), m)
+
+                if _has_summary_rows(table_data)
+                    m = max(maximum(textwidth, summary_rows[:, j]), m)
+                end
+            end
+
+            printed_data_column_widths[j] = m
         end
 
-        if num_printed_data_rows > 0
-            m = max(maximum(textwidth, table_str[:, j]), m)
+        # Markdown does not support merging rows. Hence, if we have a row group label, we must
+        # add the information in the first column. Thus, we need to possibly increase this cell
+        # accordingly.
+        if _has_row_group_labels(table_data)
+            m = maximum(x -> textwidth(last(x)), table_data.row_group_labels) +
+                _markdown__style_textwidth(style.row_group_label)
 
-            if _has_summary_rows(table_data)
-                m = max(maximum(textwidth, summary_rows[:, j]), m)
+            if table_data.show_row_number_column
+                row_number_column_width = max(row_number_column_width, m)
+
+            elseif _has_row_labels(table_data)
+                row_label_column_width = max(row_label_column_width, m)
+
+            else
+                printed_data_column_widths[1] = max(printed_data_column_widths[1], m)
             end
         end
-
-        printed_data_column_widths[j] = m
-    end
-
-    # Markdown does not support merging rows. Hence, if we have a row group label, we must
-    # add the information in the first column. Thus, we need to possibly increase this cell
-    # accordingly.
-    if _has_row_group_labels(table_data)
-        m = maximum(x -> textwidth(last(x)), table_data.row_group_labels) +
-            _markdown__style_textwidth(style.row_group_label)
-
-        if table_data.show_row_number_column
-            row_number_column_width = max(row_number_column_width, m)
-
-        elseif _has_row_labels(table_data)
-            row_label_column_width = max(row_label_column_width, m)
-
-        else
-            printed_data_column_widths[1] = max(printed_data_column_widths[1], m)
-        end
-
     end
 
     # == Print the Table ===================================================================
@@ -327,7 +329,13 @@ function _markdown__print(
             end
 
             print(buf, " ")
-            _markdown__print_aligned(buf, "⋮", cell_width, alignment)
+
+            if !tf.compact_table
+                _markdown__print_aligned(buf, "⋮", cell_width, alignment)
+            else
+                print(buf, "⋮")
+            end
+
             print(buf, " |")
 
         elseif action == :end_row
@@ -450,7 +458,12 @@ function _markdown__print(
 
             end
 
-            _markdown__print_aligned(buf, rendered_cell, cell_width, alignment)
+            if !tf.compact_table
+                _markdown__print_aligned(buf, rendered_cell, cell_width, alignment)
+            else
+                print(buf, rendered_cell)
+            end
+
             print(buf, " |")
         end
     end

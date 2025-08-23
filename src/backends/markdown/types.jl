@@ -102,12 +102,15 @@ Define the format of the tables printed with the markdown back end.
 - `subtitle_heading_level::Int`: Subtitle heading level.
 - `horizontal_line_char::Char`: Character used to draw the horizontal line.
 - `line_before_summary_rows::Bool`: Whether to draw a line before the summary rows.
+- `compact_table::Bool`: If `true`, the table is printed in a compact format without extra
+    spaces between columns.
 """
 @kwdef struct MarkdownTableFormat
     title_heading_level::Int       = 1
     subtitle_heading_level::Int    = 2
     horizontal_line_char::Char     = '─'
     line_before_summary_rows::Bool = true
+    compact_table::Bool            = false
 end
 
 """
