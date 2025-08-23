@@ -39,14 +39,16 @@ function _html__print(
     # Check the dimensions of header cell titles.
     if !isnothing(column_label_titles)
         num_column_label_rows = length(table_data.column_labels)
-        num_data_columns      = size(table_data.data, 2)
 
         if length(column_label_titles) < num_column_label_rows
             error("The number of vectors in `column_label_titles` must be equal or greater than that in `column_labels`.")
         end
 
         for k in eachindex(column_label_titles)
-            if !isnothing(column_label_titles[k]) && (length(column_label_titles[k]) != num_data_columns)
+            if (
+                !isnothing(column_label_titles[k]) &&
+                (length(column_label_titles[k]) != table_data.num_rows)
+            )
                 error("The number of elements in each row of `column_label_titles` must match the number of columns in the table.")
             end
         end
