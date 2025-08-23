@@ -47,7 +47,7 @@ function _html__print(
         for k in eachindex(column_label_titles)
             if (
                 !isnothing(column_label_titles[k]) &&
-                (length(column_label_titles[k]) != table_data.num_rows)
+                (length(column_label_titles[k]) != table_data.num_columns)
             )
                 error("The number of elements in each row of `column_label_titles` must match the number of columns in the table.")
             end
