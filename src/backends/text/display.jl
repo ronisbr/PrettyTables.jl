@@ -4,13 +4,30 @@
 #
 ############################################################################################
 
+"""
+    _text__check_eol(display::Display) -> Bool
+
+Check if the current column of the `display` is past the end of line.
+"""
 function _text__check_eol(display::Display)
     w = display.size[2]
     return (w > 0) && (display.column > display.size[2])
 end
 
+"""
+    _text__print(display::Display, char::Char) -> Nothing
+
+Print a single character `char` to the `display`.
+"""
 _text__print(display::Display, char::Char) = _text__print(display, string(char))
 
+"""
+    _text__print(display::Display, str::AbstractString, str_width::Int = -1) -> Nothing
+
+Print a string `str` to the `display`, updating the column position. If `str_width` is
+positive, it is used as the width of the printed string, reducing the computational burden.
+Otherwise, the printable width of `str` is computed using `printable_textwidth`.
+"""
 function _text__print(display::Display, str::AbstractString, str_width::Int = -1)
     _text__check_eol(display) && return nothing
     print(display.buf_line, str)
@@ -18,10 +35,20 @@ function _text__print(display::Display, str::AbstractString, str_width::Int = -1
     return nothing
 end
 
+"""
+    _text__styled_print(display::Display, char::Char, crayon::Crayon) -> Nothing
+
+Print a single character `char` to the `display` with style given by the `crayon`.
+"""
 function _text__styled_print(display::Display, char::Char, crayon::Crayon)
     return _text__styled_print(display, string(char), crayon)
 end
 
+"""
+    _text__styled_print(display::Display, str::AbstractString, crayon::Crayon) -> Nothing
+
+Print a string `str` to the `display` with the style given by the `crayon`.
+"""
 function _text__styled_print(display::Display, str::AbstractString, crayon::Crayon)
     (!display.has_color || crayon == _TEXT__DEFAULT) && return _text__print(display, str)
 
@@ -29,6 +56,12 @@ function _text__styled_print(display::Display, str::AbstractString, crayon::Cray
     return nothing
 end
 
+"""
+    _text__flush_line(display::Display, add_continuation_char::Bool = true, continuation_char::Char = '⋯'; crop_line::Bool = true) -> Nothing
+
+Flush the current line buffer to the `display`, cropping and adding continuation characters
+if needed.
+"""
 function _text__flush_line(
     display::Display,
     add_continuation_char::Bool = true,
@@ -71,6 +104,14 @@ function _text__flush_line(
     return nothing
 end
 
+"""
+    _text__print_aligned(display::Display, str::AbstractString, cell_width::Int, alignment::Symbol, crayon::Crayon = _TEXT__DEFAULT, fill::Bool = true) -> Nothing
+
+Print a string `str` to the `display`, aligned according to `alignment` in a cell of width
+`cell_width`. The string is printed with the style given by `crayon`. The `alignment` can be
+`:l` (left), `:right` (right), or `:center` (center). If `fill` is `true`, the string is
+filled with spaces to fit the cell width.
+"""
 function _text__print_aligned(
     display::Display,
     str::AbstractString,
