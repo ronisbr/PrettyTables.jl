@@ -65,6 +65,10 @@ function _next(state::PrintingTableState, table_data::TableData)
             end
         end
 
+        # If we do not have any column, jump to the table footer.
+        (rs == :column_labels) && (max_j == 0) &&
+            return _next(PrintingTableState(_FOOTNOTES - 1, 0, 0, :table_footer), table_data)
+
         return :new_row, rs, PrintingTableState(_NEW_ROW, new_i, 0, rs)
     end
 

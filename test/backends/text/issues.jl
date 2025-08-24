@@ -20,4 +20,15 @@
 
         @test result == expected
     end
+
+    @testset "Handle Correctly Empty Tables" begin
+
+        expected = """
+Title
+Notes
+"""
+
+        result = pretty_table(String, []; title = "Title", source_notes = "Notes")
+        @test result == expected
+    end
 end

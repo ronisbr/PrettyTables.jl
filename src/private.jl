@@ -22,6 +22,9 @@ function _guess_column_labels(data::Union{ColumnTable, RowTable})
 end
 
 function _guess_column_labels(data::AbstractVecOrMat)
+    # Handle the case where we have no elements in data.
+    isempty(data) && return [String[]]
+
     return [parent(["Col. $(string(i))" for i in axes(data, 2)])]
 end
 

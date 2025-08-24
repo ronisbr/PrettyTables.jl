@@ -306,8 +306,8 @@ function _pretty_table(
     ax = axes(pdata)
 
     if length(ax) == 1
-        num_columns = 1
         num_rows = length(pdata)
+        num_columns = num_rows > 0 ? 1 : 0
 
         first_row_index = first(first(ax))
         first_column_index = 1

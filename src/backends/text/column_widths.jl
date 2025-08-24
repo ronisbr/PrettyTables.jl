@@ -173,7 +173,7 @@ function _text__printed_column_widths(
 
         row_number_column_width = max(
             printable_textwidth(table_data.row_number_column_label),
-            floor(Int, log10(m) + 1)
+            floor(Int, log10(max(m, 1)) + 1)
         )
     end
 
