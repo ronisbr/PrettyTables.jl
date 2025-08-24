@@ -64,7 +64,7 @@ function _text__flush_line(
         end
     end
 
-    println(display.buf, line)
+    println(display.buf, rstrip(line))
     display.column = 0
     display.row += 1
 
