@@ -78,7 +78,7 @@ function _text__render_cell(
     # We the user wants line breaks, we should not escape the character `\n`.
     keep = line_breaks ? '\n' : ()
 
-    return escape_string(cell_str; keep)
+    return escape_string(cell_str, (); keep)
 end
 
 function _text__render_cell(
