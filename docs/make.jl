@@ -30,7 +30,10 @@ makedocs(
                 "LaTeX Backend"       => "man/latex/latex_backend.md",
                 "Examples"            => "man/latex/latex_examples.md",
             ],
-            "Markdown"                => "man/markdown/markdown_backend.md",
+            "Markdown"                => Any[
+                "Markdown Backend"    => "man/markdown/markdown_backend.md",
+                "Examples"            => "man/markdown/markdown_examples.md",
+            ]
         ],
         "Library"                     => "lib/library.md",
     ]
