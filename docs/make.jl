@@ -22,7 +22,10 @@ makedocs(
                 "Pre-defined Formats" => "man/text/predefined_formats.md",
                 "Examples"            => "man/text/text_examples.md",
             ],
-            "HTML"                    => "man/html/html_backend.md",
+            "HTML"                    => Any[
+                "HTML Backend"        => "man/html/html_backend.md",
+                "Examples"            => "man/html/html_examples.md",
+            ],
             "LaTeX"                   => Any[
                 "LaTeX Backend"       => "man/latex/latex_backend.md",
                 "Examples"            => "man/latex/latex_examples.md",
