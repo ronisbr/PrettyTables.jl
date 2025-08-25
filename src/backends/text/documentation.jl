@@ -32,7 +32,7 @@ the output.
     `alignment_anchor_regex` will also be applied to the summary rows.
     (**Default** = `false`)
 - `auto_wrap::Bool`: If `true`, the text will be wrapped on spaces to fit the column. Note
-    that this function requires `linebreaks = true` and the column must have a fixed size
+    that this function requires `line_breaks = true` and the column must have a fixed size
     (see `fixed_data_column_widths`).
     (**Default** = `false`)
 - `column_label_width_based_on_first_line_only::Bool`: If `true`, the column label width is
