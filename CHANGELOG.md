@@ -1,6 +1,13 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 3.0.1
+-------------
+
+- ![Bugfix][badge-bugfix] In the version 2, PrettyTables.jl supported different colors for
+  the headers. Hence, we need to also support different colors for the column labels in
+  version 3. However, this support was missing and we added it back in this version.
+
 Version 3.0.0
 -------------
 
