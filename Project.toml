@@ -36,4 +36,4 @@ StyledStrings = "f489334b-da3d-4c2e-b8f0-e476e12c162b"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["OffsetArrays", "Test"]
+test = ["OffsetArrays", "StyledStrings", "Test"]
