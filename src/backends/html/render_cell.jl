@@ -29,7 +29,14 @@ function _html__cell_to_str(cell::Any, context::IOContext, ::Val{:show})
 end
 
 function _html__cell_to_str(cell::AbstractString, context::IOContext, ::Val{:show})
-    return string(cell)
+    if showable(MIME("text/html"), cell)
+        # This code handles, for example, StyledStrings.jl objects.
+        cell_str = sprint(show, MIME("text/html"), cell; context)
+    else
+        cell_str = string(cell)
+    end
+
+    return cell_str
 end
 
 _html__cell_to_str(cell::HTML, context::IOContext, ::Val{:print}) = cell.content
@@ -63,8 +70,27 @@ function _html__render_cell(
     # Check if we need to replace `\n` with `<br>`.
     replace_newline = line_breaks
 
-    # If the cell type is `HTML`, we should not escape the string.
-    cell isa HTML && return cell_str
+    # If the user wants HTML code inside cell, we must not escape the HTML characters.
+    return _html__escape_str(cell_str, replace_newline, !allow_html_in_cells)
+end
+
+function _html__render_cell(
+    cell::AbstractString,
+    context::IOContext,
+    renderer::Union{Val{:print}, Val{:show}};
+    allow_html_in_cells::Bool = false,
+    line_breaks::Bool = false,
+)
+    cell_str = _html__cell_to_str(cell, context, renderer)
+
+    # Check if we need to replace `\n` with `<br>`.
+    replace_newline = line_breaks
+
+    # If the string is showable as HTML, we assume it contains HTML code and we do not
+    # escape it.
+    if showable(MIME("text/html"), cell)
+        allow_html_in_cells = true
+    end
 
     # If the user wants HTML code inside cell, we must not escape the HTML characters.
     return _html__escape_str(cell_str, replace_newline, !allow_html_in_cells)

@@ -1,9 +1,10 @@
 using Test
 using PrettyTables
 
+using LaTeXStrings
 using Markdown
 using OffsetArrays
-using LaTeXStrings
+using StyledStrings
 using Tables
 
 ############################################################################################
@@ -24,14 +25,15 @@ end
 
 @testset "HTML Back End Tests" verbose = true begin
     include("./backends/html/alignment.jl")
-    include("./backends/html/circular_reference.jl")
     include("./backends/html/cell_titles.jl")
+    include("./backends/html/circular_reference.jl")
     include("./backends/html/column_width.jl")
     include("./backends/html/cropping.jl")
     include("./backends/html/default.jl")
     include("./backends/html/divs.jl")
     include("./backends/html/full.jl")
     include("./backends/html/highlighters.jl")
+    include("./backends/html/issues.jl")
     include("./backends/html/minify.jl")
     include("./backends/html/offset_arrays.jl")
     include("./backends/html/renderers.jl")
