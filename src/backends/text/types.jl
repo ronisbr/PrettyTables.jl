@@ -200,8 +200,12 @@ Define the style of the tables printed with the text back end.
 - `stubhead_label::Crayon`:  Crayon with the style for the stubhead label.
 - `row_label::Crayon`: Crayon with the style for the row labels.
 - `row_group_label::Crayon`: Crayon with the style for the row group label.
-- `first_line_column_label::Crayon`: Crayon with the style for the first column label lines.
-- `column_label::Crayon`: Crayon with the style for the rest of the column labels.
+- `first_line_column_label::Union{Crayon, Vector{Crayon}}`: Crayon or crayons with the style
+    for the first column label lines. If a vector of crayons is passed, it must have the
+    same length as the number columns in the table.
+- `column_label::Union{Crayon, Vector{Crayon}}`: Crayon or crayons with the style for the
+    rest of the column labels. If a vector of crayons is passed, it must have the same
+    length as the number of columns in the table.
 - `first_line_merged_column_label::Crayon`: Crayon with the style for the merged cells at
     the first column label line.
 - `merged_column_label::Crayon`: Crayon with the style for the merged cells at the rest of
@@ -213,7 +217,10 @@ Define the style of the tables printed with the text back end.
 - `omitted_cell_summary::Crayon`: Crayon with the style for the omitted cell summary.
 - `table_border::Crayon`: Crayon with the style for the table border.
 """
-@kwdef struct TextTableStyle
+@kwdef struct TextTableStyle{
+    TFCL<:Union{Crayon, Vector{Crayon}},
+    TCL<:Union{Crayon, Vector{Crayon}}
+}
     title::Crayon                          = _TEXT__BOLD
     subtitle::Crayon                       = _TEXT__DEFAULT
     row_number_label::Crayon               = _TEXT__BOLD
@@ -221,8 +228,8 @@ Define the style of the tables printed with the text back end.
     stubhead_label::Crayon                 = _TEXT__BOLD
     row_label::Crayon                      = _TEXT__BOLD
     row_group_label::Crayon                = _TEXT__BOLD
-    first_line_column_label::Crayon        = _TEXT__BOLD
-    column_label::Crayon                   = _TEXT__DARK_GRAY
+    first_line_column_label::TFCL          = _TEXT__BOLD
+    column_label::TCL                      = _TEXT__DARK_GRAY
     first_line_merged_column_label::Crayon = _TEXT__BOLD_UNDERLINE
     merged_column_label::Crayon            = _TEXT__DARK_GRAY_UNDERLINE
     summary_row_cell::Crayon               = _TEXT__DEFAULT

@@ -225,8 +225,12 @@ contains the following fields:
 - `stubhead_label::Crayon`: Crayon with the style for the stubhead label.
 - `row_label::Crayon`: Crayon with the style for the row labels.
 - `row_group_label::Crayon`: Crayon with the style for the row group label.
-- `first_line_column_label::Crayon`: Crayon with the style for the first column label lines.
-- `column_label::Crayon`: Crayon with the style for the rest of the column labels.
+- `first_line_column_label::Union{Crayon, Vector{Crayon}}`: Crayon or crayons with the style
+    for the first column label lines. If a vector of crayons is passed, it must have the
+    same length as the number columns in the table.
+- `column_label::Union{Crayon, Vector{Crayon}}`: Crayon or crayons with the style for the
+    rest of the column labels. If a vector of crayons is passed, it must have the same
+    length as the number of columns in the table.
 - `first_line_merged_column_label::Crayon`: Crayon with the style for the merged cells at
   the first column label line.
 - `merged_column_label::Crayon`: Crayon with the style for the merged cells at the rest of

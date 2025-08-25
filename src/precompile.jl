@@ -97,6 +97,30 @@ PrecompileTools.@setup_workload begin
 
         pretty_table(types)
 
+        # .. Text Table Styles .............................................................
+
+        pretty_table(
+            matrix;
+            style = TextTableStyle(
+                first_line_column_label = [crayon"bold yellow" for i = 1:10]
+            )
+        )
+
+        pretty_table(
+            matrix;
+            style = TextTableStyle(
+                column_label = [crayon"bold yellow" for i = 1:10]
+            )
+        )
+
+        pretty_table(
+            matrix;
+            style = TextTableStyle(
+                first_line_column_label = [crayon"bold yellow" for i = 1:10],
+                column_label            = [crayon"bold yellow" for i = 1:10]
+            )
+        )
+
         # -- Options Used in DataFrames.jl -------------------------------------------------
 
         style = TextTableStyle(row_label = Crayon())

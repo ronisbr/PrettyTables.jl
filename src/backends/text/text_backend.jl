@@ -107,9 +107,24 @@ function _text__print_table(
             ))
 
             (j > table_data.num_columns) && throw(ArgumentError(
-                "The column index in the alignment anchor regex must be less than the number of columns ($table_data.num_columns)."
+                "The column index in the alignment anchor regex must be less than the number of columns ($(table_data.num_columns))."
             ))
         end
+    end
+
+    # Check the style variables.
+    if style.first_line_column_label isa Vector
+        length(style.first_line_column_label) != table_data.num_columns &&
+            throw(ArgumentError(
+                "The length of `first_line_column_label` in `style` must be equal to the number of columns ($(table_data.num_columns))."
+            ))
+    end
+
+    if style.column_label isa Vector
+        length(style.column_label) != table_data.num_columns &&
+            throw(ArgumentError(
+                "The length of `column_label` in `style` must be equal to the number of columns ($(table_data.num_columns))."
+            ))
     end
 
     # == Table Fitting in the Display ======================================================
@@ -1162,9 +1177,17 @@ function _text__print_table(
             cell_width    = printed_data_column_widths[jr]
             rendered_cell = column_labels[ir, jr]
             decoration    = if ir == 1
-                style.first_line_column_label
+                if style.first_line_column_label isa Crayon
+                    style.first_line_column_label
+                else
+                    style.first_line_column_label[jr]
+                end
             else
-                style.column_label
+                if style.column_label isa Crayon
+                    style.column_label
+                else
+                    style.column_label[jr]
+                end
             end
 
             cell === _IGNORE_CELL && continue
