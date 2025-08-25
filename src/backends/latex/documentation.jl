@@ -144,10 +144,13 @@ contains the following fields:
 - `row_label::LatexEnvironments`: Latex environments with the style for the row labels.
 - `row_group_label::LatexEnvironments`: Latex environments with the style for the row group
     label.
-- `first_line_column_label::LatexEnvironments`: Latex environments with the style for the
-    first column label lines.
-- `column_label::LatexEnvironments`: Latex environments with the style for the rest of the
-    column labels.
+- `first_line_column_label::Union{LatexEnvironments, Vector{LatexEnvironments}}`: Latex
+    environments with the style for the first line of the column labels. If a vector of
+    `LatexEnvironments` is provided, each column label in the first line will use the
+    corresponding style.
+- `column_label::Union{LatexEnvironments, Vector{LatexEnvironments}}`: Latex environments
+    with the style for the rest of the column labels. If a vector of `LatexEnvironments` is
+    provided, each column label will use the corresponding style.
 - `first_line_merged_column_label::LatexEnvironments`: Latex environments with the style for
     the merged cells at the first column label line.
 - `merged_column_label::LatexEnvironments`: Latex environments with the style for the merged

@@ -216,6 +216,33 @@ PrecompileTools.@setup_workload begin
 
         pretty_table(types; backend = :latex)
 
+        # .. LaTeX Table Styles ............................................................
+
+        pretty_table(
+            matrix;
+            backend = :latex,
+            style = LatexTableStyle(
+                first_line_column_label = [["textbf"] for i = 1:10]
+            )
+        )
+
+        pretty_table(
+            matrix;
+            backend = :latex,
+            style = LatexTableStyle(
+                column_label = [["textbf"] for i = 1:10]
+            )
+        )
+
+        pretty_table(
+            matrix;
+            backend = :latex,
+            style = LatexTableStyle(
+                first_line_column_label = [["textbf"] for i = 1:10],
+                column_label            = [["textbf"] for i = 1:10]
+            )
+        )
+
         # -- Markdown ----------------------------------------------------------------------
 
         pretty_table(matrix; backend = :markdown)

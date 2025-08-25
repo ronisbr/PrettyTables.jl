@@ -43,6 +43,21 @@ function _latex__print(
             tf.vertical_lines_at_data_columns::Vector{Int}
     end
 
+    # Check the style variables.
+    if style.first_line_column_label isa Vector{LatexEnvironments}
+        length(style.first_line_column_label) != table_data.num_columns &&
+            throw(ArgumentError(
+                "The length of `first_line_column_label` in `style` must be equal to the number of columns ($(table_data.num_columns))."
+            ))
+    end
+
+    if style.column_label isa Vector{LatexEnvironments}
+        length(style.column_label) != table_data.num_columns &&
+            throw(ArgumentError(
+                "The length of `column_label` in `style` must be equal to the number of columns ($(table_data.num_columns))."
+            ))
+    end
+
     # == Variables to Store Information About Indentation ==================================
 
     il = 0 # ..................................................... Current indentation level
@@ -290,7 +305,9 @@ function _latex__print(
                     rendered_cell = _latex__render_cell(cell.data, buf, renderer)
 
                     # Apply the style to the text.
-                    envs = ps.i == 1 ? style.first_line_column_label : style.column_label
+                    envs = ps.i == 1 ?
+                        style.first_line_merged_column_label :
+                        style.merged_column_label
                     rendered_cell = _latex__add_environments(rendered_cell, envs)
                     rendered_cell = rendered_cell * footnote_str
 
@@ -345,7 +362,19 @@ function _latex__print(
                         envs = style.summary_row_label
 
                     elseif action == :column_label
-                        envs = ps.i == 1 ? style.first_line_column_label : style.column_label
+                        envs = if ps.i == 1
+                            if style.first_line_column_label isa Vector{LatexEnvironments}
+                                style.first_line_column_label[ps.j]
+                            else
+                                style.first_line_column_label
+                            end
+                        else
+                            if style.column_label isa Vector{LatexEnvironments}
+                                style.column_label[ps.j]
+                            else
+                                style.column_label
+                            end
+                        end
 
                     elseif action == :summary_row_cell
                         envs = style.summary_row_cell

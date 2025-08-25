@@ -117,10 +117,13 @@ Define the style of the tables printed with the latex back end.
 - `row_label::LatexEnvironments`: Latex environments with the style for the row labels.
 - `row_group_label::LatexEnvironments`: Latex environments with the style for the row group
     label.
-- `first_line_column_label::LatexEnvironments`: Latex environments with the style for the
-    first column label lines.
-- `column_label::LatexEnvironments`: Latex environments with the style for the rest of the
-    column labels.
+- `first_line_column_label::Union{LatexEnvironments, Vector{LatexEnvironments}}`: Latex
+    environments with the style for the first line of the column labels. If a vector of
+    `LatexEnvironments` is provided, each column label in the first line will use the
+    corresponding style.
+- `column_label::Union{LatexEnvironments, Vector{LatexEnvironments}}`: Latex environments
+    with the style for the rest of the column labels. If a vector of `LatexEnvironments` is
+    provided, each column label will use the corresponding style.
 - `first_line_merged_column_label::LatexEnvironments`: Latex environments with the style for
     the merged cells at the first column label line.
 - `merged_column_label::LatexEnvironments`: Latex environments with the style for the merged
@@ -134,7 +137,10 @@ Define the style of the tables printed with the latex back end.
 - `omitted_cell_summary::LatexEnvironments`: Latex environments with the style for the
     omitted cell summary.
 """
-@kwdef struct LatexTableStyle
+@kwdef struct LatexTableStyle{
+    TFCL<:Union{LatexEnvironments, Vector{LatexEnvironments}},
+    TCL<:Union{LatexEnvironments, Vector{LatexEnvironments}}
+}
     title::LatexEnvironments                          = _LATEX__LARGE_BOLD
     subtitle::LatexEnvironments                       = _LATEX__ITALIC
     row_number_label::LatexEnvironments               = _LATEX__BOLD
@@ -142,8 +148,8 @@ Define the style of the tables printed with the latex back end.
     stubhead_label::LatexEnvironments                 = _LATEX__BOLD
     row_label::LatexEnvironments                      = _LATEX__BOLD
     row_group_label::LatexEnvironments                = _LATEX__BOLD
-    first_line_column_label::LatexEnvironments        = _LATEX__BOLD
-    column_label::LatexEnvironments                   = _LATEX__ITALIC
+    first_line_column_label::TFCL                     = _LATEX__BOLD
+    column_label::TCL                                 = _LATEX__ITALIC
     first_line_merged_column_label::LatexEnvironments = _LATEX__BOLD
     merged_column_label::LatexEnvironments            = _LATEX__BOLD
     summary_row_cell::LatexEnvironments               = _LATEX__DEFAULT
