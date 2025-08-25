@@ -655,6 +655,8 @@ function _text__print_table(
         end
 
         action, rs, ps = _next(ps, table_data)
+        _, next_rs, _  = _next(ps, table_data)
+
         ir, jr = _update_data_cell_indices(action, rs, ps, ir, jr)
 
         action == :end_printing && break
@@ -887,7 +889,7 @@ function _text__print_table(
 
             # == Handle the Horizontal Lines ===============================================
 
-            if (rs == :column_labels) && (ps.row_section == :column_labels)
+            if (rs == :column_labels) && (next_rs == :column_labels)
                 if (ps.i ∈ horizontal_lines_at_column_labels)
                     _text__print_column_label_horizontal_line(
                         display,
@@ -921,7 +923,7 @@ function _text__print_table(
                 end
 
             # Print the horizontal line after the column labels.
-            elseif (rs == :column_labels) && (ps.row_section != :column_labels) &&
+            elseif (rs == :column_labels) && (next_rs != :column_labels) &&
                 tf.horizontal_line_after_column_labels
 
                 # We should skip this line if we have a row group label at the first column.
@@ -999,7 +1001,7 @@ function _text__print_table(
                 _text__flush_line(display, false)
                 num_printed_data_section_lines += 1
 
-            elseif (rs ∈ (:data, :continuation_row)) && (ps.row_section == :summary_row) &&
+            elseif (rs ∈ (:data, :continuation_row)) && (next_rs == :summary_row) &&
                 tf.horizontal_line_before_summary_rows
 
                     _text__print_column_label_horizontal_line(
@@ -1092,7 +1094,7 @@ function _text__print_table(
             # == Omitted Cell Summary ======================================================
 
             # We also must show the omitted cell summary if the user requested it.
-            if (ps.row_section == :table_footer) && pspec.show_omitted_cell_summary
+            if (next_rs == :table_footer) && pspec.show_omitted_cell_summary
                 ocs = _omitted_cell_summary(
                     num_omitted_data_rows,
                     num_omitted_data_columns
