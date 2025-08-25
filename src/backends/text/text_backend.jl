@@ -1237,7 +1237,7 @@ function _text__print_table(
                     table_str[ir, jr]
                 else
                     if current_row_line <= length(tokens[jr])
-                        tokens[jr][current_row_line]
+                        String(tokens[jr][current_row_line])
                     else
                         ""
                     end
@@ -1280,7 +1280,7 @@ function _text__print_table(
                     tokens_jr = tokens[jr]
 
                     if current_row_line <= length(tokens_jr)
-                        string(tokens_jr[current_row_line])
+                        String(tokens_jr[current_row_line])
                     else
                         ""
                     end
