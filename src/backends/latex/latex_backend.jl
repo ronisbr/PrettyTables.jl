@@ -388,7 +388,7 @@ function _latex__print(
                     else
                         # Here we have a data cell. Hence, let's check if we have a
                         # highlighter to apply.
-                       if !isnothing(highlighters)
+                        if !isnothing(highlighters)
                             for h in highlighters
                                 if h.f(table_data.data, ps.i, ps.j)
                                     envs = h.fd(h, table_data.data, ps.i, ps.j)
