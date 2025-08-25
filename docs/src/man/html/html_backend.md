@@ -123,9 +123,12 @@ contains the following fields:
 - `stubhead_label::Vector{HtmlPair}`: Style for the stubhead label.
 - `row_label::Vector{HtmlPair}`: Style for the row label.
 - `row_group_label::Vector{HtmlPair}`: Style for the row group label.
-- `first_line_column_label::Vector{HtmlPair}`: Style for the first line of the column
-  labels.
-- `column_label::Vector{HtmlPair}`: Style for the column label.
+- `first_line_column_label::Union{Vector{HtmlPair}, Vector{Vector{HtmlPair}}}`: Style for
+  the first line of the column labels. If a vector of `Vector{HtmlPair}}` is provided, each
+  column label in the first line will use the corresponding style.
+- `column_label::Union{Vector{HtmlPair}, Vector{Vector{HtmlPair}}}`: Style for the rest of
+  the column labels. If a vector of `Vector{HtmlPair}}` is provided, each column label will
+  use the corresponding style.
 - `first_line_merged_column_label::Vector{HtmlPair}`: Style for the merged cells at the
   first column label line.
 - `merged_column_label::Vector{HtmlPair}`: Style for the merged cells at the rest of the

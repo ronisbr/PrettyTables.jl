@@ -172,6 +172,36 @@ PrecompileTools.@setup_workload begin
 
         pretty_table(html_buf, types; backend = :html)
 
+        # .. HTML Table Styles .............................................................
+
+        pretty_table(
+            html_buf,
+            matrix;
+            backend = :html,
+            style = HtmlTableStyle(
+                first_line_column_label = [["color" => "red"] for i = 1:10]
+            )
+        )
+
+        pretty_table(
+            html_buf,
+            matrix;
+            backend = :html,
+            style = HtmlTableStyle(
+                column_label = [["color" => "red"] for i = 1:10]
+            )
+        )
+
+        pretty_table(
+            html_buf,
+            matrix;
+            backend = :html,
+            style = HtmlTableStyle(
+                first_line_column_label = [["color" => "red"] for i = 1:10],
+                column_label            = [["color" => "red"] for i = 1:10]
+            )
+        )
+
         # -- LaTeX -------------------------------------------------------------------------
 
         pretty_table(matrix; backend = :latex)

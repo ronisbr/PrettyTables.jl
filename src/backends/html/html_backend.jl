@@ -54,6 +54,21 @@ function _html__print(
         end
     end
 
+    # Check the style variables.
+    if style.first_line_column_label isa Vector{Vector{HtmlPair}}
+        length(style.first_line_column_label) != table_data.num_columns &&
+            throw(ArgumentError(
+                "The length of `first_line_column_label` in `style` must be equal to the number of columns ($(table_data.num_columns))."
+            ))
+    end
+
+    if style.column_label isa Vector{Vector{HtmlPair}}
+        length(style.column_label) != table_data.num_columns &&
+            throw(ArgumentError(
+                "The length of `column_label` in `style` must be equal to the number of columns ($(table_data.num_columns))."
+            ))
+    end
+
     # == Variables to Store Information About Indentation ==================================
 
     il = 0 # ..................................................... Current indentation level
@@ -432,9 +447,23 @@ function _html__print(
 
             elseif action == :column_label
                 if ps.i == 1
-                    append!(vstyle, style.first_line_column_label)
+                    append!(
+                        vstyle,
+                        if style.first_line_column_label isa Vector{Vector{HtmlPair}}
+                            style.first_line_column_label[ps.j]
+                        else
+                            style.first_line_column_label
+                        end
+                    )
                 else
-                    append!(vstyle, style.column_label)
+                    append!(
+                        vstyle,
+                        if style.column_label isa Vector{Vector{HtmlPair}}
+                            style.column_label[ps.j]
+                        else
+                            style.column_label
+                        end
+                    )
                 end
 
             elseif action == :summary_row_cell
