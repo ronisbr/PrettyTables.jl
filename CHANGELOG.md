@@ -1,6 +1,13 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 3.0.4
+-------------
+
+- ![Bugfix][badge-bugfix] The HTML tags in properties and style must be sorted.
+- ![Bugfix][badge-bugfix] The HTML tag for the continuation row must be `<tr>` in column
+  labels.
+
 Version 3.0.3
 -------------
 
