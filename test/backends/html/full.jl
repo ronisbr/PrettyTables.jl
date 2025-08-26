@@ -5,23 +5,24 @@
 ############################################################################################
 
 @testset "All Available Fields" verbose = true begin
-    matrix = [(i, j) for i in 1:3, j in 1:3]
+    matrix = [(i, j) for i in 1:4, j in 1:4]
 
     @testset "Without Cropping" begin
         expected = """
 <table>
   <thead>
     <tr class = "title">
-      <td colspan = "5" style = "text-align: center; font-size: x-large; font-weight: bold;">Table Title</td>
+      <td colspan = "6" style = "text-align: center; font-size: x-large; font-weight: bold;">Table Title</td>
     </tr>
     <tr class = "subtitle">
-      <td colspan = "5" style = "text-align: center; font-size: large; font-style: italic;">Table Subtitle</td>
+      <td colspan = "6" style = "text-align: center; font-size: large; font-style: italic;">Table Subtitle</td>
     </tr>
     <tr class = "columnLabelRow">
       <th class = "rowNumberLabel" style = "text-align: right; font-weight: bold;">Row</th>
       <th class = "stubheadLabel" style = "text-align: right; font-weight: bold;">Rows</th>
       <th style = "text-align: right; font-weight: bold;">Col. 1</th>
       <th colspan = "2" style = "border-bottom: 1px solid black; text-align: center; font-weight: bold;">Merged Column<sup>1</sup></th>
+      <th style = "text-align: right; font-weight: bold;">Col. 4</th>
     </tr>
     <tr class = "columnLabelRow">
       <th class = "rowNumberLabel" style = "text-align: right; font-weight: bold;"></th>
@@ -29,6 +30,7 @@
       <th style = "text-align: right;">1</th>
       <th style = "text-align: right;">2</th>
       <th style = "text-align: right;">3</th>
+      <th style = "text-align: right;">4</th>
     </tr>
   </thead>
   <tbody>
@@ -38,9 +40,10 @@
       <td style = "text-align: right;">(1, 1)</td>
       <td style = "text-align: right;">(1, 2)</td>
       <td style = "text-align: right;">(1, 3)</td>
+      <td style = "text-align: right;">(1, 4)</td>
     </tr>
     <tr class = "rowGroupLabel">
-      <td colspan = "5" style = "text-align: left; font-weight: bold;">Row Group</td>
+      <td colspan = "6" style = "text-align: left; font-weight: bold;">Row Group</td>
     </tr>
     <tr class = "dataRow">
       <td class = "rowNumber" style = "text-align: right; font-weight: bold;">2</td>
@@ -48,6 +51,7 @@
       <td style = "text-align: right;">(2, 1)</td>
       <td style = "text-align: right;">(2, 2)<sup>2</sup></td>
       <td style = "text-align: right;">(2, 3)</td>
+      <td style = "text-align: right;">(2, 4)</td>
     </tr>
     <tr class = "dataRow">
       <td class = "rowNumber" style = "text-align: right; font-weight: bold;">3</td>
@@ -55,6 +59,15 @@
       <td style = "text-align: right;">(3, 1)</td>
       <td style = "text-align: right;">(3, 2)</td>
       <td style = "text-align: right;">(3, 3)</td>
+      <td style = "text-align: right;">(3, 4)</td>
+    </tr>
+    <tr class = "dataRow">
+      <td class = "rowNumber" style = "text-align: right; font-weight: bold;">4</td>
+      <td class = "rowLabel" style = "text-align: right; font-weight: bold;">Row 4</td>
+      <td style = "text-align: right;">(4, 1)</td>
+      <td style = "text-align: right;">(4, 2)</td>
+      <td style = "text-align: right;">(4, 3)</td>
+      <td style = "text-align: right;">(4, 4)</td>
     </tr>
     <tr class = "summaryRow">
       <td class = "summaryRowNumber" style = "text-align: right; font-weight: bold;"></td>
@@ -62,6 +75,7 @@
       <td style = "text-align: right;">10</td>
       <td style = "text-align: right;">20</td>
       <td style = "text-align: right;">30</td>
+      <td style = "text-align: right;">40</td>
     </tr>
     <tr class = "summaryRow">
       <td class = "summaryRowNumber" style = "text-align: right; font-weight: bold;"></td>
@@ -69,17 +83,18 @@
       <td style = "text-align: right;">20</td>
       <td style = "text-align: right;">40</td>
       <td style = "text-align: right;">60</td>
+      <td style = "text-align: right;">80</td>
     </tr>
   </tbody>
   <tfoot>
     <tr class = "footnote">
-      <td colspan = "5" style = "text-align: left; font-size: small;"><sup>1</sup> Footnote in column label</td>
+      <td colspan = "6" style = "text-align: left; font-size: small;"><sup>1</sup> Footnote in column label</td>
     </tr>
     <tr class = "footnote">
-      <td colspan = "5" style = "text-align: left; font-size: small;"><sup>2</sup> Footnote in data</td>
+      <td colspan = "6" style = "text-align: left; font-size: small;"><sup>2</sup> Footnote in data</td>
     </tr>
     <tr class = "sourceNotes">
-      <td colspan = "5" style = "text-align: left; color: gray; font-size: small; font-style: italic;">Source Notes</td>
+      <td colspan = "6" style = "text-align: left; color: gray; font-size: small; font-style: italic;">Source Notes</td>
     </tr>
   </tbody>
 </table>
@@ -89,7 +104,7 @@
             String,
             matrix;
             backend = :html,
-            column_labels = [["Col. $i" for i in 1:3], ["$i" for i in 1:3]],
+            column_labels = [["Col. $i" for i in 1:4], ["$i" for i in 1:4]],
             footnotes = [(:column_label, 1, 2) => "Footnote in column label", (:data, 2, 2) => "Footnote in data"],
             merge_column_label_cells = [MergeCells(1, 2, 2, "Merged Column", :c)],
             row_group_labels = [2 => "Row Group"],
@@ -109,7 +124,7 @@
         expected = """
 <div>
   <div style = "font-style: italic; float: right;">
-    <span>1 column and 1 row omitted</span>
+    <span>2 columns and 2 rows omitted</span>
   </div>
   <div style = "clear: both;"></div>
 </div>
@@ -208,7 +223,7 @@
         expected = """
 <div>
   <div style = "font-style: italic; float: right;">
-    <span>1 column and 1 row omitted</span>
+    <span>2 columns and 2 rows omitted</span>
   </div>
   <div style = "clear: both;"></div>
 </div>
@@ -244,10 +259,10 @@
       <td style = "text-align: right;">&dtdot;</td>
     </tr>
     <tr class = "dataRow">
-      <td class = "rowNumber" style = "text-align: right; font-weight: bold;">3</td>
-      <td class = "rowLabel" style = "text-align: right; font-weight: bold;">Row 3</td>
-      <td style = "text-align: right;">(3, 1)</td>
-      <td style = "text-align: right;">(3, 2)</td>
+      <td class = "rowNumber" style = "text-align: right; font-weight: bold;">4</td>
+      <td class = "rowLabel" style = "text-align: right; font-weight: bold;">Row 4</td>
+      <td style = "text-align: right;">(4, 1)</td>
+      <td style = "text-align: right;">(4, 2)</td>
       <td>&ctdot;</td>
     </tr>
     <tr class = "summaryRow">
