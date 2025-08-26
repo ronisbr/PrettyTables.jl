@@ -56,5 +56,33 @@
 
         @test result == expected
     end
+
+    @testset "Markdown" begin
+        matrix = [
+            md"**Bold Text**",
+            md"*Italic Text*",
+            md"`Code Snippet`"
+        ]
+
+        expected = """
+\\begin{tabular}{|r|}
+  \\hline
+  \\textbf{Col. 1} \\\\
+  \\hline
+  \\textbf{Bold Text} \\\\
+  \\emph{Italic Text} \\\\
+  \\texttt{Code Snippet} \\\\
+  \\hline
+\\end{tabular}
+"""
+
+        result = pretty_table(
+            String,
+            matrix;
+            backend = :latex
+        )
+
+        @test result == expected
+    end
 end
 
