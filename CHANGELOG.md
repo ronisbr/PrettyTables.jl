@@ -1,6 +1,16 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 3.0.2
+-------------
+
+- ![Bugfix][badge-bugfix] In the version 2, PrettyTables.jl supported different decorations
+  for the headers. Hence, we need to also support different decorations for the column
+  labels in version 3. However, this support was missing in HTML, LaTeX, and Markdown
+  backends and we added it back in this version.
+- ![Bugfix][badge-bugfix] We now correctly process StyledStrings.jl in HTML backend if the
+  renderer is `:show`.
+
 Version 3.0.1
 -------------
 
