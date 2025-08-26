@@ -1,10 +1,10 @@
 ## Description #############################################################################
 #
-# HTML Back End: Tests related with colors.
+# HTML Back End: Tests related with decorations.
 #
 ############################################################################################
 
-@testset "Colors" verbose = true begin
+@testset "Decorations" verbose = true begin
     @testset "Decoration of Column Labels" begin
         matrix = ones(3, 3)
 

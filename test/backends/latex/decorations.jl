@@ -1,10 +1,10 @@
 ## Description #############################################################################
 #
-# LaTeX Back End: Tests related with colors.
+# LaTeX Back End: Tests related with decorations.
 #
 ############################################################################################
 
-@testset "Colors" verbose = true begin
+@testset "Decorations" verbose = true begin
     @testset "Decoration of Column Labels" begin
         matrix = ones(3, 3)
 
