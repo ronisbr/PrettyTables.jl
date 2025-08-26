@@ -1,6 +1,16 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 3.0.3
+-------------
+
+- ![Bugfix][badge-bugfix] The documentation build process was fixed.
+- ![Bugfix][badge-bugfix] We should not show the continuation line if only one row will be
+  hidden because we need one additional row to show the continuation line. In this case, we
+  show all the rows.
+- ![Bugfix][badge-bugfix] The support for rendering Markdown cells in LaTeX and text backend
+  was reincluded. This was accidentally removed in version 3.0.0.
+
 Version 3.0.2
 -------------
 
