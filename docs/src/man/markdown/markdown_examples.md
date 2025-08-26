@@ -45,7 +45,7 @@ pretty_table(A; backend = :markdown)
 pretty_table(
   A;
   backend = :markdown,
-  style   = MarkdownTableStyle(first_column_label = MarkdownStyle(italic = true))
+  style   = MarkdownTableStyle(first_line_column_label = MarkdownStyle(italic = true))
 )
 ```
 
@@ -76,7 +76,6 @@ pretty_table(
     data;
     backend = :markdown,
     column_labels,
-    merge_column_label_cells = :auto,
     row_labels,
     stubhead_label = "Effect",
     summary_row_labels = ["Total"],
