@@ -63,15 +63,20 @@ function _text__cell_to_str(
 end
 
 """
-    _text__render_cell(cell::Any, @nospecialize(context::IOContext), renderer::Union{Val{:print}, Val{:show}}; kwargs...) -> String
+    _text__render_cell(cell::Any, @nospecialize(context::IOContext), renderer::Union{Val{:print}, Val{:show}}, line_breaks::Bool = false, column_width::Int = -1) -> String
 
 Render the `cell` in text back end using a specific `context` and `renderer`.
+
+If `line_breaks` is `true`, the user wants to see line breaks in the output. The parameter
+`column_width` contains the maximum column width of the current cell. Currently, it is only
+used when rendering `Markdown.MD` cells.
 """
 function _text__render_cell(
     cell::Any,
     @nospecialize(context::IOContext),
     renderer::Union{Val{:print}, Val{:show}},
-    line_breaks::Bool = false
+    line_breaks::Bool = false,
+    column_width::Int = -1
 )
     cell_str = _text__cell_to_str(cell, context, renderer)
 
@@ -85,7 +90,8 @@ function _text__render_cell(
     cell::AbstractCustomTextCell,
     @nospecialize(context::IOContext),
     renderer::Union{Val{:print}, Val{:show}},
-    line_breaks::Bool = false
+    line_breaks::Bool = false,
+    column_width::Int = -1
 )
     # Here, we are rendering the cell for the first time. Hence, we need to initialize it.
     CustomTextCell.init!(cell, context, renderer; line_breaks)
@@ -93,12 +99,33 @@ function _text__render_cell(
     return CustomTextCell.printable_cell_text(cell)
 end
 
+function _text__render_cell(
+    cell::Markdown.MD,
+    @nospecialize(context::IOContext),
+    renderer::Union{Val{:print}, Val{:show}},
+    line_breaks::Bool = false,
+    column_width::Int = -1
+)
+    if column_width <= 0
+        column_width = 80
+    end
+
+    cell_str = sprint(Markdown.term, cell, column_width; context)
+
+    if !line_breaks
+        cell_str = replace(cell_str, '\n' => "\\n")
+    end
+
+    return cell_str
+end
+
 @static if VERSION >= v"1.11"
     function _text__render_cell(
         cell::Base.AnnotatedString,
         @nospecialize(context::IOContext),
         renderer::Union{Val{:print}, Val{:show}},
-        line_breaks::Bool = false
+        line_breaks::Bool = false,
+        column_width::Int = -1
     )
         cell_str = _text__cell_to_str(cell, context, renderer)
 

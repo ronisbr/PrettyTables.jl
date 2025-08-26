@@ -77,8 +77,12 @@ function _text__render_table(
 
         cell = _current_cell(action, ps, table_data)
 
+        mw = (action ∈ (:column_label, :data, :summary_row_cell)) ?
+            maximum_data_column_widths[ps.j] :
+            -1
+
         rendered_cell = if cell !== _IGNORE_CELL
-            _text__render_cell(cell, context, renderer, lb)
+            _text__render_cell(cell, context, renderer, lb, mw)
         else
             ""
         end
@@ -116,19 +120,19 @@ function _text__render_table(
         if action == :column_label
            column_labels[ir, jr] = _text__fit_cell_in_maximum_cell_width(
                column_labels[ir, jr],
-               maximum_data_column_widths[ps.j],
+               mw,
                false
            )
         elseif action == :data
             table_str[ir, jr] = _text__fit_cell_in_maximum_cell_width(
                 table_str[ir, jr],
-                maximum_data_column_widths[ps.j],
+                mw,
                 line_breaks
             )
         elseif action == :summary_row_cell
             summary_rows[ir, jr] = _text__fit_cell_in_maximum_cell_width(
                 summary_rows[ir, jr],
-                maximum_data_column_widths[ps.j],
+                mw,
                 false
             )
         end
