@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Examples · Pretty Tables</title><meta name="title" content="Examples · Pretty Tables"/><meta property="og:title" content="Examples · Pretty Tables"/><meta property="twitter:title" content="Examples · Pretty Tables"/><meta name="description" content="Documentation for Pretty Tables."/><meta property="og:description" content="Documentation for Pretty Tables."/><meta property="twitter:description" content="Documentation for Pretty Tables."/><meta property="og:url" content="https://ronisbr.github.io/PrettyTables.jl/stable/man/html/html_examples/"/><meta property="twitter:url" content="https://ronisbr.github.io/PrettyTables.jl/stable/man/html/html_examples/"/><link rel="canonical" href="https://ronisbr.github.io/PrettyTables.jl/stable/man/html/html_examples/"/><script data-outdated-warner src="../../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../../assets/documenter.js"></script><script src="../../../search_index.js"></script><script src="../../../siteinfo.js"></script><script src="../../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../../../"><img src="../../../assets/logo.png" alt="Pretty Tables logo"/></a><div class="docs-package-name"><span class="docs-autofit"><a href="../../../">Pretty Tables</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../../">Home</a></li><li><a class="tocitem" href="../../quick_start/">Quick Start</a></li><li><a class="tocitem" href="../../usage/">Usage</a></li><li><span class="tocitem">Back Ends</span><ul><li><input class="collapse-toggle" id="menuitem-4-1" type="checkbox"/><label class="tocitem" for="menuitem-4-1"><span class="docs-label">Text</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../../text/text_backend/">Text Backend</a></li><li><a class="tocitem" href="../../text/predefined_formats/">Pre-defined Formats</a></li><li><a class="tocitem" href="../../text/text_examples/">Examples</a></li></ul></li><li><input class="collapse-toggle" id="menuitem-4-2" type="checkbox" checked/><label class="tocitem" for="menuitem-4-2"><span class="docs-label">HTML</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../html_backend/">HTML Backend</a></li><li class="is-active"><a class="tocitem" href>Examples</a></li></ul></li><li><input class="collapse-toggle" id="menuitem-4-3" type="checkbox"/><label class="tocitem" for="menuitem-4-3"><span class="docs-label">LaTeX</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../../latex/latex_backend/">LaTeX Backend</a></li><li><a class="tocitem" href="../../latex/latex_examples/">Examples</a></li></ul></li><li><input class="collapse-toggle" id="menuitem-4-4" type="checkbox"/><label class="tocitem" for="menuitem-4-4"><span class="docs-label">Markdown</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../../markdown/markdown_backend/">Markdown Backend</a></li><li><a class="tocitem" href="../../markdown/markdown_examples/">Examples</a></li></ul></li></ul></li><li><a class="tocitem" href="../../../lib/library/">Library</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Back Ends</a></li><li><a class="is-disabled">HTML</a></li><li class="is-active"><a href>Examples</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Examples</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/ronisbr/PrettyTables.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/ronisbr/PrettyTables.jl/blob/master/docs/src/man/html/html_examples.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="HTML-Backend-Examples"><a class="docs-heading-anchor" href="#HTML-Backend-Examples">HTML Backend Examples</a><a id="HTML-Backend-Examples-1"></a><a class="docs-heading-anchor-permalink" href="#HTML-Backend-Examples" title="Permalink"></a></h1><p>Here, we can see some examples of text tables generated by PrettyTables.jl. The <code>A</code> object, when referenced, is defined as:</p><pre><code class="language-julia-repl hljs">julia&gt; A = Any[
+    1    false      1.0     0x01
+    2     true      2.0     0x02
+    3    false      3.0     0x03
+    4     true      4.0     0x04
+    5    false      5.0     0x05
+    6     true      6.0     0x06
+]</code></pre><hr/><pre><code class="language-julia-repl hljs">julia&gt; pretty_table(A; backend = :html)</code></pre><table>
+  <thead>
+    <tr class = "columnLabelRow">
+      <th style = "font-weight: bold; text-align: right;">Col. 1</th>
+      <th style = "font-weight: bold; text-align: right;">Col. 2</th>
+      <th style = "font-weight: bold; text-align: right;">Col. 3</th>
+      <th style = "font-weight: bold; text-align: right;">Col. 4</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class = "dataRow">
+      <td style = "text-align: right;">1</td>
+      <td style = "text-align: right;">false</td>
+      <td style = "text-align: right;">1.0</td>
+      <td style = "text-align: right;">1</td>
+    </tr>
+    <tr class = "dataRow">
+      <td style = "text-align: right;">2</td>
+      <td style = "text-align: right;">true</td>
+      <td style = "text-align: right;">2.0</td>
+      <td style = "text-align: right;">2</td>
+    </tr>
+    <tr class = "dataRow">
+      <td style = "text-align: right;">3</td>
+      <td style = "text-align: right;">false</td>
+      <td style = "text-align: right;">3.0</td>
+      <td style = "text-align: right;">3</td>
+    </tr>
+    <tr class = "dataRow">
+      <td style = "text-align: right;">4</td>
+      <td style = "text-align: right;">true</td>
+      <td style = "text-align: right;">4.0</td>
+      <td style = "text-align: right;">4</td>
+    </tr>
+    <tr class = "dataRow">
+      <td style = "text-align: right;">5</td>
+      <td style = "text-align: right;">false</td>
+      <td style = "text-align: right;">5.0</td>
+      <td style = "text-align: right;">5</td>
+    </tr>
+    <tr class = "dataRow">
+      <td style = "text-align: right;">6</td>
+      <td style = "text-align: right;">true</td>
+      <td style = "text-align: right;">6.0</td>
+      <td style = "text-align: right;">6</td>
+    </tr>
+  </tbody>
+</table>
+<hr/><pre><code class="language-julia-repl hljs">julia&gt; pretty_table(
+    A;
+    backend = :html,
+    style = HtmlTableStyle(;
+        first_line_column_label = [&quot;color&quot; =&gt; &quot;BurlyWood&quot;, &quot;font-weight&quot; =&gt; &quot;bold&quot;]
+    )
+)</code></pre><table>
+  <thead>
+    <tr class = "columnLabelRow">
+      <th style = "color: BurlyWood; font-weight: bold; text-align: right;">Col. 1</th>
+      <th style = "color: BurlyWood; font-weight: bold; text-align: right;">Col. 2</th>
+      <th style = "color: BurlyWood; font-weight: bold; text-align: right;">Col. 3</th>
+      <th style = "color: BurlyWood; font-weight: bold; text-align: right;">Col. 4</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class = "dataRow">
+      <td style = "text-align: right;">1</td>
+      <td style = "text-align: right;">false</td>
+      <td style = "text-align: right;">1.0</td>
+      <td style = "text-align: right;">1</td>
+    </tr>
+    <tr class = "dataRow">
+      <td style = "text-align: right;">2</td>
+      <td style = "text-align: right;">true</td>
+      <td style = "text-align: right;">2.0</td>
+      <td style = "text-align: right;">2</td>
+    </tr>
+    <tr class = "dataRow">
+      <td style = "text-align: right;">3</td>
+      <td style = "text-align: right;">false</td>
+      <td style = "text-align: right;">3.0</td>
+      <td style = "text-align: right;">3</td>
+    </tr>
+    <tr class = "dataRow">
+      <td style = "text-align: right;">4</td>
+      <td style = "text-align: right;">true</td>
+      <td style = "text-align: right;">4.0</td>
+      <td style = "text-align: right;">4</td>
+    </tr>
+    <tr class = "dataRow">
+      <td style = "text-align: right;">5</td>
+      <td style = "text-align: right;">false</td>
+      <td style = "text-align: right;">5.0</td>
+      <td style = "text-align: right;">5</td>
+    </tr>
+    <tr class = "dataRow">
+      <td style = "text-align: right;">6</td>
+      <td style = "text-align: right;">true</td>
+      <td style = "text-align: right;">6.0</td>
+      <td style = "text-align: right;">6</td>
+    </tr>
+  </tbody>
+</table>
+<hr/><pre><code class="language-julia-repl hljs">julia&gt; data = [
+    10.0 6.5
+     3.0 3.0
+     0.1 1.0
+]
+
+julia&gt; row_labels = [
+    &quot;Atmospheric drag&quot;
+    &quot;Gravity gradient&quot;
+    &quot;Solar radiation pressure&quot;
+]
+
+julia&gt; column_labels = [
+    [MultiColumn(2, &quot;Value&quot;, :c)],
+    [
+        &quot;Torque [10⁻⁶ Nm]&quot;,
+        &quot;Angular Momentum [10⁻³ Nms]&quot;
+    ]
+]
+
+julia&gt; pretty_table(
+    data;
+    backend = :html,
+    column_labels,
+    merge_column_label_cells = :auto,
+    row_labels,
+    stubhead_label = &quot;Effect&quot;,
+    style = HtmlTableStyle(;
+        first_line_merged_column_label = [&quot;color&quot; =&gt; &quot;BurlyWood&quot;, &quot;font-weight&quot; =&gt; &quot;bold&quot;],
+        column_label                   = [&quot;color&quot; =&gt; &quot;DarkGrey&quot;],
+        stubhead_label                 = [&quot;color&quot; =&gt; &quot;BurlyWood&quot;, &quot;font-weight&quot; =&gt; &quot;bold&quot;],
+        summary_row_label              = [&quot;color&quot; =&gt; &quot;red&quot;,       &quot;font-weight&quot; =&gt; &quot;bold&quot;]
+    ),
+    summary_row_labels = [&quot;Total&quot;],
+    summary_rows = [(data, i) -&gt; sum(data[:, i])],
+)</code></pre><table>
+  <thead>
+    <tr class = "columnLabelRow">
+      <th class = "stubheadLabel" style = "color: BurlyWood; font-weight: bold; text-align: right;">Effect</th>
+      <th colspan = "2" style = "color: BurlyWood; font-weight: bold; font-weight: bold; text-align: center;">Value</th>
+    </tr>
+    <tr class = "columnLabelRow">
+      <th class = "stubheadLabel" style = "color: BurlyWood; font-weight: bold; text-align: right;"></th>
+      <th style = "color: DarkGrey; text-align: right;">Torque [10⁻⁶ Nm]</th>
+      <th style = "color: DarkGrey; text-align: right;">Angular Momentum [10⁻³ Nms]</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class = "dataRow">
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">Atmospheric drag</td>
+      <td style = "text-align: right;">10.0</td>
+      <td style = "text-align: right;">6.5</td>
+    </tr>
+    <tr class = "dataRow">
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">Gravity gradient</td>
+      <td style = "text-align: right;">3.0</td>
+      <td style = "text-align: right;">3.0</td>
+    </tr>
+    <tr class = "dataRow">
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">Solar radiation pressure</td>
+      <td style = "text-align: right;">0.1</td>
+      <td style = "text-align: right;">1.0</td>
+    </tr>
+    <tr class = "summaryRow">
+      <td class = "summaryRowLabel" style = "color: red; font-weight: bold; text-align: right;">Total</td>
+      <td style = "text-align: right;">13.1</td>
+      <td style = "text-align: right;">10.5</td>
+    </tr>
+  </tbody>
+</table>
+<hr/><pre><code class="language-julia-repl hljs">julia&gt; t = 0:1:20
+
+julia&gt; data = hcat(t, ones(length(t) ), t, 0.5.*t.^2);
+
+julia&gt; column_labels = [
+    [&quot;Time&quot;, &quot;Acceleration&quot;, &quot;Velocity&quot;, &quot;Distance&quot;],
+    [ &quot;[s]&quot;,     &quot;[m / s²]&quot;,  &quot;[m / s]&quot;,      &quot;[m]&quot;]
+]
+
+julia&gt; hl_p = HtmlHighlighter(
+    (data, i, j) -&gt; (j == 4) &amp;&amp; (data[i, j] &gt; 9),
+    [&quot;color&quot; =&gt; &quot;blue&quot;]
+)
+
+julia&gt; hl_v = TextHighlighter(
+    (data, i, j) -&gt; (j == 3) &amp;&amp; (data[i, j] &gt; 9),
+    [&quot;color&quot; =&gt; &quot;red&quot;]
+)
+
+julia&gt; pretty_table(
+    data;
+    backend = :html,
+    column_labels = column_labels,
+    highlighters  = [hl_p, hl_v],
+    style = HtmlTableStyle(;
+        first_line_column_label = [&quot;color&quot; =&gt; &quot;BurlyWood&quot;, &quot;font-weight&quot; =&gt; &quot;bold&quot;],
+        column_label            = [&quot;color&quot; =&gt; &quot;DarkGrey&quot;],
+    )
+)</code></pre><table>
+  <thead>
+    <tr class = "columnLabelRow">
+      <th style = "color: BurlyWood; font-weight: bold; text-align: right;">Time</th>
+      <th style = "color: BurlyWood; font-weight: bold; text-align: right;">Acceleration</th>
+      <th style = "color: BurlyWood; font-weight: bold; text-align: right;">Velocity</th>
+      <th style = "color: BurlyWood; font-weight: bold; text-align: right;">Distance</th>
+    </tr>
+    <tr class = "columnLabelRow">
+      <th style = "color: DarkGrey; text-align: right;">[s]</th>
+      <th style = "color: DarkGrey; text-align: right;">[m / s²]</th>
+      <th style = "color: DarkGrey; text-align: right;">[m / s]</th>
+      <th style = "color: DarkGrey; text-align: right;">[m]</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class = "dataRow">
+      <td style = "text-align: right;">0.0</td>
+      <td style = "text-align: right;">1.0</td>
+      <td style = "text-align: right;">0.0</td>
+      <td style = "text-align: right;">0.0</td>
+    </tr>
+    <tr class = "dataRow">
+      <td style = "text-align: right;">1.0</td>
+      <td style = "text-align: right;">1.0</td>
+      <td style = "text-align: right;">1.0</td>
+      <td style = "text-align: right;">0.5</td>
+    </tr>
+    <tr class = "dataRow">
+      <td style = "text-align: right;">2.0</td>
+      <td style = "text-align: right;">1.0</td>
+      <td style = "text-align: right;">2.0</td>
+      <td style = "text-align: right;">2.0</td>
+    </tr>
+    <tr class = "dataRow">
+      <td style = "text-align: right;">3.0</td>
+      <td style = "text-align: right;">1.0</td>
+      <td style = "text-align: right;">3.0</td>
+      <td style = "text-align: right;">4.5</td>
+    </tr>
+    <tr class = "dataRow">
+      <td style = "text-align: right;">4.0</td>
+      <td style = "text-align: right;">1.0</td>
+      <td style = "text-align: right;">4.0</td>
+      <td style = "text-align: right;">8.0</td>
+    </tr>
+    <tr class = "dataRow">
+      <td style = "text-align: right;">5.0</td>
+      <td style = "text-align: right;">1.0</td>
+      <td style = "text-align: right;">5.0</td>
+      <td style = "color: blue; text-align: right;">12.5</td>
+    </tr>
+    <tr class = "dataRow">
+      <td style = "text-align: right;">6.0</td>
+      <td style = "text-align: right;">1.0</td>
+      <td style = "text-align: right;">6.0</td>
+      <td style = "color: blue; text-align: right;">18.0</td>
+    </tr>
+    <tr class = "dataRow">
+      <td style = "text-align: right;">7.0</td>
+      <td style = "text-align: right;">1.0</td>
+      <td style = "text-align: right;">7.0</td>
+      <td style = "color: blue; text-align: right;">24.5</td>
+    </tr>
+    <tr class = "dataRow">
+      <td style = "text-align: right;">8.0</td>
+      <td style = "text-align: right;">1.0</td>
+      <td style = "text-align: right;">8.0</td>
+      <td style = "color: blue; text-align: right;">32.0</td>
+    </tr>
+    <tr class = "dataRow">
+      <td style = "text-align: right;">9.0</td>
+      <td style = "text-align: right;">1.0</td>
+      <td style = "text-align: right;">9.0</td>
+      <td style = "color: blue; text-align: right;">40.5</td>
+    </tr>
+    <tr class = "dataRow">
+      <td style = "text-align: right;">10.0</td>
+      <td style = "text-align: right;">1.0</td>
+      <td style = "color: red; text-align: right;">10.0</td>
+      <td style = "color: blue; text-align: right;">50.0</td>
+    </tr>
+    <tr class = "dataRow">
+      <td style = "text-align: right;">11.0</td>
+      <td style = "text-align: right;">1.0</td>
+      <td style = "color: red; text-align: right;">11.0</td>
+      <td style = "color: blue; text-align: right;">60.5</td>
+    </tr>
+    <tr class = "dataRow">
+      <td style = "text-align: right;">12.0</td>
+      <td style = "text-align: right;">1.0</td>
+      <td style = "color: red; text-align: right;">12.0</td>
+      <td style = "color: blue; text-align: right;">72.0</td>
+    </tr>
+    <tr class = "dataRow">
+      <td style = "text-align: right;">13.0</td>
+      <td style = "text-align: right;">1.0</td>
+      <td style = "color: red; text-align: right;">13.0</td>
+      <td style = "color: blue; text-align: right;">84.5</td>
+    </tr>
+    <tr class = "dataRow">
+      <td style = "text-align: right;">14.0</td>
+      <td style = "text-align: right;">1.0</td>
+      <td style = "color: red; text-align: right;">14.0</td>
+      <td style = "color: blue; text-align: right;">98.0</td>
+    </tr>
+    <tr class = "dataRow">
+      <td style = "text-align: right;">15.0</td>
+      <td style = "text-align: right;">1.0</td>
+      <td style = "color: red; text-align: right;">15.0</td>
+      <td style = "color: blue; text-align: right;">112.5</td>
+    </tr>
+    <tr class = "dataRow">
+      <td style = "text-align: right;">16.0</td>
+      <td style = "text-align: right;">1.0</td>
+      <td style = "color: red; text-align: right;">16.0</td>
+      <td style = "color: blue; text-align: right;">128.0</td>
+    </tr>
+    <tr class = "dataRow">
+      <td style = "text-align: right;">17.0</td>
+      <td style = "text-align: right;">1.0</td>
+      <td style = "color: red; text-align: right;">17.0</td>
+      <td style = "color: blue; text-align: right;">144.5</td>
+    </tr>
+    <tr class = "dataRow">
+      <td style = "text-align: right;">18.0</td>
+      <td style = "text-align: right;">1.0</td>
+      <td style = "color: red; text-align: right;">18.0</td>
+      <td style = "color: blue; text-align: right;">162.0</td>
+    </tr>
+    <tr class = "dataRow">
+      <td style = "text-align: right;">19.0</td>
+      <td style = "text-align: right;">1.0</td>
+      <td style = "color: red; text-align: right;">19.0</td>
+      <td style = "color: blue; text-align: right;">180.5</td>
+    </tr>
+    <tr class = "dataRow">
+      <td style = "text-align: right;">20.0</td>
+      <td style = "text-align: right;">1.0</td>
+      <td style = "color: red; text-align: right;">20.0</td>
+      <td style = "color: blue; text-align: right;">200.0</td>
+    </tr>
+  </tbody>
+</table>
+</article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../html_backend/">« HTML Backend</a><a class="docs-footer-nextpage" href="../../latex/latex_backend/">LaTeX Backend »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.14.1 on <span class="colophon-date" title="Tuesday 26 August 2025 22:02">Tuesday 26 August 2025</span>. Using Julia version 1.11.6.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
