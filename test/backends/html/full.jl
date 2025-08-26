@@ -141,7 +141,7 @@
       <th class = "stubheadLabel" style = "font-weight: bold; text-align: right;">Rows</th>
       <th style = "font-weight: bold; text-align: right;">Col. 1</th>
       <th colspan = "1" style = "border-bottom: 1px solid black; font-weight: bold; text-align: center;">Merged Column<sup>1</sup></th>
-      <td>&ctdot;</td>
+      <th>&ctdot;</th>
     </tr>
   </thead>
   <tbody>
@@ -240,7 +240,7 @@
       <th class = "stubheadLabel" style = "font-weight: bold; text-align: right;">Rows</th>
       <th style = "font-weight: bold; text-align: right;">Col. 1</th>
       <th colspan = "1" style = "border-bottom: 1px solid black; font-weight: bold; text-align: center;">Merged Column<sup>1</sup></th>
-      <td>&ctdot;</td>
+      <th>&ctdot;</th>
     </tr>
   </thead>
   <tbody>

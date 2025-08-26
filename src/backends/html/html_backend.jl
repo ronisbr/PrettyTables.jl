@@ -287,7 +287,8 @@ function _html__print(
             )
 
         elseif action == :horizontal_continuation_cell
-            _aprintln(buf, _html__create_tag("td", "&ctdot;"), il, ns; minify)
+            tag = rs == :column_labels ? "th" : "td"
+            _aprintln(buf, _html__create_tag(tag, "&ctdot;"), il, ns; minify)
 
         elseif action ∈ _VERTICAL_CONTINUATION_CELL_ACTIONS
             # Obtain the cell style.

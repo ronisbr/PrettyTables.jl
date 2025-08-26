@@ -21,7 +21,7 @@
       <th style = "font-weight: bold; text-align: right;">Col. 1</th>
       <th style = "font-weight: bold; text-align: right;">Col. 2</th>
       <th style = "font-weight: bold; text-align: right;">Col. 3</th>
-      <td>&ctdot;</td>
+      <th>&ctdot;</th>
     </tr>
   </thead>
   <tbody>
@@ -72,7 +72,7 @@
       <th style = "font-weight: bold; text-align: right;">Col. 1</th>
       <th style = "font-weight: bold; text-align: right;">Col. 2</th>
       <th style = "font-weight: bold; text-align: right;">Col. 3</th>
-      <td>&ctdot;</td>
+      <th>&ctdot;</th>
     </tr>
   </thead>
   <tbody>
@@ -118,7 +118,7 @@
       <th style = "font-weight: bold; text-align: right;">Col. 1</th>
       <th style = "font-weight: bold; text-align: right;">Col. 2</th>
       <th style = "font-weight: bold; text-align: right;">Col. 3</th>
-      <td>&ctdot;</td>
+      <th>&ctdot;</th>
     </tr>
   </thead>
   <tbody>
