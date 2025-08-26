@@ -108,7 +108,7 @@ julia> pretty_table(
     merge_column_label_cells = :auto,
     row_labels,
     stubhead_label = "Effect",
-    style = LatexTableStyle(column_label = []),
+    style = LatexTableStyle(column_label = String[]),
     summary_row_labels = ["Total"],
     summary_rows = [(data, i) -> sum(data[:, i])],
     table_format = latex_table_format__booktabs
@@ -144,7 +144,7 @@ table = pretty_table(
     merge_column_label_cells = :auto,
     row_labels,
     stubhead_label           = "Effect",
-    style                    = LatexTableStyle(column_label = []),
+    style                    = LatexTableStyle(column_label = String[]),
     summary_row_labels       = ["Total"],
     summary_rows             = [(data, i) -> sum(data[:, i])],
     table_format             = latex_table_format__booktabs
@@ -182,7 +182,7 @@ julia> pretty_table(
     backend       = :latex,
     column_labels = column_labels,
     highlighters  = [hl_p, hl_v],
-    style         = LatexTableStyle(column_label = []),
+    style         = LatexTableStyle(column_label = String[]),
     table_format  = latex_table_format__booktabs
 )
 ```
@@ -213,7 +213,7 @@ table = pretty_table(
     backend       = :latex,
     column_labels = column_labels,
     highlighters  = [hl_p, hl_v],
-    style         = LatexTableStyle(column_label = []),
+    style         = LatexTableStyle(column_label = String[]),
     table_format  = latex_table_format__booktabs
 )
 
