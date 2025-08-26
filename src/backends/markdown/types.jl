@@ -125,23 +125,29 @@ Define the style of the tables printed with the markdown back end.
 - `stubhead_label::MarkdownStyle`: Style for the stubhead label.
 - `row_label::MarkdownStyle`: Style for the row label.
 - `row_group_label::MarkdownStyle`: Style for the row group label.
-- `first_column_label::MarkdownStyle`: Style for the first line of the  column
-    labels.
-- `column_label::MarkdownStyle`: Style for the column label.
+- `first_line_column_label::Union{MarkdownStyle, Vector{MarkdownStyle}}`: Style for the
+    first line of the column label. If a vector of `MarkdownStyle` is provided, each column
+    label in the first line will use the corresponding style.
+- `column_label::Union{MarkdownStyle, Vector{MarkdownStyle}}`: Style for the column label.
+    If a vector of `MarkdownStyle` is provided, each column label will use the corresponding
+    style.
 - `summary_row_label::MarkdownStyle`: Style for the summary row label.
 - `summary_row_cell::MarkdownStyle`: Style for the summary row cell.
 - `footnote::MarkdownStyle`: Style for the footnote.
 - `source_note::MarkdownStyle`: Style for the source note.
 - `omitted_cell_summary::MarkdownStyle`: Style for the omitted cell summary.
 """
-@kwdef struct MarkdownTableStyle
+@kwdef struct MarkdownTableStyle{
+    TFCL<:Union{MarkdownStyle, Vector{MarkdownStyle}},
+    TCL<:Union{MarkdownStyle, Vector{MarkdownStyle}}
+}
     row_number_label::MarkdownStyle     = _MARKDOWN__BOLD
     row_number::MarkdownStyle           = _MARKDOWN__BOLD
     stubhead_label::MarkdownStyle       = _MARKDOWN__BOLD
     row_label::MarkdownStyle            = _MARKDOWN__BOLD
     row_group_label::MarkdownStyle      = _MARKDOWN__BOLD
-    first_column_label::MarkdownStyle   = _MARKDOWN__BOLD
-    column_label::MarkdownStyle         = _MARKDOWN__CODE
+    first_line_column_label::TFCL       = _MARKDOWN__BOLD
+    column_label::TCL                   = _MARKDOWN__CODE
     summary_row_label::MarkdownStyle    = _MARKDOWN__BOLD
     summary_row_cell::MarkdownStyle     = _MARKDOWN__NO_DECORATION
     footnote::MarkdownStyle             = _MARKDOWN__NO_DECORATION

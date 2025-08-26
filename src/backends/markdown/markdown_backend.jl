@@ -27,6 +27,21 @@ function _markdown__print(
     num_printed_data_rows    = _number_of_printed_data_rows(table_data)
     num_summary_rows         = _has_summary_rows(table_data) ? length(table_data.summary_rows) : 0
 
+    # Check the style variables.
+    if style.first_line_column_label isa Vector{MarkdownStyle}
+        length(style.first_line_column_label) != table_data.num_columns &&
+            throw(ArgumentError(
+                "The length of `first_line_column_label` in `style` must be equal to the number of columns ($(table_data.num_columns))."
+            ))
+    end
+
+    if style.column_label isa Vector{MarkdownStyle}
+        length(style.column_label) != table_data.num_columns &&
+            throw(ArgumentError(
+                "The length of `column_label` in `style` must be equal to the number of columns ($(table_data.num_columns))."
+            ))
+    end
+
     # == Render the Table ==================================================================
 
     # For Markdown, we need to render the entire table before printing to take into account
@@ -96,7 +111,19 @@ function _markdown__print(
         if table_data.show_column_labels && (action == :column_label)
             # Apply the style to the column label.
             rendered_cell = _markdown__apply_style(
-                ir == 1 ? style.first_column_label : style.column_label,
+                if ir == 1
+                    if style.first_line_column_label isa Vector{MarkdownStyle}
+                        style.first_line_column_label[jr]
+                    else
+                        style.first_line_column_label
+                    end
+                else
+                    if style.column_label isa Vector{MarkdownStyle}
+                        style.column_label[jr]
+                    else
+                        style.column_label
+                    end
+                end,
                 rendered_cell
             )
 

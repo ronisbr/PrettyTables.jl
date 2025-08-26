@@ -257,6 +257,33 @@ PrecompileTools.@setup_workload begin
 
         pretty_table(types; backend = :markdown)
 
+        # .. Markdown Table Styles .........................................................
+
+        pretty_table(
+            matrix;
+            backend = :markdown,
+            style = MarkdownTableStyle(
+                first_line_column_label = [MarkdownStyle(bold = true) for i = 1:10]
+            )
+        )
+
+        pretty_table(
+            matrix;
+            backend = :markdown,
+            style = MarkdownTableStyle(
+                column_label = [MarkdownStyle(italic = true) for i = 1:10]
+            )
+        )
+
+        pretty_table(
+            matrix;
+            backend = :markdown,
+            style = MarkdownTableStyle(
+                first_line_column_label = [MarkdownStyle(bold   = true) for i = 1:10],
+                column_label            = [MarkdownStyle(italic = true) for i = 1:10]
+            )
+        )
+
         # == Input: Tables.jl ==============================================================
 
         pretty_table(html_buf, table)

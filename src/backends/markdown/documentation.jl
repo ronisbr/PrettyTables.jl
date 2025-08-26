@@ -99,9 +99,12 @@ that contains the following fields:
 - `first_column_label::MarkdownStyle`: Style for the first line of the column labels.
 - `row_label::MarkdownStyle`: Style for the row label.
 - `row_group_label::MarkdownStyle`: Style for the row group label.
-- `first_column_label::MarkdownStyle`: Style for the first line of the  column
-    labels.
-- `column_label::MarkdownStyle`: Style for the column label.
+- `first_line_column_label::Union{MarkdownStyle, Vector{MarkdownStyle}}`: Style for the
+    first line of the column label. If a vector of `MarkdownStyle` is provided, each column
+    label in the first line will use the corresponding style.
+- `column_label::Union{MarkdownStyle, Vector{MarkdownStyle}}`: Style for the column label.
+    If a vector of `MarkdownStyle` is provided, each column label will use the corresponding
+    style.
 - `summary_row_label::MarkdownStyle`: Style for the summary row label.
 - `summary_row_cell::MarkdownStyle`: Style for the summary row cell.
 - `footnote::MarkdownStyle`: Style for the footnote.
