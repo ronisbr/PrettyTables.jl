@@ -9,10 +9,10 @@
 ]</code></pre><hr/><pre><code class="language-julia-repl hljs">julia&gt; pretty_table(A; backend = :html)</code></pre><table>
   <thead>
     <tr class = "columnLabelRow">
-      <th style = "text-align: right; font-weight: bold;">Col. 1</th>
-      <th style = "text-align: right; font-weight: bold;">Col. 2</th>
-      <th style = "text-align: right; font-weight: bold;">Col. 3</th>
-      <th style = "text-align: right; font-weight: bold;">Col. 4</th>
+      <th style = "font-weight: bold; text-align: right;">Col. 1</th>
+      <th style = "font-weight: bold; text-align: right;">Col. 2</th>
+      <th style = "font-weight: bold; text-align: right;">Col. 3</th>
+      <th style = "font-weight: bold; text-align: right;">Col. 4</th>
     </tr>
   </thead>
   <tbody>
@@ -63,10 +63,10 @@
 )</code></pre><table>
   <thead>
     <tr class = "columnLabelRow">
-      <th style = "text-align: right; color: BurlyWood; font-weight: bold;">Col. 1</th>
-      <th style = "text-align: right; color: BurlyWood; font-weight: bold;">Col. 2</th>
-      <th style = "text-align: right; color: BurlyWood; font-weight: bold;">Col. 3</th>
-      <th style = "text-align: right; color: BurlyWood; font-weight: bold;">Col. 4</th>
+      <th style = "color: BurlyWood; font-weight: bold; text-align: right;">Col. 1</th>
+      <th style = "color: BurlyWood; font-weight: bold; text-align: right;">Col. 2</th>
+      <th style = "color: BurlyWood; font-weight: bold; text-align: right;">Col. 3</th>
+      <th style = "color: BurlyWood; font-weight: bold; text-align: right;">Col. 4</th>
     </tr>
   </thead>
   <tbody>
@@ -146,33 +146,33 @@ julia&gt; pretty_table(
 )</code></pre><table>
   <thead>
     <tr class = "columnLabelRow">
-      <th class = "stubheadLabel" style = "text-align: right; color: BurlyWood; font-weight: bold;">Effect</th>
-      <th colspan = "2" style = "color: BurlyWood; font-weight: bold; text-align: center; font-weight: bold;">Value</th>
+      <th class = "stubheadLabel" style = "color: BurlyWood; font-weight: bold; text-align: right;">Effect</th>
+      <th colspan = "2" style = "color: BurlyWood; font-weight: bold; font-weight: bold; text-align: center;">Value</th>
     </tr>
     <tr class = "columnLabelRow">
-      <th class = "stubheadLabel" style = "text-align: right; color: BurlyWood; font-weight: bold;"></th>
-      <th style = "text-align: right; color: DarkGrey;">Torque [10⁻⁶ Nm]</th>
-      <th style = "text-align: right; color: DarkGrey;">Angular Momentum [10⁻³ Nms]</th>
+      <th class = "stubheadLabel" style = "color: BurlyWood; font-weight: bold; text-align: right;"></th>
+      <th style = "color: DarkGrey; text-align: right;">Torque [10⁻⁶ Nm]</th>
+      <th style = "color: DarkGrey; text-align: right;">Angular Momentum [10⁻³ Nms]</th>
     </tr>
   </thead>
   <tbody>
     <tr class = "dataRow">
-      <td class = "rowLabel" style = "text-align: right; font-weight: bold;">Atmospheric drag</td>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">Atmospheric drag</td>
       <td style = "text-align: right;">10.0</td>
       <td style = "text-align: right;">6.5</td>
     </tr>
     <tr class = "dataRow">
-      <td class = "rowLabel" style = "text-align: right; font-weight: bold;">Gravity gradient</td>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">Gravity gradient</td>
       <td style = "text-align: right;">3.0</td>
       <td style = "text-align: right;">3.0</td>
     </tr>
     <tr class = "dataRow">
-      <td class = "rowLabel" style = "text-align: right; font-weight: bold;">Solar radiation pressure</td>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">Solar radiation pressure</td>
       <td style = "text-align: right;">0.1</td>
       <td style = "text-align: right;">1.0</td>
     </tr>
     <tr class = "summaryRow">
-      <td class = "summaryRowLabel" style = "text-align: right; color: red; font-weight: bold;">Total</td>
+      <td class = "summaryRowLabel" style = "color: red; font-weight: bold; text-align: right;">Total</td>
       <td style = "text-align: right;">13.1</td>
       <td style = "text-align: right;">10.5</td>
     </tr>
@@ -209,16 +209,16 @@ julia&gt; pretty_table(
 )</code></pre><table>
   <thead>
     <tr class = "columnLabelRow">
-      <th style = "text-align: right; color: BurlyWood; font-weight: bold;">Time</th>
-      <th style = "text-align: right; color: BurlyWood; font-weight: bold;">Acceleration</th>
-      <th style = "text-align: right; color: BurlyWood; font-weight: bold;">Velocity</th>
-      <th style = "text-align: right; color: BurlyWood; font-weight: bold;">Distance</th>
+      <th style = "color: BurlyWood; font-weight: bold; text-align: right;">Time</th>
+      <th style = "color: BurlyWood; font-weight: bold; text-align: right;">Acceleration</th>
+      <th style = "color: BurlyWood; font-weight: bold; text-align: right;">Velocity</th>
+      <th style = "color: BurlyWood; font-weight: bold; text-align: right;">Distance</th>
     </tr>
     <tr class = "columnLabelRow">
-      <th style = "text-align: right; color: DarkGrey;">[s]</th>
-      <th style = "text-align: right; color: DarkGrey;">[m / s²]</th>
-      <th style = "text-align: right; color: DarkGrey;">[m / s]</th>
-      <th style = "text-align: right; color: DarkGrey;">[m]</th>
+      <th style = "color: DarkGrey; text-align: right;">[s]</th>
+      <th style = "color: DarkGrey; text-align: right;">[m / s²]</th>
+      <th style = "color: DarkGrey; text-align: right;">[m / s]</th>
+      <th style = "color: DarkGrey; text-align: right;">[m]</th>
     </tr>
   </thead>
   <tbody>
@@ -256,98 +256,98 @@ julia&gt; pretty_table(
       <td style = "text-align: right;">5.0</td>
       <td style = "text-align: right;">1.0</td>
       <td style = "text-align: right;">5.0</td>
-      <td style = "text-align: right; color: blue;">12.5</td>
+      <td style = "color: blue; text-align: right;">12.5</td>
     </tr>
     <tr class = "dataRow">
       <td style = "text-align: right;">6.0</td>
       <td style = "text-align: right;">1.0</td>
       <td style = "text-align: right;">6.0</td>
-      <td style = "text-align: right; color: blue;">18.0</td>
+      <td style = "color: blue; text-align: right;">18.0</td>
     </tr>
     <tr class = "dataRow">
       <td style = "text-align: right;">7.0</td>
       <td style = "text-align: right;">1.0</td>
       <td style = "text-align: right;">7.0</td>
-      <td style = "text-align: right; color: blue;">24.5</td>
+      <td style = "color: blue; text-align: right;">24.5</td>
     </tr>
     <tr class = "dataRow">
       <td style = "text-align: right;">8.0</td>
       <td style = "text-align: right;">1.0</td>
       <td style = "text-align: right;">8.0</td>
-      <td style = "text-align: right; color: blue;">32.0</td>
+      <td style = "color: blue; text-align: right;">32.0</td>
     </tr>
     <tr class = "dataRow">
       <td style = "text-align: right;">9.0</td>
       <td style = "text-align: right;">1.0</td>
       <td style = "text-align: right;">9.0</td>
-      <td style = "text-align: right; color: blue;">40.5</td>
+      <td style = "color: blue; text-align: right;">40.5</td>
     </tr>
     <tr class = "dataRow">
       <td style = "text-align: right;">10.0</td>
       <td style = "text-align: right;">1.0</td>
-      <td style = "text-align: right; color: red;">10.0</td>
-      <td style = "text-align: right; color: blue;">50.0</td>
+      <td style = "color: red; text-align: right;">10.0</td>
+      <td style = "color: blue; text-align: right;">50.0</td>
     </tr>
     <tr class = "dataRow">
       <td style = "text-align: right;">11.0</td>
       <td style = "text-align: right;">1.0</td>
-      <td style = "text-align: right; color: red;">11.0</td>
-      <td style = "text-align: right; color: blue;">60.5</td>
+      <td style = "color: red; text-align: right;">11.0</td>
+      <td style = "color: blue; text-align: right;">60.5</td>
     </tr>
     <tr class = "dataRow">
       <td style = "text-align: right;">12.0</td>
       <td style = "text-align: right;">1.0</td>
-      <td style = "text-align: right; color: red;">12.0</td>
-      <td style = "text-align: right; color: blue;">72.0</td>
+      <td style = "color: red; text-align: right;">12.0</td>
+      <td style = "color: blue; text-align: right;">72.0</td>
     </tr>
     <tr class = "dataRow">
       <td style = "text-align: right;">13.0</td>
       <td style = "text-align: right;">1.0</td>
-      <td style = "text-align: right; color: red;">13.0</td>
-      <td style = "text-align: right; color: blue;">84.5</td>
+      <td style = "color: red; text-align: right;">13.0</td>
+      <td style = "color: blue; text-align: right;">84.5</td>
     </tr>
     <tr class = "dataRow">
       <td style = "text-align: right;">14.0</td>
       <td style = "text-align: right;">1.0</td>
-      <td style = "text-align: right; color: red;">14.0</td>
-      <td style = "text-align: right; color: blue;">98.0</td>
+      <td style = "color: red; text-align: right;">14.0</td>
+      <td style = "color: blue; text-align: right;">98.0</td>
     </tr>
     <tr class = "dataRow">
       <td style = "text-align: right;">15.0</td>
       <td style = "text-align: right;">1.0</td>
-      <td style = "text-align: right; color: red;">15.0</td>
-      <td style = "text-align: right; color: blue;">112.5</td>
+      <td style = "color: red; text-align: right;">15.0</td>
+      <td style = "color: blue; text-align: right;">112.5</td>
     </tr>
     <tr class = "dataRow">
       <td style = "text-align: right;">16.0</td>
       <td style = "text-align: right;">1.0</td>
-      <td style = "text-align: right; color: red;">16.0</td>
-      <td style = "text-align: right; color: blue;">128.0</td>
+      <td style = "color: red; text-align: right;">16.0</td>
+      <td style = "color: blue; text-align: right;">128.0</td>
     </tr>
     <tr class = "dataRow">
       <td style = "text-align: right;">17.0</td>
       <td style = "text-align: right;">1.0</td>
-      <td style = "text-align: right; color: red;">17.0</td>
-      <td style = "text-align: right; color: blue;">144.5</td>
+      <td style = "color: red; text-align: right;">17.0</td>
+      <td style = "color: blue; text-align: right;">144.5</td>
     </tr>
     <tr class = "dataRow">
       <td style = "text-align: right;">18.0</td>
       <td style = "text-align: right;">1.0</td>
-      <td style = "text-align: right; color: red;">18.0</td>
-      <td style = "text-align: right; color: blue;">162.0</td>
+      <td style = "color: red; text-align: right;">18.0</td>
+      <td style = "color: blue; text-align: right;">162.0</td>
     </tr>
     <tr class = "dataRow">
       <td style = "text-align: right;">19.0</td>
       <td style = "text-align: right;">1.0</td>
-      <td style = "text-align: right; color: red;">19.0</td>
-      <td style = "text-align: right; color: blue;">180.5</td>
+      <td style = "color: red; text-align: right;">19.0</td>
+      <td style = "color: blue; text-align: right;">180.5</td>
     </tr>
     <tr class = "dataRow">
       <td style = "text-align: right;">20.0</td>
       <td style = "text-align: right;">1.0</td>
-      <td style = "text-align: right; color: red;">20.0</td>
-      <td style = "text-align: right; color: blue;">200.0</td>
+      <td style = "color: red; text-align: right;">20.0</td>
+      <td style = "color: blue; text-align: right;">200.0</td>
     </tr>
   </tbody>
 </table>
-</article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../html_backend/">« HTML Backend</a><a class="docs-footer-nextpage" href="../../latex/latex_backend/">LaTeX Backend »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.14.1 on <span class="colophon-date" title="Tuesday 26 August 2025 19:28">Tuesday 26 August 2025</span>. Using Julia version 1.11.6.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+</article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../html_backend/">« HTML Backend</a><a class="docs-footer-nextpage" href="../../latex/latex_backend/">LaTeX Backend »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.14.1 on <span class="colophon-date" title="Tuesday 26 August 2025 21:37">Tuesday 26 August 2025</span>. Using Julia version 1.11.6.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
