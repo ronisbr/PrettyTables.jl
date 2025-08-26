@@ -406,6 +406,13 @@ function _pretty_table(
         column_labels = [column_labels[1]]
     end
 
+    # If the difference between the `maximum_number_of_rows` and the actual number of
+    # rows is less than or equal to 1, we will not crop the table because we need one
+    # additional line to show the continuation marks.
+    if (maximum_number_of_rows > 0) && (num_rows == maximum_number_of_rows + 1)
+        maximum_number_of_rows = maximum_number_of_rows + 1
+    end
+
     # == Table Data and Printing Specification =============================================
 
     table_data = TableData(
