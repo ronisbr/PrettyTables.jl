@@ -14,21 +14,21 @@
 <table>
   <thead>
     <tr class = "columnLabelRow">
-      <th style = "text-align: right; font-weight: bold;">Col. 1</th>
-      <th style = "text-align: right; font-weight: bold;">Col. 2</th>
-      <th style = "text-align: right; font-weight: bold;">Col. 3</th>
+      <th style = "font-weight: bold; text-align: right;">Col. 1</th>
+      <th style = "font-weight: bold; text-align: right;">Col. 2</th>
+      <th style = "font-weight: bold; text-align: right;">Col. 3</th>
     </tr>
   </thead>
   <tbody>
     <tr class = "dataRow">
-      <td style = "text-align: right; font-weight: bold; color: green;">1</td>
-      <td style = "text-align: right; color: red;">2</td>
-      <td style = "text-align: right; font-weight: bold; color: green;">3</td>
+      <td style = "color: green; font-weight: bold; text-align: right;">1</td>
+      <td style = "color: red; text-align: right;">2</td>
+      <td style = "color: green; font-weight: bold; text-align: right;">3</td>
     </tr>
     <tr class = "dataRow">
-      <td style = "text-align: right; color: red;">4</td>
-      <td style = "text-align: right; font-weight: bold; color: green;">5</td>
-      <td style = "text-align: right; color: red;">6</td>
+      <td style = "color: red; text-align: right;">4</td>
+      <td style = "color: green; font-weight: bold; text-align: right;">5</td>
+      <td style = "color: red; text-align: right;">6</td>
     </tr>
   </tbody>
 </table>

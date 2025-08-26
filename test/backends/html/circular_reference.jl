@@ -19,10 +19,10 @@
 <table>
   <thead>
     <tr class = "columnLabelRow">
-      <th style = "text-align: right; font-weight: bold;">A1</th>
-      <th style = "text-align: right; font-weight: bold;">A2</th>
-      <th style = "text-align: right; font-weight: bold;">A3</th>
-      <th style = "text-align: right; font-weight: bold;">A4</th>
+      <th style = "font-weight: bold; text-align: right;">A1</th>
+      <th style = "font-weight: bold; text-align: right;">A2</th>
+      <th style = "font-weight: bold; text-align: right;">A3</th>
+      <th style = "font-weight: bold; text-align: right;">A4</th>
     </tr>
   </thead>
   <tbody>

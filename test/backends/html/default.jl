@@ -15,12 +15,12 @@
 <table>
   <thead>
     <tr class = "columnLabelRow">
-      <th style = "text-align: right; font-weight: bold;">Col. 1</th>
-      <th style = "text-align: right; font-weight: bold;">Col. 2</th>
-      <th style = "text-align: right; font-weight: bold;">Col. 3</th>
-      <th style = "text-align: right; font-weight: bold;">Col. 4</th>
-      <th style = "text-align: right; font-weight: bold;">Col. 5</th>
-      <th style = "text-align: right; font-weight: bold;">Col. 6</th>
+      <th style = "font-weight: bold; text-align: right;">Col. 1</th>
+      <th style = "font-weight: bold; text-align: right;">Col. 2</th>
+      <th style = "font-weight: bold; text-align: right;">Col. 3</th>
+      <th style = "font-weight: bold; text-align: right;">Col. 4</th>
+      <th style = "font-weight: bold; text-align: right;">Col. 5</th>
+      <th style = "font-weight: bold; text-align: right;">Col. 6</th>
     </tr>
   </thead>
   <tbody>

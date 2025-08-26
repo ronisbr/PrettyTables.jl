@@ -12,8 +12,8 @@
   <table class = "myClass">
     <thead>
       <tr class = "columnLabelRow">
-        <th style = "text-align: right; font-weight: bold;">Col. 1</th>
-        <th style = "text-align: right; font-weight: bold;">Col. 2</th>
+        <th style = "font-weight: bold; text-align: right;">Col. 1</th>
+        <th style = "font-weight: bold; text-align: right;">Col. 2</th>
       </tr>
     </thead>
     <tbody>
@@ -47,8 +47,8 @@
   <table class = "myClass">
     <thead>
       <tr class = "columnLabelRow">
-        <th style = "text-align: right; font-weight: bold;">Col. 1</th>
-        <th style = "text-align: right; font-weight: bold;">Col. 2</th>
+        <th style = "font-weight: bold; text-align: right;">Col. 1</th>
+        <th style = "font-weight: bold; text-align: right;">Col. 2</th>
       </tr>
     </thead>
     <tbody>
@@ -77,7 +77,7 @@
   <div style = "float: left;">
     <span>Top Left</span>
   </div>
-  <div style = "font-style: italic; float: right;">
+  <div style = "float: right; font-style: italic;">
     <span>Top Right</span>
   </div>
   <div style = "clear: both;"></div>
@@ -86,8 +86,8 @@
   <table class = "myClass">
     <thead>
       <tr class = "columnLabelRow">
-        <th style = "text-align: right; font-weight: bold;">Col. 1</th>
-        <th style = "text-align: right; font-weight: bold;">Col. 2</th>
+        <th style = "font-weight: bold; text-align: right;">Col. 1</th>
+        <th style = "font-weight: bold; text-align: right;">Col. 2</th>
       </tr>
     </thead>
     <tbody>

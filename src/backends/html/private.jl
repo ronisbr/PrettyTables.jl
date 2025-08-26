@@ -107,6 +107,9 @@ function _html__create_style(style::Vector{HtmlPair})
     # Create the style string.
     style_str = " style = \""
 
+    # Make sure the style is sorted by key.
+    sort!(style)
+
     @inbounds for i in eachindex(style)
         key, value = style[i]
 
@@ -144,7 +147,10 @@ function _html__open_tag(
     # Compile the text with the properties.
     properties_str = ""
 
+    # Make sure the properties are sorted by key.
     if !isnothing(properties)
+        sort!(properties)
+
         for (k, v) in properties
             if !isempty(v)
                 v_str = _html__escape_str(v)

@@ -14,10 +14,10 @@
 <table>
   <thead>
     <tr class = "columnLabelRow">
-      <th title = "1" style = "text-align: right; font-weight: bold;">(1, 1)</th>
-      <th title = "2" style = "text-align: right; font-weight: bold;">(1, 2)</th>
-      <th title = "3" style = "text-align: right; font-weight: bold;">(1, 3)</th>
-      <th title = "4" style = "text-align: right; font-weight: bold;">(1, 4)</th>
+      <th title = "1" style = "font-weight: bold; text-align: right;">(1, 1)</th>
+      <th title = "2" style = "font-weight: bold; text-align: right;">(1, 2)</th>
+      <th title = "3" style = "font-weight: bold; text-align: right;">(1, 3)</th>
+      <th title = "4" style = "font-weight: bold; text-align: right;">(1, 4)</th>
     </tr>
     <tr class = "columnLabelRow">
       <th style = "text-align: right;">(2, 1)</th>

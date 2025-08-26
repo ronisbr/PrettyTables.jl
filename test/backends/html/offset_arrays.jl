@@ -18,27 +18,27 @@
 <table>
   <thead>
     <tr class = "columnLabelRow">
-      <th class = "rowNumberLabel" style = "text-align: right; font-weight: bold;">Row</th>
-      <th style = "text-align: right; font-weight: bold;">Col. -3</th>
-      <th style = "text-align: right; font-weight: bold;">Col. -2</th>
-      <th style = "text-align: right; font-weight: bold;">Col. -1</th>
+      <th class = "rowNumberLabel" style = "font-weight: bold; text-align: right;">Row</th>
+      <th style = "font-weight: bold; text-align: right;">Col. -3</th>
+      <th style = "font-weight: bold; text-align: right;">Col. -2</th>
+      <th style = "font-weight: bold; text-align: right;">Col. -1</th>
     </tr>
   </thead>
   <tbody>
     <tr class = "dataRow">
-      <td class = "rowNumber" style = "text-align: right; font-weight: bold;">-2</td>
+      <td class = "rowNumber" style = "font-weight: bold; text-align: right;">-2</td>
       <td style = "text-align: right;">(1, 1)</td>
       <td style = "text-align: right;">(1, 2)</td>
       <td style = "text-align: right;">#undef</td>
     </tr>
     <tr class = "dataRow">
-      <td class = "rowNumber" style = "text-align: right; font-weight: bold;">-1</td>
+      <td class = "rowNumber" style = "font-weight: bold; text-align: right;">-1</td>
       <td style = "text-align: right;">nothing</td>
       <td style = "text-align: right;">missing</td>
       <td style = "text-align: right;">#undef</td>
     </tr>
     <tr class = "dataRow">
-      <td class = "rowNumber" style = "text-align: right; font-weight: bold;">0</td>
+      <td class = "rowNumber" style = "font-weight: bold; text-align: right;">0</td>
       <td style = "text-align: right;">#undef</td>
       <td style = "text-align: right;">#undef</td>
       <td style = "text-align: right;">(3, 3)</td>

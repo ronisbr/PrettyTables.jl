@@ -51,12 +51,12 @@
 <table>
   <thead>
     <tr class = "columnLabelRow">
-      <th style = "text-align: right; font-weight: bold;">#1</th>
-      <th style = "text-align: right; font-weight: bold;">#2</th>
-      <th style = "text-align: right; font-weight: bold;">#3</th>
-      <th style = "text-align: right; font-weight: bold;">#4</th>
-      <th style = "text-align: right; font-weight: bold;">#5</th>
-      <th style = "text-align: right; font-weight: bold;">#6</th>
+      <th style = "font-weight: bold; text-align: right;">#1</th>
+      <th style = "font-weight: bold; text-align: right;">#2</th>
+      <th style = "font-weight: bold; text-align: right;">#3</th>
+      <th style = "font-weight: bold; text-align: right;">#4</th>
+      <th style = "font-weight: bold; text-align: right;">#5</th>
+      <th style = "font-weight: bold; text-align: right;">#6</th>
     </tr>
   </thead>
   <tbody>
@@ -131,12 +131,12 @@ end
 <table>
   <thead>
     <tr class = "columnLabelRow">
-      <th style = "text-align: right; font-weight: bold;">#1</th>
-      <th style = "text-align: right; font-weight: bold;">#2</th>
-      <th style = "text-align: right; font-weight: bold;">#3</th>
-      <th style = "text-align: right; font-weight: bold;">#4</th>
-      <th style = "text-align: right; font-weight: bold;">#5</th>
-      <th style = "text-align: right; font-weight: bold;">#6</th>
+      <th style = "font-weight: bold; text-align: right;">#1</th>
+      <th style = "font-weight: bold; text-align: right;">#2</th>
+      <th style = "font-weight: bold; text-align: right;">#3</th>
+      <th style = "font-weight: bold; text-align: right;">#4</th>
+      <th style = "font-weight: bold; text-align: right;">#5</th>
+      <th style = "font-weight: bold; text-align: right;">#6</th>
     </tr>
   </thead>
   <tbody>

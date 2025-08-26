@@ -10,7 +10,7 @@
     @testset "Bottom Cropping" begin
         expected = """
 <div>
-  <div style = "font-style: italic; float: right;">
+  <div style = "float: right; font-style: italic;">
     <span>97 columns and 98 rows omitted</span>
   </div>
   <div style = "clear: both;"></div>
@@ -18,9 +18,9 @@
 <table>
   <thead>
     <tr class = "columnLabelRow">
-      <th style = "text-align: right; font-weight: bold;">Col. 1</th>
-      <th style = "text-align: right; font-weight: bold;">Col. 2</th>
-      <th style = "text-align: right; font-weight: bold;">Col. 3</th>
+      <th style = "font-weight: bold; text-align: right;">Col. 1</th>
+      <th style = "font-weight: bold; text-align: right;">Col. 2</th>
+      <th style = "font-weight: bold; text-align: right;">Col. 3</th>
       <td>&ctdot;</td>
     </tr>
   </thead>
@@ -61,7 +61,7 @@
     @testset "Middle Cropping" begin
         expected = """
 <div>
-  <div style = "font-style: italic; float: right;">
+  <div style = "float: right; font-style: italic;">
     <span>97 columns and 98 rows omitted</span>
   </div>
   <div style = "clear: both;"></div>
@@ -69,9 +69,9 @@
 <table>
   <thead>
     <tr class = "columnLabelRow">
-      <th style = "text-align: right; font-weight: bold;">Col. 1</th>
-      <th style = "text-align: right; font-weight: bold;">Col. 2</th>
-      <th style = "text-align: right; font-weight: bold;">Col. 3</th>
+      <th style = "font-weight: bold; text-align: right;">Col. 1</th>
+      <th style = "font-weight: bold; text-align: right;">Col. 2</th>
+      <th style = "font-weight: bold; text-align: right;">Col. 3</th>
       <td>&ctdot;</td>
     </tr>
   </thead>
@@ -115,9 +115,9 @@
 <table>
   <thead>
     <tr class = "columnLabelRow">
-      <th style = "text-align: right; font-weight: bold;">Col. 1</th>
-      <th style = "text-align: right; font-weight: bold;">Col. 2</th>
-      <th style = "text-align: right; font-weight: bold;">Col. 3</th>
+      <th style = "font-weight: bold; text-align: right;">Col. 1</th>
+      <th style = "font-weight: bold; text-align: right;">Col. 2</th>
+      <th style = "font-weight: bold; text-align: right;">Col. 3</th>
       <td>&ctdot;</td>
     </tr>
   </thead>

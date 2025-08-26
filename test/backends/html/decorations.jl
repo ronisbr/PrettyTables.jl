@@ -12,9 +12,9 @@
 <table>
   <thead>
     <tr class = "columnLabelRow">
-      <th style = "text-align: right; color: yellow;">Col. 1</th>
-      <th style = "text-align: right; color: yellow;">Col. 2</th>
-      <th style = "text-align: right; color: yellow;">Col. 3</th>
+      <th style = "color: yellow; text-align: right;">Col. 1</th>
+      <th style = "color: yellow; text-align: right;">Col. 2</th>
+      <th style = "color: yellow; text-align: right;">Col. 3</th>
     </tr>
   </thead>
   <tbody>
@@ -51,9 +51,9 @@
 <table>
   <thead>
     <tr class = "columnLabelRow">
-      <th style = "text-align: right; color: yellow;">Col. 1</th>
-      <th style = "text-align: right; color: blue;">Col. 2</th>
-      <th style = "text-align: right; color: red;">Col. 3</th>
+      <th style = "color: yellow; text-align: right;">Col. 1</th>
+      <th style = "color: blue; text-align: right;">Col. 2</th>
+      <th style = "color: red; text-align: right;">Col. 3</th>
     </tr>
   </thead>
   <tbody>

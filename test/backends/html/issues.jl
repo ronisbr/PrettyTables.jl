@@ -15,8 +15,8 @@
 <table>
   <thead>
     <tr class = "columnLabelRow">
-      <th style = "text-align: right; font-weight: bold;"><Column 1></th>
-      <th style = "text-align: right; font-weight: bold;"><Column 2></th>
+      <th style = "font-weight: bold; text-align: right;"><Column 1></th>
+      <th style = "font-weight: bold; text-align: right;"><Column 2></th>
     </tr>
   </thead>
   <tbody>
@@ -45,8 +45,8 @@
 <table>
   <thead>
     <tr class = "columnLabelRow">
-      <th style = "text-align: right; font-weight: bold;">&lt;<span style="color: #a51c2c">Column 1</span>&gt;</th>
-      <th style = "text-align: right; font-weight: bold;">&lt;Column 2&gt;</th>
+      <th style = "font-weight: bold; text-align: right;">&lt;<span style="color: #a51c2c">Column 1</span>&gt;</th>
+      <th style = "font-weight: bold; text-align: right;">&lt;Column 2&gt;</th>
     </tr>
   </thead>
   <tbody>

@@ -12,11 +12,11 @@
 <table>
   <thead>
     <tr class = "columnLabelRow">
-      <th style = "text-align: center; font-weight: bold;">Col. 1</th>
-      <th style = "text-align: center; font-weight: bold;">Col. 2</th>
-      <th style = "text-align: center; font-weight: bold;">Col. 3</th>
-      <th style = "text-align: center; font-weight: bold;">Col. 4</th>
-      <th style = "text-align: center; font-weight: bold;">Col. 5</th>
+      <th style = "font-weight: bold; text-align: center;">Col. 1</th>
+      <th style = "font-weight: bold; text-align: center;">Col. 2</th>
+      <th style = "font-weight: bold; text-align: center;">Col. 3</th>
+      <th style = "font-weight: bold; text-align: center;">Col. 4</th>
+      <th style = "font-weight: bold; text-align: center;">Col. 5</th>
     </tr>
   </thead>
   <tbody>
@@ -135,11 +135,11 @@
 <table>
   <thead>
     <tr class = "columnLabelRow">
-      <th style = "text-align: left; font-weight: bold;">Col. 1</th>
-      <th style = "text-align: center; font-weight: bold;">Col. 2</th>
-      <th style = "text-align: right; font-weight: bold;">Col. 3</th>
-      <th style = "text-align: left; font-weight: bold;">Col. 4</th>
-      <th style = "text-align: center; font-weight: bold;">Col. 5</th>
+      <th style = "font-weight: bold; text-align: left;">Col. 1</th>
+      <th style = "font-weight: bold; text-align: center;">Col. 2</th>
+      <th style = "font-weight: bold; text-align: right;">Col. 3</th>
+      <th style = "font-weight: bold; text-align: left;">Col. 4</th>
+      <th style = "font-weight: bold; text-align: center;">Col. 5</th>
     </tr>
   </thead>
   <tbody>
@@ -196,11 +196,11 @@
 <table>
   <thead>
     <tr class = "columnLabelRow">
-      <th style = "text-align: left; font-weight: bold;">Col. 1</th>
-      <th style = "text-align: center; font-weight: bold;">Col. 2</th>
-      <th style = "text-align: right; font-weight: bold;">Col. 3</th>
+      <th style = "font-weight: bold; text-align: left;">Col. 1</th>
+      <th style = "font-weight: bold; text-align: center;">Col. 2</th>
+      <th style = "font-weight: bold; text-align: right;">Col. 3</th>
       <th style = "font-weight: bold;">Col. 4</th>
-      <th style = "text-align: right; font-weight: bold;">Col. 5</th>
+      <th style = "font-weight: bold; text-align: right;">Col. 5</th>
     </tr>
   </thead>
   <tbody>
