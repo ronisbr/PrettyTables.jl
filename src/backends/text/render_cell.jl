@@ -106,7 +106,12 @@ function _text__render_cell(
     line_breaks::Bool = false,
     column_width::Int = -1
 )
-    if column_width <= 0
+    # If the user does not want to break lines, we will set the column with equal to
+    # `typemax(Int)`, which means that the text will never be broken into multiple
+    # lines.
+    if !line_breaks
+        column_width = typemax(Int)
+    elseif column_width <= 0
         column_width = 80
     end
 
