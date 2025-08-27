@@ -127,34 +127,48 @@ PrecompileTools.@setup_workload begin
 
         table_format = TextTableFormat(
             ;
+            @text__no_horizontal_lines,
+            @text__no_vertical_lines,
             ellipsis_line_skip                    = 3,
-            horizontal_line_after_data_rows       = false,
-            horizontal_line_at_beginning          = false,
-            vertical_line_after_data_columns      = false,
-            vertical_line_after_row_label_column  = false,
-            vertical_line_after_row_number_column = true,
-            vertical_line_at_beginning            = false,
-            vertical_lines_at_data_columns        = :none,
+            horizontal_line_after_column_labels   = true,
+            horizontal_line_before_summary_rows   = true,
+            vertical_line_after_row_label_column  = true,
+            vertical_line_after_row_number_column = true
+        )
+
+        hl = TextHighlighter(
+            (data, i, j) -> false,
+            Crayon(foreground = :dark_gray)
         )
 
         pretty_table(
             table;
-            alignment                   = [:l, :c, :r],
-            column_label_alignment      = :l,
-            display_size                = (15, 33),
-            new_line_at_end             = false,
-            reserved_display_lines      = 2,
-            row_label_column_alignment  = :r,
-            row_labels                  = ["row" for i = 1:10],
-            row_number_column_alignment = :r,
-            row_number_column_label     = "Row",
-            show_row_number_column      = true,
-            stubhead_label              = "Name",
-            style                       = style,
-            table_format                = table_format,
-            title                       = "Test table",
-            title_alignment             = :l,
-            vertical_crop_mode          = :middle,
+            alignment                         = [:l, :c, :r],
+            alignment_anchor_fallback         = :r,
+            alignment_anchor_regex            = [r"\."],
+            column_label_alignment            = :l,
+            column_labels                     = [["A", "B", "C"], ["A", "B", "C"]],
+            continuation_row_alignment        = :c,
+            display_size                      = (15, 33),
+            fit_table_in_display_horizontally = true,
+            fit_table_in_display_vertically   = true,
+            formatters                        = [(v, i, j) -> ismissing(v) ? "missing" : v],
+            highlighters                      = [hl],
+            maximum_data_column_widths        = [20, 20, 20],
+            new_line_at_end                   = false,
+            reserved_display_lines            = 2,
+            row_label_column_alignment        = :r,
+            row_labels                        = ["$i" for i = 1:10],
+            row_number_column_alignment       = :r,
+            row_number_column_label           = "Row",
+            show_first_column_label_only      = false,
+            show_row_number_column            = false,
+            stubhead_label                    = "Row",
+            style                             = style,
+            table_format                      = table_format,
+            title                             = "Test table",
+            title_alignment                   = :l,
+            vertical_crop_mode                = :middle,
         )
 
         # -- HTML --------------------------------------------------------------------------
@@ -286,9 +300,10 @@ PrecompileTools.@setup_workload begin
 
         # == Input: Tables.jl ==============================================================
 
-        pretty_table(html_buf, table)
-        pretty_table(html_buf, table; backend = :html)
+        pretty_table(table)
         pretty_table(table; backend = :markdown)
+        pretty_table(table; backend = :latex)
+        pretty_table(html_buf, table; backend = :html)
     end
 
     # Restore stdout.
