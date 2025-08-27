@@ -1,6 +1,12 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 3.0.5
+-------------
+
+- ![Bugfix][badge-bugfix] We must not reset the text decoration if the current crayon is
+  empty, meaning no decoration.
+
 Version 3.0.4
 -------------
 
