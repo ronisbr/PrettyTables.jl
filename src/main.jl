@@ -158,7 +158,7 @@ function pretty_table(pt::PrettyTable; kwargs...)
     return pretty_table(stdout, pt; kwargs...)
 end
 
-function pretty_table(io::IO, pt::PrettyTable; kwargs...)
+function pretty_table(@nospecialize(io::IO), pt::PrettyTable; kwargs...)
     # Get the named tuple with the configurations.
     dictkeys = (collect(keys(pt.configurations))...,)
     dictvals = (collect(values(pt.configurations))...,)
@@ -468,20 +468,42 @@ function _pretty_table(
         backend = _resolve_printing_backend(kwargs)
     end
 
-    if backend == :latex
-        _latex__print(pspec; kwargs...)
-    elseif backend == :html
-        # When wrapping `stdout` in `IOContext` in Jupyter, `io.io` is not equal to `stdout`
-        # anymore. Hence, we need to check if `io` is `stdout` before calling the HTML back
-        # end.
-        is_stdout = (io === stdout) || ((io isa IOContext) && (io.io === stdout))
-        _html__print(pspec; is_stdout, kwargs...)
-    elseif backend == :markdown
-        _markdown__print(pspec; kwargs...)
-    elseif backend == :text
-        _text__print_table(pspec; kwargs...)
-    end
+    is_stdout = (io === stdout) || ((io isa IOContext) && (io.io === stdout))
 
+    # Call the printing backend.
+    _printing_backend(Val(backend), pspec; kwargs...)
+
+    return nothing
+end
+
+"""
+    _printing_backend(::Val{backend}, pspec::PrintingSpec; is_stdout::Bool, kwargs...)
+
+Call the appropriate printing `backend` using the printing specification `pspec`.
+"""
+function _printing_backend(::Val{:latex}, pspec::PrintingSpec; kwargs...)
+    _latex__print(pspec; kwargs...)
+    return nothing
+end
+
+function _printing_backend(::Val{:html}, pspec::PrintingSpec; kwargs...)
+    # When wrapping `stdout` in `IOContext` in Jupyter, `io.io` is not equal to `stdout`
+    # anymore. Hence, we need to check if `io` is `stdout` before calling the HTML back
+    # end.
+    io = pspec.context.io
+    is_stdout = (io === stdout) || ((io isa IOContext) && (io.io === stdout))
+
+    _html__print(pspec; is_stdout, kwargs...)
+    return nothing
+end
+
+function _printing_backend(::Val{:markdown}, pspec::PrintingSpec; kwargs...)
+    _markdown__print(pspec; kwargs...)
+    return nothing
+end
+
+function _printing_backend(::Val{:text}, pspec::PrintingSpec; kwargs...)
+    _text__print_table(pspec; kwargs...)
     return nothing
 end
 
