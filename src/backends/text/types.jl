@@ -92,13 +92,14 @@ Define the format of the borders in the tables printed with the text back end.
 end
 
 # Create some default decorations to reduce allocations.
-const _TEXT__RESET               = crayon"reset"
-const _TEXT__DEFAULT             = crayon"default"
 const _TEXT__BOLD                = crayon"bold"
-const _TEXT__DARK_GRAY           = crayon"fg:dark_gray"
-const _TEXT__CYAN                = crayon"fg:cyan"
 const _TEXT__BOLD_UNDERLINE      = crayon"bold underline"
+const _TEXT__CYAN                = crayon"fg:cyan"
+const _TEXT__DARK_GRAY           = crayon"fg:dark_gray"
 const _TEXT__DARK_GRAY_UNDERLINE = crayon"fg:dark_gray underline"
+const _TEXT__DEFAULT             = crayon"default"
+const _TEXT__EMPTY_CRAYON        = crayon""
+const _TEXT__RESET               = crayon"reset"
 
 # Convert the reset crayon to string to reduce allocations.
 const _TEXT__STRING_RESET = string(_TEXT__RESET)

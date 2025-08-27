@@ -50,7 +50,8 @@ end
 Print a string `str` to the `display` with the style given by the `crayon`.
 """
 function _text__styled_print(display::Display, str::AbstractString, crayon::Crayon)
-    (!display.has_color || crayon == _TEXT__DEFAULT) && return _text__print(display, str)
+    (!display.has_color || crayon == _TEXT__DEFAULT || crayon == _TEXT__EMPTY_CRAYON) &&
+        return _text__print(display, str)
 
     _text__print(display, string(crayon) * str * _TEXT__STRING_RESET)
     return nothing
