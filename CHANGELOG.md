@@ -1,6 +1,12 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 3.0.6
+-------------
+
+- ![Enhancement][badge-enhancement] We added functions barriers and new precompilation
+  statements that reduced a lot the time to print the first table in all backends.
+
 Version 3.0.5
 -------------
 
