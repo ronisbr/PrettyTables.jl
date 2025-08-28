@@ -20,7 +20,6 @@
             row_labels                     = ["Row 1", "Row 2", "Row 3"],
             row_group_labels               = [2 => "Row Group"],
             summary_rows                   = [(data, i) -> i, (data, i) -> 2i],
-            summary_row_labels             = ["Summary 1", "Summary 2"],
             footnotes                      = [(:data, 1, 1) => "Footnote", (:data, 2, 2) => "Footnote"],
             source_notes                   = "Source Notes",
             title_alignment                = :r,

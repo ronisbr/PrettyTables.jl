@@ -14,6 +14,8 @@
             9 10 11 12
         ]
 
+        summary_rows = [(data, j) -> 20j, (data, j) -> 30j, sum]
+
         td = PrettyTables.TableData(
             ;
             data,
@@ -25,8 +27,8 @@
             row_number_column_label     = "Row Number",
             row_labels                  = ["Row 1", "Row 2", "Row 3"],
             row_group_labels            = [2 => "Row Group"],
-            summary_rows                = [(data, j) -> 20j, (data, j) -> 30j, sum],
-            summary_row_labels          = PrettyTables.SummaryLabelIterator(3),
+            summary_rows                = summary_rows,
+            summary_row_labels          = PrettyTables.SummaryLabelIterator(summary_rows),
             footnotes                   = [(:data, 1, 1) => "Footnote 1", (:data, 2, 2) => "Footnote 2"],
             source_notes                = "Source Notes",
             data_alignment              = [:l, :c, :r, :l],
@@ -132,7 +134,7 @@
 
             action, rs, ps = PrettyTables._next(ps, td)
             cell = PrettyTables._current_cell(action, ps, td)
-            @test cell == "Summary $i"
+            @test cell == (i == 3 ? "sum" : "Summary $i")
 
             for j in 1:4
                 action, rs, ps = PrettyTables._next(ps, td)
@@ -179,6 +181,7 @@
             5  6  7  8
             9 10 11 12
         ]
+        summary_rows = [(data, j) -> 20j, (data, j) -> 30j, sum]
 
         td = PrettyTables.TableData(
             ;
@@ -191,8 +194,8 @@
             row_number_column_label     = "Row Number",
             row_labels                  = ["Row 1", "Row 2", "Row 3"],
             row_group_labels            = [2 => "Row Group"],
-            summary_rows                = [(data, j) -> 20j, (data, j) -> 30j, sum],
-            summary_row_labels          = PrettyTables.SummaryLabelIterator(3),
+            summary_rows                = summary_rows,
+            summary_row_labels          = PrettyTables.SummaryLabelIterator(summary_rows),
             footnotes                   = [(:data, 1, 1) => "Footnote 1", (:data, 2, 2) => "Footnote 2"],
             source_notes                = "Source Notes",
             merge_column_label_cells    = [MergeCells(1, 2, 2, "Merged #1"), MergeCells(2, 1, 2, "Merged #2")],
@@ -312,7 +315,7 @@
 
             action, rs, ps = PrettyTables._next(ps, td)
             cell = PrettyTables._current_cell(action, ps, td)
-            @test cell == "Summary $i"
+            @test cell == (i == 3 ? "sum" : "Summary $i")
 
             for j in 1:4
                 action, rs, ps = PrettyTables._next(ps, td)

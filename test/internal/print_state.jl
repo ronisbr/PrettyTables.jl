@@ -269,6 +269,8 @@
         @testset "Bottom Vertical Cropping" begin
             # == Create the Table Data =====================================================
 
+            summary_rows = [(data, i) -> i, (data, i) -> 2i]
+
             td = PrettyTables.TableData(
                 ;
                 data                      = rand(6, 4),
@@ -280,8 +282,8 @@
                 row_number_column_label   = "Row Number",
                 row_labels                = ["Row 1", "Row 2", "Row 3"],
                 row_group_labels          = [2 => "Row Group 1", 4 => "Row Group 1"],
-                summary_rows              = [(data, i) -> i, (data, i) -> 2i],
-                summary_row_labels        = PrettyTables.SummaryLabelIterator(2),
+                summary_rows              = summary_rows,
+                summary_row_labels        = PrettyTables.SummaryLabelIterator(summary_rows),
                 footnotes                 = [(:data, 1, 1) => "Footnote", (:data, 2, 2) => "Footnote"],
                 source_notes              = "Source Notes",
                 num_rows                  = 6,
@@ -504,6 +506,8 @@
         @testset "Middle Vertical Cropping" begin
             # == Create the Table Data =====================================================
 
+            summary_rows = [(data, i) -> i, (data, i) -> 2i]
+
             td = PrettyTables.TableData(
                 ;
                 data                      = rand(6, 4),
@@ -515,8 +519,8 @@
                 row_number_column_label   = "Row Number",
                 row_labels                = ["Row 1", "Row 2", "Row 3"],
                 row_group_labels          = [2 => "Row Group 1", 6 => "Row Group 2"],
-                summary_rows              = [(data, i) -> i, (data, i) -> 2i],
-                summary_row_labels        = PrettyTables.SummaryLabelIterator(2),
+                summary_rows              = summary_rows,
+                summary_row_labels        = PrettyTables.SummaryLabelIterator(summary_rows),
                 footnotes                 = [(:data, 1, 1) => "Footnote", (:data, 2, 2) => "Footnote"],
                 source_notes              = "Source Notes",
                 num_rows                  = 6,
@@ -792,6 +796,8 @@
 
             # == Create the Table Data =====================================================
 
+            summary_rows = [(data, i) -> i, (data, i) -> 2i]
+
             td = PrettyTables.TableData(
                 ;
                 data                      = rand(3, 4),
@@ -802,8 +808,8 @@
                 show_row_number_column    = true,
                 row_number_column_label   = "Row Number",
                 row_labels                = ["Row 1", "Row 2", "Row 3"],
-                summary_rows              = [(data, i) -> i, (data, i) -> 2i],
-                summary_row_labels        = ["Summary 1", "Summary 2"],
+                summary_rows              = summary_rows,
+                summary_row_labels        = PrettyTables.SummaryLabelIterator(summary_rows),
                 footnotes                 = [(:data, 1, 1) => "Footnote", (:data, 2, 2) => "Footnote"],
                 source_notes              = "Source Notes",
                 num_rows                  = 3,

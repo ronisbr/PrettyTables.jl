@@ -399,7 +399,7 @@ function _pretty_table(
     end
 
     if !isnothing(summary_rows) && isnothing(summary_row_labels)
-        summary_row_labels = SummaryLabelIterator(length(summary_rows))
+        summary_row_labels = SummaryLabelIterator(summary_rows)
     end
 
     if show_first_column_label_only

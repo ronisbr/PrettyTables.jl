@@ -262,11 +262,15 @@ end
 # Type to lazily construct the summary row / column label if the user does not pass this
 # information.
 struct SummaryLabelIterator <: AbstractVector{String}
-    length::Int
+    summary_rows::Vector{Any}
 end
 
-Base.size(s::SummaryLabelIterator) = (s.length,)
-Base.getindex(::SummaryLabelIterator, i::Int) = "Summary $i"
+Base.size(s::SummaryLabelIterator) = (length(s.summary_rows),)
+function Base.getindex(s::SummaryLabelIterator, i::Int)
+    f_str = string(s.summary_rows[i])
+    first(f_str) == '#' && return "Summary $i"
+    return f_str
+end
 
 # == PrettyTable ===========================================================================
 

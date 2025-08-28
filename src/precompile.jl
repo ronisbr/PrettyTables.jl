@@ -80,6 +80,7 @@ PrecompileTools.@setup_workload begin
         # -- Text --------------------------------------------------------------------------
 
         pretty_table(matrix)
+        pretty_table(matrix; summary_rows = [sum, sum, sum])
 
         pretty_table(
             types;
