@@ -1,6 +1,12 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 3.0.7
+-------------
+
+- ![Bugfix][badge-bugfix] Summary row labels must be inferred from the function name if the
+  vector `summary_row_labels` is not provided.
+
 Version 3.0.6
 -------------
 
