@@ -1397,10 +1397,10 @@ function _text__print_table(
 
     if overwrite_display
         num_new_lines = max(count(==('\n'), output_str), 0)
-        print(context, "\e[1F\e[2K"^num_new_lines)
+        print(context, "\e[1F\e[2K"^num_new_lines * output_str)
+    else
+        print(context, output_str)
     end
-
-    print(context, output_str)
 
     return nothing
 end
