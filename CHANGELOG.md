@@ -1,6 +1,12 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 3.0.8
+-------------
+
+- ![Enhancement][badge-enhancement] The printing algorithm in text backend was improved to
+  prevent blinking on Windows with `overwrite_display`.
+
 Version 3.0.7
 -------------
 
