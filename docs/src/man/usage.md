@@ -489,3 +489,32 @@ create_latex_example(table, "fmt__latex_sn.png")
 ```
 
 ![fmt__latex_sn](./fmt__latex_sn.png)
+
+## PrettyTable Object
+
+The structure `PrettyTable` stores the data and configuration options required to print a
+table. The table to be displayed is specified by the `data` field, while any additional
+configuration options, corresponding to the keyword arguments accepted by the `pretty_table`
+function, can be set as fields with matching names.
+
+Users can overload the `show` function to customize how the table is printed for different
+MIME types. PrettyTables.jl provides a default `show` method for printing tables to
+`stdout`.
+
+```@repl usage
+matrix = [(i, j) for i in 1:4, j in 1:4]
+
+pt = PrettyTable(matrix)
+
+pt.table_format = TextTableFormat(; @text__no_vertical_lines)
+
+pt
+
+pt.formatters = [(v, i, j) -> "$(v[1]) <=> $(v[2])"]
+
+pt
+
+pt.formatters = nothing
+
+pt
+```
