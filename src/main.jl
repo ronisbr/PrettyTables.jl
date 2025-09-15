@@ -76,7 +76,7 @@ function pretty_table(
     source_note_alignment::Symbol = :l,
     subtitle_alignment::Symbol = :c,
     title_alignment::Symbol = :c,
-    cell_alignment::Union{Nothing, Vector{Pair{NTuple{2, Int}, Symbol}}, Vector{Function}} = nothing,
+    cell_alignment::Union{Nothing, Vector{Pair{NTuple{2, Int}, Symbol}}, Vector{F} where F <: Function} = nothing,
 
     # == Other Configurations ==============================================================
 
@@ -254,7 +254,7 @@ function _pretty_table(
 
     # == Other Configurations ==============================================================
 
-    cell_alignment::Union{Nothing, Vector{Pair{NTuple{2, Int}, Symbol}}, Vector{Function}},
+    cell_alignment::Union{Nothing, Vector{Pair{NTuple{2, Int}, Symbol}}, Vector{F} where F <: Function},
     formatters::Union{Nothing, Vector{T} where T <: Any},
     maximum_number_of_columns::Int,
     maximum_number_of_rows::Int,
@@ -370,9 +370,10 @@ function _pretty_table(
         ))
     end
 
-    if cell_alignment isa Vector
-        # If it is a `Vector`, it contains a set of `(i, j) => alignment` with the desired
-        # `alignment` for the cell `(i, j)`. Thus, we need to create a wrapper function.
+    if cell_alignment isa Vector{Pair{NTuple{2, Int}, Symbol}}
+        # If it is a `Vector{Pair{NTuple{2, Int}, Symbol}}`, it contains a set of `(i, j) =>
+        # alignment` with the desired `alignment` for the cell `(i, j)`. Thus, we need to
+        # create a wrapper function.
         cell_alignment_vect = copy(cell_alignment)
 
         cell_alignment = [
