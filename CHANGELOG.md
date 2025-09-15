@@ -1,6 +1,12 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 3.0.10
+--------------
+
+- ![Bugfix][badge-bugfix] We fixed the types in `cell_alignment` option.
+  ([#271][gh-issue-271])
+
 Version 3.0.9
 -------------
 
@@ -866,6 +872,7 @@ Version 0.1.0
 [gh-issue-212]: https://github.com/ronisbr/PrettyTables.jl/issues/212
 [gh-issue-220]: https://github.com/ronisbr/PrettyTables.jl/issues/220
 [gh-issue-270]: https://github.com/ronisbr/PrettyTables.jl/issues/270
+[gh-issue-271]: https://github.com/ronisbr/PrettyTables.jl/issues/271
 
 [gh-pr-5]: https://github.com/ronisbr/PrettyTables.jl/pull/5
 [gh-pr-8]: https://github.com/ronisbr/PrettyTables.jl/pull/8
