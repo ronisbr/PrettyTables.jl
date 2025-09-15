@@ -517,7 +517,7 @@ function _text__print_table(
 
         table_data.maximum_number_of_columns = min(
             num_printed_data_columns + 1,
-            length(column_labels)
+            table_data.num_columns
         )
 
         horizontally_limited_by_display = _text__is_printing_horizontally_limited(

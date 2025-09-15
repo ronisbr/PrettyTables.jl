@@ -175,10 +175,14 @@ function _text__number_of_required_lines(
     num_lines_before_data =
         !isempty(table_data.title) +
         !isempty(table_data.subtitle) +
-        tf.horizontal_line_at_beginning +
-        length(table_data.column_labels) +
-        length(horizontal_lines_at_column_lables) +
-        tf.horizontal_line_after_column_labels
+        tf.horizontal_line_at_beginning
+
+    if table_data.show_column_labels
+        num_lines_before_data +=
+            length(table_data.column_labels) +
+            length(horizontal_lines_at_column_lables) +
+            tf.horizontal_line_after_column_labels
+    end
 
     # Compute the number of lines we must have after printing the data.
     num_lines_after_data =
