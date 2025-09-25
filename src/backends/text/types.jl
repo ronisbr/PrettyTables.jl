@@ -305,5 +305,6 @@ struct TextHighlighter
         )
     end
 end
+TextHighlighter(f::Function; kwargs...) = TextHighlighter(f, Crayon(; kwargs...))
 
 _text__default_highlighter_fd(h::TextHighlighter, ::Any, ::Int, ::Int) = h._decoration
