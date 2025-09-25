@@ -25,7 +25,7 @@
         color = true,
         highlighters = [
             TextHighlighter((data, i, j) -> data[i, j] % 2 == 0, crayon"bold fg:cyan")
-            TextHighlighter((data, i, j) -> data[i, j] % 2 == 0, crayon"bold")
+            TextHighlighter((data, i, j) -> data[i, j] % 2 == 0; bold = true)
             TextHighlighter((data, i, j) -> data[i, j] % 2 != 0, crayon"bold italics")
         ]
     )
