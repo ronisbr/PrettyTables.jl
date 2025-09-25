@@ -32,7 +32,7 @@ function _text__fix_data_column_widths!(
 )
     for j in eachindex(printed_data_column_widths)
         fcw = fixed_data_column_widths[j - 1 + begin]
-        (fcw < 0) && continue
+        (fcw <= 0) && continue
         printed_data_column_widths[j] = fixed_data_column_widths[j - 1 + begin]
 
         if auto_wrap

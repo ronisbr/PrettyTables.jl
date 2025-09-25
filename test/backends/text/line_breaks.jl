@@ -153,7 +153,7 @@ end
         table;
         auto_wrap                = true,
         column_labels            = column_labels,
-        fixed_data_column_widths = [-1, 30],
+        fixed_data_column_widths = [0, 30],
         line_breaks              = true,
         table_format             = TextTableFormat(; @text__all_horizontal_lines)
     )
