@@ -1,6 +1,17 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 3.0.11
+--------------
+
+- ![Bugfix][badge-bugfix] `TextHighlighter` was missing the constructor that receives the
+  function to check for the highlighter and the keyword arguments to be passed to `Crayon`.
+  ([#273][gh-pr-273])
+- ![Bugfix][badge-bugfix] If the fixed column width is 0 in the text backend, we should
+  size the column automatically. ([#274][gh-pr-274])
+- ![Bugfix][badge-bugfix] We improve the verification to check if the user wants to print
+  the table to `stdout`.
+
 Version 3.0.10
 --------------
 
@@ -894,3 +905,6 @@ Version 0.1.0
 [gh-pr-219]: https://github.com/ronisbr/PrettyTables.jl/pull/219
 [gh-pr-228]: https://github.com/ronisbr/PrettyTables.jl/pull/228
 [gh-pr-231]: https://github.com/ronisbr/PrettyTables.jl/pull/231
+[gh-pr-273]: https://github.com/ronisbr/PrettyTables.jl/pull/273
+[gh-pr-274]: https://github.com/ronisbr/PrettyTables.jl/pull/274
+
