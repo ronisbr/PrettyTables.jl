@@ -469,10 +469,13 @@ function _pretty_table(
         backend = _resolve_printing_backend(kwargs)
     end
 
+    # When wrapping `stdout` in `IOContext`, sometimes `io.io` is not equal to `stdout`
+    # anymore. Hence, we need to check if `io` is `stdout` before calling the backend
+    # functions.
     is_stdout = (io === stdout) || ((io isa IOContext) && (io.io === stdout))
 
     # Call the printing backend.
-    _printing_backend(Val(backend), pspec; kwargs...)
+    _printing_backend(Val(backend), pspec; is_stdout, kwargs...)
 
     return nothing
 end
@@ -480,30 +483,26 @@ end
 """
     _printing_backend(::Val{backend}, pspec::PrintingSpec; is_stdout::Bool, kwargs...)
 
-Call the appropriate printing `backend` using the printing specification `pspec`.
+Call the appropriate printing `backend` using the printing specification `pspec`. The
+keyword argument `is_stdout` is `true` if the user wants to output the table to the
+`stdout`.
 """
-function _printing_backend(::Val{:latex}, pspec::PrintingSpec; kwargs...)
+function _printing_backend(::Val{:latex}, pspec::PrintingSpec; is_stdout::Bool, kwargs...)
     _latex__print(pspec; kwargs...)
     return nothing
 end
 
-function _printing_backend(::Val{:html}, pspec::PrintingSpec; kwargs...)
-    # When wrapping `stdout` in `IOContext` in Jupyter, `io.io` is not equal to `stdout`
-    # anymore. Hence, we need to check if `io` is `stdout` before calling the HTML back
-    # end.
-    io = pspec.context.io
-    is_stdout = (io === stdout) || ((io isa IOContext) && (io.io === stdout))
-
+function _printing_backend(::Val{:html}, pspec::PrintingSpec; is_stdout::Bool, kwargs...)
     _html__print(pspec; is_stdout, kwargs...)
     return nothing
 end
 
-function _printing_backend(::Val{:markdown}, pspec::PrintingSpec; kwargs...)
+function _printing_backend(::Val{:markdown}, pspec::PrintingSpec; is_stdout::Bool, kwargs...)
     _markdown__print(pspec; kwargs...)
     return nothing
 end
 
-function _printing_backend(::Val{:text}, pspec::PrintingSpec; kwargs...)
+function _printing_backend(::Val{:text}, pspec::PrintingSpec; is_stdout::Bool, kwargs...)
     _text__print_table(pspec; kwargs...)
     return nothing
 end
