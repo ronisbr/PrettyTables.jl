@@ -67,6 +67,12 @@ the output.
     0, it will be ignored. Notice that the parameter `fixed_data_column_widths` has
     precedence over this one.
     (**Default** = 0)
+- `minimum_data_column_widths::Union{Int, Vector{Int}}`: If it is a `Vector{Int}`, this
+    vector specifies the minimum width of each column. If it is an `Int`, this number will
+    be used as the minimum width of all columns. If the minimum width is equal or lower than
+    0, it will be ignored. Notice that the parameter `fixed_data_column_widths` has
+    precedence over this one.
+    (**Default** = 0)
 - `overwrite_display::Bool`: If `true`, the same number of lines in the printed table will
     be deleted from the output `io`. This can be used to update the table in the display
     continuously.
