@@ -79,4 +79,31 @@
 
         @test result == expected
     end
+
+    @static if VERSION >= v"1.11"
+        @testset "StyledStrings" begin
+            matrix = [
+                styled"{yellow, bold:Yellow, Bold}" styled"{blue:Blue}"
+                styled"{red: Red}"                  styled"{green, italic:Green, Italic}"
+            ]
+
+            expected = """
+┌──────────────┬───────────────┐
+│\e[1m    Col. 1    \e[0m│\e[1m Col. 2        \e[0m│
+├──────────────┼───────────────┤
+│ \e[33m\e[1mYellow, Bold\e[39m\e[22m │ \e[34mBlue\e[39m          │
+│     \e[31m Red\e[39m     │ \e[32m\e[3mGreen, Italic\e[39m\e[23m │
+└──────────────┴───────────────┘
+"""
+
+            result = pretty_table(
+                String,
+                matrix;
+                alignment = [:c, :l],
+                color = true
+            )
+
+            @test result == expected
+        end
+    end
 end
