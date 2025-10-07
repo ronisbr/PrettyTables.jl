@@ -84,16 +84,16 @@
         @testset "StyledStrings" begin
             matrix = [
                 styled"{yellow, bold:Yellow, Bold}" styled"{blue:Blue}"
-                styled"{red: Red}"                  styled"{green, italic:Green, Italic}"
+                styled"{red: Red}"                  styled"{(fg = green),(bg = blue):Green}"
             ]
 
             expected = """
-┌──────────────┬───────────────┐
-│\e[1m    Col. 1    \e[0m│\e[1m Col. 2        \e[0m│
-├──────────────┼───────────────┤
-│ \e[33m\e[1mYellow, Bold\e[39m\e[22m │ \e[34mBlue\e[39m          │
-│     \e[31m Red\e[39m     │ \e[32m\e[3mGreen, Italic\e[39m\e[23m │
-└──────────────┴───────────────┘
+┌──────────────┬────────┐
+│\e[1m    Col. 1    \e[0m│\e[1m Col. 2 \e[0m│
+├──────────────┼────────┤
+│ \e[33m\e[1mYellow, Bold\e[39m\e[22m │ \e[34mBlue\e[39m   │
+│     \e[31m Red\e[39m     │ \e[32m\e[44mGreen\e[39m\e[49m  │
+└──────────────┴────────┘
 """
 
             result = pretty_table(
