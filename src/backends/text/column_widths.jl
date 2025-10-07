@@ -5,7 +5,7 @@
 ############################################################################################
 
 """
-    _text__fix_data_column_widths!(printed_data_column_widths::Vector{Int}, column_labels::Matrix{String}, table_str::Matrix{String}, summary_rows::Union{Nothing, Matrix{String}}, fixed_data_column_widths::AbstractVector{Int}) -> Nothing
+    _text__fix_data_column_widths!(printed_data_column_widths::Vector{Int}, column_labels::Union{Nothing, Matrix{String}}, table_str::Matrix{String}, summary_rows::Union{Nothing, Matrix{String}}, fixed_data_column_widths::AbstractVector{Int}) -> Nothing
 
 Fix the data column widths given the user specification. This function also crops the cells
 at the data columns to fit the fixed width.
@@ -13,7 +13,7 @@ at the data columns to fit the fixed width.
 # Arguments
 
 - `printed_data_column_widths::Vector{Int}`: Printed data column widths.
-- `column_labels::Matrix{String}`: Column labels.
+- `column_labels::Union{Nothing, Matrix{String}}`: Column labels.
 - `table_str::Matrix{String}`: Rendered data cells.
 - `summary_rows::Union{Nothing, Matrix{String}}`: Summary rows.
 - `fixed_data_column_widths::AbstractVector{Int}`: Fixed data column widths.
@@ -23,7 +23,7 @@ at the data columns to fit the fixed width.
 """
 function _text__fix_data_column_widths!(
     printed_data_column_widths::Vector{Int},
-    column_labels::Matrix{String},
+    column_labels::Union{Nothing, Matrix{String}},
     table_str::Matrix{String},
     summary_rows::Union{Nothing, Matrix{String}},
     fixed_data_column_widths::AbstractVector{Int},
@@ -126,7 +126,7 @@ function _text__fit_cell_in_maximum_cell_width(
 end
 
 """
-    _text__printed_column_widths(table_data::TableData, row_labels::Union{Nothing, Vector{String}}, column_labels::Union{Nothing, Matrix{String}}, summary_rows::Union{Nothing, Matrix{String}}, table_str::Matrix{String}, vertical_lines_at_data_columns::AbstractVector{Int}, column_label_width_based_on_first_line_only::Bool, line_breaks::Bool)
+    _text__printed_column_widths(table_data::TableData, row_labels::Union{Nothing, Vector{String}}, column_labels::Union{Nothing, Matrix{String}}, summary_rows::Union{Nothing, Matrix{String}}, table_str::Matrix{String}, vertical_lines_at_data_columns::AbstractVector{Int}, column_label_width_based_on_first_line_only::Bool, line_breaks::Bool, minimum_data_column_width::Union{Nothing, Vector{Int}})
 
 Compute the printed column widths.
 
@@ -143,6 +143,7 @@ Compute the printed column widths.
     will be computed based on the first line only.
 - `line_breaks::Bool`: If `true`, the cells will be split into multiple lines if needed.
     Hence, the textwidth of each line is used to compute the column width.
+- `minimum_data_column_widths::Union{Nothing, Vector{Int}}`: Minimum data column widths.
 
 # Returns
 
@@ -158,7 +159,8 @@ function _text__printed_column_widths(
     table_str::Matrix{String},
     vertical_lines_at_data_columns::AbstractVector{Int},
     column_label_width_based_on_first_line_only::Bool,
-    line_breaks::Bool
+    line_breaks::Bool,
+    minimum_data_column_widths::AbstractVector{Int}
 )
     num_printed_data_rows, num_printed_data_columns = size(table_str)
 
@@ -228,6 +230,12 @@ function _text__printed_column_widths(
             if _has_summary_rows(table_data)
                 m = max(maximum(printable_textwidth, summary_rows[:, j]), m)
             end
+        end
+
+        mdw = minimum_data_column_widths[j - 1 + begin]
+
+        if mdw > 0
+            m = max(m, mdw)
         end
 
         printed_data_column_widths[j] = m

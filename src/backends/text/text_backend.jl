@@ -24,6 +24,7 @@ function _text__print_table(
     fixed_data_column_widths::Union{Int, Vector{Int}} = 0,
     highlighters::Vector{TextHighlighter} = _DEFAULT_TEXT_HIGHLIGHTER,
     line_breaks::Bool = false,
+    minimum_data_column_widths::Union{Int, Vector{Int}} = 0,
     maximum_data_column_widths::Union{Int, Vector{Int}} = 0,
     overwrite_display::Bool = false,
     reserved_display_lines::Int = 0,
@@ -86,6 +87,10 @@ function _text__print_table(
     else
         vertical_lines_at_data_columns =
             tf.vertical_lines_at_data_columns::Vector{Int}
+    end
+
+    if minimum_data_column_widths isa Number
+        minimum_data_column_widths = minimum_data_column_widths .+ 0 * (1:table_data.num_columns)
     end
 
     if maximum_data_column_widths isa Number
@@ -359,7 +364,8 @@ function _text__print_table(
             table_str,
             vertical_lines_at_data_columns,
             column_label_width_based_on_first_line_only,
-            line_breaks
+            line_breaks,
+            minimum_data_column_widths
         )
 
     # Now, we crop the additional column labels if the user wants to do so.
@@ -383,6 +389,8 @@ function _text__print_table(
 
     # If the user wants a fixed column width, we must reprocess all the data columns to crop
     # to the correct size if necessary.
+    #
+    # TODO: This can be integrated in the first column width computation!
     has_fixed_data_column_widths && _text__fix_data_column_widths!(
         printed_data_column_widths,
         column_labels,
