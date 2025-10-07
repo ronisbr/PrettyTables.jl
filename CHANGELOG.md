@@ -1,6 +1,12 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 3.1.0
+-------------
+
+- ![Feature][badge-feature] The text backend now supports setting the minimum data column
+  widths using the option `minimum_data_column_widths`.
+
 Version 3.0.11
 --------------
 
