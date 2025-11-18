@@ -1,6 +1,12 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 3.1.1
+-------------
+
+- ![Bugfix][badge-bugfix] The row group decoration is now correctly applied in the LaTeX
+  backend. (Issue [#279][gh-issue-279])
+
 Version 3.1.0
 -------------
 
@@ -12,9 +18,9 @@ Version 3.0.11
 
 - ![Bugfix][badge-bugfix] `TextHighlighter` was missing the constructor that receives the
   function to check for the highlighter and the keyword arguments to be passed to `Crayon`.
-  ([#273][gh-pr-273])
+  (PR [#273][gh-pr-273])
 - ![Bugfix][badge-bugfix] If the fixed column width is 0 in the text backend, we should
-  size the column automatically. ([#274][gh-pr-274])
+  size the column automatically. (PR [#274][gh-pr-274])
 - ![Bugfix][badge-bugfix] We improve the verification to check if the user wants to print
   the table to `stdout`.
 
@@ -22,13 +28,13 @@ Version 3.0.10
 --------------
 
 - ![Bugfix][badge-bugfix] We fixed the types in `cell_alignment` option.
-  ([#271][gh-issue-271])
+  (Issue [#271][gh-issue-271])
 
 Version 3.0.9
 -------------
 
 - ![Bugfix][badge-bugfix] We fixed a bug that was leading to an error when printing a table
-  without column labels in text backend. ([#270][gh-issue-270])
+  without column labels in text backend. (Issue [#270][gh-issue-270])
 
 Version 3.0.8
 -------------
@@ -118,9 +124,9 @@ Version 2.3.1
 -------------
 
 - ![Bugfix][badge-bugfix] `hline` suffix decoration is now handled properly in the text back
-  end when the lines are cropped. ([#228][gh-pr-228])
+  end when the lines are cropped. (PR [#228][gh-pr-228])
 - ![Bugfix][badge-bugfix] We now redirect `stdout` to `devnull` during precompilation to
-  avoid hanging in some scenarios. ([#231][gh-pr-231])
+  avoid hanging in some scenarios. (PR [#231][gh-pr-231])
 
 Version 2.3.0
 -------------
@@ -128,12 +134,12 @@ Version 2.3.0
 - ![Bugfix][badge-bugfix] The function `ft_round` was broken on Julia 1.11.
 - ![Feature][badge-feature] PrettyTables.jl now have a true Markdown back end.
 - ![Enhancement][badge-enhancement] Custom types can now dispatch easier in `pretty_table`.
-  ([#219][gh-pr-219])
+  (PR [#219][gh-pr-219])
 - ![Enhancement][badge-enhancement] We now use
   [PrecompileTools.jl](https://github.com/JuliaLang/PrecompileTools.jl) to generate the
   precompilation statements.
 - ![Enhancement][badge-enhancement] We improved how we handle Tables.jl objects.
-  ([#220][gh-issue-220])
+  (Issue [#220][gh-issue-220])
 - ![Info][badge-info] We improved the internal code style. The line width was changed from
   80 characters to 92 characters, and internal function naming was modified to enhance the
   readability.
@@ -148,34 +154,34 @@ Version 2.2.7
 -------------
 
 - ![Bugfix][badge-bugfix] We were not able to overwrite the header when printing
-  dictionaries that are not Tables.jl. ([#212][gh-issue-212])
+  dictionaries that are not Tables.jl. (Issue [#212][gh-issue-212])
 - ![Enhancement][badge-enhancement] PrettyTables.jl switched from Formatting.jl
   to Printf to print formatted text. The former was providing wrong output in
-  some scenarios as it can be seen [here][gh-issue-210]. ([#211][gh-pr-211])
+  some scenarios as it can be seen [here][gh-issue-210]. (PR [#211][gh-pr-211])
 
 Version 2.2.6
 -------------
 
 - ![Bugfix][badge-bugfix] Fix the algorithm that obtains the cell data type when
-  showing the row number. ([#208][gh-issue-208])
+  showing the row number. (Issue [#208][gh-issue-208])
 
 Version 2.2.5
 -------------
 
 - ![Bugfix][badge-bugfix] Fix the algorithm that obtains the cell data type and
-  alignment when using middle vertical crop mode. ([#207][gh-issue-207])
+  alignment when using middle vertical crop mode. (Issue [#207][gh-issue-207])
 
 Version 2.2.4
 -------------
 
 - ![Bugfix][badge-bugfix] Add `<head>` block in standalone HTML printing.
-  ([#198][gh-issue-198], [#199][gh-pr-199])
+  (Issue [#198][gh-issue-198], PR [#199][gh-pr-199])
 
 Version 2.2.3
 -------------
 
 - ![Bugfix][badge-bugfix] Fix the horizontal lines when the header is omitted.
-  ([#201][gh-issue-201])
+  (Isssue [#201][gh-issue-201])
 
 Version 2.2.2
 -------------
@@ -194,14 +200,14 @@ Version 2.2.0
 -------------
 
 - ![Bugfix][badge-bugfix] The rendered `show` was not escaping the newline
-  character when the object was not a string. ([#194][gh-issue-194])
+  character when the object was not a string. (Issue [#194][gh-issue-194])
 - ![Enhancement][badge-enhancement] PrettyTables.jl can now handle tables with
   no row or column. In this case, it shows only the header or the row label, if
-  available. ([#156][gh-issue-156])
+  available. (Issue [#156][gh-issue-156])
 - ![Enhancement][badge-enhancement] PrettyTables.jl can now detect circular
   dependency when showing an object.
 - ![Feature][badge-feature] PrettyTables.jl now supports LaTexStrings.
-  ([#186][gh-pr-186])
+  (PR [#186][gh-pr-186])
 
 Version 2.1.2
 -------------
@@ -890,6 +896,7 @@ Version 0.1.0
 [gh-issue-220]: https://github.com/ronisbr/PrettyTables.jl/issues/220
 [gh-issue-270]: https://github.com/ronisbr/PrettyTables.jl/issues/270
 [gh-issue-271]: https://github.com/ronisbr/PrettyTables.jl/issues/271
+[gh-issue-279]: https://github.com/ronisbr/PrettyTables.jl/issues/279
 
 [gh-pr-5]: https://github.com/ronisbr/PrettyTables.jl/pull/5
 [gh-pr-8]: https://github.com/ronisbr/PrettyTables.jl/pull/8
@@ -913,4 +920,3 @@ Version 0.1.0
 [gh-pr-231]: https://github.com/ronisbr/PrettyTables.jl/pull/231
 [gh-pr-273]: https://github.com/ronisbr/PrettyTables.jl/pull/273
 [gh-pr-274]: https://github.com/ronisbr/PrettyTables.jl/pull/274
-
