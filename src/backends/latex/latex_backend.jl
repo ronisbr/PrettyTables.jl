@@ -216,7 +216,8 @@ function _latex__print(
             border₀ = vline_before ? "|" : ""
             border₁ = vline_after ? "|" : ""
 
-            print(buf, "\\multicolumn{$cs}{$border₀$alignment$border₁}{$rendered_cell}")
+            rgl_styled = _latex__add_environments(rendered_cell, style.row_group_label)
+            print(buf, "\\multicolumn{$cs}{$border₀$alignment$border₁}{$rgl_styled}")
 
         else
             # Check for footnotes.
@@ -351,9 +352,6 @@ function _latex__print(
 
                     elseif action == :stubhead_label
                         envs = style.stubhead_label
-
-                    elseif action == :row_group_label
-                        envs = style.row_group_label
 
                     elseif action == :row_label
                         envs = style.row_label

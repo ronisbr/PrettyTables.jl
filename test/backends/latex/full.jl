@@ -19,7 +19,7 @@
   \\hline
   1 & \\textbf{Row 1} & (1, 1) & (1, 2) & (1, 3) \\\\
   \\hline
-  \\multicolumn{5}{|l|}{Row Group} \\\\
+  \\multicolumn{5}{|l|}{\\textbf{Row Group}} \\\\
   \\hline
   2 & \\textbf{Row 2} & (2, 1) & (2, 2)\$^{2}\$ & (2, 3) \\\\
   3 & \\textbf{Row 3} & (3, 1) & (3, 2) & (3, 3) \\\\
