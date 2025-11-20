@@ -1,6 +1,12 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 3.1.2
+-------------
+
+- ![Enhancement][badge-enhancement] We improved the compatibility with the PkgCompiler.jl.
+  (Issue [#276][gh-issue-276] and PR [#280][gh-pr-280])
+
 Version 3.1.1
 -------------
 
@@ -896,6 +902,7 @@ Version 0.1.0
 [gh-issue-220]: https://github.com/ronisbr/PrettyTables.jl/issues/220
 [gh-issue-270]: https://github.com/ronisbr/PrettyTables.jl/issues/270
 [gh-issue-271]: https://github.com/ronisbr/PrettyTables.jl/issues/271
+[gh-issue-276]: https://github.com/ronisbr/PrettyTables.jl/issues/276
 [gh-issue-279]: https://github.com/ronisbr/PrettyTables.jl/issues/279
 
 [gh-pr-5]: https://github.com/ronisbr/PrettyTables.jl/pull/5
@@ -920,3 +927,4 @@ Version 0.1.0
 [gh-pr-231]: https://github.com/ronisbr/PrettyTables.jl/pull/231
 [gh-pr-273]: https://github.com/ronisbr/PrettyTables.jl/pull/273
 [gh-pr-274]: https://github.com/ronisbr/PrettyTables.jl/pull/274
+[gh-pr-280]: https://github.com/ronisbr/PrettyTables.jl/pull/280
