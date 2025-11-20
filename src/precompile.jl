@@ -70,7 +70,7 @@ PrecompileTools.@setup_workload begin
     PrecompileTools.@compile_workload begin
         # == Input: Arrays =================================================================
 
-        matrix = randn(10, 10)
+        matrix = ones(10, 10)
 
         # -- General API -------------------------------------------------------------------
 
