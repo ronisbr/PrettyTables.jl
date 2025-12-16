@@ -129,6 +129,6 @@ For example, if we want the stubhead label to be bold and red, we must define:
 
 ```julia
 style = TypstTableStyle(
-    stubhead_label = ["text-weight" => "bold", "fill" => "red"]
+    stubhead_label = ["text-weight" => "bold", "fill" => "red", "text-fill"=>"white"]
 )
 ```
