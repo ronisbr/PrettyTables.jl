@@ -76,6 +76,7 @@ highlighters = [hl_gt5, hl_lt5]
 ```
 
 !!! note 
+
     Each cell will be rendered with one call of `#text` inside a `table.cell` function, like below: 
     ```typst
       table.cell()[#text()[Cell Content]]
