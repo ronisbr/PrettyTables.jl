@@ -75,18 +75,20 @@ hl_lt5 = TypstHighlighters(
 highlighters = [hl_gt5, hl_lt5]
 ```
 
+Each cell will be rendered with one call of `#text` inside a `table.cell` function, like below: 
+```typst
+  table.cell()[#text()[Cell Content]]
+```
+
 !!! note 
 
-    Each cell will be rendered with one call of `#text` inside a `table.cell` function, like below: 
-    ```typst
-      table.cell()[#text()[Cell Content]]
+    As `table.cell` and `#text()` shares some attributes names, those attributes used by `#text` function will be defined with `text-` prefix. 
+    Ex.: to make an table style (or highlighter) that set background ground color blue and font color white would be 
+    
+    ```julia 
+    ["fill"=>"blue","text-fill"=>"white"]
     ```
 
-    As `table.cell` and `#text()` has some attributes in common, the part rendered by `#text` function need to be prepended with `text-` in attributes names. 
-
-Ex.: 
-
-    
 
 ## Typst Table Style
 
