@@ -55,6 +55,12 @@ include("./backends/html/html_backend.jl")
 include("./backends/html/private.jl")
 include("./backends/html/render_cell.jl")
 
+include("./backends/typst/types.jl")
+include("./backends/typst/documentation.jl")
+include("./backends/typst/typst_backend.jl")
+include("./backends/typst/private.jl")
+include("./backends/typst/render_cell.jl")
+
 include("./backends/markdown/types.jl")
 include("./backends/markdown/documentation.jl")
 include("./backends/markdown/markdown_backend.jl")

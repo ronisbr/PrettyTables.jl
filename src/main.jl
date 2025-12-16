@@ -497,6 +497,11 @@ function _printing_backend(::Val{:html}, pspec::PrintingSpec; is_stdout::Bool, k
     return nothing
 end
 
+function _printing_backend(::Val{:typst}, pspec::PrintingSpec; is_stdout::Bool, kwargs...)
+    _typst__print(pspec; is_stdout, kwargs...)
+    return nothing
+end
+
 function _printing_backend(::Val{:markdown}, pspec::PrintingSpec; is_stdout::Bool, kwargs...)
     _markdown__print(pspec; kwargs...)
     return nothing
