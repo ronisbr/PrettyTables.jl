@@ -69,7 +69,7 @@ function _typst__print(
         if !isempty(top_left_string)
           _aprintln(
               buf,
-              _typst__create_tag("#align",top_left_string,args = "top+left"),
+              _typst__create_component("#align",top_left_string,args = "top+left"),
               il,
               ns;
               
@@ -80,7 +80,7 @@ function _typst__print(
         if !isempty(top_right_string)
           _aprintln(
               buf,
-              _typst__create_tag("#align",top_right_string,args = "top+right"),
+              _typst__create_component("#align",top_right_string,args = "top+right"),
               il,
               ns;
               
@@ -180,14 +180,14 @@ function _typst__print(
         elseif action == :diagonal_continuation_cell
             _aprintln(
                 buf,
-                _typst__create_tag("table.cell", "&dtdot;"; style = vstyle),
+                _typst__create_component("table.cell", "&dtdot;"; style = vstyle),
                 il,
                 ns;
                 
             )
 
         elseif action == :horizontal_continuation_cell
-            _aprintln(buf, _typst__create_tag("table.cell", "&ctdot;"), il, ns; )
+            _aprintln(buf, _typst__create_component("table.cell", "&ctdot;"), il, ns; )
 
         elseif action ∈ _VERTICAL_CONTINUATION_CELL_ACTIONS
             # Obtain the cell style.
@@ -365,12 +365,12 @@ function _typst__print(
             end
             # unique!(x->x[1], text_style)
             
-            # Create the row tag with the content.
+            # Create the row component with the content.
             _aprint(
                 buf,
-                _typst__create_tag(
+                _typst__create_component(
                     "table.cell",
-                    _typst__create_tag("#text",rendered_cell, properties= text_style);
+                    _typst__create_component("#text",rendered_cell, properties= text_style);
                     properties = cell_style,
                 )*",",
                 ps.j==1 ? il : 0,

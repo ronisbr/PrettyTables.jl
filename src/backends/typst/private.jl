@@ -64,9 +64,9 @@ end
 
 
 """
-    _typst__open_tag(tag::String; kwargs...) -> String
+    _typst__open_component(component::String; kwargs...) -> String
 
-Create the string that opens the Typst `tag`.
+Create the string that opens the Typst `component`.
 
 # Keywords
 
@@ -75,8 +75,8 @@ Create the string that opens the Typst `tag`.
 - `style::Union{Nothing, Vector{TypstPair}}`: Tag style.
     (**Default**: `nothing`)
 """
-function _typst__open_tag(
-    tag::String, args...;
+function _typst__open_component(
+    component::String, args...;
     properties::Union{Nothing, Vector{TypstPair}} = nothing
 )
     # Compile the text with the properties.
@@ -102,27 +102,27 @@ function _typst__open_tag(
         end
     end
 
-    # Return the tag.
+    # Return the component.
     if args_str != ""
-        return "$(tag)($(args_str), $(properties_str))["
+        return "$(component)($(args_str), $(properties_str))["
     else
-        return "$(tag)($(properties_str))["
+        return "$(component)($(properties_str))["
     end
 end
 
 """
-    _typst__close_tag() -> String
+    _typst__close_component() -> String
 
-Create the string that closes the Typst `tag`.
+Create the string that closes the Typst `component`.
 """
-_typst__close_tag(comma=false) = "]$(comma ? "," : "")"
+_typst__close_component(comma=false) = "]$(comma ? "," : "")"
 
 
 
 """
-    _typst__create_tag(tag::String, content::String; kwargs...) -> String
+    _typst__create_component(component::String, content::String; kwargs...) -> String
 
-Create an HTML `tag` with the `content`.
+Create an HTML `component` with the `content`.
 
 # Keywords
 
@@ -131,16 +131,16 @@ Create an HTML `tag` with the `content`.
 - `style::Union{Nothing, Vector{TypstPair}}`: Tag style.
     (**Default**: `nothing`)
 """
-function _typst__create_tag(
-    tag::String,
+function _typst__create_component(
+    component::String,
     content::String;
     args::Union{Nothing,Vector{AbstractString}} = nothing,
     properties::Union{Nothing, Vector{TypstPair}} = nothing,
 )
     if isnothing(args)
-        return _typst__open_tag(tag; properties) * content * _typst__close_tag()
+        return _typst__open_component(component; properties) * content * _typst__close_component()
     end
-    return _typst__open_tag(tag, args...; properties) * content * _typst__close_tag()
+    return _typst__open_component(component, args...; properties) * content * _typst__close_component()
 end
 
 

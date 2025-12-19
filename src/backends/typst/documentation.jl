@@ -68,12 +68,12 @@ cells with values less than 5 in blue, we can define:
 ```julia
 hl_gt5 = TypstHighlighter(
     (data, i, j) -> data[i, j] > 5,
-    ["color" => "red"]
+    ["text-fill" => "red"]
 )
 
 hl_lt5 = TypstHighlighter(
     (data, i, j) -> data[i, j] < 5,
-    ["color" => "blue"]
+    ["text-fill" => "blue"]
 )
 
 highlighters = [hl_gt5, hl_lt5]
