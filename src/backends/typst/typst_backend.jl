@@ -397,7 +397,7 @@ function _typst__print(
     end
 
     # If we are printing to `stdout`, wrap the output in a `String` object.
-    if is_stdout && isdefined(Main,:Typst)
+    if is_stdout && isdefined(Main,:Typst) 
         display("image/png",(Main.Typst ∘ Main.TypstText)(output_str))
     else
         print(context, output_str)
