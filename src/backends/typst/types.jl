@@ -134,8 +134,8 @@ Define the style of the tables printed with the HTML back end.
     stubhead_label::Vector{TypstPair}                 = _TYPST_BOLD
     row_label::Vector{TypstPair}                      = _TYPST_BOLD
     row_group_label::Vector{TypstPair}                = _TYPST_BOLD
-    first_line_column_label::TFCL                    = _TYPST_BOLD
-    column_label::TCL                                = _TYPST_NO_DECORATION
+    first_line_column_label::TFCL                     = _TYPST_BOLD
+    column_label::TCL                                 = _TYPST_BOLD
     first_line_merged_column_label::Vector{TypstPair} = _TYPST_MERGED_CELL
     merged_column_label::Vector{TypstPair}            = _TYPST_MERGED_CELL
     summary_row_cell::Vector{TypstPair}               = _TYPST_NO_DECORATION
