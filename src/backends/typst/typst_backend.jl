@@ -55,12 +55,16 @@ function _typst__print(
 
     # Check if the user wants the omitted cell summary.
     ocs = _omitted_cell_summary(table_data, pspec)
-
-    top_right_string = if !isempty(ocs)
+    top_right_string = ""
+    if !isempty(ocs)
         top_right_string = ocs
-    else 
-        []
     end
+
+    # top_right_string = if !isempty(ocs)
+    #     top_right_string = ocs
+    # else 
+    #     []
+    # end
 
     # Print the top bar if necessary.
     if !isempty(top_left_string) || !isempty(top_right_string)
@@ -68,7 +72,7 @@ function _typst__print(
         if !isempty(top_left_string)
           _aprintln(
               buf,
-              _typst__create_component("#align",top_left_string,args = "top+left"),
+              _typst__create_component("#align",top_left_string,args = ["top+left"]),
               il,
               ns;
               
@@ -79,7 +83,7 @@ function _typst__print(
         if !isempty(top_right_string)
           _aprintln(
               buf,
-              _typst__create_component("#align",top_right_string,args = "top+right"),
+              _typst__create_component("#align",top_right_string,args = ["top+right"]),
               il,
               ns;
               
@@ -115,7 +119,14 @@ function _typst__print(
         
     )
     il += 1
-    columns = _typst__get_columns_widths(columns_width, table_data.num_columns)
+    num_columns = if table_data.maximum_number_of_columns == - 1 
+        table_data.num_columns
+    elseif table_data.num_columns >  table_data.maximum_number_of_columns
+        table_data.maximum_number_of_columns+1
+    else
+        table_data.num_columns
+    end
+    columns = _typst__get_columns_widths(columns_width, num_columns)
     _aprintln(buf,"columns: $columns, ",il,ns;)
     map(style.table) do (k,s)
         if occursin(r"^[0-9]",s) || k ∉ _TYPST_STRING_ATTRIBUTES
@@ -162,28 +173,24 @@ function _typst__print(
             il += 1
             
         elseif action == :diagonal_continuation_cell
-            _aprintln(
+            _aprint(
                 buf,
-                _typst__create_component("table.cell", "&dtdot;"; style = vstyle),
-                il,
+                _typst__create_component("table.cell", _typst__create_component("#text"," ⋱ ")) * ",",
+                0,
                 ns;
-                
             )
-
         elseif action == :horizontal_continuation_cell
-            _aprintln(buf, _typst__create_component("table.cell", "&ctdot;"), il, ns; )
+            _aprint(buf, _typst__create_component("table.cell", _typst__create_component("#text"," ⋯ ")) * ",", 0, ns; )
 
         elseif action ∈ _VERTICAL_CONTINUATION_CELL_ACTIONS
             # Obtain the cell style.
             empty!(vstyle)
             alignment = _current_cell_alignment(action, ps, table_data)
 
-            _aprint(
-                buf,
-                "[align: $alinment]&vellip;],",
-                il,
+            _aprint( buf,
+                _typst__create_component("table.cell", _typst__create_component("#text","  ⋮ "))*",", 
+                ps.j ==1 ? il : 0,
                 ns;
-                
             )
 
         elseif action == :end_row

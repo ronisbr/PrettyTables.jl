@@ -82,7 +82,7 @@ function _typst__open_component(
     # Compile the text with the properties.
     properties_str = ""
     args_str = if length(args) >0 
-      join(args_str,", ")
+      join(args,", ")
     else
       ""
     end
@@ -134,9 +134,9 @@ Create an HTML `component` with the `content`.
 function _typst__create_component(
     component::String,
     content::String;
-    args::Union{Nothing,Vector{AbstractString}} = nothing,
+    args::Union{Nothing,Vector{T}} = nothing,
     properties::Union{Nothing, Vector{TypstPair}} = nothing,
-)
+) where T<:AbstractString
     if isnothing(args)
         return _typst__open_component(component; properties) * content * _typst__close_component()
     end
