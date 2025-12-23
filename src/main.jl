@@ -518,6 +518,7 @@ export pretty_table_html_backend
 export pretty_table_latex_backend
 export pretty_table_markdown_backend
 export pretty_table_text_backend
+export pretty_table_typst_backend
 
 function pretty_table_text_backend(args...; kwargs...)
     return pretty_table(args...; backend = :text, kwargs...)
@@ -533,4 +534,8 @@ end
 
 function pretty_table_html_backend(args...; kwargs...)
     return pretty_table(args...; backend = :html, kwargs...)
+end
+
+function pretty_table_typst_backend(args...; kwargs...)
+    return pretty_table(args...; backend = :typst, kwargs...)
 end

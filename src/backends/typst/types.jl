@@ -1,4 +1,4 @@
-export TypstHighlighter
+export TypstHighlighter, TypstTableStyle
 
 const TypstPair = Pair{String, String}
 const TypstAttrs = String
