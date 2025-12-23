@@ -159,7 +159,7 @@ const _TYPST__ALIGNMENT_MAP = Dict(
 """
     _typst__add_alignment_to_style!(style::Vector{TypstPair}, alignment::Symbol) -> Nothing
 
-Add the HTML alignment property to `style` according to the `alignment` symbol.
+Add the Typst alignment property to `style` according to the `alignment` symbol.
 """
 function _typst__add_alignment_to_style!(style::Vector{TypstPair}, alignment::Symbol)
     if (alignment == :n) || (alignment == :N)

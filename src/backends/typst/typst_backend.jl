@@ -9,7 +9,7 @@ function _typst__print(
     column_label_titles::Union{Nothing, AbstractVector} = nothing,
     highlighters::Vector{TypstHighlighter} = TypstHighlighter[],
     is_stdout::Bool = false,
-    maximum_column_width::String = "",
+    column_width::Union{String,Vector{String}, Vector{Pair{Int64,String}}} = "",
     top_left_string::AbstractString = "",
     style::TypstTableStyle = TypstTableStyle(),
     caption::Union{Nothing,AbstractString} = nothing,
@@ -158,22 +158,6 @@ function _typst__print(
             end
 
             empty!(vproperties)
-            class = if rs == :table_header
-                ps.state < _TITLE ? "title" : "subtitle"
-            elseif rs == :column_labels
-                "columnLabelRow"
-            elseif rs == :row_group_label
-                "rowGroupLabel"
-            elseif rs == :data
-                "dataRow"
-            elseif rs == :summary_row
-                "summaryRow"
-            elseif rs == :table_footer
-                ps.state < _FOOTNOTES ? "footnote" : "sourceNotes"
-            else
-                ""
-            end
-            push!(vproperties, "class" => class)
 
             il += 1
             
@@ -373,7 +357,7 @@ function _typst__print(
                     _typst__create_component("#text",rendered_cell, properties= text_style);
                     properties = cell_style,
                 )*",",
-                ps.j==1 ? il : 0,
+                ps.j<=1 ? il : 0,
                 ns;
                 
             )
@@ -386,15 +370,15 @@ function _typst__print(
         _aprintln(buf, "),", il, ns; )
     end
 
+    _aprintln(buf, ")", il, ns; )
     il -= 1
-    _aprint(buf, ")", il, ns; )
 
     if !isnothing(caption)
       _aprintln(buf, """, caption: "$caption")""", 0,ns; )
       il -= 1
     end
-    il -= 1
     _aprintln(buf,"}", il,ns)
+    il -= 1
     # == Print the Buffer Into the IO ======================================================
 
     output_str = String(take!(buf_io))
