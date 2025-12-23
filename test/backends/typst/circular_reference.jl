@@ -18,7 +18,7 @@
     expected = raw"""
 #{
   table(
-    columns: 4, 
+    columns: (auto, auto, auto, auto), 
     table.header(
         table.cell(align: right,)[#text(weight: "bold",)[A1]],table.cell(align: right,)[#text(weight: "bold",)[A2]],table.cell(align: right,)[#text(weight: "bold",)[A3]],table.cell(align: right,)[#text(weight: "bold",)[A4]],
     ), 
