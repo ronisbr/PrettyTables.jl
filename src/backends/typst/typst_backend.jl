@@ -126,6 +126,9 @@ function _typst__print(
     else
         table_data.num_columns
     end
+    if table_data.show_row_number_column 
+        num_columns += 1
+    end
     columns = _typst__get_columns_widths(columns_width, num_columns)
     _aprintln(buf,"columns: $columns, ",il,ns;)
     map(style.table) do (k,s)
@@ -364,7 +367,7 @@ function _typst__print(
                     _typst__create_component("#text",rendered_cell, properties= text_style);
                     properties = cell_style,
                 )*",",
-                ps.j<=1 ? il : 0,
+                ps.j==0 || (ps.j==1 && !table_data.show_row_number_column) ? il : 0,
                 ns;
                 
             )

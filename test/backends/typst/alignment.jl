@@ -29,7 +29,7 @@
             matrix;
             backend,
             alignment = :c,
-            cell_alignment = [(2, 3) => :r, (4, 5) => :l]
+            cell_alignment = [(2, 3) => :r, (4, 5) => :l], 
         )
 
         @test result == expected
