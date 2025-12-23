@@ -20,8 +20,8 @@ function _typst__escape_str(
     a = Iterators.Stateful(s)
     for c in a
         if Base.isascii(c)
-            isprint(c)         ? print(io, c) : print(io, "\\x", string(UInt32(c), base = 16, pad = 2))
-            # c == '\n'          ? (replace_newline ? print(io, "<br>") : print(io, "\\n")) :
+            c == '#'             ? (escape_typst_chars ? print(io, "\\#") : print(io,c)) :
+            isprint(c)           ? print(io, c) : print(io, "\\x", string(UInt32(c), base = 16, pad = 2))
             # c == '&'           ? (escape_typst_chars ? print(io, "&amp;")  : print(io, c)) :
             # c == '<'           ? (escape_typst_chars ? print(io, "&lt;")   : print(io, c)) :
             # c == '>'           ? (escape_typst_chars ? print(io, "&gt;")   : print(io, c)) :
@@ -169,4 +169,55 @@ function _typst__add_alignment_to_style!(style::Vector{TypstPair}, alignment::Sy
     else
         return push!(style, "align" => _TYPST__ALIGNMENT_MAP[:r])
     end
+end
+
+
+"""
+    _typst__get_columns_widths(columns::String, num_columns::Int64) -> String
+
+Create the `columns` https://typst.app/docs/reference/model/table/#parameters-columns configurantion for Tables in typst: 
+
+"""
+_typst__get_columns_widths(str::String, num_columns::Int64) = string("(",join(fill(str,num_columns),", "),")")
+ 
+"""
+    _typst__get_columns_widths(columns::Vector{String}, num_columns::Int64) -> String
+
+Create the `columns` https://typst.app/docs/reference/model/table/#parameters-columns configurantion for Tables in typst: 
+
+"""
+function _typst__get_columns_widths(columns::Vector{String}, num_columns)
+    length(columns) > num_columns &&  error("The number of vectors in `columns_width` must be equal or lower than the number of columns of data.")
+    out_columns = fill("auto",num_columns)
+    out_columns[1:length(columns)] = columns
+    string("(",join(out_columns,", "),")")
+end
+
+"""
+    _typst__get_columns_widths(columns::Vector{Pair{Int64, String}}, num_columns::Int64) -> String
+
+Create the `columns` https://typst.app/docs/reference/model/table/#parameters-columns configurantion for Tables in typst: 
+
+"""
+function _typst__get_columns_widths(columns::Vector{Pair{Int64, String}}, num_columns::Int64)
+    length(columns) > num_columns &&  error("The number of vectors in `columns_width` must be equal or lower than the number of columns of data.")
+    out_columns = fill("auto",num_columns)
+    for c in columns
+        pos = c[1]
+        pos > num_columns && continue
+        out_columns[pos] = c[2]
+    end
+    string("(",join(out_columns,", "),")")
+end
+
+
+"""
+    _typst__get_columns_widths(columns::Nothing, num_columns::Int64) -> String
+
+Create the `columns` https://typst.app/docs/reference/model/table/#parameters-columns configurantion for Tables in typst: 
+
+"""
+function _typst__get_columns_widths(::Nothing, num_columns::Int64)
+    out_columns = fill("auto",num_columns)
+    string("(",join(out_columns,", "),")")
 end

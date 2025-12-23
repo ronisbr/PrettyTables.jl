@@ -13,7 +13,7 @@
         expected = """
 #{
   table(
-    columns: 4, 
+    columns: (auto, auto, auto, auto), 
     table.header(
         table.cell(align: right,)[#text(weight: "bold",)[(1, 1)]],table.cell(align: right,)[#text(weight: "bold",)[(1, 2)]],table.cell(align: right,)[#text(weight: "bold",)[(1, 3)]],table.cell(align: right,)[#text(weight: "bold",)[(1, 4)]],
         table.cell(align: right,)[#text(weight: "bold",)[(2, 1)]],table.cell(align: right,)[#text(weight: "bold",)[(2, 2)]],table.cell(align: right,)[#text(weight: "bold",)[(2, 3)]],table.cell(align: right,)[#text(weight: "bold",)[(2, 4)]],

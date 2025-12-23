@@ -11,7 +11,7 @@
         expected = """
 #{
   table(
-    columns: 5, 
+    columns: (auto, auto, auto, auto, auto), 
     table.header(
         table.cell(align: center,)[#text(weight: "bold",)[Col. 1]],table.cell(align: center,)[#text(weight: "bold",)[Col. 2]],table.cell(align: center,)[#text(weight: "bold",)[Col. 3]],table.cell(align: center,)[#text(weight: "bold",)[Col. 4]],table.cell(align: center,)[#text(weight: "bold",)[Col. 5]],
     ), 
@@ -37,7 +37,7 @@
         expected = """
 #{
   table(
-    columns: 5, 
+    columns: (auto, auto, auto, auto, auto), 
     table.header(
         table.cell()[#text(weight: "bold",)[Col. 1]],table.cell()[#text(weight: "bold",)[Col. 2]],table.cell()[#text(weight: "bold",)[Col. 3]],table.cell()[#text(weight: "bold",)[Col. 4]],table.cell()[#text(weight: "bold",)[Col. 5]],
     ), 
@@ -64,7 +64,7 @@
         expected = """
 #{
   table(
-    columns: 5, 
+    columns: (auto, auto, auto, auto, auto), 
     table.header(
         table.cell(align: left,)[#text(weight: "bold",)[Col. 1]],table.cell(align: center,)[#text(weight: "bold",)[Col. 2]],table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],table.cell(align: left,)[#text(weight: "bold",)[Col. 4]],table.cell(align: center,)[#text(weight: "bold",)[Col. 5]],
     ), 
@@ -90,7 +90,7 @@
         expected = """
 #{
   table(
-    columns: 5, 
+    columns: (auto, auto, auto, auto, auto), 
     table.header(
         table.cell(align: left,)[#text(weight: "bold",)[Col. 1]],table.cell(align: center,)[#text(weight: "bold",)[Col. 2]],table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],table.cell()[#text(weight: "bold",)[Col. 4]],table.cell(align: right,)[#text(weight: "bold",)[Col. 5]],
     ), 

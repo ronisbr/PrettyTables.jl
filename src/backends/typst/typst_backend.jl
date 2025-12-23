@@ -3,13 +3,12 @@
 # HTML back end of PrettyTables.jl
 #
 ############################################################################################
-
 function _typst__print(
     pspec::PrintingSpec;
     column_label_titles::Union{Nothing, AbstractVector} = nothing,
     highlighters::Vector{TypstHighlighter} = TypstHighlighter[],
     is_stdout::Bool = false,
-    column_width::Union{String,Vector{String}, Vector{Pair{Int64,String}}} = "",
+    columns_width::Union{Nothing,String,Vector{String}, Vector{Pair{Int64,String}}} = nothing,
     top_left_string::AbstractString = "",
     style::TypstTableStyle = TypstTableStyle(),
     caption::Union{Nothing,AbstractString} = nothing,
@@ -116,7 +115,8 @@ function _typst__print(
         
     )
     il += 1
-    _aprintln(buf,"columns: $(table_data.num_columns), ",il,ns;)
+    columns = _typst__get_columns_widths(columns_width, table_data.num_columns)
+    _aprintln(buf,"columns: $columns, ",il,ns;)
     map(style.table) do (k,s)
         if occursin(r"^[0-9]",s) || k ∉ _TYPST_STRING_ATTRIBUTES
             _aprintln(buf,"$k:$s, ", il, ns)
