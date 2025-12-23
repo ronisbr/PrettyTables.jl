@@ -84,7 +84,7 @@ const _TYPST_LARGE_ITALIC = ["size" => "1.1em", "style" => "italic"]
 const _TYPST_SMALL = ["size" => "0.9em"]
 const _TYPST_SMALL_ITALIC = ["size" => "0.9em", "style" => "italic"]
 const _TYPST_SMALL_ITALIC_GRAY = ["color" => "gray", "size" => "0.9em", "style" => "italic"]
-const _TYPST_MERGED_CELL = ["stroke" => """(paint: rgb("#eeeeee"), thickness: 0.01pt)"""]
+const _TYPST_MERGED_CELL = ["stroke" => """(paint: rgb(200,200,200), thickness: 0.01pt)"""]
 
 const _TYPST_STRING_ATTRIBUTES = ["font","style","weight", "top-edge","bottom-edge","lang","region","script", "number-type","number-width"]
 

@@ -29,6 +29,7 @@ function pretty_table(::Type{HTML}, @nospecialize(data::Any); kwargs...)
     return HTML(str)
 end
 
+
 # We declare this function with all the common keywords and after we call an internal
 # function where all those keywords are arguments. In this case, we can use `@nospecialize`
 # in the first two arguments. The other options would be wrap the keywords inside a

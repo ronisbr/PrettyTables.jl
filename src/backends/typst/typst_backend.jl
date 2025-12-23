@@ -10,6 +10,7 @@ function _typst__print(
     is_stdout::Bool = false,
     columns_width::Union{Nothing,String,Vector{String}, Vector{Pair{Int64,String}}} = nothing,
     top_left_string::AbstractString = "",
+    color = nothing,
     style::TypstTableStyle = TypstTableStyle(),
     caption::Union{Nothing,AbstractString} = nothing,
 )
@@ -119,16 +120,7 @@ function _typst__print(
         
     )
     il += 1
-    num_columns = if table_data.maximum_number_of_columns == - 1 
-        table_data.num_columns
-    elseif table_data.num_columns >  table_data.maximum_number_of_columns
-        table_data.maximum_number_of_columns+1
-    else
-        table_data.num_columns
-    end
-    if table_data.show_row_number_column 
-        num_columns += 1
-    end
+    num_columns = _number_of_printed_columns(table_data)
     columns = _typst__get_columns_widths(columns_width, num_columns)
     _aprintln(buf,"columns: $columns, ",il,ns;)
     map(style.table) do (k,s)
@@ -149,6 +141,12 @@ function _typst__print(
     while action != :end_printing
         action, rs, ps = _next(ps, table_data)
         action == :end_printing && break
+        footnote = _current_cell_footnotes(table_data, action, ps.i, ps.j)
+        append = if !isnothing(footnote) && !isempty(footnote)
+            join(string.("#super[",footnote,"]"),", ")
+
+        end
+
         if action == :new_row
             if (ps.i == 1) && (rs ∈ (:table_header, :column_labels)) && !head_opened
                 _aprintln(buf, "table.header(", il, ns; )
@@ -336,7 +334,9 @@ function _typst__print(
                 # The footnote must be a cell that span the entire printed table.
                 push!(vproperties, "colspan" => string(_number_of_printed_columns(table_data)))
                 merge_style!(vstyle, style.footnote)
-                rendered_cell = "#super[$(ps.i)] " * rendered_cell
+            #     rendered_cell = "#super[$(ps.i)] " * rendered_cell
+
+
 
             elseif action == :source_notes
                 # The source notes must be a cell that span the entire printed table.
@@ -358,18 +358,17 @@ function _typst__print(
                 occursin(r"text-",l[1]) ? replace(l[1],"text-"=>"") =>l[2] : l
             end
             # unique!(x->x[1], text_style)
-            
+
             # Create the row component with the content.
             _aprint(
                 buf,
                 _typst__create_component(
                     "table.cell",
-                    _typst__create_component("#text",rendered_cell, properties= text_style);
+                    (action ∈ [:footnote] ? "#super[$(ps.i)]" : "")*_typst__create_component("#text",rendered_cell, properties= text_style)*something(append,"");
                     properties = cell_style,
                 )*",",
-                ps.j==0 || (ps.j==1 && !table_data.show_row_number_column) ? il : 0,
+                ps.j==0 || (ps.j==1 && !table_data.show_row_number_column) || action ∈ [:footnote,:source_notes] ? il : 0,
                 ns;
-                
             )
         end
     end
@@ -397,9 +396,9 @@ function _typst__print(
         output_str = chomp(output_str)
     end
 
-    # If we are printing to `stdout`, wrap the output in a `HTML` object.
-    if is_stdout
-        display(MIME("text/html"), HTML(output_str))
+    # If we are printing to `stdout`, wrap the output in a `String` object.
+    if is_stdout && isdefined(Main,:Typst)
+        display("image/png",(Main.Typst ∘ Main.TypstText)(output_str))
     else
         print(context, output_str)
     end
