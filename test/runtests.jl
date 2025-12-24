@@ -41,6 +41,16 @@ end
     include("./backends/html/special_cells.jl")
     include("./backends/html/stand_alone.jl")
 end
+@testset "Typst Back End Tests" verbose = true begin
+    include("./backends/typst/alignment.jl")
+    include("./backends/typst/cell_titles.jl")
+    include("./backends/typst/circular_reference.jl")
+    include("./backends/typst/column_width.jl")
+    include("./backends/typst/cropping.jl")
+    include("./backends/typst/decorations.jl")
+    include("./backends/typst/default.jl")
+    include("./backends/typst/full.jl")
+end
 
 @testset "LaTeX Back End Tests" verbose = true begin
     include("./backends/latex/alignment.jl")

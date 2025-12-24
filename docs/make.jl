@@ -33,6 +33,9 @@ makedocs(
             "Markdown"                => Any[
                 "Markdown Backend"    => "man/markdown/markdown_backend.md",
                 "Examples"            => "man/markdown/markdown_examples.md",
+            ],
+            "Typst"                => Any[
+                "Typst Backend"    => "man/typst/typst_backend.md",
             ]
         ],
         "Library"                     => "lib/library.md",

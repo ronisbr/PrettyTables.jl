@@ -29,6 +29,7 @@ function pretty_table(::Type{HTML}, @nospecialize(data::Any); kwargs...)
     return HTML(str)
 end
 
+
 # We declare this function with all the common keywords and after we call an internal
 # function where all those keywords are arguments. In this case, we can use `@nospecialize`
 # in the first two arguments. The other options would be wrap the keywords inside a
@@ -497,6 +498,11 @@ function _printing_backend(::Val{:html}, pspec::PrintingSpec; is_stdout::Bool, k
     return nothing
 end
 
+function _printing_backend(::Val{:typst}, pspec::PrintingSpec; is_stdout::Bool, kwargs...)
+    _typst__print(pspec; is_stdout, kwargs...)
+    return nothing
+end
+
 function _printing_backend(::Val{:markdown}, pspec::PrintingSpec; is_stdout::Bool, kwargs...)
     _markdown__print(pspec; kwargs...)
     return nothing
@@ -513,6 +519,7 @@ export pretty_table_html_backend
 export pretty_table_latex_backend
 export pretty_table_markdown_backend
 export pretty_table_text_backend
+export pretty_table_typst_backend
 
 function pretty_table_text_backend(args...; kwargs...)
     return pretty_table(args...; backend = :text, kwargs...)
@@ -528,4 +535,8 @@ end
 
 function pretty_table_html_backend(args...; kwargs...)
     return pretty_table(args...; backend = :html, kwargs...)
+end
+
+function pretty_table_typst_backend(args...; kwargs...)
+    return pretty_table(args...; backend = :typst, kwargs...)
 end
