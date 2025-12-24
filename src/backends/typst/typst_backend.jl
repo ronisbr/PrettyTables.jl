@@ -3,6 +3,7 @@
 # Typst back end of PrettyTables.jl
 #
 ############################################################################################
+
 function _typst__print(
     pspec::PrintingSpec;
     column_label_titles::Union{Nothing, AbstractVector} = nothing,
