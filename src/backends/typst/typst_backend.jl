@@ -348,7 +348,10 @@ function _typst__print(
             filter_text_atributes = filter(x -> x[1] ∈ text_attributes || occursin(r"text-", x[1]))
             
             # Build the text style.
-            text_style = map(_typst__merge_style!(filter_text_atributes(vstyle), filter_text_atributes(vproperties))) do l
+            text_style = map(
+                    _typst__merge_style!(filter_text_atributes(vstyle), 
+                    filter_text_atributes(vproperties))
+                ) do l
                 occursin(r"text-", l[1]) ? replace(l[1], "text-" => "") => l[2] : l
             end
 
