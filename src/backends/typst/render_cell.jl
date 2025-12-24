@@ -31,9 +31,11 @@ function _typst__cell_to_str(cell::AbstractString, context::IOContext, ::Val{:sh
 end
 
 _typst__cell_to_str(cell::HTML, context::IOContext, ::Val{:print}) = cell.content
+
 _typst__cell_to_str(cell::HTML, context::IOContext, ::Val{:show}) = cell.content
 
 _typst__cell_to_str(cell::UndefinedCell, context::IOContext, ::Val{:print}) = "#undef"
+
 _typst__cell_to_str(cell::UndefinedCell, context::IOContext, ::Val{:show}) = "#undef"
 
 
@@ -72,9 +74,6 @@ function _typst__render_cell(
 
     # Check if we need to replace `\n` with `<br>`.
     replace_newline = line_breaks
-
-    # If the string is showable as HTML, we assume it contains HTML code and we do not
-    # escape it.
 
     # If the user wants HTML code inside cell, we must not escape the HTML characters.
     return _typst__escape_str(cell_str, replace_newline, )

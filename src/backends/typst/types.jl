@@ -74,8 +74,6 @@ end
 
 _typst__default_highlighter_fd(h::TypstHighlighter, ::Any, ::Int, ::Int) = h._decoration
 
-
-
 const _TYPST_NO_DECORATION = TypstPair[]
 const _TYPST_BOLD = ["weight" => "bold"]
 const _TYPST_ITALIC = ["style" => "italic"]

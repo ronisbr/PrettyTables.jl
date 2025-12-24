@@ -6,27 +6,27 @@
 
 function _typst__print(
     pspec::PrintingSpec;
-    column_label_titles::Union{Nothing, AbstractVector} = nothing,
-    highlighters::Vector{TypstHighlighter} = TypstHighlighter[],
-    is_stdout::Bool = false,
-    columns_width::Union{Nothing,String,Vector{String}, Vector{Pair{Int64,String}}} = nothing,
-    top_left_string::AbstractString = "",
-    color = nothing,
-    style::TypstTableStyle = TypstTableStyle(),
-    caption::Union{Nothing,AbstractString} = nothing,
+    column_label_titles::Union{Nothing,AbstractVector}=nothing,
+    highlighters::Vector{TypstHighlighter}=TypstHighlighter[],
+    is_stdout::Bool=false,
+    columns_width::Union{Nothing,String,Vector{String},Vector{Pair{Int64,String}}}=nothing,
+    top_left_string::AbstractString="",
+    color=nothing,
+    style::TypstTableStyle=TypstTableStyle(),
+    caption::Union{Nothing,AbstractString}=nothing,
 )
-    context    = pspec.context
+    context = pspec.context
     table_data = pspec.table_data
-    renderer   = Val(pspec.renderer)
+    renderer = Val(pspec.renderer)
 
-    ps     = PrintingTableState()
+    ps = PrintingTableState()
     buf_io = IOBuffer()
-    buf    = IOContext(buf_io, context)
+    buf = IOContext(buf_io, context)
 
     # Create dictionaries to store properties and styles to decrease the number of
     # allocations.
-    vproperties = Pair{String, String}[]
-    vstyle      = Pair{String, String}[]
+    vproperties = Pair{String,String}[]
+    vstyle = Pair{String,String}[]
 
     # Check the dimensions of header cell titles.
     if !isnothing(column_label_titles)
@@ -62,73 +62,66 @@ function _typst__print(
         top_right_string = ocs
     end
 
-    # top_right_string = if !isempty(ocs)
-    #     top_right_string = ocs
-    # else 
-    #     []
-    # end
-
     # Print the top bar if necessary.
     if !isempty(top_left_string) || !isempty(top_right_string)
         # Top left section.
         if !isempty(top_left_string)
-          _aprintln(
-              buf,
-              _typst__create_component("#align",top_left_string,args = ["top+left"]),
-              il,
-              ns;
-              
-          )
+            _aprintln(
+                buf,
+                _typst__create_component("#align", top_left_string, args=["top+left"]),
+                il,
+                ns;)
         end
 
         # Top right section.
         if !isempty(top_right_string)
-          _aprintln(
-              buf,
-              _typst__create_component("#align",top_right_string,args = ["top+right"]),
-              il,
-              ns;
-              
-          )
+            _aprintln(
+                buf,
+                _typst__create_component("#align", top_right_string, args=["top+right"]),
+                il,
+                ns;)
         end
 
         # We need to clear the floats so that the table is rendered below the top bar.
         empty!(vstyle)
-        push!(vstyle, "clear" => "both")
 
     end
 
     # == Table =============================================================================
 
     empty!(vproperties)
-    _aprintln(buf,"#{", il,ns)
+    _aprintln(buf, "#{", il, ns)
     il += 1
+
+    # if we have a caption, we need to open a figure environment
     if !isnothing(caption)
-      _aprintln(
-          buf,
-          "figure(",
-          il,
-          ns;
-          
-      )
-      il += 1
+        _aprintln(
+            buf,
+            "figure(",
+            il,
+            ns;
+        )
+        il += 1
     end
+    # Open the table component.
     _aprintln(
         buf,
         "table(",
         il,
-        ns;
-        
-    )
+        ns;)
     il += 1
-    num_columns = _number_of_printed_columns(table_data)
-    columns = _typst__get_columns_widths(columns_width, num_columns)
-    _aprintln(buf,"columns: $columns, ",il,ns;)
-    map(style.table) do (k,s)
-        if occursin(r"^[0-9]",s) || k ∉ _TYPST_STRING_ATTRIBUTES
-            _aprintln(buf,"$k:$s, ", il, ns)
+    columns = _typst__get_columns_widths(
+        columns_width,
+        _number_of_printed_columns(table_data)
+    )
+
+    _aprintln(buf, "columns: $columns, ", il, ns;)
+
+    map(style.table) do (k, s)
+        if occursin(r"^[0-9]", s) || k ∉ _TYPST_STRING_ATTRIBUTES
+            _aprintln(buf, "$k:$s, ", il, ns)
         else
-            _aprintln(buf,"$k:\"$s\", ", il, ns)
+            _aprintln(buf, "$k:\"$s\", ", il, ns)
         end
 
     end
@@ -144,24 +137,24 @@ function _typst__print(
         action == :end_printing && break
         footnote = _current_cell_footnotes(table_data, action, ps.i, ps.j)
         append = if !isnothing(footnote) && !isempty(footnote)
-            join(string.("#super[",footnote,"]"),", ")
+            join(string.("#super[", footnote, "]"), ", ")
 
         end
 
         if action == :new_row
             if (ps.i == 1) && (rs ∈ (:table_header, :column_labels)) && !head_opened
-                _aprintln(buf, "table.header(", il, ns; )
+                _aprintln(buf, "table.header(", il, ns;)
                 il += 1
                 head_opened = true
 
             elseif !body_opened && (
-                    ((ps.i == 1) && (rs ∈ (:data, :summary_row))) ||
-                    (rs == :row_group_label)
-                )
+                ((ps.i == 1) && (rs ∈ (:data, :summary_row))) ||
+                (rs == :row_group_label)
+            )
 
                 if head_opened
                     il -= 1
-                    _aprintln(buf, "), ", il, ns; )
+                    _aprintln(buf, "), ", il, ns;)
                     il -= 1
                     head_opened = false
                 end
@@ -173,31 +166,31 @@ function _typst__print(
             empty!(vproperties)
 
             il += 1
-            
+
         elseif action == :diagonal_continuation_cell
             _aprint(
                 buf,
-                _typst__create_component("table.cell", _typst__create_component("#text"," ⋱ ")) * ",",
+                _typst__create_component("table.cell", _typst__create_component("#text", " ⋱ ")) * ",",
                 0,
                 ns;
             )
         elseif action == :horizontal_continuation_cell
-            _aprint(buf, _typst__create_component("table.cell", _typst__create_component("#text"," ⋯ ")) * ",", 0, ns; )
+            _aprint(buf, _typst__create_component("table.cell", _typst__create_component("#text", " ⋯ ")) * ",", 0, ns;)
 
         elseif action ∈ _VERTICAL_CONTINUATION_CELL_ACTIONS
             # Obtain the cell style.
             empty!(vstyle)
             alignment = _current_cell_alignment(action, ps, table_data)
 
-            _aprint( buf,
-                _typst__create_component("table.cell", _typst__create_component("#text","  ⋮ "))*",", 
-                ps.j ==1 ? il : 0,
+            _aprint(buf,
+                _typst__create_component("table.cell", _typst__create_component("#text", "  ⋮ ")) * ",",
+                ps.j == 1 ? il : 0,
                 ns;
             )
 
         elseif action == :end_row
             il -= 1
-            _aprintln(buf, "", il, ns; )
+            _aprintln(buf, "", il, ns;)
 
         else
             empty!(vproperties)
@@ -262,7 +255,7 @@ function _typst__print(
                 if !isnothing(highlighters)
                     for h in highlighters
                         if h.f(orig_data, ps.i, ps.j)
-                            merge_style!(vstyle, h.fd(h, orig_data, ps.i, ps.j))
+                            _typst__merge_style!(vstyle, h.fd(h, orig_data, ps.i, ps.j))
                             break
                         end
                     end
@@ -273,43 +266,37 @@ function _typst__print(
 
             if action == :title
                 push!(vproperties, "colspan" => string(_number_of_printed_columns(table_data)))
-                merge_style!(vstyle, style.title)
+                _typst__merge_style!(vstyle, style.title)
 
             elseif action == :subtitle
                 push!(vproperties, "colspan" => string(_number_of_printed_columns(table_data)))
-                merge_style!(vstyle, style.subtitle)
+                _typst__merge_style!(vstyle, style.subtitle)
 
             elseif action == :row_number_label
-                push!(vproperties, "class" => "rowNumberLabel")
-                merge_style!(vstyle, style.row_number_label)
+                _typst__merge_style!(vstyle, style.row_number_label)
 
             elseif action == :row_number
-                push!(vproperties, "class" => "rowNumber")
-                merge_style!(vstyle, style.row_number)
+                _typst__merge_style!(vstyle, style.row_number)
 
             elseif action == :summary_row_number
-                push!(vproperties, "class" => "summaryRowNumber")
-                merge_style!(vstyle, style.row_number)
+                _typst__merge_style!(vstyle, style.row_number)
 
             elseif action == :stubhead_label
-                push!(vproperties, "class" => "stubheadLabel")
-                merge_style!(vstyle, style.stubhead_label)
+                _typst__merge_style!(vstyle, style.stubhead_label)
 
             elseif action == :row_group_label
                 push!(vproperties, "colspan" => string(_number_of_printed_columns(table_data)))
-                merge_style!(vstyle, style.row_group_label)
+                _typst__merge_style!(vstyle, style.row_group_label)
 
             elseif action == :row_label
-                push!(vproperties, "class" => "rowLabel")
-                merge_style!(vstyle, style.row_label)
-
+                _typst__merge_style!(vstyle, style.row_label)
+ 
             elseif action == :summary_row_label
-                push!(vproperties, "class" => "summaryRowLabel")
-                merge_style!(vstyle, style.summary_row_label)
+                _typst__merge_style!(vstyle, style.summary_row_label)
 
             elseif action == :column_label
                 if ps.i == 1
-                    merge_style!(
+                    _typst__merge_style!(
                         vstyle,
                         if style.first_line_column_label isa Vector{Vector{HtmlPair}}
                             style.first_line_column_label[ps.j]
@@ -318,7 +305,7 @@ function _typst__print(
                         end
                     )
                 else
-                    merge_style!(
+                    _typst__merge_style!(
                         vstyle,
                         if style.column_label isa Vector{Vector{HtmlPair}}
                             style.column_label[ps.j]
@@ -329,46 +316,53 @@ function _typst__print(
                 end
 
             elseif action == :summary_row_cell
-                merge_style!(vstyle, style.summary_row_cell)
+                _typst__merge_style!(vstyle, style.summary_row_cell)
 
             elseif action == :footnote
                 # The footnote must be a cell that span the entire printed table.
                 push!(vproperties, "colspan" => string(_number_of_printed_columns(table_data)))
-                merge_style!(vstyle, style.footnote)
-            #     rendered_cell = "#super[$(ps.i)] " * rendered_cell
-
-
+                _typst__merge_style!(vstyle, style.footnote)
 
             elseif action == :source_notes
-                # The source notes must be a cell that span the entire printed table.
+                # The source notes must be a cell that span the entire printed table.   
                 push!(vproperties, "colspan" => string(_number_of_printed_columns(table_data)))
-                merge_style!(vstyle, style.source_note)
-
+                _typst__merge_style!(vstyle, style.source_note)
             else
                 push!(vproperties, "class" => "")
             end
-            
-            cell_attributes = ["colspan", "rowspan", "inset", "align", "fill", "stroke", "breakable"]
-            filter_cell_attributes=filter(x-> x[1] ∈ cell_attributes)
-            cell_style = merge_style!(filter_cell_attributes(vstyle),filter_cell_attributes(vproperties))
-            # unique!(x->x[1],cell_style)
-            text_attributes = ["font", "fallback", "style", "weight", "stretch", "size", "tracking", "spacing", "cjk-latin-spacing", "baseline", "overhang", "top-edge", "bottom-edge", "lang", "region", "script", "dir", "hyphenate", "costs", "kerning", "alternates", "stylistic-set", "ligatures", "discretionary-ligatures", "historical-ligatures", "number-type", "number-width", "slashed-zero", "fractions", "features",]              
-            filter_text_atributes = filter(x-> x[1] ∈ text_attributes || occursin(r"text-",x[1]))
 
-            text_style = map(merge_style!(filter_text_atributes(vstyle),filter_text_atributes(vproperties))) do l
-                occursin(r"text-",l[1]) ? replace(l[1],"text-"=>"") =>l[2] : l
+            # Separate cell and text attributes.
+            cell_attributes = ["colspan", "rowspan", "inset", "align", "fill", "stroke", "breakable"]
+            filter_cell_attributes = filter(x -> x[1] ∈ cell_attributes)
+            cell_style = _typst__merge_style!(filter_cell_attributes(vstyle), 
+                filter_cell_attributes(vproperties))
+            
+            # Text attributes.
+            text_attributes = ["font", "fallback", "style", "weight", "stretch", "size", 
+                                "tracking", "spacing", "cjk-latin-spacing", "baseline", 
+                                "overhang", "top-edge", "bottom-edge", "lang", "region", 
+                                "script", "dir", "hyphenate", "costs", "kerning", "alternates", 
+                                "stylistic-set", "ligatures", "discretionary-ligatures", 
+                                "historical-ligatures", "number-type", "number-width", 
+                                "slashed-zero", "fractions", "features",]
+            filter_text_atributes = filter(x -> x[1] ∈ text_attributes || occursin(r"text-", x[1]))
+            
+            # Build the text style.
+            text_style = map(_typst__merge_style!(filter_text_atributes(vstyle), filter_text_atributes(vproperties))) do l
+                occursin(r"text-", l[1]) ? replace(l[1], "text-" => "") => l[2] : l
             end
-            # unique!(x->x[1], text_style)
 
             # Create the row component with the content.
             _aprint(
                 buf,
                 _typst__create_component(
                     "table.cell",
-                    (action ∈ [:footnote] ? "#super[$(ps.i)]" : "")*_typst__create_component("#text",rendered_cell, properties= text_style)*something(append,"");
-                    properties = cell_style,
-                )*",",
-                ps.j==0 || (ps.j==1 && !table_data.show_row_number_column) || action ∈ [:footnote,:source_notes] ? il : 0,
+                    (action ∈ [:footnote] ? "#super[$(ps.i)]" : "") * 
+                        _typst__create_component("#text", 
+                        rendered_cell, properties=text_style) * something(append, "");
+                    properties=cell_style,
+                ) * ",",
+                ps.j == 0 || (ps.j == 1 && !table_data.show_row_number_column) || action ∈ [:footnote, :source_notes] ? il : 0,
                 ns;
             )
         end
@@ -377,18 +371,19 @@ function _typst__print(
     # Close the section that was left opened.
     if head_opened
         il -= 1
-        _aprintln(buf, "),", il, ns; )
+        _aprintln(buf, "),", il, ns;)
     end
 
-    _aprintln(buf, ")", il, ns; )
+    _aprintln(buf, ")", il, ns;)
     il -= 1
 
     if !isnothing(caption)
-      _aprintln(buf, """, caption: "$caption")""", 0,ns; )
-      il -= 1
+        _aprintln(buf, """, caption: "$caption")""", 0, ns;)
+        il -= 1
     end
-    _aprintln(buf,"}", il,ns)
+    _aprintln(buf, "}", il, ns)
     il -= 1
+
     # == Print the Buffer Into the IO ======================================================
 
     output_str = String(take!(buf_io))
@@ -398,8 +393,8 @@ function _typst__print(
     end
 
     # If we are printing to `stdout`, wrap the output in a `String` object.
-    if is_stdout && isdefined(Main,:Typst) 
-        display("image/png",(Main.Typst ∘ Main.TypstText)(output_str))
+    if is_stdout && isdefined(Main, :Typst)
+        display("image/png", (Main.Typst ∘ Main.TypstText)(output_str))
     else
         print(context, output_str)
     end
@@ -408,10 +403,3 @@ function _typst__print(
 end
 
 
-function merge_style!(bstyle,nstyle)
-    filter!(bstyle) do l
-        l[1] ∉ map(first,nstyle)
-    end
-    append!(bstyle,nstyle)
-    bstyle
-end

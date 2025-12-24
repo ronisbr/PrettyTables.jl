@@ -22,17 +22,6 @@ function _typst__escape_str(
         if Base.isascii(c)
             c == '#'             ? (escape_typst_chars ? print(io, "\\#") : print(io,c)) :
             isprint(c)           ? print(io, c) : print(io, "\\x", string(UInt32(c), base = 16, pad = 2))
-            # c == '&'           ? (escape_typst_chars ? print(io, "&amp;")  : print(io, c)) :
-            # c == '<'           ? (escape_typst_chars ? print(io, "&lt;")   : print(io, c)) :
-            # c == '>'           ? (escape_typst_chars ? print(io, "&gt;")   : print(io, c)) :
-            # c == '"'           ? (escape_typst_chars ? print(io, "&quot;") : print(io, c)) :
-            # c == '\''          ? (escape_typst_chars ? print(io, "&apos;") : print(io, c)) :
-            # c == '\0'          ? print(io, Base.escape_nul(peek(a))) :
-            # c == '\e'          ? print(io, "\\e") :
-            # c == '\\'          ? print(io, "\\\\") :
-            # '\a' <= c <= '\r'  ? print(io, '\\', "abtnvfr"[Int(c)-6]) :
-            # isprint(c)         ? print(io, c) :
-            #                      print(io, "\\x", string(UInt32(c), base = 16, pad = 2))
         elseif !Base.isoverlong(c) && !Base.ismalformed(c)
             isprint(c)         ? print(io, c) :
             c <= '\x7f'        ? print(io, "\\x", string(UInt32(c), base = 16, pad = 2)) :
@@ -47,6 +36,7 @@ function _typst__escape_str(
         end
     end
 end
+
 function _typst__escape_str(
     s::AbstractString,
     replace_newline::Bool = false,
@@ -60,8 +50,6 @@ function _typst__escape_str(
         sizehint = lastindex(s)
     )
 end
-
-
 
 """
     _typst__open_component(component::String; kwargs...) -> String
@@ -117,8 +105,6 @@ Create the string that closes the Typst `component`.
 """
 _typst__close_component(comma=false) = "]$(comma ? "," : "")"
 
-
-
 """
     _typst__create_component(component::String, content::String; kwargs...) -> String
 
@@ -155,7 +141,6 @@ const _TYPST__ALIGNMENT_MAP = Dict(
     :R => "right"
 )
 
-
 """
     _typst__add_alignment_to_style!(style::Vector{TypstPair}, alignment::Symbol) -> Nothing
 
@@ -169,24 +154,27 @@ function _typst__add_alignment_to_style!(style::Vector{TypstPair}, alignment::Sy
     else
         return push!(style, "align" => _TYPST__ALIGNMENT_MAP[:r])
     end
+    return nothing
 end
 
 
 """
     _typst__get_columns_widths(columns::String, num_columns::Int64) -> String
 
-Create the `columns` https://typst.app/docs/reference/model/table/#parameters-columns configurantion for Tables in typst: 
+Create the `columns` https://typst.app/docs/reference/model/table/#parameters-columns 
+configurantion for Tables in typst.
 
 """
-_typst__get_columns_widths(str::String, num_columns::Int64) = string("(",join(fill(str,num_columns),", "),")")
- 
+_typst__get_columns_widths(str::String, num_columns::Int64)::String = string("(",join(fill(str,num_columns),", "),")")
+
 """
     _typst__get_columns_widths(columns::Vector{String}, num_columns::Int64) -> String
 
-Create the `columns` https://typst.app/docs/reference/model/table/#parameters-columns configurantion for Tables in typst: 
+Create the `columns` https://typst.app/docs/reference/model/table/#parameters-columns 
+configurantion for Tables in typst.
 
 """
-function _typst__get_columns_widths(columns::Vector{String}, num_columns)
+function _typst__get_columns_widths(columns::Vector{String}, num_columns) :: String
     length(columns) > num_columns &&
         error("The number of vectors in `columns_width` must be equal or lower than the number of columns of data.")
     out_columns = fill("auto",num_columns)
@@ -197,11 +185,12 @@ end
 """
     _typst__get_columns_widths(columns::Vector{Pair{Int64, String}}, num_columns::Int64) -> String
 
-Create the `columns` https://typst.app/docs/reference/model/table/#parameters-columns configurantion for Tables in typst: 
+Create the `columns` https://typst.app/docs/reference/model/table/#parameters-columns configurantion for Tables in typst.
 
 """
-function _typst__get_columns_widths(columns::Vector{Pair{Int64, String}}, num_columns::Int64)
-    length(columns) > num_columns &&  error("The number of vectors in `columns_width` must be equal or lower than the number of columns of data.")
+function _typst__get_columns_widths(columns::Vector{Pair{Int64, String}}, num_columns::Int64) :: String
+    length(columns) > num_columns &&  
+        error("The number of vectors in `columns_width` must be equal or lower than the number of columns of data.")
     out_columns = fill("auto",num_columns)
     for c in columns
         pos = c[1]
@@ -215,10 +204,24 @@ end
 """
     _typst__get_columns_widths(columns::Nothing, num_columns::Int64) -> String
 
-Create the `columns` https://typst.app/docs/reference/model/table/#parameters-columns configurantion for Tables in typst: 
+Create the `columns` https://typst.app/docs/reference/model/table/#parameters-columns 
+configurantion for Tables in typst. 
 
 """
-function _typst__get_columns_widths(::Nothing, num_columns::Int64)
+function _typst__get_columns_widths(::Nothing, num_columns::Int64) :: String
     out_columns = fill("auto",num_columns)
     string("(",join(out_columns,", "),")")
+end
+
+""" 
+    _typst__merge_style!(bstyle::Vector{TypstPair}, nstyle::Vector{TypstPair}) -> Vector{TypstPair}
+
+Merge two Typst styles, `bstyle` and `nstyle`, giving priority to `nstyle` in case of conflicts.
+"""
+function _typst__merge_style!(bstyle, nstyle) :: Vector{TypstPair}
+    filter!(bstyle) do l
+        l[1] ∉ map(first, nstyle)
+    end
+    append!(bstyle, nstyle)
+    bstyle
 end
