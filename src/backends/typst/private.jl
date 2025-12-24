@@ -218,10 +218,11 @@ end
 
 Merge two Typst styles, `bstyle` and `nstyle`, giving priority to `nstyle` in case of conflicts.
 """
-function _typst__merge_style!(bstyle, nstyle) :: Vector{TypstPair}
+function _typst__merge_style!(bstyle, nstyle) :: Vector{TypstPair} :: Nothing
     filter!(bstyle) do l
         l[1] ∉ map(first, nstyle)
     end
     append!(bstyle, nstyle)
     bstyle
+    return nothing
 end
