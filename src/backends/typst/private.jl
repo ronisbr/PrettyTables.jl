@@ -187,7 +187,8 @@ Create the `columns` https://typst.app/docs/reference/model/table/#parameters-co
 
 """
 function _typst__get_columns_widths(columns::Vector{String}, num_columns)
-    length(columns) > num_columns &&  error("The number of vectors in `columns_width` must be equal or lower than the number of columns of data.")
+    length(columns) > num_columns &&
+        error("The number of vectors in `columns_width` must be equal or lower than the number of columns of data.")
     out_columns = fill("auto",num_columns)
     out_columns[1:length(columns)] = columns
     string("(",join(out_columns,", "),")")
