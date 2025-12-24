@@ -223,6 +223,5 @@ function _typst__merge_style!(bstyle, nstyle)
         l[1] ∉ map(first, nstyle)
     end
     append!(bstyle, nstyle)
-    bstyle
-    return nothing
+    return bstyle
 end
