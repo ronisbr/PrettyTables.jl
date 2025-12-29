@@ -1,6 +1,6 @@
 ## Description #############################################################################
 #
-# HTML Back End: Tests related to table cropping.
+# Typst Back End: Tests related to table cropping.
 #
 ############################################################################################
 
