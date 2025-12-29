@@ -1,6 +1,6 @@
 ## Description #############################################################################
 #
-# HTML Back End: Tests related with decorations.
+# Typst Back End: Tests related with decorations.
 #
 ############################################################################################
 

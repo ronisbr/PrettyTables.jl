@@ -1,6 +1,6 @@
 ## Description #############################################################################
 #
-# HTML Back End: Tests related with the cell titles.
+# Typst Back End: Tests related with the cell titles.
 #
 ############################################################################################
 
