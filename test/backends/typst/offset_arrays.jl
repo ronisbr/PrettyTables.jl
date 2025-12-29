@@ -35,6 +35,5 @@
         backend,
         show_row_number_column = true,
     )
-    write("d:/estudos/20250909 - Análise Card/print_tabela.$(backend == :typst ? "typ" : "html")", result)
     @test result == expected
 end
