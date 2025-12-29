@@ -10,6 +10,8 @@
     @testset "Without Cropping" begin
         expected = """
 #{
+  set par(justify: true, spacing: 1em)
+  align(top+left, )[Top left string]
   table(
     columns: (auto, auto, auto, auto, auto, auto), 
     table.header(
@@ -51,6 +53,7 @@ table.cell(align: center,colspan: 6,)[#text(size: 1.1em,style: "italic",)[Table 
             show_row_number_column = true,
             source_notes = "Source Notes",
             stubhead_label = "Rows",
+            top_left_string = "Top left string",
             subtitle = "Table Subtitle",
             summary_rows = [(data, i) -> 10i, (data, i) -> 20i],
             title = "Table Title",
@@ -61,8 +64,11 @@ table.cell(align: center,colspan: 6,)[#text(size: 1.1em,style: "italic",)[Table 
 
     @testset "With Bottom Cropping" begin
         expected = """
-#align(top+right, )[2 columns and 2 rows omitted]
 #{
+  set par(justify: true, spacing: 1em)
+  align(top+left, )[Top left string]
+  v(-1.5em)
+  align(top+right, )[2 columns and 2 rows omitted]
   table(
     columns: (auto, auto, auto, auto, auto), 
     table.header(
@@ -93,6 +99,7 @@ table.cell()[#text()[  ⋮ ]],table.cell()[#text()[  ⋮ ]],    table.cell()[#te
             merge_column_label_cells = [MergeCells(1, 2, 2, "Merged Column", :c)],
             row_group_labels = [2 => "Row Group"],
             row_labels = ["Row $i" for i in 1:5],
+            top_left_string = "Top left string",
             show_row_number_column = true,
             source_notes = "Source Notes",
             stubhead_label = "Rows",
@@ -106,8 +113,9 @@ table.cell()[#text()[  ⋮ ]],table.cell()[#text()[  ⋮ ]],    table.cell()[#te
 
     @testset "With Middle Cropping" begin
         expected = """
-#align(top+right, )[2 columns and 2 rows omitted]
 #{
+  set par(justify: true, spacing: 1em)
+  align(top+right, )[2 columns and 2 rows omitted]
   table(
     columns: (auto, auto, auto, auto, auto), 
     table.header(

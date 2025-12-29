@@ -9,8 +9,9 @@
     backend=:typst
     @testset "Bottom Cropping" begin
         expected = """
-#align(top+right, )[97 columns and 98 rows omitted]
 #{
+  set par(justify: true, spacing: 1em)
+  align(top+right, )[97 columns and 98 rows omitted]
   table(
     columns: (auto, auto, auto, auto), 
     table.header(
@@ -36,8 +37,9 @@
 
     @testset "Middle Cropping" begin
         expected = """
-#align(top+right, )[97 columns and 98 rows omitted]
 #{
+  set par(justify: true, spacing: 1em)
+  align(top+right, )[97 columns and 98 rows omitted]
   table(
     columns: (auto, auto, auto, auto), 
     table.header(
