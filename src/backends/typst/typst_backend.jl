@@ -391,9 +391,6 @@ function _typst__print(
 
     output_str = String(take!(buf_io))
 
-    if !pspec.new_line_at_end
-        output_str = chomp(output_str)
-    end
 
     # If we are printing to `stdout`, wrap the output in a `String` object.
     if is_stdout && isdefined(Main, :Typst)
