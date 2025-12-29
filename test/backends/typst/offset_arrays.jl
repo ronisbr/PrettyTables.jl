@@ -1,6 +1,6 @@
 ## Description #############################################################################
 #
-# HTML Back End: Test related with offset arrays.
+# Typst Back End: Test related with offset arrays.
 #
 ############################################################################################
 
