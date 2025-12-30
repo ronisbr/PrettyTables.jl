@@ -1,10 +1,10 @@
 ## Description #############################################################################
 #
-# Typst Back End: Test highlighters.
+# Typst Back End: Test Caption.
 # 
 ############################################################################################
 
-@testset "Highlighters" begin
+@testset "Caption" begin
     matrix = [
         1 2 3
         4 5 6
@@ -13,17 +13,30 @@
 
     expected = """
 #{
+  // Figure for table to add caption
   figure(
+    // Open table
     table(
       columns: (auto, auto, auto), 
+      // Table Header 
       table.header(
-          table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],table.cell(align: right,)[#text(weight: "bold",)[Col. 2]],table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],
+        // column_labels Row 1
+        table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],
+        table.cell(align: right,)[#text(weight: "bold",)[Col. 2]],
+        table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],
       ), 
-      table.cell(align: right,)[#text(fill: green,weight: "bold",)[1]],table.cell(align: right,)[#text(fill: red,)[2]],table.cell(align: right,)[#text(fill: green,weight: "bold",)[3]],
-      table.cell(align: right,)[#text(fill: red,)[4]],table.cell(align: right,)[#text(fill: green,weight: "bold",)[5]],table.cell(align: right,)[#text(fill: red,)[6]],
-    )
-, caption: "Highlighter table")
-}
+      // Body
+      // data Row 1
+      table.cell(align: right,)[#text(fill: green,weight: "bold",)[1]],
+      table.cell(align: right,)[#text(fill: red,)[2]],
+      table.cell(align: right,)[#text(fill: green,weight: "bold",)[3]],
+      // data Row 2
+      table.cell(align: right,)[#text(fill: red,)[4]],
+      table.cell(align: right,)[#text(fill: green,weight: "bold",)[5]],
+      table.cell(align: right,)[#text(fill: red,)[6]],
+    ),
+    caption: "Caption table")
+  }
 """
 
     result = pretty_table(
@@ -35,8 +48,8 @@
             TypstHighlighter((data, i, j) -> data[i, j] % 2 == 0, ["text-fill" => "blue"]),
             TypstHighlighter((data, i, j) -> data[i, j] % 2 != 0, ["text-weight" => "bold", "text-fill" => "green"])
         ], 
-        caption="Highlighter table"
+        caption="Caption table"
     )
-
+    @test result == expected
    
 end
