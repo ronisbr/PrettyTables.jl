@@ -109,7 +109,7 @@ function _typst__open_component(
                 if occursin(r"^[0-9]",v_str) || k ∉ _TYPST__STRING_ATTRIBUTES
                     properties_str *= "$k: $v_str,"
                 else
-                    properties_str *= "$k: \"$v_str\","
+                    properties_str *= "$k: \"$v\","
                 end
             end
         end
