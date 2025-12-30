@@ -1,13 +1,51 @@
+## Description #############################################################################
+#
+# Types and structures for the Typst back end.
+#
+############################################################################################
+
 export TypstHighlighter, TypstTableStyle
 
-const TypstPair = Pair{String, String}
+############################################################################################
+#                                        Constants                                         #
+############################################################################################
+
+# Public.
+const TypstPair  = Pair{String, String}
 const TypstAttrs = String
 
+# Private.
+const _TYPST__NO_DECORATION     = TypstPair[]
+const _TYPST__BOLD              = ["weight" => "bold"]
+const _TYPST__ITALIC            = ["style" => "italic"]
+const _TYPST__XLARGE_BOLD       = ["size" => "1.1em", "weight" => "bold"]
+const _TYPST__LARGE_ITALIC      = ["size" => "1.1em", "style" => "italic"]
+const _TYPST__SMALL             = ["size" => "0.9em"]
+const _TYPST__SMALL_ITALIC      = ["size" => "0.9em", "style" => "italic"]
+const _TYPST__SMALL_ITALIC_GRAY = ["color" => "gray", "size" => "0.9em", "style" => "italic"]
+const _TYPST__MERGED_CELL       = ["stroke" => "(paint: rgb(200,200,200), thickness: 0.01pt)"]
+
+const _TYPST__STRING_ATTRIBUTES = [
+    "bottom-edge",
+    "font",
+    "lang",
+    "number-type",
+    "number-width",
+    "region",
+    "script",
+    "style",
+    "top-edge",
+    "weight",
+]
+
+############################################################################################
+#                                          Types                                           #
+############################################################################################
 
 """
     struct TypstHighlighter
 
-Define the default highlighter of a table when using the HTML back end.
+Define the default highlighter of a table when using the Typst back end.
 
 # Fields
 
@@ -74,22 +112,10 @@ end
 
 _typst__default_highlighter_fd(h::TypstHighlighter, ::Any, ::Int, ::Int) = h._decoration
 
-const _TYPST_NO_DECORATION = TypstPair[]
-const _TYPST_BOLD = ["weight" => "bold"]
-const _TYPST_ITALIC = ["style" => "italic"]
-const _TYPST_XLARGE_BOLD = ["size" => "1.1em", "weight" => "bold"]
-const _TYPST_LARGE_ITALIC = ["size" => "1.1em", "style" => "italic"]
-const _TYPST_SMALL = ["size" => "0.9em"]
-const _TYPST_SMALL_ITALIC = ["size" => "0.9em", "style" => "italic"]
-const _TYPST_SMALL_ITALIC_GRAY = ["color" => "gray", "size" => "0.9em", "style" => "italic"]
-const _TYPST_MERGED_CELL = ["stroke" => """(paint: rgb(200,200,200), thickness: 0.01pt)"""]
-
-const _TYPST_STRING_ATTRIBUTES = ["font","style","weight", "top-edge","bottom-edge","lang","region","script", "number-type","number-width"]
-
 """
-    struct HtmlTableStyle
+    struct TypstTableStyle
 
-Define the style of the tables printed with the HTML back end.
+Define the style of the tables printed with the Typst back end.
 
 # Fields
 
@@ -122,22 +148,22 @@ Define the style of the tables printed with the HTML back end.
     TFCL<:Union{Vector{TypstPair}, Vector{Vector{TypstPair}}},
     TCL<:Union{Vector{TypstPair}, Vector{Vector{TypstPair}}}
 }
-    top_left_string::Vector{TypstPair}                = _TYPST_NO_DECORATION
-    top_right_string::Vector{TypstPair}               = _TYPST_ITALIC
-    table::Vector{TypstPair}                          = _TYPST_NO_DECORATION
-    title::Vector{TypstPair}                          = _TYPST_XLARGE_BOLD
-    subtitle::Vector{TypstPair}                       = _TYPST_LARGE_ITALIC
-    row_number_label::Vector{TypstPair}               = _TYPST_BOLD
-    row_number::Vector{TypstPair}                     = _TYPST_BOLD
-    stubhead_label::Vector{TypstPair}                 = _TYPST_BOLD
-    row_label::Vector{TypstPair}                      = _TYPST_BOLD
-    row_group_label::Vector{TypstPair}                = _TYPST_BOLD
-    first_line_column_label::TFCL                     = _TYPST_BOLD
-    column_label::TCL                                 = _TYPST_BOLD
-    first_line_merged_column_label::Vector{TypstPair} = _TYPST_MERGED_CELL
-    merged_column_label::Vector{TypstPair}            = _TYPST_MERGED_CELL
-    summary_row_cell::Vector{TypstPair}               = _TYPST_NO_DECORATION
-    summary_row_label::Vector{TypstPair}              = _TYPST_BOLD
-    footnote::Vector{TypstPair}                       = _TYPST_SMALL
-    source_note::Vector{TypstPair}                    = _TYPST_SMALL_ITALIC_GRAY
+    top_left_string::Vector{TypstPair}                = _TYPST__NO_DECORATION
+    top_right_string::Vector{TypstPair}               = _TYPST__ITALIC
+    table::Vector{TypstPair}                          = _TYPST__NO_DECORATION
+    title::Vector{TypstPair}                          = _TYPST__XLARGE_BOLD
+    subtitle::Vector{TypstPair}                       = _TYPST__LARGE_ITALIC
+    row_number_label::Vector{TypstPair}               = _TYPST__BOLD
+    row_number::Vector{TypstPair}                     = _TYPST__BOLD
+    stubhead_label::Vector{TypstPair}                 = _TYPST__BOLD
+    row_label::Vector{TypstPair}                      = _TYPST__BOLD
+    row_group_label::Vector{TypstPair}                = _TYPST__BOLD
+    first_line_column_label::TFCL                     = _TYPST__BOLD
+    column_label::TCL                                 = _TYPST__BOLD
+    first_line_merged_column_label::Vector{TypstPair} = _TYPST__MERGED_CELL
+    merged_column_label::Vector{TypstPair}            = _TYPST__MERGED_CELL
+    summary_row_cell::Vector{TypstPair}               = _TYPST__NO_DECORATION
+    summary_row_label::Vector{TypstPair}              = _TYPST__BOLD
+    footnote::Vector{TypstPair}                       = _TYPST__SMALL
+    source_note::Vector{TypstPair}                    = _TYPST__SMALL_ITALIC_GRAY
 end

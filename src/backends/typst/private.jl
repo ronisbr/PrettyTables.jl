@@ -81,7 +81,7 @@ function _typst__open_component(
         for (k, v) in properties
             if !isempty(v)
                 v_str = _typst__escape_str(v)
-                if occursin(r"^[0-9]",v_str) || k ∉ _TYPST_STRING_ATTRIBUTES
+                if occursin(r"^[0-9]",v_str) || k ∉ _TYPST__STRING_ATTRIBUTES
                     properties_str *= "$k: $v_str,"
                 else
                     properties_str *= "$k: \"$v_str\","
