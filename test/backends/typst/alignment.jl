@@ -29,6 +29,7 @@
             matrix;
             backend,
             alignment = :c,
+            data_column_widths=["1fr","1fr","1fr","1fr","1fr"],
             cell_alignment = [(2, 3) => :r, (4, 5) => :l], 
         )
 
