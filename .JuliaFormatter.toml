@@ -1,0 +1,13 @@
+style = "blue"
+
+align_assignment = true
+align_conditional = true
+align_matrix = true
+align_pair_arrow = true
+align_struct_field = true
+conditional_to_if = false
+import_to_using = false
+pipe_to_function_call = false
+short_to_long_function_def = false
+whitespace_in_kwargs = true
+whitespace_typedefs = true
