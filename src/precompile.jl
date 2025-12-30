@@ -299,6 +299,20 @@ PrecompileTools.@setup_workload begin
             )
         )
 
+        # == Typst =========================================================================
+
+        pretty_table(matrix; backend = :typst)
+
+        pretty_table(
+            matrix;
+            backend = :typst,
+            highlighters = [
+                TypstHighlighter((data, i, j) -> i == 1, ["text-fill" => "red"])
+            ]
+        )
+
+        pretty_table(types; backend = :typst)
+
         # == Input: Tables.jl ==============================================================
 
         pretty_table(table)
