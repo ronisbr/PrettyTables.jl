@@ -64,15 +64,16 @@ function _typst__print(
     if !isempty(top_left_string) || !isempty(top_right_string)
         # Top left section.
         _aprintln(buf, "set par(justify: true, spacing: 1em)", il, ns)
+        _aprintln(buf, "set par(justify: true, spacing: 1em)", il, ns)
         if !isempty(top_left_string)
             _aprintln(
                 buf,
+                _typst__create_component("align", top_left_string, args=["top+left"]),
                 _typst__create_component("align", top_left_string, args=["top+left"]),
                 il,
                 ns
             )
         end
-
         # Top right section.
         if !isempty(top_right_string)
             !isempty(top_left_string) && _aprintln(buf, "v(-1.5em)", il, ns)
@@ -307,6 +308,7 @@ function _typst__print(
                     _typst__merge_style!(
                         vstyle,
                         if style.first_line_column_label isa Vector{Vector{TypstPair}}
+                        if style.first_line_column_label isa Vector{Vector{TypstPair}}
                             style.first_line_column_label[ps.j]
                         else
                             style.first_line_column_label
@@ -315,6 +317,7 @@ function _typst__print(
                 else
                     _typst__merge_style!(
                         vstyle,
+                        if style.column_label isa Vector{Vector{TypstPair}}
                         if style.column_label isa Vector{Vector{TypstPair}}
                             style.column_label[ps.j]
                         else
