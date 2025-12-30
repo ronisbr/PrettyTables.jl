@@ -35,8 +35,9 @@
       table.cell(align: right,)[#text(fill: green,weight: "bold",)[5]],
       table.cell(align: right,)[#text(fill: red,)[6]],
     ),
-    caption: "Caption table")
-  }
+    caption: "Caption table"
+  )
+}
 """
 
     result = pretty_table(

@@ -155,8 +155,9 @@ end
 Create the `columns` https://typst.app/docs/reference/model/table/#parameters-columns 
 configuration for tables in Typst.
 """
-function _typst__get_data_column_widths(columns::AbstractTypstLength, ::Int) :: String
-    return string(columns)
+function _typst__get_data_column_widths(column_length::AbstractTypstLength, num_columns::Int) :: String
+    columns = fill(column_length, num_columns)
+    return _typst__get_data_column_widths(columns, num_columns)
 end
 
 function _typst__get_data_column_widths(columns::Integer, ::Int) :: String

@@ -9,13 +9,13 @@ function _typst__print(
     caption::Union{Nothing, AbstractString} = nothing,
     color = nothing,
     column_label_titles::Union{Nothing, AbstractVector} = nothing,
-    data_column_widths::Union{Nothing, String, Vector{String}, Vector{Pair{Int64, String}}} = nothing,
+    data_column_widths:: L = TypstLength(),
     highlighters::Vector{TypstHighlighter} = TypstHighlighter[],
     is_stdout::Bool = false,
     style::TypstTableStyle = TypstTableStyle(),
     top_left_string::AbstractString = "",
     annotate=true,
-)
+) where L <: Union{String, Vector{String}, Vector{Pair{Int64, String}},AbstractTypstLength}
 
     context    = pspec.context
     table_data = pspec.table_data
@@ -380,10 +380,10 @@ function _typst__print(
 
     if !isnothing(caption)
         _aprintln(buf, "),", il, ns)
-        _aprintln(buf, "caption: \"$caption\")", il, ns)
-    else
-        _aprintln(buf, ")", il, ns)
+        _aprintln(buf, "caption: \"$caption\"", il, ns)
+        il -= 1
     end
+    _aprintln(buf, ")", il, ns)
     il -=1
     _aprintln(buf, "}", il, ns)
     il -= 1
