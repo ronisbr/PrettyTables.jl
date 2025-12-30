@@ -1,4 +1,8 @@
-
+## Description #############################################################################
+#
+# Functions to render the table cells in the Typst back end.
+#
+############################################################################################
 
 """
     _typst__cell_to_str(cell::Any, context::IOContext, renderer::Union{Val{:print}, Val{:show}}) -> String
@@ -10,8 +14,8 @@ function _typst__cell_to_str(cell::Any, context::IOContext, ::Val{:print})
 end
 
 function _typst__cell_to_str(cell::Any, context::IOContext, ::Val{:show})
-    if showable(MIME("text/html"), cell)
-        cell_str = sprint(show, MIME("text/html"), cell; context)
+    if showable(MIME("text/typst"), cell)
+        cell_str = sprint(show, MIME("text/typst"), cell; context)
     else
         cell_str = sprint(show, cell; context)
     end
@@ -20,9 +24,8 @@ function _typst__cell_to_str(cell::Any, context::IOContext, ::Val{:show})
 end
 
 function _typst__cell_to_str(cell::AbstractString, context::IOContext, ::Val{:show})
-    if showable(MIME("text/html"), cell)
-        # This code handles, for example, StyledStrings.jl objects.
-        cell_str = sprint(show, MIME("text/html"), cell; context)
+    if showable(MIME("text/typst"), cell)
+        cell_str = sprint(show, MIME("text/typst"), cell; context)
     else
         cell_str = string(cell)
     end
@@ -78,8 +81,7 @@ end
 function _typst__render_cell(
     cell::Markdown.MD,
     context::IOContext,
-    renderer::Union{Val{:print}, Val{:show}};
-    line_breaks::Bool = false,
+    renderer::Union{Val{:print}, Val{:show}}
 )
-    return replace(sprint(show, MIME("text/html"), cell), "\n" => "")
+    return replace(sprint(show, MIME("text/typst"), cell), "\n" => "")
 end
