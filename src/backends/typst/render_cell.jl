@@ -40,50 +40,36 @@ _typst__cell_to_str(cell::UndefinedCell, context::IOContext, ::Val{:show}) = "#u
 
 
 """
-    _typst__render_cell(cell::Any, context::IOContext, renderer::Union{Val{:print}, Val{:show}}; kwargs...) -> String
+    _typst__render_cell(cell::Any, context::IOContext, renderer::Union{Val{:print}, Val{:show}}) -> String
 
-Render the `cell` in HTML back end using a specific `context` and `renderer`.
-
-# Keywords
-
-- `line_breaks::Bool`: If `true`, we will replace `\\n` with `<br>`.
-    (**Default**: `false`)
+Render the `cell` in Typst back end using a specific `context` and `renderer`.
 """
 function _typst__render_cell(
     cell::Any,
     context::IOContext,
-    renderer::Union{Val{:print}, Val{:show}};
-    line_breaks::Bool = false,
+    renderer::Union{Val{:print}, Val{:show}}
 )
     cell_str = _typst__cell_to_str(cell, context, renderer)
 
-    # Check if we need to replace `\n` with `<br>`.
-    replace_newline = line_breaks
-
     # If the user wants HTML code inside cell, we must not escape the HTML characters.
-    return _typst__escape_str(cell_str, replace_newline)
+    return _typst__escape_str(cell_str)
 end
 
 function _typst__render_cell(
     cell::AbstractString,
     context::IOContext,
-    renderer::Union{Val{:print}, Val{:show}};
-    line_breaks::Bool = false,
+    renderer::Union{Val{:print}, Val{:show}}
 )
     cell_str = _typst__cell_to_str(cell, context, renderer)
 
-    # Check if we need to replace `\n` with `<br>`.
-    replace_newline = line_breaks
-
     # If the user wants HTML code inside cell, we must not escape the HTML characters.
-    return _typst__escape_str(cell_str, replace_newline, )
+    return _typst__escape_str(cell_str)
 end
 
 function _typst__render_cell(
     cell::HTML,
     context::IOContext,
-    renderer::Union{Val{:print}, Val{:show}};
-    line_breaks::Bool = false,
+    renderer::Union{Val{:print}, Val{:show}}
 )
     return _typst__cell_to_str(cell, context, renderer)
 end
@@ -97,6 +83,3 @@ function _typst__render_cell(
 )
     return replace(sprint(show, MIME("text/html"), cell), "\n" => "")
 end
-
-
-
