@@ -163,9 +163,10 @@ function _typst__get_data_column_widths(columns::Integer, ::Int) :: String
     return string(columns)
 end
 
-function _typst__get_data_column_widths(str_columns::String, ::Int) :: String
-    columns = parse(TypstLength, str_columns) # Throw error if string doesn't match any known kind
-    return string(columns)
+function _typst__get_data_column_widths(str_columns::String, num_columns::Int) :: String
+    col_length = parse(TypstLength, str_columns) # Throw error if string doesn't match any known kind
+    columns = fill(col_length,num_columns)
+    return _typst__get_data_column_widths(columns,num_columns)
 end
 
 """
