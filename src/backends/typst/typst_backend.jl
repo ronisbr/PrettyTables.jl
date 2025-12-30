@@ -14,7 +14,7 @@ function _typst__print(
     is_stdout::Bool = false,
     style::TypstTableStyle = TypstTableStyle(),
     top_left_string::AbstractString = "",
-    commented_table=true,
+    annotate=true,
 )
 
     context    = pspec.context
@@ -65,7 +65,7 @@ function _typst__print(
     # Print the top bar if necessary.
     if !isempty(top_left_string) || !isempty(top_right_string)
         # Top left section.
-        commented_table && _aprintln(buf,"// Top bar", il, ns)
+        annotate && _aprintln(buf,"// Top bar", il, ns)
         _aprintln(buf, "set par(justify: true, spacing: 1em)", il, ns)
         _aprintln(buf, "set par(justify: true, spacing: 1em)", il, ns)
         if !isempty(top_left_string)
@@ -98,7 +98,7 @@ function _typst__print(
 
     # if we have a caption, we need to open a figure environment
     if !isnothing(caption)
-        commented_table && _aprintln(buf,"// Figure for table to add caption", il, ns)
+        annotate && _aprintln(buf,"// Figure for table to add caption", il, ns)
         _aprintln(
             buf,
             "figure(",
@@ -108,7 +108,7 @@ function _typst__print(
         il += 1
     end
     # Open the table component.
-    commented_table && _aprintln(buf,"// Open table", il, ns)
+    annotate && _aprintln(buf,"// Open table", il, ns)
     _aprintln(
         buf,
         "table(",
@@ -149,7 +149,7 @@ function _typst__print(
 
         if action == :new_row
             if (ps.i == 1) && (rs ∈ (:table_header, :column_labels)) && !head_opened
-                commented_table && _aprintln(buf,"// Table Header ", il, ns)
+                annotate && _aprintln(buf,"// Table Header ", il, ns)
                 _aprintln(buf, "table.header(", il, ns)
                 il +=1
                 head_opened = true
@@ -163,11 +163,11 @@ function _typst__print(
                     _aprintln(buf, "), ", il, ns)
                     head_opened = false
                 end
-                commented_table && _aprintln(buf,"// Table Data", il, ns)
+                annotate && _aprintln(buf,"// Body", il, ns)
 
                 body_opened = true
             end
-            _aprintln(buf, "// $rs $(ps.i)", il, ns)
+            annotate && _aprintln(buf, "// $rs Row $(ps.i)", il, ns)
 
             empty!(vproperties)
 
