@@ -25,6 +25,16 @@ const _TYPST__SMALL_ITALIC      = ["size" => "0.9em", "style" => "italic"]
 const _TYPST__SMALL_ITALIC_GRAY = ["color" => "gray", "size" => "0.9em", "style" => "italic"]
 const _TYPST__MERGED_CELL       = ["stroke" => "(paint: rgb(200,200,200), thickness: 0.01pt)"]
 
+const _TYPST__CELL_ATTRIBUTES = [
+    "align",
+    "breakable",
+    "colspan",
+    "fill",
+    "inset",
+    "rowspan",
+    "stroke",
+]
+
 const _TYPST__STRING_ATTRIBUTES = [
     "bottom-edge",
     "font",
@@ -37,6 +47,43 @@ const _TYPST__STRING_ATTRIBUTES = [
     "top-edge",
     "weight",
 ]
+
+const _TYPST__TEXT_ATTRIBUTES = [
+    "alternates",
+    "baseline",
+    "bottom-edge",
+    "cjk-latin-spacing",
+    "costs",
+    "dir",
+    "discretionary-ligatures",
+    "fallback",
+    "features",
+    "font",
+    "fractions",
+    "historical-ligatures",
+    "hyphenate",
+    "kerning",
+    "lang",
+    "ligatures",
+    "number-type",
+    "number-width",
+    "overhang",
+    "region",
+    "script",
+    "size",
+    "slashed-zero",
+    "spacing",
+    "stretch",
+    "style",
+    "stylistic-set",
+    "top-edge",
+    "tracking",
+    "weight",
+]
+
+const _typst__filter_text_atributes = filter(
+    x -> x[1] ∈ _TYPST__TEXT_ATTRIBUTES || occursin(r"text-", x[1])
+)
 
 ############################################################################################
 #                                          Types                                           #
@@ -167,3 +214,4 @@ Define the style of the tables printed with the Typst back end.
     footnote::Vector{TypstPair}                       = _TYPST__SMALL
     source_note::Vector{TypstPair}                    = _TYPST__SMALL_ITALIC_GRAY
 end
+
