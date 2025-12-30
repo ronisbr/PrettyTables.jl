@@ -14,7 +14,9 @@ function _typst__print(
     is_stdout::Bool = false,
     style::TypstTableStyle = TypstTableStyle(),
     top_left_string::AbstractString = "",
+    commented_table=true,
 )
+
     context    = pspec.context
     table_data = pspec.table_data
     renderer   = Val(pspec.renderer)
@@ -63,6 +65,7 @@ function _typst__print(
     # Print the top bar if necessary.
     if !isempty(top_left_string) || !isempty(top_right_string)
         # Top left section.
+        commented_table && _aprintln(buf,"// Top bar", il, ns)
         _aprintln(buf, "set par(justify: true, spacing: 1em)", il, ns)
         _aprintln(buf, "set par(justify: true, spacing: 1em)", il, ns)
         if !isempty(top_left_string)
@@ -95,6 +98,7 @@ function _typst__print(
 
     # if we have a caption, we need to open a figure environment
     if !isnothing(caption)
+        commented_table && _aprintln(buf,"// Figure for table to add caption", il, ns)
         _aprintln(
             buf,
             "figure(",
@@ -104,6 +108,7 @@ function _typst__print(
         il += 1
     end
     # Open the table component.
+    commented_table && _aprintln(buf,"// Open table", il, ns)
     _aprintln(
         buf,
         "table(",
@@ -125,7 +130,6 @@ function _typst__print(
         else
             _aprintln(buf, "$k:\"$s\", ", il, ns)
         end
-
     end
 
     action = :initialize
@@ -145,28 +149,28 @@ function _typst__print(
 
         if action == :new_row
             if (ps.i == 1) && (rs ∈ (:table_header, :column_labels)) && !head_opened
+                commented_table && _aprintln(buf,"// Table Header ", il, ns)
                 _aprintln(buf, "table.header(", il, ns)
-                il += 1
+                il +=1
                 head_opened = true
 
             elseif !body_opened && (
                 ((ps.i == 1) && (rs ∈ (:data, :summary_row))) ||
                 (rs == :row_group_label)
             )
-
                 if head_opened
                     il -= 1
                     _aprintln(buf, "), ", il, ns)
-                    il -= 1
                     head_opened = false
                 end
+                commented_table && _aprintln(buf,"// Table Data", il, ns)
 
                 body_opened = true
             end
+            _aprintln(buf, "// $rs $(ps.i)", il, ns)
 
             empty!(vproperties)
 
-            il += 1
 
         elseif action == :diagonal_continuation_cell
             comp = _typst__create_component(
@@ -197,9 +201,7 @@ function _typst__print(
             _aprintln(buf, comp * ",", il, ns)
 
         elseif action == :end_row
-            il -= 1
-            _aprintln(buf, "", il, ns)
-
+            # _aprintln(buf, "// $rs", il, ns)
         else
             empty!(vproperties)
             empty!(vstyle)
@@ -335,8 +337,6 @@ function _typst__print(
                 # The source notes must be a cell that span the entire printed table.   
                 push!(vproperties, "colspan" => string(_number_of_printed_columns(table_data)))
                 _typst__merge_style!(vstyle, style.source_note)
-            else
-                push!(vproperties, "class" => "")
             end
 
             # Separate cell and text attributes.
@@ -376,17 +376,17 @@ function _typst__print(
         _aprintln(buf, "),", il, ns)
     end
 
-    _aprintln(buf, ")", il, ns)
     il -= 1
 
     if !isnothing(caption)
-        _aprintln(buf, ", caption: \"$caption\")", 0, ns)
-        il -= 1
+        _aprintln(buf, "),", il, ns)
+        _aprintln(buf, "caption: \"$caption\")", il, ns)
+    else
+        _aprintln(buf, ")", il, ns)
     end
-
+    il -=1
     _aprintln(buf, "}", il, ns)
     il -= 1
-
     # == Print the Buffer Into the IO ======================================================
 
     output_str = String(take!(buf_io))
