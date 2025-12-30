@@ -151,22 +151,22 @@ end
 
 
 """
-    _typst__get_columns_widths(columns::String, num_columns::Int) -> String
+    _typst__get_data_column_widths(columns::String, num_columns::Int) -> String
 
 Create the `columns` https://typst.app/docs/reference/model/table/#parameters-columns 
 configuration for tables in Typst.
 """
-function _typst__get_columns_widths(str::String, num_columns::Int)
+function _typst__get_data_column_widths(str::String, num_columns::Int)
     return string("(", join(fill(str, num_columns), ", "), ")")
 end
 
 """
-    _typst__get_columns_widths(columns::Vector{String}, num_columns::Int) -> String
+    _typst__get_data_column_widths(columns::Vector{String}, num_columns::Int) -> String
 
 Create the `columns` https://typst.app/docs/reference/model/table/#parameters-columns 
 configuration for tables in Typst.
 """
-function _typst__get_columns_widths(columns::Vector{String}, num_columns::Int)
+function _typst__get_data_column_widths(columns::Vector{String}, num_columns::Int)
     length(columns) > num_columns &&
         error("The number of vectors in `columns_width` must be equal or lower than the number of columns of data.")
 
@@ -176,12 +176,12 @@ function _typst__get_columns_widths(columns::Vector{String}, num_columns::Int)
 end
 
 """
-    _typst__get_columns_widths(columns::Vector{Pair{Int, String}}, num_columns::Int) -> String
+    _typst__get_data_column_widths(columns::Vector{Pair{Int, String}}, num_columns::Int) -> String
 
 Create the `columns` https://typst.app/docs/reference/model/table/#parameters-columns
 configuration for tables in Typst.
 """
-function _typst__get_columns_widths(columns::Vector{Pair{Int, String}}, num_columns::Int)
+function _typst__get_data_column_widths(columns::Vector{Pair{Int, String}}, num_columns::Int)
     length(columns) > num_columns &&  
         error("The number of vectors in `columns_width` must be equal or lower than the number of columns of data.")
 
@@ -197,12 +197,12 @@ function _typst__get_columns_widths(columns::Vector{Pair{Int, String}}, num_colu
 end
 
 """
-    _typst__get_columns_widths(columns::Nothing, num_columns::Int) -> String
+    _typst__get_data_column_widths(columns::Nothing, num_columns::Int) -> String
 
 Create the `columns` https://typst.app/docs/reference/model/table/#parameters-columns 
 configuration for tables in Typst. 
 """
-function _typst__get_columns_widths(::Nothing, num_columns::Int)
+function _typst__get_data_column_widths(::Nothing, num_columns::Int)
     out_columns = fill("auto", num_columns)
     return string("(", join(out_columns,", "), ")")
 end

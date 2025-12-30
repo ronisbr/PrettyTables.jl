@@ -9,7 +9,7 @@ function _typst__print(
     caption::Union{Nothing, AbstractString} = nothing,
     color = nothing,
     column_label_titles::Union{Nothing, AbstractVector} = nothing,
-    columns_width::Union{Nothing, String, Vector{String}, Vector{Pair{Int64, String}}} = nothing,
+    data_column_widths::Union{Nothing, String, Vector{String}, Vector{Pair{Int64, String}}} = nothing,
     highlighters::Vector{TypstHighlighter} = TypstHighlighter[],
     is_stdout::Bool = false,
     style::TypstTableStyle = TypstTableStyle(),
@@ -69,7 +69,6 @@ function _typst__print(
             _aprintln(
                 buf,
                 _typst__create_component("align", top_left_string, args=["top+left"]),
-                _typst__create_component("align", top_left_string, args=["top+left"]),
                 il,
                 ns
             )
@@ -113,8 +112,8 @@ function _typst__print(
     )
     il += 1
 
-    columns = _typst__get_columns_widths(
-        columns_width,
+    columns = _typst__get_data_column_widths(
+        data_column_widths,
         _number_of_printed_columns(table_data)
     )
 
@@ -175,7 +174,7 @@ function _typst__print(
                 _typst__create_component("#text", " ⋱ ")
             )
 
-            _aprint(buf, comp * ",", 0, ns)
+            _aprintln(buf, comp * ",", il, ns)
 
         elseif action == :horizontal_continuation_cell
             comp = _typst__create_component(
@@ -183,7 +182,7 @@ function _typst__print(
                 _typst__create_component("#text", " ⋯ ")
             )
 
-            _aprint(buf, comp * ",", 0, ns)
+            _aprintln(buf, comp * ",", il, ns)
 
         elseif action ∈ _VERTICAL_CONTINUATION_CELL_ACTIONS
             # Obtain the cell style.
@@ -195,7 +194,7 @@ function _typst__print(
                 _typst__create_component("#text", "  ⋮ ")
             )
 
-            _aprint(buf, comp * ",", ps.j == 1 ? il : 0, ns)
+            _aprintln(buf, comp * ",", il, ns)
 
         elseif action == :end_row
             il -= 1
@@ -308,7 +307,6 @@ function _typst__print(
                     _typst__merge_style!(
                         vstyle,
                         if style.first_line_column_label isa Vector{Vector{TypstPair}}
-                        if style.first_line_column_label isa Vector{Vector{TypstPair}}
                             style.first_line_column_label[ps.j]
                         else
                             style.first_line_column_label
@@ -317,7 +315,6 @@ function _typst__print(
                 else
                     _typst__merge_style!(
                         vstyle,
-                        if style.column_label isa Vector{Vector{TypstPair}}
                         if style.column_label isa Vector{Vector{TypstPair}}
                             style.column_label[ps.j]
                         else
@@ -369,18 +366,7 @@ function _typst__print(
                 something(append, "");
                 properties = cell_style,
             )
-
-            ilc = if (
-                ps.j == 0 ||
-                (ps.j == 1 && !table_data.show_row_number_column) ||
-                action ∈ [:footnote, :source_notes]
-             )
-                il
-            else
-                0
-            end
-
-            _aprint(buf, comp * ",", ilc, ns)
+            _aprintln(buf, comp * ",", il, ns)
         end
     end
 
