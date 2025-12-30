@@ -1,6 +1,6 @@
 ## Description #############################################################################
 #
-# HTML Back End: Test related with the column  widths.
+# Typst Back End: Test related with the column  widths.
 #
 ############################################################################################
 @testset "Column Widths" verbose = true begin

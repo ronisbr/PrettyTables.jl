@@ -1,19 +1,19 @@
 ## Description #############################################################################
 #
-# Typst Back End: Test with default options.
+# Typst Back End: Test related Typst.jl extender
 #
 ############################################################################################
+using Typstry
 
-@testset "Default Options" begin
+@testset "Renderers" verbose = true begin
     backend=:typst
     matrix = [
         1 1.0 0x01 'a' "abc" missing
         2 2.0 0x02 'b' "def" nothing
         3 3.0 0x03 'c' "ghi" :symbol
     ]
-
-    expected = """
-#{
+  @testset "Test Typst Type ouptut" verbose = true begin
+    text_expected = """#{
   table(
     columns: (auto, auto, auto, auto, auto, auto), 
     table.header(
@@ -25,16 +25,34 @@
   )
 }
 """
+    # Test String Output
+    text_result = pretty_table(
+      String,
+      matrix;
+      backend
+    )
+    @test text_result == text_expected
+
+    # Test Typst Output
+
+    expected = Typst(TypstText(text_expected))
 
     result = pretty_table(
-        String,
-        matrix;
-        backend
+      Typst,
+      matrix;
+      backend
     )
+
     @test result == expected
 
-    result = pretty_table_typst_backend(String, matrix)
-    @test result == expected
+    # Test backend inferred by Typst Output
+    result_inferred = pretty_table(
+      Typst,
+      matrix;
+    )
 
+    @test expected == result_inferred
+
+  end
 end
 

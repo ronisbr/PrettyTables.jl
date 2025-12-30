@@ -51,10 +51,9 @@ function _typst__print(
     il = 0 # ..................................................... Current indentation level
     ns = 2 # .................................... Number of spaces in each indentation level
 
-    # == Print HTML Header =================================================================
-
     # == Top Bar ===========================================================================
-
+    _aprintln(buf, "#{", il, ns)
+    il += 1
     # Check if the user wants the omitted cell summary.
     ocs = _omitted_cell_summary(table_data, pspec)
     top_right_string = ""
@@ -65,21 +64,24 @@ function _typst__print(
     # Print the top bar if necessary.
     if !isempty(top_left_string) || !isempty(top_right_string)
         # Top left section.
+        _aprintln(buf, "set par(justify: true, spacing: 1em)", il, ns)
         if !isempty(top_left_string)
             _aprintln(
                 buf,
-                _typst__create_component("#align", top_left_string, args=["top+left"]),
+                _typst__create_component("align", top_left_string, args=["top+left"]),
                 il,
                 ns;)
         end
-
         # Top right section.
         if !isempty(top_right_string)
+            if !isempty(top_left_string)
+                _aprintln(buf, "v(-1.5em)", il, ns)
+            end
             _aprintln(
                 buf,
-                _typst__create_component("#align", top_right_string, args=["top+right"]),
+                _typst__create_component("align", top_right_string, args=["top+right"]),
                 il,
-                ns;)
+            ns;)
         end
 
         # We need to clear the floats so that the table is rendered below the top bar.
@@ -90,8 +92,6 @@ function _typst__print(
     # == Table =============================================================================
 
     empty!(vproperties)
-    _aprintln(buf, "#{", il, ns)
-    il += 1
 
     # if we have a caption, we need to open a figure environment
     if !isnothing(caption)
@@ -298,7 +298,7 @@ function _typst__print(
                 if ps.i == 1
                     _typst__merge_style!(
                         vstyle,
-                        if style.first_line_column_label isa Vector{Vector{HtmlPair}}
+                        if style.first_line_column_label isa Vector{Vector{TypstPair}}
                             style.first_line_column_label[ps.j]
                         else
                             style.first_line_column_label
@@ -307,7 +307,7 @@ function _typst__print(
                 else
                     _typst__merge_style!(
                         vstyle,
-                        if style.column_label isa Vector{Vector{HtmlPair}}
+                        if style.column_label isa Vector{Vector{TypstPair}}
                             style.column_label[ps.j]
                         else
                             style.column_label
@@ -391,9 +391,6 @@ function _typst__print(
 
     output_str = String(take!(buf_io))
 
-    if !pspec.new_line_at_end
-        output_str = chomp(output_str)
-    end
 
     # If we are printing to `stdout`, wrap the output in a `String` object.
     if is_stdout && isdefined(Main, :Typst)
