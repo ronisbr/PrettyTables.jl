@@ -356,7 +356,7 @@ function _typst__print(
                 ) do l
                 occursin(r"text-", l[1]) ? replace(l[1], "text-" => "") => l[2] : l
             end
-
+            
             # Create the row component with the content.
             comp_prefix = action ∈ [:footnote] ? "#super[$(ps.i)]" : ""
             comp = _typst__create_component(

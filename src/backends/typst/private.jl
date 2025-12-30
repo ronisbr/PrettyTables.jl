@@ -74,11 +74,10 @@ function _typst__create_component(
     args::Union{Nothing, Vector{String}} = nothing,
     properties::Union{Nothing, Vector{TypstPair}} = nothing,
 )
-    c = _typst__escape_str(content)
     isnothing(args) &&
-        return _typst__open_component(component; properties) * c * _typst__close_component()
+        return _typst__open_component(component; properties) * content * _typst__close_component()
 
-    return _typst__open_component(component, args; properties) * c * _typst__close_component()
+    return _typst__open_component(component, args; properties) * content * _typst__close_component()
 end
 
 """
