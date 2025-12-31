@@ -160,10 +160,6 @@ function _typst__get_data_column_widths(column_length::AbstractTypstLength, num_
     return _typst__get_data_column_widths(columns, num_columns)
 end
 
-function _typst__get_data_column_widths(columns::Integer, ::Int) :: String
-    return string(columns)
-end
-
 function _typst__get_data_column_widths(str_columns::String, num_columns::Int) :: String
     col_length = parse(TypstLength, str_columns) # Throw error if string doesn't match any known kind
     columns = fill(col_length,num_columns)
@@ -204,11 +200,6 @@ function _typst__get_data_column_widths(str::Vector{T}, num_columns::Int) where 
     out_columns = map(TypstLength ∘ string,str)
     return _typst__get_data_column_widths(out_columns, num_columns)
 end
-
-function _typst__get_data_column_widths(::Nothing, num_columns::Int)
-    return _typst__get_data_column_widths(AbstractTypstLength[], num_columns)
-end
-
 
 """ 
     _typst__merge_style!(bstyle::Vector{TypstPair}, nstyle::Vector{TypstPair}) -> Vector{TypstPair}
