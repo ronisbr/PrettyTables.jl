@@ -14,14 +14,41 @@
 
     expected = """
 #{
+  // Open table
   table(
     columns: (auto, auto, auto, auto, auto, auto), 
+    // Table Header 
     table.header(
-        table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],table.cell(align: right,)[#text(weight: "bold",)[Col. 2]],table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],table.cell(align: right,)[#text(weight: "bold",)[Col. 4]],table.cell(align: right,)[#text(weight: "bold",)[Col. 5]],table.cell(align: right,)[#text(weight: "bold",)[Col. 6]],
+      // column_labels Row 1
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 2]],
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 4]],
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 5]],
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 6]],
     ), 
-    table.cell(align: right,)[#text()[1]],table.cell(align: right,)[#text()[1.0]],table.cell(align: right,)[#text()[1]],table.cell(align: right,)[#text()[a]],table.cell(align: right,)[#text()[abc]],table.cell(align: right,)[#text()[missing]],
-    table.cell(align: right,)[#text()[2]],table.cell(align: right,)[#text()[2.0]],table.cell(align: right,)[#text()[2]],table.cell(align: right,)[#text()[b]],table.cell(align: right,)[#text()[def]],table.cell(align: right,)[#text()[nothing]],
-    table.cell(align: right,)[#text()[3]],table.cell(align: right,)[#text()[3.0]],table.cell(align: right,)[#text()[3]],table.cell(align: right,)[#text()[c]],table.cell(align: right,)[#text()[ghi]],table.cell(align: right,)[#text()[symbol]],
+    // Body
+    // data Row 1
+    table.cell(align: right,)[#text()[1]],
+    table.cell(align: right,)[#text()[1.0]],
+    table.cell(align: right,)[#text()[1]],
+    table.cell(align: right,)[#text()[a]],
+    table.cell(align: right,)[#text()[abc]],
+    table.cell(align: right,)[#text()[missing]],
+    // data Row 2
+    table.cell(align: right,)[#text()[2]],
+    table.cell(align: right,)[#text()[2.0]],
+    table.cell(align: right,)[#text()[2]],
+    table.cell(align: right,)[#text()[b]],
+    table.cell(align: right,)[#text()[def]],
+    table.cell(align: right,)[#text()[nothing]],
+    // data Row 3
+    table.cell(align: right,)[#text()[3]],
+    table.cell(align: right,)[#text()[3.0]],
+    table.cell(align: right,)[#text()[3]],
+    table.cell(align: right,)[#text()[c]],
+    table.cell(align: right,)[#text()[ghi]],
+    table.cell(align: right,)[#text()[symbol]],
   )
 }
 """
