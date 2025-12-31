@@ -16,7 +16,7 @@
   align(top+left, )[Top left string]
   // Open table
   table(
-    columns: (25fr, 75fr, 5em, 10%, 3cm, auto), 
+    columns: (auto, auto, 25fr, 75fr, 5em, auto),
     // Table Header 
     table.header(
       // table_header Row 1
@@ -122,7 +122,7 @@
             row_group_labels = [2 => "Row Group"],
             row_labels = ["Row $i" for i in 1:5],
             show_row_number_column = true,
-            data_column_widths = ["25fr", "75fr", "5em", "10%", "3cm"],
+            data_column_widths = ["25fr", "75fr", "5em"],
             source_notes = "Source Notes",
             stubhead_label = "Rows",
             top_left_string = "Top left string",

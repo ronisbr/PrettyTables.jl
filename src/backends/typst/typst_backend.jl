@@ -119,7 +119,8 @@ function _typst__print(
 
     columns = _typst__get_data_column_widths(
         data_column_widths,
-        _number_of_printed_columns(table_data)
+        _number_of_printed_data_columns(table_data),
+        _number_of_printed_columns(table_data),
     )
 
     _aprintln(buf, "columns: $columns, ", il, ns)
