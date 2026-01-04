@@ -14,7 +14,7 @@
   // Open table
   table(
     columns: (auto, auto, auto), 
-    // Table Header 
+    // Table Header
     table.header(
       // column_labels Row 1
       table.cell(align: right,fill: yellow,)[#text()[Col. 1]],
@@ -53,7 +53,7 @@
   // Open table
   table(
     columns: (auto, auto, auto), 
-    // Table Header 
+    // Table Header
     table.header(
       // column_labels Row 1
       table.cell(align: right,fill: yellow,)[#text()[Col. 1]],
@@ -96,7 +96,7 @@
   // Open table
   table(
     columns: (auto, auto, auto), 
-    // Table Header 
+    // Table Header
     table.header(
       // column_labels Row 1
       table.cell(align: right,fill: yellow,)[#text(fill: blue,weight: "extrabold",)[Col. 1]],

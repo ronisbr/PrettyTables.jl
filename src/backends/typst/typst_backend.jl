@@ -150,7 +150,7 @@ function _typst__print(
 
         if action == :new_row
             if (ps.i == 1) && (rs ∈ (:table_header, :column_labels)) && !head_opened
-                annotate && _aprintln(buf,"// Table Header ", il, ns)
+                annotate && _aprintln(buf,"// Table Header", il, ns)
                 _aprintln(buf, "table.header(", il, ns)
                 il +=1
                 head_opened = true

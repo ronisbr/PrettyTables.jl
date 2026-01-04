@@ -13,7 +13,7 @@
   // Open table
   table(
     columns: (1fr, 1fr, 1fr, 1fr, 1fr), 
-    // Table Header 
+    // Table Header
     table.header(
       // column_labels Row 1
       table.cell(align: center,)[#text(weight: "bold",)[Col. 1]],
@@ -73,7 +73,7 @@
   // Open table
   table(
     columns: (1fr, 1fr, 1fr, 1fr, 1fr), 
-    // Table Header 
+    // Table Header
     table.header(
       // column_labels Row 1
       table.cell()[#text(weight: "bold",)[Col. 1]],
@@ -134,7 +134,7 @@
   // Open table
   table(
     columns: (1fr, 1fr, 1fr, 1fr, 1fr), 
-    // Table Header 
+    // Table Header
     table.header(
       // column_labels Row 1
       table.cell(align: left,)[#text(weight: "bold",)[Col. 1]],
@@ -194,7 +194,7 @@
   // Open table
   table(
     columns: (1fr, 1fr, 1fr, 1fr, 1fr), 
-    // Table Header 
+    // Table Header
     table.header(
       // column_labels Row 1
       table.cell(align: left,)[#text(weight: "bold",)[Col. 1]],

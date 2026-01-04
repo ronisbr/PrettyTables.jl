@@ -13,7 +13,7 @@
   // Open table
   table(
     columns: (10fr, 10fr, 10fr), 
-    // Table Header 
+    // Table Header
     table.header(
       // column_labels Row 1
       table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],
@@ -55,7 +55,7 @@
   // Open table
   table(
     columns: (30pt, auto, auto), 
-    // Table Header 
+    // Table Header
     table.header(
       // column_labels Row 1
       table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],
@@ -107,7 +107,7 @@
   // Open table
   table(
     columns: (30pt, auto, 30pt), 
-    // Table Header 
+    // Table Header
     table.header(
       // column_labels Row 1
       table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],

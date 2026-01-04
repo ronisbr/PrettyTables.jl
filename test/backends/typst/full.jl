@@ -17,7 +17,7 @@
   // Open table
   table(
     columns: (auto, auto, 25fr, 75fr, 5em, auto), 
-    // Table Header 
+    // Table Header
     table.header(
       // table_header Row 1
       table.cell(align: center,colspan: 6,)[#text(size: 1.1em,weight: "bold",)[Table Title]],
@@ -146,7 +146,7 @@
   // Open table
   table(
     columns: (auto, auto, auto, auto, auto), 
-    // Table Header 
+    // Table Header
     table.header(
       // table_header Row 1
       table.cell(align: center,colspan: 5,)[#text(size: 1.1em,weight: "bold",)[Table Title]],
@@ -237,7 +237,7 @@
   // Open table
   table(
     columns: (auto, auto, auto, auto, auto), 
-    // Table Header 
+    // Table Header
     table.header(
       // table_header Row 1
       table.cell(align: center,colspan: 5,)[#text(size: 1.1em,weight: "bold",)[Table Title]],
