@@ -41,22 +41,6 @@ end
     include("./backends/html/special_cells.jl")
     include("./backends/html/stand_alone.jl")
 end
-@testset "Typst Back End Tests" verbose = true begin
-    include("./backends/typst/alignment.jl")
-    include("./backends/typst/caption.jl")
-    include("./backends/typst/cell_titles.jl")
-    include("./backends/typst/circular_reference.jl")
-    include("./backends/typst/data_column_widths.jl")
-    include("./backends/typst/cropping.jl")
-    include("./backends/typst/decorations.jl")
-    include("./backends/typst/default.jl")
-    include("./backends/typst/full.jl")
-    include("./backends/typst/highlighters.jl")
-    include("./backends/typst/offset_arrays.jl")
-    include("./backends/typst/renderers.jl")
-    include("./backends/typst/types.jl")
-    include("./ext/pretty_tables_typstry_ext.jl")
-end
 
 @testset "LaTeX Back End Tests" verbose = true begin
     include("./backends/latex/alignment.jl")
@@ -102,6 +86,23 @@ end
     include("./backends/text/offset_arrays.jl")
     include("./backends/text/renderers.jl")
     include("./backends/text/special_cells.jl")
+end
+
+@testset "Typst Back End Tests" verbose = true begin
+    include("./backends/typst/alignment.jl")
+    include("./backends/typst/caption.jl")
+    include("./backends/typst/cell_titles.jl")
+    include("./backends/typst/circular_reference.jl")
+    include("./backends/typst/data_column_widths.jl")
+    include("./backends/typst/cropping.jl")
+    include("./backends/typst/decorations.jl")
+    include("./backends/typst/default.jl")
+    include("./backends/typst/full.jl")
+    include("./backends/typst/highlighters.jl")
+    include("./backends/typst/offset_arrays.jl")
+    include("./backends/typst/renderers.jl")
+    include("./backends/typst/types.jl")
+    include("./ext/pretty_tables_typstry_ext.jl")
 end
 
 @testset "Tables.jl" verbose = true begin

@@ -16,7 +16,7 @@
   align(top+left, )[Top left string]
   // Open table
   table(
-    columns: (auto, auto, 25fr, 75fr, 5em, auto),
+    columns: (auto, auto, 25fr, 75fr, 5em, auto), 
     // Table Header 
     table.header(
       // table_header Row 1
