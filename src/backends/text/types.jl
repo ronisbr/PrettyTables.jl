@@ -101,8 +101,9 @@ const _TEXT__DEFAULT             = crayon"default"
 const _TEXT__EMPTY_CRAYON        = crayon""
 const _TEXT__RESET               = crayon"reset"
 
-# Convert the reset crayon to string to reduce allocations.
-const _TEXT__STRING_RESET = string(_TEXT__RESET)
+# The reset escape sequence. We use the literal string instead of `string(_TEXT__RESET)`
+# because Crayons may produce an empty string when colors are disabled at precompilation time.
+const _TEXT__STRING_RESET = "\e[0m"
 
 """
     struct TextTableFormat

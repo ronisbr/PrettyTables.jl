@@ -1,11 +1,17 @@
 using Test
 using PrettyTables
 
+using Crayons
 using LaTeXStrings
 using Markdown
 using OffsetArrays
 using StyledStrings
 using Tables
+
+# Force color output for tests to ensure ANSI escape codes are generated.
+# This is needed because Crayons.jl may disable colors during precompilation or
+# in non-TTY environments like CI.
+Crayons.force_color(true)
 
 ############################################################################################
 #                                   Types and Structures                                   #
