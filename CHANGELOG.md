@@ -1,6 +1,12 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 3.1.3
+-------------
+
+- ![Bugfix][badge-bugfix] Fix reset escape sequence to avoid precompilation issues. (PR
+  [#289][gh-pr-289])
+
 Version 3.1.2
 -------------
 
@@ -928,3 +934,4 @@ Version 0.1.0
 [gh-pr-273]: https://github.com/ronisbr/PrettyTables.jl/pull/273
 [gh-pr-274]: https://github.com/ronisbr/PrettyTables.jl/pull/274
 [gh-pr-280]: https://github.com/ronisbr/PrettyTables.jl/pull/280
+[gh-pr-289]: https://github.com/ronisbr/PrettyTables.jl/pull/289
