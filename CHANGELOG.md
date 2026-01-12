@@ -1,11 +1,13 @@
 PrettyTables.jl Changelog
 =========================
 
-Version 3.1.3
+Version 3.2.0
 -------------
 
 - ![Bugfix][badge-bugfix] Fix reset escape sequence to avoid precompilation issues. (PR
   [#289][gh-pr-289])
+- ![Feature][badge-feature] PrettyTables.jl now has a Typst backend. (PRs [#281][gh-pr-281],
+  [#283][gh-pr-283], and [#287][gh-pr-287])
 
 Version 3.1.2
 -------------
@@ -934,4 +936,7 @@ Version 0.1.0
 [gh-pr-273]: https://github.com/ronisbr/PrettyTables.jl/pull/273
 [gh-pr-274]: https://github.com/ronisbr/PrettyTables.jl/pull/274
 [gh-pr-280]: https://github.com/ronisbr/PrettyTables.jl/pull/280
+[gh-pr-281]: https://github.com/ronisbr/PrettyTables.jl/pull/281
+[gh-pr-283]: https://github.com/ronisbr/PrettyTables.jl/pull/283
+[gh-pr-287]: https://github.com/ronisbr/PrettyTables.jl/pull/287
 [gh-pr-289]: https://github.com/ronisbr/PrettyTables.jl/pull/289
