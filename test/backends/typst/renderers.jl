@@ -10,12 +10,25 @@
     @testset ":print" begin
         expected = """
 #{
+  // Open table
   table(
     columns: (auto, auto, auto, auto, auto), 
+    // Table Header
     table.header(
-        table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],table.cell(align: right,)[#text(weight: "bold",)[Col. 2]],table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],table.cell(align: right,)[#text(weight: "bold",)[Col. 4]],table.cell(align: right,)[#text(weight: "bold",)[Col. 5]],
+      // column_labels Row 1
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 2]],
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 4]],
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 5]],
     ), 
-    table.cell(align: right,)[#text()['a']],table.cell(align: right,)[#text()[:a]],table.cell(align: right,)[#text()[a]],table.cell(align: right,)[#text()[missing]],table.cell(align: right,)[#text()[nothing]],
+    // Body
+    // data Row 1
+    table.cell(align: right,)[#text()[a]],
+    table.cell(align: right,)[#text()[a]],
+    table.cell(align: right,)[#text()[a]],
+    table.cell(align: right,)[#text()[missing]],
+    table.cell(align: right,)[#text()[nothing]],
   )
 }
 """
@@ -31,12 +44,25 @@
     @testset ":show" begin
         expected = """
 #{
+  // Open table
   table(
     columns: (auto, auto, auto, auto, auto), 
+    // Table Header
     table.header(
-        table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],table.cell(align: right,)[#text(weight: "bold",)[Col. 2]],table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],table.cell(align: right,)[#text(weight: "bold",)[Col. 4]],table.cell(align: right,)[#text(weight: "bold",)[Col. 5]],
+      // column_labels Row 1
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 2]],
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 4]],
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 5]],
     ), 
-    table.cell(align: right,)[#text()['a']],table.cell(align: right,)[#text()[:a]],table.cell(align: right,)[#text()[a]],table.cell(align: right,)[#text()[missing]],table.cell(align: right,)[#text()[nothing]],
+    // Body
+    // data Row 1
+    table.cell(align: right,)[#text()['a']],
+    table.cell(align: right,)[#text()[:a]],
+    table.cell(align: right,)[#text()[a]],
+    table.cell(align: right,)[#text()[missing]],
+    table.cell(align: right,)[#text()[nothing]],
   )
 }
 """

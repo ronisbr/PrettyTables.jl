@@ -10,16 +10,37 @@
     @testset "Bottom Cropping" begin
         expected = """
 #{
+  // Top bar
+  set par(justify: true, spacing: 1em)
   set par(justify: true, spacing: 1em)
   align(top+right, )[97 columns and 98 rows omitted]
+  // Open table
   table(
     columns: (auto, auto, auto, auto), 
+    // Table Header
     table.header(
-        table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],table.cell(align: right,)[#text(weight: "bold",)[Col. 2]],table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],table.cell()[#text()[ ⋯ ]],
+      // column_labels Row 1
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 2]],
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],
+      table.cell()[#text()[ ⋯ ]],
     ), 
-    table.cell(align: right,)[#text()[(1, 1)]],table.cell(align: right,)[#text()[(1, 2)]],table.cell(align: right,)[#text()[(1, 3)]],table.cell()[#text()[ ⋯ ]],
-    table.cell(align: right,)[#text()[(2, 1)]],table.cell(align: right,)[#text()[(2, 2)]],table.cell(align: right,)[#text()[(2, 3)]],table.cell()[#text()[ ⋯ ]],
-    table.cell()[#text()[  ⋮ ]],table.cell()[#text()[  ⋮ ]],table.cell()[#text()[  ⋮ ]],table.cell()[#text()[ ⋱ ]],
+    // Body
+    // data Row 1
+    table.cell(align: right,)[#text()[(1, 1)]],
+    table.cell(align: right,)[#text()[(1, 2)]],
+    table.cell(align: right,)[#text()[(1, 3)]],
+    table.cell()[#text()[ ⋯ ]],
+    // data Row 2
+    table.cell(align: right,)[#text()[(2, 1)]],
+    table.cell(align: right,)[#text()[(2, 2)]],
+    table.cell(align: right,)[#text()[(2, 3)]],
+    table.cell()[#text()[ ⋯ ]],
+    // continuation_row Row 3
+    table.cell()[#text()[  ⋮ ]],
+    table.cell()[#text()[  ⋮ ]],
+    table.cell()[#text()[  ⋮ ]],
+    table.cell()[#text()[ ⋱ ]],
   )
 }
 """
@@ -38,16 +59,37 @@
     @testset "Middle Cropping" begin
         expected = """
 #{
+  // Top bar
+  set par(justify: true, spacing: 1em)
   set par(justify: true, spacing: 1em)
   align(top+right, )[97 columns and 98 rows omitted]
+  // Open table
   table(
     columns: (auto, auto, auto, auto), 
+    // Table Header
     table.header(
-        table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],table.cell(align: right,)[#text(weight: "bold",)[Col. 2]],table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],table.cell()[#text()[ ⋯ ]],
+      // column_labels Row 1
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 2]],
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],
+      table.cell()[#text()[ ⋯ ]],
     ), 
-    table.cell(align: right,)[#text()[(1, 1)]],table.cell(align: right,)[#text()[(1, 2)]],table.cell(align: right,)[#text()[(1, 3)]],table.cell()[#text()[ ⋯ ]],
-    table.cell()[#text()[  ⋮ ]],table.cell()[#text()[  ⋮ ]],table.cell()[#text()[  ⋮ ]],table.cell()[#text()[ ⋱ ]],
-    table.cell(align: right,)[#text()[(100, 1)]],table.cell(align: right,)[#text()[(100, 2)]],table.cell(align: right,)[#text()[(100, 3)]],table.cell()[#text()[ ⋯ ]],
+    // Body
+    // data Row 1
+    table.cell(align: right,)[#text()[(1, 1)]],
+    table.cell(align: right,)[#text()[(1, 2)]],
+    table.cell(align: right,)[#text()[(1, 3)]],
+    table.cell()[#text()[ ⋯ ]],
+    // continuation_row Row 2
+    table.cell()[#text()[  ⋮ ]],
+    table.cell()[#text()[  ⋮ ]],
+    table.cell()[#text()[  ⋮ ]],
+    table.cell()[#text()[ ⋱ ]],
+    // data Row 100
+    table.cell(align: right,)[#text()[(100, 1)]],
+    table.cell(align: right,)[#text()[(100, 2)]],
+    table.cell(align: right,)[#text()[(100, 3)]],
+    table.cell()[#text()[ ⋯ ]],
   )
 }
 """
@@ -67,14 +109,33 @@
     @testset "Omitted Cell Summary" begin
         expected = """
 #{
+  // Open table
   table(
     columns: (auto, auto, auto, auto), 
+    // Table Header
     table.header(
-        table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],table.cell(align: right,)[#text(weight: "bold",)[Col. 2]],table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],table.cell()[#text()[ ⋯ ]],
+      // column_labels Row 1
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 2]],
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],
+      table.cell()[#text()[ ⋯ ]],
     ), 
-    table.cell(align: right,)[#text()[(1, 1)]],table.cell(align: right,)[#text()[(1, 2)]],table.cell(align: right,)[#text()[(1, 3)]],table.cell()[#text()[ ⋯ ]],
-    table.cell(align: right,)[#text()[(2, 1)]],table.cell(align: right,)[#text()[(2, 2)]],table.cell(align: right,)[#text()[(2, 3)]],table.cell()[#text()[ ⋯ ]],
-    table.cell()[#text()[  ⋮ ]],table.cell()[#text()[  ⋮ ]],table.cell()[#text()[  ⋮ ]],table.cell()[#text()[ ⋱ ]],
+    // Body
+    // data Row 1
+    table.cell(align: right,)[#text()[(1, 1)]],
+    table.cell(align: right,)[#text()[(1, 2)]],
+    table.cell(align: right,)[#text()[(1, 3)]],
+    table.cell()[#text()[ ⋯ ]],
+    // data Row 2
+    table.cell(align: right,)[#text()[(2, 1)]],
+    table.cell(align: right,)[#text()[(2, 2)]],
+    table.cell(align: right,)[#text()[(2, 3)]],
+    table.cell()[#text()[ ⋯ ]],
+    // continuation_row Row 3
+    table.cell()[#text()[  ⋮ ]],
+    table.cell()[#text()[  ⋮ ]],
+    table.cell()[#text()[  ⋮ ]],
+    table.cell()[#text()[ ⋱ ]],
   )
 }
 """
