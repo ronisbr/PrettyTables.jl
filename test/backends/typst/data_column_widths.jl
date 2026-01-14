@@ -4,10 +4,10 @@
 #
 ############################################################################################
 @testset "Data Column Widths" verbose = true begin
-
   @testset "Constant value 10fr" begin
-      matrix = [(i, j) for i in 1:3, j in 1:3]
-      backend=:typst
+    matrix = [(i, j) for i in 1:3, j in 1:3]
+    backend=:typst
+
       expected = """
 #{
   // Open table
@@ -16,23 +16,23 @@
     // Table Header
     table.header(
       // column_labels Row 1
-      table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],
-      table.cell(align: right,)[#text(weight: "bold",)[Col. 2]],
-      table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 1]], 
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 2]], 
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 3]], 
     ), 
     // Body
     // data Row 1
-    table.cell(align: right,)[#text()[(1, 1)]],
-    table.cell(align: right,)[#text()[(1, 2)]],
-    table.cell(align: right,)[#text()[(1, 3)]],
+    table.cell(align: right,)[#text()[(1, 1)]], 
+    table.cell(align: right,)[#text()[(1, 2)]], 
+    table.cell(align: right,)[#text()[(1, 3)]], 
     // data Row 2
-    table.cell(align: right,)[#text()[(2, 1)]],
-    table.cell(align: right,)[#text()[(2, 2)]],
-    table.cell(align: right,)[#text()[(2, 3)]],
+    table.cell(align: right,)[#text()[(2, 1)]], 
+    table.cell(align: right,)[#text()[(2, 2)]], 
+    table.cell(align: right,)[#text()[(2, 3)]], 
     // data Row 3
-    table.cell(align: right,)[#text()[(3, 1)]],
-    table.cell(align: right,)[#text()[(3, 2)]],
-    table.cell(align: right,)[#text()[(3, 3)]],
+    table.cell(align: right,)[#text()[(3, 1)]], 
+    table.cell(align: right,)[#text()[(3, 2)]], 
+    table.cell(align: right,)[#text()[(3, 3)]], 
   )
 }
 """
@@ -48,8 +48,9 @@
   end
 
   @testset "First column width 30pt, `auto` for rest " begin
-      matrix = [(i, j) for i in 1:3, j in 1:3]
-      backend=:typst
+    matrix = [(i, j) for i in 1:3, j in 1:3]
+    backend=:typst
+
       expected = """
 #{
   // Open table
@@ -58,23 +59,23 @@
     // Table Header
     table.header(
       // column_labels Row 1
-      table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],
-      table.cell(align: right,)[#text(weight: "bold",)[Col. 2]],
-      table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 1]], 
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 2]], 
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 3]], 
     ), 
     // Body
     // data Row 1
-    table.cell(align: right,)[#text()[(1, 1)]],
-    table.cell(align: right,)[#text()[(1, 2)]],
-    table.cell(align: right,)[#text()[(1, 3)]],
+    table.cell(align: right,)[#text()[(1, 1)]], 
+    table.cell(align: right,)[#text()[(1, 2)]], 
+    table.cell(align: right,)[#text()[(1, 3)]], 
     // data Row 2
-    table.cell(align: right,)[#text()[(2, 1)]],
-    table.cell(align: right,)[#text()[(2, 2)]],
-    table.cell(align: right,)[#text()[(2, 3)]],
+    table.cell(align: right,)[#text()[(2, 1)]], 
+    table.cell(align: right,)[#text()[(2, 2)]], 
+    table.cell(align: right,)[#text()[(2, 3)]], 
     // data Row 3
-    table.cell(align: right,)[#text()[(3, 1)]],
-    table.cell(align: right,)[#text()[(3, 2)]],
-    table.cell(align: right,)[#text()[(3, 3)]],
+    table.cell(align: right,)[#text()[(3, 1)]], 
+    table.cell(align: right,)[#text()[(3, 2)]], 
+    table.cell(align: right,)[#text()[(3, 3)]], 
   )
 }
 """
@@ -110,23 +111,23 @@
     // Table Header
     table.header(
       // column_labels Row 1
-      table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],
-      table.cell(align: right,)[#text(weight: "bold",)[Col. 2]],
-      table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 1]], 
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 2]], 
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 3]], 
     ), 
     // Body
     // data Row 1
-    table.cell(align: right,)[#text()[(1, 1)]],
-    table.cell(align: right,)[#text()[(1, 2)]],
-    table.cell(align: right,)[#text()[(1, 3)]],
+    table.cell(align: right,)[#text()[(1, 1)]], 
+    table.cell(align: right,)[#text()[(1, 2)]], 
+    table.cell(align: right,)[#text()[(1, 3)]], 
     // data Row 2
-    table.cell(align: right,)[#text()[(2, 1)]],
-    table.cell(align: right,)[#text()[(2, 2)]],
-    table.cell(align: right,)[#text()[(2, 3)]],
+    table.cell(align: right,)[#text()[(2, 1)]], 
+    table.cell(align: right,)[#text()[(2, 2)]], 
+    table.cell(align: right,)[#text()[(2, 3)]], 
     // data Row 3
-    table.cell(align: right,)[#text()[(3, 1)]],
-    table.cell(align: right,)[#text()[(3, 2)]],
-    table.cell(align: right,)[#text()[(3, 3)]],
+    table.cell(align: right,)[#text()[(3, 1)]], 
+    table.cell(align: right,)[#text()[(3, 2)]], 
+    table.cell(align: right,)[#text()[(3, 3)]], 
   )
 }
 """

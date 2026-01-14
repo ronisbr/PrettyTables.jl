@@ -5,10 +5,10 @@
 ############################################################################################
 
 @testset "Renderers" verbose = true begin
+    @testset ":print" begin
     matrix = ['a' :a "a" missing nothing]
     backend= :typst
-    @testset ":print" begin
-        expected = """
+      expected = """
 #{
   // Open table
   table(
@@ -16,19 +16,19 @@
     // Table Header
     table.header(
       // column_labels Row 1
-      table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],
-      table.cell(align: right,)[#text(weight: "bold",)[Col. 2]],
-      table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],
-      table.cell(align: right,)[#text(weight: "bold",)[Col. 4]],
-      table.cell(align: right,)[#text(weight: "bold",)[Col. 5]],
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 1]], 
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 2]], 
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 3]], 
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 4]], 
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 5]], 
     ), 
     // Body
     // data Row 1
-    table.cell(align: right,)[#text()[a]],
-    table.cell(align: right,)[#text()[a]],
-    table.cell(align: right,)[#text()[a]],
-    table.cell(align: right,)[#text()[missing]],
-    table.cell(align: right,)[#text()[nothing]],
+    table.cell(align: right,)[#text()[a]], 
+    table.cell(align: right,)[#text()[a]], 
+    table.cell(align: right,)[#text()[a]], 
+    table.cell(align: right,)[#text()[missing]], 
+    table.cell(align: right,)[#text()[nothing]], 
   )
 }
 """
@@ -42,6 +42,8 @@
     end
 
     @testset ":show" begin
+      matrix = ['a' :a "a" missing nothing]
+      backend= :typst
         expected = """
 #{
   // Open table
@@ -50,19 +52,19 @@
     // Table Header
     table.header(
       // column_labels Row 1
-      table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],
-      table.cell(align: right,)[#text(weight: "bold",)[Col. 2]],
-      table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],
-      table.cell(align: right,)[#text(weight: "bold",)[Col. 4]],
-      table.cell(align: right,)[#text(weight: "bold",)[Col. 5]],
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 1]], 
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 2]], 
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 3]], 
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 4]], 
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 5]], 
     ), 
     // Body
     // data Row 1
-    table.cell(align: right,)[#text()['a']],
-    table.cell(align: right,)[#text()[:a]],
-    table.cell(align: right,)[#text()[a]],
-    table.cell(align: right,)[#text()[missing]],
-    table.cell(align: right,)[#text()[nothing]],
+    table.cell(align: right,)[#text()['a']], 
+    table.cell(align: right,)[#text()[:a]], 
+    table.cell(align: right,)[#text()[a]], 
+    table.cell(align: right,)[#text()[missing]], 
+    table.cell(align: right,)[#text()[nothing]], 
   )
 }
 """

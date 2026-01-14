@@ -13,81 +13,139 @@
   // Top bar
   set par(justify: true, spacing: 1em)
   set par(justify: true, spacing: 1em)
-  align(top+left, )[Top left string]
+  set par(justify: true, spacing: 1em)
+  align(top+left,)[Top left string]
   // Open table
   table(
     columns: (auto, auto, 25fr, 75fr, 5em, auto), 
     // Table Header
     table.header(
       // table_header Row 1
-      table.cell(align: center,colspan: 6,)[#text(size: 1.1em,weight: "bold",)[Table Title]],
+      table.cell(align: center, colspan: 6,)[
+        #text(size: 1.1em, weight: "bold",)[Table Title]
+      ], 
       // table_header Row 1
-      table.cell(align: center,colspan: 6,)[#text(size: 1.1em,style: "italic",)[Table Subtitle]],
+      table.cell(align: center, colspan: 6,)[
+        #text(size: 1.1em, style: "italic",)[
+          Table Subtitle
+        ]
+      ], 
       // column_labels Row 1
-      table.cell(align: right,)[#text(weight: "bold",)[Row]],
-      table.cell(align: right,)[#text(weight: "bold",)[Rows]],
-      table.cell(align: right,fill: yellow,)[#text(fill: blue,weight: "extrabold",)[Col. 1]],
-      table.cell(align: center,colspan: 2,fill: blue,stroke: (paint: rgb(200,200,200), thickness: 0.01pt),)[#text(fill: white,weight: "extrabold",)[Merged Column]#super[1]],
-      table.cell(align: right,fill: red,)[#text(fill: rgb(30,30,30),)[Col. 4]],
+      table.cell(align: right,)[
+        #text(weight: "bold",)[Row]
+      ], 
+      table.cell(align: right,)[
+        #text(weight: "bold",)[Rows]
+      ], 
+      table.cell(align: right, fill: yellow,)[
+        #text(fill: blue, weight: "extrabold",)[Col. 1]
+      ], 
+      table.cell(
+        align: center, colspan: 2, fill: blue,
+        stroke: (paint: rgb(200,200,200), thickness: 0.01pt),
+      )[
+        #text(fill: white, weight: "extrabold",)[
+          Merged Column
+        ]#super[1]
+      ], 
+      table.cell(align: right, fill: red,)[
+        #text(fill: rgb(30,30,30),)[Col. 4]
+      ], 
       // column_labels Row 2
-      table.cell(align: right,)[#text(weight: "bold",)[]],
-      table.cell(align: right,)[#text(weight: "bold",)[]],
-      table.cell(align: right,)[#text(weight: "bold",)[1]],
-      table.cell(align: right,)[#text(weight: "bold",)[2]],
-      table.cell(align: right,)[#text(weight: "bold",)[3]],
-      table.cell(align: right,)[#text(weight: "bold",)[4]],
+      table.cell(align: right,)[#text(weight: "bold",)[]], 
+      table.cell(align: right,)[#text(weight: "bold",)[]], 
+      table.cell(align: right,)[
+        #text(weight: "bold",)[1]
+      ], 
+      table.cell(align: right,)[
+        #text(weight: "bold",)[2]
+      ], 
+      table.cell(align: right,)[
+        #text(weight: "bold",)[3]
+      ], 
+      table.cell(align: right,)[
+        #text(weight: "bold",)[4]
+      ], 
     ), 
     // Body
     // data Row 1
-    table.cell(align: right,)[#text(weight: "bold",)[1]],
-    table.cell(align: right,)[#text(weight: "bold",)[Row 1]],
-    table.cell(align: right,)[#text()[(1, 1)]],
-    table.cell(align: right,)[#text()[(1, 2)]],
-    table.cell(align: right,)[#text()[(1, 3)]],
-    table.cell(align: right,)[#text()[(1, 4)]],
+    table.cell(align: right,)[
+      #text(weight: "bold",)[1]
+    ], 
+    table.cell(align: right,)[
+      #text(weight: "bold",)[Row 1]
+    ], 
+    table.cell(align: right,)[#text()[(1, 1)]], 
+    table.cell(align: right,)[#text()[(1, 2)]], 
+    table.cell(align: right,)[#text()[(1, 3)]], 
+    table.cell(align: right,)[#text()[(1, 4)]], 
     // row_group_label Row 2
-    table.cell(align: left,colspan: 6,)[#text(weight: "bold",)[Row Group]],
+    table.cell(align: left, colspan: 6,)[
+      #text(weight: "bold",)[Row Group]
+    ], 
     // data Row 2
-    table.cell(align: right,)[#text(weight: "bold",)[2]],
-    table.cell(align: right,)[#text(weight: "bold",)[Row 2]],
-    table.cell(align: right,)[#text()[(2, 1)]],
-    table.cell(align: right,)[#text()[(2, 2)]#super[2]],
-    table.cell(align: right,)[#text()[(2, 3)]],
-    table.cell(align: right,)[#text()[(2, 4)]],
+    table.cell(align: right,)[
+      #text(weight: "bold",)[2]
+    ], 
+    table.cell(align: right,)[
+      #text(weight: "bold",)[Row 2]
+    ], 
+    table.cell(align: right,)[#text()[(2, 1)]], 
+    table.cell(align: right,)[#text()[(2, 2)]#super[2]], 
+    table.cell(align: right,)[#text()[(2, 3)]], 
+    table.cell(align: right,)[#text()[(2, 4)]], 
     // data Row 3
-    table.cell(align: right,)[#text(weight: "bold",)[3]],
-    table.cell(align: right,)[#text(weight: "bold",)[Row 3]],
-    table.cell(align: right,)[#text()[(3, 1)]],
-    table.cell(align: right,)[#text()[(3, 2)]],
-    table.cell(align: right,)[#text()[(3, 3)]],
-    table.cell(align: right,)[#text()[(3, 4)]],
+    table.cell(align: right,)[
+      #text(weight: "bold",)[3]
+    ], 
+    table.cell(align: right,)[
+      #text(weight: "bold",)[Row 3]
+    ], 
+    table.cell(align: right,)[#text()[(3, 1)]], 
+    table.cell(align: right,)[#text()[(3, 2)]], 
+    table.cell(align: right,)[#text()[(3, 3)]], 
+    table.cell(align: right,)[#text()[(3, 4)]], 
     // data Row 4
-    table.cell(align: right,)[#text(weight: "bold",)[4]],
-    table.cell(align: right,)[#text(weight: "bold",)[Row 4]],
-    table.cell(align: right,)[#text()[(4, 1)]],
-    table.cell(align: right,)[#text()[(4, 2)]],
-    table.cell(align: right,)[#text()[(4, 3)]],
-    table.cell(align: right,)[#text()[(4, 4)]],
+    table.cell(align: right,)[
+      #text(weight: "bold",)[4]
+    ], 
+    table.cell(align: right,)[
+      #text(weight: "bold",)[Row 4]
+    ], 
+    table.cell(align: right,)[#text()[(4, 1)]], 
+    table.cell(align: right,)[#text()[(4, 2)]], 
+    table.cell(align: right,)[#text()[(4, 3)]], 
+    table.cell(align: right,)[#text()[(4, 4)]], 
     // summary_row Row 1
-    table.cell(align: right,)[#text(weight: "bold",)[]],
-    table.cell(align: right,)[#text(weight: "bold",)[Summary 1]],
-    table.cell(align: right,)[#text()[10]],
-    table.cell(align: right,)[#text()[20]],
-    table.cell(align: right,)[#text()[30]],
-    table.cell(align: right,)[#text()[40]],
+    table.cell(align: right,)[#text(weight: "bold",)[]], 
+    table.cell(align: right,)[
+      #text(weight: "bold",)[Summary 1]
+    ], 
+    table.cell(align: right,)[#text()[10]], 
+    table.cell(align: right,)[#text()[20]], 
+    table.cell(align: right,)[#text()[30]], 
+    table.cell(align: right,)[#text()[40]], 
     // summary_row Row 2
-    table.cell(align: right,)[#text(weight: "bold",)[]],
-    table.cell(align: right,)[#text(weight: "bold",)[Summary 2]],
-    table.cell(align: right,)[#text()[20]],
-    table.cell(align: right,)[#text()[40]],
-    table.cell(align: right,)[#text()[60]],
-    table.cell(align: right,)[#text()[80]],
+    table.cell(align: right,)[#text(weight: "bold",)[]], 
+    table.cell(align: right,)[
+      #text(weight: "bold",)[Summary 2]
+    ], 
+    table.cell(align: right,)[#text()[20]], 
+    table.cell(align: right,)[#text()[40]], 
+    table.cell(align: right,)[#text()[60]], 
+    table.cell(align: right,)[#text()[80]], 
     // table_footer Row 1
-    table.cell(align: left,colspan: 6,)[#super[1]#text(size: 0.9em,)[Footnote in column label]],
+    table.cell(align: left, colspan: 6,)[
+      #super[1]#text(size: 0.9em,)[Footnote in column label]
+    ], 
     // table_footer Row 2
-    table.cell(align: left,colspan: 6,)[#super[2]#text(size: 0.9em,)[Footnote in data]],
+    table.cell(align: left, colspan: 6,)[
+      #super[2]#text(size: 0.9em,)[Footnote in data]
+    ], 
     // table_footer Row 1
-    table.cell(align: left,colspan: 6,)[#text(size: 0.9em,style: "italic",)[Source Notes]],
+    table.cell(align: left, colspan: 6,)[
+      #text(size: 0.9em, style: "italic",)[Source Notes]
+    ], 
   )
 }
 """
@@ -129,7 +187,7 @@
             summary_rows = [(data, i) -> 10i, (data, i) -> 20i],
             title = "Table Title",
             subtitle = "Table Subtitle",
-            max_n_char_per_line = 50
+            max_num_char_line = 50
         )
 
         @test result == expected
@@ -141,39 +199,42 @@
   // Top bar
   set par(justify: true, spacing: 1em)
   set par(justify: true, spacing: 1em)
-  align(top+left, )[Top left string]
+  set par(justify: true, spacing: 1em)
+  align(top+left,)[Top left string]
   v(-1.5em)
-  align(top+right, )[2 columns and 2 rows omitted]
+  align(top+right,)[2 columns and 2 rows omitted]
   // Open table
   table(
     columns: (auto, auto, auto, auto, auto), 
     // Table Header
     table.header(
       // table_header Row 1
-      table.cell(align: center,colspan: 5,)[#text(size: 1.1em,weight: "bold",)[Table Title]],
+      table.cell(align: center, colspan: 5,)[#text(size: 1.1em, weight: "bold",)[Table Title]], 
       // table_header Row 1
-      table.cell(align: center,colspan: 5,)[#text(size: 1.1em,style: "italic",)[Table Subtitle]],
+      table.cell(align: center, colspan: 5,)[#text(size: 1.1em, style: "italic",)[Table Subtitle]], 
       // column_labels Row 1
-      table.cell(align: right,)[#text(weight: "bold",)[Row]],
-      table.cell(align: right,)[#text(weight: "bold",)[Rows]],
-      table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],
-      table.cell(align: center,colspan: 1,stroke: (paint: rgb(200,200,200), thickness: 0.01pt),)[#text(weight: "bold",)[Merged Column]#super[1]],
+      table.cell(align: right,)[#text(weight: "bold",)[Row]], 
+      table.cell(align: right,)[#text(weight: "bold",)[Rows]], 
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 1]], 
+      table.cell(align: center, colspan: 1, stroke: (paint: rgb(200,200,200), thickness: 0.01pt),)[
+        #text(weight: "bold",)[Merged Column]#super[1]
+      ], 
       table.cell()[#text()[ ⋯ ]],
     ), 
     // Body
     // data Row 1
-    table.cell(align: right,)[#text(weight: "bold",)[1]],
-    table.cell(align: right,)[#text(weight: "bold",)[Row 1]],
-    table.cell(align: right,)[#text()[(1, 1)]],
-    table.cell(align: right,)[#text()[(1, 2)]],
+    table.cell(align: right,)[#text(weight: "bold",)[1]], 
+    table.cell(align: right,)[#text(weight: "bold",)[Row 1]], 
+    table.cell(align: right,)[#text()[(1, 1)]], 
+    table.cell(align: right,)[#text()[(1, 2)]], 
     table.cell()[#text()[ ⋯ ]],
     // row_group_label Row 2
-    table.cell(align: left,colspan: 5,)[#text(weight: "bold",)[Row Group]],
+    table.cell(align: left, colspan: 5,)[#text(weight: "bold",)[Row Group]], 
     // data Row 2
-    table.cell(align: right,)[#text(weight: "bold",)[2]],
-    table.cell(align: right,)[#text(weight: "bold",)[Row 2]],
-    table.cell(align: right,)[#text()[(2, 1)]],
-    table.cell(align: right,)[#text()[(2, 2)]#super[2]],
+    table.cell(align: right,)[#text(weight: "bold",)[2]], 
+    table.cell(align: right,)[#text(weight: "bold",)[Row 2]], 
+    table.cell(align: right,)[#text()[(2, 1)]], 
+    table.cell(align: right,)[#text()[(2, 2)]#super[2]], 
     table.cell()[#text()[ ⋯ ]],
     // continuation_row Row 3
     table.cell()[#text()[  ⋮ ]],
@@ -182,23 +243,23 @@
     table.cell()[#text()[  ⋮ ]],
     table.cell()[#text()[ ⋱ ]],
     // summary_row Row 1
-    table.cell(align: right,)[#text(weight: "bold",)[]],
-    table.cell(align: right,)[#text(weight: "bold",)[Summary 1]],
-    table.cell(align: right,)[#text()[10]],
-    table.cell(align: right,)[#text()[20]],
+    table.cell(align: right,)[#text(weight: "bold",)[]], 
+    table.cell(align: right,)[#text(weight: "bold",)[Summary 1]], 
+    table.cell(align: right,)[#text()[10]], 
+    table.cell(align: right,)[#text()[20]], 
     table.cell()[#text()[ ⋯ ]],
     // summary_row Row 2
-    table.cell(align: right,)[#text(weight: "bold",)[]],
-    table.cell(align: right,)[#text(weight: "bold",)[Summary 2]],
-    table.cell(align: right,)[#text()[20]],
-    table.cell(align: right,)[#text()[40]],
+    table.cell(align: right,)[#text(weight: "bold",)[]], 
+    table.cell(align: right,)[#text(weight: "bold",)[Summary 2]], 
+    table.cell(align: right,)[#text()[20]], 
+    table.cell(align: right,)[#text()[40]], 
     table.cell()[#text()[ ⋯ ]],
     // table_footer Row 1
-    table.cell(align: left,colspan: 5,)[#super[1]#text(size: 0.9em,)[Footnote in column label]],
+    table.cell(align: left, colspan: 5,)[#super[1]#text(size: 0.9em,)[Footnote in column label]], 
     // table_footer Row 2
-    table.cell(align: left,colspan: 5,)[#super[2]#text(size: 0.9em,)[Footnote in data]],
+    table.cell(align: left, colspan: 5,)[#super[2]#text(size: 0.9em,)[Footnote in data]], 
     // table_footer Row 1
-    table.cell(align: left,colspan: 5,)[#text(size: 0.9em,style: "italic",)[Source Notes]],
+    table.cell(align: left, colspan: 5,)[#text(size: 0.9em, style: "italic",)[Source Notes]], 
   )
 }
 """
@@ -234,29 +295,32 @@
   // Top bar
   set par(justify: true, spacing: 1em)
   set par(justify: true, spacing: 1em)
-  align(top+right, )[2 columns and 2 rows omitted]
+  set par(justify: true, spacing: 1em)
+  align(top+right,)[2 columns and 2 rows omitted]
   // Open table
   table(
     columns: (auto, auto, auto, auto, auto), 
     // Table Header
     table.header(
       // table_header Row 1
-      table.cell(align: center,colspan: 5,)[#text(size: 1.1em,weight: "bold",)[Table Title]],
+      table.cell(align: center, colspan: 5,)[#text(size: 1.1em, weight: "bold",)[Table Title]], 
       // table_header Row 1
-      table.cell(align: center,colspan: 5,)[#text(size: 1.1em,style: "italic",)[Table Subtitle]],
+      table.cell(align: center, colspan: 5,)[#text(size: 1.1em, style: "italic",)[Table Subtitle]], 
       // column_labels Row 1
-      table.cell(align: right,)[#text(weight: "bold",)[Row]],
-      table.cell(align: right,)[#text(weight: "bold",)[Rows]],
-      table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],
-      table.cell(align: center,colspan: 1,stroke: (paint: rgb(200,200,200), thickness: 0.01pt),)[#text(weight: "bold",)[Merged Column]#super[1]],
+      table.cell(align: right,)[#text(weight: "bold",)[Row]], 
+      table.cell(align: right,)[#text(weight: "bold",)[Rows]], 
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 1]], 
+      table.cell(align: center, colspan: 1, stroke: (paint: rgb(200,200,200), thickness: 0.01pt),)[
+        #text(weight: "bold",)[Merged Column]#super[1]
+      ], 
       table.cell()[#text()[ ⋯ ]],
     ), 
     // Body
     // data Row 1
-    table.cell(align: right,)[#text(weight: "bold",)[1]],
-    table.cell(align: right,)[#text(weight: "bold",)[Row 1]],
-    table.cell(align: right,)[#text()[(1, 1)]],
-    table.cell(align: right,)[#text()[(1, 2)]],
+    table.cell(align: right,)[#text(weight: "bold",)[1]], 
+    table.cell(align: right,)[#text(weight: "bold",)[Row 1]], 
+    table.cell(align: right,)[#text()[(1, 1)]], 
+    table.cell(align: right,)[#text()[(1, 2)]], 
     table.cell()[#text()[ ⋯ ]],
     // continuation_row Row 2
     table.cell()[#text()[  ⋮ ]],
@@ -265,29 +329,29 @@
     table.cell()[#text()[  ⋮ ]],
     table.cell()[#text()[ ⋱ ]],
     // data Row 4
-    table.cell(align: right,)[#text(weight: "bold",)[4]],
-    table.cell(align: right,)[#text(weight: "bold",)[Row 4]],
-    table.cell(align: right,)[#text()[(4, 1)]],
-    table.cell(align: right,)[#text()[(4, 2)]],
+    table.cell(align: right,)[#text(weight: "bold",)[4]], 
+    table.cell(align: right,)[#text(weight: "bold",)[Row 4]], 
+    table.cell(align: right,)[#text()[(4, 1)]], 
+    table.cell(align: right,)[#text()[(4, 2)]], 
     table.cell()[#text()[ ⋯ ]],
     // summary_row Row 1
-    table.cell(align: right,)[#text(weight: "bold",)[]],
-    table.cell(align: right,)[#text(weight: "bold",)[Summary 1]],
-    table.cell(align: right,)[#text()[10]],
-    table.cell(align: right,)[#text()[20]],
+    table.cell(align: right,)[#text(weight: "bold",)[]], 
+    table.cell(align: right,)[#text(weight: "bold",)[Summary 1]], 
+    table.cell(align: right,)[#text()[10]], 
+    table.cell(align: right,)[#text()[20]], 
     table.cell()[#text()[ ⋯ ]],
     // summary_row Row 2
-    table.cell(align: right,)[#text(weight: "bold",)[]],
-    table.cell(align: right,)[#text(weight: "bold",)[Summary 2]],
-    table.cell(align: right,)[#text()[20]],
-    table.cell(align: right,)[#text()[40]],
+    table.cell(align: right,)[#text(weight: "bold",)[]], 
+    table.cell(align: right,)[#text(weight: "bold",)[Summary 2]], 
+    table.cell(align: right,)[#text()[20]], 
+    table.cell(align: right,)[#text()[40]], 
     table.cell()[#text()[ ⋯ ]],
     // table_footer Row 1
-    table.cell(align: left,colspan: 5,)[#super[1]#text(size: 0.9em,)[Footnote in column label]],
+    table.cell(align: left, colspan: 5,)[#super[1]#text(size: 0.9em,)[Footnote in column label]], 
     // table_footer Row 2
-    table.cell(align: left,colspan: 5,)[#super[2]#text(size: 0.9em,)[Footnote in data]],
+    table.cell(align: left, colspan: 5,)[#super[2]#text(size: 0.9em,)[Footnote in data]], 
     // table_footer Row 1
-    table.cell(align: left,colspan: 5,)[#text(size: 0.9em,style: "italic",)[Source Notes]],
+    table.cell(align: left, colspan: 5,)[#text(size: 0.9em, style: "italic",)[Source Notes]], 
   )
 }
 """
@@ -321,46 +385,49 @@
 #{
   set par(justify: true, spacing: 1em)
   set par(justify: true, spacing: 1em)
-  align(top+right, )[2 columns and 2 rows omitted]
+  set par(justify: true, spacing: 1em)
+  align(top+right,)[2 columns and 2 rows omitted]
   table(
     columns: (auto, auto, auto, auto, auto), 
     table.header(
-      table.cell(align: center,colspan: 5,)[#text(size: 1.1em,weight: "bold",)[Table Title]],
-      table.cell(align: center,colspan: 5,)[#text(size: 1.1em,style: "italic",)[Table Subtitle]],
-      table.cell(align: right,)[#text(weight: "bold",)[Row]],
-      table.cell(align: right,)[#text(weight: "bold",)[Rows]],
-      table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],
-      table.cell(align: center,colspan: 1,stroke: (paint: rgb(200,200,200), thickness: 0.01pt),)[#text(weight: "bold",)[Merged Column]#super[1]],
+      table.cell(align: center, colspan: 5,)[#text(size: 1.1em, weight: "bold",)[Table Title]], 
+      table.cell(align: center, colspan: 5,)[#text(size: 1.1em, style: "italic",)[Table Subtitle]], 
+      table.cell(align: right,)[#text(weight: "bold",)[Row]], 
+      table.cell(align: right,)[#text(weight: "bold",)[Rows]], 
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 1]], 
+      table.cell(align: center, colspan: 1, stroke: (paint: rgb(200,200,200), thickness: 0.01pt),)[
+        #text(weight: "bold",)[Merged Column]#super[1]
+      ], 
       table.cell()[#text()[ ⋯ ]],
     ), 
-    table.cell(align: right,)[#text(weight: "bold",)[1]],
-    table.cell(align: right,)[#text(weight: "bold",)[Row 1]],
-    table.cell(align: right,)[#text()[(1, 1)]],
-    table.cell(align: right,)[#text()[(1, 2)]],
+    table.cell(align: right,)[#text(weight: "bold",)[1]], 
+    table.cell(align: right,)[#text(weight: "bold",)[Row 1]], 
+    table.cell(align: right,)[#text()[(1, 1)]], 
+    table.cell(align: right,)[#text()[(1, 2)]], 
     table.cell()[#text()[ ⋯ ]],
     table.cell()[#text()[  ⋮ ]],
     table.cell()[#text()[  ⋮ ]],
     table.cell()[#text()[  ⋮ ]],
     table.cell()[#text()[  ⋮ ]],
     table.cell()[#text()[ ⋱ ]],
-    table.cell(align: right,)[#text(weight: "bold",)[4]],
-    table.cell(align: right,)[#text(weight: "bold",)[Row 4]],
-    table.cell(align: right,)[#text()[(4, 1)]],
-    table.cell(align: right,)[#text()[(4, 2)]],
+    table.cell(align: right,)[#text(weight: "bold",)[4]], 
+    table.cell(align: right,)[#text(weight: "bold",)[Row 4]], 
+    table.cell(align: right,)[#text()[(4, 1)]], 
+    table.cell(align: right,)[#text()[(4, 2)]], 
     table.cell()[#text()[ ⋯ ]],
-    table.cell(align: right,)[#text(weight: "bold",)[]],
-    table.cell(align: right,)[#text(weight: "bold",)[Summary 1]],
-    table.cell(align: right,)[#text()[10]],
-    table.cell(align: right,)[#text()[20]],
+    table.cell(align: right,)[#text(weight: "bold",)[]], 
+    table.cell(align: right,)[#text(weight: "bold",)[Summary 1]], 
+    table.cell(align: right,)[#text()[10]], 
+    table.cell(align: right,)[#text()[20]], 
     table.cell()[#text()[ ⋯ ]],
-    table.cell(align: right,)[#text(weight: "bold",)[]],
-    table.cell(align: right,)[#text(weight: "bold",)[Summary 2]],
-    table.cell(align: right,)[#text()[20]],
-    table.cell(align: right,)[#text()[40]],
+    table.cell(align: right,)[#text(weight: "bold",)[]], 
+    table.cell(align: right,)[#text(weight: "bold",)[Summary 2]], 
+    table.cell(align: right,)[#text()[20]], 
+    table.cell(align: right,)[#text()[40]], 
     table.cell()[#text()[ ⋯ ]],
-    table.cell(align: left,colspan: 5,)[#super[1]#text(size: 0.9em,)[Footnote in column label]],
-    table.cell(align: left,colspan: 5,)[#super[2]#text(size: 0.9em,)[Footnote in data]],
-    table.cell(align: left,colspan: 5,)[#text(size: 0.9em,style: "italic",)[Source Notes]],
+    table.cell(align: left, colspan: 5,)[#super[1]#text(size: 0.9em,)[Footnote in column label]], 
+    table.cell(align: left, colspan: 5,)[#super[2]#text(size: 0.9em,)[Footnote in data]], 
+    table.cell(align: left, colspan: 5,)[#text(size: 0.9em, style: "italic",)[Source Notes]], 
   )
 }
 """
