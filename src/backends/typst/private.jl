@@ -73,16 +73,16 @@ function _typst__create_component(
     content::String;
     args::Union{Nothing, Vector{String}} = nothing,
     properties::Union{Nothing, Vector{TypstPair}} = nothing, 
-    max_num_char_line = 50, ns = 2, 
+    wrap_column = 50, ns = 2, 
 )
     indent = repeat(" ",ns)
     open_tag = if isnothing(args)
-        _typst__open_component(component; properties, max_num_char_line)
+        _typst__open_component(component; properties, wrap_column)
     else 
-        _typst__open_component(component, args; properties, max_num_char_line)
+        _typst__open_component(component, args; properties, wrap_column)
     end
     close_tag = _typst__close_component()
-    if (length(split(open_tag,"\n")[end]) + length(content)) > max_num_char_line
+    if (length(split(open_tag,"\n")[end]) + length(content)) > wrap_column
         join(string.("$indent",split(content,"\n")),"\n") ## add indent to each line if multiple line
         return open_tag * "\n" * indent * content * "\n" * close_tag
     else
@@ -104,7 +104,7 @@ function _typst__open_component(
     component::String,
     args::Union{Nothing, Vector{String}} = nothing;
     properties::Union{Nothing, Vector{TypstPair}} = nothing, 
-    max_num_char_line = 50
+    wrap_column = 50
 )  
     # Compile the text with the properties.
     init_prop_list = something(args, String[])
@@ -121,7 +121,7 @@ function _typst__open_component(
     isempty(arg_prop_list) && return "$(component)()["
     arg_lines = reduce(arg_prop_list,init=[[]]) do line, arg
         n_char_new_line = length(join(line[end], ", "))+length(arg*",")
-        if !isempty(line[end]) && (max_num_char_line >= 0) && n_char_new_line > max_num_char_line
+        if !isempty(line[end]) && (wrap_column >= 0) && n_char_new_line > wrap_column
             push!(line,[arg])
         else
             push!(line[end],arg)

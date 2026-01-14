@@ -19,31 +19,31 @@
 #{
   // Open table
   table(
-    columns: (auto, auto, auto, auto), 
+    columns: (auto, auto, auto, auto),
     // Table Header
     table.header(
       // column_labels Row 1
-      table.cell(align: right,)[#text(weight: "bold",)[A1]], 
-      table.cell(align: right,)[#text(weight: "bold",)[A2]], 
-      table.cell(align: right,)[#text(weight: "bold",)[A3]], 
-      table.cell(align: right,)[#text(weight: "bold",)[A4]], 
-    ), 
+      table.cell(align: right,)[#text(weight: "bold",)[A1]],
+      table.cell(align: right,)[#text(weight: "bold",)[A2]],
+      table.cell(align: right,)[#text(weight: "bold",)[A3]],
+      table.cell(align: right,)[#text(weight: "bold",)[A4]],
+    ),
     // Body
     // data Row 1
-    table.cell(align: right,)[#text()[1]], 
-    table.cell(align: right,)[#text()[4]], 
-    table.cell(align: right,)[#text()[7]], 
-    table.cell(align: right,)[#text()[10]], 
+    table.cell(align: right,)[#text()[1]],
+    table.cell(align: right,)[#text()[4]],
+    table.cell(align: right,)[#text()[7]],
+    table.cell(align: right,)[#text()[10]],
     // data Row 2
-    table.cell(align: right,)[#text()[\#= circular reference =\#]], 
-    table.cell(align: right,)[#text()[5]], 
-    table.cell(align: right,)[#text()[8]], 
-    table.cell(align: right,)[#text()[11]], 
+    table.cell(align: right,)[#text()[\#= circular reference =\#]],
+    table.cell(align: right,)[#text()[5]],
+    table.cell(align: right,)[#text()[8]],
+    table.cell(align: right,)[#text()[11]],
     // data Row 3
-    table.cell(align: right,)[#text()[3]], 
-    table.cell(align: right,)[#text()[6]], 
-    table.cell(align: right,)[#text()[9]], 
-    table.cell(align: right,)[#text()[\#= circular reference =\#]], 
+    table.cell(align: right,)[#text()[3]],
+    table.cell(align: right,)[#text()[6]],
+    table.cell(align: right,)[#text()[9]],
+    table.cell(align: right,)[#text()[\#= circular reference =\#]],
   )
 }
 """

@@ -14,7 +14,7 @@ function _typst__print(
     is_stdout::Bool = false,
     style::TypstTableStyle = TypstTableStyle(),
     top_left_string::AbstractString = "",
-    max_num_char_line ::Integer = 100,
+    wrap_column ::Integer = 100,
     annotate=true,
 ) where L <: Union{String, Vector{String}, Vector{Pair{Int64, String}},AbstractTypstLength}
 
@@ -125,13 +125,13 @@ function _typst__print(
         _number_of_printed_columns(table_data),
     )
 
-    _aprintln(buf, "columns: $columns, ", il, ns)
+    _aprintln(buf, "columns: $columns,", il, ns)
 
     map(style.table) do (k, s)
         if occursin(r"^[0-9]", s) || k ∉ _TYPST__STRING_ATTRIBUTES
-            _aprintln(buf, "$k:$s, ", il, ns)
+            _aprintln(buf, "$k:$s,", il, ns)
         else
-            _aprintln(buf, "$k:\"$s\", ", il, ns)
+            _aprintln(buf, "$k:\"$s\",", il, ns)
         end
     end
 
@@ -163,7 +163,7 @@ function _typst__print(
             )
                 if head_opened
                     il -= 1
-                    _aprintln(buf, "), ", il, ns)
+                    _aprintln(buf, "),", il, ns)
                     head_opened = false
                 end
                 annotate && _aprintln(buf,"// Body", il, ns)
@@ -178,8 +178,8 @@ function _typst__print(
         elseif action == :diagonal_continuation_cell
             comp = _typst__create_component(
                 "table.cell",
-                _typst__create_component("#text", " ⋱ "; max_num_char_line); 
-                max_num_char_line
+                _typst__create_component("#text", " ⋱ "; wrap_column); 
+                wrap_column
             )
 
             _aprintln(buf, comp * ",", il, ns)
@@ -187,8 +187,8 @@ function _typst__print(
         elseif action == :horizontal_continuation_cell
             comp = _typst__create_component(
                 "table.cell",
-                _typst__create_component("#text", " ⋯ "; max_num_char_line);
-                max_num_char_line
+                _typst__create_component("#text", " ⋯ "; wrap_column);
+                wrap_column
             )
 
             _aprintln(buf, comp * ",", il, ns)
@@ -200,8 +200,8 @@ function _typst__print(
 
             comp = _typst__create_component(
                 "table.cell",
-                _typst__create_component("#text", "  ⋮ "; max_num_char_line); 
-                max_num_char_line
+                _typst__create_component("#text", "  ⋮ "; wrap_column); 
+                wrap_column
             )
 
             _aprintln(buf, comp * ",", il, ns)
@@ -368,23 +368,23 @@ function _typst__print(
             open_comp=_typst__open_component(
                 "table.cell"; 
                 properties = cell_style, 
-                max_num_char_line, 
+                wrap_column, 
             )
             content_comp = comp_prefix *
-                _typst__create_component("#text", rendered_cell; properties = text_style, max_num_char_line) *
+                _typst__create_component("#text", rendered_cell; properties = text_style, wrap_column) *
                 something(append, "")
             
             if any([
                     length(split(content_comp,"\n")) > 1, 
-                    length(content_comp)+length(open_comp) > max_num_char_line
+                    length(content_comp)+length(open_comp) > wrap_column
                 ]) 
                 _aprintln(buf, open_comp, il, ns)
                 _aprintln(buf, content_comp, il+1, ns)
-                _aprintln(buf,_typst__close_component()*", ",il, ns)
+                _aprintln(buf,_typst__close_component()*",",il, ns)
             else
                 _aprint(buf, open_comp, il, ns)
                 _aprint(buf, content_comp, 0, ns)
-                _aprintln(buf,_typst__close_component()*", ",0, ns)
+                _aprintln(buf,_typst__close_component()*",",0, ns)
             end
         end
     end

@@ -12,27 +12,27 @@
 #{
   // Open table
   table(
-    columns: (10fr, 10fr, 10fr), 
+    columns: (10fr, 10fr, 10fr),
     // Table Header
     table.header(
       // column_labels Row 1
-      table.cell(align: right,)[#text(weight: "bold",)[Col. 1]], 
-      table.cell(align: right,)[#text(weight: "bold",)[Col. 2]], 
-      table.cell(align: right,)[#text(weight: "bold",)[Col. 3]], 
-    ), 
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 2]],
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],
+    ),
     // Body
     // data Row 1
-    table.cell(align: right,)[#text()[(1, 1)]], 
-    table.cell(align: right,)[#text()[(1, 2)]], 
-    table.cell(align: right,)[#text()[(1, 3)]], 
+    table.cell(align: right,)[#text()[(1, 1)]],
+    table.cell(align: right,)[#text()[(1, 2)]],
+    table.cell(align: right,)[#text()[(1, 3)]],
     // data Row 2
-    table.cell(align: right,)[#text()[(2, 1)]], 
-    table.cell(align: right,)[#text()[(2, 2)]], 
-    table.cell(align: right,)[#text()[(2, 3)]], 
+    table.cell(align: right,)[#text()[(2, 1)]],
+    table.cell(align: right,)[#text()[(2, 2)]],
+    table.cell(align: right,)[#text()[(2, 3)]],
     // data Row 3
-    table.cell(align: right,)[#text()[(3, 1)]], 
-    table.cell(align: right,)[#text()[(3, 2)]], 
-    table.cell(align: right,)[#text()[(3, 3)]], 
+    table.cell(align: right,)[#text()[(3, 1)]],
+    table.cell(align: right,)[#text()[(3, 2)]],
+    table.cell(align: right,)[#text()[(3, 3)]],
   )
 }
 """
@@ -55,27 +55,27 @@
 #{
   // Open table
   table(
-    columns: (30pt, auto, auto), 
+    columns: (30pt, auto, auto),
     // Table Header
     table.header(
       // column_labels Row 1
-      table.cell(align: right,)[#text(weight: "bold",)[Col. 1]], 
-      table.cell(align: right,)[#text(weight: "bold",)[Col. 2]], 
-      table.cell(align: right,)[#text(weight: "bold",)[Col. 3]], 
-    ), 
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 2]],
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],
+    ),
     // Body
     // data Row 1
-    table.cell(align: right,)[#text()[(1, 1)]], 
-    table.cell(align: right,)[#text()[(1, 2)]], 
-    table.cell(align: right,)[#text()[(1, 3)]], 
+    table.cell(align: right,)[#text()[(1, 1)]],
+    table.cell(align: right,)[#text()[(1, 2)]],
+    table.cell(align: right,)[#text()[(1, 3)]],
     // data Row 2
-    table.cell(align: right,)[#text()[(2, 1)]], 
-    table.cell(align: right,)[#text()[(2, 2)]], 
-    table.cell(align: right,)[#text()[(2, 3)]], 
+    table.cell(align: right,)[#text()[(2, 1)]],
+    table.cell(align: right,)[#text()[(2, 2)]],
+    table.cell(align: right,)[#text()[(2, 3)]],
     // data Row 3
-    table.cell(align: right,)[#text()[(3, 1)]], 
-    table.cell(align: right,)[#text()[(3, 2)]], 
-    table.cell(align: right,)[#text()[(3, 3)]], 
+    table.cell(align: right,)[#text()[(3, 1)]],
+    table.cell(align: right,)[#text()[(3, 2)]],
+    table.cell(align: right,)[#text()[(3, 3)]],
   )
 }
 """
@@ -107,27 +107,27 @@
 #{
   // Open table
   table(
-    columns: (30pt, auto, 30pt), 
+    columns: (30pt, auto, 30pt),
     // Table Header
     table.header(
       // column_labels Row 1
-      table.cell(align: right,)[#text(weight: "bold",)[Col. 1]], 
-      table.cell(align: right,)[#text(weight: "bold",)[Col. 2]], 
-      table.cell(align: right,)[#text(weight: "bold",)[Col. 3]], 
-    ), 
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 2]],
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],
+    ),
     // Body
     // data Row 1
-    table.cell(align: right,)[#text()[(1, 1)]], 
-    table.cell(align: right,)[#text()[(1, 2)]], 
-    table.cell(align: right,)[#text()[(1, 3)]], 
+    table.cell(align: right,)[#text()[(1, 1)]],
+    table.cell(align: right,)[#text()[(1, 2)]],
+    table.cell(align: right,)[#text()[(1, 3)]],
     // data Row 2
-    table.cell(align: right,)[#text()[(2, 1)]], 
-    table.cell(align: right,)[#text()[(2, 2)]], 
-    table.cell(align: right,)[#text()[(2, 3)]], 
+    table.cell(align: right,)[#text()[(2, 1)]],
+    table.cell(align: right,)[#text()[(2, 2)]],
+    table.cell(align: right,)[#text()[(2, 3)]],
     // data Row 3
-    table.cell(align: right,)[#text()[(3, 1)]], 
-    table.cell(align: right,)[#text()[(3, 2)]], 
-    table.cell(align: right,)[#text()[(3, 3)]], 
+    table.cell(align: right,)[#text()[(3, 1)]],
+    table.cell(align: right,)[#text()[(3, 2)]],
+    table.cell(align: right,)[#text()[(3, 3)]],
   )
 }
 """
