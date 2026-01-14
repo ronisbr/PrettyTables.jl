@@ -22,6 +22,9 @@ the output.
 - `highlighters::Vector{TypstHighlighter}`: Highlighters to apply to the table. For more
     information, see the section **Typst Highlighters** in the **Extended Help**.
 - `caption::Untion{Nothing,AbstractString}`: String with the caption for the table.
+- `max_num_char_line::Integer`: Max number of character for each line of final typst code 
+    before break components in multiple lines
+- `annotate::Bool`: Boolean indicating if typst code should be annotated. 
 
 # Extended Help
 

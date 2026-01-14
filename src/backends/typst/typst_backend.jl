@@ -14,6 +14,7 @@ function _typst__print(
     is_stdout::Bool = false,
     style::TypstTableStyle = TypstTableStyle(),
     top_left_string::AbstractString = "",
+    max_num_char_line ::Integer = 100,
     annotate=true,
 ) where L <: Union{String, Vector{String}, Vector{Pair{Int64, String}},AbstractTypstLength}
 
@@ -177,7 +178,8 @@ function _typst__print(
         elseif action == :diagonal_continuation_cell
             comp = _typst__create_component(
                 "table.cell",
-                _typst__create_component("#text", " ⋱ ")
+                _typst__create_component("#text", " ⋱ "; max_num_char_line); 
+                max_num_char_line
             )
 
             _aprintln(buf, comp * ",", il, ns)
@@ -185,7 +187,8 @@ function _typst__print(
         elseif action == :horizontal_continuation_cell
             comp = _typst__create_component(
                 "table.cell",
-                _typst__create_component("#text", " ⋯ ")
+                _typst__create_component("#text", " ⋯ "; max_num_char_line);
+                max_num_char_line
             )
 
             _aprintln(buf, comp * ",", il, ns)
@@ -197,7 +200,8 @@ function _typst__print(
 
             comp = _typst__create_component(
                 "table.cell",
-                _typst__create_component("#text", "  ⋮ ")
+                _typst__create_component("#text", "  ⋮ "; max_num_char_line); 
+                max_num_char_line
             )
 
             _aprintln(buf, comp * ",", il, ns)
@@ -361,14 +365,27 @@ function _typst__print(
             
             # Create the row component with the content.
             comp_prefix = action ∈ [:footnote] ? "#super[$(ps.i)]" : ""
-            comp = _typst__create_component(
-                "table.cell",
-                comp_prefix *
-                _typst__create_component("#text", rendered_cell; properties = text_style) *
-                something(append, "");
-                properties = cell_style,
+            open_comp=_typst__open_component(
+                "table.cell"; 
+                properties = cell_style, 
+                max_num_char_line, 
             )
-            _aprintln(buf, comp * ",", il, ns)
+            content_comp = comp_prefix *
+                _typst__create_component("#text", rendered_cell; properties = text_style, max_num_char_line) *
+                something(append, "")
+            
+            if any([
+                    length(split(content_comp,"\n")) > 1, 
+                    length(content_comp)+length(open_comp) > max_num_char_line
+                ]) 
+                _aprintln(buf, open_comp, il, ns)
+                _aprintln(buf, content_comp, il+1, ns)
+                _aprintln(buf,_typst__close_component()*", ",il, ns)
+            else
+                _aprint(buf, open_comp, il, ns)
+                _aprint(buf, content_comp, 0, ns)
+                _aprintln(buf,_typst__close_component()*", ",0, ns)
+            end
         end
     end
 

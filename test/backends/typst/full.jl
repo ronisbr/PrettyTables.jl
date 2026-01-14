@@ -129,6 +129,7 @@
             summary_rows = [(data, i) -> 10i, (data, i) -> 20i],
             title = "Table Title",
             subtitle = "Table Subtitle",
+            max_n_char_per_line = 50
         )
 
         @test result == expected
