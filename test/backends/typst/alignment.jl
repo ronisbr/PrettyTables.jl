@@ -12,7 +12,7 @@
 #{
   // Open table
   table(
-    columns: (1fr, 1fr, 1fr, 1fr, 1fr), 
+    columns: (1fr, 1fr, 1fr, 1fr, 1fr),
     // Table Header
     table.header(
       // column_labels Row 1
@@ -21,7 +21,7 @@
       table.cell(align: center,)[#text(weight: "bold",)[Col. 3]],
       table.cell(align: center,)[#text(weight: "bold",)[Col. 4]],
       table.cell(align: center,)[#text(weight: "bold",)[Col. 5]],
-    ), 
+    ),
     // Body
     // data Row 1
     table.cell(align: center,)[#text()[(1, 1)]],
@@ -63,7 +63,7 @@
             backend,
             alignment = :c,
             data_column_widths=["1fr","1fr","1fr","1fr","1fr"],
-            cell_alignment = [(2, 3) => :r, (4, 5) => :l], 
+            cell_alignment = [(2, 3) => :r, (4, 5) => :l],
         )
 
         @test result == expected
@@ -72,7 +72,7 @@
 #{
   // Open table
   table(
-    columns: (1fr, 1fr, 1fr, 1fr, 1fr), 
+    columns: (1fr, 1fr, 1fr, 1fr, 1fr),
     // Table Header
     table.header(
       // column_labels Row 1
@@ -81,7 +81,7 @@
       table.cell()[#text(weight: "bold",)[Col. 3]],
       table.cell()[#text(weight: "bold",)[Col. 4]],
       table.cell()[#text(weight: "bold",)[Col. 5]],
-    ), 
+    ),
     // Body
     // data Row 1
     table.cell()[#text()[(1, 1)]],
@@ -133,7 +133,7 @@
 #{
   // Open table
   table(
-    columns: (1fr, 1fr, 1fr, 1fr, 1fr), 
+    columns: (1fr, 1fr, 1fr, 1fr, 1fr),
     // Table Header
     table.header(
       // column_labels Row 1
@@ -142,7 +142,7 @@
       table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],
       table.cell(align: left,)[#text(weight: "bold",)[Col. 4]],
       table.cell(align: center,)[#text(weight: "bold",)[Col. 5]],
-    ), 
+    ),
     // Body
     // data Row 1
     table.cell(align: left,)[#text()[(1, 1)]],
@@ -193,7 +193,7 @@
 #{
   // Open table
   table(
-    columns: (1fr, 1fr, 1fr, 1fr, 1fr), 
+    columns: (1fr, 1fr, 1fr, 1fr, 1fr),
     // Table Header
     table.header(
       // column_labels Row 1
@@ -202,7 +202,7 @@
       table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],
       table.cell()[#text(weight: "bold",)[Col. 4]],
       table.cell(align: right,)[#text(weight: "bold",)[Col. 5]],
-    ), 
+    ),
     // Body
     // data Row 1
     table.cell(align: left,)[#text()[(1, 1)]],

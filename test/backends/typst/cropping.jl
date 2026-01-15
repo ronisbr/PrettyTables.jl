@@ -13,10 +13,11 @@
   // Top bar
   set par(justify: true, spacing: 1em)
   set par(justify: true, spacing: 1em)
-  align(top+right, )[97 columns and 98 rows omitted]
+  set par(justify: true, spacing: 1em)
+  align(top+right,)[97 columns and 98 rows omitted]
   // Open table
   table(
-    columns: (auto, auto, auto, auto), 
+    columns: (auto, auto, auto, auto),
     // Table Header
     table.header(
       // column_labels Row 1
@@ -24,7 +25,7 @@
       table.cell(align: right,)[#text(weight: "bold",)[Col. 2]],
       table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],
       table.cell()[#text()[ ⋯ ]],
-    ), 
+    ),
     // Body
     // data Row 1
     table.cell(align: right,)[#text()[(1, 1)]],
@@ -50,7 +51,7 @@
             matrix;
             backend,
             maximum_number_of_rows = 2,
-            maximum_number_of_columns = 3, 
+            maximum_number_of_columns = 3,
         )
 
         @test result == expected
@@ -62,10 +63,11 @@
   // Top bar
   set par(justify: true, spacing: 1em)
   set par(justify: true, spacing: 1em)
-  align(top+right, )[97 columns and 98 rows omitted]
+  set par(justify: true, spacing: 1em)
+  align(top+right,)[97 columns and 98 rows omitted]
   // Open table
   table(
-    columns: (auto, auto, auto, auto), 
+    columns: (auto, auto, auto, auto),
     // Table Header
     table.header(
       // column_labels Row 1
@@ -73,7 +75,7 @@
       table.cell(align: right,)[#text(weight: "bold",)[Col. 2]],
       table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],
       table.cell()[#text()[ ⋯ ]],
-    ), 
+    ),
     // Body
     // data Row 1
     table.cell(align: right,)[#text()[(1, 1)]],
@@ -111,7 +113,7 @@
 #{
   // Open table
   table(
-    columns: (auto, auto, auto, auto), 
+    columns: (auto, auto, auto, auto),
     // Table Header
     table.header(
       // column_labels Row 1
@@ -119,7 +121,7 @@
       table.cell(align: right,)[#text(weight: "bold",)[Col. 2]],
       table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],
       table.cell()[#text()[ ⋯ ]],
-    ), 
+    ),
     // Body
     // data Row 1
     table.cell(align: right,)[#text()[(1, 1)]],

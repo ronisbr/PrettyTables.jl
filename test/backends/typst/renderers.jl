@@ -5,14 +5,14 @@
 ############################################################################################
 
 @testset "Renderers" verbose = true begin
+    @testset ":print" begin
     matrix = ['a' :a "a" missing nothing]
     backend= :typst
-    @testset ":print" begin
-        expected = """
+      expected = """
 #{
   // Open table
   table(
-    columns: (auto, auto, auto, auto, auto), 
+    columns: (auto, auto, auto, auto, auto),
     // Table Header
     table.header(
       // column_labels Row 1
@@ -21,7 +21,7 @@
       table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],
       table.cell(align: right,)[#text(weight: "bold",)[Col. 4]],
       table.cell(align: right,)[#text(weight: "bold",)[Col. 5]],
-    ), 
+    ),
     // Body
     // data Row 1
     table.cell(align: right,)[#text()[a]],
@@ -42,11 +42,13 @@
     end
 
     @testset ":show" begin
+      matrix = ['a' :a "a" missing nothing]
+      backend= :typst
         expected = """
 #{
   // Open table
   table(
-    columns: (auto, auto, auto, auto, auto), 
+    columns: (auto, auto, auto, auto, auto),
     // Table Header
     table.header(
       // column_labels Row 1
@@ -55,7 +57,7 @@
       table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],
       table.cell(align: right,)[#text(weight: "bold",)[Col. 4]],
       table.cell(align: right,)[#text(weight: "bold",)[Col. 5]],
-    ), 
+    ),
     // Body
     // data Row 1
     table.cell(align: right,)[#text()['a']],

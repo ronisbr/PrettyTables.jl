@@ -15,22 +15,22 @@
 #{
   // Open table
   table(
-    columns: (auto, auto, auto), 
+    columns: (auto, auto, auto),
     // Table Header
     table.header(
       // column_labels Row 1
       table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],
       table.cell(align: right,)[#text(weight: "bold",)[Col. 2]],
       table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],
-    ), 
+    ),
     // Body
     // data Row 1
-    table.cell(align: right,)[#text(fill: green,weight: "bold",)[1]],
+    table.cell(align: right,)[#text(fill: green, weight: "bold",)[1]],
     table.cell(align: right,)[#text(fill: red,)[2]],
-    table.cell(align: right,)[#text(fill: green,weight: "bold",)[3]],
+    table.cell(align: right,)[#text(fill: green, weight: "bold",)[3]],
     // data Row 2
     table.cell(align: right,)[#text(fill: red,)[4]],
-    table.cell(align: right,)[#text(fill: green,weight: "bold",)[5]],
+    table.cell(align: right,)[#text(fill: green, weight: "bold",)[5]],
     table.cell(align: right,)[#text(fill: red,)[6]],
   )
 }

@@ -5,7 +5,7 @@
 ############################################################################################
 using Typstry
 
-@testset "Renderers" verbose = true begin
+@testset "Extension" verbose = true begin
     backend=:typst
     matrix = [
         1 1.0 0x01 'a' "abc" missing
@@ -17,7 +17,7 @@ using Typstry
 #{
   // Open table
   table(
-    columns: (auto, auto, auto, auto, auto, auto), 
+    columns: (auto, auto, auto, auto, auto, auto),
     // Table Header
     table.header(
       // column_labels Row 1
@@ -27,7 +27,7 @@ using Typstry
       table.cell(align: right,)[#text(weight: "bold",)[Col. 4]],
       table.cell(align: right,)[#text(weight: "bold",)[Col. 5]],
       table.cell(align: right,)[#text(weight: "bold",)[Col. 6]],
-    ), 
+    ),
     // Body
     // data Row 1
     table.cell(align: right,)[#text()[1]],

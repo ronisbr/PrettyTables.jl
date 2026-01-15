@@ -22,6 +22,8 @@ the output.
 - `highlighters::Vector{TypstHighlighter}`: Highlighters to apply to the table. For more
     information, see the section **Typst Highlighters** in the **Extended Help**.
 - `caption::Untion{Nothing,AbstractString}`: String with the caption for the table.
+- `wrap_column::Integer`: indicate in which column the output will be wrapped
+- `annotate::Bool`: Boolean indicating if typst code should be annotated. 
 
 # Extended Help
 

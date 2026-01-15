@@ -16,7 +16,7 @@
 #{
   // Open table
   table(
-    columns: (auto, auto, auto, auto, auto, auto), 
+    columns: (auto, auto, auto, auto, auto, auto),
     // Table Header
     table.header(
       // column_labels Row 1
@@ -26,7 +26,7 @@
       table.cell(align: right,)[#text(weight: "bold",)[Col. 4]],
       table.cell(align: right,)[#text(weight: "bold",)[Col. 5]],
       table.cell(align: right,)[#text(weight: "bold",)[Col. 6]],
-    ), 
+    ),
     // Body
     // data Row 1
     table.cell(align: right,)[#text()[1]],

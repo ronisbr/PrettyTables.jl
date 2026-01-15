@@ -4,22 +4,22 @@
 #
 ############################################################################################
 @testset "Data Column Widths" verbose = true begin
-
   @testset "Constant value 10fr" begin
-      matrix = [(i, j) for i in 1:3, j in 1:3]
-      backend=:typst
+    matrix = [(i, j) for i in 1:3, j in 1:3]
+    backend=:typst
+
       expected = """
 #{
   // Open table
   table(
-    columns: (10fr, 10fr, 10fr), 
+    columns: (10fr, 10fr, 10fr),
     // Table Header
     table.header(
       // column_labels Row 1
       table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],
       table.cell(align: right,)[#text(weight: "bold",)[Col. 2]],
       table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],
-    ), 
+    ),
     // Body
     // data Row 1
     table.cell(align: right,)[#text()[(1, 1)]],
@@ -48,20 +48,21 @@
   end
 
   @testset "First column width 30pt, `auto` for rest " begin
-      matrix = [(i, j) for i in 1:3, j in 1:3]
-      backend=:typst
+    matrix = [(i, j) for i in 1:3, j in 1:3]
+    backend=:typst
+
       expected = """
 #{
   // Open table
   table(
-    columns: (30pt, auto, auto), 
+    columns: (30pt, auto, auto),
     // Table Header
     table.header(
       // column_labels Row 1
       table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],
       table.cell(align: right,)[#text(weight: "bold",)[Col. 2]],
       table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],
-    ), 
+    ),
     // Body
     // data Row 1
     table.cell(align: right,)[#text()[(1, 1)]],
@@ -106,14 +107,14 @@
 #{
   // Open table
   table(
-    columns: (30pt, auto, 30pt), 
+    columns: (30pt, auto, 30pt),
     // Table Header
     table.header(
       // column_labels Row 1
       table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],
       table.cell(align: right,)[#text(weight: "bold",)[Col. 2]],
       table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],
-    ), 
+    ),
     // Body
     // data Row 1
     table.cell(align: right,)[#text()[(1, 1)]],
