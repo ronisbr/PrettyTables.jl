@@ -503,6 +503,11 @@ function _printing_backend(::Val{:typst}, pspec::PrintingSpec; is_stdout::Bool, 
     return nothing
 end
 
+function _printing_backend(::Val{:excel}, pspec::PrintingSpec; is_stdout::Bool, kwargs...)
+    _excel__print(pspec; kwargs...)
+    return nothing
+end
+
 function _printing_backend(::Val{:markdown}, pspec::PrintingSpec; is_stdout::Bool, kwargs...)
     _markdown__print(pspec; kwargs...)
     return nothing
@@ -520,6 +525,7 @@ export pretty_table_latex_backend
 export pretty_table_markdown_backend
 export pretty_table_text_backend
 export pretty_table_typst_backend
+export pretty_table_excel_backend
 
 function pretty_table_text_backend(args...; kwargs...)
     return pretty_table(args...; backend = :text, kwargs...)
@@ -534,9 +540,17 @@ function pretty_table_markdown_backend(args...; kwargs...)
 end
 
 function pretty_table_html_backend(args...; kwargs...)
+    println("main546")
+    println(args...)
     return pretty_table(args...; backend = :html, kwargs...)
 end
 
 function pretty_table_typst_backend(args...; kwargs...)
     return pretty_table(args...; backend = :typst, kwargs...)
+end
+
+function pretty_table_excel_backend(args...; kwargs...)
+    println("main554")
+    println(args...)
+    return pretty_table(args...; backend = :excel, kwargs...)
 end
