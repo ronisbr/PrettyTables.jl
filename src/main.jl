@@ -540,8 +540,6 @@ function pretty_table_markdown_backend(args...; kwargs...)
 end
 
 function pretty_table_html_backend(args...; kwargs...)
-    println("main546")
-    println(args...)
     return pretty_table(args...; backend = :html, kwargs...)
 end
 
@@ -550,7 +548,6 @@ function pretty_table_typst_backend(args...; kwargs...)
 end
 
 function pretty_table_excel_backend(args...; kwargs...)
-    println("main554")
-    println(args...)
+    println("\n\nAm I ever invoked?\n\n")
     return pretty_table(args...; backend = :excel, kwargs...)
 end
