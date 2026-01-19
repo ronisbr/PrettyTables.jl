@@ -33,8 +33,6 @@ will produce an error message with instructions on how to install and load the p
 """
 function _excel__print(args...; kwargs...)
 
-    println("do domething here")
-
     error("""
     Excel backend requires the XLSX.jl package.
     
@@ -46,5 +44,3 @@ function _excel__print(args...; kwargs...)
     Then retry your pretty_table call with backend = :excel.
     """)
 end
-
-_excel_width_for_text(text) = length(text) * 1.1 + 1
