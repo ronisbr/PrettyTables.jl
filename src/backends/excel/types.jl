@@ -4,17 +4,17 @@
 #
 ############################################################################################
 
-export XlsxHighlighter, XlsxTableFormat, XlsxTableStyle
+export ExcelHighlighter, ExcelTableFormat, ExcelTableStyle
 
 # Pair that defines Excel properties.
-const XlsxPair = Pair{String, String}
+const ExcelPair = Pair{String, String}
 
 ############################################################################################
 #                                       Highlighters                                       #
 ############################################################################################
 
 """
-    struct XlsxHighlighter
+    struct ExcelHighlighter
 
 Define the default highlighter of a table when using the Excel back end.
 
@@ -32,75 +32,75 @@ Define the default highlighter of a table when using the Excel back end.
 
 This structure can be constructed using three helpers:
 
-    XlsxHighlighter(f::Function, decoration::Vector{Pair{String, String}})
+    ExcelHighlighter(f::Function, decoration::Vector{Pair{String, String}})
 
-    XlsxHighlighter(f::Function, decorations::NTuple{N, Pair{String, String})
+    ExcelHighlighter(f::Function, decorations::NTuple{N, Pair{String, String})
 
-   XlsxHighlighter(f::Function, fd::Function)
+   ExcelHighlighter(f::Function, fd::Function)
 
 The first will apply a fixed decoration to the highlighted cell specified in `decoration`,
 whereas the second let the user select the desired decoration by specifying the function
 `fd`.
 """
-struct XlsxHighlighter
+struct ExcelHighlighter
     f::Function
     fd::Function
 
     # == Private Fields ====================================================================
 
-    _decoration::Vector{XlsxPair}
+    _decoration::Vector{ExcelPair}
 
     # == Constructors ======================================================================
 
-    function XlsxHighlighter(f::Function, fd::Function)
-        return new(f, fd, XlsxPair[])
+    function ExcelHighlighter(f::Function, fd::Function)
+        return new(f, fd, ExcelPair[])
     end
 
-    function XlsxHighlighter(f::Function, decoration::XlsxPair)
+    function ExcelHighlighter(f::Function, decoration::ExcelPair)
         return new(
             f,
-            _xlsx__default_highlighter_fd,
+            _excel__default_highlighter_fd,
             [decoration]
         )
     end
 
-    function XlsxHighlighter(f::Function, decoration::Vector{XlsxPair})
+    function ExcelHighlighter(f::Function, decoration::Vector{ExcelPair})
         return new(
             f,
-            _xlsx__default_highlighter_fd,
+            _excel__default_highlighter_fd,
             decoration
         )
     end
 
-    function XlsxHighlighter(f::Function, decoration::Vector{XlsxPair}, args...)
+    function ExcelHighlighter(f::Function, decoration::Vector{ExcelPair}, args...)
         return new(
             f,
-            _xlsx__default_highlighter_fd,
+            _excel__default_highlighter_fd,
             [decoration..., args...]
         )
     end
 end
 
-_xlsx__default_highlighter_fd(h::XlsxHighlighter, ::Any, ::Int, ::Int) = h._decoration
+_excel__default_highlighter_fd(h::ExcelHighlighter, ::Any, ::Int, ::Int) = h._decoration
 
 ############################################################################################
 #                                       Table Format                                       #
 ############################################################################################
 
 # Create some default decorations to reduce allocations.
-const _XLSX__NO_DECORATION = XlsxPair[]
-const _XLSX__BOLD = ["font-weight" => "bold"]
-const _XLSX__NAME = ["font-name" => "Arial"]
-const _XLSX__ITALIC = ["font-style" => "italic"]
-const _XLSX__XLARGE_BOLD = ["font-size" => "x-large", "font-weight" => "bold"]
-const _XLSX__LARGE_ITALIC = ["font-size" => "large", "font-style" => "italic"]
-const _XLSX__SMALL = ["font-size" => "small"]
-const _XLSX__SMALL_ITALIC = ["font-size" => "small", "font-style" => "italic"]
-const _XLSX__SMALL_ITALIC_GRAY = ["color" => "gray", "font-size" => "small", "font-style" => "italic"]
-const _XLSX__MERGED_CELL = ["border-bottom" => "1px solid black"]
+const _EXCEL__NO_DECORATION = ExcelPair[]
+const _EXCEL__BOLD = ["font-weight" => "bold"]
+const _EXCEL__NAME = ["font-name" => "Arial"]
+const _EXCEL__ITALIC = ["font-style" => "italic"]
+const _EXCEL__XLARGE_BOLD = ["font-size" => "x-large", "font-weight" => "bold"]
+const _EXCEL__LARGE_ITALIC = ["font-size" => "large", "font-style" => "italic"]
+const _EXCEL__SMALL = ["font-size" => "small"]
+const _EXCEL__SMALL_ITALIC = ["font-size" => "small", "font-style" => "italic"]
+const _EXCEL__SMALL_ITALIC_GRAY = ["color" => "gray", "font-size" => "small", "font-style" => "italic"]
+const _EXCEL__MERGED_CELL = ["border-bottom" => "1px solid black"]
 
 """
-    XlsxTableFormat
+    ExcelTableFormat
 
 Format that will be used to print the Excel table. All parameters are strings compatible with
 the corresponding Excel property.
@@ -108,7 +108,7 @@ the corresponding Excel property.
 
 """
 #=
-@kwdef struct XlsxTableFormat
+@kwdef struct ExcelTableFormat
     css::String = """
     table, td, th {
       border-collapse: collapse;
@@ -171,57 +171,57 @@ end
 =#
 
 """
-    struct XlsxTableStyle
+    struct ExcelTableStyle
 
 Define the style of the tables printed with the Excel back end.
 
 # Fields
 
-- `top_left_string::Vector{XlsxPair}`: Style for the top left string.
-- `top_right_string::Vector{XlsxPair}`: Style for the top right string.
-- `table::Vector{XlsxPair}`: Style for the table.
-- `title::Vector{XlsxPair}`: Style for the title.
-- `subtitle::Vector{XlsxPair}`: Style for the subtitle.
-- `row_number_label::Vector{XlsxPair}`: Style for the row number label.
-- `row_number::Vector{XlsxPair}`: Style for the row number.
-- `stubhead_label::Vector{XlsxPair}`: Style for the stubhead label.
-- `row_label::Vector{XlsxPair}`: Style for the row label.
-- `row_group_label::Vector{XlsxPair}`: Style for the row group label.
-- `first_line_column_label::Union{Vector{XlsxPair}, Vector{Vector{XlsxPair}}}`: Style for
-    the first line of the column labels. If a vector of `Vector{XlsxPair}}` is provided,
+- `top_left_string::Vector{ExcelPair}`: Style for the top left string.
+- `top_right_string::Vector{ExcelPair}`: Style for the top right string.
+- `table::Vector{ExcelPair}`: Style for the table.
+- `title::Vector{ExcelPair}`: Style for the title.
+- `subtitle::Vector{ExcelPair}`: Style for the subtitle.
+- `row_number_label::Vector{ExcelPair}`: Style for the row number label.
+- `row_number::Vector{ExcelPair}`: Style for the row number.
+- `stubhead_label::Vector{ExcelPair}`: Style for the stubhead label.
+- `row_label::Vector{ExcelPair}`: Style for the row label.
+- `row_group_label::Vector{ExcelPair}`: Style for the row group label.
+- `first_line_column_label::Union{Vector{ExcelPair}, Vector{Vector{ExcelPair}}}`: Style for
+    the first line of the column labels. If a vector of `Vector{ExcelPair}}` is provided,
     each column label in the first line will use the corresponding style.
-- `column_label::Union{Vector{XlsxPair}, Vector{Vector{XlsxPair}}}`: Style for the rest of
-    the column labels. If a vector of `Vector{XlsxPair}}` is provided, each column label
+- `column_label::Union{Vector{ExcelPair}, Vector{Vector{ExcelPair}}}`: Style for the rest of
+    the column labels. If a vector of `Vector{ExcelPair}}` is provided, each column label
     will use the corresponding style.
-- `first_line_merged_column_label::Vector{XlsxPair}`: Style for the merged cells at the
+- `first_line_merged_column_label::Vector{ExcelPair}`: Style for the merged cells at the
     first column label line.
-- `merged_column_label::Vector{XlsxPair}`: Style for the merged cells at the rest of the
+- `merged_column_label::Vector{ExcelPair}`: Style for the merged cells at the rest of the
     column labels.
-- `summary_row_cell::Vector{XlsxPair}`: Style for the summary row cell.
-- `summary_row_label::Vector{XlsxPair}`: Style for the summary row label.
-- `footnote::Vector{XlsxPair}`: Style for the footnote.
-- `source_notes::Vector{XlsxPair}`: Style for the source notes.
+- `summary_row_cell::Vector{ExcelPair}`: Style for the summary row cell.
+- `summary_row_label::Vector{ExcelPair}`: Style for the summary row label.
+- `footnote::Vector{ExcelPair}`: Style for the footnote.
+- `source_notes::Vector{ExcelPair}`: Style for the source notes.
 """
-@kwdef struct XlsxTableStyle{
-    TFCL<:Union{Vector{XlsxPair}, Vector{Vector{XlsxPair}}},
-    TCL<:Union{Vector{XlsxPair}, Vector{Vector{XlsxPair}}}
+@kwdef struct ExcelTableStyle{
+    TFCL<:Union{Vector{ExcelPair}, Vector{Vector{ExcelPair}}},
+    TCL<:Union{Vector{ExcelPair}, Vector{Vector{ExcelPair}}}
 }
-    top_left_string::Vector{XlsxPair}                = _XLSX__NO_DECORATION
-    top_right_string::Vector{XlsxPair}               = _XLSX__ITALIC
-    table::Vector{XlsxPair}                          = _XLSX__NO_DECORATION
-    title::Vector{XlsxPair}                          = _XLSX__XLARGE_BOLD
-    subtitle::Vector{XlsxPair}                       = _XLSX__LARGE_ITALIC
-    row_number_label::Vector{XlsxPair}               = _XLSX__BOLD
-    row_number::Vector{XlsxPair}                     = _XLSX__BOLD
-    stubhead_label::Vector{XlsxPair}                 = _XLSX__BOLD
-    row_label::Vector{XlsxPair}                      = _XLSX__BOLD
-    row_group_label::Vector{XlsxPair}                = _XLSX__BOLD
-    first_line_column_label::TFCL                    = _XLSX__BOLD
-    column_label::TCL                                = _XLSX__NO_DECORATION
-    first_line_merged_column_label::Vector{XlsxPair} = _XLSX__MERGED_CELL
-    merged_column_label::Vector{XlsxPair}            = _XLSX__MERGED_CELL
-    summary_row_cell::Vector{XlsxPair}               = _XLSX__NO_DECORATION
-    summary_row_label::Vector{XlsxPair}              = _XLSX__BOLD
-    footnote::Vector{XlsxPair}                       = _XLSX__SMALL
-    source_note::Vector{XlsxPair}                    = _XLSX__SMALL_ITALIC_GRAY
+    top_left_string::Vector{ExcelPair}                = _EXCEL__NO_DECORATION
+    top_right_string::Vector{ExcelPair}               = _EXCEL__ITALIC
+    table::Vector{ExcelPair}                          = _EXCEL__NO_DECORATION
+    title::Vector{ExcelPair}                          = _EXCEL__XLARGE_BOLD
+    subtitle::Vector{ExcelPair}                       = _EXCEL__LARGE_ITALIC
+    row_number_label::Vector{ExcelPair}               = _EXCEL__BOLD
+    row_number::Vector{ExcelPair}                     = _EXCEL__BOLD
+    stubhead_label::Vector{ExcelPair}                 = _EXCEL__BOLD
+    row_label::Vector{ExcelPair}                      = _EXCEL__BOLD
+    row_group_label::Vector{ExcelPair}                = _EXCEL__BOLD
+    first_line_column_label::TFCL                    = _EXCEL__BOLD
+    column_label::TCL                                = _EXCEL__NO_DECORATION
+    first_line_merged_column_label::Vector{ExcelPair} = _EXCEL__MERGED_CELL
+    merged_column_label::Vector{ExcelPair}            = _EXCEL__MERGED_CELL
+    summary_row_cell::Vector{ExcelPair}               = _EXCEL__NO_DECORATION
+    summary_row_label::Vector{ExcelPair}              = _EXCEL__BOLD
+    footnote::Vector{ExcelPair}                       = _EXCEL__SMALL
+    source_note::Vector{ExcelPair}                    = _EXCEL__SMALL_ITALIC_GRAY
 end

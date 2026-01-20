@@ -105,4 +105,33 @@ _excel_column_width_for_text(text_length, font_size) = text_length * font_size /
 
 Estimate the height of a cell in Excel needed to accommodate a given number of lines of text of a given font size.
 """
-_excel_row_height_for_text(line_count, font_size) = line_count * (font_size * 1.2) + 2
+_excel_row_height_for_text(line_count, font_size) = line_count * (font_size * 1.4) + 2
+
+"""
+    _excel_text_lines(text)
+
+Determine the number of lines in a text by counting "\n" occurrences.
+"""
+function _excel_text_lines(text)
+    count = findall("\n", text)
+    if isnothing(count)
+        return 1
+    else
+        return length(count)+1
+    end
+end
+
+function _excel_font_attributes(table_data, highlighter, current_row, j)
+    atts = highlighter.f(table_data.data, current_row, j) ? highlighter._decoration : nothing
+    if !isnothing(atts)
+        newpairs = Vector{Pair{Symbol,Union{Bool,String}}}()
+        for (k, v) in atts
+            newv = v == "true" ? true : v == "false" ? false : v
+            newk = Symbol(k)
+            push!(newpairs, newk => newv)
+        end
+        return newpairs
+    else
+        return nothing
+    end
+end
