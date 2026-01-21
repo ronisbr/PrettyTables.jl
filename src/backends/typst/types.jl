@@ -476,7 +476,7 @@ end
 
 TypstCaption(caption; kind=Auto(), supplement=nothing, gap::AbstractTypstLength=nothing, position=nothing)= 
     TypstCaption(caption, kind, supplement, gap, position)
-TypstCaption(caption; kind=Auto(), supplement=nothing, ::Nothing, position=nothing)= 
+TypstCaption(caption; kind=Auto(), supplement=nothing, gap::Nothing=nothing, position=nothing)= 
     TypstCaption(caption, kind, supplement, nothing, position)
 TypstCaption(caption; kind=Auto(), supplement=nothing, gap="1em", position=nothing)= 
     TypstCaption(caption, kind, supplement, parse(TypstLength,gap), position)
