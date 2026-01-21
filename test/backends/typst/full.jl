@@ -142,7 +142,9 @@
     ],
     // table_footer Row 1
     table.cell(align: left, colspan: 6,)[
-      #text(size: 0.9em, style: "italic",)[Source Notes]
+      #text(fill: gray, size: 0.9em, style: "italic",)[
+        Source Notes
+      ]
     ],
   )
 }
@@ -255,7 +257,7 @@
     // table_footer Row 2
     table.cell(align: left, colspan: 5,)[#super[2]#text(size: 0.9em,)[Footnote in data]],
     // table_footer Row 1
-    table.cell(align: left, colspan: 5,)[#text(size: 0.9em, style: "italic",)[Source Notes]],
+    table.cell(align: left, colspan: 5,)[#text(fill: gray, size: 0.9em, style: "italic",)[Source Notes]],
   )
 }
 """
@@ -345,7 +347,7 @@
     // table_footer Row 2
     table.cell(align: left, colspan: 5,)[#super[2]#text(size: 0.9em,)[Footnote in data]],
     // table_footer Row 1
-    table.cell(align: left, colspan: 5,)[#text(size: 0.9em, style: "italic",)[Source Notes]],
+    table.cell(align: left, colspan: 5,)[#text(fill: gray, size: 0.9em, style: "italic",)[Source Notes]],
   )
 }
 """
@@ -419,7 +421,7 @@
     table.cell()[#text()[ ⋯ ]],
     table.cell(align: left, colspan: 5,)[#super[1]#text(size: 0.9em,)[Footnote in column label]],
     table.cell(align: left, colspan: 5,)[#super[2]#text(size: 0.9em,)[Footnote in data]],
-    table.cell(align: left, colspan: 5,)[#text(size: 0.9em, style: "italic",)[Source Notes]],
+    table.cell(align: left, colspan: 5,)[#text(fill: gray, size: 0.9em, style: "italic",)[Source Notes]],
   )
 }
 """

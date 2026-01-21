@@ -4,7 +4,7 @@
 #
 ############################################################################################
 
-export TypstHighlighter, TypstTableStyle
+export TypstHighlighter, TypstTableStyle, TypstCaption
 
 import Base: show, tryparse, parse
 
@@ -18,17 +18,27 @@ const TypstAttrs = String
 
 # Private.
 const _TYPST__NO_DECORATION     = TypstPair[]
-const _TYPST__BOLD              = ["weight" => "bold"]
-const _TYPST__ITALIC            = ["style" => "italic"]
-const _TYPST__XLARGE_BOLD       = ["size" => "1.1em", "weight" => "bold"]
-const _TYPST__LARGE_ITALIC      = ["size" => "1.1em", "style" => "italic"]
-const _TYPST__SMALL             = ["size" => "0.9em"]
-const _TYPST__SMALL_ITALIC      = ["size" => "0.9em", "style" => "italic"]
-const _TYPST__SMALL_ITALIC_GRAY = ["color" => "gray", "size" => "0.9em", "style" => "italic"]
+const _TYPST__BOLD              = ["text-weight" => "bold"]
+const _TYPST__ITALIC            = ["text-style" => "italic"]
+const _TYPST__XLARGE_BOLD       = ["text-size" => "1.1em", "text-weight" => "bold"]
+const _TYPST__LARGE_ITALIC      = ["text-size" => "1.1em", "text-style" => "italic"]
+const _TYPST__SMALL             = ["text-size" => "0.9em"]
+const _TYPST__SMALL_ITALIC      = ["text-size" => "0.9em", "text-style" => "italic"]
+const _TYPST__SMALL_ITALIC_GRAY = ["text-fill" => "gray", "text-size" => "0.9em", "text-style" => "italic"]
 const _TYPST__MERGED_CELL       = ["stroke" => "(paint: rgb(200,200,200), thickness: 0.01pt)"]
 
 const _TYPST__CELL_ATTRIBUTES = [
     "align", "breakable", "colspan", "fill", "inset", "rowspan", "stroke"
+]
+
+const _TYPST__TABLE_ATTRIBUTES = [
+    "rows",
+    "gutter",
+    "column-gutter",
+    "row-gutter",
+    "inset",
+    "fill",
+    "stroke",
 ]
 
 const _TYPST__STRING_ATTRIBUTES = [
@@ -54,6 +64,7 @@ const _TYPST__TEXT_ATTRIBUTES = [
     "discretionary-ligatures",
     "fallback",
     "features",
+    "fill",
     "font",
     "fractions",
     "historical-ligatures",
@@ -77,8 +88,8 @@ const _TYPST__TEXT_ATTRIBUTES = [
     "weight",
 ]
 
-const _typst__filter_text_atributes = filter(
-    x -> x[1] ∈ _TYPST__TEXT_ATTRIBUTES || occursin(r"text-", x[1])
+_typst__filter_text_atributes = filter(
+    x -> (occursin(r"^text-", x[1])) && (replace(x[1],r"text-"=>"") ∈ _TYPST__TEXT_ATTRIBUTES )
 )
 
 ############################################################################################
@@ -199,6 +210,8 @@ Define the style of the tables printed with the Typst back end.
     source_note::Vector{TypstPair}                    = _TYPST__SMALL_ITALIC_GRAY
 end
 
+
+
 abstract type AbstractTypstLength end
 abstract type TypstLengthKind end
 abstract type TypstFixedLengthKind <: TypstLengthKind end
@@ -214,6 +227,8 @@ struct Ex <: TypstRelativeLengthKind end
 struct Fr <: TypstFractionalLengthKind end
 struct Percent <: TypstRelativeLengthKind end
 struct Auto end
+
+Base.show(io::IO,::Auto) = print(io,"auto")
 
 # ---- policy helpers ----
 
@@ -449,3 +464,41 @@ function Base.show(io::IO, s::TypstLength{T}) where {T}
     end
     return nothing
 end
+
+
+struct TypstCaption 
+    caption:: String
+    kind:: Union{Auto,String}
+    supplement:: Union{Nothing,String}
+    gap::Union{Nothing,AbstractTypstLength}
+    position:: Union{Nothing,String}
+end
+
+TypstCaption(caption; kind=Auto(), supplement=nothing, gap=nothing, position=nothing)= 
+    TypstCaption(caption, kind, supplement, gap, position)
+
+function Base.show(io::IO, c::TypstCaption)
+    (;caption,kind, supplement, gap, position) = c
+    out = "caption: figure.caption(\n"
+    if !isnothing(position) 
+        out *= "  position: $position,\n"
+    end
+    out *= "  [$caption]\n"
+    out *= "),\n"
+    if kind isa AbstractString && kind ∉ ["table","auto","image"]
+        out *= """kind: "$kind",\n"""
+        out *= "supplement: [$(something(supplement,titlecase(kind)))],\n"
+    else
+        out *= """kind: $kind,\n"""
+        if !isnothing(supplement) 
+            out *= "supplement: [$supplement],\n"
+        end
+    end
+    if !isnothing(gap) 
+        out *= "gap: $gap,\n"
+    end
+    print(io,out)
+
+end
+
+

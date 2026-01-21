@@ -56,7 +56,7 @@
     // Table Header
     table.header(
       // column_labels Row 1
-      table.cell(align: right, fill: yellow,)[#text()[Col. 1]],
+      table.cell(align: right,)[#text(fill: yellow,)[Col. 1]],
       table.cell(align: right, fill: blue,)[#text()[Col. 2]],
       table.cell(align: right, fill: red,)[#text()[Col. 3]],
     ),
@@ -82,7 +82,7 @@
             matrix;
             backend,
             style   = TypstTableStyle(; first_line_column_label = [
-                ["fill" => "yellow"],
+                ["text-fill" => "yellow", "text-weigth"=>"bold"],
                 ["fill" => "blue"],
                 ["fill" => "red"]
             ])

@@ -6,7 +6,7 @@
 
 function _typst__print(
     pspec::PrintingSpec;
-    caption::Union{Nothing, AbstractString} = nothing,
+    caption::Union{Nothing, AbstractString, TypstCaption} = nothing,
     color = nothing,
     column_label_titles::Union{Nothing, AbstractVector} = nothing,
     data_column_widths:: L = TypstLength(),
@@ -97,6 +97,16 @@ function _typst__print(
     # == Table =============================================================================
 
     empty!(vproperties)
+    empty!(vstyle)
+
+    text_table_styles = map(
+            _typst__filter_text_atributes(style.table)
+        ) do l
+        occursin(r"text-", l[1]) ? replace(l[1], "text-" => "") => l[2] : l
+    end
+    if !isempty(text_table_styles)
+        _aprintln(buf, _typst__call_function("set text",properties=text_table_styles), il, ns)
+    end
 
     # if we have a caption, we need to open a figure environment
     if !isnothing(caption)
@@ -127,14 +137,24 @@ function _typst__print(
 
     _aprintln(buf, "columns: $columns,", il, ns)
 
-    map(style.table) do (k, s)
-        if occursin(r"^[0-9]", s) || k ∉ _TYPST__STRING_ATTRIBUTES
-            _aprintln(buf, "$k:$s,", il, ns)
-        else
-            _aprintln(buf, "$k:\"$s\",", il, ns)
+    unused_table_style=[]
+    for (k,s) in style.table
+        if k ∉ _TYPST__TABLE_ATTRIBUTES && 
+            !occursin(r"text-",k)
+            push!(unused_table_style,k)
+        elseif !occursin(r"text-",k)
+            if occursin(r"^[0-9]", s) || k ∉ _TYPST__STRING_ATTRIBUTES
+                _aprintln(buf, "$k: $s,", il, ns)
+
+            else
+                _aprintln(buf, "$k: \"$s\",", il, ns)
+            end
         end
     end
 
+    if !isempty(unused_table_style)
+        @warn "Unused table style: "*join(unused_table_style, ", ", " and ")
+    end
     action = :initialize
 
     # Some internal states to help printing.
@@ -362,7 +382,6 @@ function _typst__print(
                 ) do l
                 occursin(r"text-", l[1]) ? replace(l[1], "text-" => "") => l[2] : l
             end
-            
             # Create the row component with the content.
             comp_prefix = action ∈ [:footnote] ? "#super[$(ps.i)]" : ""
             open_comp=_typst__open_component(
@@ -397,9 +416,14 @@ function _typst__print(
 
     il -= 1
 
-    if !isnothing(caption)
+    if !isnothing(caption) 
         _aprintln(buf, "),", il, ns)
-        _aprintln(buf, "caption: \"$caption\"", il, ns)
+        if caption isa AbstractString
+            _aprintln(buf, "caption: \"$caption\",", il, ns)
+            _aprintln(buf, "kind: auto,", il, ns)
+        elseif caption isa TypstCaption
+            _aprint(buf, "$caption", il, ns)
+        end
         il -= 1
     end
     _aprintln(buf, ")", il, ns)
