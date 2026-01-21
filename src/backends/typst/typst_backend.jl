@@ -67,9 +67,9 @@ function _typst__print(
     if !isempty(top_left_string) || !isempty(top_right_string)
         # Top left section.
         annotate && _aprintln(buf,"// Top bar", il, ns)
+
         _aprintln(buf, "set par(justify: true, spacing: 1em)", il, ns)
-        _aprintln(buf, "set par(justify: true, spacing: 1em)", il, ns)
-        _aprintln(buf, "set par(justify: true, spacing: 1em)", il, ns)
+
         if !isempty(top_left_string)
             _aprintln(
                 buf,

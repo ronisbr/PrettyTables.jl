@@ -12,8 +12,6 @@
 #{
   // Top bar
   set par(justify: true, spacing: 1em)
-  set par(justify: true, spacing: 1em)
-  set par(justify: true, spacing: 1em)
   align(top+right,)[97 columns and 98 rows omitted]
   // Open table
   table(
@@ -61,8 +59,6 @@
         expected = """
 #{
   // Top bar
-  set par(justify: true, spacing: 1em)
-  set par(justify: true, spacing: 1em)
   set par(justify: true, spacing: 1em)
   align(top+right,)[97 columns and 98 rows omitted]
   // Open table

@@ -12,8 +12,6 @@
 #{
   // Top bar
   set par(justify: true, spacing: 1em)
-  set par(justify: true, spacing: 1em)
-  set par(justify: true, spacing: 1em)
   align(top+left,)[Top left string]
   // Open table
   table(
@@ -198,8 +196,6 @@
 #{
   // Top bar
   set par(justify: true, spacing: 1em)
-  set par(justify: true, spacing: 1em)
-  set par(justify: true, spacing: 1em)
   align(top+left,)[Top left string]
   v(-1.5em)
   align(top+right,)[2 columns and 2 rows omitted]
@@ -294,8 +290,6 @@
 #{
   // Top bar
   set par(justify: true, spacing: 1em)
-  set par(justify: true, spacing: 1em)
-  set par(justify: true, spacing: 1em)
   align(top+right,)[2 columns and 2 rows omitted]
   // Open table
   table(
@@ -383,8 +377,6 @@
     @testset "Without Annotation" begin
         expected = """
 #{
-  set par(justify: true, spacing: 1em)
-  set par(justify: true, spacing: 1em)
   set par(justify: true, spacing: 1em)
   align(top+right,)[2 columns and 2 rows omitted]
   table(
