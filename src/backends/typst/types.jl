@@ -466,16 +466,19 @@ function Base.show(io::IO, s::TypstLength{T}) where {T}
 end
 
 
-    struct TypstCaption  
-        caption:: String
-        kind:: Union{Auto,String}
-        supplement:: Union{Nothing,String}
-        gap:: Union{Auto,TypstLengthKind}
-        position:: Union{Nothing,String}
-    end
+struct TypstCaption  
+    caption:: String
+    kind:: Union{Auto,String}
+    supplement:: Union{Nothing,String}
+    gap:: Union{Auto,AbstractTypstLength}
+    position:: Union{Nothing,String}
+end
 
-TypstCaption(caption; kind=Auto(), supplement=nothing, gap::AbstractTypstLength=Auto(), position=nothing)= 
+TypstCaption(caption; kind=Auto(), supplement=nothing, gap::Union{Auto,AbstractTypstLength}=Auto(), position=nothing)= 
     TypstCaption(caption, kind, supplement, gap, position)
+
+TypstCaption(caption, kind, supplement, gap::AbstractString, position)= 
+    TypstCaption(caption, kind, supplement, parse(TypstLength,gap), position)
 
 function Base.show(io::IO, c::TypstCaption)
     (;caption,kind, supplement, gap, position) = c
