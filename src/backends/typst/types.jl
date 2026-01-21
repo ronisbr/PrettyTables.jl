@@ -466,20 +466,16 @@ function Base.show(io::IO, s::TypstLength{T}) where {T}
 end
 
 
-struct TypstCaption 
-    caption:: String
-    kind:: Union{Auto,String}
-    supplement:: Union{Nothing,String}
-    gap::Union{Nothing,AbstractTypstLength}
-    position:: Union{Nothing,String}
-end
+    struct TypstCaption  
+        caption:: String
+        kind:: Union{Auto,String}
+        supplement:: Union{Nothing,String}
+        gap:: Union{Auto,TypstLengthKind}
+        position:: Union{Nothing,String}
+    end
 
-TypstCaption(caption; kind=Auto(), supplement=nothing, gap::AbstractTypstLength=TypstLength(), position=nothing)= 
+TypstCaption(caption; kind=Auto(), supplement=nothing, gap::AbstractTypstLength=Auto(), position=nothing)= 
     TypstCaption(caption, kind, supplement, gap, position)
-TypstCaption(caption; kind=Auto(), supplement=nothing, gap::Nothing=nothing, position=nothing)= 
-    TypstCaption(caption, kind, supplement, nothing, position)
-TypstCaption(caption; kind=Auto(), supplement=nothing, gap="1em", position=nothing)= 
-    TypstCaption(caption, kind, supplement, parse(TypstLength,gap), position)
 
 function Base.show(io::IO, c::TypstCaption)
     (;caption,kind, supplement, gap, position) = c
@@ -498,7 +494,7 @@ function Base.show(io::IO, c::TypstCaption)
             out *= "supplement: [$supplement],\n"
         end
     end
-    if !isnothing(gap) 
+    if !(gap isa Auto)
         out *= "gap: $gap,\n"
     end
     print(io,out)
