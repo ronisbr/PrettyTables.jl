@@ -448,6 +448,8 @@ function Base.parse(::Type{TypstLength}, x) :: TypstLength
     return v
 end
 
+
+
 function Base.show(io::IO, s::TypstLength{T}) where {T}
     if T === Auto || isnothing(s.value)
         print(io, "auto")
@@ -465,7 +467,6 @@ function Base.show(io::IO, s::TypstLength{T}) where {T}
     return nothing
 end
 
-
 struct TypstCaption  
     caption:: String
     kind:: Union{Auto,String}
@@ -474,9 +475,13 @@ struct TypstCaption
     position:: Union{Nothing,String}
 end
 
-TypstCaption(caption; kind=Auto(), supplement=nothing, gap::Union{Auto,AbstractTypstLength}=Auto(), position=nothing)= 
+function TypstCaption(caption; kind=Auto(), 
+        supplement=nothing, 
+        gap::Union{Auto,AbstractTypstLength, AbstractString}=Auto(), 
+        position=nothing
+    )
     TypstCaption(caption, kind, supplement, gap, position)
-
+end
 TypstCaption(caption, kind, supplement, gap::AbstractString, position)= 
     TypstCaption(caption, kind, supplement, parse(TypstLength,gap), position)
 
