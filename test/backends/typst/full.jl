@@ -460,44 +460,211 @@
   table(
     columns: (auto, auto, auto, auto, auto),
     table.header(
-      table.cell(align: center, colspan: 5,)[#text(size: 1.1em, weight: "bold",)[Table Title]],
-      table.cell(align: center, colspan: 5,)[#text(size: 1.1em, style: "italic",)[Table Subtitle]],
-      table.cell(align: right,)[#text(weight: "bold",)[Row]],
-      table.cell(align: right,)[#text(weight: "bold",)[Rows]],
-      table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],
-      table.cell(align: center, colspan: 1, stroke: (paint: rgb(200,200,200), thickness: 0.01pt),)[
-        #text(weight: "bold",)[Merged Column]#super[1]
+      table.cell(
+        align: center,
+        colspan: 5,
+      )[
+        #text(
+          size: 1.1em,
+          weight: "bold",
+        )[
+          Table Title
+        ]
       ],
-      table.cell()[#text()[ ⋯ ]],
+      table.cell(
+        align: center,
+        colspan: 5,
+      )[
+        #text(
+          size: 1.1em,
+          style: "italic",
+        )[
+          Table Subtitle
+        ]
+      ],
+      table.cell(align: right,)[
+        #text(weight: "bold",)[
+          Row
+        ]
+      ],
+      table.cell(align: right,)[
+        #text(weight: "bold",)[
+          Rows
+        ]
+      ],
+      table.cell(align: right,)[
+        #text(weight: "bold",)[
+          Col. 1
+        ]
+      ],
+      table.cell(
+        align: center,
+        colspan: 1,
+        stroke: (paint: rgb(200,200,200), thickness: 0.01pt),
+      )[
+        #text(weight: "bold",)[
+          Merged Column
+        ]#super[1]
+      ],
+      table.cell()[
+        #text()[
+         ⋯ 
+      ]
+      ],
     ),
-    table.cell(align: right,)[#text(weight: "bold",)[1]],
-    table.cell(align: right,)[#text(weight: "bold",)[Row 1]],
-    table.cell(align: right,)[#text()[(1, 1)]],
-    table.cell(align: right,)[#text()[(1, 2)]],
-    table.cell()[#text()[ ⋯ ]],
-    table.cell()[#text()[  ⋮ ]],
-    table.cell()[#text()[  ⋮ ]],
-    table.cell()[#text()[  ⋮ ]],
-    table.cell()[#text()[  ⋮ ]],
-    table.cell()[#text()[ ⋱ ]],
-    table.cell(align: right,)[#text(weight: "bold",)[4]],
-    table.cell(align: right,)[#text(weight: "bold",)[Row 4]],
-    table.cell(align: right,)[#text()[(4, 1)]],
-    table.cell(align: right,)[#text()[(4, 2)]],
-    table.cell()[#text()[ ⋯ ]],
-    table.cell(align: right,)[#text(weight: "bold",)[]],
-    table.cell(align: right,)[#text(weight: "bold",)[Summary 1]],
-    table.cell(align: right,)[#text()[10]],
-    table.cell(align: right,)[#text()[20]],
-    table.cell()[#text()[ ⋯ ]],
-    table.cell(align: right,)[#text(weight: "bold",)[]],
-    table.cell(align: right,)[#text(weight: "bold",)[Summary 2]],
-    table.cell(align: right,)[#text()[20]],
-    table.cell(align: right,)[#text()[40]],
-    table.cell()[#text()[ ⋯ ]],
-    table.cell(align: left, colspan: 5,)[#super[1]#text(size: 0.9em,)[Footnote in column label]],
-    table.cell(align: left, colspan: 5,)[#super[2]#text(size: 0.9em,)[Footnote in data]],
-    table.cell(align: left, colspan: 5,)[#text(fill: gray, size: 0.9em, style: "italic",)[Source Notes]],
+    table.cell(align: right,)[
+      #text(weight: "bold",)[
+        1
+      ]
+    ],
+    table.cell(align: right,)[
+      #text(weight: "bold",)[
+        Row 1
+      ]
+    ],
+    table.cell(align: right,)[
+      #text()[
+        (1, 1)
+      ]
+    ],
+    table.cell(align: right,)[
+      #text()[
+        (1, 2)
+      ]
+    ],
+    table.cell()[
+      #text()[
+       ⋯ 
+    ]
+    ],
+    table.cell()[
+      #text()[
+        ⋮ 
+    ]
+    ],
+    table.cell()[
+      #text()[
+        ⋮ 
+    ]
+    ],
+    table.cell()[
+      #text()[
+        ⋮ 
+    ]
+    ],
+    table.cell()[
+      #text()[
+        ⋮ 
+    ]
+    ],
+    table.cell()[
+      #text()[
+       ⋱ 
+    ]
+    ],
+    table.cell(align: right,)[
+      #text(weight: "bold",)[
+        4
+      ]
+    ],
+    table.cell(align: right,)[
+      #text(weight: "bold",)[
+        Row 4
+      ]
+    ],
+    table.cell(align: right,)[
+      #text()[
+        (4, 1)
+      ]
+    ],
+    table.cell(align: right,)[
+      #text()[
+        (4, 2)
+      ]
+    ],
+    table.cell()[
+      #text()[
+       ⋯ 
+    ]
+    ],
+    table.cell(align: right,)[
+      #text(weight: "bold",)[
+        
+      ]
+    ],
+    table.cell(align: right,)[
+      #text(weight: "bold",)[
+        Summary 1
+      ]
+    ],
+    table.cell(align: right,)[
+      #text()[
+        10
+      ]
+    ],
+    table.cell(align: right,)[
+      #text()[
+        20
+      ]
+    ],
+    table.cell()[
+      #text()[
+       ⋯ 
+    ]
+    ],
+    table.cell(align: right,)[
+      #text(weight: "bold",)[
+        
+      ]
+    ],
+    table.cell(align: right,)[
+      #text(weight: "bold",)[
+        Summary 2
+      ]
+    ],
+    table.cell(align: right,)[
+      #text()[
+        20
+      ]
+    ],
+    table.cell(align: right,)[
+      #text()[
+        40
+      ]
+    ],
+    table.cell()[
+      #text()[
+       ⋯ 
+    ]
+    ],
+    table.cell(
+      align: left,
+      colspan: 5,
+    )[
+      #super[1]#text(size: 0.9em,)[
+        Footnote in column label
+      ]
+    ],
+    table.cell(
+      align: left,
+      colspan: 5,
+    )[
+      #super[2]#text(size: 0.9em,)[
+        Footnote in data
+      ]
+    ],
+    table.cell(
+      align: left,
+      colspan: 5,
+    )[
+      #text(
+        fill: gray,
+        size: 0.9em,
+        style: "italic",
+      )[
+        Source Notes
+      ]
+    ],
   )
 }
 """
