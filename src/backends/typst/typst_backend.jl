@@ -143,12 +143,7 @@ function _typst__print(
             !occursin(r"text-",k)
             push!(unused_table_style,k)
         elseif !occursin(r"text-",k)
-            if occursin(r"^[0-9]", s) || k ∉ _TYPST__STRING_ATTRIBUTES
-                _aprintln(buf, "$k: $s,", il, ns)
-
-            else
-                _aprintln(buf, "$k: \"$s\",", il, ns)
-            end
+            _aprintln(buf, "$k: $s,", il, ns)
         end
     end
 
