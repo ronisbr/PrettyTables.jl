@@ -136,6 +136,45 @@ function _typst__open_component(
     
 end
 
+"""
+"""
+function _typst__call_function(
+    component::String,
+    args::Union{Nothing, Vector{String}} = nothing;
+    properties::Union{Nothing, Vector{TypstPair}} = nothing, 
+    wrap_column = 50
+)  
+    # Compile the text with the properties.
+    init_prop_list = something(args, String[])
+    arg_prop_list = reduce(sort(something(properties,[])),init=init_prop_list) do list,(k,v)
+        isempty(v) && return i
+        v_str = _typst__escape_str(v)
+        prop_str = if occursin(r"^[0-9]",v_str) || k ∉ _TYPST__STRING_ATTRIBUTES
+            "$k: $v_str"
+        else
+            "$k: \"$v\""
+        end
+        push!(list,prop_str)
+    end
+    isempty(arg_prop_list) && return "$(component)()"
+    arg_lines = reduce(arg_prop_list,init=[[]]) do line, arg
+        n_char_new_line = length(join(line[end], ", "))+length(arg*",")
+        if !isempty(line[end]) && (wrap_column >= 0) && n_char_new_line > wrap_column
+            push!(line,[arg])
+        else
+            push!(line[end],arg)
+        end
+        line
+    end
+    if length(arg_lines) > 1
+        return "$(component)(\n  $(join(join.(arg_lines,", "),",\n  ")),\n)"
+    else
+        return "$(component)($(join(join.(arg_lines,", "),",\n")),)"
+    end
+    
+end
+
+
 # == Styles ================================================================================
 
 const _TYPST__ALIGNMENT_MAP = Dict(
