@@ -13,9 +13,8 @@ using PrettyTables: PrintingSpec, TableData, ColumnTable, RowTable
 using Tables
 
 include("../src/backends/excel/helpers.jl")
+#include("../src/backends/excel/types.jl")
 
-# Unicode superscript digits for footnote references
-const SUPERSCRIPT_DIGITS = ['⁰', '¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹']
 
 """
     _excel__print(pspec::PrintingSpec; kwargs...)
@@ -102,12 +101,13 @@ function PrettyTables.pretty_table(::Type{XLSX.XLSXFile}, @nospecialize(data::An
 end
 
 """
-    _write_excel_table!(sheet, table_data::TableData)
+    _write_excel_table!(sheet, table_data::TableData; kwargs)
 
 Write the complete table to an Excel sheet, including all sections.
 """
 function _write_excel_table!(sheet, table_data::TableData;
     highlighters::Vector{ExcelHighlighter}=[],
+    table_format::ExcelTableFormat,
     style::ExcelTableStyle
 )
     data = table_data.data
@@ -136,13 +136,13 @@ function _write_excel_table!(sheet, table_data::TableData;
     
     # Write title if present
     if !isempty(table_data.title)
-        _excel_write_title!(sheet, table_data, footnote_refs, current_row, num_cols, col_offset)
+        _excel_write_title!(sheet, table_data, style, footnote_refs, current_row, num_cols, col_offset)
         current_row += 1
     end
     
     # Write subtitle if present
     if !isempty(table_data.subtitle)
-        _excel_write_subtitle!(sheet, table_data, footnote_refs, current_row, num_cols, col_offset)
+        _excel_write_subtitle!(sheet, table_data, style, footnote_refs, current_row, num_cols, col_offset)
         current_row += 1
     end
     
@@ -220,8 +220,8 @@ function _write_excel_table!(sheet, table_data::TableData;
             # Write row group label in its own row in the row number column (column 1)
             group_label = row_group_map[i]
             # Check for footnote reference in row group label
-            if haskey(footnote_refs, (:row_group_label, i, 1))
-                group_label = string(group_label) * _excel_to_superscript(footnote_refs[(:row_group_label, i, 1)])
+            if haskey(footnote_refs, (:row_group_label, current_row, 1))
+                group_label = string(group_label) * _excel_to_superscript(footnote_refs[(:row_group_label, current_row, 1)])
             end
             sheet[current_row, 1] = group_label
             mergeCells(sheet, XLSX.CellRange(XLSX.CellRef(current_row, 1), XLSX.CellRef(current_row, num_cols + col_offset)))
@@ -243,8 +243,8 @@ function _write_excel_table!(sheet, table_data::TableData;
         if table_data.row_labels !== nothing && i <= length(table_data.row_labels)
             row_label_text = string(table_data.row_labels[i])
             # Check for footnote reference in row label
-            if haskey(footnote_refs, (:row_label, i, 1))
-                row_label_text = row_label_text * _excel_to_superscript(footnote_refs[(:row_label, i, 1)])
+            if haskey(footnote_refs, (:row_label, current_row, row_label_col))
+                row_label_text = row_label_text * _excel_to_superscript(footnote_refs[(:row_label, current_row, row_label_col)])
             end
             sheet[current_row, row_label_col] = row_label_text
             setAlignment(sheet, current_row, row_label_col; vertical = "top", horizontal = _excel_alignment_string(table_data.row_label_column_alignment), wrapText = true)
@@ -256,8 +256,8 @@ function _write_excel_table!(sheet, table_data::TableData;
         for j in 1:num_cols
             cell_value = _get_cell_value(data, i, j, table_data)
             # Check for footnote reference in data cell
-            if haskey(footnote_refs, (:data, i, j))
-                cell_value = string(cell_value) * _excel_to_superscript(footnote_refs[(:data, i, j)])
+            if haskey(footnote_refs, (:data, current_row, j + col_offset))
+                cell_value = string(cell_value) * _excel_to_superscript(footnote_refs[(:data, current_row, j + col_offset)])
             end
             sheet[current_row, j + col_offset] = cell_value
             setAlignment(sheet, current_row, j + col_offset; vertical = "top", horizontal = _excel_alignment_string(_excel_cell_alignment(table_data, i, j)))
@@ -282,8 +282,8 @@ function _write_excel_table!(sheet, table_data::TableData;
             if table_data.summary_row_labels !== nothing && idx <= length(table_data.summary_row_labels)
                 summary_label_text = string(table_data.summary_row_labels[idx])
                 # Check for footnote reference in summary row label
-                if haskey(footnote_refs, (:summary_row_label, idx, 1))
-                    summary_label_text = summary_label_text * _excel_to_superscript(footnote_refs[(:summary_row_label, idx, 1)])
+                if haskey(footnote_refs, (:summary_row_label, current_row, 1))
+                    summary_label_text = summary_label_text * _excel_to_superscript(footnote_refs[(:summary_row_label, current_row, 1)])
                 end
                 sheet[current_row, row_label_col] = summary_label_text
             end
@@ -303,8 +303,8 @@ function _write_excel_table!(sheet, table_data::TableData;
                     summary_row_func(col_data)
                 end
                 # Check for footnote reference in summary row cell
-                if haskey(footnote_refs, (:summary_row, idx, j))
-                    summary_value = string(summary_value) * _excel_to_superscript(footnote_refs[(:summary_row, idx, j)])
+                if haskey(footnote_refs, (:summary_row, current_row, j + col_offset))
+                    summary_value = string(summary_value) * _excel_to_superscript(footnote_refs[(:summary_row, current_row, j + col_offset)])
                 end
                 sheet[current_row, j + col_offset] = summary_value
             end
@@ -314,25 +314,15 @@ function _write_excel_table!(sheet, table_data::TableData;
     
     # Write footnotes if present
     if table_data.footnotes !== nothing && !isempty(table_data.footnotes)
-        current_row += 1  # Blank line before footnotes
-        for (idx, (_, footnote_text)) in enumerate(table_data.footnotes)
-            # Format as: ¹ Footnote text
-            sheet[current_row, 1] = _excel_to_superscript(idx) * " " * string(footnote_text)
-            mergeCells(sheet, XLSX.CellRange(XLSX.CellRef(current_row, 1), XLSX.CellRef(current_row, num_cols + col_offset)))
-            footnote_lines = _excel_text_lines(footnote_text)
-            setRowHeight(sheet, current_row; height = _excel_row_height_for_text(footnote_lines, 11))
-            current_row += 1
-        end
-    end
+        current_row += 1 # Blank line before footnotes
+        _excel_write_footnotes!(sheet, table_data, style, current_row, num_cols, col_offset)
+        current_row += 1  # Blank line after footnotes
+     end
     
     # Write source notes if present
     if !isempty(table_data.source_notes)
         current_row += 1  # Blank line before source notes
-        sheet[current_row, 1] = table_data.source_notes
-        mergeCells(sheet, XLSX.CellRange(XLSX.CellRef(current_row, 1), XLSX.CellRef(current_row, num_cols + col_offset)))
-        setAlignment(sheet, current_row, 1; horizontal = _excel_alignment_string(table_data.source_note_alignment), wrapText=true)
-        source_lines = _excel_text_lines(table_data.source_notes)
-        setRowHeight(sheet, current_row; height = _excel_row_height_for_text(source_lines, 11))
+        _write_excel_sourcenotes!(sheet, table_data, style, current_row, num_cols, col_offset)
     end
     
     max_row_label_length=0
@@ -390,18 +380,25 @@ end
 
 Write the table title to the worksheet.
 """
-function _excel_write_title!(sheet, table_data, footnote_refs, current_row, num_cols, col_offset)
+function _excel_write_title!(sheet, table_data, style, footnote_refs, current_row, num_cols, col_offset)
     title_text = table_data.title
     # Check for footnote reference in title
-    if haskey(footnote_refs, (:title, 1, 1))
+    if haskey(footnote_refs, (:title, current_row, 1))
         title_text = title_text * _excel_to_superscript(footnote_refs[(:title, 1, 1)])
     end
     sheet[current_row, 1:(num_cols + col_offset)]="" # ensure these cells aren't empty before merging
     sheet[current_row, 1] = title_text
     mergeCells(sheet, XLSX.CellRange(XLSX.CellRef(current_row, 1), XLSX.CellRef(current_row, num_cols + col_offset)))
-    setAlignment(sheet, current_row, 1; vertical = "top", horizontal=_excel_alignment_string(table_data.title_alignment), wrapText = true)
+    atts = newpairs(style.title)
+    fontsize=11
+    if !isnothing(atts)
+        setFont(sheet, current_row, 1; atts...)
+        g = getsize(atts)
+        fontsize = isnothing(g) ? fontsize : g
+    end
+    setAlignment(sheet, current_row, 1; vertical = "center", horizontal=_excel_alignment_string(table_data.title_alignment), wrapText = true)
     title_lines = _excel_text_lines(title_text)
-    setRowHeight(sheet, current_row; height = _excel_row_height_for_text(title_lines, 11))
+    setRowHeight(sheet, current_row; height = _excel_row_height_for_text(title_lines, fontsize))
 end
 
 """
@@ -409,17 +406,61 @@ end
 
 Write the table subtitle to the worksheet.
 """
-function _excel_write_subtitle!(sheet, table_data, footnote_refs, current_row, num_cols, col_offset)
+function _excel_write_subtitle!(sheet, table_data, style, footnote_refs, current_row, num_cols, col_offset)
     subtitle_text = table_data.subtitle
     # Check for footnote reference in subtitle
-    if haskey(footnote_refs, (:subtitle, 1, 1))
+    if haskey(footnote_refs, (:subtitle, current_row, 1))
         subtitle_text = subtitle_text * _excel_to_superscript(footnote_refs[(:subtitle, 1, 1)])
     end
     sheet[current_row, 1] = subtitle_text
     mergeCells(sheet, XLSX.CellRange(XLSX.CellRef(current_row, 1), XLSX.CellRef(current_row, num_cols + col_offset)))
-    setAlignment(sheet, current_row, 1; vertical = "top", horizontal=_excel_alignment_string(table_data.subtitle_alignment), wrapText = true)
+    atts = newpairs(style.subtitle)
+    fontsize=11
+    if !isnothing(atts)
+        setFont(sheet, current_row, 1; atts...)
+        g = getsize(atts)
+        fontsize = isnothing(g) ? fontsize : g
+   end
+    setAlignment(sheet, current_row, 1; vertical = "center", horizontal=_excel_alignment_string(table_data.subtitle_alignment), wrapText = true)
     subtitle_lines = _excel_text_lines(subtitle_text)
-    setRowHeight(sheet, current_row; height = _excel_row_height_for_text(subtitle_lines, 11))
+    setRowHeight(sheet, current_row; height = _excel_row_height_for_text(subtitle_lines, fontsize))
+end
+
+
+function _excel_write_footnotes!(sheet, table_data, style, current_row, num_cols, col_offset) 
+    start_row = current_row
+    atts = newpairs(style.footnote)
+    fontsize=11
+    for (idx, (_, footnote_text)) in enumerate(table_data.footnotes)
+        # Format as: ¹ Footnote text
+        sheet[current_row, 1] = _excel_to_superscript(idx) * " " * string(footnote_text)
+        mergeCells(sheet, XLSX.CellRange(XLSX.CellRef(current_row, 1), XLSX.CellRef(current_row, num_cols + col_offset)))
+        footnote_lines = _excel_text_lines(footnote_text)
+        if !isnothing(atts)
+            setFont(sheet, current_row, 1; atts...)
+            g = getsize(atts)
+            fontsize = isnothing(g) ? fontsize : g
+        end
+        setRowHeight(sheet, current_row; height = _excel_row_height_for_text(footnote_lines, fontsize))
+        current_row = current_row + 1
+   end
+    setUniformAlignment(sheet, start_row:current_row-1, 1; vertical = "center", horizontal=_excel_alignment_string(table_data.footnote_alignment), wrapText = true)
+    setUniformFont(sheet, start_row:current_row-1, 1; atts...)
+end
+
+function _write_excel_sourcenotes!(sheet, table_data, style, current_row, num_cols, col_offset)
+    sheet[current_row, 1] = table_data.source_notes
+    atts = newpairs(style.source_note)
+    fontsize=11
+    if !isnothing(atts)
+        setFont(sheet, current_row, 1; atts...)
+        g = getsize(atts)
+        fontsize = isnothing(g) ? fontsize : g
+    end
+    mergeCells(sheet, XLSX.CellRange(XLSX.CellRef(current_row, 1), XLSX.CellRef(current_row, num_cols + col_offset)))
+    setAlignment(sheet, current_row, 1; horizontal = _excel_alignment_string(table_data.source_note_alignment), wrapText=true)
+    source_lines = _excel_text_lines(table_data.source_notes)
+    setRowHeight(sheet, current_row; height = _excel_row_height_for_text(source_lines, fontsize))
 end
 
 end # module

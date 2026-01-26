@@ -4,6 +4,9 @@
 #
 ############################################################################################
 
+# Unicode superscript digits for footnote references
+const SUPERSCRIPT_DIGITS = ['⁰', '¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹']
+
 """
     _excel_alignment_string(column, col_alignment, table_alignment)
 
@@ -121,17 +124,42 @@ function _excel_text_lines(text)
     end
 end
 
+function newpairs(atts)
+    newpairs = Vector{Pair{Symbol,Any}}()
+    for (k, v) in atts
+        newv = tryparse(Int, v)
+        if isnothing(newv)
+            newv = v == "true" ? true : v == "false" ? false : v
+        end
+        newk = Symbol(k)
+        push!(newpairs, newk => newv)
+    end
+    return newpairs
+end
 function _excel_font_attributes(table_data, highlighter, current_row, j)
     atts = highlighter.f(table_data.data, current_row, j) ? highlighter._decoration : nothing
     if !isnothing(atts)
-        newpairs = Vector{Pair{Symbol,Union{Bool,String}}}()
-        for (k, v) in atts
-            newv = v == "true" ? true : v == "false" ? false : v
-            newk = Symbol(k)
-            push!(newpairs, newk => newv)
-        end
-        return newpairs
+        return newpairs(atts)
     else
         return nothing
     end
 end
+
+function face_from_crayon(c::Crayon)
+    Face(
+        foreground = c.fg === nothing ? nothing : SimpleColor(c.fg),
+        background = c.bg === nothing ? nothing : SimpleColor(c.bg),
+        weight     = c.bold      ? :bold   : nothing,
+        slant      = c.italic    ? :italic : nothing,
+        underline  = c.underline ? true    : nothing,
+    )
+end
+
+function styled_from_crayon(text::String, cr::Crayon)
+    face = face_from_crayon(cr)
+    return StyledString(text, face)
+end
+getsize(pairs::Vector{Pair{Symbol,Any}}) =
+    let p = findfirst(x -> x.first === :size, pairs)
+        p === nothing ? nothing : pairs[p].second
+    end
