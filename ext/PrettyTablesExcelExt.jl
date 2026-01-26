@@ -220,8 +220,8 @@ function _write_excel_table!(sheet, table_data::TableData;
             # Write row group label in its own row in the row number column (column 1)
             group_label = row_group_map[i]
             # Check for footnote reference in row group label
-            if haskey(footnote_refs, (:row_group_label, current_row, 1))
-                group_label = string(group_label) * _excel_to_superscript(footnote_refs[(:row_group_label, current_row, 1)])
+            if haskey(footnote_refs, (:row_group_label, i, 1))
+                group_label = string(group_label) * _excel_to_superscript(footnote_refs[(:row_group_label, i, 1)])
             end
             sheet[current_row, 1] = group_label
             mergeCells(sheet, XLSX.CellRange(XLSX.CellRef(current_row, 1), XLSX.CellRef(current_row, num_cols + col_offset)))
@@ -243,8 +243,8 @@ function _write_excel_table!(sheet, table_data::TableData;
         if table_data.row_labels !== nothing && i <= length(table_data.row_labels)
             row_label_text = string(table_data.row_labels[i])
             # Check for footnote reference in row label
-            if haskey(footnote_refs, (:row_label, current_row, row_label_col))
-                row_label_text = row_label_text * _excel_to_superscript(footnote_refs[(:row_label, current_row, row_label_col)])
+            if haskey(footnote_refs, (:row_label, i, 1))
+                row_label_text = row_label_text * _excel_to_superscript(footnote_refs[(:row_label, i, 1)])
             end
             sheet[current_row, row_label_col] = row_label_text
             setAlignment(sheet, current_row, row_label_col; vertical = "top", horizontal = _excel_alignment_string(table_data.row_label_column_alignment), wrapText = true)
@@ -256,8 +256,8 @@ function _write_excel_table!(sheet, table_data::TableData;
         for j in 1:num_cols
             cell_value = _get_cell_value(data, i, j, table_data)
             # Check for footnote reference in data cell
-            if haskey(footnote_refs, (:data, current_row, j + col_offset))
-                cell_value = string(cell_value) * _excel_to_superscript(footnote_refs[(:data, current_row, j + col_offset)])
+            if haskey(footnote_refs, (:data, i, j))
+                cell_value = string(cell_value) * _excel_to_superscript(footnote_refs[(:data, i, j)])
             end
             sheet[current_row, j + col_offset] = cell_value
             setAlignment(sheet, current_row, j + col_offset; vertical = "top", horizontal = _excel_alignment_string(_excel_cell_alignment(table_data, i, j)))
@@ -282,8 +282,8 @@ function _write_excel_table!(sheet, table_data::TableData;
             if table_data.summary_row_labels !== nothing && idx <= length(table_data.summary_row_labels)
                 summary_label_text = string(table_data.summary_row_labels[idx])
                 # Check for footnote reference in summary row label
-                if haskey(footnote_refs, (:summary_row_label, current_row, 1))
-                    summary_label_text = summary_label_text * _excel_to_superscript(footnote_refs[(:summary_row_label, current_row, 1)])
+                if haskey(footnote_refs, (:summary_row_label, idx, 1))
+                    summary_label_text = summary_label_text * _excel_to_superscript(footnote_refs[(:summary_row_label, idx, 1)])
                 end
                 sheet[current_row, row_label_col] = summary_label_text
             end
@@ -303,8 +303,8 @@ function _write_excel_table!(sheet, table_data::TableData;
                     summary_row_func(col_data)
                 end
                 # Check for footnote reference in summary row cell
-                if haskey(footnote_refs, (:summary_row, current_row, j + col_offset))
-                    summary_value = string(summary_value) * _excel_to_superscript(footnote_refs[(:summary_row, current_row, j + col_offset)])
+                if haskey(footnote_refs, (:summary_row, idx, j))
+                    summary_value = string(summary_value) * _excel_to_superscript(footnote_refs[(:summary_row, idx, j)])
                 end
                 sheet[current_row, j + col_offset] = summary_value
             end
@@ -383,7 +383,7 @@ Write the table title to the worksheet.
 function _excel_write_title!(sheet, table_data, style, footnote_refs, current_row, num_cols, col_offset)
     title_text = table_data.title
     # Check for footnote reference in title
-    if haskey(footnote_refs, (:title, current_row, 1))
+    if haskey(footnote_refs, (:title, 1, 1))
         title_text = title_text * _excel_to_superscript(footnote_refs[(:title, 1, 1)])
     end
     sheet[current_row, 1:(num_cols + col_offset)]="" # ensure these cells aren't empty before merging
@@ -409,7 +409,7 @@ Write the table subtitle to the worksheet.
 function _excel_write_subtitle!(sheet, table_data, style, footnote_refs, current_row, num_cols, col_offset)
     subtitle_text = table_data.subtitle
     # Check for footnote reference in subtitle
-    if haskey(footnote_refs, (:subtitle, current_row, 1))
+    if haskey(footnote_refs, (:subtitle, 1, 1))
         subtitle_text = subtitle_text * _excel_to_superscript(footnote_refs[(:subtitle, 1, 1)])
     end
     sheet[current_row, 1] = subtitle_text
