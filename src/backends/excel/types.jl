@@ -4,7 +4,7 @@
 #
 ############################################################################################
 
-export ExcelHighlighter, ExcelTableFormat, ExcelTableStyle
+export ExcelHighlighter, ExcelTableFormat, ExcelTableStyle, ExcelFormatter 
 
 ############################################################################################
 #                                       Constants                                          #
@@ -98,6 +98,29 @@ struct ExcelHighlighter
 end
 
 _excel__default_highlighter_fd(h::ExcelHighlighter, ::Any, ::Int, ::Int) = h._decoration
+
+############################################################################################
+#                                       Formatters                                         #
+############################################################################################
+
+"""
+    ExcelFormatter
+
+Define the Excel format to apply to a cell.
+
+# Fields
+
+- `f::Function`: Function with the signature `f(value, i, j)` in which should return `true`
+    if the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
+- `numFmt::ExcelPair`: Specifies the format to apply to the cell. The format should be 
+    specified using the `XLSX.jl` formatting definitions used by the `XLSX.setFormat`
+    function. 
+
+"""
+struct ExcelFormatter
+    f::Function
+    numFmt::Vector{ExcelPair}
+end
 
 ############################################################################################
 #                                       Table Format                                       #

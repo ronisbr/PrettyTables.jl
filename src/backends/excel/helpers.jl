@@ -148,7 +148,9 @@ Convert a keys in avector to Symbols.
 """
 function _excel_newpairs(atts)
     newpairs = Vector{Pair{Symbol,Any}}()
+    println(atts)
     for (k, v) in atts
+        println(v)
         newv = tryparse(Int, v)
         if isnothing(newv)
             newv = v == "true" ? true : v == "false" ? false : v
@@ -162,10 +164,23 @@ end
 """
     _excel_font_attributes(table_data, highlighter, current_row, j)
 
-Get highlighter font attributes for current row and vcolumn (j)
+Get highlighter font attributes for current row and column (j)
 """
 function _excel_font_attributes(table_data, highlighter, current_row, j)
     atts = highlighter.f(table_data.data, current_row, j) ? highlighter._decoration : nothing
+    if !isnothing(atts)
+        return _excel_newpairs(atts)
+    else
+        return nothing
+    end
+end
+"""
+    _excel_format_attributes(table_data, formatter, current_row, j)
+
+Get formatter format attributes for current row and column (j)
+"""
+function _excel_format_attributes(table_data, formatter, current_row, j)
+    atts = formatter.f(table_data.data, current_row, j) ? formatter.numFmt : nothing
     if !isnothing(atts)
         return _excel_newpairs(atts)
     else
