@@ -80,10 +80,8 @@ include("./backends/text/text_backend.jl")
 
 include("./backends/excel/types.jl")
 #include("./backends/excel/documentation.jl")
-#include("./backends/excel/helpers.jl")
+include("./backends/excel/helpers.jl")
 include("./backends/excel/excel_backend.jl")
-#include("./backends/excel/private.jl")
-#include("./backends/excel/render_cell.jl")
 
 include("./printing_state/alignment.jl")
 include("./printing_state/data.jl")

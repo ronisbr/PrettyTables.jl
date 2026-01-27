@@ -35,6 +35,7 @@ function PrettyTables._excel__print(
 )
     # Extract table data from PrintingSpec
     table_data = pspec.table_data
+    println(kwargs)
 
     if filename === nothing
         # Return in-memory XLSX object
@@ -98,6 +99,7 @@ Write the complete table to an Excel sheet, including all sections.
 """
 function _write_excel_table!(sheet, table_data::TableData;
     highlighters::Vector{ExcelHighlighter}=[],
+    excel_formatters::Vector{ExcelFormatter}=[],
     table_format::ExcelTableFormat,
     style::ExcelTableStyle
 )
@@ -143,11 +145,9 @@ function _write_excel_table!(sheet, table_data::TableData;
     end
     
     max_row_height = 0 # for row height - reset each row
-#    max_row_length = 0 # for row height - reset each row - is this actually needed?
     max_row_lines = 0 # for row height - reset each row
     max_col_height = zeros(Int, num_cols+col_offset) # for column width, accumulated over rows
     max_col_length = zeros(Int, num_cols+col_offset) # for column width, accumulated over rows
-#    max_col_lines = zeros(Int, num_cols+col_offset) # for column width, accumulated over rows
 
     # Write row number label if specified
     if table_data.show_row_number_column
@@ -194,19 +194,11 @@ function _write_excel_table!(sheet, table_data::TableData;
                     fontsize=DEFAULT_FONT_SIZE
                     if !isnothing(atts)
                         fontsize = _excel_update_atts!(atts, fontsize)
-#                        g = _excel_getsize(atts)
-#                        isnothing(g) && push!(atts, :size => fontsize)
-#                        fontsize = isnothing(g) ? fontsize : g
                         setFont(sheet, current_row, col_offset; atts...)
                     else
                         setFont(sheet, current_row, col_offset; size=fontsize)
                     end
                     max_row_lines, max_row_height = _excel_update_length_and_height!(max_row_lines, max_row_height, max_col_length, max_col_height, col_offset, stubhead_label, fontsize)
-#                    lines=_excel_text_lines(stubhead_label)
-#                    max_col_length[col_offset] = max(_excel_multilength(stubhead_label), max_col_length[col_offset])
-#                    max_row_lines = max(max_row_lines, lines)
-#                    max_col_height[col_offset] = max(fontsize, max_col_height[col_offset])
-#                    max_row_height = max(max_row_height, fontsize)
                 end
             end
             
@@ -228,18 +220,12 @@ function _write_excel_table!(sheet, table_data::TableData;
                     fontsize=DEFAULT_FONT_SIZE
                     if !isnothing(atts)
                         fontsize = _excel_update_atts!(atts, fontsize)
-#                        g = _excel_getsize(atts)
-#                        isnothing(g) && push!(atts, :size => fontsize)
-#                        fontsize = isnothing(g) ? fontsize : g
                         setFont(sheet, current_row, j+ col_offset; atts...)
                     else
                         setFont(sheet, current_row, j+ col_offset; size=fontsize)
                     end
                     # don't include merged columns in column width calculation
                     max_row_lines, max_row_height = _excel_update_length_and_height!(max_row_lines, max_row_height, nothing, nothing, nothing, label_text, fontsize)
-#                    max_row_length = max(_excel_multilength(label_text), max_row_length)
-#                    max_row_height = max(max_row_height, fontsize)
-#                    max_row_lines = max(max_row_lines, lines)
                     setAlignment(sheet, current_row, j + col_offset; vertical = "top", horizontal=cla, wrapText = true)
                     # Skip the spanned columns
                     j += span
@@ -375,6 +361,12 @@ function _write_excel_table!(sheet, table_data::TableData;
 
             setAlignment(sheet, current_row, j + col_offset; vertical = "top", horizontal = _excel_alignment_string(_excel_cell_alignment(table_data, i, j)))
 
+            for formatter in excel_formatters
+                atts = _excel_format_attributes(table_data, formatter, i, j)
+                if !isnothing(atts)
+                    setFormat(sheet, current_row, j + col_offset; atts...)
+                end
+            end
             for highlighter in highlighters
                 atts = _excel_font_attributes(table_data, highlighter, i, j)
                 if !isnothing(atts)
@@ -448,6 +440,14 @@ function _write_excel_table!(sheet, table_data::TableData;
                 end
                 max_col_height[j + col_offset] = max(max_col_height[j + col_offset], fontsize)
                 max_row_height = max(max_row_height, fontsize)
+
+                # apply formatters here too, but row is the Excel row number (current row), which is outside the rows in the data table.
+                for formatter in excel_formatters
+                    atts = _excel_format_attributes(table_data, formatter, current_row, j)
+                    if !isnothing(atts)
+                        setFormat(sheet, current_row, j + col_offset; atts...)
+                    end
+                end
 
             end
             setRowHeight(sheet, current_row; height = _excel_row_height_for_text(max_row_lines, max_row_height))

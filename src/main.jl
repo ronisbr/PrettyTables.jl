@@ -548,6 +548,5 @@ function pretty_table_typst_backend(args...; kwargs...)
 end
 
 function pretty_table_excel_backend(args...; kwargs...)
-    println("\n\nAm I ever invoked?\n\n")
     return pretty_table(args...; backend = :excel, kwargs...)
 end
