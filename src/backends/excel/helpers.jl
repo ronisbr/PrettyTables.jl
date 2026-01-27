@@ -4,6 +4,9 @@
 #
 ############################################################################################
 
+# Used when otherwise unspecified
+const DEFAULT_FONT_SIZE = 12
+
 # Unicode superscript digits for footnote references
 const SUPERSCRIPT_DIGITS = ['⁰', '¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹']
 
@@ -101,7 +104,7 @@ end
 
 Estimate the width of a cell in Excel needed to accommodate text of a given length.
 """
-_excel_column_width_for_text(text_length, font_size) = text_length * font_size / 11.0
+_excel_column_width_for_text(text_length, font_size) = (0.6 * text_length * font_size + 15.0) / 7.0
 
 """
     _excel_row_height_for_text(text)
@@ -124,7 +127,26 @@ function _excel_text_lines(text)
     end
 end
 
-function newpairs(atts)
+"""
+    _excel_multilength(text)
+
+Determines the length of the longest line in a multi-line text
+"""
+function _excel_multilength(text)
+    lines=split(text, "\n")
+    maxlen=0
+    for line in lines
+        maxlen = max(maxlen, length(line))
+    end
+    return maxlen
+end
+
+"""
+    _excel_newpairs(atts)
+
+Convert a keys in avector to Symbols.
+"""
+function _excel_newpairs(atts)
     newpairs = Vector{Pair{Symbol,Any}}()
     for (k, v) in atts
         newv = tryparse(Int, v)
@@ -136,17 +158,47 @@ function newpairs(atts)
     end
     return newpairs
 end
+
+"""
+    _excel_font_attributes(table_data, highlighter, current_row, j)
+
+Get highlighter font attributes for current row and vcolumn (j)
+"""
 function _excel_font_attributes(table_data, highlighter, current_row, j)
     atts = highlighter.f(table_data.data, current_row, j) ? highlighter._decoration : nothing
     if !isnothing(atts)
-        return newpairs(atts)
+        return _excel_newpairs(atts)
     else
         return nothing
     end
 end
 
+"""
+    _excel_update_atts!(atts, max_row_height, max_col_height, row)
+
+Update font size for given row
+"""
+function _excel_update_atts!(atts, fontsize)
+    g = _excel_getsize(atts)
+    isnothing(g) && push!(atts, :size => fontsize)
+    fontsize = isnothing(g) ? fontsize : g
+    return fontsize
+end
+
+function _excel_update_length_and_height!(max_row_lines, max_row_height, max_col_length, max_col_height, col, text, fontsize)
+    lines=_excel_text_lines(text)
+    if !isnothing(col)
+        max_col_length[col] = max(_excel_multilength(text), max_col_length[col])
+        max_col_height[col] = max(fontsize, max_col_height[col])
+    end
+    max_row_lines = max(max_row_lines, lines)
+    max_row_height = max(max_row_height, fontsize)
+    return max_row_lines, max_row_height
+end
+
+# Unnecessary?
 function face_from_crayon(c::Crayon)
-    Face(
+    return Face(
         foreground = c.fg === nothing ? nothing : SimpleColor(c.fg),
         background = c.bg === nothing ? nothing : SimpleColor(c.bg),
         weight     = c.bold      ? :bold   : nothing,
@@ -155,11 +207,22 @@ function face_from_crayon(c::Crayon)
     )
 end
 
+# Unnecessary?
 function styled_from_crayon(text::String, cr::Crayon)
     face = face_from_crayon(cr)
     return StyledString(text, face)
 end
-getsize(pairs::Vector{Pair{Symbol,Any}}) =
-    let p = findfirst(x -> x.first === :size, pairs)
-        p === nothing ? nothing : pairs[p].second
+
+"""
+    _excel_getsize(pairs::Vector{Pair{Symbol,Any}})
+
+Extract the font size attribute from a vector of pairs.
+"""
+function _excel_getsize(pairs::Vector{Pair{Symbol,Any}})
+    for (k, v) in pairs
+        if k == :size
+            return v
+        end
     end
+    return nothing
+end
