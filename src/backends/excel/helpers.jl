@@ -32,7 +32,7 @@ end
 
 Ensure all cells in current row are not EmptyCells to ensure formatting works completely.
 """
-_excel_unempty_row(sheet, current_row, cols) = sheet[current_row, 1:cols] = ""
+_excel_unempty_row(sheet, current_row, cols) = sheet[current_row, cols] = ""
 
 """
     _excel_column_alignment(col, col_alignment, table_alignment)
@@ -123,7 +123,7 @@ _excel_row_height_for_text(line_count, font_size) = line_count * (font_size * 1.
 """
     _excel_text_lines(text)
 
-Determine the number of lines in a text by counting "\n" occurrences.
+Determine the number of lines in a text by counting new-line occurrences.
 """
 function _excel_text_lines(text)
     count = findall("\n", text)
@@ -215,6 +215,20 @@ function _excel_update_fontsize!(atts, fontsize)
     return fontsize
 end
 
+
+function _excel_fmt__stringify(columns::AbstractVector{Int})
+
+    return (v, _, j) -> begin
+        !(v isa XLSX.CellConcreteType) && return v
+
+        for c in columns
+            j == c && return string(v)
+        end
+
+        return v
+    end
+end
+
 function _excel_update_length_and_height!(max_row_lines, max_row_height, max_col_length, max_col_height, col, text, fontsize)
     if text isa AbstractString
         lines = _excel_text_lines(text)
@@ -230,6 +244,7 @@ function _excel_update_length_and_height!(max_row_lines, max_row_height, max_col
     return max_row_lines, max_row_height
 end
 
+#=
 # Unnecessary?
 function face_from_crayon(c::Crayon)
     return Face(
@@ -246,6 +261,7 @@ function styled_from_crayon(text::String, cr::Crayon)
     face = face_from_crayon(cr)
     return StyledString(text, face)
 end
+=#
 
 """
     _excel_getsize(pairs::Vector{Pair{Symbol,Any}})

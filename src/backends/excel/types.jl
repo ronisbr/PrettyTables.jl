@@ -23,7 +23,7 @@ const _EXCEL__LARGE_ITALIC = ["size" => "14", "italic" => "true"]
 const _EXCEL__SMALL = ["size" => "10"]
 const _EXCEL__SMALL_ITALIC = ["size" => "10", "italic" => "true"]
 const _EXCEL__SMALL_ITALIC_GRAY = ["color" => "gray", "size" => "10", "italic" => "true"]
-const _EXCEL__MERGED_CELL = ["bottom" => "thin", "color" => "black"]
+const _EXCEL__MERGED_CELL = ["under" => "single", "color" => "black"]
 
 ############################################################################################
 #                                       Highlighters                                       #
@@ -144,8 +144,8 @@ the corresponding Excel property.
     underline_headers_type::Vector{ExcelPair}=["style" => "thin", "color" => "Black"]
     underline_merged_headers::Bool=true
     underline_merged_headers_type::Vector{ExcelPair}=["style" => "thin", "color" => "Black"]
-    underline_table_cells::Bool=true
-    underline_table_cells_type::Vector{ExcelPair}=["style" => "dotted", "color" => "Black"]
+    underline_data_rows::Bool=true
+    underline_data_rows_type::Vector{ExcelPair}=["style" => "dotted", "color" => "Black"]
     underline_table::Bool=true
     underline_table_type::Vector{ExcelPair}=["style" => "thin", "color" => "Black"]
     overline_group::Bool=true
@@ -156,6 +156,12 @@ the corresponding Excel property.
     underline_summary_type::Vector{ExcelPair}=["style" => "thin", "color" => "Black"]
     underline_footnotes::Bool=true
     underline_footnotes_type::Vector{ExcelPair}=["style" => "thin", "color" => "Black"]
+    vline_after_row_numbers::Bool=true
+    vline_after_row_numbers_type::Vector{ExcelPair}=["style" => "thin", "color" => "Black"]
+    vline_after_row_labels::Bool=true
+    vline_after_row_labels_type::Vector{ExcelPair}=["style" => "thin", "color" => "Black"]
+    vline_between_data_columns::Bool=true
+    vline_between_data_columns_type::Vector{ExcelPair}=["style" => "dotted", "color" => "Black"]
 end
 
 
