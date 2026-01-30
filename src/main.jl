@@ -476,8 +476,11 @@ function _pretty_table(
     is_stdout = (io === stdout) || ((io isa IOContext) && (io.io === stdout))
 
     # Call the printing backend.
-    _printing_backend(Val(backend), pspec; is_stdout, kwargs...)
-
+    if backend == :excel
+        return _printing_backend(Val(backend), pspec; is_stdout, kwargs...)
+    else
+        _printing_backend(Val(backend), pspec; is_stdout, kwargs...)
+    end
     return nothing
 end
 
@@ -504,8 +507,8 @@ function _printing_backend(::Val{:typst}, pspec::PrintingSpec; is_stdout::Bool, 
 end
 
 function _printing_backend(::Val{:excel}, pspec::PrintingSpec; is_stdout::Bool, kwargs...)
-    _excel__print(pspec; kwargs...)
-    return nothing
+    
+    return _excel__print(pspec; kwargs...)
 end
 
 function _printing_backend(::Val{:markdown}, pspec::PrintingSpec; is_stdout::Bool, kwargs...)

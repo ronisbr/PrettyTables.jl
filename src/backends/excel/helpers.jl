@@ -28,7 +28,14 @@ function _excel_alignment_string(s)
 end
 
 """
-    _excel__column_alignment(col, col_alignment, table_alignment)
+    _excel_unempty_row(sheet, current_row, cols)
+
+Ensure all cells in current row are not EmptyCells to ensure formatting works completely.
+"""
+_excel_unempty_row(sheet, current_row, cols) = sheet[current_row, 1:cols] = ""
+
+"""
+    _excel_column_alignment(col, col_alignment, table_alignment)
 
 Return the alignment value to use for column labels.
 """
@@ -148,9 +155,7 @@ Convert a keys in avector to Symbols.
 """
 function _excel_newpairs(atts)
     newpairs = Vector{Pair{Symbol,Any}}()
-    println(atts)
     for (k, v) in atts
-        println(v)
         newv = tryparse(Int, v)
         if isnothing(newv)
             newv = v == "true" ? true : v == "false" ? false : v
@@ -175,12 +180,12 @@ function _excel_font_attributes(table_data, highlighter, current_row, j)
     end
 end
 """
-    _excel_format_attributes(table_data, formatter, current_row, j)
+    _excel_format_attributes(table_data, excelFormatter, current_row, j)
 
-Get formatter format attributes for current row and column (j)
+Get ExcelFormatter format attributes for current row and column (j)
 """
-function _excel_format_attributes(table_data, formatter, current_row, j)
-    atts = formatter.f(table_data.data, current_row, j) ? formatter.numFmt : nothing
+function _excel_format_attributes(table_data, excelFormatter, current_row, j)
+    atts = excelFormatter.f(table_data.data, current_row, j) ? excelFormatter.numFmt : nothing
     if !isnothing(atts)
         return _excel_newpairs(atts)
     else
@@ -189,11 +194,21 @@ function _excel_format_attributes(table_data, formatter, current_row, j)
 end
 
 """
-    _excel_update_atts!(atts, max_row_height, max_col_height, row)
+    _excel_apply_formatter(value, formatter, current_row, j)
+
+Conditionally apply standard PrettyTables formatter to the given value.
+"""
+function _excel_apply_formatter(cell_value, formatter, current_row, j)
+    v = formatter(cell_value, current_row, j)
+    return v
+end
+
+"""
+    _excel_update_fontsize!(atts, max_row_height, max_col_height, row)
 
 Update font size for given row
 """
-function _excel_update_atts!(atts, fontsize)
+function _excel_update_fontsize!(atts, fontsize)
     g = _excel_getsize(atts)
     isnothing(g) && push!(atts, :size => fontsize)
     fontsize = isnothing(g) ? fontsize : g
@@ -201,10 +216,14 @@ function _excel_update_atts!(atts, fontsize)
 end
 
 function _excel_update_length_and_height!(max_row_lines, max_row_height, max_col_length, max_col_height, col, text, fontsize)
-    lines=_excel_text_lines(text)
-    if !isnothing(col)
-        max_col_length[col] = max(_excel_multilength(text), max_col_length[col])
-        max_col_height[col] = max(fontsize, max_col_height[col])
+    if text isa AbstractString
+        lines = _excel_text_lines(text)
+        if !isnothing(col)
+            max_col_length[col] = max(_excel_multilength(text), max_col_length[col])
+            max_col_height[col] = max(fontsize, max_col_height[col])
+        end
+    else
+        lines = 1
     end
     max_row_lines = max(max_row_lines, lines)
     max_row_height = max(max_row_height, fontsize)

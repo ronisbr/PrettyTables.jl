@@ -136,6 +136,26 @@ the corresponding Excel property.
 
 """
 @kwdef struct ExcelTableFormat
+    outside_border::Bool = true
+    outside_border_type::Vector{ExcelPair}=["style" => "thick", "color" => "Black"]
+    underline_title::Bool = true
+    underline_title_type::Vector{ExcelPair}=["style" => "thin", "color" => "Black"]
+    underline_headers::Bool=true
+    underline_headers_type::Vector{ExcelPair}=["style" => "thin", "color" => "Black"]
+    underline_merged_headers::Bool=true
+    underline_merged_headers_type::Vector{ExcelPair}=["style" => "thin", "color" => "Black"]
+    underline_table_cells::Bool=true
+    underline_table_cells_type::Vector{ExcelPair}=["style" => "dotted", "color" => "Black"]
+    underline_table::Bool=true
+    underline_table_type::Vector{ExcelPair}=["style" => "thin", "color" => "Black"]
+    overline_group::Bool=true
+    overline_group_type::Vector{ExcelPair}=["style" => "thin", "color" => "Black"]
+    underline_group::Bool=true
+    underline_group_type::Vector{ExcelPair}=["style" => "thin", "color" => "Black"]
+    underline_summary::Bool=true
+    underline_summary_type::Vector{ExcelPair}=["style" => "thin", "color" => "Black"]
+    underline_footnotes::Bool=true
+    underline_footnotes_type::Vector{ExcelPair}=["style" => "thin", "color" => "Black"]
 end
 
 
@@ -172,18 +192,18 @@ Define the style of the tables printed with the Excel back end.
 - `source_notes::Vector{ExcelPair}`: Style for the source notes.
 """
 @kwdef struct ExcelTableStyle
-    table::Vector{ExcelPair}                          = _EXCEL__NO_DECORATION
-    title::Vector{ExcelPair}                          = _EXCEL__XLARGE_BOLD
+    title::Vector{ExcelPair}                          = push!(_EXCEL__XLARGE_BOLD, "under" => "single")
     subtitle::Vector{ExcelPair}                       = _EXCEL__LARGE_ITALIC
     row_number_label::Vector{ExcelPair}               = _EXCEL__BOLD
     row_number::Vector{ExcelPair}                     = _EXCEL__BOLD
     stubhead_label::Vector{ExcelPair}                 = _EXCEL__BOLD
     row_label::Vector{ExcelPair}                      = _EXCEL__BOLD
     row_group_label::Vector{ExcelPair}                = _EXCEL__BOLD
-    first_line_column_label::Vector{ExcelPair}                     = _EXCEL__BOLD
-    column_label::Vector{ExcelPair}                                 = _EXCEL__BOLD
+    first_line_column_label::Vector{ExcelPair}        = _EXCEL__BOLD
+    column_label::Vector{ExcelPair}                   = _EXCEL__BOLD
     first_line_merged_column_label::Vector{ExcelPair} = _EXCEL__MERGED_CELL
     merged_column_label::Vector{ExcelPair}            = _EXCEL__MERGED_CELL
+    table_cell_style::Vector{ExcelPair}               = _EXCEL__NO_DECORATION
     summary_row_cell::Vector{ExcelPair}               = _EXCEL__NO_DECORATION
     summary_row_label::Vector{ExcelPair}              = _EXCEL__BOLD
     footnote::Vector{ExcelPair}                       = _EXCEL__SMALL

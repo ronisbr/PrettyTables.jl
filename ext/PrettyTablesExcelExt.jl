@@ -35,7 +35,6 @@ function PrettyTables._excel__print(
 )
     # Extract table data from PrintingSpec
     table_data = pspec.table_data
-    println(kwargs)
 
     if filename === nothing
         # Return in-memory XLSX object
@@ -55,11 +54,6 @@ function PrettyTables._excel__print(
             sheet = xf[1]
             XLSX.rename!(sheet, sheet_name)
             _write_excel_table!(sheet, table_data; kwargs...)
-        end
-        
-        # Print confirmation if appropriate
-        if pspec.context.io === stdout || (pspec.context.io isa IOContext && pspec.context.io.io === stdout)
-            println("Excel file written to: $filename")
         end
         
         return filename
@@ -98,10 +92,10 @@ end
 Write the complete table to an Excel sheet, including all sections.
 """
 function _write_excel_table!(sheet, table_data::TableData;
-    highlighters::Vector{ExcelHighlighter}=[],
-    excel_formatters::Vector{ExcelFormatter}=[],
-    table_format::ExcelTableFormat,
-    style::ExcelTableStyle
+    highlighters::Vector{ExcelHighlighter}=ExcelHighlighter[],
+    excel_formatters::Vector{ExcelFormatter}=ExcelFormatter[],
+    table_format::ExcelTableFormat=ExcelTableFormat(),
+    style::ExcelTableStyle=ExcelTableStyle(),
 )
     data = table_data.data
     num_rows = table_data.num_rows
@@ -116,7 +110,6 @@ function _write_excel_table!(sheet, table_data::TableData;
         col_offset += 1
     end
     
-
     current_row = 1
     
     # Build footnote reference map: (section, row, col) => footnote_number
@@ -138,12 +131,20 @@ function _write_excel_table!(sheet, table_data::TableData;
         _excel_write_subtitle!(sheet, table_data, style, footnote_refs, current_row, num_cols, col_offset)
         current_row += 1
     end
+
     
     # Add blank line after title/subtitle
     if current_row > 1
+        _excel_unempty_row(sheet, current_row, num_cols+col_offset) # ensure these cells aren't empty before merging
+
+        # underline beneath title/subtitle block
+        if table_format.underline_title
+            setBorder(sheet, current_row, 1:num_cols+col_offset; bottom=table_format.underline_title_type)
+        end
+
         current_row += 1
     end
-    
+
     max_row_height = 0 # for row height - reset each row
     max_row_lines = 0 # for row height - reset each row
     max_col_height = zeros(Int, num_cols+col_offset) # for column width, accumulated over rows
@@ -176,15 +177,17 @@ function _write_excel_table!(sheet, table_data::TableData;
     # Write column labels if they should be shown
     if table_data.show_column_labels && !isempty(table_data.column_labels)
         # Build a map of merged cells if present
-        merge_map = Dict{Tuple{Int, Int}, Tuple{Int, Any}}()  # (row, col) => (span, data)
+        merge_map = Dict{Tuple{Int, Int}, Tuple{Int, Any, Symbol}}()  # (row, col) => (span, data, alignment)
         if table_data.merge_column_label_cells !== nothing
             for merge_cell in table_data.merge_column_label_cells
-                # merge_cell has fields: i (row), j (column), column_span, data
-                merge_map[(merge_cell.i, merge_cell.j)] = (merge_cell.column_span, merge_cell.data)
+                # merge_cell has fields: i (row), j (column), column_span, data, alignment
+                merge_map[(merge_cell.i, merge_cell.j)] = (merge_cell.column_span, merge_cell.data, merge_cell.alignment)
             end
         end
         
         for (label_row_idx, label_row) in enumerate(table_data.column_labels)
+            _excel_unempty_row(sheet, current_row, num_cols+col_offset) # ensure these cells aren't empty before merging
+
             # Write stubhead label if needed (only on first label row)
             if table_data.row_labels !== nothing
                 if label_row_idx == 1 && !isempty(table_data.stubhead_label)
@@ -193,11 +196,12 @@ function _write_excel_table!(sheet, table_data::TableData;
                     atts = _excel_newpairs(style.stubhead_label)
                     fontsize=DEFAULT_FONT_SIZE
                     if !isnothing(atts)
-                        fontsize = _excel_update_atts!(atts, fontsize)
+                        fontsize = _excel_update_fontsize!(atts, fontsize)
                         setFont(sheet, current_row, col_offset; atts...)
                     else
                         setFont(sheet, current_row, col_offset; size=fontsize)
                     end
+                    setAlignment(sheet, current_row, col_offset; vertical = "top", horizontal=_excel_alignment_string(table_data.row_label_column_alignment), wrapText = true)
                     max_row_lines, max_row_height = _excel_update_length_and_height!(max_row_lines, max_row_height, max_col_length, max_col_height, col_offset, stubhead_label, fontsize)
                 end
             end
@@ -208,7 +212,7 @@ function _write_excel_table!(sheet, table_data::TableData;
                 cla = _excel_column_alignment(j, table_data.column_label_alignment, table_data.data_alignment) # get the column label alignment
                 # Check if this cell is the start of a merge
                 if haskey(merge_map, (label_row_idx, j))
-                    span, merge_data = merge_map[(label_row_idx, j)]
+                    span, merge_data, merge_alignment = merge_map[(label_row_idx, j)]
                     label_text = string(merge_data)
                     # Check for footnote reference
                     if haskey(footnote_refs, (:column_label, label_row_idx, j))
@@ -216,17 +220,24 @@ function _write_excel_table!(sheet, table_data::TableData;
                     end
                     sheet[current_row, j + col_offset] = label_text
                     mergeCells(sheet, XLSX.CellRange(XLSX.CellRef(current_row, j + col_offset), XLSX.CellRef(current_row, j + col_offset + span-1)))
-                    atts = _excel_newpairs(style.column_label)
+                    if label_row_idx == 1
+                        atts = _excel_newpairs(style.first_line_merged_column_label)
+                    else
+                        atts = _excel_newpairs(style.column_label)
+                    end
                     fontsize=DEFAULT_FONT_SIZE
                     if !isnothing(atts)
-                        fontsize = _excel_update_atts!(atts, fontsize)
+                        fontsize = _excel_update_fontsize!(atts, fontsize)
                         setFont(sheet, current_row, j+ col_offset; atts...)
                     else
                         setFont(sheet, current_row, j+ col_offset; size=fontsize)
                     end
                     # don't include merged columns in column width calculation
                     max_row_lines, max_row_height = _excel_update_length_and_height!(max_row_lines, max_row_height, nothing, nothing, nothing, label_text, fontsize)
-                    setAlignment(sheet, current_row, j + col_offset; vertical = "top", horizontal=cla, wrapText = true)
+                    setAlignment(sheet, current_row, j + col_offset; vertical = "top", horizontal=_excel_alignment_string(merge_alignment), wrapText = true)
+                    if table_format.underline_merged_headers
+                        setBorder(sheet, current_row, j+col_offset:j+col_offset+span-1; bottom=table_format.underline_merged_headers_type)
+                    end
                     # Skip the spanned columns
                     j += span
                 else
@@ -240,7 +251,7 @@ function _write_excel_table!(sheet, table_data::TableData;
                     atts = _excel_newpairs(style.column_label)
                     fontsize=DEFAULT_FONT_SIZE
                     if !isnothing(atts)
-                        fontsize = _excel_update_atts!(atts, fontsize)
+                        fontsize = _excel_update_fontsize!(atts, fontsize)
                         setFont(sheet, current_row, j+ col_offset; atts...)
                     else
                         setFont(sheet, current_row, j+ col_offset; size=fontsize)
@@ -251,6 +262,9 @@ function _write_excel_table!(sheet, table_data::TableData;
                 end
             end
             setRowHeight(sheet, current_row; height = _excel_row_height_for_text(max_row_lines, max_row_height))
+            if table_format.underline_headers
+                setBorder(sheet, current_row, 1:num_cols+col_offset; bottom=table_format.underline_headers_type)
+            end
             
             max_row_height = 0 # for row height - reset each row
             max_row_lines = 0 # for row height - reset each row
@@ -283,10 +297,16 @@ function _write_excel_table!(sheet, table_data::TableData;
             atts = _excel_newpairs(style.row_group_label)
             fontsize=DEFAULT_FONT_SIZE
             if !isnothing(atts)
-                fontsize = _excel_update_atts!(atts, fontsize)
+                fontsize = _excel_update_fontsize!(atts, fontsize)
                 setFont(sheet, current_row, 1; atts...)
             else
                 setFont(sheet, current_row, 1; size=fontsize)
+            end
+            if table_format.overline_group
+                setBorder(sheet, current_row, 1:num_cols+col_offset; top=table_format.underline_group_type)
+            end
+            if table_format.underline_group
+               setBorder(sheet, current_row, 1:num_cols+col_offset; bottom=table_format.underline_group_type)
             end
             # don't include group labels in column width calculation
             max_row_lines, max_row_height = _excel_update_length_and_height!(max_row_lines, max_row_height, nothing, nothing, nothing, group_label, fontsize)
@@ -306,13 +326,13 @@ function _write_excel_table!(sheet, table_data::TableData;
             atts = _excel_newpairs(style.row_number)
             fontsize=DEFAULT_FONT_SIZE
             if !isnothing(atts)
-                fontsize=_excel_update_atts!(atts, fontsize)
+                fontsize=_excel_update_fontsize!(atts, fontsize)
                 setFont(sheet, current_row, 1; atts...)
             else
                 setFont(sheet, current_row, 1; size=fontsize)
             end
             max_row_lines, max_row_height = _excel_update_length_and_height!(max_row_lines, max_row_height, max_col_length, max_col_height, 1, string(i), fontsize)
-             setAlignment(sheet, current_row, 1; vertical = "top", horizontal = _excel_alignment_string(table_data.row_number_column_alignment))
+            setAlignment(sheet, current_row, 1; vertical = "top", horizontal = _excel_alignment_string(table_data.row_number_column_alignment))
          end
         
         # Write row label if present
@@ -327,7 +347,7 @@ function _write_excel_table!(sheet, table_data::TableData;
              atts = _excel_newpairs(style.row_label)
             fontsize=DEFAULT_FONT_SIZE
             if !isnothing(atts)
-                fontsize = _excel_update_atts!(atts, fontsize)
+                fontsize = _excel_update_fontsize!(atts, fontsize)
                 setFont(sheet, current_row, row_label_col; atts...)
             else
                 setFont(sheet, current_row, row_label_col; size=fontsize)
@@ -343,30 +363,38 @@ function _write_excel_table!(sheet, table_data::TableData;
             if haskey(footnote_refs, (:data, i, j))
                 cell_value = string(cell_value) * _excel_to_superscript(footnote_refs[(:data, i, j)])
             end
-            sheet[current_row, j + col_offset] = cell_value
-            atts = _excel_newpairs(style.row_label)
+
+            #apply standard PrettyTables formatters
+            formatted_value = cell_value
+            if !isnothing(table_data.formatters)
+                for formatter in table_data.formatters
+                    formatted_value = _excel_apply_formatter(formatted_value, formatter, current_row, j)
+                end
+            end
+            sheet[current_row, j + col_offset] = formatted_value
+            atts = _excel_newpairs(style.table_cell_style)
             fontsize=DEFAULT_FONT_SIZE
             if !isnothing(atts)
-                fontsize = _excel_update_atts!(atts, fontsize)
-                setFont(sheet, current_row, row_label_col; atts...)
+                fontsize = _excel_update_fontsize!(atts, fontsize)
+                setFont(sheet, current_row, j + col_offset; atts...)
             else
-                setFont(sheet, current_row, row_label_col; size=fontsize)
+                setFont(sheet, current_row, j + col_offset; size=fontsize)
             end
-
-            if cell_value isa String # can't get width of numbers because they are affected by formatting.
-                max_row_lines, max_row_height = _excel_update_length_and_height!(max_row_lines, max_row_height, max_col_length, max_col_height, row_label_col, row_label_text, fontsize)
-            end
-            max_col_height[row_label_col] = max(max_col_height[row_label_col], fontsize)
+            max_row_lines, max_row_height = _excel_update_length_and_height!(max_row_lines, max_row_height, max_col_length, max_col_height, j + col_offset, cell_value, fontsize)
+            max_col_height[j + col_offset] = max(max_col_height[j + col_offset], fontsize)
             max_row_height = max(max_row_height, fontsize)
 
             setAlignment(sheet, current_row, j + col_offset; vertical = "top", horizontal = _excel_alignment_string(_excel_cell_alignment(table_data, i, j)))
 
+            # Apply Excel specific (numFmt) formatters
             for formatter in excel_formatters
                 atts = _excel_format_attributes(table_data, formatter, i, j)
                 if !isnothing(atts)
                     setFormat(sheet, current_row, j + col_offset; atts...)
                 end
             end
+
+            # Apply Excel specific highlighters
             for highlighter in highlighters
                 atts = _excel_font_attributes(table_data, highlighter, i, j)
                 if !isnothing(atts)
@@ -375,20 +403,26 @@ function _write_excel_table!(sheet, table_data::TableData;
                 end
             end
         end
-
         setRowHeight(sheet, current_row; height = _excel_row_height_for_text(max_row_lines, max_row_height))
-        
+        if table_format.underline_table_cells
+            setBorder(sheet, current_row, 1:num_cols+col_offset; bottom=table_format.underline_table_cells_type)
+        end
         max_row_height = 0 # for row height - reset each row
         max_row_lines = 0 # for row height - reset each row
         
         current_row += 1
     end
-    
+#    _excel_unempty_row(sheet, current_row, num_cols+col_offset) # ensure these cells aren't empty before merging
+    if table_format.underline_table
+        setBorder(sheet, current_row-1, 1:num_cols+col_offset; bottom=table_format.underline_table_type)
+    end
+
     # Write summary rows if present
     if table_data.summary_rows !== nothing
-        current_row += 1  # Blank line before summary
+#        current_row += 1  # Blank line before summary
         for (idx, summary_row_func) in enumerate(table_data.summary_rows)
             # Write summary row label in the row label column
+            _excel_unempty_row(sheet, current_row, num_cols+col_offset) # ensure these cells aren't empty before merging
             row_label_col = table_data.show_row_number_column ? 2 : 1
             if table_data.summary_row_labels !== nothing && idx <= length(table_data.summary_row_labels)
                 summary_label_text = string(table_data.summary_row_labels[idx])
@@ -400,12 +434,13 @@ function _write_excel_table!(sheet, table_data::TableData;
                 atts = _excel_newpairs(style.summary_row_label)
                 fontsize=DEFAULT_FONT_SIZE
                 if !isnothing(atts)
-                    fontsize = _excel_update_atts!(atts, fontsize)
+                    fontsize = _excel_update_fontsize!(atts, fontsize)
                     setFont(sheet, current_row, row_label_col; atts...)
                 else
                     setFont(sheet, current_row, row_label_col; size=fontsize)
                 end
             end
+            setAlignment(sheet, current_row, col_offset; vertical = "top", horizontal=_excel_alignment_string(table_data.row_label_column_alignment), wrapText = true)
             max_row_lines, max_row_height = _excel_update_length_and_height!(max_row_lines, max_row_height, max_col_length, max_col_height, row_label_col, summary_label_text, fontsize)
             
             # Write summary row data - call the function for each column
@@ -430,14 +465,12 @@ function _write_excel_table!(sheet, table_data::TableData;
                 atts = _excel_newpairs(style.summary_row_cell)
                 fontsize=DEFAULT_FONT_SIZE
                 if !isnothing(atts)
-                    fontsize = _excel_update_atts!(atts, fontsize)
+                    fontsize = _excel_update_fontsize!(atts, fontsize)
                     setFont(sheet, current_row, j + col_offset; atts...)
                 else
                     setFont(sheet, current_row, j + col_offset; size=fontsize)
                 end
-                if summary_value isa String # can't get width of numbers because they are affected by formatting.
-                    max_row_lines, max_row_height = _excel_update_length_and_height!(max_row_lines, max_row_height, max_col_length, max_col_height, j + col_offset, summary_value, fontsize)
-                end
+                max_row_lines, max_row_height = _excel_update_length_and_height!(max_row_lines, max_row_height, max_col_length, max_col_height, j + col_offset, summary_value, fontsize)
                 max_col_height[j + col_offset] = max(max_col_height[j + col_offset], fontsize)
                 max_row_height = max(max_row_height, fontsize)
 
@@ -451,25 +484,33 @@ function _write_excel_table!(sheet, table_data::TableData;
 
             end
             setRowHeight(sheet, current_row; height = _excel_row_height_for_text(max_row_lines, max_row_height))
-            
+
             max_row_height = 0 # for row height - reset each row
             max_row_lines = 0 # for row height - reset each row
         
             current_row += 1
         end
+        if table_format.underline_summary
+            setBorder(sheet, current_row-1, 1:num_cols+col_offset; bottom=table_format.underline_summary_type)
+        end
     end
     
     # Write footnotes if present
     if table_data.footnotes !== nothing && !isempty(table_data.footnotes)
+        _excel_unempty_row(sheet, current_row, num_cols+col_offset) # ensure these cells aren't empty before merging
         current_row += 1 # Blank line before footnotes
-        _excel_write_footnotes!(sheet, table_data, style, current_row, num_cols, col_offset)
-        current_row += 1  # Blank line after footnotes
+        current_row = _excel_write_footnotes!(sheet, table_data, style, current_row, num_cols, col_offset)
+        if table_format.underline_footnotes
+            setBorder(sheet, current_row-1, 1:num_cols+col_offset; bottom=table_format.underline_footnotes_type)
+        end
      end
     
     # Write source notes if present
     if !isempty(table_data.source_notes)
+        _excel_unempty_row(sheet, current_row, num_cols+col_offset) # ensure these cells aren't empty before merging
         current_row += 1  # Blank line before source notes
         _write_excel_sourcenotes!(sheet, table_data, style, current_row, num_cols, col_offset)
+        current_row += 1  # Blank line before source notes
     end
     
     for i in 1:num_cols+col_offset
@@ -478,6 +519,9 @@ function _write_excel_table!(sheet, table_data::TableData;
         end
     end
 
+    if table_format.outside_border
+        setBorder(sheet, 1:current_row-1, 1:num_cols+col_offset; outside=table_format.outside_border_type)
+    end
     return nothing
 end
 
@@ -524,13 +568,13 @@ function _excel_write_title!(sheet, table_data, style, footnote_refs, current_ro
     if haskey(footnote_refs, (:title, 1, 1))
         title_text = title_text * _excel_to_superscript(footnote_refs[(:title, 1, 1)])
     end
-    sheet[current_row, 1:(num_cols + col_offset)]="" # ensure these cells aren't empty before merging
+    _excel_unempty_row(sheet, current_row, num_cols+col_offset) # ensure these cells aren't empty before merging
     sheet[current_row, 1] = title_text
     mergeCells(sheet, XLSX.CellRange(XLSX.CellRef(current_row, 1), XLSX.CellRef(current_row, num_cols + col_offset)))
     atts = _excel_newpairs(style.title)
     fontsize=DEFAULT_FONT_SIZE
     if !isnothing(atts)
-        fontsize = _excel_update_atts!(atts, fontsize)
+        fontsize = _excel_update_fontsize!(atts, fontsize)
         setFont(sheet, current_row, 1; atts...)
     else
         setFont(sheet, current_row, 1; size=fontsize)
@@ -547,16 +591,18 @@ Write the table subtitle to the worksheet.
 """
 function _excel_write_subtitle!(sheet, table_data, style, footnote_refs, current_row, num_cols, col_offset)
     subtitle_text = table_data.subtitle
+
     # Check for footnote reference in subtitle
     if haskey(footnote_refs, (:subtitle, 1, 1))
         subtitle_text = subtitle_text * _excel_to_superscript(footnote_refs[(:subtitle, 1, 1)])
     end
+
     sheet[current_row, 1] = subtitle_text
     mergeCells(sheet, XLSX.CellRange(XLSX.CellRef(current_row, 1), XLSX.CellRef(current_row, num_cols + col_offset)))
     atts = _excel_newpairs(style.subtitle)
     fontsize=DEFAULT_FONT_SIZE
     if !isnothing(atts)
-        fontsize = _excel_update_atts!(atts, fontsize)
+        fontsize = _excel_update_fontsize!(atts, fontsize)
         setFont(sheet, current_row, 1; atts...)
     else
         setFont(sheet, current_row, 1; size=fontsize)
@@ -577,7 +623,7 @@ function _excel_write_footnotes!(sheet, table_data, style, current_row, num_cols
         mergeCells(sheet, XLSX.CellRange(XLSX.CellRef(current_row, 1), XLSX.CellRef(current_row, num_cols + col_offset)))
         footnote_lines = _excel_text_lines(footnote_text)
         if !isnothing(atts)
-            fontsize = _excel_update_atts!(atts, fontsize)
+            fontsize = _excel_update_fontsize!(atts, fontsize)
             setFont(sheet, current_row, 1; atts...)
         else
             setFont(sheet, current_row, 1; size=fontsize)
@@ -587,14 +633,16 @@ function _excel_write_footnotes!(sheet, table_data, style, current_row, num_cols
    end
     setUniformAlignment(sheet, start_row:current_row-1, 1; vertical = "center", horizontal=_excel_alignment_string(table_data.footnote_alignment), wrapText = true)
     setUniformFont(sheet, start_row:current_row-1, 1; atts...)
+    return current_row
 end
 
 function _write_excel_sourcenotes!(sheet, table_data, style, current_row, num_cols, col_offset)
+    _excel_unempty_row(sheet, current_row, num_cols+col_offset) # ensure these cells aren't empty before merging
     sheet[current_row, 1] = table_data.source_notes
     atts = _excel_newpairs(style.source_note)
     fontsize=DEFAULT_FONT_SIZE
     if !isnothing(atts)
-        fontsize = _excel_update_atts!(atts, fontsize)
+        fontsize = _excel_update_fontsize!(atts, fontsize)
         setFont(sheet, current_row, 1; atts...)
     else
         setFont(sheet, current_row, 1; size=fontsize)
