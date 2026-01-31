@@ -28,11 +28,12 @@ function _excel_alignment_string(s)
 end
 
 """
-    _excel_unempty_row(sheet, current_row, cols)
+    _excel_unempty_row(sheet, row, cols)
 
-Ensure all cells in current row are not EmptyCells to ensure formatting works completely.
+Ensure all cells in current row are not XLSX.EmptyCells to ensure formatting works completely.
+Cols expected to be a unit range.
 """
-_excel_unempty_row(sheet, current_row, cols) = sheet[current_row, cols] = ""
+_excel_unempty_row(sheet, row, cols) = sheet[row, cols] = ""
 
 """
     _excel_column_alignment(col, col_alignment, table_alignment)
@@ -107,14 +108,14 @@ function _excel_to_superscript(n::Int)
 end
 
 """
-    _excel_column_width_for_text(text)
+    _excel_column_width_for_text(text, fontsize)
 
 Estimate the width of a cell in Excel needed to accommodate text of a given length.
 """
-_excel_column_width_for_text(text_length, font_size) = (0.6 * text_length * font_size + 15.0) / 7.0
+_excel_column_width_for_text(text_length, font_size) = (0.55 * text_length * font_size + 15.0) / 7.0
 
 """
-    _excel_row_height_for_text(text)
+    _excel_row_height_for_text(text, fontsize)
 
 Estimate the height of a cell in Excel needed to accommodate a given number of lines of text of a given font size.
 """
@@ -140,12 +141,16 @@ end
 Determines the length of the longest line in a multi-line text
 """
 function _excel_multilength(text)
-    lines=split(text, "\n")
-    maxlen=0
-    for line in lines
-        maxlen = max(maxlen, length(line))
+    if text isa String
+        lines=split(text, "\n")
+        maxlen=0
+        for line in lines
+            maxlen = max(maxlen, length(line))
+        end
+        return maxlen
+    else
+        return 0
     end
-    return maxlen
 end
 
 """
@@ -154,6 +159,7 @@ end
 Convert a keys in avector to Symbols.
 """
 function _excel_newpairs(atts)
+    isnothing(atts) && return nothing
     newpairs = Vector{Pair{Symbol,Any}}()
     for (k, v) in atts
         newv = tryparse(Int, v)
@@ -164,6 +170,48 @@ function _excel_newpairs(atts)
         push!(newpairs, newk => newv)
     end
     return newpairs
+end
+
+function _excel_check_table_format(property, b)
+    if !isnothing(b)
+        return b
+    else
+        return getproperty(DEFAULT_EXCEL_TABLE_FORMAT, Symbol(property))
+    end
+end
+
+"""
+    _excel_tableformat_atts(property::String, format::Vector{ExcelPair})
+
+Override those attributes of the default table format for this table element 
+with those specified in ExcelTableFormat
+"""
+function _excel_tableformat_atts(property, format)
+    v1 = getproperty(DEFAULT_EXCEL_TABLE_FORMAT, Symbol(property))
+    isnothing(format) && return v1
+    d = Dict(v1)              # first vector
+    for (k, v) in format      # second vector overrides
+        d[k] = v
+    end
+    result = collect(d)
+    return result
+end
+
+"""
+    _excel_tablestyle_atts(property::String, format::Vector{ExcelPair})
+
+Override those attributes of the default table style for this table element 
+with those specified in ExcelTableStyle
+"""
+function _excel_tablestyle_atts(property, format)
+    v1 = getproperty(DEFAULT_EXCEL_TABLE_STYLE, Symbol(property))
+    isnothing(format) && return v1
+    d = Dict(v1)              # first vector
+    for (k, v) in format      # second vector overrides
+        d[k] = v
+    end
+    result = collect(d)
+    return result
 end
 
 """
@@ -179,6 +227,7 @@ function _excel_font_attributes(table_data, highlighter, current_row, j)
         return nothing
     end
 end
+
 """
     _excel_format_attributes(table_data, excelFormatter, current_row, j)
 
@@ -215,11 +264,31 @@ function _excel_update_fontsize!(atts, fontsize)
     return fontsize
 end
 
+"""
+    _excel_create_mergemap(table_data)
 
-function _excel_fmt__stringify(columns::AbstractVector{Int})
+Create a Dict mapping merge firlds in the header rows
+"""
+function _excel_create_mergemap(table_data)
+    merge_map = Dict{Tuple{Int, Int}, Tuple{Int, Any, Symbol}}()  # (row, col) => (span, data, alignment)
+    if table_data.merge_column_label_cells !== nothing
+        for merge_cell in table_data.merge_column_label_cells
+            # merge_cell has fields: i (row), j (column), column_span, data, alignment
+            merge_map[(merge_cell.i, merge_cell.j)] = (merge_cell.column_span, merge_cell.data, merge_cell.alignment)
+        end
+    end
+    return merge_map
+end
+
+"""
+    fmt__excel_stringify(columns)
+
+Create formatter function that turns data types XLSX.jl can't handle into their string representation.
+"""
+function fmt__excel_stringify(columns::AbstractVector{Int})
 
     return (v, _, j) -> begin
-        !(v isa XLSX.CellConcreteType) && return v
+        (v isa XLSX.CellConcreteType) && return v
 
         for c in columns
             j == c && return string(v)
@@ -229,19 +298,20 @@ function _excel_fmt__stringify(columns::AbstractVector{Int})
     end
 end
 
-function _excel_update_length_and_height!(max_row_lines, max_row_height, max_col_length, max_col_height, col, text, fontsize)
+"""
+    _excel_update_length_and_height!(max_row_lines, max_row_height, max_col_length, max_col_height, col, text, fontsize)
+
+Accumulate the number of tect lines and font heights in a single row and the length and font height of text in a single column
+"""
+function _excel_cell_length_and_height(text, fontsize)
     if text isa AbstractString
         lines = _excel_text_lines(text)
-        if !isnothing(col)
-            max_col_length[col] = max(_excel_multilength(text), max_col_length[col])
-            max_col_height[col] = max(fontsize, max_col_height[col])
-        end
     else
         lines = 1
     end
-    max_row_lines = max(max_row_lines, lines)
-    max_row_height = max(max_row_height, fontsize)
-    return max_row_lines, max_row_height
+    col_length = _excel_column_width_for_text(_excel_multilength(text), fontsize)
+    row_height = _excel_row_height_for_text(lines, fontsize)
+    return row_height, col_length
 end
 
 #=

@@ -14,22 +14,26 @@ is provided by the PrettyTablesExcelExt extension when XLSX.jl is available.
 
 # Keywords
 
-- `filename::Union{Nothing, String} = "table.xlsx"`: Output filename. If `nothing`, returns an in-memory XLSX object.
-- `sheet_name::String = "Sheet1"`: Name of the worksheet.
-- `overwrite::Bool = true`: Whether to overwrite existing files.
-- `table_style::Union{Nothing, XlsxTableStyle} = nothing`: Style to apply to the table.
-- `table_format::Union{Nothing, XlsxTableFormat} = nothing`: Format configuration for the table.
+- `filename::Union{Nothing, String}` : the name of the file or `nothing`. (Default: `nothing`)
+- `sheet-name::String` : the name of the worksheet to write to, which will be created or renamed if necessary. (Default: `prettytable`).
+- `mode::String` : Determines whether a new file is created (`mode = \"w\"`) or an existing file is updated (`mode = \"rw\"`). (Default: \"w\")
+- `overwrite::Bool` : Forces a newly created file to overwrite any existing file of the same name if `true`. (Default: `false`)
+- `anchor_cell::String` : Defines the location of the top left corner of the table in the worksheet. (Default = \"A1\")
 
 # Returns
 
-- If `filename` is a `String`: Returns the filename after writing.
-- If `filename` is `nothing`: Returns an `XLSX.XLSXFile` object (requires XLSX.jl).
+- If `filename === nothing`: Returns an in-memory `XLSX.XLSXFile` object.
+- If `filename::String` and `mode=\"w\"`: Writes to a new file and returns the filename.
+- If `filename::String` and `mode=\"rw\"`: Reads an existing file, updates and returns the in-memory `XLSX.XLSXFile` object
+
+Save a returned XLSX.XLSXFile using `XLSX.writexlsx`.
 
 # Extended Help
 
 The Excel backend converts the table data and all its sections (title, subtitle, headers,
 footers, etc.) into an Excel workbook. When XLSX.jl is not loaded, calling this function
 will produce an error message with instructions on how to install and load the package.
+
 """
 function _excel__print(args...; kwargs...)
 

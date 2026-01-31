@@ -34,13 +34,18 @@ makedocs(
                 "Markdown Backend"    => "man/markdown/markdown_backend.md",
                 "Examples"            => "man/markdown/markdown_examples.md",
             ],
-            "Typst"                => Any[
-                "Typst Backend"    => "man/typst/typst_backend.md",
-            ]
+            "Typst"                   => Any[
+                "Typst Backend"       => "man/typst/typst_backend.md",
+            ],
+            #"Excel"                   => Any[
+                #"Excel Backend"       => "man/excel/excel_backend.md",
+                #"Pre-defined Formats" => "man/excel/excel_predefined_formats.md",
+                #"Examples"            => "man/excel/excel_examples.md",
+            #],
         ],
         "Library"                     => "lib/library.md",
-    ]
-)
+    ],
+ )
 
 deploydocs(
     repo = "github.com/ronisbr/PrettyTables.jl.git",

@@ -4,7 +4,8 @@
 #
 ############################################################################################
 
-export fmt__printf, fmt__round, fmt__latex_sn
+export fmt__printf, fmt__round, fmt__latex_sn, fmt__excel_stringify
+
 
 """
     fmt__printf(fmt_str::String[, columns::AbstractVector{Int}]) -> Function
@@ -235,4 +236,58 @@ function fmt__latex_sn(m_digits::Int, columns::AbstractVector{Int})
 
         return v
     end
+end
+
+"""
+    fmt__excel_stringify(columns)
+
+Create a formatter function that turns data types the Excel backend can't handle into their 
+string representation.
+
+The Excel backend can only handle the following data types natively:
+
+    `String`,`Float64`, `Int`, `Bool`, `Dates.Date`, `Dates.Time`, `Dates.DateTime`, `Missing`, 
+
+Passing any other datatypes will cause an error. However, converting these other data types to their 
+string representation (using the `string()` function), allows them to pass without an issue.
+
+For example, the following matrix of tuples cannot be handled natively by the Excel backend, 
+but using the stringify formatter allows it to be handled successfully as a matrix of strings:
+
+```
+julia> matrix = [(i, j) for i in 1:4, j in 1:4]
+4×4 Matrix{Tuple{Int64, Int64}}:
+ (1, 1)  (1, 2)  (1, 3)  (1, 4)
+ (2, 1)  (2, 2)  (2, 3)  (2, 4)
+ (3, 1)  (3, 2)  (3, 3)  (3, 4)
+ (4, 1)  (4, 2)  (4, 3)  (4, 4)
+
+julia> pt = pretty_table(matrix; backend=:excel, formatters = [fmt__excel_stringify(1:4)])
+XLSXFile("blank.xlsx") containing 1 Worksheet
+            sheetname size          range
+-------------------------------------------------
+          prettytable 5x4           A1:D5
+
+julia> pt[1][:]
+5×4 Matrix{Any}:
+ "Col. 1"  "Col. 2"  "Col. 3"  "Col. 4"
+ "(1, 1)"  "(1, 2)"  "(1, 3)"  "(1, 4)"
+ "(2, 1)"  "(2, 2)"  "(2, 3)"  "(2, 4)"
+ "(3, 1)"  "(3, 2)"  "(3, 3)"  "(3, 4)"
+ "(4, 1)"  "(4, 2)"  "(4, 3)"  "(4, 4)"
+```
+![image|320x500](../../docs/assets/Excel_tuples.png)
+
+"""
+function fmt__excel_stringify(args...; kwargs...)
+    error("""
+    Excel backend requires the XLSX.jl package.
+    
+    Please install and load it with:
+        using Pkg
+        Pkg.add("XLSX")
+        using XLSX
+    
+    Then retry your pretty_table call with backend = :excel.
+    """)
 end
