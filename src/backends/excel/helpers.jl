@@ -119,7 +119,7 @@ _excel_column_width_for_text(text_length, font_size) = (0.55 * text_length * fon
 
 Estimate the height of a cell in Excel needed to accommodate a given number of lines of text of a given font size.
 """
-_excel_row_height_for_text(line_count, font_size) = line_count * (font_size * 1.4) + 2
+_excel_row_height_for_text(line_count, font_size) = line_count * (font_size * 1.2) + 3
 
 """
     _excel_text_lines(text)
@@ -219,13 +219,31 @@ end
 
 Get highlighter font attributes for current row and column (j)
 """
-function _excel_font_attributes(table_data, highlighter, current_row, j)
+function _excel_highlighter_atts(table_data, highlighter, current_row, j)
     atts = highlighter.f(table_data.data, current_row, j) ? highlighter._decoration : nothing
-    if !isnothing(atts)
-        return _excel_newpairs(atts)
-    else
-        return nothing
-    end
+    font_atts = Vector{Pair{Symbol,Any}}()
+    fill_atts = Vector{Pair{Symbol,Any}}()
+    border_atts = Vector{Pair{Symbol,Any}}()
+        if !isnothing(atts)
+            for (type, type_atts) in atts # type = :font, :fill, :border and type_atts = atts for that format type
+    #            for (k, v) in type_atts
+                    if type == :font
+                        font_atts = _excel_newpairs(type_atts)
+                    elseif type == :fill
+                        fill_atts = _excel_newpairs(type_atts)
+                    elseif type == :border
+                        border_atts = type_atts
+                    else
+                        println("Unreachable reached")
+                        error()
+                    end
+    #            end
+            end
+            return (font_atts, fill_atts, border_atts)
+        else
+            return nothing
+        end
+#    end
 end
 
 """
@@ -301,7 +319,7 @@ end
 """
     _excel_update_length_and_height!(max_row_lines, max_row_height, max_col_length, max_col_height, col, text, fontsize)
 
-Accumulate the number of tect lines and font heights in a single row and the length and font height of text in a single column
+Return the column width and row height needed for a table cell value (in Excel units).
 """
 function _excel_cell_length_and_height(text, fontsize)
     if text isa AbstractString
@@ -345,4 +363,65 @@ function _excel_getsize(pairs::Vector{Pair{Symbol,Any}})
         end
     end
     return nothing
+end
+
+"""
+    _excel_set_fontsize_and_alignment!(sheet, table_data, row, col, atts)
+
+Set the font size and alignment in a cell.
+"""
+function _excel_set_fontsize_and_alignment!(sheet, row, col, atts, alignment, valign, wrap)
+    fontsize=DEFAULT_FONT_SIZE
+    if !isnothing(atts)
+        fontsize = _excel_update_fontsize!(atts, fontsize)
+        setFont(sheet, row, col; atts...)
+    else
+        setFont(sheet, row, col; size=fontsize)
+    end
+    if !isnothing(alignment)
+        setAlignment(sheet, row, col; vertical = valign, horizontal = _excel_alignment_string(alignment), wrapText=wrap)
+    end
+    return fontsize
+end
+
+"""
+    _excel_get_col_width(table_format, i, max_col_length)
+
+Resolve column width for data table columns.
+"""
+function _excel_get_col_width(table_format, i, max_col_length, col_offset)
+
+    # Don't limit non-data cells
+    if i <= col_offset
+        return max_col_length[i]
+    end
+
+    col=i-col_offset
+
+    # Always use explicitly set data cell widths
+    if table_format.data_cell_width isa Float64
+        return table_format.data_cell_width
+    elseif table_format.data_cell_width isa Vector{Float64}
+        length(table_format.data_cell_width) == length(max_col_length) || throw(ArgumentError("The table format property `data_cell_width` shoud have the same number of elements as there are data columns. Expected $(length(max_col_length)): Got $(length(table_format.data_cell_width))."))
+        return table_format.data_cell_width[col]
+    end
+
+    # Limit calculated values
+    col_width = max_col_length[col]
+    if table_format.min_data_cell_width isa Float64 && table_format.min_data_cell_width > 0.0
+        col_width = max(col_width, table_format.min_data_cell_width)
+    elseif table_format.min_data_cell_width isa Vector{Float64} && table_format.min_data_cell_width[col] > 0.0
+        length(table_format.min_data_cell_width) == length(max_col_length) || throw(ArgumentError("The table format property `min_data_cell_width` shoud have the same number of elements as there are data columns. Expected $(length(max_col_length)): Got $(length(table_format.min_data_cell_width))."))
+        col_width = max(col_width, table_format.min_data_cell_width[col])
+    end
+
+    if table_format.max_data_cell_width isa Float64 && table_format.max_data_cell_width > 0.0
+        col_width = min(col_width, table_format.max_data_cell_width)
+    elseif table_format.max_data_cell_width isa Vector{Float64} && table_format.max_data_cell_width[col] > 0.0
+        length(table_format.max_data_cell_width) == length(max_col_length) || throw(ArgumentError("The table format property `max_data_cell_width` shoud have the same number of elements as there are data columns. Expected $(length(max_col_length)): Got $(length(table_format.max_data_cell_width))."))
+        col_width = min(col_width, table_format.max_data_cell_width[col])
+    end
+
+    return col_width
+    
 end

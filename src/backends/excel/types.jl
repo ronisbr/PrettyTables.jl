@@ -23,7 +23,7 @@ const _EXCEL__LARGE_ITALIC = ["size" => "14", "italic" => "true"]
 const _EXCEL__SMALL = ["size" => "10"]
 const _EXCEL__SMALL_ITALIC = ["size" => "10", "italic" => "true"]
 const _EXCEL__SMALL_ITALIC_GRAY = ["color" => "gray", "size" => "10", "italic" => "true"]
-const _EXCEL__MERGED_CELL = ["under" => "single", "color" => "black"]
+const _EXCEL__MERGED_CELL = ["color" => "black"]
 
 ############################################################################################
 #                                       Highlighters                                       #
@@ -64,7 +64,7 @@ struct ExcelHighlighter
 
     # == Private Fields ====================================================================
 
-    _decoration::Vector{ExcelPair}
+    _decoration::Vector{Pair{Symbol,Vector{ExcelPair}}}
 
     # == Constructors ======================================================================
 
@@ -76,6 +76,14 @@ struct ExcelHighlighter
         return new(
             f,
             _excel__default_highlighter_fd,
+            [:font => [decoration]]
+        )
+    end
+
+    function ExcelHighlighter(f::Function, decoration::Pair{Symbol,Vector{ExcelPair}})
+        return new(
+            f,
+            _excel__default_highlighter_fd,
             [decoration]
         )
     end
@@ -84,11 +92,11 @@ struct ExcelHighlighter
         return new(
             f,
             _excel__default_highlighter_fd,
-            decoration
+            [:font => decoration]
         )
     end
 
-    function ExcelHighlighter(f::Function, decoration::Vector{ExcelPair}, args...)
+    function ExcelHighlighter(f::Function, decoration::Vector{Pair{Symbol,Vector{ExcelPair}}}, args...)
         return new(
             f,
             _excel__default_highlighter_fd,
@@ -162,6 +170,9 @@ the corresponding Excel property.
     vline_after_row_labels_type::Union{Nothing,Vector{ExcelPair}}=nothing
     vline_between_data_columns::Union{Nothing,Bool} = nothing
     vline_between_data_columns_type::Union{Nothing,Vector{ExcelPair}}=nothing
+    data_cell_width::Union{Float64,Vector{Float64},Nothing}=nothing
+    min_data_cell_width::Union{Float64,Vector{Float64},Nothing}=nothing
+    max_data_cell_width::Union{Float64,Vector{Float64},Nothing}=nothing
 end
 #=
 @kwdef struct ExcelTableFormat
@@ -220,6 +231,9 @@ const DEFAULT_EXCEL_TABLE_FORMAT = ExcelTableFormat(
     ExcelPair["style" => "thin", "color" => "Black"],
     true,
     ExcelPair["style" => "dotted", "color" => "Black"],
+    0.0,
+    0.0,
+    0.0,
 )
 
 """
