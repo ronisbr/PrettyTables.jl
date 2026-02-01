@@ -267,8 +267,9 @@ function _write_excel_table!(sheet, table_data::TableData;
         end
 
        # Do before writing cell content and highlighting
+        _excel_unempty_row(sheet, current_row + anchor_row_offset, (table_data.show_row_number_column ? 2 : 1) + anchor_col_offset:num_cols+col_offset + anchor_col_offset) # ensure these cells aren't empty before merging
         if _excel_check_table_format("underline_data_rows",table_format.underline_data_rows)
-            setBorder(sheet, current_row + anchor_row_offset, col_offset + anchor_col_offset:num_cols + col_offset + anchor_col_offset; bottom=_excel_tableformat_atts("underline_data_rows_type", table_format.underline_data_rows_type))
+            setBorder(sheet, current_row + anchor_row_offset, col_offset + anchor_col_offset+1:num_cols + col_offset + anchor_col_offset; bottom=_excel_tableformat_atts("underline_data_rows_type", table_format.underline_data_rows_type))
         end
 
         # Write data cells
@@ -329,6 +330,7 @@ function _write_excel_table!(sheet, table_data::TableData;
     if !isempty(table_data.source_notes)
         _excel_unempty_row(sheet, current_row + anchor_row_offset, 1 + anchor_col_offset:num_cols+col_offset + anchor_col_offset) # ensure these cells aren't empty before merging
         _write_excel_sourcenotes!(sheet, table_data, style, current_row, num_cols, anchor_row_offset, anchor_col_offset, col_offset)
+        current_row += 1
     end
     
     for i in 1:num_cols+col_offset
@@ -339,7 +341,7 @@ function _write_excel_table!(sheet, table_data::TableData;
     end
 
     if _excel_check_table_format("outside_border",table_format.outside_border)
-        setBorder(sheet, 1 + anchor_row_offset:current_row + anchor_row_offset, 1 + anchor_col_offset:num_cols+col_offset + anchor_col_offset; outside=_excel_tableformat_atts("outside_border_type",table_format.outside_border_type))
+        setBorder(sheet, 1 + anchor_row_offset:current_row + anchor_row_offset-1, 1 + anchor_col_offset:num_cols+col_offset + anchor_col_offset; outside=_excel_tableformat_atts("outside_border_type",table_format.outside_border_type))
     end
     return nothing
 end
