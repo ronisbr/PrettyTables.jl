@@ -166,16 +166,16 @@ function _write_excel_table!(sheet, table_data::TableData;
         current_row += 1
     end
 
-    
-    # Add blank line after title/subtitle
+    # only if any title/subtitle has been written    
     if current_row > 1
         _excel_unempty_row(sheet, current_row + anchor_row_offset, 1 + anchor_col_offset:num_cols+col_offset + anchor_col_offset) # ensure these cells aren't empty before merging
 
         # underline beneath title/subtitle block
         if _excel_check_table_format("underline_title", table_format.underline_title)
-            setBorder(sheet, current_row + anchor_row_offset, 1 + anchor_col_offset:num_cols+col_offset + anchor_col_offset; bottom=table_format.underline_title_type)
+            setBorder(sheet, current_row + anchor_row_offset, 1 + anchor_col_offset:num_cols+col_offset + anchor_col_offset; bottom=_excel_tableformat_atts("underline_title_type", table_format.underline_title_type))
         end
 
+        # Add blank line after title/subtitle
         current_row += 1
     end
 
@@ -214,8 +214,8 @@ function _write_excel_table!(sheet, table_data::TableData;
             current_row += 1
         end
         # line under header block
-        if  _excel_check_table_format("underline_headers",table_format.underline_headers)
-            setBorder(sheet, current_row + anchor_row_offset-1, 1 + anchor_col_offset:num_cols+col_offset + anchor_col_offset; bottom=table_format.underline_headers_type)
+        if _excel_check_table_format("underline_headers",table_format.underline_headers)
+            setBorder(sheet, current_row + anchor_row_offset-1, 1 + anchor_col_offset:num_cols+col_offset + anchor_col_offset; bottom=_excel_tableformat_atts("underline_headers_type", table_format.underline_headers_type))
         end
     end
     
@@ -234,6 +234,23 @@ function _write_excel_table!(sheet, table_data::TableData;
             _excel_write_group_row!(sheet, table_data, table_format, style, footnote_refs, row_group_map, i, num_cols, col_offset, anchor_row_offset, anchor_col_offset, current_row)
 
             max_row_height = 0 # for row height - reset each row
+
+            # Annoyingly, now need to reapply highlighters in bottom row of each group, in case any of the highlighters sets cell borders that have been overwritten
+            if i > 1
+                for j in 1:num_cols
+                    for highlighter in highlighters
+                        atts = _excel_highlighter_atts(table_data, highlighter, i-1, j)
+                        if !isnothing(atts)
+                            _, _, border_atts = atts
+                            if !isempty(border_atts)
+                                setBorder(sheet, current_row + anchor_row_offset - 1, j + col_offset + anchor_col_offset; allsides = [border_atts...])
+                            end
+                            break
+                        end
+                    end
+                end
+            end
+
             current_row += 1
         end
         
@@ -248,22 +265,34 @@ function _write_excel_table!(sheet, table_data::TableData;
         if table_data.row_labels !== nothing && i <= length(table_data.row_labels)
             max_row_height = _excel_write_row_label(sheet, table_data, style, footnote_refs, i, row_label_col, max_row_height, max_col_length, anchor_row_offset, anchor_col_offset, current_row)
         end
-       
+
         # Write data cells
         for j in 1:num_cols
             max_row_height = _excel_write_cell!(sheet, table_data, table_format, style, highlighters, excel_formatters, i, j, num_cols, col_offset, footnote_refs, max_row_height, max_col_length, anchor_row_offset, anchor_col_offset, current_row)
         end
         setRowHeight(sheet, current_row + anchor_row_offset; height = max_row_height)
-        if  _excel_check_table_format("underline_data_rows",table_format.underline_data_rows)
-            setBorder(sheet, current_row + anchor_row_offset, 1:num_cols+col_offset + anchor_col_offset; bottom=table_format.underline_data_rows_type)
-        end
         max_row_height = 0 # for row height - reset each row
         
         current_row += 1
     end
-#    _excel_unempty_row(sheet, current_row, 1:num_cols+col_offset) # ensure these cells aren't empty before merging
-    if  _excel_check_table_format("underline_table",table_format.underline_table)
-        setBorder(sheet, current_row + anchor_row_offset-1, 1 + anchor_col_offset:num_cols+col_offset + anchor_col_offset; bottom=table_format.underline_table_type)
+
+    if _excel_check_table_format("underline_table",table_format.underline_table)
+        setBorder(sheet, current_row + anchor_row_offset-1, 1 + anchor_col_offset:num_cols+col_offset + anchor_col_offset; bottom=_excel_tableformat_atts("underline_table_type", table_format.underline_table_type))
+    end
+
+    # Annoyingly, now need to reapply highlighters in bottom row of table, in case any of the highlighters sets cell borders
+    i = num_rows
+    for j in 1:num_cols
+        for highlighter in highlighters
+            atts = _excel_highlighter_atts(table_data, highlighter, i, j)
+            if !isnothing(atts)
+                _, _, border_atts = atts
+                if !isempty(border_atts)
+                    setBorder(sheet, current_row + anchor_row_offset - 1, j + col_offset + anchor_col_offset; allsides = [border_atts...])
+                end
+                break
+            end
+        end
     end
 
     # Write summary rows if present
@@ -275,43 +304,38 @@ function _write_excel_table!(sheet, table_data::TableData;
             max_row_height = 0 # for row height - reset each row
             current_row += 1
         end
-        if  _excel_check_table_format("underline_summary",table_format.underline_summary)
-            setBorder(sheet, current_row + anchor_row_offset-1, 1 + anchor_col_offset:num_cols+col_offset + anchor_col_offset; bottom=table_format.underline_summary_type)
+        if _excel_check_table_format("underline_summary",table_format.underline_summary)
+            setBorder(sheet, current_row + anchor_row_offset-1, 1 + anchor_col_offset:num_cols+col_offset + anchor_col_offset; bottom=_excel_tableformat_atts("underline_summary_type", table_format.underline_summary_type))
         end
     end
 
     # Vertical line to right of row labels if required
     if table_data.row_labels !== nothing && _excel_check_table_format("vline_after_row_labels",table_format.vline_after_row_labels)
         start = (!isempty(table_data.title) ? 1 : 0) + (!isempty(table_data.subtitle) ? 1 : 0) + anchor_row_offset + 2 # allow for extra line after title/subtitle
-        setBorder(sheet, start:current_row + anchor_row_offset-1, col_offset + anchor_col_offset + (isnothing(table_data.row_labels) ? 1 : 0); right=table_format.vline_after_row_labels_type)
+        setBorder(sheet, start:current_row + anchor_row_offset-1, col_offset + anchor_col_offset + (isnothing(table_data.row_labels) ? 1 : 0); right=_excel_tableformat_atts("vline_after_row_labels_type", table_format.vline_after_row_labels_type))
     end
 
     # Write footnotes if present
     if table_data.footnotes !== nothing && !isempty(table_data.footnotes)
         _excel_unempty_row(sheet, current_row + anchor_row_offset, 1 + anchor_col_offset:num_cols+col_offset + anchor_col_offset) # ensure these cells aren't empty before merging
-#        current_row += 1 # Blank line before footnotes
-        current_row = _excel_write_footnotes!(sheet, table_data, style, current_row, num_cols, anchor_row_offset, anchor_col_offset, col_offset)
-        if  _excel_check_table_format("underline_footnotes", table_format.underline_footnotes)
-            setBorder(sheet, current_row-1, 1:num_cols+col_offset + anchor_col_offset; bottom=table_format.underline_footnotes_type)
-        end
+        current_row = _excel_write_footnotes!(sheet, table_data, table_format, style, current_row, num_cols, anchor_row_offset, anchor_col_offset, col_offset)
      end
     
     # Write source notes if present
     if !isempty(table_data.source_notes)
         _excel_unempty_row(sheet, current_row + anchor_row_offset, 1 + anchor_col_offset:num_cols+col_offset + anchor_col_offset) # ensure these cells aren't empty before merging
-#        current_row += 1  # Blank line before source notes
         _write_excel_sourcenotes!(sheet, table_data, style, current_row, num_cols, anchor_row_offset, anchor_col_offset, col_offset)
-        current_row += 1  # Blank line before source notes
     end
     
     for i in 1:num_cols+col_offset
-        if max_col_length[i] > 0
-            setColumnWidth(sheet, i + anchor_col_offset; width = max_col_length[i])
+        col_width = _excel_get_col_width(table_format, i, max_col_length, col_offset)
+        if col_width > 0.0
+            setColumnWidth(sheet, i + anchor_col_offset; width = col_width)
         end
     end
 
-    if  _excel_check_table_format("outside_border",table_format.outside_border)
-        setBorder(sheet, 1 + anchor_row_offset:current_row + anchor_row_offset-1, 1 + anchor_col_offset:num_cols+col_offset + anchor_col_offset; outside=_excel_tableformat_atts("outside_border_type",table_format.outside_border_type))
+    if _excel_check_table_format("outside_border",table_format.outside_border)
+        setBorder(sheet, 1 + anchor_row_offset:current_row + anchor_row_offset, 1 + anchor_col_offset:num_cols+col_offset + anchor_col_offset; outside=_excel_tableformat_atts("outside_border_type",table_format.outside_border_type))
     end
     return nothing
 end
