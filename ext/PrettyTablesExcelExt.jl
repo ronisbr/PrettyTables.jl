@@ -266,6 +266,11 @@ function _write_excel_table!(sheet, table_data::TableData;
             max_row_height = _excel_write_row_label(sheet, table_data, style, footnote_refs, i, row_label_col, max_row_height, max_col_length, anchor_row_offset, anchor_col_offset, current_row)
         end
 
+       # Do before writing cell content and highlighting
+        if _excel_check_table_format("underline_data_rows",table_format.underline_data_rows)
+            setBorder(sheet, current_row + anchor_row_offset, col_offset + anchor_col_offset:num_cols + col_offset + anchor_col_offset; bottom=_excel_tableformat_atts("underline_data_rows_type", table_format.underline_data_rows_type))
+        end
+
         # Write data cells
         for j in 1:num_cols
             max_row_height = _excel_write_cell!(sheet, table_data, table_format, style, highlighters, excel_formatters, i, j, num_cols, col_offset, footnote_refs, max_row_height, max_col_length, anchor_row_offset, anchor_col_offset, current_row)
@@ -281,10 +286,9 @@ function _write_excel_table!(sheet, table_data::TableData;
     end
 
     # Annoyingly, now need to reapply highlighters in bottom row of table, in case any of the highlighters sets cell borders
-    i = num_rows
     for j in 1:num_cols
         for highlighter in highlighters
-            atts = _excel_highlighter_atts(table_data, highlighter, i, j)
+            atts = _excel_highlighter_atts(table_data, highlighter, num_rows, j)
             if !isnothing(atts)
                 _, _, border_atts = atts
                 if !isempty(border_atts)

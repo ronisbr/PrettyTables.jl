@@ -385,18 +385,16 @@ function _excel_set_fontsize_and_alignment!(sheet, row, col, atts, alignment, va
 end
 
 """
-    _excel_get_col_width(table_format, i, max_col_length)
+    _excel_get_col_width(table_format, i, max_col_length, col_offset)
 
 Resolve column width for data table columns.
 """
-function _excel_get_col_width(table_format, i, max_col_length, col_offset)
+function _excel_get_col_width(table_format, col, max_col_length, col_offset)
 
     # Don't limit non-data cells
-    if i <= col_offset
-        return max_col_length[i]
+    if col <= col_offset
+        return max_col_length[col]
     end
-
-    col=i-col_offset
 
     # Always use explicitly set data cell widths
     if table_format.data_cell_width isa Float64

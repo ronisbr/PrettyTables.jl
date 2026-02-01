@@ -265,9 +265,6 @@ function _excel_write_cell!(sheet, table_data, table_format, style, highlighters
     end
 
        # Do before highlighting
-    if _excel_check_table_format("underline_data_rows",table_format.underline_data_rows)
-        setBorder(sheet, current_row + anchor_row_offset, 1:num_cols+col_offset + anchor_col_offset; bottom=_excel_tableformat_atts("underline_data_rows_type", table_format.underline_data_rows_type))
-    end
     if _excel_check_table_format("vline_between_data_columns",table_format.vline_between_data_columns) && j < num_cols
         setBorder(sheet, current_row + anchor_row_offset, j + col_offset + anchor_col_offset; right=_excel_tableformat_atts("vline_between_data_columns_type", table_format.vline_between_data_columns_type))
     end
