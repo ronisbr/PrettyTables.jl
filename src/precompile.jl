@@ -313,6 +313,20 @@ PrecompileTools.@setup_workload begin
 
         pretty_table(types; backend = :typst)
 
+#=        # == Excel =========================================================================
+
+        pretty_table(matrix; backend = :excel)
+
+        pretty_table(
+            matrix;
+            backend = :excel,
+            highlighters = [
+                ExcelHighlighter((data, i, j) -> i == 1, ["text-fill" => "red"])
+            ]
+        )
+
+        pretty_table(types; backend = :excel)
+=#        
         # == Input: Tables.jl ==============================================================
 
         pretty_table(table)
