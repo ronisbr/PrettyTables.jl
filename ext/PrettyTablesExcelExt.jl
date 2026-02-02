@@ -220,6 +220,7 @@ function _write_excel_table!(sheet, table_data::TableData;
     end
     
     # Write data rows (with row groups)
+
     # Create a mapping of row index to row group label
     row_group_map = Dict{Int, String}()
     if table_data.row_group_labels !== nothing
@@ -255,6 +256,8 @@ function _write_excel_table!(sheet, table_data::TableData;
         end
         
         # Now write the actual data row
+        _excel_unempty_row(sheet, current_row + anchor_row_offset, 1+anchor_col_offset:num_cols+col_offset + anchor_col_offset) # ensure these cells aren't empty before merging
+
         # Write row number if needed
         if table_data.show_row_number_column
             max_row_height = _excel_write_row_number!(sheet, table_data, table_format, style, i, max_row_height, anchor_row_offset, anchor_col_offset, current_row)
@@ -267,9 +270,8 @@ function _write_excel_table!(sheet, table_data::TableData;
         end
 
        # Do before writing cell content and highlighting
-        _excel_unempty_row(sheet, current_row + anchor_row_offset, (table_data.show_row_number_column ? 2 : 1) + anchor_col_offset:num_cols+col_offset + anchor_col_offset) # ensure these cells aren't empty before merging
         if _excel_check_table_format("underline_data_rows",table_format.underline_data_rows)
-            setBorder(sheet, current_row + anchor_row_offset, col_offset + anchor_col_offset+1:num_cols + col_offset + anchor_col_offset; bottom=_excel_tableformat_atts("underline_data_rows_type", table_format.underline_data_rows_type))
+            setBorder(sheet, current_row + anchor_row_offset, 1 + anchor_col_offset:num_cols + col_offset + anchor_col_offset; bottom=_excel_tableformat_atts("underline_data_rows_type", table_format.underline_data_rows_type))
         end
 
         # Write data cells
@@ -302,10 +304,12 @@ function _write_excel_table!(sheet, table_data::TableData;
 
     # Write summary rows if present
     if table_data.summary_rows !== nothing
-#        current_row += 1  # Blank line before summary
         for (idx, summary_row_func) in enumerate(table_data.summary_rows)
             _excel_unempty_row(sheet, current_row + anchor_row_offset, 1 + anchor_col_offset:num_cols+col_offset + anchor_col_offset) # ensure these cells aren't empty before merging
             _excel_write_summary_row(sheet, table_data, table_format, style, idx, summary_row_func, excel_formatters, num_cols, col_offset, footnote_refs, max_row_height, max_col_length, anchor_row_offset, anchor_col_offset, current_row)
+            if _excel_check_table_format("underline_summary_rows",table_format.underline_summary_rows) && idx < length(table_data.summary_rows)
+                setBorder(sheet, current_row + anchor_row_offset, 1 + anchor_col_offset:num_cols+col_offset + anchor_col_offset; bottom=_excel_tableformat_atts("underline_summary_rows_type", table_format.underline_summary_rows_type))
+            end
             max_row_height = 0 # for row height - reset each row
             current_row += 1
         end
