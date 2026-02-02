@@ -160,6 +160,8 @@ the corresponding Excel property.
     overline_group_type::Union{Nothing,Vector{ExcelPair}}=nothing
     underline_group::Union{Nothing,Bool} = nothing
     underline_group_type::Union{Nothing,Vector{ExcelPair}}=nothing
+    underline_summary_rows::Union{Nothing,Bool} = nothing
+    underline_summary_rows_type::Union{Nothing,Vector{ExcelPair}}=nothing
     underline_summary::Union{Nothing,Bool} = nothing
     underline_summary_type::Union{Nothing,Vector{ExcelPair}}=nothing
     underline_footnotes::Union{Nothing,Bool} = nothing
@@ -174,66 +176,40 @@ the corresponding Excel property.
     min_data_cell_width::Union{Float64,Vector{Float64},Nothing}=nothing
     max_data_cell_width::Union{Float64,Vector{Float64},Nothing}=nothing
 end
-#=
-@kwdef struct ExcelTableFormat
-    outside_border::Bool = true
-    outside_border_type::Vector{ExcelPair}=["style" => "thick", "color" => "Black"]
-    underline_title::Bool = true
-    underline_title_type::Vector{ExcelPair}=["style" => "thin", "color" => "Black"]
-    underline_headers::Bool=true
-    underline_headers_type::Vector{ExcelPair}=["style" => "thin", "color" => "Black"]
-    underline_merged_headers::Bool=true
-    underline_merged_headers_type::Vector{ExcelPair}=["style" => "thin", "color" => "Black"]
-    underline_data_rows::Bool=true
-    underline_data_rows_type::Vector{ExcelPair}=["style" => "dotted", "color" => "Black"]
-    underline_table::Bool=true
-    underline_table_type::Vector{ExcelPair}=["style" => "thin", "color" => "Black"]
-    overline_group::Bool=true
-    overline_group_type::Vector{ExcelPair}=["style" => "thin", "color" => "Black"]
-    underline_group::Bool=true
-    underline_group_type::Vector{ExcelPair}=["style" => "thin", "color" => "Black"]
-    underline_summary::Bool=true
-    underline_summary_type::Vector{ExcelPair}=["style" => "thin", "color" => "Black"]
-    underline_footnotes::Bool=true
-    underline_footnotes_type::Vector{ExcelPair}=["style" => "thin", "color" => "Black"]
-    vline_after_row_numbers::Bool=true
-    vline_after_row_numbers_type::Vector{ExcelPair}=["style" => "thin", "color" => "Black"]
-    vline_after_row_labels::Bool=true
-    vline_after_row_labels_type::Vector{ExcelPair}=["style" => "thin", "color" => "Black"]
-    vline_between_data_columns::Bool=true
-    vline_between_data_columns_type::Vector{ExcelPair}=["style" => "dotted", "color" => "Black"]
-end
-=#
+
+
 const DEFAULT_EXCEL_TABLE_FORMAT = ExcelTableFormat(
-    true,
-    ExcelPair["style" => "thick", "color" => "Black"],
-    true,
-    ExcelPair["style" => "thin", "color" => "Black"],
-    true,
-    ExcelPair["style" => "thin", "color" => "Black"],
-    true,
-    ExcelPair["style" => "thin", "color" => "Black"],
-    true,
-    ExcelPair["style" => "dotted", "color" => "Black"],
-    true,
-    ExcelPair["style" => "thin", "color" => "Black"],
-    true,
-    ExcelPair["style" => "thin", "color" => "Black"],
-    true,
-    ExcelPair["style" => "thin", "color" => "Black"],
-    true,
-    ExcelPair["style" => "thin", "color" => "Black"],
-    true,
-    ExcelPair["style" => "thin", "color" => "Black"],
-    true,
-    ExcelPair["style" => "thin", "color" => "Black"],
-    true,
-    ExcelPair["style" => "thin", "color" => "Black"],
-    true,
-    ExcelPair["style" => "dotted", "color" => "Black"],
-    0.0,
-    0.0,
-    0.0,
+    true,                                                 # outside_border
+    ExcelPair["style" => "thick", "color" => "Black"],    # outside_border_type
+    true,                                                 # underline_title
+    ExcelPair["style" => "thin", "color" => "Black"],     # underline_title_type
+    true,                                                 # underline_headers
+    ExcelPair["style" => "thin", "color" => "Black"],     # underline_headers_type
+    true,                                                 # underline_merged_headers
+    ExcelPair["style" => "thin", "color" => "Black"],     # underline_merged_headers_type
+    true,                                                 # underline_data_rows
+    ExcelPair["style" => "dotted", "color" => "Black"],   # underline_data_rows_type
+    true,                                                 # underline_table
+    ExcelPair["style" => "thin", "color" => "Black"],     # underline_table_type
+    true,                                                 # overline_group
+    ExcelPair["style" => "thin", "color" => "Black"],     # overline_group_type
+    true,                                                 # underline_group
+    ExcelPair["style" => "thin", "color" => "Black"],     # underline_group_type
+    true,                                                  # underline_summary_rows
+    ExcelPair["style" => "dotted", "color" => "Black"],   # underline_summary_rows_type
+    true,                                                 # underline_summary
+    ExcelPair["style" => "thin", "color" => "Black"],     # underline_summary_type
+    true,                                                 # underline_footnotes
+    ExcelPair["style" => "thin", "color" => "Black"],     # underline_footnotes_type
+    true,                                                 # vline_after_row_numbers
+    ExcelPair["style" => "thin", "color" => "Black"],     # vline_after_row_numbers_type
+    true,                                                 # vline_after_row_labels
+    ExcelPair["style" => "thin", "color" => "Black"],     # vline_after_row_labels_type
+    true,                                                 # vline_between_data_columns
+    ExcelPair["style" => "dotted", "color" => "Black"],   # vline_between_data_columns_type
+    0.0,                                                  # data_cell_width
+    0.0,                                                  # min_data_cell_width
+    0.0,                                                  # max_data_cell_width
 )
 
 """
