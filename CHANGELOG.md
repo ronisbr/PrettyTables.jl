@@ -1,6 +1,12 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 3.2.1
+-------------
+
+- ![Bugfix][badge-bugfix] Fix border rendering in Typst merged cells.
+- ![Bugfix][badge-bugfix] Fix alignment in Typst continuation cells.
+
 Version 3.2.0
 -------------
 
