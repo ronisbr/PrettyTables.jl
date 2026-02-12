@@ -32,13 +32,7 @@ const _TYPST__CELL_ATTRIBUTES = [
 ]
 
 const _TYPST__TABLE_ATTRIBUTES = [
-    "rows",
-    "gutter",
-    "column-gutter",
-    "row-gutter",
-    "inset",
-    "fill",
-    "stroke",
+    "rows", "gutter", "column-gutter", "row-gutter", "inset", "fill", "stroke"
 ]
 
 const _TYPST__STRING_ATTRIBUTES = [
@@ -89,7 +83,9 @@ const _TYPST__TEXT_ATTRIBUTES = [
 ]
 
 _typst__filter_text_atributes = filter(
-    x -> (occursin(r"^text-", x[1])) && (replace(x[1],r"text-"=>"") ∈ _TYPST__TEXT_ATTRIBUTES )
+    x ->
+        (occursin(r"^text-", x[1])) &&
+        (replace(x[1], r"text-"=>"") ∈ _TYPST__TEXT_ATTRIBUTES),
 )
 
 ############################################################################################
@@ -210,8 +206,6 @@ Define the style of the tables printed with the Typst back end.
     source_note::Vector{TypstPair}                    = _TYPST__SMALL_ITALIC_GRAY
 end
 
-
-
 abstract type AbstractTypstLength end
 abstract type TypstLengthKind end
 abstract type TypstFixedLengthKind <: TypstLengthKind end
@@ -240,8 +234,8 @@ const _TYPST_SUFFIX_UNIT_MAP = Dict(
     "em" => Em,
     "ex" => Ex,
     "fr" => Fr,
-    "percent"  => Percent,
-    "%"  => Percent,
+    "percent" => Percent,
+    "%" => Percent,
     "auto" => Auto,
 )
 
@@ -375,21 +369,21 @@ Typst layout reference: https://typst.app/docs/reference/layout/
 Typst syntax reference: https://typst.app/docs/reference/syntax/
 
 """
-struct TypstLength{T <: Union{Auto,TypstLengthKind}} <: AbstractTypstLength
+struct TypstLength{T <: Union{Auto, TypstLengthKind}} <: AbstractTypstLength
     value::Union{Nothing, Float64}
 end
 
 # Convenience constructors
 TypstLength() = TypstLength{Auto}(nothing)
-TypstLength(::Type{Auto},x=nothing) = TypstLength{Auto}(nothing)
+TypstLength(::Type{Auto}, x = nothing) = TypstLength{Auto}(nothing)
 TypstLength(::Type{T}, x::Real) where {T <: TypstLengthKind} = TypstLength{T}(Float64(x))
 TypstLength(s::AbstractString) = parse(TypstLength, s)
-function TypstLength(t::Symbol, x::Real) 
+function TypstLength(t::Symbol, x::Real)
     T = get(_TYPST_SUFFIX_UNIT_MAP, (lowercase ∘ string)(t), Auto)
     TypstLength{T}(Float64(x))
 end
 
-function Base.tryparse(::Type{TypstLength}, s::AbstractString) :: Union{Nothing, TypstLength}
+function Base.tryparse(::Type{TypstLength}, s::AbstractString)::Union{Nothing, TypstLength}
     t = lowercase(strip(s))
 
     if t == "auto"
@@ -415,7 +409,7 @@ function Base.tryparse(::Type{TypstLength}, s::AbstractString) :: Union{Nothing,
     return T === Auto ? TypstLength(Auto) : TypstLength(T, value)
 end
 
-function Base.tryparse(::Type{TypstLength}, x::Real) :: Union{Nothing, TypstLength}
+function Base.tryparse(::Type{TypstLength}, x::Real)::Union{Nothing, TypstLength}
     if x >= 1
         return TypstLength(Em, x)
     elseif x > 0
@@ -436,7 +430,7 @@ Numeric values are interpreted contextually:
 
 Strings may specify explicit units (`pt`, `em`, `fr`, `%`, etc.) or `"auto"`.
 """
-function Base.parse(::Type{TypstLength}, x) :: TypstLength
+function Base.parse(::Type{TypstLength}, x)::TypstLength
     v = tryparse(TypstLength, x)
     v === nothing && throw(
         ArgumentError(
@@ -448,12 +442,10 @@ function Base.parse(::Type{TypstLength}, x) :: TypstLength
     return v
 end
 
-
-
 function Base.show(io::IO, s::TypstLength{T}) where {T}
     if T === Auto || isnothing(s.value)
         print(io, "auto")
-        return
+        return nothing
     end
     value = s.value
     suffix = _TYPST_UNIT_SUFFIX_MAP[T]
@@ -462,17 +454,17 @@ function Base.show(io::IO, s::TypstLength{T}) where {T}
     if isinteger(value)
         print(io, Int(value), suffix)
     else
-        print(io, round(value,digits=2), suffix)
+        print(io, round(value; digits = 2), suffix)
     end
     return nothing
 end
 
-struct TypstCaption  
-    caption:: String
-    kind:: Union{Auto,String}
-    supplement:: Union{Nothing,String}
-    gap:: Union{Auto,AbstractTypstLength}
-    position:: Union{Nothing,String}
+struct TypstCaption
+    caption::String
+    kind::Union{Auto, String}
+    supplement::Union{Nothing, String}
+    gap::Union{Auto, AbstractTypstLength}
+    position::Union{Nothing, String}
 end
 
 function TypstCaption(
@@ -485,31 +477,29 @@ function TypstCaption(
     return TypstCaption(caption, kind, supplement, gap, position)
 end
 
-TypstCaption(caption, kind, supplement, gap::AbstractString, position)= 
-    TypstCaption(caption, kind, supplement, parse(TypstLength,gap), position)
+TypstCaption(caption, kind, supplement, gap::AbstractString, position) = TypstCaption(
+    caption, kind, supplement, parse(TypstLength, gap), position
+)
 
 function Base.show(io::IO, c::TypstCaption)
-    (;caption,kind, supplement, gap, position) = c
+    (; caption, kind, supplement, gap, position) = c
     out = "caption: figure.caption(\n"
-    if !isnothing(position) 
+    if !isnothing(position)
         out *= "  position: $position,\n"
     end
     out *= "  [$caption]\n"
     out *= "),\n"
-    if kind isa AbstractString && kind ∉ ["table","auto","image"]
+    if kind isa AbstractString && kind ∉ ["table", "auto", "image"]
         out *= """kind: "$kind",\n"""
         out *= "supplement: [$(something(supplement,titlecase(kind)))],\n"
     else
         out *= """kind: $kind,\n"""
-        if !isnothing(supplement) 
+        if !isnothing(supplement)
             out *= "supplement: [$supplement],\n"
         end
     end
     if !(gap isa Auto)
         out *= "gap: $gap,\n"
     end
-    print(io,out)
-
+    print(io, out)
 end
-
-
