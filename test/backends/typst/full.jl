@@ -187,7 +187,7 @@
             summary_rows = [(data, i) -> 10i, (data, i) -> 20i],
             title = "Table Title",
             subtitle = "Table Subtitle",
-            wrap_column = 50
+            wrap_column = 50,
         )
 
         @test result == expected
@@ -446,11 +446,10 @@
             summary_rows = [(data, i) -> 10i, (data, i) -> 20i],
             title = "Table Title",
             vertical_crop_mode = :middle,
-            annotate=false
+            annotate = false,
         )
 
         @test result == expected
-
     end
     @testset "Wrap Column Tests" begin
         expected = """
@@ -689,12 +688,10 @@
             summary_rows = [(data, i) -> 10i, (data, i) -> 20i],
             title = "Table Title",
             vertical_crop_mode = :middle,
-            wrap_column=1, #any attribute will need a new line
-            annotate=false
+            wrap_column = 1, #any attribute will need a new line
+            annotate = false,
         )
 
         @test result == expected
-
     end
-
 end

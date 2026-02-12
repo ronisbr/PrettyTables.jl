@@ -7,7 +7,7 @@
 @testset "Alignment" verbose = true begin
     matrix = [(i, j) for i in 1:5, j in 1:5]
     backend=:typst
-    @testset "Alignment as a Symbol" verbose = true  begin
+    @testset "Alignment as a Symbol" verbose = true begin
         expected = """
 #{
   // Open table
@@ -62,7 +62,7 @@
             matrix;
             backend,
             alignment = :c,
-            data_column_widths=["1fr","1fr","1fr","1fr","1fr"],
+            data_column_widths = ["1fr", "1fr", "1fr", "1fr", "1fr"],
             cell_alignment = [(2, 3) => :r, (4, 5) => :l],
         )
 
@@ -121,14 +121,14 @@
             matrix;
             alignment = :n,
             backend = :typst,
-            data_column_widths=["1fr","1fr","1fr","1fr","1fr"],
-            cell_alignment = [(2, 3) => :r, (4, 5) => :l]
+            data_column_widths = ["1fr", "1fr", "1fr", "1fr", "1fr"],
+            cell_alignment = [(2, 3) => :r, (4, 5) => :l],
         )
 
         @test result == expected
     end
 
-    @testset "Alignment as a Vector" verbose = true  begin
+    @testset "Alignment as a Vector" verbose = true begin
         expected = """
 #{
   // Open table
@@ -182,9 +182,9 @@
             String,
             matrix;
             backend = :typst,
-            data_column_widths=["1fr","1fr","1fr","1fr","1fr"],
+            data_column_widths = ["1fr", "1fr", "1fr", "1fr", "1fr"],
             alignment = [:l, :c, :r, :l, :c],
-            cell_alignment = [(2, 3) => :r, (4, 5) => :l]
+            cell_alignment = [(2, 3) => :r, (4, 5) => :l],
         )
 
         @test result == expected
@@ -241,9 +241,9 @@
             String,
             matrix;
             backend = :typst,
-            data_column_widths=["1fr","1fr","1fr","1fr","1fr"],
+            data_column_widths = ["1fr", "1fr", "1fr", "1fr", "1fr"],
             alignment = [:l, :c, :r, :n, :X],
-            cell_alignment = [(2, 3) => :r, (4, 5) => :l]
+            cell_alignment = [(2, 3) => :r, (4, 5) => :l],
         )
 
         @test result == expected

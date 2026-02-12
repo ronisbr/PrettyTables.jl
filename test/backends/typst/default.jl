@@ -53,15 +53,9 @@
 }
 """
 
-    result = pretty_table(
-        String,
-        matrix;
-        backend
-    )
+    result = pretty_table(String, matrix; backend)
     @test result == expected
 
     result = pretty_table_typst_backend(String, matrix)
     @test result == expected
-
 end
-
