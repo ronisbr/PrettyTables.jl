@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Pre-defined Formats · Pretty Tables</title><meta name="title" content="Pre-defined Formats · Pretty Tables"/><meta property="og:title" content="Pre-defined Formats · Pretty Tables"/><meta property="twitter:title" content="Pre-defined Formats · Pretty Tables"/><meta name="description" content="Documentation for Pretty Tables."/><meta property="og:description" content="Documentation for Pretty Tables."/><meta property="twitter:description" content="Documentation for Pretty Tables."/><meta property="og:url" content="https://ronisbr.github.io/PrettyTables.jl/stable/man/text/predefined_formats/"/><meta property="twitter:url" content="https://ronisbr.github.io/PrettyTables.jl/stable/man/text/predefined_formats/"/><link rel="canonical" href="https://ronisbr.github.io/PrettyTables.jl/stable/man/text/predefined_formats/"/><script data-outdated-warner src="../../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../../assets/documenter.js"></script><script src="../../../search_index.js"></script><script src="../../../siteinfo.js"></script><script src="../../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../../../"><img src="../../../assets/logo.png" alt="Pretty Tables logo"/></a><div class="docs-package-name"><span class="docs-autofit"><a href="../../../">Pretty Tables</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../../">Home</a></li><li><a class="tocitem" href="../../quick_start/">Quick Start</a></li><li><a class="tocitem" href="../../usage/">Usage</a></li><li><span class="tocitem">Back Ends</span><ul><li><input class="collapse-toggle" id="menuitem-4-1" type="checkbox" checked/><label class="tocitem" for="menuitem-4-1"><span class="docs-label">Text</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../text_backend/">Text Backend</a></li><li class="is-active"><a class="tocitem" href>Pre-defined Formats</a><ul class="internal"><li><a class="tocitem" href="#Borders"><span>Borders</span></a></li><li><a class="tocitem" href="#Formats"><span>Formats</span></a></li></ul></li><li><a class="tocitem" href="../text_examples/">Examples</a></li></ul></li><li><input class="collapse-toggle" id="menuitem-4-2" type="checkbox"/><label class="tocitem" for="menuitem-4-2"><span class="docs-label">HTML</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../../html/html_backend/">HTML Backend</a></li><li><a class="tocitem" href="../../html/html_examples/">Examples</a></li></ul></li><li><input class="collapse-toggle" id="menuitem-4-3" type="checkbox"/><label class="tocitem" for="menuitem-4-3"><span class="docs-label">LaTeX</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../../latex/latex_backend/">LaTeX Backend</a></li><li><a class="tocitem" href="../../latex/latex_examples/">Examples</a></li></ul></li><li><input class="collapse-toggle" id="menuitem-4-4" type="checkbox"/><label class="tocitem" for="menuitem-4-4"><span class="docs-label">Markdown</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../../markdown/markdown_backend/">Markdown Backend</a></li><li><a class="tocitem" href="../../markdown/markdown_examples/">Examples</a></li></ul></li><li><input class="collapse-toggle" id="menuitem-4-5" type="checkbox"/><label class="tocitem" for="menuitem-4-5"><span class="docs-label">Typst</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../../typst/typst_backend/">Typst Backend</a></li></ul></li></ul></li><li><a class="tocitem" href="../../../lib/library/">Library</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Back Ends</a></li><li><a class="is-disabled">Text</a></li><li class="is-active"><a href>Pre-defined Formats</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Pre-defined Formats</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/ronisbr/PrettyTables.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/ronisbr/PrettyTables.jl/blob/master/docs/src/man/text/predefined_formats.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Pre-defined-Formats"><a class="docs-heading-anchor" href="#Pre-defined-Formats">Pre-defined Formats</a><a id="Pre-defined-Formats-1"></a><a class="docs-heading-anchor-permalink" href="#Pre-defined-Formats" title="Permalink"></a></h1><p>The text backend has some predefined borders and formats to print tables.</p><h2 id="Borders"><a class="docs-heading-anchor" href="#Borders">Borders</a><a id="Borders-1"></a><a class="docs-heading-anchor-permalink" href="#Borders" title="Permalink"></a></h2><p>We can change the printed table borders using the parameter <code>borders</code> in the structure <a href="../../../lib/library/#PrettyTables.TextTableFormat"><code>TextTableFormat</code></a> passed to the keyword <code>table_format</code>.</p><p><code>text_table_borders__ascii_dots</code></p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; pretty_table(
+         data;
+         backend = :text,
+         table_format = TextTableFormat(borders = text_table_borders__ascii_dots)
+       )</code><code class="nohighlight hljs ansi" style="display:block;">.....................................
+:<span class="sgr1"> Col. 1 </span>:<span class="sgr1"> Col. 2 </span>:<span class="sgr1"> Col. 3 </span>:<span class="sgr1"> Col. 4 </span>:
+:........:........:........:........:
+:      1 :  false :    1.0 :      1 :
+:      2 :   true :    2.0 :      2 :
+:      3 :  false :    3.0 :      3 :
+:........:........:........:........:</code></pre><p><code>text_table_borders__ascii_rounded</code></p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; pretty_table(
+         data;
+         backend = :text,
+         table_format = TextTableFormat(borders = text_table_borders__ascii_rounded)
+       )</code><code class="nohighlight hljs ansi" style="display:block;">.--------.--------.--------.--------.
+|<span class="sgr1"> Col. 1 </span>|<span class="sgr1"> Col. 2 </span>|<span class="sgr1"> Col. 3 </span>|<span class="sgr1"> Col. 4 </span>|
+:--------+--------+--------+--------:
+|      1 |  false |    1.0 |      1 |
+|      2 |   true |    2.0 |      2 |
+|      3 |  false |    3.0 |      3 |
+&#39;--------&#39;--------&#39;--------&#39;--------&#39;</code></pre><p><code>text_table_borders__borderless</code></p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; pretty_table(
+         data;
+         backend = :text,
+         table_format = TextTableFormat(borders = text_table_borders__borderless)
+       )</code><code class="nohighlight hljs ansi" style="display:block;">
+ <span class="sgr1"> Col. 1 </span> <span class="sgr1"> Col. 2 </span> <span class="sgr1"> Col. 3 </span> <span class="sgr1"> Col. 4 </span>
+
+       1    false      1.0        1
+       2     true      2.0        2
+       3    false      3.0        3</code></pre><p><code>text_table_borders__compact</code></p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; pretty_table(
+         data;
+         backend = :text,
+         table_format = TextTableFormat(borders = text_table_borders__compact)
+       )</code><code class="nohighlight hljs ansi" style="display:block;"> -------- -------- -------- --------
+ <span class="sgr1"> Col. 1 </span> <span class="sgr1"> Col. 2 </span> <span class="sgr1"> Col. 3 </span> <span class="sgr1"> Col. 4 </span>
+ -------- -------- -------- --------
+       1    false      1.0        1
+       2     true      2.0        2
+       3    false      3.0        3
+ -------- -------- -------- --------</code></pre><p><code>text_table_borders__matrix</code></p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; pretty_table(
+         data;
+         backend = :text,
+         table_format = TextTableFormat(borders = text_table_borders__matrix)
+       )</code><code class="nohighlight hljs ansi" style="display:block;">┌        ┬        ┬        ┬        ┐
+│<span class="sgr1"> Col. 1 </span>│<span class="sgr1"> Col. 2 </span>│<span class="sgr1"> Col. 3 </span>│<span class="sgr1"> Col. 4 </span>│
+│        │        │        │        │
+│      1 │  false │    1.0 │      1 │
+│      2 │   true │    2.0 │      2 │
+│      3 │  false │    3.0 │      3 │
+└        ┴        ┴        ┴        ┘</code></pre><p><code>text_table_borders__mysql</code></p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; pretty_table(
+         data;
+         backend = :text,
+         table_format = TextTableFormat(borders = text_table_borders__mysql)
+       )</code><code class="nohighlight hljs ansi" style="display:block;">+--------+--------+--------+--------+
+|<span class="sgr1"> Col. 1 </span>|<span class="sgr1"> Col. 2 </span>|<span class="sgr1"> Col. 3 </span>|<span class="sgr1"> Col. 4 </span>|
++--------+--------+--------+--------+
+|      1 |  false |    1.0 |      1 |
+|      2 |   true |    2.0 |      2 |
+|      3 |  false |    3.0 |      3 |
++--------+--------+--------+--------+</code></pre><p><code>text_table_borders__simple</code></p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; pretty_table(
+         data;
+         backend = :text,
+         table_format = TextTableFormat(borders = text_table_borders__simple)
+       )</code><code class="nohighlight hljs ansi" style="display:block;">========= ======== ======== =========
+ <span class="sgr1"> Col. 1 </span> <span class="sgr1"> Col. 2 </span> <span class="sgr1"> Col. 3 </span> <span class="sgr1"> Col. 4 </span>
+========= ======== ======== =========
+       1    false      1.0        1
+       2     true      2.0        2
+       3    false      3.0        3
+========= ======== ======== =========</code></pre><p><code>text_table_borders__unicode_rounded</code></p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; pretty_table(
+         data;
+         backend = :text,
+         table_format = TextTableFormat(borders = text_table_borders__unicode_rounded)
+       )</code><code class="nohighlight hljs ansi" style="display:block;">╭────────┬────────┬────────┬────────╮
+│<span class="sgr1"> Col. 1 </span>│<span class="sgr1"> Col. 2 </span>│<span class="sgr1"> Col. 3 </span>│<span class="sgr1"> Col. 4 </span>│
+├────────┼────────┼────────┼────────┤
+│      1 │  false │    1.0 │      1 │
+│      2 │   true │    2.0 │      2 │
+│      3 │  false │    3.0 │      3 │
+╰────────┴────────┴────────┴────────╯</code></pre><h2 id="Formats"><a class="docs-heading-anchor" href="#Formats">Formats</a><a id="Formats-1"></a><a class="docs-heading-anchor-permalink" href="#Formats" title="Permalink"></a></h2><p>The text backend also defines some pre-defined formats to print tables that can be used through the keyword <code>table_format</code> in <a href="../../../lib/library/#PrettyTables.pretty_table"><code>pretty_table</code></a>.</p><p><code>text_table_format__matrix</code></p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; pretty_table(
+         ones(3, 3);
+         backend = :text,
+         show_column_labels = false,
+         table_format = text_table_format__matrix
+       )</code><code class="nohighlight hljs ansi" style="display:block;">┌               ┐
+│ 1.0  1.0  1.0 │
+│ 1.0  1.0  1.0 │
+│ 1.0  1.0  1.0 │
+└               ┘</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../text_backend/">« Text Backend</a><a class="docs-footer-nextpage" href="../text_examples/">Examples »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.16.1 on <span class="colophon-date" title="Thursday 12 February 2026 20:08">Thursday 12 February 2026</span>. Using Julia version 1.12.5.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
