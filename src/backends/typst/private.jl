@@ -71,8 +71,8 @@ function _typst__create_component(
     content::String;
     args::Union{Nothing, Vector{String}} = nothing,
     properties::Union{Nothing, Vector{TypstPair}} = nothing,
-    wrap_column = 50,
-    ns = 2,
+    wrap_column::Int = 50,
+    ns::Int = 2,
 )
     indent = repeat(" ", ns)
 
