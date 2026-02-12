@@ -1,11 +1,17 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 3.2.2
+-------------
+
+- ![Bugfix][badge-bugfix] Allow raw Typst cells.
+
 Version 3.2.1
 -------------
 
 - ![Bugfix][badge-bugfix] Fix border rendering in Typst merged cells.
 - ![Bugfix][badge-bugfix] Fix alignment in Typst continuation cells.
+- ![Enhancement][badge-enhancement] Add type annotation in Typst backend.
 
 Version 3.2.0
 -------------
