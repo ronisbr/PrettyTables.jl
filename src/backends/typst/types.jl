@@ -475,13 +475,16 @@ struct TypstCaption
     position:: Union{Nothing,String}
 end
 
-function TypstCaption(caption; kind=Auto(), 
-        supplement=nothing, 
-        gap::Union{Auto,AbstractTypstLength, AbstractString}=Auto(), 
-        position=nothing
-    )
-    TypstCaption(caption, kind, supplement, gap, position)
+function TypstCaption(
+    caption;
+    kind = Auto(),
+    supplement = nothing,
+    gap::Union{Auto, AbstractTypstLength, AbstractString} = Auto(),
+    position = nothing,
+)
+    return TypstCaption(caption, kind, supplement, gap, position)
 end
+
 TypstCaption(caption, kind, supplement, gap::AbstractString, position)= 
     TypstCaption(caption, kind, supplement, parse(TypstLength,gap), position)
 
