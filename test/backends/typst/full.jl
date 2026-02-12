@@ -12,8 +12,6 @@
 #{
   // Top bar
   set par(justify: true, spacing: 1em)
-  set par(justify: true, spacing: 1em)
-  set par(justify: true, spacing: 1em)
   align(top+left,)[Top left string]
   // Open table
   table(
@@ -144,7 +142,9 @@
     ],
     // table_footer Row 1
     table.cell(align: left, colspan: 6,)[
-      #text(size: 0.9em, style: "italic",)[Source Notes]
+      #text(fill: gray, size: 0.9em, style: "italic",)[
+        Source Notes
+      ]
     ],
   )
 }
@@ -187,7 +187,7 @@
             summary_rows = [(data, i) -> 10i, (data, i) -> 20i],
             title = "Table Title",
             subtitle = "Table Subtitle",
-            wrap_column = 50
+            wrap_column = 50,
         )
 
         @test result == expected
@@ -197,8 +197,6 @@
         expected = """
 #{
   // Top bar
-  set par(justify: true, spacing: 1em)
-  set par(justify: true, spacing: 1em)
   set par(justify: true, spacing: 1em)
   align(top+left,)[Top left string]
   v(-1.5em)
@@ -259,7 +257,7 @@
     // table_footer Row 2
     table.cell(align: left, colspan: 5,)[#super[2]#text(size: 0.9em,)[Footnote in data]],
     // table_footer Row 1
-    table.cell(align: left, colspan: 5,)[#text(size: 0.9em, style: "italic",)[Source Notes]],
+    table.cell(align: left, colspan: 5,)[#text(fill: gray, size: 0.9em, style: "italic",)[Source Notes]],
   )
 }
 """
@@ -293,8 +291,6 @@
         expected = """
 #{
   // Top bar
-  set par(justify: true, spacing: 1em)
-  set par(justify: true, spacing: 1em)
   set par(justify: true, spacing: 1em)
   align(top+right,)[2 columns and 2 rows omitted]
   // Open table
@@ -351,7 +347,7 @@
     // table_footer Row 2
     table.cell(align: left, colspan: 5,)[#super[2]#text(size: 0.9em,)[Footnote in data]],
     // table_footer Row 1
-    table.cell(align: left, colspan: 5,)[#text(size: 0.9em, style: "italic",)[Source Notes]],
+    table.cell(align: left, colspan: 5,)[#text(fill: gray, size: 0.9em, style: "italic",)[Source Notes]],
   )
 }
 """
@@ -383,8 +379,6 @@
     @testset "Without Annotation" begin
         expected = """
 #{
-  set par(justify: true, spacing: 1em)
-  set par(justify: true, spacing: 1em)
   set par(justify: true, spacing: 1em)
   align(top+right,)[2 columns and 2 rows omitted]
   table(
@@ -427,7 +421,7 @@
     table.cell()[#text()[ ⋯ ]],
     table.cell(align: left, colspan: 5,)[#super[1]#text(size: 0.9em,)[Footnote in column label]],
     table.cell(align: left, colspan: 5,)[#super[2]#text(size: 0.9em,)[Footnote in data]],
-    table.cell(align: left, colspan: 5,)[#text(size: 0.9em, style: "italic",)[Source Notes]],
+    table.cell(align: left, colspan: 5,)[#text(fill: gray, size: 0.9em, style: "italic",)[Source Notes]],
   )
 }
 """
@@ -452,11 +446,252 @@
             summary_rows = [(data, i) -> 10i, (data, i) -> 20i],
             title = "Table Title",
             vertical_crop_mode = :middle,
-            annotate=false
+            annotate = false,
         )
 
         @test result == expected
-
     end
+    @testset "Wrap Column Tests" begin
+        expected = """
+#{
+  set par(justify: true, spacing: 1em)
+  align(top+right,)[2 columns and 2 rows omitted]
+  table(
+    columns: (auto, auto, auto, auto, auto),
+    table.header(
+      table.cell(
+        align: center,
+        colspan: 5,
+      )[
+        #text(
+          size: 1.1em,
+          weight: "bold",
+        )[
+          Table Title
+        ]
+      ],
+      table.cell(
+        align: center,
+        colspan: 5,
+      )[
+        #text(
+          size: 1.1em,
+          style: "italic",
+        )[
+          Table Subtitle
+        ]
+      ],
+      table.cell(align: right,)[
+        #text(weight: "bold",)[
+          Row
+        ]
+      ],
+      table.cell(align: right,)[
+        #text(weight: "bold",)[
+          Rows
+        ]
+      ],
+      table.cell(align: right,)[
+        #text(weight: "bold",)[
+          Col. 1
+        ]
+      ],
+      table.cell(
+        align: center,
+        colspan: 1,
+        stroke: (paint: rgb(200,200,200), thickness: 0.01pt),
+      )[
+        #text(weight: "bold",)[
+          Merged Column
+        ]#super[1]
+      ],
+      table.cell()[
+        #text()[
+         ⋯ 
+      ]
+      ],
+    ),
+    table.cell(align: right,)[
+      #text(weight: "bold",)[
+        1
+      ]
+    ],
+    table.cell(align: right,)[
+      #text(weight: "bold",)[
+        Row 1
+      ]
+    ],
+    table.cell(align: right,)[
+      #text()[
+        (1, 1)
+      ]
+    ],
+    table.cell(align: right,)[
+      #text()[
+        (1, 2)
+      ]
+    ],
+    table.cell()[
+      #text()[
+       ⋯ 
+    ]
+    ],
+    table.cell()[
+      #text()[
+        ⋮ 
+    ]
+    ],
+    table.cell()[
+      #text()[
+        ⋮ 
+    ]
+    ],
+    table.cell()[
+      #text()[
+        ⋮ 
+    ]
+    ],
+    table.cell()[
+      #text()[
+        ⋮ 
+    ]
+    ],
+    table.cell()[
+      #text()[
+       ⋱ 
+    ]
+    ],
+    table.cell(align: right,)[
+      #text(weight: "bold",)[
+        4
+      ]
+    ],
+    table.cell(align: right,)[
+      #text(weight: "bold",)[
+        Row 4
+      ]
+    ],
+    table.cell(align: right,)[
+      #text()[
+        (4, 1)
+      ]
+    ],
+    table.cell(align: right,)[
+      #text()[
+        (4, 2)
+      ]
+    ],
+    table.cell()[
+      #text()[
+       ⋯ 
+    ]
+    ],
+    table.cell(align: right,)[
+      #text(weight: "bold",)[
+        
+      ]
+    ],
+    table.cell(align: right,)[
+      #text(weight: "bold",)[
+        Summary 1
+      ]
+    ],
+    table.cell(align: right,)[
+      #text()[
+        10
+      ]
+    ],
+    table.cell(align: right,)[
+      #text()[
+        20
+      ]
+    ],
+    table.cell()[
+      #text()[
+       ⋯ 
+    ]
+    ],
+    table.cell(align: right,)[
+      #text(weight: "bold",)[
+        
+      ]
+    ],
+    table.cell(align: right,)[
+      #text(weight: "bold",)[
+        Summary 2
+      ]
+    ],
+    table.cell(align: right,)[
+      #text()[
+        20
+      ]
+    ],
+    table.cell(align: right,)[
+      #text()[
+        40
+      ]
+    ],
+    table.cell()[
+      #text()[
+       ⋯ 
+    ]
+    ],
+    table.cell(
+      align: left,
+      colspan: 5,
+    )[
+      #super[1]#text(size: 0.9em,)[
+        Footnote in column label
+      ]
+    ],
+    table.cell(
+      align: left,
+      colspan: 5,
+    )[
+      #super[2]#text(size: 0.9em,)[
+        Footnote in data
+      ]
+    ],
+    table.cell(
+      align: left,
+      colspan: 5,
+    )[
+      #text(
+        fill: gray,
+        size: 0.9em,
+        style: "italic",
+      )[
+        Source Notes
+      ]
+    ],
+  )
+}
+"""
 
+        result = pretty_table(
+            String,
+            matrix;
+            backend,
+            footnotes = [
+                (:column_label, 1, 2) => "Footnote in column label",
+                (:data, 2, 2) => "Footnote in data",
+            ],
+            maximum_number_of_columns = 2,
+            maximum_number_of_rows = 2,
+            merge_column_label_cells = [MergeCells(1, 2, 2, "Merged Column", :c)],
+            row_group_labels = [2 => "Row Group"],
+            row_labels = ["Row $i" for i in 1:5],
+            show_row_number_column = true,
+            source_notes = "Source Notes",
+            stubhead_label = "Rows",
+            subtitle = "Table Subtitle",
+            summary_rows = [(data, i) -> 10i, (data, i) -> 20i],
+            title = "Table Title",
+            vertical_crop_mode = :middle,
+            wrap_column = 1, #any attribute will need a new line
+            annotate = false,
+        )
+
+        @test result == expected
+    end
 end

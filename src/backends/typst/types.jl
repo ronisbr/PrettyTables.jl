@@ -4,7 +4,7 @@
 #
 ############################################################################################
 
-export TypstHighlighter, TypstTableStyle
+export TypstHighlighter, TypstTableStyle, TypstCaption
 
 import Base: show, tryparse, parse
 
@@ -18,17 +18,21 @@ const TypstAttrs = String
 
 # Private.
 const _TYPST__NO_DECORATION     = TypstPair[]
-const _TYPST__BOLD              = ["weight" => "bold"]
-const _TYPST__ITALIC            = ["style" => "italic"]
-const _TYPST__XLARGE_BOLD       = ["size" => "1.1em", "weight" => "bold"]
-const _TYPST__LARGE_ITALIC      = ["size" => "1.1em", "style" => "italic"]
-const _TYPST__SMALL             = ["size" => "0.9em"]
-const _TYPST__SMALL_ITALIC      = ["size" => "0.9em", "style" => "italic"]
-const _TYPST__SMALL_ITALIC_GRAY = ["color" => "gray", "size" => "0.9em", "style" => "italic"]
+const _TYPST__BOLD              = ["text-weight" => "bold"]
+const _TYPST__ITALIC            = ["text-style" => "italic"]
+const _TYPST__XLARGE_BOLD       = ["text-size" => "1.1em", "text-weight" => "bold"]
+const _TYPST__LARGE_ITALIC      = ["text-size" => "1.1em", "text-style" => "italic"]
+const _TYPST__SMALL             = ["text-size" => "0.9em"]
+const _TYPST__SMALL_ITALIC      = ["text-size" => "0.9em", "text-style" => "italic"]
+const _TYPST__SMALL_ITALIC_GRAY = ["text-fill" => "gray", "text-size" => "0.9em", "text-style" => "italic"]
 const _TYPST__MERGED_CELL       = ["stroke" => "(paint: rgb(200,200,200), thickness: 0.01pt)"]
 
 const _TYPST__CELL_ATTRIBUTES = [
     "align", "breakable", "colspan", "fill", "inset", "rowspan", "stroke"
+]
+
+const _TYPST__TABLE_ATTRIBUTES = [
+    "rows", "gutter", "column-gutter", "row-gutter", "inset", "fill", "stroke"
 ]
 
 const _TYPST__STRING_ATTRIBUTES = [
@@ -54,6 +58,7 @@ const _TYPST__TEXT_ATTRIBUTES = [
     "discretionary-ligatures",
     "fallback",
     "features",
+    "fill",
     "font",
     "fractions",
     "historical-ligatures",
@@ -77,8 +82,10 @@ const _TYPST__TEXT_ATTRIBUTES = [
     "weight",
 ]
 
-const _typst__filter_text_atributes = filter(
-    x -> x[1] ∈ _TYPST__TEXT_ATTRIBUTES || occursin(r"text-", x[1])
+_typst__filter_text_atributes = filter(
+    x ->
+        (occursin(r"^text-", x[1])) &&
+        (replace(x[1], r"text-"=>"") ∈ _TYPST__TEXT_ATTRIBUTES),
 )
 
 ############################################################################################
@@ -215,6 +222,8 @@ struct Fr <: TypstFractionalLengthKind end
 struct Percent <: TypstRelativeLengthKind end
 struct Auto end
 
+Base.show(io::IO, ::Auto) = print(io, "auto")
+
 # ---- policy helpers ----
 
 const _TYPST_SUFFIX_UNIT_MAP = Dict(
@@ -225,8 +234,8 @@ const _TYPST_SUFFIX_UNIT_MAP = Dict(
     "em" => Em,
     "ex" => Ex,
     "fr" => Fr,
-    "percent"  => Percent,
-    "%"  => Percent,
+    "percent" => Percent,
+    "%" => Percent,
     "auto" => Auto,
 )
 
@@ -360,21 +369,21 @@ Typst layout reference: https://typst.app/docs/reference/layout/
 Typst syntax reference: https://typst.app/docs/reference/syntax/
 
 """
-struct TypstLength{T <: Union{Auto,TypstLengthKind}} <: AbstractTypstLength
+struct TypstLength{T <: Union{Auto, TypstLengthKind}} <: AbstractTypstLength
     value::Union{Nothing, Float64}
 end
 
 # Convenience constructors
 TypstLength() = TypstLength{Auto}(nothing)
-TypstLength(::Type{Auto},x=nothing) = TypstLength{Auto}(nothing)
+TypstLength(::Type{Auto}, x = nothing) = TypstLength{Auto}(nothing)
 TypstLength(::Type{T}, x::Real) where {T <: TypstLengthKind} = TypstLength{T}(Float64(x))
 TypstLength(s::AbstractString) = parse(TypstLength, s)
-function TypstLength(t::Symbol, x::Real) 
+function TypstLength(t::Symbol, x::Real)
     T = get(_TYPST_SUFFIX_UNIT_MAP, (lowercase ∘ string)(t), Auto)
     TypstLength{T}(Float64(x))
 end
 
-function Base.tryparse(::Type{TypstLength}, s::AbstractString) :: Union{Nothing, TypstLength}
+function Base.tryparse(::Type{TypstLength}, s::AbstractString)::Union{Nothing, TypstLength}
     t = lowercase(strip(s))
 
     if t == "auto"
@@ -400,7 +409,7 @@ function Base.tryparse(::Type{TypstLength}, s::AbstractString) :: Union{Nothing,
     return T === Auto ? TypstLength(Auto) : TypstLength(T, value)
 end
 
-function Base.tryparse(::Type{TypstLength}, x::Real) :: Union{Nothing, TypstLength}
+function Base.tryparse(::Type{TypstLength}, x::Real)::Union{Nothing, TypstLength}
     if x >= 1
         return TypstLength(Em, x)
     elseif x > 0
@@ -421,7 +430,7 @@ Numeric values are interpreted contextually:
 
 Strings may specify explicit units (`pt`, `em`, `fr`, `%`, etc.) or `"auto"`.
 """
-function Base.parse(::Type{TypstLength}, x) :: TypstLength
+function Base.parse(::Type{TypstLength}, x)::TypstLength
     v = tryparse(TypstLength, x)
     v === nothing && throw(
         ArgumentError(
@@ -436,7 +445,7 @@ end
 function Base.show(io::IO, s::TypstLength{T}) where {T}
     if T === Auto || isnothing(s.value)
         print(io, "auto")
-        return
+        return nothing
     end
     value = s.value
     suffix = _TYPST_UNIT_SUFFIX_MAP[T]
@@ -445,7 +454,52 @@ function Base.show(io::IO, s::TypstLength{T}) where {T}
     if isinteger(value)
         print(io, Int(value), suffix)
     else
-        print(io, round(value,digits=2), suffix)
+        print(io, round(value; digits = 2), suffix)
     end
     return nothing
+end
+
+struct TypstCaption
+    caption::String
+    kind::Union{Auto, String}
+    supplement::Union{Nothing, String}
+    gap::Union{Auto, AbstractTypstLength}
+    position::Union{Nothing, String}
+end
+
+function TypstCaption(
+    caption;
+    kind = Auto(),
+    supplement = nothing,
+    gap::Union{Auto, AbstractTypstLength, AbstractString} = Auto(),
+    position = nothing,
+)
+    return TypstCaption(caption, kind, supplement, gap, position)
+end
+
+TypstCaption(caption, kind, supplement, gap::AbstractString, position) = TypstCaption(
+    caption, kind, supplement, parse(TypstLength, gap), position
+)
+
+function Base.show(io::IO, c::TypstCaption)
+    (; caption, kind, supplement, gap, position) = c
+    out = "caption: figure.caption(\n"
+    if !isnothing(position)
+        out *= "  position: $position,\n"
+    end
+    out *= "  [$caption]\n"
+    out *= "),\n"
+    if kind isa AbstractString && kind ∉ ["table", "auto", "image"]
+        out *= """kind: "$kind",\n"""
+        out *= "supplement: [$(something(supplement,titlecase(kind)))],\n"
+    else
+        out *= """kind: $kind,\n"""
+        if !isnothing(supplement)
+            out *= "supplement: [$supplement],\n"
+        end
+    end
+    if !(gap isa Auto)
+        out *= "gap: $gap,\n"
+    end
+    print(io, out)
 end

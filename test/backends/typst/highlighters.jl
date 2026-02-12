@@ -43,8 +43,11 @@
         highlighters = [
             TypstHighlighter((data, i, j) -> data[i, j] % 2 == 0, ["text-fill" => "red"]),
             TypstHighlighter((data, i, j) -> data[i, j] % 2 == 0, ["text-fill" => "blue"]),
-            TypstHighlighter((data, i, j) -> data[i, j] % 2 != 0, ["text-weight" => "bold", "text-fill" => "green"])
-        ]
+            TypstHighlighter(
+                (data, i, j) -> data[i, j] % 2 != 0,
+                ["text-weight" => "bold", "text-fill" => "green"],
+            ),
+        ],
     )
 
     @test result == expected
@@ -54,12 +57,17 @@
         matrix;
         backend,
         highlighters = [
-            TypstHighlighter((data, i, j) -> data[i, j] % 2 == 0, (_, _, _, _) -> ["text-fill" => "red"]),
+            TypstHighlighter(
+                (data, i, j) -> data[i, j] % 2 == 0, (_, _, _, _) -> ["text-fill" => "red"]
+            ),
             TypstHighlighter((data, i, j) -> data[i, j] % 2 == 0, ["text-fill" => "blue"]),
-            TypstHighlighter((data, i, j) -> data[i, j] % 2 != 0, ["text-weight" => "bold"], "text-fill" => "green")
-        ]
+            TypstHighlighter(
+                (data, i, j) -> data[i, j] % 2 != 0,
+                ["text-weight" => "bold"],
+                "text-fill" => "green",
+            ),
+        ],
     )
 
-    
     @test result == expected
 end

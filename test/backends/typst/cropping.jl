@@ -12,8 +12,6 @@
 #{
   // Top bar
   set par(justify: true, spacing: 1em)
-  set par(justify: true, spacing: 1em)
-  set par(justify: true, spacing: 1em)
   align(top+right,)[97 columns and 98 rows omitted]
   // Open table
   table(
@@ -62,8 +60,6 @@
 #{
   // Top bar
   set par(justify: true, spacing: 1em)
-  set par(justify: true, spacing: 1em)
-  set par(justify: true, spacing: 1em)
   align(top+right,)[97 columns and 98 rows omitted]
   // Open table
   table(
@@ -102,7 +98,7 @@
             backend,
             maximum_number_of_rows = 2,
             maximum_number_of_columns = 3,
-            vertical_crop_mode = :middle
+            vertical_crop_mode = :middle,
         )
 
         @test result == expected
@@ -148,7 +144,7 @@
             backend,
             maximum_number_of_rows = 2,
             maximum_number_of_columns = 3,
-            show_omitted_cell_summary = false
+            show_omitted_cell_summary = false,
         )
 
         @test result == expected
