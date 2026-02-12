@@ -30,7 +30,7 @@ function _typst__escape_str(
             isprint(c)    ? print(io, c) :
             c <= '\x7f'   ? print(io, "\\x", string(UInt32(c); base = 16, pad = 2)) :
             c <= '\uffff' ? print(io, "\\u", string(UInt32(c); base = 16, pad = Base.need_full_hex(peek(a)) ? 4 : 2)) :
-            print(io, "\\U", string(UInt32(c); base = 16, pad = Base.need_full_hex(peek(a)) ? 8 : 4))
+                            print(io, "\\U", string(UInt32(c); base = 16, pad = Base.need_full_hex(peek(a)) ? 8 : 4))
         else # malformed or overlong
             u = bswap(reinterpret(UInt32, c))
             while true
@@ -75,18 +75,22 @@ function _typst__create_component(
     ns = 2,
 )
     indent = repeat(" ", ns)
+
     open_tag = if isnothing(args)
         _typst__open_component(component; properties, wrap_column)
     else
         _typst__open_component(component, args; properties, wrap_column)
     end
+
     close_tag = _typst__close_component()
+
     if (length(split(open_tag, "\n")[end]) + length(content)) > wrap_column
-        join(string.("$indent", split(content, "\n")), "\n") ## add indent to each line if multiple line
+        # Add indent to each line if multiple line.
+        join(string.("$indent", split(content, "\n")), "\n")
         return open_tag * "\n" * indent * content * "\n" * close_tag
-    else
-        return open_tag * content * close_tag
     end
+
+    return open_tag * content * close_tag
 end
 
 """
@@ -107,58 +111,62 @@ function _typst__open_component(
 )
     # Compile the text with the properties.
     init_prop_list = something(args, String[])
+
     arg_prop_list =
         reduce(sort(something(properties, [])); init = init_prop_list) do list, (k, v)
-            isempty(v) && return i
+            isempty(v) && return list
+
             v_str = _typst__escape_str(v)
+
             prop_str = if occursin(r"^[0-9]", v_str) || k ∉ _TYPST__STRING_ATTRIBUTES
                 "$k: $v_str"
             else
                 "$k: \"$v\""
             end
+
             push!(list, prop_str)
         end
+
     isempty(arg_prop_list) && return "$(component)()["
+
     arg_lines = reduce(arg_prop_list; init = [[]]) do line, arg
-        n_char_new_line = length(join(line[end], ", "))+length(arg*",")
+        n_char_new_line = length(join(line[end], ", ")) + length(arg*",")
+
         if !isempty(line[end]) && (wrap_column >= 0) && n_char_new_line > wrap_column
             push!(line, [arg])
         else
             push!(line[end], arg)
         end
+
         line
     end
+
     if length(arg_lines) > 1
         return "$(component)(\n  $(join(join.(arg_lines,", "),",\n  ")),\n)["
-    else
-        return "$(component)($(join(join.(arg_lines,", "),",\n")),)["
     end
+
+    return "$(component)($(join(join.(arg_lines,", "),",\n")),)["
 end
 
 """
     _typst__call_function(f, args...) -> String
 
-Call the function `f` with arguments `args...` and convert the result into
-a valid Typst representation.
+Call the function `f` with arguments `args...` and convert the result into a valid Typst
+representation.
 
-This helper is used internally by the Typst backend to evaluate user-provided
-formatting functions. 
+This helper is used internally by the Typst backend to evaluate user-provided formatting
+functions. 
 
-# Arguments
-- `f`: Function to be called.
-- `args...`: Arguments passed to the function.
+!!! note
+
+    Same as `_typst__open_component` but without the opening bracket.
 
 # Returns
+
 A `String` containing the Typst representation of the function call.
 
-# Internal
-This function is part of the Typst backend implementation and is not part of the
-public PrettyTables API.
-
-# Note
-Same as `_typst__open_component` but without the opening bracket.
-
 # Example
+
 ```julia
 _typst__call_function("text", "Hello, World!", weight="bold", fill="green")
 ``` 
@@ -177,38 +185,52 @@ function _typst__call_function(
 )
     # Compile the text with the properties.
     init_prop_list = something(args, String[])
+
     arg_prop_list =
         reduce(sort(something(properties, [])); init = init_prop_list) do list, (k, v)
-            isempty(v) && return i
+            isempty(v) && return list
+
             v_str = _typst__escape_str(v)
+
             prop_str = if occursin(r"^[0-9]", v_str) || k ∉ _TYPST__STRING_ATTRIBUTES
                 "$k: $v_str"
             else
                 "$k: \"$v\""
             end
+
             push!(list, prop_str)
         end
+
     isempty(arg_prop_list) && return "$(component)()"
+
     arg_lines = reduce(arg_prop_list; init = [[]]) do line, arg
-        n_char_new_line = length(join(line[end], ", "))+length(arg*",")
+        n_char_new_line = length(join(line[end], ", ")) + length(arg*",")
+
         if !isempty(line[end]) && (wrap_column >= 0) && n_char_new_line > wrap_column
             push!(line, [arg])
         else
             push!(line[end], arg)
         end
+
         line
     end
+
     if length(arg_lines) > 1
         return "$(component)(\n  $(join(join.(arg_lines,", "),",\n  ")),\n)"
-    else
-        return "$(component)($(join(join.(arg_lines,", "),",\n")),)"
     end
+
+    return "$(component)($(join(join.(arg_lines,", "),",\n")),)"
 end
 
 # == Styles ================================================================================
 
 const _TYPST__ALIGNMENT_MAP = Dict(
-    :l => "left", :L => "left", :c => "center", :C => "center", :r => "right", :R => "right"
+    :l => "left",
+    :L => "left",
+    :c => "center",
+    :C => "center",
+    :r => "right",
+    :R => "right"
 )
 
 """
@@ -235,18 +257,23 @@ Create the `columns` https://typst.app/docs/reference/model/table/#parameters-co
 configuration for tables in Typst.
 """
 function _typst__get_data_column_widths(
-    column_length::AbstractTypstLength, num_data_columns::Int, num_columns::Int
+    column_length::AbstractTypstLength,
+    num_data_columns::Int,
+    num_columns::Int
 )
     columns = fill(column_length, num_data_columns)
     return _typst__get_data_column_widths(columns, num_data_columns, num_columns)
 end
 
 function _typst__get_data_column_widths(
-    str_columns::String, num_data_columns::Int, num_columns::Int
+    str_columns::String,
+    num_data_columns::Int,
+    num_columns::Int
 )
     # Throw error if string doesn't match any known kind.
     col_length = parse(TypstLength, str_columns)
     columns = fill(col_length, num_columns)
+
     return _typst__get_data_column_widths(columns, num_data_columns, num_columns)
 end
 
@@ -257,7 +284,9 @@ Create the `columns` https://typst.app/docs/reference/model/table/#parameters-co
 configuration for tables in Typst.
 """
 function _typst__get_data_column_widths(
-    columns::Vector{T}, num_data_columns::Int, num_columns::Int
+    columns::Vector{T},
+    num_data_columns::Int,
+    num_columns::Int
 ) where {T <: AbstractTypstLength}
     length(columns) > num_data_columns && error(
         "The number of vectors in `data_column_widths` must be equal or lower than the number of data columns.",
@@ -285,7 +314,9 @@ Create the `columns` https://typst.app/docs/reference/model/table/#parameters-co
 configuration for tables in Typst.
 """
 function _typst__get_data_column_widths(
-    pair_columns::Vector{Pair{Int, String}}, num_data_columns::Int, num_columns::Int
+    pair_columns::Vector{Pair{Int, String}},
+    num_data_columns::Int,
+    num_columns::Int
 )
     columns::Vector{AbstractTypstLength} = fill(TypstLength(), num_data_columns)
 
@@ -299,9 +330,12 @@ function _typst__get_data_column_widths(
 end
 
 function _typst__get_data_column_widths(
-    str::Vector{T}, num_data_columns::Int, num_columns::Int
+    str::Vector{T},
+    num_data_columns::Int,
+    num_columns::Int
 ) where {T <: AbstractString}
     out_columns = map(TypstLength ∘ string, str)
+
     return _typst__get_data_column_widths(out_columns, num_data_columns, num_columns)
 end
 

@@ -16,8 +16,9 @@ function _typst__print(
     top_left_string::AbstractString = "",
     wrap_column::Integer = 100,
     annotate = true,
-) where {L <:
-         Union{String, Vector{String}, Vector{Pair{Int64, String}}, AbstractTypstLength}}
+) where {
+    L <: Union{String, Vector{String}, Vector{Pair{Int64, String}}, AbstractTypstLength}
+}
     context    = pspec.context
     table_data = pspec.table_data
     renderer   = Val(pspec.renderer)
@@ -418,6 +419,7 @@ function _typst__print(
     il -= 1
     _aprintln(buf, "}", il, ns)
     il -= 1
+
     # == Print the Buffer Into the IO ======================================================
 
     output_str = String(take!(buf_io))

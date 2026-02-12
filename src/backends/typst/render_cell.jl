@@ -47,7 +47,9 @@ _typst__cell_to_str(cell::UndefinedCell, context::IOContext, ::Val{:show}) = "#u
 Render the `cell` in Typst back end using a specific `context` and `renderer`.
 """
 function _typst__render_cell(
-    cell::Any, context::IOContext, renderer::Union{Val{:print}, Val{:show}}
+    cell::Any,
+    context::IOContext,
+    renderer::Union{Val{:print}, Val{:show}},
 )
     cell_str = _typst__cell_to_str(cell, context, renderer)
 
@@ -56,7 +58,9 @@ function _typst__render_cell(
 end
 
 function _typst__render_cell(
-    cell::AbstractString, context::IOContext, renderer::Union{Val{:print}, Val{:show}}
+    cell::AbstractString,
+    context::IOContext,
+    renderer::Union{Val{:print}, Val{:show}},
 )
     cell_str = _typst__cell_to_str(cell, context, renderer)
 
@@ -65,14 +69,18 @@ function _typst__render_cell(
 end
 
 function _typst__render_cell(
-    cell::HTML, context::IOContext, renderer::Union{Val{:print}, Val{:show}}
+    cell::HTML,
+    context::IOContext,
+    renderer::Union{Val{:print}, Val{:show}},
 )
     return _typst__cell_to_str(cell, context, renderer)
 end
 
 # For Markdown cells, we must render always using `show` to obtain the correct decoration.
 function _typst__render_cell(
-    cell::Markdown.MD, context::IOContext, renderer::Union{Val{:print}, Val{:show}}
+    cell::Markdown.MD,
+    context::IOContext,
+    renderer::Union{Val{:print}, Val{:show}},
 )
     return replace(sprint(show, MIME("text/typst"), cell), "\n" => "")
 end

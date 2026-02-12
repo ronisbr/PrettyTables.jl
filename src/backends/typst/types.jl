@@ -28,11 +28,23 @@ const _TYPST__SMALL_ITALIC_GRAY = ["text-fill" => "gray", "text-size" => "0.9em"
 const _TYPST__MERGED_CELL       = ["stroke" => "(paint: rgb(200,200,200), thickness: 0.01pt)"]
 
 const _TYPST__CELL_ATTRIBUTES = [
-    "align", "breakable", "colspan", "fill", "inset", "rowspan", "stroke"
+    "align",
+    "breakable",
+    "colspan",
+    "fill",
+    "inset",
+    "rowspan",
+    "stroke",
 ]
 
 const _TYPST__TABLE_ATTRIBUTES = [
-    "rows", "gutter", "column-gutter", "row-gutter", "inset", "fill", "stroke"
+    "rows",
+    "gutter",
+    "column-gutter",
+    "row-gutter",
+    "inset",
+    "fill",
+    "stroke",
 ]
 
 const _TYPST__STRING_ATTRIBUTES = [
@@ -82,7 +94,7 @@ const _TYPST__TEXT_ATTRIBUTES = [
     "weight",
 ]
 
-_typst__filter_text_atributes = filter(
+const _typst__filter_text_atributes = filter(
     x ->
         (occursin(r"^text-", x[1])) &&
         (replace(x[1], r"text-"=>"") ∈ _TYPST__TEXT_ATTRIBUTES),
@@ -227,16 +239,16 @@ Base.show(io::IO, ::Auto) = print(io, "auto")
 # ---- policy helpers ----
 
 const _TYPST_SUFFIX_UNIT_MAP = Dict(
-    "pt" => Pt,
-    "mm" => Mm,
-    "cm" => Cm,
-    "in" => In,
-    "em" => Em,
-    "ex" => Ex,
-    "fr" => Fr,
+    "pt"      => Pt,
+    "mm"      => Mm,
+    "cm"      => Cm,
+    "in"      => In,
+    "em"      => Em,
+    "ex"      => Ex,
+    "fr"      => Fr,
     "percent" => Percent,
-    "%" => Percent,
-    "auto" => Auto,
+    "%"       => Percent,
+    "auto"    => Auto,
 )
 
 const _TYPST_UNIT_SUFFIX_MAP = Dict(
@@ -254,15 +266,15 @@ const _TYPST_UNIT_SUFFIX_MAP = Dict(
 """
     TypstLength{T}
 
-Represents a **Typst Length value**, encoding both the *numeric magnitude*
-and the *unit or sizing mode* used by the Typst layout engine.
+Represents a **Typst Length value**, encoding both the *numeric magnitude* and the *unit or
+sizing mode* used by the Typst layout engine.
 
-`TypstLength` is intended to model all valid Length expressions accepted by
-Typst, including absolute units, font-relative units, layout fractions,
-percentages, and the special `auto` keyword.
+`TypstLength` is intended to model all valid Length expressions accepted by Typst, including
+absolute units, font-relative units, layout fractions, percentages, and the special `auto`
+keyword.
 
-The type parameter `T` specifies the *kind of Length* and determines
-how the value should be interpreted when serialized to Typst.
+The type parameter `T` specifies the *kind of Length* and determines how the value should be
+interpreted when serialized to Typst.
 
 ---
 
@@ -325,15 +337,15 @@ Example:
 
 ## Design notes
 
-TypstLength deliberately does not include pixel-based units (px)
-or viewport units (vw, vh), as Typst targets print-quality layout.
+TypstLength deliberately does not include pixel-based units (px) or viewport units (vw, vh),
+as Typst targets print-quality layout.
 
 There is no rem unit; em already captures scoped font-relative sizing.
 
-The type parameter T is expected to encode the semantic category
-of the Length (e.g. :pt, :em, :fr, :percent, :auto).
+The type parameter T is expected to encode the semantic category of the Length (e.g. :pt,
+:em, :fr, :percent, :auto).
 
-## Examples 
+## Examples
 
 Default constructor
 ```
@@ -349,6 +361,7 @@ Alternative constructor
 TypstLength(Pt,12)
 TypstLength(Auto,)
 ```
+
 Using Symbol
 ```
 TypstLength(:percent,50)
@@ -378,6 +391,7 @@ TypstLength() = TypstLength{Auto}(nothing)
 TypstLength(::Type{Auto}, x = nothing) = TypstLength{Auto}(nothing)
 TypstLength(::Type{T}, x::Real) where {T <: TypstLengthKind} = TypstLength{T}(Float64(x))
 TypstLength(s::AbstractString) = parse(TypstLength, s)
+
 function TypstLength(t::Symbol, x::Real)
     T = get(_TYPST_SUFFIX_UNIT_MAP, (lowercase ∘ string)(t), Auto)
     TypstLength{T}(Float64(x))
@@ -432,7 +446,8 @@ Strings may specify explicit units (`pt`, `em`, `fr`, `%`, etc.) or `"auto"`.
 """
 function Base.parse(::Type{TypstLength}, x)::TypstLength
     v = tryparse(TypstLength, x)
-    v === nothing && throw(
+
+    isnothing(v) && throw(
         ArgumentError(
             "Cannot parse TypstLength from $(repr(x)). " *
             "Expected a number, 'auto', or '<number><unit>' " *
@@ -447,6 +462,7 @@ function Base.show(io::IO, s::TypstLength{T}) where {T}
         print(io, "auto")
         return nothing
     end
+
     value = s.value
     suffix = _TYPST_UNIT_SUFFIX_MAP[T]
 
@@ -456,6 +472,7 @@ function Base.show(io::IO, s::TypstLength{T}) where {T}
     else
         print(io, round(value; digits = 2), suffix)
     end
+
     return nothing
 end
 
@@ -478,28 +495,41 @@ function TypstCaption(
 end
 
 TypstCaption(caption, kind, supplement, gap::AbstractString, position) = TypstCaption(
-    caption, kind, supplement, parse(TypstLength, gap), position
+    caption,
+    kind,
+    supplement,
+    parse(TypstLength, gap),
+    position,
 )
 
 function Base.show(io::IO, c::TypstCaption)
     (; caption, kind, supplement, gap, position) = c
+
     out = "caption: figure.caption(\n"
+
     if !isnothing(position)
         out *= "  position: $position,\n"
     end
+
     out *= "  [$caption]\n"
     out *= "),\n"
+
     if kind isa AbstractString && kind ∉ ["table", "auto", "image"]
         out *= """kind: "$kind",\n"""
         out *= "supplement: [$(something(supplement,titlecase(kind)))],\n"
     else
         out *= """kind: $kind,\n"""
+
         if !isnothing(supplement)
             out *= "supplement: [$supplement],\n"
         end
     end
+
     if !(gap isa Auto)
         out *= "gap: $gap,\n"
     end
+
     print(io, out)
+
+    return nothing
 end
