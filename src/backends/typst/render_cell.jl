@@ -33,10 +33,6 @@ function _typst__cell_to_str(cell::AbstractString, context::IOContext, ::Val{:sh
     return cell_str
 end
 
-_typst__cell_to_str(cell::HTML, context::IOContext, ::Val{:print}) = cell.content
-
-_typst__cell_to_str(cell::HTML, context::IOContext, ::Val{:show}) = cell.content
-
 _typst__cell_to_str(cell::UndefinedCell, context::IOContext, ::Val{:print}) = "#undef"
 
 _typst__cell_to_str(cell::UndefinedCell, context::IOContext, ::Val{:show}) = "#undef"
@@ -66,21 +62,4 @@ function _typst__render_cell(
 
     # If the user wants HTML code inside cell, we must not escape the HTML characters.
     return _typst__escape_str(cell_str)
-end
-
-function _typst__render_cell(
-    cell::HTML,
-    context::IOContext,
-    renderer::Union{Val{:print}, Val{:show}},
-)
-    return _typst__cell_to_str(cell, context, renderer)
-end
-
-# For Markdown cells, we must render always using `show` to obtain the correct decoration.
-function _typst__render_cell(
-    cell::Markdown.MD,
-    context::IOContext,
-    renderer::Union{Val{:print}, Val{:show}},
-)
-    return replace(sprint(show, MIME("text/typst"), cell), "\n" => "")
 end
