@@ -22,24 +22,24 @@
       table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],
       table.cell(align: right,)[#text(weight: "bold",)[Col. 2]],
       table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],
-      table.cell()[#text()[ ⋯ ]],
+      table.cell()[#text()[⋯]],
     ),
     // Body
     // data Row 1
     table.cell(align: right,)[#text()[(1, 1)]],
     table.cell(align: right,)[#text()[(1, 2)]],
     table.cell(align: right,)[#text()[(1, 3)]],
-    table.cell()[#text()[ ⋯ ]],
+    table.cell()[#text()[⋯]],
     // data Row 2
     table.cell(align: right,)[#text()[(2, 1)]],
     table.cell(align: right,)[#text()[(2, 2)]],
     table.cell(align: right,)[#text()[(2, 3)]],
-    table.cell()[#text()[ ⋯ ]],
+    table.cell()[#text()[⋯]],
     // continuation_row Row 3
-    table.cell()[#text()[  ⋮ ]],
-    table.cell()[#text()[  ⋮ ]],
-    table.cell()[#text()[  ⋮ ]],
-    table.cell()[#text()[ ⋱ ]],
+    table.cell()[#text()[⋮]],
+    table.cell()[#text()[⋮]],
+    table.cell()[#text()[⋮]],
+    table.cell()[#text()[⋱]],
   )
 }
 """
@@ -70,24 +70,24 @@
       table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],
       table.cell(align: right,)[#text(weight: "bold",)[Col. 2]],
       table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],
-      table.cell()[#text()[ ⋯ ]],
+      table.cell()[#text()[⋯]],
     ),
     // Body
     // data Row 1
     table.cell(align: right,)[#text()[(1, 1)]],
     table.cell(align: right,)[#text()[(1, 2)]],
     table.cell(align: right,)[#text()[(1, 3)]],
-    table.cell()[#text()[ ⋯ ]],
+    table.cell()[#text()[⋯]],
     // continuation_row Row 2
-    table.cell()[#text()[  ⋮ ]],
-    table.cell()[#text()[  ⋮ ]],
-    table.cell()[#text()[  ⋮ ]],
-    table.cell()[#text()[ ⋱ ]],
+    table.cell()[#text()[⋮]],
+    table.cell()[#text()[⋮]],
+    table.cell()[#text()[⋮]],
+    table.cell()[#text()[⋱]],
     // data Row 100
     table.cell(align: right,)[#text()[(100, 1)]],
     table.cell(align: right,)[#text()[(100, 2)]],
     table.cell(align: right,)[#text()[(100, 3)]],
-    table.cell()[#text()[ ⋯ ]],
+    table.cell()[#text()[⋯]],
   )
 }
 """
@@ -116,24 +116,24 @@
       table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],
       table.cell(align: right,)[#text(weight: "bold",)[Col. 2]],
       table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],
-      table.cell()[#text()[ ⋯ ]],
+      table.cell()[#text()[⋯]],
     ),
     // Body
     // data Row 1
     table.cell(align: right,)[#text()[(1, 1)]],
     table.cell(align: right,)[#text()[(1, 2)]],
     table.cell(align: right,)[#text()[(1, 3)]],
-    table.cell()[#text()[ ⋯ ]],
+    table.cell()[#text()[⋯]],
     // data Row 2
     table.cell(align: right,)[#text()[(2, 1)]],
     table.cell(align: right,)[#text()[(2, 2)]],
     table.cell(align: right,)[#text()[(2, 3)]],
-    table.cell()[#text()[ ⋯ ]],
+    table.cell()[#text()[⋯]],
     // continuation_row Row 3
-    table.cell()[#text()[  ⋮ ]],
-    table.cell()[#text()[  ⋮ ]],
-    table.cell()[#text()[  ⋮ ]],
-    table.cell()[#text()[ ⋱ ]],
+    table.cell()[#text()[⋮]],
+    table.cell()[#text()[⋮]],
+    table.cell()[#text()[⋮]],
+    table.cell()[#text()[⋱]],
   )
 }
 """

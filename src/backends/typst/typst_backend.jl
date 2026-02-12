@@ -185,7 +185,7 @@ function _typst__print(
         elseif action == :diagonal_continuation_cell
             comp = _typst__create_component(
                 "table.cell",
-                _typst__create_component("#text", " ⋱ "; wrap_column);
+                _typst__create_component("#text", "⋱"; wrap_column);
                 wrap_column,
             )
 
@@ -194,7 +194,7 @@ function _typst__print(
         elseif action == :horizontal_continuation_cell
             comp = _typst__create_component(
                 "table.cell",
-                _typst__create_component("#text", " ⋯ "; wrap_column);
+                _typst__create_component("#text", "⋯"; wrap_column);
                 wrap_column,
             )
 
@@ -207,7 +207,7 @@ function _typst__print(
 
             comp = _typst__create_component(
                 "table.cell",
-                _typst__create_component("#text", "  ⋮ "; wrap_column);
+                _typst__create_component("#text", "⋮"; wrap_column);
                 wrap_column,
             )
 

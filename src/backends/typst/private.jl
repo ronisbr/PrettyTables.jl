@@ -86,8 +86,8 @@ function _typst__create_component(
 
     if (length(split(open_tag, "\n")[end]) + length(content)) > wrap_column
         # Add indent to each line if multiple line.
-        join(string.("$indent", split(content, "\n")), "\n")
-        return open_tag * "\n" * indent * content * "\n" * close_tag
+        content = join(string.("$indent", split(content, "\n")), "\n")
+        return open_tag * "\n" * content * "\n" * close_tag
     end
 
     return open_tag * content * close_tag

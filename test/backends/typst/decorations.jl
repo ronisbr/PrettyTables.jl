@@ -127,9 +127,9 @@
             backend,
             style = TypstTableStyle(;
                 first_line_column_label = [
-                    ["fill" => "yellow", "text-fill"=>"blue", "text-weight"=>"extrabold"],
-                    ["fill" => "blue", "text-fill"=>"white", "text-weight"=>"extrabold"],
-                    ["fill" => "red", "text-fill"=>"rgb(30,30,30)"],
+                    ["fill" => "yellow", "text-fill" => "blue",  "text-weight" => "extrabold"],
+                    ["fill" => "blue",   "text-fill" => "white", "text-weight" => "extrabold"],
+                    ["fill" => "red",    "text-fill" => "rgb(30,30,30)"],
                 ],
             ),
         )
@@ -147,9 +147,9 @@
                 style = TypstTableStyle(;
                     table = [
                         "fill" => "yellow",
-                        "text-fill"=>"blue",
-                        "text-weight"=>"extrabold",
-                        "weigth"=>"",
+                        "text-fill" => "blue",
+                        "text-weight" => "extrabold",
+                        "weigth" => "",
                     ],
                 ),
             );
