@@ -376,9 +376,12 @@ function _typst__print(
                 "table.cell"; properties = cell_style, wrap_column
             )
 
-            # If Typstry.jl is loaded and the cell is a TypstString, we do not wrap it in a
-            # #text. Treat it as a raw Typst component.
-            content_payload = if isdefined(Main, :TypstString) && (cell isa Main.TypstString)
+            # If Typstry.jl is loaded and the cell is a `TypstString` or `Markdown.MD`, we
+            # do not wrap it in a #text. Treat it as a raw Typst component.
+            content_payload = if (
+                isdefined(Main, :TypstString) &&
+                (cell isa Main.TypstString || cell isa Markdown.MD)
+            )
                 rendered_cell
             else
                 _typst__create_component(
