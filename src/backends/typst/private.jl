@@ -138,22 +138,36 @@ end
 """
     _typst__call_function(f, args...) -> String
 
-Safely call the function `f` with arguments `args...` and convert the result into
+Call the function `f` with arguments `args...` and convert the result into
 a valid Typst representation.
 
 This helper is used internally by the Typst backend to evaluate user-provided
-formatting functions. Any exception thrown by `f` is propagated to the caller.
+formatting functions. 
 
 # Arguments
 - `f`: Function to be called.
 - `args...`: Arguments passed to the function.
 
 # Returns
-A `String` containing the Typst representation of the function result.
+A `String` containing the Typst representation of the function call.
 
 # Internal
 This function is part of the Typst backend implementation and is not part of the
 public PrettyTables API.
+
+# Note
+Same as `_typst__open_component` but without the opening bracket.
+
+# Example
+```julia
+_typst__call_function("text", "Hello, World!", weight="bold", fill="green")
+``` 
+
+will return:
+
+```typst
+text("Hello, World!", weight: "bold", fill: "green")
+``` 
 """
 function _typst__call_function(
     component::String,
