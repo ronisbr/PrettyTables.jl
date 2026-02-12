@@ -228,7 +228,7 @@ struct Fr <: TypstFractionalLengthKind end
 struct Percent <: TypstRelativeLengthKind end
 struct Auto end
 
-Base.show(io::IO,::Auto) = print(io,"auto")
+Base.show(io::IO, ::Auto) = print(io, "auto")
 
 # ---- policy helpers ----
 
