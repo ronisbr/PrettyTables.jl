@@ -92,6 +92,12 @@ table.cell()[#text()[Cell Content]]
     ["fill" => "blue", "text-fill" => "white"]
     ```
 
+!!! note
+
+    The content is always escaped and wrapped in a `#text` function. If you want to use a
+    raw Typst component as cell, load the package Typstry.jl and pass the cell content as a
+    `TypstString`. In this case, the content will not be wrapped in a `#text` function and
+    will be treated as a raw Typst component.
 
 ## Typst Table Style
 

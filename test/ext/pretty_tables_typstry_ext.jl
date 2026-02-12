@@ -5,15 +5,15 @@
 ############################################################################################
 using Typstry
 
-@testset "Extension" verbose = true begin
-    backend=:typst
+@testset "Typst Extension" verbose = true begin
+    backend = :typst
     matrix = [
         1 1.0 0x01 'a' "abc" missing
         2 2.0 0x02 'b' "def" nothing
         3 3.0 0x03 'c' "ghi" :symbol
     ]
-  @testset "Test Typst Type ouptut" verbose = true begin
-    text_expected = """
+    @testset "Typst Type ouptut" verbose = true begin
+        text_expected = """
 #{
   // Open table
   table(
@@ -53,34 +53,54 @@ using Typstry
   )
 }
 """
-    # Test String Output
-    text_result = pretty_table(
-      String,
-      matrix;
-      backend
-    )
-    @test text_result == text_expected
+        # Test String Output
+        text_result = pretty_table(String, matrix; backend)
+        @test text_result == text_expected
 
-    # Test Typst Output
+        # Test Typst Output
+        expected = Typst(TypstText(text_expected))
+        result   = pretty_table(Typst, matrix; backend)
 
-    expected = Typst(TypstText(text_expected))
+        @test result == expected
 
-    result = pretty_table(
-      Typst,
-      matrix;
-      backend
-    )
+        # Test backend inferred by Typst Output
+        result_inferred = pretty_table(Typst, matrix;)
 
-    @test result == expected
+        @test expected == result_inferred
+    end
 
-    # Test backend inferred by Typst Output
-    result_inferred = pretty_table(
-      Typst,
-      matrix;
-    )
+    @testset "Raw Typst Cells" verbose = true begin
+        backend = :typst
+        matrix = [
+            1 typst"#text(fill: blue, weight: \"bold\")[Typst Cell \#1]"
+            2 typst"#text(fill: red, weight: \"bold\")[Typst Cell \#2]"
+        ]
 
-    @test expected == result_inferred
+        expected = """
+#{
+  // Open table
+  table(
+    columns: (auto, auto),
+    // Table Header
+    table.header(
+      // column_labels Row 1
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],
+      table.cell(align: right,)[#text(weight: "bold",)[Col. 2]],
+    ),
+    // Body
+    // data Row 1
+    table.cell(align: right,)[#text()[1]],
+    table.cell(align: right,)[#text(fill: blue, weight: "bold")[Typst Cell \\#1]],
+    // data Row 2
+    table.cell(align: right,)[#text()[2]],
+    table.cell(align: right,)[#text(fill: red, weight: "bold")[Typst Cell \\#2]],
+  )
+}
+"""
+        # Test String Output
+        result = pretty_table(String, matrix; backend)
 
-  end
+        @test result == expected
+    end
 end
 

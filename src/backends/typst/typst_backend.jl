@@ -278,7 +278,6 @@ function _typst__print(
             end
 
             # Obtain the cell class and style.
-
             if action == :title
                 push!(
                     vproperties, "colspan" => string(_number_of_printed_columns(table_data))
@@ -370,17 +369,27 @@ function _typst__print(
             ) do l
                 occursin(r"text-", l[1]) ? replace(l[1], "text-" => "") => l[2] : l
             end
+
             # Create the row component with the content.
             comp_prefix = action ∈ [:footnote] ? "#super[$(ps.i)]" : ""
-            open_comp=_typst__open_component(
+            open_comp = _typst__open_component(
                 "table.cell"; properties = cell_style, wrap_column
             )
-            content_comp =
-                comp_prefix *
+
+            # If Typstry.jl is loaded and the cell is a TypstString, we do not wrap it in a
+            # #text. Treat it as a raw Typst component.
+            content_payload = if isdefined(Main, :TypstString) && (cell isa Main.TypstString)
+                rendered_cell
+            else
                 _typst__create_component(
-                    "#text", rendered_cell; properties = text_style, wrap_column
-                ) *
-                something(append, "")
+                    "#text",
+                    rendered_cell;
+                    properties = text_style,
+                    wrap_column
+                )
+            end
+
+            content_comp = comp_prefix * content_payload * something(append, "")
 
             if any([
                 length(split(content_comp, "\n")) > 1,
