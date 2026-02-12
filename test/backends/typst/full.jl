@@ -38,10 +38,7 @@
       table.cell(align: right, fill: yellow,)[
         #text(fill: blue, weight: "extrabold",)[Col. 1]
       ],
-      table.cell(
-        align: center, colspan: 2, fill: blue,
-        stroke: (paint: rgb(200,200,200), thickness: 0.01pt),
-      )[
+      table.cell(align: center, colspan: 2, fill: blue,)[
         #text(fill: white, weight: "extrabold",)[
           Merged Column
         ]#super[1]
@@ -214,9 +211,7 @@
       table.cell(align: right,)[#text(weight: "bold",)[Row]],
       table.cell(align: right,)[#text(weight: "bold",)[Rows]],
       table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],
-      table.cell(align: center, colspan: 1, stroke: (paint: rgb(200,200,200), thickness: 0.01pt),)[
-        #text(weight: "bold",)[Merged Column]#super[1]
-      ],
+      table.cell(align: center, colspan: 1,)[#text(weight: "bold",)[Merged Column]#super[1]],
       table.cell()[#text()[ ⋯ ]],
     ),
     // Body
@@ -306,9 +301,7 @@
       table.cell(align: right,)[#text(weight: "bold",)[Row]],
       table.cell(align: right,)[#text(weight: "bold",)[Rows]],
       table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],
-      table.cell(align: center, colspan: 1, stroke: (paint: rgb(200,200,200), thickness: 0.01pt),)[
-        #text(weight: "bold",)[Merged Column]#super[1]
-      ],
+      table.cell(align: center, colspan: 1,)[#text(weight: "bold",)[Merged Column]#super[1]],
       table.cell()[#text()[ ⋯ ]],
     ),
     // Body
@@ -389,9 +382,7 @@
       table.cell(align: right,)[#text(weight: "bold",)[Row]],
       table.cell(align: right,)[#text(weight: "bold",)[Rows]],
       table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],
-      table.cell(align: center, colspan: 1, stroke: (paint: rgb(200,200,200), thickness: 0.01pt),)[
-        #text(weight: "bold",)[Merged Column]#super[1]
-      ],
+      table.cell(align: center, colspan: 1,)[#text(weight: "bold",)[Merged Column]#super[1]],
       table.cell()[#text()[ ⋯ ]],
     ),
     table.cell(align: right,)[#text(weight: "bold",)[1]],
@@ -499,7 +490,6 @@
       table.cell(
         align: center,
         colspan: 1,
-        stroke: (paint: rgb(200,200,200), thickness: 0.01pt),
       )[
         #text(weight: "bold",)[
           Merged Column

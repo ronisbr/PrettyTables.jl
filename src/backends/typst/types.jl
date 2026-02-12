@@ -25,7 +25,7 @@ const _TYPST__LARGE_ITALIC      = ["text-size" => "1.1em", "text-style" => "ital
 const _TYPST__SMALL             = ["text-size" => "0.9em"]
 const _TYPST__SMALL_ITALIC      = ["text-size" => "0.9em", "text-style" => "italic"]
 const _TYPST__SMALL_ITALIC_GRAY = ["text-fill" => "gray", "text-size" => "0.9em", "text-style" => "italic"]
-const _TYPST__MERGED_CELL       = ["stroke" => "(paint: rgb(200,200,200), thickness: 0.01pt)"]
+const _TYPST__MERGED_CELL       = TypstPair[]
 
 const _TYPST__CELL_ATTRIBUTES = [
     "align",
