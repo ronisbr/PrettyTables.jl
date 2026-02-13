@@ -90,7 +90,7 @@ end
 # == Cells =================================================================================
 
 """
-    _typst__table_cell(content::AbstractString[, properties::Vector{TypstPair}]; kwargs...) -> String
+    _typst__table_cell(content::String[, properties::Vector{TypstPair}]; kwargs...) -> String
 
 Create a Typst table cell with `content` and optional `properties`. If `properties` is not
 provided or empty, a basic cell is created with the content. If `properties` are provided, a
@@ -106,7 +106,7 @@ provided or empty, a basic cell is created with the content. If `properties` are
     (**Default**: 92)
 """
 function _typst__table_cell(
-    content::AbstractString,
+    content::String,
     properties::Vector{TypstPair};
     il::Int = 2,
     ns::Int = 2,
@@ -116,12 +116,7 @@ function _typst__table_cell(
     return _typst__create_component("table.cell", content, properties; il, ns, wrap_column)
 end
 
-function _typst__table_cell(
-    content::AbstractString;
-    il::Int = 2,
-    ns::Int = 2,
-    wrap_column::Int = 92
-)
+function _typst__table_cell(content::String; il::Int = 2, ns::Int = 2, wrap_column::Int = 92)
     cl = length(content)
     id_str = repeat(" ", ns)
 
@@ -254,15 +249,15 @@ function _typst__process_caption(c::TypstCaption, il::Int)
 end
 
 """
-    _typst__text(content::AbstractString, properties::Union{Vector{TypstPair}, Nothing}) -> String
+    _typst__text(content::String, properties::Union{Vector{TypstPair}, Nothing}) -> String
 
 Convert the `content` to Typst format with optional styling `properties`. If `properties`
 is empty or `nothing` (default), the function returns the content unchanged.  Otherwise, it
 creates a Typst `#text` component with the specified properties.
 """
-_typst__text(content::AbstractString, ::Nothing) = content
+_typst__text(content::String, ::Nothing) = content
 
-function _typst__text(content::AbstractString, properties::Vector{TypstPair})
+function _typst__text(content::String, properties::Vector{TypstPair})
     (isempty(properties) || isempty(content)) && return _typst__text(content, nothing)
     return _typst__create_component("#text", content, properties; wrap_column = -1)
 end
@@ -319,10 +314,12 @@ end
 # == Styles ================================================================================
 
 """
-    _typst__get_data_column_widths(column_length::AbstractTypstLength, num_data_columns::Int, num_columns::Int)
+    _typst__get_data_column_widths(table_data::TableData[, data_column_widths]) -> String
 
-Create the `columns` https://typst.app/docs/reference/model/table/#parameters-columns 
-configuration for tables in Typst.
+Generate a Typst column width specification string for a table specified by `table_data`.
+`data_column_widths` must be an iterable of width specifications for data columns. Each
+element should be a width value compatible with Typst format (e.g., "auto", "1fr", "2cm").
+If `data_column_widths` is `nothing` (default), it defaults to "auto" for all columns.
 """
 function _typst__get_data_column_widths(table_data::TableData, ::Nothing)
     return _typst__get_data_column_widths(
