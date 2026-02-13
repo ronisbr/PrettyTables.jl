@@ -9,29 +9,29 @@
         1 2 3
         4 5 6
     ]
-    backend=:typst
+    backend = :typst
 
     expected = """
 #{
-  // Open table
   table(
-    columns: (auto, auto, auto),
-    // Table Header
+    align: (right, right, right,),
+    columns: (auto, auto, auto,),
+    // == Table Header =====================================================================
     table.header(
-      // column_labels Row 1
-      table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],
-      table.cell(align: right,)[#text(weight: "bold",)[Col. 2]],
-      table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],
+      // -- Column Labels: Row 1 -----------------------------------------------------------
+      [#text(weight: "bold",)[Col. 1]],
+      [#text(weight: "bold",)[Col. 2]],
+      [#text(weight: "bold",)[Col. 3]],
     ),
-    // Body
-    // data Row 1
-    table.cell(align: right,)[#text(fill: green, weight: "bold",)[1]],
-    table.cell(align: right,)[#text(fill: red,)[2]],
-    table.cell(align: right,)[#text(fill: green, weight: "bold",)[3]],
-    // data Row 2
-    table.cell(align: right,)[#text(fill: red,)[4]],
-    table.cell(align: right,)[#text(fill: green, weight: "bold",)[5]],
-    table.cell(align: right,)[#text(fill: red,)[6]],
+    // == Table Body =======================================================================
+    // -- Data: Row 1 ----------------------------------------------------------------------
+    [#text(weight: "bold", fill: green,)[1]],
+    [#text(fill: red,)[2]],
+    [#text(weight: "bold", fill: green,)[3]],
+    // -- Data: Row 2 ----------------------------------------------------------------------
+    [#text(fill: red,)[4]],
+    [#text(weight: "bold", fill: green,)[5]],
+    [#text(fill: red,)[6]],
   )
 }
 """

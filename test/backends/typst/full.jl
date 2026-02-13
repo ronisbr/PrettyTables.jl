@@ -11,144 +11,97 @@
     @testset "Without Cropping" begin
         expected = """
 #{
-  // Open table
   table(
-    columns: (auto, auto, 25fr, 75fr, 5em, auto),
-    // Table Header
+    align: (right, right, right, right, right, right,),
+    columns: (auto, auto, 25fr, 75fr, 5em, auto,),
+    // == Table Header ===========================
     table.header(
-      // table_header Row 1
+      // -- Table Header: Title ------------------
       table.cell(align: center, colspan: 6,)[
         #text(size: 1.1em, weight: "bold",)[Table Title]
       ],
-      // table_header Row 1
+      // -- Table Header: Subtitle ---------------
       table.cell(align: center, colspan: 6,)[
-        #text(size: 1.1em, style: "italic",)[
-          Table Subtitle
-        ]
+        #text(size: 1.1em, style: "italic",)[Table Subtitle]
       ],
-      // column_labels Row 1
-      table.cell(align: right,)[
-        #text(weight: "bold",)[Row]
-      ],
-      table.cell(align: right,)[
-        #text(weight: "bold",)[Rows]
-      ],
-      table.cell(align: right, fill: yellow,)[
+      // -- Column Labels: Row 1 -----------------
+      [#text(weight: "bold",)[Row]],
+      [#text(weight: "bold",)[Rows]],
+      table.cell(fill: yellow,)[
         #text(fill: blue, weight: "extrabold",)[Col. 1]
       ],
-      table.cell(align: center, colspan: 2, fill: blue,)[
-        #text(fill: white, weight: "extrabold",)[
-          Merged Column
-        ]#super[1]
+      table.cell(colspan: 2, fill: blue,)[
+        #text(fill: white, weight: "extrabold",)[Merged Column]#super[1]
       ],
-      table.cell(align: right, fill: red,)[
-        #text(fill: rgb(30,30,30),)[Col. 4]
+      table.cell(fill: red,)[
+        #text(fill: rgb(30, 30, 30),)[Col. 4]
       ],
-      // column_labels Row 2
-      table.cell(align: right,)[#text(weight: "bold",)[]],
-      table.cell(align: right,)[#text(weight: "bold",)[]],
-      table.cell(align: right,)[
-        #text(weight: "bold",)[1]
-      ],
-      table.cell(align: right,)[
-        #text(weight: "bold",)[2]
-      ],
-      table.cell(align: right,)[
-        #text(weight: "bold",)[3]
-      ],
-      table.cell(align: right,)[
-        #text(weight: "bold",)[4]
-      ],
+      // -- Column Labels: Row 2 -----------------
+      [],
+      [],
+      [#text(weight: "bold",)[1]],
+      [#text(weight: "bold",)[2]],
+      [#text(weight: "bold",)[3]],
+      [#text(weight: "bold",)[4]],
     ),
-    // Body
-    // data Row 1
-    table.cell(align: right,)[
-      #text(weight: "bold",)[1]
-    ],
-    table.cell(align: right,)[
-      #text(weight: "bold",)[Row 1]
-    ],
-    table.cell(align: right,)[#text()[(1, 1)]],
-    table.cell(align: right,)[#text()[(1, 2)]],
-    table.cell(align: right,)[#text()[(1, 3)]],
-    table.cell(align: right,)[#text()[(1, 4)]],
-    // row_group_label Row 2
+    // == Table Body =============================
+    // -- Data: Row 1 ----------------------------
+    [#text(weight: "bold",)[1]],
+    [#text(weight: "bold",)[Row 1]],
+    [(1, 1)],
+    [(1, 2)],
+    [(1, 3)],
+    [(1, 4)],
+    // -- Row Group Label: Row 2 -----------------
     table.cell(align: left, colspan: 6,)[
       #text(weight: "bold",)[Row Group]
     ],
-    // data Row 2
-    table.cell(align: right,)[
-      #text(weight: "bold",)[2]
-    ],
-    table.cell(align: right,)[
-      #text(weight: "bold",)[Row 2]
-    ],
-    table.cell(align: right,)[#text()[(2, 1)]],
-    table.cell(align: right,)[#text()[(2, 2)]#super[2]],
-    table.cell(align: right,)[#text()[(2, 3)]],
-    table.cell(align: right,)[#text()[(2, 4)]],
-    // data Row 3
-    table.cell(align: right,)[
-      #text(weight: "bold",)[3]
-    ],
-    table.cell(align: right,)[
-      #text(weight: "bold",)[Row 3]
-    ],
-    table.cell(align: right,)[#text()[(3, 1)]],
-    table.cell(align: right,)[#text()[(3, 2)]],
-    table.cell(align: right,)[#text()[(3, 3)]],
-    table.cell(align: right,)[#text()[(3, 4)]],
-    // data Row 4
-    table.cell(align: right,)[
-      #text(weight: "bold",)[4]
-    ],
-    table.cell(align: right,)[
-      #text(weight: "bold",)[Row 4]
-    ],
-    table.cell(align: right,)[#text()[(4, 1)]],
-    table.cell(align: right,)[#text()[(4, 2)]],
-    table.cell(align: right,)[#text()[(4, 3)]],
-    table.cell(align: right,)[#text()[(4, 4)]],
-    // summary_row Row 1
-    table.cell(align: right,)[#text(weight: "bold",)[]],
-    table.cell(align: right,)[
-      #text(weight: "bold",)[Summary 1]
-    ],
-    table.cell(align: right,)[#text()[10]],
-    table.cell(align: right,)[#text()[20]],
-    table.cell(align: right,)[#text()[30]],
-    table.cell(align: right,)[#text()[40]],
-    // summary_row Row 2
-    table.cell(align: right,)[#text(weight: "bold",)[]],
-    table.cell(align: right,)[
-      #text(weight: "bold",)[Summary 2]
-    ],
-    table.cell(align: right,)[#text()[20]],
-    table.cell(align: right,)[#text()[40]],
-    table.cell(align: right,)[#text()[60]],
-    table.cell(align: right,)[#text()[80]],
-    // table_footer Row 1
-    table.cell(
-      align: left, colspan: 6, inset: (left: 0pt),
-      stroke: none,
-    )[
+    // -- Data: Row 2 ----------------------------
+    [#text(weight: "bold",)[2]],
+    [#text(weight: "bold",)[Row 2]],
+    [(2, 1)],
+    [(2, 2)#super[2]],
+    [(2, 3)],
+    [(2, 4)],
+    // -- Data: Row 3 ----------------------------
+    [#text(weight: "bold",)[3]],
+    [#text(weight: "bold",)[Row 3]],
+    [(3, 1)],
+    [(3, 2)],
+    [(3, 3)],
+    [(3, 4)],
+    // -- Data: Row 4 ----------------------------
+    [#text(weight: "bold",)[4]],
+    [#text(weight: "bold",)[Row 4]],
+    [(4, 1)],
+    [(4, 2)],
+    [(4, 3)],
+    [(4, 4)],
+    // -- Summary Row: Row 1 ---------------------
+    [],
+    [#text(weight: "bold",)[Summary 1]],
+    [10],
+    [20],
+    [30],
+    [40],
+    // -- Summary Row: Row 2 ---------------------
+    [],
+    [#text(weight: "bold",)[Summary 2]],
+    [20],
+    [40],
+    [60],
+    [80],
+    // -- Table Footer: Footnote 1 ---------------
+    table.cell(align: left, colspan: 6, inset: (left: 0pt), stroke: none,)[
       #super[1]#text(size: 0.9em,)[Footnote in column label]
     ],
-    // table_footer Row 2
-    table.cell(
-      align: left, colspan: 6, inset: (left: 0pt),
-      stroke: none,
-    )[
+    // -- Table Footer: Footnote 2 ---------------
+    table.cell(align: left, colspan: 6, inset: (left: 0pt), stroke: none,)[
       #super[2]#text(size: 0.9em,)[Footnote in data]
     ],
-    // table_footer Row 1
-    table.cell(
-      align: left, colspan: 6, inset: (left: 0pt),
-      stroke: none,
-    )[
-      #text(fill: gray, size: 0.9em, style: "italic",)[
-        Source Notes
-      ]
+    // -- Table Footer: Source Notes -------------
+    table.cell(align: left, colspan: 6, inset: (left: 0pt), stroke: none,)[
+      #text(fill: gray, size: 0.9em, style: "italic",)[Source Notes]
     ],
   )
 }
@@ -170,9 +123,9 @@
                         "text-fill" => "white",
                         "text-weight" => "extrabold",
                     ],
-                    ["fill" => "red", "text-fill" => "rgb(30,30,30)"],
-                    ["fill" => "red", "text-fill" => "rgb(30,30,30)"],
-                    ["fill" => "red", "text-fill" => "rgb(30,30,30)"],
+                    ["fill" => "red", "text-fill" => "rgb(30, 30, 30)"],
+                    ["fill" => "red", "text-fill" => "rgb(30, 30, 30)"],
+                    ["fill" => "red", "text-fill" => "rgb(30, 30, 30)"],
                 ],
             ),
             column_labels = [["Col. $i" for i in 1:4], ["$i" for i in 1:4]],
@@ -184,7 +137,7 @@
             row_group_labels = [2 => "Row Group"],
             row_labels = ["Row $i" for i in 1:5],
             show_row_number_column = true,
-            data_column_widths = ["25fr", "75fr", "5em"],
+            data_column_widths = ["25fr", "75fr", "5em", "auto"],
             source_notes = "Source Notes",
             stubhead_label = "Rows",
             summary_rows = [(data, i) -> 10i, (data, i) -> 20i],
@@ -199,67 +152,70 @@
     @testset "With Bottom Cropping" begin
         expected = """
 #{
-  // Open table
   table(
-    columns: (auto, auto, auto, auto, auto),
-    // Table Header
+    align: (right, right, right, right, center,),
+    columns: (auto, auto, auto, auto, auto,),
+    // == Table Header =====================================================================
     table.header(
-      // table_header Row 1
+      // -- Table Header: Title ------------------------------------------------------------
       table.cell(align: center, colspan: 5,)[#text(size: 1.1em, weight: "bold",)[Table Title]],
-      // table_header Row 1
-      table.cell(align: center, colspan: 5,)[#text(size: 1.1em, style: "italic",)[Table Subtitle]],
-      // column_labels Row 1
-      table.cell(align: right,)[#text(weight: "bold",)[Row]],
-      table.cell(align: right,)[#text(weight: "bold",)[Rows]],
-      table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],
-      table.cell(align: center, colspan: 1,)[#text(weight: "bold",)[Merged Column]#super[1]],
-      table.cell()[#text()[⋯]],
+      // -- Table Header: Subtitle ---------------------------------------------------------
+      table.cell(align: center, colspan: 5,)[
+        #text(size: 1.1em, style: "italic",)[Table Subtitle]
+      ],
+      // -- Column Labels: Row 1 -----------------------------------------------------------
+      [#text(weight: "bold",)[Row]],
+      [#text(weight: "bold",)[Rows]],
+      [#text(weight: "bold",)[Col. 1]],
+      table.cell(colspan: 1,)[#text(weight: "bold",)[Merged Column]#super[1]],
+      [⋯],
     ),
-    // Body
-    // data Row 1
-    table.cell(align: right,)[#text(weight: "bold",)[1]],
-    table.cell(align: right,)[#text(weight: "bold",)[Row 1]],
-    table.cell(align: right,)[#text()[(1, 1)]],
-    table.cell(align: right,)[#text()[(1, 2)]],
-    table.cell()[#text()[⋯]],
-    // row_group_label Row 2
+    // == Table Body =======================================================================
+    // -- Data: Row 1 ----------------------------------------------------------------------
+    [#text(weight: "bold",)[1]],
+    [#text(weight: "bold",)[Row 1]],
+    [(1, 1)],
+    [(1, 2)],
+    [⋯],
+    // -- Row Group Label: Row 2 -----------------------------------------------------------
     table.cell(align: left, colspan: 5,)[#text(weight: "bold",)[Row Group]],
-    // data Row 2
-    table.cell(align: right,)[#text(weight: "bold",)[2]],
-    table.cell(align: right,)[#text(weight: "bold",)[Row 2]],
-    table.cell(align: right,)[#text()[(2, 1)]],
-    table.cell(align: right,)[#text()[(2, 2)]#super[2]],
-    table.cell()[#text()[⋯]],
-    // continuation_row Row 3
-    table.cell()[#text()[⋮]],
-    table.cell()[#text()[⋮]],
-    table.cell()[#text()[⋮]],
-    table.cell()[#text()[⋮]],
-    table.cell()[#text()[⋱]],
-    // summary_row Row 1
-    table.cell(align: right,)[#text(weight: "bold",)[]],
-    table.cell(align: right,)[#text(weight: "bold",)[Summary 1]],
-    table.cell(align: right,)[#text()[10]],
-    table.cell(align: right,)[#text()[20]],
-    table.cell()[#text()[⋯]],
-    // summary_row Row 2
-    table.cell(align: right,)[#text(weight: "bold",)[]],
-    table.cell(align: right,)[#text(weight: "bold",)[Summary 2]],
-    table.cell(align: right,)[#text()[20]],
-    table.cell(align: right,)[#text()[40]],
-    table.cell()[#text()[⋯]],
+    // -- Data: Row 2 ----------------------------------------------------------------------
+    [#text(weight: "bold",)[2]],
+    [#text(weight: "bold",)[Row 2]],
+    [(2, 1)],
+    [(2, 2)#super[2]],
+    [⋯],
+    // -- Continuation Row -----------------------------------------------------------------
+    [⋮],
+    [⋮],
+    [⋮],
+    [⋮],
+    [⋱],
+    // -- Summary Row: Row 1 ---------------------------------------------------------------
+    [],
+    [#text(weight: "bold",)[Summary 1]],
+    [10],
+    [20],
+    [⋯],
+    // -- Summary Row: Row 2 ---------------------------------------------------------------
+    [],
+    [#text(weight: "bold",)[Summary 2]],
+    [20],
+    [40],
+    [⋯],
+    // -- Omitted Cell Summary -------------------------------------------------------------
     table.cell(align: right, colspan: 5, inset: (right: 0pt), stroke: none,)[
       #text(fill: gray, size: 0.9em, style: "italic",)[2 columns and 2 rows omitted]
     ],
-    // table_footer Row 1
+    // -- Table Footer: Footnote 1 ---------------------------------------------------------
     table.cell(align: left, colspan: 5, inset: (left: 0pt), stroke: none,)[
       #super[1]#text(size: 0.9em,)[Footnote in column label]
     ],
-    // table_footer Row 2
+    // -- Table Footer: Footnote 2 ---------------------------------------------------------
     table.cell(align: left, colspan: 5, inset: (left: 0pt), stroke: none,)[
       #super[2]#text(size: 0.9em,)[Footnote in data]
     ],
-    // table_footer Row 1
+    // -- Table Footer: Source Notes -------------------------------------------------------
     table.cell(align: left, colspan: 5, inset: (left: 0pt), stroke: none,)[
       #text(fill: gray, size: 0.9em, style: "italic",)[Source Notes]
     ],
@@ -294,65 +250,68 @@
     @testset "With Middle Cropping" begin
         expected = """
 #{
-  // Open table
   table(
-    columns: (auto, auto, auto, auto, auto),
-    // Table Header
+    align: (right, right, right, right, center,),
+    columns: (auto, auto, auto, auto, auto,),
+    // == Table Header =====================================================================
     table.header(
-      // table_header Row 1
+      // -- Table Header: Title ------------------------------------------------------------
       table.cell(align: center, colspan: 5,)[#text(size: 1.1em, weight: "bold",)[Table Title]],
-      // table_header Row 1
-      table.cell(align: center, colspan: 5,)[#text(size: 1.1em, style: "italic",)[Table Subtitle]],
-      // column_labels Row 1
-      table.cell(align: right,)[#text(weight: "bold",)[Row]],
-      table.cell(align: right,)[#text(weight: "bold",)[Rows]],
-      table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],
-      table.cell(align: center, colspan: 1,)[#text(weight: "bold",)[Merged Column]#super[1]],
-      table.cell()[#text()[⋯]],
+      // -- Table Header: Subtitle ---------------------------------------------------------
+      table.cell(align: center, colspan: 5,)[
+        #text(size: 1.1em, style: "italic",)[Table Subtitle]
+      ],
+      // -- Column Labels: Row 1 -----------------------------------------------------------
+      [#text(weight: "bold",)[Row]],
+      [#text(weight: "bold",)[Rows]],
+      [#text(weight: "bold",)[Col. 1]],
+      table.cell(colspan: 1,)[#text(weight: "bold",)[Merged Column]#super[1]],
+      [⋯],
     ),
-    // Body
-    // data Row 1
-    table.cell(align: right,)[#text(weight: "bold",)[1]],
-    table.cell(align: right,)[#text(weight: "bold",)[Row 1]],
-    table.cell(align: right,)[#text()[(1, 1)]],
-    table.cell(align: right,)[#text()[(1, 2)]],
-    table.cell()[#text()[⋯]],
-    // continuation_row Row 2
-    table.cell()[#text()[⋮]],
-    table.cell()[#text()[⋮]],
-    table.cell()[#text()[⋮]],
-    table.cell()[#text()[⋮]],
-    table.cell()[#text()[⋱]],
-    // data Row 4
-    table.cell(align: right,)[#text(weight: "bold",)[4]],
-    table.cell(align: right,)[#text(weight: "bold",)[Row 4]],
-    table.cell(align: right,)[#text()[(4, 1)]],
-    table.cell(align: right,)[#text()[(4, 2)]],
-    table.cell()[#text()[⋯]],
-    // summary_row Row 1
-    table.cell(align: right,)[#text(weight: "bold",)[]],
-    table.cell(align: right,)[#text(weight: "bold",)[Summary 1]],
-    table.cell(align: right,)[#text()[10]],
-    table.cell(align: right,)[#text()[20]],
-    table.cell()[#text()[⋯]],
-    // summary_row Row 2
-    table.cell(align: right,)[#text(weight: "bold",)[]],
-    table.cell(align: right,)[#text(weight: "bold",)[Summary 2]],
-    table.cell(align: right,)[#text()[20]],
-    table.cell(align: right,)[#text()[40]],
-    table.cell()[#text()[⋯]],
+    // == Table Body =======================================================================
+    // -- Data: Row 1 ----------------------------------------------------------------------
+    [#text(weight: "bold",)[1]],
+    [#text(weight: "bold",)[Row 1]],
+    [(1, 1)],
+    [(1, 2)],
+    [⋯],
+    // -- Continuation Row -----------------------------------------------------------------
+    [⋮],
+    [⋮],
+    [⋮],
+    [⋮],
+    [⋱],
+    // -- Data: Row 4 ----------------------------------------------------------------------
+    [#text(weight: "bold",)[4]],
+    [#text(weight: "bold",)[Row 4]],
+    [(4, 1)],
+    [(4, 2)],
+    [⋯],
+    // -- Summary Row: Row 1 ---------------------------------------------------------------
+    [],
+    [#text(weight: "bold",)[Summary 1]],
+    [10],
+    [20],
+    [⋯],
+    // -- Summary Row: Row 2 ---------------------------------------------------------------
+    [],
+    [#text(weight: "bold",)[Summary 2]],
+    [20],
+    [40],
+    [⋯],
+    // -- Omitted Cell Summary -------------------------------------------------------------
     table.cell(align: right, colspan: 5, inset: (right: 0pt), stroke: none,)[
       #text(fill: gray, size: 0.9em, style: "italic",)[2 columns and 2 rows omitted]
     ],
-    // table_footer Row 1
+    // -- Table Footer: Footnote 1 ---------------------------------------------------------
     table.cell(align: left, colspan: 5, inset: (left: 0pt), stroke: none,)[
       #super[1]#text(size: 0.9em,)[Footnote in column label]
     ],
-    // table_footer Row 2
+    // -- Table Footer: Footnote 2 ---------------------------------------------------------
     table.cell(align: left, colspan: 5, inset: (left: 0pt), stroke: none,)[
       #super[2]#text(size: 0.9em,)[Footnote in data]
     ],
-    // table_footer Row 1
+    // -- Table Footer: Source Notes -------------------------------------------------------
     table.cell(align: left, colspan: 5, inset: (left: 0pt), stroke: none,)[
       #text(fill: gray, size: 0.9em, style: "italic",)[Source Notes]
     ],
@@ -388,41 +347,44 @@
         expected = """
 #{
   table(
-    columns: (auto, auto, auto, auto, auto),
+    align: (right, right, right, right, center,),
+    columns: (auto, auto, auto, auto, auto,),
     table.header(
       table.cell(align: center, colspan: 5,)[#text(size: 1.1em, weight: "bold",)[Table Title]],
-      table.cell(align: center, colspan: 5,)[#text(size: 1.1em, style: "italic",)[Table Subtitle]],
-      table.cell(align: right,)[#text(weight: "bold",)[Row]],
-      table.cell(align: right,)[#text(weight: "bold",)[Rows]],
-      table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],
-      table.cell(align: center, colspan: 1,)[#text(weight: "bold",)[Merged Column]#super[1]],
-      table.cell()[#text()[⋯]],
+      table.cell(align: center, colspan: 5,)[
+        #text(size: 1.1em, style: "italic",)[Table Subtitle]
+      ],
+      [#text(weight: "bold",)[Row]],
+      [#text(weight: "bold",)[Rows]],
+      [#text(weight: "bold",)[Col. 1]],
+      table.cell(colspan: 1,)[#text(weight: "bold",)[Merged Column]#super[1]],
+      [⋯],
     ),
-    table.cell(align: right,)[#text(weight: "bold",)[1]],
-    table.cell(align: right,)[#text(weight: "bold",)[Row 1]],
-    table.cell(align: right,)[#text()[(1, 1)]],
-    table.cell(align: right,)[#text()[(1, 2)]],
-    table.cell()[#text()[⋯]],
-    table.cell()[#text()[⋮]],
-    table.cell()[#text()[⋮]],
-    table.cell()[#text()[⋮]],
-    table.cell()[#text()[⋮]],
-    table.cell()[#text()[⋱]],
-    table.cell(align: right,)[#text(weight: "bold",)[4]],
-    table.cell(align: right,)[#text(weight: "bold",)[Row 4]],
-    table.cell(align: right,)[#text()[(4, 1)]],
-    table.cell(align: right,)[#text()[(4, 2)]],
-    table.cell()[#text()[⋯]],
-    table.cell(align: right,)[#text(weight: "bold",)[]],
-    table.cell(align: right,)[#text(weight: "bold",)[Summary 1]],
-    table.cell(align: right,)[#text()[10]],
-    table.cell(align: right,)[#text()[20]],
-    table.cell()[#text()[⋯]],
-    table.cell(align: right,)[#text(weight: "bold",)[]],
-    table.cell(align: right,)[#text(weight: "bold",)[Summary 2]],
-    table.cell(align: right,)[#text()[20]],
-    table.cell(align: right,)[#text()[40]],
-    table.cell()[#text()[⋯]],
+    [#text(weight: "bold",)[1]],
+    [#text(weight: "bold",)[Row 1]],
+    [(1, 1)],
+    [(1, 2)],
+    [⋯],
+    [⋮],
+    [⋮],
+    [⋮],
+    [⋮],
+    [⋱],
+    [#text(weight: "bold",)[4]],
+    [#text(weight: "bold",)[Row 4]],
+    [(4, 1)],
+    [(4, 2)],
+    [⋯],
+    [],
+    [#text(weight: "bold",)[Summary 1]],
+    [10],
+    [20],
+    [⋯],
+    [],
+    [#text(weight: "bold",)[Summary 2]],
+    [20],
+    [40],
+    [⋯],
     table.cell(align: right, colspan: 5, inset: (right: 0pt), stroke: none,)[
       #text(fill: gray, size: 0.9em, style: "italic",)[2 columns and 2 rows omitted]
     ],
@@ -468,231 +430,117 @@
         expected = """
 #{
   table(
-    columns: (auto, auto, auto, auto, auto),
+    align: (right, right, right, right, center,),
+    columns: (auto, auto, auto, auto, auto,),
     table.header(
-      table.cell(
-        align: center,
-        colspan: 5,
-      )[
-        #text(
-          size: 1.1em,
-          weight: "bold",
-        )[
-          Table Title
-        ]
+      table.cell(align: center, colspan: 5,)[
+        #text(size: 1.1em, weight: "bold",)[Table Title]
       ],
-      table.cell(
-        align: center,
-        colspan: 5,
-      )[
-        #text(
-          size: 1.1em,
-          style: "italic",
-        )[
-          Table Subtitle
-        ]
+      table.cell(align: center, colspan: 5,)[
+        #text(size: 1.1em, style: "italic",)[Table Subtitle]
       ],
-      table.cell(align: right,)[
-        #text(weight: "bold",)[
-          Row
-        ]
+      [
+        #text(weight: "bold",)[Row]
       ],
-      table.cell(align: right,)[
-        #text(weight: "bold",)[
-          Rows
-        ]
+      [
+        #text(weight: "bold",)[Rows]
       ],
-      table.cell(align: right,)[
-        #text(weight: "bold",)[
-          Col. 1
-        ]
+      [
+        #text(weight: "bold",)[Col. 1]
       ],
-      table.cell(
-        align: center,
-        colspan: 1,
-      )[
-        #text(weight: "bold",)[
-          Merged Column
-        ]#super[1]
+      table.cell(colspan: 1,)[
+        #text(weight: "bold",)[Merged Column]#super[1]
       ],
-      table.cell()[
-        #text()[
-          ⋯
-        ]
+      [
+        ⋯
       ],
     ),
-    table.cell(align: right,)[
-      #text(weight: "bold",)[
-        1
-      ]
+    [
+      #text(weight: "bold",)[1]
     ],
-    table.cell(align: right,)[
-      #text(weight: "bold",)[
-        Row 1
-      ]
+    [
+      #text(weight: "bold",)[Row 1]
     ],
-    table.cell(align: right,)[
-      #text()[
-        (1, 1)
-      ]
+    [
+      (1, 1)
     ],
-    table.cell(align: right,)[
-      #text()[
-        (1, 2)
-      ]
+    [
+      (1, 2)
     ],
-    table.cell()[
-      #text()[
-        ⋯
-      ]
+    [
+      ⋯
     ],
-    table.cell()[
-      #text()[
-        ⋮
-      ]
+    [
+      ⋮
     ],
-    table.cell()[
-      #text()[
-        ⋮
-      ]
+    [
+      ⋮
     ],
-    table.cell()[
-      #text()[
-        ⋮
-      ]
+    [
+      ⋮
     ],
-    table.cell()[
-      #text()[
-        ⋮
-      ]
+    [
+      ⋮
     ],
-    table.cell()[
-      #text()[
-        ⋱
-      ]
+    [
+      ⋱
     ],
-    table.cell(align: right,)[
-      #text(weight: "bold",)[
-        4
-      ]
+    [
+      #text(weight: "bold",)[4]
     ],
-    table.cell(align: right,)[
-      #text(weight: "bold",)[
-        Row 4
-      ]
+    [
+      #text(weight: "bold",)[Row 4]
     ],
-    table.cell(align: right,)[
-      #text()[
-        (4, 1)
-      ]
+    [
+      (4, 1)
     ],
-    table.cell(align: right,)[
-      #text()[
-        (4, 2)
-      ]
+    [
+      (4, 2)
     ],
-    table.cell()[
-      #text()[
-        ⋯
-      ]
+    [
+      ⋯
     ],
-    table.cell(align: right,)[
-      #text(weight: "bold",)[
-        
-      ]
+    [
+      
     ],
-    table.cell(align: right,)[
-      #text(weight: "bold",)[
-        Summary 1
-      ]
+    [
+      #text(weight: "bold",)[Summary 1]
     ],
-    table.cell(align: right,)[
-      #text()[
-        10
-      ]
+    [
+      10
     ],
-    table.cell(align: right,)[
-      #text()[
-        20
-      ]
+    [
+      20
     ],
-    table.cell()[
-      #text()[
-        ⋯
-      ]
+    [
+      ⋯
     ],
-    table.cell(align: right,)[
-      #text(weight: "bold",)[
-        
-      ]
+    [
+      
     ],
-    table.cell(align: right,)[
-      #text(weight: "bold",)[
-        Summary 2
-      ]
+    [
+      #text(weight: "bold",)[Summary 2]
     ],
-    table.cell(align: right,)[
-      #text()[
-        20
-      ]
+    [
+      20
     ],
-    table.cell(align: right,)[
-      #text()[
-        40
-      ]
+    [
+      40
     ],
-    table.cell()[
-      #text()[
-        ⋯
-      ]
+    [
+      ⋯
     ],
-    table.cell(
-      align: right,
-      colspan: 5,
-      inset: (right: 0pt),
-      stroke: none,
-    )[
-      #text(
-        fill: gray,
-        size: 0.9em,
-        style: "italic",
-      )[
-        2 columns and 2 rows omitted
-      ]
+    table.cell(align: right, colspan: 5, inset: (right: 0pt), stroke: none,)[
+      #text(fill: gray, size: 0.9em, style: "italic",)[2 columns and 2 rows omitted]
     ],
-    table.cell(
-      align: left,
-      colspan: 5,
-      inset: (left: 0pt),
-      stroke: none,
-    )[
-      #super[1]#text(size: 0.9em,)[
-        Footnote in column label
-      ]
+    table.cell(align: left, colspan: 5, inset: (left: 0pt), stroke: none,)[
+      #super[1]#text(size: 0.9em,)[Footnote in column label]
     ],
-    table.cell(
-      align: left,
-      colspan: 5,
-      inset: (left: 0pt),
-      stroke: none,
-    )[
-      #super[2]#text(size: 0.9em,)[
-        Footnote in data
-      ]
+    table.cell(align: left, colspan: 5, inset: (left: 0pt), stroke: none,)[
+      #super[2]#text(size: 0.9em,)[Footnote in data]
     ],
-    table.cell(
-      align: left,
-      colspan: 5,
-      inset: (left: 0pt),
-      stroke: none,
-    )[
-      #text(
-        fill: gray,
-        size: 0.9em,
-        style: "italic",
-      )[
-        Source Notes
-      ]
+    table.cell(align: left, colspan: 5, inset: (left: 0pt), stroke: none,)[
+      #text(fill: gray, size: 0.9em, style: "italic",)[Source Notes]
     ],
   )
 }

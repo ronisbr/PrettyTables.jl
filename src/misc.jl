@@ -73,6 +73,50 @@ function _aprintln(
     return nothing
 end
 
+function _aprint_section_annotation(
+    buf::IO,
+    str::String,
+    indentation_level::Int = 0,
+    indentation_spaces::Int = 2,
+    column_width::Int = 92,
+    fill_char::Char = '=';
+)
+    column_width < 0 && (column_width = 92)
+
+    padding_length = max(indentation_level * indentation_spaces, 0)
+    padding        = " "^padding_length
+    line_width     = padding_length + textwidth(str) + 1
+    fill_length    = max(column_width - line_width, 0)
+
+    print(buf, padding)
+    print(buf, str)
+    print(buf, " ")
+    print(buf, fill_char^fill_length)
+
+    return nothing
+end
+
+function _aprintln_section_annotation(
+    buf::IO,
+    str::String,
+    indentation_level::Int = 0,
+    indentation_spaces::Int = 2,
+    column_width::Int = 92,
+    fill_char::Char = '=';
+)
+    _aprint_section_annotation(
+        buf,
+        str,
+        indentation_level,
+        indentation_spaces,
+        column_width,
+        fill_char
+    )
+    println(buf)
+
+    return nothing
+end
+
 """
     _align_column_with_regex!(column::AbstractVector{String}, alignment_anchor_regex::Vector{Regex}, alignment_anchor_fallback::Symbol) -> Int
     _align_column_with_regex!(column::AbstractVector{Vector{String}}, alignment_anchor_regex::Vector{Regex}, alignment_anchor_fallback::Symbol) -> Int

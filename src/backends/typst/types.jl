@@ -12,20 +12,21 @@ import Base: show, tryparse, parse
 #                                        Constants                                         #
 ############################################################################################
 
-# Public.
+# == Public ================================================================================
+
 const TypstPair  = Pair{String, String}
 const TypstAttrs = String
 
-# Private.
-const _TYPST__NO_DECORATION     = TypstPair[]
-const _TYPST__BOLD              = ["text-weight" => "bold"]
-const _TYPST__ITALIC            = ["text-style" => "italic"]
-const _TYPST__XLARGE_BOLD       = ["text-size" => "1.1em", "text-weight" => "bold"]
-const _TYPST__LARGE_ITALIC      = ["text-size" => "1.1em", "text-style" => "italic"]
-const _TYPST__SMALL             = ["text-size" => "0.9em"]
-const _TYPST__SMALL_ITALIC      = ["text-size" => "0.9em", "text-style" => "italic"]
-const _TYPST__SMALL_ITALIC_GRAY = ["text-fill" => "gray", "text-size" => "0.9em", "text-style" => "italic"]
-const _TYPST__MERGED_CELL       = TypstPair[]
+# == Private ===============================================================================
+
+const _TYPST__ALIGNMENT_MAP = Dict(
+    :l => "left",
+    :L => "left",
+    :c => "center",
+    :C => "center",
+    :r => "right",
+    :R => "right"
+)
 
 const _TYPST__CELL_ATTRIBUTES = [
     "align",
@@ -101,6 +102,18 @@ const _typst__filter_text_atributes = filter(
 )
 
 const _typst__filter_cell_attributes = filter(x -> x[1] ∈ _TYPST__CELL_ATTRIBUTES)
+
+# -- Decorations ---------------------------------------------------------------------------
+
+const _TYPST__NO_DECORATION     = TypstPair[]
+const _TYPST__BOLD              = ["text-weight" => "bold"]
+const _TYPST__ITALIC            = ["text-style" => "italic"]
+const _TYPST__XLARGE_BOLD       = ["text-size" => "1.1em", "text-weight" => "bold"]
+const _TYPST__LARGE_ITALIC      = ["text-size" => "1.1em", "text-style" => "italic"]
+const _TYPST__SMALL             = ["text-size" => "0.9em"]
+const _TYPST__SMALL_ITALIC      = ["text-size" => "0.9em", "text-style" => "italic"]
+const _TYPST__SMALL_ITALIC_GRAY = ["text-fill" => "gray", "text-size" => "0.9em", "text-style" => "italic"]
+const _TYPST__MERGED_CELL       = TypstPair[]
 
 ############################################################################################
 #                                          Types                                           #
@@ -218,270 +231,6 @@ Define the style of the tables printed with the Typst back end.
     source_note::Vector{TypstPair}                    = _TYPST__SMALL_ITALIC_GRAY
 end
 
-abstract type AbstractTypstLength end
-abstract type TypstLengthKind end
-abstract type TypstFixedLengthKind <: TypstLengthKind end
-abstract type TypstRelativeLengthKind <: TypstLengthKind end
-abstract type TypstFractionalLengthKind <: TypstLengthKind end
-
-struct Pt <: TypstFixedLengthKind end
-struct Mm <: TypstFixedLengthKind end
-struct Cm <: TypstFixedLengthKind end
-struct In <: TypstFixedLengthKind end
-struct Em <: TypstRelativeLengthKind end
-struct Ex <: TypstRelativeLengthKind end
-struct Fr <: TypstFractionalLengthKind end
-struct Percent <: TypstRelativeLengthKind end
-struct Auto end
-
-Base.show(io::IO, ::Auto) = print(io, "auto")
-
-# ---- policy helpers ----
-
-const _TYPST_SUFFIX_UNIT_MAP = Dict(
-    "pt"      => Pt,
-    "mm"      => Mm,
-    "cm"      => Cm,
-    "in"      => In,
-    "em"      => Em,
-    "ex"      => Ex,
-    "fr"      => Fr,
-    "percent" => Percent,
-    "%"       => Percent,
-    "auto"    => Auto,
-)
-
-const _TYPST_UNIT_SUFFIX_MAP = Dict(
-    Pt      => "pt",
-    Mm      => "mm",
-    Cm      => "cm",
-    In      => "in",
-    Em      => "em",
-    Ex      => "ex",
-    Fr      => "fr",
-    Percent => "%",
-    Auto    => "auto",
-)
-
-"""
-    TypstLength{T}
-
-Represents a **Typst Length value**, encoding both the *numeric magnitude* and the *unit or
-sizing mode* used by the Typst layout engine.
-
-`TypstLength` is intended to model all valid Length expressions accepted by Typst, including
-absolute units, font-relative units, layout fractions, percentages, and the special `auto`
-keyword.
-
-The type parameter `T` specifies the *kind of Length* and determines how the value should be
-interpreted when serialized to Typst.
-
----
-
-## Supported Length categories
-
-### Absolute Lengths (physical units)
-
-Used for print-accurate layout such as margins and page geometry.
-
-| Unit | Meaning |
-|------|--------|
-| `pt` | Typographic point (1/72 inch) |
-| `mm` | Millimeters |
-| `cm` | Centimeters |
-| `in` | Inches |
-
-**Example (Typst):**
-
-```typst
-25mm
-12pt
-```
-
-### Font-relative Lengths
-
-Scale relative to the current text Length.
-
-| Unit | Meaning |
-|------|--------|
-| `em` | Current font Length |
-| `ex` | x-height of the font |
-
-**Example (Typst):**
-
-```typst
-25mm
-12pt
-```
-
-### Fractional Lengths (fr)
-
-Represents a fraction of remaining available space in layout constructs such as grids,
-tables, and columns.
-
-`fr` units are only valid in layout contexts.
-
-Example (Typst):
-
-```typst
-1fr
-2fr
-```
-
-### Percentage Lengths (%)
-
-Relative to the Length of the containing element.
-
-Example:
-
-```typst
-50%
-```
-
-## Design notes
-
-TypstLength deliberately does not include pixel-based units (`px`) or viewport units (`vw`,
-`vh`), as Typst targets print-quality layout.
-
-There is no `rem` unit; `em` already captures scoped font-relative sizing.
-
-The type parameter `T` is expected to encode the semantic category of the Length (e.g.
-`:pt`, `:em`, `:fr`, `:percent`, `:auto`).
-
-## Examples
-
-### Default Constructor
-
-```
-TypstLength{Pt}(12)
-TypstLength{Em}(0.5)
-TypstLength{Fr}(1)
-TypstLength{Percent}(50)
-TypstLength{Auto}()
-```
-
-### Alternative Constructor
-
-```
-TypstLength(Pt,12)
-TypstLength(Auto,)
-```
-
-### Using Symbol
-
-```
-TypstLength(:percent,50)
-TypstLength(:pt,50)
-```
-
-### Auto-parse (from string)
-
-```
-TypstLength("50em")
-TypstLength("2fr")
-TypstLength("4%")
-```
-
-## See also
-
-Typst layout reference: https://typst.app/docs/reference/layout/
-
-Typst syntax reference: https://typst.app/docs/reference/syntax/
-"""
-struct TypstLength{T <: Union{Auto, TypstLengthKind}} <: AbstractTypstLength
-    value::Union{Nothing, Float64}
-end
-
-# Convenience constructors
-TypstLength() = TypstLength{Auto}(nothing)
-TypstLength(::Type{Auto}, x = nothing) = TypstLength{Auto}(nothing)
-TypstLength(::Type{T}, x::Real) where {T <: TypstLengthKind} = TypstLength{T}(Float64(x))
-TypstLength(s::AbstractString) = parse(TypstLength, s)
-
-function TypstLength(t::Symbol, x::Real)
-    T = get(_TYPST_SUFFIX_UNIT_MAP, (lowercase ∘ string)(t), Auto)
-    TypstLength{T}(Float64(x))
-end
-
-function Base.tryparse(::Type{TypstLength}, s::AbstractString)::Union{Nothing, TypstLength}
-    t = lowercase(strip(s))
-
-    if t == "auto"
-        return TypstLength(Auto)
-    end
-
-    # number-only string
-    if occursin(r"^[+-]?\d+(\.\d+)?$", t)
-        return tryparse(TypstLength, parse(Float64, t))
-    end
-
-    m = match(r"^([+-]?\d+(?:\.\d+)?)(?:\s*)(pt|mm|cm|in|em|ex|fr|%)$", t)
-    if m === nothing
-        return nothing
-    end
-
-    value = parse(Float64, m.captures[1])
-    unit  = m.captures[2]
-
-    T = get(_TYPST_SUFFIX_UNIT_MAP, unit, nothing)
-    T === nothing && return nothing
-
-    return T === Auto ? TypstLength(Auto) : TypstLength(T, value)
-end
-
-function Base.tryparse(::Type{TypstLength}, x::Real)::Union{Nothing, TypstLength}
-    if x >= 1
-        return TypstLength(Em, x)
-    elseif x > 0
-        return TypstLength(Fr, x)  # PrettyTables-friendly default
-    else
-        return nothing
-    end
-end
-
-"""
-    parse(TypstLength, x) -> TypstLength
-
-Parse `x` into a `TypstLength`.
-
-Numeric values are interpreted contextually:
-- `x ≥ 1` → `x em`
-- `0 < x < 1` → `x fr` (layout weight, suitable for table columns)
-
-Strings may specify explicit units (`pt`, `em`, `fr`, `%`, etc.) or `"auto"`.
-"""
-function Base.parse(::Type{TypstLength}, x)::TypstLength
-    v = tryparse(TypstLength, x)
-
-    isnothing(v) && throw(
-        ArgumentError(
-            "Cannot parse TypstLength from $(repr(x)). " *
-            "Expected a number, 'auto', or '<number><unit>' " *
-            "(pt, mm, cm, in, em, ex, fr, %).",
-        ),
-    )
-    return v
-end
-
-function Base.show(io::IO, s::TypstLength{T}) where {T}
-    if T === Auto || isnothing(s.value)
-        print(io, "auto")
-        return nothing
-    end
-
-    value = s.value
-    suffix = _TYPST_UNIT_SUFFIX_MAP[T]
-
-    # Avoid trailing .0 when possible
-    if isinteger(value)
-        print(io, Int(value), suffix)
-    else
-        print(io, round(value; digits = 2), suffix)
-    end
-
-    return nothing
-end
-
 """
     struct TypstCaption
 
@@ -496,72 +245,12 @@ Define a Typst caption configuration to be used by the Typst backend.
 - `gap::Union{Auto, AbstractTypstLength}`: Gap between figure content and caption.
 - `position::Union{Nothing, String}`: Optional caption position.
 """
-struct TypstCaption
+@kwdef struct TypstCaption
     caption::String
-    kind::Union{Auto, String}
-    supplement::Union{Nothing, String}
-    gap::Union{Auto, AbstractTypstLength}
-    position::Union{Nothing, String}
+    kind::String = "auto"
+    supplement::Union{Nothing, String} = nothing
+    gap::String = "auto"
+    position::Union{Nothing, String} = nothing
 end
 
-"""
-    TypstCaption(caption; kind = Auto(), supplement = nothing, gap = Auto(), position = nothing)
-
-Create a [`TypstCaption`](@ref) object used to configure caption rendering in the Typst
-backend.
-
-# Keywords
-
-- `kind::Union{Auto, String}`: Caption kind forwarded to Typst.
-    (**Default**: `Auto()`)
-- `supplement::Union{Nothing, String}`: Optional caption supplement.
-    (**Default**: `nothing`)
-- `gap::Union{Auto, AbstractTypstLength, AbstractString}`: Gap between figure content and
-    caption. If an `AbstractString` is passed, it is parsed as a `TypstLength`.
-    (**Default**: `Auto()`)
-- `position::Union{Nothing, String}`: Optional caption position.
-    (**Default**: `nothing`)
-"""
-function TypstCaption(
-    caption;
-    kind::Union{Auto, String} = Auto(),
-    supplement::Union{Nothing, String} = nothing,
-    gap::Union{Auto, AbstractTypstLength, AbstractString} = Auto(),
-    position::Union{Nothing, String} = nothing,
-)
-    pgap = gap isa AbstractString ? parse(TypstLength, gap) : gap
-
-    return TypstCaption(caption, kind, supplement, pgap, position)
-end
-
-function Base.show(io::IO, c::TypstCaption)
-    (; caption, kind, supplement, gap, position) = c
-
-    out = "caption: figure.caption(\n"
-
-    if !isnothing(position)
-        out *= "  position: $position,\n"
-    end
-
-    out *= "  [$caption]\n"
-    out *= "),\n"
-
-    if kind isa AbstractString && kind ∉ ["table", "auto", "image"]
-        out *= """kind: "$kind",\n"""
-        out *= "supplement: [$(something(supplement,titlecase(kind)))],\n"
-    else
-        out *= """kind: $kind,\n"""
-
-        if !isnothing(supplement)
-            out *= "supplement: [$supplement],\n"
-        end
-    end
-
-    if !(gap isa Auto)
-        out *= "gap: $gap,\n"
-    end
-
-    print(io, out)
-
-    return nothing
-end
+TypstCaption(caption::String; kwargs...) = TypstCaption(; caption, kwargs...)

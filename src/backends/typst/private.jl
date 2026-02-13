@@ -4,6 +4,55 @@
 #
 ############################################################################################
 
+# == Alignment =============================================================================
+
+"""
+    _typst__alignment(a::Symbol) -> String
+
+Get the Typst alignment string corresponding to the given alignment symbol `a`. If the
+alignment symbol is not recognized, it defaults to "right".
+"""
+_typst__alignment(a::Symbol) = get(_TYPST__ALIGNMENT_MAP, a, "right")
+
+"""
+    _typst__alignment_configuration(td::TableData) -> String
+
+Create the Typst alignment configuration string for the given `td::TableData`.
+"""
+function _typst__alignment_configuration(td::TableData)
+    num_columns = td.num_columns
+
+    alignment_str = IOBuffer(sizehint = 8num_columns)
+
+    # == Row Number Column =================================================================
+
+    td.show_row_number_column &&
+        print(alignment_str, _typst__alignment(_row_number_column_alignment(td)) * ", ")
+
+    # == Row Labels ========================================================================
+
+    _has_row_labels(td) &&
+        print(alignment_str, _typst__alignment(_row_label_column_alignment(td)) * ", ")
+
+    # == Data Columns ======================================================================
+
+    nc = if td.maximum_number_of_columns >= 0
+        min(td.maximum_number_of_columns, num_columns)
+    else
+        num_columns
+    end
+
+    for i in 1:nc
+        print(alignment_str, _typst__alignment(_data_column_alignment(td, i)) * ", ")
+    end
+
+    # == Continuation Column ===============================================================
+
+    nc < num_columns && print(alignment_str, _typst__alignment(:c) * ", ")
+
+    return String(take!(alignment_str)) |> rstrip
+end
+
 # == Attributes ============================================================================
 
 """
@@ -38,28 +87,194 @@ function _typst__cell_and_text_properties(vproperties::Vector{TypstPair})
     return cell_properties, text_properties
 end
 
+# == Cells =================================================================================
+
+"""
+    _typst__table_cell(content::AbstractString[, properties::Vector{TypstPair}]; kwargs...) -> String
+
+Create a Typst table cell with `content` and optional `properties`. If `properties` is not
+provided or empty, a basic cell is created with the content. If `properties` are provided, a
+`table.cell` component is created with the content and properties.
+
+# Keywords
+
+- `il::Int`: Indentation level for formatting.
+    (**Default**: 2)
+- `ns::Int`: Number of spaces for indentation.
+    (**Default**: 2)
+- `wrap_column::Int`: Column width threshold for wrapping content.
+    (**Default**: 92)
+"""
+function _typst__table_cell(
+    content::AbstractString,
+    properties::Vector{TypstPair};
+    il::Int = 2,
+    ns::Int = 2,
+    wrap_column::Int = 92
+)
+    isempty(properties) && return _typst__table_cell(content; il, ns, wrap_column)
+    return _typst__create_component("table.cell", content, properties; il, ns, wrap_column)
+end
+
+function _typst__table_cell(
+    content::AbstractString;
+    il::Int = 2,
+    ns::Int = 2,
+    wrap_column::Int = 92
+)
+    cl = length(content)
+    id_str = repeat(" ", ns)
+
+    _typst__should_wrap(cl, il, ns, wrap_column) && return "[\n$id_str$content\n]"
+    return "[$content]"
+end
+
+# == Components ============================================================================
+
+"""
+    _typst__create_component(component::String, content::String; kwargs...) -> String
+
+Create an HTML `component` with the `content`.
+
+# Keywords
+
+- `properties::Union{Nothing, Vector{TypstPair}}`: Tag properties.
+    (**Default**: `nothing`)
+- `style::Union{Nothing, Vector{TypstPair}}`: Tag style.
+    (**Default**: `nothing`)
+"""
+function _typst__create_component(
+    component::String,
+    content::String,
+    properties::Union{Nothing, Vector{TypstPair}} = nothing;
+    il::Int = 0,
+    ns::Int = 2,
+    wrap_column::Int = 92,
+)
+    open_tag = _typst__open_component(component, properties)
+
+    line_length = length(open_tag) + length(content) + 1
+
+    if _typst__should_wrap(line_length, il, ns, wrap_column)
+        buf = IOBuffer()
+
+        println(buf, open_tag)
+        # Notice that we must print at the first indentation level because this text will
+        # also be indented when printing to the output buffer.
+        _aprintln(buf, content, 1, ns)
+        print(buf, "]")
+
+        return String(take!(buf))
+    end
+
+    return open_tag * content * "]"
+end
+
+"""
+    _typst__open_component(component::String, properties::Union{Nothing, Vector{TypstPair}} = nothing) -> String
+
+Create the string that opens the Typst `component` with the given `properties`.
+"""
+function _typst__open_component(
+    component::String,
+    properties::Union{Nothing, Vector{TypstPair}} = nothing
+)
+    prop_str = isnothing(properties) ? "" : "($(_typst__property_list(properties)))"
+    return "$component$prop_str["
+end
+
+"""
+    _typst__property_list(properties::Vector{TypstPair}) -> String
+
+Create a Typst property list string from the given vector of `properties`.
+"""
+function _typst__property_list(properties::Vector{TypstPair})
+    buf = IOBuffer(sizehint = length(properties) * 32)
+    first_prop = true
+
+    for (k, v) in properties
+        !first_prop && print(buf, " ")
+        first_prop = false
+
+        print(buf, k)
+
+        if !isempty(v)
+            v_str = _typst__escape_str(v)
+            starts_with_digit = isdigit(first(v_str))
+            needs_quote = !starts_with_digit && (k ∈ _TYPST__STRING_ATTRIBUTES)
+
+            print(buf, ": ")
+            needs_quote && print(buf, "\"")
+            print(buf, v_str)
+            needs_quote && print(buf, "\"")
+        end
+
+        print(buf, ",")
+    end
+
+    return String(take!(buf))
+end
+
+"""
+    _typst__process_caption(c::TypstCaption, il::Int) -> String
+
+Convert a `TypstCaption` into a string with the corresponding Typst configuration. The `il`
+parameter indicates the indentation level for the generated string.
+"""
+function _typst__process_caption(c::TypstCaption, il::Int)
+    (; caption, kind, supplement, gap, position) = c
+
+    ind = repeat(" ", max(il, 0))
+
+    out = "caption: figure.caption(\n"
+
+    if !isnothing(position)
+        out *= "$(ind)position: $position,\n"
+    end
+
+    out *= "$ind[$caption]\n"
+    out *= "),\n"
+
+    if kind ∉ ["table", "auto", "image"]
+        out *= "kind: \"$kind\",\n"
+        out *= "supplement: [$(something(supplement, titlecase(kind)))],\n"
+    else
+        out *= "kind: $kind,\n"
+
+        if !isnothing(supplement)
+            out *= "supplement: [$supplement],\n"
+        end
+    end
+
+    if gap != "auto"
+        out *= "gap: $gap,\n"
+    end
+
+    return out
+end
+
+_typst__text(content::AbstractString, ::Nothing) = content
+
+function _typst__text(content::AbstractString, properties::Vector{TypstPair})
+    (isempty(properties) || isempty(content)) && return _typst__text(content, nothing)
+    return _typst__create_component("#text", content, properties; wrap_column = -1)
+end
+
 # == Strings ===============================================================================
 
 """
-    _typst__escape_str(io::IO, s::AbstractString, escape_typst_chars::Bool = true) -> Nothing
-    _typst__escape_str(s::AbstractString, escape_typst_chars::Bool = true) -> String
+    _typst__escape_str(io::IO, s::AbstractString) -> Nothing
+    _typst__escape_str(s::AbstractString) -> String
 
 Print the string `s` in `io` escaping the characters for the Typst backend. If `io` is
 omitted, the escaped string is returned.
-
-If `escape_typst_chars` is `true`, then `&`, `<`, `>`, `"`, and `'`  will be replaced by
-Typst sequences.
 """
-function _typst__escape_str(
-    @nospecialize(io::IO),
-    s::AbstractString,
-    escape_typst_chars::Bool = true
-)
+function _typst__escape_str(io::IO, s::AbstractString)
     a = Iterators.Stateful(s)
 
     for c in a
         if Base.isascii(c)
-            c == '#'   ? (escape_typst_chars ? print(io, "\\#") : print(io, c)) :
+            c == '#'   ? print(io, "\\#") :
             isprint(c) ? print(io, c) : print(io, "\\x", string(UInt32(c); base = 16, pad = 2))
 
         elseif !Base.isoverlong(c) && !Base.ismalformed(c)
@@ -77,214 +292,24 @@ function _typst__escape_str(
     end
 end
 
-function _typst__escape_str(s::AbstractString, escape_typst_chars::Bool = true)
-    return sprint(_typst__escape_str, s, escape_typst_chars; sizehint = lastindex(s))
-end
-
-# == Components ============================================================================
-
-"""
-    _typst__close_component() -> String
-
-Create the string that closes the Typst `component`.
-"""
-_typst__close_component(comma = false) = "]$(comma ? "," : "")"
-
-"""
-    _typst__create_component(component::String, content::String; kwargs...) -> String
-
-Create an HTML `component` with the `content`.
-
-# Keywords
-
-- `properties::Union{Nothing, Vector{TypstPair}}`: Tag properties.
-    (**Default**: `nothing`)
-- `style::Union{Nothing, Vector{TypstPair}}`: Tag style.
-    (**Default**: `nothing`)
-"""
-function _typst__create_component(
-    component::String,
-    content::String;
-    args::Union{Nothing, Vector{String}} = nothing,
-    properties::Union{Nothing, Vector{TypstPair}} = nothing,
-    wrap_column::Int = 50,
-    ns::Int = 2,
-)
-    indent = repeat(" ", ns)
-
-    open_tag = if isnothing(args)
-        _typst__open_component(component; properties, wrap_column)
-    else
-        _typst__open_component(component, args; properties, wrap_column)
-    end
-
-    close_tag = _typst__close_component()
-
-    if (length(split(open_tag, "\n")[end]) + length(content)) > wrap_column
-        # Add indent to each line if multiple line.
-        content = join(string.("$indent", split(content, "\n")), "\n")
-        return open_tag * "\n" * content * "\n" * close_tag
-    end
-
-    return open_tag * content * close_tag
+function _typst__escape_str(s::AbstractString)
+    return sprint(_typst__escape_str, s; sizehint = 2 * lastindex(s))
 end
 
 """
-    _typst__open_component(component::String, args::Union{Nothing, Vector{String}} = nothing; kwargs...) -> String
+    _typst__should_wrap(str_length::Int, il::Int, ns::Int, wrap_column::Int) -> Bool
 
-Create the string that opens the Typst `component` with the arguments `args`.
-
-# Keywords
-
-- `properties::Union{Nothing, Vector{TypstPair}}`: Properties.
-    (**Default**: `nothing`)
+Determine whether a string with length `str_length` should be wrapped in Typst backend based
+on length constraints. The current indentation level of the string is determined by `il`,
+the number of spaces per indentation level is `ns`, and the maximum column width for
+wrapping is `wrap_column`.
 """
-function _typst__open_component(
-    component::String,
-    args::Union{Nothing, Vector{String}} = nothing;
-    properties::Union{Nothing, Vector{TypstPair}} = nothing,
-    wrap_column = 50,
-)
-    # Compile the text with the properties.
-    init_prop_list = something(args, String[])
-
-    arg_prop_list =
-        reduce(sort(something(properties, [])); init = init_prop_list) do list, (k, v)
-            isempty(v) && return list
-
-            v_str = _typst__escape_str(v)
-
-            prop_str = if occursin(r"^[0-9]", v_str) || k ∉ _TYPST__STRING_ATTRIBUTES
-                "$k: $v_str"
-            else
-                "$k: \"$v\""
-            end
-
-            push!(list, prop_str)
-        end
-
-    isempty(arg_prop_list) && return "$(component)()["
-
-    arg_lines = reduce(arg_prop_list; init = [[]]) do line, arg
-        n_char_new_line = length(join(line[end], ", ")) + length(arg*",")
-
-        if !isempty(line[end]) && (wrap_column >= 0) && n_char_new_line > wrap_column
-            push!(line, [arg])
-        else
-            push!(line[end], arg)
-        end
-
-        line
-    end
-
-    if length(arg_lines) > 1
-        return "$(component)(\n  $(join(join.(arg_lines,", "),",\n  ")),\n)["
-    end
-
-    return "$(component)($(join(join.(arg_lines,", "),",\n")),)["
-end
-
-"""
-    _typst__call_function(f, args...) -> String
-
-Call the function `f` with arguments `args...` and convert the result into a valid Typst
-representation.
-
-This helper is used internally by the Typst backend to evaluate user-provided formatting
-functions. 
-
-!!! note
-
-    Same as `_typst__open_component` but without the opening bracket.
-
-# Returns
-
-A `String` containing the Typst representation of the function call.
-
-# Example
-
-```julia
-_typst__call_function("text", "Hello, World!", weight="bold", fill="green")
-``` 
-
-will return:
-
-```typst
-text("Hello, World!", weight: "bold", fill: "green")
-``` 
-"""
-function _typst__call_function(
-    component::String,
-    args::Union{Nothing, Vector{String}} = nothing;
-    properties::Union{Nothing, Vector{TypstPair}} = nothing,
-    wrap_column = 50,
-)
-    # Compile the text with the properties.
-    init_prop_list = something(args, String[])
-
-    arg_prop_list =
-        reduce(sort(something(properties, [])); init = init_prop_list) do list, (k, v)
-            isempty(v) && return list
-
-            v_str = _typst__escape_str(v)
-
-            prop_str = if occursin(r"^[0-9]", v_str) || k ∉ _TYPST__STRING_ATTRIBUTES
-                "$k: $v_str"
-            else
-                "$k: \"$v\""
-            end
-
-            push!(list, prop_str)
-        end
-
-    isempty(arg_prop_list) && return "$(component)()"
-
-    arg_lines = reduce(arg_prop_list; init = [[]]) do line, arg
-        n_char_new_line = length(join(line[end], ", ")) + length(arg*",")
-
-        if !isempty(line[end]) && (wrap_column >= 0) && n_char_new_line > wrap_column
-            push!(line, [arg])
-        else
-            push!(line[end], arg)
-        end
-
-        line
-    end
-
-    if length(arg_lines) > 1
-        return "$(component)(\n  $(join(join.(arg_lines,", "),",\n  ")),\n)"
-    end
-
-    return "$(component)($(join(join.(arg_lines,", "),",\n")),)"
+function _typst__should_wrap(str_length::Int, il::Int, ns::Int, wrap_column::Int)
+    identation_length = (il - 1) * ns
+    return (wrap_column >= 0) && (identation_length + str_length) > wrap_column
 end
 
 # == Styles ================================================================================
-
-const _TYPST__ALIGNMENT_MAP = Dict(
-    :l => "left",
-    :L => "left",
-    :c => "center",
-    :C => "center",
-    :r => "right",
-    :R => "right"
-)
-
-"""
-    _typst__add_alignment_to_style!(style::Vector{TypstPair}, alignment::Symbol) -> Nothing
-
-Add the Typst alignment property to `style` according to the `alignment` symbol.
-"""
-function _typst__add_alignment_to_properties!(style::Vector{TypstPair}, alignment::Symbol)
-    if (alignment == :n) || (alignment == :N)
-        return nothing
-    elseif haskey(_TYPST__ALIGNMENT_MAP, alignment)
-        return push!(style, "align" => _TYPST__ALIGNMENT_MAP[alignment])
-    else
-        return push!(style, "align" => _TYPST__ALIGNMENT_MAP[:r])
-    end
-
-    return nothing
-end
 
 """
     _typst__get_data_column_widths(column_length::AbstractTypstLength, num_data_columns::Int, num_columns::Int)
@@ -292,101 +317,59 @@ end
 Create the `columns` https://typst.app/docs/reference/model/table/#parameters-columns 
 configuration for tables in Typst.
 """
-function _typst__get_data_column_widths(
-    column_length::AbstractTypstLength,
-    num_data_columns::Int,
-    num_columns::Int
-)
-    columns = fill(column_length, num_data_columns)
-    return _typst__get_data_column_widths(columns, num_data_columns, num_columns)
+function _typst__get_data_column_widths(table_data::TableData, ::Nothing)
+    return _typst__get_data_column_widths(table_data, Base.Iterators.repeated("auto", 10))
 end
 
-function _typst__get_data_column_widths(
-    str_columns::String,
-    num_data_columns::Int,
-    num_columns::Int
-)
-    # Throw error if string doesn't match any known kind.
-    col_length = parse(TypstLength, str_columns)
-    columns = fill(col_length, num_columns)
+function _typst__get_data_column_widths(table_data::TableData, data_column_widths)
+    buf = IOBuffer(sizehint = 8 * (table_data.num_columns + 3) + 2)
 
-    return _typst__get_data_column_widths(columns, num_data_columns, num_columns)
-end
+    print(buf, "(")
 
-"""
-    _typst__get_data_column_widths(columns::Vector{T}, num_data_columns::Int, num_columns::Int) where {T<: AbstractTypstLength} -> String
+    # == Row Number Column =================================================================
 
-Create the `columns` https://typst.app/docs/reference/model/table/#parameters-columns 
-configuration for tables in Typst.
-"""
-function _typst__get_data_column_widths(
-    columns::Vector{T},
-    num_data_columns::Int,
-    num_columns::Int
-) where {T <: AbstractTypstLength}
-    length(columns) > num_data_columns && error(
-        "The number of vectors in `data_column_widths` must be equal or lower than the number of data columns.",
-    )
+    table_data.show_row_number_column && print(buf, "auto, ")
 
-    num_data_columns > num_columns && error(
-        "The number of data columns cannot be higher than the total number of columns."
-    )
+    # == Row Labels ========================================================================
 
-    Δ = num_columns - num_data_columns
+    _has_row_labels(table_data) && print(buf, "auto, ")
 
-    out_columns::Vector{AbstractTypstLength} = fill(TypstLength(), num_columns)
+    # == Data Columns ======================================================================
 
-    for i in 1:length(columns)
-        out_columns[i + Δ - 1 + begin] = columns[i - 1 + begin]
+    num_printed_data_columns = _number_of_printed_data_columns(table_data)
+
+    i = 1
+    for width in data_column_widths
+        print(buf, width)
+        print(buf, ",")
+        i += 1
+        i > num_printed_data_columns && break
+        print(buf, " ")
     end
 
-    return string("(", join(out_columns, ", "), ")")
-end
+    # == Continuation Column ===============================================================
 
-"""
-    _typst__get_data_column_widths(columns::Vector{Pair{Int, String}}, num_columns::Int) -> String
+    num_printed_data_columns < table_data.num_columns && print(buf, " auto,")
 
-Create the `columns` https://typst.app/docs/reference/model/table/#parameters-columns
-configuration for tables in Typst.
-"""
-function _typst__get_data_column_widths(
-    pair_columns::Vector{Pair{Int, String}},
-    num_data_columns::Int,
-    num_columns::Int
-)
-    columns::Vector{AbstractTypstLength} = fill(TypstLength(), num_data_columns)
+    print(buf, ")")
 
-    for c in pair_columns
-        pos = c[1]
-        pos > num_columns && continue
-        columns[pos] = parse(TypstLength, c[2])
-    end
-
-    return _typst__get_data_column_widths(columns, num_data_columns, num_columns)
-end
-
-function _typst__get_data_column_widths(
-    str::Vector{T},
-    num_data_columns::Int,
-    num_columns::Int
-) where {T <: AbstractString}
-    out_columns = map(TypstLength ∘ string, str)
-
-    return _typst__get_data_column_widths(out_columns, num_data_columns, num_columns)
+    return String(take!(buf))
 end
 
 """ 
-    _typst__merge_style!(bstyle::Vector{TypstPair}, nstyle::Vector{TypstPair}) -> Vector{TypstPair}
+    _typst__merge_properties!(bproperties::Vector{TypstPair}, nproperties::Vector{TypstPair}) -> Vector{TypstPair}
 
-Merge two Typst styles, `bstyle` and `nstyle`, giving priority to `nstyle` in case of
-conflicts.
+Merge two Typst properties, `bproperties` and `nproperties`, giving priority to
+`nproperties` in case of conflicts.
 """
-function _typst__merge_properties!(bstyle::Vector{TypstPair}, nstyle::Vector{TypstPair})
-    filter!(bstyle) do l
-        l[1] ∉ map(first, nstyle)
+function _typst__merge_properties!(bproperties::Vector{TypstPair}, nproperties::Vector{TypstPair})
+    nkeys = first.(nproperties)
+
+    filter!(bproperties) do l
+        first(l) ∉ nkeys
     end
 
-    append!(bstyle, nstyle)
+    append!(bproperties, nproperties)
 
-    return bstyle
+    return bproperties
 end

@@ -6,53 +6,53 @@
 
 @testset "Alignment" verbose = true begin
     matrix = [(i, j) for i in 1:5, j in 1:5]
-    backend=:typst
+    backend = :typst
     @testset "Alignment as a Symbol" verbose = true begin
         expected = """
 #{
-  // Open table
   table(
-    columns: (1fr, 1fr, 1fr, 1fr, 1fr),
-    // Table Header
+    align: (center, center, center, center, center,),
+    columns: (1fr, 1fr, 1fr, 1fr, 1fr,),
+    // == Table Header =====================================================================
     table.header(
-      // column_labels Row 1
-      table.cell(align: center,)[#text(weight: "bold",)[Col. 1]],
-      table.cell(align: center,)[#text(weight: "bold",)[Col. 2]],
-      table.cell(align: center,)[#text(weight: "bold",)[Col. 3]],
-      table.cell(align: center,)[#text(weight: "bold",)[Col. 4]],
-      table.cell(align: center,)[#text(weight: "bold",)[Col. 5]],
+      // -- Column Labels: Row 1 -----------------------------------------------------------
+      [#text(weight: "bold",)[Col. 1]],
+      [#text(weight: "bold",)[Col. 2]],
+      [#text(weight: "bold",)[Col. 3]],
+      [#text(weight: "bold",)[Col. 4]],
+      [#text(weight: "bold",)[Col. 5]],
     ),
-    // Body
-    // data Row 1
-    table.cell(align: center,)[#text()[(1, 1)]],
-    table.cell(align: center,)[#text()[(1, 2)]],
-    table.cell(align: center,)[#text()[(1, 3)]],
-    table.cell(align: center,)[#text()[(1, 4)]],
-    table.cell(align: center,)[#text()[(1, 5)]],
-    // data Row 2
-    table.cell(align: center,)[#text()[(2, 1)]],
-    table.cell(align: center,)[#text()[(2, 2)]],
-    table.cell(align: right,)[#text()[(2, 3)]],
-    table.cell(align: center,)[#text()[(2, 4)]],
-    table.cell(align: center,)[#text()[(2, 5)]],
-    // data Row 3
-    table.cell(align: center,)[#text()[(3, 1)]],
-    table.cell(align: center,)[#text()[(3, 2)]],
-    table.cell(align: center,)[#text()[(3, 3)]],
-    table.cell(align: center,)[#text()[(3, 4)]],
-    table.cell(align: center,)[#text()[(3, 5)]],
-    // data Row 4
-    table.cell(align: center,)[#text()[(4, 1)]],
-    table.cell(align: center,)[#text()[(4, 2)]],
-    table.cell(align: center,)[#text()[(4, 3)]],
-    table.cell(align: center,)[#text()[(4, 4)]],
-    table.cell(align: left,)[#text()[(4, 5)]],
-    // data Row 5
-    table.cell(align: center,)[#text()[(5, 1)]],
-    table.cell(align: center,)[#text()[(5, 2)]],
-    table.cell(align: center,)[#text()[(5, 3)]],
-    table.cell(align: center,)[#text()[(5, 4)]],
-    table.cell(align: center,)[#text()[(5, 5)]],
+    // == Table Body =======================================================================
+    // -- Data: Row 1 ----------------------------------------------------------------------
+    [(1, 1)],
+    [(1, 2)],
+    [(1, 3)],
+    [(1, 4)],
+    [(1, 5)],
+    // -- Data: Row 2 ----------------------------------------------------------------------
+    [(2, 1)],
+    [(2, 2)],
+    table.cell(align: right,)[(2, 3)],
+    [(2, 4)],
+    [(2, 5)],
+    // -- Data: Row 3 ----------------------------------------------------------------------
+    [(3, 1)],
+    [(3, 2)],
+    [(3, 3)],
+    [(3, 4)],
+    [(3, 5)],
+    // -- Data: Row 4 ----------------------------------------------------------------------
+    [(4, 1)],
+    [(4, 2)],
+    [(4, 3)],
+    [(4, 4)],
+    table.cell(align: left,)[(4, 5)],
+    // -- Data: Row 5 ----------------------------------------------------------------------
+    [(5, 1)],
+    [(5, 2)],
+    [(5, 3)],
+    [(5, 4)],
+    [(5, 5)],
   )
 }
 """
@@ -70,173 +70,53 @@
 
         expected = """
 #{
-  // Open table
   table(
-    columns: (1fr, 1fr, 1fr, 1fr, 1fr),
-    // Table Header
+    align: (left, center, right, right, right,),
+    columns: (1fr, 1fr, 1fr, 1fr, 1fr,),
+    // == Table Header =====================================================================
     table.header(
-      // column_labels Row 1
-      table.cell()[#text(weight: "bold",)[Col. 1]],
-      table.cell()[#text(weight: "bold",)[Col. 2]],
-      table.cell()[#text(weight: "bold",)[Col. 3]],
-      table.cell()[#text(weight: "bold",)[Col. 4]],
-      table.cell()[#text(weight: "bold",)[Col. 5]],
+      // -- Column Labels: Row 1 -----------------------------------------------------------
+      [#text(weight: "bold",)[Col. 1]],
+      [#text(weight: "bold",)[Col. 2]],
+      [#text(weight: "bold",)[Col. 3]],
+      [#text(weight: "bold",)[Col. 4]],
+      [#text(weight: "bold",)[Col. 5]],
     ),
-    // Body
-    // data Row 1
-    table.cell()[#text()[(1, 1)]],
-    table.cell()[#text()[(1, 2)]],
-    table.cell()[#text()[(1, 3)]],
-    table.cell()[#text()[(1, 4)]],
-    table.cell()[#text()[(1, 5)]],
-    // data Row 2
-    table.cell()[#text()[(2, 1)]],
-    table.cell()[#text()[(2, 2)]],
-    table.cell(align: right,)[#text()[(2, 3)]],
-    table.cell()[#text()[(2, 4)]],
-    table.cell()[#text()[(2, 5)]],
-    // data Row 3
-    table.cell()[#text()[(3, 1)]],
-    table.cell()[#text()[(3, 2)]],
-    table.cell()[#text()[(3, 3)]],
-    table.cell()[#text()[(3, 4)]],
-    table.cell()[#text()[(3, 5)]],
-    // data Row 4
-    table.cell()[#text()[(4, 1)]],
-    table.cell()[#text()[(4, 2)]],
-    table.cell()[#text()[(4, 3)]],
-    table.cell()[#text()[(4, 4)]],
-    table.cell(align: left,)[#text()[(4, 5)]],
-    // data Row 5
-    table.cell()[#text()[(5, 1)]],
-    table.cell()[#text()[(5, 2)]],
-    table.cell()[#text()[(5, 3)]],
-    table.cell()[#text()[(5, 4)]],
-    table.cell()[#text()[(5, 5)]],
-  )
-}
-"""
-        result = pretty_table(
-            String,
-            matrix;
-            alignment = :n,
-            backend = :typst,
-            data_column_widths = ["1fr", "1fr", "1fr", "1fr", "1fr"],
-            cell_alignment = [(2, 3) => :r, (4, 5) => :l],
-        )
-
-        @test result == expected
-    end
-
-    @testset "Alignment as a Vector" verbose = true begin
-        expected = """
-#{
-  // Open table
-  table(
-    columns: (1fr, 1fr, 1fr, 1fr, 1fr),
-    // Table Header
-    table.header(
-      // column_labels Row 1
-      table.cell(align: left,)[#text(weight: "bold",)[Col. 1]],
-      table.cell(align: center,)[#text(weight: "bold",)[Col. 2]],
-      table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],
-      table.cell(align: left,)[#text(weight: "bold",)[Col. 4]],
-      table.cell(align: center,)[#text(weight: "bold",)[Col. 5]],
-    ),
-    // Body
-    // data Row 1
-    table.cell(align: left,)[#text()[(1, 1)]],
-    table.cell(align: center,)[#text()[(1, 2)]],
-    table.cell(align: right,)[#text()[(1, 3)]],
-    table.cell(align: left,)[#text()[(1, 4)]],
-    table.cell(align: center,)[#text()[(1, 5)]],
-    // data Row 2
-    table.cell(align: left,)[#text()[(2, 1)]],
-    table.cell(align: center,)[#text()[(2, 2)]],
-    table.cell(align: right,)[#text()[(2, 3)]],
-    table.cell(align: left,)[#text()[(2, 4)]],
-    table.cell(align: center,)[#text()[(2, 5)]],
-    // data Row 3
-    table.cell(align: left,)[#text()[(3, 1)]],
-    table.cell(align: center,)[#text()[(3, 2)]],
-    table.cell(align: right,)[#text()[(3, 3)]],
-    table.cell(align: left,)[#text()[(3, 4)]],
-    table.cell(align: center,)[#text()[(3, 5)]],
-    // data Row 4
-    table.cell(align: left,)[#text()[(4, 1)]],
-    table.cell(align: center,)[#text()[(4, 2)]],
-    table.cell(align: right,)[#text()[(4, 3)]],
-    table.cell(align: left,)[#text()[(4, 4)]],
-    table.cell(align: left,)[#text()[(4, 5)]],
-    // data Row 5
-    table.cell(align: left,)[#text()[(5, 1)]],
-    table.cell(align: center,)[#text()[(5, 2)]],
-    table.cell(align: right,)[#text()[(5, 3)]],
-    table.cell(align: left,)[#text()[(5, 4)]],
-    table.cell(align: center,)[#text()[(5, 5)]],
+    // == Table Body =======================================================================
+    // -- Data: Row 1 ----------------------------------------------------------------------
+    [(1, 1)],
+    [(1, 2)],
+    [(1, 3)],
+    [(1, 4)],
+    [(1, 5)],
+    // -- Data: Row 2 ----------------------------------------------------------------------
+    [(2, 1)],
+    [(2, 2)],
+    [(2, 3)],
+    [(2, 4)],
+    [(2, 5)],
+    // -- Data: Row 3 ----------------------------------------------------------------------
+    [(3, 1)],
+    [(3, 2)],
+    [(3, 3)],
+    [(3, 4)],
+    [(3, 5)],
+    // -- Data: Row 4 ----------------------------------------------------------------------
+    [(4, 1)],
+    [(4, 2)],
+    [(4, 3)],
+    [(4, 4)],
+    table.cell(align: left,)[(4, 5)],
+    // -- Data: Row 5 ----------------------------------------------------------------------
+    [(5, 1)],
+    [(5, 2)],
+    [(5, 3)],
+    [(5, 4)],
+    [(5, 5)],
   )
 }
 """
 
-        result = pretty_table(
-            String,
-            matrix;
-            backend = :typst,
-            data_column_widths = ["1fr", "1fr", "1fr", "1fr", "1fr"],
-            alignment = [:l, :c, :r, :l, :c],
-            cell_alignment = [(2, 3) => :r, (4, 5) => :l],
-        )
-
-        @test result == expected
-
-        expected = """
-#{
-  // Open table
-  table(
-    columns: (1fr, 1fr, 1fr, 1fr, 1fr),
-    // Table Header
-    table.header(
-      // column_labels Row 1
-      table.cell(align: left,)[#text(weight: "bold",)[Col. 1]],
-      table.cell(align: center,)[#text(weight: "bold",)[Col. 2]],
-      table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],
-      table.cell()[#text(weight: "bold",)[Col. 4]],
-      table.cell(align: right,)[#text(weight: "bold",)[Col. 5]],
-    ),
-    // Body
-    // data Row 1
-    table.cell(align: left,)[#text()[(1, 1)]],
-    table.cell(align: center,)[#text()[(1, 2)]],
-    table.cell(align: right,)[#text()[(1, 3)]],
-    table.cell()[#text()[(1, 4)]],
-    table.cell(align: right,)[#text()[(1, 5)]],
-    // data Row 2
-    table.cell(align: left,)[#text()[(2, 1)]],
-    table.cell(align: center,)[#text()[(2, 2)]],
-    table.cell(align: right,)[#text()[(2, 3)]],
-    table.cell()[#text()[(2, 4)]],
-    table.cell(align: right,)[#text()[(2, 5)]],
-    // data Row 3
-    table.cell(align: left,)[#text()[(3, 1)]],
-    table.cell(align: center,)[#text()[(3, 2)]],
-    table.cell(align: right,)[#text()[(3, 3)]],
-    table.cell()[#text()[(3, 4)]],
-    table.cell(align: right,)[#text()[(3, 5)]],
-    // data Row 4
-    table.cell(align: left,)[#text()[(4, 1)]],
-    table.cell(align: center,)[#text()[(4, 2)]],
-    table.cell(align: right,)[#text()[(4, 3)]],
-    table.cell()[#text()[(4, 4)]],
-    table.cell(align: left,)[#text()[(4, 5)]],
-    // data Row 5
-    table.cell(align: left,)[#text()[(5, 1)]],
-    table.cell(align: center,)[#text()[(5, 2)]],
-    table.cell(align: right,)[#text()[(5, 3)]],
-    table.cell()[#text()[(5, 4)]],
-    table.cell(align: right,)[#text()[(5, 5)]],
-  )
-}
-"""
         result = pretty_table(
             String,
             matrix;

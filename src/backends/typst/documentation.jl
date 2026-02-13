@@ -14,13 +14,25 @@ the output:
 # Keywords
 
 - `annotate::Bool`: Boolean indicating whether Typst code should be annotated.
-- `caption::String`: String containing the table caption, to be used by the Typst
-  `#figure` function.
+- `caption::Union{Nothing, String, TypstCaption}`: Table caption to be used by the
+    Typst `#figure` function. The user can provide additional configuration to the caption
+    by using the `TypstCaption` structure.
+- `data_column_widths::Union{Nothing, String, Vector{String}, Vector{Pair{Int, String}}}`:
+    Column widths for the data columns. The information must be a valid length information
+    in Typst, such as "10fr" or "30pt". If a single string is provided, it will be repeated
+    for all columns. If a vector of strings is provided, its length must be equal to or
+    larger than the number of printed columns. Alternatively, a vector of pairs can be
+    provided, where the first element of the pair is the column index and the second element
+    is the width for that column. In this case, columns that are not specified will have
+    width `auto`.
+    (**Default** = `nothing`)
 - `highlighters::Vector{TypstHighlighter}`: Highlighters to apply to the table. For more
-  information, see the section **Typst Highlighters** in the **Extended Help**.
-- `style::TypstTableStyle`: Style of the table. For more information, see the section
-  **Typst Table Style** in the **Extended Help**.
+    information, see the section **Typst Highlighters** in the **Extended Help**.
+    (**Default** = `TypstHighlighter[]`)
+- `style::TypstTableStyle`: Style of the table.
+    (**Default** = `TypstTableStyle()`)
 - `wrap_column::Integer`: Indicates the column where the output will be wrapped.
+    (**Default** = `92`)
 
 # Extended Help
 

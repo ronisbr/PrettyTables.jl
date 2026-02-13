@@ -9,37 +9,38 @@
         1 2 3
         4 5 6
     ]
-    backend=:typst
+    backend = :typst
+
     @testset "Text Caption" begin
         expected = """
-    #{
-      // Figure for table to add caption
-      figure(
-        // Open table
-        table(
-          columns: (auto, auto, auto),
-          // Table Header
-          table.header(
-            // column_labels Row 1
-            table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],
-            table.cell(align: right,)[#text(weight: "bold",)[Col. 2]],
-            table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],
-          ),
-          // Body
-          // data Row 1
-          table.cell(align: right,)[#text(fill: green, weight: "bold",)[1]],
-          table.cell(align: right,)[#text(fill: red,)[2]],
-          table.cell(align: right,)[#text(fill: green, weight: "bold",)[3]],
-          // data Row 2
-          table.cell(align: right,)[#text(fill: red,)[4]],
-          table.cell(align: right,)[#text(fill: green, weight: "bold",)[5]],
-          table.cell(align: right,)[#text(fill: red,)[6]],
-        ),
-        caption: "Caption table",
-        kind: auto,
-      )
-    }
-    """
+#{
+  figure(
+    table(
+      align: (right, right, right,),
+      columns: (auto, auto, auto,),
+      // == Table Header ===================================================================
+      table.header(
+        // -- Column Labels: Row 1 ---------------------------------------------------------
+        [#text(weight: "bold",)[Col. 1]],
+        [#text(weight: "bold",)[Col. 2]],
+        [#text(weight: "bold",)[Col. 3]],
+      ),
+      // == Table Body =====================================================================
+      // -- Data: Row 1 --------------------------------------------------------------------
+      [#text(weight: "bold", fill: green,)[1]],
+      [#text(fill: red,)[2]],
+      [#text(weight: "bold", fill: green,)[3]],
+      // -- Data: Row 2 --------------------------------------------------------------------
+      [#text(fill: red,)[4]],
+      [#text(weight: "bold", fill: green,)[5]],
+      [#text(fill: red,)[6]],
+    ),
+    caption: "Caption table",
+    kind: auto,
+  )
+}
+"""
+
         result = pretty_table(
             String,
             matrix;
@@ -63,36 +64,36 @@
 
     @testset "Caption - Auto Kind " begin
         expected = """
-    #{
-      // Figure for table to add caption
-      figure(
-        // Open table
-        table(
-          columns: (auto, auto, auto),
-          // Table Header
-          table.header(
-            // column_labels Row 1
-            table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],
-            table.cell(align: right,)[#text(weight: "bold",)[Col. 2]],
-            table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],
-          ),
-          // Body
-          // data Row 1
-          table.cell(align: right,)[#text(fill: green, weight: "bold",)[1]],
-          table.cell(align: right,)[#text(fill: red,)[2]],
-          table.cell(align: right,)[#text(fill: green, weight: "bold",)[3]],
-          // data Row 2
-          table.cell(align: right,)[#text(fill: red,)[4]],
-          table.cell(align: right,)[#text(fill: green, weight: "bold",)[5]],
-          table.cell(align: right,)[#text(fill: red,)[6]],
-        ),
-        caption: figure.caption(
-          [Caption table]
-        ),
-        kind: auto,
-      )
-    }
-    """
+#{
+  figure(
+    table(
+      align: (right, right, right,),
+      columns: (auto, auto, auto,),
+      // == Table Header ===================================================================
+      table.header(
+        // -- Column Labels: Row 1 ---------------------------------------------------------
+        [#text(weight: "bold",)[Col. 1]],
+        [#text(weight: "bold",)[Col. 2]],
+        [#text(weight: "bold",)[Col. 3]],
+      ),
+      // == Table Body =====================================================================
+      // -- Data: Row 1 --------------------------------------------------------------------
+      [#text(weight: "bold", fill: green,)[1]],
+      [#text(fill: red,)[2]],
+      [#text(weight: "bold", fill: green,)[3]],
+      // -- Data: Row 2 --------------------------------------------------------------------
+      [#text(fill: red,)[4]],
+      [#text(weight: "bold", fill: green,)[5]],
+      [#text(fill: red,)[6]],
+    ),
+    caption: figure.caption(
+      [Caption table]
+    ),
+    kind: auto,
+  )
+}
+"""
+
         result = pretty_table(
             String,
             matrix;
@@ -113,38 +114,39 @@
         )
         @test result == expected
     end
+
     @testset "Caption - Table Kind " begin
         expected = """
-    #{
-      // Figure for table to add caption
-      figure(
-        // Open table
-        table(
-          columns: (auto, auto, auto),
-          // Table Header
-          table.header(
-            // column_labels Row 1
-            table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],
-            table.cell(align: right,)[#text(weight: "bold",)[Col. 2]],
-            table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],
-          ),
-          // Body
-          // data Row 1
-          table.cell(align: right,)[#text(fill: green, weight: "bold",)[1]],
-          table.cell(align: right,)[#text(fill: red,)[2]],
-          table.cell(align: right,)[#text(fill: green, weight: "bold",)[3]],
-          // data Row 2
-          table.cell(align: right,)[#text(fill: red,)[4]],
-          table.cell(align: right,)[#text(fill: green, weight: "bold",)[5]],
-          table.cell(align: right,)[#text(fill: red,)[6]],
-        ),
-        caption: figure.caption(
-          [Caption table]
-        ),
-        kind: table,
-      )
-    }
-    """
+#{
+  figure(
+    table(
+      align: (right, right, right,),
+      columns: (auto, auto, auto,),
+      // == Table Header ===================================================================
+      table.header(
+        // -- Column Labels: Row 1 ---------------------------------------------------------
+        [#text(weight: "bold",)[Col. 1]],
+        [#text(weight: "bold",)[Col. 2]],
+        [#text(weight: "bold",)[Col. 3]],
+      ),
+      // == Table Body =====================================================================
+      // -- Data: Row 1 --------------------------------------------------------------------
+      [#text(weight: "bold", fill: green,)[1]],
+      [#text(fill: red,)[2]],
+      [#text(weight: "bold", fill: green,)[3]],
+      // -- Data: Row 2 --------------------------------------------------------------------
+      [#text(fill: red,)[4]],
+      [#text(weight: "bold", fill: green,)[5]],
+      [#text(fill: red,)[6]],
+    ),
+    caption: figure.caption(
+      [Caption table]
+    ),
+    kind: table,
+  )
+}
+"""
+
         result = pretty_table(
             String,
             matrix;
@@ -165,40 +167,41 @@
         )
         @test result == expected
     end
+
     @testset "Caption - Custom Kind " begin
         expected = """
-    #{
-      set text(size: 1em,)
-      // Figure for table to add caption
-      figure(
-        // Open table
-        table(
-          columns: (auto, auto, auto),
-          // Table Header
-          table.header(
-            // column_labels Row 1
-            table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],
-            table.cell(align: right,)[#text(weight: "bold",)[Col. 2]],
-            table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],
-          ),
-          // Body
-          // data Row 1
-          table.cell(align: right,)[#text(fill: green, weight: "bold",)[1]],
-          table.cell(align: right,)[#text(fill: red,)[2]],
-          table.cell(align: right,)[#text(fill: green, weight: "bold",)[3]],
-          // data Row 2
-          table.cell(align: right,)[#text(fill: red,)[4]],
-          table.cell(align: right,)[#text(fill: green, weight: "bold",)[5]],
-          table.cell(align: right,)[#text(fill: red,)[6]],
-        ),
-        caption: figure.caption(
-          [Custom kind]
-        ),
-        kind: "pretty-tables",
-        supplement: [Pretty Tables],
-      )
-    }
-    """
+#{
+  set text(size: 1em,)
+  figure(
+    table(
+      align: (right, right, right,),
+      columns: (auto, auto, auto,),
+      // == Table Header ===================================================================
+      table.header(
+        // -- Column Labels: Row 1 ---------------------------------------------------------
+        [#text(weight: "bold",)[Col. 1]],
+        [#text(weight: "bold",)[Col. 2]],
+        [#text(weight: "bold",)[Col. 3]],
+      ),
+      // == Table Body =====================================================================
+      // -- Data: Row 1 --------------------------------------------------------------------
+      [#text(weight: "bold", fill: green,)[1]],
+      [#text(fill: red,)[2]],
+      [#text(weight: "bold", fill: green,)[3]],
+      // -- Data: Row 2 --------------------------------------------------------------------
+      [#text(fill: red,)[4]],
+      [#text(weight: "bold", fill: green,)[5]],
+      [#text(fill: red,)[6]],
+    ),
+    caption: figure.caption(
+      [Custom kind]
+    ),
+    kind: "pretty-tables",
+    supplement: [Pretty Tables],
+  )
+}
+"""
+
         result = pretty_table(
             String,
             matrix;
@@ -222,40 +225,41 @@
         )
         @test result == expected
     end
+
     @testset "Caption - Kind Table - Custom Suplement " begin
         expected = """
-    #{
-      set text(size: 1em,)
-      // Figure for table to add caption
-      figure(
-        // Open table
-        table(
-          columns: (auto, auto, auto),
-          // Table Header
-          table.header(
-            // column_labels Row 1
-            table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],
-            table.cell(align: right,)[#text(weight: "bold",)[Col. 2]],
-            table.cell(align: right,)[#text(weight: "bold",)[Col. 3]],
-          ),
-          // Body
-          // data Row 1
-          table.cell(align: right,)[#text(fill: green, weight: "bold",)[1]],
-          table.cell(align: right,)[#text(fill: red,)[2]],
-          table.cell(align: right,)[#text(fill: green, weight: "bold",)[3]],
-          // data Row 2
-          table.cell(align: right,)[#text(fill: red,)[4]],
-          table.cell(align: right,)[#text(fill: green, weight: "bold",)[5]],
-          table.cell(align: right,)[#text(fill: red,)[6]],
-        ),
-        caption: figure.caption(
-          [Table with custom supplement]
-        ),
-        kind: table,
-        supplement: [Pretty Tables],
-      )
-    }
-    """
+#{
+  set text(size: 1em,)
+  figure(
+    table(
+      align: (right, right, right,),
+      columns: (auto, auto, auto,),
+      // == Table Header ===================================================================
+      table.header(
+        // -- Column Labels: Row 1 ---------------------------------------------------------
+        [#text(weight: "bold",)[Col. 1]],
+        [#text(weight: "bold",)[Col. 2]],
+        [#text(weight: "bold",)[Col. 3]],
+      ),
+      // == Table Body =====================================================================
+      // -- Data: Row 1 --------------------------------------------------------------------
+      [#text(weight: "bold", fill: green,)[1]],
+      [#text(fill: red,)[2]],
+      [#text(weight: "bold", fill: green,)[3]],
+      // -- Data: Row 2 --------------------------------------------------------------------
+      [#text(fill: red,)[4]],
+      [#text(weight: "bold", fill: green,)[5]],
+      [#text(fill: red,)[6]],
+    ),
+    caption: figure.caption(
+      [Table with custom supplement]
+    ),
+    kind: table,
+    supplement: [Pretty Tables],
+  )
+}
+"""
+
         result = pretty_table(
             String,
             matrix;

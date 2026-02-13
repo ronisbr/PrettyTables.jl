@@ -17,33 +17,33 @@
 
     expected = raw"""
 #{
-  // Open table
   table(
-    columns: (auto, auto, auto, auto),
-    // Table Header
+    align: (right, right, right, right,),
+    columns: (auto, auto, auto, auto,),
+    // == Table Header =====================================================================
     table.header(
-      // column_labels Row 1
-      table.cell(align: right,)[#text(weight: "bold",)[Row]],
-      table.cell(align: right,)[#text(weight: "bold",)[Col. -3]],
-      table.cell(align: right,)[#text(weight: "bold",)[Col. -2]],
-      table.cell(align: right,)[#text(weight: "bold",)[Col. -1]],
+      // -- Column Labels: Row 1 -----------------------------------------------------------
+      [#text(weight: "bold",)[Row]],
+      [#text(weight: "bold",)[Col. -3]],
+      [#text(weight: "bold",)[Col. -2]],
+      [#text(weight: "bold",)[Col. -1]],
     ),
-    // Body
-    // data Row 1
-    table.cell(align: right,)[#text(weight: "bold",)[-2]],
-    table.cell(align: right,)[#text()[(1, 1)]],
-    table.cell(align: right,)[#text()[(1, 2)]],
-    table.cell(align: right,)[#text()[\#undef]],
-    // data Row 2
-    table.cell(align: right,)[#text(weight: "bold",)[-1]],
-    table.cell(align: right,)[#text()[nothing]],
-    table.cell(align: right,)[#text()[missing]],
-    table.cell(align: right,)[#text()[\#undef]],
-    // data Row 3
-    table.cell(align: right,)[#text(weight: "bold",)[0]],
-    table.cell(align: right,)[#text()[\#undef]],
-    table.cell(align: right,)[#text()[\#undef]],
-    table.cell(align: right,)[#text()[(3, 3)]],
+    // == Table Body =======================================================================
+    // -- Data: Row 1 ----------------------------------------------------------------------
+    [#text(weight: "bold",)[-2]],
+    [(1, 1)],
+    [(1, 2)],
+    [\#undef],
+    // -- Data: Row 2 ----------------------------------------------------------------------
+    [#text(weight: "bold",)[-1]],
+    [nothing],
+    [missing],
+    [\#undef],
+    // -- Data: Row 3 ----------------------------------------------------------------------
+    [#text(weight: "bold",)[0]],
+    [\#undef],
+    [\#undef],
+    [(3, 3)],
   )
 }
 """
