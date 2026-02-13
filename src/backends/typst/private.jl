@@ -253,6 +253,13 @@ function _typst__process_caption(c::TypstCaption, il::Int)
     return out
 end
 
+"""
+    _typst__text(content::AbstractString, properties::Union{Vector{TypstPair}, Nothing}) -> String
+
+Convert the `content` to Typst format with optional styling `properties`. If `properties`
+is empty or `nothing` (default), the function returns the content unchanged.  Otherwise, it
+creates a Typst `#text` component with the specified properties.
+"""
 _typst__text(content::AbstractString, ::Nothing) = content
 
 function _typst__text(content::AbstractString, properties::Vector{TypstPair})
