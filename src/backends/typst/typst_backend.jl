@@ -6,7 +6,6 @@ function _typst__print(
     pspec::PrintingSpec;
     annotate::Bool = true,
     caption::Union{Nothing, AbstractString, TypstCaption} = nothing,
-    color = nothing,
     data_column_widths::L = TypstLength(),
     highlighters::Vector{TypstHighlighter} = TypstHighlighter[],
     is_stdout::Bool = false,
