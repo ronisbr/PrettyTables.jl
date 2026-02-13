@@ -41,25 +41,24 @@ function _typst__print(
 
     empty!(vproperties)
 
-    text_table_properties = map(_typst__filter_text_atributes(style.table)) do l
-        occursin(r"text-", l[1]) ? replace(l[1], "text-" => "") => l[2] : l
-    end
+    _, table_text_properties = _typst__cell_and_text_properties(style.table)
 
-    if !isempty(text_table_properties)
+    if !isempty(table_text_properties)
         _aprintln(
             buf,
-            _typst__call_function("set text"; properties = text_table_properties),
+            _typst__call_function("set text"; properties = table_text_properties),
             il,
             ns
         )
     end
 
-    # if we have a caption, we need to open a figure environment
+    # If we have a caption, we need to open a figure environment.
     if !isnothing(caption)
         annotate && _aprintln(buf, "// Figure for table to add caption", il, ns)
         _aprintln(buf, "figure(", il, ns)
         il += 1
     end
+
     # Open the table component.
     annotate && _aprintln(buf, "// Open table", il, ns)
     _aprintln(buf, "table(", il, ns)
@@ -73,18 +72,22 @@ function _typst__print(
 
     _aprintln(buf, "columns: $columns,", il, ns)
 
-    unused_table_properties = []
+    unused_table_properties = String[]
+
     for (k, s) in style.table
-        if k ∉ _TYPST__TABLE_ATTRIBUTES && !occursin(r"text-", k)
-            push!(unused_table_properties, k)
-        elseif !occursin(r"text-", k)
+        if !startswith(k, "text-")
+            if k ∉ _TYPST__TABLE_ATTRIBUTES
+                push!(unused_table_properties, k)
+                continue
+            end
+
             _aprintln(buf, "$k: $s,", il, ns)
         end
     end
 
-    if !isempty(unused_table_properties)
-        @warn "Unused table properties: " * join(unused_table_properties, ", ", " and ")
-    end
+    !isempty(unused_table_properties) && @warn (
+        "Unused table properties: " * join(unused_table_properties, ", ", " and ")
+    )
 
     action = :initialize
 

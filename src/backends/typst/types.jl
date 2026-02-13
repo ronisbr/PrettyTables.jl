@@ -280,7 +280,7 @@ interpreted when serialized to Typst.
 
 ## Supported Length categories
 
-### 1. Absolute Lengths (physical units)
+### Absolute Lengths (physical units)
 
 Used for print-accurate layout such as margins and page geometry.
 
@@ -291,13 +291,14 @@ Used for print-accurate layout such as margins and page geometry.
 | `cm` | Centimeters |
 | `in` | Inches |
 
-Example (Typst):
+**Example (Typst):**
+
 ```typst
 25mm
 12pt
 ```
 
-### 2. Font-relative Lengths
+### Font-relative Lengths
 
 Scale relative to the current text Length.
 
@@ -306,26 +307,28 @@ Scale relative to the current text Length.
 | `em` | Current font Length |
 | `ex` | x-height of the font |
 
-Example (Typst):
+**Example (Typst):**
+
 ```typst
 25mm
 12pt
 ```
 
-### 3. Fractional Lengths (fr)
+### Fractional Lengths (fr)
 
-Represents a fraction of remaining available space in layout
-constructs such as grids, tables, and columns.
+Represents a fraction of remaining available space in layout constructs such as grids,
+tables, and columns.
 
-fr units are only valid in layout contexts.
+`fr` units are only valid in layout contexts.
 
 Example (Typst):
+
 ```typst
 1fr
 2fr
 ```
 
-### 4. Percentage Lengths (%)
+### Percentage Lengths (%)
 
 Relative to the Length of the containing element.
 
@@ -337,17 +340,18 @@ Example:
 
 ## Design notes
 
-TypstLength deliberately does not include pixel-based units (px) or viewport units (vw, vh),
-as Typst targets print-quality layout.
+TypstLength deliberately does not include pixel-based units (`px`) or viewport units (`vw`,
+`vh`), as Typst targets print-quality layout.
 
-There is no rem unit; em already captures scoped font-relative sizing.
+There is no `rem` unit; `em` already captures scoped font-relative sizing.
 
-The type parameter T is expected to encode the semantic category of the Length (e.g. :pt,
-:em, :fr, :percent, :auto).
+The type parameter `T` is expected to encode the semantic category of the Length (e.g.
+`:pt`, `:em`, `:fr`, `:percent`, `:auto`).
 
 ## Examples
 
-Default constructor
+### Default Constructor
+
 ```
 TypstLength{Pt}(12)
 TypstLength{Em}(0.5)
@@ -356,19 +360,22 @@ TypstLength{Percent}(50)
 TypstLength{Auto}()
 ```
 
-Alternative constructor
+### Alternative Constructor
+
 ```
 TypstLength(Pt,12)
 TypstLength(Auto,)
 ```
 
-Using Symbol
+### Using Symbol
+
 ```
 TypstLength(:percent,50)
 TypstLength(:pt,50)
 ```
 
-Auto-parse (from string)
+### Auto-parse (from string)
+
 ```
 TypstLength("50em")
 TypstLength("2fr")
@@ -380,7 +387,6 @@ TypstLength("4%")
 Typst layout reference: https://typst.app/docs/reference/layout/
 
 Typst syntax reference: https://typst.app/docs/reference/syntax/
-
 """
 struct TypstLength{T <: Union{Auto, TypstLengthKind}} <: AbstractTypstLength
     value::Union{Nothing, Float64}
@@ -476,6 +482,20 @@ function Base.show(io::IO, s::TypstLength{T}) where {T}
     return nothing
 end
 
+"""
+    struct TypstCaption
+
+Define a Typst caption configuration to be used by the Typst backend.
+
+# Fields
+
+- `caption::String`: Caption text.
+- `kind::Union{Auto, String}`: Caption kind forwarded to Typst (for example, `auto` or a
+    custom kind).
+- `supplement::Union{Nothing, String}`: Optional caption supplement.
+- `gap::Union{Auto, AbstractTypstLength}`: Gap between figure content and caption.
+- `position::Union{Nothing, String}`: Optional caption position.
+"""
 struct TypstCaption
     caption::String
     kind::Union{Auto, String}
@@ -484,23 +504,35 @@ struct TypstCaption
     position::Union{Nothing, String}
 end
 
+"""
+    TypstCaption(caption; kind = Auto(), supplement = nothing, gap = Auto(), position = nothing)
+
+Create a [`TypstCaption`](@ref) object used to configure caption rendering in the Typst
+backend.
+
+# Keywords
+
+- `kind::Union{Auto, String}`: Caption kind forwarded to Typst.
+    (**Default**: `Auto()`)
+- `supplement::Union{Nothing, String}`: Optional caption supplement.
+    (**Default**: `nothing`)
+- `gap::Union{Auto, AbstractTypstLength, AbstractString}`: Gap between figure content and
+    caption. If an `AbstractString` is passed, it is parsed as a `TypstLength`.
+    (**Default**: `Auto()`)
+- `position::Union{Nothing, String}`: Optional caption position.
+    (**Default**: `nothing`)
+"""
 function TypstCaption(
     caption;
-    kind = Auto(),
-    supplement = nothing,
+    kind::Union{Auto, String} = Auto(),
+    supplement::Union{Nothing, String} = nothing,
     gap::Union{Auto, AbstractTypstLength, AbstractString} = Auto(),
-    position = nothing,
+    position::Union{Nothing, String} = nothing,
 )
-    return TypstCaption(caption, kind, supplement, gap, position)
-end
+    pgap = gap isa AbstractString ? parse(TypstLength, gap) : gap
 
-TypstCaption(caption, kind, supplement, gap::AbstractString, position) = TypstCaption(
-    caption,
-    kind,
-    supplement,
-    parse(TypstLength, gap),
-    position,
-)
+    return TypstCaption(caption, kind, supplement, pgap, position)
+end
 
 function Base.show(io::IO, c::TypstCaption)
     (; caption, kind, supplement, gap, position) = c
