@@ -208,6 +208,16 @@ const _VERTICAL_CONTINUATION_CELL_ACTIONS = (
     :row_label_vertical_continuation_cell
 )
 
+const _TABLE_ROW_SECTION_NAMES = Dict(
+    :table_header     => "Table Header",
+    :column_labels    => "Column Labels",
+    :data             => "Data",
+    :continuation_row => "Continuation Row",
+    :row_group_label  => "Row Group Label",
+    :summary_row      => "Summary Row",
+    :table_footer     => "Table Footer"
+)
+
 """
     struct PrintingTableState
 

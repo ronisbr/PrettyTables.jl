@@ -27,6 +27,37 @@ function _column_label_limits(table_data::TableData, i::Int, j::Int)
 end
 
 """
+    _current_table_row_section_info(rs::Symbol, action::Symbol, i::Number) -> String
+
+Generate a descriptive string for the current table row section specified by the `rs` and
+`action` parameters, along with the row index `i`.
+"""
+function _current_table_row_section_info(rs::Symbol, action::Symbol, i::Number)
+    section = get(_TABLE_ROW_SECTION_NAMES, rs, "Unknown Section")
+    section_desc = "Row $i"
+
+    if rs == :table_header
+        section_desc = if action == :title
+            "Title"
+        elseif action == :subtitle
+            "Subtitle"
+        end
+
+    elseif rs == :table_footer
+        section_desc = if action == :footnote
+            "Footnote $i"
+        elseif action == :source_notes
+            "Source Notes"
+        end
+
+    elseif rs == :continuation_row
+        section_desc = ""
+    end
+
+    return isempty(section_desc) ? section : "$section: $section_desc"
+end
+
+"""
     _has_footnotes(table_data::TableData) -> Bool
 
 Return whether `table_data` has footnotes.
