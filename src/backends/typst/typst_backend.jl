@@ -10,7 +10,7 @@ function _typst__print(
     highlighters::Vector{TypstHighlighter} = TypstHighlighter[],
     is_stdout::Bool = false,
     style::TypstTableStyle = TypstTableStyle(),
-    wrap_column::Integer = 100,
+    wrap_column::Integer = 92,
 ) where {
     L <: Union{String, Vector{String}, Vector{Pair{Int64, String}}, AbstractTypstLength}
 }
