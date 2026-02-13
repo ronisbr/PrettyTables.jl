@@ -325,7 +325,10 @@ Create the `columns` https://typst.app/docs/reference/model/table/#parameters-co
 configuration for tables in Typst.
 """
 function _typst__get_data_column_widths(table_data::TableData, ::Nothing)
-    return _typst__get_data_column_widths(table_data, Base.Iterators.repeated("auto", 10))
+    return _typst__get_data_column_widths(
+        table_data,
+        Base.Iterators.repeated("auto", table_data.num_columns)
+    )
 end
 
 function _typst__get_data_column_widths(table_data::TableData, data_column_widths)
