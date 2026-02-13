@@ -13,17 +13,14 @@ the output:
 
 # Keywords
 
-- `column_label_titles::Union{Nothing, AbstractVector}`: Titles for the column labels. If
-    `nothing`, no titles are added. If a vector is passed, it must have the same length as
-    the number of column label rows. Each element in the vector can be `nothing` (no title
-    for that row) or an element containing the title for that row. Note that this element
-    will be converted to a string using the function `string`.
-    (**Default**: `nothing`)
-- `highlighters::Vector{TypstHighlighter}`: Highlighters to apply to the table. For more
-    information, see the section **Typst Highlighters** in the **Extended Help**.
-- `caption::Union{Nothing, AbstractString}`: String containing the table caption.
-- `wrap_column::Integer`: Indicates the column where the output will be wrapped.
 - `annotate::Bool`: Boolean indicating whether Typst code should be annotated.
+- `caption::String`: String containing the table caption, to be used by the Typst
+  `#figure` function.
+- `highlighters::Vector{TypstHighlighter}`: Highlighters to apply to the table. For more
+  information, see the section **Typst Highlighters** in the **Extended Help**.
+- `style::TypstTableStyle`: Style of the table. For more information, see the section
+  **Typst Table Style** in the **Extended Help**.
+- `wrap_column::Integer`: Indicates the column where the output will be wrapped.
 
 # Extended Help
 
