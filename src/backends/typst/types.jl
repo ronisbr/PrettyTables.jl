@@ -100,6 +100,8 @@ const _typst__filter_text_atributes = filter(
         (replace(x[1], r"text-"=>"") ∈ _TYPST__TEXT_ATTRIBUTES),
 )
 
+const _typst__filter_cell_attributes = filter(x -> x[1] ∈ _TYPST__CELL_ATTRIBUTES)
+
 ############################################################################################
 #                                          Types                                           #
 ############################################################################################
@@ -169,8 +171,6 @@ Define the style of the tables printed with the Typst back end.
 
 # Fields
 
-- `top_left_string::Vector{TypstPair}`: Style for the top left string.
-- `top_right_string::Vector{TypstPair}`: Style for the top right string.
 - `table::Vector{TypstPair}`: Style for the table.
 - `title::Vector{TypstPair}`: Style for the title.
 - `subtitle::Vector{TypstPair}`: Style for the subtitle.
@@ -189,6 +189,7 @@ Define the style of the tables printed with the Typst back end.
     first column label line.
 - `merged_column_label::Vector{TypstPair}`: Style for the merged cells at the rest of the
     column labels.
+- `omitted_cell_summary::Vector{TypstPair}`: Style for the omitted cell summary.
 - `summary_row_cell::Vector{TypstPair}`: Style for the summary row cell.
 - `summary_row_label::Vector{TypstPair}`: Style for the summary row label.
 - `footnote::Vector{TypstPair}`: Style for the footnote.
@@ -198,8 +199,6 @@ Define the style of the tables printed with the Typst back end.
     TFCL <: Union{Vector{TypstPair}, Vector{Vector{TypstPair}}},
     TCL <: Union{Vector{TypstPair}, Vector{Vector{TypstPair}}},
 }
-    top_left_string::Vector{TypstPair}                = _TYPST__NO_DECORATION
-    top_right_string::Vector{TypstPair}               = _TYPST__ITALIC
     table::Vector{TypstPair}                          = _TYPST__NO_DECORATION
     title::Vector{TypstPair}                          = _TYPST__XLARGE_BOLD
     subtitle::Vector{TypstPair}                       = _TYPST__LARGE_ITALIC
@@ -212,6 +211,7 @@ Define the style of the tables printed with the Typst back end.
     column_label::TCL                                 = _TYPST__BOLD
     first_line_merged_column_label::Vector{TypstPair} = _TYPST__MERGED_CELL
     merged_column_label::Vector{TypstPair}            = _TYPST__MERGED_CELL
+    omitted_cell_summary::Vector{TypstPair}           = _TYPST__SMALL_ITALIC_GRAY
     summary_row_cell::Vector{TypstPair}               = _TYPST__NO_DECORATION
     summary_row_label::Vector{TypstPair}              = _TYPST__BOLD
     footnote::Vector{TypstPair}                       = _TYPST__SMALL

@@ -17,15 +17,6 @@ function PrettyTables.pretty_table(::Type{Typst}, @nospecialize(data::Any); kwar
     return Typst(TypstText(str))
 end
 
-# For Markdown cells, we must render always using `show` to obtain the correct decoration.
-function PrettyTables._typst__render_cell(
-    cell::Markdown.MD,
-    context::IOContext,
-    renderer::Union{Val{:print}, Val{:show}},
-)
-    return sprint(show, MIME("text/typst"), Typst(cell))
-end
-
 # Render cells with Typst commands.
 function PrettyTables._typst__render_cell(
     cell::TypstString,

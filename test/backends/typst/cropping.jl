@@ -5,14 +5,12 @@
 ############################################################################################
 
 @testset "Table Cropping" verbose = true begin
-    matrix = [(i, j) for i in 1:100, j in 1:100]
-    backend=:typst
+    matrix  = [(i, j) for i in 1:100, j in 1:100]
+    backend = :typst
+
     @testset "Bottom Cropping" begin
         expected = """
 #{
-  // Top bar
-  set par(justify: true, spacing: 1em)
-  align(top+right,)[97 columns and 98 rows omitted]
   // Open table
   table(
     columns: (auto, auto, auto, auto),
@@ -40,6 +38,9 @@
     table.cell()[#text()[⋮]],
     table.cell()[#text()[⋮]],
     table.cell()[#text()[⋱]],
+    table.cell(align: right, colspan: 4, inset: (right: 0pt), stroke: none,)[
+      #text(fill: gray, size: 0.9em, style: "italic",)[97 columns and 98 rows omitted]
+    ],
   )
 }
 """
@@ -58,9 +59,6 @@
     @testset "Middle Cropping" begin
         expected = """
 #{
-  // Top bar
-  set par(justify: true, spacing: 1em)
-  align(top+right,)[97 columns and 98 rows omitted]
   // Open table
   table(
     columns: (auto, auto, auto, auto),
@@ -88,6 +86,9 @@
     table.cell(align: right,)[#text()[(100, 2)]],
     table.cell(align: right,)[#text()[(100, 3)]],
     table.cell()[#text()[⋯]],
+    table.cell(align: right, colspan: 4, inset: (right: 0pt), stroke: none,)[
+      #text(fill: gray, size: 0.9em, style: "italic",)[97 columns and 98 rows omitted]
+    ],
   )
 }
 """

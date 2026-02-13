@@ -4,6 +4,40 @@
 #
 ############################################################################################
 
+# == Attributes ============================================================================
+
+"""
+    _typst__cell_and_text_properties(vproperties::Vector{TypstPair}) -> Tuple{Vector{TypstPair}, Vector{TypstPair}}
+
+Split `vproperties` into the properties that must be applied to the Typst `table.cell` and
+those that must be applied to the text content.
+
+The first returned vector contains only attributes listed in `_TYPST__CELL_ATTRIBUTES`. The
+second returned vector contains only valid text properties prefixed with `text-`, with this
+prefix removed.
+"""
+function _typst__cell_and_text_properties(vproperties::Vector{TypstPair})
+    # Separate cell and text attributes in a single pass to reduce allocations.
+    cell_properties = TypstPair[]
+    text_properties = TypstPair[]
+    sizehint!(cell_properties, length(vproperties))
+    sizehint!(text_properties, length(vproperties))
+
+    for (k, v) in vproperties
+        if k ∈ _TYPST__CELL_ATTRIBUTES
+            push!(cell_properties, k => v)
+        end
+
+        if startswith(k, "text-")
+            text_key = SubString(k, 6)
+            text_key ∈ _TYPST__TEXT_ATTRIBUTES &&
+                push!(text_properties, String(text_key) => v)
+        end
+    end
+
+    return cell_properties, text_properties
+end
+
 # == Strings ===============================================================================
 
 """
@@ -17,7 +51,9 @@ If `escape_typst_chars` is `true`, then `&`, `<`, `>`, `"`, and `'`  will be rep
 Typst sequences.
 """
 function _typst__escape_str(
-    @nospecialize(io::IO), s::AbstractString, escape_typst_chars::Bool = true
+    @nospecialize(io::IO),
+    s::AbstractString,
+    escape_typst_chars::Bool = true
 )
     a = Iterators.Stateful(s)
 
@@ -238,7 +274,7 @@ const _TYPST__ALIGNMENT_MAP = Dict(
 
 Add the Typst alignment property to `style` according to the `alignment` symbol.
 """
-function _typst__add_alignment_to_style!(style::Vector{TypstPair}, alignment::Symbol)
+function _typst__add_alignment_to_properties!(style::Vector{TypstPair}, alignment::Symbol)
     if (alignment == :n) || (alignment == :N)
         return nothing
     elseif haskey(_TYPST__ALIGNMENT_MAP, alignment)
@@ -345,7 +381,7 @@ end
 Merge two Typst styles, `bstyle` and `nstyle`, giving priority to `nstyle` in case of
 conflicts.
 """
-function _typst__merge_style!(bstyle::Vector{TypstPair}, nstyle::Vector{TypstPair})
+function _typst__merge_properties!(bstyle::Vector{TypstPair}, nstyle::Vector{TypstPair})
     filter!(bstyle) do l
         l[1] ∉ map(first, nstyle)
     end

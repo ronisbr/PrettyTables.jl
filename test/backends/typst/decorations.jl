@@ -136,20 +136,20 @@
 
         @test result == expected
     end
-    @testset "Table Style Validation" verbose=true begin
+    @testset "Table Property Validation" verbose=true begin
         matrix = ones(3, 3)
         backend = :typst
-        @test_warn "Unused table style:" begin
+        @test_warn "Unused table properties:" begin
             result = pretty_table(
                 String,
                 matrix;
                 backend,
                 style = TypstTableStyle(;
                     table = [
-                        "fill" => "yellow",
-                        "text-fill" => "blue",
+                        "fill"        => "yellow",
+                        "text-fill"   => "blue",
                         "text-weight" => "extrabold",
-                        "weigth" => "",
+                        "weigth"      => "",
                     ],
                 ),
             );

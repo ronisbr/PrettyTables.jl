@@ -63,3 +63,20 @@ function _typst__render_cell(
     # If the user wants HTML code inside cell, we must not escape the HTML characters.
     return _typst__escape_str(cell_str)
 end
+
+function PrettyTables._typst__render_cell(
+    cell::Markdown.MD,
+    context::IOContext,
+    renderer::Union{Val{:print}, Val{:show}},
+)
+    # We will always render Markdown cells using `#raw` until we can obtain a good way to
+    # convert Markdown to Typst.
+    str = "\"" * replace(chomp(string(cell)), "\n" => "\\n\" + \n  \"") * "\""
+
+    return """
+        #raw(
+          $str,
+          block: false,
+          lang: "markdown",
+        )"""
+end

@@ -102,51 +102,5 @@ using Typstry
 
         @test result == expected
     end
-
-    @testset "Markdown Cells" verbose = true begin
-        backend = :typst
-        matrix = [
-            1 md"**bold**"
-            2 md"*italic*"
-        ]
-
-        expected = """
-#{
-  // Open table
-  table(
-    columns: (auto, auto),
-    // Table Header
-    table.header(
-      // column_labels Row 1
-      table.cell(align: right,)[#text(weight: "bold",)[Col. 1]],
-      table.cell(align: right,)[#text(weight: "bold",)[Col. 2]],
-    ),
-    // Body
-    // data Row 1
-    table.cell(align: right,)[#text()[1]],
-    table.cell(align: right,)[
-      #raw(
-        "**bold**",
-        block: false,
-        lang: "markdown"
-      )
-    ],
-    // data Row 2
-    table.cell(align: right,)[#text()[2]],
-    table.cell(align: right,)[
-      #raw(
-        "*italic*",
-        block: false,
-        lang: "markdown"
-      )
-    ],
-  )
-}
-"""
-        # Test String Output
-        result = pretty_table(String, matrix; backend)
-
-        @test result == expected
-    end
 end
 

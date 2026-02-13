@@ -5,14 +5,12 @@
 ############################################################################################
 
 @testset "All Available Fields" verbose = true begin
-    matrix = [(i, j) for i in 1:4, j in 1:4]
+    matrix  = [(i, j) for i in 1:4, j in 1:4]
     backend = :typst
+
     @testset "Without Cropping" begin
         expected = """
 #{
-  // Top bar
-  set par(justify: true, spacing: 1em)
-  align(top+left,)[Top left string]
   // Open table
   table(
     columns: (auto, auto, 25fr, 75fr, 5em, auto),
@@ -130,15 +128,24 @@
     table.cell(align: right,)[#text()[60]],
     table.cell(align: right,)[#text()[80]],
     // table_footer Row 1
-    table.cell(align: left, colspan: 6,)[
+    table.cell(
+      align: left, colspan: 6, inset: (left: 0pt),
+      stroke: none,
+    )[
       #super[1]#text(size: 0.9em,)[Footnote in column label]
     ],
     // table_footer Row 2
-    table.cell(align: left, colspan: 6,)[
+    table.cell(
+      align: left, colspan: 6, inset: (left: 0pt),
+      stroke: none,
+    )[
       #super[2]#text(size: 0.9em,)[Footnote in data]
     ],
     // table_footer Row 1
-    table.cell(align: left, colspan: 6,)[
+    table.cell(
+      align: left, colspan: 6, inset: (left: 0pt),
+      stroke: none,
+    )[
       #text(fill: gray, size: 0.9em, style: "italic",)[
         Source Notes
       ]
@@ -180,7 +187,6 @@
             data_column_widths = ["25fr", "75fr", "5em"],
             source_notes = "Source Notes",
             stubhead_label = "Rows",
-            top_left_string = "Top left string",
             summary_rows = [(data, i) -> 10i, (data, i) -> 20i],
             title = "Table Title",
             subtitle = "Table Subtitle",
@@ -193,11 +199,6 @@
     @testset "With Bottom Cropping" begin
         expected = """
 #{
-  // Top bar
-  set par(justify: true, spacing: 1em)
-  align(top+left,)[Top left string]
-  v(-1.5em)
-  align(top+right,)[2 columns and 2 rows omitted]
   // Open table
   table(
     columns: (auto, auto, auto, auto, auto),
@@ -247,12 +248,21 @@
     table.cell(align: right,)[#text()[20]],
     table.cell(align: right,)[#text()[40]],
     table.cell()[#text()[⋯]],
+    table.cell(align: right, colspan: 5, inset: (right: 0pt), stroke: none,)[
+      #text(fill: gray, size: 0.9em, style: "italic",)[2 columns and 2 rows omitted]
+    ],
     // table_footer Row 1
-    table.cell(align: left, colspan: 5,)[#super[1]#text(size: 0.9em,)[Footnote in column label]],
+    table.cell(align: left, colspan: 5, inset: (left: 0pt), stroke: none,)[
+      #super[1]#text(size: 0.9em,)[Footnote in column label]
+    ],
     // table_footer Row 2
-    table.cell(align: left, colspan: 5,)[#super[2]#text(size: 0.9em,)[Footnote in data]],
+    table.cell(align: left, colspan: 5, inset: (left: 0pt), stroke: none,)[
+      #super[2]#text(size: 0.9em,)[Footnote in data]
+    ],
     // table_footer Row 1
-    table.cell(align: left, colspan: 5,)[#text(fill: gray, size: 0.9em, style: "italic",)[Source Notes]],
+    table.cell(align: left, colspan: 5, inset: (left: 0pt), stroke: none,)[
+      #text(fill: gray, size: 0.9em, style: "italic",)[Source Notes]
+    ],
   )
 }
 """
@@ -270,7 +280,6 @@
             merge_column_label_cells = [MergeCells(1, 2, 2, "Merged Column", :c)],
             row_group_labels = [2 => "Row Group"],
             row_labels = ["Row $i" for i in 1:5],
-            top_left_string = "Top left string",
             show_row_number_column = true,
             source_notes = "Source Notes",
             stubhead_label = "Rows",
@@ -285,9 +294,6 @@
     @testset "With Middle Cropping" begin
         expected = """
 #{
-  // Top bar
-  set par(justify: true, spacing: 1em)
-  align(top+right,)[2 columns and 2 rows omitted]
   // Open table
   table(
     columns: (auto, auto, auto, auto, auto),
@@ -335,12 +341,21 @@
     table.cell(align: right,)[#text()[20]],
     table.cell(align: right,)[#text()[40]],
     table.cell()[#text()[⋯]],
+    table.cell(align: right, colspan: 5, inset: (right: 0pt), stroke: none,)[
+      #text(fill: gray, size: 0.9em, style: "italic",)[2 columns and 2 rows omitted]
+    ],
     // table_footer Row 1
-    table.cell(align: left, colspan: 5,)[#super[1]#text(size: 0.9em,)[Footnote in column label]],
+    table.cell(align: left, colspan: 5, inset: (left: 0pt), stroke: none,)[
+      #super[1]#text(size: 0.9em,)[Footnote in column label]
+    ],
     // table_footer Row 2
-    table.cell(align: left, colspan: 5,)[#super[2]#text(size: 0.9em,)[Footnote in data]],
+    table.cell(align: left, colspan: 5, inset: (left: 0pt), stroke: none,)[
+      #super[2]#text(size: 0.9em,)[Footnote in data]
+    ],
     // table_footer Row 1
-    table.cell(align: left, colspan: 5,)[#text(fill: gray, size: 0.9em, style: "italic",)[Source Notes]],
+    table.cell(align: left, colspan: 5, inset: (left: 0pt), stroke: none,)[
+      #text(fill: gray, size: 0.9em, style: "italic",)[Source Notes]
+    ],
   )
 }
 """
@@ -372,8 +387,6 @@
     @testset "Without Annotation" begin
         expected = """
 #{
-  set par(justify: true, spacing: 1em)
-  align(top+right,)[2 columns and 2 rows omitted]
   table(
     columns: (auto, auto, auto, auto, auto),
     table.header(
@@ -410,9 +423,18 @@
     table.cell(align: right,)[#text()[20]],
     table.cell(align: right,)[#text()[40]],
     table.cell()[#text()[⋯]],
-    table.cell(align: left, colspan: 5,)[#super[1]#text(size: 0.9em,)[Footnote in column label]],
-    table.cell(align: left, colspan: 5,)[#super[2]#text(size: 0.9em,)[Footnote in data]],
-    table.cell(align: left, colspan: 5,)[#text(fill: gray, size: 0.9em, style: "italic",)[Source Notes]],
+    table.cell(align: right, colspan: 5, inset: (right: 0pt), stroke: none,)[
+      #text(fill: gray, size: 0.9em, style: "italic",)[2 columns and 2 rows omitted]
+    ],
+    table.cell(align: left, colspan: 5, inset: (left: 0pt), stroke: none,)[
+      #super[1]#text(size: 0.9em,)[Footnote in column label]
+    ],
+    table.cell(align: left, colspan: 5, inset: (left: 0pt), stroke: none,)[
+      #super[2]#text(size: 0.9em,)[Footnote in data]
+    ],
+    table.cell(align: left, colspan: 5, inset: (left: 0pt), stroke: none,)[
+      #text(fill: gray, size: 0.9em, style: "italic",)[Source Notes]
+    ],
   )
 }
 """
@@ -445,8 +467,6 @@
     @testset "Wrap Column Tests" begin
         expected = """
 #{
-  set par(justify: true, spacing: 1em)
-  align(top+right,)[2 columns and 2 rows omitted]
   table(
     columns: (auto, auto, auto, auto, auto),
     table.header(
@@ -627,8 +647,24 @@
       ]
     ],
     table.cell(
+      align: right,
+      colspan: 5,
+      inset: (right: 0pt),
+      stroke: none,
+    )[
+      #text(
+        fill: gray,
+        size: 0.9em,
+        style: "italic",
+      )[
+        2 columns and 2 rows omitted
+      ]
+    ],
+    table.cell(
       align: left,
       colspan: 5,
+      inset: (left: 0pt),
+      stroke: none,
     )[
       #super[1]#text(size: 0.9em,)[
         Footnote in column label
@@ -637,6 +673,8 @@
     table.cell(
       align: left,
       colspan: 5,
+      inset: (left: 0pt),
+      stroke: none,
     )[
       #super[2]#text(size: 0.9em,)[
         Footnote in data
@@ -645,6 +683,8 @@
     table.cell(
       align: left,
       colspan: 5,
+      inset: (left: 0pt),
+      stroke: none,
     )[
       #text(
         fill: gray,
