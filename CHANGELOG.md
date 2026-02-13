@@ -1,6 +1,12 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 3.2.3
+-------------
+
+- ![Enhancement][badge-enhancement] We refactored the code in Typst to make the options and
+  table output closer to what we have in LaTeX backend.
+
 Version 3.2.2
 -------------
 
