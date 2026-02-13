@@ -95,14 +95,6 @@ const _TYPST__TEXT_ATTRIBUTES = [
     "weight",
 ]
 
-const _typst__filter_text_atributes = filter(
-    x ->
-        (occursin(r"^text-", x[1])) &&
-        (replace(x[1], r"text-"=>"") ∈ _TYPST__TEXT_ATTRIBUTES),
-)
-
-const _typst__filter_cell_attributes = filter(x -> x[1] ∈ _TYPST__CELL_ATTRIBUTES)
-
 # -- Decorations ---------------------------------------------------------------------------
 
 const _TYPST__NO_DECORATION     = TypstPair[]
