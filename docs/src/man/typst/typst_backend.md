@@ -6,20 +6,33 @@ the output:
 
 ## Keywords
 
-- `column_label_titles::Union{Nothing, AbstractVector}`: Titles for the column labels. If
-  `nothing`, no titles are added. If a vector is passed, it must have the same length as the
-  number of column label rows. Each element in the vector can be `nothing` (no title for
-  that row) or an element containing the title for that row. Note that this element will be
-  converted to a string using the function `string`.
-  (**Default**: `nothing`)
+- `annotate::Bool`: Boolean indicating whether Typst code should be annotated.
+- `caption::Union{Nothing, String, TypstCaption}`: Table caption to be used by the
+  Typst `#figure` function. The user can provide additional configuration to the caption
+  by using the `TypstCaption` structure.
+- `data_column_widths::Union{Nothing, String, Vector{String}, Vector{Pair{Int, String}}}`:
+  Column widths for the data columns. The information must be a valid length information
+  in Typst, such as "10fr" or "30pt". If a single string is provided, it will be repeated
+  for all columns. If a vector of strings is provided, its length must be equal to or
+  larger than the number of printed columns. Alternatively, a vector of pairs can be
+  provided, where the first element of the pair is the column index and the second element
+  is the width for that column. In this case, columns that are not specified will have
+  width `auto`.
+  (**Default** = `nothing`)
 - `highlighters::Vector{TypstHighlighter}`: Highlighters to apply to the table. For more
-  information, see the section [Typst Highlighters](@ref).
+  information, see the section **Typst Highlighters** in the **Extended Help**.
+  (**Default** = `TypstHighlighter[]`)
 - `style::TypstTableStyle`: Style of the table. For more information, see the section
-  [Typst Table Style](@ref).
-- `top_left_string::String`: String to put in the top left corner div.
-  (**Default**: "")
-- `caption::String`: String containing the table caption, to be used by the Typst
-  `#figure` function.
+  **Typst Table Style** in the **Extended Help**.
+  (**Default** = `TypstTableStyle()`)
+- `wrap_column::Integer`: Indicates the column where the output will be wrapped.
+  (**Default** = `92`)
+
+!!! note
+
+    The content in the cells is always escaped. If you want to use a raw Typst component as
+    cell, load the package Typstry.jl and pass the cell content as a `TypstString`. In this
+    case, the content will not be escaped and will be treated as a raw Typst component.
 
 ## Typst Highlighters
 
@@ -64,19 +77,19 @@ the cells with values less than 5 in blue, we can define:
 ```julia
 hl_gt5 = TypstHighlighter(
     (data, i, j) -> data[i, j] > 5,
-    ["fill" => "red", "text-fill" => "white"]
+    ["text-fill" => "red"]
 )
 
 hl_lt5 = TypstHighlighter(
     (data, i, j) -> data[i, j] < 5,
-    ["fill" => "blue"]
+    ["text-fill" => "blue"]
 )
 
 highlighters = [hl_gt5, hl_lt5]
 ```
 
-Each cell is rendered with one call to `#text` inside a `table.cell` function, as shown
-below:
+Each cell with properties is rendered with one call to `#text` inside a `table.cell`
+function, as shown below:
 
 ```typst
 table.cell()[#text()[Cell Content]]
@@ -92,20 +105,11 @@ table.cell()[#text()[Cell Content]]
     ["fill" => "blue", "text-fill" => "white"]
     ```
 
-!!! note
-
-    The content is always escaped and wrapped in a `#text` function. If you want to use a
-    raw Typst component as cell, load the package Typstry.jl and pass the cell content as a
-    `TypstString`. In this case, the content will not be wrapped in a `#text` function and
-    will be treated as a raw Typst component.
-
 ## Typst Table Style
 
 The Typst table style is defined using an object of type [`TypstTableStyle`](@ref) that
 contains the following fields:
 
-- `top_left_string::Vector{TypstPair}`: Style for the top left string.
-- `top_right_string::Vector{TypstPair}`: Style for the top right string.
 - `table::Vector{TypstPair}`: Style for the table.
 - `title::Vector{TypstPair}`: Style for the title.
 - `subtitle::Vector{TypstPair}`: Style for the subtitle.
@@ -128,8 +132,6 @@ contains the following fields:
 - `summary_row_label::Vector{TypstPair}`: Style for the summary row label.
 - `footnote::Vector{TypstPair}`: Style for the footnote.
 - `source_notes::Vector{TypstPair}`: Style for the source notes.
-- `first_line_of_column_labels::Vector{TypstPair}`: Style for the first line of the column
-  labels.
 
 Each field is a vector of [`TypstPair`](@ref), *i.e.* `Pair{String, String}`, describing
 properties and values compatible with the Typst style attribute.
@@ -141,3 +143,7 @@ style = TypstTableStyle(
     stubhead_label = ["text-weight" => "bold", "fill" => "red", "text-fill" => "white"]
 )
 ```
+
+The user can pass any property compatible with the Typst style attribute. If the prefix
+`text-` is used, the property will be applied to the text of the cell. Otherwise, it will be
+applied to the cell itself.
