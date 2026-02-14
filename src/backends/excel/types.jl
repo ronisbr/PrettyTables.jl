@@ -4,7 +4,8 @@
 #
 ############################################################################################
 
-export ExcelHighlighter, ExcelTableFormat, ExcelTableStyle, ExcelFormatter, DEFAULT_EXCEL_TABLE_FORMAT, DEFAULT_EXCEL_TABLE_STYLE 
+export ExcelHighlighter, ExcelTableFormat, ExcelTableStyle, ExcelFormatter
+export DEFAULT_EXCEL_TABLE_FORMAT, DEFAULT_EXCEL_TABLE_STYLE 
 
 ############################################################################################
 #                                       Constants                                          #
@@ -13,7 +14,7 @@ export ExcelHighlighter, ExcelTableFormat, ExcelTableStyle, ExcelFormatter, DEFA
 # Pair that defines Excel properties.
 const ExcelPair = Pair{String, String}
 
-# Create some default decorations to reduce allocations.
+# Create some default table style definitions to reduce allocations.
 const _EXCEL__NO_DECORATION = ExcelPair[]
 const _EXCEL__BOLD = ["bold" => "true"]
 const _EXCEL__NAME = ["name" => "Calibri"]
@@ -46,17 +47,52 @@ Define the default highlighter of a table when using the Excel back end.
 
 # Remarks
 
-This structure can be constructed using three helpers:
+An Excel highlighter can be constructed using the following helpers:
 
-    ExcelHighlighter(f::Function, decoration::Vector{Pair{String, String}})
+```julia
+ExcelHighlighters(f::Function, decoration::ExcelPair)
+ExcelHighlighters(f::Function, decoration::Vector{Pair{String, String}})
+ExcelHighlighters(f::Function, decoration::Pair{Symbol, Vector{Pair{String, String}}})
+ExcelHighlighters(
+    f::Function,
+    decoration::Vector{Pair{Symbol, Vector{Pair{String, String}}}}
+)
 
-    ExcelHighlighter(f::Function, decorations::NTuple{N, Pair{String, String})
+ExcelHighlighters(f::Function, fd::Function)
+```
 
-    ExcelHighlighter(f::Function, fd::Function)
+The first set will apply a fixed decoration to the highlighted cell, whereas the 
+second lets the user select the desired decoration by specifying the function `fd`.
 
-The first will apply a fixed decoration to the highlighted cell specified in `decoration`,
-whereas the second let the user select the desired decoration by specifying the function
-`fd`.
+The decoration is specified as `[:format => ["attribute" => "value"], ...]`
+where `:format` can be specified as `:font`, `:fill` or `:border`. The attributes and 
+values are the same as those supported by the functions `XLSX.setFont`, `XLSX.setFill` 
+and `XLSX.setBorder`.
+
+If the leading symbol is omitted, it is assumed to be `:font`.
+
+For example, if we want to highlight the cells in the third data column with a value greater 
+than 10, those in the fourth column with a value greater than 10 and those (in any column) 
+with zero value, each with separate highlighter formats, we can specify:
+
+```julia
+highlighters = [
+    ExcelHighlighter((data, i, j) -> (j == 3) && (data[i, j] > 10), [
+        :font => [ "color"=>"red", "bold"=>"true"],
+        :fill => [ "pattern" => "solid", "fgColor" => "grey90"],
+        :border => ["style" => "thick", "color" => "red"],
+    ]),
+    ExcelHighlighter((data, i, j) -> (data[i, j] ≈ 0.0), [
+        :font => [ "color"=>"green", "bold"=>"true"],
+        :border => ["style" => "thick", "color" => "green"],
+    ]),
+    ExcelHighlighter((data, i, j) -> (j == 4) && (data[i, j] > 10),
+        ["color"=>"blue", "bold"=>"true"], # assumes `:font`
+    ),
+]
+
+```
+
 """
 struct ExcelHighlighter
     f::Function
@@ -64,7 +100,7 @@ struct ExcelHighlighter
 
     # == Private Fields ====================================================================
 
-    _decoration::Vector{Pair{Symbol,Vector{ExcelPair}}}
+    _decoration::Vector{Pair{Symbol, Vector{ExcelPair}}}
 
     # == Constructors ======================================================================
 
@@ -80,7 +116,7 @@ struct ExcelHighlighter
         )
     end
 
-    function ExcelHighlighter(f::Function, decoration::Pair{Symbol,Vector{ExcelPair}})
+    function ExcelHighlighter(f::Function, decoration::Pair{Symbol, Vector{ExcelPair}})
         return new(
             f,
             _excel__default_highlighter_fd,
@@ -96,11 +132,14 @@ struct ExcelHighlighter
         )
     end
 
-    function ExcelHighlighter(f::Function, decoration::Vector{Pair{Symbol,Vector{ExcelPair}}}, args...)
+    function ExcelHighlighter(
+        f::Function,
+        decoration::Vector{Pair{Symbol, Vector{ExcelPair}}}
+    )
         return new(
             f,
             _excel__default_highlighter_fd,
-            [decoration..., args...]
+            decoration
         )
     end
 end
@@ -112,17 +151,48 @@ _excel__default_highlighter_fd(h::ExcelHighlighter, ::Any, ::Int, ::Int) = h._de
 ############################################################################################
 
 """
-    ExcelFormatter
+    struct ExcelFormatter
 
 Define the Excel format to apply to a cell.
 
 # Fields
 
-- `f::Function`: Function with the signature `f(value, i, j)` in which should return `true`
-    if the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
+- `f::Function`: Function with the signature `f(value, i, j)` which should return `true` 
+  if the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
 - `numFmt::ExcelPair`: Specifies the format to apply to the cell. The format should be 
-    specified using the `XLSX.jl` formatting definitions used by the `XLSX.setFormat`
-    function. 
+  specified with an `ExcelPair` (*i.e.* `Pair{String, String}`) using the `XLSX.jl` 
+  formatting definitions used by the `XLSX.setFormat` function.
+
+# Remarks
+
+It is possible to apply a set of native Excel formats by passing a `Vector{ExcelFormatter}` 
+to the `excel_formatters` keyword. Each Excel formatter is an instance of the structure 
+[`ExcelFormatter`](@ref).
+
+Each formatter that satisfies the specified condition in the given table cell is applied 
+in turn, in the order they appear in the vector of formatters.
+
+Excel formatters may be applied in addition to the standard formatters. The standard 
+formatters control the literal values written to Excel while the Excel formatters control 
+how Excel displays the literal cell values.
+
+For example, to apply Excel-native formatting to different columns of a table:
+
+```julia
+excel_formatters = [
+    ExcelFormatter((v, i, j) -> (j==1), ["format" => "#,##0_0_0"])
+    ExcelFormatter((v, i, j) -> (j==2), ["format" => "#,##0.??_0_0"])
+    ExcelFormatter((v, i, j) -> (j==3), ["format" => "#,##0.???"])
+    ExcelFormatter((v, i, j) -> (j==4), ["format" => "0_0_0_0"])
+]
+```
+
+Excel formatters apply native Excel formatting to native Excel values. 
+However, `PrettyTables,jl`can handle Julia types that can't be represented 
+natively in Excel. If these are passed natively, then XLSX.jl will fail. 
+To circumvent this, a predefined formatter has been provided which converts 
+any unhandled types to strings (using `string()`). For more information, see 
+[`fmt__excel_stringify`](@ref).
 
 """
 struct ExcelFormatter
@@ -133,48 +203,152 @@ end
 ############################################################################################
 #                                       Table Format                                       #
 ############################################################################################
-
+#        1         2         3         4         5         6         7         8         9      
+#2345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012
 
 """
     ExcelTableFormat
 
-Format that will be used to print the Excel table. All parameters are strings compatible with
-the corresponding Excel property.
+Format that will be used to print the Excel table. All parameters are strings compatible 
+with the corresponding Excel property.
 
+# Fields
+
+
+- `outside_border::Bool`: A Bool indicating whether or not to draw an outside border.
+- `outside_border_type::Union{Nothing,Vector{ExcelPair}}`: Describes the border to be 
+  applied to the outside border of the table.
+- `underline_title::Bool`: Determines whether to draw a cell border under the 
+  table title/subtitle section.
+- `underline_title_type::Union{Nothing,Vector{ExcelPair}}`: Describes the border to be 
+  drawn under the table title/subtitle section.
+- `underline_headers::Bool`: Determines whether to draw a cell border under the 
+  (unmerged) column headers.
+- `underline_headers_type::Union{Nothing,Vector{ExcelPair}}`: Describes the border 
+  to be drawn under teh (unmerged) column headers.
+- `underline_merged_headers::Bool`: Determines whether to draw a cell border under 
+  any merged column headers. 
+- `underline_merged_headers_type::Union{Nothing,Vector{ExcelPair}}`: Describes the 
+  border to be drawn under any merged column headers.
+- `underline_data_rows::Bool`: Determines whether to draw a cell border under each 
+  data row in the data table. 
+- `underline_data_rows_type::Union{Nothing,Vector{ExcelPair}}`: Describes the border 
+  to be drawn under each data row in the data table.
+- `underline_table::Bool`: Determines whether to draw a cell border under the 
+  data table section.
+- `underline_table_type::Union{Nothing,Vector{ExcelPair}}`: Describes the border to 
+  be drawn under the data table section.
+- `overline_group::Bool`: Determines whether to draw a cell border over each 
+  row group divider.
+- `overline_group_type::Union{Nothing,Vector{ExcelPair}}`: Describes the border to 
+  be drawn over each row group divider.
+- `underline_group::Bool`: Determines whether to draw a cell border under each 
+  row group divider.
+- `underline_group_type::Union{Nothing,Vector{ExcelPair}}`: Describes the border to 
+  be drawn under each row group divider.
+- `underline_summary_rows::Bool`: Determines whether to draw a cell border under 
+  the summary rows section. 
+- `underline_summary_rows_type::Union{Nothing,Vector{ExcelPair}}`: Describes the 
+  border to be drawn under the summary rows.
+- `underline_summary::Bool`: Determines whether to draw a cell border under the 
+  table summary section.
+- `underline_summary_type::Union{Nothing,Vector{ExcelPair}}`: Describes the border 
+  to be drawn under the table summary.
+- `underline_footnotes::Bool`: Determines whether to draw a cell border under the 
+  table footnotes section.
+- `underline_footnotes_type::Union{Nothing,Vector{ExcelPair}}`: Describes the border 
+  to be drawn under the footnote section.
+- `vline_after_row_numbers::Bool`: Determines whether to draw a cell border to the 
+  right of the row number column.
+- `vline_after_row_numbers_type::Union{Nothing,Vector{ExcelPair}}`: Describes the 
+  border to be drawn under the row number column.
+- `vline_after_row_labels::Bool`: Determines whether to draw a cell border to the 
+  right of the row label column.
+- `vline_after_row_labels_type::Union{Nothing,Vector{ExcelPair}}`: Describes the 
+  border to be drawn after the row label column.
+- `vline_between_data_columns::Bool`: Determines whether to draw a vertical 
+  border to be drawn between the data columns.
+- `vline_between_data_columns_type::Union{Nothing,Vector{ExcelPair}}`: Describes the 
+  border to be drawn between the data columns.
+- `data_column_width::Union{Float64,Vector{Float64},Nothing}`: Specifies the column 
+  width to be used for the data table columns, over-riding any automatically 
+  calculated column width. If a vector of values is provided, the width of each 
+  column is set by the corresponding vector entry.
+- `min_data_column_width::Union{Float64,Vector{Float64},Nothing}`: Specifies the 
+  minimum column width to be used for the data table columns, clipping any 
+  narrower column width automatically calculated. If a vector of values is 
+  provided, the minimum width of each column is set by the corresponding vector 
+  entry.
+- `max_data_column_width::Union{Float64,Vector{Float64},Nothing}`: Specifies the 
+  maximum column width to be used for the data table columns, clipping any 
+  wider column width automatically calculated. If a vector of values is 
+  provided, the maximum width of each column is set by the corresponding vector 
+  entry.
+
+
+# Remarks
+
+The borders to be used in each section of the generated table are defined using an 
+object of type [`ExcelTableFormat`}(@ref)] that contains the following fields:
+
+Each cell border is controlled by two fields. The first is a Bool which dictates 
+whether or not the cell border should be drawn. The second is a vector of 
+`Pair{String, String}` which specifies the border attributes to use if the border 
+is to be drawn using the attributes supported by `XLSX.setBorder`.
+
+The `underline` and `overline` values specify the bottom and top cell borders 
+respectively while `vline` values specify the border on the right hand side.
+
+The `title` border is drawn under the subtitle row (if provided) or under the title 
+row if there is no subtitle.
+
+The `data_column_width`, `min_data_column_width` and `max_data_column_width` fields
+are specified in `pt`. If `data_column_width` is specified, `min_data_column_width` 
+and `max_data_column_width` are ignored.
+
+It is only necessary to define those fields for which the default border formats 
+need to be overwritten. For example, to choose to draw an outside border around 
+the whole table with a double line:
+
+```julia
+table_format = ExcelTableFormat(
+    outside_border_type=["style" => "double"],
+)
+```
 
 """
 @kwdef struct ExcelTableFormat
     outside_border::Bool = true
-    outside_border_type::Union{Nothing,Vector{ExcelPair}}=nothing
-    underline_title::Union{Nothing,Bool} = nothing
-    underline_title_type::Union{Nothing,Vector{ExcelPair}}=nothing
-    underline_headers::Union{Nothing,Bool} = nothing
-    underline_headers_type::Union{Nothing,Vector{ExcelPair}}=nothing
-    underline_merged_headers::Union{Nothing,Bool} = nothing
-    underline_merged_headers_type::Union{Nothing,Vector{ExcelPair}}=nothing
-    underline_data_rows::Union{Nothing,Bool} = nothing
-    underline_data_rows_type::Union{Nothing,Vector{ExcelPair}}=nothing
-    underline_table::Union{Nothing,Bool} = nothing
-    underline_table_type::Union{Nothing,Vector{ExcelPair}}=nothing
-    overline_group::Union{Nothing,Bool} = nothing
-    overline_group_type::Union{Nothing,Vector{ExcelPair}}=nothing
-    underline_group::Union{Nothing,Bool} = nothing
-    underline_group_type::Union{Nothing,Vector{ExcelPair}}=nothing
-    underline_summary_rows::Union{Nothing,Bool} = nothing
-    underline_summary_rows_type::Union{Nothing,Vector{ExcelPair}}=nothing
-    underline_summary::Union{Nothing,Bool} = nothing
-    underline_summary_type::Union{Nothing,Vector{ExcelPair}}=nothing
-    underline_footnotes::Union{Nothing,Bool} = nothing
-    underline_footnotes_type::Union{Nothing,Vector{ExcelPair}}=nothing
-    vline_after_row_numbers::Union{Nothing,Bool} = nothing
-    vline_after_row_numbers_type::Union{Nothing,Vector{ExcelPair}}=nothing
-    vline_after_row_labels::Union{Nothing,Bool} = nothing
-    vline_after_row_labels_type::Union{Nothing,Vector{ExcelPair}}=nothing
-    vline_between_data_columns::Union{Nothing,Bool} = nothing
-    vline_between_data_columns_type::Union{Nothing,Vector{ExcelPair}}=nothing
-    data_cell_width::Union{Float64,Vector{Float64},Nothing}=nothing
-    min_data_cell_width::Union{Float64,Vector{Float64},Nothing}=nothing
-    max_data_cell_width::Union{Float64,Vector{Float64},Nothing}=nothing
+    outside_border_type::Union{Nothing, Vector{ExcelPair}}=nothing
+    underline_title::Union{Nothing, Bool} = nothing
+    underline_title_type::Union{Nothing, Vector{ExcelPair}}=nothing
+    underline_headers::Union{Nothing, Bool} = nothing
+    underline_headers_type::Union{Nothing, Vector{ExcelPair}}=nothing
+    underline_merged_headers::Union{Nothing, Bool} = nothing
+    underline_merged_headers_type::Union{Nothing, Vector{ExcelPair}}=nothing
+    underline_data_rows::Union{Nothing, Bool} = nothing
+    underline_data_rows_type::Union{Nothing, Vector{ExcelPair}}=nothing
+    underline_table::Union{Nothing, Bool} = nothing
+    underline_table_type::Union{Nothing, Vector{ExcelPair}}=nothing
+    overline_group::Union{Nothing, Bool} = nothing
+    overline_group_type::Union{Nothing, Vector{ExcelPair}}=nothing
+    underline_group::Union{Nothing, Bool} = nothing
+    underline_group_type::Union{Nothing, Vector{ExcelPair}}=nothing
+    underline_summary_rows::Union{Nothing, Bool} = nothing
+    underline_summary_rows_type::Union{Nothing, Vector{ExcelPair}}=nothing
+    underline_summary::Union{Nothing, Bool} = nothing
+    underline_summary_type::Union{Nothing, Vector{ExcelPair}}=nothing
+    underline_footnotes::Union{Nothing, Bool} = nothing
+    underline_footnotes_type::Union{Nothing, Vector{ExcelPair}}=nothing
+    vline_after_row_numbers::Union{Nothing, Bool} = nothing
+    vline_after_row_numbers_type::Union{Nothing, Vector{ExcelPair}}=nothing
+    vline_after_row_labels::Union{Nothing, Bool} = nothing
+    vline_after_row_labels_type::Union{Nothing, Vector{ExcelPair}}=nothing
+    vline_between_data_columns::Union{Nothing, Bool} = nothing
+    vline_between_data_columns_type::Union{Nothing, Vector{ExcelPair}}=nothing
+    data_column_width::Union{Float64, Vector{Float64},Nothing}=nothing
+    min_data_column_width::Union{Float64, Vector{Float64},Nothing}=nothing
+    max_data_column_width::Union{Float64, Vector{Float64},Nothing}=nothing
 end
 
 
@@ -195,7 +369,7 @@ const DEFAULT_EXCEL_TABLE_FORMAT = ExcelTableFormat(
     ExcelPair["style" => "thin", "color" => "Black"],     # overline_group_type
     true,                                                 # underline_group
     ExcelPair["style" => "thin", "color" => "Black"],     # underline_group_type
-    true,                                                  # underline_summary_rows
+    true,                                                 # underline_summary_rows
     ExcelPair["style" => "dotted", "color" => "Black"],   # underline_summary_rows_type
     true,                                                 # underline_summary
     ExcelPair["style" => "thin", "color" => "Black"],     # underline_summary_type
@@ -207,60 +381,83 @@ const DEFAULT_EXCEL_TABLE_FORMAT = ExcelTableFormat(
     ExcelPair["style" => "thin", "color" => "Black"],     # vline_after_row_labels_type
     true,                                                 # vline_between_data_columns
     ExcelPair["style" => "dotted", "color" => "Black"],   # vline_between_data_columns_type
-    0.0,                                                  # data_cell_width
-    0.0,                                                  # min_data_cell_width
-    0.0,                                                  # max_data_cell_width
+    -1.0,                                                 # data_cell_width
+    -1.0,                                                 # min_data_cell_width
+    -1.0,                                                 # max_data_cell_width
 )
 
 """
     struct ExcelTableStyle
 
-Define the style of the tables printed with the Excel back end.
+Define the style (font attributes) of each of the table elements used with the 
+Excel back end.
 
 # Fields
 
-- `top_left_string::Vector{ExcelPair}`: Style for the top left string.
-- `top_right_string::Vector{ExcelPair}`: Style for the top right string.
-- `table::Vector{ExcelPair}`: Style for the table.
-- `title::Vector{ExcelPair}`: Style for the title.
-- `subtitle::Vector{ExcelPair}`: Style for the subtitle.
-- `row_number_label::Vector{ExcelPair}`: Style for the row number label.
-- `row_number::Vector{ExcelPair}`: Style for the row number.
-- `stubhead_label::Vector{ExcelPair}`: Style for the stubhead label.
-- `row_label::Vector{ExcelPair}`: Style for the row label.
-- `row_group_label::Vector{ExcelPair}`: Style for the row group label.
-- `first_line_column_label::Union{Vector{ExcelPair}, Vector{Vector{ExcelPair}}}`: Style for
-    the first line of the column labels. If a vector of `Vector{ExcelPair}}` is provided,
-    each column label in the first line will use the corresponding style.
-- `column_label::Union{Vector{ExcelPair}, Vector{Vector{ExcelPair}}}`: Style for the rest of
-    the column labels. If a vector of `Vector{ExcelPair}}` is provided, each column label
-    will use the corresponding style.
-- `first_line_merged_column_label::Vector{ExcelPair}`: Style for the merged cells at the
-    first column label line.
-- `merged_column_label::Vector{ExcelPair}`: Style for the merged cells at the rest of the
-    column labels.
-- `summary_row_cell::Vector{ExcelPair}`: Style for the summary row cell.
-- `summary_row_label::Vector{ExcelPair}`: Style for the summary row label.
-- `footnote::Vector{ExcelPair}`: Style for the footnote.
-- `source_notes::Vector{ExcelPair}`: Style for the source notes.
+- `title::Union{Nothing,Vector{ExcelPair}}`: Style for the title.
+- `subtitle::Union{Nothing,Vector{ExcelPair}}`: Style for the subtitle.
+- `row_number_label::Union{Nothing,Vector{ExcelPair}}`: Style for the row number label.
+- `row_number::Union{Nothing,Vector{ExcelPair}}`: Style for the row number.
+- `stubhead_label::Union{Nothing,Vector{ExcelPair}}`: Style for the stubhead label.
+- `row_label::Union{Nothing,Vector{ExcelPair}}`: Style for the row label.
+- `row_group_label::Union{Nothing,Vector{ExcelPair}}`: Style for the row group label.
+- `first_line_column_label::Union{Nothing,Vector{ExcelPair},Vector{Vector{ExcelPair}}}`: 
+  Style for the first line of the column labels. If a vector of `Vector{ExcelPair}}` is 
+  provided, each column label in the first line will use the corresponding style.
+- `column_label::Union{Nothing,Vector{ExcelPair}, Vector{Vector{ExcelPair}}}`: Style for 
+  the rest of the column labels. If a vector of `Vector{ExcelPair}}` is provided, each 
+  column label will use the corresponding style.
+- `first_line_merged_column_label::Union{Nothing,Vector{ExcelPair}}`: Style for the 
+  merged cells at the first column label line.
+- `merged_column_label::Union{Nothing,Vector{ExcelPair}}`: Style for the merged cells 
+  at the rest of the column labels.
+- `summary_row_cell::Union{Nothing,Vector{ExcelPair}}`: Style for the summary row cell.
+- `summary_row_label::Union{Nothing,Vector{ExcelPair}}`: Style for the summary row label.
+- `footnote::Union{Nothing,Vector{ExcelPair}}`: Style for the footnotes.
+- `source_note::Union{Nothing,Vector{ExcelPair}}`: Style for the source notes.
+
+# Remarks
+
+Each field corresponds to a table element and should be a vector of [`ExcelPair`](@ref), 
+*i.e.* `Pair{String, String}`, describing properties and values compatible with the 
+`XLSX.setFont` function.
+
+It is only necessary to define those fields for which the default style needs to be 
+overwritten. For example:
+
+
+# Examples
+
+```julia
+style = ExcelTableStyle(
+    column_label                   = [["bold" => "true"], ["color" => "red"]], # assuming two columns
+    summary_row_label              = ["size" => "8"],
+    first_line_merged_column_label = ["bold" => "true", "color" => "orange"],
+    footnote                       = ["italic" => "true", "color" => "cyan"],
+    row_group_label                = ["bold" => "true", "color" => "magenta"],
+    subtitle                       = ["italic" => "true"],
+    title                          = ["bold" => "true", "color" => "orange", "size" => "18", "under" => "single"],
+)
+```
+
 """
 @kwdef struct ExcelTableStyle
-    title::Union{Nothing,Vector{ExcelPair}}=nothing
-    subtitle::Union{Nothing,Vector{ExcelPair}}=nothing
-    row_number_label::Union{Nothing,Vector{ExcelPair}}=nothing
-    row_number::Union{Nothing,Vector{ExcelPair}}=nothing
-    stubhead_label::Union{Nothing,Vector{ExcelPair}}=nothing
-    row_label::Union{Nothing,Vector{ExcelPair}}=nothing
-    row_group_label::Union{Nothing,Vector{ExcelPair}}=nothing
-    first_line_column_label::Union{Nothing,Vector{ExcelPair}}=nothing
-    column_label::Union{Nothing,Vector{ExcelPair}}=nothing
-    first_line_merged_column_label::Union{Nothing,Vector{ExcelPair}}=nothing
-    merged_column_label::Union{Nothing,Vector{ExcelPair}}=nothing
-    table_cell_style::Union{Nothing,Vector{ExcelPair}}=nothing
-    summary_row_cell::Union{Nothing,Vector{ExcelPair}}=nothing
-    summary_row_label::Union{Nothing,Vector{ExcelPair}}=nothing
-    footnote::Union{Nothing,Vector{ExcelPair}}=nothing
-    source_note::Union{Nothing,Vector{ExcelPair}}=nothing
+    title::Union{Nothing, Vector{ExcelPair}}=nothing
+    subtitle::Union{Nothing, Vector{ExcelPair}}=nothing
+    row_number_label::Union{Nothing, Vector{ExcelPair}}=nothing
+    row_number::Union{Nothing, Vector{ExcelPair}}=nothing
+    stubhead_label::Union{Nothing, Vector{ExcelPair}}=nothing
+    row_label::Union{Nothing, Vector{ExcelPair}}=nothing
+    row_group_label::Union{Nothing, Vector{ExcelPair}}=nothing
+    first_line_column_label::Union{Nothing, Vector{ExcelPair}, Vector{Vector{ExcelPair}}}=nothing
+    column_label::Union{Nothing, Vector{ExcelPair}, Vector{Vector{ExcelPair}}}=nothing
+    first_line_merged_column_label::Union{Nothing, Vector{ExcelPair}}=nothing
+    merged_column_label::Union{Nothing, Vector{ExcelPair}}=nothing
+    table_cell_style::Union{Nothing, Vector{ExcelPair}}=nothing
+    summary_row_cell::Union{Nothing, Vector{ExcelPair}}=nothing
+    summary_row_label::Union{Nothing, Vector{ExcelPair}}=nothing
+    footnote::Union{Nothing, Vector{ExcelPair}}=nothing
+    source_note::Union{Nothing, Vector{ExcelPair}}=nothing
 end
 
 const DEFAULT_EXCEL_TABLE_STYLE =  ExcelTableStyle(

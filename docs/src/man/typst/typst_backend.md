@@ -38,7 +38,7 @@ A Typst highlighter can be constructed using three helpers:
 ```julia
 TypstHighlighters(f::Function, decoration::Vector{Pair{String, String}})
 
-TypstHighlighters(f::Function, decorations::NTuple{N, Pair{String, String})
+TypstHighlighters(f::Function, decorations::NTuple{N, Pair{String, String}})
 
 TypstHighlighters(f::Function, fd::Function)
 ```
