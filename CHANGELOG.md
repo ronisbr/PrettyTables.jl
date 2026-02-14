@@ -1,6 +1,12 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 3.2.3
+-------------
+
+- ![Enhancement][badge-enhancement] We simplified the Typst back end to improve the
+  performance and make the API easier to use.
+
 Version 3.2.2
 -------------
 
