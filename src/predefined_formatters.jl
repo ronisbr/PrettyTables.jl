@@ -276,7 +276,7 @@ julia> pt[1][:]
  "(3, 1)"  "(3, 2)"  "(3, 3)"  "(3, 4)"
  "(4, 1)"  "(4, 2)"  "(4, 3)"  "(4, 4)"
 ```
-![image|320x500](../man/excel/Excel_tuples.png)
+![image|320x500](../man/excel/excel_images/Excel_tuples.png)
 
 """
 function fmt__excel_stringify(args...; kwargs...)
