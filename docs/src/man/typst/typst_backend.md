@@ -22,6 +22,9 @@ the output:
 - `highlighters::Vector{TypstHighlighter}`: Highlighters to apply to the table. For more
   information, see the section **Typst Highlighters** in the **Extended Help**.
   (**Default** = `TypstHighlighter[]`)
+- `minify::Bool`: If `true`, the generated Typst code will be minified by ignoring
+  `wrap_column` and printing the table columns in the same line.
+  (**Default** = `false`)
 - `style::TypstTableStyle`: Style of the table. For more information, see the section
   **Typst Table Style** in the **Extended Help**.
   (**Default** = `TypstTableStyle()`)

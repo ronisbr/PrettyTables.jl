@@ -1,3 +1,5 @@
+## Description #############################################################################
+#
 # Typst back end of PrettyTables.jl
 #
 ############################################################################################
@@ -9,6 +11,7 @@ function _typst__print(
     data_column_widths::Union{Nothing, String, Vector{String}, Vector{Pair{Int, String}}} = nothing,
     highlighters::Vector{TypstHighlighter} = TypstHighlighter[],
     is_stdout::Bool = false,
+    minify::Bool = false,
     style::TypstTableStyle = TypstTableStyle(),
     wrap_column::Integer = 92,
 )
@@ -41,6 +44,11 @@ function _typst__print(
             end,
             1:table_data.num_columns
         )
+    end
+
+    # If `minify` is `true`, we do not wrap lines.
+    if minify
+        wrap_column = -1
     end
 
     # Create dictionaries to store properties to decrease the number of allocations.
@@ -109,6 +117,10 @@ function _typst__print(
     head_opened = false
     body_opened = false
 
+    # This variable stores whether the first column of the current row is being printed. It
+    # is used to simplify the logic when `minify` is `true`.
+    first_column = false
+
     while action != :end_printing
         action, rs, ps = _next(ps, table_data)
         action == :end_printing && break
@@ -123,6 +135,8 @@ function _typst__print(
         end
 
         if action == :new_row
+            first_column = true
+
             if (ps.i == 1) && (rs ∈ (:table_header, :column_labels)) && !head_opened
                 annotate && _aprintln_section_annotation(
                     buf,
@@ -169,19 +183,26 @@ function _typst__print(
 
             empty!(vproperties)
 
+            minify && print(buf, repeat(" ", il * ns))
+
         elseif action == :diagonal_continuation_cell
             cell_str = _typst__table_cell("⋱"; il, ns, wrap_column)
-            _aprintln(buf, cell_str * ",", il, ns)
+            _typst__print_cell(buf, cell_str, first_column, il, ns, minify)
+            first_column = false
 
         elseif action == :horizontal_continuation_cell
             cell_str = _typst__table_cell("⋯"; il, ns, wrap_column)
-            _aprintln(buf, cell_str * ",", il, ns)
+            _typst__print_cell(buf, cell_str, first_column, il, ns, minify)
+            first_column = false
 
         elseif action ∈ _VERTICAL_CONTINUATION_CELL_ACTIONS
             cell_str = _typst__table_cell("⋮"; il, ns, wrap_column)
-            _aprintln(buf, cell_str * ",", il, ns)
+            _typst__print_cell(buf, cell_str, first_column, il, ns, minify)
+            first_column = false
 
         elseif action == :end_row
+            minify && println(buf)
+
             # We need the print the omitted cell summary as soon as we enter the table
             # footer.
             if (!isempty(ocs) && next_rs ∈ (:table_footer, :end_printing) && !ocs_printed)
@@ -388,7 +409,8 @@ function _typst__print(
                 wrap_column
             )
 
-            _aprintln(buf, cell_str * ",", il, ns)
+            _typst__print_cell(buf, cell_str, first_column, il, ns, minify)
+            first_column = false
         end
     end
 

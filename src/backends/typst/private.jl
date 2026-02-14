@@ -90,6 +90,37 @@ end
 # == Cells =================================================================================
 
 """
+    _typst__print_cell(io::IO, cell::String, first_column::Bool, il::Int, ns::Int, minify::Bool)
+
+Print a table cell to the output stream in Typst format.
+
+# Arguments
+
+- `io::IO`: The output stream where the cell will be printed.
+- `cell::String`: The content of the cell to be printed.
+- `first_column::Bool`: Whether this cell is in the first column.
+- `il::Int`: The indentation level for formatting.
+- `ns::Int`: The number of spaces for indentation.
+- `minify::Bool`: If `true`, prints the cell in minified format.
+"""
+function _typst__print_cell(
+    io::IO,
+    cell::String,
+    first_column::Bool,
+    il::Int,
+    ns::Int,
+    minify::Bool
+)
+    cell_str = cell * ","
+
+    !minify && return _aprintln(io, cell_str, il, ns)
+
+    first_column || print(io, " ")
+    print(io, cell_str)
+    return nothing
+end
+
+"""
     _typst__table_cell(content::String[, properties::Vector{TypstPair}]; kwargs...) -> String
 
 Create a Typst table cell with `content` and optional `properties`. If `properties` is not

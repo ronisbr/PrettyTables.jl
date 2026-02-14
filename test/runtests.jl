@@ -104,6 +104,7 @@ end
     include("./backends/typst/default.jl")
     include("./backends/typst/full.jl")
     include("./backends/typst/highlighters.jl")
+    include("./backends/typst/minify.jl")
     include("./backends/typst/offset_arrays.jl")
     include("./backends/typst/renderers.jl")
     include("./ext/pretty_tables_typstry_ext.jl")
