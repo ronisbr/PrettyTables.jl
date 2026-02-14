@@ -207,7 +207,7 @@ end
 #2345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012
 
 """
-    ExcelTableFormat
+    struct ExcelTableFormat
 
 Format that will be used to print the Excel table. All parameters are strings compatible 
 with the corresponding Excel property.
