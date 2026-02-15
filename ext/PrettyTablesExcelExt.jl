@@ -4,7 +4,7 @@ using PrettyTables
 using XLSX
 
 # Import the functions we're overriding
-import PrettyTables: _excel__print, fmt__excel_stringify
+import PrettyTables: _excel__print, fmt__excel_stringify, pretty_table
 
 # Import types we need
 using PrettyTables: PrintingSpec, TableData, ColumnTable, RowTable
@@ -86,7 +86,7 @@ function PrettyTables._excel__print(
         end
         
     else
-        if mode ∉ ["w", "rw"]
+        if mode ∉ ["w", "rw", "wr"]
             throw(ArgumentError("Invalid mode \"$mode\". \nMust be either \"w\" to create a new file or \"rw\" to add a PrettyTable to an existing spreadsheet."))
         end
         if sheet isa XLSX.Worksheet
@@ -106,7 +106,7 @@ function PrettyTables._excel__print(
                 return filename
             end
 
-        elseif mode == "rw" # Open an existing `xlsx` file and write a PrettyTable to it. Return in-memory XLSX object.
+        elseif mode ∈ ["rw", "wr"] # Open an existing `xlsx` file and write a PrettyTable to it. Return in-memory XLSX object.
             xf = XLSX.opentemplate(filename)
             XLSX.hassheet(xf, sheet) || XLSX.addsheet!(xf, sheet)
             sh = xf[sheet]
@@ -138,12 +138,12 @@ xf = pretty_table(XLSX.XLSXFile, data; backend = :excel)
 XLSX.writexlsx("myfile.xlsx", xf)
 ```
 """
-function PrettyTables.pretty_table(::Type{XLSX.XLSXFile}, @nospecialize(data::Any); kwargs...)
+function pretty_table(::Type{XLSX.XLSXFile}, @nospecialize(data::Any); kwargs...)
     # Force backend to :excel and filename to nothing
     if !haskey(kwargs, :backend)
-        return pretty_table(String, data; backend = :excel, filename = nothing, kwargs...)
+        return pretty_table(data; backend = :excel, filename = nothing, kwargs...)
     else
-        return pretty_table(String, data; filename = nothing, kwargs...)
+        return pretty_table(data; filename = nothing, kwargs...)
     end
 end
 

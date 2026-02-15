@@ -240,6 +240,8 @@ end
 
 """
     fmt__excel_stringify(columns)
+    fmt__excel_stringify()
+
 
 Create a formatter function that turns data types the Excel backend can't handle into their 
 string representation.
@@ -250,6 +252,9 @@ The Excel backend can only handle the following data types natively:
 
 Passing any other datatypes will cause an error. However, converting these other data types to their 
 string representation (using the `string()` function), allows them to pass without an issue.
+
+Pass a verctor (or unit range) of column numbers to apply this formatter to specific columns, or 
+leave the argument empty to apply it to the entire table.
 
 For example, the following matrix of tuples cannot be handled natively by the Excel backend, 
 but using the stringify formatter allows it to be handled successfully as a matrix of strings:

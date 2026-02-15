@@ -7,6 +7,8 @@ using Markdown
 using OffsetArrays
 using StyledStrings
 using Tables
+using XLSX
+using Dates
 
 # Force color output for tests to ensure ANSI escape codes are generated.
 # This is needed because Crayons.jl may disable colors during precompilation or
@@ -27,6 +29,14 @@ include("./types.jl")
     include("./internal/cell_alignment.jl")
     include("./internal/cell_data.jl")
     include("./internal/print_state.jl")
+end
+
+@testset "Excel Back End Tests" verbose = true begin
+    include("./backends/excel/files_and_sheets.jl")
+    include("./backends/excel/circular_reference.jl")
+    include("./backends/excel/alignment.jl")
+    include("./backends/excel/highlighters.jl")
+    include("./backends/excel/formatters.jl")
 end
 
 @testset "HTML Back End Tests" verbose = true begin

@@ -303,10 +303,12 @@ end
 
 Create formatter function that turns data types XLSX.jl can't handle into their string representation.
 """
-function fmt__excel_stringify(columns::AbstractVector{Int})
+function fmt__excel_stringify(columns::Union{Nothing,Int,AbstractVector{Int}}=nothing)
 
     return (v, _, j) -> begin
         (v isa XLSX.CellConcreteType) && return v
+
+        isnothing(columns) && return string(v)
 
         for c in columns
             j == c && return string(v)

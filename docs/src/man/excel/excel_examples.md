@@ -41,6 +41,29 @@ significantly impacted by Excel formatting - although this is not impossible).
 If automatic determination of column widths is unsatisfactory, consider setting min and/or 
 max width limits or fixing column widths entirely.
 
+To illustrate the extent to which formatting affects width, consider:
+
+```julia
+now = Dates.now()
+matrix = [
+    now now now now 
+    now now now now 
+]
+
+result = pretty_table(
+    XLSX.XLSXFile,
+    matrix;
+    excel_formatters = [
+        ExcelFormatter((v, i, j) -> (j==1), ["format" => "ShortDate"])
+        ExcelFormatter((v, i, j) -> (j==2), ["format" => "LongDate"])
+        ExcelFormatter((v, i, j) -> (j==3), ["format" => "hh:mm"])
+        ExcelFormatter((v, i, j) -> (j==4), ["format" => "yyyy-mm-dd\"T\"hh:mm:ss"])
+    ]
+)
+```
+![image|320x500](../excel/excel_images/Excel_datetime.png)
+(The column widths were adjusted manually in this example.)
+
 ## Predefined Formatters
 
 Predefined formatters are intended for text output. They can be used straightforwardly with 

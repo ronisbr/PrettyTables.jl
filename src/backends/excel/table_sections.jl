@@ -340,7 +340,15 @@ function _excel_write_summary_row(sheet, table_data, table_format, style, idx, s
         sheet[current_row + anchor_row_offset, j + col_offset + anchor_col_offset] = summary_value
         atts = _excel_newpairs(_excel_tablestyle_atts("summary_row_cell",style.summary_row_cell))
 
-        fontsize = _excel_set_fontsize_and_alignment!(sheet, current_row + anchor_row_offset, j + col_offset + anchor_col_offset, atts, table_data.row_label_column_alignment, "top", false)
+        # get alignment for summary row cell - default to center if not specified
+        aln = :c
+        if table_data.data_alignment isa Symbol
+            aln = table_data.data_alignment
+        elseif table_data.data_alignment isa Vector && j <= length(table_data.data_alignment)
+            aln = table_data.data_alignment[j]
+        end
+
+        fontsize = _excel_set_fontsize_and_alignment!(sheet, current_row + anchor_row_offset, j + col_offset + anchor_col_offset, atts, aln, "top", false)
 
         row_height, col_length = _excel_cell_length_and_height(summary_value, fontsize)
         max_row_height = max(max_row_height, row_height)
