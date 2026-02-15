@@ -350,7 +350,8 @@ function _write_excel_table!(sheet, table_data::TableData;
 
     # Vertical line to right of row labels if required
     if table_data.row_labels !== nothing && _excel_check_table_format("vline_after_row_labels",table_format.vline_after_row_labels)
-        start = (!isempty(table_data.title) ? 1 : 0) + (!isempty(table_data.subtitle) ? 1 : 0) + anchor_row_offset + 2 # allow for extra line after title/subtitle
+        start = (isempty(table_data.title) ? 0 : 1) + (isempty(table_data.subtitle) ? 0 : 1)
+        start = (start == 0 ? 0 : start + 1) + anchor_row_offset + 1 # allow for extra line after title/subtitle
         setBorder(sheet, start:current_row + anchor_row_offset-1, col_offset + anchor_col_offset + (isnothing(table_data.row_labels) ? 1 : 0); right=_excel_tableformat_atts("vline_after_row_labels_type", table_format.vline_after_row_labels_type))
     end
 

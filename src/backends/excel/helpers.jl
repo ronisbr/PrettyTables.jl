@@ -299,7 +299,7 @@ function _excel_create_mergemap(table_data)
 end
 
 """
-    fmt__excel_stringify(columns)
+    fmt__excel_stringify(columns::AbstractVector(Int))
 
 Create formatter function that turns data types XLSX.jl can't handle into their string representation.
 """
@@ -397,27 +397,27 @@ function _excel_get_col_width(table_format, col, max_col_length, col_offset)
     end
 
     # Always use explicitly set data cell widths
-    if table_format.data_cell_width isa Float64
-        return table_format.data_cell_width
-    elseif table_format.data_cell_width isa Vector{Float64}
-        length(table_format.data_cell_width) == length(max_col_length) || throw(ArgumentError("The table format property `data_cell_width` shoud have the same number of elements as there are data columns. Expected $(length(max_col_length)): Got $(length(table_format.data_cell_width))."))
-        return table_format.data_cell_width[col]
+    if table_format.data_column_width isa Float64
+        return table_format.data_column_width
+    elseif table_format.data_column_width isa Vector{Float64}
+        length(table_format.data_column_width) == length(max_col_length) || throw(ArgumentError("The table format property `data_column_width` shoud have the same number of elements as there are data columns. Expected $(length(max_col_length)): Got $(length(table_format.data_column_width))."))
+        return table_format.data_column_width[col]
     end
 
     # Limit calculated values
     col_width = max_col_length[col]
-    if table_format.min_data_cell_width isa Float64 && table_format.min_data_cell_width > 0.0
-        col_width = max(col_width, table_format.min_data_cell_width)
-    elseif table_format.min_data_cell_width isa Vector{Float64} && table_format.min_data_cell_width[col] > 0.0
-        length(table_format.min_data_cell_width) == length(max_col_length) || throw(ArgumentError("The table format property `min_data_cell_width` shoud have the same number of elements as there are data columns. Expected $(length(max_col_length)): Got $(length(table_format.min_data_cell_width))."))
-        col_width = max(col_width, table_format.min_data_cell_width[col])
+    if table_format.min_data_column_width isa Float64 && table_format.min_data_column_width > 0.0
+        col_width = max(col_width, table_format.min_data_column_width)
+    elseif table_format.min_data_column_width isa Vector{Float64} && table_format.min_data_column_width[col] > 0.0
+        length(table_format.min_data_column_width) == length(max_col_length) || throw(ArgumentError("The table format property `min_data_column_width` shoud have the same number of elements as there are data columns. Expected $(length(max_col_length)): Got $(length(table_format.min_data_column_width))."))
+        col_width = max(col_width, table_format.min_data_column_width[col])
     end
 
-    if table_format.max_data_cell_width isa Float64 && table_format.max_data_cell_width > 0.0
-        col_width = min(col_width, table_format.max_data_cell_width)
-    elseif table_format.max_data_cell_width isa Vector{Float64} && table_format.max_data_cell_width[col] > 0.0
-        length(table_format.max_data_cell_width) == length(max_col_length) || throw(ArgumentError("The table format property `max_data_cell_width` shoud have the same number of elements as there are data columns. Expected $(length(max_col_length)): Got $(length(table_format.max_data_cell_width))."))
-        col_width = min(col_width, table_format.max_data_cell_width[col])
+    if table_format.max_data_column_width isa Float64 && table_format.max_data_column_width > 0.0
+        col_width = min(col_width, table_format.max_data_column_width)
+    elseif table_format.max_data_column_width isa Vector{Float64} && table_format.max_data_column_width[col] > 0.0
+        length(table_format.max_data_column_width) == length(max_col_length) || throw(ArgumentError("The table format property `max_data_column_width` shoud have the same number of elements as there are data columns. Expected $(length(max_col_length)): Got $(length(table_format.max_data_column_width))."))
+        col_width = min(col_width, table_format.max_data_column_width[col])
     end
 
     return col_width

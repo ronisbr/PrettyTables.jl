@@ -418,7 +418,7 @@ Excel back end.
 
 # Remarks
 
-Each field corresponds to a table element and should be a vector of [`ExcelPair`](@ref), 
+Each field corresponds to a table element and should be a vector of `ExcelPair`, 
 *i.e.* `Pair{String, String}`, describing properties and values compatible with the 
 `XLSX.setFont` function.
 

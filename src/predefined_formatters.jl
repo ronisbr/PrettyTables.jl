@@ -246,7 +246,7 @@ string representation.
 
 The Excel backend can only handle the following data types natively:
 
-    `String`,`Float64`, `Int`, `Bool`, `Dates.Date`, `Dates.Time`, `Dates.DateTime`, `Missing`, 
+    `String`, `Float64`, `Int`, `Bool`, `Dates.Date`, `Dates.Time`, `Dates.DateTime`, `Missing`, 
 
 Passing any other datatypes will cause an error. However, converting these other data types to their 
 string representation (using the `string()` function), allows them to pass without an issue.
