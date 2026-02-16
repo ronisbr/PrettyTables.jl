@@ -186,16 +186,16 @@ end
 Override those attributes of the default table format for this table element 
 with those specified in ExcelTableFormat
 """
-function _excel_tableformat_atts(property, format)
-    v1 = getproperty(DEFAULT_EXCEL_TABLE_FORMAT, Symbol(property))
-    isnothing(format) && return v1
-    d = Dict(v1)              # first vector
-    for (k, v) in format      # second vector overrides
-        d[k] = v
-    end
-    result = collect(d)
-    return result
-end
+_excel_tableformat_atts(property, format) = _excel_override_properties(DEFAULT_EXCEL_TABLE_FORMAT, property, format)
+#    v1 = getproperty(DEFAULT_EXCEL_TABLE_FORMAT, Symbol(property))
+#    isnothing(format) && return v1
+#    d = Dict(v1)              # first vector
+#    for (k, v) in format      # second vector overrides
+#        d[k] = v
+#    end
+#    result = collect(d)
+#    return result
+#end
 
 """
     _excel_tablestyle_atts(property::String, format::Vector{ExcelPair})
@@ -203,15 +203,25 @@ end
 Override those attributes of the default table style for this table element 
 with those specified in ExcelTableStyle
 """
-function _excel_tablestyle_atts(property, format)
-    v1 = getproperty(DEFAULT_EXCEL_TABLE_STYLE, Symbol(property))
+_excel_tablestyle_atts(property, format) = _excel_override_properties(DEFAULT_EXCEL_TABLE_STYLE, property, format)
+#    v1 = getproperty(DEFAULT_EXCEL_TABLE_STYLE, Symbol(property))
+#    isnothing(format) && return v1
+#    d = Dict(v1)              # first vector
+#    for (k, v) in format      # second vector overrides
+#        d[k] = v
+#    end
+#    result = collect(d)
+#    return result
+#end
+
+function _excel_override_properties(default, property, format)
+    v1 = getproperty(default, Symbol(property))
     isnothing(format) && return v1
     d = Dict(v1)              # first vector
     for (k, v) in format      # second vector overrides
         d[k] = v
     end
-    result = collect(d)
-    return result
+    return collect(d)
 end
 
 """
@@ -303,7 +313,7 @@ end
 
 Create formatter function that turns data types XLSX.jl can't handle into their string representation.
 """
-function fmt__excel_stringify(columns::Union{Nothing,Int,AbstractVector{Int}}=nothing)
+function fmt__excel_stringify(columns::Union{Nothing,Int,AbstractVector{Int}} = nothing)
 
     return (v, _, j) -> begin
         (v isa XLSX.CellConcreteType) && return v
@@ -334,25 +344,6 @@ function _excel_cell_length_and_height(text, fontsize)
     return row_height, col_length
 end
 
-#=
-# Unnecessary?
-function face_from_crayon(c::Crayon)
-    return Face(
-        foreground = c.fg === nothing ? nothing : SimpleColor(c.fg),
-        background = c.bg === nothing ? nothing : SimpleColor(c.bg),
-        weight     = c.bold      ? :bold   : nothing,
-        slant      = c.italic    ? :italic : nothing,
-        underline  = c.underline ? true    : nothing,
-    )
-end
-
-# Unnecessary?
-function styled_from_crayon(text::String, cr::Crayon)
-    face = face_from_crayon(cr)
-    return StyledString(text, face)
-end
-=#
-
 """
     _excel_getsize(pairs::Vector{Pair{Symbol,Any}})
 
@@ -378,10 +369,10 @@ function _excel_set_fontsize_and_alignment!(sheet, row, col, atts, alignment, va
         fontsize = _excel_update_fontsize!(atts, fontsize)
         setFont(sheet, row, col; atts...)
     else
-        setFont(sheet, row, col; size=fontsize)
+        setFont(sheet, row, col; size = fontsize)
     end
     if !isnothing(alignment)
-        setAlignment(sheet, row, col; vertical = valign, horizontal = _excel_alignment_string(alignment), wrapText=wrap)
+        setAlignment(sheet, row, col; vertical = valign, horizontal = _excel_alignment_string(alignment), wrapText = wrap)
     end
     return fontsize
 end

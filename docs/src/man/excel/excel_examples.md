@@ -41,7 +41,7 @@ significantly impacted by Excel formatting - although this is not impossible).
 If automatic determination of column widths is unsatisfactory, consider setting min and/or 
 max width limits or fixing column widths entirely.
 
-To illustrate the extent to which formatting affects width, consider:
+To illustrate the extent to which formatting affects width even of the same data, consider:
 
 ```julia
 now = Dates.now()
@@ -55,14 +55,15 @@ result = pretty_table(
     matrix;
     excel_formatters = [
         ExcelFormatter((v, i, j) -> (j==1), ["format" => "ShortDate"])
-        ExcelFormatter((v, i, j) -> (j==2), ["format" => "LongDate"])
+        ExcelFormatter((v, i, j) -> (j==2), ["format" => "d mmmm yyyy"])
         ExcelFormatter((v, i, j) -> (j==3), ["format" => "hh:mm"])
         ExcelFormatter((v, i, j) -> (j==4), ["format" => "yyyy-mm-dd\"T\"hh:mm:ss"])
     ]
+    table_format = ExcelTableFormat(data_column_width = [12.0, 16.0, 8.0, 20.0])
 )
 ```
 ![image|320x500](../excel/excel_images/Excel_datetime.png)
-(The column widths were adjusted manually in this example.)
+
 
 ## Predefined Formatters
 
@@ -99,7 +100,7 @@ useful. For example, the addition of
 excel_formatters = [ExcelFormatter((v, i, j) -> true, ["format" => "@_0"])],
 ```
 in the above `pretty_table` specification would provide a right cell margin the width of 
-one '0' character to the data in each cell, similar to the one included in the first example.
+one '`0`' character to the data in each cell, similar to the one included in the first example.
 
 ## Excel Highlighters
 

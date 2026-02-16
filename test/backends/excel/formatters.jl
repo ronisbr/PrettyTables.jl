@@ -4,7 +4,7 @@
 #
 ############################################################################################
 
-@testset "Excel Formatters" verbose=true begin
+@testset "Excel formatters" verbose=true begin
     matrix = [
         π π π π
         π π π π
@@ -37,14 +37,15 @@
         matrix;
         excel_formatters = [
             ExcelFormatter((v, i, j) -> (j==1), ["format" => "ShortDate"])
-            ExcelFormatter((v, i, j) -> (j==2), ["format" => "LongDate"])
+            ExcelFormatter((v, i, j) -> (j==2), ["format" => "d mmmm yyyy"])
             ExcelFormatter((v, i, j) -> (j==3), ["format" => "hh:mm"])
             ExcelFormatter((v, i, j) -> (j==4), ["format" => "yyyy-mm-dd\"T\"hh:mm:ss"])
-        ]
+        ],
+        table_format = ExcelTableFormat(data_column_width = [12.0, 16.0, 8.0, 20.0])
     )
 
     @test XLSX.getFormat(result[1], "A2").format["numFmt"]["formatCode"] == "m/d/yyyy"
-    @test XLSX.getFormat(result[1], "B2").format["numFmt"]["formatCode"] == "d-mmm-yy"
+    @test XLSX.getFormat(result[1], "B2").format["numFmt"]["formatCode"] == "d mmmm yyyy"
     @test XLSX.getFormat(result[1], "C2").format["numFmt"]["formatCode"] == "hh:mm"
     @test XLSX.getFormat(result[1], "D2").format["numFmt"]["formatCode"] == "yyyy-mm-dd\"T\"hh:mm:ss"
 

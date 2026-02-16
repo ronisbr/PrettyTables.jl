@@ -381,9 +381,9 @@ const DEFAULT_EXCEL_TABLE_FORMAT = ExcelTableFormat(
     ExcelPair["style" => "thin", "color" => "Black"],     # vline_after_row_labels_type
     true,                                                 # vline_between_data_columns
     ExcelPair["style" => "dotted", "color" => "Black"],   # vline_between_data_columns_type
-    -1.0,                                                 # data_cell_width
-    -1.0,                                                 # min_data_cell_width
-    -1.0,                                                 # max_data_cell_width
+    -1.0,                                                 # data_column_width
+    -1.0,                                                 # min_data_column_width
+    -1.0,                                                 # max_data_column_width
 )
 
 """

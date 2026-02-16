@@ -10,6 +10,7 @@
         4 5 6
     ]
 
+    # Test the four constructors.
     result = pretty_table(
         XLSX.XLSXFile,
         matrix;
@@ -41,5 +42,10 @@
     @test XLSX.getFill(result[1], "A3").fill["patternFill"] == Dict("patternType" => "solid", "fgrgb" => "FFE5E5E5")
     @test XLSX.getFont(result[1], "C3").font["color"] == Dict("rgb" => "FF0000FF")
 
+    # Test border highlighters in last table row before a row group which has an overline 
+    # and in last row of the table. These are exceptions because the highlighter border is 
+    # drawn first and, for these exceptions, has to be re-drawn.
+
+    # TBC
 end
 

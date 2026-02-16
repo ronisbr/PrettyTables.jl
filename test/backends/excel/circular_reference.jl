@@ -4,7 +4,7 @@
 #
 ############################################################################################
 
-@testset "Circular Reference" verbose = true begin
+@testset "Circular reference" verbose = true begin
     cr = CircularRef(
         [1, 2, 3],
         [4, 5, 6],
@@ -22,6 +22,7 @@
     # There is an intervention upstream to flag `#= circular reference =#` 
     # which the `:excel` backend can't then handle in any way I can 
     # figure out.
+    # I don't understand what a circular reference is in this context.
 
 
 #   @test result == expected
