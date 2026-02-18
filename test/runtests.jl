@@ -37,6 +37,8 @@ end
     include("./backends/excel/alignment.jl")
     include("./backends/excel/highlighters.jl")
     include("./backends/excel/formatters.jl")
+    include("./backends/excel/heights_and_widths.jl")
+    include("./backends/excel/column_headers.jl")
 end
 
 @testset "HTML Back End Tests" verbose = true begin

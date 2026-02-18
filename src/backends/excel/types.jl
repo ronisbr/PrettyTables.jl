@@ -319,36 +319,36 @@ table_format = ExcelTableFormat(
 """
 @kwdef struct ExcelTableFormat
     outside_border::Bool = true
-    outside_border_type::Union{Nothing, Vector{ExcelPair}}=nothing
+    outside_border_type::Union{Nothing, Vector{ExcelPair}} = nothing
     underline_title::Union{Nothing, Bool} = nothing
-    underline_title_type::Union{Nothing, Vector{ExcelPair}}=nothing
+    underline_title_type::Union{Nothing, Vector{ExcelPair}} = nothing
     underline_headers::Union{Nothing, Bool} = nothing
-    underline_headers_type::Union{Nothing, Vector{ExcelPair}}=nothing
+    underline_headers_type::Union{Nothing, Vector{ExcelPair}} = nothing
     underline_merged_headers::Union{Nothing, Bool} = nothing
-    underline_merged_headers_type::Union{Nothing, Vector{ExcelPair}}=nothing
+    underline_merged_headers_type::Union{Nothing, Vector{ExcelPair}} = nothing
     underline_data_rows::Union{Nothing, Bool} = nothing
-    underline_data_rows_type::Union{Nothing, Vector{ExcelPair}}=nothing
+    underline_data_rows_type::Union{Nothing, Vector{ExcelPair}} = nothing
     underline_table::Union{Nothing, Bool} = nothing
-    underline_table_type::Union{Nothing, Vector{ExcelPair}}=nothing
+    underline_table_type::Union{Nothing, Vector{ExcelPair}} = nothing
     overline_group::Union{Nothing, Bool} = nothing
-    overline_group_type::Union{Nothing, Vector{ExcelPair}}=nothing
+    overline_group_type::Union{Nothing, Vector{ExcelPair}} = nothing
     underline_group::Union{Nothing, Bool} = nothing
-    underline_group_type::Union{Nothing, Vector{ExcelPair}}=nothing
+    underline_group_type::Union{Nothing, Vector{ExcelPair}} = nothing
     underline_summary_rows::Union{Nothing, Bool} = nothing
-    underline_summary_rows_type::Union{Nothing, Vector{ExcelPair}}=nothing
+    underline_summary_rows_type::Union{Nothing, Vector{ExcelPair}} = nothing
     underline_summary::Union{Nothing, Bool} = nothing
-    underline_summary_type::Union{Nothing, Vector{ExcelPair}}=nothing
+    underline_summary_type::Union{Nothing, Vector{ExcelPair}} = nothing
     underline_footnotes::Union{Nothing, Bool} = nothing
-    underline_footnotes_type::Union{Nothing, Vector{ExcelPair}}=nothing
+    underline_footnotes_type::Union{Nothing, Vector{ExcelPair}} = nothing
     vline_after_row_numbers::Union{Nothing, Bool} = nothing
-    vline_after_row_numbers_type::Union{Nothing, Vector{ExcelPair}}=nothing
+    vline_after_row_numbers_type::Union{Nothing, Vector{ExcelPair}} = nothing
     vline_after_row_labels::Union{Nothing, Bool} = nothing
-    vline_after_row_labels_type::Union{Nothing, Vector{ExcelPair}}=nothing
+    vline_after_row_labels_type::Union{Nothing, Vector{ExcelPair}} = nothing
     vline_between_data_columns::Union{Nothing, Bool} = nothing
-    vline_between_data_columns_type::Union{Nothing, Vector{ExcelPair}}=nothing
-    data_column_width::Union{Float64, Vector{Float64},Nothing}=nothing
-    min_data_column_width::Union{Float64, Vector{Float64},Nothing}=nothing
-    max_data_column_width::Union{Float64, Vector{Float64},Nothing}=nothing
+    vline_between_data_columns_type::Union{Nothing, Vector{ExcelPair}} = nothing
+    data_column_width::Union{Float64, Vector{Float64}, Nothing} = nothing
+    min_data_column_width::Union{Float64, Vector{Float64}, Nothing} = nothing
+    max_data_column_width::Union{Float64, Vector{Float64}, Nothing} = nothing
 end
 
 
@@ -385,6 +385,10 @@ const DEFAULT_EXCEL_TABLE_FORMAT = ExcelTableFormat(
     -1.0,                                                 # min_data_column_width
     -1.0,                                                 # max_data_column_width
 )
+
+############################################################################################
+#                                       Table Style                                        #
+############################################################################################
 
 """
     struct ExcelTableStyle
@@ -442,22 +446,22 @@ style = ExcelTableStyle(
 
 """
 @kwdef struct ExcelTableStyle
-    title::Union{Nothing, Vector{ExcelPair}}=nothing
-    subtitle::Union{Nothing, Vector{ExcelPair}}=nothing
-    row_number_label::Union{Nothing, Vector{ExcelPair}}=nothing
-    row_number::Union{Nothing, Vector{ExcelPair}}=nothing
-    stubhead_label::Union{Nothing, Vector{ExcelPair}}=nothing
-    row_label::Union{Nothing, Vector{ExcelPair}}=nothing
-    row_group_label::Union{Nothing, Vector{ExcelPair}}=nothing
-    first_line_column_label::Union{Nothing, Vector{ExcelPair}, Vector{Vector{ExcelPair}}}=nothing
-    column_label::Union{Nothing, Vector{ExcelPair}, Vector{Vector{ExcelPair}}}=nothing
-    first_line_merged_column_label::Union{Nothing, Vector{ExcelPair}}=nothing
-    merged_column_label::Union{Nothing, Vector{ExcelPair}}=nothing
-    table_cell_style::Union{Nothing, Vector{ExcelPair}}=nothing
-    summary_row_cell::Union{Nothing, Vector{ExcelPair}}=nothing
-    summary_row_label::Union{Nothing, Vector{ExcelPair}}=nothing
-    footnote::Union{Nothing, Vector{ExcelPair}}=nothing
-    source_note::Union{Nothing, Vector{ExcelPair}}=nothing
+    title::Union{Nothing, Vector{ExcelPair}} = nothing
+    subtitle::Union{Nothing, Vector{ExcelPair}} = nothing
+    row_number_label::Union{Nothing, Vector{ExcelPair}} = nothing
+    row_number::Union{Nothing, Vector{ExcelPair}} = nothing
+    stubhead_label::Union{Nothing, Vector{ExcelPair}} = nothing
+    row_label::Union{Nothing, Vector{ExcelPair}} = nothing
+    row_group_label::Union{Nothing, Vector{ExcelPair}} = nothing
+    first_line_column_label::Union{Nothing, Vector{ExcelPair}, Vector{Vector{ExcelPair}}} = nothing
+    column_label::Union{Nothing, Vector{ExcelPair}, Vector{Vector{ExcelPair}}} = nothing
+    first_line_merged_column_label::Union{Nothing, Vector{ExcelPair}} = nothing
+    merged_column_label::Union{Nothing, Vector{ExcelPair}} = nothing
+    table_cell_style::Union{Nothing, Vector{ExcelPair}} = nothing
+    summary_row_cell::Union{Nothing, Vector{ExcelPair}} = nothing
+    summary_row_label::Union{Nothing, Vector{ExcelPair}} = nothing
+    footnote::Union{Nothing, Vector{ExcelPair}} = nothing
+    source_note::Union{Nothing, Vector{ExcelPair}} = nothing
 end
 
 const DEFAULT_EXCEL_TABLE_STYLE =  ExcelTableStyle(

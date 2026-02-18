@@ -58,7 +58,7 @@ result = pretty_table(
         ExcelFormatter((v, i, j) -> (j==2), ["format" => "d mmmm yyyy"])
         ExcelFormatter((v, i, j) -> (j==3), ["format" => "hh:mm"])
         ExcelFormatter((v, i, j) -> (j==4), ["format" => "yyyy-mm-dd\"T\"hh:mm:ss"])
-    ]
+    ],
     table_format = ExcelTableFormat(data_column_width = [12.0, 16.0, 8.0, 20.0])
 )
 ```

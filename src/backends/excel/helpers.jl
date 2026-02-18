@@ -112,7 +112,7 @@ end
 
 Estimate the width of a cell in Excel needed to accommodate text of a given length.
 """
-_excel_column_width_for_text(text_length, font_size) = (0.55 * text_length * font_size + 15.0) / 7.0
+_excel_column_width_for_text(text_length, font_size) = (0.55 * text_length * font_size) / 7.0 + 2.0
 
 """
     _excel_row_height_for_text(text, fontsize)
@@ -141,7 +141,7 @@ end
 Determines the length of the longest line in a multi-line text
 """
 function _excel_multilength(text)
-    if text isa String
+    if text isa AbstractString
         lines=split(text, "\n")
         maxlen=0
         for line in lines
@@ -187,15 +187,6 @@ Override those attributes of the default table format for this table element
 with those specified in ExcelTableFormat
 """
 _excel_tableformat_atts(property, format) = _excel_override_properties(DEFAULT_EXCEL_TABLE_FORMAT, property, format)
-#    v1 = getproperty(DEFAULT_EXCEL_TABLE_FORMAT, Symbol(property))
-#    isnothing(format) && return v1
-#    d = Dict(v1)              # first vector
-#    for (k, v) in format      # second vector overrides
-#        d[k] = v
-#    end
-#    result = collect(d)
-#    return result
-#end
 
 """
     _excel_tablestyle_atts(property::String, format::Vector{ExcelPair})
@@ -204,15 +195,6 @@ Override those attributes of the default table style for this table element
 with those specified in ExcelTableStyle
 """
 _excel_tablestyle_atts(property, format) = _excel_override_properties(DEFAULT_EXCEL_TABLE_STYLE, property, format)
-#    v1 = getproperty(DEFAULT_EXCEL_TABLE_STYLE, Symbol(property))
-#    isnothing(format) && return v1
-#    d = Dict(v1)              # first vector
-#    for (k, v) in format      # second vector overrides
-#        d[k] = v
-#    end
-#    result = collect(d)
-#    return result
-#end
 
 function _excel_override_properties(default, property, format)
     v1 = getproperty(default, Symbol(property))
@@ -281,9 +263,9 @@ function _excel_apply_formatter(cell_value, formatter, current_row, j)
 end
 
 """
-    _excel_update_fontsize!(atts, max_row_height, max_col_height, row)
+    _excel_update_fontsize!(atts, fontsize)
 
-Update font size for given row
+Update font size in a given set of font attributes
 """
 function _excel_update_fontsize!(atts, fontsize)
     g = _excel_getsize(atts)
@@ -336,10 +318,11 @@ Return the column width and row height needed for a table cell value (in Excel u
 function _excel_cell_length_and_height(text, fontsize)
     if text isa AbstractString
         lines = _excel_text_lines(text)
+        col_length = _excel_column_width_for_text(_excel_multilength(text), fontsize)
     else
         lines = 1
+        col_length = 0.0
     end
-    col_length = _excel_column_width_for_text(_excel_multilength(text), fontsize)
     row_height = _excel_row_height_for_text(lines, fontsize)
     return row_height, col_length
 end
@@ -359,7 +342,7 @@ function _excel_getsize(pairs::Vector{Pair{Symbol,Any}})
 end
 
 """
-    _excel_set_fontsize_and_alignment!(sheet, table_data, row, col, atts)
+    _excel_set_fontsize_and_alignment!(sheet, table_data, row, col, atts, alignment, valign, wrap)
 
 Set the font size and alignment in a cell.
 """
@@ -415,4 +398,37 @@ function _excel_get_col_width(table_format, col, max_col_length, col_offset)
 
     return col_width
     
+end
+
+"""
+    _get_cell_value(data, i, j, table_data::TableData)
+
+Get the value of a cell from the data structure, handling different data types.
+"""
+function _get_cell_value(table_data::TableData, i::Int, j::Int)
+    data = table_data.data
+    # Adjust indices based on the data structure's first indices
+    row_idx = i + table_data.first_row_index - 1
+    col_idx = j + table_data.first_column_index - 1
+    
+    try
+        if data isa ColumnTable
+            # For ColumnTable, access via column name
+            col_name = data.column_names[col_idx]
+            col_data = Tables.getcolumn(data.table, col_name)
+            return col_data[row_idx]
+        elseif data isa RowTable
+            # For RowTable, iterate to the right row
+            rows = collect(Tables.rows(data.table))
+            row = rows[row_idx]
+            col_name = data.column_names[col_idx]
+            return Tables.getcolumn(row, col_name)
+        else
+            # For regular arrays and matrices
+            return data[row_idx, col_idx]
+        end
+    catch e
+        # If there's an error accessing the data, return empty string
+        return ""
+    end
 end

@@ -88,16 +88,16 @@ const _UNDEFINED_CELL = UndefinedCell()
 
     # ==  Table Header =====================================================================
 
-    title::String = ""
-    subtitle::String = ""
+    title::AbstractString = ""
+    subtitle::AbstractString = ""
 
     # == Labels ============================================================================
 
     # -- Columns ---------------------------------------------------------------------------
 
-    stubhead_label::String = ""
+    stubhead_label::AbstractString = ""
     show_row_number_column::Bool = false
-    row_number_column_label::String = ""
+    row_number_column_label::AbstractString = ""
     column_labels::Vector{Vector{Any}}
     show_column_labels::Bool = true
 
@@ -115,7 +115,7 @@ const _UNDEFINED_CELL = UndefinedCell()
     # == Table Footer ======================================================================
 
     footnotes::Union{Nothing, Vector{Pair{FootnoteTuple, String}}} = nothing
-    source_notes::String = ""
+    source_notes::AbstractString = ""
 
     # == Alignments ========================================================================
 
