@@ -42,15 +42,15 @@ Return the alignment value to use for column labels.
 """
 function _excel_column_alignment(col, col_alignment, table_alignment=nothing)
     if col_alignment isa Symbol
-        return _excel_alignment_string(col_alignment)
+        return col_alignment
     elseif col_alignment isa Vector{Symbol} && !isempty(col_alignment)
         if length(col_alignment) < col
             throw(ArgumentError("column_label_alignment vector has fewer entries than there are columns"))
         else
-            return _excel_alignment_string(col_alignment[col])
+            return col_alignment[col]
         end
     else
-        return _excel_column_alignment(col, table_alignment)
+        return col, table_alignment
     end
 end
 
@@ -190,11 +190,31 @@ _excel_tableformat_atts(property, format) = _excel_override_properties(DEFAULT_E
 
 """
     _excel_tablestyle_atts(property::String, format::Vector{ExcelPair})
+    _excel_tablestyle_atts(property::String, format::Vector{Vector{ExcelPair}}, j = nothing)
 
 Override those attributes of the default table style for this table element 
 with those specified in ExcelTableStyle
 """
-_excel_tablestyle_atts(property, format) = _excel_override_properties(DEFAULT_EXCEL_TABLE_STYLE, property, format)
+function _excel_tablestyle_atts(property, format, j = nothing)
+    if isnothing(format) || format isa Vector{Pair{String, String}}
+        return _excel_override_properties(DEFAULT_EXCEL_TABLE_STYLE, property, format)
+    end
+    return _excel_override_properties(DEFAULT_EXCEL_TABLE_STYLE, property, format[j])
+end
+
+"""
+    _excel_tablefill_atts(property::String, format::Vector{ExcelPair})
+    _excel_tablefill_atts(property::String, format::Vector{Vector{ExcelPair}}, j = nothing)
+
+Override those attributes of the default table fill for this table element 
+with those specified in ExcelTableFill
+"""
+function _excel_tablefill_atts(property, format, j = nothing)
+    if isnothing(format) || format isa Vector{Pair{String, String}}
+        return _excel_override_properties(DEFAULT_EXCEL_TABLE_FILL, property, format)
+    end
+    return _excel_override_properties(DEFAULT_EXCEL_TABLE_FILL, property, format[j])
+end
 
 function _excel_override_properties(default, property, format)
     v1 = getproperty(default, Symbol(property))
@@ -350,12 +370,12 @@ function _excel_set_fontsize_and_alignment!(sheet, row, col, atts, alignment, va
     fontsize=DEFAULT_FONT_SIZE
     if !isnothing(atts)
         fontsize = _excel_update_fontsize!(atts, fontsize)
-        setFont(sheet, row, col; atts...)
+        XLSX.setFont(sheet, row, col; atts...)
     else
-        setFont(sheet, row, col; size = fontsize)
+        XLSX.setFont(sheet, row, col; size = fontsize)
     end
     if !isnothing(alignment)
-        setAlignment(sheet, row, col; vertical = valign, horizontal = _excel_alignment_string(alignment), wrapText = wrap)
+        XLSX.setAlignment(sheet, row, col; vertical = valign, horizontal = _excel_alignment_string(alignment), wrapText = wrap)
     end
     return fontsize
 end

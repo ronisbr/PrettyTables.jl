@@ -1,0 +1,133 @@
+## Description #############################################################################
+#
+# Excel Back End: Test formats (table borders).
+#
+############################################################################################
+
+@testset "ExcelTableFormat" verbose=true begin
+    matrix = [
+        1 2 3
+        4 5 6
+        7 8 9
+    ]
+
+    # Test default formats
+    result = pretty_table(
+        XLSX.XLSXFile,
+        matrix;
+        title = "This is a title.",
+        subtitle = "This is a subtitle.",
+        stubhead_label  = "This is a stubhead label.",
+        show_row_number_column = true,
+        row_number_column_label = "Row Number",
+        row_labels = ["Row 1", "Row 2", "Row 3"],
+        row_group_labels = [3 => "Group 1"],
+        summary_row_labels = ["Total"],
+        summary_rows = [(data, i) -> sum(data[:, i])],
+        footnotes = [
+            (:subtitle, 1, 1) => "Subtitle footnote"
+            (:column_label, 1, 3) => "Third column footnote."
+            (:data, 2, 2) => "Middle data footnote."
+        ],
+        source_notes = "This is a source note.",
+    )
+
+    r = result[1]
+
+    f =  XLSX.getBorder(r, "A1").border
+    f["top"] == Dict("style" => "thick", "rgb" => "FF000000")
+    f["left"] == Dict("style" => "thick", "rgb" => "FF000000")
+    f["right"] == Dict("style" => "thick", "rgb" => "FF000000")
+    f["bottom"] === nothing
+    @test XLSX.getBorder(r, "A2").border["bottom"] === nothing
+    @test XLSX.getBorder(r, "A3").border["bottom"] == Dict("style" => "thin", "rgb" => "FF000000")
+    @test XLSX.getBorder(r, "A4").border["bottom"] == Dict("style" => "thin", "rgb" => "FF000000")
+    f = XLSX.getBorder(r, "A5").border
+    @test f["bottom"] == Dict("rgb" => "FF000000", "style" => "dotted")
+    @test f["right"] == Dict("rgb" => "FF000000", "style" => "thin")
+    f = XLSX.getBorder(r, "B5").border
+    @test f["bottom"] ==  Dict("rgb" => "FF000000", "style" => "dotted")
+    @test f["right"] ==  Dict("rgb" => "FF000000", "style" => "thin")
+    f = XLSX.getBorder(r, "D5").border
+    @test f["bottom"] == Dict("rgb" => "FF000000", "style" => "dotted")
+    @test f["right"]  == Dict("rgb" => "FF000000", "style" => "dotted")
+    @test XLSX.getBorder(r, "A6").border["bottom"] == Dict("rgb" => "FF000000", "style" => "dotted")
+    f = XLSX.getBorder(r, "A7").border
+    @test f["top"] == Dict("style" => "thin", "rgb" => "FF000000")
+    @test f["bottom"] == Dict("style" => "thin", "rgb" => "FF000000")
+    @test XLSX.getBorder(r, "A8").border["bottom"] == Dict("style" => "thin", "rgb" => "FF000000")
+    @test XLSX.getBorder(r, "A9").border["bottom"] == Dict("style" => "thin", "rgb" => "FF000000")
+    @test XLSX.getBorder(r, "A10").border["bottom"] === nothing
+    @test XLSX.getBorder(r, "A11").border["bottom"] === nothing
+    @test XLSX.getBorder(r, "A12").border["bottom"] == Dict("style" => "thin", "rgb" => "FF000000")
+    f =  XLSX.getBorder(r, "A13").border
+    f["top"] === nothing
+    f["bottom"] == Dict("style" => "thick", "rgb" => "FF000000")
+    f["left"] == Dict("style" => "thick", "rgb" => "FF000000")
+    f["right"] == Dict("style" => "thick", "rgb" => "FF000000")
+
+    # Test merging of predefined formats
+    result = pretty_table(
+        XLSX.XLSXFile,
+        matrix;
+        title = "This is a title.",
+        subtitle = "This is a subtitle.",
+        stubhead_label  = "This is a stubhead label.",
+        show_row_number_column = true,
+        row_number_column_label = "Row Number",
+        row_labels = ["Row 1", "Row 2", "Row 3"],
+        row_group_labels = [3 => "Group 1"],
+        summary_row_labels = ["Total"],
+        summary_rows = [(data, i) -> sum(data[:, i])],
+        footnotes = [
+            (:subtitle, 1, 1) => "Subtitle footnote"
+            (:column_label, 1, 3) => "Third column footnote."
+            (:data, 2, 2) => "Middle data footnote."
+        ],
+        source_notes = "This is a source note.",
+        table_format = ExcelTableFormat(
+            EXCEL_FORMAT_SECTION_LINES,
+            EXCEL_FORMAT_NO_VLINES;
+            overline_group = true,
+            underline_group = true,
+            overline_group_type = ["style" => "double", "color" => "red"],
+        ),
+    )
+
+    r = result[1]
+
+    f =  XLSX.getBorder(r, "A1").border
+    f["top"] == Dict("style" => "thick", "rgb" => "FF000000")
+    f["left"] == Dict("style" => "thick", "rgb" => "FF000000")
+    f["right"] == Dict("style" => "thick", "rgb" => "FF000000")
+    f["bottom"] === nothing
+    @test XLSX.getBorder(r, "A2").border["bottom"] === nothing
+    @test XLSX.getBorder(r, "A3").border["bottom"] == Dict("style" => "thin", "rgb" => "FF000000")
+    @test XLSX.getBorder(r, "A4").border["bottom"] == Dict("style" => "thin", "rgb" => "FF000000")
+    f = XLSX.getBorder(r, "A5").border
+    @test f["bottom"] === nothing
+    @test f["right"] === nothing
+    f = XLSX.getBorder(r, "B5").border
+    @test f["bottom"] === nothing
+    @test f["right"] === nothing
+    f = XLSX.getBorder(r, "D5").border
+    @test f["bottom"] === nothing
+    @test f["right"] === nothing
+    @test XLSX.getBorder(r, "A6").border["bottom"] === nothing
+    f = XLSX.getBorder(r, "A7").border
+    @test f["top"] == Dict("rgb" => "FFFF0000", "style" => "double")
+    @test f["bottom"] == Dict("style" => "thin", "rgb" => "FF000000")
+    @test XLSX.getBorder(r, "D7").border["top"] == Dict("style" => "double", "rgb" => "FFFF0000")
+    @test XLSX.getBorder(r, "A8").border["bottom"] == Dict("style" => "thin", "rgb" => "FF000000")
+    @test XLSX.getBorder(r, "A9").border["bottom"] == Dict("style" => "thin", "rgb" => "FF000000")
+    @test XLSX.getBorder(r, "A10").border["bottom"] === nothing
+    @test XLSX.getBorder(r, "A11").border["bottom"] === nothing
+    @test XLSX.getBorder(r, "A12").border["bottom"] == Dict("style" => "thin", "rgb" => "FF000000")
+    f =  XLSX.getBorder(r, "A13").border
+    f["top"] === nothing
+    f["bottom"] == Dict("style" => "thick", "rgb" => "FF000000")
+    f["left"] == Dict("style" => "thick", "rgb" => "FF000000")
+    f["right"] == Dict("style" => "thick", "rgb" => "FF000000")
+
+end
+

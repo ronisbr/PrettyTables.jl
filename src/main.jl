@@ -52,10 +52,10 @@ function pretty_table(
 
     # == Table Sections ====================================================================
 
-    title::AbstractString = "",
-    subtitle::AbstractString = "",
-    stubhead_label::AbstractString = "",
-    row_number_column_label::AbstractString = "Row",
+    title::String = "",
+    subtitle::String = "",
+    stubhead_label::String = "",
+    row_number_column_label::String = "Row",
     row_labels::Union{Nothing, AbstractVector} = nothing,
     row_group_labels::Union{Nothing, Vector{Pair{Int, String}}} = nothing,
     column_labels::Union{Nothing, AbstractVector} = nothing,
@@ -63,7 +63,7 @@ function pretty_table(
     summary_rows::Union{Nothing, Vector{T} where T <: Any} = nothing,
     summary_row_labels::Union{Nothing, Vector{String}} = nothing,
     footnotes::Union{Nothing, Vector{Pair{FootnoteTuple, String}}} = nothing,
-    source_notes::AbstractString = "",
+    source_notes::String = "",
 
     # == Alignments ========================================================================
 
@@ -227,10 +227,10 @@ function _pretty_table(
 
     # == Table Sections ====================================================================
 
-    title::AbstractString,
-    subtitle::AbstractString,
-    stubhead_label::AbstractString,
-    row_number_column_label::AbstractString,
+    title::String,
+    subtitle::String,
+    stubhead_label::String,
+    row_number_column_label::String,
     row_labels::Union{Nothing, AbstractVector},
     row_group_labels::Union{Nothing, Vector{Pair{Int, String}}},
     column_labels::Union{Nothing, AbstractVector},
@@ -238,7 +238,7 @@ function _pretty_table(
     summary_rows::Union{Nothing, Vector{T} where T <: Any},
     summary_row_labels::Union{Nothing, Vector{String}},
     footnotes::Union{Nothing, Vector{Pair{FootnoteTuple, String}}},
-    source_notes::AbstractString,
+    source_notes::String,
 
     # == Alignments ========================================================================
 

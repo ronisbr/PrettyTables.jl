@@ -15,9 +15,9 @@
     cr.A1[2]   = cr
     cr.A4[end] = cr
 
-#    f=pretty_table(cr; backend = :excel)#formatters = [fmt__excel_stringify(1:4)])
+    f=pretty_table(cr; backend = :excel, formatters = [fmt__excel_stringify(1:4)])
 
-    
+#    writexlsx("circular_reference.xlsx", f, overwrite = true)
     # I can't obviously see how to address this in the Excel backend. 
     # There is an intervention upstream to flag `#= circular reference =#` 
     # which the `:excel` backend can't then handle in any way I can 

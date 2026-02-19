@@ -5,11 +5,11 @@
 ############################################################################################
 
 """
-    _excel_write_title!(sheet, table_data, style, footnote_refs, current_row, num_cols, anchor_row_offset, anchor_col_offset, col_offset)
+    _excel_write_title!(sheet, table_data, style, fill, footnote_refs, current_row, num_cols, anchor_row_offset, anchor_col_offset, col_offset)
 
 Write the table title to the worksheet.
 """
-function _excel_write_title!(sheet, table_data, style, footnote_refs, current_row, num_cols, anchor_row_offset, anchor_col_offset, col_offset)
+function _excel_write_title!(sheet, table_data, style, fill, footnote_refs, current_row, num_cols, anchor_row_offset, anchor_col_offset, col_offset)
     title_text = table_data.title
     # Check for footnote reference in title
     if haskey(footnote_refs, (:title, 1, 1))
@@ -17,22 +17,27 @@ function _excel_write_title!(sheet, table_data, style, footnote_refs, current_ro
     end
     _excel_unempty_row(sheet, current_row + anchor_row_offset, 1+anchor_col_offset:num_cols+col_offset+anchor_col_offset) # ensure these cells aren't empty before merging
     sheet[current_row + anchor_row_offset, 1 + anchor_col_offset] = title_text
-    mergeCells(sheet, XLSX.CellRange(XLSX.CellRef(current_row + anchor_row_offset, 1 + anchor_col_offset), XLSX.CellRef(current_row + anchor_row_offset, num_cols + col_offset + anchor_col_offset)))
-    atts = _excel_newpairs(_excel_tablestyle_atts("title",style.title))
+    XLSX.mergeCells(sheet, XLSX.CellRange(XLSX.CellRef(current_row + anchor_row_offset, 1 + anchor_col_offset), XLSX.CellRef(current_row + anchor_row_offset, num_cols + col_offset + anchor_col_offset)))
 
+    atts = _excel_newpairs(_excel_tablestyle_atts("title",style.title))
     fontsize = _excel_set_fontsize_and_alignment!(sheet, current_row + anchor_row_offset, 1 + anchor_col_offset, atts, table_data.title_alignment, "bottom", true)
 
+    fillatts = _excel_newpairs(_excel_tablefill_atts("title",fill.title))
+    if !isnothing(atts)
+        XLSX.setFill(sheet, current_row + anchor_row_offset, 1 + anchor_col_offset; fillatts...)
+    end
+    
     title_lines = _excel_text_lines(title_text)
 
     return _excel_row_height_for_text(title_lines, fontsize)
 end
 
 """
-    _excel_write_subtitle!(sheet, table_data, style, footnote_refs, current_row, num_cols, anchor_row_offset, anchor_col_offset, col_offset)
+    _excel_write_subtitle!(sheet, table_data, style, fill, footnote_refs, current_row, num_cols, anchor_row_offset, anchor_col_offset, col_offset)
 
 Write the table subtitle to the worksheet.
 """
-function _excel_write_subtitle!(sheet, table_data, style, footnote_refs, current_row, num_cols, anchor_row_offset, anchor_col_offset, col_offset)
+function _excel_write_subtitle!(sheet, table_data, style, fill, footnote_refs, current_row, num_cols, anchor_row_offset, anchor_col_offset, col_offset)
     subtitle_text = table_data.subtitle
 
     # Check for footnote reference in subtitle
@@ -41,22 +46,27 @@ function _excel_write_subtitle!(sheet, table_data, style, footnote_refs, current
     end
 
     sheet[current_row + anchor_row_offset, 1 + anchor_col_offset] = subtitle_text
-    mergeCells(sheet, XLSX.CellRange(XLSX.CellRef(current_row + anchor_row_offset, 1 + anchor_col_offset), XLSX.CellRef(current_row + anchor_row_offset, num_cols + col_offset + anchor_col_offset)))
+    XLSX.mergeCells(sheet, XLSX.CellRange(XLSX.CellRef(current_row + anchor_row_offset, 1 + anchor_col_offset), XLSX.CellRef(current_row + anchor_row_offset, num_cols + col_offset + anchor_col_offset)))
     atts = _excel_newpairs(_excel_tablestyle_atts("subtitle",style.subtitle))
 
     fontsize = _excel_set_fontsize_and_alignment!(sheet, current_row + anchor_row_offset, 1 + anchor_col_offset, atts, table_data.subtitle_alignment, "bottom", true)
 
+    fillatts = _excel_newpairs(_excel_tablefill_atts("subtitle",fill.subtitle))
+    if !isnothing(fillatts)
+        XLSX.setFill(sheet, current_row + anchor_row_offset, 1 + anchor_col_offset; fillatts...)
+    end
+    
     subtitle_lines = _excel_text_lines(subtitle_text)
     
     return _excel_row_height_for_text(subtitle_lines, fontsize)
 end
 
 """
-    _excel_write_row_number_column!(sheet, table_data, table_format, style, max_row_height, max_col_length, anchor_row_offset, anchor_col_offset, current_row)
+    _excel_write_row_number_column!(sheet, table_data, table_format, style, fill, max_row_height, max_col_length, anchor_row_offset, anchor_col_offset, current_row)
 
 Write the row number column header to the worksheet.
 """
-function _excel_write_row_number_column!(sheet, table_data, table_format, style, max_row_height, max_col_length, anchor_row_offset, anchor_col_offset, current_row)
+function _excel_write_row_number_column!(sheet, table_data, table_format, style, fill, max_row_height, max_col_length, anchor_row_offset, anchor_col_offset, current_row)
     if !isnothing(table_data.row_number_column_label)
         number_label = table_data.row_number_column_label
         sheet[current_row + anchor_row_offset, 1 + anchor_col_offset] = number_label
@@ -65,9 +75,14 @@ function _excel_write_row_number_column!(sheet, table_data, table_format, style,
 
         fontsize = _excel_set_fontsize_and_alignment!(sheet, current_row + anchor_row_offset, 1 + anchor_col_offset, atts, table_data.row_number_column_alignment, "bottom", false)
 
+        fillatts = _excel_newpairs(_excel_tablefill_atts("row_number_label",fill.row_number_label))
+        if !isnothing(fillatts)
+            XLSX.setFill(sheet, current_row + anchor_row_offset, 1 + anchor_col_offset; fillatts...)
+        end
+                    
         if table_data.show_row_number_column && _excel_check_table_format("vline_after_row_numbers",table_format.vline_after_row_numbers)
             sheet[current_row + anchor_row_offset + 1:current_row + anchor_row_offset + length(table_data.column_labels), 1 + anchor_col_offset]=""
-            setBorder(sheet, current_row + anchor_row_offset:current_row + anchor_row_offset + length(table_data.column_labels), 1 + anchor_col_offset; right=_excel_tableformat_atts("vline_after_row_numbers_type", table_format.vline_after_row_numbers_type))
+            XLSX.setBorder(sheet, current_row + anchor_row_offset:current_row + anchor_row_offset + length(table_data.column_labels), 1 + anchor_col_offset; right=_excel_tableformat_atts("vline_after_row_numbers_type", table_format.vline_after_row_numbers_type))
         end
         row_height, col_length = _excel_cell_length_and_height(number_label, fontsize)
         max_row_height = max(max_row_height, row_height)
@@ -77,17 +92,22 @@ function _excel_write_row_number_column!(sheet, table_data, table_format, style,
 end
 
 """
-    _excel_write_stubhead_label!(sheet, table_data, style, col_offset, max_row_height, max_col_length, anchor_row_offset, anchor_col_offset, current_row)
+    _excel_write_stubhead_label!(sheet, table_data, style, fill, col_offset, max_row_height, max_col_length, anchor_row_offset, anchor_col_offset, current_row)
 
 Write the stubhead label to the worksheet.
 """
-function _excel_write_stubhead_label!(sheet, table_data, style, col_offset, max_row_height, max_col_length, anchor_row_offset, anchor_col_offset, current_row)
+function _excel_write_stubhead_label!(sheet, table_data, style, fill, col_offset, max_row_height, max_col_length, anchor_row_offset, anchor_col_offset, current_row)
     stubhead_label = table_data.stubhead_label
     sheet[current_row + anchor_row_offset, col_offset + anchor_col_offset] = stubhead_label
     atts = _excel_newpairs(_excel_tablestyle_atts("stubhead_label",style.stubhead_label))
 
     fontsize = _excel_set_fontsize_and_alignment!(sheet, current_row + anchor_row_offset, col_offset + anchor_col_offset, atts, table_data.row_label_column_alignment, "bottom", true)
 
+    fillatts = _excel_newpairs(_excel_tablefill_atts("stubhead_label",fill.stubhead_label))
+    if !isnothing(fillatts)
+        XLSX.setFill(sheet, current_row + anchor_row_offset, col_offset + anchor_col_offset; fillatts...)
+    end
+    
     row_height, col_length = _excel_cell_length_and_height(stubhead_label, fontsize)
     max_row_height = max(max_row_height, row_height)
     max_col_length[col_offset] = max(max_col_length[col_offset], col_length)
@@ -95,11 +115,11 @@ function _excel_write_stubhead_label!(sheet, table_data, style, col_offset, max_
 end
 
 """
-    _excel_write_column_labels!(sheet, table_data, table_format, style, footnote_refs, merge_map, label_row, label_row_idx, j, num_cols, col_offset, max_row_height, max_col_length, anchor_row_offset, anchor_col_offset, current_row)
+    _excel_write_column_labels!(sheet, table_data, table_format, style, fill, footnote_refs, merge_map, label_row, label_row_idx, j, num_cols, col_offset, max_row_height, max_col_length, anchor_row_offset, anchor_col_offset, current_row)
 
 Write the column labels to the worksheet.
 """
-function _excel_write_column_labels!(sheet, table_data, table_format, style, footnote_refs, merge_map, label_row, label_row_idx, j, num_cols, col_offset, max_row_height, max_col_length, anchor_row_offset, anchor_col_offset, current_row)
+function _excel_write_column_labels!(sheet, table_data, table_format, style, fill, footnote_refs, merge_map, label_row, label_row_idx, j, num_cols, col_offset, max_row_height, max_col_length, anchor_row_offset, anchor_col_offset, current_row)
     cla = _excel_column_alignment(j, table_data.column_label_alignment, table_data.data_alignment) # get the column label alignment
     # Check if this cell is the start of a merge
     if haskey(merge_map, (label_row_idx, j))
@@ -110,24 +130,31 @@ function _excel_write_column_labels!(sheet, table_data, table_format, style, foo
             label_text = label_text * _excel_to_superscript(footnote_refs[(:column_label, label_row_idx, j)])
         end
         sheet[current_row + anchor_row_offset, j + col_offset + anchor_col_offset] = label_text
-        mergeCells(sheet, XLSX.CellRange(XLSX.CellRef(current_row + anchor_row_offset, j + col_offset + anchor_col_offset), XLSX.CellRef(current_row + anchor_row_offset, j + col_offset + anchor_col_offset + span-1)))
+        XLSX.mergeCells(sheet, XLSX.CellRange(XLSX.CellRef(current_row + anchor_row_offset, j + col_offset + anchor_col_offset), XLSX.CellRef(current_row + anchor_row_offset, j + col_offset + anchor_col_offset + span-1)))
         if label_row_idx == 1
             atts = _excel_newpairs(_excel_tablestyle_atts("first_line_merged_column_label", style.first_line_merged_column_label))
+            fillatts = _excel_newpairs(_excel_tablefill_atts("first_line_merged_column_label",fill.first_line_merged_column_label))
         else
             atts = _excel_newpairs(_excel_tablestyle_atts("merged_column_label",style.merged_column_label))
+            fillatts = _excel_newpairs(_excel_tablefill_atts("merged_column_label",fill.merged_column_label))
         end
 
         fontsize = _excel_set_fontsize_and_alignment!(sheet, current_row + anchor_row_offset, j + col_offset + anchor_col_offset, atts, merge_alignment, "bottom", true)
 
+        if !isnothing(fillatts)
+            XLSX.setFill(sheet, current_row + anchor_row_offset, j + col_offset + anchor_col_offset; fillatts...)
+        end
+    
         # don't include merged columns in column width calculation
         row_height, _ = _excel_cell_length_and_height(label_text, fontsize)
         max_row_height = max(max_row_height, row_height)
         if  _excel_check_table_format("underline_merged_headers",table_format.underline_merged_headers)
-            setBorder(sheet, current_row + anchor_row_offset, j+col_offset + anchor_col_offset:j+col_offset + anchor_col_offset+span-1; bottom=_excel_tableformat_atts("underline_merged_headers_type", table_format.underline_merged_headers_type))
+            XLSX.setBorder(sheet, current_row + anchor_row_offset, j + col_offset + anchor_col_offset:j+col_offset + anchor_col_offset+span-1; bottom=_excel_tableformat_atts("underline_merged_headers_type", table_format.underline_merged_headers_type))
         end
-        if  _excel_check_table_format("vline_between_data_columns",table_format.vline_between_data_columns) && j+span < num_cols
-            setBorder(sheet, current_row + anchor_row_offset, j+col_offset + anchor_col_offset; right=_excel_tableformat_atts("vline_between_data_columns_type", table_format.vline_between_data_columns_type))
+        if  _excel_check_table_format("vline_between_data_columns",table_format.vline_between_data_columns) && j+span-1 < num_cols
+            XLSX.setBorder(sheet, current_row + anchor_row_offset, j + col_offset + anchor_col_offset+span-1; right=_excel_tableformat_atts("vline_between_data_columns_type", table_format.vline_between_data_columns_type))
         end
+
         # Skip the spanned columns
         j += span
     else
@@ -139,19 +166,27 @@ function _excel_write_column_labels!(sheet, table_data, table_format, style, foo
         end
         sheet[current_row + anchor_row_offset, j + col_offset + anchor_col_offset] = label_text
         if label_row_idx == 1
-            atts = _excel_newpairs(_excel_tablestyle_atts("first_line_column_label", style.first_line_column_label))
+            atts = _excel_newpairs(_excel_tablestyle_atts("first_line_column_label", style.first_line_column_label, j))
+            fillatts = _excel_newpairs(_excel_tablefill_atts("first_line_column_label",fill.first_line_column_label, j))
         else
-            atts = _excel_newpairs(_excel_tablestyle_atts("column_label",style.column_label))
+            atts = _excel_newpairs(_excel_tablestyle_atts("column_label",style.column_label, j))
+            fillatts = _excel_newpairs(_excel_tablefill_atts("column_label",fill.column_label, j))
         end
 
-        fontsize = _excel_set_fontsize_and_alignment!(sheet, current_row + anchor_row_offset, j + col_offset + anchor_col_offset, atts, nothing, "bottom", true)
-        setAlignment(sheet, current_row + anchor_row_offset, j + col_offset + anchor_col_offset; vertical = "top", horizontal=cla, wrapText = true)
+        fontsize = _excel_set_fontsize_and_alignment!(sheet, current_row + anchor_row_offset, j + col_offset + anchor_col_offset, atts, cla, "bottom", true)
+
+        if !isnothing(fillatts)
+            XLSX.setFill(sheet, current_row + anchor_row_offset, j + col_offset + anchor_col_offset; fillatts...)
+        end
 
         row_height, col_length = _excel_cell_length_and_height(label_text, fontsize)
         max_row_height = max(max_row_height, row_height)
         max_col_length[j+col_offset] = max(max_col_length[j+col_offset], col_length)
         if  _excel_check_table_format("vline_between_data_columns",table_format.vline_between_data_columns) && j < num_cols
-            setBorder(sheet, current_row + anchor_row_offset, j+col_offset + anchor_col_offset; right=_excel_tableformat_atts("vline_between_data_columns_type", table_format.vline_between_data_columns_type))
+            XLSX.setBorder(sheet, current_row + anchor_row_offset, j+col_offset + anchor_col_offset; right=_excel_tableformat_atts("vline_between_data_columns_type", table_format.vline_between_data_columns_type))
+        end
+        if  _excel_check_table_format("underline_between_headers",table_format.underline_between_headers) && label_row_idx < length(table_data.column_labels)
+            XLSX.setBorder(sheet, current_row + anchor_row_offset, j+col_offset + anchor_col_offset; bottom=_excel_tableformat_atts("underline_between_headers_type", table_format.underline_between_headers_type))
         end
         j += 1
     end
@@ -159,11 +194,11 @@ function _excel_write_column_labels!(sheet, table_data, table_format, style, foo
 end
 
 """
-    _excel_write_group_row!(sheet, table_data, table_format, style, footnote_refs, row_group_map, i, num_cols, col_offset, anchor_row_offset, anchor_col_offset, current_row)
+    _excel_write_group_row!(sheet, table_data, table_format, style, fill, footnote_refs, row_group_map, i, num_cols, col_offset, anchor_row_offset, anchor_col_offset, current_row)
 
 Write a group row to the worksheet.
 """
-function _excel_write_group_row!(sheet, table_data, table_format, style, footnote_refs, row_group_map, i, num_cols, col_offset, max_row_height, anchor_row_offset, anchor_col_offset, current_row)
+function _excel_write_group_row!(sheet, table_data, table_format, style, fill, footnote_refs, row_group_map, i, num_cols, col_offset, max_row_height, anchor_row_offset, anchor_col_offset, current_row)
     # Write row group label in its own row in the row number column (column 1)
     group_label = row_group_map[i]
     # Check for footnote reference in row group label
@@ -171,39 +206,47 @@ function _excel_write_group_row!(sheet, table_data, table_format, style, footnot
         group_label = string(group_label) * _excel_to_superscript(footnote_refs[(:row_group_label, i, 1)])
     end
     sheet[current_row + anchor_row_offset, 1 + anchor_col_offset] = group_label
-    mergeCells(sheet, XLSX.CellRange(XLSX.CellRef(current_row + anchor_row_offset, 1 + anchor_col_offset), XLSX.CellRef(current_row + anchor_row_offset, num_cols + col_offset + anchor_col_offset)))
+    XLSX.mergeCells(sheet, XLSX.CellRange(XLSX.CellRef(current_row + anchor_row_offset, 1 + anchor_col_offset), XLSX.CellRef(current_row + anchor_row_offset, num_cols + col_offset + anchor_col_offset)))
     atts = _excel_newpairs(_excel_tablestyle_atts("row_group_label",style.row_group_label))
 
     fontsize = _excel_set_fontsize_and_alignment!(sheet, current_row + anchor_row_offset, 1 + anchor_col_offset, atts, table_data.row_group_label_alignment, "center",true)
 
+    fillatts = _excel_newpairs(_excel_tablefill_atts("row_group_label",fill.row_group_label))
+    if !isnothing(fillatts)
+        XLSX.setFill(sheet, current_row + anchor_row_offset, 1 + anchor_col_offset; fillatts...)
+    end
     if  _excel_check_table_format("overline_group",table_format.overline_group)
-        setBorder(sheet, current_row + anchor_row_offset, 1 + anchor_col_offset:num_cols+col_offset + anchor_col_offset; top=_excel_tableformat_atts("underline_group_type", table_format.underline_group_type))
+        XLSX.setBorder(sheet, current_row + anchor_row_offset, 1 + anchor_col_offset:num_cols+col_offset + anchor_col_offset; top=_excel_tableformat_atts("overline_group_type", table_format.overline_group_type))
     end
     if  _excel_check_table_format("underline_group",table_format.underline_group)
-        setBorder(sheet, current_row + anchor_row_offset, 1 + anchor_col_offset:num_cols+col_offset + anchor_col_offset; bottom=_excel_tableformat_atts("underline_group_type", table_format.underline_group_type))
+        XLSX.setBorder(sheet, current_row + anchor_row_offset, 1 + anchor_col_offset:num_cols+col_offset + anchor_col_offset; bottom=_excel_tableformat_atts("underline_group_type", table_format.underline_group_type))
     end
     # don't include group labels in column width calculation
     row_height, _ = _excel_cell_length_and_height(group_label, fontsize)
     max_row_height = max(max_row_height, row_height)
 
-    setRowHeight(sheet, current_row + anchor_row_offset; height = row_height)
+    XLSX.setRowHeight(sheet, current_row + anchor_row_offset; height = row_height)
 
     return max_row_height
 end
 
 """
-    _excel_write_row_number!(sheet, table_data, table_format, style, i, max_row_height, anchor_row_offset, anchor_col_offset, current_row)
+    _excel_write_row_number!(sheet, table_data, table_format, style, fill, i, max_row_height, anchor_row_offset, anchor_col_offset, current_row)
 
 Write a row number to the worksheet.
 """
-function _excel_write_row_number!(sheet, table_data, table_format, style, i, max_row_height, anchor_row_offset, anchor_col_offset, current_row)
+function _excel_write_row_number!(sheet, table_data, table_format, style, fill, i, max_row_height, anchor_row_offset, anchor_col_offset, current_row)
     sheet[current_row + anchor_row_offset, 1 + anchor_col_offset] = i
     atts = _excel_newpairs(_excel_tablestyle_atts("row_number",style.row_number))
 
     fontsize = _excel_set_fontsize_and_alignment!(sheet, current_row + anchor_row_offset, 1 + anchor_col_offset, atts, table_data.row_number_column_alignment, "top", false)
 
+    fillatts = _excel_newpairs(_excel_tablefill_atts("row_number",fill.row_number))
+    if !isnothing(fillatts)
+        XLSX.setFill(sheet, current_row + anchor_row_offset, 1 + anchor_col_offset; fillatts...)
+    end
     if  _excel_check_table_format("vline_after_row_numbers",table_format.vline_after_row_numbers)
-        setBorder(sheet, current_row + anchor_row_offset, 1 + anchor_col_offset; right=_excel_tableformat_atts("vline_after_row_numbers_type", table_format.vline_after_row_numbers_type))
+        XLSX.setBorder(sheet, current_row + anchor_row_offset, 1 + anchor_col_offset; right=_excel_tableformat_atts("vline_after_row_numbers_type", table_format.vline_after_row_numbers_type))
     end
 
     row_height, _ = _excel_cell_length_and_height(i, fontsize)
@@ -213,11 +256,11 @@ function _excel_write_row_number!(sheet, table_data, table_format, style, i, max
 end
 
 """
-    _excel_write_row_label!(heet, table_data, style, footnote_refs, i, row_label_col, max_row_height, max_col_length, anchor_row_offset, anchor_col_offset, current_row)
+    _excel_write_row_label!(heet, table_data, style, fill, footnote_refs, i, row_label_col, max_row_height, max_col_length, anchor_row_offset, anchor_col_offset, current_row)
 
 Write a row label to the worksheet.
 """
-function _excel_write_row_label(sheet, table_data, style, footnote_refs, i, row_label_col, max_row_height, max_col_length, anchor_row_offset, anchor_col_offset, current_row)
+function _excel_write_row_label(sheet, table_data, style, fill, footnote_refs, i, row_label_col, max_row_height, max_col_length, anchor_row_offset, anchor_col_offset, current_row)
     row_label_text = string(table_data.row_labels[i])
     # Check for footnote reference in row label
     if haskey(footnote_refs, (:row_label, i, 1))
@@ -228,6 +271,10 @@ function _excel_write_row_label(sheet, table_data, style, footnote_refs, i, row_
 
     fontsize = _excel_set_fontsize_and_alignment!(sheet, current_row + anchor_row_offset, row_label_col + anchor_col_offset, atts, table_data.row_label_column_alignment, "top", true)
 
+    fillatts = _excel_newpairs(_excel_tablefill_atts("row_label",fill.row_label))
+    if !isnothing(fillatts)
+        XLSX.setFill(sheet, current_row + anchor_row_offset, row_label_col + anchor_col_offset; fillatts...)
+    end
     row_height, col_length = _excel_cell_length_and_height(row_label_text, fontsize)
     max_row_height = max(max_row_height, row_height)
     max_col_length[row_label_col] = max(max_col_length[row_label_col], col_length)
@@ -236,11 +283,11 @@ function _excel_write_row_label(sheet, table_data, style, footnote_refs, i, row_
 end
 
 """
-    _excel_write_cell!(sheet, table_data, table_format, style, highlighters, excel_formatters, i, j, num_cols, col_offset, footnote_refs, max_row_height, max_col_length, anchor_row_offset, anchor_col_offset, current_row)
+    _excel_write_cell!(sheet, table_data, table_format, style, fill, highlighters, excel_formatters, i, j, num_cols, col_offset, footnote_refs, max_row_height, max_col_length, anchor_row_offset, anchor_col_offset, current_row)
 
 Write a single cell to the worksheet.
 """
-function _excel_write_cell!(sheet, table_data, table_format, style, highlighters, excel_formatters, i, j, num_cols, col_offset, footnote_refs, max_row_height, max_col_length, anchor_row_offset, anchor_col_offset, current_row)
+function _excel_write_cell!(sheet, table_data, table_format, style, fill, excel_formatters, i, j, num_cols, col_offset, footnote_refs, max_row_height, max_col_length, anchor_row_offset, anchor_col_offset, current_row)
     data = table_data.data
     cell_value = _get_cell_value(table_data, i, j)
 
@@ -258,21 +305,25 @@ function _excel_write_cell!(sheet, table_data, table_format, style, highlighters
     end
     lines = formatted_value isa AbstractString ? _excel_text_lines(formatted_value) : 1
     sheet[current_row + anchor_row_offset, j + col_offset + anchor_col_offset] = formatted_value
-    atts = _excel_newpairs(_excel_tablestyle_atts("table_cell_style", style.table_cell_style))
+    atts = _excel_newpairs(_excel_tablestyle_atts("table_cell", style.table_cell, j))
 
     fontsize = _excel_set_fontsize_and_alignment!(sheet, current_row + anchor_row_offset, j + col_offset + anchor_col_offset, atts, _excel_cell_alignment(table_data, i, j), "top", lines > 1 ? true : false)
 
+    fillatts = _excel_newpairs(_excel_tablefill_atts("table_cell",fill.table_cell))
+    if !isnothing(fillatts)
+        XLSX.setFill(sheet, current_row + anchor_row_offset, j + col_offset + anchor_col_offset; fillatts...)
+    end
     # Apply Excel specific (numFmt) formatters
     for formatter in excel_formatters
         atts = _excel_format_attributes(table_data, formatter, i, j)
         if !isnothing(atts)
-            setFormat(sheet, current_row + anchor_row_offset, j + col_offset + anchor_col_offset; atts...)
+            XLSX.setFormat(sheet, current_row + anchor_row_offset, j + col_offset + anchor_col_offset; atts...)
         end
     end
 
        # Do before highlighting
     if _excel_check_table_format("vline_between_data_columns",table_format.vline_between_data_columns) && j < num_cols
-        setBorder(sheet, current_row + anchor_row_offset, j + col_offset + anchor_col_offset; right=_excel_tableformat_atts("vline_between_data_columns_type", table_format.vline_between_data_columns_type))
+        XLSX.setBorder(sheet, current_row + anchor_row_offset, j + col_offset + anchor_col_offset; right=_excel_tableformat_atts("vline_between_data_columns_type", table_format.vline_between_data_columns_type))
     end
 
     row_height, col_length = _excel_cell_length_and_height(formatted_value, fontsize)
@@ -283,11 +334,11 @@ function _excel_write_cell!(sheet, table_data, table_format, style, highlighters
 end
 
 """
-    _excel_write_summary_row!(sheet, table_data, table_format, style, idx, summary_row_func, excel_formatters, num_cols, col_offset, footnote_refs, max_row_height, max_col_length, anchor_row_offset, anchor_col_offset, current_row)
+    _excel_write_summary_row!(sheet, table_data, table_format, style, fill, idx, summary_row_func, excel_formatters, num_cols, col_offset, footnote_refs, max_row_height, max_col_length, anchor_row_offset, anchor_col_offset, current_row)
 
 Write a summary row to the worksheet.
 """
-function _excel_write_summary_row(sheet, table_data, table_format, style, idx, summary_row_func, excel_formatters, num_cols, col_offset, footnote_refs, max_row_height, max_col_length, anchor_row_offset, anchor_col_offset, current_row)
+function _excel_write_summary_row(sheet, table_data, table_format, style, fill, idx, summary_row_func, excel_formatters, num_cols, col_offset, footnote_refs, max_row_height, max_col_length, anchor_row_offset, anchor_col_offset, current_row)
     # Write summary row label in the row label column
     row_label_col = table_data.show_row_number_column ? 2 : 1
     if table_data.summary_row_labels !== nothing && idx <= length(table_data.summary_row_labels)
@@ -301,6 +352,10 @@ function _excel_write_summary_row(sheet, table_data, table_format, style, idx, s
 
         fontsize = _excel_set_fontsize_and_alignment!(sheet, current_row + anchor_row_offset, col_offset + anchor_col_offset, atts, table_data.row_label_column_alignment, "top", true)
 
+        fillatts = _excel_newpairs(_excel_tablefill_atts("summary_row_label",fill.summary_row_label))
+        if !isnothing(fillatts)
+            XLSX.setFill(sheet, current_row + anchor_row_offset, col_offset + anchor_col_offset; fillatts...)
+        end
         row_height, col_length = _excel_cell_length_and_height(summary_label_text, fontsize)
         max_row_height = max(max_row_height, row_height)
         max_col_length[col_offset] = max(max_col_length[col_offset], col_length)
@@ -325,7 +380,8 @@ function _excel_write_summary_row(sheet, table_data, table_format, style, idx, s
             summary_value = string(summary_value) * _excel_to_superscript(footnote_refs[(:summary_row, idx, j)])
         end
         sheet[current_row + anchor_row_offset, j + col_offset + anchor_col_offset] = summary_value
-        atts = _excel_newpairs(_excel_tablestyle_atts("summary_row_cell",style.summary_row_cell))
+        atts = _excel_newpairs(_excel_tablestyle_atts("summary_row_cell",style.summary_row_cell, j))
+
 
         # get alignment for summary row cell - default to center if not specified
         aln = :c
@@ -337,6 +393,11 @@ function _excel_write_summary_row(sheet, table_data, table_format, style, idx, s
 
         fontsize = _excel_set_fontsize_and_alignment!(sheet, current_row + anchor_row_offset, j + col_offset + anchor_col_offset, atts, aln, "top", false)
 
+        fillatts = _excel_newpairs(_excel_tablefill_atts("summary_row_cell",fill.summary_row_cell, j))
+        if !isnothing(fillatts)
+            XLSX.setFill(sheet, current_row + anchor_row_offset, j + col_offset + anchor_col_offset; fillatts...)
+        end
+
         row_height, col_length = _excel_cell_length_and_height(summary_value, fontsize)
         max_row_height = max(max_row_height, row_height)
         max_col_length[j + col_offset] = max(max_col_length[j + col_offset], col_length)
@@ -345,64 +406,72 @@ function _excel_write_summary_row(sheet, table_data, table_format, style, idx, s
         for formatter in excel_formatters
             atts = _excel_format_attributes(table_data, formatter, current_row, j)
             if !isnothing(atts)
-                setFormat(sheet, current_row + anchor_row_offset, j + col_offset + anchor_col_offset; atts...)
+                XLSX.setFormat(sheet, current_row + anchor_row_offset, j + col_offset + anchor_col_offset; atts...)
             end
         end
 
         if  _excel_check_table_format("vline_between_data_columns",table_format.vline_between_data_columns) && j < num_cols
-            setBorder(sheet, current_row + anchor_row_offset, j+col_offset + anchor_col_offset; right=_excel_tableformat_atts("vline_between_data_columns_type", table_format.vline_between_data_columns_type))
+            XLSX.setBorder(sheet, current_row + anchor_row_offset, j+col_offset + anchor_col_offset; right=_excel_tableformat_atts("vline_between_data_columns_type", table_format.vline_between_data_columns_type))
         end
 
     end
-    #setRowHeight(sheet, current_row + anchor_row_offset; height = max_row_height)
 
     return max_row_height
 end
 
 """
-    _excel_write_footnotes!(sheet, table_data, table_format, style, current_row, num_cols, anchor_row_offset, anchor_col_offset, col_offset)
+    _excel_write_footnotes!(sheet, table_data, table_format, style, fill, current_row, num_cols, anchor_row_offset, anchor_col_offset, col_offset)
 
 Write the footnotes section to the worksheet.
 """
-function _excel_write_footnotes!(sheet, table_data, table_format, style, current_row, num_cols, max_row_height, anchor_row_offset, anchor_col_offset, col_offset)
+function _excel_write_footnotes!(sheet, table_data, table_format, style, fill, current_row, num_cols, max_row_height, anchor_row_offset, anchor_col_offset, col_offset)
     start_row = current_row
     atts = _excel_newpairs(_excel_tablestyle_atts("footnote",style.footnote))
+    fillatts = _excel_newpairs(_excel_tablefill_atts("footnote",fill.footnote))
     for (idx, (_, footnote_text)) in enumerate(table_data.footnotes)
         # Format as: ¹ Footnote text
         max_row_height[current_row] = 0.0 # reset for next row
         sheet[current_row + anchor_row_offset, 1 + anchor_col_offset] = _excel_to_superscript(idx) * " " * string(footnote_text)
-        mergeCells(sheet, XLSX.CellRange(XLSX.CellRef(current_row + anchor_row_offset, 1 + anchor_col_offset), XLSX.CellRef(current_row + anchor_row_offset, num_cols + col_offset + anchor_col_offset)))
+        XLSX.mergeCells(sheet, XLSX.CellRange(XLSX.CellRef(current_row + anchor_row_offset, 1 + anchor_col_offset), XLSX.CellRef(current_row + anchor_row_offset, num_cols + col_offset + anchor_col_offset)))
         footnote_lines = _excel_text_lines(footnote_text)
 
         fontsize = _excel_set_fontsize_and_alignment!(sheet, current_row + anchor_row_offset, 1 + anchor_col_offset, atts, nothing, "center", true)
+
+        if !isnothing(fillatts)
+            XLSX.setFill(sheet, current_row + anchor_row_offset, 1 + anchor_col_offset; fillatts...)
+        end
 
         max_row_height[current_row] = max(max_row_height[current_row], _excel_row_height_for_text(footnote_lines, fontsize))
 
         current_row += 1
     end
-    setUniformAlignment(sheet, start_row:current_row + anchor_row_offset-1, 1 + anchor_col_offset; vertical = "center", horizontal=_excel_alignment_string(table_data.footnote_alignment), wrapText = true)
-    setUniformFont(sheet, start_row:current_row + anchor_row_offset-1, 1 + anchor_col_offset; atts...)
+    XLSX.setUniformAlignment(sheet, start_row:current_row + anchor_row_offset-1, 1 + anchor_col_offset; vertical = "center", horizontal=_excel_alignment_string(table_data.footnote_alignment), wrapText = true)
+    XLSX.setUniformFont(sheet, start_row:current_row + anchor_row_offset-1, 1 + anchor_col_offset; atts...)
     if _excel_check_table_format("underline_footnotes", table_format.underline_footnotes)
-        setBorder(sheet, current_row+anchor_row_offset-1, 1 + anchor_col_offset:anchor_col_offset+num_cols+col_offset; bottom=_excel_tableformat_atts("underline_footnotes_type", table_format.underline_footnotes_type))
+        XLSX.setBorder(sheet, current_row+anchor_row_offset-1, 1 + anchor_col_offset:anchor_col_offset+num_cols+col_offset; bottom=_excel_tableformat_atts("underline_footnotes_type", table_format.underline_footnotes_type))
     end
     return current_row
 end
 
 """
-    _write_excel_sourcenotes!(sheet, table_data, style, current_row, num_cols, anchor_row_offset, anchor_col_offset, col_offset)
+    _write_excel_sourcenotes!(sheet, table_data, style, fill, current_row, num_cols, max_row_height, anchor_row_offset, anchor_col_offset, col_offset)
 
 Write the source notes section to the worksheet.
 """
-function _write_excel_sourcenotes!(sheet, table_data, style, current_row, num_cols, max_row_height, anchor_row_offset, anchor_col_offset, col_offset)
+function _write_excel_sourcenotes!(sheet, table_data, style, fill, current_row, num_cols, max_row_height, anchor_row_offset, anchor_col_offset, col_offset)
 #    _excel_unempty_row(sheet, current_row + anchor_row_offset, 1:num_cols+col_offset) # ensure these cells aren't empty before merging
     sheet[current_row + anchor_row_offset, 1 + anchor_col_offset] = table_data.source_notes
     atts = _excel_newpairs(_excel_tablestyle_atts("source_note",style.source_note))
 
     fontsize = _excel_set_fontsize_and_alignment!(sheet, current_row + anchor_row_offset, 1 + anchor_col_offset, atts, table_data.source_note_alignment, "center", true)
 
-    mergeCells(sheet, XLSX.CellRange(XLSX.CellRef(current_row + anchor_row_offset, 1 + anchor_col_offset), XLSX.CellRef(current_row + anchor_row_offset, num_cols + col_offset + anchor_col_offset)))
+    XLSX.mergeCells(sheet, XLSX.CellRange(XLSX.CellRef(current_row + anchor_row_offset, 1 + anchor_col_offset), XLSX.CellRef(current_row + anchor_row_offset, num_cols + col_offset + anchor_col_offset)))
     source_lines = _excel_text_lines(table_data.source_notes)
     max_row_height = max(max_row_height, _excel_row_height_for_text(source_lines, fontsize))
-    setRowHeight(sheet, current_row + anchor_row_offset; height = max_row_height)
+    fillatts = _excel_newpairs(_excel_tablefill_atts("source_note",fill.source_note))
+    if !isnothing(fillatts)
+        XLSX.setFill(sheet, current_row + anchor_row_offset, 1 + anchor_col_offset; fillatts...)
+    end
+    XLSX.setRowHeight(sheet, current_row + anchor_row_offset; height = max_row_height)
     return max_row_height
 end

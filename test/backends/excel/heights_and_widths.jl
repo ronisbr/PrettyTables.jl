@@ -4,7 +4,7 @@
 #
 ############################################################################################
 
-@testset "Heights and widths" verbose=true begin
+@testset "Heights and widths" verbose = true begin
 
     data = [
         1 2 3
@@ -12,8 +12,8 @@
     result = pretty_table(
         XLSX.XLSXFile,
         data;
-        title=styled"{strikethrough:Test} Table",
-        subtitle="Subtitle_test",
+        title = "Test Table",
+        subtitle = "Subtitle_test",
         highlighters = [ExcelHighlighter((data, i, j) -> (i == 1),
             ["color" => "red", "bold" => "true", "size" => "32"])
         ],
@@ -37,7 +37,7 @@
         XLSX.XLSXFile,
         data;
         style = ExcelTableStyle(
-            table_cell_style = ["size" => "48", "bold" => "true"],
+            table_cell = ["size" => "48", "bold" => "true"],
         )
     )
     # Cells containing text affect calculated cell width; numbers don't.

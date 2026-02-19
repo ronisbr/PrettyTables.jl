@@ -55,7 +55,9 @@ Implementation of Excel backend printing when XLSX.jl is loaded.
 - `table_format::ExcelTableFormat`: Defines the table borders to be used in each section 
   of the table. For more information, see the section [`ExcelTableFormat`](@ref)
 - `style::ExcelTableStyle`: Defines the Excel font attributes to be used by each element of 
-  the table. For more information, see the section [`ExcelTableStyle`](@ref). 
+  the table. For more information, see the section [`ExcelTableStyle`](@ref).
+- `fill::ExcelTableFill`: Defines the Excel cell fill to be used by each element of 
+  the table. For more information, see the section [`ExcelTableFill`](@ref).
 
 Save a returned XLSX.XLSXFile using `XLSX.writexlsx` or `XLSX.savexlsx`.
 
@@ -75,7 +77,7 @@ function PrettyTables._excel__print(
     if filename === nothing
         if sheet isa String
             # Return in-memory XLSX object
-            xf = newxlsx()
+            xf = XLSX.newxlsx()
             sh = xf[1]
             sheet == sh.name || XLSX.renamesheet!(sh, sheet)
             _write_excel_table!(sh, table_data; anchor_cell, kwargs...)
