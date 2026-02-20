@@ -63,9 +63,10 @@ Save a returned XLSX.XLSXFile using `XLSX.writexlsx` or `XLSX.savexlsx`.
 
 """
 function PrettyTables._excel__print(
+    # Default values chosen to minimise risk of accidentally overwriting data if `mode=\"rw\"`
     pspec::PrintingSpec;
     filename::Union{Nothing, String} = nothing,
-    sheet::Union{String, XLSX.Worksheet} = "prettytable", # this minimises risk of accidentally overwriting data if `mode=\"rw\"`.
+    sheet::Union{String, XLSX.Worksheet} = "prettytable",
     mode::String = "w",
     overwrite::Bool = false,
     anchor_cell::String = "A1",

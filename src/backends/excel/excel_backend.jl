@@ -15,7 +15,7 @@ Implementation of Excel backend printing when XLSX.jl is loaded.
     - If `sheet === XLSX.worksheet`: Returns `nothing`. The worksheet specified is updated in place.
     - If `sheet !== XLSX.worksheet`: Returns an in-memory `XLSX.XLSXFile` object.
 - If `filename::String` and `mode=\"w\"`: Writes to a new file and returns the filename.
-- If `filename::String` and `mode=\"rw\"`: Reads an existing file, updates and returns the in-memory `XLSX.XLSXFile` object
+- If `filename::String` and `mode=\"rw\"`: Reads an existing file, updates and returns the in-memory `XLSX.XLSXFile` object.
 
 # Additional Keywords
 
@@ -25,9 +25,9 @@ Implementation of Excel backend printing when XLSX.jl is loaded.
   for `mode`.
 - `sheet::Union{String, XLSX.Worksheet}`: If `sheet` is a `String`, it specifies the name of 
   the tab to use for the created pretty table. Default = `"prettytable"`. If a sheet with the 
-  given name doesn't exist, it will be created. The resultant `XLSXFile` object will be 
-  returned. If `sheet` is an `XLSX.Worksheet`, this worksheet will be updated in place by the 
-  addition of the pretty table and `nothing` will be returned.
+  given name doesn't exist, it will be created. If `sheet` is an `XLSX.Worksheet`, this 
+  worksheet will be updated in place by the addition of the pretty table and `nothing` will 
+  be returned.
 - `mode::String`: Determines whether to create a new Excel file (`mode = "w"` - Default) or 
   to open and use an existing Excel file (`mode = "rw"`).
 - `overwrite::Bool`: Determines whether or not to overwrite an existing file if `mode = "w"`. 

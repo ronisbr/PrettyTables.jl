@@ -1,6 +1,6 @@
 ## Description #############################################################################
 #
-# Helpers for designing tables in the Excel backend.
+# Excel Back End: Helpers for building tables.
 #
 ############################################################################################
 
@@ -40,7 +40,7 @@ _excel_unempty_row(sheet, row, cols) = sheet[row, cols] = ""
 
 Return the alignment value to use for column labels.
 """
-function _excel_column_alignment(col, col_alignment, table_alignment=nothing)
+function _excel_column_alignment(col, col_alignment, table_alignment = nothing)
     if col_alignment isa Symbol
         return col_alignment
     elseif col_alignment isa Vector{Symbol} && !isempty(col_alignment)
@@ -142,8 +142,8 @@ Determines the length of the longest line in a multi-line text
 """
 function _excel_multilength(text)
     if text isa AbstractString
-        lines=split(text, "\n")
-        maxlen=0
+        lines = split(text, "\n")
+        maxlen = 0
         for line in lines
             maxlen = max(maxlen, length(line))
         end
@@ -186,7 +186,11 @@ end
 Override those attributes of the default table format for this table element 
 with those specified in ExcelTableFormat
 """
-_excel_tableformat_atts(property, format) = _excel_override_properties(DEFAULT_EXCEL_TABLE_FORMAT, property, format)
+_excel_tableformat_atts(property, format) = _excel_override_properties(
+    DEFAULT_EXCEL_TABLE_FORMAT, 
+    property, 
+    format,
+)
 
 """
     _excel_tablestyle_atts(property::String, format::Vector{ExcelPair})
@@ -304,7 +308,11 @@ function _excel_create_mergemap(table_data)
     if table_data.merge_column_label_cells !== nothing
         for merge_cell in table_data.merge_column_label_cells
             # merge_cell has fields: i (row), j (column), column_span, data, alignment
-            merge_map[(merge_cell.i, merge_cell.j)] = (merge_cell.column_span, merge_cell.data, merge_cell.alignment)
+            merge_map[(merge_cell.i, merge_cell.j)] = (
+                merge_cell.column_span, 
+                merge_cell.data, 
+                merge_cell.alignment,
+            )
         end
     end
     return merge_map
@@ -367,7 +375,7 @@ end
 Set the font size and alignment in a cell.
 """
 function _excel_set_fontsize_and_alignment!(sheet, row, col, atts, alignment, valign, wrap)
-    fontsize=DEFAULT_FONT_SIZE
+    fontsize = DEFAULT_FONT_SIZE
     if !isnothing(atts)
         fontsize = _excel_update_fontsize!(atts, fontsize)
         XLSX.setFont(sheet, row, col; atts...)
@@ -375,7 +383,14 @@ function _excel_set_fontsize_and_alignment!(sheet, row, col, atts, alignment, va
         XLSX.setFont(sheet, row, col; size = fontsize)
     end
     if !isnothing(alignment)
-        XLSX.setAlignment(sheet, row, col; vertical = valign, horizontal = _excel_alignment_string(alignment), wrapText = wrap)
+        XLSX.setAlignment(
+            sheet, 
+            row, 
+            col; 
+            vertical = valign, 
+            horizontal = _excel_alignment_string(alignment), 
+            wrapText = wrap,
+        )
     end
     return fontsize
 end
@@ -396,8 +411,11 @@ function _excel_get_col_width(table_format, col, max_col_length, col_offset)
     if table_format.data_column_width isa Float64
         return table_format.data_column_width
     elseif table_format.data_column_width isa Vector{Float64}
-        length(table_format.data_column_width) == length(max_col_length) || throw(ArgumentError("The table format property `data_column_width` shoud have the same number of elements as there are data columns. Expected $(length(max_col_length)): Got $(length(table_format.data_column_width))."))
-        return table_format.data_column_width[col]
+        if length(table_format.data_column_width) == length(max_col_length)
+            return table_format.data_column_width[col]
+        else
+            throw(ArgumentError("The table format property `data_column_width` shoud have the same number of elements as there are data columns. Expected $(length(max_col_length)): Got $(length(table_format.data_column_width))."))
+        end
     end
 
     # Limit calculated values
@@ -405,15 +423,21 @@ function _excel_get_col_width(table_format, col, max_col_length, col_offset)
     if table_format.min_data_column_width isa Float64 && table_format.min_data_column_width > 0.0
         col_width = max(col_width, table_format.min_data_column_width)
     elseif table_format.min_data_column_width isa Vector{Float64} && table_format.min_data_column_width[col] > 0.0
-        length(table_format.min_data_column_width) == length(max_col_length) || throw(ArgumentError("The table format property `min_data_column_width` shoud have the same number of elements as there are data columns. Expected $(length(max_col_length)): Got $(length(table_format.min_data_column_width))."))
-        col_width = max(col_width, table_format.min_data_column_width[col])
+        if length(table_format.min_data_column_width) == length(max_col_length)
+            col_width = max(col_width, table_format.min_data_column_width[col])
+        else
+            throw(ArgumentError("The table format property `min_data_column_width` shoud have the same number of elements as there are data columns. Expected $(length(max_col_length)): Got $(length(table_format.min_data_column_width))."))
+        end
     end
 
     if table_format.max_data_column_width isa Float64 && table_format.max_data_column_width > 0.0
         col_width = min(col_width, table_format.max_data_column_width)
     elseif table_format.max_data_column_width isa Vector{Float64} && table_format.max_data_column_width[col] > 0.0
-        length(table_format.max_data_column_width) == length(max_col_length) || throw(ArgumentError("The table format property `max_data_column_width` shoud have the same number of elements as there are data columns. Expected $(length(max_col_length)): Got $(length(table_format.max_data_column_width))."))
-        col_width = min(col_width, table_format.max_data_column_width[col])
+        if length(table_format.max_data_column_width) == length(max_col_length)
+            col_width = min(col_width, table_format.max_data_column_width[col])
+        else
+            throw(ArgumentError("The table format property `max_data_column_width` shoud have the same number of elements as there are data columns. Expected $(length(max_col_length)): Got $(length(table_format.max_data_column_width))."))
+        end
     end
 
     return col_width

@@ -1,11 +1,11 @@
 ## Description #############################################################################
 #
-# Documentation for the Excel backend.
+# Excel Back End: Documentation for the Excel backend.
 #
 ############################################################################################
 
 """
-# PrettyTables.jl Excel Backend
+# Excel Backend
 
 The Excel backend can be selected by passing the keyword `backend = :excel` to the function
 [`pretty_table`](@ref). This will allow you to create a pretty table in a newly created 
@@ -15,19 +15,25 @@ This backend uses the functions of [XLSX.jl](https://github.com/felipenoris/XLSX
 particularly the functions `setFont`, `setFill`, `setBorder` and `setFormat`. For more 
 information, refer to the documentation of this package.
 
-The following additional keywords configure the output of the `:excel` backend.
+## Keywords
 
-# Keywords
+The following additional keywords configure the output of the `:excel` backend.
 
 - `filename::Union{Nothing,String}`: The name of the Excel file to be used to contain the 
   table. If `nothing` (default), no file will be created but an `XLSXFile` object will be 
   returned instead. If a valid filename is given, behaviour depends on the value specified 
-  for `mode`.
+  for `mode` as follows:
+    - If `filename === nothing`
+      - If `sheet === XLSX.worksheet`: Returns `nothing`. The worksheet specified is updated in place.
+      - If `sheet !== XLSX.worksheet`: Returns an in-memory `XLSX.XLSXFile` object.
+    - If `filename::String` and `mode=\"w\"`: Writes to a new file and returns the filename.
+    - If `filename::String` and `mode=\"rw\"`: Reads an existing file, updates and returns the in-memory `XLSX.XLSXFile` object.
+
 - `sheet::Union{String, XLSX.Worksheet}`: If `sheet` is a `String`, it specifies the name of 
   the tab to use for the created pretty table. Default = `"prettytable"`. If a sheet with the 
-  given name doesn't exist, it will be created. The resultant `XLSXFile` object will be 
-  returned. If `sheet` is an `XLSX.Worksheet`, this worksheet will be updated in place by the 
-  addition of the pretty table and `nothing` will be returned.
+  given name doesn't exist, it will be created. If `sheet` is an `XLSX.Worksheet`, this 
+  worksheet will be updated in place by the addition of the pretty table and `nothing` will 
+  be returned.
 - `mode::String`: Determines whether to create a new Excel file (`mode = "w"` - Default) or 
   to open and use an existing Excel file (`mode = "rw"`).
 - `overwrite::Bool`: Determines whether or not to overwrite an existing file if `mode = "w"`. 
@@ -45,8 +51,6 @@ The following additional keywords configure the output of the `:excel` backend.
 - `style::ExcelTableStyle`: Defines the Excel font attributes to be used by each element of 
   the table. For more information, see the section [`ExcelTableStyle`](@ref). 
 
-
-# Extended Help
 
 ## Excel Highlighters
 
@@ -79,7 +83,8 @@ where `:format` can be specified as `:font`, `:fill` or `:border`. The attribute
 values are the same as those supported by the functions `XLSX.setFont`, `XLSX.setFill` 
 and `XLSX.setBorder`.
 
-If the leading symbol is omitted, it is assumed to be `:font`.
+If a single decoration is supplied, the leading symbol may omitted and will be assumed 
+to be `:font`.
 
 !!! note
 
@@ -118,16 +123,16 @@ highlighters = [
 
 It is possible to apply a set of native Excel formats by passing a `Vector{ExcelFormatter}` 
 to the `excel_formatters` keyword. Each Excel formatter is an instance of the structure 
-[`ExcelFormatter`](@ref). It contains the following two public fields:
+[`ExcelFormatter`](@ref).
 
-- `f::Function`: Function with the signature `f(value, i, j)` which should return `true` 
-  if the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
-- `numFmt::ExcelPair`: Specifies the format to apply to the cell. The format should be 
-  specified with an `ExcelPair` (*i.e.* `Pair{String, String}`) using the `XLSX.jl` 
-  formatting definitions used by the `XLSX.setFormat` function.
+The first formatter (in the order they are specified) that satisfies the specified condition 
+in the given table cell is applied, and the remainder of the formatters in the list are 
+skipped. If none matches, no `ExcelFormatter` is applied.
 
-Each formatter that satisfies the specified condition in the given table cell is applied 
-in turn, in the order they appear in the vector of formatters.
+An `ExcelFormatter` can be applied in the summary row, too. In this case, the value of `i` 
+should relate to the Excel row in which the summary row appears, rather than the data table 
+row. This will always be outside the range of (greater than) any `i` in the data table. The
+value of `j` has the same meaning/values (column specifier) as in the data table itself.
 
 Excel formatters may be applied in addition to the standard formatters. The standard 
 formatters control the literal values written to Excel while the Excel formatters control 
@@ -164,9 +169,13 @@ object of type [`ExcelTableFormat`}(@ref)] that contains the following fields:
 - `underline_title_type::Union{Nothing,Vector{ExcelPair}}`: Describes the border to be 
   drawn under the table title/subtitle section.
 - `underline_headers::Bool`: Determines whether to draw a cell border under the 
-  (unmerged) column headers.
+  (unmerged) column header section.
 - `underline_headers_type::Union{Nothing,Vector{ExcelPair}}`: Describes the border 
-  to be drawn under teh (unmerged) column headers.
+  to be drawn under the column header section.
+- `underline_between_headers::Bool`: Determines whether to draw a cell border under the 
+  (unmerged) column headers.
+- `underline_between_headers_type::Union{Nothing,Vector{ExcelPair}}`: Describes the border 
+  to be drawn between (unmerged) column headers.
 - `underline_merged_headers::Bool`: Determines whether to draw a cell border under 
   any merged column headers. 
 - `underline_merged_headers_type::Union{Nothing,Vector{ExcelPair}}`: Describes the 
@@ -227,9 +236,12 @@ object of type [`ExcelTableFormat`}(@ref)] that contains the following fields:
   entry.
 
 Each cell border is controlled by two fields. The first is a Bool which dictates 
-whether or not the cell border should be drawn. The second is a vector of 
-`Pair{String, String}` which specifies the border attributes to use if the border 
-is to be drawn using the attributes supported by `XLSX.setBorder`.
+whether or not the cell border should be drawn (default = `true` in every case). 
+The second is a vector of `Pair{String, String}` which specifies the border 
+attributes to use if the border is to be drawn using the attributes supported 
+by `XLSX.setBorder`. The default color is `black` and the style is one of `dotted` 
+(for internal cell borders within a section), `thin` (for borders between sections), 
+or `thick` (only for the outside table border).
 
 The `underline` and `overline` values specify the bottom and top cell borders 
 respectively while `vline` values specify the border on the right hand side.
@@ -237,9 +249,21 @@ respectively while `vline` values specify the border on the right hand side.
 The `title` border is drawn under the subtitle row (if provided) or under the title 
 row if there is no subtitle.
 
+To simplify the specification of table borders, four standard definitions are provided:
+- `DEFAULT_EXCEL_TABLE_FORMAT`: The default table format used by `pretty_table` when 
+  the `table_format` keyword is not specified. This format draws all borders with a 
+  thin line, except for the outside border which is drawn with a thick line and the 
+  data row underline and summary row underline which are drawn with a dotted line.
+- `EXCEL_FORMAT_NO_VLINES`: A table format with no vertical lines.
+- `EXCEL_FORMAT_CELL_LINES`: A table format with no borders around the individual data 
+  cells.
+  - `EXCEL_FORMAT_SECTION_LINES`: Produces a table with horizontal lines separating the 
+  different table sections (title, column labels, data rows, summary rows, footnotes)
+  and one vertical line between the row labels and the table data.
+
 The `data_column_width`, `min_data_column_width` and `max_data_column_width` fields
-are specified in `pt`. If `data_column_width` is specified, `min_data_column_width` 
-and `max_data_column_width` are ignored.
+are specified in Excel's internal units. If `data_column_width` is specified, 
+`min_data_column_width` and `max_data_column_width` are ignored.
 
 It is only necessary to define those fields for which the default border formats 
 need to be overwritten. For example, to choose to draw an outside border around 
@@ -250,6 +274,24 @@ table_format = ExcelTableFormat(
     outside_border_type=["style" => "double"],
 )
 ```
+
+The predefined table formats may be used as a starting point, alone or in combination 
+and, if required, can be further modidied by overwriting specific fields. For example, 
+to start with the `EXCEL_FORMAT_SECTION_LINES` and format and modify the section lines 
+to be thick and red:
+
+```julia
+table_format = ExcelTableFormat(
+    EXCEL_FORMAT_SECTION_LINES;
+    underline_data_rows_type = ["style" => "thick", "color" => "red"],
+    overline_group_type = ["style" => "thick", "color" => "red"],
+    underline_group_type = ["style" => "thick", "color" => "red"],
+    underline_summary_rows_type = ["style" => "thick", "color" => "red"],
+)
+```
+When merging formats like this, the predefined table formats are applied in order, 
+with later formats taking precedence over earlier ones. Finally, any keyword arguments 
+provided will take precedence over all predefined formats.
 
 ## Excel Table Style
 
@@ -273,13 +315,19 @@ contains the following fields:
   merged cells at the first column label line.
 - `merged_column_label::Union{Nothing,Vector{ExcelPair}}`: Style for the merged cells 
   at the rest of the column labels.
-- `summary_row_cell::Union{Nothing,Vector{ExcelPair}}`: Style for the summary row cell.
+- `table_cell::Union{Nothing, Vector{ExcelPair}, Vector{Vector{ExcelPair}}}`: Style 
+  for the table cells. If a vector of `Vector{ExcelPair}}` is provided, each 
+  column in the data table will use the corresponding style.
 - `summary_row_label::Union{Nothing,Vector{ExcelPair}}`: Style for the summary row label.
+- `summary_row_cell::Union{Nothing, Vector{ExcelPair}, Vector{Vector{ExcelPair}}}`: Style 
+  for the summary row cell. If a vector of `Vector{ExcelPair}}` is provided, each column 
+  in the summary row will use the corresponding style.
 - `footnote::Union{Nothing,Vector{ExcelPair}}`: Style for the footnotes.
 - `source_note::Union{Nothing,Vector{ExcelPair}}`: Style for the source notes.
 
-Each field is a vector of `ExcelPair`, *i.e.* `Pair{String, String}`, describing
-properties and values compatible with the `XLSX.setFont` function.
+Each field corresponds to a table element and should be a vector of `ExcelPair`, 
+*i.e.* `Pair{String, String}`, describing properties and values compatible with the 
+`XLSX.setFont` function.
 
 It is only necessary to define those fields for which the default style needs to be 
 overwritten. For example:
@@ -295,6 +343,52 @@ style = ExcelTableStyle(
     title                          = ["bold" => "true", "color" => "orange", "size" => "18", "under" => "single"],
 )
 
+```
+
+## Excel Table Fill
+
+The Excel table fill (background cell color) is defined using an object of type 
+[`ExcelTableFill`](@ref) that contains the following fields: 
+
+- `title::Union{Nothing,Vector{ExcelPair}}`: Fill for the title.
+- `subtitle::Union{Nothing,Vector{ExcelPair}}`: Fill for the subtitle.
+- `row_number_label::Union{Nothing,Vector{ExcelPair}}`: Fill for the row number label.
+- `row_number::Union{Nothing,Vector{ExcelPair}}`: Fill for the row number.
+- `stubhead_label::Union{Nothing,Vector{ExcelPair}}`: Fill for the stubhead label.
+- `row_label::Union{Nothing,Vector{ExcelPair}}`: Fill for the row label.
+- `row_group_label::Union{Nothing,Vector{ExcelPair}}`: Fill for the row group label.
+- `first_line_column_label::Union{Nothing,Vector{ExcelPair},Vector{Vector{ExcelPair}}}`: 
+  Fill for the first line of the column labels. If a vector of `Vector{ExcelPair}}` is 
+  provided, each column label in the first line will use the corresponding fill.
+- `column_label::Union{Nothing,Vector{ExcelPair}, Vector{Vector{ExcelPair}}}`: Fill for 
+  the rest of the column labels. If a vector of `Vector{ExcelPair}}` is provided, each 
+  column label will use the corresponding fill.
+- `first_line_merged_column_label::Union{Nothing,Vector{ExcelPair}}`: Fill for the 
+  merged cells at the first column label line.
+- `merged_column_label::Union{Nothing,Vector{ExcelPair}}`: Fill for the merged cells 
+  at the rest of the column labels.
+- `table_cell::Union{Nothing, Vector{ExcelPair}, Vector{Vector{ExcelPair}}}`: Fill 
+  for the table cells. If a vector of `Vector{ExcelPair}}` is provided, each 
+  column in the data table will use the corresponding fill.
+- `summary_row_label::Union{Nothing,Vector{ExcelPair}}`: Fill for the summary row label.
+- `summary_row_cell::Union{Nothing, Vector{ExcelPair}, Vector{Vector{ExcelPair}}}`: Fill 
+  for the summary row cell. If a vector of `Vector{ExcelPair}}` is provided, each column 
+  in the summary row will use the corresponding fill.
+- `footnote::Union{Nothing,Vector{ExcelPair}}`: Fill for the footnotes.
+- `source_note::Union{Nothing,Vector{ExcelPair}}`: Fill for the source notes.
+
+Each field corresponds to a table element and should be a vector of `ExcelPair`, 
+*i.e.* `Pair{String, String}`, describing properties and values compatible with the 
+`XLSX.setFill` function.
+
+It is only necessary to define those fields for which the default style needs to be 
+overwritten. For example:
+
+```julia
+style = ExcelTableFill(
+    column_label                   = [["pattern" => "solid", "fgColor" => "gray20"], ["pattern" => "solid", "fgColor" => "grey80"]], # assuming two columns
+    summary_row_label              = ["pattern" => "lightHorizontal"],
+)
 ```
 
 """

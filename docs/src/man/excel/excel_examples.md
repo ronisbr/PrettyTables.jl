@@ -4,6 +4,37 @@ Here we show some examples produced by the Excel backend.
 
 ## Excel Formatter
 
+Native Excel formatting can straightforwardly be used to format the display format of 
+table data without affecting the underlying values.
+
+```julia
+data = [10.0^(-i + j) for i in 1:6, j in 1:6]
+
+f1 = ExcelFormatter((data, i, j) -> j==1, ["format" => "#,##0.0????_0"])
+
+f2 = ExcelFormatter((data, i, j) -> j==2, ["format" => "#,##0.0???_0"])
+
+f3 = ExcelFormatter((data, i, j) -> j==3, ["format" => "#,##0.0??_0"])
+
+f4 = ExcelFormatter((data, i, j) -> j==4, ["format" => "#,##0.0?_0"])
+
+f5 = ExcelFormatter((data, i, j) -> j==5, ["format" => "#,##0.0_0"])
+
+f6 = ExcelFormatter((data, i, j) -> j==6, ["format" => "#,##0_0"])
+
+f = pretty_table(
+        data, 
+        anchor_cell = "B2"; 
+        table_format = ExcelTableFormat(data_column_width = 10.5), 
+        excel_formatters = [f1, f2, f3, f4, f5, f6], 
+        backend = :excel,
+    )
+
+```
+
+![image|320x500](../excel/excel_images/Excel_formatter2.png)
+
+
 ```julia
 julia> data = [f(a) for a = 0:30:90, f in (sind, cosd, tand)]
 4×3 Matrix{Float64}:
@@ -14,8 +45,8 @@ julia> data = [f(a) for a = 0:30:90, f in (sind, cosd, tand)]
 
 julia> f = pretty_table(data; 
     excel_formatters = [ExcelFormatter((v, i, j) -> true, ["format" => "0.000_);;@_)"])], 
-    backend=:excel, 
-    anchor_cell="B2"
+    backend = :excel, 
+    anchor_cell = "B2"
 )
 XLSXFile("blank.xlsx") containing 1 Worksheet
             sheetname size          range
@@ -76,17 +107,17 @@ For example, using the same trig data table as above:
 ```julia
 pretty_table(data; 
     formatters = [fmt__printf("%5.3f")], 
-    backend=:excel, 
-    filename="prettytable.xlsx", 
-    overwrite=true, 
-    anchor_cell="D8"
+    backend = :excel, 
+    filename = "prettytable.xlsx", 
+    overwrite = true, 
+    anchor_cell = "D8"
 )
 ```
 ![image|320x500](../excel/excel_images/Predefined_formatter.png)
 
 Excel generates a warning that numbers are represented as text. Clicking in such a cell and 
 hitting enter causes Excel to convert the string to a number again, but the formatting is 
-lost (eg, 1.000 => 1). Moreover, by converting to a string, the precision has been truncated 
+lost (eg, `1.000` => `1`). Moreover, by converting to a string, the precision has been truncated 
 to the length of the string. While not important for presentation purposes, if the table is 
 used in Excel as input for further calculation, some information will have been lost.
 
@@ -218,6 +249,99 @@ julia> writexlsx("mytest.xlsx", f, overwrite=true)
 
 ```
 ![image|320x500](../excel/excel_images/Excel_table_style.png)
+
+## Excel borders and fill
+
+```julia
+matrix = [
+    "Data" "Data" "Data"
+    "Data" "Data" "Data"
+    "Data" "Data" "Data"
+    "Data" "Data" "Data"
+    "Data" "Data" "Data"
+    "Data" "Data" "Data"
+]
+
+result = pretty_table(
+    XLSX.XLSXFile,
+    matrix,
+    anchor_cell = "B2";
+    title = "Title",
+    subtitle = "Subtitle",
+    stubhead_label  = "Stubhead Label",
+    column_labels = [
+        ["Column Label", "Column Label", "Column Label"],
+        ["Column Label", MultiColumn(2, "Merged Column Label")],
+        [MultiColumn(2, "Merged Column Label"), "Column Label"],
+    ],
+    merge_column_label_cells = :auto,
+    show_row_number_column = true,
+    row_number_column_label = "Row Number",
+    row_labels = fill("Row Label", 6),
+    row_group_labels = [3 => "Row Group Label", 5 => "Row Group Label"],
+    summary_row_labels = ["Row Summary Label", "Row Summary Label"],
+    summary_rows = [(data, i) -> "Summary Cell", (data, i) -> "Summary Cell"],
+    footnotes = [
+        (:title, 1, 1) => "Footnotes"
+    ],
+    source_notes = "Source Notes",
+    alignment = :c,
+    row_label_column_alignment = :c,
+    row_number_column_alignment = :c,
+    table_format = ExcelTableFormat(
+        outside_border = false,
+        underline_title_type = ["style" => "thick", "color" => "white"],
+        underline_headers_type = ["style" => "thick", "color" => "white"],
+        underline_between_headers_type = ["style" => "thin", "color" => "white"],
+        underline_merged_headers_type = ["style" => "thin", "color" => "white"],
+        underline_data_rows_type = ["style" => "thin", "color" => "white"],
+        underline_table_type = ["style" => "thick", "color" => "white"],
+        overline_group_type = ["style" => "thick", "color" => "white"],
+        underline_group_type = ["style" => "thick", "color" => "white"],
+        underline_summary_rows_type = ["style" => "thin", "color" => "white"],
+        underline_summary_type = ["style" => "thick", "color" => "white"],
+        underline_footnotes_type = ["style" => "thin", "color" => "white"],
+        vline_after_row_numbers_type = ["style" => "thin", "color" => "white"],
+        vline_after_row_labels_type = ["style" => "thick", "color" => "white"],
+        vline_between_data_columns_type = ["style" => "thin", "color" => "white"],
+    ),
+    style = ExcelTableStyle(
+        title = ["color" => "white", "bold" => "true"],
+        subtitle = ["color" => "white", "italic" => "true"],
+        row_number_label = ["color" => "white", "bold" => "true"],
+        row_number = ["color" => "white"],
+        stubhead_label = ["color" => "white", "bold" => "true"],
+        row_label = ["color" => "white", "bold" => "true"],
+        row_group_label = ["color" => "white", "bold" => "true"],
+        first_line_column_label = ["color" => "white", "bold" => "true"],
+        column_label = ["color" => "white"],
+        first_line_merged_column_label = ["color" => "white", "bold" => "true"],
+        merged_column_label = ["color" => "white"],
+        table_cell = ["color" => "white"],
+        summary_row_label = ["color" => "white", "bold" => "true"],
+        summary_row_cell = ["color" => "white"],
+        source_note = ["color" => "black"],
+    ),
+    fill = ExcelTableFill(
+        title = ["pattern" => "solid", "fgColor" => "black"],
+        subtitle = ["pattern" => "solid", "fgColor" => "grey50"],
+        row_number_label = ["pattern" => "solid", "fgColor" => "seagreen"],
+        row_number = ["pattern" => "solid", "fgColor" => "steelblue4"],
+        stubhead_label = ["pattern" => "solid", "fgColor" => "seagreen"],
+        row_label = ["pattern" => "solid", "fgColor" => "steelblue4"],
+        row_group_label = ["pattern" => "solid", "fgColor" => "goldenrod1"],
+        first_line_column_label = ["pattern" => "solid", "fgColor" => "seagreen"],
+        column_label = ["pattern" => "solid", "fgColor" => "seagreen"],
+        merged_column_label = ["pattern" => "solid", "fgColor" => "seagreen"],
+        table_cell = ["pattern" => "solid", "fgColor" => "steelblue4"],
+        summary_row_label = ["pattern" => "solid", "fgColor" => "violetred3"],
+        summary_row_cell = ["pattern" => "solid", "fgColor" => "violetred3"],
+        footnote = ["pattern" => "solid", "fgColor" => "grey80"],
+        source_note = ["pattern" => "solid", "fgColor" => "grey80"],  
+    )
+)
+```
+![image|320x500](../excel/excel_images/Excel_table_fill.png)
 
 
 ## Putting it all together

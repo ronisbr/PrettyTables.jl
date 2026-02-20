@@ -1,6 +1,6 @@
 ## Description #############################################################################
 #
-# Types and structures for the Excel back end.
+# Excel Back End: Types, structures and constructors.
 #
 ############################################################################################
 
@@ -70,7 +70,8 @@ where `:format` can be specified as `:font`, `:fill` or `:border`. The attribute
 values are the same as those supported by the functions `XLSX.setFont`, `XLSX.setFill` 
 and `XLSX.setBorder`.
 
-If the leading symbol is omitted, it is assumed to be `:font`.
+If a single decoration is supplied, the leading symbol may omitted and will be assumed 
+to be `:font`.
 
 For example, if we want to highlight the cells in the third data column with a value greater 
 than 10, those in the fourth column with a value greater than 10 and those (in any column) 
@@ -170,8 +171,14 @@ It is possible to apply a set of native Excel formats by passing a `Vector{Excel
 to the `excel_formatters` keyword. Each Excel formatter is an instance of the structure 
 [`ExcelFormatter`](@ref).
 
-Each formatter that satisfies the specified condition in the given table cell is applied 
-in turn, in the order they appear in the vector of formatters.
+The first formatter (in the order they are specified) that satisfies the specified condition 
+in the given table cell is applied, and the remainder of the formatters in the list are 
+skipped. If none matches, no `ExcelFormatter` is applied.
+
+An `ExcelFormatter` can be applied in the summary row, too. In this case, the value of `i` 
+should relate to the Excel row in which the summary row appears, rather than the data table 
+row. This will always be outside the range of (greater than) any `i` in the data table. The
+value of `j` has the same meaning/values (column specifier) as in the data table itself.
 
 Excel formatters may be applied in addition to the standard formatters. The standard 
 formatters control the literal values written to Excel while the Excel formatters control 
@@ -296,9 +303,12 @@ The borders to be used in each section of the generated table are defined using 
 object of type [`ExcelTableFormat`}(@ref)] that contains the following fields:
 
 Each cell border is controlled by two fields. The first is a Bool which dictates 
-whether or not the cell border should be drawn. The second is a vector of 
-`Pair{String, String}` which specifies the border attributes to use if the border 
-is to be drawn using the attributes supported by `XLSX.setBorder`.
+whether or not the cell border should be drawn (default = `true` in every case). 
+The second is a vector of `Pair{String, String}` which specifies the border 
+attributes to use if the border is to be drawn using the attributes supported 
+by `XLSX.setBorder`. The default color is `black` and the style is one of `dotted` 
+(for internal cell borders within a section), `thin` (for borders between sections), 
+or `thick` (only for the outside table border).
 
 The `underline` and `overline` values specify the bottom and top cell borders 
 respectively while `vline` values specify the border on the right hand side.
@@ -319,8 +329,8 @@ To simplify the specification of table borders, four standard definitions are pr
   and one vertical line between the row labels and the table data.
 
 The `data_column_width`, `min_data_column_width` and `max_data_column_width` fields
-are specified in `pt`. If `data_column_width` is specified, `min_data_column_width` 
-and `max_data_column_width` are ignored.
+are specified in Excel's internal units. If `data_column_width` is specified, 
+`min_data_column_width` and `max_data_column_width` are ignored.
 
 It is only necessary to define those fields for which the default border formats 
 need to be overwritten. For example, to choose to draw an outside border around 
@@ -440,7 +450,7 @@ const EXCEL_FORMAT_SECTION_LINES = ExcelTableFormat(
     vline_after_row_numbers = false,
 )
 
-function _excel_merge(a::ExcelTableFormat, b::ExcelTableFormat)
+function _excel_format_merge(a::ExcelTableFormat, b::ExcelTableFormat)
     return ExcelTableFormat(; (name => (getfield(b, name) === nothing ?
                                         getfield(a, name) :
                                         getfield(b, name))
@@ -477,11 +487,11 @@ function ExcelTableFormat(presets::ExcelTableFormat...; kwargs...)
 
     # Merge all presets in order
     for p in presets
-        fmt = _excel_merge(fmt, p)
+        fmt = _excel_format_merge(fmt, p)
     end
 
     # Apply keyword overrides last
-    return _excel_merge(fmt, ExcelTableFormat(; kwargs...))
+    return _excel_format_merge(fmt, ExcelTableFormat(; kwargs...))
 end
 
 
@@ -634,7 +644,6 @@ Each field corresponds to a table element and should be a vector of `ExcelPair`,
 
 It is only necessary to define those fields for which the default style needs to be 
 overwritten. For example:
-
 
 # Examples
 
