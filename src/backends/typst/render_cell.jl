@@ -33,14 +33,9 @@ function _typst__cell_to_str(cell::AbstractString, context::IOContext, ::Val{:sh
     return cell_str
 end
 
-_typst__cell_to_str(cell::HTML, context::IOContext, ::Val{:print}) = cell.content
-
-_typst__cell_to_str(cell::HTML, context::IOContext, ::Val{:show}) = cell.content
-
 _typst__cell_to_str(cell::UndefinedCell, context::IOContext, ::Val{:print}) = "#undef"
 
 _typst__cell_to_str(cell::UndefinedCell, context::IOContext, ::Val{:show}) = "#undef"
-
 
 """
     _typst__render_cell(cell::Any, context::IOContext, renderer::Union{Val{:print}, Val{:show}}) -> String
@@ -50,7 +45,7 @@ Render the `cell` in Typst back end using a specific `context` and `renderer`.
 function _typst__render_cell(
     cell::Any,
     context::IOContext,
-    renderer::Union{Val{:print}, Val{:show}}
+    renderer::Union{Val{:print}, Val{:show}},
 )
     cell_str = _typst__cell_to_str(cell, context, renderer)
 
@@ -61,7 +56,7 @@ end
 function _typst__render_cell(
     cell::AbstractString,
     context::IOContext,
-    renderer::Union{Val{:print}, Val{:show}}
+    renderer::Union{Val{:print}, Val{:show}},
 )
     cell_str = _typst__cell_to_str(cell, context, renderer)
 
@@ -69,19 +64,19 @@ function _typst__render_cell(
     return _typst__escape_str(cell_str)
 end
 
-function _typst__render_cell(
-    cell::HTML,
-    context::IOContext,
-    renderer::Union{Val{:print}, Val{:show}}
-)
-    return _typst__cell_to_str(cell, context, renderer)
-end
-
-# For Markdown cells, we must render always using `show` to obtain the correct decoration.
-function _typst__render_cell(
+function PrettyTables._typst__render_cell(
     cell::Markdown.MD,
     context::IOContext,
-    renderer::Union{Val{:print}, Val{:show}}
+    renderer::Union{Val{:print}, Val{:show}},
 )
-    return replace(sprint(show, MIME("text/typst"), cell), "\n" => "")
+    # We will always render Markdown cells using `#raw` until we can obtain a good way to
+    # convert Markdown to Typst.
+    str = "\"" * replace(chomp(string(cell)), "\n" => "\\n\" + \n  \"") * "\""
+
+    return """
+        #raw(
+          $str,
+          block: false,
+          lang: "markdown",
+        )"""
 end

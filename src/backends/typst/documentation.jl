@@ -9,21 +9,40 @@
 
 The Typst backend can be selected by passing the keyword `backend = :typst` to the function
 [`pretty_table`](@ref). In this case, we have the following additional keywords to configure
-the output.
+the output:
 
 # Keywords
 
-- `column_label_titles::Union{Nothing, AbstractVector}`: Titles for the column labels. If
-    `nothing`, no titles are added. If a vector is passed, it must have the same length as
-    the number of column label rows. Each element in the vector can be `nothing` (no title
-    for that row) or an element with the title for that row. Notice that this element will
-    be converted to string using the function `string`.
-    (**Default**: `nothing`)
+- `annotate::Bool`: Boolean indicating whether Typst code should be annotated.
+- `caption::Union{Nothing, String, TypstCaption}`: Table caption to be used by the
+    Typst `#figure` function. The user can provide additional configuration to the caption
+    by using the `TypstCaption` structure.
+- `data_column_widths::Union{Nothing, String, Vector{String}, Vector{Pair{Int, String}}}`:
+    Column widths for the data columns. The information must be a valid length information
+    in Typst, such as "10fr" or "30pt". If a single string is provided, it will be repeated
+    for all columns. If a vector of strings is provided, its length must be equal to or
+    larger than the number of printed columns. Alternatively, a vector of pairs can be
+    provided, where the first element of the pair is the column index and the second element
+    is the width for that column. In this case, columns that are not specified will have
+    width `auto`.
+    (**Default** = `nothing`)
 - `highlighters::Vector{TypstHighlighter}`: Highlighters to apply to the table. For more
     information, see the section **Typst Highlighters** in the **Extended Help**.
-- `caption::Untion{Nothing,AbstractString}`: String with the caption for the table.
-- `wrap_column::Integer`: indicate in which column the output will be wrapped
-- `annotate::Bool`: Boolean indicating if typst code should be annotated. 
+    (**Default** = `TypstHighlighter[]`)
+- `minify::Bool`: If `true`, the generated Typst code will be minified by ignoring
+    `wrap_column` and printing the table columns in the same line.
+    (**Default** = `false`)
+- `style::TypstTableStyle`: Style of the table. For more information, see the section
+    **Typst Table Style** in the **Extended Help**.
+    (**Default** = `TypstTableStyle()`)
+- `wrap_column::Integer`: Indicates the column where the output will be wrapped.
+    (**Default** = `92`)
+
+!!! note
+
+    The content in the cells is always escaped. If you want to use a raw Typst component as
+    cell, load the package Typstry.jl and pass the cell content as a `TypstString`. In this
+    case, the content will not be escaped and will be treated as a raw Typst component.
 
 # Extended Help
 
@@ -33,9 +52,9 @@ A set of highlighters can be passed as a `Vector{TypstHighlighter}` to the `high
 keyword. Each highlighter is an instance of the structure [`TypstHighlighter`](@ref). It
 contains the following two public fields:
 
-- `f::Function`: Function with the signature `f(data, i, j)` in which should return `true`
+- `f::Function`: Function with the signature `f(data, i, j)`, which should return `true`
     if the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
-- `fd::Function`: Function with the signature `f(h, data, i, j)` in which `h` is the
+- `fd::Function`: Function with the signature `f(h, data, i, j)`, where `h` is the
     highlighter. This function must return a `Vector{Pair{String, String}}` with properties
     compatible with the `style` field that will be applied to the highlighted cell.
 
@@ -49,18 +68,18 @@ TypstHighlighter(f::Function, decorations::NTuple{N, Pair{String, String}})
 TypstHighlighter(f::Function, fd::Function)
 ```
 
- The first will apply a fixed decoration to the highlighted cell specified in `decoration`,
- the second allows specifying decorations as a `Tuple`, and the third lets the user select
- the desired decoration by specifying the function `fd`.
+The first applies a fixed decoration to the highlighted cell specified in `decoration`, the
+second allows specifying decorations as a `Tuple`, and the third lets the user select the
+desired decoration by specifying the function `fd`.
 
 !!! note
 
-    If multiple highlighters are valid for the element `(i, j)`, the applied style will be
-    equal to the first match considering the order in the vector `highlighters`.
+    If multiple highlighters are valid for element `(i, j)`, the applied style is the first
+    match according to the order in the vector `highlighters`.
 
 !!! note
 
-    If the highlighters are used together with [Formatters](@ref), the change in the format
+    If highlighters are used together with [Formatters](@ref), formatting changes
     **will not** affect the parameter `data` passed to the highlighter function `f`. It will
     always receive the original, unformatted value.
 
@@ -80,5 +99,65 @@ hl_lt5 = TypstHighlighter(
 
 highlighters = [hl_gt5, hl_lt5]
 ```
+
+Each cell with properties is rendered with one call to `#text` inside a `table.cell`
+function, as shown below:
+
+```typst
+table.cell()[#text()[Cell Content]]
+```
+
+!!! note
+
+    Since `table.cell` and `#text()` share some attribute names, attributes used by the
+    `#text` function must be defined with the `text-` prefix. For example, to create a table
+    style (or highlighter) that sets a blue background and white font color:
+
+    ```julia
+    ["fill" => "blue", "text-fill" => "white"]
+    ```
+
+## Typst Table Style
+
+The Typst table style is defined using an object of type [`TypstTableStyle`](@ref) that
+contains the following fields:
+
+- `table::Vector{TypstPair}`: Style for the table.
+- `title::Vector{TypstPair}`: Style for the title.
+- `subtitle::Vector{TypstPair}`: Style for the subtitle.
+- `row_number_label::Vector{TypstPair}`: Style for the row number label.
+- `row_number::Vector{TypstPair}`: Style for the row number.
+- `stubhead_label::Vector{TypstPair}`: Style for the stubhead label.
+- `row_label::Vector{TypstPair}`: Style for the row label.
+- `row_group_label::Vector{TypstPair}`: Style for the row group label.
+- `first_line_column_label::Union{Vector{TypstPair}, Vector{Vector{TypstPair}}}`: Style for
+  the first line of the column labels. If a vector of `Vector{TypstPair}` is provided, each
+  column label in the first line will use the corresponding style.
+- `column_label::Union{Vector{TypstPair}, Vector{Vector{TypstPair}}}`: Style for the rest of
+  the column labels. If a vector of `Vector{TypstPair}` is provided, each column label will
+  use the corresponding style.
+- `first_line_merged_column_label::Vector{TypstPair}`: Style for the merged cells at the
+  first column label line.
+- `merged_column_label::Vector{TypstPair}`: Style for the merged cells at the rest of the
+  column labels.
+- `summary_row_cell::Vector{TypstPair}`: Style for the summary row cell.
+- `summary_row_label::Vector{TypstPair}`: Style for the summary row label.
+- `footnote::Vector{TypstPair}`: Style for the footnote.
+- `source_notes::Vector{TypstPair}`: Style for the source notes.
+
+Each field is a vector of [`TypstPair`](@ref), *i.e.* `Pair{String, String}`, describing
+properties and values compatible with the Typst style attribute.
+
+For example, if we want the stubhead label to be bold and red, we must define:
+
+```julia
+style = TypstTableStyle(
+    stubhead_label = ["text-weight" => "bold", "text-fill" => "red"]
+)
+```
+
+The user can pass any property compatible with the Typst style attribute. If the prefix
+`text-` is used, the property will be applied to the text of the cell. Otherwise, it will be
+applied to the cell itself.
 """
 pretty_table_typst_backend

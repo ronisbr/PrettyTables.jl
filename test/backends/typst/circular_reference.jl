@@ -5,45 +5,40 @@
 ############################################################################################
 
 @testset "Circular Reference" begin
-    cr = CircularRef(
-        [1, 2, 3],
-        [4, 5, 6],
-        [7, 8, 9],
-        [10, 11, 12]
-    )
+    cr = CircularRef([1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12])
 
     cr.A1[2]   = cr
     cr.A4[end] = cr
 
     expected = raw"""
 #{
-  // Open table
   table(
-    columns: (auto, auto, auto, auto),
-    // Table Header
+    align: (right, right, right, right,),
+    columns: (auto, auto, auto, auto,),
+    // == Table Header =====================================================================
     table.header(
-      // column_labels Row 1
-      table.cell(align: right,)[#text(weight: "bold",)[A1]],
-      table.cell(align: right,)[#text(weight: "bold",)[A2]],
-      table.cell(align: right,)[#text(weight: "bold",)[A3]],
-      table.cell(align: right,)[#text(weight: "bold",)[A4]],
+      // -- Column Labels: Row 1 -----------------------------------------------------------
+      [#text(weight: "bold",)[A1]],
+      [#text(weight: "bold",)[A2]],
+      [#text(weight: "bold",)[A3]],
+      [#text(weight: "bold",)[A4]],
     ),
-    // Body
-    // data Row 1
-    table.cell(align: right,)[#text()[1]],
-    table.cell(align: right,)[#text()[4]],
-    table.cell(align: right,)[#text()[7]],
-    table.cell(align: right,)[#text()[10]],
-    // data Row 2
-    table.cell(align: right,)[#text()[\#= circular reference =\#]],
-    table.cell(align: right,)[#text()[5]],
-    table.cell(align: right,)[#text()[8]],
-    table.cell(align: right,)[#text()[11]],
-    // data Row 3
-    table.cell(align: right,)[#text()[3]],
-    table.cell(align: right,)[#text()[6]],
-    table.cell(align: right,)[#text()[9]],
-    table.cell(align: right,)[#text()[\#= circular reference =\#]],
+    // == Table Body =======================================================================
+    // -- Data: Row 1 ----------------------------------------------------------------------
+    [1],
+    [4],
+    [7],
+    [10],
+    // -- Data: Row 2 ----------------------------------------------------------------------
+    [\#= circular reference =\#],
+    [5],
+    [8],
+    [11],
+    // -- Data: Row 3 ----------------------------------------------------------------------
+    [3],
+    [6],
+    [9],
+    [\#= circular reference =\#],
   )
 }
 """
@@ -52,4 +47,3 @@
 
     @test result == expected
 end
-

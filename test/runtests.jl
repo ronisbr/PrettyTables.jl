@@ -112,7 +112,6 @@ end
 @testset "Typst Back End Tests" verbose = true begin
     include("./backends/typst/alignment.jl")
     include("./backends/typst/caption.jl")
-    include("./backends/typst/cell_titles.jl")
     include("./backends/typst/circular_reference.jl")
     include("./backends/typst/data_column_widths.jl")
     include("./backends/typst/cropping.jl")
@@ -120,9 +119,9 @@ end
     include("./backends/typst/default.jl")
     include("./backends/typst/full.jl")
     include("./backends/typst/highlighters.jl")
+    include("./backends/typst/minify.jl")
     include("./backends/typst/offset_arrays.jl")
     include("./backends/typst/renderers.jl")
-    include("./backends/typst/types.jl")
     include("./ext/pretty_tables_typstry_ext.jl")
 end
 

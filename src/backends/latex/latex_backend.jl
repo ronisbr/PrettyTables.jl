@@ -197,6 +197,7 @@ function _latex__print(
                 cs = _number_of_printed_columns(table_data)
                 ocs_styled = _latex__add_environments(ocs, style.omitted_cell_summary)
                 _aprintln(buf, "\\multicolumn{$cs}{r@{}}{$ocs_styled}", il, ns)
+                ocs_printed = true
             end
 
         elseif action == :row_group_label
