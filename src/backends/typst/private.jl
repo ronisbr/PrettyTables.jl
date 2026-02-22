@@ -181,19 +181,18 @@ function _typst__create_component(
 
     line_length = length(open_tag) + length(content) + 1
 
-    if _typst__should_wrap(line_length, il, ns, wrap_column)
-        buf = IOBuffer()
+    !_typst__should_wrap(line_length, il, ns, wrap_column) && return open_tag * content * "]"
 
-        println(buf, open_tag)
-        # Notice that we must print at the first indentation level because this text will
-        # also be indented when printing to the output buffer.
-        _aprintln(buf, content, 1, ns)
-        print(buf, "]")
+    buf = IOBuffer()
 
-        return String(take!(buf))
-    end
+    println(buf, open_tag)
 
-    return open_tag * content * "]"
+    # Notice that we must print at the first indentation level because this text will also
+    # be indented when printing to the output buffer.
+    _aprintln(buf, content, 1, ns)
+    print(buf, "]")
+
+    return String(take!(buf))
 end
 
 """
@@ -250,33 +249,27 @@ parameter indicates the indentation level for the generated string.
 function _typst__process_caption(c::TypstCaption, il::Int)
     (; caption, kind, supplement, gap, position) = c
 
-    ind = repeat(" ", max(il, 0))
+    ind = " "^max(il, 0)
+    buf = IOBuffer()
 
-    out = "caption: figure.caption(\n"
+    @_println(buf, "caption: figure.caption(")
 
-    if !isnothing(position)
-        out *= "$(ind)position: $position,\n"
-    end
+    !isnothing(position) && @_println(buf, ind, "position: ", position, ",")
 
-    out *= "$ind[$caption]\n"
-    out *= "),\n"
+    @_println(buf, ind, "[", caption, "]")
+    @_println(buf, "),")
 
-    if kind ∉ ["table", "auto", "image"]
-        out *= "kind: \"$kind\",\n"
-        out *= "supplement: [$(something(supplement, titlecase(kind)))],\n"
+    if kind ∉ ("table", "auto", "image")
+        @_println(buf, "kind: \"", kind, "\",")
+        @_println(buf, "supplement: [", something(supplement, titlecase(kind)), "],")
     else
-        out *= "kind: $kind,\n"
-
-        if !isnothing(supplement)
-            out *= "supplement: [$supplement],\n"
-        end
+        @_println(buf, "kind: ", kind, ",")
+        !isnothing(supplement) && @_println(buf, "supplement: [", supplement, "],")
     end
 
-    if gap != "auto"
-        out *= "gap: $gap,\n"
-    end
+    gap != "auto" && @_println(buf, "gap: ", gap, ",")
 
-    return out
+    return String(take!(buf))
 end
 
 """
@@ -378,8 +371,7 @@ function _typst__get_data_column_widths(table_data::TableData, data_column_width
 
     i = 1
     for width in data_column_widths
-        print(buf, width)
-        print(buf, ",")
+        @_print(buf, width, ",")
         i += 1
         i > num_printed_data_columns && break
         print(buf, " ")
