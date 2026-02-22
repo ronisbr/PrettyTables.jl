@@ -1,8 +1,43 @@
 ## Description #############################################################################
 #
-# Miscellaneous functions.
+# Miscellaneous functions and macros.
 #
 ############################################################################################
+
+"""
+    @_print(io, args...)
+
+Print `args` to `io`. Each argument in `args` is printed sequentially using `print`, and a
+final `println` is issued to terminate the line.
+
+This macro expands each argument into a separate `print` call, avoiding the overhead of
+string interpolation or concatenation, which reduces allocations.
+"""
+macro _print(io, args...)
+    return esc(
+        quote
+            $([:(print($io, $arg)) for arg in args]...)
+        end
+    )
+end
+
+"""
+    @_println(io, args...)
+
+Print `args` to `io` followed by a newline. Each argument in `args` is printed sequentially
+using `print`, and a final `println` is issued to terminate the line.
+
+This macro expands each argument into a separate `print` call, avoiding the overhead of
+string interpolation or concatenation, which reduces allocations.
+"""
+macro _println(io, args...)
+    return esc(
+        quote
+            $([:(print($io, $arg)) for arg in args]...)
+            println($io)
+        end
+    )
+end
 
 """
     _aprint(buf::IO, str::String, indentation_level::Int = 0, indentation_spaces::Int = 2; kwargs...) -> Nothing
@@ -23,26 +58,25 @@ function _aprint(
     indentation_spaces::Int = 2;
     minify::Bool = false
 )
-    tokens = split(str, '\n')
-
-    if !minify
-        padding = " "^max(indentation_level * indentation_spaces, 0)
-
-        for i in eachindex(tokens)
-            t = tokens[i]
-
-            # If the token is empty, we do nothing to avoid unnecessary white spaces.
-            if !isempty(t)
-                print(buf, padding)
-                print(buf, t)
-            end
-
-            i != last(eachindex(tokens)) && println(buf)
-        end
-    else
-        for t in tokens
+    if minify
+        for t in eachsplit(str, '\n')
             !isempty(t) && print(buf, strip(t))
         end
+
+        return nothing
+    end
+
+    padding = " "^max(indentation_level * indentation_spaces, 0)
+    first_token = true
+
+    for t in eachsplit(str, '\n')
+        # Print newline before each token except the first, preserving internal
+        # line breaks (including empty lines).
+        !first_token && println(buf)
+        first_token = false
+
+        # If the token is empty, we do nothing to avoid unnecessary white spaces.
+        !isempty(t) && @_print(buf, padding, t)
     end
 
     return nothing
@@ -73,13 +107,20 @@ function _aprintln(
     return nothing
 end
 
+"""
+    _aprint_section_annotation(buf::IO, str::String, indentation_level::Int = 0, indentation_spaces::Int = 2, column_width::Int = 92, fill_char::Char = '=') -> Nothing
+
+Print a section annotation line to `buf`. The annotation consists of `str` padded to
+`indentation_level` and followed by `fill_char` characters up to `column_width`. If
+`column_width` is negative, it defaults to 92. No newline is appended.
+"""
 function _aprint_section_annotation(
     buf::IO,
     str::String,
     indentation_level::Int = 0,
     indentation_spaces::Int = 2,
     column_width::Int = 92,
-    fill_char::Char = '=';
+    fill_char::Char = '='
 )
     column_width < 0 && (column_width = 92)
 
@@ -88,21 +129,23 @@ function _aprint_section_annotation(
     line_width     = padding_length + textwidth(str) + 1
     fill_length    = max(column_width - line_width, 0)
 
-    print(buf, padding)
-    print(buf, str)
-    print(buf, " ")
-    print(buf, fill_char^fill_length)
+    @_print(buf, padding, str, " ", fill_char^fill_length)
 
     return nothing
 end
 
+"""
+    _aprintln_section_annotation(buf::IO, str::String, indentation_level::Int = 0, indentation_spaces::Int = 2, column_width::Int = 92, fill_char::Char = '=') -> Nothing
+
+Same as `_aprint_section_annotation`, but appends a newline after the annotation.
+"""
 function _aprintln_section_annotation(
     buf::IO,
     str::String,
     indentation_level::Int = 0,
     indentation_spaces::Int = 2,
     column_width::Int = 92,
-    fill_char::Char = '=';
+    fill_char::Char = '='
 )
     _aprint_section_annotation(
         buf,
