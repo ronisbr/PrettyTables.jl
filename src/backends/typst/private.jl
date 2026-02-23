@@ -286,6 +286,108 @@ function _typst__text(content::String, properties::Vector{TypstPair})
     return _typst__create_component("#text", content, properties; wrap_column = -1)
 end
 
+# == Lines =================================================================================
+
+"""
+    _typst__vertical_lines!(buf::IO, td::TableData, tf::TypstTableFormat, total_inner_table_lines::Int, vertical_lines_at_data_columns::AbstractVector{Int}, il::Int, ns::Int) -> Nothing
+
+Print to `buf` the Typst vertical lines configurations considering the table data `td` and
+table format `tf`. `total_inner_table_lines` is the total number of rows in the inner table
+(excluding title, subtitle, footnote, and source note rows).
+`vertical_lines_at_data_columns` contains the indices of data columns that require a
+vertical line on their right side. `il` and `ns` are the indentation level and number of
+spaces per indentation level, respectively.
+"""
+function _typst__vertical_lines!(
+    buf::IO,
+    td::TableData,
+    tf::TypstTableFormat,
+    total_inner_table_lines::Int,
+    vertical_lines_at_data_columns::AbstractVector{Int},
+    il::Int,
+    ns::Int,
+)
+    num_columns = td.num_columns
+    borders     = tf.borders
+
+    current_typst_column = 0
+
+    # We must skit the title and subtitles since they must not have vertical lines.
+    has_title    = !isempty(td.title)
+    has_subtitle = !isempty(td.subtitle)
+
+    vs = has_title + has_subtitle
+    nr = vs + total_inner_table_lines
+
+    # Pre-compute padding once to avoid repeated allocation in each vline call.
+    padding = " "^max(il * ns, 0)
+
+    # Print a vline entry directly to avoid intermediate string and split allocations.
+    _vline(x, stroke) = begin
+        # Using only one argument in `print` to avoid intermediate string allocations.
+        if vs == 0
+            @_println(buf, padding, "table.vline(x: ", x, ", end: ", nr, ", stroke: ", stroke, "),")
+            return nothing
+        end
+
+        @_println(buf, padding, "table.vline(x: ", x, ", start: ", vs, ", end: ", nr, ", stroke: ", stroke, "),")
+        return nothing
+    end
+
+    # == Table Beginning ===================================================================
+
+    tf.vertical_line_at_beginning && _vline(current_typst_column, borders.left_line)
+
+    # == Row Number Column =================================================================
+
+    if td.show_row_number_column
+        current_typst_column += 1
+        tf.vertical_line_after_row_number_column &&
+            _vline(current_typst_column, borders.center_line)
+    end
+
+    # == Row Labels ========================================================================
+
+    if _has_row_labels(td)
+        current_typst_column += 1
+        tf.vertical_line_after_row_label_column &&
+            _vline(current_typst_column, borders.center_line)
+    end
+
+    # == Data Columns ======================================================================
+
+    nc = if td.maximum_number_of_columns >= 0
+        min(td.maximum_number_of_columns, num_columns)
+    else
+        num_columns
+    end
+
+    for i in 1:nc
+        current_typst_column += 1
+
+        format = borders.center_line
+        vline  = i in vertical_lines_at_data_columns
+
+        if ((i == nc) && tf.vertical_line_after_data_columns)
+            # If we have the continuation line, we must use the middle line here.
+            format = nc < num_columns ? borders.center_line : borders.right_line
+            vline = true
+        end
+
+        vline && _vline(current_typst_column, format)
+    end
+
+    # == Continuation Column ===============================================================
+
+    if nc < num_columns
+        current_typst_column += 1
+        tf.vertical_line_after_continuation_column &&
+            _vline(current_typst_column, borders.right_line)
+    end
+
+    return nothing
+end
+
 # == Strings ===============================================================================
 
 """
