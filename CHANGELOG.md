@@ -1,6 +1,12 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 3.3.1
+-------------
+
+- ![Bugfix][badge-bugfix] We fixed the column width computation in the text back end when
+  merged cells are present in the column labels.
+
 Version 3.3.0
 -------------
 
