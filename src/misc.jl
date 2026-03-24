@@ -584,6 +584,8 @@ function _resolve_printing_backend(configurations)
         backend = :latex
     elseif table_format isa MarkdownTableFormat
         backend = :markdown
+    elseif table_format isa TypstTableFormat
+        backend = :typst
     end
 
     return backend
