@@ -86,4 +86,37 @@ Notes
 
         @test result == expected
     end
+
+    @testset "Cell Width Computation with Merged Cells" begin
+        matrix = ones(4, 3)
+
+        column_labels = [
+            ["Var. Value", MultiColumn(2, "Failure State", :c)],
+            ["", "Failure Active", "Failure Latched" ]
+        ]
+
+        expected = """
+┌────────────┬──────────────────────────────────┐
+│ Var. Value │          Failure State           │
+│            │ ───────────────┬──────────────── │
+│            │ Failure Active │ Failure Latched │
+├────────────┼────────────────┼─────────────────┤
+│        1.0 │            1.0 │             1.0 │
+│        1.0 │            1.0 │             1.0 │
+│        1.0 │            1.0 │             1.0 │
+│        1.0 │            1.0 │             1.0 │
+└────────────┴────────────────┴─────────────────┘
+"""
+
+        result = pretty_table(
+            String,
+            matrix;
+            column_labels,
+            table_format = TextTableFormat(;
+                horizontal_line_at_merged_column_labels = true
+            )
+        )
+
+        @test result == expected
+    end
 end
