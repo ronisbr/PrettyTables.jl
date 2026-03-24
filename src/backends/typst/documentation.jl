@@ -35,6 +35,8 @@ the output:
 - `style::TypstTableStyle`: Style of the table. For more information, see the section
     **Typst Table Style** in the **Extended Help**.
     (**Default** = `TypstTableStyle()`)
+- `table_format::TypstTableFormat`: Typst table format used to render the table. For more
+    information, see the section **Typst Table Format** in the **Extended Help**.
 - `wrap_column::Integer`: Indicates the column where the output will be wrapped.
     (**Default** = `92`)
 
@@ -116,6 +118,57 @@ table.cell()[#text()[Cell Content]]
     ```julia
     ["fill" => "blue", "text-fill" => "white"]
     ```
+
+## Typst Table Format
+
+The Typst table format is defined using an object of type [`TypstTableFormat`](@ref) that
+contains the following fields:
+
+- `borders::TypstTableBorders`: Format of the borders.
+- `horizontal_line_at_beginning::Bool`: If `true`, a horizontal line will be drawn at the
+    beginning of the table.
+- `horizontal_line_at_merged_column_labels::Bool`: If `true`, a horizontal line will be
+    drawn on bottom of the merged column labels using `\\cline`.
+- `horizontal_line_after_column_labels::Bool`: If `true`, a horizontal line will be drawn
+    after the column labels.
+- `horizontal_lines_at_data_rows::Union{Symbol, Vector{Int}}`: A horizontal line will be
+    drawn after each data row index listed in this vector. If the symbol `:all` is passed, a
+    horizontal line will be drawn after every data column. If the symbol `:none` is passed,
+    no horizontal lines will be drawn after the data rows.
+- `horizontal_line_before_row_group_label::Bool`: If `true`, a horizontal line will be
+    drawn before the row group label.
+- `horizontal_line_after_row_group_label::Bool`: If `true`, a horizontal line will be
+    drawn after the row group label.
+- `horizontal_line_after_data_rows::Bool`: If `true`, a horizontal line will be drawn
+    after the data rows.
+- `horizontal_line_before_summary_rows::Bool`: If `true`, a horizontal line will be drawn
+    before the summary rows. Notice that this line is the same as the one drawn if
+    `horizontal_line_after_data_rows` is `true`. However, in this case, the line is omitted
+    if there is no summary rows.
+- `horizontal_line_after_summary_rows::Bool`: If `true`, a horizontal line will be drawn
+    after the summary rows.
+- `vertical_line_at_beginning::Bool`: If `true`, a vertical line will be drawn at the
+    beginning of the table.
+- `vertical_line_after_row_number_column::Bool`: If `true`, a vertical line will be drawn
+    after the row number column.
+- `vertical_line_after_row_label_column::Bool`: If `true`, a vertical line will be drawn
+    after the row label column.
+- `vertical_lines_at_data_columns::Union{Symbol, Vector{Int}}`: A vertical line will be
+    drawn after each data column index listed in this vector. If the symbol `:all` is
+    passed, a vertical line will be drawn after every data column. If the symbol `:none` is
+    passed, no vertical lines will be drawn after the data columns.
+- `vertical_line_after_data_columns::Bool`: If `true`, a vertical line will be drawn after
+    the data columns.
+- `vertical_line_after_continuation_column::Bool`: If `true`, a vertical line will be
+    drawn after the continuation column.
+
+We provide a few helpers to configure the table format. For more information, see the
+documentation of the following macros:
+
+- [`@typst__all_horizontal_lines`](@ref).
+- [`@typst__all_vertical_lines`](@ref).
+- [`@typst__no_horizontal_lines`](@ref).
+- [`@typst__no_vertical_lines`](@ref).
 
 ## Typst Table Style
 
