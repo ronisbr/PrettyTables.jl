@@ -6,6 +6,7 @@
 [![docs-dev](https://img.shields.io/badge/docs-dev-blue.svg)][docs-dev-url]
 [![Code Style: Blue](https://img.shields.io/badge/code%20style-blue-4495d1.svg)](https://github.com/invenia/BlueStyle)
 [![DOI](https://zenodo.org/badge/165340490.svg)](https://zenodo.org/doi/10.5281/zenodo.10015722)
+[![Hypercommit](https://img.shields.io/badge/Hypercommit-DB2475)](https://hypercommit.com/prettytables-jl)
 
 This package has the purpose to print data in matrices using different backends. It was
 orizinally inspired in the functionality provided by
