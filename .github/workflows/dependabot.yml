@@ -1,0 +1,30 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Sao_Paulo"
+
+    # Group all bumps into a single PR.
+    groups:
+      github-actions:
+        patterns: ["*"]
+
+    # Keep open PR count manageable.
+    open-pull-requests-limit: 5
+
+    # Auto-assign reviewer.
+    reviewers:
+      - ronisbr
+
+    # Add a label to these PRs for easy filtering
+    labels:
+      - "dependencies"
+      - "github-actions"
+
+    # Useful commit message prefix
+    commit-message:
+      prefix: ":construction_worker:"
