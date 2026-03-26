@@ -1,6 +1,11 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 3.3.2
+-------------
+
+- Dummy release.
+
 Version 3.3.1
 -------------
 
