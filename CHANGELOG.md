@@ -1,6 +1,27 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 3.3.2
+-------------
+
+- Dummy release.
+
+Version 3.3.1
+-------------
+
+- ![Bugfix][badge-bugfix] We fixed the column width computation in the text back end when
+  merged cells are present in the column labels.
+
+Version 3.3.0
+-------------
+
+- ![Feature][badge-feature] The Typst back end now has the option `minify` to reduce the
+  number of lines in the output.
+- ![Feature][badge-feature] We added support for configuring table borders in the Typst back
+  end.
+- ![Bugfix][badge-bugfix] We fixed a bug in which the remaining ANSI escape sequences in an
+  AnsiCell were being ignored, leading to problems in some edge cases.
+
 Version 3.2.3
 -------------
 

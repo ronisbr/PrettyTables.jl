@@ -14,6 +14,23 @@
   table(
     align: (right, right, right, right, right, right,),
     columns: (auto, auto, 25fr, 75fr, 5em, auto,),
+    stroke: none,
+    // == Horizontal Lines =======================
+    table.hline(y: 2, stroke: 1.5pt,),
+    table.hline(y: 3, start: 3, end: 5, stroke: 0.8pt,),
+    table.hline(y: 4, stroke: 0.8pt,),
+    table.hline(y: 5, stroke: 0.5pt,),
+    table.hline(y: 6, stroke: 0.5pt,),
+    table.hline(y: 9, stroke: 0.5pt,),
+    table.hline(y: 11, stroke: 1.5pt,),
+    // == Vertical Lines =========================
+    table.vline(x: 0, start: 2, end: 11, stroke: 1.5pt),
+    table.vline(x: 1, start: 2, end: 11, stroke: 0.8pt),
+    table.vline(x: 2, start: 2, end: 11, stroke: 0.8pt),
+    table.vline(x: 3, start: 2, end: 11, stroke: 0.8pt),
+    table.vline(x: 4, start: 2, end: 11, stroke: 0.8pt),
+    table.vline(x: 5, start: 2, end: 11, stroke: 0.8pt),
+    table.vline(x: 6, start: 2, end: 11, stroke: 1.5pt),
     // == Table Header ===========================
     table.header(
       // -- Table Header: Title ------------------
@@ -155,6 +172,21 @@
   table(
     align: (right, right, right, right, center,),
     columns: (auto, auto, auto, auto, auto,),
+    stroke: none,
+    // == Horizontal Lines =================================================================
+    table.hline(y: 2, stroke: 1.5pt,),
+    table.hline(y: 3, stroke: 0.8pt,),
+    table.hline(y: 4, stroke: 0.5pt,),
+    table.hline(y: 5, stroke: 0.5pt,),
+    table.hline(y: 7, stroke: 0.5pt,),
+    table.hline(y: 9, stroke: 1.5pt,),
+    // == Vertical Lines ===================================================================
+    table.vline(x: 0, start: 2, end: 9, stroke: 1.5pt),
+    table.vline(x: 1, start: 2, end: 9, stroke: 0.8pt),
+    table.vline(x: 2, start: 2, end: 9, stroke: 0.8pt),
+    table.vline(x: 3, start: 2, end: 9, stroke: 0.8pt),
+    table.vline(x: 4, start: 2, end: 9, stroke: 0.8pt),
+    table.vline(x: 5, start: 2, end: 9, stroke: 1.5pt),
     // == Table Header =====================================================================
     table.header(
       // -- Table Header: Title ------------------------------------------------------------
@@ -253,6 +285,19 @@
   table(
     align: (right, right, right, right, center,),
     columns: (auto, auto, auto, auto, auto,),
+    stroke: none,
+    // == Horizontal Lines =================================================================
+    table.hline(y: 2, stroke: 1.5pt,),
+    table.hline(y: 3, stroke: 0.8pt,),
+    table.hline(y: 6, stroke: 0.5pt,),
+    table.hline(y: 8, stroke: 1.5pt,),
+    // == Vertical Lines ===================================================================
+    table.vline(x: 0, start: 2, end: 8, stroke: 1.5pt),
+    table.vline(x: 1, start: 2, end: 8, stroke: 0.8pt),
+    table.vline(x: 2, start: 2, end: 8, stroke: 0.8pt),
+    table.vline(x: 3, start: 2, end: 8, stroke: 0.8pt),
+    table.vline(x: 4, start: 2, end: 8, stroke: 0.8pt),
+    table.vline(x: 5, start: 2, end: 8, stroke: 1.5pt),
     // == Table Header =====================================================================
     table.header(
       // -- Table Header: Title ------------------------------------------------------------
@@ -349,6 +394,17 @@
   table(
     align: (right, right, right, right, center,),
     columns: (auto, auto, auto, auto, auto,),
+    stroke: none,
+    table.hline(y: 2, stroke: 1.5pt,),
+    table.hline(y: 3, stroke: 0.8pt,),
+    table.hline(y: 6, stroke: 0.5pt,),
+    table.hline(y: 8, stroke: 1.5pt,),
+    table.vline(x: 0, start: 2, end: 8, stroke: 1.5pt),
+    table.vline(x: 1, start: 2, end: 8, stroke: 0.8pt),
+    table.vline(x: 2, start: 2, end: 8, stroke: 0.8pt),
+    table.vline(x: 3, start: 2, end: 8, stroke: 0.8pt),
+    table.vline(x: 4, start: 2, end: 8, stroke: 0.8pt),
+    table.vline(x: 5, start: 2, end: 8, stroke: 1.5pt),
     table.header(
       table.cell(align: center, colspan: 5,)[#text(size: 1.1em, weight: "bold",)[Table Title]],
       table.cell(align: center, colspan: 5,)[
@@ -426,12 +482,24 @@
 
         @test result == expected
     end
+
     @testset "Wrap Column Tests" begin
         expected = """
 #{
   table(
     align: (right, right, right, right, center,),
     columns: (auto, auto, auto, auto, auto,),
+    stroke: none,
+    table.hline(y: 2, stroke: 1.5pt,),
+    table.hline(y: 3, stroke: 0.8pt,),
+    table.hline(y: 6, stroke: 0.5pt,),
+    table.hline(y: 8, stroke: 1.5pt,),
+    table.vline(x: 0, start: 2, end: 8, stroke: 1.5pt),
+    table.vline(x: 1, start: 2, end: 8, stroke: 0.8pt),
+    table.vline(x: 2, start: 2, end: 8, stroke: 0.8pt),
+    table.vline(x: 3, start: 2, end: 8, stroke: 0.8pt),
+    table.vline(x: 4, start: 2, end: 8, stroke: 0.8pt),
+    table.vline(x: 5, start: 2, end: 8, stroke: 1.5pt),
     table.header(
       table.cell(align: center, colspan: 5,)[
         #text(size: 1.1em, weight: "bold",)[Table Title]

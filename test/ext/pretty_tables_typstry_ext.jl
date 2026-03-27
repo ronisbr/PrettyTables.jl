@@ -3,6 +3,7 @@
 # Typst Back End: Test related Typst.jl extender
 #
 ############################################################################################
+
 using Typstry
 
 @testset "Typst Extension" verbose = true begin
@@ -19,6 +20,19 @@ using Typstry
   table(
     align: (right, right, right, right, right, right,),
     columns: (auto, auto, auto, auto, auto, auto,),
+    stroke: none,
+    // == Horizontal Lines =================================================================
+    table.hline(y: 0, stroke: 1.5pt,),
+    table.hline(y: 1, stroke: 0.8pt,),
+    table.hline(y: 4, stroke: 1.5pt,),
+    // == Vertical Lines ===================================================================
+    table.vline(x: 0, end: 4, stroke: 1.5pt),
+    table.vline(x: 1, end: 4, stroke: 0.8pt),
+    table.vline(x: 2, end: 4, stroke: 0.8pt),
+    table.vline(x: 3, end: 4, stroke: 0.8pt),
+    table.vline(x: 4, end: 4, stroke: 0.8pt),
+    table.vline(x: 5, end: 4, stroke: 0.8pt),
+    table.vline(x: 6, end: 4, stroke: 1.5pt),
     // == Table Header =====================================================================
     table.header(
       // -- Column Labels: Row 1 -----------------------------------------------------------
@@ -83,6 +97,15 @@ using Typstry
   table(
     align: (right, right,),
     columns: (auto, auto,),
+    stroke: none,
+    // == Horizontal Lines =================================================================
+    table.hline(y: 0, stroke: 1.5pt,),
+    table.hline(y: 1, stroke: 0.8pt,),
+    table.hline(y: 3, stroke: 1.5pt,),
+    // == Vertical Lines ===================================================================
+    table.vline(x: 0, end: 3, stroke: 1.5pt),
+    table.vline(x: 1, end: 3, stroke: 0.8pt),
+    table.vline(x: 2, end: 3, stroke: 1.5pt),
     // == Table Header =====================================================================
     table.header(
       // -- Column Labels: Row 1 -----------------------------------------------------------

@@ -181,19 +181,18 @@ function _typst__create_component(
 
     line_length = length(open_tag) + length(content) + 1
 
-    if _typst__should_wrap(line_length, il, ns, wrap_column)
-        buf = IOBuffer()
+    !_typst__should_wrap(line_length, il, ns, wrap_column) && return open_tag * content * "]"
 
-        println(buf, open_tag)
-        # Notice that we must print at the first indentation level because this text will
-        # also be indented when printing to the output buffer.
-        _aprintln(buf, content, 1, ns)
-        print(buf, "]")
+    buf = IOBuffer()
 
-        return String(take!(buf))
-    end
+    println(buf, open_tag)
 
-    return open_tag * content * "]"
+    # Notice that we must print at the first indentation level because this text will also
+    # be indented when printing to the output buffer.
+    _aprintln(buf, content, 1, ns)
+    print(buf, "]")
+
+    return String(take!(buf))
 end
 
 """
@@ -250,33 +249,27 @@ parameter indicates the indentation level for the generated string.
 function _typst__process_caption(c::TypstCaption, il::Int)
     (; caption, kind, supplement, gap, position) = c
 
-    ind = repeat(" ", max(il, 0))
+    ind = " "^max(il, 0)
+    buf = IOBuffer()
 
-    out = "caption: figure.caption(\n"
+    @_println(buf, "caption: figure.caption(")
 
-    if !isnothing(position)
-        out *= "$(ind)position: $position,\n"
-    end
+    !isnothing(position) && @_println(buf, ind, "position: ", position, ",")
 
-    out *= "$ind[$caption]\n"
-    out *= "),\n"
+    @_println(buf, ind, "[", caption, "]")
+    @_println(buf, "),")
 
-    if kind ∉ ["table", "auto", "image"]
-        out *= "kind: \"$kind\",\n"
-        out *= "supplement: [$(something(supplement, titlecase(kind)))],\n"
+    if kind ∉ ("table", "auto", "image")
+        @_println(buf, "kind: \"", kind, "\",")
+        @_println(buf, "supplement: [", something(supplement, titlecase(kind)), "],")
     else
-        out *= "kind: $kind,\n"
-
-        if !isnothing(supplement)
-            out *= "supplement: [$supplement],\n"
-        end
+        @_println(buf, "kind: ", kind, ",")
+        !isnothing(supplement) && @_println(buf, "supplement: [", supplement, "],")
     end
 
-    if gap != "auto"
-        out *= "gap: $gap,\n"
-    end
+    gap != "auto" && @_println(buf, "gap: ", gap, ",")
 
-    return out
+    return String(take!(buf))
 end
 
 """
@@ -291,6 +284,108 @@ _typst__text(content::String, ::Nothing) = content
 function _typst__text(content::String, properties::Vector{TypstPair})
     (isempty(properties) || isempty(content)) && return _typst__text(content, nothing)
     return _typst__create_component("#text", content, properties; wrap_column = -1)
+end
+
+# == Lines =================================================================================
+
+"""
+    _typst__vertical_lines!(buf::IO, td::TableData, tf::TypstTableFormat, total_inner_table_lines::Int, vertical_lines_at_data_columns::AbstractVector{Int}, il::Int, ns::Int) -> Nothing
+
+Print to `buf` the Typst vertical lines configurations considering the table data `td` and
+table format `tf`. `total_inner_table_lines` is the total number of rows in the inner table
+(excluding title, subtitle, footnote, and source note rows).
+`vertical_lines_at_data_columns` contains the indices of data columns that require a
+vertical line on their right side. `il` and `ns` are the indentation level and number of
+spaces per indentation level, respectively.
+"""
+function _typst__vertical_lines!(
+    buf::IO,
+    td::TableData,
+    tf::TypstTableFormat,
+    total_inner_table_lines::Int,
+    vertical_lines_at_data_columns::AbstractVector{Int},
+    il::Int,
+    ns::Int,
+)
+    num_columns = td.num_columns
+    borders     = tf.borders
+
+    current_typst_column = 0
+
+    # We must skit the title and subtitles since they must not have vertical lines.
+    has_title    = !isempty(td.title)
+    has_subtitle = !isempty(td.subtitle)
+
+    vs = has_title + has_subtitle
+    nr = vs + total_inner_table_lines
+
+    # Pre-compute padding once to avoid repeated allocation in each vline call.
+    padding = " "^max(il * ns, 0)
+
+    # Print a vline entry directly to avoid intermediate string and split allocations.
+    _vline(x, stroke) = begin
+        # Using only one argument in `print` to avoid intermediate string allocations.
+        if vs == 0
+            @_println(buf, padding, "table.vline(x: ", x, ", end: ", nr, ", stroke: ", stroke, "),")
+            return nothing
+        end
+
+        @_println(buf, padding, "table.vline(x: ", x, ", start: ", vs, ", end: ", nr, ", stroke: ", stroke, "),")
+        return nothing
+    end
+
+    # == Table Beginning ===================================================================
+
+    tf.vertical_line_at_beginning && _vline(current_typst_column, borders.left_line)
+
+    # == Row Number Column =================================================================
+
+    if td.show_row_number_column
+        current_typst_column += 1
+        tf.vertical_line_after_row_number_column &&
+            _vline(current_typst_column, borders.center_line)
+    end
+
+    # == Row Labels ========================================================================
+
+    if _has_row_labels(td)
+        current_typst_column += 1
+        tf.vertical_line_after_row_label_column &&
+            _vline(current_typst_column, borders.center_line)
+    end
+
+    # == Data Columns ======================================================================
+
+    nc = if td.maximum_number_of_columns >= 0
+        min(td.maximum_number_of_columns, num_columns)
+    else
+        num_columns
+    end
+
+    for i in 1:nc
+        current_typst_column += 1
+
+        format = borders.center_line
+        vline  = i in vertical_lines_at_data_columns
+
+        if ((i == nc) && tf.vertical_line_after_data_columns)
+            # If we have the continuation line, we must use the middle line here.
+            format = nc < num_columns ? borders.center_line : borders.right_line
+            vline = true
+        end
+
+        vline && _vline(current_typst_column, format)
+    end
+
+    # == Continuation Column ===============================================================
+
+    if nc < num_columns
+        current_typst_column += 1
+        tf.vertical_line_after_continuation_column &&
+            _vline(current_typst_column, borders.right_line)
+    end
+
+    return nothing
 end
 
 # == Strings ===============================================================================
@@ -378,8 +473,7 @@ function _typst__get_data_column_widths(table_data::TableData, data_column_width
 
     i = 1
     for width in data_column_widths
-        print(buf, width)
-        print(buf, ",")
+        @_print(buf, width, ",")
         i += 1
         i > num_printed_data_columns && break
         print(buf, " ")
