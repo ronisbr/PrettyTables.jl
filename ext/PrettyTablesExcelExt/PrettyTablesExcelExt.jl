@@ -12,9 +12,9 @@ using PrettyTables: PrintingSpec, TableData, ColumnTable, RowTable
 # Also import Tables.jl for handling table data
 using Tables
 
-include("../src/backends/excel/table_sections.jl")
-include("../src/backends/excel/write_table.jl")
-include("../src/backends/excel/helpers.jl")
+include("table_sections.jl")
+include("write_table.jl")
+include("helpers.jl")
 
 """
     _excel__print(pspec::PrintingSpec; kwargs...)
