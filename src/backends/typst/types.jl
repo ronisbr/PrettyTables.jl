@@ -4,7 +4,7 @@
 #
 ############################################################################################
 
-export TypstHighlighter, TypstTableStyle, TypstCaption
+export TypstHighlighter, TypstTableBorders, TypstTableFormat, TypstTableStyle, TypstCaption
 
 import Base: show, tryparse, parse
 
@@ -168,6 +168,122 @@ struct TypstHighlighter
 end
 
 _typst__default_highlighter_fd(h::TypstHighlighter, ::Any, ::Int, ::Int) = h._decoration
+
+"""
+    struct TypstTableBorders
+
+Define the stroke widths for the borders of a table printed with the Typst back end. All
+fields are strings with the properties that can be passed to a `stroke` object (e.g.,
+`"(paint: blue, thickness: 4pt, cap: \"round\")"`). For more information, refer to:
+https://typst.app/docs/reference/visualize/stroke/
+
+# Fields
+
+## Horizontal Lines
+
+- `top_line::String`: Stroke for the top border of the table.
+    (**Default**: `"1.5pt"`)
+- `header_line::String`: Stroke for the line below the table header.
+    (**Default**: `"1.0pt"`)
+- `merged_header_cell_line::String`: Stroke for the line below merged header cells.
+    (**Default**: `"0.8pt"`)
+- `middle_line::String`: Stroke for horizontal lines inside the table body.
+    (**Default**: `"0.8pt"`)
+- `bottom_line::String`: Stroke for the bottom border of the table.
+    (**Default**: `"1.5pt"`)
+
+## Vertical Lines
+
+- `left_line::String`: Stroke for the left border of the table.
+    (**Default**: `"1.5pt"`)
+- `center_line::String`: Stroke for vertical lines inside the table body.
+    (**Default**: `"0.8pt"`)
+- `right_line::String`: Stroke for the right border of the table.
+    (**Default**: `"1.5pt"`)
+"""
+@kwdef struct TypstTableBorders
+    # == Horizontal Lines ==================================================================
+
+    top_line::String                = "1.5pt"
+    header_line::String             = "0.8pt"
+    merged_header_cell_line::String = "0.8pt"
+    middle_line::String             = "0.5pt"
+    bottom_line::String             = "1.5pt"
+
+    # == Vertical Lines ====================================================================
+
+    left_line::String               = "1.5pt"
+    center_line::String             = "0.8pt"
+    right_line::String              = "1.5pt"
+end
+
+"""
+    struct TypstTableFormat
+
+Define the format of the tables printed with the Typst back end.
+
+# Fields
+
+- `borders::TypstTableBorders`: Format of the borders.
+- `horizontal_line_at_beginning::Bool`: If `true`, a horizontal line will be drawn at the
+    beginning of the table.
+- `horizontal_line_at_merged_column_labels::Bool`: If `true`, a horizontal line will be
+    drawn on bottom of the merged column labels using `\\cline`.
+- `horizontal_line_after_column_labels::Bool`: If `true`, a horizontal line will be drawn
+    after the column labels.
+- `horizontal_lines_at_data_rows::Union{Symbol, Vector{Int}}`: A horizontal line will be
+    drawn after each data row index listed in this vector. If the symbol `:all` is passed, a
+    horizontal line will be drawn after every data column. If the symbol `:none` is passed,
+    no horizontal lines will be drawn after the data rows.
+- `horizontal_line_before_row_group_label::Bool`: If `true`, a horizontal line will be
+    drawn before the row group label.
+- `horizontal_line_after_row_group_label::Bool`: If `true`, a horizontal line will be
+    drawn after the row group label.
+- `horizontal_line_after_data_rows::Bool`: If `true`, a horizontal line will be drawn
+    after the data rows.
+- `horizontal_line_before_summary_rows::Bool`: If `true`, a horizontal line will be drawn
+    before the summary rows. Notice that this line is the same as the one drawn if
+    `horizontal_line_after_data_rows` is `true`. However, in this case, the line is omitted
+    if there is no summary rows.
+- `horizontal_line_after_summary_rows::Bool`: If `true`, a horizontal line will be drawn
+    after the summary rows.
+- `vertical_line_at_beginning::Bool`: If `true`, a vertical line will be drawn at the
+    beginning of the table.
+- `vertical_line_after_row_number_column::Bool`: If `true`, a vertical line will be drawn
+    after the row number column.
+- `vertical_line_after_row_label_column::Bool`: If `true`, a vertical line will be drawn
+    after the row label column.
+- `vertical_lines_at_data_columns::Union{Symbol, Vector{Int}}`: A vertical line will be
+    drawn after each data column index listed in this vector. If the symbol `:all` is
+    passed, a vertical line will be drawn after every data column. If the symbol `:none` is
+    passed, no vertical lines will be drawn after the data columns.
+- `vertical_line_after_data_columns::Bool`: If `true`, a vertical line will be drawn after
+    the data columns.
+- `vertical_line_after_continuation_column::Bool`: If `true`, a vertical line will be
+    drawn after the continuation column.
+"""
+@kwdef struct TypstTableFormat
+    borders::TypstTableBorders = TypstTableBorders()
+
+    # == Configuration for the Horizontal and Vertical Lines ===============================
+
+    horizontal_line_at_beginning::Bool = true
+    horizontal_line_after_column_labels::Bool = true
+    horizontal_line_at_merged_column_labels::Bool = true
+    horizontal_lines_at_data_rows::Union{Symbol, Vector{Int}} = :none
+    horizontal_line_before_row_group_label::Bool = true
+    horizontal_line_after_row_group_label::Bool = true
+    horizontal_line_after_data_rows::Bool = true
+    horizontal_line_before_summary_rows::Bool = true
+    horizontal_line_after_summary_rows::Bool = true
+
+    vertical_line_at_beginning::Bool = true
+    vertical_line_after_row_number_column::Bool = true
+    vertical_line_after_row_label_column::Bool = true
+    vertical_lines_at_data_columns::Union{Symbol, Vector{Int}} = :all
+    vertical_line_after_data_columns::Bool = true
+    vertical_line_after_continuation_column::Bool = true
+end
 
 """
     struct TypstTableStyle

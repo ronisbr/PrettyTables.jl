@@ -206,15 +206,9 @@ function _text__printed_column_widths(
 
                 # At first, we must neglect all the column label merged cells. Its width
                 # will be taken into account at a latter stage.
-                #
-                # Notice that the function `_is_column_label_cell_merged` returns `true`
-                # only if `(i, j)` is in the middle of the merged cell. Since a merged cell
-                # spans at least two columns, if is sufficient to check if `j + 1` is in the
-                # merged cell. At the left most merged column, we are in a `_IGNORE_CELL`
-                # that has 0 width.
-                if !_is_column_label_cell_merged(table_data, i, j + 1)
-                    m = max(m, printable_textwidth(column_labels[i, j]))
-                end
+                _is_column_label_cell_merged(table_data, i, j) && continue
+
+                m = max(m, printable_textwidth(column_labels[i, j]))
             end
         end
 

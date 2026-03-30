@@ -5,14 +5,27 @@
 ############################################################################################
 
 @testset "Alignment" verbose = true begin
-    matrix = [(i, j) for i in 1:5, j in 1:5]
+    matrix  = [(i, j) for i in 1:5, j in 1:5]
     backend = :typst
+
     @testset "Alignment as a Symbol" verbose = true begin
         expected = """
 #{
   table(
     align: (center, center, center, center, center,),
     columns: (1fr, 1fr, 1fr, 1fr, 1fr,),
+    stroke: none,
+    // == Horizontal Lines =================================================================
+    table.hline(y: 0, stroke: 1.5pt,),
+    table.hline(y: 1, stroke: 0.8pt,),
+    table.hline(y: 6, stroke: 1.5pt,),
+    // == Vertical Lines ===================================================================
+    table.vline(x: 0, end: 6, stroke: 1.5pt),
+    table.vline(x: 1, end: 6, stroke: 0.8pt),
+    table.vline(x: 2, end: 6, stroke: 0.8pt),
+    table.vline(x: 3, end: 6, stroke: 0.8pt),
+    table.vline(x: 4, end: 6, stroke: 0.8pt),
+    table.vline(x: 5, end: 6, stroke: 1.5pt),
     // == Table Header =====================================================================
     table.header(
       // -- Column Labels: Row 1 -----------------------------------------------------------
@@ -73,6 +86,18 @@
   table(
     align: (left, center, right, right, right,),
     columns: (1fr, 1fr, 1fr, 1fr, 1fr,),
+    stroke: none,
+    // == Horizontal Lines =================================================================
+    table.hline(y: 0, stroke: 1.5pt,),
+    table.hline(y: 1, stroke: 0.8pt,),
+    table.hline(y: 6, stroke: 1.5pt,),
+    // == Vertical Lines ===================================================================
+    table.vline(x: 0, end: 6, stroke: 1.5pt),
+    table.vline(x: 1, end: 6, stroke: 0.8pt),
+    table.vline(x: 2, end: 6, stroke: 0.8pt),
+    table.vline(x: 3, end: 6, stroke: 0.8pt),
+    table.vline(x: 4, end: 6, stroke: 0.8pt),
+    table.vline(x: 5, end: 6, stroke: 1.5pt),
     // == Table Header =====================================================================
     table.header(
       // -- Column Labels: Row 1 -----------------------------------------------------------

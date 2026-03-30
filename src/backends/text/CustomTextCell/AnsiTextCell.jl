@@ -106,10 +106,10 @@ function CustomTextCell.rendered_cell(cell::AnsiTextCell)
         cell.content
     end
 
-    cropped_str = first(right_crop(line_str, cell.crop))
+    cropped_str, remaining_ansi = right_crop(line_str, cell.crop)
 
-    return left_padding_str * cropped_str * right_padding_str * cell.suffix *
-        _TEXT__STRING_RESET
+    return left_padding_str * cropped_str * remaining_ansi * _TEXT__STRING_RESET *
+        right_padding_str * cell.suffix
 end
 
 function CustomTextCell.rendered_cell_line(cell::AnsiTextCell, line::Int)
@@ -124,10 +124,11 @@ function CustomTextCell.rendered_cell_line(cell::AnsiTextCell, line::Int)
     right_padding_str = " "^max(cell.right_padding, 0)
     line_str          = cell.lines[line]
     decoration_str    = convert(String, cell.decorations[line])
-    cropped_str       = first(right_crop(line_str, cell.crop))
 
-    return decoration_str * left_padding_str * cropped_str * right_padding_str *
-        cell.suffix * _TEXT__STRING_RESET
+    cropped_str, remaining_ansi = right_crop(line_str, cell.crop)
+
+    return decoration_str * left_padding_str * cropped_str * remaining_ansi *
+        _TEXT__STRING_RESET * right_padding_str * cell.suffix
 end
 
 function CustomTextCell.printable_cell_text(cell::AnsiTextCell)
