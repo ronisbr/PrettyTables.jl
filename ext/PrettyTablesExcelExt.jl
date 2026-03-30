@@ -106,8 +106,8 @@ function PrettyTables._excel__print(
                 sh = xf[1]
                 sheet == sh.name || XLSX.renamesheet!(sh, sheet)
                 _write_excel_table!(sh, table_data; anchor_cell, kwargs...)
-                return filename
             end
+            return filename
 
         elseif mode ∈ ["rw", "wr"] # Open an existing `xlsx` file and write a PrettyTable to it. Return in-memory XLSX object.
             xf = XLSX.opentemplate(filename)
