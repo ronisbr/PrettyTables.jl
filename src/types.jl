@@ -143,7 +143,7 @@ const _UNDEFINED_CELL = UndefinedCell()
     num_columns::Int
 
     # We need to store the first index in both direction to reduce the number of
-    # allocations. Notice that `data` is stores using `Any`, meaning that using functions
+    # allocations. Notice that `data` is stored using `Any`, meaning that using functions
     # like `axes`, `firstindex`, and `begin` inside `getindex` will allocate.
     first_row_index::Int
     first_column_index::Int
