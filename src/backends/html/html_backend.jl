@@ -397,14 +397,15 @@ function _html__print(
             # If we are in a data cell, we must check for highlighters.
             if action == :data
                 orig_data = _get_data(table_data.data)
-
                 if !isnothing(highlighters)
+                    all_highs = Dict{String,String}()
                     for h in highlighters
                         if h.f(orig_data, ps.i, ps.j)
-                            append!(vstyle, h.fd(h, orig_data, ps.i, ps.j))
-                            break
+                            highs = h.fd(h, orig_data, ps.i, ps.j)
+                            merge!( all_highs, Dict( highs ))
                         end
                     end
+                    append!(vstyle, collect(all_highs))
                 end
             end
 
