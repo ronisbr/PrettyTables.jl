@@ -72,8 +72,7 @@ whereas the second lets the user select the desired decoration by specifying the
 
 !!! note
 
-    If multiple highlighters are valid for the element `(i, j)`, the applied style will be
-    equal to the first match considering the order in the vector `highlighters`.
+    If multiple highlighters are valid for the element `(i, j)`, they will be applied applied progressively.
 
 !!! note
 
