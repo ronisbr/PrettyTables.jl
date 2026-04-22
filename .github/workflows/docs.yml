@@ -32,7 +32,7 @@ jobs:
             texlive-latex-recommended \
             texlive-latex-extra \
             texlive-luatex
-      - uses: julia-actions/setup-julia@v2
+      - uses: julia-actions/setup-julia@v3
         with:
           version: '1'
       - uses: julia-actions/cache@v3
