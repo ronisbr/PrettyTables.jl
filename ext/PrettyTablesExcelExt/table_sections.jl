@@ -73,7 +73,6 @@ function _excel_finalize_footnotes!(
     table_data,
     table_format,
     style,
-    fill,
     footnote_start_row,
     footnote_end_row,
     anchor_col_offset,

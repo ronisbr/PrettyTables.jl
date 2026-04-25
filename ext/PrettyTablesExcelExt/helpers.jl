@@ -207,24 +207,27 @@ function _excel_tablestyle_atts(property, format, j = nothing)
 end
 
 """
-    _excel_tablefill_atts(property::String, format::Vector{ExcelPair})
-    _excel_tablefill_atts(property::String, format::Vector{Vector{ExcelPair}}, j = nothing)
+    _excel_cell_fill_atts(field, j = nothing) -> Vector{ExcelPair}
 
-Override those attributes of the default table fill for this table element 
-with those specified in ExcelTableFill
+Extract fill attributes from a style field value. Any pair whose key starts with
+`"cell_fill_"` is collected with the prefix stripped; all other pairs are ignored.
+If the field is a `Vector{Vector{ExcelPair}}`, column index `j` selects the entry.
+Returns an empty vector when no fill attributes are present.
 """
-function _excel_tablefill_atts(property, format, j = nothing)
-    if isnothing(format) || format isa Vector{Pair{String, String}}
-        return _excel_override_properties(DEFAULT_EXCEL_TABLE_FILL, property, format)
-    end
-    return _excel_override_properties(DEFAULT_EXCEL_TABLE_FILL, property, format[j])
+function _excel_cell_fill_atts(field, j = nothing)
+    isnothing(field) && return ExcelPair[]
+    raw = (field isa Vector{Vector{ExcelPair}}) ? field[j] : field
+    prefix = "cell_fill_"
+    n = length(prefix)
+    return ExcelPair[SubString(k, n + 1) => v for (k, v) in raw if startswith(k, prefix)]
 end
 
 function _excel_override_properties(default, property, format)
     v1 = getproperty(default, Symbol(property))
     isnothing(format) && return v1
-    d = Dict(v1)              # first vector
-    for (k, v) in format      # second vector overrides
+    d = Dict(v1)
+    for (k, v) in format
+        startswith(k, "cell_fill_") && continue   # fill pairs are handled separately
         d[k] = v
     end
     return collect(d)

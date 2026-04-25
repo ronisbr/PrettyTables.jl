@@ -48,8 +48,8 @@ The following additional keywords configure the output of the `:excel` backend.
   table. For more information, see the section [`ExcelHighlighter`](@ref).
 - `table_format::ExcelTableFormat`: Defines the table borders to be used in each section
   of the table. For more information, see the section [`ExcelTableFormat`](@ref)
-- `style::ExcelTableStyle`: Defines the Excel font attributes to be used by each element of
-  the table. For more information, see the section [`ExcelTableStyle`](@ref).
+- `style::ExcelTableStyle`: Defines the Excel font and fill attributes to be used by each
+  element of the table. For more information, see the section [`ExcelTableStyle`](@ref).
 
 
 ## Excel Highlighters
@@ -329,6 +329,11 @@ Each field corresponds to a table element and should be a vector of `ExcelPair`,
 *i.e.* `Pair{String, String}`, describing properties and values compatible with the
 `XLSX.setFont` function.
 
+Fill (background color) attributes for a cell can also be included in the same field by
+prefixing their keys with `"cell_fill_"`. Any pair whose key starts with `"cell_fill_"` is
+routed to `XLSX.setFill` (with the prefix stripped) instead of `XLSX.setFont`. Font and
+fill pairs may be mixed freely within a single field.
+
 It is only necessary to define those fields for which the default style needs to be
 overwritten. For example:
 
@@ -340,54 +345,8 @@ style = ExcelTableStyle(
     footnote                       = ["italic" => "true", "color" => "cyan"],
     row_group_label                = ["bold" => "true", "color" => "magenta"],
     subtitle                       = ["italic" => "true"],
-    title                          = ["bold" => "true", "color" => "orange", "size" => "18", "under" => "single"],
-)
-
-```
-
-## Excel Table Fill
-
-The Excel table fill (background cell color) is defined using an object of type
-[`ExcelTableFill`](@ref) that contains the following fields:
-
-- `title::Union{Nothing,Vector{ExcelPair}}`: Fill for the title.
-- `subtitle::Union{Nothing,Vector{ExcelPair}}`: Fill for the subtitle.
-- `row_number_label::Union{Nothing,Vector{ExcelPair}}`: Fill for the row number label.
-- `row_number::Union{Nothing,Vector{ExcelPair}}`: Fill for the row number.
-- `stubhead_label::Union{Nothing,Vector{ExcelPair}}`: Fill for the stubhead label.
-- `row_label::Union{Nothing,Vector{ExcelPair}}`: Fill for the row label.
-- `row_group_label::Union{Nothing,Vector{ExcelPair}}`: Fill for the row group label.
-- `first_line_column_label::Union{Nothing,Vector{ExcelPair},Vector{Vector{ExcelPair}}}`:
-  Fill for the first line of the column labels. If a vector of `Vector{ExcelPair}}` is
-  provided, each column label in the first line will use the corresponding fill.
-- `column_label::Union{Nothing,Vector{ExcelPair}, Vector{Vector{ExcelPair}}}`: Fill for
-  the rest of the column labels. If a vector of `Vector{ExcelPair}}` is provided, each
-  column label will use the corresponding fill.
-- `first_line_merged_column_label::Union{Nothing,Vector{ExcelPair}}`: Fill for the
-  merged cells at the first column label line.
-- `merged_column_label::Union{Nothing,Vector{ExcelPair}}`: Fill for the merged cells
-  at the rest of the column labels.
-- `table_cell::Union{Nothing, Vector{ExcelPair}, Vector{Vector{ExcelPair}}}`: Fill
-  for the table cells. If a vector of `Vector{ExcelPair}}` is provided, each
-  column in the data table will use the corresponding fill.
-- `summary_row_label::Union{Nothing,Vector{ExcelPair}}`: Fill for the summary row label.
-- `summary_row_cell::Union{Nothing, Vector{ExcelPair}, Vector{Vector{ExcelPair}}}`: Fill
-  for the summary row cell. If a vector of `Vector{ExcelPair}}` is provided, each column
-  in the summary row will use the corresponding fill.
-- `footnote::Union{Nothing,Vector{ExcelPair}}`: Fill for the footnotes.
-- `source_note::Union{Nothing,Vector{ExcelPair}}`: Fill for the source notes.
-
-Each field corresponds to a table element and should be a vector of `ExcelPair`,
-*i.e.* `Pair{String, String}`, describing properties and values compatible with the
-`XLSX.setFill` function.
-
-It is only necessary to define those fields for which the default style needs to be
-overwritten. For example:
-
-```julia
-style = ExcelTableFill(
-    column_label                   = [["pattern" => "solid", "fgColor" => "gray20"], ["pattern" => "solid", "fgColor" => "grey80"]], # assuming two columns
-    summary_row_label              = ["pattern" => "lightHorizontal"],
+    title                          = ["bold" => "true", "color" => "orange", "size" => "18", "under" => "single",
+                                      "cell_fill_pattern" => "solid", "cell_fill_fgColor" => "black"],
 )
 ```
 

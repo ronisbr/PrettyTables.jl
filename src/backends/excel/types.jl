@@ -4,8 +4,8 @@
 #
 ############################################################################################
 
-export ExcelHighlighter, ExcelTableFormat, ExcelTableStyle, ExcelTableFill, ExcelFormatter
-export DEFAULT_EXCEL_TABLE_FORMAT, DEFAULT_EXCEL_TABLE_STYLE, DEFAULT_EXCEL_TABLE_FILL
+export ExcelPair, ExcelHighlighter, ExcelTableFormat, ExcelTableStyle, ExcelFormatter
+export DEFAULT_EXCEL_TABLE_FORMAT, DEFAULT_EXCEL_TABLE_STYLE
 export EXCEL_FORMAT_NO_VLINES, EXCEL_FORMAT_CELL_LINES, EXCEL_FORMAT_SECTION_LINES
 
 ############################################################################################
@@ -597,98 +597,3 @@ const DEFAULT_EXCEL_TABLE_STYLE =  ExcelTableStyle(
     _EXCEL__SMALL_ITALIC_GRAY,                       # source_note
 )
 
-############################################################################################
-#                                       Table Fill                                        #
-############################################################################################
-
-"""
-    struct ExcelTableFill
-
-Define the cell fill to use for each of the table elements in the 
-Excel back end.
-
-# Fields
-
-- `title::Union{Nothing,Vector{ExcelPair}}`: Fill for the title.
-- `subtitle::Union{Nothing,Vector{ExcelPair}}`: Fill for the subtitle.
-- `row_number_label::Union{Nothing,Vector{ExcelPair}}`: Fill for the row number label.
-- `row_number::Union{Nothing,Vector{ExcelPair}}`: Fill for the row number.
-- `stubhead_label::Union{Nothing,Vector{ExcelPair}}`: Fill for the stubhead label.
-- `row_label::Union{Nothing,Vector{ExcelPair}}`: Fill for the row label.
-- `row_group_label::Union{Nothing,Vector{ExcelPair}}`: Fill for the row group label.
-- `first_line_column_label::Union{Nothing,Vector{ExcelPair},Vector{Vector{ExcelPair}}}`: 
-  Fill for the first line of the column labels. If a vector of `Vector{ExcelPair}}` is 
-  provided, each column label in the first line will use the corresponding fill.
-- `column_label::Union{Nothing,Vector{ExcelPair}, Vector{Vector{ExcelPair}}}`: Fill for 
-  the rest of the column labels. If a vector of `Vector{ExcelPair}}` is provided, each 
-  column label will use the corresponding fill.
-- `first_line_merged_column_label::Union{Nothing,Vector{ExcelPair}}`: Fill for the 
-  merged cells at the first column label line.
-- `merged_column_label::Union{Nothing,Vector{ExcelPair}}`: Fill for the merged cells 
-  at the rest of the column labels.
-- `table_cell::Union{Nothing, Vector{ExcelPair}, Vector{Vector{ExcelPair}}}`: Fill 
-  for the table cells. If a vector of `Vector{ExcelPair}}` is provided, each 
-  column in the data table will use the corresponding fill.
-- `summary_row_label::Union{Nothing,Vector{ExcelPair}}`: Fill for the summary row label.
-- `summary_row_cell::Union{Nothing, Vector{ExcelPair}, Vector{Vector{ExcelPair}}}`: Fill 
-  for the summary row cell. If a vector of `Vector{ExcelPair}}` is provided, each column 
-  in the summary row will use the corresponding fill.
-- `footnote::Union{Nothing,Vector{ExcelPair}}`: Fill for the footnotes.
-- `source_note::Union{Nothing,Vector{ExcelPair}}`: Fill for the source notes.
-
-# Remarks
-
-Each field corresponds to a table element and should be a vector of `ExcelPair`, 
-*i.e.* `Pair{String, String}`, describing properties and values compatible with the 
-`XLSX.setFill` function.
-
-It is only necessary to define those fields for which the default style needs to be 
-overwritten. For example:
-
-# Examples
-
-```julia
-style = ExcelTableFill(
-    column_label                   = [["pattern" => "solid", "fgColor" => "gray20"], ["pattern" => "solid", "fgColor" => "grey80"]], # assuming two columns
-    summary_row_label              = ["pattern" => "lightHorizontal"],
-)
-```
-
-"""
-@kwdef struct ExcelTableFill
-    title::Union{Nothing, Vector{ExcelPair}} = nothing
-    subtitle::Union{Nothing, Vector{ExcelPair}} = nothing
-    row_number_label::Union{Nothing, Vector{ExcelPair}} = nothing
-    row_number::Union{Nothing, Vector{ExcelPair}} = nothing
-    stubhead_label::Union{Nothing, Vector{ExcelPair}} = nothing
-    row_label::Union{Nothing, Vector{ExcelPair}} = nothing
-    row_group_label::Union{Nothing, Vector{ExcelPair}} = nothing
-    first_line_column_label::Union{Nothing, Vector{ExcelPair}, Vector{Vector{ExcelPair}}} = nothing
-    column_label::Union{Nothing, Vector{ExcelPair}, Vector{Vector{ExcelPair}}} = nothing
-    first_line_merged_column_label::Union{Nothing, Vector{ExcelPair}} = nothing
-    merged_column_label::Union{Nothing, Vector{ExcelPair}} = nothing
-    table_cell::Union{Nothing, Vector{ExcelPair}, Vector{Vector{ExcelPair}}} = nothing
-    summary_row_label::Union{Nothing, Vector{ExcelPair}} = nothing
-    summary_row_cell::Union{Nothing, Vector{ExcelPair}, Vector{Vector{ExcelPair}}} = nothing
-    footnote::Union{Nothing, Vector{ExcelPair}} = nothing
-    source_note::Union{Nothing, Vector{ExcelPair}} = nothing
-end
-
-const DEFAULT_EXCEL_TABLE_FILL =  ExcelTableFill(
-    ExcelPair[],                                    # title
-    ExcelPair[],                                    # subtitle
-    ExcelPair[],                                    # row_number_label
-    ExcelPair[],                                    # row_number
-    ExcelPair[],                                    # stubhead_label
-    ExcelPair[],                                    # row_label
-    ExcelPair[],                                    # row_group_label
-    ExcelPair[],                                    # first_line_column_label
-    ExcelPair[],                                    # column_label
-    ExcelPair[],                                    # first_line_merged_column_label
-    ExcelPair[],                                    # merged_column_label
-    ExcelPair[],                                    # table_cell
-    ExcelPair[],                                    # summary_row_label
-    ExcelPair[],                                    # summary_row_cell
-    ExcelPair[],                                    # footnote
-    ExcelPair[],                                    # source_note
-)

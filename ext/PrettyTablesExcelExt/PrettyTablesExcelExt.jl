@@ -54,16 +54,14 @@ Implementation of Excel backend printing when XLSX.jl is loaded.
   anywhere on a sheet. A table will overwrite any existing data in the cells it is written to, 
   but using `anchor_cell` makes it possible to place a pretty table alongside existing data 
   in the specified sheet. Default = `"A1"`. 
-- `excel_formatters::Vector{ExcelFormatter}`: Excel-specific format (numFmt) definitions 
+- `excel_formatters::Vector{ExcelFormatter}`: Excel-specific format (numFmt) definitions
   to appy to the table. For more information, see the section [`ExcelFormatter`](@ref).
-- `highlighters::Vector{ExcelHighlighter}`: Excel-specific highlighters to apply to the 
+- `highlighters::Vector{ExcelHighlighter}`: Excel-specific highlighters to apply to the
   table. For more information, see the section [`ExcelHighlighter`](@ref).
-- `table_format::ExcelTableFormat`: Defines the table borders to be used in each section 
+- `table_format::ExcelTableFormat`: Defines the table borders to be used in each section
   of the table. For more information, see the section [`ExcelTableFormat`](@ref)
-- `style::ExcelTableStyle`: Defines the Excel font attributes to be used by each element of 
-  the table. For more information, see the section [`ExcelTableStyle`](@ref).
-- `fill::ExcelTableFill`: Defines the Excel cell fill to be used by each element of 
-  the table. For more information, see the section [`ExcelTableFill`](@ref).
+- `style::ExcelTableStyle`: Defines the Excel font and fill attributes to be used by each
+  element of the table. For more information, see the section [`ExcelTableStyle`](@ref).
 
 Save a returned XLSX.XLSXFile using `XLSX.writexlsx` or `XLSX.savexlsx`.
 
