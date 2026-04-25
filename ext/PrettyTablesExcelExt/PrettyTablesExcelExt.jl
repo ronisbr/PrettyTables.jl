@@ -7,7 +7,13 @@ using XLSX
 import PrettyTables: _excel__print, fmt__excel_stringify, pretty_table
 
 # Import types we need
-using PrettyTables: PrintingSpec, TableData, ColumnTable, RowTable
+using PrettyTables: PrintingSpec, TableData, ColumnTable, RowTable,
+                    PrintingTableState, MergeCells
+
+# Import internal iterator and helpers
+import PrettyTables: _next, _current_cell, _current_cell_alignment,
+                     _current_cell_footnotes, _number_of_printed_columns,
+                     _number_of_printed_data_columns, _IGNORE_CELL
 
 # Also import Tables.jl for handling table data
 using Tables
@@ -72,22 +78,19 @@ function PrettyTables._excel__print(
     anchor_cell::String = "A1",
     kwargs...
 )
-    # Extract table data from PrintingSpec
-    table_data = pspec.table_data
-
     if filename === nothing
         if sheet isa String
             # Return in-memory XLSX object
             xf = XLSX.newxlsx()
             sh = xf[1]
             sheet == sh.name || XLSX.renamesheet!(sh, sheet)
-            _write_excel_table!(sh, table_data; anchor_cell, kwargs...)
+            _write_excel_table!(sh, pspec; anchor_cell, kwargs...)
             return xf
         else # sheet isa XLSX.worksheet; update sheet in place.
-            _write_excel_table!(sheet, table_data; anchor_cell, kwargs...)
+            _write_excel_table!(sheet, pspec; anchor_cell, kwargs...)
             return nothing
         end
-        
+
     else
         if mode ∉ ["w", "rw", "wr"]
             throw(ArgumentError("Invalid mode \"$mode\". \nMust be either \"w\" to create a new file or \"rw\" to add a PrettyTable to an existing spreadsheet."))
@@ -101,11 +104,11 @@ function PrettyTables._excel__print(
             if !overwrite && isfile(filename)
                 error("File '$filename' already exists and overwrite=false")
             end
-            
+
             XLSX.openxlsx(filename, mode="w") do xf
                 sh = xf[1]
                 sheet == sh.name || XLSX.renamesheet!(sh, sheet)
-                _write_excel_table!(sh, table_data; anchor_cell, kwargs...)
+                _write_excel_table!(sh, pspec; anchor_cell, kwargs...)
             end
             return filename
 
@@ -113,7 +116,7 @@ function PrettyTables._excel__print(
             xf = XLSX.opentemplate(filename)
             XLSX.hassheet(xf, sheet) || XLSX.addsheet!(xf, sheet)
             sh = xf[sheet]
-            _write_excel_table!(sh, table_data; anchor_cell, kwargs...)
+            _write_excel_table!(sh, pspec; anchor_cell, kwargs...)
             return xf # returning xf forces the user to save using XLSX.writexlsx, reducing the risk of accidentally overwriting data.
 
         else

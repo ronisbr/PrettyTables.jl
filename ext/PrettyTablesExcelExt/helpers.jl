@@ -299,26 +299,6 @@ function _excel_update_fontsize!(atts, fontsize)
 end
 
 """
-    _excel_create_mergemap(table_data)
-
-Create a Dict mapping merge firlds in the header rows
-"""
-function _excel_create_mergemap(table_data)
-    merge_map = Dict{Tuple{Int, Int}, Tuple{Int, Any, Symbol}}()  # (row, col) => (span, data, alignment)
-    if table_data.merge_column_label_cells !== nothing
-        for merge_cell in table_data.merge_column_label_cells
-            # merge_cell has fields: i (row), j (column), column_span, data, alignment
-            merge_map[(merge_cell.i, merge_cell.j)] = (
-                merge_cell.column_span, 
-                merge_cell.data, 
-                merge_cell.alignment,
-            )
-        end
-    end
-    return merge_map
-end
-
-"""
     fmt__excel_stringify(columns::AbstractVector(Int))
 
 Create formatter function that turns data types XLSX.jl can't handle into their string representation.
@@ -442,6 +422,27 @@ function _excel_get_col_width(table_format, col, max_col_length, col_offset)
 
     return col_width
     
+end
+
+"""
+    _excel_compute_col_offset(table_data::TableData) -> Int
+
+Return the number of leading columns before the data columns (row number column +
+row label column). This offset is used when mapping data column indices to absolute
+Excel column numbers.
+"""
+function _excel_compute_col_offset(table_data::TableData)
+    col_offset = 0
+    if table_data.show_row_number_column
+        col_offset += 1
+    end
+    if table_data.row_labels !== nothing || table_data.summary_row_labels !== nothing
+        col_offset += 1
+    end
+    if table_data.row_group_labels !== nothing && col_offset == 0
+        col_offset += 1
+    end
+    return col_offset
 end
 
 """
