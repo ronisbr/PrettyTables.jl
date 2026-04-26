@@ -431,24 +431,29 @@ end
         table_format::ExcelTableFormat,
         col::Int,
         max_col_length::Vector{Float64},
-        col_offset::Int
+        col_offset::Int,
+        min_data_column_widths::AbstractVector{Float64},
+        max_data_column_widths::AbstractVector{Float64}
     ) -> Float64
 
-Resolve the Excel column width for column `col`, respecting any explicit, minimum, or
-maximum widths configured in `table_format`. Columns at or before `col_offset` (row-number
-and row-label columns) are returned as-is from `max_col_length`.
+Resolve the Excel column width for column `col`. Columns at or before `col_offset`
+(row-number and row-label columns) are returned as-is from `max_col_length`. For data
+columns, an explicit `table_format.data_column_width` takes precedence; otherwise the
+auto-calculated width is clamped between the corresponding entries of
+`min_data_column_widths` and `max_data_column_widths` (values ≤ 0 are ignored).
 """
 function _excel__get_col_width(
     table_format::ExcelTableFormat,
     col::Int,
     max_col_length::Vector{Float64},
     col_offset::Int,
+    min_data_column_widths::AbstractVector{Float64},
+    max_data_column_widths::AbstractVector{Float64},
 )
-
     # Don't limit non-data cells.
     col <= col_offset && return max_col_length[col]
 
-    # Always use explicitly set data cell widths
+    # Always use explicitly set data cell widths.
     table_format.data_column_width isa Float64 && return table_format.data_column_width
 
     if table_format.data_column_width isa Vector{Float64}
@@ -460,44 +465,15 @@ function _excel__get_col_width(
         ))
     end
 
-    # Limit calculated values
+    # Clamp auto-calculated width between min and max.
+    j         = col - col_offset
     col_width = max_col_length[col]
 
-    if (
-        table_format.min_data_column_width isa Float64 &&
-        table_format.min_data_column_width > 0
-    )
-        col_width = max(col_width, table_format.min_data_column_width)
+    min_w = min_data_column_widths[j]
+    min_w > 0.0 && (col_width = max(col_width, min_w))
 
-    elseif (
-        table_format.min_data_column_width isa Vector{Float64} &&
-        table_format.min_data_column_width[col] > 0
-    )
-        length(table_format.min_data_column_width) != length(max_col_length) &&
-            throw(ArgumentError(
-                "The table format property `min_data_column_width` shoud have the same number of elements as there are data columns. Expected $(length(max_col_length)): Got $(length(table_format.min_data_column_width)).",
-            ))
-
-        col_width = max(col_width, table_format.min_data_column_width[col])
-    end
-
-    if (
-        table_format.max_data_column_width isa Float64 &&
-        table_format.max_data_column_width > 0
-    )
-        col_width = min(col_width, table_format.max_data_column_width)
-
-    elseif (
-        table_format.max_data_column_width isa Vector{Float64} &&
-        table_format.max_data_column_width[col] > 0
-    )
-        length(table_format.max_data_column_width) != length(max_col_length) &&
-            throw(ArgumentError(
-                "The table format property `max_data_column_width` shoud have the same number of elements as there are data columns. Expected $(length(max_col_length)): Got $(length(table_format.max_data_column_width))."
-            ))
-
-        col_width = min(col_width, table_format.max_data_column_width[col])
-    end
+    max_w = max_data_column_widths[j]
+    max_w > 0.0 && (col_width = min(col_width, max_w))
 
     return col_width
 end

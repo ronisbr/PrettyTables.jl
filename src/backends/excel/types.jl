@@ -241,16 +241,6 @@ strings compatible with the `setBorder` XLSX.jl function.
   width to be used for the data table columns, over-riding any automatically 
   calculated column width. If a vector of values is provided, the width of each 
   column is set by the corresponding vector entry.
-- `min_data_column_width::Union{Float64,Vector{Float64},Nothing}`: Specifies the 
-  minimum column width to be used for the data table columns, clipping any 
-  narrower column width automatically calculated. If a vector of values is 
-  provided, the minimum width of each column is set by the corresponding vector 
-  entry.
-- `max_data_column_width::Union{Float64,Vector{Float64},Nothing}`: Specifies the 
-  maximum column width to be used for the data table columns, clipping any 
-  wider column width automatically calculated. If a vector of values is 
-  provided, the maximum width of each column is set by the corresponding vector 
-  entry.
 
 
 # Remarks
@@ -284,9 +274,7 @@ To simplify the specification of table borders, four standard definitions are pr
   different table sections (title, column labels, data rows, summary rows, footnotes)
   and one vertical line between the row labels and the table data.
 
-The `data_column_width`, `min_data_column_width` and `max_data_column_width` fields
-are specified in Excel's internal units. If `data_column_width` is specified, 
-`min_data_column_width` and `max_data_column_width` are ignored.
+The `data_column_width` field is specified in Excel's internal units.
 
 It is only necessary to define those fields for which the default border formats 
 need to be overwritten. For example, to choose to draw an outside border around 
@@ -346,8 +334,6 @@ table_format = ExcelTableFormat(
     vline_between_data_columns::Union{Nothing, Bool} = nothing
     vline_between_data_columns_type::Union{Nothing, Vector{ExcelPair}} = nothing
     data_column_width::Union{Float64, Vector{Float64}, Nothing} = nothing
-    min_data_column_width::Union{Float64, Vector{Float64}, Nothing} = nothing
-    max_data_column_width::Union{Float64, Vector{Float64}, Nothing} = nothing
 end
 
 const DEFAULT_EXCEL_TABLE_FORMAT = ExcelTableFormat(
@@ -382,8 +368,6 @@ const DEFAULT_EXCEL_TABLE_FORMAT = ExcelTableFormat(
     true,                                                 # vline_between_data_columns
     ExcelPair["style" => "dotted", "color" => "Black"],   # vline_between_data_columns_type
     -1.0,                                                 # data_column_width
-    -1.0,                                                 # min_data_column_width
-    -1.0,                                                 # max_data_column_width
 )
 
 const EXCEL_FORMAT_NO_VLINES = ExcelTableFormat(
