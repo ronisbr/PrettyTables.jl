@@ -203,7 +203,7 @@ function _excel__cell_fill_attributes(
     return ExcelPair[SubString(k, n + 1) => v for (k, v) in raw if startswith(k, prefix)]
 end
 
-function _excel__cell_fill_attributes(_::Nothing, _::Union{Nothing, Int} = nothing)
+function _excel__cell_fill_attributes(::Nothing, ::Union{Nothing, Int} = nothing)
     return ExcelPair[]
 end
 
@@ -605,39 +605,4 @@ function _excel__apply_cell_style!(
     isempty(fill_attributes) || XLSX.setFill(sheet, row, col; fill_attributes...)
 
     return fontsize
-end
-
-"""
-    _get_cell_value(table_data::TableData, i::Int, j::Int) -> Any
-
-Extract the value at row `i` and column `j` from the data structure in `table_data`,
-handling `ColumnTable`, `RowTable`, and array-like inputs.
-"""
-function _get_cell_value(table_data::TableData, i::Int, j::Int)
-    data = table_data.data
-
-    # Adjust indices based on the data structure's first indices.
-    row_idx = i + table_data.first_row_index - 1
-    col_idx = j + table_data.first_column_index - 1
-
-    try
-        if data isa ColumnTable
-            # For ColumnTable, access via column name
-            col_name = data.column_names[col_idx]
-            col_data = Tables.getcolumn(data.table, col_name)
-            return col_data[row_idx]
-        elseif data isa RowTable
-            # For RowTable, iterate to the right row
-            rows = collect(Tables.rows(data.table))
-            row = rows[row_idx]
-            col_name = data.column_names[col_idx]
-            return Tables.getcolumn(row, col_name)
-        else
-            # For regular arrays and matrices
-            return data[row_idx, col_idx]
-        end
-    catch e
-        # If there's an error accessing the data, return empty string
-        return ""
-    end
 end

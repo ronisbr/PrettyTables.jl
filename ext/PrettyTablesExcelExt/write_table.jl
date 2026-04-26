@@ -17,8 +17,8 @@ during the single pass over the iterator.
 
 # Keywords
 
-- `highlighters::Vector{ExcelHighlighter}`: Highlighters applied to data cells after all
-    borders have been set.
+- `highlighters::Vector{ExcelHighlighter}`: Highlighters applied inline while writing data
+    cells.
     (**Default**: `ExcelHighlighter[]`)
 - `excel_formatters::Vector{ExcelFormatter}`: Number-format rules applied to data and
     summary cells.
@@ -45,7 +45,6 @@ function _excel__write_table!(
     anchor_row_offset = Int(c.row_number  - 1)
     anchor_col_offset = Int(c.column_number - 1)
 
-    num_rows   = table_data.num_rows
     num_cols   = table_data.num_columns
     col_offset = _excel__compute_col_offset(table_data)
 
@@ -60,12 +59,11 @@ function _excel__write_table!(
     current_row = 1  # internal row counter (relative to the table, not the sheet)
 
     # Tracking variables used for post-loop operations and section transitions.
-    data_i_to_sheet_row = Dict{Int, Int}()   # data row index i → absolute sheet row
-    first_content_row   = 0                  # absolute sheet row of first non-header row
-    last_written_row    = 0                  # absolute sheet row of last data/summary row
-    footnote_start_row  = 0                  # absolute sheet row of first footnote
-    footnote_end_row    = 0                  # absolute sheet row of last footnote
-    in_footnotes        = false
+    first_content_row  = 0      # absolute sheet row of first non-header row
+    last_written_row   = 0      # absolute sheet row of last data/summary row
+    footnote_start_row = 0      # absolute sheet row of first footnote
+    footnote_end_row   = 0      # absolute sheet row of last footnote
+    in_footnotes       = false
 
     # Shared column range expression (reused in many setBorder/unempty calls).
     all_cols(offset = 0) = 1 + anchor_col_offset : num_cols + col_offset + anchor_col_offset + offset
@@ -92,7 +90,6 @@ function _excel__write_table!(
             end
 
             if rs == :data
-                data_i_to_sheet_row[ps.i] = current_row + anchor_row_offset
                 _excel__try_border!(
                     sheet, current_row + anchor_row_offset, all_cols(),
                     table_format, "underline_data_rows", :bottom,
@@ -409,6 +406,30 @@ function _excel__write_table!(
                     max_col_length[ps.j + col_offset], col_length,
                 )
 
+                for highlighter in highlighters
+                    highlighter.f(table_data.data, ps.i, ps.j) || continue
+                    decoration = highlighter.fd(highlighter, table_data.data, ps.i, ps.j)
+                    font_attributes, fill_attributes = _excel__font_fill_attributes(decoration)
+                    if !isempty(font_attributes)
+                        hl_font_size = _excel__getsize(font_attributes)
+                        if !isnothing(hl_font_size)
+                            hl_row_height, hl_col_length = _excel__cell_length_and_height(
+                                formatted_value, hl_font_size,
+                            )
+                            max_row_height[current_row] = max(
+                                max_row_height[current_row], hl_row_height,
+                            )
+                            max_col_length[ps.j + col_offset] = max(
+                                max_col_length[ps.j + col_offset], hl_col_length,
+                            )
+                        end
+                        XLSX.setFont(sheet, sheet_row, excel_col; font_attributes...)
+                    end
+                    !isempty(fill_attributes) &&
+                        XLSX.setFill(sheet, sheet_row, excel_col; fill_attributes...)
+                    break
+                end
+
             # -- Summary row cell ------------------------------------------------------
             elseif action == :summary_row_cell
                 excel_col = ps.j + col_offset + anchor_col_offset
@@ -488,50 +509,6 @@ function _excel__write_table!(
         table_format, "outside_border", :outside,
     )
 
-    # Apply highlighters after all borders so they render on top.
-    if num_rows > 0
-        for i in 1:num_rows
-            hl_row = get(data_i_to_sheet_row, i, 0)
-            hl_row == 0 && continue
-
-            for j in 1:num_cols
-                for highlighter in highlighters
-                    highlighter.f(table_data.data, i, j) || continue
-
-                    decoration = highlighter.fd(highlighter, table_data.data, i, j)
-                    font_attributes, fill_attributes = _excel__font_fill_attributes(decoration)
-
-                    if !isempty(font_attributes)
-                        font_size = _excel__getsize(font_attributes)
-                        if !isnothing(font_size)
-                            row_height, col_length = _excel__cell_length_and_height(
-                                _get_cell_value(table_data, i, j), font_size,
-                            )
-                            internal_row = hl_row - anchor_row_offset
-                            max_row_height[internal_row] = max(
-                                get(max_row_height, internal_row, 0.0), row_height,
-                            )
-                            max_col_length[j + col_offset] = max(
-                                max_col_length[j + col_offset], col_length,
-                            )
-                        end
-                        XLSX.setFont(
-                            sheet, hl_row, j + col_offset + anchor_col_offset;
-                            font_attributes...,
-                        )
-                    end
-                    if !isempty(fill_attributes)
-                        XLSX.setFill(
-                            sheet, hl_row, j + col_offset + anchor_col_offset;
-                            fill_attributes...,
-                        )
-                    end
-                    break
-                end
-            end
-        end
-    end
-
     # Set column widths based on accumulated content lengths.
     for i in 1:num_cols + col_offset
         col_width = _excel__get_col_width(table_format, i, max_col_length, col_offset)
@@ -540,7 +517,7 @@ function _excel__write_table!(
         end
     end
 
-    # Re-apply row heights (may have been updated by highlighter font-size changes).
+    # Set final row heights.
     for (row, height) in max_row_height
         XLSX.setRowHeight(sheet, row + anchor_row_offset; height = height)
     end
