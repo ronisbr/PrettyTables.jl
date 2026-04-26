@@ -6,7 +6,7 @@
 
 export ExcelPair, ExcelHighlighter, ExcelTableBorders, ExcelTableFormat, ExcelTableStyle, ExcelFormatter
 export DEFAULT_EXCEL_TABLE_STYLE
-export EXCEL_FORMAT_NO_VLINES, EXCEL_FORMAT_CELL_LINES, EXCEL_FORMAT_SECTION_LINES
+export EXCEL_FORMAT_NO_VLINES, EXCEL_FORMAT_NO_CELL_LINES, EXCEL_FORMAT_SECTION_LINES
 
 ############################################################################################
 #                                       Constants                                          #
@@ -277,31 +277,36 @@ color) are configured via the `borders::ExcelTableBorders` field.
 The `horizontal_line_after_title` border is drawn under the subtitle row (if provided) or
 under the title row when there is no subtitle.
 
-Three predefined formats are provided (in addition to the default `ExcelTableFormat()`):
+Three predefined `NamedTuple` presets override specific fields from the default:
 - `EXCEL_FORMAT_NO_VLINES`: No vertical lines.
 - `EXCEL_FORMAT_NO_CELL_LINES`: No borders between individual data cells (no data row
     underlines, no column dividers).
 - `EXCEL_FORMAT_SECTION_LINES`: Only section-level horizontal borders and one vertical
     line after the row label column.
 
-To customize border styles, pass an `ExcelTableBorders` object. For example, to draw all
-section-separator lines in red:
+Presets are plain `NamedTuple`s and can be applied by splatting them into the constructor.
+Use `merge` to combine presets or to override individual fields:
 
 ```julia
-table_format = ExcelTableFormat(
-    borders = ExcelTableBorders(header_line = ["style" => "thin", "color" => "red"]),
+# Apply a single preset
+table_format = ExcelTableFormat(; EXCEL_FORMAT_NO_VLINES...)
+
+# Apply a preset and customize border styles
+table_format = ExcelTableFormat(;
+    EXCEL_FORMAT_SECTION_LINES...,
+    borders = ExcelTableBorders(header_line = ["style" => "thick", "color" => "red"]),
 )
-```
 
-Predefined formats can be combined and extended:
+# Combine two presets (merge resolves any overlapping keys, last wins)
+table_format = ExcelTableFormat(; merge(EXCEL_FORMAT_SECTION_LINES, EXCEL_FORMAT_NO_VLINES)...)
 
-```julia
-table_format = ExcelTableFormat(
-    EXCEL_FORMAT_SECTION_LINES;
-    borders = ExcelTableBorders(
-        header_line = ["style" => "thick", "color" => "red"],
-        middle_line = ["style" => "thick", "color" => "red"],
-    ),
+# Combine presets and re-enable a specific line
+table_format = ExcelTableFormat(;
+    merge(
+        EXCEL_FORMAT_SECTION_LINES,
+        EXCEL_FORMAT_NO_VLINES,
+        (horizontal_line_before_row_group_label = true,),
+    )...,
 )
 ```
 
@@ -309,40 +314,38 @@ table_format = ExcelTableFormat(
 @kwdef struct ExcelTableFormat
     borders::ExcelTableBorders = ExcelTableBorders()
     # Horizontal lines
-    horizontal_line_at_beginning::Bool                          = true
-    horizontal_line_after_title::Union{Nothing, Bool}           = nothing
-    horizontal_line_after_column_labels::Union{Nothing, Bool}   = nothing
-    horizontal_line_between_column_labels::Union{Nothing, Bool} = nothing
-    horizontal_line_at_merged_column_labels::Union{Nothing, Bool} = nothing
-    horizontal_lines_at_data_rows::Union{Nothing, Bool}         = nothing
-    horizontal_line_after_data_rows::Union{Nothing, Bool}       = nothing
-    horizontal_line_before_row_group_label::Union{Nothing, Bool} = nothing
-    horizontal_line_after_row_group_label::Union{Nothing, Bool} = nothing
-    horizontal_line_before_summary_rows::Union{Nothing, Bool}   = nothing
-    horizontal_line_after_summary_rows::Union{Nothing, Bool}    = nothing
-    horizontal_line_after_footnotes::Union{Nothing, Bool}       = nothing
+    horizontal_line_at_beginning::Bool            = true
+    horizontal_line_after_title::Bool             = true
+    horizontal_line_after_column_labels::Bool     = true
+    horizontal_line_between_column_labels::Bool   = true
+    horizontal_line_at_merged_column_labels::Bool = true
+    horizontal_lines_at_data_rows::Bool           = true
+    horizontal_line_after_data_rows::Bool         = true
+    horizontal_line_before_row_group_label::Bool  = true
+    horizontal_line_after_row_group_label::Bool   = true
+    horizontal_line_before_summary_rows::Bool     = true
+    horizontal_line_after_summary_rows::Bool      = true
+    horizontal_line_after_footnotes::Bool         = true
     # Vertical lines
-    vertical_line_at_beginning::Bool                            = true
-    vertical_line_after_row_number_column::Union{Nothing, Bool} = nothing
-    vertical_line_after_row_label_column::Union{Nothing, Bool}  = nothing
-    vertical_lines_at_data_columns::Union{Nothing, Bool}        = nothing
-    vertical_line_after_data_columns::Bool                      = true
+    vertical_line_at_beginning::Bool              = true
+    vertical_line_after_row_number_column::Bool   = true
+    vertical_line_after_row_label_column::Bool    = true
+    vertical_lines_at_data_columns::Bool          = true
+    vertical_line_after_data_columns::Bool        = true
 end
 
-
-
-const EXCEL_FORMAT_NO_VLINES = ExcelTableFormat(
+const EXCEL_FORMAT_NO_VLINES = (
     vertical_line_after_row_number_column = false,
     vertical_line_after_row_label_column  = false,
     vertical_lines_at_data_columns        = false,
 )
 
-const EXCEL_FORMAT_NO_CELL_LINES = ExcelTableFormat(
+const EXCEL_FORMAT_NO_CELL_LINES = (
     horizontal_lines_at_data_rows  = false,
     vertical_lines_at_data_columns = false,
 )
 
-const EXCEL_FORMAT_SECTION_LINES = ExcelTableFormat(
+const EXCEL_FORMAT_SECTION_LINES = (
     horizontal_lines_at_data_rows          = false,
     horizontal_line_before_row_group_label = false,
     horizontal_line_after_row_group_label  = false,
@@ -350,55 +353,6 @@ const EXCEL_FORMAT_SECTION_LINES = ExcelTableFormat(
     vertical_lines_at_data_columns         = false,
     vertical_line_after_row_number_column  = false,
 )
-
-function _excel__format_merge(a::ExcelTableFormat, b::ExcelTableFormat)
-    # `borders` is never `nothing`, so we use equality with the zero-kwarg default to detect
-    # "not explicitly set" — only override `a.borders` when `b` was given a custom value.
-    merged_borders = b.borders == ExcelTableBorders() ? a.borders : b.borders
-    return ExcelTableFormat(;
-        borders = merged_borders,
-        (name => (getfield(b, name) === nothing ?
-                  getfield(a, name) :
-                  getfield(b, name))
-         for name in fieldnames(ExcelTableFormat) if name != :borders
-        )...
-    )
-end
-
-"""
-  ExcelTableFormat(presets::ExcelTableFormat...; kwargs...)
-
-Create an `ExcelTableFormat` object by merging one or more predefined table formats 
-and then modifying the resulting format with any keyword arguments.
-
-When merging, the predefined table formats are applied in order, with later formats 
-taking precedence over earlier ones. Finally, any keyword arguments provided will 
-take precedence over all predefined formats.
-
-Example usage:
-
-```julia
-table_format = ExcelTableFormat(
-    EXCEL_FORMAT_SECTION_LINES,
-    EXCEL_FORMAT_NO_VLINES;
-    horizontal_line_before_row_group_label = true,
-    horizontal_line_after_row_group_label  = true,
-)
-```
-
-"""
-function ExcelTableFormat(presets::ExcelTableFormat...; kwargs...)
-    # Start from the default instance
-    fmt = ExcelTableFormat()
-
-    # Merge all presets in order
-    for p in presets
-        fmt = _excel__format_merge(fmt, p)
-    end
-
-    # Apply keyword overrides last
-    return _excel__format_merge(fmt, ExcelTableFormat(; kwargs...))
-end
 
 
 ############################################################################################

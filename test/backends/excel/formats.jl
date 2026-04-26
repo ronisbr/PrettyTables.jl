@@ -66,7 +66,7 @@
     f["left"] == Dict("style" => "thick", "rgb" => "FF000000")
     f["right"] == Dict("style" => "thick", "rgb" => "FF000000")
 
-    # Test merging of predefined formats
+    # Test combining predefined formats via merge()
     result = pretty_table(
         XLSX.XLSXFile,
         matrix;
@@ -85,11 +85,15 @@
             (:data, 2, 2) => "Middle data footnote."
         ],
         source_notes = "This is a source note.",
-        table_format = ExcelTableFormat(
-            EXCEL_FORMAT_SECTION_LINES,
-            EXCEL_FORMAT_NO_VLINES;
-            horizontal_line_before_row_group_label = true,
-            horizontal_line_after_row_group_label  = true,
+        table_format = ExcelTableFormat(;
+            merge(
+                EXCEL_FORMAT_SECTION_LINES,
+                EXCEL_FORMAT_NO_VLINES,
+                (
+                    horizontal_line_before_row_group_label = true,
+                    horizontal_line_after_row_group_label  = true,
+                ),
+            )...,
             borders = ExcelTableBorders(header_line = ["style" => "double", "color" => "red"]),
         ),
     )

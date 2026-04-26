@@ -128,13 +128,6 @@ function _excel__newpairs(attributes::Union{Nothing, Vector{ExcelPair}})
     return newpairs
 end
 
-"""
-    _excel__check_table_format(b::Union{Nothing, Bool}) -> Bool
-
-Return `b` if it is not `nothing`; otherwise return `true` (all format fields default to
-enabled).
-"""
-_excel__check_table_format(b::Union{Nothing, Bool}) = something(b, true)
 
 """
     _excel__tablestyle_attributes(
@@ -502,9 +495,7 @@ function _excel__try_border!(
     border_style::Vector{ExcelPair},
     side::Symbol,
 )
-    field = getproperty(table_format, Symbol(property))
-
-    _excel__check_table_format(field) || return
+    getproperty(table_format, Symbol(property)) || return
 
     XLSX.setBorder(sheet, rows, cols; Dict(side => border_style)...)
 

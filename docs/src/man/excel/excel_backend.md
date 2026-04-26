@@ -201,36 +201,33 @@ Border styles are specified using an [`ExcelTableBorders`](@ref) object:
 
 ### Predefined formats
 
-Three predefined formats modify the defaults:
+Three `NamedTuple` presets are provided:
 - `EXCEL_FORMAT_NO_VLINES`: No vertical lines.
 - `EXCEL_FORMAT_NO_CELL_LINES`: No data row underlines and no column dividers.
 - `EXCEL_FORMAT_SECTION_LINES`: Only section-level horizontal borders and no column
   dividers.
 
-To customize border styles, pass an `ExcelTableBorders` object. For example, to draw
-all section-separator lines in red:
+Apply a preset by splatting it into the constructor. Use `merge` to combine presets or
+to override individual fields:
 
 ```julia
-table_format = ExcelTableFormat(
-    borders = ExcelTableBorders(header_line = ["style" => "thin", "color" => "red"]),
+# Apply a single preset
+table_format = ExcelTableFormat(; EXCEL_FORMAT_NO_VLINES...)
+
+# Combine two presets
+table_format = ExcelTableFormat(; merge(EXCEL_FORMAT_SECTION_LINES, EXCEL_FORMAT_NO_VLINES)...)
+
+# Apply a preset with custom border style
+table_format = ExcelTableFormat(;
+    EXCEL_FORMAT_SECTION_LINES...,
+    borders = ExcelTableBorders(header_line = ["style" => "thick", "color" => "red"]),
+)
+
+# Re-enable a field that a preset turns off
+table_format = ExcelTableFormat(;
+    merge(EXCEL_FORMAT_SECTION_LINES, (horizontal_line_before_row_group_label = true,))...,
 )
 ```
-
-Predefined formats can be combined and extended:
-
-```julia
-table_format = ExcelTableFormat(
-    EXCEL_FORMAT_SECTION_LINES;
-    borders = ExcelTableBorders(
-        header_line = ["style" => "thick", "color" => "red"],
-        middle_line = ["style" => "thick", "color" => "red"],
-    ),
-)
-```
-
-When merging formats, the predefined table formats are applied in order with later
-formats taking precedence. Any keyword arguments take precedence over all predefined
-formats.
 
 ## Excel Table Style
 

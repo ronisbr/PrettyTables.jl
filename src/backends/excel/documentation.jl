@@ -191,7 +191,9 @@ Border styles are specified using an [`ExcelTableBorders`](@ref) object with the
 
 ### Predefined formats
 
-Three predefined formats modify the defaults:
+Three `NamedTuple` presets are provided. Apply them by splatting into the constructor,
+combining multiple presets or re-enabling fields with `merge`:
+
 - `EXCEL_FORMAT_NO_VLINES`: No vertical lines.
 - `EXCEL_FORMAT_NO_CELL_LINES`: No data row underlines and no column dividers.
 - `EXCEL_FORMAT_SECTION_LINES`: Only section-level horizontal borders and no column
@@ -199,7 +201,21 @@ Three predefined formats modify the defaults:
 
 ### Examples
 
-To draw section-separator lines in red:
+Apply a preset:
+
+```julia
+table_format = ExcelTableFormat(; EXCEL_FORMAT_NO_VLINES...)
+```
+
+Combine presets and override a field:
+
+```julia
+table_format = ExcelTableFormat(;
+    merge(EXCEL_FORMAT_SECTION_LINES, (horizontal_line_before_row_group_label = true,))...,
+)
+```
+
+Draw section-separator lines in red:
 
 ```julia
 table_format = ExcelTableFormat(
