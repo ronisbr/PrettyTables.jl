@@ -30,46 +30,36 @@ include("write_table.jl")
 #                                        Functions                                         #
 ############################################################################################
 
-""" _excel__print(pspec::PrintingSpec; kwargs...)
+"""
+    _excel__print(pspec::PrintingSpec; kwargs...) -> Union{Nothing, String, XLSX.XLSXFile}
 
-Implementation of Excel backend printing when XLSX.jl is loaded.
+Write the table described by `pspec` to an Excel workbook. All other keyword arguments are
+passed through to `_excel__write_table!`.
 
 # Keywords
 
-- `filename::Union{Nothing,String}`: The name of the Excel file to be used to contain the
-    table. If `nothing` (default), no file will be created but an `XLSXFile` object will be
-    returned instead. If a valid filename is given, behaviour depends on the value specified
-    for `mode`.
+- `filename::Union{Nothing, String}`: Path of the Excel file to write. When `nothing`, no
+    file is created and an in-memory `XLSX.XLSXFile` is returned instead. When a string,
+    behaviour depends on `mode`.
     (**Default**: `nothing`)
-- `sheet::Union{String, XLSX.Worksheet}`: If `sheet` is a `String`, it specifies the name of
-    the tab to use for the created pretty table. Default = `"prettytable"`. If a sheet with
-    the given name doesn't exist, it will be created. The resultant `XLSXFile` object will
-    be returned. If `sheet` is an `XLSX.Worksheet`, this worksheet will be updated in place
-    by the addition of the pretty table and `nothing` will be returned.
+- `sheet::Union{String, XLSX.Worksheet}`: When a `String`, the name of the worksheet tab.
+    If no sheet with that name exists it will be created. When an `XLSX.Worksheet`, that
+    worksheet is updated in place and `nothing` is returned.
     (**Default**: `"prettytable"`)
-- `mode::String`: Determines whether to create a new Excel file (`mode = "w"`) or to open
-    and use an existing Excel file (`mode = "rw"`).
+- `mode::String`: `"w"` to create a new file or `"rw"` to open and update an existing one.
     (**Default**: `"w"`)
-- `overwrite::Bool`: Determines whether or not to overwrite an existing file if `mode =
-    "w"`.
+- `overwrite::Bool`: Allow overwriting an existing file when `mode = "w"`.
     (**Default**: `false`)
-- `anchor_cell::String`: Defines the top-left cell of the table, allowing placement anywhere
-    on a sheet. A table will overwrite any existing data in the cells it is written to, but
-    using `anchor_cell` makes it possible to place a pretty table alongside existing data in
-    the specified sheet.
+- `anchor_cell::String`: Top-left cell of the table in A1 notation, allowing placement
+    anywhere on the sheet.
     (**Default**: `"A1"`)
-
-All other keyword arguments are passed to the internal `_excel__write_table!` function.
 
 # Returns
 
-- If `filename === nothing`
-    - If `sheet === XLSX.worksheet`: Returns `nothing`. The worksheet specified is updated
-    in place.
-    - If `sheet !== XLSX.worksheet`: Returns an in-memory `XLSX.XLSXFile` object.
-    - If `filename::String` and `mode=\"w\"`: Writes to a new file and returns the filename.
-- If `filename::String` and `mode = "rw"`: Reads an existing file, updates and returns the
-    in-memory `XLSX.XLSXFile` object
+- `nothing` when `sheet` is an `XLSX.Worksheet` (the worksheet is updated in place).
+- `XLSX.XLSXFile` when `filename` is `nothing` and `sheet` is a `String`.
+- `String` (the filename) when `filename` is a `String` and `mode = "w"`.
+- `XLSX.XLSXFile` when `filename` is a `String` and `mode = "rw"`.
 
 !!! note
 
@@ -138,20 +128,17 @@ function PrettyTables._excel__print(
 end
 
 """
-    pretty_table(::Type{XLSX.XLSXFile}, data; kwargs...)
+    pretty_table(::Type{XLSX.XLSXFile}, data::Any; kwargs...) -> XLSX.XLSXFile
 
-Convenience method to get an in-memory XLSX workbook object.
+Render `data` as a PrettyTable and return an in-memory `XLSX.XLSXFile` object. All keyword
+arguments are forwarded to `pretty_table`.
 
 # Examples
 
 ```julia
 julia> using PrettyTables, XLSX
 
-julia> data = [1 2 3; 4 5 6]
-
-julia> xf = pretty_table(XLSX.XLSXFile, data; backend = :excel)
-
-julia> # Now you can manipulate the workbook further or save it to file yourself.
+julia> xf = pretty_table(XLSX.XLSXFile, [1 2 3; 4 5 6]; backend = :excel)
 
 julia> XLSX.writexlsx("myfile.xlsx", xf)
 ```

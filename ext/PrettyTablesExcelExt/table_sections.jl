@@ -6,28 +6,35 @@
 
 """
     _excel__write_full_span_cell!(
-        sheet, text, row, num_cols, col_offset,
-        anchor_row_offset, anchor_col_offset,
-        style_attributes, fill_attributes, alignment, valign
+        sheet::XLSX.Worksheet,
+        text::Any,
+        row::Int,
+        num_cols::Int,
+        col_offset::Int,
+        anchor_row_offset::Int,
+        anchor_col_offset::Int,
+        style_attributes::Union{Nothing, Vector{Pair{Symbol, Any}}},
+        fill_attributes::Union{Nothing, Vector{Pair{Symbol, Any}}},
+        alignment::Union{Nothing, Symbol},
+        valign::String
     ) -> Float64
 
 Write a cell that spans the full width of the table (title, subtitle, row group labels,
-footnotes, source notes). Returns the computed row height.
-
-The caller is responsible for calling `_excel__unempty_row` before invoking this function.
+footnotes, source notes). Returns the computed row height. The caller is responsible for
+calling `_excel__unempty_row!` before invoking this function.
 """
 function _excel__write_full_span_cell!(
-    sheet,
-    text,
-    row,
-    num_cols,
-    col_offset,
-    anchor_row_offset,
-    anchor_col_offset,
-    style_attributes,
-    fill_attributes,
-    alignment,
-    valign,
+    sheet::XLSX.Worksheet,
+    text::Any,
+    row::Int,
+    num_cols::Int,
+    col_offset::Int,
+    anchor_row_offset::Int,
+    anchor_col_offset::Int,
+    style_attributes::Union{Nothing, Vector{Pair{Symbol, Any}}},
+    fill_attributes::Union{Nothing, Vector{Pair{Symbol, Any}}},
+    alignment::Union{Nothing, Symbol},
+    valign::String,
 )
     sheet_row = row + anchor_row_offset
     col_start = 1 + anchor_col_offset
@@ -57,27 +64,32 @@ end
 
 """
     _excel__finalize_footnotes!(
-        sheet, table_data, table_format, style, fill,
-        footnote_start_row, footnote_end_row,
-        anchor_col_offset, col_offset, num_cols
-    )
+        sheet::XLSX.Worksheet,
+        table_data::TableData,
+        table_format::ExcelTableFormat,
+        style::ExcelTableStyle,
+        footnote_start_row::Int,
+        footnote_end_row::Int,
+        anchor_col_offset::Int,
+        col_offset::Int,
+        num_cols::Int
+    ) -> Nothing
 
-Apply batch font/alignment styling across all footnote rows and draw the optional
-underline border after footnotes. Called once after the last footnote row is written.
-
-`footnote_start_row` and `footnote_end_row` are absolute Excel row numbers (including
-the anchor offset).
+Apply batch font/alignment styling across all footnote rows and draw the optional underline
+border after footnotes. Called once after the last footnote row is written.
+`footnote_start_row` and `footnote_end_row` are absolute Excel row numbers (including the
+anchor offset).
 """
 function _excel__finalize_footnotes!(
-    sheet,
-    table_data,
-    table_format,
-    style,
-    footnote_start_row,
-    footnote_end_row,
-    anchor_col_offset,
-    col_offset,
-    num_cols,
+    sheet::XLSX.Worksheet,
+    table_data::TableData,
+    table_format::ExcelTableFormat,
+    style::ExcelTableStyle,
+    footnote_start_row::Int,
+    footnote_end_row::Int,
+    anchor_col_offset::Int,
+    col_offset::Int,
+    num_cols::Int,
 )
     attributes = _excel__newpairs(_excel__tablestyle_attributes("footnote", style.footnote))
 

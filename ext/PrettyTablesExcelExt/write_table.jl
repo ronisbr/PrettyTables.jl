@@ -5,14 +5,35 @@
 ############################################################################################
 
 """
-    _excel__write_table!(sheet, pspec::PrintingSpec; kwargs)
+    _excel__write_table!(
+        sheet::XLSX.Worksheet,
+        pspec::PrintingSpec;
+        kwargs...
+    ) -> Nothing
 
-Write the complete table to an Excel sheet using the PrettyTables.jl printing iterator.
+Write the complete table described by `pspec` to `sheet` using the PrettyTables.jl
+printing iterator. Cell styling, borders, column widths, and row heights are all applied
+during the single pass over the iterator.
+
+# Keywords
+
+- `highlighters::Vector{ExcelHighlighter}`: Highlighters applied to data cells after all
+    borders have been set.
+    (**Default**: `ExcelHighlighter[]`)
+- `excel_formatters::Vector{ExcelFormatter}`: Number-format rules applied to data and
+    summary cells.
+    (**Default**: `ExcelFormatter[]`)
+- `table_format::ExcelTableFormat`: Border and column-width configuration.
+    (**Default**: `ExcelTableFormat()`)
+- `style::ExcelTableStyle`: Font and fill style for each table section.
+    (**Default**: `ExcelTableStyle()`)
+- `anchor_cell::String`: Top-left cell of the table in A1 notation (e.g. `"B3"`).
+    (**Default**: `"A1"`)
 """
 function _excel__write_table!(
     sheet::XLSX.Worksheet,
     pspec::PrintingSpec;
-    highlighters::Vector{ExcelHighlighter}  = ExcelHighlighter[],
+    highlighters::Vector{ExcelHighlighter}   = ExcelHighlighter[],
     excel_formatters::Vector{ExcelFormatter} = ExcelFormatter[],
     table_format::ExcelTableFormat           = ExcelTableFormat(),
     style::ExcelTableStyle                   = ExcelTableStyle(),
@@ -63,7 +84,7 @@ function _excel__write_table!(
             max_row_height[current_row] = 0.0
 
             # Ensure all cells in the row are non-empty before any merges.
-            _excel__unempty_row(sheet, current_row + anchor_row_offset, all_cols())
+            _excel__unempty_row!(sheet, current_row + anchor_row_offset, all_cols())
 
             # Track first non-header row for vline_after_row_labels calculation.
             if first_content_row == 0 && rs != :table_header
@@ -99,7 +120,7 @@ function _excel__write_table!(
                 max_row_height[current_row] = 0.0
 
                 # Ensure cells exist before setting a border on the blank row.
-                _excel__unempty_row(sheet, current_row + anchor_row_offset, all_cols())
+                _excel__unempty_row!(sheet, current_row + anchor_row_offset, all_cols())
 
                 _excel__try_border!(
                     sheet, current_row + anchor_row_offset, all_cols(),
