@@ -428,45 +428,38 @@ end
 
 """
     _excel__get_col_width(
-        table_format::ExcelTableFormat,
         col::Int,
         max_col_length::Vector{Float64},
         col_offset::Int,
+        data_column_widths::AbstractVector{Float64},
         min_data_column_widths::AbstractVector{Float64},
         max_data_column_widths::AbstractVector{Float64}
     ) -> Float64
 
 Resolve the Excel column width for column `col`. Columns at or before `col_offset`
 (row-number and row-label columns) are returned as-is from `max_col_length`. For data
-columns, an explicit `table_format.data_column_width` takes precedence; otherwise the
+columns, a positive entry in `data_column_widths` takes precedence; otherwise the
 auto-calculated width is clamped between the corresponding entries of
 `min_data_column_widths` and `max_data_column_widths` (values ≤ 0 are ignored).
 """
 function _excel__get_col_width(
-    table_format::ExcelTableFormat,
     col::Int,
     max_col_length::Vector{Float64},
     col_offset::Int,
+    data_column_widths::AbstractVector{Float64},
     min_data_column_widths::AbstractVector{Float64},
     max_data_column_widths::AbstractVector{Float64},
 )
     # Don't limit non-data cells.
     col <= col_offset && return max_col_length[col]
 
-    # Always use explicitly set data cell widths.
-    table_format.data_column_width isa Float64 && return table_format.data_column_width
+    j = col - col_offset
 
-    if table_format.data_column_width isa Vector{Float64}
-        length(table_format.data_column_width) == length(max_col_length) &&
-            return table_format.data_column_width[col]
-
-        throw(ArgumentError(
-            "The table format property `data_column_width` shoud have the same number of elements as there are data columns. Expected $(length(max_col_length)): Got $(length(table_format.data_column_width))."
-        ))
-    end
+    # A positive explicit width overrides everything.
+    dw = data_column_widths[j]
+    dw > 0.0 && return dw
 
     # Clamp auto-calculated width between min and max.
-    j         = col - col_offset
     col_width = max_col_length[col]
 
     min_w = min_data_column_widths[j]

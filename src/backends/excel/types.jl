@@ -237,10 +237,6 @@ strings compatible with the `setBorder` XLSX.jl function.
   border to be drawn between the data columns.
 - `vline_between_data_columns_type::Union{Nothing,Vector{ExcelPair}}`: Describes the 
   border to be drawn between the data columns.
-- `data_column_width::Union{Float64,Vector{Float64},Nothing}`: Specifies the column 
-  width to be used for the data table columns, over-riding any automatically 
-  calculated column width. If a vector of values is provided, the width of each 
-  column is set by the corresponding vector entry.
 
 
 # Remarks
@@ -273,8 +269,6 @@ To simplify the specification of table borders, four standard definitions are pr
   - `EXCEL_FORMAT_SECTION_LINES`: Produces a table with horizontal lines separating the 
   different table sections (title, column labels, data rows, summary rows, footnotes)
   and one vertical line between the row labels and the table data.
-
-The `data_column_width` field is specified in Excel's internal units.
 
 It is only necessary to define those fields for which the default border formats 
 need to be overwritten. For example, to choose to draw an outside border around 
@@ -333,7 +327,6 @@ table_format = ExcelTableFormat(
     vline_after_row_labels_type::Union{Nothing, Vector{ExcelPair}} = nothing
     vline_between_data_columns::Union{Nothing, Bool} = nothing
     vline_between_data_columns_type::Union{Nothing, Vector{ExcelPair}} = nothing
-    data_column_width::Union{Float64, Vector{Float64}, Nothing} = nothing
 end
 
 const DEFAULT_EXCEL_TABLE_FORMAT = ExcelTableFormat(
@@ -367,7 +360,6 @@ const DEFAULT_EXCEL_TABLE_FORMAT = ExcelTableFormat(
     ExcelPair["style" => "thin", "color" => "Black"],     # vline_after_row_labels_type
     true,                                                 # vline_between_data_columns
     ExcelPair["style" => "dotted", "color" => "Black"],   # vline_between_data_columns_type
-    -1.0,                                                 # data_column_width
 )
 
 const EXCEL_FORMAT_NO_VLINES = ExcelTableFormat(

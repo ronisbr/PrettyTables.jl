@@ -29,13 +29,18 @@ during the single pass over the iterator.
     (**Default**: `ExcelTableStyle()`)
 - `anchor_cell::String`: Top-left cell of the table in A1 notation (e.g. `"B3"`).
     (**Default**: `"A1"`)
+- `data_column_widths::Union{Float64, Vector{Float64}}`: Explicit width for each data
+    column in Excel units, overriding auto-calculated widths. A scalar applies to all
+    columns; a vector sets per-column widths. When set (> 0), `minimum_data_column_widths`
+    and `maximum_data_column_widths` are ignored for that column.
+    (**Default**: `0.0`)
 - `minimum_data_column_widths::Union{Float64, Vector{Float64}}`: Minimum width for each
     data column in Excel units. A scalar applies to all columns; a vector sets per-column
-    minimums. Ignored when `table_format.data_column_width` is set.
+    minimums.
     (**Default**: `0.0`)
 - `maximum_data_column_widths::Union{Float64, Vector{Float64}}`: Maximum width for each
     data column in Excel units. A scalar applies to all columns; a vector sets per-column
-    maximums. Ignored when `table_format.data_column_width` is set.
+    maximums.
     (**Default**: `0.0`)
 """
 function _excel__write_table!(
@@ -46,6 +51,7 @@ function _excel__write_table!(
     table_format::ExcelTableFormat                            = ExcelTableFormat(),
     style::ExcelTableStyle                                    = ExcelTableStyle(),
     anchor_cell::String,
+    data_column_widths::Union{Float64, Vector{Float64}}         = 0.0,
     minimum_data_column_widths::Union{Float64, Vector{Float64}} = 0.0,
     maximum_data_column_widths::Union{Float64, Vector{Float64}} = 0.0,
 )
@@ -57,6 +63,10 @@ function _excel__write_table!(
 
     num_cols   = table_data.num_columns
     col_offset = _excel__compute_col_offset(table_data)
+
+    if data_column_widths isa Number
+        data_column_widths = data_column_widths .+ 0.0 * (1:num_cols)
+    end
 
     if minimum_data_column_widths isa Number
         minimum_data_column_widths = minimum_data_column_widths .+ 0.0 * (1:num_cols)
@@ -530,8 +540,8 @@ function _excel__write_table!(
     # Set column widths based on accumulated content lengths.
     for i in 1:num_cols + col_offset
         col_width = _excel__get_col_width(
-            table_format, i, max_col_length, col_offset,
-            minimum_data_column_widths, maximum_data_column_widths,
+            i, max_col_length, col_offset,
+            data_column_widths, minimum_data_column_widths, maximum_data_column_widths,
         )
         if col_width > 0.0
             XLSX.setColumnWidth(sheet, i + anchor_col_offset; width = col_width)
