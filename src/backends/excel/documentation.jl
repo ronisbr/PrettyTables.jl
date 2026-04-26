@@ -141,140 +141,87 @@ any unhandled types to strings (using `string()`). For more information, see
 
 ## Excel Table Format
 
-The borders to be used in each section of the generated table are defined using an
-object of type [`ExcelTableFormat`}(@ref)] that contains the following fields:
+The borders used in each section of the generated table are configured using an
+[`ExcelTableFormat`](@ref) object. It contains boolean fields that control **where**
+borders are drawn, and a [`ExcelTableBorders`](@ref) object that controls **how** they
+look.
 
-- `outside_border::Bool`: A Bool indicating whether or not to draw an outside border.
-- `outside_border_type::Union{Nothing,Vector{ExcelPair}}`: Describes the border to be
-  applied to the outside border of the table.
-- `underline_title::Bool`: Determines whether to draw a cell border under the
-  table title/subtitle section.
-- `underline_title_type::Union{Nothing,Vector{ExcelPair}}`: Describes the border to be
-  drawn under the table title/subtitle section.
-- `underline_headers::Bool`: Determines whether to draw a cell border under the
-  (unmerged) column header section.
-- `underline_headers_type::Union{Nothing,Vector{ExcelPair}}`: Describes the border
-  to be drawn under the column header section.
-- `underline_between_headers::Bool`: Determines whether to draw a cell border under the
-  (unmerged) column headers.
-- `underline_between_headers_type::Union{Nothing,Vector{ExcelPair}}`: Describes the border
-  to be drawn between (unmerged) column headers.
-- `underline_merged_headers::Bool`: Determines whether to draw a cell border under
-  any merged column headers.
-- `underline_merged_headers_type::Union{Nothing,Vector{ExcelPair}}`: Describes the
-  border to be drawn under any merged column headers.
-- `underline_data_rows::Bool`: Determines whether to draw a cell border under each
-  data row in the data table.
-- `underline_data_rows_type::Union{Nothing,Vector{ExcelPair}}`: Describes the border
-  to be drawn under each data row in the data table.
-- `underline_table::Bool`: Determines whether to draw a cell border under the
-  data table section.
-- `underline_table_type::Union{Nothing,Vector{ExcelPair}}`: Describes the border to
-  be drawn under the data table section.
-- `overline_group::Bool`: Determines whether to draw a cell border over each
-  row group divider.
-- `overline_group_type::Union{Nothing,Vector{ExcelPair}}`: Describes the border to
-  be drawn over each row group divider.
-- `underline_group::Bool`: Determines whether to draw a cell border under each
-  row group divider.
-- `underline_group_type::Union{Nothing,Vector{ExcelPair}}`: Describes the border to
-  be drawn under each row group divider.
-- `underline_summary_rows::Bool`: Determines whether to draw a cell border under
-  the summary rows section.
-- `underline_summary_rows_type::Union{Nothing,Vector{ExcelPair}}`: Describes the
-  border to be drawn under the summary rows.
-- `underline_summary::Bool`: Determines whether to draw a cell border under the
-  table summary section.
-- `underline_summary_type::Union{Nothing,Vector{ExcelPair}}`: Describes the border
-  to be drawn under the table summary.
-- `underline_footnotes::Bool`: Determines whether to draw a cell border under the
-  table footnotes section.
-- `underline_footnotes_type::Union{Nothing,Vector{ExcelPair}}`: Describes the border
-  to be drawn under the footnote section.
-- `vline_after_row_numbers::Bool`: Determines whether to draw a cell border to the
-  right of the row number column.
-- `vline_after_row_numbers_type::Union{Nothing,Vector{ExcelPair}}`: Describes the
-  border to be drawn under the row number column.
-- `vline_after_row_labels::Bool`: Determines whether to draw a cell border to the
-  right of the row label column.
-- `vline_after_row_labels_type::Union{Nothing,Vector{ExcelPair}}`: Describes the
-  border to be drawn after the row label column.
-- `vline_between_data_columns::Bool`: Determines whether to draw a vertical
-  border to be drawn between the data columns.
-- `vline_between_data_columns_type::Union{Nothing,Vector{ExcelPair}}`: Describes the
-  border to be drawn between the data columns.
-- `data_column_width::Union{Float64,Vector{Float64},Nothing}`: Specifies the column
-  width to be used for the data table columns, over-riding any automatically
-  calculated column width. If a vector of values is provided, the width of each
-  column is set by the corresponding vector entry.
-- `min_data_column_width::Union{Float64,Vector{Float64},Nothing}`: Specifies the
-  minimum column width to be used for the data table columns, clipping any
-  narrower column width automatically calculated. If a vector of values is
-  provided, the minimum width of each column is set by the corresponding vector
-  entry.
-- `max_data_column_width::Union{Float64,Vector{Float64},Nothing}`: Specifies the
-  maximum column width to be used for the data table columns, clipping any
-  wider column width automatically calculated. If a vector of values is
-  provided, the maximum width of each column is set by the corresponding vector
-  entry.
+### Placement fields (`ExcelTableFormat`)
 
-Each cell border is controlled by two fields. The first is a Bool which dictates
-whether or not the cell border should be drawn (default = `true` in every case).
-The second is a vector of `Pair{String, String}` which specifies the border
-attributes to use if the border is to be drawn using the attributes supported
-by `XLSX.setBorder`. The default color is `black` and the style is one of `dotted`
-(for internal cell borders within a section), `thin` (for borders between sections),
-or `thick` (only for the outside table border).
+- `borders::ExcelTableBorders`: Border style configuration (see below).
+- `outside_border::Bool`: Draw a border around the entire table.
+- `underline_title::Bool`: Draw a line under the title/subtitle section.
+- `underline_headers::Bool`: Draw a line under the column header section.
+- `underline_between_headers::Bool`: Draw a line between column header rows.
+- `underline_merged_headers::Bool`: Draw a line under merged column headers.
+- `underline_data_rows::Bool`: Draw a line under each data row.
+- `underline_table::Bool`: Draw a line under the data table section.
+- `overline_group::Bool`: Draw a line above each row group divider.
+- `underline_group::Bool`: Draw a line below each row group divider.
+- `underline_summary_rows::Bool`: Draw a line between consecutive summary rows.
+- `underline_summary::Bool`: Draw a line under the last summary row.
+- `underline_footnotes::Bool`: Draw a line under the footnotes section.
+- `vline_after_row_numbers::Bool`: Draw a vertical line after the row number column.
+- `vline_after_row_labels::Bool`: Draw a vertical line after the row label column.
+- `vline_between_data_columns::Bool`: Draw vertical lines between data columns.
 
-The `underline` and `overline` values specify the bottom and top cell borders
-respectively while `vline` values specify the border on the right hand side.
+The `underline` and `overline` fields specify bottom and top borders respectively;
+`vline` fields specify right-hand-side borders. The `underline_title` border is drawn
+under the subtitle row (if any) or under the title row when there is no subtitle.
 
-The `title` border is drawn under the subtitle row (if provided) or under the title
-row if there is no subtitle.
+### Style fields (`ExcelTableBorders`)
 
-To simplify the specification of table borders, four standard definitions are provided:
-- `DEFAULT_EXCEL_TABLE_FORMAT`: The default table format used by `pretty_table` when
-  the `table_format` keyword is not specified. This format draws all borders with a
-  thin line, except for the outside border which is drawn with a thick line and the
-  data row underline and summary row underline which are drawn with a dotted line.
-- `EXCEL_FORMAT_NO_VLINES`: A table format with no vertical lines.
-- `EXCEL_FORMAT_CELL_LINES`: A table format with no borders around the individual data
-  cells.
-  - `EXCEL_FORMAT_SECTION_LINES`: Produces a table with horizontal lines separating the
-  different table sections (title, column labels, data rows, summary rows, footnotes)
-  and one vertical line between the row labels and the table data.
+Border styles are specified using an [`ExcelTableBorders`](@ref) object with these fields:
 
-The `data_column_width`, `min_data_column_width` and `max_data_column_width` fields
-are specified in Excel's internal units. If `data_column_width` is specified,
-`min_data_column_width` and `max_data_column_width` are ignored.
+**Horizontal lines:**
+- `top_line`: Top of the outside border (default: thick black).
+- `header_line`: Section-separator lines — title underline, header underline, group
+  over/underlines, summary underline, table underline, footnote underline (default: thin black).
+- `merged_header_cell_line`: Line below merged header cells (default: thin black).
+- `middle_line`: Within-section lines — data row underlines, summary row underlines,
+  between-header lines, and vertical lines between data columns (default: dotted black).
+- `bottom_line`: Bottom of the outside border (default: thick black).
 
-It is only necessary to define those fields for which the default border formats
-need to be overwritten. For example, to choose to draw an outside border around
-the whole table with a double line:
+**Vertical lines:**
+- `left_line`: Left of the outside border (default: thick black).
+- `center_line`: Structural vertical lines — after row numbers and after row labels
+  (default: thin black).
+- `right_line`: Right of the outside border (default: thick black).
+
+### Predefined formats
+
+Four standard definitions are provided:
+- `DEFAULT_EXCEL_TABLE_FORMAT`: All borders enabled with default styles.
+- `EXCEL_FORMAT_NO_VLINES`: No vertical lines.
+- `EXCEL_FORMAT_NO_CELL_LINES`: No data row underlines and no column dividers.
+- `EXCEL_FORMAT_SECTION_LINES`: Only section-level horizontal borders and no column
+  dividers.
+
+### Examples
+
+To draw section-separator lines in red:
 
 ```julia
 table_format = ExcelTableFormat(
-    outside_border_type=["style" => "double"],
+    borders = ExcelTableBorders(header_line = ["style" => "thin", "color" => "red"]),
 )
 ```
 
-The predefined table formats may be used as a starting point, alone or in combination
-and, if required, can be further modidied by overwriting specific fields. For example,
-to start with the `EXCEL_FORMAT_SECTION_LINES` and format and modify the section lines
-to be thick and red:
+To start from a preset and customize border styles:
 
 ```julia
 table_format = ExcelTableFormat(
     EXCEL_FORMAT_SECTION_LINES;
-    underline_data_rows_type = ["style" => "thick", "color" => "red"],
-    overline_group_type = ["style" => "thick", "color" => "red"],
-    underline_group_type = ["style" => "thick", "color" => "red"],
-    underline_summary_rows_type = ["style" => "thick", "color" => "red"],
+    borders = ExcelTableBorders(
+        header_line = ["style" => "thick", "color" => "red"],
+        middle_line = ["style" => "thick", "color" => "red"],
+    ),
 )
 ```
-When merging formats like this, the predefined table formats are applied in order,
-with later formats taking precedence over earlier ones. Finally, any keyword arguments
-provided will take precedence over all predefined formats.
+
+When merging presets, the predefined table formats are applied in order with later
+formats taking precedence. Any keyword arguments provided take precedence over all
+predefined formats.
 
 ## Excel Table Style
 

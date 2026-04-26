@@ -140,21 +140,6 @@ function _excel__check_table_format(property::AbstractString, b::Union{Nothing, 
 end
 
 """
-    _excel__tableformat_attributes(
-        property::AbstractString,
-        format::Union{Nothing, Vector{ExcelPair}}
-    ) -> Vector{ExcelPair}
-
-Override the default `ExcelTableFormat` attributes for the table element identified by
-`property` with the pairs supplied in `format`.
-"""
-function _excel__tableformat_attributes(
-    property::AbstractString, format::Union{Nothing, Vector{ExcelPair}}
-)
-    return _excel__override_properties(DEFAULT_EXCEL_TABLE_FORMAT, property, format)
-end
-
-"""
     _excel__tablestyle_attributes(
         property::AbstractString,
         format::Union{Nothing, Vector{ExcelPair}, Vector{Vector{ExcelPair}}},
@@ -503,11 +488,12 @@ end
         cols::Any,
         table_format::ExcelTableFormat,
         property::AbstractString,
+        border_style::Vector{ExcelPair},
         side::Symbol
     ) -> Nothing
 
-Apply a border on `sheet` at `rows`×`cols` using the style from `table_format` for
-`property`, but only when that property is enabled. `side` is the keyword passed to
+Apply a border on `sheet` at `rows`×`cols` using `border_style`, but only when the
+boolean field `property` in `table_format` is enabled. `side` is the keyword passed to
 `XLSX.setBorder` (e.g. `:bottom`).
 """
 function _excel__try_border!(
@@ -516,16 +502,43 @@ function _excel__try_border!(
     cols::Any,
     table_format::ExcelTableFormat,
     property::AbstractString,
+    border_style::Vector{ExcelPair},
     side::Symbol,
 )
     field = getproperty(table_format, Symbol(property))
 
     _excel__check_table_format(property, field) || return
 
-    type_field  = getproperty(table_format, Symbol(property * "_type"))
-    border_type = _excel__tableformat_attributes(property * "_type", type_field)
+    XLSX.setBorder(sheet, rows, cols; Dict(side => border_style)...)
 
-    XLSX.setBorder(sheet, rows, cols; Dict(side => border_type)...)
+    return nothing
+end
+
+"""
+    _excel__try_outside_border!(
+        sheet::XLSX.Worksheet,
+        rows::AbstractRange,
+        cols::AbstractRange,
+        table_format::ExcelTableFormat
+    ) -> Nothing
+
+Draw the outside border around `rows`×`cols` using the four outer line styles from
+`table_format.borders`, but only when `outside_border` is enabled.
+"""
+function _excel__try_outside_border!(
+    sheet::XLSX.Worksheet,
+    rows::AbstractRange,
+    cols::AbstractRange,
+    table_format::ExcelTableFormat,
+)
+    _excel__check_table_format("outside_border", table_format.outside_border) || return
+
+    b = table_format.borders
+
+    XLSX.setBorder(sheet, first(rows), cols;        top    = b.top_line)
+    XLSX.setBorder(sheet, last(rows),  cols;        bottom = b.bottom_line)
+    XLSX.setBorder(sheet, rows,        first(cols); left   = b.left_line)
+    XLSX.setBorder(sheet, rows,        last(cols);  right  = b.right_line)
 
     return nothing
 end

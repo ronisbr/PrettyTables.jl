@@ -90,7 +90,7 @@
             EXCEL_FORMAT_NO_VLINES;
             overline_group = true,
             underline_group = true,
-            overline_group_type = ["style" => "double", "color" => "red"],
+            borders = ExcelTableBorders(header_line = ["style" => "double", "color" => "red"]),
         ),
     )
 
@@ -102,8 +102,8 @@
     f["right"] == Dict("style" => "thick", "rgb" => "FF000000")
     f["bottom"] === nothing
     @test XLSX.getBorder(r, "A2").border["bottom"] === nothing
-    @test XLSX.getBorder(r, "A3").border["bottom"] == Dict("style" => "thin", "rgb" => "FF000000")
-    @test XLSX.getBorder(r, "A4").border["bottom"] == Dict("style" => "thin", "rgb" => "FF000000")
+    @test XLSX.getBorder(r, "A3").border["bottom"] == Dict("rgb" => "FFFF0000", "style" => "double")
+    @test XLSX.getBorder(r, "A4").border["bottom"] == Dict("rgb" => "FFFF0000", "style" => "double")
     f = XLSX.getBorder(r, "A5").border
     @test f["bottom"] === nothing
     @test f["right"] === nothing
@@ -116,13 +116,13 @@
     @test XLSX.getBorder(r, "A6").border["bottom"] === nothing
     f = XLSX.getBorder(r, "A7").border
     @test f["top"] == Dict("rgb" => "FFFF0000", "style" => "double")
-    @test f["bottom"] == Dict("style" => "thin", "rgb" => "FF000000")
+    @test f["bottom"] == Dict("rgb" => "FFFF0000", "style" => "double")
     @test XLSX.getBorder(r, "D7").border["top"] == Dict("style" => "double", "rgb" => "FFFF0000")
-    @test XLSX.getBorder(r, "A8").border["bottom"] == Dict("style" => "thin", "rgb" => "FF000000")
-    @test XLSX.getBorder(r, "A9").border["bottom"] == Dict("style" => "thin", "rgb" => "FF000000")
+    @test XLSX.getBorder(r, "A8").border["bottom"] == Dict("rgb" => "FFFF0000", "style" => "double")
+    @test XLSX.getBorder(r, "A9").border["bottom"] == Dict("rgb" => "FFFF0000", "style" => "double")
     @test XLSX.getBorder(r, "A10").border["bottom"] === nothing
     @test XLSX.getBorder(r, "A11").border["bottom"] === nothing
-    @test XLSX.getBorder(r, "A12").border["bottom"] == Dict("style" => "thin", "rgb" => "FF000000")
+    @test XLSX.getBorder(r, "A12").border["bottom"] == Dict("rgb" => "FFFF0000", "style" => "double")
     f =  XLSX.getBorder(r, "A13").border
     f["top"] === nothing
     f["bottom"] == Dict("style" => "thick", "rgb" => "FF000000")

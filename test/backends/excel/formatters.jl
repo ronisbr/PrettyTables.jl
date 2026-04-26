@@ -45,7 +45,7 @@
             ExcelFormatter((v, i, j) -> (j==3), ["format" => "hh:mm"])
             ExcelFormatter((v, i, j) -> (j==4), ["format" => "yyyy-mm-dd\"T\"hh:mm:ss"])
         ],
-        table_format = ExcelTableFormat(data_column_width = [12.0, 16.0, 8.0, 20.0])
+        data_column_widths = [12.0, 16.0, 8.0, 20.0],
     )
 
     @test XLSX.getFormat(result[1], "A2").format["numFmt"]["formatCode"] == "m/d/yyyy"

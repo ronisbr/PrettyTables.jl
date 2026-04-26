@@ -4,7 +4,7 @@
 #
 ############################################################################################
 
-export ExcelPair, ExcelHighlighter, ExcelTableFormat, ExcelTableStyle, ExcelFormatter
+export ExcelPair, ExcelHighlighter, ExcelTableBorders, ExcelTableFormat, ExcelTableStyle, ExcelFormatter
 export DEFAULT_EXCEL_TABLE_FORMAT, DEFAULT_EXCEL_TABLE_STYLE
 export EXCEL_FORMAT_NO_VLINES, EXCEL_FORMAT_CELL_LINES, EXCEL_FORMAT_SECTION_LINES
 
@@ -165,201 +165,181 @@ struct ExcelFormatter
 end
 
 ############################################################################################
+#                                      Table Borders                                       #
+############################################################################################
+
+"""
+    struct ExcelTableBorders
+
+Define the border styles for each line type used when printing a table with the Excel back
+end. All fields are `Vector{ExcelPair}` compatible with the `XLSX.setBorder` function.
+
+# Fields
+
+## Horizontal Lines
+
+- `top_line::Vector{ExcelPair}`: Style for the top border of the table.
+    (**Default**: `["style" => "thick", "color" => "Black"]`)
+- `header_line::Vector{ExcelPair}`: Style for section-separating horizontal lines (title
+    underline, header underline, group over/underlines, summary underline, footnote
+    underline, table underline).
+    (**Default**: `["style" => "thin", "color" => "Black"]`)
+- `merged_header_cell_line::Vector{ExcelPair}`: Style for the line below merged header
+    cells.
+    (**Default**: `["style" => "thin", "color" => "Black"]`)
+- `middle_line::Vector{ExcelPair}`: Style for within-section horizontal lines (data row
+    underlines, summary row underlines, between-header lines) and for vertical lines between
+    data columns.
+    (**Default**: `["style" => "dotted", "color" => "Black"]`)
+- `bottom_line::Vector{ExcelPair}`: Style for the bottom border of the table.
+    (**Default**: `["style" => "thick", "color" => "Black"]`)
+
+## Vertical Lines
+
+- `left_line::Vector{ExcelPair}`: Style for the left border of the table.
+    (**Default**: `["style" => "thick", "color" => "Black"]`)
+- `center_line::Vector{ExcelPair}`: Style for structural vertical lines (after the row
+    number column and after the row label column).
+    (**Default**: `["style" => "thin", "color" => "Black"]`)
+- `right_line::Vector{ExcelPair}`: Style for the right border of the table.
+    (**Default**: `["style" => "thick", "color" => "Black"]`)
+"""
+@kwdef struct ExcelTableBorders
+    # == Horizontal Lines ==================================================================
+
+    top_line::Vector{ExcelPair}                = ExcelPair["style" => "thick",  "color" => "Black"]
+    header_line::Vector{ExcelPair}             = ExcelPair["style" => "thin",   "color" => "Black"]
+    merged_header_cell_line::Vector{ExcelPair} = ExcelPair["style" => "thin",   "color" => "Black"]
+    middle_line::Vector{ExcelPair}             = ExcelPair["style" => "dotted", "color" => "Black"]
+    bottom_line::Vector{ExcelPair}             = ExcelPair["style" => "thick",  "color" => "Black"]
+
+    # == Vertical Lines ====================================================================
+
+    left_line::Vector{ExcelPair}               = ExcelPair["style" => "thick",  "color" => "Black"]
+    center_line::Vector{ExcelPair}             = ExcelPair["style" => "thin",   "color" => "Black"]
+    right_line::Vector{ExcelPair}              = ExcelPair["style" => "thick",  "color" => "Black"]
+end
+
+############################################################################################
 #                                       Table Format                                       #
 ############################################################################################
-#        1         2         3         4         5         6         7         8         9      
+#        1         2         3         4         5         6         7         8         9
 #2345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012
 
 """
     struct ExcelTableFormat
 
-Define the table cell borders that will be used to form the Excel table. All parameters are 
-strings compatible with the `setBorder` XLSX.jl function.
+Define the table borders that will be used to form the Excel table.
 
 # Fields
 
-- `outside_border::Bool`: A Bool indicating whether or not to draw an outside border.
-- `outside_border_type::Union{Nothing,Vector{ExcelPair}}`: Describes the border to be 
-  applied to the outside border of the table.
-- `underline_title::Bool`: Determines whether to draw a cell border under the 
-  table title/subtitle section.
-- `underline_title_type::Union{Nothing,Vector{ExcelPair}}`: Describes the border to be 
-  drawn under the table title/subtitle section.
-- `underline_headers::Bool`: Determines whether to draw a cell border under the 
-  (unmerged) column header section.
-- `underline_headers_type::Union{Nothing,Vector{ExcelPair}}`: Describes the border 
-  to be drawn under the column header section.
-- `underline_between_headers::Bool`: Determines whether to draw a cell border under the 
-  (unmerged) column headers.
-- `underline_between_headers_type::Union{Nothing,Vector{ExcelPair}}`: Describes the border 
-  to be drawn between (unmerged) column headers.
-- `underline_merged_headers::Bool`: Determines whether to draw a cell border under 
-  any merged column headers. 
-- `underline_merged_headers_type::Union{Nothing,Vector{ExcelPair}}`: Describes the 
-  border to be drawn under any merged column headers.
-- `underline_data_rows::Bool`: Determines whether to draw a cell border under each 
-  data row in the data table. 
-- `underline_data_rows_type::Union{Nothing,Vector{ExcelPair}}`: Describes the border 
-  to be drawn under each data row in the data table.
-- `underline_table::Bool`: Determines whether to draw a cell border under the 
-  data table section.
-- `underline_table_type::Union{Nothing,Vector{ExcelPair}}`: Describes the border to 
-  be drawn under the data table section.
-- `overline_group::Bool`: Determines whether to draw a cell border over each 
-  row group divider.
-- `overline_group_type::Union{Nothing,Vector{ExcelPair}}`: Describes the border to 
-  be drawn over each row group divider.
-- `underline_group::Bool`: Determines whether to draw a cell border under each 
-  row group divider.
-- `underline_group_type::Union{Nothing,Vector{ExcelPair}}`: Describes the border to 
-  be drawn under each row group divider.
-- `underline_summary_rows::Bool`: Determines whether to draw a cell border under 
-  the summary rows section. 
-- `underline_summary_rows_type::Union{Nothing,Vector{ExcelPair}}`: Describes the 
-  border to be drawn under the summary rows.
-- `underline_summary::Bool`: Determines whether to draw a cell border under the 
-  table summary section.
-- `underline_summary_type::Union{Nothing,Vector{ExcelPair}}`: Describes the border 
-  to be drawn under the table summary.
-- `underline_footnotes::Bool`: Determines whether to draw a cell border under the 
-  table footnotes section.
-- `underline_footnotes_type::Union{Nothing,Vector{ExcelPair}}`: Describes the border 
-  to be drawn under the footnote section.
-- `vline_after_row_numbers::Bool`: Determines whether to draw a cell border to the 
-  right of the row number column.
-- `vline_after_row_numbers_type::Union{Nothing,Vector{ExcelPair}}`: Describes the 
-  border to be drawn under the row number column.
-- `vline_after_row_labels::Bool`: Determines whether to draw a cell border to the 
-  right of the row label column.
-- `vline_after_row_labels_type::Union{Nothing,Vector{ExcelPair}}`: Describes the 
-  border to be drawn after the row label column.
-- `vline_between_data_columns::Bool`: Determines whether to draw a vertical 
-  border to be drawn between the data columns.
-- `vline_between_data_columns_type::Union{Nothing,Vector{ExcelPair}}`: Describes the 
-  border to be drawn between the data columns.
-
+- `borders::ExcelTableBorders`: Border style configuration for all line types.
+- `outside_border::Bool`: Whether to draw a border around the entire table.
+- `underline_title::Union{Nothing,Bool}`: Whether to draw a line under the title/subtitle
+    section.
+- `underline_headers::Union{Nothing,Bool}`: Whether to draw a line under the column header
+    section.
+- `underline_between_headers::Union{Nothing,Bool}`: Whether to draw a line between
+    (unmerged) column header rows.
+- `underline_merged_headers::Union{Nothing,Bool}`: Whether to draw a line under merged
+    column headers.
+- `underline_data_rows::Union{Nothing,Bool}`: Whether to draw a line under each data row.
+- `underline_table::Union{Nothing,Bool}`: Whether to draw a line under the data table
+    section.
+- `overline_group::Union{Nothing,Bool}`: Whether to draw a line above each row group
+    divider.
+- `underline_group::Union{Nothing,Bool}`: Whether to draw a line below each row group
+    divider.
+- `underline_summary_rows::Union{Nothing,Bool}`: Whether to draw a line under each summary
+    row (between multiple summary rows).
+- `underline_summary::Union{Nothing,Bool}`: Whether to draw a line under the last summary
+    row.
+- `underline_footnotes::Union{Nothing,Bool}`: Whether to draw a line under the footnotes
+    section.
+- `vline_after_row_numbers::Union{Nothing,Bool}`: Whether to draw a vertical line to the
+    right of the row number column.
+- `vline_after_row_labels::Union{Nothing,Bool}`: Whether to draw a vertical line to the
+    right of the row label column.
+- `vline_between_data_columns::Union{Nothing,Bool}`: Whether to draw vertical lines
+    between data columns.
 
 # Remarks
 
-The borders to be used in each section of the generated table are defined using an 
-object of type [`ExcelTableFormat`}(@ref)] that contains the following fields:
+Border placement is controlled by the boolean fields above. Border styles (line thickness,
+color) are configured via the `borders::ExcelTableBorders` field. The `underline` and
+`overline` fields specify the bottom and top cell borders respectively; `vline` fields
+specify right-hand-side borders.
 
-Each cell border is controlled by two fields. The first is a Bool which dictates 
-whether or not the cell border should be drawn (default = `true` in every case). 
-The second is a vector of `Pair{String, String}` which specifies the border 
-attributes to use if the border is to be drawn using the attributes supported 
-by `XLSX.setBorder`. The default color is `black` and the style is one of `dotted` 
-(for internal cell borders within a section), `thin` (for borders between sections), 
-or `thick` (only for the outside table border).
+The `underline_title` border is drawn under the subtitle row (if provided) or under the
+title row when there is no subtitle.
 
-The `underline` and `overline` values specify the bottom and top cell borders 
-respectively while `vline` values specify the border on the right hand side.
+Four predefined formats are provided:
+- `DEFAULT_EXCEL_TABLE_FORMAT`: All borders enabled; outside border is thick, section
+    separators are thin, and within-section lines are dotted.
+- `EXCEL_FORMAT_NO_VLINES`: No vertical lines.
+- `EXCEL_FORMAT_NO_CELL_LINES`: No borders between individual data cells (no data row
+    underlines, no column dividers).
+- `EXCEL_FORMAT_SECTION_LINES`: Only section-level horizontal borders and one vertical
+    line after the row label column.
 
-The `title` border is drawn under the subtitle row (if provided) or under the title 
-row if there is no subtitle.
-
-To simplify the specification of table borders, four standard definitions are provided:
-- `DEFAULT_EXCEL_TABLE_FORMAT`: The default table format used by `pretty_table` when 
-  the `table_format` keyword is not specified. This format draws all borders with a 
-  thin line, except for the outside border which is drawn with a thick line and the 
-  data row underline and summary row underline which are drawn with a dotted line.
-- `EXCEL_FORMAT_NO_VLINES`: A table format with no vertical lines.
-- `EXCEL_FORMAT_CELL_LINES`: A table format with no borders around the individual data 
-  cells.
-  - `EXCEL_FORMAT_SECTION_LINES`: Produces a table with horizontal lines separating the 
-  different table sections (title, column labels, data rows, summary rows, footnotes)
-  and one vertical line between the row labels and the table data.
-
-It is only necessary to define those fields for which the default border formats 
-need to be overwritten. For example, to choose to draw an outside border around 
-the whole table with a double line:
+To customize border styles, pass an `ExcelTableBorders` object. For example, to draw all
+section-separator lines in red:
 
 ```julia
 table_format = ExcelTableFormat(
-    outside_border_type=["style" => "double"],
+    borders = ExcelTableBorders(header_line = ["style" => "thin", "color" => "red"]),
 )
 ```
 
-The predefined table formats may be used as a starting point, alone or in combination 
-and, if required, can be further modidied by overwriting specific fields. For example, 
-to start with the `EXCEL_FORMAT_SECTION_LINES` format and modify the section lines to 
-be thick and red:
+Predefined formats can be combined and extended:
 
 ```julia
 table_format = ExcelTableFormat(
     EXCEL_FORMAT_SECTION_LINES;
-    underline_data_rows_type = ["style" => "thick", "color" => "red"],
-    overline_group_type = ["style" => "thick", "color" => "red"],
-    underline_group_type = ["style" => "thick", "color" => "red"],
-    underline_summary_rows_type = ["style" => "thick", "color" => "red"],
+    borders = ExcelTableBorders(
+        header_line = ["style" => "thick", "color" => "red"],
+        middle_line = ["style" => "thick", "color" => "red"],
+    ),
 )
 ```
 
 """
 @kwdef struct ExcelTableFormat
-    outside_border::Bool = true
-    outside_border_type::Union{Nothing, Vector{ExcelPair}} = nothing
+    borders::ExcelTableBorders          = ExcelTableBorders()
+    outside_border::Bool                = true
     underline_title::Union{Nothing, Bool} = nothing
-    underline_title_type::Union{Nothing, Vector{ExcelPair}} = nothing
     underline_headers::Union{Nothing, Bool} = nothing
-    underline_headers_type::Union{Nothing, Vector{ExcelPair}} = nothing
     underline_between_headers::Union{Nothing, Bool} = nothing
-    underline_between_headers_type::Union{Nothing, Vector{ExcelPair}} = nothing
     underline_merged_headers::Union{Nothing, Bool} = nothing
-    underline_merged_headers_type::Union{Nothing, Vector{ExcelPair}} = nothing
     underline_data_rows::Union{Nothing, Bool} = nothing
-    underline_data_rows_type::Union{Nothing, Vector{ExcelPair}} = nothing
     underline_table::Union{Nothing, Bool} = nothing
-    underline_table_type::Union{Nothing, Vector{ExcelPair}} = nothing
     overline_group::Union{Nothing, Bool} = nothing
-    overline_group_type::Union{Nothing, Vector{ExcelPair}} = nothing
     underline_group::Union{Nothing, Bool} = nothing
-    underline_group_type::Union{Nothing, Vector{ExcelPair}} = nothing
     underline_summary_rows::Union{Nothing, Bool} = nothing
-    underline_summary_rows_type::Union{Nothing, Vector{ExcelPair}} = nothing
     underline_summary::Union{Nothing, Bool} = nothing
-    underline_summary_type::Union{Nothing, Vector{ExcelPair}} = nothing
     underline_footnotes::Union{Nothing, Bool} = nothing
-    underline_footnotes_type::Union{Nothing, Vector{ExcelPair}} = nothing
     vline_after_row_numbers::Union{Nothing, Bool} = nothing
-    vline_after_row_numbers_type::Union{Nothing, Vector{ExcelPair}} = nothing
     vline_after_row_labels::Union{Nothing, Bool} = nothing
-    vline_after_row_labels_type::Union{Nothing, Vector{ExcelPair}} = nothing
     vline_between_data_columns::Union{Nothing, Bool} = nothing
-    vline_between_data_columns_type::Union{Nothing, Vector{ExcelPair}} = nothing
 end
 
 const DEFAULT_EXCEL_TABLE_FORMAT = ExcelTableFormat(
-    true,                                                 # outside_border
-    ExcelPair["style" => "thick", "color" => "Black"],    # outside_border_type
-    true,                                                 # underline_title
-    ExcelPair["style" => "thin", "color" => "Black"],     # underline_title_type
-    true,                                                 # underline_headers
-    ExcelPair["style" => "thin", "color" => "Black"],     # underline_headers_type
-    true,                                                 # underline_between_headers
-    ExcelPair["style" => "thin", "color" => "Black"],     # underline_between_headers_type
-    true,                                                 # underline_merged_headers
-    ExcelPair["style" => "thin", "color" => "Black"],     # underline_merged_headers_type
-    true,                                                 # underline_data_rows
-    ExcelPair["style" => "dotted", "color" => "Black"],   # underline_data_rows_type
-    true,                                                 # underline_table
-    ExcelPair["style" => "thin", "color" => "Black"],     # underline_table_type
-    true,                                                 # overline_group
-    ExcelPair["style" => "thin", "color" => "Black"],     # overline_group_type
-    true,                                                 # underline_group
-    ExcelPair["style" => "thin", "color" => "Black"],     # underline_group_type
-    true,                                                 # underline_summary_rows
-    ExcelPair["style" => "dotted", "color" => "Black"],   # underline_summary_rows_type
-    true,                                                 # underline_summary
-    ExcelPair["style" => "thin", "color" => "Black"],     # underline_summary_type
-    true,                                                 # underline_footnotes
-    ExcelPair["style" => "thin", "color" => "Black"],     # underline_footnotes_type
-    true,                                                 # vline_after_row_numbers
-    ExcelPair["style" => "thin", "color" => "Black"],     # vline_after_row_numbers_type
-    true,                                                 # vline_after_row_labels
-    ExcelPair["style" => "thin", "color" => "Black"],     # vline_after_row_labels_type
-    true,                                                 # vline_between_data_columns
-    ExcelPair["style" => "dotted", "color" => "Black"],   # vline_between_data_columns_type
+    ExcelTableBorders(), # borders
+    true,                # outside_border
+    true,                # underline_title
+    true,                # underline_headers
+    true,                # underline_between_headers
+    true,                # underline_merged_headers
+    true,                # underline_data_rows
+    true,                # underline_table
+    true,                # overline_group
+    true,                # underline_group
+    true,                # underline_summary_rows
+    true,                # underline_summary
+    true,                # underline_footnotes
+    true,                # vline_after_row_numbers
+    true,                # vline_after_row_labels
+    true,                # vline_between_data_columns
 )
 
 const EXCEL_FORMAT_NO_VLINES = ExcelTableFormat(
@@ -383,12 +363,17 @@ const EXCEL_FORMAT_SECTION_LINES = ExcelTableFormat(
 )
 
 function _excel__format_merge(a::ExcelTableFormat, b::ExcelTableFormat)
-    return ExcelTableFormat(; (name => (getfield(b, name) === nothing ?
-                                        getfield(a, name) :
-                                        getfield(b, name))
-                                for name in fieldnames(ExcelTableFormat)
-                              )...
-            )
+    # `borders` is never `nothing`, so we use equality with the zero-kwarg default to detect
+    # "not explicitly set" — only override `a.borders` when `b` was given a custom value.
+    merged_borders = b.borders == ExcelTableBorders() ? a.borders : b.borders
+    return ExcelTableFormat(;
+        borders = merged_borders,
+        (name => (getfield(b, name) === nothing ?
+                  getfield(a, name) :
+                  getfield(b, name))
+         for name in fieldnames(ExcelTableFormat) if name != :borders
+        )...
+    )
 end
 
 """

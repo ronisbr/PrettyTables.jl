@@ -290,20 +290,16 @@ result = pretty_table(
     row_number_column_alignment = :c,
     table_format = ExcelTableFormat(
         outside_border = false,
-        underline_title_type = ["style" => "thick", "color" => "white"],
-        underline_headers_type = ["style" => "thick", "color" => "white"],
-        underline_between_headers_type = ["style" => "thin", "color" => "white"],
-        underline_merged_headers_type = ["style" => "thin", "color" => "white"],
-        underline_data_rows_type = ["style" => "thin", "color" => "white"],
-        underline_table_type = ["style" => "thick", "color" => "white"],
-        overline_group_type = ["style" => "thick", "color" => "white"],
-        underline_group_type = ["style" => "thick", "color" => "white"],
-        underline_summary_rows_type = ["style" => "thin", "color" => "white"],
-        underline_summary_type = ["style" => "thick", "color" => "white"],
-        underline_footnotes_type = ["style" => "thin", "color" => "white"],
-        vline_after_row_numbers_type = ["style" => "thin", "color" => "white"],
-        vline_after_row_labels_type = ["style" => "thick", "color" => "white"],
-        vline_between_data_columns_type = ["style" => "thin", "color" => "white"],
+        borders = ExcelTableBorders(
+            top_line                = ["style" => "thick", "color" => "white"],
+            header_line             = ["style" => "thick", "color" => "white"],
+            merged_header_cell_line = ["style" => "thin",  "color" => "white"],
+            middle_line             = ["style" => "thin",  "color" => "white"],
+            bottom_line             = ["style" => "thick", "color" => "white"],
+            left_line               = ["style" => "thick", "color" => "white"],
+            center_line             = ["style" => "thin",  "color" => "white"],
+            right_line              = ["style" => "thick", "color" => "white"],
+        ),
     ),
     style = ExcelTableStyle(
         title = ["color" => "white", "bold" => "true"],
@@ -448,7 +444,12 @@ highlighters = [
 ]
 
 table_format = ExcelTableFormat(
-    outside_border_type=["style" => "double"],
+    borders = ExcelTableBorders(
+        top_line    = ["style" => "double"],
+        bottom_line = ["style" => "double"],
+        left_line   = ["style" => "double"],
+        right_line  = ["style" => "double"],
+    ),
 )
 
 style = ExcelTableStyle(

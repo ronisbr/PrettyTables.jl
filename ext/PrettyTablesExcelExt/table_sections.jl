@@ -111,15 +111,10 @@ function _excel__finalize_footnotes!(
         )
     end
 
-    if _excel__check_table_format("underline_footnotes", table_format.underline_footnotes)
-        XLSX.setBorder(
-            sheet,
-            footnote_end_row,
-            1 + anchor_col_offset : num_cols + col_offset + anchor_col_offset;
-            bottom = _excel__tableformat_attributes(
-                "underline_footnotes_type",
-                table_format.underline_footnotes_type,
-            ),
-        )
-    end
+    _excel__try_border!(
+        sheet,
+        footnote_end_row,
+        1 + anchor_col_offset : num_cols + col_offset + anchor_col_offset,
+        table_format, "underline_footnotes", table_format.borders.header_line, :bottom,
+    )
 end

@@ -102,7 +102,7 @@
     f=pretty_table(data;
         column_labels,
         merge_column_label_cells,
-        table_format = ExcelTableFormat(underline_merged_headers_type = ["style" => "thick", "color" => "red"]),
+        table_format = ExcelTableFormat(borders = ExcelTableBorders(merged_header_cell_line = ["style" => "thick", "color" => "red"])),
         style = ExcelTableStyle(merged_column_label = ["color"=>"red", "size"=>"32"]),
         backend = :excel,
     )

@@ -82,7 +82,7 @@
             ExcelFormatter((v, i, j) -> (j==3), ["format" => "hh:mm"])
             ExcelFormatter((v, i, j) -> (j==4), ["format" => "yyyy-mm-dd\"T\"hh:mm:ss"])
         ],
-        table_format = ExcelTableFormat(data_column_width = 10.5)
+        data_column_widths = 10.5,
     )
     for j in 1:4
         @test XLSX.getColumnWidth(result[1], 1, j) ≈ 11.2109375
@@ -99,7 +99,7 @@
             ExcelFormatter((v, i, j) -> (j==3), ["format" => "hh:mm"])
             ExcelFormatter((v, i, j) -> (j==4), ["format" => "yyyy-mm-dd\"T\"hh:mm:ss"])
         ],
-        table_format = ExcelTableFormat(data_column_width = [12.0, 16.0, 8.0, 20.0])
+        data_column_widths = [12.0, 16.0, 8.0, 20.0],
     )
     w=[12.7109375, 16.7109375, 8.7109375, 20.7109375]
     for j in 1:4
@@ -117,7 +117,7 @@
             ExcelFormatter((v, i, j) -> (j==3), ["format" => "hh:mm"])
             ExcelFormatter((v, i, j) -> (j==4), ["format" => "yyyy-mm-dd\"T\"hh:mm:ss"])
         ],
-        table_format = ExcelTableFormat(max_data_column_width = [6.0, 100.0, 40.0, 5.0])
+        maximum_data_column_widths = [6.0, 100.0, 40.0, 5.0],
     )
     w=[6.7109375, 8.368080357142858, 8.368080357142858, 5.7109375]
     for j in 1:4
@@ -135,7 +135,7 @@
             ExcelFormatter((v, i, j) -> (j==3), ["format" => "hh:mm"])
             ExcelFormatter((v, i, j) -> (j==4), ["format" => "yyyy-mm-dd\"T\"hh:mm:ss"])
         ],
-        table_format = ExcelTableFormat(min_data_column_width = [1.0, 12.0, 16.0, 1.0])
+        minimum_data_column_widths = [1.0, 12.0, 16.0, 1.0],
     )
     w=[8.368080357142858, 12.7109375, 16.7109375, 8.368080357142858]
     for j in 1:4
