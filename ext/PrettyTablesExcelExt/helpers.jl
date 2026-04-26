@@ -160,6 +160,36 @@ function _excel_cell_fill_atts(field, j = nothing)
     return ExcelPair[SubString(k, n + 1) => v for (k, v) in raw if startswith(k, prefix)]
 end
 
+"""
+    _excel_font_fill_atts(style_key, field, j = nothing) -> (font_atts, fill_atts)
+    _excel_font_fill_atts(pairs::Vector{ExcelPair})      -> (font_atts, fill_atts)
+
+Split a style field (or raw decoration vector) into font and fill attribute vectors.
+
+The first method merges `field` with the default table style (via `_excel_tablestyle_atts`)
+for font attributes, and extracts `"cell_fill_"` prefixed entries for fill. Use this for
+`ExcelTableStyle` fields (title, column_label, table_cell, …).
+
+The second method performs a direct split on a flat `Vector{ExcelPair}` without merging
+with defaults. Use this for `ExcelHighlighter` decorations.
+
+Both methods return `(font_atts, fill_atts)` as `Vector{Pair{Symbol,Any}}` ready for
+splatting into `XLSX.setFont` / `XLSX.setFill`.
+"""
+function _excel_font_fill_atts(style_key::AbstractString, field, j = nothing)
+    return (
+        _excel_newpairs(_excel_tablestyle_atts(style_key, field, j)),
+        _excel_newpairs(_excel_cell_fill_atts(field, j)),
+    )
+end
+
+function _excel_font_fill_atts(pairs::Vector{ExcelPair})
+    return (
+        _excel_newpairs(filter(p -> !startswith(p.first, "cell_fill_"), pairs)),
+        _excel_newpairs(_excel_cell_fill_atts(pairs)),
+    )
+end
+
 function _excel_override_properties(default, property, format)
     v1 = getproperty(default, Symbol(property))
     isnothing(format) && return v1
@@ -368,8 +398,7 @@ function _excel_apply_cell_style!(
     sheet, row, col, style_key, style_field, alignment, valign, wrap;
     col_idx = nothing,
 )
-    font_atts = _excel_newpairs(_excel_tablestyle_atts(style_key, style_field, col_idx))
-    fill_atts = _excel_newpairs(_excel_cell_fill_atts(style_field, col_idx))
+    font_atts, fill_atts = _excel_font_fill_atts(style_key, style_field, col_idx)
     fontsize  = _excel_set_fontsize_and_alignment!(sheet, row, col, font_atts, alignment, valign, wrap)
     isempty(fill_atts) || XLSX.setFill(sheet, row, col; fill_atts...)
     return fontsize

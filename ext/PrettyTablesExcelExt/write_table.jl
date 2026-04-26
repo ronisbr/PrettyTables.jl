@@ -199,8 +199,7 @@ function _write_excel_table!(
                 style_key   = action == :source_notes ? "source_note" : string(action)
                 style_field = getproperty(style, Symbol(style_key))
 
-                style_atts = _excel_newpairs(_excel_tablestyle_atts(style_key, style_field))
-                fill_atts  = _excel_newpairs(_excel_cell_fill_atts(style_field))
+                style_atts, fill_atts = _excel_font_fill_atts(style_key, style_field)
 
                 valign = action ∈ (:title, :subtitle, :row_number_label) ? "bottom" :
                          action == :row_group_label ? "center" : "center"
@@ -479,10 +478,7 @@ function _write_excel_table!(
                     highlighter.f(table_data.data, i, j) || continue
 
                     decoration = highlighter.fd(highlighter, table_data.data, i, j)
-                    fill_atts  = _excel_newpairs(_excel_cell_fill_atts(decoration))
-                    font_atts  = _excel_newpairs(
-                        filter(p -> !startswith(p.first, "cell_fill_"), decoration)
-                    )
+                    font_atts, fill_atts = _excel_font_fill_atts(decoration)
 
                     if !isempty(font_atts)
                         font_size = _excel_getsize(font_atts)
