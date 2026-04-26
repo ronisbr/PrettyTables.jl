@@ -406,7 +406,7 @@ const EXCEL_FORMAT_SECTION_LINES = ExcelTableFormat(
     vline_after_row_numbers = false,
 )
 
-function _excel_format_merge(a::ExcelTableFormat, b::ExcelTableFormat)
+function _excel__format_merge(a::ExcelTableFormat, b::ExcelTableFormat)
     return ExcelTableFormat(; (name => (getfield(b, name) === nothing ?
                                         getfield(a, name) :
                                         getfield(b, name))
@@ -443,11 +443,11 @@ function ExcelTableFormat(presets::ExcelTableFormat...; kwargs...)
 
     # Merge all presets in order
     for p in presets
-        fmt = _excel_format_merge(fmt, p)
+        fmt = _excel__format_merge(fmt, p)
     end
 
     # Apply keyword overrides last
-    return _excel_format_merge(fmt, ExcelTableFormat(; kwargs...))
+    return _excel__format_merge(fmt, ExcelTableFormat(; kwargs...))
 end
 
 

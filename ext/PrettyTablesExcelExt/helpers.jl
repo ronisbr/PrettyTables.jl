@@ -11,11 +11,11 @@ const DEFAULT_FONT_SIZE = 12
 const SUPERSCRIPT_DIGITS = ['⁰', '¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹']
 
 """
-    _excel_alignment_string(column, col_alignment, table_alignment)
+    _excel__alignment_string(column, col_alignment, table_alignment)
 
 Convert the given alignment (Symbol) to a string for use in XLSX.setAlignment
 """
-function _excel_alignment_string(s)
+function _excel__alignment_string(s)
     if s == :l
         return "left"
     elseif s == :r
@@ -28,43 +28,43 @@ function _excel_alignment_string(s)
 end
 
 """
-    _excel_unempty_row(sheet, row, cols)
+    _excel__unempty_row(sheet, row, cols)
 
 Ensure all cells in current row are not XLSX.EmptyCells to ensure formatting works completely.
 Cols expected to be a unit range.
 """
-_excel_unempty_row(sheet, row, cols) = sheet[row, cols] = ""
+_excel__unempty_row(sheet, row, cols) = sheet[row, cols] = ""
 
 """
-    _excel_to_superscript(n::Int) -> String
+    _excel__to_superscript(n::Int) -> String
 
 Convert an integer to a superscript string using Unicode characters.
 """
-function _excel_to_superscript(n::Int)
+function _excel__to_superscript(n::Int)
     digits_str = string(n)
     return join([SUPERSCRIPT_DIGITS[parse(Int, d) + 1] for d in digits_str])
 end
 
 """
-    _excel_column_width_for_text(text, fontsize)
+    _excel__column_width_for_text(text, fontsize)
 
 Estimate the width of a cell in Excel needed to accommodate text of a given length.
 """
-_excel_column_width_for_text(text_length, font_size) = (0.55 * text_length * font_size) / 7.0 + 2.0
+_excel__column_width_for_text(text_length, font_size) = (0.55 * text_length * font_size) / 7.0 + 2.0
 
 """
-    _excel_row_height_for_text(text, fontsize)
+    _excel__row_height_for_text(text, fontsize)
 
 Estimate the height of a cell in Excel needed to accommodate a given number of lines of text of a given font size.
 """
-_excel_row_height_for_text(line_count, font_size) = line_count * (font_size * 1.2) + 3
+_excel__row_height_for_text(line_count, font_size) = line_count * (font_size * 1.2) + 3
 
 """
-    _excel_text_lines(text)
+    _excel__text_lines(text)
 
 Determine the number of lines in a text by counting new-line occurrences.
 """
-function _excel_text_lines(text)
+function _excel__text_lines(text)
     count = findall("\n", text)
     if isnothing(count)
         return 1
@@ -74,11 +74,11 @@ function _excel_text_lines(text)
 end
 
 """
-    _excel_multilength(text)
+    _excel__multilength(text)
 
 Determines the length of the longest line in a multi-line text
 """
-function _excel_multilength(text)
+function _excel__multilength(text)
     if text isa AbstractString
         lines = split(text, "\n")
         maxlen = 0
@@ -92,14 +92,14 @@ function _excel_multilength(text)
 end
 
 """
-    _excel_newpairs(atts)
+    _excel__newpairs(attributes)
 
 Convert a keys in avector to Symbols.
 """
-function _excel_newpairs(atts)
-    isnothing(atts) && return nothing
+function _excel__newpairs(attributes)
+    isnothing(attributes) && return nothing
     newpairs = Vector{Pair{Symbol,Any}}()
-    for (k, v) in atts
+    for (k, v) in attributes
         newv = tryparse(Int, v)
         if isnothing(newv)
             newv = v == "true" ? true : v == "false" ? false : v
@@ -110,7 +110,7 @@ function _excel_newpairs(atts)
     return newpairs
 end
 
-function _excel_check_table_format(property, b)
+function _excel__check_table_format(property, b)
     if !isnothing(b)
         return b
     else
@@ -119,40 +119,40 @@ function _excel_check_table_format(property, b)
 end
 
 """
-    _excel_tableformat_atts(property::String, format::Vector{ExcelPair})
+    _excel__tableformat_attributes(property::String, format::Vector{ExcelPair})
 
 Override those attributes of the default table format for this table element 
 with those specified in ExcelTableFormat
 """
-_excel_tableformat_atts(property, format) = _excel_override_properties(
+_excel__tableformat_attributes(property, format) = _excel__override_properties(
     DEFAULT_EXCEL_TABLE_FORMAT, 
     property, 
     format,
 )
 
 """
-    _excel_tablestyle_atts(property::String, format::Vector{ExcelPair})
-    _excel_tablestyle_atts(property::String, format::Vector{Vector{ExcelPair}}, j = nothing)
+    _excel__tablestyle_attributes(property::String, format::Vector{ExcelPair})
+    _excel__tablestyle_attributes(property::String, format::Vector{Vector{ExcelPair}}, j = nothing)
 
 Override those attributes of the default table style for this table element 
 with those specified in ExcelTableStyle
 """
-function _excel_tablestyle_atts(property, format, j = nothing)
+function _excel__tablestyle_attributes(property, format, j = nothing)
     if isnothing(format) || format isa Vector{Pair{String, String}}
-        return _excel_override_properties(DEFAULT_EXCEL_TABLE_STYLE, property, format)
+        return _excel__override_properties(DEFAULT_EXCEL_TABLE_STYLE, property, format)
     end
-    return _excel_override_properties(DEFAULT_EXCEL_TABLE_STYLE, property, format[j])
+    return _excel__override_properties(DEFAULT_EXCEL_TABLE_STYLE, property, format[j])
 end
 
 """
-    _excel_cell_fill_atts(field, j = nothing) -> Vector{ExcelPair}
+    _excel__cell_fill_attributes(field, j = nothing) -> Vector{ExcelPair}
 
 Extract fill attributes from a style field value. Any pair whose key starts with
 `"cell_fill_"` is collected with the prefix stripped; all other pairs are ignored.
 If the field is a `Vector{Vector{ExcelPair}}`, column index `j` selects the entry.
 Returns an empty vector when no fill attributes are present.
 """
-function _excel_cell_fill_atts(field, j = nothing)
+function _excel__cell_fill_attributes(field, j = nothing)
     isnothing(field) && return ExcelPair[]
     raw = (field isa Vector{Vector{ExcelPair}}) ? field[j] : field
     prefix = "cell_fill_"
@@ -161,36 +161,36 @@ function _excel_cell_fill_atts(field, j = nothing)
 end
 
 """
-    _excel_font_fill_atts(style_key, field, j = nothing) -> (font_atts, fill_atts)
-    _excel_font_fill_atts(pairs::Vector{ExcelPair})      -> (font_atts, fill_atts)
+    _excel__font_fill_attributes(style_key, field, j = nothing) -> (font_attributes, fill_attributes)
+    _excel__font_fill_attributes(pairs::Vector{ExcelPair})      -> (font_attributes, fill_attributes)
 
 Split a style field (or raw decoration vector) into font and fill attribute vectors.
 
-The first method merges `field` with the default table style (via `_excel_tablestyle_atts`)
+The first method merges `field` with the default table style (via `_excel__tablestyle_attributes`)
 for font attributes, and extracts `"cell_fill_"` prefixed entries for fill. Use this for
 `ExcelTableStyle` fields (title, column_label, table_cell, …).
 
 The second method performs a direct split on a flat `Vector{ExcelPair}` without merging
 with defaults. Use this for `ExcelHighlighter` decorations.
 
-Both methods return `(font_atts, fill_atts)` as `Vector{Pair{Symbol,Any}}` ready for
+Both methods return `(font_attributes, fill_attributes)` as `Vector{Pair{Symbol,Any}}` ready for
 splatting into `XLSX.setFont` / `XLSX.setFill`.
 """
-function _excel_font_fill_atts(style_key::AbstractString, field, j = nothing)
+function _excel__font_fill_attributes(style_key::AbstractString, field, j = nothing)
     return (
-        _excel_newpairs(_excel_tablestyle_atts(style_key, field, j)),
-        _excel_newpairs(_excel_cell_fill_atts(field, j)),
+        _excel__newpairs(_excel__tablestyle_attributes(style_key, field, j)),
+        _excel__newpairs(_excel__cell_fill_attributes(field, j)),
     )
 end
 
-function _excel_font_fill_atts(pairs::Vector{ExcelPair})
+function _excel__font_fill_attributes(pairs::Vector{ExcelPair})
     return (
-        _excel_newpairs(filter(p -> !startswith(p.first, "cell_fill_"), pairs)),
-        _excel_newpairs(_excel_cell_fill_atts(pairs)),
+        _excel__newpairs(filter(p -> !startswith(p.first, "cell_fill_"), pairs)),
+        _excel__newpairs(_excel__cell_fill_attributes(pairs)),
     )
 end
 
-function _excel_override_properties(default, property, format)
+function _excel__override_properties(default, property, format)
     v1 = getproperty(default, Symbol(property))
     isnothing(format) && return v1
     d = Dict(v1)
@@ -202,27 +202,27 @@ function _excel_override_properties(default, property, format)
 end
 
 """
-    _excel_format_attributes(table_data, excelFormatter, current_row, j)
+    _excel__format_attributes(table_data, excelFormatter, current_row, j)
 
 Get ExcelFormatter format attributes for current row and column (j)
 """
-function _excel_format_attributes(table_data, excelFormatter, current_row, j)
-    atts = excelFormatter.f(table_data.data, current_row, j) ? excelFormatter.numFmt : nothing
-    if !isnothing(atts)
-        return _excel_newpairs(atts)
+function _excel__format_attributes(table_data, excelFormatter, current_row, j)
+    attributes = excelFormatter.f(table_data.data, current_row, j) ? excelFormatter.numFmt : nothing
+    if !isnothing(attributes)
+        return _excel__newpairs(attributes)
     else
         return nothing
     end
 end
 
 """
-    _excel_update_fontsize!(atts, fontsize)
+    _excel__update_fontsize!(attributes, fontsize)
 
 Update font size in a given set of font attributes
 """
-function _excel_update_fontsize!(atts, fontsize)
-    g = _excel_getsize(atts)
-    isnothing(g) && push!(atts, :size => fontsize)
+function _excel__update_fontsize!(attributes, fontsize)
+    g = _excel__getsize(attributes)
+    isnothing(g) && push!(attributes, :size => fontsize)
     fontsize = isnothing(g) ? fontsize : g
     return fontsize
 end
@@ -248,28 +248,28 @@ function fmt__excel_stringify(columns::Union{Nothing,Int,AbstractVector{Int}} = 
 end
 
 """
-    _excel_update_length_and_height!(max_row_lines, max_row_height, max_col_length, max_col_height, col, text, fontsize)
+    _excel__update_length_and_height!(max_row_lines, max_row_height, max_col_length, max_col_height, col, text, fontsize)
 
 Return the column width and row height needed for a table cell value (in Excel units).
 """
-function _excel_cell_length_and_height(text, fontsize)
+function _excel__cell_length_and_height(text, fontsize)
     if text isa AbstractString
-        lines = _excel_text_lines(text)
-        col_length = _excel_column_width_for_text(_excel_multilength(text), fontsize)
+        lines = _excel__text_lines(text)
+        col_length = _excel__column_width_for_text(_excel__multilength(text), fontsize)
     else
         lines = 1
         col_length = 0.0
     end
-    row_height = _excel_row_height_for_text(lines, fontsize)
+    row_height = _excel__row_height_for_text(lines, fontsize)
     return row_height, col_length
 end
 
 """
-    _excel_getsize(pairs::Vector{Pair{Symbol,Any}})
+    _excel__getsize(pairs::Vector{Pair{Symbol,Any}})
 
 Extract the font size attribute from a vector of pairs.
 """
-function _excel_getsize(pairs::Vector{Pair{Symbol,Any}})
+function _excel__getsize(pairs::Vector{Pair{Symbol,Any}})
     for (k, v) in pairs
         if k == :size
             return v
@@ -279,15 +279,15 @@ function _excel_getsize(pairs::Vector{Pair{Symbol,Any}})
 end
 
 """
-    _excel_set_fontsize_and_alignment!(sheet, table_data, row, col, atts, alignment, valign, wrap)
+    _excel__set_fontsize_and_alignment!(sheet, table_data, row, col, attributes, alignment, valign, wrap)
 
 Set the font size and alignment in a cell.
 """
-function _excel_set_fontsize_and_alignment!(sheet, row, col, atts, alignment, valign, wrap)
+function _excel__set_fontsize_and_alignment!(sheet, row, col, attributes, alignment, valign, wrap)
     fontsize = DEFAULT_FONT_SIZE
-    if !isnothing(atts)
-        fontsize = _excel_update_fontsize!(atts, fontsize)
-        XLSX.setFont(sheet, row, col; atts...)
+    if !isnothing(attributes)
+        fontsize = _excel__update_fontsize!(attributes, fontsize)
+        XLSX.setFont(sheet, row, col; attributes...)
     else
         XLSX.setFont(sheet, row, col; size = fontsize)
     end
@@ -297,7 +297,7 @@ function _excel_set_fontsize_and_alignment!(sheet, row, col, atts, alignment, va
             row, 
             col; 
             vertical = valign, 
-            horizontal = _excel_alignment_string(alignment), 
+            horizontal = _excel__alignment_string(alignment), 
             wrapText = wrap,
         )
     end
@@ -305,11 +305,11 @@ function _excel_set_fontsize_and_alignment!(sheet, row, col, atts, alignment, va
 end
 
 """
-    _excel_get_col_width(table_format, i, max_col_length, col_offset)
+    _excel__get_col_width(table_format, i, max_col_length, col_offset)
 
 Resolve column width for data table columns.
 """
-function _excel_get_col_width(table_format, col, max_col_length, col_offset)
+function _excel__get_col_width(table_format, col, max_col_length, col_offset)
 
     # Don't limit non-data cells
     if col <= col_offset
@@ -354,13 +354,13 @@ function _excel_get_col_width(table_format, col, max_col_length, col_offset)
 end
 
 """
-    _excel_compute_col_offset(table_data::TableData) -> Int
+    _excel__compute_col_offset(table_data::TableData) -> Int
 
 Return the number of leading columns before the data columns (row number column +
 row label column). This offset is used when mapping data column indices to absolute
 Excel column numbers.
 """
-function _excel_compute_col_offset(table_data::TableData)
+function _excel__compute_col_offset(table_data::TableData)
     col_offset = 0
     if table_data.show_row_number_column
         col_offset += 1
@@ -375,32 +375,32 @@ function _excel_compute_col_offset(table_data::TableData)
 end
 
 """
-    _excel_try_border!(sheet, rows, cols, table_format, property, side)
+    _excel__try_border!(sheet, rows, cols, table_format, property, side)
 
 Apply a border on `sheet` at `rows`×`cols` using `table_format.property` only when that
 property is enabled. `side` is the keyword passed to `XLSX.setBorder` (e.g. `:bottom`).
 """
-function _excel_try_border!(sheet, rows, cols, table_format, property, side::Symbol)
+function _excel__try_border!(sheet, rows, cols, table_format, property, side::Symbol)
     field = getproperty(table_format, Symbol(property))
-    _excel_check_table_format(property, field) || return
+    _excel__check_table_format(property, field) || return
     type_field  = getproperty(table_format, Symbol(property * "_type"))
-    border_type = _excel_tableformat_atts(property * "_type", type_field)
+    border_type = _excel__tableformat_attributes(property * "_type", type_field)
     XLSX.setBorder(sheet, rows, cols; Dict(side => border_type)...)
 end
 
 """
-    _excel_apply_cell_style!(sheet, row, col, style_key, style_field, alignment, valign, wrap; col_idx) -> fontsize
+    _excel__apply_cell_style!(sheet, row, col, style_key, style_field, alignment, valign, wrap; col_idx) -> fontsize
 
 Apply font and fill styling to a single cell and return the resolved font size.
 `col_idx` selects a per-column entry when `style_field` is a `Vector{Vector{ExcelPair}}`.
 """
-function _excel_apply_cell_style!(
+function _excel__apply_cell_style!(
     sheet, row, col, style_key, style_field, alignment, valign, wrap;
     col_idx = nothing,
 )
-    font_atts, fill_atts = _excel_font_fill_atts(style_key, style_field, col_idx)
-    fontsize  = _excel_set_fontsize_and_alignment!(sheet, row, col, font_atts, alignment, valign, wrap)
-    isempty(fill_atts) || XLSX.setFill(sheet, row, col; fill_atts...)
+    font_attributes, fill_attributes = _excel__font_fill_attributes(style_key, style_field, col_idx)
+    fontsize  = _excel__set_fontsize_and_alignment!(sheet, row, col, font_attributes, alignment, valign, wrap)
+    isempty(fill_attributes) || XLSX.setFill(sheet, row, col; fill_attributes...)
     return fontsize
 end
 

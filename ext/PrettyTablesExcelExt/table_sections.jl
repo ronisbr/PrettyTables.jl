@@ -5,18 +5,18 @@
 ############################################################################################
 
 """
-    _excel_write_full_span_cell!(
+    _excel__write_full_span_cell!(
         sheet, text, row, num_cols, col_offset,
         anchor_row_offset, anchor_col_offset,
-        style_atts, fill_atts, alignment, valign
+        style_attributes, fill_attributes, alignment, valign
     ) -> Float64
 
 Write a cell that spans the full width of the table (title, subtitle, row group labels,
 footnotes, source notes). Returns the computed row height.
 
-The caller is responsible for calling `_excel_unempty_row` before invoking this function.
+The caller is responsible for calling `_excel__unempty_row` before invoking this function.
 """
-function _excel_write_full_span_cell!(
+function _excel__write_full_span_cell!(
     sheet,
     text,
     row,
@@ -24,8 +24,8 @@ function _excel_write_full_span_cell!(
     col_offset,
     anchor_row_offset,
     anchor_col_offset,
-    style_atts,
-    fill_atts,
+    style_attributes,
+    fill_attributes,
     alignment,
     valign,
 )
@@ -43,20 +43,20 @@ function _excel_write_full_span_cell!(
         ),
     )
 
-    fontsize = _excel_set_fontsize_and_alignment!(
-        sheet, sheet_row, col_start, style_atts, alignment, valign, true
+    fontsize = _excel__set_fontsize_and_alignment!(
+        sheet, sheet_row, col_start, style_attributes, alignment, valign, true
     )
 
-    if !isnothing(fill_atts)
-        XLSX.setFill(sheet, sheet_row, col_start; fill_atts...)
+    if !isnothing(fill_attributes)
+        XLSX.setFill(sheet, sheet_row, col_start; fill_attributes...)
     end
 
-    text_lines = text isa AbstractString ? _excel_text_lines(text) : 1
-    return _excel_row_height_for_text(text_lines, fontsize)
+    text_lines = text isa AbstractString ? _excel__text_lines(text) : 1
+    return _excel__row_height_for_text(text_lines, fontsize)
 end
 
 """
-    _excel_finalize_footnotes!(
+    _excel__finalize_footnotes!(
         sheet, table_data, table_format, style, fill,
         footnote_start_row, footnote_end_row,
         anchor_col_offset, col_offset, num_cols
@@ -68,7 +68,7 @@ underline border after footnotes. Called once after the last footnote row is wri
 `footnote_start_row` and `footnote_end_row` are absolute Excel row numbers (including
 the anchor offset).
 """
-function _excel_finalize_footnotes!(
+function _excel__finalize_footnotes!(
     sheet,
     table_data,
     table_format,
@@ -79,32 +79,32 @@ function _excel_finalize_footnotes!(
     col_offset,
     num_cols,
 )
-    atts = _excel_newpairs(_excel_tablestyle_atts("footnote", style.footnote))
+    attributes = _excel__newpairs(_excel__tablestyle_attributes("footnote", style.footnote))
 
     XLSX.setUniformAlignment(
         sheet,
         footnote_start_row:footnote_end_row,
         1 + anchor_col_offset;
         vertical   = "center",
-        horizontal = _excel_alignment_string(table_data.footnote_alignment),
+        horizontal = _excel__alignment_string(table_data.footnote_alignment),
         wrapText   = true,
     )
 
-    if !isnothing(atts)
+    if !isnothing(attributes)
         XLSX.setUniformFont(
             sheet,
             footnote_start_row:footnote_end_row,
             1 + anchor_col_offset;
-            atts...,
+            attributes...,
         )
     end
 
-    if _excel_check_table_format("underline_footnotes", table_format.underline_footnotes)
+    if _excel__check_table_format("underline_footnotes", table_format.underline_footnotes)
         XLSX.setBorder(
             sheet,
             footnote_end_row,
             1 + anchor_col_offset : num_cols + col_offset + anchor_col_offset;
-            bottom = _excel_tableformat_atts(
+            bottom = _excel__tableformat_attributes(
                 "underline_footnotes_type",
                 table_format.underline_footnotes_type,
             ),
