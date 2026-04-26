@@ -36,68 +36,6 @@ Cols expected to be a unit range.
 _excel_unempty_row(sheet, row, cols) = sheet[row, cols] = ""
 
 """
-    _excel_column_alignment(col, col_alignment, table_alignment)
-
-Return the alignment value to use for column labels.
-"""
-function _excel_column_alignment(col, col_alignment, table_alignment = nothing)
-    if col_alignment isa Symbol
-        return col_alignment
-    elseif col_alignment isa Vector{Symbol} && !isempty(col_alignment)
-        if length(col_alignment) < col
-            throw(ArgumentError("column_label_alignment vector has fewer entries than there are columns"))
-        else
-            return col_alignment[col]
-        end
-    else
-        return col, table_alignment
-    end
-end
-
-"""
-    _excel_cell_alignment(table_data::TableData, i::Int, j::Int) -> Symbol
-
-Get the alignment for a data cell at position (i, j).
-
-Returns one of `:l` (left), `:c` (center), or `:r` (right).
-
-# Precedence (highest to lowest):
-1. Cell-specific alignment from `cell_alignment` functions
-2. Column-specific alignment from `data_alignment` for column j
-3. Default alignment (`:r`)
-
-# Arguments
-- `table_data::TableData`: The table data structure
-- `i::Int`: Row index (1-based)
-- `j::Int`: Column index (1-based)
-"""
-function _excel_cell_alignment(table_data::TableData, i::Int, j::Int)
-
-    # 1. Check cell-specific alignment (highest priority)
-    if table_data.cell_alignment !== nothing
-        for alignment_spec in table_data.cell_alignment
-            if alignment_spec isa Function
-                # Function with signature (data, i, j) -> Union{Symbol, Nothing}
-                result = alignment_spec(table_data.data, i, j)
-                if result !== nothing
-                    return result
-                end
-            end
-        end
-    end
-    
-    # 2. Check column-specific alignment
-    if table_data.data_alignment isa Symbol
-        return table_data.data_alignment
-    elseif table_data.data_alignment isa Vector && j <= length(table_data.data_alignment)
-        return table_data.data_alignment[j]
-    end
-    
-    # 3. Default alignment
-    return :r
-end
-
-"""
     _excel_to_superscript(n::Int) -> String
 
 Convert an integer to a superscript string using Unicode characters.
@@ -280,16 +218,6 @@ function _excel_format_attributes(table_data, excelFormatter, current_row, j)
 end
 
 """
-    _excel_apply_formatter(value, formatter, current_row, j)
-
-Conditionally apply standard PrettyTables formatter to the given value.
-"""
-function _excel_apply_formatter(cell_value, formatter, current_row, j)
-    v = formatter(cell_value, current_row, j)
-    return v
-end
-
-"""
     _excel_update_fontsize!(atts, fontsize)
 
 Update font size in a given set of font attributes
@@ -446,6 +374,37 @@ function _excel_compute_col_offset(table_data::TableData)
         col_offset += 1
     end
     return col_offset
+end
+
+"""
+    _excel_try_border!(sheet, rows, cols, table_format, property, side)
+
+Apply a border on `sheet` at `rows`×`cols` using `table_format.property` only when that
+property is enabled. `side` is the keyword passed to `XLSX.setBorder` (e.g. `:bottom`).
+"""
+function _excel_try_border!(sheet, rows, cols, table_format, property, side::Symbol)
+    field = getproperty(table_format, Symbol(property))
+    _excel_check_table_format(property, field) || return
+    type_field  = getproperty(table_format, Symbol(property * "_type"))
+    border_type = _excel_tableformat_atts(property * "_type", type_field)
+    XLSX.setBorder(sheet, rows, cols; Dict(side => border_type)...)
+end
+
+"""
+    _excel_apply_cell_style!(sheet, row, col, style_key, style_field, alignment, valign, wrap; col_idx) -> fontsize
+
+Apply font and fill styling to a single cell and return the resolved font size.
+`col_idx` selects a per-column entry when `style_field` is a `Vector{Vector{ExcelPair}}`.
+"""
+function _excel_apply_cell_style!(
+    sheet, row, col, style_key, style_field, alignment, valign, wrap;
+    col_idx = nothing,
+)
+    font_atts = _excel_newpairs(_excel_tablestyle_atts(style_key, style_field, col_idx))
+    fill_atts = _excel_newpairs(_excel_cell_fill_atts(style_field, col_idx))
+    fontsize  = _excel_set_fontsize_and_alignment!(sheet, row, col, font_atts, alignment, valign, wrap)
+    isempty(fill_atts) || XLSX.setFill(sheet, row, col; fill_atts...)
+    return fontsize
 end
 
 """
