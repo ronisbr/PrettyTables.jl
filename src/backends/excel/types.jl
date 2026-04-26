@@ -243,7 +243,9 @@ Define the table borders that will be used to form the Excel table.
     column header rows.
 - `horizontal_line_at_merged_column_labels::Bool`: Whether to draw a line under merged
     column headers.
-- `horizontal_lines_at_data_rows::Bool`: Whether to draw a line under each data row.
+- `horizontal_lines_at_data_rows::Union{Bool, Vector{Int}}`: Controls which data rows get
+    an underline. `true` draws a line after every data row; `false` draws none; a
+    `Vector{Int}` draws a line only after the listed row indices.
 - `horizontal_line_after_data_rows::Bool`: Whether to draw a line under the data table
     section.
 - `horizontal_line_before_row_group_label::Bool`: Whether to draw a line above each row
@@ -315,7 +317,7 @@ table_format = ExcelTableFormat(;
     horizontal_line_after_column_labels::Bool     = true
     horizontal_line_between_column_labels::Bool   = true
     horizontal_line_at_merged_column_labels::Bool = true
-    horizontal_lines_at_data_rows::Bool           = true
+    horizontal_lines_at_data_rows::Union{Bool, Vector{Int}} = true
     horizontal_line_after_data_rows::Bool         = true
     horizontal_line_before_row_group_label::Bool  = true
     horizontal_line_after_row_group_label::Bool   = true

@@ -118,10 +118,13 @@ function _excel__write_table!(
             end
 
             if rs == :data
-                _excel__try_border!(
-                    sheet, current_row + anchor_row_offset, all_cols(),
-                    table_format, "horizontal_lines_at_data_rows", table_format.borders.middle_line, :bottom,
-                )
+                hlines = table_format.horizontal_lines_at_data_rows
+                if hlines === true || (hlines isa Vector{Int} && ps.i ∈ hlines)
+                    XLSX.setBorder(
+                        sheet, current_row + anchor_row_offset, all_cols();
+                        bottom = table_format.borders.middle_line,
+                    )
+                end
 
             elseif rs == :table_footer && next_action == :footnote
                 if footnote_start_row == 0

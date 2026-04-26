@@ -165,7 +165,9 @@ look.
 - `horizontal_line_after_column_labels::Bool`: Draw a line under the column header section.
 - `horizontal_line_between_column_labels::Bool`: Draw a line between column header rows.
 - `horizontal_line_at_merged_column_labels::Bool`: Draw a line under merged column headers.
-- `horizontal_lines_at_data_rows::Bool`: Draw a line under each data row.
+- `horizontal_lines_at_data_rows::Union{Bool, Vector{Int}}`: Draw underlines after data
+  rows. `true` draws after every row, `false` draws none, a `Vector{Int}` draws only after
+  the specified row indices (e.g., `[1, 3]` draws after rows 1 and 3).
 - `horizontal_line_after_data_rows::Bool`: Draw a line under the data table section.
 - `horizontal_line_before_row_group_label::Bool`: Draw a line above each row group divider.
 - `horizontal_line_after_row_group_label::Bool`: Draw a line below each row group divider.
