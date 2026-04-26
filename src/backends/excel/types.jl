@@ -5,7 +5,7 @@
 ############################################################################################
 
 export ExcelPair, ExcelHighlighter, ExcelTableBorders, ExcelTableFormat, ExcelTableStyle, ExcelFormatter
-export DEFAULT_EXCEL_TABLE_FORMAT, DEFAULT_EXCEL_TABLE_STYLE
+export DEFAULT_EXCEL_TABLE_STYLE
 export EXCEL_FORMAT_NO_VLINES, EXCEL_FORMAT_CELL_LINES, EXCEL_FORMAT_SECTION_LINES
 
 ############################################################################################
@@ -277,9 +277,7 @@ color) are configured via the `borders::ExcelTableBorders` field.
 The `horizontal_line_after_title` border is drawn under the subtitle row (if provided) or
 under the title row when there is no subtitle.
 
-Four predefined formats are provided:
-- `DEFAULT_EXCEL_TABLE_FORMAT`: All borders enabled; outside border is thick, section
-    separators are thin, and within-section lines are dotted.
+Three predefined formats are provided (in addition to the default `ExcelTableFormat()`):
 - `EXCEL_FORMAT_NO_VLINES`: No vertical lines.
 - `EXCEL_FORMAT_NO_CELL_LINES`: No borders between individual data cells (no data row
     underlines, no column dividers).
@@ -331,26 +329,7 @@ table_format = ExcelTableFormat(
     vertical_line_after_data_columns::Bool                      = true
 end
 
-const DEFAULT_EXCEL_TABLE_FORMAT = ExcelTableFormat(
-    borders                              = ExcelTableBorders(),
-    horizontal_line_at_beginning         = true,
-    horizontal_line_after_title          = true,
-    horizontal_line_after_column_labels  = true,
-    horizontal_line_between_column_labels = true,
-    horizontal_line_at_merged_column_labels = true,
-    horizontal_lines_at_data_rows        = true,
-    horizontal_line_after_data_rows      = true,
-    horizontal_line_before_row_group_label = true,
-    horizontal_line_after_row_group_label = true,
-    horizontal_line_before_summary_rows  = true,
-    horizontal_line_after_summary_rows   = true,
-    horizontal_line_after_footnotes      = true,
-    vertical_line_at_beginning           = true,
-    vertical_line_after_row_number_column = true,
-    vertical_line_after_row_label_column = true,
-    vertical_lines_at_data_columns       = true,
-    vertical_line_after_data_columns     = true,
-)
+
 
 const EXCEL_FORMAT_NO_VLINES = ExcelTableFormat(
     vertical_line_after_row_number_column = false,

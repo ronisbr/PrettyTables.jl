@@ -191,8 +191,7 @@ Border styles are specified using an [`ExcelTableBorders`](@ref) object with the
 
 ### Predefined formats
 
-Four standard definitions are provided:
-- `DEFAULT_EXCEL_TABLE_FORMAT`: All borders enabled with default styles.
+Three predefined formats modify the defaults:
 - `EXCEL_FORMAT_NO_VLINES`: No vertical lines.
 - `EXCEL_FORMAT_NO_CELL_LINES`: No data row underlines and no column dividers.
 - `EXCEL_FORMAT_SECTION_LINES`: Only section-level horizontal borders and no column

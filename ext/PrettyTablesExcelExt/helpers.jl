@@ -129,15 +129,12 @@ function _excel__newpairs(attributes::Union{Nothing, Vector{ExcelPair}})
 end
 
 """
-    _excel__check_table_format(property::AbstractString, b::Union{Nothing, Bool}) -> Bool
+    _excel__check_table_format(b::Union{Nothing, Bool}) -> Bool
 
-Return `b` if it is not `nothing`; otherwise return the default value of the `property`
-field from `DEFAULT_EXCEL_TABLE_FORMAT`.
+Return `b` if it is not `nothing`; otherwise return `true` (all format fields default to
+enabled).
 """
-function _excel__check_table_format(property::AbstractString, b::Union{Nothing, Bool})
-    !isnothing(b) && return b
-    return getproperty(DEFAULT_EXCEL_TABLE_FORMAT, Symbol(property))
-end
+_excel__check_table_format(b::Union{Nothing, Bool}) = something(b, true)
 
 """
     _excel__tablestyle_attributes(
@@ -507,7 +504,7 @@ function _excel__try_border!(
 )
     field = getproperty(table_format, Symbol(property))
 
-    _excel__check_table_format(property, field) || return
+    _excel__check_table_format(field) || return
 
     XLSX.setBorder(sheet, rows, cols; Dict(side => border_style)...)
 
