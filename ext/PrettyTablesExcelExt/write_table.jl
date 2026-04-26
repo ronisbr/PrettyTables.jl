@@ -476,48 +476,40 @@ function _write_excel_table!(
 
             for j in 1:num_cols
                 for highlighter in highlighters
-                    atts = _excel_highlighter_atts(table_data, highlighter, i, j)
-                    if !isnothing(atts)
-                        font_atts, fill_atts, border_atts = atts
-                        if !isempty(font_atts)
-                            font_size = _excel_getsize(font_atts)
-                            if !isnothing(font_size)
-                                row_height, col_length = _excel_cell_length_and_height(
-                                    _get_cell_value(table_data, i, j), font_size,
-                                )
-                                internal_row = hl_row - anchor_row_offset
-                                max_row_height[internal_row] = max(
-                                    get(max_row_height, internal_row, 0.0), row_height,
-                                )
-                                max_col_length[j + col_offset] = max(
-                                    max_col_length[j + col_offset], col_length,
-                                )
-                            end
-                            XLSX.setFont(
-                                sheet,
-                                hl_row,
-                                j + col_offset + anchor_col_offset;
-                                font_atts...,
+                    highlighter.f(table_data.data, i, j) || continue
+
+                    decoration = highlighter.fd(highlighter, table_data.data, i, j)
+                    fill_atts  = _excel_newpairs(_excel_cell_fill_atts(decoration))
+                    font_atts  = _excel_newpairs(
+                        filter(p -> !startswith(p.first, "cell_fill_"), decoration)
+                    )
+
+                    if !isempty(font_atts)
+                        font_size = _excel_getsize(font_atts)
+                        if !isnothing(font_size)
+                            row_height, col_length = _excel_cell_length_and_height(
+                                _get_cell_value(table_data, i, j), font_size,
+                            )
+                            internal_row = hl_row - anchor_row_offset
+                            max_row_height[internal_row] = max(
+                                get(max_row_height, internal_row, 0.0), row_height,
+                            )
+                            max_col_length[j + col_offset] = max(
+                                max_col_length[j + col_offset], col_length,
                             )
                         end
-                        if !isempty(fill_atts)
-                            XLSX.setFill(
-                                sheet,
-                                hl_row,
-                                j + col_offset + anchor_col_offset;
-                                fill_atts...,
-                            )
-                        end
-                        if !isempty(border_atts)
-                            XLSX.setBorder(
-                                sheet,
-                                hl_row,
-                                j + col_offset + anchor_col_offset;
-                                allsides = [border_atts...],
-                            )
-                        end
-                        break
+                        XLSX.setFont(
+                            sheet, hl_row, j + col_offset + anchor_col_offset;
+                            font_atts...,
+                        )
                     end
+                    if !isempty(fill_atts)
+                        XLSX.setFill(
+                            sheet, hl_row, j + col_offset + anchor_col_offset;
+                            fill_atts...,
+                        )
+                    end
+                    break
                 end
             end
         end

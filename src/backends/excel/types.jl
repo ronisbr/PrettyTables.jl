@@ -38,61 +38,44 @@ Define the default highlighter of a table when using the Excel back end.
 
 # Fields
 
-- `f::Function`: Function with the signature `f(data, i, j)` in which should return `true`
+- `f::Function`: Function with the signature `f(data, i, j)` which should return `true`
     if the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
 - `fd::Function`: Function with the signature `f(h, data, i, j)` in which `h` is the
-    highlighter. This function must return a `Vector{Pair{String, String}}` with properties
-    compatible with the `style` field that will be applied to the highlighted cell.
-- `_decoration::Dict{String, String}`: The decoration to be applied to the highlighted cell
-    if the default `fd` is used.
+    highlighter. This function must return a `Vector{ExcelPair}` with the styling attributes
+    to apply to the highlighted cell.
+- `_decoration::Vector{ExcelPair}`: The decoration applied when the default `fd` is used.
 
 # Remarks
 
 An Excel highlighter can be constructed using the following helpers:
 
 ```julia
-ExcelHighlighters(f::Function, decoration::ExcelPair)
-ExcelHighlighters(f::Function, decoration::Vector{Pair{String, String}})
-ExcelHighlighters(f::Function, decoration::Pair{Symbol, Vector{Pair{String, String}}})
-ExcelHighlighters(
-    f::Function,
-    decoration::Vector{Pair{Symbol, Vector{Pair{String, String}}}}
-)
-
-ExcelHighlighters(f::Function, fd::Function)
+ExcelHighlighter(f::Function, decoration::ExcelPair)
+ExcelHighlighter(f::Function, decoration::Vector{ExcelPair})
+ExcelHighlighter(f::Function, fd::Function)
 ```
 
-The first set will apply a fixed decoration to the highlighted cell, whereas the 
-second lets the user select the desired decoration by specifying the function `fd`.
+The decoration is a flat `Vector{ExcelPair}` (same format as `ExcelTableStyle` fields).
+Font attributes are passed directly; fill attributes use the `"cell_fill_"` key prefix
+(the prefix is stripped before calling `XLSX.setFill`). Border attributes are not
+supported in highlighters.
 
-The decoration is specified as `[:format => ["attribute" => "value"], ...]`
-where `:format` can be specified as `:font`, `:fill` or `:border`. The attributes and 
-values are the same as those supported by the functions `XLSX.setFont`, `XLSX.setFill` 
-and `XLSX.setBorder`.
-
-If a single decoration is supplied, the leading symbol may omitted and will be assumed 
-to be `:font`.
-
-For example, if we want to highlight the cells in the third data column with a value greater 
-than 10, those in the fourth column with a value greater than 10 and those (in any column) 
-with zero value, each with separate highlighter formats, we can specify:
+For example, to highlight cells in column 3 with a value greater than 10 in red bold,
+cells with value 0 in green with a solid fill, and cells in column 4 > 10 in blue:
 
 ```julia
 highlighters = [
     ExcelHighlighter((data, i, j) -> (j == 3) && (data[i, j] > 10), [
-        :font => [ "color"=>"red", "bold"=>"true"],
-        :fill => [ "pattern" => "solid", "fgColor" => "grey90"],
-        :border => ["style" => "thick", "color" => "red"],
+        "color" => "red", "bold" => "true",
+        "cell_fill_pattern" => "solid", "cell_fill_fgColor" => "grey90",
     ]),
-    ExcelHighlighter((data, i, j) -> (data[i, j] ≈ 0.0), [
-        :font => [ "color"=>"green", "bold"=>"true"],
-        :border => ["style" => "thick", "color" => "green"],
-    ]),
+    ExcelHighlighter((data, i, j) -> (data[i, j] ≈ 0.0),
+        ["color" => "green", "bold" => "true"],
+    ),
     ExcelHighlighter((data, i, j) -> (j == 4) && (data[i, j] > 10),
-        ["color"=>"blue", "bold"=>"true"], # assumes `:font`
+        ["color" => "blue", "bold" => "true"],
     ),
 ]
-
 ```
 
 """
@@ -102,7 +85,7 @@ struct ExcelHighlighter
 
     # == Private Fields ====================================================================
 
-    _decoration::Vector{Pair{Symbol, Vector{ExcelPair}}}
+    _decoration::Vector{ExcelPair}
 
     # == Constructors ======================================================================
 
@@ -111,38 +94,11 @@ struct ExcelHighlighter
     end
 
     function ExcelHighlighter(f::Function, decoration::ExcelPair)
-        return new(
-            f,
-            _excel__default_highlighter_fd,
-            [:font => [decoration]]
-        )
-    end
-
-    function ExcelHighlighter(f::Function, decoration::Pair{Symbol, Vector{ExcelPair}})
-        return new(
-            f,
-            _excel__default_highlighter_fd,
-            [decoration]
-        )
+        return new(f, _excel__default_highlighter_fd, [decoration])
     end
 
     function ExcelHighlighter(f::Function, decoration::Vector{ExcelPair})
-        return new(
-            f,
-            _excel__default_highlighter_fd,
-            [:font => decoration]
-        )
-    end
-
-    function ExcelHighlighter(
-        f::Function,
-        decoration::Vector{Pair{Symbol, Vector{ExcelPair}}}
-    )
-        return new(
-            f,
-            _excel__default_highlighter_fd,
-            decoration
-        )
+        return new(f, _excel__default_highlighter_fd, decoration)
     end
 end
 

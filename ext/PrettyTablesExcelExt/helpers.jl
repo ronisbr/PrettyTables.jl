@@ -172,38 +172,6 @@ function _excel_override_properties(default, property, format)
 end
 
 """
-    _excel_font_attributes(table_data, highlighter, current_row, j)
-
-Get highlighter font attributes for current row and column (j)
-"""
-function _excel_highlighter_atts(table_data, highlighter, current_row, j)
-    atts = highlighter.f(table_data.data, current_row, j) ? highlighter._decoration : nothing
-    font_atts = Vector{Pair{Symbol,Any}}()
-    fill_atts = Vector{Pair{Symbol,Any}}()
-    border_atts = Vector{Pair{Symbol,Any}}()
-        if !isnothing(atts)
-            for (type, type_atts) in atts # type = :font, :fill, :border and type_atts = atts for that format type
-    #            for (k, v) in type_atts
-                    if type == :font
-                        font_atts = _excel_newpairs(type_atts)
-                    elseif type == :fill
-                        fill_atts = _excel_newpairs(type_atts)
-                    elseif type == :border
-                        border_atts = type_atts
-                    else
-                        println("Unreachable reached")
-                        error()
-                    end
-    #            end
-            end
-            return (font_atts, fill_atts, border_atts)
-        else
-            return nothing
-        end
-#    end
-end
-
-"""
     _excel_format_attributes(table_data, excelFormatter, current_row, j)
 
 Get ExcelFormatter format attributes for current row and column (j)

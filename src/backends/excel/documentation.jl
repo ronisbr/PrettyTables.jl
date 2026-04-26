@@ -61,30 +61,20 @@ contains the following two public fields:
 - `f::Function`: Function with the signature `f(data, i, j)`, which should return `true`
   if the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
 - `fd::Function`: Function with the signature `f(h, data, i, j)` in which `h` is the
-  highlighter. This function must return a `Vector{Pair{Symbol,Vector{Pair{String, String}}}}` with properties compatible with the `XLSX.setFont` function that will be applied to
-  the highlighted cell.
+  highlighter. This function must return a `Vector{ExcelPair}` with the styling attributes
+  to apply to the highlighted cell.
 
 An Excel highlighter can be constructed using the following helpers:
 
 ```julia
-ExcelHighlighters(f::Function, decoration::ExcelPair)
-ExcelHighlighters(f::Function, decoration::Vector{Pair{String, String}})
-ExcelHighlighters(f::Function, decoration::Pair{Symbol,Vector{Pair{String, String}}})
-ExcelHighlighters(f::Function, decoration::Vector{Pair{Symbol,Vector{Pair{String, String}}}})
-
-ExcelHighlighters(f::Function, fd::Function)
+ExcelHighlighter(f::Function, decoration::ExcelPair)
+ExcelHighlighter(f::Function, decoration::Vector{ExcelPair})
+ExcelHighlighter(f::Function, fd::Function)
 ```
 
-The first set will apply a fixed decoration to the highlighted cell, whereas the
-second lets the user select the desired decoration by specifying the function `fd`.
-
-The decoration is specified as `[:format => ["attribute" => "value"], ...]`
-where `:format` can be specified as `:font`, `:fill` or `:border`. The attributes and
-values are the same as those supported by the functions `XLSX.setFont`, `XLSX.setFill`
-and `XLSX.setBorder`.
-
-If a single decoration is supplied, the leading symbol may omitted and will be assumed
-to be `:font`.
+The decoration uses the same `Vector{ExcelPair}` format as `ExcelTableStyle` fields.
+Font attributes are specified directly; fill attributes use the `"cell_fill_"` key prefix
+(stripped before calling `XLSX.setFill`). Border attributes are not supported.
 
 !!! note
 
@@ -98,25 +88,18 @@ to be `:font`.
     always receive the original, unformatted value.
 
 For example, if we want to highlight the cells in the third data column with a value greater
-than 10, those in the fourth column with a value greater than 10 and those (in any column)
-with zero value, each with separate highlighter formats, we can specify:
+than 10 in red with a grey fill, and those in the fourth column in blue:
 
 ```julia
 highlighters = [
     ExcelHighlighter((data, i, j) -> (j == 3) && (data[i, j] > 10), [
-        :font => [ "color"=>"red", "bold"=>"true"],
-        :fill => [ "pattern" => "solid", "fgColor" => "grey90"],
-        :border => ["style" => "thick", "color" => "red"],
-    ]),
-    ExcelHighlighter((data, i, j) -> (data[i, j] ≈ 0.0), [
-        :font => [ "color"=>"green", "bold"=>"true"],
-        :border => ["style" => "thick", "color" => "green"],
+        "color" => "red", "bold" => "true",
+        "cell_fill_pattern" => "solid", "cell_fill_fgColor" => "grey90",
     ]),
     ExcelHighlighter((data, i, j) -> (j == 4) && (data[i, j] > 10),
-        ["color"=>"blue", "bold"=>"true"], # assumes `:font`
+        ["color" => "blue", "bold" => "true"],
     ),
 ]
-
 ```
 
 ## Excel Formatters
