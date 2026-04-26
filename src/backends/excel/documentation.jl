@@ -205,6 +205,13 @@ combining multiple presets or re-enabling fields with `merge`:
 - `EXCEL_FORMAT_SECTION_LINES`: Only section-level horizontal borders and no column
   dividers.
 
+Four macros are also available to quickly enable or disable all lines of a given direction:
+
+- `@excel__all_horizontal_lines`: Enable all horizontal lines.
+- `@excel__no_horizontal_lines`: Suppress all horizontal lines.
+- `@excel__all_vertical_lines`: Enable all vertical lines.
+- `@excel__no_vertical_lines`: Suppress all vertical lines.
+
 ### Examples
 
 Apply a preset:

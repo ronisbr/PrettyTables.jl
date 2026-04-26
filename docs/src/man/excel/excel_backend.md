@@ -207,33 +207,60 @@ Border styles are specified using an [`ExcelTableBorders`](@ref) object:
 
 ### Predefined formats
 
-Three `NamedTuple` presets are provided:
+Three `NamedTuple` presets are provided. Apply them by splatting into the constructor,
+combining multiple presets or re-enabling fields with `merge`:
+
 - `EXCEL_FORMAT_NO_VLINES`: No vertical lines.
 - `EXCEL_FORMAT_NO_CELL_LINES`: No data row underlines and no column dividers.
 - `EXCEL_FORMAT_SECTION_LINES`: Only section-level horizontal borders and no column
   dividers.
 
-Apply a preset by splatting it into the constructor. Use `merge` to combine presets or
-to override individual fields:
+Four macros are also available to quickly enable or disable all lines of a given direction:
+
+- `@excel__all_horizontal_lines`: Enable all horizontal lines.
+- `@excel__no_horizontal_lines`: Suppress all horizontal lines.
+- `@excel__all_vertical_lines`: Enable all vertical lines.
+- `@excel__no_vertical_lines`: Suppress all vertical lines.
+
+### Examples
+
+Apply a preset:
 
 ```julia
-# Apply a single preset
 table_format = ExcelTableFormat(; EXCEL_FORMAT_NO_VLINES...)
+```
 
-# Combine two presets
-table_format = ExcelTableFormat(; merge(EXCEL_FORMAT_SECTION_LINES, EXCEL_FORMAT_NO_VLINES)...)
+Combine presets and override a field:
 
-# Apply a preset with custom border style
-table_format = ExcelTableFormat(;
-    EXCEL_FORMAT_SECTION_LINES...,
-    borders = ExcelTableBorders(header_line = ["style" => "thick", "color" => "red"]),
-)
-
-# Re-enable a field that a preset turns off
+```julia
 table_format = ExcelTableFormat(;
     merge(EXCEL_FORMAT_SECTION_LINES, (horizontal_line_before_row_group_label = true,))...,
 )
 ```
+
+Draw section-separator lines in red:
+
+```julia
+table_format = ExcelTableFormat(
+    borders = ExcelTableBorders(header_line = ["style" => "thin", "color" => "red"]),
+)
+```
+
+To start from a preset and customize border styles:
+
+```julia
+table_format = ExcelTableFormat(
+    EXCEL_FORMAT_SECTION_LINES;
+    borders = ExcelTableBorders(
+        header_line = ["style" => "thick", "color" => "red"],
+        middle_line = ["style" => "thick", "color" => "red"],
+    ),
+)
+```
+
+When merging presets, the predefined table formats are applied in order with later
+formats taking precedence. Any keyword arguments provided take precedence over all
+predefined formats.
 
 ## Excel Table Style
 
