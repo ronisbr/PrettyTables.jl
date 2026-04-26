@@ -17,23 +17,16 @@ during the single pass over the iterator.
 
 # Keywords
 
-- `highlighters::Vector{ExcelHighlighter}`: Highlighters applied inline while writing data
-    cells.
-    (**Default**: `ExcelHighlighter[]`)
+- `anchor_cell::String`: Top-left cell of the table in A1 notation (e.g. `"B3"`).
+    (**Default**: `"A1"`)
+- `data_column_widths::Union{Float64, Vector{Float64}}`: Explicit width for each data column
+    in Excel units, overriding auto-calculated widths. A scalar applies to all columns; a
+    vector sets per-column widths. When set (> 0), `minimum_data_column_widths` and
+    `maximum_data_column_widths` are ignored for that column.
+    (**Default**: `0.0`)
 - `excel_formatters::Vector{ExcelFormatter}`: Number-format rules applied to data and
     summary cells.
     (**Default**: `ExcelFormatter[]`)
-- `table_format::ExcelTableFormat`: Border and column-width configuration.
-    (**Default**: `ExcelTableFormat()`)
-- `style::ExcelTableStyle`: Font and fill style for each table section.
-    (**Default**: `ExcelTableStyle()`)
-- `anchor_cell::String`: Top-left cell of the table in A1 notation (e.g. `"B3"`).
-    (**Default**: `"A1"`)
-- `data_column_widths::Union{Float64, Vector{Float64}}`: Explicit width for each data
-    column in Excel units, overriding auto-calculated widths. A scalar applies to all
-    columns; a vector sets per-column widths. When set (> 0), `minimum_data_column_widths`
-    and `maximum_data_column_widths` are ignored for that column.
-    (**Default**: `0.0`)
 - `minimum_data_column_widths::Union{Float64, Vector{Float64}}`: Minimum width for each
     data column in Excel units. A scalar applies to all columns; a vector sets per-column
     minimums.
@@ -42,18 +35,22 @@ during the single pass over the iterator.
     data column in Excel units. A scalar applies to all columns; a vector sets per-column
     maximums.
     (**Default**: `0.0`)
+- `style::ExcelTableStyle`: Font and fill style for each table section.
+    (**Default**: `ExcelTableStyle()`)
+- `table_format::ExcelTableFormat`: Border and column-width configuration.
+    (**Default**: `ExcelTableFormat()`)
 """
 function _excel__write_table!(
     sheet::XLSX.Worksheet,
     pspec::PrintingSpec;
-    highlighters::Vector{ExcelHighlighter}                    = ExcelHighlighter[],
-    excel_formatters::Vector{ExcelFormatter}                  = ExcelFormatter[],
-    table_format::ExcelTableFormat                            = ExcelTableFormat(),
-    style::ExcelTableStyle                                    = ExcelTableStyle(),
-    anchor_cell::String,
-    data_column_widths::Union{Float64, Vector{Float64}}         = 0.0,
-    minimum_data_column_widths::Union{Float64, Vector{Float64}} = 0.0,
+    anchor_cell::String = "A1",
+    data_column_widths::Union{Float64, Vector{Float64}} = 0.0,
+    excel_formatters::Vector{ExcelFormatter} = ExcelFormatter[],
+    highlighters::Vector{ExcelHighlighter} = ExcelHighlighter[],
     maximum_data_column_widths::Union{Float64, Vector{Float64}} = 0.0,
+    minimum_data_column_widths::Union{Float64, Vector{Float64}} = 0.0,
+    style::ExcelTableStyle = ExcelTableStyle(),
+    table_format::ExcelTableFormat = ExcelTableFormat(),
 )
     table_data = pspec.table_data
 
