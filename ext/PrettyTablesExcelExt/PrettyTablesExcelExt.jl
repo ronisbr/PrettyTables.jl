@@ -82,10 +82,10 @@ function PrettyTables._excel__print(
             xf = XLSX.newxlsx()
             sh = xf[1]
             sheet == sh.name || XLSX.renamesheet!(sh, sheet)
-            _write_excel_table!(sh, pspec; anchor_cell, kwargs...)
+            _excel__write_table!(sh, pspec; anchor_cell, kwargs...)
             return xf
         else # sheet isa XLSX.worksheet; update sheet in place.
-            _write_excel_table!(sheet, pspec; anchor_cell, kwargs...)
+            _excel__write_table!(sheet, pspec; anchor_cell, kwargs...)
             return nothing
         end
 
@@ -106,7 +106,7 @@ function PrettyTables._excel__print(
             XLSX.openxlsx(filename, mode="w") do xf
                 sh = xf[1]
                 sheet == sh.name || XLSX.renamesheet!(sh, sheet)
-                _write_excel_table!(sh, pspec; anchor_cell, kwargs...)
+                _excel__write_table!(sh, pspec; anchor_cell, kwargs...)
             end
             return filename
 
@@ -114,7 +114,7 @@ function PrettyTables._excel__print(
             xf = XLSX.opentemplate(filename)
             XLSX.hassheet(xf, sheet) || XLSX.addsheet!(xf, sheet)
             sh = xf[sheet]
-            _write_excel_table!(sh, pspec; anchor_cell, kwargs...)
+            _excel__write_table!(sh, pspec; anchor_cell, kwargs...)
             return xf # returning xf forces the user to save using XLSX.writexlsx, reducing the risk of accidentally overwriting data.
 
         else

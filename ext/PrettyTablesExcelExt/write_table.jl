@@ -5,11 +5,11 @@
 ############################################################################################
 
 """
-    _write_excel_table!(sheet, pspec::PrintingSpec; kwargs)
+    _excel__write_table!(sheet, pspec::PrintingSpec; kwargs)
 
 Write the complete table to an Excel sheet using the PrettyTables.jl printing iterator.
 """
-function _write_excel_table!(
+function _excel__write_table!(
     sheet::XLSX.Worksheet,
     pspec::PrintingSpec;
     highlighters::Vector{ExcelHighlighter}  = ExcelHighlighter[],
