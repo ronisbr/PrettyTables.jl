@@ -511,8 +511,10 @@ end
     ) -> Nothing
 
 Draw the outer horizontal and vertical borders around `rows`×`cols` using the outer line
-styles from `table_format.borders`, controlled by `horizontal_line_at_beginning`,
-`vertical_line_at_beginning`, and `vertical_line_after_data_columns`.
+styles from `table_format.borders`. The top and bottom borders are controlled by
+`horizontal_line_at_beginning`; the left and right borders by `vertical_line_at_beginning`
+and `vertical_line_after_data_columns`. The bottom border overrides any thinner line
+previously set on `last(rows)`, matching the Typst backend behavior.
 """
 function _excel__try_outer_borders!(
     sheet::XLSX.Worksheet,
@@ -523,7 +525,8 @@ function _excel__try_outer_borders!(
     b = table_format.borders
 
     if table_format.horizontal_line_at_beginning
-        XLSX.setBorder(sheet, first(rows), cols; top = b.top_line)
+        XLSX.setBorder(sheet, first(rows), cols; top    = b.top_line)
+        XLSX.setBorder(sheet, last(rows),  cols; bottom = b.bottom_line)
     end
 
     if table_format.vertical_line_at_beginning
