@@ -101,8 +101,7 @@ function _excel__write_table!(
     first_content_row = 0      # absolute sheet row of first non-header row
     last_written_row  = 0      # absolute sheet row of last data/summary row
 
-    # Shared column range expression (reused in many setBorder/unempty calls).
-    all_cols(offset = 0) = 1 + anchor_col_offset : num_cols + col_offset + anchor_col_offset + offset
+    all_cols = 1 + anchor_col_offset : num_cols + col_offset + anchor_col_offset
 
     # == Main Loop =========================================================================
 
@@ -118,7 +117,7 @@ function _excel__write_table!(
             max_row_height[current_row] = 0.0
 
             # Ensure all cells in the row are non-empty before any merges.
-            _excel__unempty_row!(sheet, current_row + anchor_row_offset, all_cols())
+            _excel__unempty_row!(sheet, current_row + anchor_row_offset, all_cols)
 
             # Track first non-header row for vertical_line_after_row_label_column calculation.
             if first_content_row == 0 && rs != :table_header
@@ -127,7 +126,7 @@ function _excel__write_table!(
 
             if rs == :data && ps.i ∈ horizontal_lines_at_data_rows
                 XLSX.setBorder(
-                    sheet, current_row + anchor_row_offset, all_cols();
+                    sheet, current_row + anchor_row_offset, all_cols;
                     bottom = table_format.borders.middle_line,
                 )
 
@@ -148,11 +147,11 @@ function _excel__write_table!(
                 max_row_height[current_row] = 0.0
 
                 # Ensure cells exist before any formatting on the blank row.
-                _excel__unempty_row!(sheet, current_row + anchor_row_offset, all_cols())
+                _excel__unempty_row!(sheet, current_row + anchor_row_offset, all_cols)
 
             elseif rs == :column_labels && next_rs != :column_labels
                 _excel__try_border!(
-                    sheet, current_row + anchor_row_offset, all_cols(),
+                    sheet, current_row + anchor_row_offset, all_cols,
                     table_format, "horizontal_line_after_column_labels", table_format.borders.header_line, :bottom,
                 )
 
@@ -164,23 +163,23 @@ function _excel__write_table!(
 
                 if next_rs == :summary_row
                     _excel__try_border!(
-                        sheet, current_row + anchor_row_offset, all_cols(),
+                        sheet, current_row + anchor_row_offset, all_cols,
                         table_format, "horizontal_line_before_summary_rows", table_format.borders.middle_line, :bottom,
                     )
                 else
                     _excel__try_border!(
-                        sheet, current_row + anchor_row_offset, all_cols(),
+                        sheet, current_row + anchor_row_offset, all_cols,
                         table_format, "horizontal_line_after_summary_rows", table_format.borders.header_line, :bottom,
                     )
                 end
 
             elseif rs == :row_group_label
                 _excel__try_border!(
-                    sheet, current_row + anchor_row_offset, all_cols(),
+                    sheet, current_row + anchor_row_offset, all_cols,
                     table_format, "horizontal_line_before_row_group_label", table_format.borders.header_line, :top,
                 )
                 _excel__try_border!(
-                    sheet, current_row + anchor_row_offset, all_cols(),
+                    sheet, current_row + anchor_row_offset, all_cols,
                     table_format, "horizontal_line_after_row_group_label", table_format.borders.header_line, :bottom,
                 )
             end
@@ -190,7 +189,7 @@ function _excel__write_table!(
                 next_rs ∈ (:table_footer, :end_printing, :summary_row)) ||
                (rs == :summary_row && next_rs ∈ (:table_footer, :end_printing))
                 _excel__try_border!(
-                    sheet, current_row + anchor_row_offset, all_cols(),
+                    sheet, current_row + anchor_row_offset, all_cols,
                     table_format, "horizontal_line_after_data_rows", table_format.borders.header_line, :bottom,
                 )
             end
@@ -515,7 +514,7 @@ function _excel__write_table!(
     _excel__try_outer_borders!(
         sheet,
         content_start : content_end,
-        all_cols(),
+        all_cols,
         table_format,
     )
 
