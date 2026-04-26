@@ -81,6 +81,14 @@ function _excel__write_table!(
 
     # == Iterator Setup ====================================================================
 
+    # Process horizontal_lines_at_data_rows into an iterable of row indices, mirroring
+    # the Typst backend's Union{Symbol, Vector{Int}} handling.
+    horizontal_lines_at_data_rows = if table_format.horizontal_lines_at_data_rows isa Symbol
+        table_format.horizontal_lines_at_data_rows == :all ? (1:typemax(Int)) : (1:0)
+    else
+        table_format.horizontal_lines_at_data_rows::Vector{Int}
+    end
+
     ps     = PrintingTableState()
     action = :initialize
 
@@ -117,14 +125,11 @@ function _excel__write_table!(
                 first_content_row = current_row + anchor_row_offset
             end
 
-            if rs == :data
-                hlines = table_format.horizontal_lines_at_data_rows
-                if hlines === true || (hlines isa Vector{Int} && ps.i ∈ hlines)
-                    XLSX.setBorder(
-                        sheet, current_row + anchor_row_offset, all_cols();
-                        bottom = table_format.borders.middle_line,
-                    )
-                end
+            if rs == :data && ps.i ∈ horizontal_lines_at_data_rows
+                XLSX.setBorder(
+                    sheet, current_row + anchor_row_offset, all_cols();
+                    bottom = table_format.borders.middle_line,
+                )
 
             elseif rs == :table_footer && next_action == :footnote
                 if footnote_start_row == 0
