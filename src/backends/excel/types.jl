@@ -180,9 +180,8 @@ end. All fields are `Vector{ExcelPair}` compatible with the `XLSX.setBorder` fun
 
 - `top_line::Vector{ExcelPair}`: Style for the top border of the table.
     (**Default**: `["style" => "thick", "color" => "Black"]`)
-- `header_line::Vector{ExcelPair}`: Style for section-separating horizontal lines (title
-    underline, header underline, group over/underlines, summary underline, footnote
-    underline, table underline).
+- `header_line::Vector{ExcelPair}`: Style for section-separating horizontal lines (header
+    underline, group over/underlines, summary underline, table underline).
     (**Default**: `["style" => "thin", "color" => "Black"]`)
 - `merged_header_cell_line::Vector{ExcelPair}`: Style for the line below merged header
     cells.
@@ -234,48 +233,46 @@ Define the table borders that will be used to form the Excel table.
 # Fields
 
 - `borders::ExcelTableBorders`: Border style configuration for all line types.
-- `horizontal_line_at_beginning::Bool`: Whether to draw a horizontal line at the beginning
-    (top) of the table.
-- `horizontal_line_after_title::Union{Nothing,Bool}`: Whether to draw a line under the
-    title/subtitle section.
-- `horizontal_line_after_column_labels::Union{Nothing,Bool}`: Whether to draw a line under
-    the column header section.
-- `horizontal_line_between_column_labels::Union{Nothing,Bool}`: Whether to draw a line
-    between (unmerged) column header rows.
-- `horizontal_line_at_merged_column_labels::Union{Nothing,Bool}`: Whether to draw a line
-    under merged column headers.
-- `horizontal_lines_at_data_rows::Union{Nothing,Bool}`: Whether to draw a line under each
-    data row.
-- `horizontal_line_after_data_rows::Union{Nothing,Bool}`: Whether to draw a line under the
-    data table section.
-- `horizontal_line_before_row_group_label::Union{Nothing,Bool}`: Whether to draw a line
-    above each row group divider.
-- `horizontal_line_after_row_group_label::Union{Nothing,Bool}`: Whether to draw a line
-    below each row group divider.
-- `horizontal_line_before_summary_rows::Union{Nothing,Bool}`: Whether to draw a line under
-    each summary row (between multiple summary rows).
-- `horizontal_line_after_summary_rows::Union{Nothing,Bool}`: Whether to draw a line under
-    the last summary row.
-- `horizontal_line_after_footnotes::Union{Nothing,Bool}`: Whether to draw a line under the
-    footnotes section.
-- `vertical_line_at_beginning::Bool`: Whether to draw a vertical line at the beginning
-    (left) of the table.
-- `vertical_line_after_row_number_column::Union{Nothing,Bool}`: Whether to draw a vertical
-    line to the right of the row number column.
-- `vertical_line_after_row_label_column::Union{Nothing,Bool}`: Whether to draw a vertical
-    line to the right of the row label column.
-- `vertical_lines_at_data_columns::Union{Nothing,Bool}`: Whether to draw vertical lines
-    between data columns.
+- `horizontal_line_at_beginning::Bool`: Whether to draw a horizontal line at the first
+    table row after the title/subtitle section (i.e., the top of the column labels or
+    the first data row if there are no column labels). Title and subtitle rows are never
+    bordered.
+- `horizontal_line_after_column_labels::Bool`: Whether to draw a line under the column
+    header section.
+- `horizontal_line_between_column_labels::Bool`: Whether to draw a line between (unmerged)
+    column header rows.
+- `horizontal_line_at_merged_column_labels::Bool`: Whether to draw a line under merged
+    column headers.
+- `horizontal_lines_at_data_rows::Bool`: Whether to draw a line under each data row.
+- `horizontal_line_after_data_rows::Bool`: Whether to draw a line under the data table
+    section.
+- `horizontal_line_before_row_group_label::Bool`: Whether to draw a line above each row
+    group divider.
+- `horizontal_line_after_row_group_label::Bool`: Whether to draw a line below each row
+    group divider.
+- `horizontal_line_before_summary_rows::Bool`: Whether to draw a line under each summary
+    row (between multiple summary rows).
+- `horizontal_line_after_summary_rows::Bool`: Whether to draw a line under the last
+    summary row.
+- `vertical_line_at_beginning::Bool`: Whether to draw a vertical line at the left side of
+    the table (spanning only the content rows, not title/subtitle or footnotes).
+- `vertical_line_after_row_number_column::Bool`: Whether to draw a vertical line to the
+    right of the row number column.
+- `vertical_line_after_row_label_column::Bool`: Whether to draw a vertical line to the
+    right of the row label column.
+- `vertical_lines_at_data_columns::Bool`: Whether to draw vertical lines between data
+    columns.
 - `vertical_line_after_data_columns::Bool`: Whether to draw a vertical line after the last
-    data column (right side of the table).
+    data column (spanning only the content rows, not title/subtitle or footnotes).
 
 # Remarks
 
 Border placement is controlled by the boolean fields above. Border styles (line thickness,
 color) are configured via the `borders::ExcelTableBorders` field.
 
-The `horizontal_line_after_title` border is drawn under the subtitle row (if provided) or
-under the title row when there is no subtitle.
+Title, subtitle, footnotes, and source notes are never bordered. The outer left, right, and
+top borders apply only to the content area (column labels through the last data/summary
+row).
 
 Three predefined `NamedTuple` presets override specific fields from the default:
 - `EXCEL_FORMAT_NO_VLINES`: No vertical lines.
@@ -315,7 +312,6 @@ table_format = ExcelTableFormat(;
     borders::ExcelTableBorders = ExcelTableBorders()
     # Horizontal lines
     horizontal_line_at_beginning::Bool            = true
-    horizontal_line_after_title::Bool             = true
     horizontal_line_after_column_labels::Bool     = true
     horizontal_line_between_column_labels::Bool   = true
     horizontal_line_at_merged_column_labels::Bool = true
@@ -325,7 +321,6 @@ table_format = ExcelTableFormat(;
     horizontal_line_after_row_group_label::Bool   = true
     horizontal_line_before_summary_rows::Bool     = true
     horizontal_line_after_summary_rows::Bool      = true
-    horizontal_line_after_footnotes::Bool         = true
     # Vertical lines
     vertical_line_at_beginning::Bool              = true
     vertical_line_after_row_number_column::Bool   = true

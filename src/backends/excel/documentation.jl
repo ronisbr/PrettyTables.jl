@@ -149,8 +149,9 @@ look.
 ### Placement fields (`ExcelTableFormat`)
 
 - `borders::ExcelTableBorders`: Border style configuration (see below).
-- `horizontal_line_at_beginning::Bool`: Draw a horizontal line at the top of the table.
-- `horizontal_line_after_title::Bool`: Draw a line under the title/subtitle section.
+- `horizontal_line_at_beginning::Bool`: Draw a horizontal line at the first table row
+  after the title/subtitle section (i.e., the top of the column labels or the first data
+  row). Title and subtitle rows are never bordered.
 - `horizontal_line_after_column_labels::Bool`: Draw a line under the column header section.
 - `horizontal_line_between_column_labels::Bool`: Draw a line between column header rows.
 - `horizontal_line_at_merged_column_labels::Bool`: Draw a line under merged column headers.
@@ -160,15 +161,16 @@ look.
 - `horizontal_line_after_row_group_label::Bool`: Draw a line below each row group divider.
 - `horizontal_line_before_summary_rows::Bool`: Draw a line between consecutive summary rows.
 - `horizontal_line_after_summary_rows::Bool`: Draw a line under the last summary row.
-- `horizontal_line_after_footnotes::Bool`: Draw a line under the footnotes section.
-- `vertical_line_at_beginning::Bool`: Draw a vertical line on the left side of the table.
+- `vertical_line_at_beginning::Bool`: Draw a vertical line on the left side of the content
+  area (excludes title/subtitle and footnotes).
 - `vertical_line_after_row_number_column::Bool`: Draw a vertical line after the row number column.
 - `vertical_line_after_row_label_column::Bool`: Draw a vertical line after the row label column.
 - `vertical_lines_at_data_columns::Bool`: Draw vertical lines between data columns.
-- `vertical_line_after_data_columns::Bool`: Draw a vertical line on the right side of the table.
+- `vertical_line_after_data_columns::Bool`: Draw a vertical line on the right side of the
+  content area (excludes title/subtitle and footnotes).
 
-The `horizontal_line_after_title` border is drawn under the subtitle row (if any) or
-under the title row when there is no subtitle.
+Title, subtitle, footnotes, and source notes are never bordered. All outer borders apply
+only to the content area (column labels through the last data/summary row).
 
 ### Style fields (`ExcelTableBorders`)
 
@@ -176,8 +178,8 @@ Border styles are specified using an [`ExcelTableBorders`](@ref) object with the
 
 **Horizontal lines:**
 - `top_line`: Top of the outside border (default: thick black).
-- `header_line`: Section-separator lines — title underline, header underline, group
-  over/underlines, summary underline, table underline, footnote underline (default: thin black).
+- `header_line`: Section-separator lines — header underline, group over/underlines,
+  summary underline, table underline (default: thin black).
 - `merged_header_cell_line`: Line below merged header cells (default: thin black).
 - `middle_line`: Within-section lines — data row underlines, summary row underlines,
   between-header lines, and vertical lines between data columns (default: dotted black).

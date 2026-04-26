@@ -144,13 +144,8 @@ function _excel__write_table!(
                 current_row += 1
                 max_row_height[current_row] = 0.0
 
-                # Ensure cells exist before setting a border on the blank row.
+                # Ensure cells exist before any formatting on the blank row.
                 _excel__unempty_row!(sheet, current_row + anchor_row_offset, all_cols())
-
-                _excel__try_border!(
-                    sheet, current_row + anchor_row_offset, all_cols(),
-                    table_format, "horizontal_line_after_title", table_format.borders.header_line, :bottom,
-                )
 
             elseif rs == :column_labels && next_rs != :column_labels
                 _excel__try_border!(
@@ -529,10 +524,12 @@ function _excel__write_table!(
         end
     end
 
-    # Outside border around the full table.
+    # Outer borders span only the content area (excludes title/subtitle and footnotes).
+    content_start = first_content_row > 0 ? first_content_row : 1 + anchor_row_offset
+    content_end   = last_written_row   > 0 ? last_written_row  : current_row + anchor_row_offset - 1
     _excel__try_outer_borders!(
         sheet,
-        1 + anchor_row_offset : current_row + anchor_row_offset - 1,
+        content_start : content_end,
         all_cols(),
         table_format,
     )
