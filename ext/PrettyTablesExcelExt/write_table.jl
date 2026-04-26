@@ -98,11 +98,8 @@ function _excel__write_table!(
     current_row = 1  # internal row counter (relative to the table, not the sheet)
 
     # Tracking variables used for post-loop operations and section transitions.
-    first_content_row  = 0      # absolute sheet row of first non-header row
-    last_written_row   = 0      # absolute sheet row of last data/summary row
-    footnote_start_row = 0      # absolute sheet row of first footnote
-    footnote_end_row   = 0      # absolute sheet row of last footnote
-    in_footnotes       = false
+    first_content_row = 0      # absolute sheet row of first non-header row
+    last_written_row  = 0      # absolute sheet row of last data/summary row
 
     # Shared column range expression (reused in many setBorder/unempty calls).
     all_cols(offset = 0) = 1 + anchor_col_offset : num_cols + col_offset + anchor_col_offset + offset
@@ -134,11 +131,6 @@ function _excel__write_table!(
                     bottom = table_format.borders.middle_line,
                 )
 
-            elseif rs == :table_footer && next_action == :footnote
-                if footnote_start_row == 0
-                    footnote_start_row = current_row + anchor_row_offset
-                end
-                in_footnotes = true
             end
 
         # == End Row ===================================================================
@@ -203,24 +195,6 @@ function _excel__write_table!(
                 )
             end
 
-            # Finalize footnotes when the last footnote row ends.
-            if in_footnotes &&
-               !isnothing(table_data.footnotes) &&
-               ps.i >= length(table_data.footnotes)
-                footnote_end_row = current_row + anchor_row_offset
-                _excel__finalize_footnotes!(
-                    sheet,
-                    table_data,
-                    table_format,
-                    style,
-                    footnote_start_row,
-                    footnote_end_row,
-                    anchor_col_offset,
-                    col_offset,
-                    num_cols,
-                )
-                in_footnotes = false
-            end
 
             current_row += 1
 
