@@ -161,5 +161,36 @@
     # Last row: only thick outer bottom, no dotted.
     @test XLSX.getBorder(r, "A4").border["bottom"] == Dict("style" => "thick", "rgb" => "FF000000")
 
+    # Vector{Int} for vertical_lines_at_data_columns: only after columns 1 and 3.
+    # Table has 4 data columns (A=col1, B=col2, C=col3, D=col4).
+    result = pretty_table(
+        XLSX.XLSXFile,
+        [1 2 3 4; 5 6 7 8];
+        table_format = ExcelTableFormat(vertical_lines_at_data_columns = [1, 3]),
+    )
+
+    r = result[1]
+
+    # Column 1: right border drawn (1 ∈ [1, 3]).
+    @test XLSX.getBorder(r, "A1").border["right"] == Dict("style" => "dotted", "rgb" => "FF000000")
+    # Column 2: no right border (2 ∉ [1, 3]).
+    @test XLSX.getBorder(r, "B1").border["right"] === nothing
+    # Column 3: right border drawn (3 ∈ [1, 3]).
+    @test XLSX.getBorder(r, "C1").border["right"] == Dict("style" => "dotted", "rgb" => "FF000000")
+    # Column 4: last column — no vertical_lines_at_data_columns border (ps.j < num_cols guard).
+    @test XLSX.getBorder(r, "D1").border["right"] == Dict("style" => "thick",  "rgb" => "FF000000")
+
+    # :none → no column dividers at all.
+    result = pretty_table(
+        XLSX.XLSXFile,
+        [1 2 3; 4 5 6];
+        table_format = ExcelTableFormat(vertical_lines_at_data_columns = :none),
+    )
+
+    r = result[1]
+
+    @test XLSX.getBorder(r, "A1").border["right"] === nothing
+    @test XLSX.getBorder(r, "B1").border["right"] === nothing
+
 end
 

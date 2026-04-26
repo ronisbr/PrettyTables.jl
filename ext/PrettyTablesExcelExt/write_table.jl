@@ -81,12 +81,18 @@ function _excel__write_table!(
 
     # == Iterator Setup ====================================================================
 
-    # Process horizontal_lines_at_data_rows into an iterable of row indices, mirroring
-    # the Typst backend's Union{Symbol, Vector{Int}} handling.
+    # Preprocess Union{Symbol,Vector{Int}} fields into concrete index iterables,
+    # mirroring the Typst backend's handling.
     horizontal_lines_at_data_rows = if table_format.horizontal_lines_at_data_rows isa Symbol
         table_format.horizontal_lines_at_data_rows == :all ? (1:typemax(Int)) : (1:0)
     else
         table_format.horizontal_lines_at_data_rows::Vector{Int}
+    end
+
+    vertical_lines_at_data_columns = if table_format.vertical_lines_at_data_columns isa Symbol
+        table_format.vertical_lines_at_data_columns == :all ? (1:typemax(Int)) : (1:0)
+    else
+        table_format.vertical_lines_at_data_columns::Vector{Int}
     end
 
     ps     = PrintingTableState()
@@ -295,10 +301,10 @@ function _excel__write_table!(
                         sheet, sheet_row, excel_col : excel_col + span - 1,
                         table_format, "horizontal_line_at_merged_column_labels", table_format.borders.merged_header_cell_line, :bottom,
                     )
-                    if ps.j + span - 1 < num_cols
-                        _excel__try_border!(
-                            sheet, sheet_row, excel_col + span - 1,
-                            table_format, "vertical_lines_at_data_columns", table_format.borders.middle_line, :right,
+                    if ps.j + span - 1 < num_cols && (ps.j + span - 1) ∈ vertical_lines_at_data_columns
+                        XLSX.setBorder(
+                            sheet, sheet_row, excel_col + span - 1;
+                            right = table_format.borders.middle_line,
                         )
                     end
 
@@ -319,10 +325,10 @@ function _excel__write_table!(
                         max_col_length[ps.j + col_offset], col_length,
                     )
 
-                    if ps.j < num_cols
-                        _excel__try_border!(
-                            sheet, sheet_row, excel_col,
-                            table_format, "vertical_lines_at_data_columns", table_format.borders.middle_line, :right,
+                    if ps.j < num_cols && ps.j ∈ vertical_lines_at_data_columns
+                        XLSX.setBorder(
+                            sheet, sheet_row, excel_col;
+                            right = table_format.borders.middle_line,
                         )
                     end
                     if ps.i < length(table_data.column_labels)
@@ -425,10 +431,10 @@ function _excel__write_table!(
                         break
                     end
                 end
-                if ps.j < num_cols
-                    _excel__try_border!(
-                        sheet, sheet_row, excel_col,
-                        table_format, "vertical_lines_at_data_columns", table_format.borders.middle_line, :right,
+                if ps.j < num_cols && ps.j ∈ vertical_lines_at_data_columns
+                    XLSX.setBorder(
+                        sheet, sheet_row, excel_col;
+                        right = table_format.borders.middle_line,
                     )
                 end
                 row_height, col_length = _excel__cell_length_and_height(formatted_value, fontsize)
@@ -482,10 +488,10 @@ function _excel__write_table!(
                         break
                     end
                 end
-                if ps.j < num_cols
-                    _excel__try_border!(
-                        sheet, sheet_row, excel_col,
-                        table_format, "vertical_lines_at_data_columns", table_format.borders.middle_line, :right,
+                if ps.j < num_cols && ps.j ∈ vertical_lines_at_data_columns
+                    XLSX.setBorder(
+                        sheet, sheet_row, excel_col;
+                        right = table_format.borders.middle_line,
                     )
                 end
                 row_height, col_length = _excel__cell_length_and_height(formatted_value, fontsize)

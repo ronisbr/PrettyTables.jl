@@ -177,7 +177,9 @@ look.
   area (excludes title/subtitle and footnotes).
 - `vertical_line_after_row_number_column::Bool`: Draw a vertical line after the row number column.
 - `vertical_line_after_row_label_column::Bool`: Draw a vertical line after the row label column.
-- `vertical_lines_at_data_columns::Bool`: Draw vertical lines between data columns.
+- `vertical_lines_at_data_columns::Union{Symbol, Vector{Int}}`: Draw dividers between data
+  columns. `:all` draws after every column, `:none` draws none, a `Vector{Int}` draws only
+  after the specified column indices (e.g., `[1, 3]` draws after columns 1 and 3).
 - `vertical_line_after_data_columns::Bool`: Draw a vertical line on the right side of the
   content area (excludes title/subtitle and footnotes).
 

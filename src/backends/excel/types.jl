@@ -262,8 +262,9 @@ Define the table borders that will be used to form the Excel table.
     right of the row number column.
 - `vertical_line_after_row_label_column::Bool`: Whether to draw a vertical line to the
     right of the row label column.
-- `vertical_lines_at_data_columns::Bool`: Whether to draw vertical lines between data
-    columns.
+- `vertical_lines_at_data_columns::Union{Symbol, Vector{Int}}`: Controls which data columns
+    get a right-side divider. `:all` draws after every data column; `:none` draws none; a
+    `Vector{Int}` draws only after the listed column indices.
 - `vertical_line_after_data_columns::Bool`: Whether to draw a vertical line after the last
     data column (spanning only the content rows, not title/subtitle or footnotes).
 
@@ -327,14 +328,14 @@ table_format = ExcelTableFormat(;
     vertical_line_at_beginning::Bool              = true
     vertical_line_after_row_number_column::Bool   = true
     vertical_line_after_row_label_column::Bool    = true
-    vertical_lines_at_data_columns::Bool          = true
+    vertical_lines_at_data_columns::Union{Symbol, Vector{Int}} = :all
     vertical_line_after_data_columns::Bool        = true
 end
 
 const EXCEL_FORMAT_NO_VLINES = (
     vertical_line_after_row_number_column = false,
     vertical_line_after_row_label_column  = false,
-    vertical_lines_at_data_columns        = false,
+    vertical_lines_at_data_columns        = :none,
 )
 
 const EXCEL_FORMAT_NO_CELL_LINES = (
