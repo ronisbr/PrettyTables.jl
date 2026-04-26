@@ -515,30 +515,36 @@ function _excel__try_border!(
 end
 
 """
-    _excel__try_outside_border!(
+    _excel__try_outer_borders!(
         sheet::XLSX.Worksheet,
         rows::AbstractRange,
         cols::AbstractRange,
         table_format::ExcelTableFormat
     ) -> Nothing
 
-Draw the outside border around `rows`×`cols` using the four outer line styles from
-`table_format.borders`, but only when `outside_border` is enabled.
+Draw the outer horizontal and vertical borders around `rows`×`cols` using the outer line
+styles from `table_format.borders`, controlled by `horizontal_line_at_beginning`,
+`vertical_line_at_beginning`, and `vertical_line_after_data_columns`.
 """
-function _excel__try_outside_border!(
+function _excel__try_outer_borders!(
     sheet::XLSX.Worksheet,
     rows::AbstractRange,
     cols::AbstractRange,
     table_format::ExcelTableFormat,
 )
-    _excel__check_table_format("outside_border", table_format.outside_border) || return
-
     b = table_format.borders
 
-    XLSX.setBorder(sheet, first(rows), cols;        top    = b.top_line)
-    XLSX.setBorder(sheet, last(rows),  cols;        bottom = b.bottom_line)
-    XLSX.setBorder(sheet, rows,        first(cols); left   = b.left_line)
-    XLSX.setBorder(sheet, rows,        last(cols);  right  = b.right_line)
+    if table_format.horizontal_line_at_beginning
+        XLSX.setBorder(sheet, first(rows), cols; top = b.top_line)
+    end
+
+    if table_format.vertical_line_at_beginning
+        XLSX.setBorder(sheet, rows, first(cols); left = b.left_line)
+    end
+
+    if table_format.vertical_line_after_data_columns
+        XLSX.setBorder(sheet, rows, last(cols); right = b.right_line)
+    end
 
     return nothing
 end

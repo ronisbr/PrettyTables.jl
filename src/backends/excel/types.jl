@@ -234,44 +234,48 @@ Define the table borders that will be used to form the Excel table.
 # Fields
 
 - `borders::ExcelTableBorders`: Border style configuration for all line types.
-- `outside_border::Bool`: Whether to draw a border around the entire table.
-- `underline_title::Union{Nothing,Bool}`: Whether to draw a line under the title/subtitle
-    section.
-- `underline_headers::Union{Nothing,Bool}`: Whether to draw a line under the column header
-    section.
-- `underline_between_headers::Union{Nothing,Bool}`: Whether to draw a line between
-    (unmerged) column header rows.
-- `underline_merged_headers::Union{Nothing,Bool}`: Whether to draw a line under merged
-    column headers.
-- `underline_data_rows::Union{Nothing,Bool}`: Whether to draw a line under each data row.
-- `underline_table::Union{Nothing,Bool}`: Whether to draw a line under the data table
-    section.
-- `overline_group::Union{Nothing,Bool}`: Whether to draw a line above each row group
-    divider.
-- `underline_group::Union{Nothing,Bool}`: Whether to draw a line below each row group
-    divider.
-- `underline_summary_rows::Union{Nothing,Bool}`: Whether to draw a line under each summary
-    row (between multiple summary rows).
-- `underline_summary::Union{Nothing,Bool}`: Whether to draw a line under the last summary
-    row.
-- `underline_footnotes::Union{Nothing,Bool}`: Whether to draw a line under the footnotes
-    section.
-- `vline_after_row_numbers::Union{Nothing,Bool}`: Whether to draw a vertical line to the
-    right of the row number column.
-- `vline_after_row_labels::Union{Nothing,Bool}`: Whether to draw a vertical line to the
-    right of the row label column.
-- `vline_between_data_columns::Union{Nothing,Bool}`: Whether to draw vertical lines
+- `horizontal_line_at_beginning::Bool`: Whether to draw a horizontal line at the beginning
+    (top) of the table.
+- `horizontal_line_after_title::Union{Nothing,Bool}`: Whether to draw a line under the
+    title/subtitle section.
+- `horizontal_line_after_column_labels::Union{Nothing,Bool}`: Whether to draw a line under
+    the column header section.
+- `horizontal_line_between_column_labels::Union{Nothing,Bool}`: Whether to draw a line
+    between (unmerged) column header rows.
+- `horizontal_line_at_merged_column_labels::Union{Nothing,Bool}`: Whether to draw a line
+    under merged column headers.
+- `horizontal_lines_at_data_rows::Union{Nothing,Bool}`: Whether to draw a line under each
+    data row.
+- `horizontal_line_after_data_rows::Union{Nothing,Bool}`: Whether to draw a line under the
+    data table section.
+- `horizontal_line_before_row_group_label::Union{Nothing,Bool}`: Whether to draw a line
+    above each row group divider.
+- `horizontal_line_after_row_group_label::Union{Nothing,Bool}`: Whether to draw a line
+    below each row group divider.
+- `horizontal_line_before_summary_rows::Union{Nothing,Bool}`: Whether to draw a line under
+    each summary row (between multiple summary rows).
+- `horizontal_line_after_summary_rows::Union{Nothing,Bool}`: Whether to draw a line under
+    the last summary row.
+- `horizontal_line_after_footnotes::Union{Nothing,Bool}`: Whether to draw a line under the
+    footnotes section.
+- `vertical_line_at_beginning::Bool`: Whether to draw a vertical line at the beginning
+    (left) of the table.
+- `vertical_line_after_row_number_column::Union{Nothing,Bool}`: Whether to draw a vertical
+    line to the right of the row number column.
+- `vertical_line_after_row_label_column::Union{Nothing,Bool}`: Whether to draw a vertical
+    line to the right of the row label column.
+- `vertical_lines_at_data_columns::Union{Nothing,Bool}`: Whether to draw vertical lines
     between data columns.
+- `vertical_line_after_data_columns::Bool`: Whether to draw a vertical line after the last
+    data column (right side of the table).
 
 # Remarks
 
 Border placement is controlled by the boolean fields above. Border styles (line thickness,
-color) are configured via the `borders::ExcelTableBorders` field. The `underline` and
-`overline` fields specify the bottom and top cell borders respectively; `vline` fields
-specify right-hand-side borders.
+color) are configured via the `borders::ExcelTableBorders` field.
 
-The `underline_title` border is drawn under the subtitle row (if provided) or under the
-title row when there is no subtitle.
+The `horizontal_line_after_title` border is drawn under the subtitle row (if provided) or
+under the title row when there is no subtitle.
 
 Four predefined formats are provided:
 - `DEFAULT_EXCEL_TABLE_FORMAT`: All borders enabled; outside border is thick, section
@@ -305,61 +309,67 @@ table_format = ExcelTableFormat(
 
 """
 @kwdef struct ExcelTableFormat
-    borders::ExcelTableBorders          = ExcelTableBorders()
-    outside_border::Bool                = true
-    underline_title::Union{Nothing, Bool} = nothing
-    underline_headers::Union{Nothing, Bool} = nothing
-    underline_between_headers::Union{Nothing, Bool} = nothing
-    underline_merged_headers::Union{Nothing, Bool} = nothing
-    underline_data_rows::Union{Nothing, Bool} = nothing
-    underline_table::Union{Nothing, Bool} = nothing
-    overline_group::Union{Nothing, Bool} = nothing
-    underline_group::Union{Nothing, Bool} = nothing
-    underline_summary_rows::Union{Nothing, Bool} = nothing
-    underline_summary::Union{Nothing, Bool} = nothing
-    underline_footnotes::Union{Nothing, Bool} = nothing
-    vline_after_row_numbers::Union{Nothing, Bool} = nothing
-    vline_after_row_labels::Union{Nothing, Bool} = nothing
-    vline_between_data_columns::Union{Nothing, Bool} = nothing
+    borders::ExcelTableBorders = ExcelTableBorders()
+    # Horizontal lines
+    horizontal_line_at_beginning::Bool                          = true
+    horizontal_line_after_title::Union{Nothing, Bool}           = nothing
+    horizontal_line_after_column_labels::Union{Nothing, Bool}   = nothing
+    horizontal_line_between_column_labels::Union{Nothing, Bool} = nothing
+    horizontal_line_at_merged_column_labels::Union{Nothing, Bool} = nothing
+    horizontal_lines_at_data_rows::Union{Nothing, Bool}         = nothing
+    horizontal_line_after_data_rows::Union{Nothing, Bool}       = nothing
+    horizontal_line_before_row_group_label::Union{Nothing, Bool} = nothing
+    horizontal_line_after_row_group_label::Union{Nothing, Bool} = nothing
+    horizontal_line_before_summary_rows::Union{Nothing, Bool}   = nothing
+    horizontal_line_after_summary_rows::Union{Nothing, Bool}    = nothing
+    horizontal_line_after_footnotes::Union{Nothing, Bool}       = nothing
+    # Vertical lines
+    vertical_line_at_beginning::Bool                            = true
+    vertical_line_after_row_number_column::Union{Nothing, Bool} = nothing
+    vertical_line_after_row_label_column::Union{Nothing, Bool}  = nothing
+    vertical_lines_at_data_columns::Union{Nothing, Bool}        = nothing
+    vertical_line_after_data_columns::Bool                      = true
 end
 
 const DEFAULT_EXCEL_TABLE_FORMAT = ExcelTableFormat(
-    ExcelTableBorders(), # borders
-    true,                # outside_border
-    true,                # underline_title
-    true,                # underline_headers
-    true,                # underline_between_headers
-    true,                # underline_merged_headers
-    true,                # underline_data_rows
-    true,                # underline_table
-    true,                # overline_group
-    true,                # underline_group
-    true,                # underline_summary_rows
-    true,                # underline_summary
-    true,                # underline_footnotes
-    true,                # vline_after_row_numbers
-    true,                # vline_after_row_labels
-    true,                # vline_between_data_columns
+    borders                              = ExcelTableBorders(),
+    horizontal_line_at_beginning         = true,
+    horizontal_line_after_title          = true,
+    horizontal_line_after_column_labels  = true,
+    horizontal_line_between_column_labels = true,
+    horizontal_line_at_merged_column_labels = true,
+    horizontal_lines_at_data_rows        = true,
+    horizontal_line_after_data_rows      = true,
+    horizontal_line_before_row_group_label = true,
+    horizontal_line_after_row_group_label = true,
+    horizontal_line_before_summary_rows  = true,
+    horizontal_line_after_summary_rows   = true,
+    horizontal_line_after_footnotes      = true,
+    vertical_line_at_beginning           = true,
+    vertical_line_after_row_number_column = true,
+    vertical_line_after_row_label_column = true,
+    vertical_lines_at_data_columns       = true,
+    vertical_line_after_data_columns     = true,
 )
 
 const EXCEL_FORMAT_NO_VLINES = ExcelTableFormat(
-    vline_after_row_numbers = false,
-    vline_after_row_labels = false,
-    vline_between_data_columns = false,
+    vertical_line_after_row_number_column = false,
+    vertical_line_after_row_label_column  = false,
+    vertical_lines_at_data_columns        = false,
 )
 
 const EXCEL_FORMAT_NO_CELL_LINES = ExcelTableFormat(
-    underline_data_rows = false,
-    vline_between_data_columns = false,
+    horizontal_lines_at_data_rows  = false,
+    vertical_lines_at_data_columns = false,
 )
 
 const EXCEL_FORMAT_SECTION_LINES = ExcelTableFormat(
-    underline_data_rows = false,
-    overline_group = false,
-    underline_group = false,
-    underline_summary_rows = false,
-    vline_between_data_columns = false,
-    vline_after_row_numbers = false,
+    horizontal_lines_at_data_rows          = false,
+    horizontal_line_before_row_group_label = false,
+    horizontal_line_after_row_group_label  = false,
+    horizontal_line_before_summary_rows    = false,
+    vertical_lines_at_data_columns         = false,
+    vertical_line_after_row_number_column  = false,
 )
 
 function _excel__format_merge(a::ExcelTableFormat, b::ExcelTableFormat)
@@ -392,8 +402,8 @@ Example usage:
 table_format = ExcelTableFormat(
     EXCEL_FORMAT_SECTION_LINES,
     EXCEL_FORMAT_NO_VLINES;
-    overline_group = true,
-    underline_group = true,
+    horizontal_line_before_row_group_label = true,
+    horizontal_line_after_row_group_label  = true,
 )
 ```
 

@@ -112,7 +112,7 @@ function _excel__write_table!(
             # Ensure all cells in the row are non-empty before any merges.
             _excel__unempty_row!(sheet, current_row + anchor_row_offset, all_cols())
 
-            # Track first non-header row for vline_after_row_labels calculation.
+            # Track first non-header row for vertical_line_after_row_label_column calculation.
             if first_content_row == 0 && rs != :table_header
                 first_content_row = current_row + anchor_row_offset
             end
@@ -120,7 +120,7 @@ function _excel__write_table!(
             if rs == :data
                 _excel__try_border!(
                     sheet, current_row + anchor_row_offset, all_cols(),
-                    table_format, "underline_data_rows", table_format.borders.middle_line, :bottom,
+                    table_format, "horizontal_lines_at_data_rows", table_format.borders.middle_line, :bottom,
                 )
 
             elseif rs == :table_footer && next_action == :footnote
@@ -149,13 +149,13 @@ function _excel__write_table!(
 
                 _excel__try_border!(
                     sheet, current_row + anchor_row_offset, all_cols(),
-                    table_format, "underline_title", table_format.borders.header_line, :bottom,
+                    table_format, "horizontal_line_after_title", table_format.borders.header_line, :bottom,
                 )
 
             elseif rs == :column_labels && next_rs != :column_labels
                 _excel__try_border!(
                     sheet, current_row + anchor_row_offset, all_cols(),
-                    table_format, "underline_headers", table_format.borders.header_line, :bottom,
+                    table_format, "horizontal_line_after_column_labels", table_format.borders.header_line, :bottom,
                 )
 
             elseif rs ∈ (:data, :continuation_row)
@@ -167,23 +167,23 @@ function _excel__write_table!(
                 if next_rs == :summary_row
                     _excel__try_border!(
                         sheet, current_row + anchor_row_offset, all_cols(),
-                        table_format, "underline_summary_rows", table_format.borders.middle_line, :bottom,
+                        table_format, "horizontal_line_before_summary_rows", table_format.borders.middle_line, :bottom,
                     )
                 else
                     _excel__try_border!(
                         sheet, current_row + anchor_row_offset, all_cols(),
-                        table_format, "underline_summary", table_format.borders.header_line, :bottom,
+                        table_format, "horizontal_line_after_summary_rows", table_format.borders.header_line, :bottom,
                     )
                 end
 
             elseif rs == :row_group_label
                 _excel__try_border!(
                     sheet, current_row + anchor_row_offset, all_cols(),
-                    table_format, "overline_group", table_format.borders.header_line, :top,
+                    table_format, "horizontal_line_before_row_group_label", table_format.borders.header_line, :top,
                 )
                 _excel__try_border!(
                     sheet, current_row + anchor_row_offset, all_cols(),
-                    table_format, "underline_group", table_format.borders.header_line, :bottom,
+                    table_format, "horizontal_line_after_row_group_label", table_format.borders.header_line, :bottom,
                 )
             end
 
@@ -193,7 +193,7 @@ function _excel__write_table!(
                (rs == :summary_row && next_rs ∈ (:table_footer, :end_printing))
                 _excel__try_border!(
                     sheet, current_row + anchor_row_offset, all_cols(),
-                    table_format, "underline_table", table_format.borders.header_line, :bottom,
+                    table_format, "horizontal_line_after_data_rows", table_format.borders.header_line, :bottom,
                 )
             end
 
@@ -290,12 +290,12 @@ function _excel__write_table!(
 
                     _excel__try_border!(
                         sheet, sheet_row, excel_col : excel_col + span - 1,
-                        table_format, "underline_merged_headers", table_format.borders.merged_header_cell_line, :bottom,
+                        table_format, "horizontal_line_at_merged_column_labels", table_format.borders.merged_header_cell_line, :bottom,
                     )
                     if ps.j + span - 1 < num_cols
                         _excel__try_border!(
                             sheet, sheet_row, excel_col + span - 1,
-                            table_format, "vline_between_data_columns", table_format.borders.middle_line, :right,
+                            table_format, "vertical_lines_at_data_columns", table_format.borders.middle_line, :right,
                         )
                     end
 
@@ -319,13 +319,13 @@ function _excel__write_table!(
                     if ps.j < num_cols
                         _excel__try_border!(
                             sheet, sheet_row, excel_col,
-                            table_format, "vline_between_data_columns", table_format.borders.middle_line, :right,
+                            table_format, "vertical_lines_at_data_columns", table_format.borders.middle_line, :right,
                         )
                     end
                     if ps.i < length(table_data.column_labels)
                         _excel__try_border!(
                             sheet, sheet_row, excel_col,
-                            table_format, "underline_between_headers", table_format.borders.middle_line, :bottom,
+                            table_format, "horizontal_line_between_column_labels", table_format.borders.middle_line, :bottom,
                         )
                     end
                 end
@@ -343,7 +343,7 @@ function _excel__write_table!(
                 )
                 _excel__try_border!(
                     sheet, sheet_row, excel_col,
-                    table_format, "vline_after_row_numbers", table_format.borders.center_line, :right,
+                    table_format, "vertical_line_after_row_number_column", table_format.borders.center_line, :right,
                 )
                 row_height, col_length = _excel__cell_length_and_height(label_text, fontsize)
                 max_row_height[current_row] = max(max_row_height[current_row], row_height)
@@ -362,7 +362,7 @@ function _excel__write_table!(
                 )
                 _excel__try_border!(
                     sheet, sheet_row, excel_col,
-                    table_format, "vline_after_row_numbers", table_format.borders.center_line, :right,
+                    table_format, "vertical_line_after_row_number_column", table_format.borders.center_line, :right,
                 )
                 row_height, _ = _excel__cell_length_and_height(val, fontsize)
                 max_row_height[current_row] = max(max_row_height[current_row], row_height)
@@ -425,7 +425,7 @@ function _excel__write_table!(
                 if ps.j < num_cols
                     _excel__try_border!(
                         sheet, sheet_row, excel_col,
-                        table_format, "vline_between_data_columns", table_format.borders.middle_line, :right,
+                        table_format, "vertical_lines_at_data_columns", table_format.borders.middle_line, :right,
                     )
                 end
                 row_height, col_length = _excel__cell_length_and_height(formatted_value, fontsize)
@@ -482,7 +482,7 @@ function _excel__write_table!(
                 if ps.j < num_cols
                     _excel__try_border!(
                         sheet, sheet_row, excel_col,
-                        table_format, "vline_between_data_columns", table_format.borders.middle_line, :right,
+                        table_format, "vertical_lines_at_data_columns", table_format.borders.middle_line, :right,
                     )
                 end
                 row_height, col_length = _excel__cell_length_and_height(formatted_value, fontsize)
@@ -524,13 +524,13 @@ function _excel__write_table!(
         if vline_start <= vline_end
             _excel__try_border!(
                 sheet, vline_start : vline_end, col_offset + anchor_col_offset,
-                table_format, "vline_after_row_labels", table_format.borders.center_line, :right,
+                table_format, "vertical_line_after_row_label_column", table_format.borders.center_line, :right,
             )
         end
     end
 
     # Outside border around the full table.
-    _excel__try_outside_border!(
+    _excel__try_outer_borders!(
         sheet,
         1 + anchor_row_offset : current_row + anchor_row_offset - 1,
         all_cols(),

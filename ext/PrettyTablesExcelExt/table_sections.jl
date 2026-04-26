@@ -115,6 +115,6 @@ function _excel__finalize_footnotes!(
         sheet,
         footnote_end_row,
         1 + anchor_col_offset : num_cols + col_offset + anchor_col_offset,
-        table_format, "underline_footnotes", table_format.borders.header_line, :bottom,
+        table_format, "horizontal_line_after_footnotes", table_format.borders.header_line, :bottom,
     )
 end

@@ -159,25 +159,26 @@ look.
 ### Placement fields (`ExcelTableFormat`)
 
 - `borders::ExcelTableBorders`: Border style configuration.
-- `outside_border::Bool`: Draw a border around the entire table.
-- `underline_title::Bool`: Draw a line under the title/subtitle section.
-- `underline_headers::Bool`: Draw a line under the column header section.
-- `underline_between_headers::Bool`: Draw a line between column header rows.
-- `underline_merged_headers::Bool`: Draw a line under merged column headers.
-- `underline_data_rows::Bool`: Draw a line under each data row.
-- `underline_table::Bool`: Draw a line under the data table section.
-- `overline_group::Bool`: Draw a line above each row group divider.
-- `underline_group::Bool`: Draw a line below each row group divider.
-- `underline_summary_rows::Bool`: Draw a line between consecutive summary rows.
-- `underline_summary::Bool`: Draw a line under the last summary row.
-- `underline_footnotes::Bool`: Draw a line under the footnotes section.
-- `vline_after_row_numbers::Bool`: Draw a vertical line after the row number column.
-- `vline_after_row_labels::Bool`: Draw a vertical line after the row label column.
-- `vline_between_data_columns::Bool`: Draw vertical lines between data columns.
+- `horizontal_line_at_beginning::Bool`: Draw a horizontal line at the top of the table.
+- `horizontal_line_after_title::Bool`: Draw a line under the title/subtitle section.
+- `horizontal_line_after_column_labels::Bool`: Draw a line under the column header section.
+- `horizontal_line_between_column_labels::Bool`: Draw a line between column header rows.
+- `horizontal_line_at_merged_column_labels::Bool`: Draw a line under merged column headers.
+- `horizontal_lines_at_data_rows::Bool`: Draw a line under each data row.
+- `horizontal_line_after_data_rows::Bool`: Draw a line under the data table section.
+- `horizontal_line_before_row_group_label::Bool`: Draw a line above each row group divider.
+- `horizontal_line_after_row_group_label::Bool`: Draw a line below each row group divider.
+- `horizontal_line_before_summary_rows::Bool`: Draw a line between consecutive summary rows.
+- `horizontal_line_after_summary_rows::Bool`: Draw a line under the last summary row.
+- `horizontal_line_after_footnotes::Bool`: Draw a line under the footnotes section.
+- `vertical_line_at_beginning::Bool`: Draw a vertical line on the left side of the table.
+- `vertical_line_after_row_number_column::Bool`: Draw a vertical line after the row number column.
+- `vertical_line_after_row_label_column::Bool`: Draw a vertical line after the row label column.
+- `vertical_lines_at_data_columns::Bool`: Draw vertical lines between data columns.
+- `vertical_line_after_data_columns::Bool`: Draw a vertical line on the right side of the table.
 
-The `underline` and `overline` fields specify bottom and top borders respectively;
-`vline` fields specify right-hand-side borders. The `underline_title` border is drawn
-under the subtitle row (if any) or under the title row when there is no subtitle.
+The `horizontal_line_after_title` border is drawn under the subtitle row (if any) or
+under the title row when there is no subtitle.
 
 ### Style fields (`ExcelTableBorders`)
 

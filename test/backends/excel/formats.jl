@@ -88,8 +88,8 @@
         table_format = ExcelTableFormat(
             EXCEL_FORMAT_SECTION_LINES,
             EXCEL_FORMAT_NO_VLINES;
-            overline_group = true,
-            underline_group = true,
+            horizontal_line_before_row_group_label = true,
+            horizontal_line_after_row_group_label  = true,
             borders = ExcelTableBorders(header_line = ["style" => "double", "color" => "red"]),
         ),
     )

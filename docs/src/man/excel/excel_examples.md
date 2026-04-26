@@ -289,7 +289,9 @@ result = pretty_table(
     row_label_column_alignment = :c,
     row_number_column_alignment = :c,
     table_format = ExcelTableFormat(
-        outside_border = false,
+        horizontal_line_at_beginning     = false,
+        vertical_line_at_beginning       = false,
+        vertical_line_after_data_columns = false,
         borders = ExcelTableBorders(
             top_line                = ["style" => "thick", "color" => "white"],
             header_line             = ["style" => "thick", "color" => "white"],
