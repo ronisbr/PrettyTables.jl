@@ -16,16 +16,18 @@ export EXCEL_FORMAT_NO_VLINES, EXCEL_FORMAT_NO_CELL_LINES, EXCEL_FORMAT_SECTION_
 const ExcelPair = Pair{String, String}
 
 # Create some default table style definitions to reduce allocations.
-const _EXCEL__NO_DECORATION = ExcelPair[]
-const _EXCEL__BOLD = ["bold" => "true"]
-const _EXCEL__NAME = ["name" => "Calibri"]
-const _EXCEL__ITALIC = ["italic" => "true"]
-const _EXCEL__XLARGE_BOLD = ["size" => "18", "bold" => "true"]
-const _EXCEL__LARGE_ITALIC = ["size" => "14", "italic" => "true"]
-const _EXCEL__SMALL = ["size" => "10"]
-const _EXCEL__SMALL_ITALIC = ["size" => "10", "italic" => "true"]
-const _EXCEL__SMALL_ITALIC_GRAY = ["color" => "gray", "size" => "10", "italic" => "true"]
-#const _EXCEL__MERGED_CELL = ["color" => "black"]
+const _EXCEL__NO_DECORATION     = ExcelPair[]
+const _EXCEL__BOLD              = ["bold"   => "true"]
+const _EXCEL__ITALIC            = ["italic" => "true"]
+const _EXCEL__XLARGE_BOLD       = ["size"   => "18", "bold"   => "true"]
+const _EXCEL__LARGE_ITALIC      = ["size"   => "14", "italic" => "true"]
+const _EXCEL__SMALL             = ["size"   => "10"]
+const _EXCEL__SMALL_ITALIC      = ["size"   => "10", "italic" => "true"]
+const _EXCEL__SMALL_ITALIC_GRAY = ["color"  => "gray", "size" => "10", "italic" => "true"]
+
+const _EXCEL__MEDIUM_BORDER     = ["style" => "medium", "color" => "Black"]
+const _EXCEL__THICK_BORDER      = ["style" => "thick", "color" => "Black"]
+const _EXCEL__THIN_BORDER       = ["style" => "thin",  "color" => "Black"]
 
 ############################################################################################
 #                                       Highlighters                                       #
@@ -77,7 +79,6 @@ highlighters = [
     ),
 ]
 ```
-
 """
 struct ExcelHighlighter
     f::Function
@@ -206,17 +207,17 @@ end. All fields are `Vector{ExcelPair}` compatible with the `XLSX.setBorder` fun
 @kwdef struct ExcelTableBorders
     # == Horizontal Lines ==================================================================
 
-    top_line::Vector{ExcelPair}                = ExcelPair["style" => "thick",  "color" => "Black"]
-    header_line::Vector{ExcelPair}             = ExcelPair["style" => "thin",   "color" => "Black"]
-    merged_header_cell_line::Vector{ExcelPair} = ExcelPair["style" => "thin",   "color" => "Black"]
-    middle_line::Vector{ExcelPair}             = ExcelPair["style" => "dotted", "color" => "Black"]
-    bottom_line::Vector{ExcelPair}             = ExcelPair["style" => "thick",  "color" => "Black"]
+    top_line::Vector{ExcelPair}                = _EXCEL__THICK_BORDER
+    header_line::Vector{ExcelPair}             = _EXCEL__MEDIUM_BORDER
+    merged_header_cell_line::Vector{ExcelPair} = _EXCEL__THIN_BORDER
+    middle_line::Vector{ExcelPair}             = _EXCEL__THIN_BORDER
+    bottom_line::Vector{ExcelPair}             = _EXCEL__THICK_BORDER
 
     # == Vertical Lines ====================================================================
 
-    left_line::Vector{ExcelPair}               = ExcelPair["style" => "thick",  "color" => "Black"]
-    center_line::Vector{ExcelPair}             = ExcelPair["style" => "thin",   "color" => "Black"]
-    right_line::Vector{ExcelPair}              = ExcelPair["style" => "thick",  "color" => "Black"]
+    left_line::Vector{ExcelPair}               = _EXCEL__THICK_BORDER
+    center_line::Vector{ExcelPair}             = _EXCEL__THIN_BORDER
+    right_line::Vector{ExcelPair}              = _EXCEL__THICK_BORDER
 end
 
 ############################################################################################
