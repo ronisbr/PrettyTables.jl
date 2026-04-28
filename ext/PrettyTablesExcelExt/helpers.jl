@@ -472,37 +472,6 @@ function _excel__compute_col_offset(table_data::TableData)
 end
 
 """
-    _excel__try_border!(
-        sheet::XLSX.Worksheet,
-        rows::Any,
-        cols::Any,
-        table_format::ExcelTableFormat,
-        property::AbstractString,
-        border_style::Vector{ExcelPair},
-        side::Symbol
-    ) -> Nothing
-
-Apply a border on `sheet` at `rows`×`cols` using `border_style`, but only when the
-boolean field `property` in `table_format` is enabled. `side` is the keyword passed to
-`XLSX.setBorder` (e.g. `:bottom`).
-"""
-function _excel__try_border!(
-    sheet::XLSX.Worksheet,
-    rows::Any,
-    cols::Any,
-    table_format::ExcelTableFormat,
-    property::AbstractString,
-    border_style::Vector{ExcelPair},
-    side::Symbol,
-)
-    getproperty(table_format, Symbol(property)) || return
-
-    XLSX.setBorder(sheet, rows, cols; Dict(side => border_style)...)
-
-    return nothing
-end
-
-"""
     _excel__try_outer_borders!(
         sheet::XLSX.Worksheet,
         rows::AbstractRange,
