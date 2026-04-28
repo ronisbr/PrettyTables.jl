@@ -97,202 +97,6 @@ end
 _excel__multilength(::Any) = 0
 
 """
-    _excel__newpairs(
-        attributes::Union{Nothing, Vector{ExcelPair}}
-    ) -> Union{Nothing, Vector{Pair{Symbol, Any}}}
-
-Convert the string keys in `attributes` to `Symbol`s and parse numeric and boolean values.
-Returns `nothing` when `attributes` is `nothing`.
-"""
-function _excel__newpairs(attributes::Union{Nothing, Vector{ExcelPair}})
-    isnothing(attributes) && return nothing
-
-    newpairs = Vector{Pair{Symbol,Any}}()
-
-    for (k, v) in attributes
-        newv = tryparse(Int, v)
-        if isnothing(newv)
-            newv = if v == "true"
-                true
-            elseif v == "false"
-                false
-            else
-                v
-            end
-        end
-
-        newk = Symbol(k)
-        push!(newpairs, newk => newv)
-    end
-
-    return newpairs
-end
-
-
-"""
-    _excel__tablestyle_attributes(
-        property::AbstractString,
-        format::Union{Nothing, Vector{ExcelPair}, Vector{Vector{ExcelPair}}},
-        j::Union{Nothing, Int} = nothing
-    ) -> Vector{ExcelPair}
-
-Override the default `ExcelTableStyle` attributes for the table element identified by
-`property` with the pairs supplied in `format`. When `format` is a
-`Vector{Vector{ExcelPair}}`, column index `j` selects the per-column entry.
-"""
-function _excel__tablestyle_attributes(
-    property::AbstractString,
-    format::Union{Nothing, Vector{ExcelPair}},
-    _::Union{Nothing, Int} = nothing,
-)
-    return _excel__override_properties(DEFAULT_EXCEL_TABLE_STYLE, property, format)
-end
-
-function _excel__tablestyle_attributes(
-    property::AbstractString,
-    format::Vector{Vector{ExcelPair}},
-    j::Union{Nothing, Int} = nothing,
-)
-    return _excel__override_properties(DEFAULT_EXCEL_TABLE_STYLE, property, format[j])
-end
-
-"""
-    _excel__cell_fill_attributes(
-        field::Union{Nothing, Vector{ExcelPair}, Vector{Vector{ExcelPair}}},
-        j::Union{Nothing, Int} = nothing
-    ) -> Vector{ExcelPair}
-
-Extract fill attributes from a style field value. Any pair whose key starts with
-`"cell_fill_"` is collected with the prefix stripped; all other pairs are ignored. When
-`field` is a `Vector{Vector{ExcelPair}}`, column index `j` selects the entry. Returns an
-empty vector when no fill attributes are present.
-"""
-function _excel__cell_fill_attributes(
-    field::Union{Vector{ExcelPair}, Vector{Vector{ExcelPair}}},
-    j::Union{Nothing, Int} = nothing,
-)
-    raw = (field isa Vector{Vector{ExcelPair}}) ? field[j] : field
-    prefix = "cell_fill_"
-    n = length(prefix)
-
-    return ExcelPair[SubString(k, n + 1) => v for (k, v) in raw if startswith(k, prefix)]
-end
-
-function _excel__cell_fill_attributes(::Nothing, ::Union{Nothing, Int} = nothing)
-    return ExcelPair[]
-end
-
-"""
-    _excel__font_fill_attributes(
-        style_key::AbstractString,
-        field::Any,
-        j::Union{Nothing, Int} = nothing
-    ) -> Tuple{Vector{Pair{Symbol, Any}}, Vector{Pair{Symbol, Any}}}
-    _excel__font_fill_attributes(
-        pairs::Vector{ExcelPair}
-    ) -> Tuple{Vector{Pair{Symbol, Any}}, Vector{Pair{Symbol, Any}}}
-
-Split a style field or raw decoration vector into font and fill attribute vectors.
-
-The first method merges `field` with the default table style via
-`_excel__tablestyle_attributes` for font attributes, and extracts `"cell_fill_"` prefixed
-entries for fill. Use this for `ExcelTableStyle` fields (title, column_label, table_cell,
-…).
-
-The second method performs a direct split on a flat `Vector{ExcelPair}` without merging
-with defaults. Use this for `ExcelHighlighter` decorations.
-
-Both methods return `(font_attributes, fill_attributes)` as `Vector{Pair{Symbol, Any}}`
-ready for splatting into `XLSX.setFont` / `XLSX.setFill`.
-"""
-function _excel__font_fill_attributes(
-    style_key::AbstractString,
-    field::Any,
-    j::Union{Nothing, Int} = nothing,
-)
-    return (
-        _excel__newpairs(_excel__tablestyle_attributes(style_key, field, j)),
-        _excel__newpairs(_excel__cell_fill_attributes(field, j)),
-    )
-end
-
-function _excel__font_fill_attributes(pairs::Vector{ExcelPair})
-    return (
-        _excel__newpairs(filter(p -> !startswith(p.first, "cell_fill_"), pairs)),
-        _excel__newpairs(_excel__cell_fill_attributes(pairs)),
-    )
-end
-
-"""
-    _excel__override_properties(
-        default::Any,
-        property::AbstractString,
-        format::Union{Nothing, Vector{ExcelPair}}
-    ) -> Vector{ExcelPair}
-
-Merge `format` pairs into the default attribute vector for the field `property` in
-`default`. Pairs whose key starts with `"cell_fill_"` are skipped (handled separately by
-`_excel__cell_fill_attributes`). Returns the merged vector.
-"""
-function _excel__override_properties(
-    default::Any,
-    property::AbstractString,
-    format::Union{Nothing, Vector{ExcelPair}},
-)
-    v1 = getproperty(default, Symbol(property))
-    isnothing(format) && return v1
-
-    d = Dict(v1)
-
-    for (k, v) in format
-        startswith(k, "cell_fill_") && continue # fill pairs are handled separately
-        d[k] = v
-    end
-
-    return collect(d)
-end
-
-"""
-    _excel__format_attributes(
-        table_data::TableData,
-        excelFormatter::ExcelFormatter,
-        current_row::Int,
-        j::Int
-    ) -> Union{Nothing, Vector{Pair{Symbol, Any}}}
-
-Apply `excelFormatter` to the cell at row `current_row` and column `j` and return the
-format attributes when the formatter condition is met, or `nothing` otherwise.
-"""
-function _excel__format_attributes(
-    table_data::TableData,
-    excelFormatter::ExcelFormatter,
-    current_row::Int,
-    j::Int,
-)
-    attributes =
-        excelFormatter.f(table_data.data, current_row, j) ? excelFormatter.numFmt : nothing
-
-    !isnothing(attributes) && return _excel__newpairs(attributes)
-    return nothing
-end
-
-"""
-    _excel__update_fontsize!(
-        attributes::Vector{Pair{Symbol, Any}},
-        fontsize::Number
-    ) -> Number
-
-Ensure a `:size` entry is present in `attributes`, inserting `fontsize` if none exists.
-Returns the resolved font size.
-"""
-function _excel__update_fontsize!(attributes::Vector{Pair{Symbol, Any}}, fontsize::Number)
-    g = _excel__getsize(attributes)
-    isnothing(g) && push!(attributes, :size => fontsize)
-    fontsize = isnothing(g) ? fontsize : g
-    return fontsize
-end
-
-"""
     fmt__excel_stringify(
         columns::Union{Nothing, Int, AbstractVector{Int}} = nothing
     ) -> Function
@@ -340,65 +144,6 @@ function _excel__cell_length_and_height(_::Any, fontsize::Number)
     row_height = _excel__row_height_for_text(lines, fontsize)
 
     return row_height, col_length
-end
-
-"""
-    _excel__getsize(pairs::Vector{Pair{Symbol, Any}}) -> Union{Nothing, Number}
-
-Extract the `:size` font attribute from `pairs`, returning `nothing` if not present.
-"""
-function _excel__getsize(pairs::Vector{Pair{Symbol, Any}})
-    for (k, v) in pairs
-        k == :size && return v
-    end
-
-    return nothing
-end
-
-"""
-    _excel__set_fontsize_and_alignment!(
-        sheet::XLSX.Worksheet,
-        row::Int,
-        col::Int,
-        attributes::Union{Nothing, Vector{Pair{Symbol, Any}}},
-        alignment::Union{Nothing, Symbol},
-        valign::String,
-        wrap::Bool
-    ) -> Number
-
-Set the font and alignment for cell (`row`, `col`) in `sheet`. Returns the resolved font
-size.
-"""
-function _excel__set_fontsize_and_alignment!(
-    sheet::XLSX.Worksheet,
-    row::Int,
-    col::Int,
-    attributes::Union{Nothing, Vector{Pair{Symbol, Any}}},
-    alignment::Union{Nothing, Symbol},
-    valign::String,
-    wrap::Bool,
-)
-    fontsize = DEFAULT_FONT_SIZE
-
-    if !isnothing(attributes)
-        fontsize = _excel__update_fontsize!(attributes, fontsize)
-        XLSX.setFont(sheet, row, col; attributes...)
-    else
-        XLSX.setFont(sheet, row, col; size = fontsize)
-    end
-
-    if !isnothing(alignment)
-        XLSX.setAlignment(
-            sheet,
-            row,
-            col;
-            vertical = valign,
-            horizontal = _excel__alignment_string(alignment),
-            wrapText = wrap,
-        )
-    end
-
-    return fontsize
 end
 
 """
@@ -509,6 +254,37 @@ function _excel__try_outer_borders!(
     return nothing
 end
 
+function _excel__split_attributes(attributes::Vector{ExcelPair})
+    font_attributes = Pair{Symbol, Any}[]
+    fill_attributes = Pair{Symbol, Any}[]
+
+    for (k, v) in attributes
+        if startswith(k, "cell_fill_")
+            pv = fill_attributes
+            sym = Symbol(replace(k, "cell_fill_" => ""))
+        else
+            pv = font_attributes
+            sym = Symbol(k)
+        end
+
+        processed_attribute = tryparse(Int, v)
+
+        if isnothing(processed_attribute)
+            processed_attribute = if v == "true"
+                true
+            elseif v == "false"
+                false
+            else
+                v
+            end
+        end
+
+        push!(pv, sym => processed_attribute)
+    end
+
+    return font_attributes, fill_attributes
+end
+
 """
     _excel__apply_cell_style!(
         sheet::XLSX.Worksheet,
@@ -535,22 +311,100 @@ function _excel__apply_cell_style!(
     sheet::XLSX.Worksheet,
     row::Int,
     col::Int,
-    style_key::AbstractString,
-    style_field::Any,
+    style::Vector{ExcelPair},
     alignment::Union{Nothing, Symbol},
     valign::String,
-    wrap::Bool;
-    col_idx::Union{Nothing, Int} = nothing,
+    wrap::Bool
 )
-    font_attributes, fill_attributes = _excel__font_fill_attributes(
-        style_key, style_field, col_idx
-    )
+    font_attributes, fill_attributes = _excel__split_attributes(style)
 
-    fontsize = _excel__set_fontsize_and_alignment!(
-        sheet, row, col, font_attributes, alignment, valign, wrap
+    if !isnothing(font_attributes)
+        id = findfirst(==(:size), first.(font_attributes))
+        fontsize = isnothing(id) ? DEFAULT_FONT_SIZE : last(font_attributes[id])
+
+        XLSX.setFont(sheet, row, col; font_attributes...)
+    else
+        fontsize = DEFAULT_FONT_SIZE
+        XLSX.setFont(sheet, row, col; size = fontsize)
+    end
+
+    !isnothing(alignment) && XLSX.setAlignment(
+        sheet,
+        row,
+        col;
+        vertical = valign,
+        horizontal = _excel__alignment_string(alignment),
+        wrapText = wrap,
     )
 
     isempty(fill_attributes) || XLSX.setFill(sheet, row, col; fill_attributes...)
 
     return fontsize
+end
+
+function _excel__write_full_span_cell!(
+    sheet::XLSX.Worksheet,
+    text::Any,
+    row::Int,
+    num_cols::Int,
+    col_offset::Int,
+    anchor_row_offset::Int,
+    anchor_col_offset::Int,
+    style::Vector{ExcelPair},
+    alignment::Union{Nothing, Symbol},
+    valign::String,
+)
+    sheet_row = row + anchor_row_offset
+    col_start = 1 + anchor_col_offset
+    col_end   = num_cols + col_offset + anchor_col_offset
+
+    sheet[sheet_row, col_start] = text
+
+    XLSX.mergeCells(
+        sheet,
+        XLSX.CellRange(
+            XLSX.CellRef(sheet_row, col_start),
+            XLSX.CellRef(sheet_row, col_end),
+        ),
+    )
+
+    fontsize = _excel__apply_cell_style!(
+        sheet,
+        sheet_row,
+        col_start,
+        style,
+        alignment,
+        valign,
+        true
+    )
+
+    text_lines = text isa AbstractString ? _excel__text_lines(text) : 1
+    return _excel__row_height_for_text(text_lines, fontsize)
+end
+
+"""
+    _excel__format_attributes(
+        table_data::TableData,
+        excelFormatter::ExcelFormatter,
+        current_row::Int,
+        j::Int
+    ) -> Union{Nothing, Vector{Pair{Symbol, Any}}}
+
+Apply `excelFormatter` to the cell at row `current_row` and column `j` and return the
+format attributes when the formatter condition is met, or `nothing` otherwise.
+"""
+function _excel__format_attributes(
+    table_data::TableData,
+    excelFormatter::ExcelFormatter,
+    current_row::Int,
+    j::Int,
+)
+    attributes =
+        excelFormatter.f(table_data.data, current_row, j) ? excelFormatter.numFmt : nothing
+
+    isnothing(attributes) && return nothing
+
+    font_attributes, _ = _excel__split_attributes(attributes)
+
+    return font_attributes
 end

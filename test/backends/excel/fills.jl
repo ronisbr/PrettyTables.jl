@@ -89,23 +89,12 @@
             ],
             merged_column_label = ["color" => "white",
                                    "cell_fill_pattern" => "solid", "cell_fill_fgColor" => "seagreen"],
-            table_cell = [
-                ["color" => "white",
+            data_cell = ["color" => "white",
                  "cell_fill_pattern" => "solid", "cell_fill_fgColor" => "steelblue4"],
-                ["color" => "white",
-                 "cell_fill_pattern" => "solid", "cell_fill_fgColor" => "green"],
-                ["color" => "white",
-                 "cell_fill_pattern" => "solid", "cell_fill_fgColor" => "red"],
-            ],
             summary_row_label = ["color" => "white", "bold" => "true",
                                  "cell_fill_pattern" => "solid", "cell_fill_fgColor" => "violetred3"],
-            summary_row_cell = [
-                ["color" => "white",
-                 "cell_fill_pattern" => "solid", "cell_fill_fgColor" => "violetred3"],
-                ["color" => "white",
-                 "cell_fill_pattern" => "solid", "cell_fill_fgColor" => "green"],
-                ["color" => "white",
-                 "cell_fill_pattern" => "solid", "cell_fill_fgColor" => "red"],
+            summary_row_cell = ["color" => "white",
+                 "cell_fill_pattern" => "solid", "cell_fill_fgColor" => "violetred3"
             ],
             footnote = ["cell_fill_pattern" => "solid", "cell_fill_fgColor" => "grey80"],
             source_note = ["color" => "black",
@@ -143,14 +132,14 @@
     @test XLSX.getFill(r, "C12").fill["patternFill"] == Dict("patternType" => "solid", "fgrgb" => "FF36648B")
     @test XLSX.getFill(r, "C14").fill["patternFill"] == Dict("patternType" => "solid", "fgrgb" => "FF36648B")
     @test XLSX.getFill(r, "D8").fill["patternFill"] == Dict("patternType" => "solid", "fgrgb" => "FF36648B")
-    @test XLSX.getFill(r, "E12").fill["patternFill"] == Dict("patternType" => "solid", "fgrgb" => "FF008000")
-    @test XLSX.getFill(r, "F15").fill["patternFill"] == Dict("patternType" => "solid", "fgrgb" => "FFFF0000")
+    @test XLSX.getFill(r, "E12").fill["patternFill"] == Dict("patternType" => "solid", "fgrgb" => "FF36648B")
+    @test XLSX.getFill(r, "F15").fill["patternFill"] == Dict("patternType" => "solid", "fgrgb" => "FF36648B")
 
     # Summary rows
     @test XLSX.getFill(r, "C16").fill["patternFill"] == Dict("patternType" => "solid", "fgrgb" => "FFCD3278")
     @test XLSX.getFill(r, "D16").fill["patternFill"] == Dict("patternType" => "solid", "fgrgb" => "FFCD3278")
-    @test XLSX.getFill(r, "E17").fill["patternFill"] == Dict("patternType" => "solid", "fgrgb" => "FF008000")
-    @test XLSX.getFill(r, "F16").fill["patternFill"] == Dict("patternType" => "solid", "fgrgb" => "FFFF0000")
+    @test XLSX.getFill(r, "E17").fill["patternFill"] == Dict("patternType" => "solid", "fgrgb" => "FFCD3278")
+    @test XLSX.getFill(r, "F16").fill["patternFill"] == Dict("patternType" => "solid", "fgrgb" => "FFCD3278")
 
     # Footnote and sourcenotes
     @test XLSX.getFill(r, "B18").fill["patternFill"] == Dict("patternType" => "solid", "fgrgb" => "FFCCCCCC")
@@ -222,7 +211,7 @@
                                               "cell_fill_pattern" => "solid", "cell_fill_fgColor" => "seagreen"],
             merged_column_label = ["color" => "white",
                                    "cell_fill_pattern" => "solid", "cell_fill_fgColor" => "seagreen"],
-            table_cell = ["color" => "white",
+            data_cell = ["color" => "white",
                           "cell_fill_pattern" => "solid", "cell_fill_fgColor" => "steelblue4"],
             summary_row_label = ["color" => "white", "bold" => "true",
                                  "cell_fill_pattern" => "solid", "cell_fill_fgColor" => "violetred3"],

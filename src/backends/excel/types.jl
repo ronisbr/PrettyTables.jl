@@ -418,41 +418,44 @@ style = ExcelTableStyle(
 ```
 
 """
-@kwdef struct ExcelTableStyle
-    title::Union{Nothing, Vector{ExcelPair}} = nothing
-    subtitle::Union{Nothing, Vector{ExcelPair}} = nothing
-    row_number_label::Union{Nothing, Vector{ExcelPair}} = nothing
-    row_number::Union{Nothing, Vector{ExcelPair}} = nothing
-    stubhead_label::Union{Nothing, Vector{ExcelPair}} = nothing
-    row_label::Union{Nothing, Vector{ExcelPair}} = nothing
-    row_group_label::Union{Nothing, Vector{ExcelPair}} = nothing
-    first_line_column_label::Union{Nothing, Vector{ExcelPair}, Vector{Vector{ExcelPair}}} = nothing
-    column_label::Union{Nothing, Vector{ExcelPair}, Vector{Vector{ExcelPair}}} = nothing
-    first_line_merged_column_label::Union{Nothing, Vector{ExcelPair}} = nothing
-    merged_column_label::Union{Nothing, Vector{ExcelPair}} = nothing
-    table_cell::Union{Nothing, Vector{ExcelPair}, Vector{Vector{ExcelPair}}} = nothing
-    summary_row_label::Union{Nothing, Vector{ExcelPair}} = nothing
-    summary_row_cell::Union{Nothing, Vector{ExcelPair}, Vector{Vector{ExcelPair}}} = nothing
-    footnote::Union{Nothing, Vector{ExcelPair}} = nothing
-    source_note::Union{Nothing, Vector{ExcelPair}} = nothing
+@kwdef struct ExcelTableStyle{
+    TFCL <: Union{Vector{ExcelPair}, Vector{Vector{ExcelPair}}},
+    TCL <: Union{Vector{ExcelPair}, Vector{Vector{ExcelPair}}},
+}
+    title::Vector{ExcelPair}                          = _EXCEL__XLARGE_BOLD
+    subtitle::Vector{ExcelPair}                       = _EXCEL__LARGE_ITALIC
+    row_number_label::Vector{ExcelPair}               = _EXCEL__BOLD
+    row_number::Vector{ExcelPair}                     = _EXCEL__BOLD
+    stubhead_label::Vector{ExcelPair}                 = _EXCEL__BOLD
+    row_label::Vector{ExcelPair}                      = _EXCEL__BOLD
+    row_group_label::Vector{ExcelPair}                = _EXCEL__BOLD
+    first_line_column_label::TFCL                     = _EXCEL__BOLD
+    column_label::TCL                                 = _EXCEL__NO_DECORATION
+    first_line_merged_column_label::Vector{ExcelPair} = _EXCEL__BOLD
+    merged_column_label::Vector{ExcelPair}            = _EXCEL__NO_DECORATION
+    data_cell::Vector{ExcelPair}                      = _EXCEL__NO_DECORATION
+    summary_row_label::Vector{ExcelPair}              = _EXCEL__BOLD
+    summary_row_cell::Vector{ExcelPair}               = _EXCEL__NO_DECORATION
+    footnote::Vector{ExcelPair}                       = _EXCEL__SMALL
+    source_note::Vector{ExcelPair}                    = _EXCEL__SMALL_ITALIC_GRAY
 end
 
-const DEFAULT_EXCEL_TABLE_STYLE =  ExcelTableStyle(
-    push!(_EXCEL__XLARGE_BOLD, "under" => "single"), # title
-    _EXCEL__LARGE_ITALIC,                            # subtitle
-    _EXCEL__BOLD,                                    # row_number_label
-    _EXCEL__BOLD,                                    # row_number
-    _EXCEL__BOLD,                                    # stubhead_label
-    _EXCEL__BOLD,                                    # row_label
-    _EXCEL__BOLD,                                    # row_group_label
-    _EXCEL__BOLD,                                    # first_line_column_label
-    _EXCEL__NO_DECORATION,                           # column_label
-    _EXCEL__BOLD,                                    # first_line_merged_column_label
-    _EXCEL__NO_DECORATION,                           # merged_column_label
-    _EXCEL__NO_DECORATION,                           # table_cell
-    _EXCEL__BOLD,                                    # summary_row_label
-    _EXCEL__NO_DECORATION,                           # summary_row_cell
-    _EXCEL__SMALL,                                   # footnote
-    _EXCEL__SMALL_ITALIC_GRAY,                       # source_note
-)
+# const DEFAULT_EXCEL_TABLE_STYLE =  ExcelTableStyle(
+#     push!(_EXCEL__XLARGE_BOLD, "under" => "single"), # title
+#     _EXCEL__LARGE_ITALIC,                            # subtitle
+#     _EXCEL__BOLD,                                    # row_number_label
+#     _EXCEL__BOLD,                                    # row_number
+#     _EXCEL__BOLD,                                    # stubhead_label
+#     _EXCEL__BOLD,                                    # row_label
+#     _EXCEL__BOLD,                                    # row_group_label
+#     _EXCEL__BOLD,                                    # first_line_column_label
+#     _EXCEL__NO_DECORATION,                           # column_label
+#     _EXCEL__BOLD,                                    # first_line_merged_column_label
+#     _EXCEL__NO_DECORATION,                           # merged_column_label
+#     _EXCEL__NO_DECORATION,                           # table_cell
+#     _EXCEL__BOLD,                                    # summary_row_label
+#     _EXCEL__NO_DECORATION,                           # summary_row_cell
+#     _EXCEL__SMALL,                                   # footnote
+#     _EXCEL__SMALL_ITALIC_GRAY,                       # source_note
+# )
 

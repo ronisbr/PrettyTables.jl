@@ -247,12 +247,8 @@ function _excel__write_table!(
                     rendered_cell = _excel__to_superscript(ps.i) * rendered_cell
                 end
 
-                style_key   = action == :source_notes ? "source_note" : string(action)
-                style_field = getproperty(style, Symbol(style_key))
-
-                style_attributes, fill_attributes = _excel__font_fill_attributes(
-                    style_key, style_field
-                )
+                style_key  = action == :source_notes ? "source_note" : string(action)
+                cell_style = getproperty(style, Symbol(style_key))
 
                 valign = if action ∈ (:title, :subtitle, :row_number_label)
                     "bottom"
@@ -270,11 +266,11 @@ function _excel__write_table!(
                     col_offset,
                     anchor_row_offset,
                     anchor_col_offset,
-                    style_attributes,
-                    fill_attributes,
+                    cell_style,
                     alignment,
                     valign,
                 )
+
                 max_row_height[current_row] = max(max_row_height[current_row], row_height)
 
             # -- Column labels ---------------------------------------------------------
@@ -296,11 +292,7 @@ function _excel__write_table!(
                         ),
                     )
 
-                    style_key = ps.i == 1 ?
-                        "first_line_merged_column_label" :
-                        "merged_column_label"
-
-                    style_field = ps.i == 1 ?
+                    cell_style = ps.i == 1 ?
                         style.first_line_merged_column_label :
                         style.merged_column_label
 
@@ -308,8 +300,7 @@ function _excel__write_table!(
                         sheet,
                         sheet_row,
                         excel_col,
-                        style_key,
-                        style_field,
+                        cell_style,
                         cell.alignment,
                         "bottom",
                         true,
@@ -343,22 +334,23 @@ function _excel__write_table!(
                 else
                     sheet[sheet_row, excel_col] = rendered_cell
 
-                    style_key = ps.i == 1 ? "first_line_column_label" : "column_label"
+                    style_var =
+                        ps.i == 1 ? style.first_line_column_label : style.column_label
 
-                    style_field = ps.i == 1 ?
-                        style.first_line_column_label :
-                        style.column_label
+                    cell_style = if style_var isa Vector{Vector{ExcelPair}}
+                        style_var[ps.j]
+                    else
+                        style_var
+                    end
 
                     fontsize = _excel__apply_cell_style!(
                         sheet,
                         sheet_row,
                         excel_col,
-                        style_key,
-                        style_field,
+                        cell_style,
                         alignment,
                         "bottom",
-                        true;
-                        col_idx = ps.j,
+                        true
                     )
 
                     row_height, col_length = _excel__cell_length_and_height(
@@ -401,7 +393,6 @@ function _excel__write_table!(
                     sheet,
                     sheet_row,
                     excel_col,
-                    "row_number_label",
                     style.row_number_label,
                     alignment,
                     "bottom",
@@ -432,7 +423,6 @@ function _excel__write_table!(
                     sheet,
                     sheet_row,
                     excel_col,
-                    "row_number",
                     style.row_number,
                     alignment,
                     "top",
@@ -460,7 +450,6 @@ function _excel__write_table!(
                     sheet,
                     sheet_row,
                     excel_col,
-                    "stubhead_label",
                     style.stubhead_label,
                     alignment,
                     "bottom",
@@ -476,9 +465,9 @@ function _excel__write_table!(
 
             # -- Row label / summary row label -----------------------------------------
             elseif action ∈ (:row_label, :summary_row_label)
-                excel_col   = col_offset + anchor_col_offset
-                style_key   = string(action)
-                style_field = getproperty(style, Symbol(style_key))
+                excel_col  = col_offset + anchor_col_offset
+                style_key  = string(action)
+                cell_style = getproperty(style, Symbol(style_key))
 
                 sheet[sheet_row, excel_col] = rendered_cell
 
@@ -486,8 +475,7 @@ function _excel__write_table!(
                     sheet,
                     sheet_row,
                     excel_col,
-                    style_key,
-                    style_field,
+                    cell_style,
                     alignment,
                     "top",
                     true,
@@ -514,12 +502,10 @@ function _excel__write_table!(
                     sheet,
                     sheet_row,
                     excel_col,
-                    "table_cell",
-                    style.table_cell,
+                    style.data_cell,
                     alignment,
                     "top",
-                    lines > 1;
-                    col_idx = ps.j,
+                    lines > 1
                 )
 
                 for formatter in excel_formatters
@@ -555,30 +541,28 @@ function _excel__write_table!(
                     highlighter.f(table_data.data, ps.i, ps.j) || continue
 
                     decoration = highlighter.fd(highlighter, table_data.data, ps.i, ps.j)
-                    font_attributes, fill_attributes = _excel__font_fill_attributes(
-                        decoration
+
+                    hl_font_size = _excel__apply_cell_style!(
+                        sheet,
+                        sheet_row,
+                        excel_col,
+                        decoration,
+                        nothing,
+                        "",
+                        false
                     )
 
-                    if !isempty(font_attributes)
-                        hl_font_size = _excel__getsize(font_attributes)
+                    hl_row_height, hl_col_length = _excel__cell_length_and_height(
+                        rendered_cell, hl_font_size
+                    )
 
-                        if !isnothing(hl_font_size)
-                            hl_row_height, hl_col_length = _excel__cell_length_and_height(
-                                rendered_cell, hl_font_size
-                            )
-                            max_row_height[current_row] = max(
-                                max_row_height[current_row], hl_row_height
-                            )
-                            max_col_length[ps.j + col_offset] = max(
-                                max_col_length[ps.j + col_offset], hl_col_length
-                            )
-                        end
+                    max_row_height[current_row] = max(
+                        max_row_height[current_row], hl_row_height
+                    )
 
-                        XLSX.setFont(sheet, sheet_row, excel_col; font_attributes...)
-                    end
-
-                    !isempty(fill_attributes) &&
-                        XLSX.setFill(sheet, sheet_row, excel_col; fill_attributes...)
+                    max_col_length[ps.j + col_offset] = max(
+                        max_col_length[ps.j + col_offset], hl_col_length
+                    )
 
                     break
                 end
@@ -593,12 +577,10 @@ function _excel__write_table!(
                     sheet,
                     sheet_row,
                     excel_col,
-                    "summary_row_cell",
                     style.summary_row_cell,
                     alignment,
                     "top",
-                    false;
-                    col_idx = ps.j,
+                    false
                 )
 
                 for formatter in excel_formatters

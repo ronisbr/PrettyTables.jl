@@ -60,21 +60,13 @@
                 ["color" => "red"], 
                 ["size" => "24"]
             ],
-            table_cell = [
-                ["bold" => "true"], 
-                ["color" => "red"], 
-                ["size" => "24"]
-            ],
+            data_cell = ["bold" => "true"], 
             summary_row_label = [
                 "bold" => "true", 
                 "color" => "red", 
                 "size" => "24"
             ],
-            summary_row_cell = [
-                ["italic" => "true"], 
-                ["color" => "green"], 
-                ["size" => "14"]
-            ],
+            summary_row_cell = ["italic" => "true"], 
             footnote = [
                 "bold" => "true", 
                 "color" => "magenta"
@@ -127,8 +119,8 @@
 
     # Data row (vector)
     @test XLSX.getFont(r, "C5").font["b"] === nothing
-    @test XLSX.getFont(r, "D5").font["color"] == Dict("rgb" => "FFFF0000")
-    @test XLSX.getFont(r, "E5").font["sz"] == Dict("val" => "24")
+    @test XLSX.getFont(r, "D5").font["b"] === nothing
+    @test XLSX.getFont(r, "E5").font["b"] === nothing
 
     # summary row label
     f = XLSX.getFont(r, "B9").font
@@ -138,8 +130,8 @@
 
     # summary row (vector)
     @test XLSX.getFont(r, "C9").font["i"] === nothing
-    @test XLSX.getFont(r, "D9").font["color"] == Dict("rgb" => "FF008000")
-    @test XLSX.getFont(r, "E9").font["sz"] == Dict("val" => "14")
+    @test XLSX.getFont(r, "D9").font["i"] === nothing
+    @test XLSX.getFont(r, "E9").font["i"] === nothing
 
     # Footnotes
     f = XLSX.getFont(r, "A10").font
@@ -200,7 +192,7 @@
                 "color" => "red", 
                 "size" => "24"
             ],
-            table_cell = [
+            data_cell = [
                 "bold" => "true", 
                 "color" => "red", 
                 "size" => "24"

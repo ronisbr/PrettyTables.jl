@@ -23,7 +23,6 @@ using Tables
 ############################################################################################
 
 include("helpers.jl")
-include("table_sections.jl")
 include("render_cell.jl")
 include("write_table.jl")
 

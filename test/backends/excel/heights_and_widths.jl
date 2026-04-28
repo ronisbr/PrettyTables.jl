@@ -37,7 +37,7 @@
         XLSX.XLSXFile,
         data;
         style = ExcelTableStyle(
-            table_cell = ["size" => "48", "bold" => "true"],
+            data_cell = ["size" => "48", "bold" => "true"],
         )
     )
     # Cells containing text affect calculated cell width; numbers don't.
