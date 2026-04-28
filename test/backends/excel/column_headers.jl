@@ -71,7 +71,7 @@
     )
 
     # merged columns in bottom row
-    @test XLSX.getBorder(f[1], "C3").border["bottom"] == Dict("style" => "thin", "rgb" => "FF000000")
+    @test XLSX.getBorder(f[1], "C3").border["bottom"] == Dict("style" => "medium", "rgb" => "FF000000")
     @test XLSX.isMergedCell(f[1], "D3") == true
 
     column_labels = [

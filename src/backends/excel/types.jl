@@ -25,9 +25,10 @@ const _EXCEL__SMALL             = ["size"   => "10"]
 const _EXCEL__SMALL_ITALIC      = ["size"   => "10", "italic" => "true"]
 const _EXCEL__SMALL_ITALIC_GRAY = ["color"  => "gray", "size" => "10", "italic" => "true"]
 
+const _EXCEL__DOTTED_BORDER     = ["style" => "dotted", "color" => "Black"]
 const _EXCEL__MEDIUM_BORDER     = ["style" => "medium", "color" => "Black"]
-const _EXCEL__THICK_BORDER      = ["style" => "thick", "color" => "Black"]
-const _EXCEL__THIN_BORDER       = ["style" => "thin",  "color" => "Black"]
+const _EXCEL__THICK_BORDER      = ["style" => "thick",  "color" => "Black"]
+const _EXCEL__THIN_BORDER       = ["style" => "thin",   "color" => "Black"]
 
 ############################################################################################
 #                                       Highlighters                                       #
@@ -181,15 +182,15 @@ end. All fields are `Vector{ExcelPair}` compatible with the `XLSX.setBorder` fun
 
 - `top_line::Vector{ExcelPair}`: Style for the top border of the table.
     (**Default**: `["style" => "thick", "color" => "Black"]`)
-- `header_line::Vector{ExcelPair}`: Style for section-separating horizontal lines (header
-    underline, group over/underlines, summary underline, table underline).
-    (**Default**: `["style" => "thin", "color" => "Black"]`)
+- `header_line::Vector{ExcelPair}`: Style for the line drawn under the column label
+    section.
+    (**Default**: `["style" => "medium", "color" => "Black"]`)
 - `merged_header_cell_line::Vector{ExcelPair}`: Style for the line below merged header
     cells.
     (**Default**: `["style" => "thin", "color" => "Black"]`)
-- `middle_line::Vector{ExcelPair}`: Style for within-section horizontal lines (data row
-    underlines, summary row underlines, between-header lines) and for vertical lines between
-    data columns.
+- `middle_line::Vector{ExcelPair}`: Style for all other internal horizontal lines (data
+    row underlines, lines around row groups, lines around summary rows) and for vertical
+    lines between data columns.
     (**Default**: `["style" => "dotted", "color" => "Black"]`)
 - `bottom_line::Vector{ExcelPair}`: Style for the bottom border of the table.
     (**Default**: `["style" => "thick", "color" => "Black"]`)
@@ -210,7 +211,7 @@ end. All fields are `Vector{ExcelPair}` compatible with the `XLSX.setBorder` fun
     top_line::Vector{ExcelPair}                = _EXCEL__THICK_BORDER
     header_line::Vector{ExcelPair}             = _EXCEL__MEDIUM_BORDER
     merged_header_cell_line::Vector{ExcelPair} = _EXCEL__THIN_BORDER
-    middle_line::Vector{ExcelPair}             = _EXCEL__THIN_BORDER
+    middle_line::Vector{ExcelPair}             = _EXCEL__DOTTED_BORDER
     bottom_line::Vector{ExcelPair}             = _EXCEL__THICK_BORDER
 
     # == Vertical Lines ====================================================================

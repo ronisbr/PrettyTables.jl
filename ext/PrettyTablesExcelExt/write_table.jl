@@ -177,7 +177,7 @@ function _excel__write_table!(
                     if table_format.horizontal_line_after_summary_rows
                         XLSX.setBorder(
                             sheet, current_row + anchor_row_offset, all_cols;
-                            bottom = table_format.borders.header_line,
+                            bottom = table_format.borders.middle_line,
                         )
                     end
                 end
@@ -186,14 +186,14 @@ function _excel__write_table!(
                 if table_format.horizontal_line_before_row_group_label
                     XLSX.setBorder(
                         sheet, current_row + anchor_row_offset, all_cols;
-                        top = table_format.borders.header_line,
+                        top = table_format.borders.middle_line,
                     )
                 end
 
                 if table_format.horizontal_line_after_row_group_label
                     XLSX.setBorder(
                         sheet, current_row + anchor_row_offset, all_cols;
-                        bottom = table_format.borders.header_line,
+                        bottom = table_format.borders.middle_line,
                     )
                 end
             end
@@ -210,7 +210,7 @@ function _excel__write_table!(
                 if table_format.horizontal_line_after_data_rows
                     XLSX.setBorder(
                         sheet, current_row + anchor_row_offset, all_cols;
-                        bottom = table_format.borders.header_line,
+                        bottom = table_format.borders.middle_line,
                     )
                 end
             end

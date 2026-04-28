@@ -41,22 +41,22 @@
     f["bottom"] === nothing
     @test XLSX.getBorder(r, "A2").border["bottom"] === nothing
     @test XLSX.getBorder(r, "A3") === nothing
-    @test XLSX.getBorder(r, "A4").border["top"]    == Dict("style" => "thick", "rgb" => "FF000000")
-    @test XLSX.getBorder(r, "A4").border["bottom"] == Dict("style" => "thin",  "rgb" => "FF000000")
+    @test XLSX.getBorder(r, "A4").border["top"]    == Dict("style" => "thick",  "rgb" => "FF000000")
+    @test XLSX.getBorder(r, "A4").border["bottom"] == Dict("style" => "medium", "rgb" => "FF000000")
     f = XLSX.getBorder(r, "A5").border
     @test f["bottom"] == Dict("rgb" => "FF000000", "style" => "dotted")
     @test f["right"] == Dict("rgb" => "FF000000", "style" => "thin")
     f = XLSX.getBorder(r, "B5").border
-    @test f["bottom"] ==  Dict("rgb" => "FF000000", "style" => "dotted")
-    @test f["right"] ==  Dict("rgb" => "FF000000", "style" => "thin")
+    @test f["bottom"] == Dict("rgb" => "FF000000", "style" => "dotted")
+    @test f["right"] == Dict("rgb" => "FF000000", "style" => "thin")
     f = XLSX.getBorder(r, "D5").border
     @test f["bottom"] == Dict("rgb" => "FF000000", "style" => "dotted")
     @test f["right"]  == Dict("rgb" => "FF000000", "style" => "dotted")
     @test XLSX.getBorder(r, "A6").border["bottom"] == Dict("rgb" => "FF000000", "style" => "dotted")
     f = XLSX.getBorder(r, "A7").border
-    @test f["top"] == Dict("style" => "thin", "rgb" => "FF000000")
-    @test f["bottom"] == Dict("style" => "thin", "rgb" => "FF000000")
-    @test XLSX.getBorder(r, "A8").border["bottom"] == Dict("style" => "thin", "rgb" => "FF000000")
+    @test f["top"]    == Dict("style" => "dotted", "rgb" => "FF000000")
+    @test f["bottom"] == Dict("style" => "dotted", "rgb" => "FF000000")
+    @test XLSX.getBorder(r, "A8").border["bottom"] == Dict("style" => "dotted", "rgb" => "FF000000")
     @test XLSX.getBorder(r, "A9").border["bottom"] == Dict("style" => "thick", "rgb" => "FF000000")
     @test XLSX.getBorder(r, "A10").border["bottom"] === nothing
     @test XLSX.getBorder(r, "A11").border["bottom"] === nothing
@@ -116,10 +116,10 @@
     @test f["right"] === nothing
     @test XLSX.getBorder(r, "A6").border["bottom"] === nothing
     f = XLSX.getBorder(r, "A7").border
-    @test f["top"] == Dict("rgb" => "FFFF0000", "style" => "double")
-    @test f["bottom"] == Dict("rgb" => "FFFF0000", "style" => "double")
-    @test XLSX.getBorder(r, "D7").border["top"] == Dict("style" => "double", "rgb" => "FFFF0000")
-    @test XLSX.getBorder(r, "A8").border["bottom"] == Dict("rgb" => "FFFF0000", "style" => "double")
+    @test f["top"]    == Dict("rgb" => "FF000000", "style" => "dotted")
+    @test f["bottom"] == Dict("rgb" => "FF000000", "style" => "dotted")
+    @test XLSX.getBorder(r, "D7").border["top"] == Dict("style" => "dotted", "rgb" => "FF000000")
+    @test XLSX.getBorder(r, "A8").border["bottom"] == Dict("rgb" => "FF000000", "style" => "dotted")
     @test XLSX.getBorder(r, "A9").border["bottom"] == Dict("style" => "thick",  "rgb" => "FF000000")
     @test XLSX.getBorder(r, "A10").border["bottom"] === nothing
     @test XLSX.getBorder(r, "A11").border["bottom"] === nothing
@@ -134,9 +134,9 @@
 
     r = result[1]
 
-    # Row 1: column labels — thick top, thin bottom.
+    # Row 1: column labels — thick top, medium bottom.
     @test XLSX.getBorder(r, "A1").border["top"]    == Dict("style" => "thick",  "rgb" => "FF000000")
-    @test XLSX.getBorder(r, "A1").border["bottom"] == Dict("style" => "thin",   "rgb" => "FF000000")
+    @test XLSX.getBorder(r, "A1").border["bottom"] == Dict("style" => "medium", "rgb" => "FF000000")
     # Data row 1 (ps.i=1): in [1, 3] → dotted underline.
     @test XLSX.getBorder(r, "A2").border["bottom"] == Dict("style" => "dotted", "rgb" => "FF000000")
     # Data row 2 (ps.i=2): not in [1, 3] → no underline.

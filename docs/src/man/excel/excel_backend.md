@@ -192,11 +192,11 @@ Border styles are specified using an [`ExcelTableBorders`](@ref) object:
 
 **Horizontal lines:**
 - `top_line`: Top of the outside border (default: thick black).
-- `header_line`: Section-separator lines — header underline, group over/underlines,
-  summary underline, table underline (default: thin black).
+- `header_line`: Line drawn under the column label section (default: medium black).
 - `merged_header_cell_line`: Line below merged header cells (default: thin black).
-- `middle_line`: Within-section lines — data row underlines, summary row underlines,
-  between-header lines, and vertical lines between data columns (default: dotted black).
+- `middle_line`: All other internal horizontal lines — data row underlines, lines around
+  row groups, lines around summary rows, between-header lines — and vertical lines between
+  data columns (default: dotted black).
 - `bottom_line`: Bottom of the outside border (default: thick black).
 
 **Vertical lines:**
