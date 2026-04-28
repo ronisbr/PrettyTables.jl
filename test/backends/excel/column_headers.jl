@@ -4,115 +4,155 @@
 #
 ############################################################################################
 
-@testset "Column headers" verbose=true begin
-
+@testset "Column Headers" verbose = true begin
     data = [1 2 3 4]
-
-
     merge_column_label_cells = :auto
 
-    column_labels = [
-        [EmptyCells(2), MultiColumn(2, "Estimated Data")],
-        [
-            styled"{(foreground=gray):[s]}",
-            styled"{(foreground=gray):[m / s²]}",
-            styled"{(foreground=gray):[m / s]}",
-            styled"{(foreground=gray):[m]}",
-        ],
-        ["Time (s)", "Acceleration", "Velocity", "Position"],
-    ]
+    # == Merged Columns in Top Row ============================================================
 
-    f=pretty_table(data;
-        column_labels,
-        merge_column_label_cells,
-        backend = :excel,
-    )
-    
-    # merged columns in top row
-    @test XLSX.getBorder(f[1], "C1").border["bottom"] == Dict("style" => "thin", "rgb" => "FF000000")
-    @test XLSX.isMergedCell(f[1], "D1") == true
+    @testset "Merged Columns in Top Row" verbose = true begin
+        column_labels = [
+            [EmptyCells(2), MultiColumn(2, "Estimated Data")],
+            [
+                styled"{(foreground=gray):[s]}",
+                styled"{(foreground=gray):[m / s²]}",
+                styled"{(foreground=gray):[m / s]}",
+                styled"{(foreground=gray):[m]}",
+            ],
+            ["Time (s)", "Acceleration", "Velocity", "Position"],
+        ]
 
-    column_labels = [
-        [
-            styled"{(foreground=gray):[s]}",
-            styled"{(foreground=gray):[m / s²]}",
-            styled"{(foreground=gray):[m / s]}",
-            styled"{(foreground=gray):[m]}",
-        ],
-        [EmptyCells(2), MultiColumn(2, "Estimated Data")],
-        ["Time (s)", "Acceleration", "Velocity", "Position"],
-    ]
+        f = pretty_table(data;
+            column_labels,
+            merge_column_label_cells,
+            backend = :excel,
+        )
 
-    f=pretty_table(data;
-        column_labels,
-        merge_column_label_cells,
-        backend = :excel,
-    )
-    
-    # merged columns in middle row
-    @test XLSX.getBorder(f[1], "C2").border["bottom"] == Dict("style" => "thin", "rgb" => "FF000000")
-    @test XLSX.isMergedCell(f[1], "D2") == true
+        @test XLSX.getBorder(f[1], "C1").border["bottom"] == Dict("style" => "thin", "rgb" => "FF000000")
+        @test XLSX.isMergedCell(f[1], "D1") == true
+    end
 
-    column_labels = [
-        [
-            styled"{(foreground=gray):[s]}",
-            styled"{(foreground=gray):[m / s²]}",
-            styled"{(foreground=gray):[m / s]}",
-            styled"{(foreground=gray):[m]}",
-        ],
-        ["Time (s)", "Acceleration", "Velocity", "Position"],
-        [EmptyCells(2), MultiColumn(2, "Estimated Data")],
-    ]
+    # == Merged Columns in Middle Row =========================================================
 
-    f=pretty_table(data;
-        column_labels,
-        merge_column_label_cells,
-        backend = :excel,
-    )
+    @testset "Merged Columns in Middle Row" verbose = true begin
+        column_labels = [
+            [
+                styled"{(foreground=gray):[s]}",
+                styled"{(foreground=gray):[m / s²]}",
+                styled"{(foreground=gray):[m / s]}",
+                styled"{(foreground=gray):[m]}",
+            ],
+            [EmptyCells(2), MultiColumn(2, "Estimated Data")],
+            ["Time (s)", "Acceleration", "Velocity", "Position"],
+        ]
 
-    # merged columns in bottom row
-    @test XLSX.getBorder(f[1], "C3").border["bottom"] == Dict("style" => "medium", "rgb" => "FF000000")
-    @test XLSX.isMergedCell(f[1], "D3") == true
+        f = pretty_table(data;
+            column_labels,
+            merge_column_label_cells,
+            backend = :excel,
+        )
 
-    column_labels = [
-        [
-            styled"{(foreground=gray):[s]}",
-            styled"{(foreground=gray):[m / s²]}",
-            styled"{(foreground=gray):[m / s]}",
-            styled"{(foreground=gray):[m]}",
-        ],
-        [EmptyCells(1), MultiColumn(2, "Estimated Data"), EmptyCells(1)],
-        ["Time (s)", "Acceleration", "Velocity", "Position"],
-    ]
+        @test XLSX.getBorder(f[1], "C2").border["bottom"] == Dict("style" => "thin", "rgb" => "FF000000")
+        @test XLSX.isMergedCell(f[1], "D2") == true
+    end
 
-    f=pretty_table(data;
-        column_labels,
-        merge_column_label_cells,
-        backend = :excel,
-    )
+    # == Merged Columns in Bottom Row =========================================================
 
-    # merged columns middle two columns
-    @test XLSX.getBorder(f[1], "B2").border["bottom"] == Dict("style" => "thin", "rgb" => "FF000000")
-    @test XLSX.isMergedCell(f[1], "C2") == true
+    @testset "Merged Columns in Bottom Row" verbose = true begin
+        column_labels = [
+            [
+                styled"{(foreground=gray):[s]}",
+                styled"{(foreground=gray):[m / s²]}",
+                styled"{(foreground=gray):[m / s]}",
+                styled"{(foreground=gray):[m]}",
+            ],
+            ["Time (s)", "Acceleration", "Velocity", "Position"],
+            [EmptyCells(2), MultiColumn(2, "Estimated Data")],
+        ]
 
-    # Default height and width.
-    @test XLSX.getRowHeight(f[1], "C3") ≈ 17.6109375
-    @test XLSX.getColumnWidth(f[1], "C3") ≈ 10.253794642857144
+        f = pretty_table(data;
+            column_labels,
+            merge_column_label_cells,
+            backend = :excel,
+        )
 
-    f=pretty_table(data;
-        column_labels,
-        merge_column_label_cells,
-        table_format = ExcelTableFormat(borders = ExcelTableBorders(merged_header_cell_line = ["style" => "thick", "color" => "red"])),
-        style = ExcelTableStyle(merged_column_label = ["color"=>"red", "size"=>"32"]),
-        backend = :excel,
-    )
+        @test XLSX.getBorder(f[1], "C3").border["bottom"] == Dict("style" => "medium", "rgb" => "FF000000")
+        @test XLSX.isMergedCell(f[1], "D3") == true
+    end
 
-    # Merged comumn label doesn't affect column width.
-    @test XLSX.getRowHeight(f[1], "C2") ≈ 41.6109375
-    @test XLSX.getColumnWidth(f[1], "C3") ≈ 10.253794642857144
-    @test XLSX.getColumnWidth(f[1], "D3") ≈ 10.253794642857144
+    # == Merged Columns in Middle Two Columns =================================================
 
-    # Merged column label has changed border
-    @test XLSX.getBorder(f[1], "C2").border["bottom"] == Dict("style" => "thick", "rgb" => "FFFF0000")
+    @testset "Merged Columns in Middle Two Columns" verbose = true begin
+        column_labels = [
+            [
+                styled"{(foreground=gray):[s]}",
+                styled"{(foreground=gray):[m / s²]}",
+                styled"{(foreground=gray):[m / s]}",
+                styled"{(foreground=gray):[m]}",
+            ],
+            [EmptyCells(1), MultiColumn(2, "Estimated Data"), EmptyCells(1)],
+            ["Time (s)", "Acceleration", "Velocity", "Position"],
+        ]
 
+        f = pretty_table(data;
+            column_labels,
+            merge_column_label_cells,
+            backend = :excel,
+        )
+
+        @test XLSX.getBorder(f[1], "B2").border["bottom"] == Dict("style" => "thin", "rgb" => "FF000000")
+        @test XLSX.isMergedCell(f[1], "C2") == true
+    end
+
+    # == Default Height and Width =============================================================
+
+    @testset "Default Height and Width" verbose = true begin
+        column_labels = [
+            [
+                styled"{(foreground=gray):[s]}",
+                styled"{(foreground=gray):[m / s²]}",
+                styled"{(foreground=gray):[m / s]}",
+                styled"{(foreground=gray):[m]}",
+            ],
+            [EmptyCells(1), MultiColumn(2, "Estimated Data"), EmptyCells(1)],
+            ["Time (s)", "Acceleration", "Velocity", "Position"],
+        ]
+
+        f = pretty_table(data;
+            column_labels,
+            merge_column_label_cells,
+            backend = :excel,
+        )
+
+        @test XLSX.getRowHeight(f[1], "C3") ≈ 17.6109375
+        @test XLSX.getColumnWidth(f[1], "C3") ≈ 10.253794642857144
+    end
+
+    # == Formatted Merged Column Labels =======================================================
+
+    @testset "Formatted Merged Column Labels" verbose = true begin
+        column_labels = [
+            [
+                styled"{(foreground=gray):[s]}",
+                styled"{(foreground=gray):[m / s²]}",
+                styled"{(foreground=gray):[m / s]}",
+                styled"{(foreground=gray):[m]}",
+            ],
+            [EmptyCells(1), MultiColumn(2, "Estimated Data"), EmptyCells(1)],
+            ["Time (s)", "Acceleration", "Velocity", "Position"],
+        ]
+
+        f = pretty_table(data;
+            column_labels,
+            merge_column_label_cells,
+            table_format = ExcelTableFormat(borders = ExcelTableBorders(merged_header_cell_line = ["style" => "thick", "color" => "red"])),
+            style = ExcelTableStyle(merged_column_label = ["color" => "red", "size" => "32"]),
+            backend = :excel,
+        )
+
+        @test XLSX.getRowHeight(f[1], "C2") ≈ 41.6109375
+        @test XLSX.getColumnWidth(f[1], "C3") ≈ 10.253794642857144
+        @test XLSX.getColumnWidth(f[1], "D3") ≈ 10.253794642857144
+        @test XLSX.getBorder(f[1], "C2").border["bottom"] == Dict("style" => "thick", "rgb" => "FFFF0000")
+    end
 end
