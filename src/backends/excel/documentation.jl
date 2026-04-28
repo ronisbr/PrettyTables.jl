@@ -186,7 +186,7 @@ Border styles are specified using an [`ExcelTableBorders`](@ref) object with the
 - `merged_header_cell_line`: Line below merged header cells (default: thin black).
 - `middle_line`: All other internal horizontal lines — data row underlines, lines around
   row groups, lines around summary rows, between-header lines — and vertical lines between
-  data columns (default: dotted black).
+  data columns (default: thin black).
 - `bottom_line`: Bottom of the outside border (default: thick black).
 
 **Vertical lines:**
