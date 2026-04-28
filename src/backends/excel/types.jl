@@ -4,9 +4,8 @@
 #
 ############################################################################################
 
-export ExcelPair, ExcelHighlighter, ExcelTableBorders, ExcelTableFormat, ExcelTableStyle, ExcelFormatter
-export DEFAULT_EXCEL_TABLE_STYLE
-export EXCEL_FORMAT_NO_VLINES, EXCEL_FORMAT_NO_CELL_LINES, EXCEL_FORMAT_SECTION_LINES
+export ExcelPair, ExcelHighlighter, ExcelTableBorders, ExcelTableFormat, ExcelTableStyle
+export ExcelFormatter
 
 ############################################################################################
 #                                       Constants                                          #
@@ -62,8 +61,8 @@ Font attributes are passed directly; fill attributes use the `"cell_fill_"` key 
 (the prefix is stripped before calling `XLSX.setFill`). Border attributes are not
 supported in highlighters.
 
-For example, to highlight cells in column 3 with a value greater than 10 in red bold,
-cells with value 0 in green with a solid fill, and cells in column 4 > 10 in blue:
+For example, to highlight cells in column 3 with a value greater than 10 in red bold, cells
+with value 0 in green with a solid fill, and cells in column 4 greated than 10 in blue:
 
 ```julia
 highlighters = [
@@ -116,29 +115,29 @@ Define the Excel format to apply to a cell.
 
 # Fields
 
-- `f::Function`: Function with the signature `f(value, i, j)` which should return `true` 
+- `f::Function`: Function with the signature `f(value, i, j)` which should return `true`
   if the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
-- `numFmt::ExcelPair`: Specifies the format to apply to the cell. The format should be 
-  specified with an `ExcelPair` (*i.e.* `Pair{String, String}`) using the `XLSX.jl` 
+- `numFmt::ExcelPair`: Specifies the format to apply to the cell. The format should be
+  specified with an `ExcelPair` (*i.e.* `Pair{String, String}`) using the `XLSX.jl`
   formatting definitions used by the `XLSX.setFormat` function.
 
 # Remarks
 
-It is possible to apply a set of native Excel formats by passing a `Vector{ExcelFormatter}` 
-to the `excel_formatters` keyword. Each Excel formatter is an instance of the structure 
+It is possible to apply a set of native Excel formats by passing a `Vector{ExcelFormatter}`
+to the `excel_formatters` keyword. Each Excel formatter is an instance of the structure
 [`ExcelFormatter`](@ref).
 
-The first formatter (in the order they are specified) that satisfies the specified condition 
-in the given table cell is applied, and the remainder of the formatters in the list are 
+The first formatter (in the order they are specified) that satisfies the specified condition
+in the given table cell is applied, and the remainder of the formatters in the list are
 skipped. If none matches, no `ExcelFormatter` is applied.
 
-An `ExcelFormatter` can be applied in the summary row, too. In this case, the value of `i` 
-should relate to the Excel row in which the summary row appears, rather than the data table 
+An `ExcelFormatter` can be applied in the summary row, too. In this case, the value of `i`
+should relate to the Excel row in which the summary row appears, rather than the data table
 row. This will always be outside the range of (greater than) any `i` in the data table. The
 value of `j` has the same meaning/values (column specifier) as in the data table itself.
 
-Excel formatters may be applied in addition to the standard formatters. The standard 
-formatters control the literal values written to Excel while the Excel formatters control 
+Excel formatters may be applied in addition to the standard formatters. The standard
+formatters control the literal values written to Excel while the Excel formatters control
 how Excel displays the literal cell values.
 
 For example, to apply Excel-native formatting to different columns of a table:
@@ -152,13 +151,11 @@ excel_formatters = [
 ]
 ```
 
-Excel formatters apply native Excel formatting to native Excel values. 
-However, `PrettyTables,jl`can handle Julia types that can't be represented 
-natively in Excel. If these are passed natively, then XLSX.jl will fail. 
-To circumvent this, a predefined formatter has been provided which converts 
-any unhandled types to strings (using `string()`). For more information, see 
-[`fmt__excel_stringify`](@ref).
-
+Excel formatters apply native Excel formatting to native Excel values. However,
+`PrettyTables,jl`can handle Julia types that can't be represented natively in Excel. If
+these are passed natively, then XLSX.jl will fail. To circumvent this, a predefined
+formatter has been provided which converts any unhandled types to strings (using
+`string()`). For more information, see [`fmt__excel_stringify`](@ref).
 """
 struct ExcelFormatter
     f::Function
@@ -223,8 +220,6 @@ end
 ############################################################################################
 #                                       Table Format                                       #
 ############################################################################################
-#        1         2         3         4         5         6         7         8         9
-#2345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012
 
 """
     struct ExcelTableFormat
@@ -268,91 +263,29 @@ Define the table borders that will be used to form the Excel table.
     `Vector{Int}` draws only after the listed column indices.
 - `vertical_line_after_data_columns::Bool`: Whether to draw a vertical line after the last
     data column (spanning only the content rows, not title/subtitle or footnotes).
-
-# Remarks
-
-Border placement is controlled by the boolean fields above. Border styles (line thickness,
-color) are configured via the `borders::ExcelTableBorders` field.
-
-Title, subtitle, footnotes, and source notes are never bordered. The outer left, right, and
-top borders apply only to the content area (column labels through the last data/summary
-row).
-
-Three predefined `NamedTuple` presets override specific fields from the default:
-- `EXCEL_FORMAT_NO_VLINES`: No vertical lines.
-- `EXCEL_FORMAT_NO_CELL_LINES`: No borders between individual data cells (no data row
-    underlines, no column dividers).
-- `EXCEL_FORMAT_SECTION_LINES`: Only section-level horizontal borders and one vertical
-    line after the row label column.
-
-Presets are plain `NamedTuple`s and can be applied by splatting them into the constructor.
-Use `merge` to combine presets or to override individual fields:
-
-```julia
-# Apply a single preset
-table_format = ExcelTableFormat(; EXCEL_FORMAT_NO_VLINES...)
-
-# Apply a preset and customize border styles
-table_format = ExcelTableFormat(;
-    EXCEL_FORMAT_SECTION_LINES...,
-    borders = ExcelTableBorders(header_line = ["style" => "thick", "color" => "red"]),
-)
-
-# Combine two presets (merge resolves any overlapping keys, last wins)
-table_format = ExcelTableFormat(; merge(EXCEL_FORMAT_SECTION_LINES, EXCEL_FORMAT_NO_VLINES)...)
-
-# Combine presets and re-enable a specific line
-table_format = ExcelTableFormat(;
-    merge(
-        EXCEL_FORMAT_SECTION_LINES,
-        EXCEL_FORMAT_NO_VLINES,
-        (horizontal_line_before_row_group_label = true,),
-    )...,
-)
-```
-
 """
 @kwdef struct ExcelTableFormat
     borders::ExcelTableBorders = ExcelTableBorders()
-    # Horizontal lines
-    horizontal_line_at_beginning::Bool            = true
-    horizontal_line_after_column_labels::Bool     = true
-    horizontal_line_between_column_labels::Bool   = true
-    horizontal_line_at_merged_column_labels::Bool = true
-    horizontal_lines_at_data_rows::Union{Symbol, Vector{Int}} = :all
-    horizontal_line_after_data_rows::Bool         = true
-    horizontal_line_before_row_group_label::Bool  = true
-    horizontal_line_after_row_group_label::Bool   = true
-    horizontal_line_before_summary_rows::Bool     = true
-    horizontal_line_after_summary_rows::Bool      = true
-    # Vertical lines
-    vertical_line_at_beginning::Bool              = true
-    vertical_line_after_row_number_column::Bool   = true
-    vertical_line_after_row_label_column::Bool    = true
+
+    # == Configuration for the Horizontal and Vertical Lines ===============================
+
+    horizontal_line_at_beginning::Bool                         = true
+    horizontal_line_after_column_labels::Bool                  = true
+    horizontal_line_between_column_labels::Bool                = true
+    horizontal_line_at_merged_column_labels::Bool              = true
+    horizontal_lines_at_data_rows::Union{Symbol, Vector{Int}}  = :all
+    horizontal_line_after_data_rows::Bool                      = true
+    horizontal_line_before_row_group_label::Bool               = true
+    horizontal_line_after_row_group_label::Bool                = true
+    horizontal_line_before_summary_rows::Bool                  = true
+    horizontal_line_after_summary_rows::Bool                   = true
+
+    vertical_line_at_beginning::Bool                           = true
+    vertical_line_after_row_number_column::Bool                = true
+    vertical_line_after_row_label_column::Bool                 = true
     vertical_lines_at_data_columns::Union{Symbol, Vector{Int}} = :all
-    vertical_line_after_data_columns::Bool        = true
+    vertical_line_after_data_columns::Bool                     = true
 end
-
-const EXCEL_FORMAT_NO_VLINES = (
-    vertical_line_after_row_number_column = false,
-    vertical_line_after_row_label_column  = false,
-    vertical_lines_at_data_columns        = :none,
-)
-
-const EXCEL_FORMAT_NO_CELL_LINES = (
-    horizontal_lines_at_data_rows  = :none,
-    vertical_lines_at_data_columns = false,
-)
-
-const EXCEL_FORMAT_SECTION_LINES = (
-    horizontal_lines_at_data_rows          = :none,
-    horizontal_line_before_row_group_label = false,
-    horizontal_line_after_row_group_label  = false,
-    horizontal_line_before_summary_rows    = false,
-    vertical_lines_at_data_columns         = false,
-    vertical_line_after_row_number_column  = false,
-)
-
 
 ############################################################################################
 #                                       Table Style                                        #
@@ -361,47 +294,48 @@ const EXCEL_FORMAT_SECTION_LINES = (
 """
     struct ExcelTableStyle
 
-Define the style (font attributes) of each of the table elements used with the 
+Define the style (font and cell attributes) of each of the table elements used with the
 Excel back end.
 
 # Fields
 
-- `title::Union{Nothing,Vector{ExcelPair}}`: Style for the title.
-- `subtitle::Union{Nothing,Vector{ExcelPair}}`: Style for the subtitle.
-- `row_number_label::Union{Nothing,Vector{ExcelPair}}`: Style for the row number label.
-- `row_number::Union{Nothing,Vector{ExcelPair}}`: Style for the row number.
-- `stubhead_label::Union{Nothing,Vector{ExcelPair}}`: Style for the stubhead label.
-- `row_label::Union{Nothing,Vector{ExcelPair}}`: Style for the row label.
-- `row_group_label::Union{Nothing,Vector{ExcelPair}}`: Style for the row group label.
-- `first_line_column_label::Union{Nothing,Vector{ExcelPair},Vector{Vector{ExcelPair}}}`: 
-  Style for the first line of the column labels. If a vector of `Vector{ExcelPair}}` is 
-  provided, each column label in the first line will use the corresponding style.
-- `column_label::Union{Nothing,Vector{ExcelPair}, Vector{Vector{ExcelPair}}}`: Style for 
-  the rest of the column labels. If a vector of `Vector{ExcelPair}}` is provided, each 
-  column label will use the corresponding style.
-- `first_line_merged_column_label::Union{Nothing,Vector{ExcelPair}}`: Style for the 
-  merged cells at the first column label line.
-- `merged_column_label::Union{Nothing,Vector{ExcelPair}}`: Style for the merged cells 
-  at the rest of the column labels.
-- `table_cell::Union{Nothing, Vector{ExcelPair}, Vector{Vector{ExcelPair}}}`: Style 
-  for the table cells. If a vector of `Vector{ExcelPair}}` is provided, each 
-  column in the data table will use the corresponding style.
-- `summary_row_label::Union{Nothing,Vector{ExcelPair}}`: Style for the summary row label.
-- `summary_row_cell::Union{Nothing, Vector{ExcelPair}, Vector{Vector{ExcelPair}}}`: Style 
-  for the summary row cell. If a vector of `Vector{ExcelPair}}` is provided, each column 
-  in the summary row will use the corresponding style.
-- `footnote::Union{Nothing,Vector{ExcelPair}}`: Style for the footnotes.
-- `source_note::Union{Nothing,Vector{ExcelPair}}`: Style for the source notes.
+- `title::Vector{ExcelPair}`: Style for the title.
+- `subtitle::Vector{ExcelPair}`: Style for the subtitle.
+- `row_number_label::Vector{ExcelPair}`: Style for the row number label.
+- `row_number::Vector{ExcelPair}`: Style for the row number.
+- `stubhead_label::Vector{ExcelPair}`: Style for the stubhead label.
+- `row_label::Vector{ExcelPair}`: Style for the row label.
+- `row_group_label::Vector{ExcelPair}`: Style for the row group label.
+- `first_line_column_label::Union{Nothing,Vector{ExcelPair},Vector{Vector{ExcelPair}}}`:
+    Style for the first line of the column labels. If a vector of `Vector{ExcelPair}}` is
+    provided, each column label in the first line will use the corresponding style.
+- `column_label::Union{Vector{ExcelPair}, Vector{Vector{ExcelPair}}}`: Style for the rest of
+    the column labels. If a vector of `Vector{ExcelPair}}` is provided, each column label
+    will use the corresponding style.
+- `first_line_merged_column_label::Vector{ExcelPair}`: Style for the merged cells at the
+    first column label line.
+- `merged_column_label::Vector{ExcelPair}`: Style for the merged cells at the rest of the
+    column labels.
+- `data_cell::Vector{ExcelPair}`: Style for the table cells. If a vector of
+    `Vector{ExcelPair}}` is provided, each column in the data table will use the
+    corresponding style.
+- `summary_row_label::Vector{ExcelPair}`: Style for the summary row label.
+- `summary_row_cell::Vector{ExcelPair}`: Style for the summary row cell. If a vector of
+    `Vector{ExcelPair}}` is provided, each column in the summary row will use the
+    corresponding style.
+- `footnote::Vector{ExcelPair}`: Style for the footnotes.
+- `source_note::Vector{ExcelPair}`: Style for the source notes.
 
 # Remarks
 
-Each field corresponds to a table element and should be a vector of `ExcelPair`, 
-*i.e.* `Pair{String, String}`, describing properties and values compatible with the 
-`XLSX.setFont` function.
+Each field corresponds to a table element and should be a vector of `ExcelPair`, *i.e.*
+`Pair{String, String}`, describing properties and values compatible with the `XLSX.setFont`
+function. We can also defined properties to be applied to the cell itself with the function
+`XLSX.setFill`. In this case, prefix the parameter name with `"cell_fill_"` (e.g.,
+`"cell_fill_pattern" => "solid"`).
 
-It is only necessary to define those fields for which the default style needs to be 
+It is only necessary to define those fields for which the default style needs to be
 overwritten. For example:
-
 
 # Examples
 
@@ -416,7 +350,6 @@ style = ExcelTableStyle(
     title                          = ["bold" => "true", "color" => "orange", "size" => "18", "under" => "single"],
 )
 ```
-
 """
 @kwdef struct ExcelTableStyle{
     TFCL <: Union{Vector{ExcelPair}, Vector{Vector{ExcelPair}}},
@@ -439,23 +372,3 @@ style = ExcelTableStyle(
     footnote::Vector{ExcelPair}                       = _EXCEL__SMALL
     source_note::Vector{ExcelPair}                    = _EXCEL__SMALL_ITALIC_GRAY
 end
-
-# const DEFAULT_EXCEL_TABLE_STYLE =  ExcelTableStyle(
-#     push!(_EXCEL__XLARGE_BOLD, "under" => "single"), # title
-#     _EXCEL__LARGE_ITALIC,                            # subtitle
-#     _EXCEL__BOLD,                                    # row_number_label
-#     _EXCEL__BOLD,                                    # row_number
-#     _EXCEL__BOLD,                                    # stubhead_label
-#     _EXCEL__BOLD,                                    # row_label
-#     _EXCEL__BOLD,                                    # row_group_label
-#     _EXCEL__BOLD,                                    # first_line_column_label
-#     _EXCEL__NO_DECORATION,                           # column_label
-#     _EXCEL__BOLD,                                    # first_line_merged_column_label
-#     _EXCEL__NO_DECORATION,                           # merged_column_label
-#     _EXCEL__NO_DECORATION,                           # table_cell
-#     _EXCEL__BOLD,                                    # summary_row_label
-#     _EXCEL__NO_DECORATION,                           # summary_row_cell
-#     _EXCEL__SMALL,                                   # footnote
-#     _EXCEL__SMALL_ITALIC_GRAY,                       # source_note
-# )
-
