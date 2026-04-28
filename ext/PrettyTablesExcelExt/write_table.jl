@@ -54,12 +54,14 @@ function _excel__write_table!(
 )
     table_data = pspec.table_data
 
-    c                = XLSX.CellRef(anchor_cell)
+    c = XLSX.CellRef(anchor_cell)
     anchor_row_offset = Int(c.row_number  - 1)
     anchor_col_offset = Int(c.column_number - 1)
 
     num_cols   = table_data.num_columns
     col_offset = _excel__compute_col_offset(table_data)
+
+    renderer = Val(pspec.renderer)
 
     if data_column_widths isa Number
         data_column_widths = data_column_widths .+ 0.0 * (1:num_cols)
@@ -224,23 +226,25 @@ function _excel__write_table!(
             cell = _current_cell(action, ps, table_data)
             cell === _IGNORE_CELL && continue
 
+            rendered_cell = _excel__render_cell(cell, renderer)
+
             alignment = _current_cell_alignment(action, ps, table_data)
             sheet_row = current_row + anchor_row_offset
 
             # Footnote superscripts to append to this cell.
             fn_indices = _current_cell_footnotes(table_data, action, ps.i, ps.j)
-            fn_str =
-                (!isnothing(fn_indices) && !isempty(fn_indices)) ?
-                join(_excel__to_superscript.(fn_indices)) : ""
+
+            if !isnothing(fn_indices) && !isempty(fn_indices)
+                fn_str = join(_excel__to_superscript.(fn_indices))
+                rendered_cell = string(rendered_cell) * fn_str
+            end
 
             # -- Full-span cells -------------------------------------------------------
             if action ∈ (:title, :subtitle, :row_group_label, :footnote, :source_notes)
 
                 if action == :footnote
                     # Footnote cells are prefixed with their index superscript.
-                    text = _excel__to_superscript(ps.i) * " " * string(cell)
-                else
-                    text = string(something(cell, "")) * fn_str
+                    rendered_cell = _excel__to_superscript(ps.i) * rendered_cell
                 end
 
                 style_key   = action == :source_notes ? "source_note" : string(action)
@@ -260,7 +264,7 @@ function _excel__write_table!(
 
                 row_height = _excel__write_full_span_cell!(
                     sheet,
-                    text,
+                    rendered_cell,
                     current_row,
                     num_cols,
                     col_offset,
@@ -281,9 +285,8 @@ function _excel__write_table!(
                 if cell isa MergeCells
                     num_data_cols = _number_of_printed_data_columns(table_data)
                     span          = min(cell.column_span, num_data_cols - ps.j + 1)
-                    label_text    = string(cell.data) * fn_str
 
-                    sheet[sheet_row, excel_col] = label_text
+                    sheet[sheet_row, excel_col] = rendered_cell
 
                     XLSX.mergeCells(
                         sheet,
@@ -312,7 +315,7 @@ function _excel__write_table!(
                         true,
                     )
 
-                    row_height, _ = _excel__cell_length_and_height(label_text, fontsize)
+                    row_height, _ = _excel__cell_length_and_height(rendered_cell, fontsize)
 
                     max_row_height[current_row] = max(
                         max_row_height[current_row], row_height
@@ -338,8 +341,7 @@ function _excel__write_table!(
                     end
 
                 else
-                    label_text = string(cell) * fn_str
-                    sheet[sheet_row, excel_col] = label_text
+                    sheet[sheet_row, excel_col] = rendered_cell
 
                     style_key = ps.i == 1 ? "first_line_column_label" : "column_label"
 
@@ -360,7 +362,7 @@ function _excel__write_table!(
                     )
 
                     row_height, col_length = _excel__cell_length_and_height(
-                        label_text, fontsize
+                        rendered_cell, fontsize
                     )
 
                     max_row_height[current_row] = max(
@@ -392,9 +394,8 @@ function _excel__write_table!(
             # -- Row number label ----------------------------------------------------------
             elseif action == :row_number_label
                 excel_col  = 1 + anchor_col_offset
-                label_text = string(something(cell, "")) * fn_str
 
-                sheet[sheet_row, excel_col] = label_text
+                sheet[sheet_row, excel_col] = rendered_cell
 
                 fontsize = _excel__apply_cell_style!(
                     sheet,
@@ -415,7 +416,7 @@ function _excel__write_table!(
                 end
 
                 row_height, col_length = _excel__cell_length_and_height(
-                    label_text, fontsize
+                    rendered_cell, fontsize
                 )
 
                 max_row_height[current_row] = max(max_row_height[current_row], row_height)
@@ -424,9 +425,8 @@ function _excel__write_table!(
             # -- Row Number / Summary Row Number -------------------------------------------
             elseif action ∈ (:row_number, :summary_row_number)
                 excel_col = 1 + anchor_col_offset
-                val       = cell
 
-                sheet[sheet_row, excel_col] = val
+                sheet[sheet_row, excel_col] = rendered_cell
 
                 fontsize = _excel__apply_cell_style!(
                     sheet,
@@ -446,16 +446,15 @@ function _excel__write_table!(
                     )
                 end
 
-                row_height, _ = _excel__cell_length_and_height(val, fontsize)
+                row_height, _ = _excel__cell_length_and_height(rendered_cell, fontsize)
 
                 max_row_height[current_row] = max(max_row_height[current_row], row_height)
 
             # -- Stubhead label --------------------------------------------------------
             elseif action == :stubhead_label
                 excel_col  = col_offset + anchor_col_offset
-                label_text = string(something(cell, "")) * fn_str
 
-                sheet[sheet_row, excel_col] = label_text
+                sheet[sheet_row, excel_col] = rendered_cell
 
                 fontsize = _excel__apply_cell_style!(
                     sheet,
@@ -469,7 +468,7 @@ function _excel__write_table!(
                 )
 
                 row_height, col_length = _excel__cell_length_and_height(
-                    label_text, fontsize
+                    rendered_cell, fontsize
                 )
 
                 max_row_height[current_row] = max(max_row_height[current_row], row_height)
@@ -478,11 +477,10 @@ function _excel__write_table!(
             # -- Row label / summary row label -----------------------------------------
             elseif action ∈ (:row_label, :summary_row_label)
                 excel_col   = col_offset + anchor_col_offset
-                label_text  = string(cell) * fn_str
                 style_key   = string(action)
                 style_field = getproperty(style, Symbol(style_key))
 
-                sheet[sheet_row, excel_col] = label_text
+                sheet[sheet_row, excel_col] = rendered_cell
 
                 fontsize = _excel__apply_cell_style!(
                     sheet,
@@ -496,7 +494,7 @@ function _excel__write_table!(
                 )
 
                 row_height, col_length = _excel__cell_length_and_height(
-                    label_text, fontsize
+                    rendered_cell, fontsize
                 )
 
                 max_row_height[current_row] = max(max_row_height[current_row], row_height)
@@ -506,14 +504,11 @@ function _excel__write_table!(
             elseif action == :data
                 excel_col = ps.j + col_offset + anchor_col_offset
 
-                # _current_cell already applied table_data.formatters.
-                formatted_value = !isempty(fn_str) ? string(cell) * fn_str : cell
-
-                lines = formatted_value isa AbstractString ?
-                    _excel__text_lines(formatted_value) :
+                lines = rendered_cell isa AbstractString ?
+                    _excel__text_lines(rendered_cell) :
                     1
 
-                sheet[sheet_row, excel_col] = formatted_value
+                sheet[sheet_row, excel_col] = rendered_cell
 
                 fontsize = _excel__apply_cell_style!(
                     sheet,
@@ -547,7 +542,7 @@ function _excel__write_table!(
                 end
 
                 row_height, col_length = _excel__cell_length_and_height(
-                    formatted_value, fontsize
+                    rendered_cell, fontsize
                 )
 
                 max_row_height[current_row] = max(max_row_height[current_row], row_height)
@@ -569,7 +564,7 @@ function _excel__write_table!(
 
                         if !isnothing(hl_font_size)
                             hl_row_height, hl_col_length = _excel__cell_length_and_height(
-                                formatted_value, hl_font_size
+                                rendered_cell, hl_font_size
                             )
                             max_row_height[current_row] = max(
                                 max_row_height[current_row], hl_row_height
@@ -592,10 +587,7 @@ function _excel__write_table!(
             elseif action == :summary_row_cell
                 excel_col = ps.j + col_offset + anchor_col_offset
 
-                # _current_cell already called the summary function.
-                formatted_value = !isempty(fn_str) ? string(cell) * fn_str : cell
-
-                sheet[sheet_row, excel_col] = formatted_value
+                sheet[sheet_row, excel_col] = rendered_cell
 
                 fontsize = _excel__apply_cell_style!(
                     sheet,
@@ -628,7 +620,7 @@ function _excel__write_table!(
                 end
 
                 row_height, col_length = _excel__cell_length_and_height(
-                    formatted_value, fontsize
+                    rendered_cell, fontsize
                 )
 
                 max_row_height[current_row] = max(max_row_height[current_row], row_height)
