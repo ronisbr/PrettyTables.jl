@@ -32,16 +32,15 @@ include("./types.jl")
 end
 
 @testset "Excel Back End Tests" verbose = true begin
-    include("./backends/excel/files_and_sheets.jl")
-    include("./backends/excel/circular_reference.jl")
     include("./backends/excel/alignment.jl")
-    include("./backends/excel/highlighters.jl")
+    include("./backends/excel/column_headers.jl")
+    include("./backends/excel/files_and_sheets.jl")
+    include("./backends/excel/fills.jl")
+    include("./backends/excel/formats.jl")
     include("./backends/excel/formatters.jl")
     include("./backends/excel/heights_and_widths.jl")
-    include("./backends/excel/column_headers.jl")
+    include("./backends/excel/highlighters.jl")
     include("./backends/excel/styles.jl")
-    include("./backends/excel/formats.jl")
-    include("./backends/excel/fills.jl")
 end
 
 @testset "HTML Back End Tests" verbose = true begin
