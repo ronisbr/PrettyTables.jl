@@ -6,7 +6,7 @@
 
 @testset "Heights and Widths" verbose = true begin
 
-    # == Style and Highlighter Size Effects ===================================================
+    # == Style and Highlighter Size Effects ================================================
 
     @testset "Style and Highlighter Size Effects" verbose = true begin
         data = [1 2 3]
@@ -16,13 +16,16 @@
             data;
             title = "Test Table",
             subtitle = "Subtitle_test",
-            highlighters = [ExcelHighlighter((data, i, j) -> (i == 1),
-                ["color" => "red", "bold" => "true", "size" => "32"]
-            )],
-            style = ExcelTableStyle(
+            highlighters = [
+                ExcelHighlighter(
+                    (data, i, j) -> (i == 1),
+                    ["color" => "red", "bold" => "true", "size" => "32"],
+                ),
+            ],
+            style = ExcelTableStyle(;
                 title = ["size" => "48", "bold" => "true"],
                 subtitle = ["size" => "8", "italic" => "true"],
-            )
+            ),
         )
 
         @test XLSX.getRowHeight(result[1], 1, 1) ≈ 60.810937499999994
@@ -30,7 +33,7 @@
         @test XLSX.getRowHeight(result[1], 5, 1) ≈ 41.6109375
     end
 
-    # == Text vs Numbers Affecting Width/Height ==============================================
+    # == Text vs Numbers Affecting Width/Height ============================================
 
     @testset "Text vs Numbers Affecting Width/Height" verbose = true begin
         data = [
@@ -41,9 +44,7 @@
         result = pretty_table(
             XLSX.XLSXFile,
             data;
-            style = ExcelTableStyle(
-                data_cell = ["size" => "48", "bold" => "true"],
-            )
+            style = ExcelTableStyle(; data_cell = ["size" => "48", "bold" => "true"]),
         )
 
         @test XLSX.getColumnWidth(result[1], 2, 1) ≈ 81.91093750000002
@@ -51,7 +52,7 @@
         @test XLSX.getRowHeight(result[1], 3, 1) ≈ 60.810937499999994
     end
 
-    # == Formatted Dates Column Widths ========================================================
+    # == Formatted Dates Column Widths =====================================================
 
     @testset "Formatted Dates Column Widths" verbose = true begin
         now = Dates.now()
@@ -69,7 +70,9 @@
                 ExcelFormatter((v, i, j) -> (j == 1), ["format" => "ShortDate"])
                 ExcelFormatter((v, i, j) -> (j == 2), ["format" => "d mmmm yyyy"])
                 ExcelFormatter((v, i, j) -> (j == 3), ["format" => "hh:mm"])
-                ExcelFormatter((v, i, j) -> (j == 4), ["format" => "yyyy-mm-dd\"T\"hh:mm:ss"])
+                ExcelFormatter(
+                    (v, i, j) -> (j == 4), ["format" => "yyyy-mm-dd\"T\"hh:mm:ss"]
+                )
             ],
         )
 
@@ -79,7 +82,7 @@
         end
     end
 
-    # == Fixed Column Widths ==================================================================
+    # == Fixed Column Widths ===============================================================
 
     @testset "Fixed Column Widths" verbose = true begin
         now = Dates.now()
@@ -98,7 +101,9 @@
                     ExcelFormatter((v, i, j) -> (j == 1), ["format" => "ShortDate"])
                     ExcelFormatter((v, i, j) -> (j == 2), ["format" => "d mmmm yyyy"])
                     ExcelFormatter((v, i, j) -> (j == 3), ["format" => "hh:mm"])
-                    ExcelFormatter((v, i, j) -> (j == 4), ["format" => "yyyy-mm-dd\"T\"hh:mm:ss"])
+                    ExcelFormatter(
+                        (v, i, j) -> (j == 4), ["format" => "yyyy-mm-dd\"T\"hh:mm:ss"]
+                    )
                 ],
                 data_column_widths = 10.5,
             )
@@ -117,7 +122,9 @@
                     ExcelFormatter((v, i, j) -> (j == 1), ["format" => "ShortDate"])
                     ExcelFormatter((v, i, j) -> (j == 2), ["format" => "d mmmm yyyy"])
                     ExcelFormatter((v, i, j) -> (j == 3), ["format" => "hh:mm"])
-                    ExcelFormatter((v, i, j) -> (j == 4), ["format" => "yyyy-mm-dd\"T\"hh:mm:ss"])
+                    ExcelFormatter(
+                        (v, i, j) -> (j == 4), ["format" => "yyyy-mm-dd\"T\"hh:mm:ss"]
+                    )
                 ],
                 data_column_widths = [12.0, 16.0, 8.0, 20.0],
             )
@@ -130,7 +137,7 @@
         end
     end
 
-    # == Maximum Column Widths ================================================================
+    # == Maximum Column Widths =============================================================
 
     @testset "Maximum Column Widths" verbose = true begin
         now = Dates.now()
@@ -148,7 +155,9 @@
                 ExcelFormatter((v, i, j) -> (j == 1), ["format" => "ShortDate"])
                 ExcelFormatter((v, i, j) -> (j == 2), ["format" => "d mmmm yyyy"])
                 ExcelFormatter((v, i, j) -> (j == 3), ["format" => "hh:mm"])
-                ExcelFormatter((v, i, j) -> (j == 4), ["format" => "yyyy-mm-dd\"T\"hh:mm:ss"])
+                ExcelFormatter(
+                    (v, i, j) -> (j == 4), ["format" => "yyyy-mm-dd\"T\"hh:mm:ss"]
+                )
             ],
             maximum_data_column_widths = [6.0, 100.0, 40.0, 5.0],
         )
@@ -160,7 +169,7 @@
         end
     end
 
-    # == Minimum Column Widths ================================================================
+    # == Minimum Column Widths =============================================================
 
     @testset "Minimum Column Widths" verbose = true begin
         now = Dates.now()
@@ -178,7 +187,9 @@
                 ExcelFormatter((v, i, j) -> (j == 1), ["format" => "ShortDate"])
                 ExcelFormatter((v, i, j) -> (j == 2), ["format" => "d mmmm yyyy"])
                 ExcelFormatter((v, i, j) -> (j == 3), ["format" => "hh:mm"])
-                ExcelFormatter((v, i, j) -> (j == 4), ["format" => "yyyy-mm-dd\"T\"hh:mm:ss"])
+                ExcelFormatter(
+                    (v, i, j) -> (j == 4), ["format" => "yyyy-mm-dd\"T\"hh:mm:ss"]
+                )
             ],
             minimum_data_column_widths = [1.0, 12.0, 16.0, 1.0],
         )

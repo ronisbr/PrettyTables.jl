@@ -6,7 +6,7 @@
 
 @testset "Files and Sheets" verbose = true begin
 
-    # == Creating and Reading Tables ==========================================================
+    # == Creating and Reading Tables =======================================================
 
     @testset "Creating and Reading Tables" verbose = true begin
         data = [1 2; 3 4]
@@ -25,17 +25,23 @@
         @test xlsx["prettytable"]["A2:B3"] == data
     end
 
-    # == File Modes ===========================================================================
+    # == File Modes ========================================================================
 
     @testset "File Modes" verbose = true begin
         data = [1 2; 3 4]
 
-        @test_throws ErrorException pretty_table(data; backend = :excel, filename = "test.xlsx", mode = "w")
+        @test_throws ErrorException pretty_table(
+            data; backend = :excel, filename = "test.xlsx", mode = "w"
+        )
 
-        @test_throws ArgumentError pretty_table(data; backend = :excel, filename = "test.xlsx", mode = "r")
+        @test_throws ArgumentError pretty_table(
+            data; backend = :excel, filename = "test.xlsx", mode = "r"
+        )
 
         data2 = [7 8; 9 0]
-        f = pretty_table(data2; backend = :excel, filename = "test.xlsx", mode = "w", overwrite = true)
+        f = pretty_table(
+            data2; backend = :excel, filename = "test.xlsx", mode = "w", overwrite = true
+        )
         @test f == "test.xlsx"
 
         data3 = [5 6; 7 8]
@@ -44,16 +50,18 @@
         @test f["prettytable"]["A1:B1"] == Any["Col. 1" "Col. 2"]
         @test f["prettytable"]["A2:B3"] == data3
 
-        writexlsx("test.xlsx", f, overwrite = true)
+        writexlsx("test.xlsx", f; overwrite = true)
     end
 
-    # == Anchor Cells =========================================================================
+    # == Anchor Cells ======================================================================
 
     @testset "Anchor Cells" verbose = true begin
         data = [1 2; 3 4]
         data3 = [5 6; 7 8]
 
-        f = pretty_table(data; backend = :excel, filename = "test.xlsx", mode = "rw", anchor_cell = "D1")
+        f = pretty_table(
+            data; backend = :excel, filename = "test.xlsx", mode = "rw", anchor_cell = "D1"
+        )
         @test f isa XLSX.XLSXFile
         @test f["prettytable"]["A1:B1"] == Any["Col. 1" "Col. 2"]
         @test f["prettytable"]["A2:B3"] == data3
@@ -61,14 +69,16 @@
         @test f["prettytable"]["D2:E3"] == data
     end
 
-    # == XLSX Worksheets ======================================================================
+    # == XLSX Worksheets ===================================================================
 
     @testset "XLSX Worksheets" verbose = true begin
         data = [1 2; 3 4]
         data3 = [5 6; 7 8]
 
         f = openxlsx("test.xlsx"; mode = "rw")
-        newf = pretty_table(data; backend = :excel, sheet = XLSX.addsheet!(f, "newsheet"), mode = "rw")
+        newf = pretty_table(
+            data; backend = :excel, sheet = XLSX.addsheet!(f, "newsheet"), mode = "rw"
+        )
         @test isnothing(newf) === true
         @test XLSX.hassheet(f, "prettytable")
         @test XLSX.hassheet(f, "newsheet")
@@ -77,10 +87,16 @@
         @test f["newsheet"]["A1:B1"] == Any["Col. 1" "Col. 2"]
         @test f["newsheet"]["A2:B3"] == data
 
-        @test_throws ArgumentError pretty_table(data; backend = :excel, filename = "test.xlsx", sheet = f["newsheet"], mode = "rw")
+        @test_throws ArgumentError pretty_table(
+            data;
+            backend = :excel,
+            filename = "test.xlsx",
+            sheet = f["newsheet"],
+            mode = "rw",
+        )
     end
 
-    # == Cleanup ==============================================================================
+    # == Cleanup ===========================================================================
 
-    isfile("test.xlsx") && rm("test.xlsx", force = true)
+    isfile("test.xlsx") && rm("test.xlsx"; force = true)
 end

@@ -11,7 +11,7 @@
         7 8 9
     ]
 
-    # == Styles with Vectors of Column Properties =============================================
+    # == Styles with Vectors of Column Properties ==========================================
 
     @testset "Styles with Vectors of Column Properties" verbose = true begin
         result = pretty_table(
@@ -32,52 +32,28 @@
                 (:data, 2, 2) => "Midddle data footnote."
             ],
             source_notes = "This is a source note.",
-            style = ExcelTableStyle(
+            style = ExcelTableStyle(;
                 title = [
                     "bold" => "true",
                     "color" => "orange",
                     "size" => "18",
-                    "under" => "single"
+                    "under" => "single",
                 ],
-                subtitle = [
-                    "italic" => "true",
-                    "name" => "Palatino"
-                ],
+                subtitle = ["italic" => "true", "name" => "Palatino"],
                 row_number_label = ["under" => "double"],
                 row_number = ["strike" => "true"],
-                stubhead_label = [
-                    "bold" => "true",
-                    "color" => "red",
-                    "size" => "24"
-                ],
-                row_label = [
-                    "color" => "orange"
-                ],
-                row_group_label = [
-                    "bold" => "true",
-                    "color" => "magenta"
-                ],
+                stubhead_label = ["bold" => "true", "color" => "red", "size" => "24"],
+                row_label = ["color" => "orange"],
+                row_group_label = ["bold" => "true", "color" => "magenta"],
                 first_line_column_label = [
-                    ["bold" => "true"],
-                    ["color" => "red"],
-                    ["size" => "24"]
+                    ["bold" => "true"], ["color" => "red"], ["size" => "24"]
                 ],
                 data_cell = ["bold" => "true"],
-                summary_row_label = [
-                    "bold" => "true",
-                    "color" => "red",
-                    "size" => "24"
-                ],
+                summary_row_label = ["bold" => "true", "color" => "red", "size" => "24"],
                 summary_row_cell = ["italic" => "true"],
-                footnote = [
-                    "bold" => "true",
-                    "color" => "magenta"
-                ],
-                source_note = [
-                    "italic" => "true",
-                    "color" => "cyan"
-                ],
-            )
+                footnote = ["bold" => "true", "color" => "magenta"],
+                source_note = ["italic" => "true", "color" => "cyan"],
+            ),
         )
 
         r = result[1]
@@ -132,7 +108,7 @@
         @test f["color"] == Dict("rgb" => "FF00FFFF")
     end
 
-    # == Styles with Constant Properties ======================================================
+    # == Styles with Constant Properties ===================================================
 
     @testset "Styles with Constant Properties for All Columns" verbose = true begin
         result = pretty_table(
@@ -153,60 +129,28 @@
                 (:data, 2, 2) => "Middle data footnote."
             ],
             source_notes = "This is a source note.",
-            style = ExcelTableStyle(
+            style = ExcelTableStyle(;
                 title = [
                     "bold" => "true",
                     "color" => "orange",
                     "size" => "18",
-                    "under" => "single"
+                    "under" => "single",
                 ],
-                subtitle = [
-                    "italic" => "true",
-                    "name" => "Palatino"
-                ],
+                subtitle = ["italic" => "true", "name" => "Palatino"],
                 row_number_label = ["under" => "double"],
                 row_number = ["strike" => "true"],
-                stubhead_label = [
-                    "bold" => "true",
-                    "color" => "red",
-                    "size" => "24"
-                ],
-                row_label = [
-                    "color" => "orange"
-                ],
-                row_group_label = [
-                    "bold" => "true",
-                    "color" => "magenta"
-                ],
+                stubhead_label = ["bold" => "true", "color" => "red", "size" => "24"],
+                row_label = ["color" => "orange"],
+                row_group_label = ["bold" => "true", "color" => "magenta"],
                 first_line_column_label = [
-                    "bold" => "true",
-                    "color" => "red",
-                    "size" => "24"
+                    "bold" => "true", "color" => "red", "size" => "24"
                 ],
-                data_cell = [
-                    "bold" => "true",
-                    "color" => "red",
-                    "size" => "24"
-                ],
-                summary_row_label = [
-                    "bold" => "true",
-                    "color" => "red",
-                    "size" => "24"
-                ],
-                summary_row_cell = [
-                    "italic" => "true",
-                    "color" => "green",
-                    "size" => "14"
-                ],
-                footnote = [
-                    "bold" => "true",
-                    "color" => "magenta"
-                ],
-                source_note = [
-                    "italic" => "true",
-                    "color" => "cyan"
-                ],
-            )
+                data_cell = ["bold" => "true", "color" => "red", "size" => "24"],
+                summary_row_label = ["bold" => "true", "color" => "red", "size" => "24"],
+                summary_row_cell = ["italic" => "true", "color" => "green", "size" => "14"],
+                footnote = ["bold" => "true", "color" => "magenta"],
+                source_note = ["italic" => "true", "color" => "cyan"],
+            ),
         )
 
         r = result[1]
