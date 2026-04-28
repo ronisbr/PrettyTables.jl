@@ -82,25 +82,25 @@
 
     # Title
     f = XLSX.getFont(r, "A1").font
-    @test f["b"] === nothing 
+    @test haskey(f, "b") == true 
     @test f["color"] == Dict("rgb" => "FFFFA500")
     @test f["sz"] == Dict("val" => "18")
-    @test f["u"] === nothing
+    @test haskey(f, "u") == true
 
     # Subtitle
     f = XLSX.getFont(r, "A2").font
-    @test f["i"] === nothing
+    @test haskey(f, "i") == true
     @test f["name"] == Dict("val" => "Palatino")
 
     # Row number label
     @test XLSX.getFont(r, "A4").font["u"] == Dict("val" => "double")
 
     # Row number
-    @test XLSX.getFont(r, "A6").font["strike"] == nothing
+    @test haskey(XLSX.getFont(r, "A6").font, "strike") == true
 
     # Stubhead label
     f = XLSX.getFont(r, "B4").font
-    @test f["b"] === nothing
+    @test haskey(f, "b") == true
     @test f["color"] == Dict("rgb" => "FFFF0000")
     @test f["sz"] == Dict("val" => "24")
 
@@ -109,38 +109,38 @@
 
     # Row group label
     f = XLSX.getFont(r, "A7").font
-    @test f["b"] === nothing 
+    @test haskey(f, "b") == true 
     @test f["color"] == Dict("rgb" => "FFFF00FF")
 
     # Column headers (vector)
-    @test XLSX.getFont(r, "C4").font["b"] === nothing
+    @test haskey(XLSX.getFont(r, "C4").font, "b") == true
     @test XLSX.getFont(r, "D4").font["color"] == Dict("rgb" => "FFFF0000")
     @test XLSX.getFont(r, "E4").font["sz"] == Dict("val" => "24")
 
     # Data row (vector)
-    @test XLSX.getFont(r, "C5").font["b"] === nothing
-    @test XLSX.getFont(r, "D5").font["b"] === nothing
-    @test XLSX.getFont(r, "E5").font["b"] === nothing
+    @test haskey(XLSX.getFont(r, "C5").font, "b") == true
+    @test haskey(XLSX.getFont(r, "D5").font, "b") == true
+    @test haskey(XLSX.getFont(r, "E5").font, "b") == true
 
     # summary row label
     f = XLSX.getFont(r, "B9").font
-    @test f["b"] === nothing
+    @test haskey(f, "b") == true
     @test f["color"] == Dict("rgb" => "FFFF0000")
     @test f["sz"] == Dict("val" => "24")
 
     # summary row (vector)
-    @test XLSX.getFont(r, "C9").font["i"] === nothing
-    @test XLSX.getFont(r, "D9").font["i"] === nothing
-    @test XLSX.getFont(r, "E9").font["i"] === nothing
+    @test haskey(XLSX.getFont(r, "C9").font, "i") == true
+    @test haskey(XLSX.getFont(r, "D9").font, "i") == true
+    @test haskey(XLSX.getFont(r, "E9").font, "i") == true
 
     # Footnotes
     f = XLSX.getFont(r, "A10").font
-    @test f["b"] === nothing 
+    @test haskey(f, "b") == true 
     @test f["color"] == Dict("rgb" => "FFFF00FF")
 
     # Summary notes
     f = XLSX.getFont(r, "A13").font
-    @test f["i"] === nothing 
+    @test haskey(f, "i") == true 
     @test f["color"] == Dict("rgb" => "FF00FFFF")
 
     # Test styles with constant properties for all columns
@@ -222,25 +222,25 @@
 
     # Title
     f = XLSX.getFont(r, "A1").font
-    @test f["b"] === nothing 
+    @test haskey(f, "b") == true 
     @test f["color"] == Dict("rgb" => "FFFFA500")
     @test f["sz"] == Dict("val" => "18")
-    @test f["u"] === nothing
+    @test haskey(f, "u") == true
 
     # Subtitle
     f = XLSX.getFont(r, "A2").font
-    @test f["i"] === nothing
+    @test haskey(f, "i") == true
     @test f["name"] == Dict("val" => "Palatino")
 
     # Row number label
     @test XLSX.getFont(r, "A4").font["u"] == Dict("val" => "double")
 
     # Row number
-    @test XLSX.getFont(r, "A6").font["strike"] == nothing
+    @test haskey(XLSX.getFont(r, "A6").font, "strike") == true
 
     # Stubhead label
     f = XLSX.getFont(r, "B4").font
-    @test f["b"] === nothing
+    @test haskey(f, "b") == true
     @test f["color"] == Dict("rgb" => "FFFF0000")
     @test f["sz"] == Dict("val" => "24")
 
@@ -249,65 +249,65 @@
 
     # Row group label
     f = XLSX.getFont(r, "A7").font
-    @test f["b"] === nothing 
+    @test haskey(f, "b") == true 
     @test f["color"] == Dict("rgb" => "FFFF00FF")
 
     # Column headers (single)
     f = XLSX.getFont(r, "C4").font
-    @test f["b"] === nothing
+    @test haskey(f, "b") == true
     @test f["color"] == Dict("rgb" => "FFFF0000")
     @test f["sz"] == Dict("val" => "24")
     f = XLSX.getFont(r, "D4").font
-    @test f["b"] === nothing
+    @test haskey(f, "b") == true
     @test f["color"] == Dict("rgb" => "FFFF0000")
     @test f["sz"] == Dict("val" => "24")
     f = XLSX.getFont(r, "E4").font
-    @test f["b"] === nothing
+    @test haskey(f, "b") == true
     @test f["color"] == Dict("rgb" => "FFFF0000")
     @test f["sz"] == Dict("val" => "24")
 
     # Data row (single)
     f = XLSX.getFont(r, "C5").font
-    @test f["b"] === nothing
+    @test haskey(f, "b") == true
     @test f["color"] == Dict("rgb" => "FFFF0000")
     @test f["sz"] == Dict("val" => "24")
     f = XLSX.getFont(r, "D5").font
-    @test f["b"] === nothing
+    @test haskey(f, "b") == true
     @test f["color"] == Dict("rgb" => "FFFF0000")
     @test f["sz"] == Dict("val" => "24")
     f = XLSX.getFont(r, "E5").font
-    @test f["b"] === nothing
+    @test haskey(f, "b") == true
     @test f["color"] == Dict("rgb" => "FFFF0000")
     @test f["sz"] == Dict("val" => "24")
 
     # summary row label
     f = XLSX.getFont(r, "B9").font
-    @test f["b"] === nothing
+    @test haskey(f, "b") == true
     @test f["color"] == Dict("rgb" => "FFFF0000")
     @test f["sz"] == Dict("val" => "24")
 
     # summary row (vector)
     f = XLSX.getFont(r, "C9").font
-    @test f["i"] === nothing
+    @test haskey(f, "i") == true
     @test f["color"] == Dict("rgb" => "FF008000")
     @test f["sz"] == Dict("val" => "14")
     f = XLSX.getFont(r, "D9").font
-    @test f["i"] === nothing
+    @test haskey(f, "i") == true
     @test f["color"] == Dict("rgb" => "FF008000")
     @test f["sz"] == Dict("val" => "14")
     f = XLSX.getFont(r, "E9").font
-    @test f["i"] === nothing
+    @test haskey(f, "i") == true
     @test f["color"] == Dict("rgb" => "FF008000")
     @test f["sz"] == Dict("val" => "14")
 
     # Footnotes
     f = XLSX.getFont(r, "A10").font
-    @test f["b"] === nothing 
+    @test haskey(f, "b") == true 
     @test f["color"] == Dict("rgb" => "FFFF00FF")
 
     # Summary notes
     f = XLSX.getFont(r, "A13").font
-    @test f["i"] === nothing 
+    @test haskey(f, "i") == true 
     @test f["color"] == Dict("rgb" => "FF00FFFF")
 
 end
