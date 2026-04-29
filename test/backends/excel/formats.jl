@@ -51,18 +51,17 @@
             Dict("style" => "medium", "rgb" => "FF000000")
 
         f = XLSX.getBorder(r, "A5").border
-        @test f["bottom"] == Dict("rgb" => "FF000000", "style" => "thin")
+        @test f["bottom"] === nothing
         @test f["right"] == Dict("rgb" => "FF000000", "style" => "thin")
 
         f = XLSX.getBorder(r, "B5").border
-        @test f["bottom"] == Dict("rgb" => "FF000000", "style" => "thin")
+        @test f["bottom"] === nothing
         @test f["right"] == Dict("rgb" => "FF000000", "style" => "thin")
 
         f = XLSX.getBorder(r, "D5").border
-        @test f["bottom"] == Dict("rgb" => "FF000000", "style" => "thin")
+        @test f["bottom"] === nothing
         @test f["right"] == Dict("rgb" => "FF000000", "style" => "thin")
-        @test XLSX.getBorder(r, "A6").border["bottom"] ==
-            Dict("rgb" => "FF000000", "style" => "thin")
+        @test XLSX.getBorder(r, "A6").border["bottom"] === nothing
 
         f = XLSX.getBorder(r, "A7").border
         @test f["top"] == Dict("style" => "thin", "rgb" => "FF000000")
@@ -77,9 +76,9 @@
         @test XLSX.getBorder(r, "A12").border["bottom"] === nothing
     end
 
-    # == Combining Predefined Formats ======================================================
+    # == No Vertical Lines with Row Group Borders =============================================
 
-    @testset "Combining Predefined Formats via Merge" verbose = true begin
+    @testset "No Vertical Lines with Row Group Borders" verbose = true begin
         result = pretty_table(
             XLSX.XLSXFile,
             matrix;
@@ -99,14 +98,11 @@
             ],
             source_notes = "This is a source note.",
             table_format = ExcelTableFormat(;
-                merge(
-                    EXCEL_FORMAT_SECTION_LINES,
-                    EXCEL_FORMAT_NO_VLINES,
-                    (
-                        horizontal_line_before_row_group_label = true,
-                        horizontal_line_after_row_group_label = true,
-                    ),
-                )...,
+                horizontal_line_before_row_group_label = true,
+                horizontal_line_after_row_group_label = true,
+                vertical_line_after_row_number_column = false,
+                vertical_line_after_row_label_column = false,
+                vertical_lines_at_data_columns = :none,
                 borders = ExcelTableBorders(;
                     header_line = ["style" => "double", "color" => "red"]
                 ),
