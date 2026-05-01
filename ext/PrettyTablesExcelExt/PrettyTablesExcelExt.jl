@@ -4,7 +4,8 @@ using PrettyTables
 using XLSX
 
 # Import the functions we're overriding.
-import PrettyTables: _excel__print, fmt__excel_stringify, pretty_table
+import PrettyTables: _excel__print, _is_horizontally_cropped, _update_data_cell_indices
+import PrettyTables: fmt__excel_stringify, pretty_table
 
 # Import types we need.
 using PrettyTables: PrintingSpec, TableData, ColumnTable, RowTable, PrintingTableState
@@ -13,7 +14,7 @@ using PrettyTables: MergeCells
 # Import internal iterator and helpers.
 import PrettyTables: _next, _current_cell, _current_cell_alignment, _current_cell_footnotes
 import PrettyTables: _number_of_printed_columns, _number_of_printed_data_columns
-import PrettyTables: _IGNORE_CELL
+import PrettyTables: _IGNORE_CELL, _EXCEL__NO_DECORATION
 
 # Also import Tables.jl for handling table data
 using Tables
@@ -38,6 +39,9 @@ passed through to `_excel__write_table!`.
 
 # Keywords
 
+- `anchor_cell::String`: Top-left cell of the table in A1 notation, allowing placement
+    anywhere on the sheet.
+    (**Default**: `"A1"`)
 - `filename::Union{Nothing, String}`: Path of the Excel file to write. When `nothing`, no
     file is created and an in-memory `XLSX.XLSXFile` is returned instead. When a string,
     behaviour depends on `mode`.
@@ -50,9 +54,6 @@ passed through to `_excel__write_table!`.
     (**Default**: `"w"`)
 - `overwrite::Bool`: Allow overwriting an existing file when `mode = "w"`.
     (**Default**: `false`)
-- `anchor_cell::String`: Top-left cell of the table in A1 notation, allowing placement
-    anywhere on the sheet.
-    (**Default**: `"A1"`)
 
 # Returns
 
@@ -67,11 +68,11 @@ passed through to `_excel__write_table!`.
 """
 function PrettyTables._excel__print(
     pspec::PrintingSpec;
+    anchor_cell::String = "A1",
     filename::Union{Nothing, String} = nothing,
-    sheet::Union{String, XLSX.Worksheet} = "prettytable",
     mode::String = "w",
     overwrite::Bool = false,
-    anchor_cell::String = "A1",
+    sheet::Union{String, XLSX.Worksheet} = "prettytable",
     kwargs...
 )
     if isnothing(filename)

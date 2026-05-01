@@ -263,6 +263,8 @@ Define the table borders that will be used to form the Excel table.
     `Vector{Int}` draws only after the listed column indices.
 - `vertical_line_after_data_columns::Bool`: Whether to draw a vertical line after the last
     data column (spanning only the content rows, not title/subtitle or footnotes).
+- `vertical_line_after_continuation_column::Bool`: If `true`, a vertical line will be
+    drawn after the continuation column.
 """
 @kwdef struct ExcelTableFormat
     borders::ExcelTableBorders = ExcelTableBorders()
@@ -285,6 +287,7 @@ Define the table borders that will be used to form the Excel table.
     vertical_line_after_row_label_column::Bool = true
     vertical_lines_at_data_columns::Union{Symbol, Vector{Int}} = :all
     vertical_line_after_data_columns::Bool = true
+    vertical_line_after_continuation_column::Bool = true
 end
 
 ############################################################################################
@@ -306,9 +309,9 @@ Excel back end.
 - `stubhead_label::Vector{ExcelPair}`: Style for the stubhead label.
 - `row_label::Vector{ExcelPair}`: Style for the row label.
 - `row_group_label::Vector{ExcelPair}`: Style for the row group label.
-- `first_line_column_label::Union{Nothing,Vector{ExcelPair},Vector{Vector{ExcelPair}}}`:
-    Style for the first line of the column labels. If a vector of `Vector{ExcelPair}}` is
-    provided, each column label in the first line will use the corresponding style.
+- `first_line_column_label::Union{Vector{ExcelPair}, Vector{Vector{ExcelPair}}}`: Style for
+    the first line of the column labels. If a vector of `Vector{ExcelPair}}` is provided,
+    each column label in the first line will use the corresponding style.
 - `column_label::Union{Vector{ExcelPair}, Vector{Vector{ExcelPair}}}`: Style for the rest of
     the column labels. If a vector of `Vector{ExcelPair}}` is provided, each column label
     will use the corresponding style.

@@ -65,16 +65,13 @@ function _excel__row_height_for_text(line_count::Number, font_size::Number)
 end
 
 """
-    _excel__text_lines(text::AbstractString) -> Number
+    _excel__text_lines(text::Any) -> Number
 
-Determine the number of lines in `text` by counting newline occurrences.
+Determine the number of lines in `text` by counting newline occurrences. If `text` is not a
+string, returns 1.
 """
-function _excel__text_lines(text::AbstractString)
-    # TODO: Improve this algorithm.
-    count = findall("\n", text)
-    isnothing(count) && return 1
-    return length(count) + 1
-end
+_excel__text_lines(text::AbstractString) = count('\n', text) + 1
+_excel__text_lines(::Any) = 1
 
 """
     _excel__multilength(text::AbstractString) -> Number
@@ -247,8 +244,16 @@ function _excel__try_outer_borders!(
         XLSX.setBorder(sheet, rows, first(cols); left = b.left_line)
     end
 
-    if table_format.vertical_line_after_data_columns
-        XLSX.setBorder(sheet, rows, last(cols); right = b.right_line)
+    if _is_horizontally_cropped(table_data)
+        table_format.vertical_line_after_continuation_column && XLSX.setBorder(
+            sheet,
+            rows,
+            first(cols) + col_offset;
+            right = b.right_line,
+        )
+    else
+        table_format.vertical_line_after_data_columns &&
+            XLSX.setBorder(sheet, rows, last(cols); right = b.right_line)
     end
 
     return nothing
@@ -340,46 +345,6 @@ function _excel__apply_cell_style!(
     isempty(fill_attributes) || XLSX.setFill(sheet, row, col; fill_attributes...)
 
     return fontsize
-end
-
-function _excel__write_full_span_cell!(
-    sheet::XLSX.Worksheet,
-    text::Any,
-    row::Int,
-    num_cols::Int,
-    col_offset::Int,
-    anchor_row_offset::Int,
-    anchor_col_offset::Int,
-    style::Vector{ExcelPair},
-    alignment::Union{Nothing, Symbol},
-    valign::String,
-)
-    sheet_row = row + anchor_row_offset
-    col_start = 1 + anchor_col_offset
-    col_end   = num_cols + col_offset + anchor_col_offset
-
-    sheet[sheet_row, col_start] = text
-
-    XLSX.mergeCells(
-        sheet,
-        XLSX.CellRange(
-            XLSX.CellRef(sheet_row, col_start),
-            XLSX.CellRef(sheet_row, col_end),
-        ),
-    )
-
-    fontsize = _excel__apply_cell_style!(
-        sheet,
-        sheet_row,
-        col_start,
-        style,
-        alignment,
-        valign,
-        true
-    )
-
-    text_lines = text isa AbstractString ? _excel__text_lines(text) : 1
-    return _excel__row_height_for_text(text_lines, fontsize)
 end
 
 """
