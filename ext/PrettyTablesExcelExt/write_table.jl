@@ -450,6 +450,7 @@ function _excel__write_table!(
                 # -- Data Cell -------------------------------------------------------------
 
                 elseif action == :data
+                    cell_style = style.data_cell
                     lines = _excel__text_lines(rendered_cell)
                     vertical_alignment = "top"
                     wrap = lines > 1
@@ -498,6 +499,7 @@ function _excel__write_table!(
                 # -- Summary Row Cell ------------------------------------------------------
 
                 elseif action == :summary_row_cell
+                    cell_style = style.summary_row_cell
                     vertical_alignment = "top"
                     wrap = false
 

@@ -68,42 +68,42 @@
         @test haskey(f, "i") == true
         @test f["name"] == Dict("val" => "Palatino")
 
-        @test XLSX.getFont(r, "A4").font["u"] == Dict("val" => "double")
-        @test haskey(XLSX.getFont(r, "A6").font, "strike") == true
+        @test XLSX.getFont(r, "A3").font["u"] == Dict("val" => "double")
+        @test haskey(XLSX.getFont(r, "A5").font, "strike") == true
 
-        f = XLSX.getFont(r, "B4").font
+        f = XLSX.getFont(r, "B3").font
         @test haskey(f, "b") == true
         @test f["color"] == Dict("rgb" => "FFFF0000")
         @test f["sz"] == Dict("val" => "24")
 
-        @test XLSX.getFont(r, "B5").font["color"] == Dict("rgb" => "FFFFA500")
+        @test XLSX.getFont(r, "B4").font["color"] == Dict("rgb" => "FFFFA500")
 
-        f = XLSX.getFont(r, "A7").font
+        f = XLSX.getFont(r, "A6").font
         @test haskey(f, "b") == true
         @test f["color"] == Dict("rgb" => "FFFF00FF")
+
+        @test haskey(XLSX.getFont(r, "C3").font, "b") == true
+        @test XLSX.getFont(r, "D3").font["color"] == Dict("rgb" => "FFFF0000")
+        @test XLSX.getFont(r, "E3").font["sz"] == Dict("val" => "24")
 
         @test haskey(XLSX.getFont(r, "C4").font, "b") == true
-        @test XLSX.getFont(r, "D4").font["color"] == Dict("rgb" => "FFFF0000")
-        @test XLSX.getFont(r, "E4").font["sz"] == Dict("val" => "24")
+        @test haskey(XLSX.getFont(r, "D4").font, "b") == true
+        @test haskey(XLSX.getFont(r, "E4").font, "b") == true
 
-        @test haskey(XLSX.getFont(r, "C5").font, "b") == true
-        @test haskey(XLSX.getFont(r, "D5").font, "b") == true
-        @test haskey(XLSX.getFont(r, "E5").font, "b") == true
-
-        f = XLSX.getFont(r, "B9").font
+        f = XLSX.getFont(r, "B8").font
         @test haskey(f, "b") == true
         @test f["color"] == Dict("rgb" => "FFFF0000")
         @test f["sz"] == Dict("val" => "24")
 
-        @test haskey(XLSX.getFont(r, "C9").font, "i") == true
-        @test haskey(XLSX.getFont(r, "D9").font, "i") == true
-        @test haskey(XLSX.getFont(r, "E9").font, "i") == true
+        @test haskey(XLSX.getFont(r, "C8").font, "i") == true
+        @test haskey(XLSX.getFont(r, "D8").font, "i") == true
+        @test haskey(XLSX.getFont(r, "E8").font, "i") == true
 
-        f = XLSX.getFont(r, "A10").font
+        f = XLSX.getFont(r, "A9").font
         @test haskey(f, "b") == true
         @test f["color"] == Dict("rgb" => "FFFF00FF")
 
-        f = XLSX.getFont(r, "A13").font
+        f = XLSX.getFont(r, "A12").font
         @test haskey(f, "i") == true
         @test f["color"] == Dict("rgb" => "FF00FFFF")
     end
@@ -165,19 +165,32 @@
         @test haskey(f, "i") == true
         @test f["name"] == Dict("val" => "Palatino")
 
-        @test XLSX.getFont(r, "A4").font["u"] == Dict("val" => "double")
-        @test haskey(XLSX.getFont(r, "A6").font, "strike") == true
+        @test XLSX.getFont(r, "A3").font["u"] == Dict("val" => "double")
+        @test haskey(XLSX.getFont(r, "A5").font, "strike") == true
 
-        f = XLSX.getFont(r, "B4").font
+        f = XLSX.getFont(r, "B3").font
         @test haskey(f, "b") == true
         @test f["color"] == Dict("rgb" => "FFFF0000")
         @test f["sz"] == Dict("val" => "24")
 
-        @test XLSX.getFont(r, "B5").font["color"] == Dict("rgb" => "FFFFA500")
+        @test XLSX.getFont(r, "B4").font["color"] == Dict("rgb" => "FFFFA500")
 
-        f = XLSX.getFont(r, "A7").font
+        f = XLSX.getFont(r, "A6").font
         @test haskey(f, "b") == true
         @test f["color"] == Dict("rgb" => "FFFF00FF")
+
+        f = XLSX.getFont(r, "C3").font
+        @test haskey(f, "b") == true
+        @test f["color"] == Dict("rgb" => "FFFF0000")
+        @test f["sz"] == Dict("val" => "24")
+        f = XLSX.getFont(r, "D3").font
+        @test haskey(f, "b") == true
+        @test f["color"] == Dict("rgb" => "FFFF0000")
+        @test f["sz"] == Dict("val" => "24")
+        f = XLSX.getFont(r, "E3").font
+        @test haskey(f, "b") == true
+        @test f["color"] == Dict("rgb" => "FFFF0000")
+        @test f["sz"] == Dict("val" => "24")
 
         f = XLSX.getFont(r, "C4").font
         @test haskey(f, "b") == true
@@ -192,42 +205,29 @@
         @test f["color"] == Dict("rgb" => "FFFF0000")
         @test f["sz"] == Dict("val" => "24")
 
-        f = XLSX.getFont(r, "C5").font
-        @test haskey(f, "b") == true
-        @test f["color"] == Dict("rgb" => "FFFF0000")
-        @test f["sz"] == Dict("val" => "24")
-        f = XLSX.getFont(r, "D5").font
-        @test haskey(f, "b") == true
-        @test f["color"] == Dict("rgb" => "FFFF0000")
-        @test f["sz"] == Dict("val" => "24")
-        f = XLSX.getFont(r, "E5").font
+        f = XLSX.getFont(r, "B8").font
         @test haskey(f, "b") == true
         @test f["color"] == Dict("rgb" => "FFFF0000")
         @test f["sz"] == Dict("val" => "24")
 
-        f = XLSX.getFont(r, "B9").font
-        @test haskey(f, "b") == true
-        @test f["color"] == Dict("rgb" => "FFFF0000")
-        @test f["sz"] == Dict("val" => "24")
-
-        f = XLSX.getFont(r, "C9").font
+        f = XLSX.getFont(r, "C8").font
         @test haskey(f, "i") == true
         @test f["color"] == Dict("rgb" => "FF008000")
         @test f["sz"] == Dict("val" => "14")
-        f = XLSX.getFont(r, "D9").font
+        f = XLSX.getFont(r, "D8").font
         @test haskey(f, "i") == true
         @test f["color"] == Dict("rgb" => "FF008000")
         @test f["sz"] == Dict("val" => "14")
-        f = XLSX.getFont(r, "E9").font
+        f = XLSX.getFont(r, "E8").font
         @test haskey(f, "i") == true
         @test f["color"] == Dict("rgb" => "FF008000")
         @test f["sz"] == Dict("val" => "14")
 
-        f = XLSX.getFont(r, "A10").font
+        f = XLSX.getFont(r, "A9").font
         @test haskey(f, "b") == true
         @test f["color"] == Dict("rgb" => "FFFF00FF")
 
-        f = XLSX.getFont(r, "A13").font
+        f = XLSX.getFont(r, "A12").font
         @test haskey(f, "i") == true
         @test f["color"] == Dict("rgb" => "FF00FFFF")
     end

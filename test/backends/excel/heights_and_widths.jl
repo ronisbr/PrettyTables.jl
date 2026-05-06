@@ -30,7 +30,7 @@
 
         @test XLSX.getRowHeight(result[1], 1, 1) ≈ 60.810937499999994
         @test XLSX.getRowHeight(result[1], 2, 1) ≈ 12.8109375
-        @test XLSX.getRowHeight(result[1], 5, 1) ≈ 41.6109375
+        @test XLSX.getRowHeight(result[1], 4, 1) ≈ 41.6109375
     end
 
     # == Text vs Numbers Affecting Width/Height ============================================

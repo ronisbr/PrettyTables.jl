@@ -36,20 +36,28 @@
             backend = :excel,
         )
 
-        @test XLSX.getAlignment(f[1], "A4").alignment["alignment"] ==
+        @test XLSX.getAlignment(f[1], "A3").alignment["alignment"] ==
             Dict("horizontal" => "center", "wrapText" => "1", "vertical" => "bottom")
-        @test XLSX.getAlignment(f[1], "B4").alignment["alignment"] ==
+        @test XLSX.getAlignment(f[1], "B3").alignment["alignment"] ==
             Dict("horizontal" => "left", "wrapText" => "1", "vertical" => "bottom")
-        @test XLSX.getAlignment(f[1], "C4").alignment["alignment"] ==
+        @test XLSX.getAlignment(f[1], "C3").alignment["alignment"] ==
             Dict("horizontal" => "right", "wrapText" => "1", "vertical" => "bottom")
-        @test XLSX.getAlignment(f[1], "D4").alignment["alignment"] ==
+        @test XLSX.getAlignment(f[1], "D3").alignment["alignment"] ==
             Dict("horizontal" => "center", "wrapText" => "1", "vertical" => "bottom")
+        @test XLSX.getAlignment(f[1], "A4").alignment["alignment"] ==
+            Dict("horizontal" => "center", "wrapText" => "1", "vertical" => "top")
         @test XLSX.getAlignment(f[1], "A5").alignment["alignment"] ==
             Dict("horizontal" => "center", "wrapText" => "1", "vertical" => "top")
         @test XLSX.getAlignment(f[1], "A6").alignment["alignment"] ==
             Dict("horizontal" => "center", "wrapText" => "1", "vertical" => "top")
         @test XLSX.getAlignment(f[1], "A7").alignment["alignment"] ==
             Dict("horizontal" => "center", "wrapText" => "1", "vertical" => "top")
+        @test XLSX.getAlignment(f[1], "B7").alignment["alignment"] ==
+            Dict("horizontal" => "left", "wrapText" => "0", "vertical" => "top")
+        @test XLSX.getAlignment(f[1], "C7").alignment["alignment"] ==
+            Dict("horizontal" => "right", "wrapText" => "0", "vertical" => "top")
+        @test XLSX.getAlignment(f[1], "D7").alignment["alignment"] ==
+            Dict("horizontal" => "center", "wrapText" => "0", "vertical" => "top")
         @test XLSX.getAlignment(f[1], "A8").alignment["alignment"] ==
             Dict("horizontal" => "center", "wrapText" => "1", "vertical" => "top")
         @test XLSX.getAlignment(f[1], "B8").alignment["alignment"] ==
@@ -59,18 +67,10 @@
         @test XLSX.getAlignment(f[1], "D8").alignment["alignment"] ==
             Dict("horizontal" => "center", "wrapText" => "0", "vertical" => "top")
         @test XLSX.getAlignment(f[1], "A9").alignment["alignment"] ==
-            Dict("horizontal" => "center", "wrapText" => "1", "vertical" => "top")
-        @test XLSX.getAlignment(f[1], "B9").alignment["alignment"] ==
-            Dict("horizontal" => "left", "wrapText" => "0", "vertical" => "top")
-        @test XLSX.getAlignment(f[1], "C9").alignment["alignment"] ==
-            Dict("horizontal" => "right", "wrapText" => "0", "vertical" => "top")
-        @test XLSX.getAlignment(f[1], "D9").alignment["alignment"] ==
-            Dict("horizontal" => "center", "wrapText" => "0", "vertical" => "top")
+            Dict("horizontal" => "right", "wrapText" => "1", "vertical" => "center")
         @test XLSX.getAlignment(f[1], "A10").alignment["alignment"] ==
             Dict("horizontal" => "right", "wrapText" => "1", "vertical" => "center")
         @test XLSX.getAlignment(f[1], "A11").alignment["alignment"] ==
-            Dict("horizontal" => "right", "wrapText" => "1", "vertical" => "center")
-        @test XLSX.getAlignment(f[1], "A12").alignment["alignment"] ==
             Dict("horizontal" => "center", "wrapText" => "1", "vertical" => "center")
     end
 
@@ -94,17 +94,17 @@
             Dict("horizontal" => "left", "wrapText" => "1", "vertical" => "bottom")
         @test XLSX.getAlignment(f[1], "A2").alignment["alignment"] ==
             Dict("horizontal" => "center", "wrapText" => "1", "vertical" => "bottom")
-        @test XLSX.getAlignment(f[1], "A4").alignment["alignment"] ==
+        @test XLSX.getAlignment(f[1], "A3").alignment["alignment"] ==
             Dict("horizontal" => "right", "wrapText" => "1", "vertical" => "bottom")
-        @test XLSX.getAlignment(f[1], "B4").alignment["alignment"] ==
+        @test XLSX.getAlignment(f[1], "B3").alignment["alignment"] ==
             Dict("horizontal" => "center", "wrapText" => "1", "vertical" => "bottom")
-        @test XLSX.getAlignment(f[1], "C4").alignment["alignment"] ==
+        @test XLSX.getAlignment(f[1], "C3").alignment["alignment"] ==
             Dict("horizontal" => "left", "wrapText" => "1", "vertical" => "bottom")
-        @test XLSX.getAlignment(f[1], "A5").alignment["alignment"] ==
+        @test XLSX.getAlignment(f[1], "A4").alignment["alignment"] ==
             Dict("horizontal" => "right", "wrapText" => "0", "vertical" => "top")
-        @test XLSX.getAlignment(f[1], "B6").alignment["alignment"] ==
+        @test XLSX.getAlignment(f[1], "B5").alignment["alignment"] ==
             Dict("horizontal" => "center", "wrapText" => "0", "vertical" => "top")
-        @test XLSX.getAlignment(f[1], "C7").alignment["alignment"] ==
+        @test XLSX.getAlignment(f[1], "C6").alignment["alignment"] ==
             Dict("horizontal" => "left", "wrapText" => "0", "vertical" => "top")
     end
 
@@ -125,6 +125,12 @@
             backend = :excel,
         )
 
+        @test XLSX.getAlignment(f[1], "A4").alignment["alignment"] ==
+            Dict("horizontal" => "left", "wrapText" => "0", "vertical" => "top")
+        @test XLSX.getAlignment(f[1], "B4").alignment["alignment"] ==
+            Dict("horizontal" => "right", "wrapText" => "0", "vertical" => "top")
+        @test XLSX.getAlignment(f[1], "C4").alignment["alignment"] ==
+            Dict("horizontal" => "left", "wrapText" => "0", "vertical" => "top")
         @test XLSX.getAlignment(f[1], "A5").alignment["alignment"] ==
             Dict("horizontal" => "left", "wrapText" => "0", "vertical" => "top")
         @test XLSX.getAlignment(f[1], "B5").alignment["alignment"] ==
@@ -136,12 +142,6 @@
         @test XLSX.getAlignment(f[1], "B6").alignment["alignment"] ==
             Dict("horizontal" => "right", "wrapText" => "0", "vertical" => "top")
         @test XLSX.getAlignment(f[1], "C6").alignment["alignment"] ==
-            Dict("horizontal" => "left", "wrapText" => "0", "vertical" => "top")
-        @test XLSX.getAlignment(f[1], "A7").alignment["alignment"] ==
-            Dict("horizontal" => "left", "wrapText" => "0", "vertical" => "top")
-        @test XLSX.getAlignment(f[1], "B7").alignment["alignment"] ==
-            Dict("horizontal" => "right", "wrapText" => "0", "vertical" => "top")
-        @test XLSX.getAlignment(f[1], "C7").alignment["alignment"] ==
             Dict("horizontal" => "left", "wrapText" => "0", "vertical" => "top")
     end
 end

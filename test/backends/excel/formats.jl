@@ -44,36 +44,35 @@
         f["bottom"] === nothing
 
         @test XLSX.getBorder(r, "A2").border["bottom"] === nothing
-        @test XLSX.getBorder(r, "A3") === nothing
-        @test XLSX.getBorder(r, "A4").border["top"] ==
+        @test XLSX.getBorder(r, "A3").border["top"] ==
             Dict("style" => "thick", "rgb" => "FF000000")
-        @test XLSX.getBorder(r, "A4").border["bottom"] ==
+        @test XLSX.getBorder(r, "A3").border["bottom"] ==
             Dict("style" => "medium", "rgb" => "FF000000")
 
-        f = XLSX.getBorder(r, "A5").border
+        f = XLSX.getBorder(r, "A4").border
         @test f["bottom"] === nothing
         @test f["right"] == Dict("rgb" => "FF000000", "style" => "thin")
 
-        f = XLSX.getBorder(r, "B5").border
+        f = XLSX.getBorder(r, "B4").border
         @test f["bottom"] === nothing
         @test f["right"] == Dict("rgb" => "FF000000", "style" => "thin")
 
-        f = XLSX.getBorder(r, "D5").border
+        f = XLSX.getBorder(r, "D4").border
         @test f["bottom"] === nothing
         @test f["right"] == Dict("rgb" => "FF000000", "style" => "thin")
-        @test XLSX.getBorder(r, "A6").border["bottom"] === nothing
+        @test XLSX.getBorder(r, "A5").border["bottom"] === nothing
 
-        f = XLSX.getBorder(r, "A7").border
+        f = XLSX.getBorder(r, "A6").border
         @test f["top"] == Dict("style" => "thin", "rgb" => "FF000000")
         @test f["bottom"] == Dict("style" => "thin", "rgb" => "FF000000")
 
-        @test XLSX.getBorder(r, "A8").border["bottom"] ==
+        @test XLSX.getBorder(r, "A7").border["bottom"] ==
             Dict("style" => "thin", "rgb" => "FF000000")
-        @test XLSX.getBorder(r, "A9").border["bottom"] ==
+        @test XLSX.getBorder(r, "A8").border["bottom"] ==
             Dict("style" => "thick", "rgb" => "FF000000")
+        @test XLSX.getBorder(r, "A9").border["bottom"] === nothing
         @test XLSX.getBorder(r, "A10").border["bottom"] === nothing
         @test XLSX.getBorder(r, "A11").border["bottom"] === nothing
-        @test XLSX.getBorder(r, "A12").border["bottom"] === nothing
     end
 
     # == No Vertical Lines with Row Group Borders =============================================
@@ -118,38 +117,37 @@
         f["bottom"] === nothing
 
         @test XLSX.getBorder(r, "A2").border["bottom"] === nothing
-        @test XLSX.getBorder(r, "A3") === nothing
-        @test XLSX.getBorder(r, "A4").border["top"] ==
+        @test XLSX.getBorder(r, "A3").border["top"] ==
             Dict("style" => "thick", "rgb" => "FF000000")
-        @test XLSX.getBorder(r, "A4").border["bottom"] ==
+        @test XLSX.getBorder(r, "A3").border["bottom"] ==
             Dict("rgb" => "FFFF0000", "style" => "double")
 
-        f = XLSX.getBorder(r, "A5").border
+        f = XLSX.getBorder(r, "A4").border
         @test f["bottom"] === nothing
         @test f["right"] === nothing
 
-        f = XLSX.getBorder(r, "B5").border
+        f = XLSX.getBorder(r, "B4").border
         @test f["bottom"] === nothing
         @test f["right"] === nothing
 
-        f = XLSX.getBorder(r, "D5").border
+        f = XLSX.getBorder(r, "D4").border
         @test f["bottom"] === nothing
         @test f["right"] === nothing
-        @test XLSX.getBorder(r, "A6").border["bottom"] === nothing
+        @test XLSX.getBorder(r, "A5").border["bottom"] === nothing
 
-        f = XLSX.getBorder(r, "A7").border
+        f = XLSX.getBorder(r, "A6").border
         @test f["top"] == Dict("rgb" => "FF000000", "style" => "thin")
         @test f["bottom"] == Dict("rgb" => "FF000000", "style" => "thin")
 
-        @test XLSX.getBorder(r, "D7").border["top"] ==
+        @test XLSX.getBorder(r, "D6").border["top"] ==
             Dict("style" => "thin", "rgb" => "FF000000")
-        @test XLSX.getBorder(r, "A8").border["bottom"] ==
+        @test XLSX.getBorder(r, "A7").border["bottom"] ==
             Dict("rgb" => "FF000000", "style" => "thin")
-        @test XLSX.getBorder(r, "A9").border["bottom"] ==
+        @test XLSX.getBorder(r, "A8").border["bottom"] ==
             Dict("style" => "thick", "rgb" => "FF000000")
+        @test XLSX.getBorder(r, "A9").border["bottom"] === nothing
         @test XLSX.getBorder(r, "A10").border["bottom"] === nothing
         @test XLSX.getBorder(r, "A11").border["bottom"] === nothing
-        @test XLSX.getBorder(r, "A12").border["bottom"] === nothing
     end
 
     # == Horizontal Lines at Data Rows ========================================================

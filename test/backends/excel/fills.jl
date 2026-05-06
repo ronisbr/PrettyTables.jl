@@ -176,65 +176,65 @@
             Dict("patternType" => "solid", "fgrgb" => "FF7F7F7F")
 
         # Headings
-        @test XLSX.getFill(r, "B5").fill["patternFill"] ==
+        @test XLSX.getFill(r, "B4").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FF2E8B57")
-        @test XLSX.getFill(r, "C5").fill["patternFill"] ==
+        @test XLSX.getFill(r, "C4").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FF2E8B57")
-        @test XLSX.getFill(r, "D5").fill["patternFill"] ==
+        @test XLSX.getFill(r, "D4").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FF2E8B57")
-        @test XLSX.getFill(r, "E5").fill["patternFill"] ==
+        @test XLSX.getFill(r, "E4").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FF0000FF")
-        @test XLSX.getFill(r, "F5").fill["patternFill"] ==
+        @test XLSX.getFill(r, "F4").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FFFF0000")
+        @test XLSX.getFill(r, "D5").fill["patternFill"] ==
+            Dict("patternType" => "solid", "fgrgb" => "FFFF0000")
+        @test XLSX.getFill(r, "E5").fill["patternFill"] ==
+            Dict("patternType" => "solid", "fgrgb" => "FF2E8B57")
         @test XLSX.getFill(r, "D6").fill["patternFill"] ==
-            Dict("patternType" => "solid", "fgrgb" => "FFFF0000")
-        @test XLSX.getFill(r, "E6").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FF2E8B57")
-        @test XLSX.getFill(r, "D7").fill["patternFill"] ==
-            Dict("patternType" => "solid", "fgrgb" => "FF2E8B57")
-        @test XLSX.getFill(r, "F7").fill["patternFill"] ==
+        @test XLSX.getFill(r, "F6").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FF0000FF")
 
         # Row groups
-        @test XLSX.getFill(r, "B10").fill["patternFill"] ==
+        @test XLSX.getFill(r, "B9").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FFFFC125")
-        @test XLSX.getFill(r, "B13").fill["patternFill"] ==
+        @test XLSX.getFill(r, "B12").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FFFFC125")
 
         # Data rows
-        @test XLSX.getFill(r, "B8").fill["patternFill"] ==
+        @test XLSX.getFill(r, "B7").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FF36648B")
-        @test XLSX.getFill(r, "B11").fill["patternFill"] ==
+        @test XLSX.getFill(r, "B10").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FF36648B")
-        @test XLSX.getFill(r, "B15").fill["patternFill"] ==
+        @test XLSX.getFill(r, "B14").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FF36648B")
-        @test XLSX.getFill(r, "C9").fill["patternFill"] ==
+        @test XLSX.getFill(r, "C8").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FF36648B")
-        @test XLSX.getFill(r, "C12").fill["patternFill"] ==
+        @test XLSX.getFill(r, "C11").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FF36648B")
-        @test XLSX.getFill(r, "C14").fill["patternFill"] ==
+        @test XLSX.getFill(r, "C13").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FF36648B")
-        @test XLSX.getFill(r, "D8").fill["patternFill"] ==
+        @test XLSX.getFill(r, "D7").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FF36648B")
-        @test XLSX.getFill(r, "E12").fill["patternFill"] ==
+        @test XLSX.getFill(r, "E11").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FF36648B")
-        @test XLSX.getFill(r, "F15").fill["patternFill"] ==
+        @test XLSX.getFill(r, "F14").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FF36648B")
 
         # Summary rows
-        @test XLSX.getFill(r, "C16").fill["patternFill"] ==
+        @test XLSX.getFill(r, "C15").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FFCD3278")
-        @test XLSX.getFill(r, "D16").fill["patternFill"] ==
+        @test XLSX.getFill(r, "D15").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FFCD3278")
-        @test XLSX.getFill(r, "E17").fill["patternFill"] ==
+        @test XLSX.getFill(r, "E16").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FFCD3278")
-        @test XLSX.getFill(r, "F16").fill["patternFill"] ==
+        @test XLSX.getFill(r, "F15").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FFCD3278")
 
         # Footnote and sourcenotes
-        @test XLSX.getFill(r, "B18").fill["patternFill"] ==
+        @test XLSX.getFill(r, "B17").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FFCCCCCC")
-        @test XLSX.getFill(r, "B19").fill["patternFill"] ==
+        @test XLSX.getFill(r, "B18").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FFCCCCCC")
     end
 
@@ -380,57 +380,57 @@
             Dict("patternType" => "solid", "fgrgb" => "FF7F7F7F")
 
         # Headings
-        @test XLSX.getFill(r, "B5").fill["patternFill"] ==
+        @test XLSX.getFill(r, "B4").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FF2E8B57")
-        @test XLSX.getFill(r, "C5").fill["patternFill"] ==
+        @test XLSX.getFill(r, "C4").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FF2E8B57")
-        @test XLSX.getFill(r, "D5").fill["patternFill"] ==
+        @test XLSX.getFill(r, "D4").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FF2E8B57")
-        @test XLSX.getFill(r, "E6").fill["patternFill"] ==
+        @test XLSX.getFill(r, "E5").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FF2E8B57")
-        @test XLSX.getFill(r, "F7").fill["patternFill"] ==
+        @test XLSX.getFill(r, "F6").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FF2E8B57")
 
         # Row groups
-        @test XLSX.getFill(r, "B10").fill["patternFill"] ==
+        @test XLSX.getFill(r, "B9").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FFFFC125")
-        @test XLSX.getFill(r, "B13").fill["patternFill"] ==
+        @test XLSX.getFill(r, "B12").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FFFFC125")
 
         # Data rows
-        @test XLSX.getFill(r, "B8").fill["patternFill"] ==
+        @test XLSX.getFill(r, "B7").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FF36648B")
-        @test XLSX.getFill(r, "B11").fill["patternFill"] ==
+        @test XLSX.getFill(r, "B10").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FF36648B")
-        @test XLSX.getFill(r, "B15").fill["patternFill"] ==
+        @test XLSX.getFill(r, "B14").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FF36648B")
-        @test XLSX.getFill(r, "C9").fill["patternFill"] ==
+        @test XLSX.getFill(r, "C8").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FF36648B")
-        @test XLSX.getFill(r, "C12").fill["patternFill"] ==
+        @test XLSX.getFill(r, "C11").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FF36648B")
-        @test XLSX.getFill(r, "C14").fill["patternFill"] ==
+        @test XLSX.getFill(r, "C13").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FF36648B")
-        @test XLSX.getFill(r, "D8").fill["patternFill"] ==
+        @test XLSX.getFill(r, "D7").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FF36648B")
-        @test XLSX.getFill(r, "E12").fill["patternFill"] ==
+        @test XLSX.getFill(r, "E11").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FF36648B")
-        @test XLSX.getFill(r, "F15").fill["patternFill"] ==
+        @test XLSX.getFill(r, "F14").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FF36648B")
 
         # Summary rows
-        @test XLSX.getFill(r, "C16").fill["patternFill"] ==
+        @test XLSX.getFill(r, "C15").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FFCD3278")
-        @test XLSX.getFill(r, "D16").fill["patternFill"] ==
+        @test XLSX.getFill(r, "D15").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FFCD3278")
-        @test XLSX.getFill(r, "E17").fill["patternFill"] ==
+        @test XLSX.getFill(r, "E16").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FFCD3278")
-        @test XLSX.getFill(r, "F16").fill["patternFill"] ==
+        @test XLSX.getFill(r, "F15").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FFCD3278")
 
         # Footnote and sourcenotes
-        @test XLSX.getFill(r, "B18").fill["patternFill"] ==
+        @test XLSX.getFill(r, "B17").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FFCCCCCC")
-        @test XLSX.getFill(r, "B19").fill["patternFill"] ==
+        @test XLSX.getFill(r, "B18").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FFCCCCCC")
     end
 end

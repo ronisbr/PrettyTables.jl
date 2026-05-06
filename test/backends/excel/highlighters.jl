@@ -40,11 +40,11 @@
             ],
         )
 
-        @test XLSX.getFont(result[1], "C2").font["color"] == Dict("rgb" => "FF008000")
-        @test XLSX.getFont(result[1], "D2").font["color"] == Dict("rgb" => "FFFF0000")
-        @test XLSX.getFill(result[1], "B3").fill["patternFill"] ==
+        @test XLSX.getFont(result[1], "B2").font["color"] == Dict("rgb" => "FF008000")
+        @test XLSX.getFont(result[1], "C2").font["color"] == Dict("rgb" => "FFFF0000")
+        @test XLSX.getFill(result[1], "A3").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FFE5E5E5")
-        @test XLSX.getFont(result[1], "D5").font["color"] == Dict("rgb" => "FF0000FF")
+        @test XLSX.getFont(result[1], "C5").font["color"] == Dict("rgb" => "FF0000FF")
     end
 
     # == With Source Note Row ==============================================================
@@ -77,11 +77,11 @@
             ],
         )
 
-        @test XLSX.getFont(result[1], "C2").font["color"] == Dict("rgb" => "FF008000")
-        @test XLSX.getFont(result[1], "C2").font["sz"] == Dict("val" => "18")
-        @test XLSX.getFont(result[1], "D2").font["color"] == Dict("rgb" => "FFFF0000")
-        @test XLSX.getFill(result[1], "B3").fill["patternFill"] ==
+        @test XLSX.getFont(result[1], "B2").font["color"] == Dict("rgb" => "FF008000")
+        @test XLSX.getFont(result[1], "B2").font["sz"] == Dict("val" => "18")
+        @test XLSX.getFont(result[1], "C2").font["color"] == Dict("rgb" => "FFFF0000")
+        @test XLSX.getFill(result[1], "A3").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FFE5E5E5")
-        @test XLSX.getFont(result[1], "D5").font["color"] == Dict("rgb" => "FF0000FF")
+        @test XLSX.getFont(result[1], "C5").font["color"] == Dict("rgb" => "FF0000FF")
     end
 end
