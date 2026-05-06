@@ -413,9 +413,16 @@ function _excel__write_table!(
                 # -- Row number Label ------------------------------------------------------
 
                 elseif action == :row_number_label
-                    cell_style = style.row_number_label
+                    cell_style = ps.i == 1 ? style.row_number_label : _EXCEL__NO_DECORATION
                     vertical_alignment = "bottom"
                     wrap = true
+
+                    if ps.i == 1 && table_format.horizontal_line_between_column_labels
+                        XLSX.setBorder(
+                            sheet, sheet_row, sheet_col;
+                            bottom = table_format.borders.middle_line,
+                        )
+                    end
 
                 # -- Row Number / Summary Row Number ---------------------------------------
 
@@ -427,9 +434,16 @@ function _excel__write_table!(
                 # -- Stubhead Label --------------------------------------------------------
 
                 elseif action == :stubhead_label
-                    cell_style = style.stubhead_label
+                    cell_style = ps.i == 1 ? style.stubhead_label : _EXCEL__NO_DECORATION
                     vertical_alignment = "bottom"
                     wrap = true
+
+                    if ps.i == 1 && table_format.horizontal_line_between_column_labels
+                        XLSX.setBorder(
+                            sheet, sheet_row, sheet_col;
+                            bottom = table_format.borders.middle_line,
+                        )
+                    end
 
                 # -- Row Label / Summary Row Label -----------------------------------------
 
