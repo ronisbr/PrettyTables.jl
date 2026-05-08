@@ -133,11 +133,11 @@ function _current_cell_footnotes(table_data::TableData, cell_type::Symbol, i::In
         f, _ = table_data.footnotes[k - 1 + begin]
         ct, fi, fj = f
 
-        if ct == cell_type
+        if (ct == cell_type) && (fi == i)
             if (
                 # Cell types that only requires testing the row index.
-                ((ct ∈ (:row_number, :row_label, :summary_row_number)) && (fi == i)) ||
-                ((fi == i) && (fj == j))
+                (ct ∈ (:title, :subtitle, :row_number, :row_label, :summary_row_number)) ||
+                (fj == j)
             )
                 push!(current_footnotes, k)
             end
