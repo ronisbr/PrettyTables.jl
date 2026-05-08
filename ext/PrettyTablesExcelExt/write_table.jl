@@ -103,6 +103,8 @@ function _excel__write_table!(
     ps     = PrintingTableState()
     action = :initialize
 
+    has_cont_column = _is_horizontally_cropped(table_data)
+
     # Tracking variables used for post-loop operations and section transitions.
     first_content_row = 0 # ..................... Absolute sheet row of first non-header row
     last_written_row  = 0 # .................... Absolute sheet row of last data/summary row
@@ -369,14 +371,21 @@ function _excel__write_table!(
                     )
                 end
 
-                # We draw the vertical line here because we have access to the actual
-                # span of the merged cell.
-                if (
-                    ((ps.j + span - 1) ∈ vertical_lines_at_data_columns) || (
-                        (ps.j + span - 1) == num_printed_data_cols &&
-                        table_format.vertical_line_after_data_columns
-                    )
-                )
+                # We draw the vertical line here because we have access to the actual span
+                # of the merged cell.
+                last_merged_col = ps.j + span - 1
+                if (last_merged_col == num_printed_data_cols)
+                    # If we do not have a continuation column, we are in the last column.
+                    # The left border in this case is drawn at the end.
+                    table_format.vertical_line_after_data_columns && has_cont_column &&
+                        XLSX.setBorder(
+                            sheet,
+                            sheet_row,
+                            sheet_col + span - 1;
+                            right = table_format.borders.middle_line,
+                        )
+
+                elseif (last_merged_col ∈ vertical_lines_at_data_columns)
                     XLSX.setBorder(
                         sheet,
                         sheet_row,
@@ -573,12 +582,18 @@ function _excel__write_table!(
             :vertical_continuation_cell,
         )
             if !(action == :column_label && cell isa MergeCells)
-                if (
-                    (ps.j ∈ vertical_lines_at_data_columns) || (
-                        ps.j == num_printed_data_cols &&
-                        table_format.vertical_line_after_data_columns
-                    )
-                )
+                if (ps.j == num_printed_data_cols)
+                    # If we do not have a continuation column, we are in the last column.
+                    # The left border in this case is drawn at the end.
+                    table_format.vertical_line_after_data_columns && has_cont_column &&
+                        XLSX.setBorder(
+                            sheet,
+                            sheet_row,
+                            sheet_col;
+                            right = table_format.borders.middle_line,
+                        )
+
+                elseif (ps.j ∈ vertical_lines_at_data_columns)
                     XLSX.setBorder(
                         sheet,
                         sheet_row,
