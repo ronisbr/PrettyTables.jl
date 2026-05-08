@@ -60,6 +60,7 @@ function _excel__write_table!(
     anchor_col_offset = Int(c.column_number - 1)
 
     num_cols = table_data.num_columns
+    num_rows = table_data.num_rows
     num_printed_cols = _number_of_printed_columns(table_data)
     num_printed_data_cols = _number_of_printed_data_columns(table_data)
 
@@ -143,15 +144,6 @@ function _excel__write_table!(
                 first_content_row = ir + anchor_row_offset
             end
 
-            if rs == :data && ps.i ∈ horizontal_lines_at_data_rows
-                XLSX.setBorder(
-                    sheet,
-                    ir + anchor_row_offset,
-                    all_cols;
-                    bottom = table_format.borders.middle_line,
-                )
-            end
-
         # == Continuation Cells ============================================================
 
         elseif action ∈ (
@@ -210,23 +202,36 @@ function _excel__write_table!(
             elseif rs ∈ (:data, :continuation_row)
                 last_written_row = ir + anchor_row_offset
 
+                if next_rs ∉ (:data, :continuation_row)
+                    table_format.horizontal_line_after_data_rows && XLSX.setBorder(
+                        sheet, ir + anchor_row_offset, all_cols;
+                        bottom = table_format.borders.middle_line,
+                    )
+
+                    ((next_rs == :summary_row) && table_format.horizontal_line_before_summary_rows) &&
+                        XLSX.setBorder(
+                            sheet, ir + anchor_row_offset, all_cols;
+                            bottom = table_format.borders.middle_line,
+                        )
+
+                elseif (ps.i ∈ horizontal_lines_at_data_rows)
+                    XLSX.setBorder(
+                        sheet,
+                        ir + anchor_row_offset,
+                        all_cols;
+                        bottom = table_format.borders.middle_line
+                    )
+                end
+
             elseif rs == :summary_row
                 last_written_row = ir + anchor_row_offset
 
-                if next_rs == :summary_row
-                    if table_format.horizontal_line_before_summary_rows
+                if next_rs != :summary_row
+                    table_format.horizontal_line_after_summary_rows &&
                         XLSX.setBorder(
                             sheet, ir + anchor_row_offset, all_cols;
-                            bottom = table_format.borders.middle_line,
+                            bottom = table_format.borders.bottom_line,
                         )
-                    end
-                else
-                    if table_format.horizontal_line_after_summary_rows
-                        XLSX.setBorder(
-                            sheet, ir + anchor_row_offset, all_cols;
-                            bottom = table_format.borders.middle_line,
-                        )
-                    end
                 end
 
             elseif rs == :row_group_label
@@ -243,24 +248,6 @@ function _excel__write_table!(
                         bottom = table_format.borders.middle_line,
                     )
                 end
-            end
-
-            # Transition from data/summary to the table footer (or to summary rows).
-            if (
-                (
-                    rs ∈ (:data, :continuation_row) &&
-                    next_rs ∈ (:table_footer, :end_printing, :summary_row)
-                ) || (
-                    rs == :summary_row && next_rs ∈ (:table_footer, :end_printing)
-                )
-            )
-                if table_format.horizontal_line_after_data_rows
-                    XLSX.setBorder(
-                        sheet, ir + anchor_row_offset, all_cols;
-                        bottom = table_format.borders.middle_line,
-                    )
-                end
-
             end
 
         # == Cell Actions ==================================================================
