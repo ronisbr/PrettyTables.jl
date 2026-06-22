@@ -120,6 +120,21 @@ Define the Excel format to apply to a cell.
 - `numFmt::ExcelPair`: Specifies the format to apply to the cell. The format should be
   specified with an `ExcelPair` (*i.e.* `Pair{String, String}`) using the `XLSX.jl`
   formatting definitions used by the `XLSX.setFormat` function.
+- `region::Symbol`: Region of the table in which the formatter is applied. It can be
+  `:data` or `:summary_row`. If it is `:data`, the formatter is applied to the data cells
+  and the value of `i` passed to `f` is the **data row** index. If it is `:summary_row`,
+  the formatter is applied to the summary row cells and the value of `i` passed to `f` is
+  the **summary row** index (*i.e.* `1` for the first summary row, `2` for the second, and
+  so on).
+
+# Constructors
+
+```julia
+ExcelFormatter(f::Function, numFmt::Vector{ExcelPair}; region::Symbol = :data)
+```
+
+The keyword `region` defaults to `:data`, so the formatter matches data cells based on the
+data row index unless `:summary_row` is explicitly requested.
 
 # Remarks
 
@@ -131,10 +146,11 @@ The first formatter (in the order they are specified) that satisfies the specifi
 in the given table cell is applied, and the remainder of the formatters in the list are
 skipped. If none matches, no `ExcelFormatter` is applied.
 
-An `ExcelFormatter` can be applied in the summary row, too. In this case, the value of `i`
-should relate to the Excel row in which the summary row appears, rather than the data table
-row. This will always be outside the range of (greater than) any `i` in the data table. The
-value of `j` has the same meaning/values (column specifier) as in the data table itself.
+An `ExcelFormatter` can be applied in the summary row, too. In this case, set `region` to
+`:summary_row`. The value of `i` passed to `f` then relates to the summary row index (`1`
+for the first summary row, `2` for the second, and so on), rather than the data table row.
+The value of `j` has the same meaning/values (column specifier) as in the data table
+itself.
 
 Excel formatters may be applied in addition to the standard formatters. The standard
 formatters control the literal values written to Excel while the Excel formatters control
@@ -160,6 +176,21 @@ formatter has been provided which converts any unhandled types to strings (using
 struct ExcelFormatter
     f::Function
     numFmt::Vector{ExcelPair}
+    region::Symbol
+
+    # == Constructors ======================================================================
+
+    function ExcelFormatter(
+        f::Function,
+        numFmt::Vector{ExcelPair};
+        region::Symbol = :data
+    )
+        region ∈ (:data, :summary_row) || throw(ArgumentError(
+            "The `region` of an `ExcelFormatter` must be `:data` or `:summary_row`."
+        ))
+
+        return new(f, numFmt, region)
+    end
 end
 
 ############################################################################################

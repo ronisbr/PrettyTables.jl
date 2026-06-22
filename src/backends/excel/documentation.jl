@@ -125,10 +125,12 @@ The first formatter (in the order they are specified) that satisfies the specifi
 in the given table cell is applied, and the remainder of the formatters in the list are
 skipped. If none matches, no `ExcelFormatter` is applied.
 
-An `ExcelFormatter` can be applied in the summary row, too. In this case, the value of `i`
-should relate to the Excel row in which the summary row appears, rather than the data table
-row. This will always be outside the range of (greater than) any `i` in the data table. The
-value of `j` has the same meaning/values (column specifier) as in the data table itself.
+By default, an `ExcelFormatter` matches the **data cells** and the value of `i` passed to
+its function is the data row index. An `ExcelFormatter` can be applied in the summary row,
+too, by setting the keyword `region = :summary_row`. In this case, the value of `i` relates
+to the summary row index (`1` for the first summary row, `2` for the second, and so on),
+rather than the data table row. The value of `j` has the same meaning/values (column
+specifier) as in the data table itself.
 
 Excel formatters may be applied in addition to the standard formatters. The standard
 formatters control the literal values written to Excel while the Excel formatters control

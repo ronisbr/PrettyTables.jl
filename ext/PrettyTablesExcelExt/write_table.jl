@@ -466,8 +466,11 @@ function _excel__write_table!(
                     wrap = lines > 1
 
                     for formatter in excel_formatters
+                        # `:data` formatters match the data row index.
+                        formatter.region === :data || continue
+
                         fmt_attributes = _excel__format_attributes(
-                            table_data, formatter, ir, ps.j
+                            table_data, formatter, ps.i, ps.j
                         )
                         if !isnothing(fmt_attributes)
                             XLSX.setFormat(sheet, sheet_row, sheet_col; fmt_attributes...)
@@ -514,8 +517,11 @@ function _excel__write_table!(
                     wrap = false
 
                     for formatter in excel_formatters
+                        # `:summary_row` formatters match the summary row index.
+                        formatter.region === :summary_row || continue
+
                         fmt_attributes = _excel__format_attributes(
-                            table_data, formatter, ir, ps.j
+                            table_data, formatter, ps.i, ps.j
                         )
 
                         if !isnothing(fmt_attributes)
