@@ -40,8 +40,7 @@ end
 Convert the integer `n` to a superscript string using Unicode characters.
 """
 function _excel__to_superscript(n::Int)
-    digits_str = string(n)
-    return join([SUPERSCRIPT_DIGITS[parse(Int, d) + 1] for d in digits_str])
+    return join(SUPERSCRIPT_DIGITS[parse(Int, c) + 1] for c in string(n))
 end
 
 """
@@ -51,6 +50,9 @@ Estimate the Excel column width needed to display text of `text_length` characte
 at `font_size`.
 """
 function _excel__column_width_for_text(text_length::Number, font_size::Number)
+    # Empirical approximation of Excel's column-width units for ASCII characters in the
+    # default font, derived from a pixel-to-character ratio of 0.55/7 with a constant
+    # padding of 2 for margins.
     return (0.55 * text_length * font_size) / 7 + 2
 end
 
@@ -61,6 +63,8 @@ Estimate the Excel row height needed to accommodate `line_count` lines of text r
 `font_size`.
 """
 function _excel__row_height_for_text(line_count::Number, font_size::Number)
+    # Standard Excel row height in points: line_count × (1.2 × font_size), plus a 3-point
+    # padding that approximates the row margins Excel uses by default.
     return line_count * (font_size * 1.2) + 3
 end
 
@@ -80,15 +84,7 @@ Return the length of the longest line in the multi-line string `text`. If `text`
 string, returns 0.
 """
 function _excel__multilength(text::AbstractString)
-    # TODO: Improve this algorithm.
-    lines = split(text, "\n")
-    maxlen = 0
-
-    for line in lines
-        maxlen = max(maxlen, length(line))
-    end
-
-    return maxlen
+    return maximum(length, split(text, '\n'); init = 0)
 end
 
 _excel__multilength(::Any) = 0
@@ -108,9 +104,7 @@ function fmt__excel_stringify(columns::Union{Nothing, Int, AbstractVector{Int}} 
 
         isnothing(columns) && return string(v)
 
-        for c in columns
-            j == c && return string(v)
-        end
+        j ∈ columns && return string(v)
 
         return v
     end

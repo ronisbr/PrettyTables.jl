@@ -35,6 +35,6 @@ function _excel__render_cell(cell::MergeCells, renderer::Union{Val{:print}, Val{
 end
 
 function _excel__render_cell(cell::Any, renderer::Union{Val{:print}, Val{:show}})
-    return renderer === Val(:print) ? sprint(show, cell) :
+    return renderer isa Val{:print} ? sprint(show, cell) :
            sprint(show, MIME("text/plain"), cell)
 end

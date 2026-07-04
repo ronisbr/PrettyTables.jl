@@ -70,15 +70,17 @@ function _excel__write_table!(
     renderer = Val(pspec.renderer)
 
     if data_column_widths isa Number
-        data_column_widths = data_column_widths .+ 0.0 * (1:num_cols)
+        data_column_widths = fill(Float64(data_column_widths), num_cols)
     end
 
     if minimum_data_column_widths isa Number
-        minimum_data_column_widths = minimum_data_column_widths .+ 0.0 * (1:num_cols)
+        minimum_data_column_widths =
+            fill(Float64(minimum_data_column_widths), num_cols)
     end
 
     if maximum_data_column_widths isa Number
-        maximum_data_column_widths = maximum_data_column_widths .+ 0.0 * (1:num_cols)
+        maximum_data_column_widths =
+            fill(Float64(maximum_data_column_widths), num_cols)
     end
 
     max_row_height = Dict{Int, Float64}()
