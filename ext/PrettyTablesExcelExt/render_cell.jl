@@ -6,7 +6,7 @@
 
 """
     _excel__render_cell(cell::Ts, renderer::Union{Val{:print}, Val{:show}}) -> Ts
-    _excel__render_cell(call::Tns, renderer::Union{Val{:print}, Val{:show}}) -> String
+    _excel__render_cell(cell::Any, renderer::Union{Val{:print}, Val{:show}}) -> String
 
 Render the `cell` in excel back end. If the cell type `Ts` is
 supported by Excel, we will return the cell itself. In this case,

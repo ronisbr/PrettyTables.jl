@@ -224,22 +224,21 @@ end
         sheet::XLSX.Worksheet,
         row::Int,
         col::Int,
-        style_key::AbstractString,
-        style_field::Any,
+        style::Vector{ExcelPair},
         alignment::Union{Nothing, Symbol},
         valign::String,
-        wrap::Bool;
-        kwargs...
+        wrap::Bool,
     ) -> Number
 
 Apply font and fill styling to the cell at (`row`, `col`) in `sheet` and return the
 resolved font size.
 
-# Keywords
-
-- `col_idx::Union{Nothing, Int}`: Column index used to select a per-column entry when
-    `style_field` is a `Vector{Vector{ExcelPair}}`.
-    (**Default**: `nothing`)
+The font size is taken from the `:size` entry of `style` when present, and from
+`DEFAULT_FONT_SIZE` otherwise. When `style` carries no font attributes, no font is written
+and a highlighter's prior font settings are preserved. The `:cell_fill_*` entries of
+`style` are routed to `XLSX.setFill` and the remaining entries to `XLSX.setFont`.
+`alignment`, when not `nothing`, is applied via `XLSX.setAlignment` together with `valign`
+and `wrap`.
 """
 function _excel__apply_cell_style!(
     sheet::XLSX.Worksheet,

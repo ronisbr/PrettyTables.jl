@@ -242,22 +242,23 @@ end
     fmt__excel_stringify(columns)
     fmt__excel_stringify()
 
-
-Create a formatter function that turns data types the Excel backend can't handle into their 
+Create a formatter function that turns data types the Excel backend can't handle into their
 string representation.
 
 The Excel backend can only handle the following data types natively:
 
-    `String`, `Float64`, `Int`, `Bool`, `Dates.Date`, `Dates.Time`, `Dates.DateTime`, `Missing`, 
+    `String`, `Float64`, `Int`, `Bool`, `Dates.Date`, `Dates.Time`, `Dates.DateTime`, `Missing`,
 
-Passing any other datatypes will cause an error. However, converting these other data types to their 
-string representation (using the `string()` function), allows them to pass without an issue.
+Passing any other data types will cause an error. However, converting these other data types
+to their string representation (using the `string()` function) allows them to pass without
+an issue.
 
-Pass a verctor (or unit range) of column numbers to apply this formatter to specific columns, or 
-leave the argument empty to apply it to the entire table.
+Pass a vector (or unit range) of column numbers to apply this formatter to specific columns,
+or leave the argument empty to apply it to the entire table.
 
-For example, the following matrix of tuples cannot be handled natively by the Excel backend, 
-but using the stringify formatter allows it to be handled successfully as a matrix of strings:
+For example, the following matrix of tuples cannot be handled natively by the Excel backend,
+but using the stringify formatter allows it to be handled successfully as a matrix of
+strings:
 
 ```
 julia> matrix = [(i, j) for i in 1:4, j in 1:4]
@@ -287,12 +288,11 @@ julia> pt[1][:]
 function fmt__excel_stringify(args...; kwargs...)
     error("""
     Excel backend requires the XLSX.jl package.
-    
+
     Please install and load it with:
         using Pkg
         Pkg.add("XLSX")
-        using XLSX
-    
+        using XLSX    
     Then retry your pretty_table call with backend = :excel.
     """)
 end
