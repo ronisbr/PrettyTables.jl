@@ -236,8 +236,8 @@ function _excel__try_outer_borders!(
     b = table_format.borders
 
     if table_format.horizontal_line_at_beginning
-        XLSX.setBorder(sheet, first(rows), cols; top    = b.top_line)
-        XLSX.setBorder(sheet, last(rows),  cols; bottom = b.bottom_line)
+        XLSX.setBorder(sheet, first(rows), cols; top = b.top_line)
+        XLSX.setBorder(sheet, last(rows), cols; bottom = b.bottom_line)
     end
 
     if table_format.vertical_line_at_beginning
@@ -245,12 +245,8 @@ function _excel__try_outer_borders!(
     end
 
     if _is_horizontally_cropped(table_data)
-        table_format.vertical_line_after_continuation_column && XLSX.setBorder(
-            sheet,
-            rows,
-            first(cols) + col_offset;
-            right = b.right_line,
-        )
+        table_format.vertical_line_after_continuation_column &&
+            XLSX.setBorder(sheet, rows, first(cols) + col_offset; right = b.right_line)
     else
         table_format.vertical_line_after_data_columns &&
             XLSX.setBorder(sheet, rows, last(cols); right = b.right_line)
@@ -319,7 +315,7 @@ function _excel__apply_cell_style!(
     style::Vector{ExcelPair},
     alignment::Union{Nothing, Symbol},
     valign::String,
-    wrap::Bool
+    wrap::Bool,
 )
     font_attributes, fill_attributes = _excel__split_attributes(style)
 
@@ -359,10 +355,7 @@ Apply `excelFormatter` to the cell at row `current_row` and column `j` and retur
 format attributes when the formatter condition is met, or `nothing` otherwise.
 """
 function _excel__format_attributes(
-    table_data::TableData,
-    excelFormatter::ExcelFormatter,
-    current_row::Int,
-    j::Int,
+    table_data::TableData, excelFormatter::ExcelFormatter, current_row::Int, j::Int
 )
     attributes =
         excelFormatter.f(table_data.data, current_row, j) ? excelFormatter.numFmt : nothing

@@ -56,7 +56,7 @@ function _excel__write_table!(
     table_data = pspec.table_data
 
     c = XLSX.CellRef(anchor_cell)
-    anchor_row_offset = Int(c.row_number  - 1)
+    anchor_row_offset = Int(c.row_number - 1)
     anchor_col_offset = Int(c.column_number - 1)
 
     num_cols = table_data.num_columns
@@ -131,7 +131,7 @@ function _excel__write_table!(
 
         if action == :new_row
             ir += 1
-            jr  = 0
+            jr = 0
 
             max_row_height[ir] = 0.0
 
@@ -147,12 +147,12 @@ function _excel__write_table!(
         # == Continuation Cells ============================================================
 
         elseif action ∈ (
-                :horizontal_continuation_cell,
-                :diagonal_continuation_cell,
-                :vertical_continuation_cell,
-                :row_number_vertical_continuation_cell,
-                :row_label_vertical_continuation_cell,
-            )
+            :horizontal_continuation_cell,
+            :diagonal_continuation_cell,
+            :vertical_continuation_cell,
+            :row_number_vertical_continuation_cell,
+            :row_label_vertical_continuation_cell,
+        )
             alignment = :c
 
             rendered_cell = if action == :horizontal_continuation_cell
@@ -178,23 +178,19 @@ function _excel__write_table!(
             row_height, col_length = _excel__cell_length_and_height(rendered_cell, fontsize)
 
             max_row_height[ir] = max(max_row_height[ir], row_height)
-            max_col_length[jr] = max(
-                max_col_length[jr], col_length
-            )
+            max_col_length[jr] = max(max_col_length[jr], col_length)
 
         # == End Row =======================================================================
 
         elseif action == :end_row
-            XLSX.setRowHeight(
-                sheet,
-                ir + anchor_row_offset;
-                height = max_row_height[ir],
-            )
+            XLSX.setRowHeight(sheet, ir + anchor_row_offset; height = max_row_height[ir])
 
             if rs == :column_labels && next_rs != :column_labels
                 if table_format.horizontal_line_after_column_labels
                     XLSX.setBorder(
-                        sheet, ir + anchor_row_offset, all_cols;
+                        sheet,
+                        ir + anchor_row_offset,
+                        all_cols;
                         bottom = table_format.borders.header_line,
                     )
                 end
@@ -204,22 +200,28 @@ function _excel__write_table!(
 
                 if next_rs ∉ (:data, :continuation_row)
                     table_format.horizontal_line_after_data_rows && XLSX.setBorder(
-                        sheet, ir + anchor_row_offset, all_cols;
+                        sheet,
+                        ir + anchor_row_offset,
+                        all_cols;
                         bottom = table_format.borders.middle_line,
                     )
 
-                    ((next_rs == :summary_row) && table_format.horizontal_line_before_summary_rows) &&
-                        XLSX.setBorder(
-                            sheet, ir + anchor_row_offset, all_cols;
-                            bottom = table_format.borders.middle_line,
-                        )
+                    (
+                        (next_rs == :summary_row) &&
+                        table_format.horizontal_line_before_summary_rows
+                    ) && XLSX.setBorder(
+                        sheet,
+                        ir + anchor_row_offset,
+                        all_cols;
+                        bottom = table_format.borders.middle_line,
+                    )
 
                 elseif (ps.i ∈ horizontal_lines_at_data_rows)
                     XLSX.setBorder(
                         sheet,
                         ir + anchor_row_offset,
                         all_cols;
-                        bottom = table_format.borders.middle_line
+                        bottom = table_format.borders.middle_line,
                     )
                 end
 
@@ -227,24 +229,29 @@ function _excel__write_table!(
                 last_written_row = ir + anchor_row_offset
 
                 if next_rs != :summary_row
-                    table_format.horizontal_line_after_summary_rows &&
-                        XLSX.setBorder(
-                            sheet, ir + anchor_row_offset, all_cols;
-                            bottom = table_format.borders.bottom_line,
-                        )
+                    table_format.horizontal_line_after_summary_rows && XLSX.setBorder(
+                        sheet,
+                        ir + anchor_row_offset,
+                        all_cols;
+                        bottom = table_format.borders.bottom_line,
+                    )
                 end
 
             elseif rs == :row_group_label
                 if table_format.horizontal_line_before_row_group_label
                     XLSX.setBorder(
-                        sheet, ir + anchor_row_offset, all_cols;
+                        sheet,
+                        ir + anchor_row_offset,
+                        all_cols;
                         top = table_format.borders.middle_line,
                     )
                 end
 
                 if table_format.horizontal_line_after_row_group_label
                     XLSX.setBorder(
-                        sheet, ir + anchor_row_offset, all_cols;
+                        sheet,
+                        ir + anchor_row_offset,
+                        all_cols;
                         bottom = table_format.borders.middle_line,
                     )
                 end
@@ -295,19 +302,12 @@ function _excel__write_table!(
                 XLSX.mergeCells(
                     sheet,
                     XLSX.CellRange(
-                        XLSX.CellRef(sheet_row, col_start),
-                        XLSX.CellRef(sheet_row, col_end),
+                        XLSX.CellRef(sheet_row, col_start), XLSX.CellRef(sheet_row, col_end)
                     ),
                 )
 
                 fontsize = _excel__apply_cell_style!(
-                    sheet,
-                    sheet_row,
-                    col_start,
-                    cell_style,
-                    alignment,
-                    valign,
-                    true
+                    sheet, sheet_row, col_start, cell_style, alignment, valign, true
                 )
 
                 text_lines = _excel__text_lines(rendered_cell)
@@ -331,29 +331,23 @@ function _excel__write_table!(
                     ),
                 )
 
-                cell_style = ps.i == 1 ?
-                    style.first_line_merged_column_label :
+                cell_style =
+                    ps.i == 1 ? style.first_line_merged_column_label :
                     style.merged_column_label
 
                 fontsize = _excel__apply_cell_style!(
-                    sheet,
-                    sheet_row,
-                    sheet_col,
-                    cell_style,
-                    cell.alignment,
-                    "bottom",
-                    true,
+                    sheet, sheet_row, sheet_col, cell_style, cell.alignment, "bottom", true
                 )
 
                 row_height, _ = _excel__cell_length_and_height(rendered_cell, fontsize)
 
-                max_row_height[ir] = max(
-                    max_row_height[ir], row_height
-                )
+                max_row_height[ir] = max(max_row_height[ir], row_height)
 
                 if table_format.horizontal_line_at_merged_column_labels
                     XLSX.setBorder(
-                        sheet, sheet_row, sheet_col:(sheet_col + span - 1);
+                        sheet,
+                        sheet_row,
+                        sheet_col:(sheet_col + span - 1);
                         bottom = table_format.borders.merged_header_cell_line,
                     )
                 end
@@ -364,7 +358,8 @@ function _excel__write_table!(
                 if (last_merged_col == num_printed_data_cols)
                     # If we do not have a continuation column, we are in the last column.
                     # The left border in this case is drawn at the end.
-                    table_format.vertical_line_after_data_columns && has_cont_column &&
+                    table_format.vertical_line_after_data_columns &&
+                        has_cont_column &&
                         XLSX.setBorder(
                             sheet,
                             sheet_row,
@@ -403,9 +398,11 @@ function _excel__write_table!(
                     wrap = true
 
                     if ps.i < length(table_data.column_labels) &&
-                       table_format.horizontal_line_between_column_labels
+                        table_format.horizontal_line_between_column_labels
                         XLSX.setBorder(
-                            sheet, sheet_row, sheet_col;
+                            sheet,
+                            sheet_row,
+                            sheet_col;
                             bottom = table_format.borders.middle_line,
                         )
                     end
@@ -419,7 +416,9 @@ function _excel__write_table!(
 
                     if ps.i == 1 && table_format.horizontal_line_between_column_labels
                         XLSX.setBorder(
-                            sheet, sheet_row, sheet_col;
+                            sheet,
+                            sheet_row,
+                            sheet_col;
                             bottom = table_format.borders.middle_line,
                         )
                     end
@@ -440,7 +439,9 @@ function _excel__write_table!(
 
                     if ps.i == 1 && table_format.horizontal_line_between_column_labels
                         XLSX.setBorder(
-                            sheet, sheet_row, sheet_col;
+                            sheet,
+                            sheet_row,
+                            sheet_col;
                             bottom = table_format.borders.middle_line,
                         )
                     end
@@ -482,29 +483,21 @@ function _excel__write_table!(
                     for highlighter in highlighters
                         highlighter.f(table_data.data, ps.i, ps.j) || continue
 
-                        decoration = highlighter.fd(highlighter, table_data.data, ps.i, ps.j)
+                        decoration = highlighter.fd(
+                            highlighter, table_data.data, ps.i, ps.j
+                        )
 
                         hl_font_size = _excel__apply_cell_style!(
-                            sheet,
-                            sheet_row,
-                            sheet_col,
-                            decoration,
-                            nothing,
-                            "",
-                            false
+                            sheet, sheet_row, sheet_col, decoration, nothing, "", false
                         )
 
                         hl_row_height, hl_col_length = _excel__cell_length_and_height(
                             rendered_cell, hl_font_size
                         )
 
-                        max_row_height[ir] = max(
-                            max_row_height[ir], hl_row_height
-                        )
+                        max_row_height[ir] = max(max_row_height[ir], hl_row_height)
 
-                        max_col_length[jr] = max(
-                            max_col_length[jr], hl_col_length
-                        )
+                        max_col_length[jr] = max(max_col_length[jr], hl_col_length)
 
                         break
                     end
@@ -540,7 +533,7 @@ function _excel__write_table!(
                     cell_style,
                     alignment,
                     vertical_alignment,
-                    wrap
+                    wrap,
                 )
 
                 row_height, col_length = _excel__cell_length_and_height(
@@ -558,41 +551,30 @@ function _excel__write_table!(
             :row_number_label,
             :row_number,
             :row_number_vertical_continuation_cell,
-            :summary_row_number
+            :summary_row_number,
         )
-            table_format.vertical_line_after_row_number_column &&
-                XLSX.setBorder(
-                    sheet,
-                    sheet_row,
-                    sheet_col;
-                    right = table_format.borders.center_line
-                )
+            table_format.vertical_line_after_row_number_column && XLSX.setBorder(
+                sheet, sheet_row, sheet_col; right = table_format.borders.center_line
+            )
 
         elseif action ∈ (
             :stubhead_label,
             :row_label,
             :row_label_vertical_continuation_cell,
-            :summary_row_label
+            :summary_row_label,
         )
-            table_format.vertical_line_after_row_label_column &&
-                XLSX.setBorder(
-                    sheet,
-                    sheet_row,
-                    sheet_col;
-                    right = table_format.borders.center_line,
-                )
+            table_format.vertical_line_after_row_label_column && XLSX.setBorder(
+                sheet, sheet_row, sheet_col; right = table_format.borders.center_line
+            )
 
-        elseif action ∈ (
-            :column_label,
-            :data,
-            :summary_row_cell,
-            :vertical_continuation_cell,
-        )
+        elseif action ∈
+            (:column_label, :data, :summary_row_cell, :vertical_continuation_cell)
             if !(action == :column_label && cell isa MergeCells)
                 if (ps.j == num_printed_data_cols)
                     # If we do not have a continuation column, we are in the last column.
                     # The left border in this case is drawn at the end.
-                    table_format.vertical_line_after_data_columns && has_cont_column &&
+                    table_format.vertical_line_after_data_columns &&
+                        has_cont_column &&
                         XLSX.setBorder(
                             sheet,
                             sheet_row,
@@ -617,12 +599,13 @@ function _excel__write_table!(
     # Vertical line to the right of the row labels column.
     if table_data.row_labels !== nothing
         vline_start = first_content_row > 0 ? first_content_row : 1 + anchor_row_offset
-        vline_end =
-            last_written_row > 0 ? last_written_row : ir + anchor_row_offset - 1
+        vline_end = last_written_row > 0 ? last_written_row : ir + anchor_row_offset - 1
 
         if vline_start <= vline_end && table_format.vertical_line_after_row_label_column
             XLSX.setBorder(
-                sheet, vline_start:vline_end, initial_data_column + anchor_col_offset;
+                sheet,
+                vline_start:vline_end,
+                initial_data_column + anchor_col_offset;
                 right = table_format.borders.center_line,
             )
         end
@@ -630,15 +613,14 @@ function _excel__write_table!(
 
     # Outer borders span only the content area (excludes title/subtitle and footnotes).
     content_start = first_content_row > 0 ? first_content_row : 1 + anchor_row_offset
-    content_end =
-        last_written_row > 0 ? last_written_row : ir + anchor_row_offset - 1
+    content_end = last_written_row > 0 ? last_written_row : ir + anchor_row_offset - 1
     all_rows = content_start:content_end
 
     b = table_format.borders
 
     if table_format.horizontal_line_at_beginning
-        XLSX.setBorder(sheet, content_start, all_cols; top    = b.top_line)
-        XLSX.setBorder(sheet, content_end,   all_cols; bottom = b.bottom_line)
+        XLSX.setBorder(sheet, content_start, all_cols; top = b.top_line)
+        XLSX.setBorder(sheet, content_end, all_cols; bottom = b.bottom_line)
     end
 
     if table_format.vertical_line_at_beginning
@@ -646,12 +628,8 @@ function _excel__write_table!(
     end
 
     if _is_horizontally_cropped(table_data)
-        table_format.vertical_line_after_continuation_column && XLSX.setBorder(
-            sheet,
-            all_rows,
-            last(all_cols);
-            right = b.right_line,
-        )
+        table_format.vertical_line_after_continuation_column &&
+            XLSX.setBorder(sheet, all_rows, last(all_cols); right = b.right_line)
     else
         table_format.vertical_line_after_data_columns &&
             XLSX.setBorder(sheet, all_rows, last(all_cols); right = b.right_line)
@@ -668,7 +646,8 @@ function _excel__write_table!(
             maximum_data_column_widths,
         )
 
-        col_width > 0 && XLSX.setColumnWidth(sheet, i + anchor_col_offset; width = col_width)
+        col_width > 0 &&
+            XLSX.setColumnWidth(sheet, i + anchor_col_offset; width = col_width)
     end
 
     # Set final row heights.

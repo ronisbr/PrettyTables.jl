@@ -73,7 +73,7 @@ function PrettyTables._excel__print(
     mode::String = "w",
     overwrite::Bool = false,
     sheet::Union{String, XLSX.Worksheet} = "prettytable",
-    kwargs...
+    kwargs...,
 )
     if isnothing(filename)
         if sheet isa String
@@ -92,20 +92,24 @@ function PrettyTables._excel__print(
     end
 
     # Check arguments.
-    mode ∉ ["w", "rw", "wr"] && throw(ArgumentError(
-        "Invalid mode \"$mode\". Must be either \"w\" to create a new file or \"rw\" to add a PrettyTable to an existing spreadsheet."
-    ))
+    mode ∉ ["w", "rw", "wr"] && throw(
+        ArgumentError(
+            "Invalid mode \"$mode\". Must be either \"w\" to create a new file or \"rw\" to add a PrettyTable to an existing spreadsheet.",
+        ),
+    )
 
-    sheet isa XLSX.Worksheet && throw(ArgumentError(
-        "Can't specify both `filename` and an `XLSX.worksheet`. Either the `sheet` argument must be a `String` name of the worksheet to write to, not an `XLSX.Worksheet` object or the filename must be `nothing`."
-    ))
+    sheet isa XLSX.Worksheet && throw(
+        ArgumentError(
+            "Can't specify both `filename` and an `XLSX.worksheet`. Either the `sheet` argument must be a `String` name of the worksheet to write to, not an `XLSX.Worksheet` object or the filename must be `nothing`.",
+        ),
+    )
 
     if mode == "w"
         # Write the PrettyTable to a new `xlsx` file.
         (!overwrite && isfile(filename)) &&
             error("File \"$filename\" already exists and `overwrite = false`.")
 
-        XLSX.openxlsx(filename, mode = "w") do xf
+        XLSX.openxlsx(filename; mode = "w") do xf
             sh = xf[1]
             sheet == sh.name || XLSX.renamesheet!(sh, sheet)
 
