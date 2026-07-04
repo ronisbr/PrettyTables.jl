@@ -79,8 +79,42 @@
         @test XLSX.getFormat(result[1], "D5").format["numFmt"]["formatCode"] == "0.000"
     end
 
-    # == Region Field and Constructors =====================================================
+    # == Predicate receives the entire data matrix =======================================
 
+    @testset "Predicate receives the data matrix" verbose = true begin
+        # The `ExcelFormatter` predicate signature is `f(data, i, j)`, where the first
+        # argument is the entire data matrix passed to `pretty_table`. The predicate can
+        # therefore index into `data` to express conditions on the cell value.
+        matrix = [
+            1 2 3
+            4 5 6
+            7 8 9
+        ]
+
+        result = pretty_table(
+            XLSX.XLSXFile,
+            matrix;
+            excel_formatters = [
+                ExcelFormatter(
+                    (data, i, j) -> (data[i, j] > 5),
+                    ["format" => "0.00"],
+                ),
+            ],
+        )
+
+        # Cells whose value exceeds 5 are: (2,3) = 6 and (3,*) = {7,8,9}. Excel rows are
+        # one header row plus the data rows, so the matched cells sit at C3, A4, B4, C4.
+        @test XLSX.getFormat(result[1], "C3").format["numFmt"]["formatCode"] == "0.00"
+        @test XLSX.getFormat(result[1], "A4").format["numFmt"]["formatCode"] == "0.00"
+        @test XLSX.getFormat(result[1], "B4").format["numFmt"]["formatCode"] == "0.00"
+        @test XLSX.getFormat(result[1], "C4").format["numFmt"]["formatCode"] == "0.00"
+        # Cells whose value does not exceed 5 must keep the default "General" format.
+        @test XLSX.getFormat(result[1], "A2").format["numFmt"]["formatCode"] == "General"
+        @test XLSX.getFormat(result[1], "B2").format["numFmt"]["formatCode"] == "General"
+        @test XLSX.getFormat(result[1], "C2").format["numFmt"]["formatCode"] == "General"
+    end
+
+    # == Region Field and Constructors =====================================================
     @testset "Region Field and Constructors" verbose = true begin
         # The default region must be `:data`.
         f = ExcelFormatter((v, i, j) -> true, ["format" => "0.00"])
