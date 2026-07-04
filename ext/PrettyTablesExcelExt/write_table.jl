@@ -414,7 +414,8 @@ function _excel__write_table!(
                     vertical_alignment = "bottom"
                     wrap = true
 
-                    if ps.i == 1 && table_format.horizontal_line_between_column_labels
+                    if (ps.i < length(table_data.column_labels)) &&
+                        table_format.horizontal_line_between_column_labels
                         XLSX.setBorder(
                             sheet,
                             sheet_row,
@@ -437,7 +438,8 @@ function _excel__write_table!(
                     vertical_alignment = "bottom"
                     wrap = true
 
-                    if ps.i == 1 && table_format.horizontal_line_between_column_labels
+                    if (ps.i < length(table_data.column_labels)) &&
+                        table_format.horizontal_line_between_column_labels
                         XLSX.setBorder(
                             sheet,
                             sheet_row,

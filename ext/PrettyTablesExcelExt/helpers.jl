@@ -252,14 +252,15 @@ function _excel__apply_cell_style!(
 )
     font_attributes, fill_attributes = _excel__split_attributes(style)
 
-    if !isnothing(font_attributes)
+    if !isempty(font_attributes)
         id = findfirst(==(:size), first.(font_attributes))
         fontsize = isnothing(id) ? DEFAULT_FONT_SIZE : last(font_attributes[id])
 
         XLSX.setFont(sheet, row, col; font_attributes...)
     else
+        # Preserve any font previously applied (e.g., by a highlighter) by not calling
+        # `setFont`. The default size is used only as a fallback for cell sizing.
         fontsize = DEFAULT_FONT_SIZE
-        XLSX.setFont(sheet, row, col; size = fontsize)
     end
 
     !isnothing(alignment) && XLSX.setAlignment(

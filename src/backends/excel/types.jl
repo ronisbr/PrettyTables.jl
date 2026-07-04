@@ -115,8 +115,10 @@ Define the Excel format to apply to a cell.
 
 # Fields
 
-- `f::Function`: Function with the signature `f(value, i, j)` which should return `true`
-  if the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
+- `f::Function`: Function with the signature `f(data, i, j)` which should return `true`
+  if the element `(i, j)` in `data` must be formatted, or `false` otherwise. The first
+  argument is the entire data matrix passed to `pretty_table`, allowing `data[i, j]` to be
+  inspected inside the predicate.
 - `numFmt::ExcelPair`: Specifies the format to apply to the cell. The format should be
   specified with an `ExcelPair` (*i.e.* `Pair{String, String}`) using the `XLSX.jl`
   formatting definitions used by the `XLSX.setFormat` function.
@@ -160,10 +162,10 @@ For example, to apply Excel-native formatting to different columns of a table:
 
 ```julia
 excel_formatters = [
-    ExcelFormatter((v, i, j) -> (j==1), ["format" => "#,##0_0_0"])
-    ExcelFormatter((v, i, j) -> (j==2), ["format" => "#,##0.??_0_0"])
-    ExcelFormatter((v, i, j) -> (j==3), ["format" => "#,##0.???"])
-    ExcelFormatter((v, i, j) -> (j==4), ["format" => "0_0_0_0"])
+    ExcelFormatter((data, i, j) -> (j==1), ["format" => "#,##0_0_0"])
+    ExcelFormatter((data, i, j) -> (j==2), ["format" => "#,##0.??_0_0"])
+    ExcelFormatter((data, i, j) -> (j==3), ["format" => "#,##0.???"])
+    ExcelFormatter((data, i, j) -> (j==4), ["format" => "0_0_0_0"])
 ]
 ```
 
