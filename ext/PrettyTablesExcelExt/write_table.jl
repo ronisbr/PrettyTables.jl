@@ -140,8 +140,8 @@ function _excel__write_table!(
             # Ensure all cells in the row are non-empty before any merges.
             _excel__unempty_row!(sheet, ir + anchor_row_offset, all_cols)
 
-            # Track first non-header row for vertical_line_after_row_label_column
-            # calculation.
+            # Track the first row outside the title/subtitle section so the post-loop
+            # outer-border logic can clamp the top of the content area accordingly.
             if first_content_row == 0 && rs != :table_header
                 first_content_row = ir + anchor_row_offset
             end
@@ -597,21 +597,6 @@ function _excel__write_table!(
     end
 
     # == Post-Loop Operations ==============================================================
-
-    # Vertical line to the right of the row labels column.
-    if table_data.row_labels !== nothing
-        vline_start = first_content_row > 0 ? first_content_row : 1 + anchor_row_offset
-        vline_end = last_written_row > 0 ? last_written_row : ir + anchor_row_offset - 1
-
-        if vline_start <= vline_end && table_format.vertical_line_after_row_label_column
-            XLSX.setBorder(
-                sheet,
-                vline_start:vline_end,
-                num_leading_columns + anchor_col_offset;
-                right = table_format.borders.center_line,
-            )
-        end
-    end
 
     # Outer borders span only the content area (excludes title/subtitle and footnotes).
     content_start = first_content_row > 0 ? first_content_row : 1 + anchor_row_offset
