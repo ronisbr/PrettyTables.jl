@@ -4,11 +4,11 @@ using PrettyTables
 using XLSX
 
 # Import the functions we're overriding.
-import PrettyTables: _excel__print, _is_horizontally_cropped, _update_data_cell_indices
+import PrettyTables: _excel__print, _is_horizontally_cropped
 import PrettyTables: fmt__excel_stringify, pretty_table
 
 # Import types we need.
-using PrettyTables: PrintingSpec, TableData, ColumnTable, RowTable, PrintingTableState
+using PrettyTables: PrintingSpec, TableData, PrintingTableState
 using PrettyTables: MergeCells
 
 # Import internal iterator and helpers.
