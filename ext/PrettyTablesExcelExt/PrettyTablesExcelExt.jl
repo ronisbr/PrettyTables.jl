@@ -50,7 +50,8 @@ passed through to `_excel__write_table!`.
     If no sheet with that name exists it will be created. When an `XLSX.Worksheet`, that
     worksheet is updated in place and `nothing` is returned.
     (**Default**: `"prettytable"`)
-- `mode::String`: `"w"` to create a new file or `"rw"` to open and update an existing one.
+- `mode::String`: `"w"` to create a new file, `"rw"` to open and update an existing one,
+    or `"wr"` as an alias for `"rw"`.
     (**Default**: `"w"`)
 - `overwrite::Bool`: Allow overwriting an existing file when `mode = "w"`.
     (**Default**: `false`)
@@ -60,7 +61,7 @@ passed through to `_excel__write_table!`.
 - `nothing` when `sheet` is an `XLSX.Worksheet` (the worksheet is updated in place).
 - `XLSX.XLSXFile` when `filename` is `nothing` and `sheet` is a `String`.
 - `String` (the filename) when `filename` is a `String` and `mode = "w"`.
-- `XLSX.XLSXFile` when `filename` is a `String` and `mode = "rw"`.
+- `XLSX.XLSXFile` when `filename` is a `String` and `mode = "rw"` (or `"wr"`).
 
 !!! note
 

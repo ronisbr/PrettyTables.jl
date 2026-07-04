@@ -64,7 +64,7 @@ function _excel__write_table!(
     num_printed_cols = _number_of_printed_columns(table_data)
     num_printed_data_cols = _number_of_printed_data_columns(table_data)
 
-    initial_data_column =
+    num_leading_columns =
         num_printed_cols - num_printed_data_cols - _is_horizontally_cropped(table_data)
 
     renderer = Val(pspec.renderer)
@@ -107,7 +107,7 @@ function _excel__write_table!(
     has_cont_column = _is_horizontally_cropped(table_data)
 
     # Tracking variables used for post-loop operations and section transitions.
-    first_content_row = 0 # ..................... Absolute sheet row of first non-header row
+    first_content_row = 0 # ... Absolute sheet row of first row outside the title/subtitle section
     last_written_row  = 0 # .................... Absolute sheet row of last data/summary row
 
     all_cols = (1 + anchor_col_offset):(num_printed_cols + anchor_col_offset)
@@ -169,7 +169,7 @@ function _excel__write_table!(
                 sheet,
                 sheet_row,
                 sheet_col,
-                style.row_number_label,
+                style.data_cell,
                 alignment,
                 "bottom",
                 false,
@@ -286,10 +286,8 @@ function _excel__write_table!(
                 style_key  = action == :source_notes ? "source_note" : string(action)
                 cell_style = getproperty(style, Symbol(style_key))
 
-                valign = if action ∈ (:title, :subtitle, :row_number_label)
+                valign = if action ∈ (:title, :subtitle)
                     "bottom"
-                elseif action == :row_group_label
-                    "center"
                 else
                     "center"
                 end
@@ -607,7 +605,7 @@ function _excel__write_table!(
             XLSX.setBorder(
                 sheet,
                 vline_start:vline_end,
-                initial_data_column + anchor_col_offset;
+                num_leading_columns + anchor_col_offset;
                 right = table_format.borders.center_line,
             )
         end
@@ -642,7 +640,7 @@ function _excel__write_table!(
         col_width = _excel__get_col_width(
             i,
             max_col_length,
-            initial_data_column,
+            num_leading_columns,
             data_column_widths,
             minimum_data_column_widths,
             maximum_data_column_widths,
