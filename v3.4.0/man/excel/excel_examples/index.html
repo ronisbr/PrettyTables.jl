@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Examples · Pretty Tables</title><meta name="title" content="Examples · Pretty Tables"/><meta property="og:title" content="Examples · Pretty Tables"/><meta property="twitter:title" content="Examples · Pretty Tables"/><meta name="description" content="Documentation for Pretty Tables."/><meta property="og:description" content="Documentation for Pretty Tables."/><meta property="twitter:description" content="Documentation for Pretty Tables."/><meta property="og:url" content="https://ronisbr.github.io/PrettyTables.jl/stable/man/excel/excel_examples/"/><meta property="twitter:url" content="https://ronisbr.github.io/PrettyTables.jl/stable/man/excel/excel_examples/"/><link rel="canonical" href="https://ronisbr.github.io/PrettyTables.jl/stable/man/excel/excel_examples/"/><script data-outdated-warner src="../../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../../assets/documenter.js"></script><script src="../../../search_index.js"></script><script src="../../../siteinfo.js"></script><script src="../../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../../../"><img src="../../../assets/logo.png" alt="Pretty Tables logo"/></a><div class="docs-package-name"><span class="docs-autofit"><a href="../../../">Pretty Tables</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../../">Home</a></li><li><a class="tocitem" href="../../quick_start/">Quick Start</a></li><li><a class="tocitem" href="../../usage/">Usage</a></li><li><span class="tocitem">Back Ends</span><ul><li><input class="collapse-toggle" id="menuitem-4-1" type="checkbox"/><label class="tocitem" for="menuitem-4-1"><span class="docs-label">Text</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../../text/text_backend/">Text Backend</a></li><li><a class="tocitem" href="../../text/predefined_formats/">Pre-defined Formats</a></li><li><a class="tocitem" href="../../text/text_examples/">Examples</a></li></ul></li><li><input class="collapse-toggle" id="menuitem-4-2" type="checkbox"/><label class="tocitem" for="menuitem-4-2"><span class="docs-label">HTML</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../../html/html_backend/">HTML Backend</a></li><li><a class="tocitem" href="../../html/html_examples/">Examples</a></li></ul></li><li><input class="collapse-toggle" id="menuitem-4-3" type="checkbox"/><label class="tocitem" for="menuitem-4-3"><span class="docs-label">LaTeX</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../../latex/latex_backend/">LaTeX Backend</a></li><li><a class="tocitem" href="../../latex/latex_examples/">Examples</a></li></ul></li><li><input class="collapse-toggle" id="menuitem-4-4" type="checkbox"/><label class="tocitem" for="menuitem-4-4"><span class="docs-label">Markdown</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../../markdown/markdown_backend/">Markdown Backend</a></li><li><a class="tocitem" href="../../markdown/markdown_examples/">Examples</a></li></ul></li><li><input class="collapse-toggle" id="menuitem-4-5" type="checkbox"/><label class="tocitem" for="menuitem-4-5"><span class="docs-label">Typst</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../../typst/typst_backend/">Typst Backend</a></li></ul></li><li><input class="collapse-toggle" id="menuitem-4-6" type="checkbox" checked/><label class="tocitem" for="menuitem-4-6"><span class="docs-label">Excel</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../excel_backend/">Excel Backend</a></li><li class="is-active"><a class="tocitem" href>Examples</a><ul class="internal"><li><a class="tocitem" href="#Excel-Formatter"><span>Excel Formatter</span></a></li><li><a class="tocitem" href="#Predefined-Formatters"><span>Predefined Formatters</span></a></li><li><a class="tocitem" href="#Excel-Highlighters"><span>Excel Highlighters</span></a></li><li><a class="tocitem" href="#Excel-Table-Style"><span>Excel Table Style</span></a></li><li><a class="tocitem" href="#Excel-borders-and-fill"><span>Excel borders and fill</span></a></li><li><a class="tocitem" href="#Putting-it-all-together"><span>Putting it all together</span></a></li></ul></li></ul></li></ul></li><li><a class="tocitem" href="../../../lib/library/">Library</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Back Ends</a></li><li><a class="is-disabled">Excel</a></li><li class="is-active"><a href>Examples</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Examples</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/ronisbr/PrettyTables.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/ronisbr/PrettyTables.jl/blob/master/docs/src/man/excel/excel_examples.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Excel-Backend-Examples"><a class="docs-heading-anchor" href="#Excel-Backend-Examples">Excel Backend Examples</a><a id="Excel-Backend-Examples-1"></a><a class="docs-heading-anchor-permalink" href="#Excel-Backend-Examples" title="Permalink"></a></h1><p>Here we show some examples produced by the Excel backend.</p><h2 id="Excel-Formatter"><a class="docs-heading-anchor" href="#Excel-Formatter">Excel Formatter</a><a id="Excel-Formatter-1"></a><a class="docs-heading-anchor-permalink" href="#Excel-Formatter" title="Permalink"></a></h2><p>Native Excel formatting can straightforwardly be used to format the display format of table data without affecting the underlying values.</p><pre><code class="language-julia hljs">data = [10.0^(-i + j) for i in 1:6, j in 1:6];
+
+f1 = ExcelFormatter((data, i, j) -&gt; j==1, [&quot;format&quot; =&gt; &quot;#,##0.0????_0&quot;]);
+f2 = ExcelFormatter((data, i, j) -&gt; j==2, [&quot;format&quot; =&gt; &quot;#,##0.0???_0&quot;]);
+f3 = ExcelFormatter((data, i, j) -&gt; j==3, [&quot;format&quot; =&gt; &quot;#,##0.0??_0&quot;]);
+f4 = ExcelFormatter((data, i, j) -&gt; j==4, [&quot;format&quot; =&gt; &quot;#,##0.0?_0&quot;]);
+f5 = ExcelFormatter((data, i, j) -&gt; j==5, [&quot;format&quot; =&gt; &quot;#,##0.0_0&quot;]);
+f6 = ExcelFormatter((data, i, j) -&gt; j==6, [&quot;format&quot; =&gt; &quot;#,##0_0&quot;]);
+
+f = pretty_table(
+    data;
+    anchor_cell = &quot;B2&quot;,
+    backend = :excel,
+    data_column_widths = 10.5,
+    excel_formatters = [f1, f2, f3, f4, f5, f6],
+)
+
+writexlsx(&quot;output.xlsx&quot;, f; overwrite = true);</code></pre><p><img src="../excel_images/excel_example_formatter_01.png" alt="image|320x500"/></p><pre><code class="language-julia hljs">data = [f(a) for a = 0:30:90, f in (sind, cosd, tand)];
+
+f = pretty_table(
+    data;
+    anchor_cell = &quot;B2&quot;,
+    backend = :excel,
+    excel_formatters = [ExcelFormatter((v, i, j) -&gt; true, [&quot;format&quot; =&gt; &quot;0.000_);;@_)&quot;])],
+)
+
+writexlsx(&quot;output.xlsx&quot;, f; overwrite = true);</code></pre><p><img src="../excel_images/excel_example_formatter_02.png" alt="image|320x500"/></p><p>The calculated values of the trigonometric functions are written natively to Excel at full precision but the <code>ExcelFormatter</code> sets the Excel display format to only show three decimal places in the table.</p><p>When an Excel formatter is used, the printed width of cell data is determined by Excel based on the format specified. It cannot be known by PrettyTables.jl. For this reason, most cell data values are not considered by the automatic determination of column widths, which therefore relies on the column headers only. However, if cells contain text (or are otherwise represnted as <code>Strings</code>), these are included in column width determination (text is less likely to be significantly impacted by Excel formatting - although this is not impossible).</p><p>If automatic determination of column widths is unsatisfactory, consider setting minimum and/or maximum width limits or fixing column widths entirely.</p><p>To illustrate the extent to which formatting affects width even of the same data, consider:</p><pre><code class="language-julia hljs">dt = Dates.DateTime(&quot;1986-06-19T18:35:00&quot;);
+
+matrix = [
+    dt dt dt dt
+    dt dt dt dt
+];
+
+f = pretty_table(
+    XLSX.XLSXFile,
+    matrix;
+    anchor_cell = &quot;B2&quot;,
+    data_column_widths = [12.0, 16.0, 8.0, 20.0],
+    excel_formatters = [
+        ExcelFormatter((v, i, j) -&gt; (j == 1), [&quot;format&quot; =&gt; &quot;ShortDate&quot;])
+        ExcelFormatter((v, i, j) -&gt; (j == 2), [&quot;format&quot; =&gt; &quot;d mmmm yyyy&quot;])
+        ExcelFormatter((v, i, j) -&gt; (j == 3), [&quot;format&quot; =&gt; &quot;hh:mm&quot;])
+        ExcelFormatter((v, i, j) -&gt; (j == 4), [&quot;format&quot; =&gt; &quot;yyyy-mm-dd\&quot;T\&quot;hh:mm:ss&quot;])
+    ],
+)
+
+XLSX.writexlsx(&quot;output.xlsx&quot;, f; overwrite = true);</code></pre><p><img src="../excel_images/excel_example_datetime.png" alt="image|320x500"/></p><h2 id="Predefined-Formatters"><a class="docs-heading-anchor" href="#Predefined-Formatters">Predefined Formatters</a><a id="Predefined-Formatters-1"></a><a class="docs-heading-anchor-permalink" href="#Predefined-Formatters" title="Permalink"></a></h2><p>Predefined formatters are intended for text output. They can be used straightforwardly with the <code>:excel</code> backend but convert cell data to formatted strings rather than passing the native values.</p><p>For example, using the same trigonometry data table as above:</p><pre><code class="language-julia hljs">data = [f(a) for a = 0:30:90, f in (sind, cosd, tand)];
+
+f = pretty_table(
+    data;
+    anchor_cell = &quot;B2&quot;,
+    backend = :excel,
+    formatters = [fmt__printf(&quot;%5.3f&quot;)],
+    filename = &quot;output.xlsx&quot;,
+    overwrite = true
+)</code></pre><p><img src="../excel_images/excel_example_predefined_formatters.png" alt="image|320x500"/></p><p>Excel generates a warning that numbers are represented as text. Clicking in such a cell and hitting enter causes Excel to convert the string to a number again, but the formatting is lost (eg, <code>1.000</code> =&gt; <code>1</code>). Moreover, by converting to a string, the precision has been truncated to the length of the string. While not important for presentation purposes, if the table is used in Excel as input for further calculation, some information will have been lost.</p><p>Numbers passed via a predefined formatter are converted to a string representation and so will always be included in the column width determination.</p><p>An Excel formatter and a predefined formatter can readily be applied to the same cell, if useful. For example, the addition of</p><pre><code class="language-julia hljs">excel_formatters = [ExcelFormatter((v, i, j) -&gt; true, [&quot;format&quot; =&gt; &quot;@_0&quot;])],</code></pre><p>in the above <code>pretty_table</code> specification would provide a right cell margin the width of one &#39;<code>0</code>&#39; character to the data in each cell, similar to the one included in the first example.</p><h2 id="Excel-Highlighters"><a class="docs-heading-anchor" href="#Excel-Highlighters">Excel Highlighters</a><a id="Excel-Highlighters-1"></a><a class="docs-heading-anchor-permalink" href="#Excel-Highlighters" title="Permalink"></a></h2><pre><code class="language-julia hljs">t = 0:1:20;
+
+data = hcat(t, ones(length(t) ), t, 0.5.*t.^2);
+
+column_labels = [
+    [&quot;Time&quot;, &quot;Acceleration&quot;, &quot;Velocity&quot;, &quot;Distance&quot;],
+    [ &quot;[s]&quot;,     &quot;[m / s²]&quot;,  &quot;[m / s]&quot;,      &quot;[m]&quot;]
+];
+
+hl_p = ExcelHighlighter(
+    (data, i, j) -&gt; (j == 4) &amp;&amp; (data[i, j] &gt; 9),
+    [&quot;color&quot; =&gt; &quot;navy&quot;, &quot;bold&quot; =&gt; &quot;true&quot;]
+);
+
+hl_v = ExcelHighlighter(
+    (data, i, j) -&gt; (j == 3) &amp;&amp; (data[i, j] &gt; 9),
+    [&quot;color&quot; =&gt; &quot;maroon&quot;, &quot;bold&quot; =&gt; &quot;true&quot;]
+);
+
+ hl_10 = ExcelHighlighter(
+     (data, i, j) -&gt; (i == 10),
+     [
+         &quot;color&quot; =&gt; &quot;white&quot;,
+         &quot;bold&quot; =&gt; &quot;true&quot;,
+         &quot;cell_fill_fgColor&quot; =&gt; &quot;darkgray&quot;,
+         &quot;cell_fill_pattern&quot; =&gt; &quot;solid&quot;,
+     ]
+ );
+
+style = ExcelTableStyle(first_line_column_label = [&quot;color&quot; =&gt; &quot;orange&quot;, &quot;bold&quot; =&gt; &quot;true&quot;]);
+
+f = pretty_table(
+    data;
+    anchor_cell = &quot;B2&quot;,
+    backend = :excel,
+    column_labels = column_labels,
+    excel_formatters = [ExcelFormatter((v, i, j) -&gt; true, [&quot;format&quot; =&gt; &quot;#,##0.0&quot;])],
+    highlighters = [hl_10, hl_p, hl_v],
+    style = style,
+)
+
+XLSX.writexlsx(&quot;output.xlsx&quot;, f; overwrite=true);</code></pre><p><img src="../excel_images/excel_example_highlighter.png" alt="image|320x500"/></p><h2 id="Excel-Table-Style"><a class="docs-heading-anchor" href="#Excel-Table-Style">Excel Table Style</a><a id="Excel-Table-Style-1"></a><a class="docs-heading-anchor-permalink" href="#Excel-Table-Style" title="Permalink"></a></h2><pre><code class="language-julia hljs">data = [
+    10.0 6.5
+     3.0 3.0
+     0.1 1.0
+];
+
+row_labels = [
+   &quot;Atmospheric drag&quot;
+   &quot;Gravity gradient&quot;
+   &quot;Solar radiation pressure&quot;
+]
+column_labels = [
+    [MultiColumn(2, &quot;Value&quot;, :c)],
+    [
+        &quot;Torque [10⁻⁶ Nm]&quot;,
+        &quot;Angular Momentum [10⁻³ Nms]&quot;
+    ]
+]
+
+pretty_table(
+    data;
+    anchor_cell = &quot;B2&quot;,
+    backend = :excel,
+    column_labels,
+    excel_formatters = [ExcelFormatter((v, i, j) -&gt; true, [&quot;format&quot; =&gt; &quot;Number&quot;])],
+    filename = &quot;output.xlsx&quot;,
+    merge_column_label_cells = :auto,
+    overwrite = true,
+    row_labels,
+    stubhead_label = &quot;Effect&quot;,
+    style = ExcelTableStyle(;
+        first_line_merged_column_label = [&quot;color&quot; =&gt; &quot;navy&quot;, &quot;bold&quot; =&gt; &quot;true&quot;],
+        column_label                   = [&quot;color&quot; =&gt; &quot;grey&quot;],
+        stubhead_label                 = [&quot;color&quot; =&gt; &quot;navy&quot;, &quot;bold&quot; =&gt; &quot;true&quot;],
+        summary_row_label              = [&quot;color&quot; =&gt; &quot;orange&quot;, &quot;bold&quot; =&gt; &quot;true&quot;]
+    ),
+    summary_row_labels = [&quot;Total&quot;],
+    summary_rows = [(data, i) -&gt; sum(data[:, i])],
+)</code></pre><p><img src="../excel/excel_images/Excel_table_style.png" alt="image|320x500"/></p><h2 id="Excel-borders-and-fill"><a class="docs-heading-anchor" href="#Excel-borders-and-fill">Excel borders and fill</a><a id="Excel-borders-and-fill-1"></a><a class="docs-heading-anchor-permalink" href="#Excel-borders-and-fill" title="Permalink"></a></h2><pre><code class="language-julia hljs">matrix = [
+    &quot;Data&quot; &quot;Data&quot; &quot;Data&quot;
+    &quot;Data&quot; &quot;Data&quot; &quot;Data&quot;
+    &quot;Data&quot; &quot;Data&quot; &quot;Data&quot;
+    &quot;Data&quot; &quot;Data&quot; &quot;Data&quot;
+    &quot;Data&quot; &quot;Data&quot; &quot;Data&quot;
+    &quot;Data&quot; &quot;Data&quot; &quot;Data&quot;
+]
+
+f = pretty_table(
+    XLSX.XLSXFile,
+    matrix;
+    anchor_cell = &quot;B2&quot;,
+    alignment = :c,
+    column_labels = [
+        [&quot;Column Label&quot;, &quot;Column Label&quot;, &quot;Column Label&quot;],
+        [&quot;Column Label&quot;, MultiColumn(2, &quot;Merged Column Label&quot;)],
+        [MultiColumn(2, &quot;Merged Column Label&quot;), &quot;Column Label&quot;],
+    ],
+    footnotes = [(:title, 1, 1) =&gt; &quot;Footnotes&quot;],
+    merge_column_label_cells = :auto,
+    row_group_labels = [3 =&gt; &quot;Row Group Label&quot;, 5 =&gt; &quot;Row Group Label&quot;],
+    row_label_column_alignment = :c,
+    row_labels = fill(&quot;Row Label&quot;, 6),
+    row_number_column_alignment = :c,
+    row_number_column_label = &quot;Row Number&quot;,
+    show_row_number_column = true,
+    source_notes = &quot;Source Notes&quot;,
+    style = ExcelTableStyle(;
+        title = [
+          &quot;color&quot; =&gt; &quot;white&quot;,
+          &quot;bold&quot; =&gt; &quot;true&quot;,
+          &quot;cell_fill_pattern&quot; =&gt; &quot;solid&quot;,
+          &quot;cell_fill_fgColor&quot; =&gt; &quot;black&quot;
+        ],
+        subtitle = [
+          &quot;color&quot; =&gt; &quot;white&quot;,
+          &quot;italic&quot; =&gt; &quot;true&quot;,
+          &quot;cell_fill_pattern&quot; =&gt; &quot;solid&quot;,
+          &quot;cell_fill_fgColor&quot; =&gt; &quot;grey50&quot;
+        ],
+        row_number_label = [
+          &quot;color&quot; =&gt; &quot;white&quot;,
+          &quot;bold&quot; =&gt; &quot;true&quot;,
+          &quot;cell_fill_pattern&quot; =&gt; &quot;solid&quot;,
+          &quot;cell_fill_fgColor&quot; =&gt; &quot;seagreen&quot;
+        ],
+        row_number = [
+          &quot;color&quot; =&gt; &quot;white&quot;,
+          &quot;cell_fill_pattern&quot; =&gt; &quot;solid&quot;,
+          &quot;cell_fill_fgColor&quot; =&gt; &quot;steelblue4&quot;
+        ],
+        stubhead_label = [
+          &quot;color&quot; =&gt; &quot;white&quot;,
+          &quot;bold&quot; =&gt; &quot;true&quot;,
+          &quot;cell_fill_pattern&quot; =&gt; &quot;solid&quot;,
+          &quot;cell_fill_fgColor&quot; =&gt; &quot;seagreen&quot;
+        ],
+        row_label = [
+          &quot;color&quot; =&gt; &quot;white&quot;,
+          &quot;bold&quot; =&gt; &quot;true&quot;,
+          &quot;cell_fill_pattern&quot; =&gt; &quot;solid&quot;,
+          &quot;cell_fill_fgColor&quot; =&gt; &quot;steelblue4&quot;
+        ],
+        first_line_column_label = [
+          &quot;color&quot; =&gt; &quot;white&quot;,
+          &quot;bold&quot; =&gt; &quot;true&quot;,
+          &quot;cell_fill_pattern&quot; =&gt; &quot;solid&quot;,
+          &quot;cell_fill_fgColor&quot; =&gt; &quot;seagreen&quot;
+        ],
+        column_label = [
+          &quot;color&quot; =&gt; &quot;white&quot;,
+          &quot;cell_fill_pattern&quot; =&gt; &quot;solid&quot;,
+          &quot;cell_fill_fgColor&quot; =&gt; &quot;seagreen&quot;
+        ],
+        first_line_merged_column_label = [
+          &quot;color&quot; =&gt; &quot;white&quot;,
+          &quot;bold&quot; =&gt; &quot;true&quot;
+        ],
+        merged_column_label = [
+          &quot;color&quot; =&gt; &quot;white&quot;,
+          &quot;cell_fill_pattern&quot; =&gt; &quot;solid&quot;,
+          &quot;cell_fill_fgColor&quot; =&gt; &quot;seagreen&quot;
+        ],
+        row_group_label = [
+          &quot;color&quot; =&gt; &quot;white&quot;,
+          &quot;bold&quot; =&gt; &quot;true&quot;,
+          &quot;cell_fill_pattern&quot; =&gt; &quot;solid&quot;,
+          &quot;cell_fill_fgColor&quot; =&gt; &quot;goldenrod1&quot;
+        ],
+        data_cell = [
+          &quot;color&quot; =&gt; &quot;white&quot;,
+          &quot;cell_fill_pattern&quot; =&gt; &quot;solid&quot;,
+          &quot;cell_fill_fgColor&quot; =&gt; &quot;steelblue4&quot;
+        ],
+        summary_row_label = [
+          &quot;color&quot; =&gt; &quot;white&quot;,
+          &quot;bold&quot; =&gt; &quot;true&quot;,
+          &quot;cell_fill_pattern&quot; =&gt; &quot;solid&quot;,
+          &quot;cell_fill_fgColor&quot; =&gt; &quot;violetred3&quot;
+        ],
+        summary_row_cell = [
+          &quot;cell_fill_pattern&quot; =&gt; &quot;solid&quot;,
+          &quot;cell_fill_fgColor&quot; =&gt; &quot;violetred3&quot;,
+          &quot;color&quot; =&gt; &quot;white&quot;
+        ],
+        footnote = [
+          &quot;cell_fill_pattern&quot; =&gt; &quot;solid&quot;,
+          &quot;cell_fill_fgColor&quot; =&gt; &quot;grey80&quot;
+        ],
+        source_note = [
+          &quot;color&quot; =&gt; &quot;black&quot;,
+          &quot;cell_fill_pattern&quot; =&gt; &quot;solid&quot;,
+          &quot;cell_fill_fgColor&quot; =&gt; &quot;grey80&quot;
+        ],
+    ),
+    stubhead_label  = &quot;Stubhead Label&quot;,
+    subtitle = &quot;Subtitle&quot;,
+    summary_row_labels = [&quot;Row Summary Label&quot;, &quot;Row Summary Label&quot;],
+    summary_rows = [(data, i) -&gt; &quot;Summary Cell&quot;, (data, i) -&gt; &quot;Summary Cell&quot;],
+    table_format = ExcelTableFormat(;
+        @excel__all_horizontal_lines,
+        @excel__all_vertical_lines,
+        horizontal_line_at_beginning     = false,
+        vertical_line_at_beginning       = false,
+        vertical_line_after_data_columns = false,
+        borders = ExcelTableBorders(
+            header_line             = [&quot;style&quot; =&gt; &quot;thick&quot;, &quot;color&quot; =&gt; &quot;white&quot;],
+            merged_header_cell_line = [&quot;style&quot; =&gt; &quot;thin&quot;,  &quot;color&quot; =&gt; &quot;white&quot;],
+            middle_line             = [&quot;style&quot; =&gt; &quot;thin&quot;,  &quot;color&quot; =&gt; &quot;white&quot;],
+            bottom_line             = [&quot;style&quot; =&gt; &quot;thick&quot;, &quot;color&quot; =&gt; &quot;white&quot;],
+            center_line             = [&quot;style&quot; =&gt; &quot;thin&quot;,  &quot;color&quot; =&gt; &quot;white&quot;],
+        ),
+    ),
+    title = &quot;Title&quot;,
+)
+
+XLSX.writexlsx(&quot;output.xlsx&quot;, f; overwrite = true)</code></pre><p><img src="../excel_images/excel_example_table_fill.png" alt="image|320x500"/></p><h2 id="Putting-it-all-together"><a class="docs-heading-anchor" href="#Putting-it-all-together">Putting it all together</a><a id="Putting-it-all-together-1"></a><a class="docs-heading-anchor-permalink" href="#Putting-it-all-together" title="Permalink"></a></h2><pre><code class="language-julia hljs"># == Creating the Table ====================================================================
+
+v1_t = 0:5:20;
+
+v1_a = ones(length(v1_t)) * 1.0;
+
+v1_v = @. 0 + v1_a * v1_t;
+
+v1_d = @. 0 + v1_a * v1_t^2 / 2;
+
+v2_t = 0:5:20;
+
+v2_a = ones(length(v2_t)) * 0.75;
+
+v2_v = @. 0 + v2_a * v2_t;
+
+v2_d = @. 0 + v2_a * v2_t^2 / 2;
+
+table = [
+  v1_t v1_a v1_v v1_d
+  v2_t v2_a v2_v v2_d
+];
+
+# == Configuring the Table =================================================================
+
+title = &quot;Table 1. Data obtained from the test procedure.&quot;;
+
+subtitle = &quot;Comparison between two vehicles&quot;;
+
+column_labels = [
+    [EmptyCells(2), MultiColumn(2, &quot;Estimated Data&quot;)],
+    [&quot;Time (s)&quot;, &quot;Acceleration&quot;, &quot;Velocity&quot;, &quot;Position&quot;],
+];
+
+units = [
+  styled&quot;{(foreground=gray):[s]}&quot;,
+  styled&quot;{(foreground=gray):[m / s²]}&quot;,
+  styled&quot;{(foreground=gray):[m / s]}&quot;,
+  styled&quot;{(foreground=gray):[m]}&quot;,
+];
+
+push!(column_labels, units);
+
+merge_column_label_cells = :auto;
+
+column_label_alignment = :c;
+
+show_row_number_column = true;
+row_number_column_label = &quot;Row Number&quot;;
+
+stubhead_label=&quot;Stubhead Label&quot;;
+
+row_labels = [
+    &quot;Multi-line\nrow label a&quot;,
+    &quot;Row b&quot;,
+    &quot;Row c&quot;,
+    &quot;Row d&quot;,
+    &quot;Row e&quot;,
+    &quot;Row f&quot;,
+    &quot;Row g&quot;,
+    &quot;Row h&quot;,
+    &quot;Row i&quot;,
+    &quot;Row j&quot;
+]
+
+row_group_labels = [
+    1 =&gt; &quot;Vehicle #1\nand some continuation&quot;,
+    6 =&gt; &quot;Vehicle #2&quot;
+]
+
+cell_alignment = [(data, i, j) -&gt; :r]
+
+summary_rows = [
+    (data, j) -&gt; maximum(@views data[ 1:5, j]),
+    (data, j) -&gt; maximum(@views data[6:10, j]),
+]
+
+summary_row_labels = [
+    &quot;Max. for very long Vehicle #1&quot;,
+    &quot;Max. for Vehicle #2&quot;,
+]
+
+footnotes = [
+    (:subtitle, 1, 1) =&gt; &quot;Vehicle 1: Ford Escort, Vehicle 2: VW Golf&quot;
+    (:column_label, 1, 3) =&gt; &quot;Estimated data based on the acceleration measurement.&quot;
+]
+
+source_notes = &quot;Source: Test procedure conducted on 2024-01-15.\nNote: Data is for demonstration purposes only.&quot;
+
+excel_formatters = [
+    ExcelFormatter((v, i, j) -&gt; (j==1), [&quot;format&quot; =&gt; &quot;#,##0_0_0&quot;])
+    ExcelFormatter((v, i, j) -&gt; (j==2), [&quot;format&quot; =&gt; &quot;#,##0.??_0_0&quot;])
+    ExcelFormatter((v, i, j) -&gt; (j==3), [&quot;format&quot; =&gt; &quot;#,##0.???&quot;])
+    ExcelFormatter((v, i, j) -&gt; (j==4), [&quot;format&quot; =&gt; &quot;0_0_0_0&quot;])
+]
+
+highlighters = [
+    ExcelHighlighter(
+        (data, i, j) -&gt; (j == 3) &amp;&amp; (data[i, j] &gt; 10),
+        [
+            &quot;color&quot; =&gt; &quot;maroon&quot;,
+            &quot;bold&quot; =&gt; &quot;true&quot;,
+            &quot;cell_fill_pattern&quot; =&gt; &quot;solid&quot;,
+            &quot;cell_fill_fgColor&quot; =&gt; &quot;grey90&quot;
+        ],
+    ),
+    ExcelHighlighter(
+        (data, i, j) -&gt; (data[i, j] ≈ 0.0),
+        [&quot;color&quot; =&gt; &quot;green&quot;, &quot;bold&quot; =&gt; &quot;true&quot;],
+    ),
+    ExcelHighlighter(
+        (data, i, j) -&gt; (j == 4) &amp;&amp; (data[i, j] &gt; 10),
+        [ &quot;color&quot; =&gt; &quot;navy&quot;, &quot;bold&quot; =&gt; &quot;true&quot;]
+    )
+]
+
+table_format = ExcelTableFormat(
+    borders = ExcelTableBorders(
+        top_line    = [&quot;style&quot; =&gt; &quot;thick&quot;],
+        bottom_line = [&quot;style&quot; =&gt; &quot;thick&quot;],
+        left_line   = [&quot;style&quot; =&gt; &quot;thick&quot;],
+        right_line  = [&quot;style&quot; =&gt; &quot;thick&quot;],
+    ),
+)
+
+style = ExcelTableStyle(
+    column_label                   = [&quot;bold&quot; =&gt; &quot;true&quot;],
+    summary_row_label              = [&quot;size&quot; =&gt; &quot;8&quot;],
+    first_line_merged_column_label = [&quot;bold&quot; =&gt; &quot;true&quot;, &quot;color&quot; =&gt; &quot;orange&quot;],
+    footnote                       = [&quot;italic&quot; =&gt; &quot;true&quot;, &quot;color&quot; =&gt; &quot;gray&quot;],
+    row_group_label                = [&quot;bold&quot; =&gt; &quot;true&quot;, &quot;color&quot; =&gt; &quot;purple&quot;],
+    subtitle                       = [&quot;italic&quot; =&gt; &quot;true&quot;],
+    title                          = [&quot;bold&quot; =&gt; &quot;true&quot;, &quot;color&quot; =&gt; &quot;navy&quot;, &quot;size&quot; =&gt; &quot;18&quot;],
+)
+
+# == Printing the Table ====================================================================
+
+pretty_table(
+    table;
+    anchor_cell = &quot;B2&quot;,
+    backend = :excel,
+    cell_alignment,
+    column_label_alignment,
+    column_labels,
+    excel_formatters,
+    filename = &quot;output.xlsx&quot;,
+    footnotes,
+    highlighters,
+    merge_column_label_cells,
+    overwrite = true,
+    row_group_labels,
+    row_labels,
+    row_number_column_label,
+    show_row_number_column,
+    source_notes,
+    stubhead_label,
+    style,
+    subtitle,
+    summary_row_labels,
+    summary_rows,
+    table_format,
+    title,
+)</code></pre><p><img src="../excel_images/excel_example_all_together.png" alt="image|320x500"/></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../excel_backend/">« Excel Backend</a><a class="docs-footer-nextpage" href="../../../lib/library/">Library »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.17.0 on <span class="colophon-date" title="Sunday 5 July 2026 01:12">Sunday 5 July 2026</span>. Using Julia version 1.12.6.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
