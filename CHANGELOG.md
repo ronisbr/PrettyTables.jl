@@ -1,6 +1,31 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 3.4.0
+-------------
+
+- ![Feature][badge-feature] Add the Excel back end as a package extension. (PR
+  [#298][gh-pr-298])
+- ![Feature][badge-feature] Add support for `Vector{Int}` in
+  `horizontal_lines_at_data_rows` and `vertical_lines_at_data_columns` of the Excel back
+  end.
+- ![Feature][badge-feature] Add helper macros for enabling/disabling all lines in the
+  Excel back end.
+- ![Enhancement][badge-enhancement] Refactor the Excel back end to use the
+  PrettyTables.jl printing iterator and consolidate the style and border API.
+- ![Enhancement][badge-enhancement] Revamp the `ExcelFormatter` API, moving column widths
+  to keyword arguments and replacing border fields with `ExcelTableBorders`.
+- ![Enhancement][badge-enhancement] Apply behavioural and consistency cleanups, remove dead
+  code, and tidy style issues in the Excel back end.
+- ![Bugfix][badge-bugfix] Fix border style semantics, defaults, and bottom line drawing in
+  the Excel back end.
+- ![Bugfix][badge-bugfix] Fix the vertical line after data columns and horizontal lines at
+  summary rows in the Excel back end.
+- ![Bugfix][badge-bugfix] Fix footnotes in title and subtitles.
+- ![Bugfix][badge-bugfix] Fix cell styling in the Excel back end.
+- ![Info][badge-info] Bump CI actions. (PRs [#302][gh-pr-302], [#305][gh-pr-305],
+  [#310][gh-pr-310] and [#311][gh-pr-311])
+
 Version 3.3.2
 -------------
 
@@ -884,12 +909,12 @@ Version 0.1.0
 
 - Initial version.
 
-[badge-breaking]: https://img.shields.io/badge/BREAKING-red.svg
-[badge-deprecation]: https://img.shields.io/badge/Deprecation-orange.svg
-[badge-feature]: https://img.shields.io/badge/Feature-green.svg
-[badge-enhancement]: https://img.shields.io/badge/Enhancement-blue.svg
-[badge-bugfix]: https://img.shields.io/badge/Bugfix-purple.svg
-[badge-info]: https://img.shields.io/badge/Info-gray.svg
+[badge-breaking]: https://img.shields.io/badge/Breaking-DC2626?style=flat-square
+[badge-deprecation]: https://img.shields.io/badge/Deprecation-D97706?style=flat-square
+[badge-feature]: https://img.shields.io/badge/Feature-16A34A?style=flat-square
+[badge-enhancement]: https://img.shields.io/badge/Enhancement-0284C7?style=flat-square
+[badge-bugfix]: https://img.shields.io/badge/Bugfix-DB2777?style=flat-square
+[badge-info]: https://img.shields.io/badge/Info-475569?style=flat-square
 
 [gh-issue-3]: https://github.com/ronisbr/PrettyTables.jl/issues/3
 [gh-issue-4]: https://github.com/ronisbr/PrettyTables.jl/issues/4
@@ -919,6 +944,7 @@ Version 0.1.0
 [gh-issue-70]: https://github.com/ronisbr/PrettyTables.jl/issues/70
 [gh-issue-79]: https://github.com/ronisbr/PrettyTables.jl/issues/79
 [gh-issue-90]: https://github.com/ronisbr/PrettyTables.jl/issues/90
+[gh-issue-93]: https://github.com/ronisbr/PrettyTables.jl/issues/93
 [gh-issue-95]: https://github.com/ronisbr/PrettyTables.jl/issues/95
 [gh-issue-103]: https://github.com/ronisbr/PrettyTables.jl/issues/103
 [gh-issue-105]: https://github.com/ronisbr/PrettyTables.jl/issues/105
@@ -933,6 +959,7 @@ Version 0.1.0
 [gh-issue-133]: https://github.com/ronisbr/PrettyTables.jl/issues/133
 [gh-issue-140]: https://github.com/ronisbr/PrettyTables.jl/issues/140
 [gh-issue-142]: https://github.com/ronisbr/PrettyTables.jl/issues/142
+[gh-issue-144]: https://github.com/ronisbr/PrettyTables.jl/issues/144
 [gh-issue-146]: https://github.com/ronisbr/PrettyTables.jl/issues/146
 [gh-issue-149]: https://github.com/ronisbr/PrettyTables.jl/issues/149
 [gh-issue-150]: https://github.com/ronisbr/PrettyTables.jl/issues/150
@@ -943,6 +970,7 @@ Version 0.1.0
 [gh-issue-170]: https://github.com/ronisbr/PrettyTables.jl/issues/170
 [gh-issue-174]: https://github.com/ronisbr/PrettyTables.jl/issues/174
 [gh-issue-179]: https://github.com/ronisbr/PrettyTables.jl/issues/179
+[gh-issue-194]: https://github.com/ronisbr/PrettyTables.jl/issues/194
 [gh-issue-198]: https://github.com/ronisbr/PrettyTables.jl/issues/198
 [gh-issue-201]: https://github.com/ronisbr/PrettyTables.jl/issues/201
 [gh-issue-207]: https://github.com/ronisbr/PrettyTables.jl/issues/207
@@ -985,3 +1013,8 @@ Version 0.1.0
 [gh-pr-289]: https://github.com/ronisbr/PrettyTables.jl/pull/289
 [gh-pr-290]: https://github.com/ronisbr/PrettyTables.jl/pull/290
 [gh-pr-295]: https://github.com/ronisbr/PrettyTables.jl/pull/295
+[gh-pr-298]: https://github.com/ronisbr/PrettyTables.jl/pull/298
+[gh-pr-302]: https://github.com/ronisbr/PrettyTables.jl/pull/302
+[gh-pr-305]: https://github.com/ronisbr/PrettyTables.jl/pull/305
+[gh-pr-310]: https://github.com/ronisbr/PrettyTables.jl/pull/310
+[gh-pr-311]: https://github.com/ronisbr/PrettyTables.jl/pull/311
