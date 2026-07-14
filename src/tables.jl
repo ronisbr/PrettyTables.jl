@@ -28,12 +28,7 @@ function ColumnTable(data::Any)
     return ColumnTable(data, table, names, (size_i, size_j))
 end
 
-function getindex(ctable::ColumnTable, inds...)
-    length(inds) != 2 && error("A element of type `ColumnTable` must be accesses using 2 indices.")
-
-    # Access index.
-    i, j = inds[1], inds[2]
-
+function getindex(ctable::ColumnTable, i, j)
     # Get the column name.
     column_name = ctable.column_names[j]
 
@@ -43,12 +38,15 @@ function getindex(ctable::ColumnTable, inds...)
     return element
 end
 
-function isassigned(ctable::ColumnTable, inds...)
-    length(inds) != 2 && error("A element of type `ColumnTable` must be accesses using 2 indices.")
+function getindex(ctable::ColumnTable, inds...)
+    if length(inds) != 2
+        error("A element of type `ColumnTable` must be accesses using 2 indices.")
+    end
 
-    # Access index.
-    i, j = inds[1], inds[2]
+    return getindex(ctable, inds[1], inds[2])
+end
 
+function isassigned(ctable::ColumnTable, i, j)
     # Get the column name.
     column_name = ctable.column_names[j]
 
@@ -61,6 +59,14 @@ function isassigned(ctable::ColumnTable, inds...)
     else
         return isassigned(col, i)
     end
+end
+
+function isassigned(ctable::ColumnTable, inds...)
+    if length(inds) != 2
+        error("A element of type `ColumnTable` must be accesses using 2 indices.")
+    end
+
+    return isassigned(ctable, inds[1], inds[2])
 end
 
 axes(ctable::ColumnTable) = (Base.OneTo(ctable.size[1]), Base.OneTo(ctable.size[2]))
@@ -113,12 +119,7 @@ function RowTable(data::Any)
     return RowTable(data, table, names, (size_i, size_j))
 end
 
-function getindex(rtable::RowTable, inds...)
-    length(inds) != 2 && error("A element of type `RowTable` must be accesses using 2 indices.")
-
-    # Access index.
-    i, j = inds[1], inds[2]
-
+function getindex(rtable::RowTable, i, j)
     # Get the column name.
     column_name = rtable.column_names[j]
 
@@ -147,9 +148,17 @@ function getindex(rtable::RowTable, inds...)
     end
 end
 
-function isassigned(rtable::RowTable, inds...)
+function getindex(rtable::RowTable, inds...)
+    if length(inds) != 2
+        error("A element of type `RowTable` must be accesses using 2 indices.")
+    end
+
+    return getindex(rtable, inds[1], inds[2])
+end
+
+function isassigned(rtable::RowTable, i, j)
     try
-        getindex(rtable, inds...)
+        getindex(rtable, i, j)
         return true
     catch e
         if isa(e, UndefRefError)
@@ -158,6 +167,14 @@ function isassigned(rtable::RowTable, inds...)
             throw(e)
         end
     end
+end
+
+function isassigned(rtable::RowTable, inds...)
+    if length(inds) != 2
+        error("A element of type `RowTable` must be accesses using 2 indices.")
+    end
+
+    return isassigned(rtable, inds[1], inds[2])
 end
 
 axes(rtable::RowTable) = (Base.OneTo(rtable.size[1]), Base.OneTo(rtable.size[2]))
