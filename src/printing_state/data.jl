@@ -5,6 +5,15 @@
 ############################################################################################
 
 """
+    _get_data_cell(data, i::Int, j::Int) -> Any
+
+Return the normalized data cell at `(i, j)`, or `_UNDEFINED_CELL` if it is unassigned.
+"""
+function _get_data_cell(data::Union{AbstractVecOrMat, ColumnTable, RowTable}, i::Int, j::Int)
+    return isassigned(data, i, j) ? getindex(data, i, j) : _UNDEFINED_CELL
+end
+
+"""
     _current_cell(action::Symbol, state::PrintingTableState, table_data::TableData) -> Any
 
 Return the current data specified by the `action` and the current printing table `state` of
@@ -77,15 +86,11 @@ function _current_cell(
         i₀ = table_data.first_row_index
         j₀ = table_data.first_column_index
 
-        cell_data = if isassigned(
+        cell_data = _get_data_cell(
             table_data.data,
             state.i - 1 + i₀,
             state.j - 1 + j₀
         )
-            table_data.data[state.i - 1 + i₀, state.j - 1 + j₀]
-        else
-            _UNDEFINED_CELL
-        end
 
         if !isnothing(table_data.formatters)
             for f in table_data.formatters
