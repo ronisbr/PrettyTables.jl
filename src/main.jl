@@ -209,7 +209,7 @@ end
 
 # This function converts the common keywords to positional arguments. Hence, we can use
 # `@nospecialize` at the first two arguments, improving the time to print the first table.
-function _pretty_table(
+Base.@nospecializeinfer function _pretty_table(
     @nospecialize(io::IO),
     @nospecialize(data::Any),
 
