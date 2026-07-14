@@ -39,7 +39,7 @@ function _current_cell(
         end
 
     elseif action == :row_number
-        return state.i - 1 + firstindex(table_data.data, 1)
+        return state.i - 1 + table_data.first_row_index
 
     elseif action == :summary_row_number
         return ""
