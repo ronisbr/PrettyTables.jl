@@ -148,7 +148,7 @@ const _UNDEFINED_CELL = UndefinedCell()
     first_row_index::Int
     first_column_index::Int
 
-    # Maxium number of rows and columns we must print.
+    # Maximum number of rows and columns we must print.
     maximum_number_of_columns::Int = -1
     maximum_number_of_rows::Int = -1
 
@@ -234,7 +234,7 @@ This structure stores the current state of the printing process.
 
     The field `row_section` is used to determine the next state of the printing process. It
     must not be used to verify the current or the next row section as the meaning can change
-    depending on the current state. Instead, always used the function `_next` to obtain the
+    depending on the current state. Instead, always use the function `_next` to obtain the
     next row section.
 """
 struct PrintingTableState

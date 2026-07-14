@@ -208,14 +208,12 @@ can be specified using a symbol: `:l` for left, `:c` for center, or `:r` for rig
     (**Default**: `:c`)
 - `title_alignment::Symbol`: Alignment of the title.
     (**Default**: `:c`)
-- `cell_alignment::Union{Nothing, Vector{Pair{NTuple{2, Int}, Symbol}, Vector{Function}}`: A
-    vector of functions with the signature `f(data, i, j)` that overrides the alignment of
-    the cell `(i, j)` to the value returned by `f`. The function must return a valid
-    alignment symbol or `nothing`. In the latter, the cell alignment will not be modified.
-    If the function returns an invalid data, it will be discarded. For convenience, it can
-    also be a vector of `Pair{NTuple{2, Int}, Symbol}`, *i.e.*
-    `(i::Int, j::Int) => a::Symbol`, that overrides the alignment of the cell `(i, j)` to
-    `a`.
+- `cell_alignment::Union{Nothing, Vector{<:Function},
+    Vector{Pair{NTuple{2, Int}, Symbol}}}`: Either `nothing`, a vector of functions, or a
+    vector of coordinate/alignment pairs. Each function must have the signature
+    `f(data, i, j)` and return a valid alignment symbol or `nothing` for the cell `(i, j)`.
+    Returning `nothing` leaves the cell alignment unchanged. Each pair must have the form
+    `(i::Int, j::Int) => a::Symbol` and sets the alignment of cell `(i, j)` to `a`.
     (**Default** = `nothing`)
 
 !!! warning

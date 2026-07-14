@@ -2,8 +2,8 @@
 #
 # Functions to define interfaces with Tables.jl.
 #
-# This file contains some overloads related to the structures `ColumnTable` `RowTable` so
-# that an element can be accessed by `table[i,j]`. This is required for the low-level
+# This file contains some overloads related to the structures `ColumnTable` and `RowTable`
+# so that an element can be accessed by `table[i,j]`. This is required for the low-level
 # interface of PrettyTables.jl when printing.
 #
 ############################################################################################

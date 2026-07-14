@@ -569,7 +569,7 @@ end
     _resolve_printing_backend(configurations) -> Symbol
 
 Return the printing backend to be used based on the `configurations` provided. Notice that
-it function must only be used when the user did not specify the backend directly using the
+this function must only be used when the user did not specify the backend directly using the
 `backend` keyword.
 """
 function _resolve_printing_backend(configurations)

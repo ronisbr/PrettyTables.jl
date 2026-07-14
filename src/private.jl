@@ -65,17 +65,17 @@ end
 
 Process the column label specification by replacing `MultiColumn` objects in `column_labels`
 and adding the correct specification to `merge_column_label_cells`. This function returns
-the new objects that must replace the olds `column_labels` and the
+the new objects that must replace the old `column_labels` and the
 `merge_column_label_cells`.
 
-The number of columns in the table must be passed in `num_column` so the function can verify
+The number of columns in the table must be passed in `num_columns` so the function can verify
 the correctness of the specification.
 """
 function _process_merge_column_label_specification(
     column_labels::Vector{T},
     num_columns::Int
 ) where T <: AbstractVector
-    # We only need to process the column labels if we have an elements of type `MultiColumn`
+    # We only need to process the column labels if we have elements of type `MultiColumn`
     # or `EmptyCells` in the column labels. Otherwise, we can return the current column
     # label, reducing the allocations.
     need_processing = false
