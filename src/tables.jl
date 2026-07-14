@@ -14,7 +14,7 @@ import Base: getindex, isassigned, length, size
 #                             Functions Related to ColumnTable                             #
 ############################################################################################
 
-function ColumnTable(data::Any)
+Base.@nospecializeinfer function ColumnTable(@nospecialize(data::Any))
     # Access the table using the columns.
     table = Tables.columns(data)
 
@@ -88,7 +88,7 @@ _get_data(ctable::ColumnTable) = ctable.data
 #                              Functions Related to RowTable                               #
 ############################################################################################
 
-function RowTable(data::Any)
+Base.@nospecializeinfer function RowTable(@nospecialize(data::Any))
     # Access the table using the rows.
     table = Tables.rows(data)
 
