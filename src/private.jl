@@ -93,7 +93,7 @@ function _process_merge_column_label_specification(
 
     !need_processing && return column_labels, nothing
 
-    processed_column_labels = Vector{Any}(undef, length(column_labels))
+    processed_column_labels = Vector{Vector{Any}}(undef, length(column_labels))
 
     merge_column_label_cells = MergeCells[]
 
@@ -185,9 +185,7 @@ function _validate_merge_cell_specification(table_data::TableData)
             "The specification #$i for merging cells references a cell outside the table column range."
         ))
 
-        for j in eachindex(mc)
-            i == j && continue
-
+        for j in (i + 1):lastindex(mc)
             mj = mc[j]
 
             mi.i != mj.i && continue
