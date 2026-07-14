@@ -353,4 +353,35 @@
 
         action, rs, ps = PrettyTables._next(ps, td)
     end
+
+    @testset "Current Cell Footnotes" begin
+        """Create table data with the specified footnotes for testing."""
+        function table_data_with_footnotes(footnotes)
+            return PrettyTables.TableData(;
+                data               = reshape([1], 1, 1),
+                column_labels      = [Any["Column"]],
+                footnotes,
+                num_rows           = 1,
+                num_columns        = 1,
+                first_row_index    = 1,
+                first_column_index = 1,
+            )
+        end
+
+        td = table_data_with_footnotes(nothing)
+        @test isnothing(PrettyTables._current_cell_footnotes(td, :data, 1, 1))
+
+        td = table_data_with_footnotes([(:data, 2, 1) => "No match"])
+        @test isnothing(PrettyTables._current_cell_footnotes(td, :data, 1, 1))
+
+        td = table_data_with_footnotes([(:data, 1, 1) => "Match"])
+        @test PrettyTables._current_cell_footnotes(td, :data, 1, 1) == [1]
+
+        td = table_data_with_footnotes([
+            (:data, 1, 1) => "First match",
+            (:data, 2, 1) => "No match",
+            (:data, 1, 1) => "Second match",
+        ])
+        @test PrettyTables._current_cell_footnotes(td, :data, 1, 1) == [1, 3]
+    end
 end

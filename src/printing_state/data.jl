@@ -124,15 +124,20 @@ function _current_cell(
 end
 
 """
-    _current_cell_footnotes(table_data::TableData, cell_type::Symbol, i::Int, j::Int) -> Union{Nothing, Vector{Int}}
+    _current_cell_footnotes(
+        table_data::TableData,
+        cell_type::Symbol,
+        i::Int,
+        j::Int
+    ) -> Union{Nothing, Vector{Int}}
 
-Return an array of integers with the footnotes defined in `table_data` for the `cell_type`
-at position `(i, j)`.
+Return the ordered footnote indices for the `cell_type` at `(i, j)`, or `nothing` if there
+are no matches.
 """
 function _current_cell_footnotes(table_data::TableData, cell_type::Symbol, i::Int, j::Int)
     isnothing(table_data.footnotes) && return nothing
 
-    current_footnotes = Int[]
+    current_footnotes = nothing
 
     for k in 1:length(table_data.footnotes)
         f, _ = table_data.footnotes[k - 1 + begin]
@@ -144,7 +149,11 @@ function _current_cell_footnotes(table_data::TableData, cell_type::Symbol, i::In
                 (ct ∈ (:title, :subtitle, :row_number, :row_label, :summary_row_number)) ||
                 (fj == j)
             )
-                push!(current_footnotes, k)
+                if isnothing(current_footnotes)
+                    current_footnotes = Int[k]
+                else
+                    push!(current_footnotes, k)
+                end
             end
         end
     end
