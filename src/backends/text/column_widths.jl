@@ -5,7 +5,15 @@
 ############################################################################################
 
 """
-    _text__fix_data_column_widths!(printed_data_column_widths::Vector{Int}, column_labels::Union{Nothing, Matrix{String}}, table_str::Matrix{String}, summary_rows::Union{Nothing, Matrix{String}}, fixed_data_column_widths::AbstractVector{Int}) -> Nothing
+    _text__fix_data_column_widths!(
+        printed_data_column_widths::Vector{Int},
+        column_labels::Union{Nothing, Matrix{String}},
+        table_str::Matrix{String},
+        summary_rows::Union{Nothing, Matrix{String}},
+        fixed_data_column_widths::AbstractVector{Int},
+        auto_wrap::Bool,
+        line_breaks::Bool
+    ) -> Nothing
 
 Fix the data column widths given the user specification. This function also crops the cells
 at the data columns to fit the fixed width.
@@ -141,7 +149,7 @@ Compute the printed column widths.
 - `table_data::TableData`: Table data.
 - `row_labels::Union{Nothing, Vector{String}}`: Rendered row labels.
 - `column_labels::Union{Nothing, Matrix{String}}`: Rendered column labels.
-- `summary_rows::Union{Nothing, Vector{String}}`: Rendered summary rows.
+- `summary_rows::Union{Nothing, Matrix{String}}`: Rendered summary rows.
 - `table_str::Matrix{String}`: Rendered data cells.
 - `vertical_lines_at_data_columns::AbstractVector{Int}`: List of columns where a vertical
     line must be drawn after the cell.
@@ -149,7 +157,7 @@ Compute the printed column widths.
     will be computed based on the first line only.
 - `line_breaks::Bool`: If `true`, the cells will be split into multiple lines if needed.
     Hence, the textwidth of each line is used to compute the column width.
-- `minimum_data_column_widths::Union{Nothing, Vector{Int}}`: Minimum data column widths.
+- `minimum_data_column_widths::AbstractVector{Int}`: Minimum data column widths.
 
 # Returns
 

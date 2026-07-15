@@ -112,8 +112,8 @@ end
 
 Print a string `str` to the `display`, aligned according to `alignment` in a cell of width
 `cell_width`. The string is printed with the style given by `crayon`. The `alignment` can be
-`:l` (left), `:right` (right), or `:center` (center). If `fill` is `true`, the string is
-filled with spaces to fit the cell width.
+`:l` (left), `:r` (right), or `:c` (center). If `fill` is `true`, the string is filled with
+spaces to fit the cell width.
 """
 function _text__print_aligned(
     display::Display,
@@ -185,8 +185,8 @@ Print a horizontal line to `display`.
     (**Default**: false)
 - `row_group_label::Bool`: If `true`, a row group label horizontal line will be drawn. In
     this case, the horizontal line type is also modified by the keyword `top`, whereas the
-    keyword `bottom` is neglected. To draw the bottom row label horizontal line, set `top`to
-    `false`.
+    keyword `bottom` is neglected. To draw the bottom row label horizontal line, set `top`
+    to `false`.
     (**Default**: false)
 """
 function _text__print_horizontal_line(
@@ -603,7 +603,7 @@ end
 Print to `display` the horizontal line `intersection` if we have enough space. Otherwise,
 print `row`. The argument `final_intersection` indicates that we are printing the final
 intersection of the table. In that case, we print `intersection` if we have at least two
-remaning spaces.
+remaining spaces.
 """
 function _text__horizontal_line_intersection(
     display::Display,
@@ -611,7 +611,7 @@ function _text__horizontal_line_intersection(
     row::String,
     final_intersection::Bool
 )
-    # If the display size is negative, it means we do not have a limite. Hence, just print
+    # If the display size is negative, it means we do not have a limit. Hence, just print
     # the intersection.
     if display.size[2] < 0
         _text__print(display, intersection)

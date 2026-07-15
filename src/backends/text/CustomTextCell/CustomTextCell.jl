@@ -30,7 +30,7 @@ end
 """
     crop!(cell::AbstractCustomTextCell, field_width::Int) -> Nothing
 
-Rigth crop a field with display width `field_width` from `cell`. This cropping must be
+Right-crop a field with display width `field_width` from `cell`. This cropping must be
 applied to either the entire cell or to a specific line.
 """
 function crop!(cell::AbstractCustomTextCell, field_width::Int)
