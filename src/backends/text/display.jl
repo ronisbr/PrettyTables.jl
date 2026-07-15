@@ -148,13 +148,13 @@ function _text__print_aligned(
     styled && print(display.buf_line, string(crayon))
 
     for _ in 1:left_margin
-        write(display.buf_line, 0x20)
+        write(display.buf_line, ' ')
     end
 
     print(display.buf_line, str)
 
     for _ in 1:right_margin
-        write(display.buf_line, 0x20)
+        write(display.buf_line, ' ')
     end
 
     styled && print(display.buf_line, _TEXT__STRING_RESET)
