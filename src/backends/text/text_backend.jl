@@ -667,7 +667,7 @@ function _text__print_table(
     tokens = if !line_breaks
         nothing
     else
-        Vector{Vector{SubString}}(undef, last_printed_column_index)
+        Vector{Vector{SubString{String}}}(undef, last_printed_column_index)
     end
 
     while action != :end_printing

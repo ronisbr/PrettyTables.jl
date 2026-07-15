@@ -101,7 +101,7 @@ function _text__fit_cell_in_maximum_cell_width(
         cell_str *= "…"
     else
         tokens = split(cell_str, '\n')
-        str    = ""
+        fitted_tokens = Vector{String}(undef, length(tokens))
 
         for k in eachindex(tokens)
             t  = tokens[k]
@@ -112,21 +112,27 @@ function _text__fit_cell_in_maximum_cell_width(
                 t *= "…"
             end
 
-            str *= t
-
-            if k != last(eachindex(tokens))
-                str *= "\n"
-            end
+            fitted_tokens[k] = t
         end
 
-        cell_str = str
+        cell_str = join(fitted_tokens, '\n')
     end
 
     return cell_str
 end
 
 """
-    _text__printed_column_widths(table_data::TableData, row_labels::Union{Nothing, Vector{String}}, column_labels::Union{Nothing, Matrix{String}}, summary_rows::Union{Nothing, Matrix{String}}, table_str::Matrix{String}, vertical_lines_at_data_columns::AbstractVector{Int}, column_label_width_based_on_first_line_only::Bool, line_breaks::Bool, minimum_data_column_width::Union{Nothing, Vector{Int}})
+    _text__printed_column_widths(
+        table_data,
+        row_labels,
+        column_labels,
+        summary_rows,
+        table_str,
+        vertical_lines_at_data_columns,
+        column_label_width_based_on_first_line_only,
+        line_breaks,
+        minimum_data_column_widths
+    )
 
 Compute the printed column widths.
 

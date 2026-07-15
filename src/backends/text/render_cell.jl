@@ -15,6 +15,7 @@
 Convert the `cell` to a string using a specific `context` and `renderer`.
 """
 function _text__cell_to_str(cell::Any, @nospecialize(context::IOContext), ::Val{:print})
+    cell isa String && return cell
     return sprint(print, cell; context)
 end
 
@@ -27,6 +28,7 @@ function _text__cell_to_str(
     @nospecialize(context::IOContext),
     ::Val{:show}
 )
+    cell isa String && return cell
     return sprint(print, cell; context)
 end
 

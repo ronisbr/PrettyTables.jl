@@ -4,6 +4,22 @@
 #
 ############################################################################################
 
+@testset "Fit Multiline Cell in Maximum Width" begin
+    fit_cell = PrettyTables._text__fit_cell_in_maximum_cell_width
+
+    @test fit_cell("", 3, true) == ""
+    @test fit_cell("abcd\n", 3, true) == "ab…\n"
+    @test fit_cell("\nabc", 3, true) == "\nabc"
+    @test fit_cell("ab\n\ncdef", 3, true) == "ab\n\ncd…"
+
+    mixed = "\e[31mαβγδ\e[0m\nok\nabcdef"
+    @test fit_cell(mixed, 3, true) == "\e[31mαβ…\nok\nab…"
+
+    many_lines = join(fill("abcdef", 1_000), '\n')
+    @test fit_cell(many_lines, 3, true) == join(fill("ab…", 1_000), '\n')
+    @test fit_cell("unchanged\nlines", 0, true) == "unchanged\nlines"
+end
+
 @testset "Fixed Data Column Widths" begin
     matrix = ["A = ($i, $j)\nB = ($i, $j)" for i in 1:3, j in 1:5]
 

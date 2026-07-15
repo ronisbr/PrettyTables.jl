@@ -53,7 +53,9 @@ function _text__styled_print(display::Display, str::AbstractString, crayon::Cray
     (!display.has_color || crayon == _TEXT__DEFAULT || crayon == _TEXT__EMPTY_CRAYON) &&
         return _text__print(display, str)
 
-    _text__print(display, string(crayon) * str * _TEXT__STRING_RESET)
+    _text__check_eol(display) && return nothing
+    print(display.buf_line, string(crayon), str, _TEXT__STRING_RESET)
+    display.column += printable_textwidth(str)
     return nothing
 end
 
@@ -121,8 +123,43 @@ function _text__print_aligned(
     crayon::Crayon = _TEXT__DEFAULT,
     fill::Bool = true
 )
-    aligned_str = align_string(str, cell_width, alignment; fill)
-    _text__styled_print(display, aligned_str, crayon)
+    str_width = printable_textwidth(str)
+    _text__check_eol(display) && return nothing
+
+    left_margin = 0
+    right_margin = 0
+
+    if cell_width > str_width
+        remaining = cell_width - str_width
+
+        if alignment === :l
+            right_margin = fill ? remaining : 0
+        elseif alignment === :c
+            left_margin = div(remaining, 2)
+            right_margin = fill ? remaining - left_margin : 0
+        elseif alignment === :r
+            left_margin = remaining
+        end
+    end
+
+    styled = display.has_color && crayon != _TEXT__DEFAULT &&
+        crayon != _TEXT__EMPTY_CRAYON
+
+    styled && print(display.buf_line, string(crayon))
+
+    for _ in 1:left_margin
+        write(display.buf_line, 0x20)
+    end
+
+    print(display.buf_line, str)
+
+    for _ in 1:right_margin
+        write(display.buf_line, 0x20)
+    end
+
+    styled && print(display.buf_line, _TEXT__STRING_RESET)
+    display.column += left_margin + str_width + right_margin
+
     return nothing
 end
 

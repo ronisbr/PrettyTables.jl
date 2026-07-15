@@ -48,4 +48,13 @@
             renderer = :show
         )
     end
+
+    @testset "Exact String Identity" begin
+        context = IOContext(IOBuffer())
+        cell = "string"
+
+        for renderer in (Val(:print), Val(:show))
+            @test PrettyTables._text__cell_to_str(cell, context, renderer) === cell
+        end
+    end
 end
