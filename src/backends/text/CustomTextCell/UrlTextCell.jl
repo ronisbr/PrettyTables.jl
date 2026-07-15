@@ -47,6 +47,7 @@ function CustomTextCell.init!(
     cell.crop          = 0
     cell.left_padding  = 0
     cell.right_padding = 0
+    cell.suffix        = ""
 
     return nothing
 end

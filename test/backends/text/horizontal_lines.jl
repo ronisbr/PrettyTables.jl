@@ -129,3 +129,30 @@
 
     @test result == expected
 end
+
+@testset "Horizontal Lines Do Not Mutate the Table Format" begin
+    horizontal_lines = [1, 3]
+    table_format = TextTableFormat(
+        horizontal_lines_at_column_labels = horizontal_lines
+    )
+
+    expected = """
+┌───┬───┐
+│ A │ B │
+├───┼───┤
+│ C │ D │
+├───┼───┤
+│ 1 │ 2 │
+└───┴───┘
+"""
+
+    result = pretty_table(
+        String,
+        [1 2];
+        column_labels = [["A", "B"], ["C", "D"]],
+        table_format = table_format,
+    )
+
+    @test result == expected
+    @test horizontal_lines == [1, 3]
+end

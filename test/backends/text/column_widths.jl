@@ -52,6 +52,8 @@ end
         alignment = [:r, :c, :l, :c, :l],
         minimum_data_column_widths = [0, -1, 10, 20, 3],
     )
+
+    @test result == expected
 end
 
 @testset "Maximum Data Column Widths" begin
@@ -81,4 +83,42 @@ end
     )
 
     @test result == expected
+end
+
+@testset "Summary Widths Without Data Rows" begin
+    matrix = Matrix{Int}(undef, 0, 2)
+
+    expected = """
+┌───────────┬──────────────┬────────────────────┐
+│           │            A │                  B │
+├───────────┼──────────────┼────────────────────┤
+│ Summary 1 │ summary-wide │ even-wider-summary │
+└───────────┴──────────────┴────────────────────┘
+"""
+
+    result = pretty_table(
+        String,
+        matrix;
+        column_labels = ["A", "B"],
+        summary_rows = [(data, j) -> j == 1 ? "summary-wide" : "even-wider-summary"],
+    )
+
+    @test result == expected
+    @test all(textwidth(line) == 49 for line in split(chomp(result), '\n'))
+
+    expected_without_column_labels = """
+┌───────────┬──────────────┬────────────────────┐
+│ Summary 1 │ summary-wide │ even-wider-summary │
+└───────────┴──────────────┴────────────────────┘
+"""
+
+    result_without_column_labels = pretty_table(
+        String,
+        matrix;
+        column_labels = ["A", "B"],
+        show_column_labels = false,
+        summary_rows = [(data, j) -> j == 1 ? "summary-wide" : "even-wider-summary"],
+    )
+
+    @test result_without_column_labels == expected_without_column_labels
 end

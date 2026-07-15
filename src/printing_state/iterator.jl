@@ -52,10 +52,28 @@ function _next(state::PrintingTableState, table_data::TableData)
     if ps < _NEW_ROW
         new_i = i + 1
 
-        # If we are started the column labels but the user does not want to show them, we
-        # must skip to the data section.
-        (rs == :column_labels) && !table_data.show_column_labels &&
-            return _next(PrintingTableState(_NEW_ROW - 1, 0, 0, :data), table_data)
+        # If we started the column labels but the user does not want to show them, skip to
+        # the first section that has rows.
+        if (rs == :column_labels) && !table_data.show_column_labels
+            next_row_section = if max_i > 0
+                :data
+            elseif !isnothing(table_data.summary_rows)
+                :summary_row
+            else
+                :table_footer
+            end
+
+            next_printing_state = if next_row_section == :table_footer
+                _END_ROW
+            else
+                _NEW_ROW - 1
+            end
+
+            return _next(
+                PrintingTableState(next_printing_state, 0, 0, next_row_section),
+                table_data
+            )
+        end
 
         # Check if we are starting a row group label.
         if (rs == :data) && !isnothing(table_data.row_group_labels)
@@ -151,7 +169,14 @@ function _next(state::PrintingTableState, table_data::TableData)
                 ((mr == 0) && (max_i > 0)) &&
                     return :end_row, rs, PrintingTableState(_NEW_ROW - 1, i, 0, :continuation_row)
 
-                # If we have no data rows, we can go to the table footer.
+                # If we have no data rows, we can go to the summary rows.
+                if (table_data.num_rows == 0) && !isnothing(table_data.summary_rows)
+                    return :end_row,
+                    rs,
+                    PrintingTableState(_NEW_ROW - 1, 0, 0, :summary_row)
+                end
+
+                # If we have no data or summary rows, we can go to the table footer.
                 (max_i == 0) &&
                     return :end_row, rs, PrintingTableState(_END_ROW, 0, 0, :table_footer)
 

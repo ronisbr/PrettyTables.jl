@@ -265,6 +265,77 @@
         @test action == :end_printing
     end
 
+    @testset "Zero Rows With Hidden Column Labels" begin
+        @testset "With Summary Rows" begin
+            summary_rows = [(data, j) -> j]
+            td = PrettyTables.TableData(
+                ;
+                data               = Matrix{Int}(undef, 0, 2),
+                column_labels      = [["1", "2"]],
+                show_column_labels = false,
+                summary_rows       = summary_rows,
+                summary_row_labels = PrettyTables.SummaryLabelIterator(summary_rows),
+                num_rows           = 0,
+                num_columns        = 2,
+                first_row_index    = 1,
+                first_column_index = 1,
+            )
+
+            ps = PrettyTables.PrintingTableState()
+            actions = Symbol[]
+            row_sections = Symbol[]
+
+            while true
+                action, row_section, ps = PrettyTables._next(ps, td)
+                push!(actions, action)
+                push!(row_sections, row_section)
+                action == :end_printing && break
+            end
+
+            @test actions == [
+                :new_row,
+                :summary_row_label,
+                :summary_row_cell,
+                :summary_row_cell,
+                :end_row,
+                :end_printing,
+            ]
+            @test row_sections == [
+                :summary_row,
+                :summary_row,
+                :summary_row,
+                :summary_row,
+                :summary_row,
+                :table_footer,
+            ]
+            @test :data ∉ actions
+        end
+
+        @testset "Without Summary Rows" begin
+            td = PrettyTables.TableData(
+                ;
+                data               = Matrix{Int}(undef, 0, 2),
+                column_labels      = [["1", "2"]],
+                show_column_labels = false,
+                num_rows           = 0,
+                num_columns        = 2,
+                first_row_index    = 1,
+                first_column_index = 1,
+            )
+
+            action, row_section, ps = PrettyTables._next(
+                PrettyTables.PrintingTableState(),
+                td
+            )
+
+            @test action == :end_printing
+            @test row_section == :table_footer
+            @test ps.i == 0
+            @test :data != action
+            @test :new_row != action
+        end
+    end
+
     @testset "With Cropping" verbose = true begin
         @testset "Bottom Vertical Cropping" begin
             # == Create the Table Data =====================================================

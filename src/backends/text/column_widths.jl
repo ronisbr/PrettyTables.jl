@@ -220,10 +220,10 @@ function _text__printed_column_widths(
                     m = max(m, _maximum_textwidth_per_line(cell))
                 end
             end
+        end
 
-            if _has_summary_rows(table_data)
-                m = max(maximum(printable_textwidth, summary_rows[:, j]), m)
-            end
+        if _has_summary_rows(table_data)
+            m = max(maximum(printable_textwidth, summary_rows[:, j]), m)
         end
 
         mdw = minimum_data_column_widths[j - 1 + begin]

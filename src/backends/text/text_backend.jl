@@ -142,10 +142,9 @@ function _text__print_table(
             1:0
         end
     else
-        horizontal_lines_at_column_labels = tf.horizontal_lines_at_column_labels::Vector{Int}
-        filter!(
+        horizontal_lines_at_column_labels = filter(
             x -> 1 <= x <= length(table_data.column_labels),
-            horizontal_lines_at_column_labels
+            tf.horizontal_lines_at_column_labels::Vector{Int}
         )
     end
 

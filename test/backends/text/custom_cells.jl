@@ -264,6 +264,32 @@
         )
         @test result == expected
 
+        # -- Cell Reuse --------------------------------------------------------------------
+
+        url_cell = UrlTextCell("PrettyTables", "https://prettytables.jl")
+
+        expected = """
+┌────────┐
+│ Col. 1 │
+├────────┤
+│ \e]8;;https://prettytables.jl\e\\Prett…\e]8;;\e\\ │
+└────────┘
+"""
+
+        result = pretty_table(String, [url_cell]; fixed_data_column_widths = [6])
+        @test result == expected
+
+        expected = """
+┌──────────────┐
+│       Col. 1 │
+├──────────────┤
+│ \e]8;;https://prettytables.jl\e\\PrettyTables\e]8;;\e\\ │
+└──────────────┘
+"""
+
+        result = pretty_table(String, [url_cell])
+        @test result == expected
+
         # -- Display Cropping --------------------------------------------------------------
 
         expected = """
