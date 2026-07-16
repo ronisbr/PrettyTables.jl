@@ -20,32 +20,15 @@ const TypstAttrs = String
 # == Private ===============================================================================
 
 const _TYPST__ALIGNMENT_MAP = Dict(
-    :l => "left",
-    :L => "left",
-    :c => "center",
-    :C => "center",
-    :r => "right",
-    :R => "right"
+    :l => "left", :L => "left", :c => "center", :C => "center", :r => "right", :R => "right"
 )
 
 const _TYPST__CELL_ATTRIBUTES = [
-    "align",
-    "breakable",
-    "colspan",
-    "fill",
-    "inset",
-    "rowspan",
-    "stroke",
+    "align", "breakable", "colspan", "fill", "inset", "rowspan", "stroke"
 ]
 
 const _TYPST__TABLE_ATTRIBUTES = [
-    "rows",
-    "gutter",
-    "column-gutter",
-    "row-gutter",
-    "inset",
-    "fill",
-    "stroke",
+    "rows", "gutter", "column-gutter", "row-gutter", "inset", "fill", "stroke"
 ]
 
 const _TYPST__STRING_ATTRIBUTES = [
@@ -212,9 +195,9 @@ https://typst.app/docs/reference/visualize/stroke/
 
     # == Vertical Lines ====================================================================
 
-    left_line::String               = "1.5pt"
-    center_line::String             = "0.8pt"
-    right_line::String              = "1.5pt"
+    left_line::String   = "1.5pt"
+    center_line::String = "0.8pt"
+    right_line::String  = "1.5pt"
 end
 
 """

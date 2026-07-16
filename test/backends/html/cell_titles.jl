@@ -5,7 +5,7 @@
 ############################################################################################
 
 @testset "Cell Titles" verbose = true begin
-    @testset  "Column Label Titles" begin
+    @testset "Column Label Titles" begin
         matrix              = [(i, j) for i in 1:2, j in 1:4]
         column_labels       = [[(i, j) for j in 1:4] for i in 1:3]
         column_label_titles = [[1, 2, 3, 4], nothing, ["5", "6", "7", "8"]]
@@ -61,9 +61,8 @@
     end
 
     @testset "Errors" verbose = true begin
-        matrix              = [(i, j) for i in 1:2, j in 1:4]
-        column_labels       = [[(i, j) for j in 1:4] for i in 1:3]
-
+        matrix        = [(i, j) for i in 1:2, j in 1:4]
+        column_labels = [[(i, j) for j in 1:4] for i in 1:3]
 
         column_label_titles = [[1, 2, 3, 4], ["5", "6", "7", "8"]]
         @test_throws Exception pretty_table(

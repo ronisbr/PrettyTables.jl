@@ -16,17 +16,17 @@ const ExcelPair = Pair{String, String}
 
 # Create some default table style definitions to reduce allocations.
 const _EXCEL__NO_DECORATION     = ExcelPair[]
-const _EXCEL__BOLD              = ["bold"   => "true"]
+const _EXCEL__BOLD              = ["bold" => "true"]
 const _EXCEL__ITALIC            = ["italic" => "true"]
-const _EXCEL__XLARGE_BOLD       = ["size"   => "18", "bold"   => "true"]
-const _EXCEL__LARGE_ITALIC      = ["size"   => "14", "italic" => "true"]
-const _EXCEL__SMALL             = ["size"   => "10"]
-const _EXCEL__SMALL_ITALIC      = ["size"   => "10", "italic" => "true"]
-const _EXCEL__SMALL_ITALIC_GRAY = ["color"  => "gray", "size" => "10", "italic" => "true"]
+const _EXCEL__XLARGE_BOLD       = ["size" => "18", "bold" => "true"]
+const _EXCEL__LARGE_ITALIC      = ["size" => "14", "italic" => "true"]
+const _EXCEL__SMALL             = ["size" => "10"]
+const _EXCEL__SMALL_ITALIC      = ["size" => "10", "italic" => "true"]
+const _EXCEL__SMALL_ITALIC_GRAY = ["color" => "gray", "size" => "10", "italic" => "true"]
 
-const _EXCEL__MEDIUM_BORDER     = ["style" => "medium", "color" => "Black"]
-const _EXCEL__THICK_BORDER      = ["style" => "thick",  "color" => "Black"]
-const _EXCEL__THIN_BORDER       = ["style" => "thin",   "color" => "Black"]
+const _EXCEL__MEDIUM_BORDER = ["style" => "medium", "color" => "Black"]
+const _EXCEL__THICK_BORDER  = ["style" => "thick", "color" => "Black"]
+const _EXCEL__THIN_BORDER   = ["style" => "thin", "color" => "Black"]
 
 ############################################################################################
 #                                       Highlighters                                       #
@@ -182,14 +182,12 @@ struct ExcelFormatter
 
     # == Constructors ======================================================================
 
-    function ExcelFormatter(
-        f::Function,
-        numFmt::Vector{ExcelPair};
-        region::Symbol = :data
-    )
-        region ∈ (:data, :summary_row) || throw(ArgumentError(
-            "The `region` of an `ExcelFormatter` must be `:data` or `:summary_row`."
-        ))
+    function ExcelFormatter(f::Function, numFmt::Vector{ExcelPair}; region::Symbol = :data)
+        region ∈ (:data, :summary_row) || throw(
+            ArgumentError(
+                "The `region` of an `ExcelFormatter` must be `:data` or `:summary_row`."
+            ),
+        )
 
         return new(f, numFmt, region)
     end
@@ -245,9 +243,9 @@ end. All fields are `Vector{ExcelPair}` compatible with the `XLSX.setBorder` fun
 
     # == Vertical Lines ====================================================================
 
-    left_line::Vector{ExcelPair}               = _EXCEL__THICK_BORDER
-    center_line::Vector{ExcelPair}             = _EXCEL__THIN_BORDER
-    right_line::Vector{ExcelPair}              = _EXCEL__THICK_BORDER
+    left_line::Vector{ExcelPair}   = _EXCEL__THICK_BORDER
+    center_line::Vector{ExcelPair} = _EXCEL__THIN_BORDER
+    right_line::Vector{ExcelPair}  = _EXCEL__THICK_BORDER
 end
 
 ############################################################################################

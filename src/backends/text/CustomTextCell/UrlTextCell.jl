@@ -42,7 +42,7 @@ function CustomTextCell.init!(
     cell::UrlTextCell,
     context::IOContext,
     renderer::Union{Val{:print}, Val{:show}};
-    line_breaks::Bool = false
+    line_breaks::Bool = false,
 )
     cell.crop          = 0
     cell.left_padding  = 0

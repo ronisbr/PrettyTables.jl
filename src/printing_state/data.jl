@@ -34,11 +34,7 @@ end
 Return the current data specified by the `action` and the current printing table `state` of
 `table_data`.
 """
-function _current_cell(
-    action::Symbol,
-    state::PrintingTableState,
-    table_data::TableData
-)
+function _current_cell(action::Symbol, state::PrintingTableState, table_data::TableData)
     if action == :title
         return table_data.title
 
@@ -101,11 +97,7 @@ function _current_cell(
         i₀ = table_data.first_row_index
         j₀ = table_data.first_column_index
 
-        cell_data = _get_data_cell(
-            table_data.data,
-            state.i - 1 + i₀,
-            state.j - 1 + j₀
-        )
+        cell_data = _get_data_cell(table_data.data, state.i - 1 + i₀, state.j - 1 + j₀)
 
         if !isnothing(table_data.formatters)
             for f in table_data.formatters

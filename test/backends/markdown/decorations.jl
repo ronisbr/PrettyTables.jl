@@ -20,7 +20,9 @@
             String,
             matrix;
             backend = :markdown,
-            style = MarkdownTableStyle(; first_line_column_label = MarkdownStyle(italic = true))
+            style = MarkdownTableStyle(;
+                first_line_column_label = MarkdownStyle(; italic = true)
+            ),
         )
 
         @test result == expected
@@ -37,15 +39,15 @@
             String,
             matrix;
             backend = :markdown,
-            style = MarkdownTableStyle(; first_line_column_label = [
-                MarkdownStyle(italic = true),
-                MarkdownStyle(bold   = true),
-                MarkdownStyle(code   = true)
-            ])
+            style = MarkdownTableStyle(;
+                first_line_column_label = [
+                    MarkdownStyle(; italic = true),
+                    MarkdownStyle(; bold = true),
+                    MarkdownStyle(; code = true),
+                ],
+            ),
         )
 
         @test result == expected
     end
 end
-
-

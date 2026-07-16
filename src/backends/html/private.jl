@@ -20,35 +20,32 @@ If `escape_html_chars` is `true`, `&`, `<`, `>`, `"`, and `'`  will be replaced 
 sequences.
 """
 function _html__escape_str(
-    io::IO,
-    s::AbstractString,
-    replace_newline::Bool = false,
-    escape_html_chars::Bool = true,
+    io::IO, s::AbstractString, replace_newline::Bool = false, escape_html_chars::Bool = true
 )
     a = Iterators.Stateful(s)
     for c in a
         if Base.isascii(c)
-            c == '\n'          ? (replace_newline ? print(io, "<br>") : print(io, "\\n")) :
-            c == '&'           ? (escape_html_chars ? print(io, "&amp;")  : print(io, c)) :
-            c == '<'           ? (escape_html_chars ? print(io, "&lt;")   : print(io, c)) :
-            c == '>'           ? (escape_html_chars ? print(io, "&gt;")   : print(io, c)) :
-            c == '"'           ? (escape_html_chars ? print(io, "&quot;") : print(io, c)) :
-            c == '\''          ? (escape_html_chars ? print(io, "&apos;") : print(io, c)) :
-            c == '\0'          ? print(io, Base.escape_nul(peek(a))) :
-            c == '\e'          ? print(io, "\\e") :
-            c == '\\'          ? print(io, "\\\\") :
-            '\a' <= c <= '\r'  ? print(io, '\\', "abtnvfr"[Int(c)-6]) :
-            isprint(c)         ? print(io, c) :
-                                 print(io, "\\x", string(UInt32(c), base = 16, pad = 2))
+            c == '\n'         ? (replace_newline ? print(io, "<br>") : print(io, "\\n")) :
+            c == '&'          ? (escape_html_chars ? print(io, "&amp;") : print(io, c))  :
+            c == '<'          ? (escape_html_chars ? print(io, "&lt;") : print(io, c))   :
+            c == '>'          ? (escape_html_chars ? print(io, "&gt;") : print(io, c))   :
+            c == '"'          ? (escape_html_chars ? print(io, "&quot;") : print(io, c)) :
+            c == '\''         ? (escape_html_chars ? print(io, "&apos;") : print(io, c)) :
+            c == '\0'         ? print(io, Base.escape_nul(peek(a)))                      :
+            c == '\e'         ? print(io, "\\e")                                         :
+            c == '\\'         ? print(io, "\\\\")                                        :
+            '\a' <= c <= '\r' ? print(io, '\\', "abtnvfr"[Int(c) - 6])                   :
+            isprint(c)        ? print(io, c)                                             :
+            print(io, "\\x", string(UInt32(c); base = 16, pad = 2))
         elseif !Base.isoverlong(c) && !Base.ismalformed(c)
-            isprint(c)         ? print(io, c) :
-            c <= '\x7f'        ? print(io, "\\x", string(UInt32(c), base = 16, pad = 2)) :
-            c <= '\uffff'      ? print(io, "\\u", string(UInt32(c), base = 16, pad = Base.need_full_hex(peek(a)) ? 4 : 2)) :
-                                 print(io, "\\U", string(UInt32(c), base = 16, pad = Base.need_full_hex(peek(a)) ? 8 : 4))
+            isprint(c)    ? print(io, c) :
+            c <= '\x7f'   ? print(io, "\\x", string(UInt32(c); base = 16, pad = 2)) :
+            c <= '\uffff' ? print(io, "\\u", string(UInt32(c); base = 16, pad = Base.need_full_hex(peek(a)) ? 4 : 2)) :
+            print(io, "\\U", string(UInt32(c); base = 16, pad = Base.need_full_hex(peek(a)) ? 8 : 4))
         else # malformed or overlong
             u = bswap(reinterpret(UInt32, c))
             while true
-                print(io, "\\x", string(u % UInt8, base = 16, pad = 2))
+                print(io, "\\x", string(u % UInt8; base = 16, pad = 2))
                 (u >>= 8) == 0 && break
             end
         end
@@ -56,28 +53,17 @@ function _html__escape_str(
 end
 
 function _html__escape_str(
-    s::AbstractString,
-    replace_newline::Bool = false,
-    escape_html_chars::Bool = true
+    s::AbstractString, replace_newline::Bool = false, escape_html_chars::Bool = true
 )
     return sprint(
-        _html__escape_str,
-        s,
-        replace_newline,
-        escape_html_chars;
-        sizehint = lastindex(s)
+        _html__escape_str, s, replace_newline, escape_html_chars; sizehint = lastindex(s)
     )
 end
 
 # == Styles ================================================================================
 
 const _HTML__ALIGNMENT_MAP = Dict(
-    :l => "left",
-    :L => "left",
-    :c => "center",
-    :C => "center",
-    :r => "right",
-    :R => "right"
+    :l => "left", :L => "left", :c => "center", :C => "center", :r => "right", :R => "right"
 )
 
 """
@@ -142,7 +128,7 @@ Create the string that opens the HTML `tag`.
 function _html__open_tag(
     tag::String;
     properties::Union{Nothing, Vector{HtmlPair}} = nothing,
-    style::Union{Nothing, Vector{HtmlPair}} = nothing
+    style::Union{Nothing, Vector{HtmlPair}} = nothing,
 )
     # Compile the text with the properties.
     properties_str = ""
@@ -189,7 +175,7 @@ function _html__create_tag(
     tag::String,
     content::String;
     properties::Union{Nothing, Vector{HtmlPair}} = nothing,
-    style::Union{Nothing, Vector{HtmlPair}} = nothing
+    style::Union{Nothing, Vector{HtmlPair}} = nothing,
 )
     return _html__open_tag(tag; properties, style) * content * _html__close_tag(tag)
 end
@@ -222,7 +208,7 @@ function _html__print_top_bar_section(
     decoration::Union{Nothing, Vector{HtmlPair}},
     il::Int,
     ns::Int;
-    minify::Bool = false
+    minify::Bool = false,
 )
     style = isnothing(decoration) ? HtmlPair[] : copy(decoration)
     push!(style, "float" => position)
@@ -230,17 +216,8 @@ function _html__print_top_bar_section(
     _aprintln(buf, _html__open_tag("div"; style), il, ns; minify)
     il += 1
 
-    _aprintln(
-        buf,
-        _html__create_tag(
-            "span",
-            _html__escape_str(text)
-        ),
-        il,
-        ns;
-        minify
-    )
+    _aprintln(buf, _html__create_tag("span", _html__escape_str(text)), il, ns; minify)
 
     il -= 1
-    _aprintln(buf, _html__close_tag("div"), il, ns; minify)
+    return _aprintln(buf, _html__close_tag("div"), il, ns; minify)
 end

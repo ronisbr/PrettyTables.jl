@@ -47,7 +47,7 @@
 └──────────┘
 """
 
-        result = pretty_table(String, ansi_table, maximum_data_column_widths = 8)
+        result = pretty_table(String, ansi_table; maximum_data_column_widths = 8)
         @test result == expected
 
         expected = """
@@ -61,7 +61,7 @@
 1 column omitted
 """
 
-        result = pretty_table(String, ansi_table, display_size = (-1, 10))
+        result = pretty_table(String, ansi_table; display_size = (-1, 10))
         @test result == expected
 
         # == From Functions ================================================================
@@ -75,9 +75,9 @@
         end
 
         ansi_table = [
-            AnsiTextCell(f, context = (:color => true,))
-            AnsiTextCell(f, context = (:color => true,))
-            AnsiTextCell(f, context = (:color => true,))
+            AnsiTextCell(f; context = (:color => true,))
+            AnsiTextCell(f; context = (:color => true,))
+            AnsiTextCell(f; context = (:color => true,))
         ]
 
         # -- No Crop -----------------------------------------------------------------------
@@ -108,7 +108,7 @@
 └──────────┘
 """
 
-        result = pretty_table(String, ansi_table, maximum_data_column_widths = 8)
+        result = pretty_table(String, ansi_table; maximum_data_column_widths = 8)
         @test result == expected
 
         expected = """
@@ -122,7 +122,7 @@
 1 column omitted
 """
 
-        result = pretty_table(String, ansi_table, display_size = (-1, 10))
+        result = pretty_table(String, ansi_table; display_size = (-1, 10))
         @test result == expected
 
         # -- Newlines ----------------------------------------------------------------------
@@ -191,10 +191,7 @@
 """
 
         result = pretty_table(
-            String,
-            table;
-            alignment = :c,
-            fixed_data_column_widths = [-1, -1, 60]
+            String, table; alignment = :c, fixed_data_column_widths = [-1, -1, 60]
         )
         @test result == expected
 
@@ -209,11 +206,7 @@
 └────────┴────────────────────────────┴──────────────────────────────────────────┘
 """
 
-        result = pretty_table(
-            String,
-            table;
-            alignment = :l
-        )
+        result = pretty_table(String, table; alignment = :l)
         @test result == expected
 
         # == Highlighters ==================================================================
@@ -229,17 +222,9 @@
 └────────┴────────────────────────────┴──────────────────────────────────────────┘
 """
 
-        hl = TextHighlighter(
-            (data, i, j) -> j == 3,
-            crayon"yellow bold"
-        )
+        hl = TextHighlighter((data, i, j) -> j == 3, crayon"yellow bold")
 
-        result = pretty_table(
-            String,
-            table;
-            color = true,
-            highlighters = [hl]
-        )
+        result = pretty_table(String, table; color = true, highlighters = [hl])
         @test result == expected
 
         # == Cropping ======================================================================
@@ -257,11 +242,7 @@
 └────────┴───────────────┴────────────────────┘
 """
 
-        result = pretty_table(
-            String,
-            table;
-            fixed_data_column_widths = [-1, 13, 18]
-        )
+        result = pretty_table(String, table; fixed_data_column_widths = [-1, 13, 18])
         @test result == expected
 
         # -- Cell Reuse --------------------------------------------------------------------
@@ -304,11 +285,7 @@
                                   1 column omitted
 """
 
-        result = pretty_table(
-            String,
-            table;
-            display_size = (-1, 50)
-        )
+        result = pretty_table(String, table; display_size = (-1, 50))
         @test result == expected
 
         expected = """
@@ -323,12 +300,7 @@
                                   1 column omitted
 """
 
-        result = pretty_table(
-            String,
-            table;
-            alignment = :l,
-            display_size = (-1, 50)
-        )
+        result = pretty_table(String, table; alignment = :l, display_size = (-1, 50))
         @test result == expected
 
         expected = """
@@ -342,14 +314,8 @@
 └────────┴────────────────────────────┴───
                           1 column omitted
 """
-        result = pretty_table(
-            String,
-            table;
-            alignment = :l,
-            display_size = (-1, 42)
-        )
+        result = pretty_table(String, table; alignment = :l, display_size = (-1, 42))
         @test result == expected
-
 
         expected = """
 ┌────────┬────────────────────────────┬─────────
@@ -362,12 +328,7 @@
 └────────┴────────────────────────────┴─────────
                                 1 column omitted
 """
-        result = pretty_table(
-            String,
-            table;
-            alignment = :l,
-            display_size = (-1, 48)
-        )
+        result = pretty_table(String, table; alignment = :l, display_size = (-1, 48))
         @test result == expected
 
         # == Multi-line Cells ==============================================================
@@ -394,11 +355,7 @@
 └────────┴────────────────────────────┴──────────────────────────────────────────┘
 """
 
-        result = pretty_table(
-            String,
-            table;
-            line_breaks = true
-        )
+        result = pretty_table(String, table; line_breaks = true)
         @test result == expected
     end
 end

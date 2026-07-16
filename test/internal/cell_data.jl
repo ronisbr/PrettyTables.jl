@@ -16,8 +16,7 @@
 
         summary_rows = [(data, j) -> 20j, (data, j) -> 30j, sum]
 
-        td = PrettyTables.TableData(
-            ;
+        td = PrettyTables.TableData(;
             data,
             title                       = "Table Title",
             subtitle                    = "Table Subtitle",
@@ -39,7 +38,7 @@
             num_columns                 = 4,
             first_row_index             = 1,
             first_column_index          = 1,
-            formatters                  = [(v, i, j) -> i == 2 ? v + 10 : v,],
+            formatters                  = [(v, i, j) -> i == 2 ? v + 10 : v],
         )
 
         # == Iterate the Printing Table ps =================================================
@@ -141,7 +140,7 @@
                 cell = PrettyTables._current_cell(action, ps, td)
 
                 if i ∈ (1, 2)
-                    @test cell == (10i  + 10) * j
+                    @test cell == (10i + 10) * j
                 else
                     @test cell == sum(data[:, j])
                 end
@@ -183,8 +182,7 @@
         ]
         summary_rows = [(data, j) -> 20j, (data, j) -> 30j, sum]
 
-        td = PrettyTables.TableData(
-            ;
+        td = PrettyTables.TableData(;
             data,
             title                       = "Table Title",
             subtitle                    = "Table Subtitle",
@@ -207,7 +205,7 @@
             num_columns                 = 4,
             first_row_index             = 1,
             first_column_index          = 1,
-            formatters                  = [(v, i, j) -> i == 2 ? v + 10 : v,],
+            formatters                  = [(v, i, j) -> i == 2 ? v + 10 : v],
         )
 
         # == Iterate the Printing Table ps =================================================
@@ -322,7 +320,7 @@
                 cell = PrettyTables._current_cell(action, ps, td)
 
                 if i ∈ (1, 2)
-                    @test cell == (10i  + 10) * j
+                    @test cell == (10i + 10) * j
                 else
                     @test cell == sum(data[:, j])
                 end
@@ -358,8 +356,8 @@
         """Create table data with the specified footnotes for testing."""
         function table_data_with_footnotes(footnotes)
             return PrettyTables.TableData(;
-                data               = reshape([1], 1, 1),
-                column_labels      = [Any["Column"]],
+                data          = reshape([1], 1, 1),
+                column_labels = [Any["Column"]],
                 footnotes,
                 num_rows           = 1,
                 num_columns        = 1,

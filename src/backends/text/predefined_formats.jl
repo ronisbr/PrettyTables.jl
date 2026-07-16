@@ -17,7 +17,7 @@ export text_table_borders__mysql
 export text_table_borders__simple
 export text_table_borders__unicode_rounded
 
-const text_table_borders__ascii_dots = TextTableBorders(
+const text_table_borders__ascii_dots = TextTableBorders(;
     up_right_corner     = '.',
     up_left_corner      = '.',
     bottom_left_corner  = ':',
@@ -28,10 +28,10 @@ const text_table_borders__ascii_dots = TextTableBorders(
     middle_intersection = ':',
     bottom_intersection = ':',
     column              = ':',
-    row                 = '.'
+    row                 = '.',
 )
 
-const text_table_borders__ascii_rounded = TextTableBorders(
+const text_table_borders__ascii_rounded = TextTableBorders(;
     up_right_corner     = '.',
     up_left_corner      = '.',
     bottom_left_corner  = '\'',
@@ -42,10 +42,10 @@ const text_table_borders__ascii_rounded = TextTableBorders(
     middle_intersection = '+',
     bottom_intersection = '\'',
     column              = '|',
-    row                 = '-'
+    row                 = '-',
 )
 
-const text_table_borders__borderless = TextTableBorders(
+const text_table_borders__borderless = TextTableBorders(;
     up_right_corner     = ' ',
     up_left_corner      = ' ',
     bottom_left_corner  = ' ',
@@ -59,7 +59,7 @@ const text_table_borders__borderless = TextTableBorders(
     row                 = ' ',
 )
 
-const text_table_borders__compact = TextTableBorders(
+const text_table_borders__compact = TextTableBorders(;
     up_right_corner     = ' ',
     up_left_corner      = ' ',
     bottom_left_corner  = ' ',
@@ -68,19 +68,19 @@ const text_table_borders__compact = TextTableBorders(
     left_intersection   = ' ',
     right_intersection  = ' ',
     middle_intersection = ' ',
-    bottom_intersection  = ' ',
+    bottom_intersection = ' ',
     column              = ' ',
-    row                 = '-'
+    row                 = '-',
 )
 
-const text_table_borders__matrix = TextTableBorders(
+const text_table_borders__matrix = TextTableBorders(;
     left_intersection   = '│',
     right_intersection  = '│',
     middle_intersection = '│',
-    row                 = ' '
+    row                 = ' ',
 )
 
-const text_table_borders__mysql = TextTableBorders(
+const text_table_borders__mysql = TextTableBorders(;
     up_right_corner     = '+',
     up_left_corner      = '+',
     bottom_left_corner  = '+',
@@ -91,10 +91,10 @@ const text_table_borders__mysql = TextTableBorders(
     middle_intersection = '+',
     bottom_intersection = '+',
     column              = '|',
-    row                 = '-'
+    row                 = '-',
 )
 
-const text_table_borders__simple = TextTableBorders(
+const text_table_borders__simple = TextTableBorders(;
     up_right_corner     = '=',
     up_left_corner      = '=',
     bottom_left_corner  = '=',
@@ -103,12 +103,12 @@ const text_table_borders__simple = TextTableBorders(
     left_intersection   = '=',
     right_intersection  = '=',
     middle_intersection = ' ',
-    bottom_intersection  = ' ',
+    bottom_intersection = ' ',
     column              = ' ',
-    row                 = '='
+    row                 = '=',
 )
 
-const text_table_borders__unicode_rounded = TextTableBorders(
+const text_table_borders__unicode_rounded = TextTableBorders(;
     up_right_corner     = '╮',
     up_left_corner      = '╭',
     bottom_left_corner  = '╰',
@@ -119,7 +119,7 @@ const text_table_borders__unicode_rounded = TextTableBorders(
     middle_intersection = '┼',
     bottom_intersection = '┴',
     column              = '│',
-    row                 = '─'
+    row                 = '─',
 )
 
 ############################################################################################
@@ -128,7 +128,7 @@ const text_table_borders__unicode_rounded = TextTableBorders(
 
 export text_table_format__matrix
 
-const text_table_format__matrix = TextTableFormat(
+const text_table_format__matrix = TextTableFormat(;
     borders                                  = text_table_borders__matrix,
     horizontal_line_after_column_labels      = true,
     horizontal_line_after_data_rows          = true,

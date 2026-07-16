@@ -29,20 +29,11 @@
 </table>
 """
 
-        result = pretty_table(
-            String,
-            matrix;
-            backend = :html
-        )
+        result = pretty_table(String, matrix; backend = :html)
 
         @test result == expected
 
-        result = pretty_table(
-            String,
-            matrix;
-            backend = :html,
-            renderer = :show
-        )
+        result = pretty_table(String, matrix; backend = :html, renderer = :show)
 
         @test result == expected
     end
@@ -71,20 +62,11 @@
 </table>
 """
 
-        result = pretty_table(
-            String,
-            matrix;
-            backend = :html
-        )
+        result = pretty_table(String, matrix; backend = :html)
 
         @test result == expected
 
-        result = pretty_table(
-            String,
-            matrix;
-            backend = :html,
-            renderer = :show
-        )
+        result = pretty_table(String, matrix; backend = :html, renderer = :show)
 
         @test result == expected
     end
@@ -113,21 +95,12 @@
 </table>
 """
 
-        result = pretty_table(
-            String,
-            matrix;
-            backend = :html,
-            allow_html_in_cells = true
-        )
+        result = pretty_table(String, matrix; backend = :html, allow_html_in_cells = true)
 
         @test result == expected
 
         result = pretty_table(
-            String,
-            matrix;
-            backend = :html,
-            allow_html_in_cells = true,
-            renderer = :show
+            String, matrix; backend = :html, allow_html_in_cells = true, renderer = :show
         )
 
         @test result == expected
@@ -153,11 +126,7 @@
 </table>
 """
 
-        result = pretty_table(
-            String,
-            matrix;
-            backend = :html
-        )
+        result = pretty_table(String, matrix; backend = :html)
 
         @test result == expected
 
@@ -178,12 +147,7 @@
 </table>
 """
 
-        result = pretty_table(
-            String,
-            matrix;
-            backend = :html,
-            line_breaks = true
-        )
+        result = pretty_table(String, matrix; backend = :html, line_breaks = true)
 
         @test result == expected
     end
@@ -221,20 +185,11 @@
 </table>
 """
 
-        result = pretty_table(
-            String,
-            v;
-            backend = :html
-        )
+        result = pretty_table(String, v; backend = :html)
 
         @test result == expected
 
-        result = pretty_table(
-            String,
-            v;
-            backend = :html,
-            renderer = :show
-        )
+        result = pretty_table(String, v; backend = :html, renderer = :show)
 
         @test result == expected
     end
@@ -261,19 +216,10 @@
 </table>
 """
 
-        result = pretty_table(
-            String,
-            matrix;
-            backend = :html
-        )
+        result = pretty_table(String, matrix; backend = :html)
         @test result == expected
 
-        result = pretty_table(
-            String,
-            matrix;
-            backend = :html,
-            renderer = :show
-        )
+        result = pretty_table(String, matrix; backend = :html, renderer = :show)
         @test result == expected
     end
 end

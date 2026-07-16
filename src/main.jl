@@ -11,8 +11,10 @@ function pretty_table(@nospecialize(data::Any); kwargs...)
     return pretty_table(io, data; kwargs...)
 end
 
-function pretty_table(::Type{String}, @nospecialize(data::Any); color::Bool = false, kwargs...)
-    io = IOContext(IOBuffer(), :color => color, :displaysize =>  (-1, -1))
+function pretty_table(
+    ::Type{String}, @nospecialize(data::Any); color::Bool = false, kwargs...
+)
+    io = IOContext(IOBuffer(), :color => color, :displaysize => (-1, -1))
     pretty_table(io, data; kwargs...)
     return String(take!(io.io))
 end
@@ -29,7 +31,6 @@ function pretty_table(::Type{HTML}, @nospecialize(data::Any); kwargs...)
     return HTML(str)
 end
 
-
 # We declare this function with all the common keywords and after we call an internal
 # function where all those keywords are arguments. In this case, we can use `@nospecialize`
 # in the first two arguments. The other options would be wrap the keywords inside a
@@ -37,7 +38,6 @@ end
 function pretty_table(
     io::IO,
     data::Any;
-
     backend::Symbol = :auto,
 
     # == Arguments for the IOContext =======================================================
@@ -77,7 +77,9 @@ function pretty_table(
     source_note_alignment::Symbol = :l,
     subtitle_alignment::Symbol = :c,
     title_alignment::Symbol = :c,
-    cell_alignment::Union{Nothing, Vector{Pair{NTuple{2, Int}, Symbol}}, Vector{F} where F <: Function} = nothing,
+    cell_alignment::Union{
+        Nothing, Vector{Pair{NTuple{2, Int}, Symbol}}, Vector{F} where F <: Function
+    } = nothing,
 
     # == Other Configurations ==============================================================
 
@@ -89,12 +91,11 @@ function pretty_table(
     show_first_column_label_only::Bool = false,
     show_row_number_column::Bool = false,
     vertical_crop_mode::Symbol = :bottom,
-    kwargs...
+    kwargs...,
 )
     return _pretty_table(
         io,
         data,
-
         backend,
 
         # == Arguments for the IOContext ===================================================
@@ -149,7 +150,7 @@ function pretty_table(
 
         # == Other Keyword Arguments =======================================================
 
-        kwargs...
+        kwargs...,
     )
 end
 
@@ -212,7 +213,6 @@ end
 Base.@nospecializeinfer function _pretty_table(
     @nospecialize(io::IO),
     @nospecialize(data::Any),
-
     backend::Symbol,
 
     # == Arguments for the IOContext =======================================================
@@ -255,7 +255,9 @@ Base.@nospecializeinfer function _pretty_table(
 
     # == Other Configurations ==============================================================
 
-    cell_alignment::Union{Nothing, Vector{Pair{NTuple{2, Int}, Symbol}}, Vector{F} where F <: Function},
+    cell_alignment::Union{
+        Nothing, Vector{Pair{NTuple{2, Int}, Symbol}}, Vector{F} where F <: Function
+    },
     formatters::Union{Nothing, Vector{T} where T <: Any},
     maximum_number_of_columns::Int,
     maximum_number_of_rows::Int,
@@ -264,7 +266,7 @@ Base.@nospecializeinfer function _pretty_table(
     show_first_column_label_only::Bool,
     show_row_number_column::Bool,
     vertical_crop_mode::Symbol;
-    kwargs...
+    kwargs...,
 )
 
     # == Table Preprocessing ===============================================================
@@ -273,11 +275,7 @@ Base.@nospecializeinfer function _pretty_table(
     ptd = get(io, :__PRETTY_TABLES__DATA__, nothing)
 
     if !isnothing(ptd)
-        context = IOContext(
-            io,
-            :compact => compact_printing,
-            :limit   => limit_printing
-        )
+        context = IOContext(io, :compact => compact_printing, :limit => limit_printing)
 
         # In this case, `ptd` is a vector with the data printed by PrettyTables.jl. Hence,
         # we need to search if the current one is inside this vector. If true, we have a
@@ -296,7 +294,7 @@ Base.@nospecializeinfer function _pretty_table(
             io,
             :__PRETTY_TABLES__DATA__ => Any[data],
             :compact                 => compact_printing,
-            :limit                   => limit_printing
+            :limit                   => limit_printing,
         )
     end
 
@@ -318,7 +316,11 @@ Base.@nospecializeinfer function _pretty_table(
         first_row_index = first(first(ax))
         first_column_index = first(last(ax))
     else
-        throw(ArgumentError("`pretty_table` does not support data with more than 2 dimensions."))
+        throw(
+            ArgumentError(
+                "`pretty_table` does not support data with more than 2 dimensions."
+            ),
+        )
     end
 
     # If we reach this point and `column_labels` is nothing, we must guess it.
@@ -342,11 +344,9 @@ Base.@nospecializeinfer function _pretty_table(
 
     if merge_column_label_cells isa Symbol
         if merge_column_label_cells == :auto
-            column_labels, _merge_column_label_cells =
-                _process_merge_column_label_specification(
-                    column_labels,
-                    num_columns
-                )
+            column_labels, _merge_column_label_cells = _process_merge_column_label_specification(
+                column_labels, num_columns
+            )
         else
             _merge_column_label_cells = nothing
         end
@@ -356,9 +356,11 @@ Base.@nospecializeinfer function _pretty_table(
 
     # Check the column labels.
     for cl in column_labels
-        length(cl) != num_columns && throw(ArgumentError(
-            "Each vector in `column_labels` must have the same number of elements as the table columns ($num_columns)."
-        ))
+        length(cl) != num_columns && throw(
+            ArgumentError(
+                "Each vector in `column_labels` must have the same number of elements as the table columns ($num_columns).",
+            ),
+        )
     end
 
     if (renderer != :print) && (renderer != :show)
@@ -366,9 +368,11 @@ Base.@nospecializeinfer function _pretty_table(
     end
 
     if (alignment isa AbstractVector) && (length(alignment) != num_columns)
-        throw(ArgumentError(
-            "The length of vector `alignment` ($(length(alignment))) must be equal to the number of columns ($num_columns)."
-        ))
+        throw(
+            ArgumentError(
+                "The length of vector `alignment` ($(length(alignment))) must be equal to the number of columns ($num_columns).",
+            ),
+        )
     end
 
     if cell_alignment isa Vector{Pair{NTuple{2, Int}, Symbol}}
@@ -377,17 +381,15 @@ Base.@nospecializeinfer function _pretty_table(
         # create a wrapper function.
         cell_alignment_vect = copy(cell_alignment)
 
-        cell_alignment = [
-            (_, i, j) -> begin
-                for p in cell_alignment_vect
-                    if first(p) == (i, j)
-                        return last(p)
-                    end
+        cell_alignment = [(_, i, j) -> begin
+            for p in cell_alignment_vect
+                if first(p) == (i, j)
+                    return last(p)
                 end
-
-                return nothing
             end
-        ]
+
+            return nothing
+        end]
     end
 
     if isnothing(column_label_alignment)
@@ -395,9 +397,11 @@ Base.@nospecializeinfer function _pretty_table(
     end
 
     if !isnothing(summary_rows) && !isnothing(summary_row_labels)
-        length(summary_rows) != length(summary_row_labels) && throw(ArgumentError(
-            "The length of `summary_rows` ($length(summary_rows)) must be equal to the length of `summary_row_labels` ($length(summary_row_labels))."
-        ))
+        length(summary_rows) != length(summary_row_labels) && throw(
+            ArgumentError(
+                "The length of `summary_rows` ($length(summary_rows)) must be equal to the length of `summary_row_labels` ($length(summary_row_labels)).",
+            ),
+        )
     end
 
     if !isnothing(summary_rows) && isnothing(summary_row_labels)
@@ -451,17 +455,13 @@ Base.@nospecializeinfer function _pretty_table(
         first_column_index,
         maximum_number_of_columns,
         maximum_number_of_rows,
-        vertical_crop_mode
+        vertical_crop_mode,
     )
 
     _validate_merge_cell_specification(table_data)
 
     pspec = PrintingSpec(
-        context,
-        table_data,
-        renderer,
-        show_omitted_cell_summary,
-        new_line_at_end
+        context, table_data, renderer, show_omitted_cell_summary, new_line_at_end
     )
 
     # If backend is `:auto`, obtain the backend from the `table_format` keyword. It it does
@@ -507,11 +507,12 @@ function _printing_backend(::Val{:typst}, pspec::PrintingSpec; is_stdout::Bool, 
 end
 
 function _printing_backend(::Val{:excel}, pspec::PrintingSpec; is_stdout::Bool, kwargs...)
-    
     return _excel__print(pspec; kwargs...)
 end
 
-function _printing_backend(::Val{:markdown}, pspec::PrintingSpec; is_stdout::Bool, kwargs...)
+function _printing_backend(
+    ::Val{:markdown}, pspec::PrintingSpec; is_stdout::Bool, kwargs...
+)
     _markdown__print(pspec; kwargs...)
     return nothing
 end

@@ -8,7 +8,7 @@ function _latex__print(
     pspec::PrintingSpec;
     highlighters::Union{Nothing, Vector{LatexHighlighter}} = nothing,
     style::LatexTableStyle = LatexTableStyle(),
-    table_format::LatexTableFormat = LatexTableFormat()
+    table_format::LatexTableFormat = LatexTableFormat(),
 )
     context    = pspec.context
     table_data = pspec.table_data
@@ -22,7 +22,7 @@ function _latex__print(
     # Process the horizontal lines at data rows.
     if tf.horizontal_lines_at_data_rows isa Symbol
         horizontal_lines_at_data_rows = if tf.horizontal_lines_at_data_rows == :all
-            1:table_data.num_rows
+            1:(table_data.num_rows)
         else
             1:0
         end
@@ -32,30 +32,30 @@ function _latex__print(
 
     # Process the vertical lines at data columns.
     if tf.vertical_lines_at_data_columns isa Symbol
-        vertical_lines_at_data_columns =
-            if tf.vertical_lines_at_data_columns == :all
-                1:table_data.num_columns
-            else
-                1:0
-            end
+        vertical_lines_at_data_columns = if tf.vertical_lines_at_data_columns == :all
+            1:(table_data.num_columns)
+        else
+            1:0
+        end
     else
-        vertical_lines_at_data_columns =
-            tf.vertical_lines_at_data_columns::Vector{Int}
+        vertical_lines_at_data_columns = tf.vertical_lines_at_data_columns::Vector{Int}
     end
 
     # Check the style variables.
     if style.first_line_column_label isa Vector{LatexEnvironments}
-        length(style.first_line_column_label) != table_data.num_columns &&
-            throw(ArgumentError(
-                "The length of `first_line_column_label` in `style` must be equal to the number of columns ($(table_data.num_columns))."
-            ))
+        length(style.first_line_column_label) != table_data.num_columns && throw(
+            ArgumentError(
+                "The length of `first_line_column_label` in `style` must be equal to the number of columns ($(table_data.num_columns)).",
+            ),
+        )
     end
 
     if style.column_label isa Vector{LatexEnvironments}
-        length(style.column_label) != table_data.num_columns &&
-            throw(ArgumentError(
-                "The length of `column_label` in `style` must be equal to the number of columns ($(table_data.num_columns))."
-            ))
+        length(style.column_label) != table_data.num_columns && throw(
+            ArgumentError(
+                "The length of `column_label` in `style` must be equal to the number of columns ($(table_data.num_columns)).",
+            ),
+        )
     end
 
     # == Variables to Store Information About Indentation ==================================
@@ -66,11 +66,7 @@ function _latex__print(
     # == Print LaTeX Header ================================================================
 
     # Create the table header description for the current table.
-    desc = _latex__table_header_description(
-        table_data,
-        tf,
-        vertical_lines_at_data_columns
-    )
+    desc = _latex__table_header_description(table_data, tf, vertical_lines_at_data_columns)
 
     _aprintln(buf, "\\begin{tabular}{$desc}", il, ns)
     il += 1
@@ -120,14 +116,14 @@ function _latex__print(
             hline_str = ""
 
             # Print the horizontal line after the column labels.
-            if (rs == :table_header) && (next_rs != :table_header) && tf.horizontal_line_at_beginning
+            if (rs == :table_header) &&
+                (next_rs != :table_header) &&
+                tf.horizontal_line_at_beginning
                 hline_str *= tf.borders.header_line
                 first_table_line = false
 
             elseif (rs == :column_labels)
-
                 if ps.row_section == :column_labels
-
                     if tf.horizontal_line_at_merged_column_labels
                         # The specification in `merged_column_labels` refers to the data
                         # columns. Hence, we need to add the offset regarding the previous
@@ -145,37 +141,37 @@ function _latex__print(
                     end
                 end
 
-            # Check if the next line is a row group label and the user request a line before
-            # it.
-            elseif (next_rs == :row_group_label) && tf.horizontal_line_before_row_group_label
+                # Check if the next line is a row group label and the user request a line before
+                # it.
+            elseif (next_rs == :row_group_label) &&
+                tf.horizontal_line_before_row_group_label
                 hline_str *= tf.borders.middle_line
 
-            # Check if we must print an horizontal line after the current data row.
+                # Check if we must print an horizontal line after the current data row.
             elseif (rs == :data) && (ps.i ∈ horizontal_lines_at_data_rows)
                 hline_str *= tf.borders.middle_line
 
             elseif (
-                    (rs ∈ (:data, :continuation_row)) &&
-                    (next_rs ∈ (:summary_row, :table_footer, :end_printing)) &&
-                    tf.horizontal_line_after_data_rows
-                )
+                (rs ∈ (:data, :continuation_row)) &&
+                (next_rs ∈ (:summary_row, :table_footer, :end_printing)) &&
+                tf.horizontal_line_after_data_rows
+            )
                 hline_str *= tf.borders.middle_line
 
-            elseif(
-                    (rs ∈ (:data, :continuation_row)) &&
-                    (next_rs == :summary_row) &&
-                    tf.horizontal_line_before_summary_rows
-                )
-
+            elseif (
+                (rs ∈ (:data, :continuation_row)) &&
+                (next_rs == :summary_row) &&
+                tf.horizontal_line_before_summary_rows
+            )
                 hline_str *= tf.borders.middle_line
 
             elseif (rs == :row_group_label) && tf.horizontal_line_after_row_group_label
                 hline_str *= tf.borders.header_line
 
-            # Check if the must print the horizontal line at the end of the table.
-            elseif (rs == :summary_row) && (next_rs != :summary_row) &&
+                # Check if the must print the horizontal line at the end of the table.
+            elseif (rs == :summary_row) &&
+                (next_rs != :summary_row) &&
                 tf.horizontal_line_after_summary_rows
-
                 hline_str *= tf.borders.header_line
             end
 
@@ -189,11 +185,7 @@ function _latex__print(
 
             # == Omitted Cell Summary ======================================================
 
-            if (
-                !isempty(ocs) &&
-                next_rs ∈ (:table_footer, :end_printing) &&
-                !ocs_printed
-            )
+            if (!isempty(ocs) && next_rs ∈ (:table_footer, :end_printing) && !ocs_printed)
                 cs = _number_of_printed_columns(table_data)
                 ocs_styled = _latex__add_environments(ocs, style.omitted_cell_summary)
                 _aprintln(buf, "\\multicolumn{$cs}{r@{}}{$ocs_styled}", il, ns)
@@ -256,9 +248,8 @@ function _latex__print(
                 # First, we handle merged cells.
                 if (action ∈ (:title, :subtitle))
                     alignment = _latex__alignment_to_str(
-                        action == :title ?
-                            table_data.title_alignment :
-                            table_data.subtitle_alignment
+                        action == :title ? table_data.title_alignment :
+                        table_data.subtitle_alignment,
                     )
 
                     cs = _number_of_printed_columns(table_data)
@@ -266,8 +257,7 @@ function _latex__print(
                     rendered_cell = _latex__render_cell(cell, buf, renderer)
 
                     rendered_cell = _latex__add_environments(
-                        rendered_cell,
-                        action == :title ? style.title : style.subtitle
+                        rendered_cell, action == :title ? style.title : style.subtitle
                     )
 
                     rendered_cell = rendered_cell * footnote_str
@@ -288,17 +278,17 @@ function _latex__print(
                     alignment = _latex__alignment_to_str(cell.alignment)
 
                     # We must check if we have a vertical line after the cell merge.
-                    vline = if (
-                        (ps.j + cs - 1 ∈ vertical_lines_at_data_columns) ||
-                        (
-                            (ps.j + cs - 1 == num_data_columns) &&
-                            tf.vertical_line_after_data_columns
+                    vline =
+                        if (
+                            (ps.j + cs - 1 ∈ vertical_lines_at_data_columns) || (
+                                (ps.j + cs - 1 == num_data_columns) &&
+                                tf.vertical_line_after_data_columns
+                            )
                         )
-                    )
-                        true
-                    else
-                        false
-                    end
+                            true
+                        else
+                            false
+                        end
 
                     if vline
                         alignment *= "|"
@@ -307,8 +297,8 @@ function _latex__print(
                     rendered_cell = _latex__render_cell(cell.data, buf, renderer)
 
                     # Apply the style to the text.
-                    envs = ps.i == 1 ?
-                        style.first_line_merged_column_label :
+                    envs =
+                        ps.i == 1 ? style.first_line_merged_column_label :
                         style.merged_column_label
                     rendered_cell = _latex__add_environments(rendered_cell, envs)
                     rendered_cell = rendered_cell * footnote_str
@@ -316,8 +306,8 @@ function _latex__print(
                     # Merge the cells.
                     rendered_cell = "\\multicolumn{$cs}{@{}$alignment@{}}{$rendered_cell}"
 
-                # Check if we must merge the cell to render the footnotes or source
-                # notes.
+                    # Check if we must merge the cell to render the footnotes or source
+                    # notes.
                 elseif (action == :footnote)
                     alignment     = _latex__alignment_to_str(table_data.footnote_alignment)
                     cs            = _number_of_printed_columns(table_data)

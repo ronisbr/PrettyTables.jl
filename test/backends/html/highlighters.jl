@@ -41,8 +41,12 @@
         highlighters = [
             HtmlHighlighter((data, i, j) -> data[i, j] % 2 == 0, "color" => "red"),
             HtmlHighlighter((data, i, j) -> data[i, j] % 2 == 0, ["color" => "blue"]),
-            HtmlHighlighter((data, i, j) -> data[i, j] % 2 != 0, ["font-weight" => "bold"], "color" => "green")
-        ]
+            HtmlHighlighter(
+                (data, i, j) -> data[i, j] % 2 != 0,
+                ["font-weight" => "bold"],
+                "color" => "green",
+            ),
+        ],
     )
 
     @test result == expected
@@ -52,10 +56,16 @@
         matrix;
         backend = :html,
         highlighters = [
-            HtmlHighlighter((data, i, j) -> data[i, j] % 2 == 0, (_, _, _, _) -> ["color" => "red"]),
+            HtmlHighlighter(
+                (data, i, j) -> data[i, j] % 2 == 0, (_, _, _, _) -> ["color" => "red"]
+            ),
             HtmlHighlighter((data, i, j) -> data[i, j] % 2 == 0, ["color" => "blue"]),
-            HtmlHighlighter((data, i, j) -> data[i, j] % 2 != 0, ["font-weight" => "bold"], "color" => "green")
-        ]
+            HtmlHighlighter(
+                (data, i, j) -> data[i, j] % 2 != 0,
+                ["font-weight" => "bold"],
+                "color" => "green",
+            ),
+        ],
     )
 
     @test result == expected

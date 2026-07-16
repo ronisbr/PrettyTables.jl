@@ -43,9 +43,7 @@ _typst__cell_to_str(cell::UndefinedCell, context::IOContext, ::Val{:show}) = "#u
 Render the `cell` in Typst back end using a specific `context` and `renderer`.
 """
 function _typst__render_cell(
-    cell::Any,
-    context::IOContext,
-    renderer::Union{Val{:print}, Val{:show}},
+    cell::Any, context::IOContext, renderer::Union{Val{:print}, Val{:show}}
 )
     cell_str = _typst__cell_to_str(cell, context, renderer)
 
@@ -54,9 +52,7 @@ function _typst__render_cell(
 end
 
 function _typst__render_cell(
-    cell::AbstractString,
-    context::IOContext,
-    renderer::Union{Val{:print}, Val{:show}},
+    cell::AbstractString, context::IOContext, renderer::Union{Val{:print}, Val{:show}}
 )
     cell_str = _typst__cell_to_str(cell, context, renderer)
 
@@ -65,9 +61,7 @@ function _typst__render_cell(
 end
 
 function PrettyTables._typst__render_cell(
-    cell::Markdown.MD,
-    context::IOContext,
-    renderer::Union{Val{:print}, Val{:show}},
+    cell::Markdown.MD, context::IOContext, renderer::Union{Val{:print}, Val{:show}}
 )
     # We will always render Markdown cells using `#raw` until we can obtain a good way to
     # convert Markdown to Typst.

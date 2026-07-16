@@ -24,7 +24,7 @@
             String,
             matrix;
             backend = :latex,
-            style = LatexTableStyle(; first_line_column_label = ["textbf"])
+            style = LatexTableStyle(; first_line_column_label = ["textbf"]),
         )
 
         @test result == expected
@@ -45,14 +45,15 @@
             String,
             matrix;
             backend = :latex,
-            style = LatexTableStyle(; first_line_column_label = [
-                ["color{red}",   "textbf"],
-                ["color{blue}",  "textbf"],
-                ["color{green}", "textbf"]
-            ])
+            style = LatexTableStyle(;
+                first_line_column_label = [
+                    ["color{red}", "textbf"],
+                    ["color{blue}", "textbf"],
+                    ["color{green}", "textbf"],
+                ],
+            ),
         )
 
         @test result == expected
     end
 end
-

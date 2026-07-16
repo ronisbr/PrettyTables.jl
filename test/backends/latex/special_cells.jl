@@ -4,6 +4,8 @@
 #
 ############################################################################################
 
+#! format: off
+
 @testset "Special Cells" verbose = true begin
     @testset "LatexCell" begin
         matrix = [
@@ -86,3 +88,4 @@
     end
 end
 
+#! format: on

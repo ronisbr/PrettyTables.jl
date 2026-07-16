@@ -10,12 +10,12 @@
 
 export latex_table_borders__booktabs
 
-const latex_table_borders__booktabs = LatexTableBorders(
+const latex_table_borders__booktabs = LatexTableBorders(;
     top_line                = "\\toprule",
     header_line             = "\\midrule",
     merged_header_cell_line = "\\cmidrule",
     middle_line             = "\\midrule",
-    bottom_line             = "\\bottomrule"
+    bottom_line             = "\\bottomrule",
 )
 
 ############################################################################################
@@ -24,8 +24,7 @@ const latex_table_borders__booktabs = LatexTableBorders(
 
 export latex_table_format__booktabs
 
-const latex_table_format__booktabs = LatexTableFormat(
-    ;
+const latex_table_format__booktabs = LatexTableFormat(;
     borders = latex_table_borders__booktabs,
     @latex__all_horizontal_lines,
     @latex__no_vertical_lines,

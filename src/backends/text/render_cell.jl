@@ -24,42 +24,28 @@ function _text__cell_to_str(cell::Any, @nospecialize(context::IOContext), ::Val{
 end
 
 function _text__cell_to_str(
-    cell::AbstractString,
-    @nospecialize(context::IOContext),
-    ::Val{:show}
+    cell::AbstractString, @nospecialize(context::IOContext), ::Val{:show}
 )
     cell isa String && return cell
     return sprint(print, cell; context)
 end
 
-function _text__cell_to_str(
-    ::UndefinedCell,
-    @nospecialize(::IOContext),
-    ::Val{:print}
-)
+function _text__cell_to_str(::UndefinedCell, @nospecialize(::IOContext), ::Val{:print})
+    return "#undef"
+end
+
+function _text__cell_to_str(::UndefinedCell, @nospecialize(::IOContext), ::Val{:show})
     return "#undef"
 end
 
 function _text__cell_to_str(
-    ::UndefinedCell,
-    @nospecialize(::IOContext),
-    ::Val{:show}
-)
-    return "#undef"
-end
-
-function _text__cell_to_str(
-    cell::MergeCells,
-    @nospecialize(context::IOContext),
-    renderer::Val{:print}
+    cell::MergeCells, @nospecialize(context::IOContext), renderer::Val{:print}
 )
     return _text__cell_to_str(cell.data, context, renderer)
 end
 
 function _text__cell_to_str(
-    cell::MergeCells,
-    @nospecialize(context::IOContext),
-    renderer::Val{:show}
+    cell::MergeCells, @nospecialize(context::IOContext), renderer::Val{:show}
 )
     return _text__cell_to_str(cell.data, context, renderer)
 end
@@ -78,7 +64,7 @@ function _text__render_cell(
     @nospecialize(context::IOContext),
     renderer::Union{Val{:print}, Val{:show}},
     line_breaks::Bool = false,
-    column_width::Int = -1
+    column_width::Int = -1,
 )
     cell_str = _text__cell_to_str(cell, context, renderer)
 
@@ -93,7 +79,7 @@ function _text__render_cell(
     @nospecialize(context::IOContext),
     renderer::Union{Val{:print}, Val{:show}},
     line_breaks::Bool = false,
-    column_width::Int = -1
+    column_width::Int = -1,
 )
     # Here, we are rendering the cell for the first time. Hence, we need to initialize it.
     CustomTextCell.init!(cell, context, renderer; line_breaks)
@@ -106,7 +92,7 @@ function _text__render_cell(
     @nospecialize(context::IOContext),
     renderer::Union{Val{:print}, Val{:show}},
     line_breaks::Bool = false,
-    column_width::Int = -1
+    column_width::Int = -1,
 )
     # If the user does not want to break lines, we will set the column with equal to
     # `typemax(Int)`, which means that the text will never be broken into multiple
@@ -132,7 +118,7 @@ end
         @nospecialize(context::IOContext),
         renderer::Union{Val{:print}, Val{:show}},
         line_breaks::Bool = false,
-        column_width::Int = -1
+        column_width::Int = -1,
     )
         cell_str = _text__cell_to_str(cell, context, renderer)
 

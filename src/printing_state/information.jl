@@ -114,8 +114,7 @@ be printed.
 """
 function _is_horizontally_cropped(table_data::TableData)
     return table_data.maximum_number_of_columns > 0 ?
-        table_data.num_columns > table_data.maximum_number_of_columns :
-        false
+           table_data.num_columns > table_data.maximum_number_of_columns : false
 end
 
 """
@@ -136,8 +135,7 @@ printed.
 """
 function _is_vertically_cropped(table_data::TableData)
     return table_data.maximum_number_of_rows > 0 ?
-        table_data.num_rows > table_data.maximum_number_of_rows :
-        false
+           table_data.num_rows > table_data.maximum_number_of_rows : false
 end
 
 """
@@ -146,7 +144,8 @@ end
 Return the number of printed columns in `table_data`, which includes the continuation row.
 """
 function _number_of_printed_columns(table_data::TableData)
-    data_columns = table_data.maximum_number_of_columns >= 0 ?
+    data_columns =
+        table_data.maximum_number_of_columns >= 0 ?
         # If we are cropping the table, we have one additional column for the continuation
         # characters.
         min(table_data.maximum_number_of_columns + 1, table_data.num_columns) :
@@ -166,7 +165,8 @@ end
 Return the number of printed data columns.
 """
 function _number_of_printed_data_columns(table_data::TableData)
-    data_columns = table_data.maximum_number_of_columns > 0 ?
+    data_columns =
+        table_data.maximum_number_of_columns > 0 ?
         min(table_data.maximum_number_of_columns, table_data.num_columns) :
         table_data.num_columns
 
@@ -179,9 +179,9 @@ end
 Return the number of printed data rows.
 """
 function _number_of_printed_data_rows(table_data::TableData)
-    data_rows = table_data.maximum_number_of_rows >= 0 ?
-        min(table_data.maximum_number_of_rows, table_data.num_rows) :
-        table_data.num_rows
+    data_rows =
+        table_data.maximum_number_of_rows >= 0 ?
+        min(table_data.maximum_number_of_rows, table_data.num_rows) : table_data.num_rows
 
     return data_rows
 end

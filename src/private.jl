@@ -29,10 +29,7 @@ function _guess_column_labels(data::AbstractVecOrMat)
 end
 
 function _guess_column_labels(::AbstractDict{K, V}) where {K, V}
-    return [
-        ["Keys", "Values"],
-        [_compact_type_str(K), _compact_type_str(V)]
-    ]
+    return [["Keys", "Values"], [_compact_type_str(K), _compact_type_str(V)]]
 end
 
 """
@@ -56,7 +53,8 @@ end
 Base.@nospecializeinfer function _preprocess_data(@nospecialize(data::Any))
     # This is the fallback action to guess the column label. Hence, if data does not support
     # Tables.jl API, we must throw an error.
-    !Tables.istable(data) && error("`pretty_table` does not support objects of type `$(typeof(data))`.")
+    !Tables.istable(data) &&
+        error("`pretty_table` does not support objects of type `$(typeof(data))`.")
     return Tables.columnaccess(data) ? ColumnTable(data) : RowTable(data)
 end
 
@@ -72,9 +70,8 @@ The number of columns in the table must be passed in `num_columns` so the functi
 the correctness of the specification.
 """
 function _process_merge_column_label_specification(
-    column_labels::Vector{T},
-    num_columns::Int
-) where T <: AbstractVector
+    column_labels::Vector{T}, num_columns::Int
+) where {T <: AbstractVector}
     # We only need to process the column labels if we have elements of type `MultiColumn`
     # or `EmptyCells` in the column labels. Otherwise, we can return the current column
     # label, reducing the allocations.
@@ -105,22 +102,25 @@ function _process_merge_column_label_specification(
             column = line[c]
 
             if column isa MultiColumn
-                push!(merge_column_label_cells, MergeCells(
-                    l,
-                    length(column_label_line) + 1,
-                    column.column_span,
-                    column.data,
-                    column.alignment
-                ))
+                push!(
+                    merge_column_label_cells,
+                    MergeCells(
+                        l,
+                        length(column_label_line) + 1,
+                        column.column_span,
+                        column.data,
+                        column.alignment,
+                    ),
+                )
 
-                for _ in 1:column.column_span
+                for _ in 1:(column.column_span)
                     push!(column_label_line, "")
                 end
 
                 continue
 
             elseif column isa EmptyCells
-                for _ in 1:column.number_of_cells
+                for _ in 1:(column.number_of_cells)
                     push!(column_label_line, "")
                 end
 
@@ -132,9 +132,11 @@ function _process_merge_column_label_specification(
 
         # Check if the number of processed columns is correct.
         npc = length(column_label_line)
-        npc != num_columns && throw(ArgumentError(
-            "The number of columns ($npc) obtained from the specifications in the line #$(l) of `column_label` does not match the number of columns in the table ($num_columns)."
-        ))
+        npc != num_columns && throw(
+            ArgumentError(
+                "The number of columns ($npc) obtained from the specifications in the line #$(l) of `column_label` does not match the number of columns in the table ($num_columns).",
+            ),
+        )
 
         processed_column_labels[l] = column_label_line
     end
@@ -160,30 +162,38 @@ function _validate_merge_cell_specification(table_data::TableData)
         mi_beg = mi.j
         mi_end = mi.j + mi.column_span - 1
 
-        mi.column_span < 2 && throw(ArgumentError(
-            "The specification #$i has a column span lower than 2."
-        ))
+        mi.column_span < 2 &&
+            throw(ArgumentError("The specification #$i has a column span lower than 2."))
 
+        mi.i < 0 && throw(
+            ArgumentError(
+                "The row index is negative in the specification #$i for merging cells."
+            ),
+        )
 
-        mi.i < 0 && throw(ArgumentError(
-            "The row index is negative in the specification #$i for merging cells."
-        ))
+        mi.i > num_column_label_rows && throw(
+            ArgumentError(
+                "The row index is larger than the number of column label rows in the specification #$i for merging cells.",
+            ),
+        )
 
-        mi.i > num_column_label_rows && throw(ArgumentError(
-            "The row index is larger than the number of column label rows in the specification #$i for merging cells."
-        ))
+        mi.j < 0 && throw(
+            ArgumentError(
+                "The column index is negative in the specification #$i for merging cells.",
+            ),
+        )
 
-        mi.j < 0 && throw(ArgumentError(
-            "The column index is negative in the specification #$i for merging cells."
-        ))
+        mi.j > table_data.num_columns && throw(
+            ArgumentError(
+                "The column index is larger than the number of table columns in the specification #$i for merging cells.",
+            ),
+        )
 
-        mi.j > table_data.num_columns && throw(ArgumentError(
-            "The column index is larger than the number of table columns in the specification #$i for merging cells."
-        ))
-
-        mi_end > table_data.num_columns && throw(ArgumentError(
-            "The specification #$i for merging cells references a cell outside the table column range."
-        ))
+        mi_end > table_data.num_columns && throw(
+            ArgumentError(
+                "The specification #$i for merging cells references a cell outside the table column range.",
+            ),
+        )
 
         for j in (i + 1):lastindex(mc)
             mj = mc[j]
@@ -193,9 +203,9 @@ function _validate_merge_cell_specification(table_data::TableData)
             mj_beg = mj.j
             mj_end = mj.j + mj.column_span - 1
 
-            ((mi_end >= mj_beg) && (mj_end >= mi_beg)) && throw(ArgumentError(
-                "The specifications #$i and #$j for merging cells overlap."
-            ))
+            ((mi_end >= mj_beg) && (mj_end >= mi_beg)) && throw(
+                ArgumentError("The specifications #$i and #$j for merging cells overlap."),
+            )
         end
     end
 

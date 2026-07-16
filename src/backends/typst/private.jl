@@ -22,7 +22,7 @@ Create the Typst alignment configuration string for the given `td::TableData`.
 function _typst__alignment_configuration(td::TableData)
     num_columns = td.num_columns
 
-    alignment_str = IOBuffer(sizehint = 8num_columns)
+    alignment_str = IOBuffer(; sizehint = 8num_columns)
 
     # == Row Number Column =================================================================
 
@@ -104,12 +104,7 @@ Print a table cell to the output stream in Typst format.
 - `minify::Bool`: If `true`, prints the cell in minified format.
 """
 function _typst__print_cell(
-    io::IO,
-    cell::String,
-    first_column::Bool,
-    il::Int,
-    ns::Int,
-    minify::Bool
+    io::IO, cell::String, first_column::Bool, il::Int, ns::Int, minify::Bool
 )
     cell_str = cell * ","
 
@@ -141,13 +136,15 @@ function _typst__table_cell(
     properties::Vector{TypstPair};
     il::Int = 2,
     ns::Int = 2,
-    wrap_column::Int = 92
+    wrap_column::Int = 92,
 )
     isempty(properties) && return _typst__table_cell(content; il, ns, wrap_column)
     return _typst__create_component("table.cell", content, properties; il, ns, wrap_column)
 end
 
-function _typst__table_cell(content::String; il::Int = 2, ns::Int = 2, wrap_column::Int = 92)
+function _typst__table_cell(
+    content::String; il::Int = 2, ns::Int = 2, wrap_column::Int = 92
+)
     cl = length(content)
     id_str = repeat(" ", ns)
 
@@ -181,7 +178,8 @@ function _typst__create_component(
 
     line_length = length(open_tag) + length(content) + 1
 
-    !_typst__should_wrap(line_length, il, ns, wrap_column) && return open_tag * content * "]"
+    !_typst__should_wrap(line_length, il, ns, wrap_column) &&
+        return open_tag * content * "]"
 
     buf = IOBuffer()
 
@@ -201,8 +199,7 @@ end
 Create the string that opens the Typst `component` with the given `properties`.
 """
 function _typst__open_component(
-    component::String,
-    properties::Union{Nothing, Vector{TypstPair}} = nothing
+    component::String, properties::Union{Nothing, Vector{TypstPair}} = nothing
 )
     prop_str = isnothing(properties) ? "" : "($(_typst__property_list(properties)))"
     return "$component$prop_str["
@@ -214,7 +211,7 @@ end
 Create a Typst property list string from the given vector of `properties`.
 """
 function _typst__property_list(properties::Vector{TypstPair})
-    buf = IOBuffer(sizehint = length(properties) * 32)
+    buf = IOBuffer(; sizehint = length(properties) * 32)
     first_prop = true
 
     for (k, v) in properties
@@ -326,11 +323,33 @@ function _typst__vertical_lines!(
     _vline(x, stroke) = begin
         # Using only one argument in `print` to avoid intermediate string allocations.
         if vs == 0
-            @_println(buf, padding, "table.vline(x: ", x, ", end: ", nr, ", stroke: ", stroke, "),")
+            @_println(
+                buf,
+                padding,
+                "table.vline(x: ",
+                x,
+                ", end: ",
+                nr,
+                ", stroke: ",
+                stroke,
+                "),"
+            )
             return nothing
         end
 
-        @_println(buf, padding, "table.vline(x: ", x, ", start: ", vs, ", end: ", nr, ", stroke: ", stroke, "),")
+        @_println(
+            buf,
+            padding,
+            "table.vline(x: ",
+            x,
+            ", start: ",
+            vs,
+            ", end: ",
+            nr,
+            ", stroke: ",
+            stroke,
+            "),"
+        )
         return nothing
     end
 
@@ -409,7 +428,7 @@ function _typst__escape_str(io::IO, s::AbstractString)
             isprint(c)    ? print(io, c) :
             c <= '\x7f'   ? print(io, "\\x", string(UInt32(c); base = 16, pad = 2)) :
             c <= '\uffff' ? print(io, "\\u", string(UInt32(c); base = 16, pad = Base.need_full_hex(peek(a)) ? 4 : 2)) :
-                            print(io, "\\U", string(UInt32(c); base = 16, pad = Base.need_full_hex(peek(a)) ? 8 : 4))
+            print(io, "\\U", string(UInt32(c); base = 16, pad = Base.need_full_hex(peek(a)) ? 8 : 4))
         else # malformed or overlong
             u = bswap(reinterpret(UInt32, c))
             while true
@@ -449,13 +468,12 @@ If `data_column_widths` is `nothing` (default), it defaults to "auto" for all co
 """
 function _typst__get_data_column_widths(table_data::TableData, ::Nothing)
     return _typst__get_data_column_widths(
-        table_data,
-        Base.Iterators.repeated("auto", table_data.num_columns)
+        table_data, Base.Iterators.repeated("auto", table_data.num_columns)
     )
 end
 
 function _typst__get_data_column_widths(table_data::TableData, data_column_widths)
-    buf = IOBuffer(sizehint = 8 * (table_data.num_columns + 3) + 2)
+    buf = IOBuffer(; sizehint = 8 * (table_data.num_columns + 3) + 2)
 
     print(buf, "(")
 
@@ -494,7 +512,9 @@ end
 Merge two Typst properties, `bproperties` and `nproperties`, giving priority to
 `nproperties` in case of conflicts.
 """
-function _typst__merge_properties!(bproperties::Vector{TypstPair}, nproperties::Vector{TypstPair})
+function _typst__merge_properties!(
+    bproperties::Vector{TypstPair}, nproperties::Vector{TypstPair}
+)
     nkeys = first.(nproperties)
 
     filter!(bproperties) do l

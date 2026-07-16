@@ -52,7 +52,7 @@
             matrix;
             backend = :html,
             maximum_number_of_rows = 2,
-            maximum_number_of_columns = 3
+            maximum_number_of_columns = 3,
         )
 
         @test result == expected
@@ -104,7 +104,7 @@
             backend = :html,
             maximum_number_of_rows = 2,
             maximum_number_of_columns = 3,
-            vertical_crop_mode = :middle
+            vertical_crop_mode = :middle,
         )
 
         @test result == expected
@@ -150,7 +150,7 @@
             backend = :html,
             maximum_number_of_rows = 2,
             maximum_number_of_columns = 3,
-            show_omitted_cell_summary = false
+            show_omitted_cell_summary = false,
         )
 
         @test result == expected

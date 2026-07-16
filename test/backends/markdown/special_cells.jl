@@ -16,20 +16,11 @@
 |       \\`Code\\` |
 """
 
-        result = pretty_table(
-            String,
-            matrix;
-            backend = :markdown
-        )
+        result = pretty_table(String, matrix; backend = :markdown)
 
         @test result == expected
 
-        result = pretty_table(
-            String,
-            matrix;
-            backend = :markdown,
-            renderer = :show
-        )
+        result = pretty_table(String, matrix; backend = :markdown, renderer = :show)
 
         @test result == expected
     end
@@ -45,20 +36,11 @@
 |         `Code` |
 """
 
-        result = pretty_table(
-            String,
-            matrix;
-            backend = :markdown
-        )
+        result = pretty_table(String, matrix; backend = :markdown)
 
         @test result == expected
 
-        result = pretty_table(
-            String,
-            matrix;
-            backend = :markdown,
-            renderer = :show
-        )
+        result = pretty_table(String, matrix; backend = :markdown, renderer = :show)
 
         @test result == expected
     end
@@ -75,10 +57,7 @@
 """
 
         result = pretty_table(
-            String,
-            matrix;
-            backend = :markdown,
-            allow_markdown_in_cells = true
+            String, matrix; backend = :markdown, allow_markdown_in_cells = true
         )
 
         @test result == expected
@@ -88,7 +67,7 @@
             matrix;
             backend = :markdown,
             allow_markdown_in_cells = true,
-            renderer = :show
+            renderer = :show,
         )
 
         @test result == expected
@@ -103,20 +82,11 @@
 | First Line\\nSecond Line | Third Line\\nFourth Line |
 """
 
-        result = pretty_table(
-            String,
-            matrix;
-            backend = :markdown
-        )
+        result = pretty_table(String, matrix; backend = :markdown)
 
         @test result == expected
 
-        result = pretty_table(
-            String,
-            matrix;
-            backend = :markdown,
-            renderer = :show
-        )
+        result = pretty_table(String, matrix; backend = :markdown, renderer = :show)
 
         @test result == expected
 
@@ -126,21 +96,12 @@
 | First Line<br>Second Line | Third Line<br>Fourth Line |
 """
 
-        result = pretty_table(
-            String,
-            matrix;
-            backend = :markdown,
-            line_breaks = true
-        )
+        result = pretty_table(String, matrix; backend = :markdown, line_breaks = true)
 
         @test result == expected
 
         result = pretty_table(
-            String,
-            matrix;
-            backend = :markdown,
-            line_breaks = true,
-            renderer = :show
+            String, matrix; backend = :markdown, line_breaks = true, renderer = :show
         )
 
         @test result == expected
@@ -162,22 +123,12 @@
 |                  π |
 """
 
-        result = pretty_table(
-            String,
-            v;
-            backend = :markdown
-        )
+        result = pretty_table(String, v; backend = :markdown)
 
         @test result == expected
 
-        result = pretty_table(
-            String,
-            v;
-            backend = :markdown,
-            renderer = :show
-        )
+        result = pretty_table(String, v; backend = :markdown, renderer = :show)
 
         @test result == expected
     end
 end
-

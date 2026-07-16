@@ -42,7 +42,7 @@
             matrix;
             backend = :html,
             color   = true,
-            style   = HtmlTableStyle(; first_line_column_label = ["color" => "yellow"])
+            style   = HtmlTableStyle(; first_line_column_label = ["color" => "yellow"]),
         )
 
         @test result == expected
@@ -81,14 +81,9 @@
             matrix;
             backend = :html,
             color   = true,
-            style   = HtmlTableStyle(; first_line_column_label = [
-                ["color" => "yellow"],
-                ["color" => "blue"],
-                ["color" => "red"]
-            ])
+            style   = HtmlTableStyle(; first_line_column_label = [["color" => "yellow"], ["color" => "blue"], ["color" => "red"]]),
         )
 
         @test result == expected
     end
 end
-

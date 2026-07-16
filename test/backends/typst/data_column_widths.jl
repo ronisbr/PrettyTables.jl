@@ -8,7 +8,6 @@
     backend = :typst
 
     @testset "Constant value 10fr" begin
-
         expected = """
 #{
   table(
@@ -93,10 +92,7 @@
 """
 
         result = pretty_table(
-          String,
-          matrix;
-          backend,
-          data_column_widths = [1 => "30pt", 3 => "30pt"]
+            String, matrix; backend, data_column_widths = [1 => "30pt", 3 => "30pt"]
         )
 
         @test result == expected

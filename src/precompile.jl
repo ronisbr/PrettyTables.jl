@@ -49,11 +49,11 @@ PrecompileTools.@setup_workload begin
         Float64[1 2; 3 4],
         Bool[0 1; 0 1],
         ["S" "S"; "S" "S"],
-        ['C' 'C'; 'C' 'C']
+        ['C' 'C'; 'C' 'C'],
     ]
 
     # A named tuple is compliant with Table.jl.
-    table = (a = 1:1:10, b = ["S" for i = 1:10], c = ['C' for i = 1:10])
+    table = (a = 1:1:10, b = ["S" for i in 1:10], c = ['C' for i in 1:10])
 
     dict = Dict(:a => (1, 1), :b => (2, 2), :c => (3, 3))
 
@@ -90,10 +90,7 @@ PrecompileTools.@setup_workload begin
         )
 
         pretty_table(
-            matrix;
-            highlighters = [
-                TextHighlighter((data, i, j) -> i == 1, crayon"bold")
-            ]
+            matrix; highlighters = [TextHighlighter((data, i, j) -> i == 1, crayon"bold")]
         )
 
         pretty_table(types)
@@ -102,45 +99,39 @@ PrecompileTools.@setup_workload begin
 
         pretty_table(
             matrix;
-            style = TextTableStyle(
-                first_line_column_label = [crayon"bold yellow" for i = 1:10]
-            )
+            style = TextTableStyle(;
+                first_line_column_label = [crayon"bold yellow" for i in 1:10]
+            ),
         )
 
         pretty_table(
             matrix;
-            style = TextTableStyle(
-                column_label = [crayon"bold yellow" for i = 1:10]
-            )
+            style = TextTableStyle(; column_label = [crayon"bold yellow" for i in 1:10]),
         )
 
         pretty_table(
             matrix;
-            style = TextTableStyle(
-                first_line_column_label = [crayon"bold yellow" for i = 1:10],
-                column_label            = [crayon"bold yellow" for i = 1:10]
-            )
+            style = TextTableStyle(;
+                first_line_column_label = [crayon"bold yellow" for i in 1:10],
+                column_label            = [crayon"bold yellow" for i in 1:10],
+            ),
         )
 
         # -- Options Used in DataFrames.jl -------------------------------------------------
 
-        style = TextTableStyle(row_label = Crayon())
+        style = TextTableStyle(; row_label = Crayon())
 
-        table_format = TextTableFormat(
-            ;
+        table_format = TextTableFormat(;
             @text__no_horizontal_lines,
             @text__no_vertical_lines,
             ellipsis_line_skip                    = 3,
             horizontal_line_after_column_labels   = true,
             horizontal_line_before_summary_rows   = true,
             vertical_line_after_row_label_column  = true,
-            vertical_line_after_row_number_column = true
+            vertical_line_after_row_number_column = true,
         )
 
-        hl = TextHighlighter(
-            (data, i, j) -> false,
-            Crayon(foreground = :dark_gray)
-        )
+        hl = TextHighlighter((data, i, j) -> false, Crayon(; foreground = :dark_gray))
 
         pretty_table(
             table;
@@ -159,7 +150,7 @@ PrecompileTools.@setup_workload begin
             new_line_at_end                   = false,
             reserved_display_lines            = 2,
             row_label_column_alignment        = :r,
-            row_labels                        = ["$i" for i = 1:10],
+            row_labels                        = ["$i" for i in 1:10],
             row_number_column_alignment       = :r,
             row_number_column_label           = "Row",
             show_first_column_label_only      = false,
@@ -182,7 +173,7 @@ PrecompileTools.@setup_workload begin
             backend = :html,
             highlighters = [
                 HtmlHighlighter((data, i, j) -> i == 1, ["font-weight" => "bold"])
-            ]
+            ],
         )
 
         pretty_table(html_buf, types; backend = :html)
@@ -193,28 +184,26 @@ PrecompileTools.@setup_workload begin
             html_buf,
             matrix;
             backend = :html,
-            style = HtmlTableStyle(
-                first_line_column_label = [["color" => "red"] for i = 1:10]
-            )
+            style = HtmlTableStyle(;
+                first_line_column_label = [["color" => "red"] for i in 1:10]
+            ),
         )
 
         pretty_table(
             html_buf,
             matrix;
             backend = :html,
-            style = HtmlTableStyle(
-                column_label = [["color" => "red"] for i = 1:10]
-            )
+            style = HtmlTableStyle(; column_label = [["color" => "red"] for i in 1:10]),
         )
 
         pretty_table(
             html_buf,
             matrix;
             backend = :html,
-            style = HtmlTableStyle(
-                first_line_column_label = [["color" => "red"] for i = 1:10],
-                column_label            = [["color" => "red"] for i = 1:10]
-            )
+            style = HtmlTableStyle(;
+                first_line_column_label = [["color" => "red"] for i in 1:10],
+                column_label            = [["color" => "red"] for i in 1:10],
+            ),
         )
 
         # -- LaTeX -------------------------------------------------------------------------
@@ -224,9 +213,7 @@ PrecompileTools.@setup_workload begin
         pretty_table(
             matrix;
             backend = :latex,
-            highlighters = [
-                LatexHighlighter((data, i, j) -> i == 1, ["textbf"])
-            ]
+            highlighters = [LatexHighlighter((data, i, j) -> i == 1, ["textbf"])],
         )
 
         pretty_table(types; backend = :latex)
@@ -236,26 +223,22 @@ PrecompileTools.@setup_workload begin
         pretty_table(
             matrix;
             backend = :latex,
-            style = LatexTableStyle(
-                first_line_column_label = [["textbf"] for i = 1:10]
-            )
+            style = LatexTableStyle(; first_line_column_label = [["textbf"] for i in 1:10]),
         )
 
         pretty_table(
             matrix;
             backend = :latex,
-            style = LatexTableStyle(
-                column_label = [["textbf"] for i = 1:10]
-            )
+            style = LatexTableStyle(; column_label = [["textbf"] for i in 1:10]),
         )
 
         pretty_table(
             matrix;
             backend = :latex,
-            style = LatexTableStyle(
-                first_line_column_label = [["textbf"] for i = 1:10],
-                column_label            = [["textbf"] for i = 1:10]
-            )
+            style = LatexTableStyle(;
+                first_line_column_label = [["textbf"] for i in 1:10],
+                column_label            = [["textbf"] for i in 1:10],
+            ),
         )
 
         # -- Markdown ----------------------------------------------------------------------
@@ -266,8 +249,8 @@ PrecompileTools.@setup_workload begin
             matrix;
             backend = :markdown,
             highlighters = [
-                MarkdownHighlighter((data, i, j) -> i == 1, MarkdownStyle(bold = :true))
-            ]
+                MarkdownHighlighter((data, i, j) -> i == 1, MarkdownStyle(; bold = :true))
+            ],
         )
 
         pretty_table(types; backend = :markdown)
@@ -277,26 +260,26 @@ PrecompileTools.@setup_workload begin
         pretty_table(
             matrix;
             backend = :markdown,
-            style = MarkdownTableStyle(
-                first_line_column_label = [MarkdownStyle(bold = true) for i = 1:10]
-            )
+            style = MarkdownTableStyle(;
+                first_line_column_label = [MarkdownStyle(; bold = true) for i in 1:10]
+            ),
         )
 
         pretty_table(
             matrix;
             backend = :markdown,
-            style = MarkdownTableStyle(
-                column_label = [MarkdownStyle(italic = true) for i = 1:10]
-            )
+            style = MarkdownTableStyle(;
+                column_label = [MarkdownStyle(; italic = true) for i in 1:10]
+            ),
         )
 
         pretty_table(
             matrix;
             backend = :markdown,
-            style = MarkdownTableStyle(
-                first_line_column_label = [MarkdownStyle(bold   = true) for i = 1:10],
-                column_label            = [MarkdownStyle(italic = true) for i = 1:10]
-            )
+            style = MarkdownTableStyle(;
+                first_line_column_label = [MarkdownStyle(; bold = true) for i in 1:10],
+                column_label            = [MarkdownStyle(; italic = true) for i in 1:10],
+            ),
         )
 
         # == Typst =========================================================================
@@ -308,25 +291,25 @@ PrecompileTools.@setup_workload begin
             backend = :typst,
             highlighters = [
                 TypstHighlighter((data, i, j) -> i == 1, ["text-fill" => "red"])
-            ]
+            ],
         )
 
         pretty_table(types; backend = :typst)
 
-#=        # == Excel =========================================================================
+        #=        # == Excel =========================================================================
 
-        pretty_table(matrix; backend = :excel)
+                pretty_table(matrix; backend = :excel)
 
-        pretty_table(
-            matrix;
-            backend = :excel,
-            highlighters = [
-                ExcelHighlighter((data, i, j) -> i == 1, ["text-fill" => "red"])
-            ]
-        )
+                pretty_table(
+                    matrix;
+                    backend = :excel,
+                    highlighters = [
+                        ExcelHighlighter((data, i, j) -> i == 1, ["text-fill" => "red"])
+                    ]
+                )
 
-        pretty_table(types; backend = :excel)
-=#        
+                pretty_table(types; backend = :excel)
+        =#
         # == Input: Tables.jl ==============================================================
 
         pretty_table(table)

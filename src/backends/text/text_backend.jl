@@ -67,39 +67,33 @@ function _text__print_table(
     end
 
     # Create the structure that holds the display information.
-    display = Display(
-        display_size,
-        1,
-        0,
-        get(context, :color, false),
-        buf_io,
-        IOBuffer()
-    )
+    display = Display(display_size, 1, 0, get(context, :color, false), buf_io, IOBuffer())
 
     # Process the vertical lines at data columns.
     if tf.vertical_lines_at_data_columns isa Symbol
-        vertical_lines_at_data_columns =
-            if tf.vertical_lines_at_data_columns == :all
-                1:table_data.num_columns
-            else
-                1:0
-            end
+        vertical_lines_at_data_columns = if tf.vertical_lines_at_data_columns == :all
+            1:(table_data.num_columns)
+        else
+            1:0
+        end
     else
-        vertical_lines_at_data_columns =
-            tf.vertical_lines_at_data_columns::Vector{Int}
+        vertical_lines_at_data_columns = tf.vertical_lines_at_data_columns::Vector{Int}
     end
 
     if minimum_data_column_widths isa Number
-        minimum_data_column_widths = minimum_data_column_widths .+ 0 * (1:table_data.num_columns)
+        minimum_data_column_widths =
+            minimum_data_column_widths .+ 0 * (1:(table_data.num_columns))
     end
 
     if maximum_data_column_widths isa Number
-        maximum_data_column_widths = maximum_data_column_widths .+ 0 * (1:table_data.num_columns)
+        maximum_data_column_widths =
+            maximum_data_column_widths .+ 0 * (1:(table_data.num_columns))
     end
 
     has_fixed_data_column_widths = false
     if (fixed_data_column_widths isa Number) && (fixed_data_column_widths > 0)
-        fixed_data_column_widths = fixed_data_column_widths .+ 0 * (1:table_data.num_columns)
+        fixed_data_column_widths =
+            fixed_data_column_widths .+ 0 * (1:(table_data.num_columns))
         has_fixed_data_column_widths = true
     elseif fixed_data_column_widths isa AbstractVector
         has_fixed_data_column_widths = true
@@ -107,29 +101,35 @@ function _text__print_table(
 
     if alignment_anchor_regex isa Vector{Pair{Int, Vector{Regex}}}
         for (j, _) in alignment_anchor_regex
-            (j <= 0) && throw(ArgumentError(
-                "The column index in the alignment anchor regex must be greater than 0."
-            ))
+            (j <= 0) && throw(
+                ArgumentError(
+                    "The column index in the alignment anchor regex must be greater than 0.",
+                ),
+            )
 
-            (j > table_data.num_columns) && throw(ArgumentError(
-                "The column index in the alignment anchor regex must be less than the number of columns ($(table_data.num_columns))."
-            ))
+            (j > table_data.num_columns) && throw(
+                ArgumentError(
+                    "The column index in the alignment anchor regex must be less than the number of columns ($(table_data.num_columns)).",
+                ),
+            )
         end
     end
 
     # Check the style variables.
     if style.first_line_column_label isa Vector
-        length(style.first_line_column_label) != table_data.num_columns &&
-            throw(ArgumentError(
-                "The length of `first_line_column_label` in `style` must be equal to the number of columns ($(table_data.num_columns))."
-            ))
+        length(style.first_line_column_label) != table_data.num_columns && throw(
+            ArgumentError(
+                "The length of `first_line_column_label` in `style` must be equal to the number of columns ($(table_data.num_columns)).",
+            ),
+        )
     end
 
     if style.column_label isa Vector
-        length(style.column_label) != table_data.num_columns &&
-            throw(ArgumentError(
-                "The length of `column_label` in `style` must be equal to the number of columns ($(table_data.num_columns))."
-            ))
+        length(style.column_label) != table_data.num_columns && throw(
+            ArgumentError(
+                "The length of `column_label` in `style` must be equal to the number of columns ($(table_data.num_columns)).",
+            ),
+        )
     end
 
     # == Table Fitting in the Display ======================================================
@@ -144,14 +144,14 @@ function _text__print_table(
     else
         horizontal_lines_at_column_labels = filter(
             x -> 1 <= x <= length(table_data.column_labels),
-            tf.horizontal_lines_at_column_labels::Vector{Int}
+            tf.horizontal_lines_at_column_labels::Vector{Int},
         )
     end
 
     # Process the horizontal lines at data rows.
     if tf.horizontal_lines_at_data_rows isa Symbol
         horizontal_lines_at_data_rows = if tf.horizontal_lines_at_data_rows == :all
-            1:table_data.num_rows
+            1:(table_data.num_rows)
         else
             1:0
         end
@@ -178,8 +178,7 @@ function _text__print_table(
 
         if table_data.maximum_number_of_columns >= 0
             table_data.maximum_number_of_columns = min(
-                table_data.maximum_number_of_columns,
-                mc
+                table_data.maximum_number_of_columns, mc
             )
         else
             table_data.maximum_number_of_columns = mc
@@ -206,16 +205,15 @@ function _text__print_table(
         #   2. Compute the number of rendered columns.
         #   3. Re-design the number of rendered rows considering the actual number of lines.
 
-        mr, suppress_hline_before_continuation_row, suppress_hline_after_continuation_row =
-            _text__design_vertical_cropping(
-                table_data,
-                tf,
-                horizontal_lines_at_column_labels,
-                horizontal_lines_at_data_rows,
-                pspec.show_omitted_cell_summary,
-                display.size[1],
-                pspec.new_line_at_end
-            )
+        mr, suppress_hline_before_continuation_row, suppress_hline_after_continuation_row = _text__design_vertical_cropping(
+            table_data,
+            tf,
+            horizontal_lines_at_column_labels,
+            horizontal_lines_at_data_rows,
+            pspec.show_omitted_cell_summary,
+            display.size[1],
+            pspec.new_line_at_end,
+        )
 
         if table_data.maximum_number_of_rows >= 0
             vertically_limited_by_display = mr < table_data.maximum_number_of_rows
@@ -232,11 +230,7 @@ function _text__print_table(
     # account the required column width.
 
     row_labels, column_labels, table_str, summary_rows, footnotes = _text__render_table(
-        table_data,
-        context,
-        renderer,
-        line_breaks,
-        maximum_data_column_widths,
+        table_data, context, renderer, line_breaks, maximum_data_column_widths
     )
 
     num_printed_data_rows, num_printed_data_columns = size(table_str)
@@ -258,7 +252,7 @@ function _text__print_table(
         column_str = Vector{String}(
             undef,
             num_printed_data_rows +
-            (apply_alignment_regex_to_summary_rows ? num_summary_rows : 0)
+            (apply_alignment_regex_to_summary_rows ? num_summary_rows : 0),
         )
 
         # Check if we have one set of regexes to be applied to all the columns or if the
@@ -274,16 +268,10 @@ function _text__print_table(
                 end
 
                 if !line_breaks
-                    _align_column_with_regex!(
-                        column_str,
-                        regex,
-                        alignment_anchor_fallback
-                    )
+                    _align_column_with_regex!(column_str, regex, alignment_anchor_fallback)
                 else
                     _align_multline_column_with_regex!(
-                        column_str,
-                        regex,
-                        alignment_anchor_fallback
+                        column_str, regex, alignment_anchor_fallback
                     )
                 end
 
@@ -306,16 +294,10 @@ function _text__print_table(
                 end
 
                 if !line_breaks
-                    _align_column_with_regex!(
-                        column_str,
-                        regex,
-                        alignment_anchor_fallback
-                    )
+                    _align_column_with_regex!(column_str, regex, alignment_anchor_fallback)
                 else
                     _align_multline_column_with_regex!(
-                        column_str,
-                        regex,
-                        alignment_anchor_fallback
+                        column_str, regex, alignment_anchor_fallback
                     )
                 end
 
@@ -332,21 +314,16 @@ function _text__print_table(
         for j in 1:num_printed_data_columns
             for i in 1:num_printed_data_rows
                 table_str[i, j] = _text__fit_cell_in_maximum_cell_width(
-                    table_str[i, j],
-                    maximum_data_column_widths[j],
-                    line_breaks
+                    table_str[i, j], maximum_data_column_widths[j], line_breaks
                 )
             end
 
             # Check if the summary rows were modified by the alignment regex.
-            (isnothing(summary_rows) || !apply_alignment_regex_to_summary_rows) &&
-                continue
+            (isnothing(summary_rows) || !apply_alignment_regex_to_summary_rows) && continue
 
             for i in 1:size(summary_rows, 1)
                 summary_rows[i, j] = _text__fit_cell_in_maximum_cell_width(
-                    summary_rows[i, j],
-                    maximum_data_column_widths[j],
-                    line_breaks
+                    summary_rows[i, j], maximum_data_column_widths[j], line_breaks
                 )
             end
         end
@@ -354,18 +331,17 @@ function _text__print_table(
 
     # == Compute the Column Width ==========================================================
 
-    row_number_column_width, row_label_column_width, printed_data_column_widths =
-        _text__printed_column_widths(
-            table_data,
-            row_labels,
-            column_labels,
-            summary_rows,
-            table_str,
-            vertical_lines_at_data_columns,
-            column_label_width_based_on_first_line_only,
-            line_breaks,
-            minimum_data_column_widths
-        )
+    row_number_column_width, row_label_column_width, printed_data_column_widths = _text__printed_column_widths(
+        table_data,
+        row_labels,
+        column_labels,
+        summary_rows,
+        table_str,
+        vertical_lines_at_data_columns,
+        column_label_width_based_on_first_line_only,
+        line_breaks,
+        minimum_data_column_widths,
+    )
 
     # Now, we crop the additional column labels if the user wants to do so.
     # TODO: What we should do with the merged column labels?
@@ -397,7 +373,7 @@ function _text__print_table(
         summary_rows,
         fixed_data_column_widths,
         auto_wrap,
-        line_breaks
+        line_breaks,
     )
 
     # If the user wants equal data column widths, make every column width equal to the
@@ -450,7 +426,7 @@ function _text__print_table(
             cw = max(
                 1,
                 shrinkable_column_minimum_width,
-                printed_data_column_widths[shrinkable_data_column] - Δc
+                printed_data_column_widths[shrinkable_data_column] - Δc,
             )
 
             printed_data_column_widths[shrinkable_data_column] = cw
@@ -480,33 +456,28 @@ function _text__print_table(
 
                 # We need to modify the first field of this column label to take into
                 # account merged labels.
-                column_labels[i, j₀] =
-                    _text__fit_cell_in_maximum_cell_width(
-                        column_labels[i, j₀],
-                        cell_width,
-                        line_breaks
-                    )
+                column_labels[i, j₀] = _text__fit_cell_in_maximum_cell_width(
+                    column_labels[i, j₀], cell_width, line_breaks
+                )
             end
 
             # Shrink the data cells.
             for i in 1:num_printed_data_rows
-                table_str[i, shrinkable_data_column] =
-                    _text__fit_cell_in_maximum_cell_width(
-                        table_str[i, shrinkable_data_column],
-                        printed_data_column_widths[shrinkable_data_column],
-                        line_breaks
-                    )
+                table_str[i, shrinkable_data_column] = _text__fit_cell_in_maximum_cell_width(
+                    table_str[i, shrinkable_data_column],
+                    printed_data_column_widths[shrinkable_data_column],
+                    line_breaks,
+                )
             end
 
             # Shrink the summary rows.
             if !isnothing(summary_rows)
                 for i in 1:size(summary_rows, 1)
-                    summary_rows[i, shrinkable_data_column] =
-                        _text__fit_cell_in_maximum_cell_width(
-                            summary_rows[i, shrinkable_data_column],
-                            printed_data_column_widths[shrinkable_data_column],
-                            line_breaks
-                        )
+                    summary_rows[i, shrinkable_data_column] = _text__fit_cell_in_maximum_cell_width(
+                        summary_rows[i, shrinkable_data_column],
+                        printed_data_column_widths[shrinkable_data_column],
+                        line_breaks,
+                    )
                 end
             end
         end
@@ -523,8 +494,7 @@ function _text__print_table(
         )
 
         table_data.maximum_number_of_columns = min(
-            num_printed_data_columns + 1,
-            table_data.num_columns
+            num_printed_data_columns + 1, table_data.num_columns
         )
 
         horizontally_limited_by_display = _text__is_printing_horizontally_limited(
@@ -573,26 +543,24 @@ function _text__print_table(
         # Notice that `mr` contains the number of fully printed data rows. Furthermore, if
         # `lrc` is `true`, the last row is cropped, meaning that we need to print `mr + 1`
         # rows from the rendered table.
-        mr, lrc, suppress_hline_before_continuation_row =
-            _text__design_vertical_cropping_with_line_breaks(
-                table_data,
-                table_str,
-                tf,
-                horizontal_lines_at_column_labels,
-                horizontal_lines_at_data_rows,
-                pspec.show_omitted_cell_summary,
-                display.size[1],
-                pspec.new_line_at_end,
-                num_printed_data_columns,
-            )
+        mr, lrc, suppress_hline_before_continuation_row = _text__design_vertical_cropping_with_line_breaks(
+            table_data,
+            table_str,
+            tf,
+            horizontal_lines_at_column_labels,
+            horizontal_lines_at_data_rows,
+            pspec.show_omitted_cell_summary,
+            display.size[1],
+            pspec.new_line_at_end,
+            num_printed_data_columns,
+        )
 
         if table_data.maximum_number_of_rows >= 0
             vertically_limited_by_display =
                 vertically_limited_by_display || (mr < table_data.maximum_number_of_rows)
 
             table_data.maximum_number_of_rows = min(
-                table_data.maximum_number_of_rows,
-                mr + lrc
+                table_data.maximum_number_of_rows, mr + lrc
             )
         else
             vertically_limited_by_display =
@@ -631,21 +599,17 @@ function _text__print_table(
     # Number of lines available in the display for the data section. Notice that it only
     # makes sense if the display are limiting the table.
     num_available_data_section_lines = if vertically_limited_by_display
-        total_table_lines, num_lines_before_data, num_lines_after_data =
-            _text__number_of_required_lines(
-                table_data,
-                tf,
-                horizontal_lines_at_column_labels,
-                horizontal_lines_at_data_rows,
-                pspec.new_line_at_end
-            )
+        total_table_lines, num_lines_before_data, num_lines_after_data = _text__number_of_required_lines(
+            table_data,
+            tf,
+            horizontal_lines_at_column_labels,
+            horizontal_lines_at_data_rows,
+            pspec.new_line_at_end,
+        )
 
         (
-            display.size[1] -
-            num_lines_before_data -
-            num_lines_after_data -
-            pspec.show_omitted_cell_summary -
-            1 # ........................................................... Continuation row
+            display.size[1] - num_lines_before_data - num_lines_after_data -
+            pspec.show_omitted_cell_summary - 1 # ........................................................... Continuation row
         )
     else
         0
@@ -685,7 +649,9 @@ function _text__print_table(
 
         # If we already printed the number of available lines in data section, skip
         # everything until we exit the data section.
-        if line_breaks && (rs == :data) && (num_available_data_section_lines > 0) &&
+        if line_breaks &&
+            (rs == :data) &&
+            (num_available_data_section_lines > 0) &&
             (num_printed_data_section_lines >= num_available_data_section_lines)
             current_row_line = 0
             continue
@@ -706,7 +672,7 @@ function _text__print_table(
                     printed_table_width,
                     alignment,
                     decoration,
-                    false
+                    false,
                 )
                 _text__flush_line(display)
             end
@@ -724,7 +690,7 @@ function _text__print_table(
                     printed_table_width,
                     alignment,
                     decoration,
-                    false
+                    false,
                 )
                 _text__flush_line(display)
 
@@ -740,7 +706,7 @@ function _text__print_table(
                     printed_table_width,
                     alignment,
                     decoration,
-                    false
+                    false,
                 )
                 _text__flush_line(display)
             end
@@ -765,7 +731,7 @@ function _text__print_table(
                     row_number_column_width,
                     row_label_column_width,
                     printed_data_column_widths,
-                    true
+                    true,
                 )
 
                 _text__flush_line(display, false)
@@ -780,7 +746,6 @@ function _text__print_table(
                 if tf.horizontal_line_before_row_group_label ||
                     (ir - 1 ∈ horizontal_lines_at_data_rows) ||
                     (ir == 1 && tf.horizontal_line_after_column_labels)
-
                     _text__print_horizontal_line(
                         display,
                         tf,
@@ -792,7 +757,7 @@ function _text__print_table(
                         printed_data_column_widths,
                         true,
                         false,
-                        true
+                        true,
                     )
 
                     _text__flush_line(display, false)
@@ -882,7 +847,7 @@ function _text__print_table(
                 _text__flush_line(
                     display,
                     true,
-                    (num_data_lines - 1) % (tf.ellipsis_line_skip + 1) == 0 ? '⋯' : ' '
+                    (num_data_lines - 1) % (tf.ellipsis_line_skip + 1) == 0 ? '⋯' : ' ',
                 )
 
             else
@@ -924,11 +889,12 @@ function _text__print_table(
                         row_label_column_width,
                         printed_data_column_widths,
                         false,
-                        false
+                        false,
                     )
                     _text__flush_line(display, false)
 
-                elseif tf.horizontal_line_at_merged_column_labels && _has_merged_cells(table_data, ps.i)
+                elseif tf.horizontal_line_at_merged_column_labels &&
+                    _has_merged_cells(table_data, ps.i)
                     _text__print_column_label_horizontal_line_only_at_merged_labels(
                         display,
                         tf,
@@ -938,14 +904,14 @@ function _text__print_table(
                         vertical_lines_at_data_columns,
                         row_number_column_width,
                         row_label_column_width,
-                        printed_data_column_widths
+                        printed_data_column_widths,
                     )
                     _text__flush_line(display, false)
-
                 end
 
-            # Print the horizontal line after the column labels.
-            elseif (rs == :column_labels) && (next_rs != :column_labels) &&
+                # Print the horizontal line after the column labels.
+            elseif (rs == :column_labels) &&
+                (next_rs != :column_labels) &&
                 tf.horizontal_line_after_column_labels
 
                 # We should skip this line if we have a row group label at the first column.
@@ -966,13 +932,13 @@ function _text__print_table(
                         row_label_column_width,
                         printed_data_column_widths,
                         false,
-                        bottom
+                        bottom,
                     )
 
                     _text__flush_line(display, false)
                 end
 
-            # Check if we must print an horizontal line after the current data row.
+                # Check if we must print an horizontal line after the current data row.
             elseif (rs == :data) && (ps.i ∈ horizontal_lines_at_data_rows)
                 hline = true
 
@@ -1004,7 +970,6 @@ function _text__print_table(
             elseif (rs == :data) &&
                 (next_rs ∈ (:summary_row, :table_footer, :end_printing)) &&
                 tf.horizontal_line_after_data_rows
-
                 bottom = next_rs ∈ (:table_footer, :end_printing)
 
                 _text__print_horizontal_line(
@@ -1017,32 +982,32 @@ function _text__print_table(
                     row_label_column_width,
                     printed_data_column_widths,
                     false,
-                    bottom
+                    bottom,
                 )
 
                 _text__flush_line(display, false)
                 num_printed_data_section_lines += 1
 
-            elseif (rs ∈ (:data, :continuation_row)) && (next_rs == :summary_row) &&
+            elseif (rs ∈ (:data, :continuation_row)) &&
+                (next_rs == :summary_row) &&
                 tf.horizontal_line_before_summary_rows
+                _text__print_column_label_horizontal_line(
+                    display,
+                    tf,
+                    style.table_border,
+                    table_data,
+                    length(table_data.column_labels),
+                    vertical_lines_at_data_columns,
+                    row_number_column_width,
+                    row_label_column_width,
+                    printed_data_column_widths,
+                    false,
+                    false,
+                )
 
-                    _text__print_column_label_horizontal_line(
-                        display,
-                        tf,
-                        style.table_border,
-                        table_data,
-                        length(table_data.column_labels),
-                        vertical_lines_at_data_columns,
-                        row_number_column_width,
-                        row_label_column_width,
-                        printed_data_column_widths,
-                        false,
-                        false
-                    )
+                _text__flush_line(display, false)
 
-                    _text__flush_line(display, false)
-
-            # Check if we must print an horizontal line after the continuation row.
+                # Check if we must print an horizontal line after the continuation row.
             elseif (rs == :continuation_row) && !suppress_hline_after_continuation_row
                 hline = false
                 bottom = next_rs ∈ (:table_footer, :end_printing)
@@ -1066,7 +1031,7 @@ function _text__print_table(
                         row_label_column_width,
                         printed_data_column_widths,
                         false,
-                        bottom
+                        bottom,
                     )
 
                     _text__flush_line(display, false)
@@ -1085,14 +1050,14 @@ function _text__print_table(
                         printed_data_column_widths,
                         false,
                         true,
-                        true
+                        true,
                     )
 
                     _text__flush_line(display, false)
                     num_printed_data_section_lines += 1
                 end
 
-            # Check if the must print the horizontal line at the end of the table.
+                # Check if the must print the horizontal line at the end of the table.
             elseif (rs == :summary_row) && (next_rs != :summary_row)
                 # If the next section is the table footer, we must draw the last table line.
                 if tf.horizontal_line_after_summary_rows
@@ -1106,7 +1071,7 @@ function _text__print_table(
                         row_label_column_width,
                         printed_data_column_widths,
                         false,
-                        true
+                        true,
                     )
 
                     _text__flush_line(display, false)
@@ -1117,19 +1082,12 @@ function _text__print_table(
 
             # We also must show the omitted cell summary if the user requested it.
             if (next_rs == :table_footer) && pspec.show_omitted_cell_summary
-                ocs = _omitted_cell_summary(
-                    num_omitted_data_rows,
-                    num_omitted_data_columns
-                )
+                ocs = _omitted_cell_summary(num_omitted_data_rows, num_omitted_data_columns)
 
                 isempty(ocs) && continue
 
                 _text__print_aligned(
-                    display,
-                    ocs,
-                    printed_table_width,
-                    :r,
-                    style.omitted_cell_summary
+                    display, ocs, printed_table_width, :r, style.omitted_cell_summary
                 )
 
                 _text__flush_line(display; crop_line = false)
@@ -1384,11 +1342,7 @@ function _text__print_table(
         end
 
         _text__print_aligned(
-            display,
-            " " * rendered_cell * " " ,
-            cell_width + 2,
-            alignment,
-            decoration
+            display, " " * rendered_cell * " ", cell_width + 2, alignment, decoration
         )
 
         vline && _text__styled_print(display, vline_char, style.table_border)

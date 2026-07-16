@@ -41,7 +41,9 @@ function _html__print(
         num_column_label_rows = length(table_data.column_labels)
 
         if length(column_label_titles) < num_column_label_rows
-            error("The number of vectors in `column_label_titles` must be equal or greater than that in `column_labels`.")
+            error(
+                "The number of vectors in `column_label_titles` must be equal or greater than that in `column_labels`.",
+            )
         end
 
         for k in eachindex(column_label_titles)
@@ -49,24 +51,28 @@ function _html__print(
                 !isnothing(column_label_titles[k]) &&
                 (length(column_label_titles[k]) != table_data.num_columns)
             )
-                error("The number of elements in each row of `column_label_titles` must match the number of columns in the table.")
+                error(
+                    "The number of elements in each row of `column_label_titles` must match the number of columns in the table.",
+                )
             end
         end
     end
 
     # Check the style variables.
     if style.first_line_column_label isa Vector{Vector{HtmlPair}}
-        length(style.first_line_column_label) != table_data.num_columns &&
-            throw(ArgumentError(
-                "The length of `first_line_column_label` in `style` must be equal to the number of columns ($(table_data.num_columns))."
-            ))
+        length(style.first_line_column_label) != table_data.num_columns && throw(
+            ArgumentError(
+                "The length of `first_line_column_label` in `style` must be equal to the number of columns ($(table_data.num_columns)).",
+            ),
+        )
     end
 
     if style.column_label isa Vector{Vector{HtmlPair}}
-        length(style.column_label) != table_data.num_columns &&
-            throw(ArgumentError(
-                "The length of `column_label` in `style` must be equal to the number of columns ($(table_data.num_columns))."
-            ))
+        length(style.column_label) != table_data.num_columns && throw(
+            ArgumentError(
+                "The length of `column_label` in `style` must be equal to the number of columns ($(table_data.num_columns)).",
+            ),
+        )
     end
 
     # == Variables to Store Information About Indentation ==================================
@@ -87,7 +93,7 @@ function _html__print(
             <style>""",
             il,
             ns;
-            minify
+            minify,
         )
         il += 1
 
@@ -100,7 +106,7 @@ function _html__print(
             """,
             il,
             ns;
-            minify
+            minify,
         )
 
         _aprintln(buf, tf.css, il, ns; minify)
@@ -114,7 +120,7 @@ function _html__print(
             <body>""",
             il,
             ns;
-            minify
+            minify,
         )
     end
 
@@ -129,38 +135,20 @@ function _html__print(
 
     # Print the top bar if necessary.
     if !isempty(top_left_string) || !isempty(top_right_string)
-        _aprintln(
-            buf,
-            _html__open_tag("div"),
-            il,
-            ns;
-            minify
-        )
+        _aprintln(buf, _html__open_tag("div"), il, ns; minify)
         il += 1
 
         # Top left section.
         if !isempty(top_left_string)
             _html__print_top_bar_section(
-                buf,
-                "left",
-                top_left_string,
-                style.top_left_string,
-                il,
-                ns;
-                minify,
+                buf, "left", top_left_string, style.top_left_string, il, ns; minify
             )
         end
 
         # Top right section.
         if !isempty(top_right_string)
             _html__print_top_bar_section(
-                buf,
-                "right",
-                top_right_string,
-                style.top_right_string,
-                il,
-                ns;
-                minify,
+                buf, "right", top_right_string, style.top_right_string, il, ns; minify
             )
         end
 
@@ -187,7 +175,7 @@ function _html__print(
             _html__open_tag("div"; properties = vproperties, style = vstyle),
             il,
             ns;
-            minify
+            minify,
         )
 
         il += 1
@@ -201,7 +189,7 @@ function _html__print(
         _html__open_tag("table"; properties = vproperties, style = style.table),
         il,
         ns;
-        minify
+        minify,
     )
 
     il += 1
@@ -219,17 +207,14 @@ function _html__print(
         action == :end_printing && break
 
         if action == :new_row
-
             if (ps.i == 1) && (rs ∈ (:table_header, :column_labels)) && !head_opened
                 _aprintln(buf, "<thead>", il, ns; minify)
                 il += 1
                 head_opened = true
 
             elseif !body_opened && (
-                    ((ps.i == 1) && (rs ∈ (:data, :summary_row))) ||
-                    (rs == :row_group_label)
-                )
-
+                ((ps.i == 1) && (rs ∈ (:data, :summary_row))) || (rs == :row_group_label)
+            )
                 if head_opened
                     il -= 1
                     _aprintln(buf, "</thead>", il, ns; minify)
@@ -279,11 +264,7 @@ function _html__print(
 
         elseif action == :diagonal_continuation_cell
             _aprintln(
-                buf,
-                _html__create_tag("td", "&dtdot;"; style = vstyle),
-                il,
-                ns;
-                minify
+                buf, _html__create_tag("td", "&dtdot;"; style = vstyle), il, ns; minify
             )
 
         elseif action == :horizontal_continuation_cell
@@ -297,11 +278,7 @@ function _html__print(
             _html__add_alignment_to_style!(vstyle, alignment)
 
             _aprintln(
-                buf,
-                _html__create_tag("td", "&vellip;"; style = vstyle),
-                il,
-                ns;
-                minify
+                buf, _html__create_tag("td", "&vellip;"; style = vstyle), il, ns; minify
             )
 
         elseif action == :end_row
@@ -335,11 +312,7 @@ function _html__print(
 
                 push!(vproperties, "colspan" => string(cs))
                 rendered_cell = _html__render_cell(
-                    cell.data,
-                    buf,
-                    renderer;
-                    allow_html_in_cells,
-                    line_breaks
+                    cell.data, buf, renderer; allow_html_in_cells, line_breaks
                 )
 
                 alignment = cell.alignment
@@ -350,16 +323,12 @@ function _html__print(
                         style.first_line_merged_column_label
                     else
                         style.merged_column_label
-                    end
+                    end,
                 )
 
             else
                 rendered_cell = _html__render_cell(
-                    cell,
-                    buf,
-                    renderer;
-                    allow_html_in_cells,
-                    line_breaks
+                    cell, buf, renderer; allow_html_in_cells, line_breaks
                 )
 
                 alignment = _current_cell_alignment(action, ps, table_data)
@@ -411,11 +380,15 @@ function _html__print(
             # Obtain the cell class and style.
 
             if action == :title
-                push!(vproperties, "colspan" => string(_number_of_printed_columns(table_data)))
+                push!(
+                    vproperties, "colspan" => string(_number_of_printed_columns(table_data))
+                )
                 append!(vstyle, style.title)
 
             elseif action == :subtitle
-                push!(vproperties, "colspan" => string(_number_of_printed_columns(table_data)))
+                push!(
+                    vproperties, "colspan" => string(_number_of_printed_columns(table_data))
+                )
                 append!(vstyle, style.subtitle)
 
             elseif action == :row_number_label
@@ -435,7 +408,9 @@ function _html__print(
                 append!(vstyle, style.stubhead_label)
 
             elseif action == :row_group_label
-                push!(vproperties, "colspan" => string(_number_of_printed_columns(table_data)))
+                push!(
+                    vproperties, "colspan" => string(_number_of_printed_columns(table_data))
+                )
                 append!(vstyle, style.row_group_label)
 
             elseif action == :row_label
@@ -454,7 +429,7 @@ function _html__print(
                             style.first_line_column_label[ps.j]
                         else
                             style.first_line_column_label
-                        end
+                        end,
                     )
                 else
                     append!(
@@ -463,7 +438,7 @@ function _html__print(
                             style.column_label[ps.j]
                         else
                             style.column_label
-                        end
+                        end,
                     )
                 end
 
@@ -472,13 +447,17 @@ function _html__print(
 
             elseif action == :footnote
                 # The footnote must be a cell that span the entire printed table.
-                push!(vproperties, "colspan" => string(_number_of_printed_columns(table_data)))
+                push!(
+                    vproperties, "colspan" => string(_number_of_printed_columns(table_data))
+                )
                 append!(vstyle, style.footnote)
                 rendered_cell = "<sup>$(ps.i)</sup> " * rendered_cell
 
             elseif action == :source_notes
                 # The source notes must be a cell that span the entire printed table.
-                push!(vproperties, "colspan" => string(_number_of_printed_columns(table_data)))
+                push!(
+                    vproperties, "colspan" => string(_number_of_printed_columns(table_data))
+                )
                 append!(vstyle, style.source_note)
 
             else
@@ -490,14 +469,11 @@ function _html__print(
             _aprintln(
                 buf,
                 _html__create_tag(
-                    row_tag,
-                    rendered_cell;
-                    properties = vproperties,
-                    style = vstyle
+                    row_tag, rendered_cell; properties = vproperties, style = vstyle
                 ),
                 il,
                 ns;
-                minify
+                minify,
             )
         end
     end
@@ -525,7 +501,7 @@ function _html__print(
             </html>""",
             il,
             ns;
-            minify
+            minify,
         )
     end
 

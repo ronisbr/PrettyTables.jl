@@ -16,10 +16,7 @@
 └────────┴────────┴────────┴─────────┴─────────┘
 """
 
-        result = pretty_table(
-            String,
-            matrix;
-        )
+        result = pretty_table(String, matrix;)
 
         @test result == expected
     end
@@ -33,11 +30,7 @@
 └────────┴────────┴────────┴─────────┴─────────┘
 """
 
-        result = pretty_table(
-            String,
-            matrix;
-            renderer = :show
-        )
+        result = pretty_table(String, matrix; renderer = :show)
 
         @test result == expected
 
@@ -45,7 +38,7 @@
             String,
             matrix;
             merge_column_label_cells = [MergeCells(1, 1, 2, "Merged Cell")],
-            renderer = :show
+            renderer = :show,
         )
     end
 

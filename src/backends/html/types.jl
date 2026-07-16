@@ -57,27 +57,15 @@ struct HtmlHighlighter
     end
 
     function HtmlHighlighter(f::Function, decoration::HtmlPair)
-        return new(
-            f,
-            _html__default_highlighter_fd,
-            [decoration]
-        )
+        return new(f, _html__default_highlighter_fd, [decoration])
     end
 
     function HtmlHighlighter(f::Function, decoration::Vector{HtmlPair})
-        return new(
-            f,
-            _html__default_highlighter_fd,
-            decoration
-        )
+        return new(f, _html__default_highlighter_fd, decoration)
     end
 
     function HtmlHighlighter(f::Function, decoration::Vector{HtmlPair}, args...)
-        return new(
-            f,
-            _html__default_highlighter_fd,
-            [decoration..., args...]
-        )
+        return new(f, _html__default_highlighter_fd, [decoration..., args...])
     end
 end
 
@@ -95,7 +83,9 @@ const _HTML__XLARGE_BOLD = ["font-size" => "x-large", "font-weight" => "bold"]
 const _HTML__LARGE_ITALIC = ["font-size" => "large", "font-style" => "italic"]
 const _HTML__SMALL = ["font-size" => "small"]
 const _HTML__SMALL_ITALIC = ["font-size" => "small", "font-style" => "italic"]
-const _HTML__SMALL_ITALIC_GRAY = ["color" => "gray", "font-size" => "small", "font-style" => "italic"]
+const _HTML__SMALL_ITALIC_GRAY = [
+    "color" => "gray", "font-size" => "small", "font-style" => "italic"
+]
 const _HTML__MERGED_CELL = ["border-bottom" => "1px solid black"]
 
 """
@@ -205,8 +195,8 @@ Define the style of the tables printed with the HTML back end.
 - `source_notes::Vector{HtmlPair}`: Style for the source notes.
 """
 @kwdef struct HtmlTableStyle{
-    TFCL<:Union{Vector{HtmlPair}, Vector{Vector{HtmlPair}}},
-    TCL<:Union{Vector{HtmlPair}, Vector{Vector{HtmlPair}}}
+    TFCL <: Union{Vector{HtmlPair}, Vector{Vector{HtmlPair}}},
+    TCL <: Union{Vector{HtmlPair}, Vector{Vector{HtmlPair}}},
 }
     top_left_string::Vector{HtmlPair}                = _HTML__NO_DECORATION
     top_right_string::Vector{HtmlPair}               = _HTML__ITALIC

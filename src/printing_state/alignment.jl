@@ -11,9 +11,7 @@ Return the alignment where the current cell specified by the `action` and the cu
 printing table `state` of `table_data`.
 """
 function _current_cell_alignment(
-    action::Symbol,
-    state::PrintingTableState,
-    table_data::TableData
+    action::Symbol, state::PrintingTableState, table_data::TableData
 )
     if (action == :title)
         return table_data.title_alignment
@@ -27,7 +25,9 @@ function _current_cell_alignment(
     elseif action == :summary_row_number
         return table_data.row_number_column_alignment
 
-    elseif (action == :stubhead_label) || (action == :row_label) || (action == :summary_row_label)
+    elseif (action == :stubhead_label) ||
+        (action == :row_label) ||
+        (action == :summary_row_label)
         return table_data.row_label_column_alignment
 
     elseif action == :column_label
@@ -117,4 +117,3 @@ Return the row label column alignment.
 function _row_label_column_alignment(table_data::TableData)
     return table_data.row_label_column_alignment
 end
-

@@ -1,6 +1,8 @@
 using Documenter
 using PrettyTables
 
+#! format: off
+
 makedocs(
     modules = [PrettyTables],
     format = Documenter.HTML(
@@ -50,3 +52,5 @@ deploydocs(
     repo = "github.com/ronisbr/PrettyTables.jl.git",
     target = "build",
 )
+
+#! format: on

@@ -26,11 +26,7 @@ end
 
 function Base.show(io::IO, ::MIME"text/plain", cf::CircularRef)
     context = IOContext(io, :color => false)
-    pretty_table(
-        context,
-        cf;
-        renderer = :show
-    )
+    pretty_table(context, cf; renderer = :show)
     return nothing
 end
 
@@ -53,4 +49,3 @@ function Base.show(io::IO, ::MIME"text/typst", cf::CircularRef)
     pretty_table(io, cf; backend = :typst, renderer = :show)
     return nothing
 end
-

@@ -55,7 +55,7 @@ function CustomTextCell.init!(
     cell::AnsiTextCell,
     context::IOContext,
     renderer::Union{Val{:print}, Val{:show}};
-    line_breaks::Bool = false
+    line_breaks::Bool = false,
 )
     cell.crop          = 0
     cell.left_padding  = 0
@@ -108,8 +108,12 @@ function CustomTextCell.rendered_cell(cell::AnsiTextCell)
 
     cropped_str, remaining_ansi = right_crop(line_str, cell.crop)
 
-    return left_padding_str * cropped_str * remaining_ansi * _TEXT__STRING_RESET *
-        right_padding_str * cell.suffix
+    return left_padding_str *
+           cropped_str *
+           remaining_ansi *
+           _TEXT__STRING_RESET *
+           right_padding_str *
+           cell.suffix
 end
 
 function CustomTextCell.rendered_cell_line(cell::AnsiTextCell, line::Int)
@@ -127,8 +131,13 @@ function CustomTextCell.rendered_cell_line(cell::AnsiTextCell, line::Int)
 
     cropped_str, remaining_ansi = right_crop(line_str, cell.crop)
 
-    return decoration_str * left_padding_str * cropped_str * remaining_ansi *
-        _TEXT__STRING_RESET * right_padding_str * cell.suffix
+    return decoration_str *
+           left_padding_str *
+           cropped_str *
+           remaining_ansi *
+           _TEXT__STRING_RESET *
+           right_padding_str *
+           cell.suffix
 end
 
 function CustomTextCell.printable_cell_text(cell::AnsiTextCell)

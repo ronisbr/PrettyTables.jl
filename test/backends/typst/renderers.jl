@@ -9,7 +9,6 @@
     backend = :typst
 
     @testset ":print" begin
-
         expected = """
 #{
   table(

@@ -31,13 +31,16 @@ function _typst__print(
     # Check inputs.
     if data_column_widths isa Vector{String}
         nc = _number_of_printed_data_columns(table_data)
-        length(data_column_widths) < nc &&
-            throw(ArgumentError(
-                "The length of `data_column_widths` must be equal to or larger than the number of printed columns ($nc)."
-            ))
+        length(data_column_widths) < nc && throw(
+            ArgumentError(
+                "The length of `data_column_widths` must be equal to or larger than the number of printed columns ($nc).",
+            ),
+        )
 
     elseif data_column_widths isa String
-        data_column_widths = Base.Iterators.repeated(data_column_widths, table_data.num_columns)
+        data_column_widths = Base.Iterators.repeated(
+            data_column_widths, table_data.num_columns
+        )
 
     elseif data_column_widths isa Vector{Pair{Int, String}}
         dc = data_column_widths
@@ -46,8 +49,7 @@ function _typst__print(
                 id = findfirst(==(i), first.(dc))
                 isnothing(id) && return "auto"
                 return last(dc[id])
-            end,
-            1:table_data.num_columns
+            end, 1:(table_data.num_columns)
         )
     end
 
@@ -59,7 +61,7 @@ function _typst__print(
     # Process the horizontal lines at data rows.
     if tf.horizontal_lines_at_data_rows isa Symbol
         horizontal_lines_at_data_rows = if tf.horizontal_lines_at_data_rows == :all
-            1:table_data.num_rows
+            1:(table_data.num_rows)
         else
             1:0
         end
@@ -69,15 +71,13 @@ function _typst__print(
 
     # Process the vertical lines at data columns.
     if tf.vertical_lines_at_data_columns isa Symbol
-        vertical_lines_at_data_columns =
-            if tf.vertical_lines_at_data_columns == :all
-                1:table_data.num_columns
-            else
-                1:0
-            end
+        vertical_lines_at_data_columns = if tf.vertical_lines_at_data_columns == :all
+            1:(table_data.num_columns)
+        else
+            1:0
+        end
     else
-        vertical_lines_at_data_columns =
-            tf.vertical_lines_at_data_columns::Vector{Int}
+        vertical_lines_at_data_columns = tf.vertical_lines_at_data_columns::Vector{Int}
     end
 
     # Create dictionaries to store properties to decrease the number of allocations.
@@ -137,9 +137,8 @@ function _typst__print(
         end
     end
 
-    !isempty(unused_table_properties) && @warn (
-        "Unused table properties: " * join(unused_table_properties, ", ", " and ")
-    )
+    !isempty(unused_table_properties) &&
+        @warn ("Unused table properties: " * join(unused_table_properties, ", ", " and "))
 
     action = :initialize
 
@@ -163,7 +162,7 @@ function _typst__print(
 
     # This variable stores the indentation level to print the horizontal lines.
     il_table  = il
-    hline_pad = " " ^ max(il_table * ns, 0)
+    hline_pad = " "^max(il_table * ns, 0)
 
     # This variable is used to check if we are printing the first line of the table. It is
     # used to check if we need to print the horizontal line at the beginning of the table.
@@ -205,12 +204,7 @@ function _typst__print(
 
             if (ps.i == 1) && (rs ∈ (:table_header, :column_labels)) && !head_opened
                 annotate && _aprintln_section_annotation(
-                    buf_tc,
-                    "// == Table Header",
-                    il,
-                    ns,
-                    wrap_column,
-                    '='
+                    buf_tc, "// == Table Header", il, ns, wrap_column, '='
                 )
 
                 _aprintln(buf_tc, "table.header(", il, ns)
@@ -227,12 +221,7 @@ function _typst__print(
                 end
 
                 annotate && _aprintln_section_annotation(
-                    buf_tc,
-                    "// == Table Body",
-                    il,
-                    ns,
-                    wrap_column,
-                    '='
+                    buf_tc, "// == Table Body", il, ns, wrap_column, '='
                 )
 
                 body_opened = true
@@ -244,7 +233,7 @@ function _typst__print(
                 il,
                 ns,
                 wrap_column,
-                '-'
+                '-',
             )
 
             empty!(vproperties)
@@ -269,7 +258,8 @@ function _typst__print(
         elseif action == :end_row
             minify && println(buf_tc)
 
-            if rs ∈ (:column_labels, :data, :row_group_label, :continuation_row, :summary_row)
+            if rs ∈
+                (:column_labels, :data, :row_group_label, :continuation_row, :summary_row)
                 table_lines += 1
             end
 
@@ -279,16 +269,16 @@ function _typst__print(
             stroke = ""
 
             # Print the horizontal line after the column labels.
-            if (rs == :table_header) && (next_rs != :table_header) && tf.horizontal_line_at_beginning
+            if (rs == :table_header) &&
+                (next_rs != :table_header) &&
+                tf.horizontal_line_at_beginning
                 hline  = "y: $(current_typst_line)"
                 stroke = tf.borders.top_line
 
                 first_table_line = false
 
             elseif (rs == :column_labels)
-
                 if ps.row_section == :column_labels
-
                     if tf.horizontal_line_at_merged_column_labels
                         # The specification in `merged_column_labels` refers to the data
                         # columns. Hence, we need to add the offset regarding the previous
@@ -308,30 +298,31 @@ function _typst__print(
                     stroke = tf.borders.header_line
                 end
 
-            # Check if the next line is a row group label and the user request a line before
-            # it.
-            elseif (next_rs == :row_group_label) && tf.horizontal_line_before_row_group_label
+                # Check if the next line is a row group label and the user request a line before
+                # it.
+            elseif (next_rs == :row_group_label) &&
+                tf.horizontal_line_before_row_group_label
                 hline  = "y: $(current_typst_line)"
                 stroke = tf.borders.middle_line
 
-            # Check if we must print an horizontal line after the current data row.
+                # Check if we must print an horizontal line after the current data row.
             elseif (rs == :data) && (ps.i ∈ horizontal_lines_at_data_rows)
                 hline  = "y: $(current_typst_line)"
                 stroke = tf.borders.middle_line
 
             elseif (
-                    (rs ∈ (:data, :continuation_row)) &&
-                    (next_rs ∈ (:summary_row, :table_footer, :end_printing)) &&
-                    tf.horizontal_line_after_data_rows
-                )
+                (rs ∈ (:data, :continuation_row)) &&
+                (next_rs ∈ (:summary_row, :table_footer, :end_printing)) &&
+                tf.horizontal_line_after_data_rows
+            )
                 hline  = "y: $(current_typst_line)"
                 stroke = tf.borders.middle_line
 
             elseif (
-                    (rs ∈ (:data, :continuation_row)) &&
-                    (next_rs == :summary_row) &&
-                    tf.horizontal_line_before_summary_rows
-                )
+                (rs ∈ (:data, :continuation_row)) &&
+                (next_rs == :summary_row) &&
+                tf.horizontal_line_before_summary_rows
+            )
                 hline  = "y: $(current_typst_line)"
                 stroke = tf.borders.middle_line
 
@@ -339,10 +330,10 @@ function _typst__print(
                 hline  = "y: $(current_typst_line)"
                 stroke = tf.borders.middle_line
 
-            # Check if the must print the horizontal line at the end of the table.
-            elseif (rs == :summary_row) && (next_rs != :summary_row) &&
+                # Check if the must print the horizontal line at the end of the table.
+            elseif (rs == :summary_row) &&
+                (next_rs != :summary_row) &&
                 tf.horizontal_line_after_summary_rows
-
                 hline  = "y: $(current_typst_line)"
                 stroke = tf.borders.middle_line
             end
@@ -354,7 +345,13 @@ function _typst__print(
             end
 
             !isempty(hline) && @_println(
-                buf_hlines, hline_pad, "table.hline(", hline, ", stroke: ", stroke, ",),"
+                buf_hlines,
+                hline_pad,
+                "table.hline(",
+                hline,
+                ", stroke: ",
+                stroke,
+                ",),"
             )
 
             # == Omitted Cell Summary ======================================================
@@ -362,8 +359,9 @@ function _typst__print(
             # We need the print the omitted cell summary as soon as we enter the table
             # footer.
             if (!isempty(ocs) && next_rs ∈ (:table_footer, :end_printing) && !ocs_printed)
-                cell_properties, text_properties =
-                    _typst__cell_and_text_properties(style.omitted_cell_summary)
+                cell_properties, text_properties = _typst__cell_and_text_properties(
+                    style.omitted_cell_summary
+                )
 
                 push!(
                     cell_properties,
@@ -375,20 +373,11 @@ function _typst__print(
 
                 cell_content = _typst__text(ocs, text_properties)
                 cell_str = _typst__table_cell(
-                    cell_content,
-                    cell_properties;
-                    il,
-                    ns,
-                    wrap_column
+                    cell_content, cell_properties; il, ns, wrap_column
                 )
 
                 annotate && _aprintln_section_annotation(
-                    buf_tc,
-                    "// -- Omitted Cell Summary",
-                    il,
-                    ns,
-                    wrap_column,
-                    '-'
+                    buf_tc, "// -- Omitted Cell Summary", il, ns, wrap_column, '-'
                 )
 
                 _aprintln(buf_tc, cell_str * ",", il, ns)
@@ -444,7 +433,9 @@ function _typst__print(
                 if !isnothing(highlighters)
                     for h in highlighters
                         if h.f(orig_data, ps.i, ps.j)
-                            _typst__merge_properties!(vproperties, h.fd(h, orig_data, ps.i, ps.j))
+                            _typst__merge_properties!(
+                                vproperties, h.fd(h, orig_data, ps.i, ps.j)
+                            )
                             break
                         end
                     end
@@ -459,7 +450,7 @@ function _typst__print(
                 push!(
                     vproperties,
                     "align"   => _typst__alignment(alignment),
-                    "colspan" => string(_number_of_printed_columns(table_data))
+                    "colspan" => string(_number_of_printed_columns(table_data)),
                 )
                 _typst__merge_properties!(vproperties, style.title)
 
@@ -467,7 +458,7 @@ function _typst__print(
                 push!(
                     vproperties,
                     "align"   => _typst__alignment(alignment),
-                    "colspan" => string(_number_of_printed_columns(table_data))
+                    "colspan" => string(_number_of_printed_columns(table_data)),
                 )
                 _typst__merge_properties!(vproperties, style.subtitle)
 
@@ -487,7 +478,7 @@ function _typst__print(
                 push!(
                     vproperties,
                     "align"   => _typst__alignment(alignment),
-                    "colspan" => string(_number_of_printed_columns(table_data))
+                    "colspan" => string(_number_of_printed_columns(table_data)),
                 )
                 _typst__merge_properties!(vproperties, style.row_group_label)
 
@@ -528,7 +519,7 @@ function _typst__print(
                     "align"   => _typst__alignment(alignment),
                     "colspan" => string(_number_of_printed_columns(table_data)),
                     "inset"   => "(left: 0pt)",
-                    "stroke"  => "none"
+                    "stroke"  => "none",
                 )
                 _typst__merge_properties!(vproperties, style.footnote)
 
@@ -539,7 +530,7 @@ function _typst__print(
                     "align"   => _typst__alignment(alignment),
                     "colspan" => string(_number_of_printed_columns(table_data)),
                     "inset"   => "(left: 0pt)",
-                    "stroke"  => "none"
+                    "stroke"  => "none",
                 )
                 _typst__merge_properties!(vproperties, style.source_note)
             end
@@ -552,21 +543,22 @@ function _typst__print(
             # If the type is `Markdown.MD` or if Typstry.jl is loaded and the cell is a
             # `TypstString`, we do not wrap it in a #text. Treat it as a raw Typst
             # component.
-            cell_content = if (
-                (cell isa Markdown.MD) ||
-                (isdefined(Main, :TypstString) && (cell isa Main.TypstString))
-            )
-                rendered_cell
-            else
-                _typst__text(rendered_cell, text_properties)
-            end
+            cell_content =
+                if (
+                    (cell isa Markdown.MD) ||
+                    (isdefined(Main, :TypstString) && (cell isa Main.TypstString))
+                )
+                    rendered_cell
+                else
+                    _typst__text(rendered_cell, text_properties)
+                end
 
             cell_str = _typst__table_cell(
                 cell_prefix * cell_content * something(append, ""),
                 cell_properties;
                 il,
                 ns,
-                wrap_column
+                wrap_column,
             )
 
             _typst__print_cell(buf_tc, cell_str, first_column, il, ns, minify)
@@ -582,33 +574,17 @@ function _typst__print(
 
     # Join the horizontal and vertical lines with the table content.
     annotate && _aprintln_section_annotation(
-        buf,
-        "// == Horizontal Lines",
-        il_table,
-        ns,
-        wrap_column,
-        '='
+        buf, "// == Horizontal Lines", il_table, ns, wrap_column, '='
     )
 
     write(buf, take!(buf_hlines))
 
     annotate && _aprintln_section_annotation(
-        buf,
-        "// == Vertical Lines",
-        il_table,
-        ns,
-        wrap_column,
-        '='
+        buf, "// == Vertical Lines", il_table, ns, wrap_column, '='
     )
 
     _typst__vertical_lines!(
-        buf,
-        table_data,
-        tf,
-        table_lines,
-        vertical_lines_at_data_columns,
-        il_table,
-        ns
+        buf, table_data, tf, table_lines, vertical_lines_at_data_columns, il_table, ns
     )
 
     write(buf, take!(buf_tc))

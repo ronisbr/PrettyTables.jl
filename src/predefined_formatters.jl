@@ -6,7 +6,6 @@
 
 export fmt__printf, fmt__round, fmt__latex_sn, fmt__excel_stringify
 
-
 """
     fmt__printf(fmt_str::String[, columns::AbstractVector{Int}]) -> Function
 
@@ -286,13 +285,13 @@ julia> pt[1][:]
 
 """
 function fmt__excel_stringify(args...; kwargs...)
-    error("""
-    Excel backend requires the XLSX.jl package.
+    return error("""
+           Excel backend requires the XLSX.jl package.
 
-    Please install and load it with:
-        using Pkg
-        Pkg.add("XLSX")
-        using XLSX    
-    Then retry your pretty_table call with backend = :excel.
-    """)
+           Please install and load it with:
+               using Pkg
+               Pkg.add("XLSX")
+               using XLSX    
+           Then retry your pretty_table call with backend = :excel.
+           """)
 end

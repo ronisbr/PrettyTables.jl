@@ -34,14 +34,10 @@
                 ExcelFormatter((v, i, j) -> (i == 2), ["format" => "0.00"])
                 # `:summary_row` region matching the summary row index.
                 ExcelFormatter(
-                    (v, i, j) -> (i == 1),
-                    ["format" => "0.00000"];
-                    region = :summary_row
+                    (v, i, j) -> (i == 1), ["format" => "0.00000"]; region = :summary_row
                 )
                 ExcelFormatter(
-                    (v, i, j) -> (i == 2),
-                    ["format" => "0.000"];
-                    region = :summary_row
+                    (v, i, j) -> (i == 2), ["format" => "0.000"]; region = :summary_row
                 )
                 # `:data` region matching by column.
                 ExcelFormatter((v, i, j) -> (j == 1), ["format" => "#,##0_0_0"])
@@ -95,10 +91,7 @@
             XLSX.XLSXFile,
             matrix;
             excel_formatters = [
-                ExcelFormatter(
-                    (data, i, j) -> (data[i, j] > 5),
-                    ["format" => "0.00"],
-                ),
+                ExcelFormatter((data, i, j) -> (data[i, j] > 5), ["format" => "0.00"])
             ],
         )
 

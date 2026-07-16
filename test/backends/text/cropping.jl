@@ -21,10 +21,7 @@
 """
 
             result = pretty_table(
-                String,
-                matrix;
-                maximum_number_of_columns = 3,
-                maximum_number_of_rows = 2
+                String, matrix; maximum_number_of_columns = 3, maximum_number_of_rows = 2
             )
 
             @test result == expected
@@ -47,7 +44,7 @@
                 matrix;
                 maximum_number_of_columns = 3,
                 maximum_number_of_rows = 2,
-                vertical_crop_mode = :middle
+                vertical_crop_mode = :middle,
             )
 
             @test result == expected
@@ -69,7 +66,7 @@
                 matrix;
                 maximum_number_of_columns = 3,
                 maximum_number_of_rows = 2,
-                show_omitted_cell_summary = false
+                show_omitted_cell_summary = false,
             )
 
             @test result == expected
@@ -91,11 +88,7 @@
                         95 columns and 96 rows omitted
 """
 
-            result = pretty_table(
-                String,
-                matrix;
-                display_size = (12, 54)
-            )
+            result = pretty_table(String, matrix; display_size = (12, 54))
 
             @test result == expected
 
@@ -141,7 +134,7 @@
                 String,
                 matrix;
                 display_size = (12, 54),
-                table_format = TextTableFormat(horizontal_lines_at_data_rows = :all)
+                table_format = TextTableFormat(; horizontal_lines_at_data_rows = :all),
             )
 
             @test result == expected
@@ -164,7 +157,7 @@
                 String,
                 matrix;
                 display_size = (13, 54),
-                table_format = TextTableFormat(horizontal_lines_at_data_rows = :all)
+                table_format = TextTableFormat(; horizontal_lines_at_data_rows = :all),
             )
 
             @test result == expected
@@ -263,7 +256,7 @@
                 matrix;
                 display_size = (13, 54),
                 row_group_labels = [1 => "Row Group 1"],
-                table_format = TextTableFormat(horizontal_lines_at_data_rows = :all)
+                table_format = TextTableFormat(; horizontal_lines_at_data_rows = :all),
             )
 
             @test result == expected
@@ -287,29 +280,29 @@
                 matrix;
                 display_size = (13, 54),
                 row_group_labels = [2 => "Row Group 1"],
-                table_format = TextTableFormat(horizontal_lines_at_data_rows = :all)
+                table_format = TextTableFormat(; horizontal_lines_at_data_rows = :all),
             )
 
             @test result == expected
 
-expected = """
-┌────────┬────────┬────────┬────────┬────────┬────────
-│ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │ Col. 5 │ Col.  ⋯
-├────────┴────────┴────────┴────────┴────────┴────────
-│ Row Group 1
-├────────┬────────┬────────┬────────┬────────┬────────
-│ (1, 1) │ (1, 2) │ (1, 3) │ (1, 4) │ (1, 5) │ (1, 6 ⋯
-│      ⋮ │      ⋮ │      ⋮ │      ⋮ │      ⋮ │       ⋱
-└────────┴────────┴────────┴────────┴────────┴────────
-                        95 columns and 99 rows omitted
-"""
+            expected = """
+            ┌────────┬────────┬────────┬────────┬────────┬────────
+            │ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │ Col. 5 │ Col.  ⋯
+            ├────────┴────────┴────────┴────────┴────────┴────────
+            │ Row Group 1
+            ├────────┬────────┬────────┬────────┬────────┬────────
+            │ (1, 1) │ (1, 2) │ (1, 3) │ (1, 4) │ (1, 5) │ (1, 6 ⋯
+            │      ⋮ │      ⋮ │      ⋮ │      ⋮ │      ⋮ │       ⋱
+            └────────┴────────┴────────┴────────┴────────┴────────
+                                    95 columns and 99 rows omitted
+            """
 
             result = pretty_table(
                 String,
                 matrix;
                 display_size = (13, 54),
                 row_group_labels = [1 => "Row Group 1", 2 => "Row Group 2"],
-                table_format = TextTableFormat(horizontal_lines_at_data_rows = :all)
+                table_format = TextTableFormat(; horizontal_lines_at_data_rows = :all),
             )
 
             @test result == expected
@@ -333,7 +326,7 @@ expected = """
                 String,
                 matrix;
                 display_size = (12, 54),
-                summary_rows = [(data, i) -> "Summary $i"]
+                summary_rows = [(data, i) -> "Summary $i"],
             )
 
             @test result == expected
@@ -356,7 +349,7 @@ expected = """
                 matrix;
                 display_size = (12, 54),
                 summary_rows = [(data, i) -> "Summary $i"],
-                table_format = TextTableFormat(horizontal_lines_at_data_rows = :all),
+                table_format = TextTableFormat(; horizontal_lines_at_data_rows = :all),
             )
 
             @test result == expected
@@ -380,7 +373,7 @@ expected = """
                 matrix;
                 display_size = (13, 54),
                 summary_rows = [(data, i) -> "Summary $i"],
-                table_format = TextTableFormat(horizontal_lines_at_data_rows = :all),
+                table_format = TextTableFormat(; horizontal_lines_at_data_rows = :all),
             )
 
             @test result == expected
@@ -401,12 +394,8 @@ expected = """
 """
 
             result = pretty_table(
-                String,
-                matrix;
-                display_size = (12, 54),
-                vertical_crop_mode = :middle
+                String, matrix; display_size = (12, 54), vertical_crop_mode = :middle
             )
-
 
             expected = """
 ┌──────────┬──────────┬──────────┬──────────┬───────────
@@ -427,7 +416,7 @@ expected = """
                 display_size = (12, 56),
                 maximum_number_of_columns = 7,
                 maximum_number_of_rows = 4,
-                vertical_crop_mode = :middle
+                vertical_crop_mode = :middle,
             )
 
             @test result == expected
@@ -451,8 +440,8 @@ expected = """
                 String,
                 matrix;
                 display_size = (12, 54),
-                table_format = TextTableFormat(horizontal_lines_at_data_rows = :all),
-                vertical_crop_mode = :middle
+                table_format = TextTableFormat(; horizontal_lines_at_data_rows = :all),
+                vertical_crop_mode = :middle,
             )
 
             @test result == expected
@@ -475,8 +464,8 @@ expected = """
                 String,
                 matrix;
                 display_size = (13, 54),
-                table_format = TextTableFormat(horizontal_lines_at_data_rows = :all),
-                vertical_crop_mode = :middle
+                table_format = TextTableFormat(; horizontal_lines_at_data_rows = :all),
+                vertical_crop_mode = :middle,
             )
 
             @test result == expected
@@ -503,7 +492,7 @@ expected = """
                 fit_table_in_display_horizontally = false,
                 maximum_number_of_columns = 7,
                 maximum_number_of_rows = 5,
-                vertical_crop_mode = :middle
+                vertical_crop_mode = :middle,
             )
 
             @test result == expected
@@ -531,7 +520,6 @@ expected = """
 
             @test result == expected
 
-
             expected = """
 ┌──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬──────────┬───┐
 │   Col. 1 │   Col. 2 │   Col. 3 │   Col. 4 │   Col. 5 │   Col. 6 │   Col. 7 │ ⋯ │
@@ -554,33 +542,33 @@ expected = """
                 fit_table_in_display_vertically = false,
                 maximum_number_of_columns = 7,
                 maximum_number_of_rows = 5,
-                vertical_crop_mode = :middle
+                vertical_crop_mode = :middle,
             )
 
             @test result == expected
 
             # == Row Group Labels ==========================================================
 
-expected = """
-┌────────┬────────┬────────┬────────┬────────┬────────
-│ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │ Col. 5 │ Col.  ⋯
-├────────┴────────┴────────┴────────┴────────┴────────
-│ Row Group 1
-├────────┬────────┬────────┬────────┬────────┬────────
-│ (1, 1) │ (1, 2) │ (1, 3) │ (1, 4) │ (1, 5) │ (1, 6 ⋯
-├────────┼────────┼────────┼────────┼────────┼────────
-│      ⋮ │      ⋮ │      ⋮ │      ⋮ │      ⋮ │       ⋱
-└────────┴────────┴────────┴────────┴────────┴────────
-                        95 columns and 99 rows omitted
-"""
+            expected = """
+            ┌────────┬────────┬────────┬────────┬────────┬────────
+            │ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │ Col. 5 │ Col.  ⋯
+            ├────────┴────────┴────────┴────────┴────────┴────────
+            │ Row Group 1
+            ├────────┬────────┬────────┬────────┬────────┬────────
+            │ (1, 1) │ (1, 2) │ (1, 3) │ (1, 4) │ (1, 5) │ (1, 6 ⋯
+            ├────────┼────────┼────────┼────────┼────────┼────────
+            │      ⋮ │      ⋮ │      ⋮ │      ⋮ │      ⋮ │       ⋱
+            └────────┴────────┴────────┴────────┴────────┴────────
+                                    95 columns and 99 rows omitted
+            """
 
             result = pretty_table(
                 String,
                 matrix;
                 display_size = (13, 54),
                 row_group_labels = [1 => "Row Group 1"],
-                table_format = TextTableFormat(horizontal_lines_at_data_rows = :all),
-                vertical_crop_mode = :middle
+                table_format = TextTableFormat(; horizontal_lines_at_data_rows = :all),
+                vertical_crop_mode = :middle,
             )
 
             @test result == expected
@@ -604,8 +592,8 @@ expected = """
                 matrix;
                 display_size = (14, 54),
                 row_group_labels = [1 => "Row Group 1"],
-                table_format = TextTableFormat(horizontal_lines_at_data_rows = :all),
-                vertical_crop_mode = :middle
+                table_format = TextTableFormat(; horizontal_lines_at_data_rows = :all),
+                vertical_crop_mode = :middle,
             )
 
             @test result == expected
@@ -628,8 +616,8 @@ expected = """
                 matrix;
                 display_size = (14, 54),
                 row_group_labels = [1 => "Row Group 1", 100 => "Row Group 100"],
-                table_format = TextTableFormat(horizontal_lines_at_data_rows = :all),
-                vertical_crop_mode = :middle
+                table_format = TextTableFormat(; horizontal_lines_at_data_rows = :all),
+                vertical_crop_mode = :middle,
             )
 
             @test result == expected
@@ -654,7 +642,7 @@ expected = """
                 matrix;
                 display_size = (12, 54),
                 summary_rows = [(data, i) -> "Summary $i"],
-                vertical_crop_mode = :middle
+                vertical_crop_mode = :middle,
             )
 
             @test result == expected
@@ -677,8 +665,8 @@ expected = """
                 matrix;
                 display_size = (12, 54),
                 summary_rows = [(data, i) -> "Summary $i"],
-                table_format = TextTableFormat(horizontal_lines_at_data_rows = :all),
-                vertical_crop_mode = :middle
+                table_format = TextTableFormat(; horizontal_lines_at_data_rows = :all),
+                vertical_crop_mode = :middle,
             )
 
             @test result == expected
@@ -702,8 +690,8 @@ expected = """
                 matrix;
                 display_size = (13, 54),
                 summary_rows = [(data, i) -> "Summary $i"],
-                table_format = TextTableFormat(horizontal_lines_at_data_rows = :all),
-                vertical_crop_mode = :middle
+                table_format = TextTableFormat(; horizontal_lines_at_data_rows = :all),
+                vertical_crop_mode = :middle,
             )
 
             @test result == expected
@@ -727,12 +715,12 @@ expected = """
                 matrix;
                 display_size = (13, 54),
                 summary_rows = [(data, i) -> "Summary $i"],
-                table_format = TextTableFormat(
+                table_format = TextTableFormat(;
                     horizontal_line_after_data_rows = false,
                     horizontal_line_before_summary_rows = false,
                     horizontal_lines_at_data_rows = :all,
                 ),
-                vertical_crop_mode = :middle
+                vertical_crop_mode = :middle,
             )
 
             @test result == expected
@@ -756,19 +744,19 @@ expected = """
                 matrix;
                 display_size = (13, 54),
                 summary_rows = [(data, i) -> "Summary $i"],
-                table_format = TextTableFormat(
+                table_format = TextTableFormat(;
                     horizontal_line_after_data_rows = false,
                     horizontal_line_before_summary_rows = true,
                     horizontal_lines_at_data_rows = :all,
                 ),
-                vertical_crop_mode = :middle
+                vertical_crop_mode = :middle,
             )
 
             @test result == expected
         end
 
         @testset "Omitted Cell Summary" begin
-                expected = """
+            expected = """
 ┌──────────┬──────────┬──────────┬───┐
 │   Col. 1 │   Col. 2 │   Col. 3 │ ⋯ │
 ├──────────┼──────────┼──────────┼───┤
@@ -784,7 +772,7 @@ expected = """
                 maximum_number_of_columns = 3,
                 maximum_number_of_rows = 2,
                 show_omitted_cell_summary = false,
-                vertical_crop_mode = :middle
+                vertical_crop_mode = :middle,
             )
 
             @test result == expected
@@ -815,7 +803,7 @@ expected = """
             matrix;
             line_breaks = true,
             display_size = (15, 20),
-            table_format = TextTableFormat(; @text__all_horizontal_lines)
+            table_format = TextTableFormat(; @text__all_horizontal_lines),
         )
         @test result == expected
 
@@ -841,7 +829,7 @@ expected = """
             matrix;
             line_breaks = true,
             display_size = (16, 20),
-            table_format = TextTableFormat(; @text__all_horizontal_lines)
+            table_format = TextTableFormat(; @text__all_horizontal_lines),
         )
         @test result == expected
 
@@ -868,7 +856,7 @@ expected = """
             matrix;
             line_breaks = true,
             display_size = (17, 20),
-            table_format = TextTableFormat(; @text__all_horizontal_lines)
+            table_format = TextTableFormat(; @text__all_horizontal_lines),
         )
         @test result == expected
     end
@@ -882,9 +870,7 @@ end
     ]
 
     expected = pretty_table(
-        String,
-        matrix;
-        column_labels = [MultiColumn(2, "H"^35, :r), "Col. 3"],
+        String, matrix; column_labels = [MultiColumn(2, "H"^35, :r), "Col. 3"]
     )
 
     result = pretty_table(

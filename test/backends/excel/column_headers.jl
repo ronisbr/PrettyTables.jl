@@ -120,11 +120,7 @@
         # (a stubhead when row labels are also requested) must each receive a \"thin\" bottom
         # border on every row except the last header row, mirroring the behaviour of the
         # column-label cells.
-        column_labels = [
-            ["A", "B", "C", "D"],
-            ["a", "b", "c", "d"],
-            ["x", "y", "z", "w"],
-        ]
+        column_labels = [["A", "B", "C", "D"], ["a", "b", "c", "d"], ["x", "y", "z", "w"]]
 
         # With `show_row_number_column = true`, column A holds the row-number-label cells.
 
@@ -133,9 +129,7 @@
             column_labels,
             backend = :excel,
             show_row_number_column = true,
-            table_format = ExcelTableFormat(;
-                horizontal_line_between_column_labels = true,
-            ),
+            table_format = ExcelTableFormat(; horizontal_line_between_column_labels = true),
         )
 
         # A1 (first header row) and A2 (middle header row) must both carry a thin border
@@ -160,9 +154,7 @@
             column_labels,
             backend = :excel,
             row_labels = ["r1", "r2", "r3", "r4"],
-            table_format = ExcelTableFormat(;
-                horizontal_line_between_column_labels = true,
-            ),
+            table_format = ExcelTableFormat(; horizontal_line_between_column_labels = true),
         )
         for cell in ("A1", "A2")
             border = XLSX.getBorder(g[1], cell).border

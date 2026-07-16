@@ -74,13 +74,11 @@ function _excel__write_table!(
     end
 
     if minimum_data_column_widths isa Number
-        minimum_data_column_widths =
-            fill(Float64(minimum_data_column_widths), num_cols)
+        minimum_data_column_widths = fill(Float64(minimum_data_column_widths), num_cols)
     end
 
     if maximum_data_column_widths isa Number
-        maximum_data_column_widths =
-            fill(Float64(maximum_data_column_widths), num_cols)
+        maximum_data_column_widths = fill(Float64(maximum_data_column_widths), num_cols)
     end
 
     max_row_height = Dict{Int, Float64}()
@@ -129,8 +127,6 @@ function _excel__write_table!(
         sheet_row = ir + anchor_row_offset
         sheet_col = jr + anchor_col_offset
 
-        # == New Row =======================================================================
-
         if action == :new_row
             ir += 1
             jr = 0
@@ -145,8 +141,6 @@ function _excel__write_table!(
             if first_content_row == 0 && rs != :table_header
                 first_content_row = ir + anchor_row_offset
             end
-
-        # == Continuation Cells ============================================================
 
         elseif action ∈ (
             :horizontal_continuation_cell,
@@ -168,21 +162,13 @@ function _excel__write_table!(
             sheet[sheet_row, sheet_col] = rendered_cell
 
             fontsize = _excel__apply_cell_style!(
-                sheet,
-                sheet_row,
-                sheet_col,
-                style.data_cell,
-                alignment,
-                "bottom",
-                false,
+                sheet, sheet_row, sheet_col, style.data_cell, alignment, "bottom", false
             )
 
             row_height, col_length = _excel__cell_length_and_height(rendered_cell, fontsize)
 
             max_row_height[ir] = max(max_row_height[ir], row_height)
             max_col_length[jr] = max(max_col_length[jr], col_length)
-
-        # == End Row =======================================================================
 
         elseif action == :end_row
             XLSX.setRowHeight(sheet, ir + anchor_row_offset; height = max_row_height[ir])
@@ -259,9 +245,9 @@ function _excel__write_table!(
                 end
             end
 
-        # == Cell Actions ==================================================================
-
         else
+            # == Cell Actions ==============================================================
+
             cell = _current_cell(action, ps, table_data)
             cell === _IGNORE_CELL && continue
 
@@ -315,9 +301,9 @@ function _excel__write_table!(
 
                 max_row_height[ir] = max(max_row_height[ir], row_height)
 
-            # -- Column labels (Merged Cell) -----------------------------------------------
-
             elseif (action == :column_label) && (cell isa MergeCells)
+                # -- Column labels (Merged Cell) -------------------------------------------
+
                 num_data_cols = _number_of_printed_data_columns(table_data)
                 span          = min(cell.column_span, num_data_cols - ps.j + 1)
 
@@ -376,13 +362,14 @@ function _excel__write_table!(
                     )
                 end
 
-            # -- Other Cells ---------------------------------------------------------------
             else
+                # -- Other Cells -----------------------------------------------------------
+
                 vertical_alignment = "bottom"
                 cell_style         = _EXCEL__NO_DECORATION
                 wrap               = false
 
-                # -- Unmerged Column labels ------------------------------------------------
+                # .. Unmerged Column labels ................................................
 
                 if (action == :column_label)
                     style_var =
@@ -407,8 +394,6 @@ function _excel__write_table!(
                         )
                     end
 
-                # -- Row number Label ------------------------------------------------------
-
                 elseif action == :row_number_label
                     cell_style = ps.i == 1 ? style.row_number_label : _EXCEL__NO_DECORATION
                     vertical_alignment = "bottom"
@@ -424,14 +409,11 @@ function _excel__write_table!(
                         )
                     end
 
-                # -- Row Number / Summary Row Number ---------------------------------------
 
                 elseif action ∈ (:row_number, :summary_row_number)
                     cell_style = style.row_number
                     vertical_alignment = "top"
                     wrap = true
-
-                # -- Stubhead Label --------------------------------------------------------
 
                 elseif action == :stubhead_label
                     cell_style = ps.i == 1 ? style.stubhead_label : _EXCEL__NO_DECORATION
@@ -448,8 +430,6 @@ function _excel__write_table!(
                         )
                     end
 
-                # -- Row Label / Summary Row Label -----------------------------------------
-
                 elseif action == :row_label
                     cell_style = style.row_label
                     vertical_alignment = "top"
@@ -459,8 +439,6 @@ function _excel__write_table!(
                     cell_style = style.summary_row_label
                     vertical_alignment = "top"
                     wrap = true
-
-                # -- Data Cell -------------------------------------------------------------
 
                 elseif action == :data
                     cell_style = style.data_cell
@@ -503,8 +481,6 @@ function _excel__write_table!(
 
                         break
                     end
-
-                # -- Summary Row Cell ------------------------------------------------------
 
                 elseif action == :summary_row_cell
                     cell_style = style.summary_row_cell

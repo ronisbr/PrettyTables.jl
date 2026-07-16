@@ -35,7 +35,7 @@ function _text__render_table(
     @nospecialize(context::IOContext),
     renderer::Union{Val{:print}, Val{:show}},
     line_breaks::Bool,
-    maximum_data_column_widths::AbstractVector{Int}
+    maximum_data_column_widths::AbstractVector{Int},
 )
     num_column_label_lines   = length(table_data.column_labels)
     num_printed_data_columns = _number_of_printed_data_columns(table_data)
@@ -50,15 +50,14 @@ function _text__render_table(
         nothing
     end
 
-    row_labels = _has_row_labels(table_data) ?
-        Vector{String}(undef, num_printed_data_rows) :
-        nothing
+    row_labels =
+        _has_row_labels(table_data) ? Vector{String}(undef, num_printed_data_rows) : nothing
 
     table_str = Matrix{String}(undef, num_printed_data_rows, num_printed_data_columns)
 
-    summary_rows = _has_summary_rows(table_data) ?
-        Matrix{String}(undef, num_summary_rows, num_printed_data_columns) :
-        nothing
+    summary_rows =
+        _has_summary_rows(table_data) ?
+        Matrix{String}(undef, num_summary_rows, num_printed_data_columns) : nothing
 
     footnotes = _has_footnotes(table_data) ? Vector{String}(undef, num_footnotes) : nothing
 
@@ -77,16 +76,17 @@ function _text__render_table(
 
         ir, jr = _update_data_cell_indices(action, rs, ps, ir, jr)
 
-        action ∉ (:column_label, :data, :summary_row_cell, :row_label, :footnote) && continue
+        action ∉ (:column_label, :data, :summary_row_cell, :row_label, :footnote) &&
+            continue
 
         # We should only break lines if we are in a data cell.
         lb = (action == :data) && line_breaks
 
         cell = _current_cell(action, ps, table_data)
 
-        mw = (action ∈ (:column_label, :data, :summary_row_cell)) ?
-            maximum_data_column_widths[ps.j] :
-            -1
+        mw =
+            (action ∈ (:column_label, :data, :summary_row_cell)) ?
+            maximum_data_column_widths[ps.j] : -1
 
         rendered_cell = if cell !== _IGNORE_CELL
             _text__render_cell(cell, context, renderer, lb, mw)
@@ -125,22 +125,16 @@ function _text__render_table(
         # If the user requested a maximum data column width, check the current size and crop
         # accordingly.
         if action == :column_label
-           column_labels[ir, jr] = _text__fit_cell_in_maximum_cell_width(
-               column_labels[ir, jr],
-               mw,
-               false
-           )
+            column_labels[ir, jr] = _text__fit_cell_in_maximum_cell_width(
+                column_labels[ir, jr], mw, false
+            )
         elseif action == :data
             table_str[ir, jr] = _text__fit_cell_in_maximum_cell_width(
-                table_str[ir, jr],
-                mw,
-                line_breaks
+                table_str[ir, jr], mw, line_breaks
             )
         elseif action == :summary_row_cell
             summary_rows[ir, jr] = _text__fit_cell_in_maximum_cell_width(
-                summary_rows[ir, jr],
-                mw,
-                false
+                summary_rows[ir, jr], mw, false
             )
         end
     end

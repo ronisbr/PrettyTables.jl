@@ -24,7 +24,9 @@ abstract type AbstractCustomTextCell end
 Add `suffix` to the custom `cell` rendered text.
 """
 function add_suffix!(cell::AbstractCustomTextCell, suffix::String)
-    error("The custom text cell of type `$(typeof(cell))` does not implement the API function `add_suffix!`.")
+    return error(
+        "The custom text cell of type `$(typeof(cell))` does not implement the API function `add_suffix!`.",
+    )
 end
 
 """
@@ -34,7 +36,9 @@ Right-crop a field with display width `field_width` from `cell`. This cropping m
 applied to either the entire cell or to a specific line.
 """
 function crop!(cell::AbstractCustomTextCell, field_width::Int)
-    error("The custom text cell of type `$(typeof(cell))` does not implement the API function `crop!`.")
+    return error(
+        "The custom text cell of type `$(typeof(cell))` does not implement the API function `crop!`.",
+    )
 end
 
 """
@@ -50,9 +54,11 @@ function init!(
     cell::AbstractCustomTextCell,
     context::IOContext,
     renderer::Union{Val{:print}, Val{:show}};
-    line_breaks::Bool = false
+    line_breaks::Bool = false,
 )
-    error("The custom text cell of type `$(typeof(cell))` does not implement the API function `init!`.")
+    return error(
+        "The custom text cell of type `$(typeof(cell))` does not implement the API function `init!`.",
+    )
 end
 
 """
@@ -61,7 +67,9 @@ end
 Apply a left padding of `pad` display characters to `cell`.
 """
 function left_padding!(cell::AbstractCustomTextCell, pad::Int)
-    error("The custom text cell of type `$(typeof(cell))` does not implement the API function `left_padding!`.")
+    return error(
+        "The custom text cell of type `$(typeof(cell))` does not implement the API function `left_padding!`.",
+    )
 end
 
 """
@@ -70,7 +78,9 @@ end
 Apply a right padding of `pad` display characters to `cell`.
 """
 function right_padding!(cell::AbstractCustomTextCell, pad::Int)
-    error("The custom text cell of type `$(typeof(cell))` does not implement the API function `right_padding!`.")
+    return error(
+        "The custom text cell of type `$(typeof(cell))` does not implement the API function `right_padding!`.",
+    )
 end
 
 """
@@ -80,7 +90,9 @@ Render all the lines in the `cell`, applying the specifications for right and le
 and cropping.
 """
 function rendered_cell(cell::AbstractCustomTextCell)
-    error("The custom text cell of type `$(typeof(cell))` does not implement the API function `rendered_cell`.")
+    return error(
+        "The custom text cell of type `$(typeof(cell))` does not implement the API function `rendered_cell`.",
+    )
 end
 
 """
@@ -105,7 +117,9 @@ specifications for right and left padding or cropping.
     If line breaks are not supported, `\n` must be escaped.
 """
 function printable_cell_text(cell::AbstractCustomTextCell)
-    error("The custom text cell type `$(typeof(cell))` does not implement the API function `printable_cell_text`.")
+    return error(
+        "The custom text cell type `$(typeof(cell))` does not implement the API function `printable_cell_text`.",
+    )
 end
 
 end

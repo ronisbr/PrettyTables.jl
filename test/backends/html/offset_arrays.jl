@@ -47,12 +47,7 @@
 </table>
 """
 
-    result = pretty_table(
-        String,
-        omatrix;
-        backend = :html,
-        show_row_number_column = true
-    )
+    result = pretty_table(String, omatrix; backend = :html, show_row_number_column = true)
 
     @test result == expected
 end

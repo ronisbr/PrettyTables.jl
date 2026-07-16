@@ -27,15 +27,10 @@
 └─────────────────────────────┴───────┘
 """
 
-    result = pretty_table(
-        String,
-        data;
-        column_labels,
-        line_breaks = true
-    )
+    result = pretty_table(String, data; column_labels, line_breaks = true)
     @test result == expected
 
-        expected = """
+    expected = """
 ┌─────────────────────────────┬───────┐
 │         Information         │ Value │
 ├─────────────────────────────┼───────┤
@@ -49,13 +44,7 @@
 └─────────────────────────────┴───────┘
 """
 
-    result = pretty_table(
-        String,
-        data;
-        alignment = :c,
-        column_labels,
-        line_breaks = true
-    )
+    result = pretty_table(String, data; alignment = :c, column_labels, line_breaks = true)
     @test result == expected
 
     expected = """
@@ -72,13 +61,7 @@
 └─────────────────────────────┴───────┘
 """
 
-    result = pretty_table(
-        String,
-        data;
-        alignment = :l,
-        column_labels,
-        line_breaks = true
-    )
+    result = pretty_table(String, data; alignment = :l, column_labels, line_breaks = true)
     @test result == expected
 
     expected = """
@@ -91,11 +74,7 @@
 └────────────────────────────────────────────────────────────────────┴───────┘
 """
 
-    result = pretty_table(
-        String,
-        data;
-        column_labels
-    )
+    result = pretty_table(String, data; column_labels)
     @test result == expected
 end
 
@@ -155,7 +134,7 @@ end
         column_labels            = column_labels,
         fixed_data_column_widths = [0, 30],
         line_breaks              = true,
-        table_format             = TextTableFormat(; @text__all_horizontal_lines)
+        table_format             = TextTableFormat(; @text__all_horizontal_lines),
     )
 
     @test result == expected
@@ -199,7 +178,7 @@ end
         column_labels            = column_labels,
         fixed_data_column_widths = [-1, 30],
         line_breaks              = true,
-        table_format             = TextTableFormat(; @text__all_horizontal_lines)
+        table_format             = TextTableFormat(; @text__all_horizontal_lines),
     )
 
     @test result == expected
@@ -243,7 +222,7 @@ end
         column_labels            = column_labels,
         fixed_data_column_widths = [-1, 30],
         line_breaks              = true,
-        table_format             = TextTableFormat(; @text__all_horizontal_lines)
+        table_format             = TextTableFormat(; @text__all_horizontal_lines),
     )
 
     @test result == expected
@@ -282,7 +261,8 @@ end
 """
 
     result = pretty_table(
-        String, table;
+        String,
+        table;
         alignment                = :l,
         auto_wrap                = true,
         column_labels            = column_labels,
@@ -296,4 +276,3 @@ end
 
     @test result == expected
 end
-

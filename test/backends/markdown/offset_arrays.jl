@@ -23,12 +23,8 @@
 """
 
     result = pretty_table(
-        String,
-        omatrix;
-        backend = :markdown,
-        show_row_number_column = true
+        String, omatrix; backend = :markdown, show_row_number_column = true
     )
 
     @test result == expected
 end
-

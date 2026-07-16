@@ -69,7 +69,7 @@ function _text__flush_line(
     display::Display,
     add_continuation_char::Bool = true,
     continuation_char::Char = '⋯';
-    crop_line::Bool = true
+    crop_line::Bool = true,
 )
     dw   = display.size[2]
     line = String(take!(display.buf_line))
@@ -83,17 +83,14 @@ function _text__flush_line(
             add_continuation_char,
             add_space_in_continuation_char = add_continuation_char,
             continuation_char,
-            printable_string_width = str_width
+            printable_string_width = str_width,
         )
 
         if crop > 0
             cont_str = add_continuation_char ? (" " * string(continuation_char)) : ""
 
             cropped_str, ansi = right_crop(
-                line,
-                crop;
-                keep_escape_seq = true,
-                printable_string_width = str_width
+                line, crop; keep_escape_seq = true, printable_string_width = str_width
             )
 
             line = cropped_str * convert(String, parse_decoration(ansi)) * cont_str
@@ -121,7 +118,7 @@ function _text__print_aligned(
     cell_width::Int,
     alignment::Symbol,
     crayon::Crayon = _TEXT__DEFAULT,
-    fill::Bool = true
+    fill::Bool = true,
 )
     str_width = printable_textwidth(str)
     _text__check_eol(display) && return nothing
@@ -142,8 +139,7 @@ function _text__print_aligned(
         end
     end
 
-    styled = display.has_color && crayon != _TEXT__DEFAULT &&
-        crayon != _TEXT__EMPTY_CRAYON
+    styled = display.has_color && crayon != _TEXT__DEFAULT && crayon != _TEXT__EMPTY_CRAYON
 
     styled && print(display.buf_line, string(crayon))
 
@@ -200,7 +196,7 @@ function _text__print_horizontal_line(
     printed_data_column_widths::Vector{Int},
     top::Bool = false,
     bottom::Bool = false,
-    row_group_label::Bool = false
+    row_group_label::Bool = false,
 )
     # == Auxiliary Variables ===============================================================
 
@@ -257,24 +253,16 @@ function _text__print_horizontal_line(
 
     if table_data.show_row_number_column
         _text__print(display, row^(row_number_column_width + 2))
-        tf.vertical_line_after_row_number_column && _text__horizontal_line_intersection(
-            display,
-            mi,
-            row,
-            false
-        )
+        tf.vertical_line_after_row_number_column &&
+            _text__horizontal_line_intersection(display, mi, row, false)
     end
 
     # -- Row Label Column ------------------------------------------------------------------
 
     if _has_row_labels(table_data)
         _text__print(display, row^(row_label_column_width + 2))
-        tf.vertical_line_after_row_label_column && _text__horizontal_line_intersection(
-            display,
-            mi,
-            row,
-            false
-        )
+        tf.vertical_line_after_row_label_column &&
+            _text__horizontal_line_intersection(display, mi, row, false)
     end
 
     # -- Data ------------------------------------------------------------------------------
@@ -288,7 +276,7 @@ function _text__print_horizontal_line(
                 display,
                 table_continuation_column ? mi : ri,
                 row,
-                !table_continuation_column
+                !table_continuation_column,
             )
         elseif j ∈ vertical_lines_at_data_columns
             _text__horizontal_line_intersection(display, mi, row, false)
@@ -299,12 +287,8 @@ function _text__print_horizontal_line(
 
     if table_continuation_column
         _text__print(display, row^3)
-        tf.vertical_line_after_continuation_column && _text__horizontal_line_intersection(
-            display,
-            ri,
-            row,
-            true
-        )
+        tf.vertical_line_after_continuation_column &&
+            _text__horizontal_line_intersection(display, ri, row, true)
     end
 
     crayon != _TEXT__DEFAULT && _text__print(display, _TEXT__STRING_RESET)
@@ -400,24 +384,16 @@ function _text__print_column_label_horizontal_line(
 
     if table_data.show_row_number_column
         _text__print(display, row^(row_number_column_width + 2))
-        tf.vertical_line_after_row_number_column && _text__horizontal_line_intersection(
-            display,
-            mi,
-            row,
-            false
-        )
+        tf.vertical_line_after_row_number_column &&
+            _text__horizontal_line_intersection(display, mi, row, false)
     end
 
     # -- Row Label Column ------------------------------------------------------------------
 
     if _has_row_labels(table_data)
         _text__print(display, row^(row_label_column_width + 2))
-        tf.vertical_line_after_row_label_column && _text__horizontal_line_intersection(
-            display,
-            mi,
-            row,
-            false
-        )
+        tf.vertical_line_after_row_label_column &&
+            _text__horizontal_line_intersection(display, mi, row, false)
     end
 
     # -- Data ------------------------------------------------------------------------------
@@ -431,16 +407,16 @@ function _text__print_column_label_horizontal_line(
                 display,
                 table_continuation_column ? mi : ri,
                 row,
-                !table_continuation_column
+                !table_continuation_column,
             )
         elseif j ∈ vertical_lines_at_data_columns
             # We must compute if the cell at the top or at the bottom from the current
             # horizontal line is merged. Notice that if we are at the top of the table, the
             # effect is equal to have a merged cell above it.
-            top_j₀,    top_j₁    = _column_label_limits(table_data, row_number,     j + 1)
+            top_j₀, top_j₁       = _column_label_limits(table_data, row_number, j + 1)
             bottom_j₀, bottom_j₁ = _column_label_limits(table_data, row_number + 1, j + 1)
 
-            tcm = (top_j₀    != top_j₁)    && (j + 1 != top_j₀   ) || top
+            tcm = (top_j₀ != top_j₁) && (j + 1 != top_j₀) || top
             bcm = (bottom_j₀ != bottom_j₁) && (j + 1 != bottom_j₀)
 
             if tf.suppress_vertical_lines_at_column_labels
@@ -469,12 +445,8 @@ function _text__print_column_label_horizontal_line(
 
     if table_continuation_column
         _text__print(display, row^3)
-        tf.vertical_line_after_continuation_column && _text__horizontal_line_intersection(
-            display,
-            ri,
-            row,
-            true
-        )
+        tf.vertical_line_after_continuation_column &&
+            _text__horizontal_line_intersection(display, ri, row, true)
     end
 
     crayon != _TEXT__DEFAULT && _text__print(display, _TEXT__STRING_RESET)
@@ -510,7 +482,7 @@ function _text__print_column_label_horizontal_line_only_at_merged_labels(
     vertical_lines_at_data_columns::AbstractVector{Int},
     row_number_column_width::Int,
     row_label_column_width::Int,
-    printed_data_column_widths::Vector{Int}
+    printed_data_column_widths::Vector{Int},
 )
     # == Auxiliary Variables ===============================================================
 
@@ -571,7 +543,9 @@ function _text__print_column_label_horizontal_line_only_at_merged_labels(
                 bottom_j₀, bottom_j₁ = _column_label_limits(table_data, row_number + 1, j)
                 ci = (bottom_j₀ != bottom_j₁) && (j != bottom_j₁) ? row : ti
 
-                _text__print(display, tf.suppress_vertical_lines_at_column_labels ? row : ci)
+                _text__print(
+                    display, tf.suppress_vertical_lines_at_column_labels ? row : ci
+                )
 
                 continue
             end
@@ -584,12 +558,8 @@ function _text__print_column_label_horizontal_line_only_at_merged_labels(
 
     if table_continuation_column
         _text__print(display, row^3)
-        tf.vertical_line_after_continuation_column && _text__horizontal_line_intersection(
-            display,
-            ri,
-            row,
-            true
-        )
+        tf.vertical_line_after_continuation_column &&
+            _text__horizontal_line_intersection(display, ri, row, true)
     end
 
     crayon != _TEXT__DEFAULT && _text__print(display, _TEXT__STRING_RESET)
@@ -606,10 +576,7 @@ intersection of the table. In that case, we print `intersection` if we have at l
 remaining spaces.
 """
 function _text__horizontal_line_intersection(
-    display::Display,
-    intersection::String,
-    row::String,
-    final_intersection::Bool
+    display::Display, intersection::String, row::String, final_intersection::Bool
 )
     # If the display size is negative, it means we do not have a limit. Hence, just print
     # the intersection.

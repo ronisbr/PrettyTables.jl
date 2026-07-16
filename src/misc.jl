@@ -17,7 +17,7 @@ macro _print(io, args...)
     return esc(
         quote
             $([:(print($io, $arg)) for arg in args]...)
-        end
+        end,
     )
 end
 
@@ -35,7 +35,7 @@ macro _println(io, args...)
         quote
             $([:(print($io, $arg)) for arg in args]...)
             println($io)
-        end
+        end,
     )
 end
 
@@ -56,7 +56,7 @@ function _aprint(
     str::String,
     indentation_level::Int = 0,
     indentation_spaces::Int = 2;
-    minify::Bool = false
+    minify::Bool = false,
 )
     if minify
         for t in eachsplit(str, '\n')
@@ -100,7 +100,7 @@ function _aprintln(
     str::String,
     indentation_level::Int = 0,
     indentation_spaces::Int = 2;
-    minify::Bool = false
+    minify::Bool = false,
 )
     _aprint(buf, str, indentation_level, indentation_spaces; minify)
     !minify && println(buf)
@@ -120,7 +120,7 @@ function _aprint_section_annotation(
     indentation_level::Int = 0,
     indentation_spaces::Int = 2,
     column_width::Int = 92,
-    fill_char::Char = '='
+    fill_char::Char = '=',
 )
     column_width < 0 && (column_width = 92)
 
@@ -145,15 +145,10 @@ function _aprintln_section_annotation(
     indentation_level::Int = 0,
     indentation_spaces::Int = 2,
     column_width::Int = 92,
-    fill_char::Char = '='
+    fill_char::Char = '=',
 )
     _aprint_section_annotation(
-        buf,
-        str,
-        indentation_level,
-        indentation_spaces,
-        column_width,
-        fill_char
+        buf, str, indentation_level, indentation_spaces, column_width, fill_char
     )
     println(buf)
 
@@ -279,7 +274,7 @@ function _align_column_with_regex!(
     column::AbstractVector{Vector{T}},
     alignment_anchor_regex::Vector{Regex},
     alignment_anchor_fallback::Symbol,
-) where T <: AbstractString
+) where {T <: AbstractString}
     # Variable to store in which column we must align the match.
     alignment_column = 0
 
@@ -400,9 +395,7 @@ function _align_multline_column_with_regex!(
     # element is a line. Then, we perform the alignment and re-join the lines.
     v = split.(column, '\n')
     largest_cell_width = _align_column_with_regex!(
-        v,
-        alignment_anchor_regex,
-        alignment_anchor_fallback
+        v, alignment_anchor_regex, alignment_anchor_fallback
     )
 
     for i in 1:length(column)
@@ -422,8 +415,8 @@ function _auto_wrap(str::AbstractString, field_width::Int)
     (field_width <= 0) && throw(ArgumentError("`field_width` must be greater than 0."))
 
     # Buffers.
-    buf      = IOBuffer(sizehint = length(str)) # .......... Buffer to store the entire text
-    line_buf = IOBuffer(sizehint = length(str)) # ......... Buffer to store the current line
+    buf      = IOBuffer(; sizehint = length(str)) # .......... Buffer to store the entire text
+    line_buf = IOBuffer(; sizehint = length(str)) # ......... Buffer to store the current line
 
     # Auxiliary variables.
     state          = :text # .................................................. String state
@@ -462,8 +455,8 @@ function _auto_wrap(str::AbstractString, field_width::Int)
 
             # If we have a last space in this line, break the line at that position, and
             # move the rest to another line.
-            l₀ = line[1:last_space - 1]
-            l₁ = line[last_space + 1:end]
+            l₀ = line[1:(last_space - 1)]
+            l₁ = line[(last_space + 1):end]
 
             write(buf, l₀)
             write(buf, '\n')
@@ -529,7 +522,7 @@ function _omitted_cell_summary(table_data::TableData, pspec::PrintingSpec)
 
     # Compute the number of omitted rows and columns.
     num_omitted_columns = (max_columns > 0) ? num_columns - max_columns : 0
-    num_omitted_rows    = (max_rows > 0)    ? num_rows    - max_rows    : 0
+    num_omitted_rows    = (max_rows > 0) ? num_rows - max_rows : 0
 
     return _omitted_cell_summary(num_omitted_rows, num_omitted_columns)
 end

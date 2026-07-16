@@ -7,7 +7,7 @@
 @testset "Alignment" verbose = true begin
     matrix = [(i, j) for i in 1:5, j in 1:5]
 
-    @testset "Alignment as a Symbol" verbose = true  begin
+    @testset "Alignment as a Symbol" verbose = true begin
         expected = """
 \\begin{tabular}{|c|c|c|c|c|}
   \\hline
@@ -27,7 +27,7 @@
             matrix;
             alignment = :c,
             backend = :latex,
-            cell_alignment = [(2, 3) => :r, (4, 5) => :l]
+            cell_alignment = [(2, 3) => :r, (4, 5) => :l],
         )
 
         @test result == expected
@@ -52,15 +52,14 @@
             alignment = :c,
             backend = :latex,
             cell_alignment = [(2, 3) => :r, (4, 5) => :l],
-            table_format = LatexTableFormat(
-                ;
+            table_format = LatexTableFormat(;
                 vertical_lines_at_data_columns = [1, 3, 4],
-                vertical_line_after_data_columns = false
-            )
+                vertical_line_after_data_columns = false,
+            ),
         )
     end
 
-    @testset "Alignment as a Vector" verbose = true  begin
+    @testset "Alignment as a Vector" verbose = true begin
         expected = """
 \\begin{tabular}{|l|c|r|l|c|}
   \\hline
@@ -80,7 +79,7 @@
             matrix;
             backend = :latex,
             alignment = [:l, :c, :r, :l, :c],
-            cell_alignment = [(2, 3) => :r, (4, 5) => :l]
+            cell_alignment = [(2, 3) => :r, (4, 5) => :l],
         )
 
         @test result == expected
@@ -105,14 +104,12 @@
             backend = :latex,
             alignment = [:l, :c, :r, :l, :c],
             cell_alignment = [(2, 3) => :r, (4, 5) => :l],
-            table_format = LatexTableFormat(
-                ;
+            table_format = LatexTableFormat(;
                 vertical_lines_at_data_columns = [1, 3, 4],
-                vertical_line_after_data_columns = false
-            )
+                vertical_line_after_data_columns = false,
+            ),
         )
 
         @test result == expected
     end
 end
-

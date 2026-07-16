@@ -6,11 +6,7 @@
 
 @testset "Tables.jl Compatibility" begin
     # A NamedTuple is compliant with Tables.jl API.
-    table = (
-        x = Int64(1):Int64(3),
-        y = 'a':'c',
-        z = ["String 1";"String 2";"String 3"]
-    )
+    table = (x = Int64(1):Int64(3), y = 'a':'c', z = ["String 1"; "String 2"; "String 3"])
 
     # Thus, the following 5 calls must provide the same results.
     result_1 = pretty_table(String, table)
@@ -34,9 +30,7 @@
 
     # If the column labels is passed, it must replace the Tables.jl schema.
     result = pretty_table(
-        String,
-        table;
-        column_labels = ["My col. 1", "My col. 2", "My col. 3"]
+        String, table; column_labels = ["My col. 1", "My col. 2", "My col. 3"]
     )
 
     expected = """
@@ -86,10 +80,7 @@ end
     end
 
     make_source(; subset_works = false) = InstrumentedRowSource(
-        [(a = i, b = 10i) for i in 1:6],
-        0,
-        Dict{Int, Int}(),
-        subset_works
+        [(a = i, b = 10i) for i in 1:6], 0, Dict{Int, Int}(), subset_works
     )
 
     source = make_source()
@@ -130,15 +121,13 @@ end
     source = make_source(; subset_works = true)
     rtable = PrettyTables.RowTable(source)
     source.iterator_calls = 0
-    @test [(rtable[i, 1], rtable[i, 2]) for i in 1:6] ==
-        [(i, 10i) for i in 1:6]
+    @test [(rtable[i, 1], rtable[i, 2]) for i in 1:6] == [(i, 10i) for i in 1:6]
     @test source.iterator_calls == 0
     @test source.subset_calls == Dict(i => 1 for i in 1:6)
     @test PrettyTables._get_data(rtable) === source
 end
 
 @testset "Tables.jl without Schema" begin
-
     expected = """
 ┌───┬───────┬─────┬───┐
 │ a │     b │   c │ d │
@@ -167,7 +156,8 @@ end
 
     Tables.columnaccess(::Type{<:MyColumnTable}) = true
     Tables.columns(m::MyColumnTable) = m
-    Tables.getcolumn(m::MyColumnTable, ::Type{T}, col::Int, nm::Symbol) where {T} = mat(m)[:, col]
+    Tables.getcolumn(m::MyColumnTable, ::Type{T}, col::Int, nm::Symbol) where {T} =
+        mat(m)[:, col]
     Tables.getcolumn(m::MyColumnTable, nm::Symbol) = mat(m)[:, lookup(m)[nm]]
     Tables.getcolumn(m::MyColumnTable, i::Int) = mat(m)[:, i]
     Tables.columnnames(m::MyColumnTable) = names(m)
@@ -181,11 +171,7 @@ end
         6     true      6.0     0x06
     ]
 
-    table = MyColumnTable(
-        [:a, :b, :c, :d],
-        Dict(:a => 1, :b => 2, :c => 3, :d => 4),
-        data
-    )
+    table = MyColumnTable([:a, :b, :c, :d], Dict(:a => 1, :b => 2, :c => 3, :d => 4), data)
 
     result = pretty_table(String, table)
 
@@ -214,7 +200,8 @@ end
     Tables.rows(m::MyRowTable) = m
     Base.eltype(m::MyRowTable{T}) where {T} = MyMatrixRow{T}
     Base.length(m::MyRowTable) = size(mat(m), 1)
-    Base.iterate(m::MyRowTable, st = 1) = st > length(m) ? nothing : (MyMatrixRow(st, m), st + 1)
+    Base.iterate(m::MyRowTable, st = 1) =
+        st > length(m) ? nothing : (MyMatrixRow(st, m), st + 1)
 
     Tables.getcolumn(m::MyMatrixRow, ::Type, col::Int, nm::Symbol) =
         getfield(getfield(m, :source), :matrix)[getfield(m, :row), col]
@@ -222,19 +209,13 @@ end
     Tables.getcolumn(m::MyMatrixRow, i::Int) =
         getfield(getfield(m, :source), :matrix)[getfield(m, :row), i]
 
-    Tables.getcolumn(m::MyMatrixRow, nm::Symbol) = getfield(
-        getfield(m, :source), :matrix)[
-            getfield(m, :row),
-            getfield(getfield(m, :source), :lookup)[nm]
-        ]
+    Tables.getcolumn(m::MyMatrixRow, nm::Symbol) = getfield(getfield(m, :source), :matrix)[
+        getfield(m, :row), getfield(getfield(m, :source), :lookup)[nm]
+    ]
 
     Tables.columnnames(m::MyMatrixRow) = names(getfield(m, :source))
 
-    table = MyRowTable(
-        [:a, :b, :c, :d],
-        Dict(:a => 1, :b => 2, :c => 3, :d => 4),
-        data
-    )
+    table = MyRowTable([:a, :b, :c, :d], Dict(:a => 1, :b => 2, :c => 3, :d => 4), data)
 
     # This test does not have a valid `Tables.subet` implementation.
     result = pretty_table(String, table)
@@ -249,8 +230,8 @@ end
 end
 
 @testset "Tables.jl with Custom Column Name Vector" begin
-    struct TestVec{T} <: AbstractArray{T,1}
-        data::Array{T,1}
+    struct TestVec{T} <: AbstractArray{T, 1}
+        data::Array{T, 1}
     end
 
     struct MinimalTable
@@ -258,27 +239,25 @@ end
         colnames::TestVec
     end
 
-    Base.IndexStyle(::Type{A}) where {A<:TestVec} = Base.IndexCartesian()
+    Base.IndexStyle(::Type{A}) where {A <: TestVec} = Base.IndexCartesian()
     Base.size(A::TestVec) = size(getfield(A, :data))
     Base.getindex(A::TestVec, index::Int) = getindex(getfield(A, :data), index)
-    Base.collect(::Type{T}, itr::TestVec) where {T} = TestVec(collect(T, getfield(itr, :data)))
+    Base.collect(::Type{T}, itr::TestVec) where {T} =
+        TestVec(collect(T, getfield(itr, :data)))
 
     Tables.istable(x::MinimalTable) = true
     Tables.columnaccess(::MinimalTable) = true
     Tables.columnnames(x::MinimalTable) = getfield(x, :colnames)
     Tables.columns(x::MinimalTable) = x
     Base.getindex(x::MinimalTable, i1, i2) = getindex(getfield(x, :data), i1, i2)
-    Base.getproperty(x::MinimalTable, s::Symbol) = getindex(x, :, findfirst(==(s), Tables.columnnames(x)))
+    Base.getproperty(x::MinimalTable, s::Symbol) =
+        getindex(x, :, findfirst(==(s), Tables.columnnames(x)))
     Base.convert(::Type{<:TestVec}, x::Array) = TestVec(x)
 
     data     = [10.0^(i + j) for i in 1:10, j in 1:5]
     mintable = MinimalTable(data, [:C1, :C2, :C3, :C4, :C5])
 
-    str_data = pretty_table(
-        String,
-        data;
-        column_labels = ["C1", "C2", "C3", "C4", "C5"]
-    )
+    str_data = pretty_table(String, data; column_labels = ["C1", "C2", "C3", "C4", "C5"])
 
     str_mintable = pretty_table(String, mintable)
 
@@ -308,12 +287,10 @@ end
     Tables.columnnames(m::MinimalColumnTable) = getfield(m, :colnames)
     Tables.columns(m::MinimalColumnTable) = m
     Tables.getcolumn(m::MinimalColumnTable, i::Int) = m.columns[i]
-    Tables.getcolumn(m::MinimalColumnTable, nm::Symbol) = getindex(m.columns, findfirst(==(nm), m.colnames))
+    Tables.getcolumn(m::MinimalColumnTable, nm::Symbol) =
+        getindex(m.columns, findfirst(==(nm), m.colnames))
 
-    table = MinimalColumnTable(
-        [Vector{Any}(undef, 3) for _ in 1:3],
-        [:A, :B, :C]
-    )
+    table = MinimalColumnTable([Vector{Any}(undef, 3) for _ in 1:3], [:A, :B, :C])
 
     table.columns[1][1] = UInt64(1)
     table.columns[2][2] = Int64(1)
@@ -332,10 +309,10 @@ end
     struct MinimalRowTable{T}
         rows::Vector{MinimalRow{T}}
 
-        function MinimalRowTable(data::Vector{Vector{T}}, colnames::Vector{Symbol}) where T
-            new{T}(
-                [MinimalRow{T}(data[i], colnames) for i in 1:length(data)],
-            )
+        function MinimalRowTable(
+            data::Vector{Vector{T}}, colnames::Vector{Symbol}
+        ) where {T}
+            return new{T}([MinimalRow{T}(data[i], colnames) for i in 1:length(data)],)
         end
     end
 
@@ -345,12 +322,10 @@ end
 
     Tables.columnnames(m::MinimalRow) = getfield(m, :colnames)
     Tables.getcolumn(m::MinimalRow, i::Int) = m.data[i]
-    Tables.getcolumn(m::MinimalRow, nm::Symbol) = getindex(m.data, findfirst(==(nm), m.colnames))
+    Tables.getcolumn(m::MinimalRow, nm::Symbol) =
+        getindex(m.data, findfirst(==(nm), m.colnames))
 
-    table = MinimalRowTable(
-        [Vector{Any}(undef, 3) for _ in 1:3],
-        [:A, :B, :C]
-    )
+    table = MinimalRowTable([Vector{Any}(undef, 3) for _ in 1:3], [:A, :B, :C])
 
     table.rows[1].data[1] = UInt64(1)
     table.rows[2].data[2] = Int64(1)

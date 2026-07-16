@@ -40,19 +40,17 @@ passed through to `_excel__write_table!`.
     Save a returned `XLSX.XLSXFile` using `XLSX.writexlsx` or `XLSX.savexlsx`.
 """
 function _excel__print(args...; kwargs...)
-    error(
-        """
-        Excel backend requires the XLSX.jl package.
+    error("""
+          Excel backend requires the XLSX.jl package.
 
-        Please install and load it with:
+          Please install and load it with:
 
-            using Pkg
-            Pkg.add("XLSX")
-            using XLSX
+              using Pkg
+              Pkg.add("XLSX")
+              using XLSX
 
-        Then retry your pretty_table call with backend = :excel.
-        """
-    )
+          Then retry your pretty_table call with backend = :excel.
+          """)
 
     return nothing
 end

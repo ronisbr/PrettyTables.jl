@@ -113,10 +113,10 @@ Parse and validate the public command-line `arguments`.
 - `NamedTuple`: Positive trial and repeat counts, ordered backend selection, and help state.
 """
 function parse_parent_arguments(arguments::Vector{String})
-    trials  = 10
+    trials = 10
     repeats = 50
     backends = copy(BACKENDS)
-    index   = 1
+    index = 1
 
     while index <= length(arguments)
         argument = arguments[index]
@@ -632,8 +632,7 @@ function print_result_table(title::String, rows::Matrix, labels::Vector{String})
     highlighters = TextHighlighter[
         TextHighlighter((_, _, column) -> column == score_column, crayon"bold yellow"),
         TextHighlighter(
-            (data, row, column) ->
-                data[row, column] == "n/a" || data[row, column] == "-",
+            (data, row, column) -> data[row, column] == "n/a" || data[row, column] == "-",
             crayon"fg:dark_gray",
         ),
         TextHighlighter(

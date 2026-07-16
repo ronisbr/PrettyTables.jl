@@ -9,7 +9,6 @@
     backend = :typst
 
     @testset "Decoration of Column Labels" begin
-
         expected = """
 #{
   table(
@@ -184,7 +183,7 @@
                         "weigth"      => "",
                     ],
                 ),
-            );
+            )
         end
     end
 end

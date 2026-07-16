@@ -36,7 +36,7 @@ function _text__fix_data_column_widths!(
     summary_rows::Union{Nothing, Matrix{String}},
     fixed_data_column_widths::AbstractVector{Int},
     auto_wrap::Bool,
-    line_breaks::Bool
+    line_breaks::Bool,
 )
     for j in eachindex(printed_data_column_widths)
         fcw = fixed_data_column_widths[j - 1 + begin]
@@ -74,7 +74,7 @@ function _text__fix_data_column_widths!(
                         tw   = printable_textwidth(line)
                         tw <= cw && continue
 
-                        line  = first(right_crop(line, tw - cw + 1))
+                        line = first(right_crop(line, tw - cw + 1))
                         line *= "…"
                         tokens[l] = line
                     end
@@ -95,9 +95,7 @@ Fit the cell with text `cell_str` in a field with a maximum width `maximum_cell_
 `line_breaks` is `true`, the cell will be split into multiple lines before fitting it.
 """
 function _text__fit_cell_in_maximum_cell_width(
-    cell_str::String,
-    maximum_cell_width::Int,
-    line_breaks::Bool
+    cell_str::String, maximum_cell_width::Int, line_breaks::Bool
 )
     maximum_cell_width < 1 && return cell_str
 
@@ -174,7 +172,7 @@ function _text__printed_column_widths(
     vertical_lines_at_data_columns::AbstractVector{Int},
     column_label_width_based_on_first_line_only::Bool,
     line_breaks::Bool,
-    minimum_data_column_widths::AbstractVector{Int}
+    minimum_data_column_widths::AbstractVector{Int},
 )
     num_printed_data_rows, num_printed_data_columns = size(table_str)
 
@@ -183,27 +181,27 @@ function _text__printed_column_widths(
     printed_data_column_widths = zeros(Int, num_printed_data_columns)
 
     if table_data.show_row_number_column
-        m = (_is_vertically_cropped(table_data) && (table_data.vertical_crop_mode == :bottom)) ?
-            table_data.maximum_number_of_rows :
-            table_data.num_rows
+        m =
+            (
+                _is_vertically_cropped(table_data) &&
+                (table_data.vertical_crop_mode == :bottom)
+            ) ? table_data.maximum_number_of_rows : table_data.num_rows
 
         row_number_column_width = max(
             printable_textwidth(table_data.row_number_column_label),
-            floor(Int, log10(max(m, 1)) + 1)
+            floor(Int, log10(max(m, 1)) + 1),
         )
     end
 
     if !isnothing(row_labels)
         row_label_column_width = max(
             printable_textwidth(table_data.stubhead_label),
-
             num_printed_data_rows > 0 ? maximum(printable_textwidth, row_labels) : 0,
-
             if _has_summary_rows(table_data)
                 maximum(printable_textwidth, table_data.summary_row_labels)
             else
                 0
-            end
+            end,
         )
     end
 

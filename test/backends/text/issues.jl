@@ -22,7 +22,6 @@
     end
 
     @testset "Handle Correctly Empty Tables" begin
-
         expected = """
 Title
 Notes
@@ -52,10 +51,7 @@ Notes
 """
 
         result = pretty_table(
-            String,
-            matrix;
-            display_size = (15, 50),
-            show_column_labels = false
+            String, matrix; display_size = (15, 50), show_column_labels = false
         )
 
         @test result == expected
@@ -81,7 +77,7 @@ Notes
             matrix;
             display_size = (15, 50),
             show_column_labels = false,
-            vertical_crop_mode = :middle
+            vertical_crop_mode = :middle,
         )
 
         @test result == expected
@@ -92,7 +88,7 @@ Notes
 
         column_labels = [
             ["Var. Value", MultiColumn(2, "Failure State", :c)],
-            ["", "Failure Active", "Failure Latched" ]
+            ["", "Failure Active", "Failure Latched"],
         ]
 
         expected = """
@@ -114,7 +110,7 @@ Notes
             column_labels,
             table_format = TextTableFormat(;
                 horizontal_line_at_merged_column_labels = true
-            )
+            ),
         )
 
         @test result == expected

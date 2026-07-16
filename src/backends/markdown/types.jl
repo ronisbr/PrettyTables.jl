@@ -71,15 +71,12 @@ struct MarkdownHighlighter
     end
 
     function MarkdownHighlighter(f::Function, decoration::MarkdownStyle)
-        return new(
-            f,
-            _markdown__default_highlighter_fd,
-            decoration
-        )
+        return new(f, _markdown__default_highlighter_fd, decoration)
     end
 end
 
-_markdown__default_highlighter_fd(h::MarkdownHighlighter, ::Any, ::Int, ::Int) = h._decoration
+_markdown__default_highlighter_fd(h::MarkdownHighlighter, ::Any, ::Int, ::Int) =
+    h._decoration
 
 ############################################################################################
 #                                       Table Format                                       #
@@ -87,9 +84,9 @@ _markdown__default_highlighter_fd(h::MarkdownHighlighter, ::Any, ::Int, ::Int) =
 
 # Create some default decorations to reduce allocations.
 const _MARKDOWN__NO_DECORATION = MarkdownStyle()
-const _MARKDOWN__BOLD          = MarkdownStyle(bold   = true)
-const _MARKDOWN__ITALIC        = MarkdownStyle(italic = true)
-const _MARKDOWN__CODE          = MarkdownStyle(code   = true)
+const _MARKDOWN__BOLD          = MarkdownStyle(; bold = true)
+const _MARKDOWN__ITALIC        = MarkdownStyle(; italic = true)
+const _MARKDOWN__CODE          = MarkdownStyle(; code = true)
 
 """
     struct MarkdownTableFormat
@@ -138,8 +135,8 @@ Define the style of the tables printed with the markdown back end.
 - `omitted_cell_summary::MarkdownStyle`: Style for the omitted cell summary.
 """
 @kwdef struct MarkdownTableStyle{
-    TFCL<:Union{MarkdownStyle, Vector{MarkdownStyle}},
-    TCL<:Union{MarkdownStyle, Vector{MarkdownStyle}}
+    TFCL <: Union{MarkdownStyle, Vector{MarkdownStyle}},
+    TCL <: Union{MarkdownStyle, Vector{MarkdownStyle}},
 }
     row_number_label::MarkdownStyle     = _MARKDOWN__BOLD
     row_number::MarkdownStyle           = _MARKDOWN__BOLD

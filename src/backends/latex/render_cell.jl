@@ -41,9 +41,7 @@ _latex__cell_to_str(cell::UndefinedCell, context::IOContext, ::Val{:show}) = "#u
 Render the `cell` in latex back end using a specific `context` and `renderer`.
 """
 function _latex__render_cell(
-    cell::Any,
-    context::IOContext,
-    renderer::Union{Val{:print}, Val{:show}}
+    cell::Any, context::IOContext, renderer::Union{Val{:print}, Val{:show}}
 )
     cell_str = _latex__cell_to_str(cell, context, renderer)
 
@@ -52,17 +50,13 @@ function _latex__render_cell(
 end
 
 function _latex__render_cell(
-    cell::LatexCell,
-    context::IOContext,
-    renderer::Union{Val{:print}, Val{:show}}
+    cell::LatexCell, context::IOContext, renderer::Union{Val{:print}, Val{:show}}
 )
     return _latex__cell_to_str(cell.data, context, renderer)
 end
 
 function _latex__render_cell(
-    cell::LaTeXString,
-    context::IOContext,
-    renderer::Union{Val{:print}, Val{:show}}
+    cell::LaTeXString, context::IOContext, renderer::Union{Val{:print}, Val{:show}}
 )
     return _latex__cell_to_str(cell, context, renderer)
 end

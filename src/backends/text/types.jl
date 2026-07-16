@@ -78,17 +78,17 @@ Define the format of the borders in the tables printed with the text back end.
 - `row::Char`: Character in a horizontal line inside the table.
 """
 @kwdef struct TextTableBorders
-    up_right_corner::Char      = '┐'
-    up_left_corner::Char       = '┌'
-    bottom_left_corner::Char   = '└'
-    bottom_right_corner::Char  = '┘'
-    up_intersection::Char      = '┬'
-    left_intersection::Char    = '├'
-    right_intersection::Char   = '┤'
-    middle_intersection::Char  = '┼'
-    bottom_intersection::Char  = '┴'
-    column::Char               = '│'
-    row::Char                  = '─'
+    up_right_corner::Char     = '┐'
+    up_left_corner::Char      = '┌'
+    bottom_left_corner::Char  = '└'
+    bottom_right_corner::Char = '┘'
+    up_intersection::Char     = '┬'
+    left_intersection::Char   = '├'
+    right_intersection::Char  = '┤'
+    middle_intersection::Char = '┼'
+    bottom_intersection::Char = '┴'
+    column::Char              = '│'
+    row::Char                 = '─'
 end
 
 # Create some default decorations to reduce allocations.
@@ -220,8 +220,7 @@ Define the style of the tables printed with the text back end.
 - `table_border::Crayon`: Crayon with the style for the table border.
 """
 @kwdef struct TextTableStyle{
-    TFCL<:Union{Crayon, Vector{Crayon}},
-    TCL<:Union{Crayon, Vector{Crayon}}
+    TFCL <: Union{Crayon, Vector{Crayon}}, TCL <: Union{Crayon, Vector{Crayon}}
 }
     title::Crayon                          = _TEXT__BOLD
     subtitle::Crayon                       = _TEXT__DEFAULT
@@ -299,11 +298,7 @@ struct TextHighlighter
     end
 
     function TextHighlighter(f::Function, decoration::Crayon)
-        return new(
-            f,
-            _text__default_highlighter_fd,
-            decoration
-        )
+        return new(f, _text__default_highlighter_fd, decoration)
     end
 
     function TextHighlighter(f::Function; kwargs...)

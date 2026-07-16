@@ -34,9 +34,7 @@
         String,
         matrix;
         column_labels = column_labels,
-        table_format = TextTableFormat(
-            horizontal_line_at_merged_column_labels = true
-        ),
+        table_format = TextTableFormat(; horizontal_line_at_merged_column_labels = true),
     )
 
     @test result == expected
@@ -62,9 +60,9 @@
         String,
         matrix;
         column_labels = column_labels,
-        table_format = TextTableFormat(
+        table_format = TextTableFormat(;
             horizontal_line_at_merged_column_labels = true,
-            suppress_vertical_lines_at_column_labels   = true,
+            suppress_vertical_lines_at_column_labels = true,
         ),
     )
 
@@ -91,9 +89,9 @@
         String,
         matrix;
         column_labels = column_labels,
-        table_format = TextTableFormat(
+        table_format = TextTableFormat(;
             horizontal_line_at_merged_column_labels = true,
-            horizontal_lines_at_column_labels          = [2],
+            horizontal_lines_at_column_labels = [2],
         ),
     )
 
@@ -120,10 +118,10 @@
         String,
         matrix;
         column_labels = column_labels,
-        table_format = TextTableFormat(
-            horizontal_line_at_merged_column_labels = true,
-            horizontal_lines_at_column_labels          = [2],
-            suppress_vertical_lines_at_column_labels   = true,
+        table_format = TextTableFormat(;
+            horizontal_line_at_merged_column_labels  = true,
+            horizontal_lines_at_column_labels        = [2],
+            suppress_vertical_lines_at_column_labels = true,
         ),
     )
 
@@ -132,9 +130,7 @@ end
 
 @testset "Horizontal Lines Do Not Mutate the Table Format" begin
     horizontal_lines = [1, 3]
-    table_format = TextTableFormat(
-        horizontal_lines_at_column_labels = horizontal_lines
-    )
+    table_format = TextTableFormat(; horizontal_lines_at_column_labels = horizontal_lines)
 
     expected = """
 ┌───┬───┐
@@ -147,10 +143,7 @@ end
 """
 
     result = pretty_table(
-        String,
-        [1 2];
-        column_labels = [["A", "B"], ["C", "D"]],
-        table_format = table_format,
+        String, [1 2]; column_labels = [["A", "B"], ["C", "D"]], table_format = table_format
     )
 
     @test result == expected

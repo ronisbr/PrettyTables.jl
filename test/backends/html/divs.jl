@@ -27,11 +27,7 @@
 """
 
     result = pretty_table(
-        String,
-        matrix;
-        backend = :html,
-        table_class = "myClass",
-        wrap_table_in_div = true,
+        String, matrix; backend = :html, table_class = "myClass", wrap_table_in_div = true
     )
 
     @test result == expected

@@ -35,10 +35,7 @@ end
 Print `str` to the buffer `buf` with `alignment` considering the `cell_width`.
 """
 function _markdown__print_aligned(
-    buf::IOContext,
-    str::String,
-    cell_width::Int,
-    alignment::Symbol
+    buf::IOContext, str::String, cell_width::Int, alignment::Symbol
 )
     print(buf, align_string(str, cell_width, alignment; fill = true))
     return nothing
@@ -62,7 +59,7 @@ function _markdown__print_header_separator(
     table_data::TableData,
     row_number_column_width::Int,
     row_label_column_width::Int,
-    printed_data_column_widths::Vector{Int}
+    printed_data_column_widths::Vector{Int},
 )
     print(buf, "|")
 
@@ -126,7 +123,7 @@ function _markdown__print_row_group_line(
     char::Char,
     row_number_column_width::Int,
     row_label_column_width::Int,
-    printed_data_column_widths::Vector{Int}
+    printed_data_column_widths::Vector{Int},
 )
     s = string(char)
 
@@ -162,7 +159,6 @@ function _markdown__print_row_group_line(
         print(buf, " ")
         print(buf, s^first(printed_data_column_widths))
         print(buf, " |")
-
     end
 
     for i in eachindex(printed_data_column_widths)[2:end]
@@ -198,7 +194,7 @@ function _markdown__print_separation_line(
     char::Char,
     row_number_column_width::Int,
     row_label_column_width::Int,
-    printed_data_column_widths::Vector{Int}
+    printed_data_column_widths::Vector{Int},
 )
     s = string(char)
     print(buf, "|")
@@ -251,32 +247,29 @@ leading to `\\n`.
 If `escape_markdown_chars` is `true`, `*`, `_`, `~`, `\\``, and `|`  will be escaped.
 """
 function _markdown__escape_str(
-    io::IO,
-    s::AbstractString,
-    replace_newline::Bool,
-    escape_markdown_chars::Bool
+    io::IO, s::AbstractString, replace_newline::Bool, escape_markdown_chars::Bool
 )
     a = Iterators.Stateful(s)
     for c in a
         if isascii(c)
-            c == '\n'          ? print(io, replace_newline ? "<br>" : "\\n") :
-            c == '*'           ? print(io, escape_markdown_chars ? "\\*" : "*") :
-            c == '_'           ? print(io, escape_markdown_chars ? "\\_" : "_") :
-            c == '~'           ? print(io, escape_markdown_chars ? "\\~" : "~") :
-            c == '`'           ? print(io, escape_markdown_chars ? "\\`" : "`") :
-            c == '|'           ? print(io, escape_markdown_chars ? "\\|" : "|") :
-            '\a' <= c <= '\r'  ? print(io, "\\", "abtnvfr"[Int(c)-6]) :
-            isprint(c)         ? print(io, c) :
-                                 print(io, "\\x", string(UInt32(c), base = 16, pad = 2))
+            c == '\n'         ? print(io, replace_newline ? "<br>" : "\\n") :
+            c == '*'          ? print(io, escape_markdown_chars ? "\\*" : "*") :
+            c == '_'          ? print(io, escape_markdown_chars ? "\\_" : "_") :
+            c == '~'          ? print(io, escape_markdown_chars ? "\\~" : "~") :
+            c == '`'          ? print(io, escape_markdown_chars ? "\\`" : "`") :
+            c == '|'          ? print(io, escape_markdown_chars ? "\\|" : "|") :
+            '\a' <= c <= '\r' ? print(io, "\\", "abtnvfr"[Int(c) - 6]) :
+            isprint(c)        ? print(io, c) :
+            print(io, "\\x", string(UInt32(c); base = 16, pad = 2))
         elseif !Base.isoverlong(c) && !Base.ismalformed(c)
-            isprint(c)         ? print(io, c) :
-            c <= '\x7f'        ? print(io, "\\x", string(UInt32(c), base = 16, pad = 2)) :
-            c <= '\uffff'      ? print(io, "\\u", string(UInt32(c), base = 16, pad = Base.need_full_hex(peek(a)) ? 4 : 2)) :
-                                 print(io, "\\U", string(UInt32(c), base = 16, pad = Base.need_full_hex(peek(a)) ? 8 : 4))
+            isprint(c)    ? print(io, c) :
+            c <= '\x7f'   ? print(io, "\\x", string(UInt32(c); base = 16, pad = 2)) :
+            c <= '\uffff' ? print(io, "\\u", string(UInt32(c); base = 16, pad = Base.need_full_hex(peek(a)) ? 4 : 2)) :
+            print(io, "\\U", string(UInt32(c); base = 16, pad = Base.need_full_hex(peek(a)) ? 8 : 4))
         else # malformed or overlong
             u = bswap(reinterpret(UInt32, c))
             while true
-                print(io, "\\x", string(u % UInt8, base = 16, pad = 2))
+                print(io, "\\x", string(u % UInt8; base = 16, pad = 2))
                 (u >>= 8) == 0 && break
             end
         end
@@ -284,16 +277,14 @@ function _markdown__escape_str(
 end
 
 function _markdown__escape_str(
-    s::AbstractString,
-    replace_newline::Bool,
-    escape_markdown_chars::Bool,
+    s::AbstractString, replace_newline::Bool, escape_markdown_chars::Bool
 )
     return sprint(
         _markdown__escape_str,
         s,
         replace_newline,
         escape_markdown_chars;
-        sizehint = lastindex(s)
+        sizehint = lastindex(s),
     )
 end
 
@@ -305,11 +296,11 @@ end
 Apply the markdown style `s` to `str`.
 """
 function _markdown__apply_style(s::MarkdownStyle, str::String)
-    isempty(str)    && return str
-    s.bold          && (str = "**" * str * "**")
-    s.italic        && (str = "*"  * str * "*")
+    isempty(str) && return str
+    s.bold && (str = "**" * str * "**")
+    s.italic && (str = "*" * str * "*")
     s.strikethrough && (str = "~~" * str * "~~")
-    s.code          && (str = "`"  * str * "`")
+    s.code && (str = "`" * str * "`")
 
     return str
 end
@@ -321,10 +312,10 @@ Return the additional textwidth required to apply the markdown style `s`.
 """
 function _markdown__style_textwidth(s::MarkdownStyle)
     Δ = 0
-    s.bold          && (Δ += 4)
-    s.italic        && (Δ += 2)
+    s.bold && (Δ += 4)
+    s.italic && (Δ += 2)
     s.strikethrough && (Δ += 4)
-    s.code          && (Δ += 2)
+    s.code && (Δ += 2)
 
     return Δ
 end

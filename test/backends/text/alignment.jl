@@ -6,8 +6,13 @@
 
 @testset "Column Alignment Regex" begin
     matrix = [
-        i == 2 ? missing :
-        i == 5 ? nothing : (-1)^j * 10.0^(-i + j) for i in 1:7, j in 1:7
+        if i == 2
+            missing
+        elseif i == 5
+            nothing
+        else
+            (-1)^j * 10.0^(-i + j)
+        end for i in 1:7, j in 1:7
     ]
 
     expected = """
@@ -24,18 +29,12 @@
 └────────────┴────────────┴──────────────┴──────────────┴────────────────┴────────────────┴────────────────┘
 """
 
-    result = pretty_table(
-        String,
-        matrix;
-        alignment_anchor_regex = [r"\."]
-    )
+    result = pretty_table(String, matrix; alignment_anchor_regex = [r"\."])
 
     @test result == expected
 
     result = pretty_table(
-        String,
-        matrix;
-        alignment_anchor_regex = [i => [r"\."] for i in 1:7]
+        String, matrix; alignment_anchor_regex = [i => [r"\."] for i in 1:7]
     )
 
     @test result == expected
@@ -54,11 +53,7 @@
 └───────────┴───────────┴─────────────┴─────────────┴───────────────┴───────────────┴───────────────┘
 """
 
-    result = pretty_table(
-        String,
-        matrix;
-        alignment_anchor_regex = [r"\.", r"^"]
-    )
+    result = pretty_table(String, matrix; alignment_anchor_regex = [r"\.", r"^"])
 
     @test result == expected
 
@@ -80,9 +75,9 @@
 
     result = pretty_table(
         String,
-        matrix,
+        matrix;
         alignment_anchor_regex = [4 => [r"\.", r"^"]],
-        show_row_number_column = true
+        show_row_number_column = true,
     )
 
     @test result == expected
@@ -103,10 +98,10 @@
 
     result = pretty_table(
         String,
-        matrix,
+        matrix;
         alignment_anchor_regex = [4 => [r"\.", r"^"]],
         row_labels = ["a" for i in 1:7],
-        show_row_number_column = true
+        show_row_number_column = true,
     )
 
     @test result == expected
@@ -131,7 +126,7 @@
         String,
         matrix;
         alignment_anchor_regex = [4 => [r"\.", r"^"]],
-        fixed_data_column_widths = [-1, -1, -1, 20, -1, -1, -1]
+        fixed_data_column_widths = [-1, -1, -1, 20, -1, -1, -1],
     )
 
     @test result == expected
@@ -155,7 +150,7 @@
         matrix;
         alignment = :c,
         alignment_anchor_regex = [4 => [r"\.", r"^"]],
-        fixed_data_column_widths = [-1, -1, -1, 20, -1, -1, -1]
+        fixed_data_column_widths = [-1, -1, -1, 20, -1, -1, -1],
     )
 
     @test result == expected
@@ -179,7 +174,7 @@
         matrix;
         alignment = :l,
         alignment_anchor_regex = [4 => [r"\.", r"^"]],
-        fixed_data_column_widths = [-1, -1, -1, 20, -1, -1, -1]
+        fixed_data_column_widths = [-1, -1, -1, 20, -1, -1, -1],
     )
 
     @test result == expected
@@ -204,7 +199,7 @@
         String,
         matrix;
         alignment_anchor_regex = [4 => [r"\.", r"^"]],
-        maximum_data_column_widths = 10
+        maximum_data_column_widths = 10,
     )
 
     @test result == expected
@@ -229,7 +224,7 @@
         String,
         matrix;
         alignment_anchor_regex = [i => [r"\."] for i in 1:7],
-        alignment_anchor_fallback = :c
+        alignment_anchor_fallback = :c,
     )
 
     @test result == expected
@@ -252,7 +247,7 @@
         String,
         matrix;
         alignment_anchor_regex = [i => [r"\."] for i in 1:7],
-        alignment_anchor_fallback = :r
+        alignment_anchor_fallback = :r,
     )
 
     @test result == expected
@@ -281,7 +276,7 @@
         matrix;
         alignment_anchor_regex = [r"\."],
         apply_alignment_regex_to_summary_rows = true,
-        summary_rows = [c -> "123456.7890", c -> "0987.654321"]
+        summary_rows = [c -> "123456.7890", c -> "0987.654321"],
     )
 
     expected = """
@@ -307,7 +302,7 @@
         alignment_anchor_fallback = :r,
         alignment_anchor_regex = [r"\."],
         apply_alignment_regex_to_summary_rows = true,
-        summary_rows = [c -> "123456.7890", c -> "0987.654321"]
+        summary_rows = [c -> "123456.7890", c -> "0987.654321"],
     )
 
     expected = """
@@ -334,7 +329,7 @@
         alignment_anchor_regex = [r"\."],
         apply_alignment_regex_to_summary_rows = true,
         maximum_data_column_widths = 10,
-        summary_rows = [c -> "123456.7890", c -> "0987.654321"]
+        summary_rows = [c -> "123456.7890", c -> "0987.654321"],
     )
 
     expected = """
@@ -360,16 +355,19 @@
         alignment_anchor_fallback = :r,
         alignment_anchor_regex = [3 => [r"\.", r"^"]],
         apply_alignment_regex_to_summary_rows = true,
-        summary_rows = [c -> "123456.7890", c -> "0987.654321"]
+        summary_rows = [c -> "123456.7890", c -> "0987.654321"],
     )
 end
 
 @testset "Column Alignment Regex With Multiple Lines" begin
     matrix = [
-        i == 2 ? missing :
-        i == 5 ? nothing :
-        "$((-1)^j * round(10.0^(-i + j); digits = 3))\n$((-1)^j * round(10.0^(-i + (j + 1)); digits = 3))"
-        for i in 1:4, j in 1:4
+        if i == 2
+            missing
+        elseif i == 5
+            nothing
+        else
+            "$((-1)^j * round(10.0^(-i + j); digits = 3))\n$((-1)^j * round(10.0^(-i + (j + 1)); digits = 3))"
+        end for i in 1:4, j in 1:4
     ]
 
     expected = """
@@ -394,7 +392,7 @@ end
         matrix;
         alignment_anchor_regex = [r"\."],
         line_breaks = true,
-        table_format = TextTableFormat(; @text__all_horizontal_lines)
+        table_format = TextTableFormat(; @text__all_horizontal_lines),
     )
 
     @test result == expected
@@ -423,7 +421,7 @@ end
         alignment_anchor_regex = [r"\."],
         line_breaks = true,
         show_row_number_column = true,
-        table_format = TextTableFormat(; @text__all_horizontal_lines)
+        table_format = TextTableFormat(; @text__all_horizontal_lines),
     )
 
     @test result == expected
@@ -457,7 +455,7 @@ end
         line_breaks = true,
         apply_alignment_regex_to_summary_rows = true,
         summary_rows = [c -> "123456.7890", c -> "0987.654321"],
-        table_format = TextTableFormat(; @text__all_horizontal_lines)
+        table_format = TextTableFormat(; @text__all_horizontal_lines),
     )
 
     expected = """
@@ -489,6 +487,6 @@ end
         line_breaks = true,
         show_row_number_column = true,
         summary_rows = [c -> "123456.7890", c -> "0987.654321"],
-        table_format = TextTableFormat(; @text__all_horizontal_lines)
+        table_format = TextTableFormat(; @text__all_horizontal_lines),
     )
 end

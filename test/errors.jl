@@ -29,8 +29,6 @@ end
     ]
 
     @test_throws ArgumentError pretty_table(
-        data,
-        summary_rows = [(data, i) -> i],
-        summary_row_labels = ["First", "Second"]
+        data, summary_rows = [(data, i) -> i], summary_row_labels = ["First", "Second"]
     )
 end

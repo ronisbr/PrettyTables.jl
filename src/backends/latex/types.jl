@@ -138,8 +138,8 @@ Define the style of the tables printed with the latex back end.
     omitted cell summary.
 """
 @kwdef struct LatexTableStyle{
-    TFCL<:Union{LatexEnvironments, Vector{LatexEnvironments}},
-    TCL<:Union{LatexEnvironments, Vector{LatexEnvironments}}
+    TFCL <: Union{LatexEnvironments, Vector{LatexEnvironments}},
+    TCL <: Union{LatexEnvironments, Vector{LatexEnvironments}},
 }
     title::LatexEnvironments                          = _LATEX__LARGE_BOLD
     subtitle::LatexEnvironments                       = _LATEX__ITALIC

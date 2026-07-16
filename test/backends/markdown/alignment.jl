@@ -23,7 +23,7 @@
             matrix;
             alignment = :c,
             backend = :markdown,
-            cell_alignment = [(2, 3) => :r, (4, 5) => :l]
+            cell_alignment = [(2, 3) => :r, (4, 5) => :l],
         )
 
         @test result == expected
@@ -45,10 +45,9 @@
             matrix;
             backend = :markdown,
             alignment = [:l, :c, :r, :l, :c],
-            cell_alignment = [(2, 3) => :r, (4, 5) => :l]
+            cell_alignment = [(2, 3) => :r, (4, 5) => :l],
         )
 
         @test result == expected
     end
-
 end

@@ -22,9 +22,9 @@ struct EmptyCells
     number_of_cells::Int
 
     function EmptyCells(number_of_cells::Int)
-        number_of_cells < 1 && throw(ArgumentError(
-            "The `number_of_cells` of `EmptyCells` must be greater than 0."
-        ))
+        number_of_cells < 1 && throw(
+            ArgumentError("The `number_of_cells` of `EmptyCells` must be greater than 0."),
+        )
 
         return new(number_of_cells)
     end
@@ -47,16 +47,16 @@ struct MultiColumn
     alignment::Symbol
 
     function MultiColumn(column_span::Int, data::Any)
-        column_span < 2 && throw(ArgumentError(
-            "The `column_span` of `MultiColumn` must be greater than 1."
-        ))
+        column_span < 2 && throw(
+            ArgumentError("The `column_span` of `MultiColumn` must be greater than 1.")
+        )
         return new(column_span, data, :c)
     end
 
     function MultiColumn(column_span::Int, data::Any, alignment::Symbol)
-        column_span < 2 && throw(ArgumentError(
-            "The `column_span` of `MultiColumn` must be greater than 1."
-        ))
+        column_span < 2 && throw(
+            ArgumentError("The `column_span` of `MultiColumn` must be greater than 1.")
+        )
         return new(column_span, data, alignment)
     end
 end
@@ -245,7 +245,7 @@ const _NEW_ROW_AFTER_GROUP = 14
 const _VERTICAL_CONTINUATION_CELL_ACTIONS = (
     :vertical_continuation_cell,
     :row_number_vertical_continuation_cell,
-    :row_label_vertical_continuation_cell
+    :row_label_vertical_continuation_cell,
 )
 
 const _TABLE_ROW_SECTION_NAMES = Dict(
@@ -255,7 +255,7 @@ const _TABLE_ROW_SECTION_NAMES = Dict(
     :continuation_row => "Continuation Row",
     :row_group_label  => "Row Group Label",
     :summary_row      => "Summary Row",
-    :table_footer     => "Table Footer"
+    :table_footer     => "Table Footer",
 )
 
 """
@@ -283,12 +283,7 @@ struct PrintingTableState
     j::Int
     row_section::Symbol
 
-    function PrintingTableState(
-        state::Int,
-        i::Int,
-        j::Int,
-        row_section::Symbol
-    )
+    function PrintingTableState(state::Int, i::Int, j::Int, row_section::Symbol)
         return new(state, i, j, row_section)
     end
 
