@@ -9,8 +9,23 @@
 
 Return the normalized data cell at `(i, j)`, or `_UNDEFINED_CELL` if it is unassigned.
 """
-function _get_data_cell(data::Union{AbstractVecOrMat, ColumnTable, RowTable}, i::Int, j::Int)
+function _get_data_cell(data::Union{AbstractVecOrMat, ColumnTable}, i::Int, j::Int)
     return isassigned(data, i, j) ? getindex(data, i, j) : _UNDEFINED_CELL
+end
+
+"""
+    _get_data_cell(data::RowTable, i::Int, j::Int) -> Any
+
+Return a row-table cell using one retrieval, mapping an undefined reference to the undefined
+cell marker.
+"""
+function _get_data_cell(data::RowTable, i::Int, j::Int)
+    try
+        return getindex(data, i, j)
+    catch e
+        e isa UndefRefError && return _UNDEFINED_CELL
+        rethrow()
+    end
 end
 
 """

@@ -52,6 +52,91 @@
     @test result == expected
 end
 
+@testset "RowTable acquisition state" begin
+    mutable struct InstrumentedRowSource
+        rows::Vector{NamedTuple{(:a, :b), Tuple{Int, Int}}}
+        iterator_calls::Int
+        subset_calls::Dict{Int, Int}
+        subset_works::Bool
+    end
+
+    Tables.istable(::Type{InstrumentedRowSource}) = true
+    Tables.rowaccess(::Type{InstrumentedRowSource}) = true
+    Tables.rows(source::InstrumentedRowSource) = source
+    Tables.schema(::InstrumentedRowSource) = Tables.Schema((:a, :b), (Int, Int))
+    Base.length(source::InstrumentedRowSource) = length(source.rows)
+
+    function Base.iterate(source::InstrumentedRowSource)
+        isempty(source.rows) && return nothing
+        source.iterator_calls += 1
+        return source.rows[1], (:opaque_iterator_state, 2)
+    end
+
+    function Base.iterate(source::InstrumentedRowSource, state::Tuple{Symbol, Int})
+        i = state[2]
+        i > length(source.rows) && return nothing
+        source.iterator_calls += 1
+        return source.rows[i], (:opaque_iterator_state, i + 1)
+    end
+
+    function Tables.subset(source::InstrumentedRowSource, i::Int; viewhint = nothing)
+        source.subset_calls[i] = get(source.subset_calls, i, 0) + 1
+        source.subset_works || throw(ArgumentError("subset disabled"))
+        return source.rows[i]
+    end
+
+    make_source(; subset_works = false) = InstrumentedRowSource(
+        [(a = i, b = 10i) for i in 1:6],
+        0,
+        Dict{Int, Int}(),
+        subset_works
+    )
+
+    source = make_source()
+    rtable = PrettyTables.RowTable(source)
+    source.iterator_calls = 0
+    @test [rtable[i, 1] for i in 1:6] == collect(1:6)
+    @test source.iterator_calls == 6
+    @test all(==(1), values(source.subset_calls))
+
+    for i in (Int32(2), UInt(2))
+        source = make_source()
+        rtable = PrettyTables.RowTable(source)
+        source.iterator_calls = 0
+        @test (rtable[i, 1], rtable[i, 2]) == (2, 20)
+        @test source.iterator_calls == 2
+    end
+
+    source = make_source()
+    rtable = PrettyTables.RowTable(source)
+    source.iterator_calls = 0
+    @test (rtable[3, 1], rtable[3, 2]) == (3, 30)
+    @test source.iterator_calls == 3
+    @test get(source.subset_calls, 3, 0) == 1
+    @test rtable[1, 1] == 1
+    @test source.iterator_calls == 4
+    @test rtable[2, 2] == 20
+    @test source.iterator_calls == 5
+
+    out_of_range_failed = try
+        rtable[10, 1]
+        false
+    catch
+        true
+    end
+    @test out_of_range_failed
+    @test rtable[2, 1] == 2
+
+    source = make_source(; subset_works = true)
+    rtable = PrettyTables.RowTable(source)
+    source.iterator_calls = 0
+    @test [(rtable[i, 1], rtable[i, 2]) for i in 1:6] ==
+        [(i, 10i) for i in 1:6]
+    @test source.iterator_calls == 0
+    @test source.subset_calls == Dict(i => 1 for i in 1:6)
+    @test PrettyTables._get_data(rtable) === source
+end
+
 @testset "Tables.jl without Schema" begin
 
     expected = """

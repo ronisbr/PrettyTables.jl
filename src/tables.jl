@@ -116,36 +116,88 @@ Base.@nospecializeinfer function RowTable(@nospecialize(data::Any))
 
     size_j = length(names)::Int
 
-    return RowTable(data, table, names, (size_i, size_j))
+    return RowTable(data, table, names, (size_i, size_j), RowTableAccessState())
+end
+
+"""
+    _row_table_subset(rtable::RowTable, i::Integer) -> Tuple{Bool, Any}
+
+Acquire and cache the subset row for row `i`, including acquisition failures.
+"""
+function _row_table_subset(rtable::RowTable, i::Integer)
+    access_state = rtable.access_state
+
+    # Reset the row-local subset cache for a new requested row.
+    if access_state.requested_row != i
+        access_state.requested_row = i
+        access_state.subset_attempted = false
+        access_state.subset_succeeded = false
+        access_state.subset_row = nothing
+    end
+
+    # Return a previously cached subset acquisition result.
+    access_state.subset_attempted &&
+        return access_state.subset_succeeded, access_state.subset_row
+
+    # Mark the attempt before invoking user-provided table code.
+    access_state.subset_attempted = true
+    try
+        access_state.subset_row = Tables.subset(rtable.data, i; viewhint = true)
+
+        # Record a successful subset acquisition.
+        access_state.subset_succeeded = true
+    catch
+        # Record a failed subset acquisition.
+        access_state.subset_row = nothing
+        access_state.subset_succeeded = false
+    end
+
+    # Return the cached subset acquisition status and row.
+    return access_state.subset_succeeded, access_state.subset_row
+end
+
+"""
+    _row_table_iterator_row(rtable::RowTable, i::Integer) -> Any
+
+Acquire row `i` from the iterator, advancing forward or restarting for backward requests.
+"""
+function _row_table_iterator_row(rtable::RowTable, i::Integer)
+    access_state = rtable.access_state
+
+    if !access_state.iterator_started || i < access_state.iterator_row_index
+        step = iterate(rtable.table)
+        step === nothing && error("The row `i` does not exist.")
+
+        access_state.iterator_row, access_state.iterator_state = step
+        access_state.iterator_row_index = 1
+        access_state.iterator_started = true
+    end
+
+    while access_state.iterator_row_index < i
+        step = iterate(rtable.table, access_state.iterator_state)
+        step === nothing && error("The row `i` does not exist.")
+
+        access_state.iterator_row, access_state.iterator_state = step
+        access_state.iterator_row_index += 1
+    end
+
+    return access_state.iterator_row
 end
 
 function getindex(rtable::RowTable, i, j)
-    # Get the column name.
     column_name = rtable.column_names[j]
+    subset_succeeded, subset_row = _row_table_subset(rtable, i)
 
-    # If we have `Tables.subset`, let's use it. Otherwise, we fallback to the row iteration
-    # as indicated here:
-    #
-    #   https://github.com/ronisbr/PrettyTables.jl/issues/220
-
-    try
-        row = Tables.subset(rtable.data, i; viewhint = true)
-        element = Tables.getcolumn(row, column_name)
-        return element
-
-    catch e
-        # Get the i-th row by iterating the row table.
-        it, state = iterate(rtable.table)
-
-        for _ in 2:i
-            it, state = iterate(rtable.table, state)
-            it === nothing && error("The row `i` does not exist.")
+    if subset_succeeded
+        try
+            return Tables.getcolumn(subset_row, column_name)
+        catch
+            # Preserve the broad subset-to-iterator fallback semantics.
         end
-
-        element = Tables.getcolumn(it, column_name)
-
-        return element
     end
+
+    row = _row_table_iterator_row(rtable, i)
+    return Tables.getcolumn(row, column_name)
 end
 
 function getindex(rtable::RowTable, inds...)

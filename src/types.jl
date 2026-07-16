@@ -172,16 +172,56 @@ struct ColumnTable
 end
 
 """
+    mutable struct RowTableAccessState
+
+Mutable, constant-space state used to acquire rows from a `RowTable`.
+
+# Fields
+
+- `requested_row::Int`: Row index associated with the cached subset acquisition.
+    (**Default**: `0`)
+- `subset_attempted::Bool`: Whether subset acquisition was attempted for `requested_row`.
+    (**Default**: `false`)
+- `subset_succeeded::Bool`: Whether subset acquisition succeeded for `requested_row`.
+    (**Default**: `false`)
+- `subset_row::Any`: Row returned by the cached subset acquisition.
+    (**Default**: `nothing`)
+- `iterator_row_index::Int`: Index of the row currently held by the iterator cursor.
+    (**Default**: `0`)
+- `iterator_row::Any`: Row currently held by the iterator cursor.
+    (**Default**: `nothing`)
+- `iterator_state::Any`: Opaque state required to continue the row iterator.
+    (**Default**: `nothing`)
+- `iterator_started::Bool`: Whether iterator traversal has started.
+    (**Default**: `false`)
+"""
+mutable struct RowTableAccessState
+    requested_row::Int
+    subset_attempted::Bool
+    subset_succeeded::Bool
+    subset_row::Any
+    iterator_row_index::Int
+    iterator_row::Any
+    iterator_state::Any
+    iterator_started::Bool
+
+    function RowTableAccessState()
+        return new(0, false, false, nothing, 0, nothing, nothing, false)
+    end
+end
+
+"""
     struct RowTable
 
 This structure helps to access elements that comply with the row access specification of
 Tables.jl.
 """
 struct RowTable
-    data::Any                    # .......................................... Original table
-    table::Any                   # ..................... Table converted using `Tables.rows`
-    column_names::Vector{Symbol} # ............................................ Column names
-    size::Tuple{Int, Int}        # ....................................... Size of the table
+    data::Any                         # ..................................... Original table
+    table::Any                        # ................ Table converted using `Tables.rows`
+    column_names::Vector{Symbol}      # ....................................... Column names
+    size::Tuple{Int, Int}             # .................................. Size of the table
+    access_state::RowTableAccessState # ........................... Mutable row access state
 end
 
 # == Print Table State =====================================================================
@@ -365,4 +405,3 @@ function Base.setproperty!(pt::PrettyTable, field::Symbol, value::Any)
     field in fieldnames(PrettyTable) && return setfield!(pt, field, value)
     return getfield(pt, :configurations)[field] = value
 end
-
