@@ -1,6 +1,11 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 3.4.2
+-------------
+
+- ![Info][badge-info] Remove stale tests for the old Excel formatter.
+
 Version 3.4.1
 -------------
 
