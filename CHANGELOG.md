@@ -1,6 +1,16 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 3.4.1
+-------------
+
+- ![Enhancement][badge-enhancement] Improve the text backend performance, including a 13×
+  speedup for row tables.
+- ![Bugfix][badge-bugfix] Correct a broken image link in the Excel documentation. (PR
+  [#314][gh-pr-314])
+- ![Bugfix][badge-bugfix] Fix edge cases in the text backend.
+- ![Bugfix][badge-bugfix] Remove an unnecessary formatter.
+
 Version 3.4.0
 -------------
 
@@ -1018,3 +1028,4 @@ Version 0.1.0
 [gh-pr-305]: https://github.com/ronisbr/PrettyTables.jl/pull/305
 [gh-pr-310]: https://github.com/ronisbr/PrettyTables.jl/pull/310
 [gh-pr-311]: https://github.com/ronisbr/PrettyTables.jl/pull/311
+[gh-pr-314]: https://github.com/ronisbr/PrettyTables.jl/pull/314
