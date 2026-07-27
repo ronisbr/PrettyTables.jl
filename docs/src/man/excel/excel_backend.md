@@ -139,7 +139,7 @@ excel_formatters = [
 ```
 
 Excel formatters apply native Excel formatting to native Excel values. However,
-`PrettyTables,jl` can handle Julia types that can't be represented natively in Excel. If
+`PrettyTables.jl` can handle Julia types that can't be represented natively in Excel. If
 these are passed natively, then XLSX.jl will fail. To circumvent this, a predefined
 formatter has been provided which converts any unhandled types to strings (using
 `string()`). For more information, see [`fmt__excel_stringify`](@ref).
