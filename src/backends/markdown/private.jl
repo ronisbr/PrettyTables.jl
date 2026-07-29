@@ -138,7 +138,6 @@ function _markdown__print_row_group_line(
     row_label_column_width::Int,
     printed_data_column_widths::Vector{Int},
 )
-    s = string(char)
 
     # Check the initial column.
     cell_width = if table_data.show_row_number_column
@@ -160,23 +159,23 @@ function _markdown__print_row_group_line(
     if table_data.show_row_number_column
         if _has_row_labels(table_data)
             print(buf, " ")
-            print(buf, s^row_label_column_width)
+            print(buf, repeat(char, row_label_column_width))
             print(buf, " |")
         end
 
         print(buf, " ")
-        print(buf, s^first(printed_data_column_widths))
+        print(buf, repeat(char, first(printed_data_column_widths)))
         print(buf, " |")
 
     elseif _has_row_labels(table_data)
         print(buf, " ")
-        print(buf, s^first(printed_data_column_widths))
+        print(buf, repeat(char, first(printed_data_column_widths)))
         print(buf, " |")
     end
 
     for i in eachindex(printed_data_column_widths)[2:end]
         print(buf, " ")
-        print(buf, s^printed_data_column_widths[i])
+        print(buf, repeat(char, printed_data_column_widths[i]))
         print(buf, " |")
     end
 
@@ -209,14 +208,13 @@ function _markdown__print_separation_line(
     row_label_column_width::Int,
     printed_data_column_widths::Vector{Int},
 )
-    s = string(char)
     print(buf, "|")
 
     # == Row Number Column =================================================================
 
     if table_data.show_row_number_column
         print(buf, " ")
-        print(buf, s^row_number_column_width)
+        print(buf, repeat(char, row_number_column_width))
         print(buf, " |")
     end
 
@@ -224,7 +222,7 @@ function _markdown__print_separation_line(
 
     if _has_row_labels(table_data)
         print(buf, " ")
-        print(buf, s^row_label_column_width)
+        print(buf, repeat(char, row_label_column_width))
         print(buf, " |")
     end
 
@@ -232,13 +230,13 @@ function _markdown__print_separation_line(
 
     for w in printed_data_column_widths
         print(buf, " ")
-        print(buf, s^w)
+        print(buf, repeat(char, w))
         print(buf, " |")
     end
 
     # == Continuation Column ===============================================================
 
-    _is_horizontally_cropped(table_data) && print(buf, " $s |")
+    _is_horizontally_cropped(table_data) && print(buf, " ", char, " |")
 
     println(buf)
 

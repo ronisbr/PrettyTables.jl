@@ -90,26 +90,30 @@ end
 Create the HTML style string using the information in the dictionary `style`.
 """
 function _html__create_style(style::Vector{HtmlPair})
-    # If there is no keys in the style dictionary, just return the tag.
+    # If there are no keys in the style vector, just return the tag.
     isempty(style) && return ""
-
-    # Create the style string.
-    style_str = " style = \""
 
     # Make sure the style is sorted by key.
     sort!(style)
 
-    @inbounds for i in eachindex(style)
-        key, value = style[i]
+    # NOTE: The separator is *prepended* to every entry but the first. Appending it and
+    # skipping the last index left a trailing space whenever the last pair had an empty
+    # value, as in `["a" => "1", "z" => ""]`.
+    style_str = ""
+    first_pair = true
 
+    @inbounds for (key, value) in style
         # If the value is empty, then just continue.
         isempty(value) && continue
 
-        style_str *= "$key: $value;"
-        i != last(eachindex(style)) && (style_str *= " ")
+        style_str *= first_pair ? "$key: $value;" : " $key: $value;"
+        first_pair = false
     end
 
-    return style_str * "\""
+    # Every value was empty, so there is no style to emit.
+    first_pair && return ""
+
+    return " style = \"" * style_str * "\""
 end
 
 _html__create_style(::Nothing) = ""

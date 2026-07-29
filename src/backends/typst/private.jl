@@ -538,10 +538,16 @@ Merge two Typst properties, `bproperties` and `nproperties`, giving priority to
 function _typst__merge_properties!(
     bproperties::Vector{TypstPair}, nproperties::Vector{TypstPair}
 )
-    nkeys = first.(nproperties)
-
+    # NOTE: `first.(nproperties)` would allocate a `Vector{String}` on every merge. Scanning
+    # `nproperties` directly avoids it, and the vectors involved are tiny.
     filter!(bproperties) do l
-        first(l) ∉ nkeys
+        k = first(l)
+
+        for np in nproperties
+            first(np) == k && return false
+        end
+
+        return true
     end
 
     append!(bproperties, nproperties)

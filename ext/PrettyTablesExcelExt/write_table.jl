@@ -194,7 +194,8 @@ function _excel__write_table!(
             # a full run of the printing state iterator and only this branch consumes it.
             _, next_rs, _ = _next(ps, table_data)
 
-            XLSX.setRowHeight(sheet, ir + anchor_row_offset; height = max_row_height[ir])
+            # NOTE: The row height is set once for every row in the post-loop block, which
+            # already has the final value. Setting it here as well doubled the work.
 
             if rs == :column_labels && next_rs != :column_labels
                 if table_format.horizontal_line_after_column_labels
