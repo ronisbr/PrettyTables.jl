@@ -309,3 +309,64 @@ end
         @test result == expected
     end
 end
+
+@testset "Default Column Labels Without Any Row" verbose = true begin
+    # The number of columns of a matrix does not depend on its number of rows. Hence, a
+    # matrix with no rows but a positive number of columns must still get one automatic
+    # label per column.
+    #
+    # The guard that handles empty data used `isempty`, which is length-based and thus also
+    # true here, so the automatic labels came out as an empty row and the table failed the
+    # "one label per column" validation.
+    empty_matrix = Matrix{Int}(undef, 0, 3)
+
+    @testset "Text" begin
+        expected = """
+┌────────┬────────┬────────┐
+│ Col. 1 │ Col. 2 │ Col. 3 │
+└────────┴────────┴────────┘
+"""
+
+        @test pretty_table(String, empty_matrix) == expected
+    end
+
+    @testset "Row Number Column" begin
+        expected = """
+┌─────┬────────┬────────┬────────┐
+│ Row │ Col. 1 │ Col. 2 │ Col. 3 │
+└─────┴────────┴────────┴────────┘
+"""
+
+        @test pretty_table(String, empty_matrix; show_row_number_column = true) == expected
+    end
+
+    @testset "Markdown" begin
+        expected = """
+| **Col. 1** | **Col. 2** | **Col. 3** |
+|-----------:|-----------:|-----------:|
+"""
+
+        @test pretty_table(String, empty_matrix; backend = :markdown) == expected
+    end
+
+    @testset "Other Empty Shapes Are Unchanged" begin
+        # A vector without elements is defined to have no columns, and so is a matrix
+        # without columns. Both must keep printing nothing.
+        @test pretty_table(String, Int[]) == ""
+        @test pretty_table(String, Matrix{Int}(undef, 0, 0)) == ""
+        @test pretty_table(String, Matrix{Int}(undef, 3, 0)) == ""
+    end
+
+    @testset "Offset Columns" begin
+        # The labels follow the column axis, exactly like they do for a non-empty table.
+        data = OffsetArray(Matrix{Int}(undef, 0, 3), 1:0, 0:2)
+
+        expected = """
+┌────────┬────────┬────────┐
+│ Col. 0 │ Col. 1 │ Col. 2 │
+└────────┴────────┴────────┘
+"""
+
+        @test pretty_table(String, data) == expected
+    end
+end
