@@ -397,3 +397,77 @@ end
         @test result == expected
     end
 end
+
+@testset "Tables.jl Wrapper Edge Cases" verbose = true begin
+    @testset "Column Table With Tuple Columns" begin
+        # `isassigned` short-circuits to `true` when the column is a `Tuple`, since a tuple
+        # cannot hold an undefined element. Every existing column table test uses `Vector`
+        # columns, so that branch was never taken.
+        struct TupleColumnTable
+            columns::NamedTuple
+        end
+
+        Tables.istable(::Type{TupleColumnTable}) = true
+        Tables.columnaccess(::Type{TupleColumnTable}) = true
+        Tables.columns(t::TupleColumnTable) = t
+        Tables.columnnames(t::TupleColumnTable) = keys(getfield(t, :columns))
+        Tables.getcolumn(t::TupleColumnTable, nm::Symbol) = getfield(t, :columns)[nm]
+        Tables.getcolumn(t::TupleColumnTable, i::Int) = getfield(t, :columns)[i]
+        Tables.rowcount(t::TupleColumnTable) = length(first(getfield(t, :columns)))
+
+        expected = """
+┌───┬───┐
+│ a │ b │
+├───┼───┤
+│ 1 │ 4 │
+│ 2 │ 5 │
+│ 3 │ 6 │
+└───┴───┘
+"""
+
+        table = TupleColumnTable((a = (1, 2, 3), b = (4, 5, 6)))
+
+        @test pretty_table(String, table) == expected
+    end
+
+    @testset "Row Table Without Rows" verbose = true begin
+        # `RowTable` obtains the column names from the first row. When the table has no rows
+        # at all, it must fall back to the schema, and to an empty set of columns when there
+        # is no schema either. Neither fallback was covered.
+
+        @testset "With a Schema" begin
+            struct EmptyRowsWithSchema end
+
+            Tables.istable(::Type{EmptyRowsWithSchema}) = true
+            Tables.rowaccess(::Type{EmptyRowsWithSchema}) = true
+            Tables.rows(s::EmptyRowsWithSchema) = s
+            Tables.schema(::EmptyRowsWithSchema) = Tables.Schema((:a, :b), (Int, Int))
+            Base.length(::EmptyRowsWithSchema) = 0
+            Base.iterate(::EmptyRowsWithSchema, state = 1) = nothing
+
+            expected = """
+┌───────┬───────┐
+│     a │     b │
+│ Int64 │ Int64 │
+└───────┴───────┘
+"""
+
+            @test pretty_table(String, EmptyRowsWithSchema()) == expected
+        end
+
+        @testset "Without a Schema" begin
+            struct EmptyRowsNoSchema end
+
+            Tables.istable(::Type{EmptyRowsNoSchema}) = true
+            Tables.rowaccess(::Type{EmptyRowsNoSchema}) = true
+            Tables.rows(s::EmptyRowsNoSchema) = s
+            Tables.schema(::EmptyRowsNoSchema) = nothing
+            Base.length(::EmptyRowsNoSchema) = 0
+            Base.iterate(::EmptyRowsNoSchema, state = 1) = nothing
+
+            # Without rows and without a schema there is nothing to name, so the table has
+            # no columns and prints nothing.
+            @test pretty_table(String, EmptyRowsNoSchema()) == ""
+        end
+    end
+end
