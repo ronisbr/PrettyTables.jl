@@ -80,6 +80,12 @@ length(ctable::ColumnTable) = ctable.size[1] * ctable.size[2]
 
 size(ctable::ColumnTable) = ctable.size
 
+# A whole-column query must be answered by the wrapper itself. Otherwise, it would be
+# forwarded to the user's object, which usually does not support `[:, j]` indexing. This is
+# the access pattern the summary rows use to obtain the column they must reduce.
+Base.maybeview(ctable::ColumnTable, ::Colon, j::Integer) =
+    Tables.getcolumn(ctable.table, ctable.column_names[j])
+
 Base.maybeview(ctable::ColumnTable, inds...) = Base.maybeview(ctable.data, inds...)
 
 _get_data(ctable::ColumnTable) = ctable.data
@@ -239,6 +245,13 @@ end
 length(rtable::RowTable) = rtable.size[1] * rtable.size[2]
 
 size(rtable::RowTable) = rtable.size
+
+# A whole-column query must be answered by the wrapper itself. Otherwise, it would be
+# forwarded to the user's object, which usually does not support `[:, j]` indexing. Since a
+# row table has no columns, we must materialize one. Notice that the rows are walked forward,
+# meaning this is `O(num_rows)`, and that it is only paid once per summary row per column.
+Base.maybeview(rtable::RowTable, ::Colon, j::Integer) =
+    [rtable[i, j] for i in 1:rtable.size[1]]
 
 Base.maybeview(rtable::RowTable, inds...) = Base.maybeview(rtable.data, inds...)
 

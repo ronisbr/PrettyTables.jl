@@ -36,11 +36,7 @@ function _typst__alignment_configuration(td::TableData)
 
     # == Data Columns ======================================================================
 
-    nc = if td.maximum_number_of_columns >= 0
-        min(td.maximum_number_of_columns, num_columns)
-    else
-        num_columns
-    end
+    nc = _number_of_printed_data_columns(td)
 
     for i in 1:nc
         print(alignment_str, _typst__alignment(_data_column_alignment(td, i)) * ", ")
@@ -375,11 +371,7 @@ function _typst__vertical_lines!(
 
     # == Data Columns ======================================================================
 
-    nc = if td.maximum_number_of_columns >= 0
-        min(td.maximum_number_of_columns, num_columns)
-    else
-        num_columns
-    end
+    nc = _number_of_printed_data_columns(td)
 
     for i in 1:nc
         current_typst_column += 1

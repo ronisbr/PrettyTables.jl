@@ -399,7 +399,7 @@ Base.@nospecializeinfer function _pretty_table(
     if !isnothing(summary_rows) && !isnothing(summary_row_labels)
         length(summary_rows) != length(summary_row_labels) && throw(
             ArgumentError(
-                "The length of `summary_rows` ($length(summary_rows)) must be equal to the length of `summary_row_labels` ($length(summary_row_labels)).",
+                "The length of `summary_rows` ($(length(summary_rows))) must be equal to the length of `summary_row_labels` ($(length(summary_row_labels))).",
             ),
         )
     end

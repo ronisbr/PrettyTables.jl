@@ -28,3 +28,22 @@
 
     @test result == expected
 end
+
+@testset "Empty Table With Row Numbers" begin
+    # The row number column width used `floor(Int, log10(m) + 1)`, which throws an
+    # `InexactError` for an empty table because `log10(0) == -Inf`.
+    expected = """
+| **Row** | **A** | **B** |
+|--------:|------:|------:|
+"""
+
+    result = pretty_table(
+        String,
+        Matrix{Int}(undef, 0, 2);
+        backend = :markdown,
+        show_row_number_column = true,
+        column_labels = [["A", "B"]],
+    )
+
+    @test result == expected
+end

@@ -134,7 +134,12 @@ Return whether `table_data` is vertically cropped, meaning that a continuation r
 printed.
 """
 function _is_vertically_cropped(table_data::TableData)
-    return table_data.maximum_number_of_rows > 0 ?
+    # NOTE: For rows, `maximum_number_of_rows == 0` means "crop to zero rows", whereas a
+    # negative value means "no limit". This is the convention `_next` and
+    # `_number_of_printed_data_rows` use. Testing for `> 0` here made a table cropped to zero
+    # rows be reported as not cropped, so the data columns were sized without accounting for
+    # the continuation row.
+    return table_data.maximum_number_of_rows >= 0 ?
            table_data.num_rows > table_data.maximum_number_of_rows : false
 end
 
@@ -144,8 +149,12 @@ end
 Return the number of printed columns in `table_data`, which includes the continuation row.
 """
 function _number_of_printed_columns(table_data::TableData)
+    # NOTE: `maximum_number_of_columns <= 0` means "no limit", exactly like in `_next` and in
+    # `_number_of_printed_data_columns`. Testing for `>= 0` here made a `0` be treated as
+    # "crop to a single column", so the back ends laid out one column while the iterator fed
+    # them all of them.
     data_columns =
-        table_data.maximum_number_of_columns >= 0 ?
+        table_data.maximum_number_of_columns > 0 ?
         # If we are cropping the table, we have one additional column for the continuation
         # characters.
         min(table_data.maximum_number_of_columns + 1, table_data.num_columns) :

@@ -80,6 +80,21 @@ function _text__print_table(
         vertical_lines_at_data_columns = tf.vertical_lines_at_data_columns::Vector{Int}
     end
 
+    # The width keywords are indexed inside the per-cell loop. Hence, we must check their
+    # length here to raise a meaningful error instead of a `BoundsError` deep in the back
+    # end.
+    for (name, v) in (
+        ("fixed_data_column_widths", fixed_data_column_widths),
+        ("minimum_data_column_widths", minimum_data_column_widths),
+        ("maximum_data_column_widths", maximum_data_column_widths),
+    )
+        (v isa AbstractVector) && (length(v) != table_data.num_columns) && throw(
+            ArgumentError(
+                "The length of `$name` ($(length(v))) must be equal to the number of columns ($(table_data.num_columns)).",
+            ),
+        )
+    end
+
     if minimum_data_column_widths isa Number
         minimum_data_column_widths =
             minimum_data_column_widths .+ 0 * (1:(table_data.num_columns))
@@ -379,7 +394,8 @@ function _text__print_table(
     # If the user wants equal data column widths, make every column width equal to the
     # largest one.
     if equal_data_column_widths
-        printed_data_column_widths .= maximum(printed_data_column_widths)
+        # `init` is required because the table can have no columns at all.
+        printed_data_column_widths .= maximum(printed_data_column_widths; init = 0)
     end
 
     # == Horizontal Printing Limit =========================================================
@@ -493,8 +509,12 @@ function _text__print_table(
             printed_data_column_widths,
         )
 
+        # `table_str` was rendered using an earlier, coarser estimate of the number of
+        # columns. Hence, we must never claim to print more columns than were actually
+        # rendered. Otherwise, the main loop would emit one `:data` action too many and index
+        # past the end of `table_str` and `printed_data_column_widths`.
         table_data.maximum_number_of_columns = min(
-            num_printed_data_columns + 1, table_data.num_columns
+            num_printed_data_columns + 1, table_data.num_columns, size(table_str, 2)
         )
 
         horizontally_limited_by_display = _text__is_printing_horizontally_limited(
@@ -520,6 +540,9 @@ function _text__print_table(
     else
         num_printed_data_columns
     end
+
+    # Never index past what was actually rendered.
+    last_printed_column_index = min(last_printed_column_index, size(table_str, 2))
 
     # Finally, we can compute the printed table width.
     printed_table_width = table_width_wo_cont_col

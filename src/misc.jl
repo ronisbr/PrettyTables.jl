@@ -569,8 +569,8 @@ function _resolve_printing_backend(configurations)
     table_format = get(configurations, :table_format, nothing)
     backend = :text
 
-    if isnothing(table_format)
-        backend = :text
+    if table_format isa ExcelTableFormat
+        backend = :excel
     elseif table_format isa HtmlTableFormat
         backend = :html
     elseif table_format isa LatexTableFormat

@@ -7,6 +7,19 @@
 export fmt__printf, fmt__round, fmt__latex_sn, fmt__excel_stringify
 
 """
+    fmt__excel_stringify(columns::Union{Nothing, Int, AbstractVector{Int}} = nothing) -> Function
+
+Create a formatter function that converts values XLSX.jl cannot handle directly into their
+string representation. When `columns` is `nothing`, all values are stringified; otherwise
+only the columns listed in `columns` are converted.
+
+!!! note
+
+    This function is only available when the package XLSX.jl is loaded.
+"""
+function fmt__excel_stringify end
+
+"""
     fmt__printf(fmt_str::String[, columns::AbstractVector{Int}]) -> Function
 
 Apply the format `fmt_str` (see the `Printf` standard library) to the elements in the

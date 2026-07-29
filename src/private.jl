@@ -165,9 +165,9 @@ function _validate_merge_cell_specification(table_data::TableData)
         mi.column_span < 2 &&
             throw(ArgumentError("The specification #$i has a column span lower than 2."))
 
-        mi.i < 0 && throw(
+        mi.i < 1 && throw(
             ArgumentError(
-                "The row index is negative in the specification #$i for merging cells."
+                "The row index must be greater than 0 in the specification #$i for merging cells.",
             ),
         )
 
@@ -177,9 +177,9 @@ function _validate_merge_cell_specification(table_data::TableData)
             ),
         )
 
-        mi.j < 0 && throw(
+        mi.j < 1 && throw(
             ArgumentError(
-                "The column index is negative in the specification #$i for merging cells.",
+                "The column index must be greater than 0 in the specification #$i for merging cells.",
             ),
         )
 

@@ -132,11 +132,7 @@ function _latex__table_header_description(
 
     # == Data Columns ======================================================================
 
-    nc = if td.maximum_number_of_columns >= 0
-        data_columns = min(td.maximum_number_of_columns, num_columns)
-    else
-        data_columns = num_columns
-    end
+    nc = _number_of_printed_data_columns(td)
 
     for i in 1:nc
         print(desc, _data_column_alignment(td, i) |> _latex__alignment_to_str)

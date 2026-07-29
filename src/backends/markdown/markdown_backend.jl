@@ -192,8 +192,17 @@ function _markdown__print(
                     table_data.num_rows
                 end
 
+            # The printed row numbers run from `first_row_index` to `first_row_index + m - 1`,
+            # which can be negative when the data has a non 1-based row axis. Notice that
+            # `ndigits` must be used instead of `floor(Int, log10(m) + 1)` because the latter
+            # throws an `InexactError` for an empty table, where `log10(0) == -Inf`.
+            f = table_data.first_row_index
+            l = f + max(m, 1) - 1
+
             row_number_column_width = max(
-                textwidth(decorated_row_number_column_label), floor(Int, log10(m) + 1)
+                textwidth(decorated_row_number_column_label),
+                ndigits(f) + (f < 0),
+                ndigits(l) + (l < 0),
             )
         end
 

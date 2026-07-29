@@ -494,8 +494,12 @@ function _text__design_vertical_cropping_with_line_breaks(
     last_row_cropped  = false
 
     # We need this verification if we are not printing one entire column to avoid problems
-    # in the algorithm.
-    num_printed_data_columns = max(num_printed_data_columns, 1)
+    # in the algorithm. Notice that the upper clamp is required because the table can have no
+    # columns at all, in which case there is nothing to measure.
+    num_printed_data_columns = clamp(num_printed_data_columns, 1, size(table_str, 2))
+
+    # If the table has no columns, no data row can be cropped.
+    size(table_str, 2) == 0 && return table_data.num_rows, false, false
 
     @views for i in 1:min(size(table_str, 1), table_data.num_rows)
         hline               = i ∈ horizontal_lines_at_data_rows

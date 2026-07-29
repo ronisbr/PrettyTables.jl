@@ -341,3 +341,59 @@ end
     result = pretty_table(String, table)
     @test result == expected
 end
+
+@testset "Summary Rows Over Tables.jl Sources" verbose = true begin
+    # `summary_rows` asks the wrapper for a whole column with `data[:, j]`. Since both
+    # `ColumnTable` and `RowTable` used to forward that query straight to the user's object,
+    # every Tables.jl input threw a `MethodError` before the summary could be computed.
+    expected = """
+┌──┬───────┬───────┐
+│  │     a │     b │
+│  │ Int64 │ Int64 │
+├──┼───────┼───────┤
+│  │     1 │     4 │
+│  │     2 │     5 │
+│  │     3 │     6 │
+├──┼───────┼───────┤
+│  │     6 │    15 │
+└──┴───────┴───────┘
+"""
+
+    @testset "NamedTuple" begin
+        result = pretty_table(
+            String,
+            (a = [1, 2, 3], b = [4, 5, 6]);
+            summary_rows = [sum],
+            summary_row_labels = [""],
+            show_row_number_column = false,
+        )
+
+        @test result == expected
+    end
+
+    @testset "Column Access" begin
+        result = pretty_table(
+            String,
+            Tables.columntable((a = [1, 2, 3], b = [4, 5, 6]));
+            summary_rows = [sum],
+            summary_row_labels = [""],
+            show_row_number_column = false,
+        )
+
+        @test result == expected
+    end
+
+    @testset "Row Access" begin
+        rows = [(a = 1, b = 4), (a = 2, b = 5), (a = 3, b = 6)]
+
+        result = pretty_table(
+            String,
+            Tables.rowtable(rows);
+            summary_rows = [sum],
+            summary_row_labels = [""],
+            show_row_number_column = false,
+        )
+
+        @test result == expected
+    end
+end

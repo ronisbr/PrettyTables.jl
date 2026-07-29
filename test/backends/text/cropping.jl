@@ -1159,3 +1159,20 @@ end
 
     @test result == expected
 end
+
+@testset "Table Width Equal to the Display Width" begin
+    # When the rendered table exactly fills the display, the back end could flag the table as
+    # horizontally limited while every rendered column already fit. In that case it claimed
+    # to print one column more than `table_str` actually had, indexing past its end.
+    #
+    # This sweep does not assert on the rendered output; it only guards against the crash,
+    # which happened for 29 distinct (number of columns, display width) combinations.
+    for nc in 2:8, w in 6:60
+        matrix = ["c"^j for _ in 1:2, j in 1:nc]
+
+        io = IOContext(IOBuffer(), :displaysize => (30, w), :color => false)
+
+        @test_nowarn pretty_table(io, matrix; show_column_labels = false)
+        @test_nowarn pretty_table(io, matrix; show_column_labels = true)
+    end
+end

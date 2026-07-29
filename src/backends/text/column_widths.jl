@@ -187,9 +187,17 @@ function _text__printed_column_widths(
                 (table_data.vertical_crop_mode == :bottom)
             ) ? table_data.maximum_number_of_rows : table_data.num_rows
 
+        # The printed row numbers run from `first_row_index` to `first_row_index + m - 1`,
+        # which can be negative when the data has a non 1-based row axis. Notice that
+        # `ndigits` must be used instead of `floor(Int, log10(x) + 1)` because the latter is
+        # float-fragile, returning 19 instead of 18 for `m = 999_999_999_999_999_999`.
+        f = table_data.first_row_index
+        l = f + max(m, 1) - 1
+
         row_number_column_width = max(
             printable_textwidth(table_data.row_number_column_label),
-            floor(Int, log10(max(m, 1)) + 1),
+            ndigits(f) + (f < 0),
+            ndigits(l) + (l < 0),
         )
     end
 
@@ -237,6 +245,12 @@ function _text__printed_column_widths(
         if _has_summary_rows(table_data)
             m = max(maximum(printable_textwidth, summary_rows[:, j]), m)
         end
+
+        # When the table is vertically cropped, a continuation row showing `⋮` is printed in
+        # every data column. Hence, the column must be wide enough to show it. Notice that
+        # this only matters when nothing else contributed to the width, which happens when
+        # the column labels are hidden and no data row is printed.
+        _is_vertically_cropped(table_data) && (m = max(m, 1))
 
         mdw = minimum_data_column_widths[j - 1 + begin]
 

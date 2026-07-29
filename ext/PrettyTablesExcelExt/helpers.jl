@@ -98,7 +98,9 @@ Create a formatter function that converts values XLSX.jl cannot handle directly 
 string representation. When `columns` is `nothing`, all values are stringified; otherwise
 only the columns listed in `columns` are converted.
 """
-function fmt__excel_stringify(columns::Union{Nothing, Int, AbstractVector{Int}} = nothing)
+function PrettyTables.fmt__excel_stringify(
+    columns::Union{Nothing, Int, AbstractVector{Int}} = nothing
+)
     return (v, _, j) -> begin
         (v isa XLSX.CellConcreteType) && return v
 

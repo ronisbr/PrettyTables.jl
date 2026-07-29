@@ -54,10 +54,25 @@ function _next(state::PrintingTableState, table_data::TableData)
     if ps < _NEW_ROW
         new_i = i + 1
 
+        # If we do not have any column, jump to the table footer. Notice that this check must
+        # come before the `show_column_labels` shortcut below. Otherwise, the shortcut would
+        # already have moved the row section away from `:column_labels`, and a table without
+        # columns would be rendered with empty rows.
+        (max_j == 0) && return _next(
+            PrintingTableState(_FOOTNOTES - 1, 0, 0, :table_footer), table_data
+        )
+
         # If we started the column labels but the user does not want to show them, skip to
         # the first section that has rows.
         if (rs == :column_labels) && !table_data.show_column_labels
-            next_row_section = if max_i > 0
+            # If the maximum number of rows is 0, we must go to the continuation row. Notice
+            # that this rule also exists in the `:end_row` branch of the column labels, which
+            # this shortcut jumps over.
+            mr = table_data.maximum_number_of_rows
+
+            next_row_section = if (mr == 0) && (max_i > 0)
+                :continuation_row
+            elseif max_i > 0
                 :data
             elseif !isnothing(table_data.summary_rows)
                 :summary_row
@@ -84,13 +99,6 @@ function _next(state::PrintingTableState, table_data::TableData)
                 PrintingTableState(_NEW_ROW, new_i, 0, :row_group_label)
             end
         end
-
-        # If we do not have any column, jump to the table footer.
-        (rs == :column_labels) &&
-            (max_j == 0) &&
-            return _next(
-                PrintingTableState(_FOOTNOTES - 1, 0, 0, :table_footer), table_data
-            )
 
         return :new_row, rs, PrintingTableState(_NEW_ROW, new_i, 0, rs)
     end

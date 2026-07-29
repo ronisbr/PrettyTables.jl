@@ -70,6 +70,20 @@ function _excel__write_table!(
     context  = pspec.context
     renderer = pspec.renderer === :show ? Val(:show) : Val(:print)
 
+    # The width keywords are indexed per data column. Hence, we must check their length here
+    # to raise a meaningful error instead of a `BoundsError` deep in the back end.
+    for (name, v) in (
+        ("data_column_widths", data_column_widths),
+        ("minimum_data_column_widths", minimum_data_column_widths),
+        ("maximum_data_column_widths", maximum_data_column_widths),
+    )
+        (v isa AbstractVector) && (length(v) != num_cols) && throw(
+            ArgumentError(
+                "The length of `$name` ($(length(v))) must be equal to the number of columns ($num_cols).",
+            ),
+        )
+    end
+
     if data_column_widths isa Number
         data_column_widths = fill(Float64(data_column_widths), num_cols)
     end

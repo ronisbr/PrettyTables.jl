@@ -110,11 +110,16 @@ function _current_cell(action::Symbol, state::PrintingTableState, table_data::Ta
     elseif action == :summary_row_cell
         f = table_data.summary_rows[state.i - 1 + begin]
 
-        col = @views table_data.data[:, state.j]
+        # The printing state column index is always 1-based, whereas the data can have an
+        # arbitrary column axis. Hence, we must offset it exactly like the `:data` action
+        # does. Otherwise, the summary would be computed from the wrong source column.
+        j₀ = table_data.first_column_index
+
+        col = @views table_data.data[:, state.j - 1 + j₀]
 
         applicable(f, col) && return f(col)
 
-        return f(table_data.data, state.j)
+        return f(table_data.data, state.j - 1 + j₀)
 
     elseif action == :footnote
         return table_data.footnotes[state.i - 1 + begin].second
