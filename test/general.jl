@@ -162,3 +162,40 @@ end
         end
     end
 end
+
+@testset "Multiple Footnotes in the Same Cell" verbose = true begin
+    # A cell may carry more than one footnote. The loop that appends the second and further
+    # references was never executed, since every existing test attaches at most one footnote
+    # per cell.
+    matrix = [1 2]
+
+    footnotes = [
+        (:data, 1, 1) => "one",
+        (:data, 1, 1) => "two",
+    ]
+
+    @testset "Text" begin
+        result = pretty_table(String, matrix; footnotes)
+        @test occursin("1¹ʼ²", result)
+    end
+
+    @testset "LaTeX" begin
+        result = pretty_table(String, matrix; backend = :latex, footnotes)
+        @test occursin("1\$^{1,2}\$", result)
+    end
+
+    @testset "HTML" begin
+        result = pretty_table(String, matrix; backend = :html, footnotes)
+        @test occursin("1<sup>1,2</sup>", result)
+    end
+
+    @testset "Markdown" begin
+        result = pretty_table(String, matrix; backend = :markdown, footnotes)
+        @test occursin("1[^1][^2]", result)
+    end
+
+    @testset "Typst" begin
+        result = pretty_table(String, matrix; backend = :typst, footnotes)
+        @test occursin("[1#super[1], #super[2]],", result)
+    end
+end
