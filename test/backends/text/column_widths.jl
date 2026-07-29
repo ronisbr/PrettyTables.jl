@@ -138,3 +138,57 @@ end
 
     @test result_without_column_labels == expected_without_column_labels
 end
+
+@testset "Fixed Data Column Widths Limited by the Display" verbose = true begin
+    # When `fixed_data_column_widths` is set, the back end uses those widths, instead of a
+    # rough estimate, to decide how many columns fit in the display. That estimation loop was
+    # never executed, since no test combined a fixed width with a constrained display.
+    matrix = [1 2 3; 4 5 6]
+
+    render(width) = begin
+        io = IOContext(IOBuffer(), :displaysize => (30, width), :color => false)
+        pretty_table(io, matrix; fixed_data_column_widths = [6, 6, 6])
+        String(take!(io.io))
+    end
+
+    @testset "Every Column Fits" begin
+        expected = """
+┌────────┬────────┬────────┐
+│ Col. 1 │ Col. 2 │ Col. 3 │
+├────────┼────────┼────────┤
+│      1 │      2 │      3 │
+│      4 │      5 │      6 │
+└────────┴────────┴────────┘
+"""
+
+        @test render(40) == expected
+    end
+
+    @testset "One Column Omitted" begin
+        expected = """
+┌────────┬──────────
+│ Col. 1 │ Col. 2  ⋯
+├────────┼──────────
+│      1 │      2  ⋯
+│      4 │      5  ⋯
+└────────┴──────────
+    1 column omitted
+"""
+
+        @test render(20) == expected
+    end
+
+    @testset "Two Columns Omitted" begin
+        expected = """
+┌────────┬────
+│ Col. 1 │ C ⋯
+├────────┼────
+│      1 │   ⋯
+│      4 │   ⋯
+└────────┴────
+2 columns omitted
+"""
+
+        @test render(14) == expected
+    end
+end
