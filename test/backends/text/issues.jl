@@ -116,3 +116,23 @@ Notes
         @test result == expected
     end
 end
+
+@testset "Overwrite Display" begin
+    # `overwrite_display` prefixes the table with one "move up and erase line" sequence per
+    # line of output, so that a previously printed table is replaced in place.
+    io = IOContext(IOBuffer(), :color => false)
+
+    pretty_table(io, [1 2]; overwrite_display = true)
+
+    result = String(take!(io.io))
+
+    expected =
+        "\e[1F\e[2K"^5 *
+        "┌────────┬────────┐\n" *
+        "│ Col. 1 │ Col. 2 │\n" *
+        "├────────┼────────┤\n" *
+        "│      1 │      2 │\n" *
+        "└────────┴────────┘\n"
+
+    @test result == expected
+end
