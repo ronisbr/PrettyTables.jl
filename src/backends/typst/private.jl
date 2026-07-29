@@ -409,6 +409,12 @@ end
 
 # == Strings ===============================================================================
 
+# ASCII characters that carry a special meaning in Typst markup and, hence, must be escaped
+# with a backslash when they occur inside a cell. Notice that the cell content is emitted
+# inside a Typst content block (`[...]`), meaning that an unbalanced `[` or `]` silently
+# breaks the entire document.
+const _TYPST__ESCAPED_CHARACTERS = ('\\', '#', '[', ']', '*', '_', '$', '<', '>', '@', '`', '~')
+
 """
     _typst__escape_str(io::IO, s::AbstractString) -> Nothing
     _typst__escape_str(s::AbstractString) -> String
@@ -421,7 +427,7 @@ function _typst__escape_str(io::IO, s::AbstractString)
 
     for c in a
         if Base.isascii(c)
-            c == '#'   ? print(io, "\\#") :
+            c ∈ _TYPST__ESCAPED_CHARACTERS ? print(io, '\\', c) :
             isprint(c) ? print(io, c) : print(io, "\\x", string(UInt32(c); base = 16, pad = 2))
 
         elseif !Base.isoverlong(c) && !Base.ismalformed(c)

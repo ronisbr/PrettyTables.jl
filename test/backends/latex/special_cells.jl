@@ -86,6 +86,25 @@
 
         @test result == expected
     end
+
+    @testset "Escaping of LaTeX Metacharacters" begin
+        # `^` must be escaped as `\textasciicircum{}`. Notice that `\^` is the circumflex
+        # *accent* command, which takes the next character as its argument. Hence, `a\^b`
+        # would typeset `b` with a circumflex instead of showing a literal caret.
+        matrix = ["a^b" "c%d" "e&f" "g_h" "i#j" "k{l}" "m~n" "o\\p" "q\$r"]
+
+        result = pretty_table(String, matrix; backend = :latex)
+
+        @test occursin("a\\textasciicircum{}b", result)
+        @test occursin("c\\%d", result)
+        @test occursin("e\\&f", result)
+        @test occursin("g\\_h", result)
+        @test occursin("i\\#j", result)
+        @test occursin("k\\{l\\}", result)
+        @test occursin("m\\textasciitilde{}n", result)
+        @test occursin("o\\textbackslash{}p", result)
+        @test occursin("q\\\$r", result)
+    end
 end
 
 #! format: on

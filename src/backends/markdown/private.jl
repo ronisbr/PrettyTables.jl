@@ -234,7 +234,19 @@ end
 
 # == Strings ===============================================================================
 
-"""
+# ASCII characters that carry a special meaning inside a Markdown table cell and, hence, must
+# be escaped with a backslash. Notice that `[` and `]` are particularly important because the
+# back end itself emits `[^N]` footnote references, meaning that unescaped user data can
+# collide with the generated markup, whereas `<` and `>` would otherwise be interpreted as
+# raw HTML or as an autolink.
+#
+# `#` and `!` are deliberately **not** escaped. `#` only starts an ATX heading at the
+# beginning of a line, which cannot happen inside a cell, and escaping it would corrupt the
+# `#= circular reference =#` and `#undef` sentinels this package emits. `!` is only special
+# when immediately followed by `[`, which is already escaped.
+const _MARKDOWN__ESCAPED_CHARACTERS = ('*', '_', '~', '`', '|', '[', ']', '<', '>')
+
+raw"""
     _markdown__escape_str(@nospecialize(io::IO), s::AbstractString, replace_newline::Bool = false, escape_markdown_chars::Bool = true) -> Nothing
     _markdown__escape_str(s::AbstractString, replace_newline::Bool = false, escape_markdown_chars::Bool = true) -> String
 
@@ -242,9 +254,11 @@ Print the string `s` in `io` escaping the characters for the markdown back end. 
 omitted, the escaped string is returned.
 
 If `replace_newline` is `true`, `\n` is replaced with `<br>`. Otherwise, it is escaped,
-leading to `\\n`.
+leading to `\n`.
 
-If `escape_markdown_chars` is `true`, `*`, `_`, `~`, `\\``, and `|`  will be escaped.
+If `escape_markdown_chars` is `true`, the characters in `_MARKDOWN__ESCAPED_CHARACTERS`
+(`*`, `_`, `~`, `` ` ``, `|`, `[`, `]`, `<`, and `>`) will be escaped, as well as the
+backslash itself.
 """
 function _markdown__escape_str(
     io::IO, s::AbstractString, replace_newline::Bool, escape_markdown_chars::Bool
@@ -253,11 +267,9 @@ function _markdown__escape_str(
     for c in a
         if isascii(c)
             c == '\n'         ? print(io, replace_newline ? "<br>" : "\\n") :
-            c == '*'          ? print(io, escape_markdown_chars ? "\\*" : "*") :
-            c == '_'          ? print(io, escape_markdown_chars ? "\\_" : "_") :
-            c == '~'          ? print(io, escape_markdown_chars ? "\\~" : "~") :
-            c == '`'          ? print(io, escape_markdown_chars ? "\\`" : "`") :
-            c == '|'          ? print(io, escape_markdown_chars ? "\\|" : "|") :
+            c == '\\'         ? print(io, escape_markdown_chars ? "\\\\" : "\\") :
+            c ∈ _MARKDOWN__ESCAPED_CHARACTERS ?
+                (escape_markdown_chars ? print(io, '\\', c) : print(io, c)) :
             '\a' <= c <= '\r' ? print(io, "\\", "abtnvfr"[Int(c) - 6]) :
             isprint(c)        ? print(io, c) :
             print(io, "\\x", string(UInt32(c); base = 16, pad = 2))
@@ -297,10 +309,13 @@ Apply the markdown style `s` to `str`.
 """
 function _markdown__apply_style(s::MarkdownStyle, str::String)
     isempty(str) && return str
+    # NOTE: `code` must be applied innermost because a Markdown code span renders its
+    # content verbatim. Otherwise, the `bold`, `italic`, and `strikethrough` markers would
+    # be shown literally to the user.
+    s.code && (str = "`" * str * "`")
     s.bold && (str = "**" * str * "**")
     s.italic && (str = "*" * str * "*")
     s.strikethrough && (str = "~~" * str * "~~")
-    s.code && (str = "`" * str * "`")
 
     return str
 end

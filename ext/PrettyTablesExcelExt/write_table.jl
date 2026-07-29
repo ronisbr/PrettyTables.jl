@@ -67,7 +67,8 @@ function _excel__write_table!(
     num_leading_columns =
         num_printed_cols - num_printed_data_cols - _is_horizontally_cropped(table_data)
 
-    renderer = Val(pspec.renderer)
+    context  = pspec.context
+    renderer = pspec.renderer === :show ? Val(:show) : Val(:print)
 
     if data_column_widths isa Number
         data_column_widths = fill(Float64(data_column_widths), num_cols)
@@ -113,6 +114,10 @@ function _excel__write_table!(
     all_cols = (1 + anchor_col_offset):(num_printed_cols + anchor_col_offset)
 
     ir = jr = 0
+
+    # The highlighters and the formatters must receive the object the user passed to
+    # `pretty_table`, not the internal table wrapper. Notice that this is loop invariant.
+    orig_data = _get_data(table_data.data)
 
     # == Main Loop =========================================================================
 
@@ -251,7 +256,7 @@ function _excel__write_table!(
             cell = _current_cell(action, ps, table_data)
             cell === _IGNORE_CELL && continue
 
-            rendered_cell = _excel__render_cell(cell, renderer)
+            rendered_cell = _excel__render_cell(cell, context, renderer)
 
             alignment = _current_cell_alignment(action, ps, table_data)
 
@@ -451,7 +456,7 @@ function _excel__write_table!(
                         formatter.region === :data || continue
 
                         fmt_attributes = _excel__format_attributes(
-                            table_data, formatter, ps.i, ps.j
+                            orig_data, formatter, ps.i, ps.j
                         )
                         if !isnothing(fmt_attributes)
                             XLSX.setFormat(sheet, sheet_row, sheet_col; fmt_attributes...)
@@ -461,11 +466,9 @@ function _excel__write_table!(
 
                     # Apply highlighters in order, breaking after the first match.
                     for highlighter in highlighters
-                        highlighter.f(table_data.data, ps.i, ps.j) || continue
+                        highlighter.f(orig_data, ps.i, ps.j) || continue
 
-                        decoration = highlighter.fd(
-                            highlighter, table_data.data, ps.i, ps.j
-                        )
+                        decoration = highlighter.fd(highlighter, orig_data, ps.i, ps.j)
 
                         hl_font_size = _excel__apply_cell_style!(
                             sheet, sheet_row, sheet_col, decoration, nothing, "", false
@@ -492,7 +495,7 @@ function _excel__write_table!(
                         formatter.region === :summary_row || continue
 
                         fmt_attributes = _excel__format_attributes(
-                            table_data, formatter, ps.i, ps.j
+                            orig_data, formatter, ps.i, ps.j
                         )
 
                         if !isnothing(fmt_attributes)

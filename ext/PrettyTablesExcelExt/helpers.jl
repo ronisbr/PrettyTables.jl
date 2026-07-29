@@ -272,20 +272,24 @@ end
 
 """
     _excel__format_attributes(
-        table_data::TableData,
+        @nospecialize(data::Any),
         excelFormatter::ExcelFormatter,
         current_row::Int,
         j::Int
     ) -> Union{Nothing, Vector{Pair{Symbol, Any}}}
 
-Apply `excelFormatter` to the cell at row `current_row` and column `j` and return the
-format attributes when the formatter condition is met, or `nothing` otherwise.
+Compute the format attributes `excelFormatter` yields for the cell at row `current_row` and
+column `j` of `data`, or return `nothing` when the formatter condition is not met. Notice
+that `data` must be the object the user passed to `pretty_table`, so that the formatter
+condition sees the same object in every back end.
 """
 function _excel__format_attributes(
-    table_data::TableData, excelFormatter::ExcelFormatter, current_row::Int, j::Int
+    @nospecialize(data::Any),
+    excelFormatter::ExcelFormatter,
+    current_row::Int,
+    j::Int,
 )
-    attributes =
-        excelFormatter.f(table_data.data, current_row, j) ? excelFormatter.numFmt : nothing
+    attributes = excelFormatter.f(data, current_row, j) ? excelFormatter.numFmt : nothing
 
     isnothing(attributes) && return nothing
 

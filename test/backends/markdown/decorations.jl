@@ -50,4 +50,19 @@
 
         @test result == expected
     end
+    @testset "Code Style Is Applied Innermost" begin
+        # A Markdown code span renders its content verbatim. Hence, if `code` were applied
+        # outermost, the `bold` / `italic` / `strikethrough` markers would show up literally.
+        result = pretty_table(
+            String,
+            [1 2];
+            backend = :markdown,
+            style = MarkdownTableStyle(;
+                first_line_column_label = MarkdownStyle(; bold = true, code = true),
+            ),
+        )
+
+        @test occursin("**`Col. 1`**", result)
+        @test !occursin("`**Col. 1**`", result)
+    end
 end

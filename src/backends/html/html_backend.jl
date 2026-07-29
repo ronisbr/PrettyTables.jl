@@ -233,7 +233,7 @@ function _html__print(
                 elseif body_opened
                     il -= 1
                     _aprintln(buf, "</tbody>", il, ns; minify)
-                    head_opened = false
+                    body_opened = false
                 end
 
                 _aprintln(buf, "<tfoot>", il, ns; minify)
@@ -253,7 +253,12 @@ function _html__print(
             elseif rs == :summary_row
                 "summaryRow"
             elseif rs == :table_footer
-                ps.state < _FOOTNOTES ? "footnote" : "sourceNotes"
+                # NOTE: This condition must mirror the one the printing state iterator uses
+                # to decide whether it is emitting a footnote row or a source note row.
+                # Otherwise, a table with source notes but without footnotes would tag its
+                # source note rows with the `footnote` class.
+                (ps.state < _FOOTNOTES) && !isnothing(table_data.footnotes) ?
+                    "footnote" : "sourceNotes"
             else
                 ""
             end

@@ -68,7 +68,7 @@ function _latex__escape_str(io::IO, s::AbstractString, esc::String = "")
             c == '\$'         ? print(io, "\\\$") :
             c == '&'          ? print(io, "\\&") :
             c == '_'          ? print(io, "\\_") :
-            c == '^'          ? print(io, "\\^") :
+            c == '^'          ? print(io, "\\textasciicircum{}") :
             c == '{'          ? print(io, "\\{") :
             c == '}'          ? print(io, "\\}") :
             c == '~'          ? print(io, "\\textasciitilde{}") :

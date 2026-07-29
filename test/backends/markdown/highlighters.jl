@@ -35,4 +35,32 @@
     )
 
     @test result == expected
+
+    @testset "First Match Wins" begin
+        # The applied style must be the one of the **first** matching highlighter.
+        h1 = MarkdownHighlighter((d, i, j) -> true, MarkdownStyle(; bold = true))
+        h2 = MarkdownHighlighter((d, i, j) -> true, MarkdownStyle(; strikethrough = true))
+
+        result = pretty_table(String, [1]; backend = :markdown, highlighters = [h1, h2])
+
+        @test occursin("**1**", result)
+        @test !occursin("~~", result)
+    end
+
+    @testset "Highlighter Receives the Original Data" begin
+        # The highlighter callbacks must see the object the user passed to `pretty_table`,
+        # not the internal table wrapper, so that they are portable across back ends.
+        data = (a = [1, 2],)
+        seen = []
+
+        h = MarkdownHighlighter(
+            (d, i, j) -> (push!(seen, typeof(d)); false),
+            MarkdownStyle(; bold = true),
+        )
+
+        pretty_table(String, data; backend = :markdown, highlighters = [h])
+
+        @test !isempty(seen)
+        @test all(==(typeof(data)), seen)
+    end
 end

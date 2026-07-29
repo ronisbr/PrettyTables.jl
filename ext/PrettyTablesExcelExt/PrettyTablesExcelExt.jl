@@ -12,6 +12,7 @@ using PrettyTables: PrintingSpec, TableData, PrintingTableState, MergeCells
 # Import internal iterator and helpers.
 import PrettyTables: _next, _current_cell, _current_cell_alignment, _current_cell_footnotes
 import PrettyTables: _number_of_printed_columns, _number_of_printed_data_columns
+import PrettyTables: _get_data
 import PrettyTables: _IGNORE_CELL, _EXCEL__NO_DECORATION
 
 # Also import Tables.jl for handling table data

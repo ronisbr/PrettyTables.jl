@@ -80,4 +80,32 @@
     )
 
     @test result == expected
+
+    @testset "First Match Wins" begin
+        # The applied style must be the one of the **first** matching highlighter.
+        h1 = TypstHighlighter((d, i, j) -> true, ["text-fill" => "red"])
+        h2 = TypstHighlighter((d, i, j) -> true, ["text-fill" => "blue"])
+
+        result = pretty_table(String, [1]; backend = :typst, highlighters = [h1, h2])
+
+        @test occursin("red", result)
+        @test !occursin("blue", result)
+    end
+
+    @testset "Highlighter Receives the Original Data" begin
+        # The highlighter callbacks must see the object the user passed to `pretty_table`,
+        # not the internal table wrapper, so that they are portable across back ends.
+        data = (a = [1, 2],)
+        seen = []
+
+        h = TypstHighlighter(
+            (d, i, j) -> (push!(seen, typeof(d)); false),
+            ["text-fill" => "red"],
+        )
+
+        pretty_table(String, data; backend = :typst, highlighters = [h])
+
+        @test !isempty(seen)
+        @test all(==(typeof(data)), seen)
+    end
 end

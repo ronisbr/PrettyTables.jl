@@ -96,7 +96,7 @@
     <tr class = "sourceNotes">
       <td colspan = "6" style = "color: gray; font-size: small; font-style: italic; text-align: left;">Source Notes</td>
     </tr>
-  </tbody>
+  </tfoot>
 </table>
 """
 
@@ -197,7 +197,7 @@
     <tr class = "sourceNotes">
       <td colspan = "5" style = "color: gray; font-size: small; font-style: italic; text-align: left;">Source Notes</td>
     </tr>
-  </tbody>
+  </tfoot>
 </table>
 """
 
@@ -296,7 +296,7 @@
     <tr class = "sourceNotes">
       <td colspan = "5" style = "color: gray; font-size: small; font-style: italic; text-align: left;">Source Notes</td>
     </tr>
-  </tbody>
+  </tfoot>
 </table>
 """
 
@@ -323,5 +323,50 @@
         )
 
         @test result == expected
+    end
+    @testset "Source Notes Without Footnotes" begin
+        # When the table has source notes but no footnotes, the source note rows must still
+        # be tagged with the `sourceNotes` class. Otherwise, the default CSS rule
+        # `tr.sourceNotes td` would never fire.
+        result = pretty_table(String, [1 2]; backend = :html, source_notes = "src")
+
+        expected = """
+<table>
+  <thead>
+    <tr class = "columnLabelRow">
+      <th style = "font-weight: bold; text-align: right;">Col. 1</th>
+      <th style = "font-weight: bold; text-align: right;">Col. 2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class = "dataRow">
+      <td style = "text-align: right;">1</td>
+      <td style = "text-align: right;">2</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr class = "sourceNotes">
+      <td colspan = "2" style = "color: gray; font-size: small; font-style: italic; text-align: left;">src</td>
+    </tr>
+  </tfoot>
+</table>
+"""
+
+        @test result == expected
+    end
+
+    @testset "Table Footer Is Closed With </tfoot>" begin
+        # The `<tfoot>` section must be closed with `</tfoot>`, and `</tbody>` must be
+        # emitted exactly once.
+        result = pretty_table(
+            String,
+            [1 2];
+            backend = :html,
+            footnotes = [(:column_label, 1, 1) => "note A"],
+        )
+
+        @test occursin("</tfoot>", result)
+        @test count("</tbody>", result) == 1
+        @test count("</tfoot>", result) == 1
     end
 end

@@ -69,4 +69,32 @@
     )
 
     @test result == expected
+
+    @testset "First Match Wins" begin
+        # The applied style must be the one of the **first** matching highlighter.
+        h1 = HtmlHighlighter((d, i, j) -> true, ["color" => "red"])
+        h2 = HtmlHighlighter((d, i, j) -> true, ["color" => "blue"])
+
+        result = pretty_table(String, [1]; backend = :html, highlighters = [h1, h2])
+
+        @test occursin("color: red", result)
+        @test !occursin("color: blue", result)
+    end
+
+    @testset "Highlighter Receives the Original Data" begin
+        # The highlighter callbacks must see the object the user passed to `pretty_table`,
+        # not the internal table wrapper, so that they are portable across back ends.
+        data = (a = [1, 2],)
+        seen = []
+
+        h = HtmlHighlighter(
+            (d, i, j) -> (push!(seen, typeof(d)); false),
+            ["color" => "red"],
+        )
+
+        pretty_table(String, data; backend = :html, highlighters = [h])
+
+        @test !isempty(seen)
+        @test all(==(typeof(data)), seen)
+    end
 end

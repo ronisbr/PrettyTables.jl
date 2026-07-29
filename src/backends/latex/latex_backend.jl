@@ -86,6 +86,10 @@ function _latex__print(
     # to draw a line after them if the user wants.
     merged_column_labels = Tuple{Int, Int}[]
 
+    # The highlighters must receive the object the user passed to `pretty_table`, not the
+    # internal table wrapper. Notice that this is loop invariant.
+    orig_data = _get_data(table_data.data)
+
     while action != :end_printing
         action, rs, ps = _next(ps, table_data)
 
@@ -378,9 +382,11 @@ function _latex__print(
                         # Here we have a data cell. Hence, let's check if we have a
                         # highlighter to apply.
                         if !isnothing(highlighters)
+                            # Apply the highlighters in order, stopping at the first match.
                             for h in highlighters
-                                if h.f(table_data.data, ps.i, ps.j)
-                                    envs = h.fd(h, table_data.data, ps.i, ps.j)
+                                if h.f(orig_data, ps.i, ps.j)
+                                    envs = h.fd(h, orig_data, ps.i, ps.j)
+                                    break
                                 end
                             end
                         end
