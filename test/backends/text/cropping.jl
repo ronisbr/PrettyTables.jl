@@ -1176,3 +1176,26 @@ end
         @test_nowarn pretty_table(io, matrix; show_column_labels = true)
     end
 end
+
+@testset "Shrinkable Data Column With Summary Rows" begin
+    # The shrinkable column must also be applied to the summary row cells. That loop was
+    # never executed, since no test combined `shrinkable_data_column` with `summary_rows`.
+    matrix = [1 2 3; 4 5 6]
+
+    expected = """
+┌─────┬────┬────────┬────────┐
+│     │ C… │ Col. 2 │ Col. 3 │
+├─────┼────┼────────┼────────┤
+│     │  1 │      2 │      3 │
+│     │  4 │      5 │      6 │
+├─────┼────┼────────┼────────┤
+│ sum │  5 │      7 │      9 │
+└─────┴────┴────────┴────────┘
+"""
+
+    io = IOContext(IOBuffer(), :displaysize => (30, 30), :color => false)
+
+    pretty_table(io, matrix; shrinkable_data_column = 1, summary_rows = [sum])
+
+    @test String(take!(io.io)) == expected
+end
