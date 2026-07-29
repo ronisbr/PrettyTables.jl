@@ -237,3 +237,28 @@ end
 
     @test result == expected
 end
+
+@testset "Horizontal Lines at All Column Labels" begin
+    # `horizontal_lines_at_column_labels = :all` draws a line after every column label row
+    # except the last, whose line is governed by
+    # `horizontal_line_after_column_labels`. The `:all` branch had no coverage.
+    expected = """
+┌───┬───┐
+│ A │ B │
+├───┼───┤
+│ a │ b │
+├───┼───┤
+│ 1 │ 2 │
+│ 3 │ 4 │
+└───┴───┘
+"""
+
+    result = pretty_table(
+        String,
+        [1 2; 3 4];
+        column_labels = [["A", "B"], ["a", "b"]],
+        table_format = TextTableFormat(; horizontal_lines_at_column_labels = :all),
+    )
+
+    @test result == expected
+end
