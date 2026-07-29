@@ -60,7 +60,12 @@ Version 3.4.3
   is disabled, and the centering of custom text cells in the text back end.
 - ![Bugfix][badge-bugfix] Correct the documentation that described constructors and table
   format presets that do not exist.
+- ![Bugfix][badge-bugfix] Generate the automatic column labels of a matrix that has columns
+  but no rows, which used to fail the "one label per column" validation.
 - ![Info][badge-info] Fix typos and grammar in comments, docstrings, and error messages.
+- ![Info][badge-info] Expand the test suite, notably covering the index vector form of the
+  line specifications, the per-column label styles, malformed UTF-8 in a cell, and the
+  Tables.jl wrapper edge cases, which brings `src/tables.jl` to full line coverage.
 
 Version 3.4.2
 -------------
