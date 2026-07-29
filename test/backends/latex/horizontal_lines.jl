@@ -92,3 +92,17 @@ end
 
     @test result == expected
 end
+@testset "Merged Column Label Truncated by the Column Limit" begin
+    # When a merged column label spans more columns than are actually printed, its span must
+    # be clamped to the remaining columns.
+    result = pretty_table(
+        String,
+        [1 2 3 4; 5 6 7 8];
+        backend = :latex,
+        column_labels = [[MultiColumn(4, "Wide")], ["a", "b", "c", "d"]],
+        maximum_number_of_columns = 2,
+    )
+
+    @test occursin("\\multicolumn{2}{", result)
+    @test !occursin("\\multicolumn{4}{", result)
+end
