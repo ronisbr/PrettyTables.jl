@@ -230,3 +230,82 @@ end
         @test occursin("a\\xff\\xfeb", pretty_table(String, matrix; backend = :typst))
     end
 end
+
+@testset "Column Labels Without Any Row" verbose = true begin
+    # A table with column labels but no data and no summary rows closes its header section
+    # immediately. In the text back end the column label line doubles as the bottom border,
+    # and in the HTML back end `</thead>` must be emitted without ever opening a `<tbody>`.
+    empty_matrix  = Matrix{Int}(undef, 0, 3)
+    column_labels = [["A", "B", "C"]]
+
+    @testset "Text" begin
+        expected = """
+┌───┬───┬───┐
+│ A │ B │ C │
+└───┴───┴───┘
+"""
+
+        @test pretty_table(String, empty_matrix; column_labels) == expected
+    end
+
+    @testset "HTML" begin
+        expected = """
+<table>
+  <thead>
+    <tr class = "columnLabelRow">
+      <th style = "font-weight: bold; text-align: right;">A</th>
+      <th style = "font-weight: bold; text-align: right;">B</th>
+      <th style = "font-weight: bold; text-align: right;">C</th>
+    </tr>
+  </thead>
+</table>
+"""
+
+        result = pretty_table(String, empty_matrix; backend = :html, column_labels)
+
+        @test result == expected
+    end
+
+    @testset "HTML With Source Notes" begin
+        # Here the header must be closed by the transition into the table footer.
+        result = pretty_table(
+            String, empty_matrix; backend = :html, column_labels, source_notes = "s"
+        )
+
+        @test occursin("</thead>\n  <tfoot>", result)
+        @test occursin("<tr class = \"sourceNotes\">", result)
+        @test !occursin("<tbody>", result)
+    end
+
+    @testset "LaTeX" begin
+        expected = """
+\\begin{tabular}{|r|r|r|}
+  \\hline
+  \\textbf{A} & \\textbf{B} & \\textbf{C} \\\\
+  \\hline
+\\end{tabular}
+"""
+
+        result = pretty_table(String, empty_matrix; backend = :latex, column_labels)
+
+        @test result == expected
+    end
+
+    @testset "Typst" begin
+        result = pretty_table(String, empty_matrix; backend = :typst, column_labels)
+
+        @test occursin("table.header(", result)
+        @test occursin("[#text(weight: \"bold\",)[A]],", result)
+    end
+
+    @testset "Markdown" begin
+        expected = """
+| **A** | **B** | **C** |
+|------:|------:|------:|
+"""
+
+        result = pretty_table(String, empty_matrix; backend = :markdown, column_labels)
+
+        @test result == expected
+    end
+end
