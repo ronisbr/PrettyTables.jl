@@ -91,7 +91,7 @@ end
 """
     _has_row_group_labels(table_data::TableData)
 
-Return whether `table_data` has row group lables.
+Return whether `table_data` has row group labels.
 """
 function _has_row_group_labels(table_data::TableData)
     return !isnothing(table_data.row_group_labels)
@@ -153,7 +153,7 @@ end
 """
     _number_of_printed_columns(table_data::TableData) -> Int
 
-Return the number of printed columns in `table_data`, which includes the continuation row.
+Return the number of printed columns in `table_data`, which includes the continuation column.
 """
 function _number_of_printed_columns(table_data::TableData)
     # NOTE: `maximum_number_of_columns <= 0` means "no limit", exactly like in `_next` and in

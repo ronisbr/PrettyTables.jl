@@ -41,12 +41,12 @@ Define the format of the tables printed with the LaTeX back end.
 - `horizontal_line_at_beginning::Bool`: If `true`, a horizontal line will be drawn at the
     beginning of the table.
 - `horizontal_line_at_merged_column_labels::Bool`: If `true`, a horizontal line will be
-    drawn on bottom of the merged column labels using `\\cline`.
+    drawn at the bottom of the merged column labels using `\\cline`.
 - `horizontal_line_after_column_labels::Bool`: If `true`, a horizontal line will be drawn
     after the column labels.
 - `horizontal_lines_at_data_rows::Union{Symbol, Vector{Int}}`: A horizontal line will be
     drawn after each data row index listed in this vector. If the symbol `:all` is passed, a
-    horizontal line will be drawn after every data column. If the symbol `:none` is passed,
+    horizontal line will be drawn after every data row. If the symbol `:none` is passed,
     no horizontal lines will be drawn after the data rows.
 - `horizontal_line_before_row_group_label::Bool`: If `true`, a horizontal line will be
     drawn before the row group label.
@@ -57,7 +57,7 @@ Define the format of the tables printed with the LaTeX back end.
 - `horizontal_line_before_summary_rows::Bool`: If `true`, a horizontal line will be drawn
     before the summary rows. Notice that this line is the same as the one drawn if
     `horizontal_line_after_data_rows` is `true`. However, in this case, the line is omitted
-    if there is no summary rows.
+    if there are no summary rows.
 - `horizontal_line_after_summary_rows::Bool`: If `true`, a horizontal line will be drawn
     after the summary rows.
 - `vertical_line_at_beginning::Bool`: If `true`, a vertical line will be drawn at the
@@ -68,7 +68,7 @@ Define the format of the tables printed with the LaTeX back end.
     after the row label column.
 - `vertical_lines_at_data_columns::Union{Symbol, Vector{Int}}`: A vertical line will be
     drawn after each data column index listed in this vector. If the symbol `:all` is
-    passed, a vertical line will be drawn after every data column. If the symbol `:none` is
+    passed, a vertical line will be drawn after every data row. If the symbol `:none` is
     passed, no vertical lines will be drawn after the data columns.
 - `vertical_line_after_data_columns::Bool`: If `true`, a vertical line will be drawn after
     the data columns.
@@ -101,7 +101,7 @@ Define the format of the tables printed with the LaTeX back end.
 end
 
 """
-    struct LatextTableStyle
+    struct LatexTableStyle
 
 Define the style of the tables printed with the latex back end.
 
@@ -170,9 +170,9 @@ Defines the default highlighter of a table when using the LaTeX backend.
 
 # Fields
 
-- `f::Function`: Function with the signature `f(data, i, j)` in which should return `true`
+- `f::Function`: Function with the signature `f(data, i, j)` which should return `true`
     if the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
-- `fd`: A function with the signature `f(h, data, i, j)::Vector{String}` in which `h` is the
+- `fd`: A function with the signature `fd(h, data, i, j)::Vector{String}` in which `h` is the
     highlighter object, `data` is the matrix, and `(i, j)` is the element position in the
     table. This function should return a vector with the LaTeX environments to be applied to
     the cell.
@@ -192,7 +192,7 @@ text, and
 LatexHighlighter(f::Function, fd::Function)
 ```
 
-where the user select the desired decoration by specifying the function `fd`.
+where the user selects the desired decoration by specifying the function `fd`.
 
 Thus, for example:
 
@@ -203,8 +203,11 @@ LatexHighlighter((data, i, j) -> true, ["textbf", "small"])
 will wrap all the cells in the table in the following environment:
 
 ```latex
-\\textbf{\\small{<Cell text>}}
+\\small{\\textbf{<Cell text>}}
 ```
+
+Notice that the environments are applied in order, meaning that the **last** one in the
+vector ends up being the outermost.
 """
 @kwdef struct LatexHighlighter
     f::Function
@@ -244,7 +247,7 @@ struct LatexCell{T}
     data::T
 end
 
-"""
+raw"""
     @latex_cell_str(str)
 
 Create a table cell with LaTeX code.
@@ -253,7 +256,7 @@ Create a table cell with LaTeX code.
 
 ```julia
 julia> latex_cell"\textbf{Bold text}"
-LatexCell{String}("\\textbf{Bold text}")
+LatexCell{String}("\textbf{Bold text}")
 ```
 """
 macro latex_cell_str(str)

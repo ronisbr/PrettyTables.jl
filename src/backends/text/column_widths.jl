@@ -225,7 +225,7 @@ function _text__printed_column_widths(
                 (column_label_width_based_on_first_line_only && (i > 1)) && break
 
                 # At first, we must neglect all the column label merged cells. Its width
-                # will be taken into account at a latter stage.
+                # will be taken into account at a later stage.
                 _is_column_label_cell_merged(table_data, i, j) && continue
 
                 m = max(m, printable_textwidth(column_labels[i, j]))

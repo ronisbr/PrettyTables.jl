@@ -36,8 +36,8 @@ Defines the default highlighter of a table when using the markdown backend.
 
 # Fields
 
-- `f::Function`: Function with the signature `f(data, i, j)` in which should return `true`
-    if the element `(i, j)` in `data` must be highlighter, or `false` otherwise.
+- `f::Function`: Function with the signature `f(data, i, j)` which should return `true`
+    if the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
 - `fd::Function`: Function with the signature `fd(h, data, i, j)` in which `h` is the
     highlighter. This function must return the `MarkdownStyle` to be applied to the
     cell that must be highlighted.
@@ -53,7 +53,7 @@ This structure can be constructed using two helpers:
     MarkdownHighlighter(f::Function, fd::Function)
 
 The first will apply a fixed decoration to the highlighted cell specified in `decoration`
-whereas the second let the user select the desired decoration by specifying the function
+whereas the second lets the user select the desired decoration by specifying the function
 `fd`.
 """
 struct MarkdownHighlighter

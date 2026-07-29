@@ -59,7 +59,7 @@ A set of highlighters can be passed as a `Vector{HtmlHighlighter}` to the `highl
 keyword. Each highlighter is an instance of the structure [`HtmlHighlighter`](@ref). It
 contains the following two public fields:
 
-- `f::Function`: Function with the signature `f(data, i, j)` in which should return `true`
+- `f::Function`: Function with the signature `f(data, i, j)` which should return `true`
     if the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
 - `fd::Function`: Function with the signature `f(h, data, i, j)` in which `h` is the
     highlighter. This function must return a `Vector{Pair{String, String}}` with properties
@@ -70,7 +70,7 @@ A HTML highlighter can be constructed using three helpers:
 ```julia
 HtmlHighlighter(f::Function, decoration::Vector{Pair{String, String}})
 
-HtmlHighlighter(f::Function, decorations::NTuple{N, Pair{String, String}})
+HtmlHighlighter(f::Function, decoration::HtmlPair)
 
 HtmlHighlighter(f::Function, fd::Function)
 ```

@@ -325,7 +325,7 @@ function _typst__print(
                 hline  = "y: $(current_typst_line)"
                 stroke = tf.borders.middle_line
 
-                # Check if we must print an horizontal line after the current data row.
+                # Check if we must print a horizontal line after the current data row.
             elseif (rs == :data) && (ps.i ∈ horizontal_lines_at_data_rows)
                 hline  = "y: $(current_typst_line)"
                 stroke = tf.borders.middle_line
@@ -350,7 +350,7 @@ function _typst__print(
                 hline  = "y: $(current_typst_line)"
                 stroke = tf.borders.middle_line
 
-                # Check if the must print the horizontal line at the end of the table.
+                # Check if we must print the horizontal line at the end of the table.
             elseif (rs == :summary_row) &&
                 (next_rs != :summary_row) &&
                 tf.horizontal_line_after_summary_rows
@@ -358,7 +358,7 @@ function _typst__print(
                 stroke = tf.borders.middle_line
             end
 
-            # If the next section if the end of the table and we need to draw a horizontal
+            # If the next section is the end of the table and we need to draw a horizontal
             # line, we should change it to the bottom line.
             if next_rs ∈ (:table_footer, :end_printing) && !isempty(hline)
                 stroke = tf.borders.bottom_line
@@ -376,7 +376,7 @@ function _typst__print(
 
             # == Omitted Cell Summary ======================================================
 
-            # We need the print the omitted cell summary as soon as we enter the table
+            # We need to print the omitted cell summary as soon as we enter the table
             # footer.
             if (!isempty(ocs) && next_rs ∈ (:table_footer, :end_printing) && !ocs_printed)
                 cell_properties, text_properties = _typst__cell_and_text_properties(
@@ -548,7 +548,7 @@ function _typst__print(
                 _typst__merge_properties!(vproperties, style.summary_row_cell)
 
             elseif action == :footnote
-                # The footnote must be a cell that span the entire printed table.
+                # The footnote must be a cell that spans the entire printed table.
                 push!(
                     vproperties,
                     "align"   => _typst__alignment(alignment),
@@ -559,7 +559,7 @@ function _typst__print(
                 _typst__merge_properties!(vproperties, style.footnote)
 
             elseif action == :source_notes
-                # The source notes must be a cell that span the entire printed table.   
+                # The source notes must be a cell that spans the entire printed table.   
                 push!(
                     vproperties,
                     "align"   => _typst__alignment(alignment),

@@ -65,7 +65,7 @@ A Typst highlighter can be constructed using three helpers:
 ```julia
 TypstHighlighter(f::Function, decoration::Vector{Pair{String, String}})
 
-TypstHighlighter(f::Function, decorations::NTuple{N, Pair{String, String}})
+TypstHighlighter(f::Function, decoration::TypstPair)
 
 TypstHighlighter(f::Function, fd::Function)
 ```
@@ -133,7 +133,7 @@ contains the following fields:
     after the column labels.
 - `horizontal_lines_at_data_rows::Union{Symbol, Vector{Int}}`: A horizontal line will be
     drawn after each data row index listed in this vector. If the symbol `:all` is passed, a
-    horizontal line will be drawn after every data column. If the symbol `:none` is passed,
+    horizontal line will be drawn after every data row. If the symbol `:none` is passed,
     no horizontal lines will be drawn after the data rows.
 - `horizontal_line_before_row_group_label::Bool`: If `true`, a horizontal line will be
     drawn before the row group label.
@@ -144,7 +144,7 @@ contains the following fields:
 - `horizontal_line_before_summary_rows::Bool`: If `true`, a horizontal line will be drawn
     before the summary rows. Notice that this line is the same as the one drawn if
     `horizontal_line_after_data_rows` is `true`. However, in this case, the line is omitted
-    if there is no summary rows.
+    if there are no summary rows.
 - `horizontal_line_after_summary_rows::Bool`: If `true`, a horizontal line will be drawn
     after the summary rows.
 - `vertical_line_at_beginning::Bool`: If `true`, a vertical line will be drawn at the
@@ -155,7 +155,7 @@ contains the following fields:
     after the row label column.
 - `vertical_lines_at_data_columns::Union{Symbol, Vector{Int}}`: A vertical line will be
     drawn after each data column index listed in this vector. If the symbol `:all` is
-    passed, a vertical line will be drawn after every data column. If the symbol `:none` is
+    passed, a vertical line will be drawn after every data row. If the symbol `:none` is
     passed, no vertical lines will be drawn after the data columns.
 - `vertical_line_after_data_columns::Bool`: If `true`, a vertical line will be drawn after
     the data columns.

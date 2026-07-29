@@ -459,7 +459,7 @@ function _html__print(
                 append!(vstyle, style.summary_row_cell)
 
             elseif action == :footnote
-                # The footnote must be a cell that span the entire printed table.
+                # The footnote must be a cell that spans the entire printed table.
                 push!(
                     vproperties, "colspan" => string(_number_of_printed_columns(table_data))
                 )
@@ -467,7 +467,7 @@ function _html__print(
                 rendered_cell = "<sup>$(ps.i)</sup> " * rendered_cell
 
             elseif action == :source_notes
-                # The source notes must be a cell that span the entire printed table.
+                # The source notes must be a cell that spans the entire printed table.
                 push!(
                     vproperties, "colspan" => string(_number_of_printed_columns(table_data))
                 )

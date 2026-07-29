@@ -40,18 +40,21 @@ end
 
 _latex__add_environments(s::String, ::Nothing) = s
 
-"""
-    _latex__escape_str(@nospecialize(io::IO), s::AbstractString, replace_newline::Bool = false, escape_latex_chars::Bool = true) -> Nothing
-    _latex__escape_str(s::AbstractString, replace_newline::Bool = false, escape_latex_chars::Bool = true) -> String
+raw"""
+    _latex__escape_str(io::IO, s::AbstractString, esc::String = "") -> Nothing
+    _latex__escape_str(s::AbstractString, esc::String = "") -> String
 
-Print the string `s` in `io` escaping the characters for the latex back end. If `io` is
+Print the string `s` in `io` escaping the characters for the LaTeX back end. If `io` is
 omitted, the escaped string is returned.
 
-If `replace_newline` is `true`, `\n` is replaced with `<br>`. Otherwise, it is escaped,
-leading to `\\n`.
+Every character in `esc` is escaped by prefixing it with a backslash. On top of that, the
+LaTeX metacharacters `%`, `#`, `$`, `&`, `_`, `{`, and `}` are escaped, `^` and `~` are
+replaced by `\textasciicircum{}` and `\textasciitilde{}`, and the backslash itself is
+replaced by `\textbackslash{}`. Control and non-printable characters are emitted using a
+`\textbackslash{}x`, `\textbackslash{}u`, or `\textbackslash{}U` sequence.
 
-If `escape_latex_chars` is `true`, `&`, `<`, `>`, `"`, and `'`  will be replaced by latex
-sequences.
+Notice that `<`, `>`, `"`, and `'` are **not** escaped. Under the OT1 font encoding, `<` and
+`>` are typeset as `¡` and `¿`.
 """
 function _latex__escape_str(io::IO, s::AbstractString, esc::String = "")
     a = Iterators.Stateful(s)

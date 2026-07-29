@@ -87,7 +87,7 @@ end
 """
     _html__create_style(style::Vector{HtmlPair}) -> String
 
-Create the HTML style string using the information in the dictionary `style`.
+Create the HTML style string using the information in the vector `style`.
 """
 function _html__create_style(style::Vector{HtmlPair})
     # If there are no keys in the style vector, just return the tag.

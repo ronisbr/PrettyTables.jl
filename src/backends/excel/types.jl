@@ -62,7 +62,7 @@ Font attributes are passed directly; fill attributes use the `"cell_fill_"` key 
 supported in highlighters.
 
 For example, to highlight cells in column 3 with a value greater than 10 in red bold, cells
-with value 0 in green with a solid fill, and cells in column 4 greated than 10 in blue:
+with value 0 in green with a solid fill, and cells in column 4 greater than 10 in blue:
 
 ```julia
 highlighters = [
@@ -119,7 +119,7 @@ Define the Excel format to apply to a cell.
   if the element `(i, j)` in `data` must be formatted, or `false` otherwise. The first
   argument is the entire data matrix passed to `pretty_table`, allowing `data[i, j]` to be
   inspected inside the predicate.
-- `numFmt::ExcelPair`: Specifies the format to apply to the cell. The format should be
+- `numFmt::Vector{ExcelPair}`: Specifies the format to apply to the cell. The format should be
   specified with an `ExcelPair` (*i.e.* `Pair{String, String}`) using the `XLSX.jl`
   formatting definitions used by the `XLSX.setFormat` function.
 - `region::Symbol`: Region of the table in which the formatter is applied. It can be
@@ -170,7 +170,7 @@ excel_formatters = [
 ```
 
 Excel formatters apply native Excel formatting to native Excel values. However,
-`PrettyTables,jl`can handle Julia types that can't be represented natively in Excel. If
+`PrettyTables.jl` can handle Julia types that can't be represented natively in Excel. If
 these are passed natively, then XLSX.jl will fail. To circumvent this, a predefined
 formatter has been provided which converts any unhandled types to strings (using
 `string()`). For more information, see [`fmt__excel_stringify`](@ref).
@@ -364,7 +364,7 @@ Excel back end.
 
 Each field corresponds to a table element and should be a vector of `ExcelPair`, *i.e.*
 `Pair{String, String}`, describing properties and values compatible with the `XLSX.setFont`
-function. We can also defined properties to be applied to the cell itself with the function
+function. We can also define properties to be applied to the cell itself with the function
 `XLSX.setFill`. In this case, prefix the parameter name with `"cell_fill_"` (e.g.,
 `"cell_fill_pattern" => "solid"`).
 

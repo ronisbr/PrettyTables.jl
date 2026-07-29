@@ -101,7 +101,7 @@ A set of highlighters can be passed as a `Vector{TextHighlighter}` to the `highl
 keyword. Each highlighter is an instance of the structure [`TextHighlighter`](@ref). It
 contains three fields:
 
-- `f::Function`: Function with the signature `f(data, i, j)` in which should return `true`
+- `f::Function`: Function with the signature `f(data, i, j)` which should return `true`
     if the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
 - `fd::Function`: Function with the signature `fd(h, data, i, j)` in which `h` is the
     highlighter. This function must return the `Crayon` to be applied to the cell that must
@@ -212,7 +212,7 @@ contains the following fields:
     after the row label column.
 - `vertical_lines_at_data_columns::Union{Symbol, Vector{Int}}`: A vertical line will be
     drawn after each data column index listed in this vector. If the symbol `:all` is
-    passed, a vertical line will be drawn after every data column. If the symbol `:none` is
+    passed, a vertical line will be drawn after every data row. If the symbol `:none` is
     passed, no vertical lines will be drawn after the data columns.
 - `vertical_line_after_data_columns::Bool`: If `true`, a vertical line will be drawn after
     the data columns.

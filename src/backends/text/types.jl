@@ -148,13 +148,13 @@ Define the format of the tables printed with the text back end.
     after the row label column.
 - `vertical_lines_at_data_columns::Union{Symbol, Vector{Int}}`: A vertical line will be
     drawn after each data column index listed in this vector. If the symbol `:all` is
-    passed, a vertical line will be drawn after every data column. If the symbol `:none` is
+    passed, a vertical line will be drawn after every data row. If the symbol `:none` is
     passed, no vertical lines will be drawn after the data columns.
 - `vertical_line_after_data_columns::Bool`: If `true`, a vertical line will be drawn after
     the data columns.
 - `vertical_line_after_continuation_column::Bool`: If `true`, a vertical line will be
     drawn after the continuation column.
-- `ellipsis_line_skip::Integer`: Number of lines to skip when printing an ellipsis.
+- `ellipsis_line_skip::Int`: Number of lines to skip when printing an ellipsis.
 """
 @kwdef struct TextTableFormat
     # == Border and Lines ==================================================================
@@ -204,7 +204,7 @@ Define the style of the tables printed with the text back end.
 - `row_group_label::Crayon`: Crayon with the style for the row group label.
 - `first_line_column_label::Union{Crayon, Vector{Crayon}}`: Crayon or crayons with the style
     for the first column label lines. If a vector of crayons is passed, it must have the
-    same length as the number columns in the table.
+    same length as the number of columns in the table.
 - `column_label::Union{Crayon, Vector{Crayon}}`: Crayon or crayons with the style for the
     rest of the column labels. If a vector of crayons is passed, it must have the same
     length as the number of columns in the table.
@@ -252,12 +252,12 @@ Defines the default highlighter of a table when using the text backend.
 
 # Fields
 
-- `f::Function`: Function with the signature `f(data, i, j)` in which should return `true`
-    if the element `(i, j)` in `data` must be highlighter, or `false` otherwise.
-- `fd::Function`: Function with the signature `f(h, data, i, j)` in which `h` is the
+- `f::Function`: Function with the signature `f(data, i, j)` which should return `true`
+    if the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
+- `fd::Function`: Function with the signature `fd(h, data, i, j)` in which `h` is the
     highlighter. This function must return the `Crayon` to be applied to the cell that must
     be highlighted.
-- `crayon::Crayon`: The `Crayon` to be applied to the highlighted cell if the default `fd`
+- `_decoration::Crayon`: The `Crayon` to be applied to the highlighted cell if the default `fd`
     is used.
 
 # Remarks

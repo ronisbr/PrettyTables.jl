@@ -6,7 +6,6 @@
 
 export TypstHighlighter, TypstTableBorders, TypstTableFormat, TypstTableStyle, TypstCaption
 
-import Base: show, tryparse, parse
 
 ############################################################################################
 #                                        Constants                                         #
@@ -101,27 +100,26 @@ Define the default highlighter of a table when using the Typst back end.
 
 # Fields
 
-- `f::Function`: Function with the signature `f(data, i, j)` in which should return `true`
+- `f::Function`: Function with the signature `f(data, i, j)` which should return `true`
     if the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
 - `fd::Function`: Function with the signature `f(h, data, i, j)` in which `h` is the
     highlighter. This function must return a `Vector{Pair{String, String}}` with properties
     compatible with the `style` field that will be applied to the highlighted cell.
-- `_decoration::Dict{String, String}`: The decoration to be applied to the highlighted cell
+- `_decoration::Vector{TypstPair}`: The decoration to be applied to the highlighted cell
     if the default `fd` is used.
 
 # Remarks
 
-This structure can be constructed using three helpers:
+This structure can be constructed using the following helpers:
 
-    TypstHighlighter(f::Function, decoration::Vector{Pair{String, String}})
+    TypstHighlighter(f::Function, decoration::TypstPair)
 
-    TypstHighlighter(f::Function, decorations::NTuple{N, Pair{String, String})
+    TypstHighlighter(f::Function, decoration::Vector{TypstPair})
 
     TypstHighlighter(f::Function, fd::Function)
 
-The first will apply a fixed decoration to the highlighted cell specified in `decoration`,
-whereas the second let the user select the desired decoration by specifying the function
-`fd`.
+The first two apply a fixed decoration to the highlighted cell, whereas the third lets the
+user select the desired decoration by specifying the function `fd`.
 """
 struct TypstHighlighter
     f::Function
@@ -167,11 +165,11 @@ https://typst.app/docs/reference/visualize/stroke/
 - `top_line::String`: Stroke for the top border of the table.
     (**Default**: `"1.5pt"`)
 - `header_line::String`: Stroke for the line below the table header.
-    (**Default**: `"1.0pt"`)
+    (**Default**: `"0.8pt"`)
 - `merged_header_cell_line::String`: Stroke for the line below merged header cells.
     (**Default**: `"0.8pt"`)
 - `middle_line::String`: Stroke for horizontal lines inside the table body.
-    (**Default**: `"0.8pt"`)
+    (**Default**: `"0.5pt"`)
 - `bottom_line::String`: Stroke for the bottom border of the table.
     (**Default**: `"1.5pt"`)
 
@@ -211,12 +209,12 @@ Define the format of the tables printed with the Typst back end.
 - `horizontal_line_at_beginning::Bool`: If `true`, a horizontal line will be drawn at the
     beginning of the table.
 - `horizontal_line_at_merged_column_labels::Bool`: If `true`, a horizontal line will be
-    drawn on bottom of the merged column labels using `\\cline`.
+    drawn at the bottom of the merged column labels using `table.hline`.
 - `horizontal_line_after_column_labels::Bool`: If `true`, a horizontal line will be drawn
     after the column labels.
 - `horizontal_lines_at_data_rows::Union{Symbol, Vector{Int}}`: A horizontal line will be
     drawn after each data row index listed in this vector. If the symbol `:all` is passed, a
-    horizontal line will be drawn after every data column. If the symbol `:none` is passed,
+    horizontal line will be drawn after every data row. If the symbol `:none` is passed,
     no horizontal lines will be drawn after the data rows.
 - `horizontal_line_before_row_group_label::Bool`: If `true`, a horizontal line will be
     drawn before the row group label.
@@ -227,7 +225,7 @@ Define the format of the tables printed with the Typst back end.
 - `horizontal_line_before_summary_rows::Bool`: If `true`, a horizontal line will be drawn
     before the summary rows. Notice that this line is the same as the one drawn if
     `horizontal_line_after_data_rows` is `true`. However, in this case, the line is omitted
-    if there is no summary rows.
+    if there are no summary rows.
 - `horizontal_line_after_summary_rows::Bool`: If `true`, a horizontal line will be drawn
     after the summary rows.
 - `vertical_line_at_beginning::Bool`: If `true`, a vertical line will be drawn at the
@@ -238,7 +236,7 @@ Define the format of the tables printed with the Typst back end.
     after the row label column.
 - `vertical_lines_at_data_columns::Union{Symbol, Vector{Int}}`: A vertical line will be
     drawn after each data column index listed in this vector. If the symbol `:all` is
-    passed, a vertical line will be drawn after every data column. If the symbol `:none` is
+    passed, a vertical line will be drawn after every data row. If the symbol `:none` is
     passed, no vertical lines will be drawn after the data columns.
 - `vertical_line_after_data_columns::Bool`: If `true`, a vertical line will be drawn after
     the data columns.
@@ -330,10 +328,10 @@ Define a Typst caption configuration to be used by the Typst backend.
 # Fields
 
 - `caption::String`: Caption text.
-- `kind::Union{Auto, String}`: Caption kind forwarded to Typst (for example, `auto` or a
+- `kind::String`: Caption kind forwarded to Typst (for example, `auto` or a
     custom kind).
 - `supplement::Union{Nothing, String}`: Optional caption supplement.
-- `gap::Union{Auto, AbstractTypstLength}`: Gap between figure content and caption.
+- `gap::String`: Gap between figure content and caption.
 - `position::Union{Nothing, String}`: Optional caption position.
 """
 @kwdef struct TypstCaption

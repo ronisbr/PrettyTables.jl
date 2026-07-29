@@ -452,7 +452,7 @@ function _text__print_column_label_horizontal_line(
             if tf.suppress_vertical_lines_at_column_labels
                 bcm = tcm = true
 
-                # We must have a specia treatment if this is the last column label since we
+                # We must have a special treatment if this is the last column label since we
                 # must connect the vertical lines with those at the table.
                 row_number == num_column_labels && (bcm = false)
             end

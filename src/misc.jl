@@ -27,8 +27,7 @@ end
 """
     @_print(io, args...)
 
-Print `args` to `io`. Each argument in `args` is printed sequentially using `print`, and a
-final `println` is issued to terminate the line.
+Print `args` to `io`. Each argument in `args` is printed sequentially using `print`.
 
 This macro expands each argument into a separate `print` call, avoiding the overhead of
 string interpolation or concatenation, which reduces allocations.
@@ -458,7 +457,7 @@ function _auto_wrap(str::AbstractString, field_width::Int)
         line_overflow = line_width + ctw > field_width
 
         @views if (c == '\n') || (line_overflow && ((last_space == 0) || (c == ' ')))
-            # If the characer is a line break, if we have a line overflow and we do not have
+            # If the character is a line break, if we have a line overflow and we do not have
             # any space in this line, or if we have a line overflow and this character is a
             # space, we only flush the current line buffer to the output buffer.
             write(buf, take!(line_buf))

@@ -47,7 +47,7 @@ function _typst__render_cell(
 )
     cell_str = _typst__cell_to_str(cell, context, renderer)
 
-    # If the user wants HTML code inside cell, we must not escape the HTML characters.
+    # Notice that the cell content is always escaped, since it is emitted inside a Typst content block.
     return _typst__escape_str(cell_str)
 end
 
@@ -56,7 +56,7 @@ function _typst__render_cell(
 )
     cell_str = _typst__cell_to_str(cell, context, renderer)
 
-    # If the user wants HTML code inside cell, we must not escape the HTML characters.
+    # Notice that the cell content is always escaped, since it is emitted inside a Typst content block.
     return _typst__escape_str(cell_str)
 end
 

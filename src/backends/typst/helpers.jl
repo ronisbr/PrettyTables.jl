@@ -14,7 +14,7 @@ Return the keyword arguments to be passed to [`TypstTableFormat`](@ref) to show 
 horizontal lines.
 
 We can use the output of this function when creating the text table format object. For
-example, the following code creates a text table format with all horizontal lines:
+example, the following code creates a Typst table format with all horizontal lines:
 
 ```julia
 tf = TypstTableFormat(; @typst__all_horizontal_lines())
@@ -48,7 +48,7 @@ julia> pretty_table(A; table_format = TypstTableFormat(; @typst__all_horizontal_
     table.hline(y: 4, stroke: 1.5pt,),
     // == Vertical Lines ===================================================================
     table.vline(x: 0, end: 4, stroke: 1.5pt),
-    table.vline(x: 1, end: 4, stroke: 0.8pt,
+    table.vline(x: 1, end: 4, stroke: 0.8pt),
     table.vline(x: 2, end: 4, stroke: 0.8pt),
     table.vline(x: 3, end: 4, stroke: 1.5pt),
     // == Table Header =====================================================================
@@ -143,7 +143,7 @@ Return the keyword arguments to be passed to [`TypstTableFormat`](@ref) to show 
 lines.
 
 We can use the output of this function when creating the text table format object. For
-example, the following code creates a text table format with all vertical lines:
+example, the following code creates a Typst table format with all vertical lines:
 
 ```julia
 tf = TypstTableFormat(; @typst__all_vertical_lines)
@@ -248,7 +248,8 @@ julia> pretty_table(
     [1.0],
     [1.0],
   )
-}```
+}
+```
 """
 macro typst__all_vertical_lines()
     return :(
@@ -270,7 +271,7 @@ Return the keyword arguments to be passed to [`TypstTableFormat`](@ref) to suppr
 horizontal lines.
 
 We can use the output of this function when creating the text table format object. For
-example, the following code creates a text table format without horizontal lines:
+example, the following code creates a Typst table format without horizontal lines:
 
 ```julia
 tf = TypstTableFormat(; @typst__no_horizontal_lines)
@@ -391,7 +392,7 @@ Return the keyword arguments to be passed to [`TypstTableFormat`](@ref) to suppr
 vertical lines.
 
 We can use the output of this function when creating the text table format object. For
-example, the following code creates a text table format without vertical lines:
+example, the following code creates a Typst table format without vertical lines:
 
 ```julia
 tf = TypstTableFormat(; @typst__no_vertical_lines)

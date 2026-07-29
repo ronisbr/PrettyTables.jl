@@ -11,7 +11,7 @@ The Excel backend can be selected by passing the keyword `backend = :excel` to t
 [`pretty_table`](@ref). This will allow you to create a pretty table in a newly created
 Excel file or to add a pretty table to a new or existing sheet in an existing Excel file.
 
-The Excel backend return depends on the following combination of keywords:
+The Excel backend's return value depends on the following combination of keywords:
 
 - `nothing` when `sheet` is an `XLSX.Worksheet` (the worksheet is updated in place).
 - `XLSX.XLSXFile` when `filename` is `nothing` and `sheet` is a `String`.
@@ -58,7 +58,7 @@ The Excel backend return depends on the following combination of keywords:
     If no sheet with that name exists it will be created. When an `XLSX.Worksheet`, that
     worksheet is updated in place and `nothing` is returned.
     (**Default**: `"prettytable"`)
-- `style::TextTableStyle`: Style of the table. For more information, see the section
+- `style::ExcelTableStyle`: Style of the table. For more information, see the section
     **Excel Table Style** in the **Extended Help**.
 - `table_format::ExcelTableFormat`: Excel table format used to render the table. For more
     information, see the section **Excel Table Format** in the **Extended Help**.
@@ -148,7 +148,7 @@ excel_formatters = [
 ```
 
 Excel formatters apply native Excel formatting to native Excel values. However,
-`PrettyTables,jl`can handle Julia types that can't be represented natively in Excel. If
+`PrettyTables.jl` can handle Julia types that can't be represented natively in Excel. If
 these are passed natively, then XLSX.jl will fail. To circumvent this, a predefined
 formatter has been provided which converts any unhandled types to strings (using
 `string()`). For more information, see [`fmt__excel_stringify`](@ref).
@@ -224,40 +224,41 @@ Border styles are specified using an [`ExcelTableBorders`](@ref) object with the
 Apply a preset:
 
 ```julia
-table_format = ExcelTableFormat(; EXCEL_FORMAT_NO_VLINES...)
+table_format = ExcelTableFormat(; @excel__no_vertical_lines)
 ```
 
-Combine presets and override a field:
+Apply a preset and override one of its fields. Notice that the keyword must come **after**
+the macro, since the last binding wins:
 
 ```julia
 table_format = ExcelTableFormat(;
-    merge(EXCEL_FORMAT_SECTION_LINES, (horizontal_line_before_row_group_label = true,))...,
+    @excel__no_vertical_lines,
+    vertical_line_at_beginning = true,
 )
 ```
 
 Draw section-separator lines in red:
 
 ```julia
-table_format = ExcelTableFormat(
-    borders = ExcelTableBorders(header_line = ["style" => "thin", "color" => "red"]),
+table_format = ExcelTableFormat(;
+    borders = ExcelTableBorders(; header_line = ["style" => "thin", "color" => "red"]),
 )
 ```
 
-To start from a preset and customize border styles:
+To combine a preset with customized border styles:
 
 ```julia
-table_format = ExcelTableFormat(
-    EXCEL_FORMAT_SECTION_LINES;
-    borders = ExcelTableBorders(
+table_format = ExcelTableFormat(;
+    @excel__no_vertical_lines,
+    borders = ExcelTableBorders(;
         header_line = ["style" => "thick", "color" => "red"],
         middle_line = ["style" => "thick", "color" => "red"],
     ),
 )
 ```
 
-When merging presets, the predefined table formats are applied in order with later formats
-taking precedence. Any keyword arguments provided take precedence over all predefined
-formats.
+When more than one preset is applied, they take effect in order, with the later ones taking
+precedence. Any keyword argument provided after them takes precedence over all of them.
 
 ## Excel Table Style
 

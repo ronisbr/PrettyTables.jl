@@ -43,7 +43,7 @@ passed through to `_excel__write_table!`.
     (**Default**: `"A1"`)
 - `filename::Union{Nothing, String}`: Path of the Excel file to write. When `nothing`, no
     file is created and an in-memory `XLSX.XLSXFile` is returned instead. When a string,
-    behaviour depends on `mode`.
+    behavior depends on `mode`.
     (**Default**: `nothing`)
 - `sheet::Union{String, XLSX.Worksheet}`: When a `String`, the name of the worksheet tab.
     If no sheet with that name exists it will be created. When an `XLSX.Worksheet`, that
@@ -94,7 +94,7 @@ function PrettyTables._excel__print(
     # Check arguments.
     mode ∉ ["w", "rw", "wr"] && throw(
         ArgumentError(
-            "Invalid mode \"$mode\". Must be either \"w\" to create a new file or \"rw\" to add a PrettyTable to an existing spreadsheet.",
+            "Invalid mode \"$mode\". Must be either \"w\" to create a new file, or \"rw\" (or its alias \"wr\") to add a PrettyTable to an existing spreadsheet.",
         ),
     )
 

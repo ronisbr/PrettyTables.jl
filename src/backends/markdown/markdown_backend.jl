@@ -182,7 +182,7 @@ function _markdown__print(
     row_label_column_width     = 1
     printed_data_column_widths = ones(Int, num_printed_data_columns)
 
-    # We we are printing in compact mode, we do not need to compute the column widths.
+    # When we are printing in compact mode, we do not need to compute the column widths.
     if !tf.compact_table
         if table_data.show_row_number_column
             m =
@@ -364,7 +364,7 @@ function _markdown__print(
             print(buf, " |")
 
         elseif action == :end_row
-            # Obtain the next row section since some actions depends on it.
+            # Obtain the next row section since some actions depend on it.
             _, next_rs, _ = _next(ps, table_data)
 
             println(buf)
@@ -455,7 +455,7 @@ function _markdown__print(
             elseif action == :column_label
                 cell_width = printed_data_column_widths[jr]
 
-                # If need to check if we are in a cell that should be merged. Since Markdown
+                # We need to check if we are in a cell that should be merged. Since Markdown
                 # does not support such an operation, we only fill the field with `-`.
                 rendered_cell = if _current_cell(action, ps, table_data) === _IGNORE_CELL
                     string(tf.horizontal_line_char)^cell_width

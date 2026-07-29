@@ -153,14 +153,16 @@ end
 """
     _typst__create_component(component::String, content::String; kwargs...) -> String
 
-Create an HTML `component` with the `content`.
+Create a Typst `component` with the `content`.
 
 # Keywords
 
-- `properties::Union{Nothing, Vector{TypstPair}}`: Tag properties.
-    (**Default**: `nothing`)
-- `style::Union{Nothing, Vector{TypstPair}}`: Tag style.
-    (**Default**: `nothing`)
+- `il::Int`: Indentation level for formatting.
+    (**Default**: 0)
+- `ns::Int`: Number of spaces in each indentation level.
+    (**Default**: 2)
+- `wrap_column::Int`: Column width threshold for wrapping the content.
+    (**Default**: 92)
 """
 function _typst__create_component(
     component::String,
@@ -311,7 +313,7 @@ function _typst__vertical_lines!(
 
     current_typst_column = 0
 
-    # We must skit the title and subtitles since they must not have vertical lines.
+    # We must skip the title and subtitles since they must not have vertical lines.
     has_title    = !isempty(td.title)
     has_subtitle = !isempty(td.subtitle)
 
@@ -475,8 +477,8 @@ the number of spaces per indentation level is `ns`, and the maximum column width
 wrapping is `wrap_column`.
 """
 function _typst__should_wrap(str_length::Int, il::Int, ns::Int, wrap_column::Int)
-    identation_length = (il - 1) * ns
-    return (wrap_column >= 0) && (identation_length + str_length) > wrap_column
+    indentation_length = (il - 1) * ns
+    return (wrap_column >= 0) && (indentation_length + str_length) > wrap_column
 end
 
 # == Styles ================================================================================

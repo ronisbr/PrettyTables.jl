@@ -222,7 +222,7 @@ function fmt__latex_sn(m_digits::Int)
         str = Printf.format(fmts, v)
 
         # Check if we have scientific notation.
-        aux = match(r"e[+,-][0-9]+", str)
+        aux = match(r"e[+-][0-9]+", str)
 
         if !isnothing(aux)
             exp_str = " \\cdot 10^{" * string(parse(Int, aux.match[2:end])) * "}"
@@ -247,7 +247,7 @@ function fmt__latex_sn(m_digits::Int, columns::AbstractVector{Int})
             str = Printf.format(fmts, v)
 
             # Check if we have scientific notation.
-            aux = match(r"e[+,-][0-9]+", str)
+            aux = match(r"e[+-][0-9]+", str)
 
             if !isnothing(aux)
                 exp_str = " \\cdot 10^{" * string(parse(Int, aux.match[2:end])) * "}"

@@ -40,7 +40,7 @@ end
 
 function getindex(ctable::ColumnTable, inds...)
     if length(inds) != 2
-        error("A element of type `ColumnTable` must be accesses using 2 indices.")
+        error("An element of type `ColumnTable` must be accessed using 2 indices.")
     end
 
     return getindex(ctable, inds[1], inds[2])
@@ -63,7 +63,7 @@ end
 
 function isassigned(ctable::ColumnTable, inds...)
     if length(inds) != 2
-        error("A element of type `ColumnTable` must be accesses using 2 indices.")
+        error("An element of type `ColumnTable` must be accessed using 2 indices.")
     end
 
     return isassigned(ctable, inds[1], inds[2])
@@ -217,7 +217,7 @@ end
 
 function getindex(rtable::RowTable, inds...)
     if length(inds) != 2
-        error("A element of type `RowTable` must be accesses using 2 indices.")
+        error("An element of type `RowTable` must be accessed using 2 indices.")
     end
 
     return getindex(rtable, inds[1], inds[2])
@@ -238,7 +238,7 @@ end
 
 function isassigned(rtable::RowTable, inds...)
     if length(inds) != 2
-        error("A element of type `RowTable` must be accesses using 2 indices.")
+        error("An element of type `RowTable` must be accessed using 2 indices.")
     end
 
     return isassigned(rtable, inds[1], inds[2])
@@ -270,7 +270,7 @@ _get_data(rtable::RowTable) = rtable.data
 #                                     Other Overloads                                      #
 ############################################################################################
 
-# `_getdata` is a function that returns the original matrix passed to `pretty_table`
+# `_get_data` is a function that returns the original matrix passed to `pretty_table`
 # function. This is required because when printing something compliant with Tables.jl, we
 # modify its type to be `ColumnTable` or `RowTable`. In this case, functions like
 # highlighters must receive the original data, not the transformed one.

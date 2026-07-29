@@ -115,7 +115,7 @@ end
 # == Rows ==================================================================================
 
 """
-    _markdown__row_group_line(buf::IOContext, row_group_label::String, table_data::TableData, char::Char, row_number_column_width::Int, row_label_column_width::Int, printed_data_column_widths::Vector{Int}) -> Nothing
+    _markdown__print_row_group_line(buf::IOContext, row_group_label::String, table_data::TableData, char::Char, row_number_column_width::Int, row_label_column_width::Int, printed_data_column_widths::Vector{Int}) -> Nothing
 
 Print the row group line to `buf`.
 
@@ -187,7 +187,7 @@ function _markdown__print_row_group_line(
 end
 
 """
-    _markdown__row_separation_line(buf::IOContext, table_data::TableData, char::Char, row_number_column_width::Int, row_label_column_width::Int, printed_data_column_widths::Vector{Int}) -> Nothing
+    _markdown__print_separation_line(buf::IOContext, table_data::TableData, char::Char, row_number_column_width::Int, row_label_column_width::Int, printed_data_column_widths::Vector{Int}) -> Nothing
 
 Print a row separation line to `buf`.
 

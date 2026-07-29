@@ -5,10 +5,10 @@
 ############################################################################################
 
 """
-    _next(state::PrintingTableState, table_data::TableData) -> Union{Symbol, Nothing}, PrintingTableState
+    _next(state::PrintingTableState, table_data::TableData) -> Tuple{Symbol, Symbol, PrintingTableState}
 
-Return the action the back end must perform and the new print table state given the current
-`state` and the `table_data`.
+Return the action the back end must perform, the current table row section, and the new
+print table state, given the current `state` and the `table_data`.
 """
 function _next(state::PrintingTableState, table_data::TableData)
     ps = state.state
@@ -305,7 +305,7 @@ function _next(state::PrintingTableState, table_data::TableData)
         return :end_row, rs, PrintingTableState(_END_ROW_AFTER_GROUP, i, 0, rs)
 
     # After the row group label, we must change the row section to `:data`. Notice that
-    # there is not possibility to have a row group label outside the data rows.
+    # there is no possibility to have a row group label outside the data rows.
     ps < _NEW_ROW_AFTER_GROUP &&
         return :new_row, :data, PrintingTableState(_ROW_GROUP, i, 0, :data)
 

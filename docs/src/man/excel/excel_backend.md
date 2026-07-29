@@ -215,40 +215,41 @@ Border styles are specified using an [`ExcelTableBorders`](@ref) object with the
 Apply a preset:
 
 ```julia
-table_format = ExcelTableFormat(; EXCEL_FORMAT_NO_VLINES...)
+table_format = ExcelTableFormat(; @excel__no_vertical_lines)
 ```
 
-Combine presets and override a field:
+Apply a preset and override one of its fields. Notice that the keyword must come **after**
+the macro, since the last binding wins:
 
 ```julia
 table_format = ExcelTableFormat(;
-    merge(EXCEL_FORMAT_SECTION_LINES, (horizontal_line_before_row_group_label = true,))...,
+    @excel__no_vertical_lines,
+    vertical_line_at_beginning = true,
 )
 ```
 
 Draw section-separator lines in red:
 
 ```julia
-table_format = ExcelTableFormat(
-    borders = ExcelTableBorders(header_line = ["style" => "thin", "color" => "red"]),
+table_format = ExcelTableFormat(;
+    borders = ExcelTableBorders(; header_line = ["style" => "thin", "color" => "red"]),
 )
 ```
 
-To start from a preset and customize border styles:
+To combine a preset with customized border styles:
 
 ```julia
-table_format = ExcelTableFormat(
-    EXCEL_FORMAT_SECTION_LINES;
-    borders = ExcelTableBorders(
+table_format = ExcelTableFormat(;
+    @excel__no_vertical_lines,
+    borders = ExcelTableBorders(;
         header_line = ["style" => "thick", "color" => "red"],
         middle_line = ["style" => "thick", "color" => "red"],
     ),
 )
 ```
 
-When merging presets, the predefined table formats are applied in order with later formats
-taking precedence. Any keyword arguments provided take precedence over all predefined
-formats.
+When more than one preset is applied, they take effect in order, with the later ones taking
+precedence. Any keyword argument provided after them takes precedence over all of them.
 
 ## Excel Table Style
 

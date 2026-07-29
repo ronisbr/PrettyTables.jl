@@ -106,7 +106,7 @@ function rendered_cell_line(cell::AbstractCustomTextCell, line::Int)::String
     return rendered_cell(cell)
 end
 
-"""
+raw"""
     printable_cell_text(cell::AbstractCustomTextCell) -> String
 
 Render only the printable characters in `cell`. Here, we must not consider the
@@ -118,7 +118,7 @@ specifications for right and left padding or cropping.
 """
 function printable_cell_text(cell::AbstractCustomTextCell)::String
     return error(
-        "The custom text cell type `$(typeof(cell))` does not implement the API function `printable_cell_text`.",
+        "The custom text cell of type `$(typeof(cell))` does not implement the API function `printable_cell_text`.",
     )
 end
 

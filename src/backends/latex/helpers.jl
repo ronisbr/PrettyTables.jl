@@ -14,7 +14,7 @@ Return the keyword arguments to be passed to [`LatexTableFormat`](@ref) to show 
 horizontal lines.
 
 We can use the output of this function when creating the text table format object. For
-example, the following code creates a text table format with all horizontal lines:
+example, the following code creates a LaTeX table format with all horizontal lines:
 
 ```julia
 tf = LatexTableFormat(; @latex__all_horizontal_lines())
@@ -37,13 +37,13 @@ julia> A = ones(3, 3);
 julia> pretty_table(A; table_format = LatexTableFormat(; @latex__all_horizontal_lines))
 \\begin{tabular}{|r|r|r|}
   \\hline
-  \\textbf{Col. 1} & \\textbf{Col. 2} & \\textbf{Col. 3} \\
+  \\textbf{Col. 1} & \\textbf{Col. 2} & \\textbf{Col. 3} \\\\
   \\hline
-  1.0 & 1.0 & 1.0 \\
+  1.0 & 1.0 & 1.0 \\\\
   \\hline
-  1.0 & 1.0 & 1.0 \\
+  1.0 & 1.0 & 1.0 \\\\
   \\hline
-  1.0 & 1.0 & 1.0 \\
+  1.0 & 1.0 & 1.0 \\\\
   \\hline
 \\end{tabular}
 
@@ -56,12 +56,12 @@ julia> pretty_table(
        )
 \\begin{tabular}{|r|r|r|}
   \\hline
-  \\textbf{Col. 1} & \\textbf{Col. 2} & \\textbf{Col. 3} \\
-  1.0 & 1.0 & 1.0 \\
+  \\textbf{Col. 1} & \\textbf{Col. 2} & \\textbf{Col. 3} \\\\
+  1.0 & 1.0 & 1.0 \\\\
   \\hline
-  1.0 & 1.0 & 1.0 \\
+  1.0 & 1.0 & 1.0 \\\\
   \\hline
-  1.0 & 1.0 & 1.0 \\
+  1.0 & 1.0 & 1.0 \\\\
   \\hline
 \\end{tabular}
 ```
@@ -89,7 +89,7 @@ Return the keyword arguments to be passed to [`LatexTableFormat`](@ref) to show 
 lines.
 
 We can use the output of this function when creating the text table format object. For
-example, the following code creates a text table format with all vertical lines:
+example, the following code creates a LaTeX table format with all vertical lines:
 
 ```julia
 tf = LatexTableFormat(; @latex__all_vertical_lines)
@@ -159,7 +159,7 @@ Return the keyword arguments to be passed to [`LatexTableFormat`](@ref) to suppr
 horizontal lines.
 
 We can use the output of this function when creating the text table format object. For
-example, the following code creates a text table format without horizontal lines:
+example, the following code creates a LaTeX table format without horizontal lines:
 
 ```julia
 tf = LatexTableFormat(; @latex__no_horizontal_lines)
@@ -226,7 +226,7 @@ Return the keyword arguments to be passed to [`LatexTableFormat`](@ref) to suppr
 vertical lines.
 
 We can use the output of this function when creating the text table format object. For
-example, the following code creates a text table format without vertical lines:
+example, the following code creates a LaTeX table format without vertical lines:
 
 ```julia
 tf = LatexTableFormat(; @latex__no_vertical_lines)

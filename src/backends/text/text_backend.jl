@@ -136,7 +136,7 @@ function _text__print_table(
 
             (j > table_data.num_columns) && throw(
                 ArgumentError(
-                    "The column index in the alignment anchor regex must be less than the number of columns ($(table_data.num_columns)).",
+                    "The column index in the alignment anchor regex must not be greater than the number of columns ($(table_data.num_columns)).",
                 ),
             )
         end
@@ -218,7 +218,7 @@ function _text__print_table(
     suppress_hline_after_continuation_row  = false
 
     if fit_table_in_display_vertically && (display_size[1] > 0)
-        # We do not support middle cropping when using line breaks since it will required a
+        # We do not support middle cropping when using line breaks since it will require a
         # much more complex algorithm, decreasing the maintainability.
         if line_breaks
             table_data.vertical_crop_mode = :bottom
@@ -371,7 +371,7 @@ function _text__print_table(
     )
 
     # Now, we crop the additional column labels if the user wants to do so.
-    # TODO: What we should do with the merged column labels?
+    # TODO: What should we do with the merged column labels?
     if column_label_width_based_on_first_line_only
         for j in eachindex(printed_data_column_widths)
             cw  = printed_data_column_widths[j]
@@ -632,7 +632,7 @@ function _text__print_table(
     num_lines_in_row = 0
 
     # Number of lines available in the display for the data section. Notice that it only
-    # makes sense if the display are limiting the table.
+    # makes sense if the display is limiting the table.
     num_available_data_section_lines = if vertically_limited_by_display
         total_table_lines, num_lines_before_data, num_lines_after_data = _text__number_of_required_lines(
             table_data,
@@ -654,7 +654,7 @@ function _text__print_table(
     # labels.
     num_printed_data_section_lines = 0
 
-    # Stored state at the beginning of the row with multiple lines. We used those values to
+    # Stored state at the beginning of the row with multiple lines. We use those values to
     # reiterate the printing state until we have no more new rows.
     saved_ps = PrintingTableState()
     saved_ir = 0
@@ -958,7 +958,7 @@ function _text__print_table(
 
                 # We should skip this line if we have a row group label at the first column.
                 if next_rs != :row_group_label
-                    # We must handle that case where there is no data rows. In this case,
+                    # We must handle that case where there are no data rows. In this case,
                     # the next section after the column labels will be the table footer or
                     # the end of printing.
                     bottom = next_rs ∈ (:table_footer, :end_printing)
@@ -980,7 +980,7 @@ function _text__print_table(
                     _text__flush_line(display, false)
                 end
 
-                # Check if we must print an horizontal line after the current data row.
+                # Check if we must print a horizontal line after the current data row.
             elseif (rs == :data) && (ps.i ∈ horizontal_lines_at_data_rows)
                 hline = true
 
@@ -1049,7 +1049,7 @@ function _text__print_table(
 
                 _text__flush_line(display, false)
 
-                # Check if we must print an horizontal line after the continuation row.
+                # Check if we must print a horizontal line after the continuation row.
             elseif (rs == :continuation_row) && !suppress_hline_after_continuation_row
                 hline = false
                 bottom = next_rs ∈ (:table_footer, :end_printing)
@@ -1099,7 +1099,7 @@ function _text__print_table(
                     num_printed_data_section_lines += 1
                 end
 
-                # Check if the must print the horizontal line at the end of the table.
+                # Check if we must print the horizontal line at the end of the table.
             elseif (rs == :summary_row) && (next_rs != :summary_row)
                 # If the next section is the table footer, we must draw the last table line.
                 if tf.horizontal_line_after_summary_rows

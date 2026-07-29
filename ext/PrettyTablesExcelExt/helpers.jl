@@ -19,7 +19,7 @@ function _excel__alignment_string(s::Symbol)
     s == :r && return "right"
     s == :c && return "center"
 
-    # Return "left" for :l for any other value.
+    # Return "left" for `:l` or any other value.
     return "left"
 end
 
@@ -114,6 +114,8 @@ end
 
 """
     _excel__cell_length_and_height(text::Any, fontsize::Number) -> Tuple{Float64, Float64}
+
+Notice that the returned tuple is `(row_height, col_length)`, in that order.
 
 Compute the estimated Excel row height and column width for a cell containing `text`
 rendered at `fontsize`.
