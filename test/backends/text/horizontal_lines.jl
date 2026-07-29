@@ -203,3 +203,37 @@ end
         @test result == expected
     end
 end
+
+@testset "Merged Column Label Line With Leading Columns and Cropping" begin
+    # The horizontal line drawn only under the merged column labels must skip the row number
+    # and row label columns, and must also span the continuation column when the table is
+    # horizontally cropped. Those three fill branches were never executed together.
+    matrix = [1 2 3 4; 5 6 7 8]
+
+    expected = """
+┌─────┬────┬───────┬───┐
+│ Row │    │   X   │ ⋯ │
+│     │    │ ──┬── │───┤
+│     │    │ a │ b │ ⋯ │
+├─────┼────┼───┼───┼───┤
+│   1 │ r1 │ 1 │ 2 │ ⋯ │
+│   2 │ r2 │ 5 │ 6 │ ⋯ │
+└─────┴────┴───┴───┴───┘
+       2 columns omitted
+"""
+
+    result = pretty_table(
+        String,
+        matrix;
+        column_labels = [
+            [MultiColumn(2, "X"), MultiColumn(2, "Y")],
+            ["a", "b", "c", "d"],
+        ],
+        table_format = TextTableFormat(; horizontal_line_at_merged_column_labels = true),
+        show_row_number_column = true,
+        row_labels = ["r1", "r2"],
+        maximum_number_of_columns = 2,
+    )
+
+    @test result == expected
+end
