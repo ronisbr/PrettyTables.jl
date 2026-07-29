@@ -199,3 +199,34 @@ end
         @test occursin("[1#super[1], #super[2]],", result)
     end
 end
+
+@testset "Malformed UTF-8 in a Cell" verbose = true begin
+    # Each escaper has a final branch that emits the raw bytes of a malformed or overlong
+    # UTF-8 sequence. It is only reachable with an invalid string, which no test provided.
+    invalid = String(UInt8[0x61, 0xff, 0xfe, 0x62])
+
+    @test !isvalid(invalid)
+
+    matrix = [invalid]
+
+    @testset "Text" begin
+        @test occursin("a\\xff\\xfeb", pretty_table(String, matrix))
+    end
+
+    @testset "LaTeX" begin
+        result = pretty_table(String, matrix; backend = :latex)
+        @test occursin("a\\textbackslash{}xff\\textbackslash{}xfeb", result)
+    end
+
+    @testset "HTML" begin
+        @test occursin("a\\xff\\xfeb", pretty_table(String, matrix; backend = :html))
+    end
+
+    @testset "Markdown" begin
+        @test occursin("a\\xff\\xfeb", pretty_table(String, matrix; backend = :markdown))
+    end
+
+    @testset "Typst" begin
+        @test occursin("a\\xff\\xfeb", pretty_table(String, matrix; backend = :typst))
+    end
+end
