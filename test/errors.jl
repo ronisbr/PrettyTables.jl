@@ -59,3 +59,35 @@ end
     @test occursin("`summary_row_labels` (2)", msg)
     @test !occursin("length(summary_rows)", msg)
 end
+
+@testset "Column Label Style Vector Length" begin
+    # When `first_line_column_label` or `column_label` is given as a vector, it must hold
+    # exactly one style per column. Only the `first_line_column_label` check was covered.
+    data = [1 2 3]
+
+    @test_throws ArgumentError pretty_table(
+        String, data; style = TextTableStyle(; column_label = [crayon"bold"])
+    )
+
+    @test_throws ArgumentError pretty_table(
+        String, data; style = TextTableStyle(; first_line_column_label = [crayon"bold"])
+    )
+
+    @test_throws ArgumentError pretty_table(
+        String, data; backend = :latex, style = LatexTableStyle(; column_label = [["textbf"]])
+    )
+
+    @test_throws ArgumentError pretty_table(
+        String,
+        data;
+        backend = :html,
+        style = HtmlTableStyle(; column_label = [["color" => "red"]]),
+    )
+
+    @test_throws ArgumentError pretty_table(
+        String,
+        data;
+        backend = :markdown,
+        style = MarkdownTableStyle(; column_label = [MarkdownStyle(; bold = true)]),
+    )
+end
