@@ -121,3 +121,33 @@
         @test result == expected
     end
 end
+
+@testset "Colored Vertical Lines" begin
+    # The vertical line separators are printed as a `Char`. The styled branch of the `Char`
+    # method is only taken when color is enabled *and* the border crayon is not the default,
+    # a combination no test exercised. Notice that the counterpart, which asserts that no
+    # escape sequence leaks when color is disabled, lives in "Table Border Without Color".
+    io = IOContext(IOBuffer(), :color => true)
+
+    pretty_table(io, [1 2]; style = TextTableStyle(; table_border = crayon"blue"))
+
+    result = String(take!(io.io))
+
+    expected =
+        "\e[34m┌────────┬────────┐\e[0m\n" *
+        "\e[34m│\e[0m\e[1m Col. 1 \e[0m\e[34m│\e[0m\e[1m Col. 2 \e[0m\e[34m│\e[0m\n" *
+        "\e[34m├────────┼────────┤\e[0m\n" *
+        "\e[34m│\e[0m      1 \e[34m│\e[0m      2 \e[34m│\e[0m\n" *
+        "\e[34m└────────┴────────┘\e[0m\n"
+
+    @test result == expected
+end
+
+@testset "Table Border Without Color" begin
+    # A non-default border crayon must not leak any escape sequence when color is disabled.
+    result = pretty_table(
+        String, [1 2]; style = TextTableStyle(; table_border = crayon"blue")
+    )
+
+    @test !occursin("\e", result)
+end
