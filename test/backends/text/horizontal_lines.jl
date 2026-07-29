@@ -149,3 +149,57 @@ end
     @test result == expected
     @test horizontal_lines == [1, 3]
 end
+
+@testset "Line Specifications as a Vector of Indices" verbose = true begin
+    # `horizontal_lines_at_data_rows` and `vertical_lines_at_data_columns` accept either a
+    # `Symbol` (`:all` / `:none`) or an explicit `Vector{Int}`. The vector branch is what
+    # narrows the field type in the back end, and it must select exactly the requested rows
+    # and columns.
+    matrix = [1 2 3; 4 5 6]
+
+    @testset "Vector of Indices" begin
+        expected = """
+┌────────┬────────────────┐
+│ Col. 1 │ Col. 2  Col. 3 │
+├────────┼────────────────┤
+│      1 │      2       3 │
+├────────┼────────────────┤
+│      4 │      5       6 │
+└────────┴────────────────┘
+"""
+
+        result = pretty_table(
+            String,
+            matrix;
+            table_format = TextTableFormat(;
+                horizontal_lines_at_data_rows  = [1],
+                vertical_lines_at_data_columns = [1],
+            ),
+        )
+
+        @test result == expected
+    end
+
+    @testset "All Lines" begin
+        expected = """
+┌────────┬────────┬────────┐
+│ Col. 1 │ Col. 2 │ Col. 3 │
+├────────┼────────┼────────┤
+│      1 │      2 │      3 │
+├────────┼────────┼────────┤
+│      4 │      5 │      6 │
+└────────┴────────┴────────┘
+"""
+
+        result = pretty_table(
+            String,
+            matrix;
+            table_format = TextTableFormat(;
+                horizontal_lines_at_data_rows  = :all,
+                vertical_lines_at_data_columns = :all,
+            ),
+        )
+
+        @test result == expected
+    end
+end
