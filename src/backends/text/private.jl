@@ -147,7 +147,47 @@ end
 # == Vertical Cropping =====================================================================
 
 """
-    _text__number_of_required_lines(table_data::TableData, tf::TextTableFormat, horizontal_lines_at_column_lables::AbstractVector{Int}, horizontal_lines_at_data_rows::AbstractVector{Int}, new_line_at_end::Bool) -> NTuple{4, Int}
+    _text__count_horizontal_lines(horizontal_lines::AbstractVector{Int}, last_row::Int) -> Int
+
+Return how many of the rows in `1:last_row` have a horizontal line drawn after them
+according to `horizontal_lines`. Notice that a row is counted only once, even if it appears
+more than once in `horizontal_lines`.
+
+This function must be `O(length(horizontal_lines))`, never `O(last_row)`, because `last_row`
+can be the number of rows of a very large table that is only shown cropped.
+"""
+function _text__count_horizontal_lines(
+    horizontal_lines::AbstractUnitRange{Int}, last_row::Int
+)
+    (last_row < 1) && return 0
+
+    # A range is sorted and has no duplicates. Hence, we only need the size of the
+    # intersection with `1:last_row`.
+    l = max(first(horizontal_lines), 1)
+    u = min(last(horizontal_lines), last_row)
+
+    return max(0, u - l + 1)
+end
+
+function _text__count_horizontal_lines(horizontal_lines::AbstractVector{Int}, last_row::Int)
+    (last_row < 1) && return 0
+
+    n = 0
+
+    for (k, i) in enumerate(horizontal_lines)
+        (1 <= i <= last_row) || continue
+
+        # Skip a row we have already counted.
+        (i ∈ view(horizontal_lines, 1:(k - 1))) && continue
+
+        n += 1
+    end
+
+    return n
+end
+
+"""
+    _text__number_of_required_lines(table_data::TableData, tf::TextTableFormat, horizontal_lines_at_column_lables::AbstractVector{Int}, horizontal_lines_at_data_rows::AbstractVector{Int}, new_line_at_end::Bool) -> NTuple{3, Int}
 
 Compute the total number of lines required to print the table.
 
@@ -209,18 +249,34 @@ function _text__number_of_required_lines(
 
     # Count how many non-data lines we must print in data row section. This number includes
     # the horizontal lines and the row group labels.
-    num_non_data_lines = 0
+    #
+    # NOTE: This computation must never iterate over the rows of the source table. Otherwise,
+    # printing a cropped view of a table with millions of rows would be `O(num_rows)` even
+    # though only a screenful is ever shown.
+    num_rows = table_data.num_rows
 
-    for i in 1:(table_data.num_rows)
-        if i != table_data.num_rows
-            num_non_data_lines += i ∈ horizontal_lines_at_data_rows
-        end
+    # The horizontal line after the last data row is not counted here.
+    num_non_data_lines =
+        _text__count_horizontal_lines(horizontal_lines_at_data_rows, num_rows - 1)
 
-        if _print_row_group_label(table_data, i)
-            num_non_data_lines +=
-                1 +
-                tf.horizontal_line_before_row_group_label +
-                tf.horizontal_line_after_row_group_label
+    if _has_row_group_labels(table_data)
+        row_group_labels = table_data.row_group_labels
+
+        lines_per_row_group_label =
+            1 +
+            tf.horizontal_line_before_row_group_label +
+            tf.horizontal_line_after_row_group_label
+
+        for (k, rg) in enumerate(row_group_labels)
+            i = first(rg)
+
+            (1 <= i <= num_rows) || continue
+
+            # If two groups start at the same row, only one label is printed. Hence, we must
+            # count that row only once, exactly like the previous per-row scan did.
+            any(m -> first(row_group_labels[m]) == i, 1:(k - 1)) && continue
+
+            num_non_data_lines += lines_per_row_group_label
         end
     end
 

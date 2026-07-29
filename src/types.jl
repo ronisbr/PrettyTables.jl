@@ -164,11 +164,20 @@ end
 This structure helps to access elements that comply with the column access specification of
 Tables.jl.
 """
-struct ColumnTable
-    data::Any                    # .......................................... Original table
-    table::Any                   # ................... Table converted using `Tables.column`
+struct ColumnTable{D, T}
+    data::D                      # .......................................... Original table
+    table::T                     # .................. Table converted using `Tables.columns`
     column_names::Vector{Symbol} # ............................................ Column names
     size::Tuple{Int, Int}        # ....................................... Size of the table
+end
+
+# Since the structure is parametric, the automatically generated constructor requires
+# `column_names` to be a `Vector{Symbol}` already. However, `Tables.columnnames` is allowed
+# to return any container of symbols. Hence, we must convert it here.
+function ColumnTable(
+    data::D, table::T, column_names::AbstractVector{Symbol}, size::Tuple{Int, Int}
+) where {D, T}
+    return ColumnTable{D, T}(data, table, convert(Vector{Symbol}, column_names), size)
 end
 
 """
@@ -178,6 +187,9 @@ Mutable, constant-space state used to acquire rows from a `RowTable`.
 
 # Fields
 
+- `subset_supported::Bool`: Whether `Tables.subset` can be used with this table at all. It
+    starts as `true` and is latched to `false` at the first failure.
+    (**Default**: `true`)
 - `requested_row::Int`: Row index associated with the cached subset acquisition.
     (**Default**: `0`)
 - `subset_attempted::Bool`: Whether subset acquisition was attempted for `requested_row`.
@@ -196,6 +208,11 @@ Mutable, constant-space state used to acquire rows from a `RowTable`.
     (**Default**: `false`)
 """
 mutable struct RowTableAccessState
+    # NOTE: `subset_supported` must be latched, not reset per row. The subset cache is
+    # row-local, so a table that does not implement `Tables.subset` used to pay for a thrown
+    # and caught exception once per row, forever.
+    subset_supported::Bool
+    subset_getcolumn_supported::Bool
     requested_row::Int
     subset_attempted::Bool
     subset_succeeded::Bool
@@ -206,7 +223,7 @@ mutable struct RowTableAccessState
     iterator_started::Bool
 
     function RowTableAccessState()
-        return new(0, false, false, nothing, 0, nothing, nothing, false)
+        return new(true, true, 0, false, false, nothing, 0, nothing, nothing, false)
     end
 end
 
@@ -216,12 +233,25 @@ end
 This structure helps to access elements that comply with the row access specification of
 Tables.jl.
 """
-struct RowTable
-    data::Any                         # ..................................... Original table
-    table::Any                        # ................ Table converted using `Tables.rows`
+struct RowTable{D, T}
+    data::D                           # ..................................... Original table
+    table::T                          # ................ Table converted using `Tables.rows`
     column_names::Vector{Symbol}      # ....................................... Column names
     size::Tuple{Int, Int}             # .................................. Size of the table
     access_state::RowTableAccessState # ........................... Mutable row access state
+end
+
+# See the note in the `ColumnTable` constructor.
+function RowTable(
+    data::D,
+    table::T,
+    column_names::AbstractVector{Symbol},
+    size::Tuple{Int, Int},
+    access_state::RowTableAccessState,
+) where {D, T}
+    return RowTable{D, T}(
+        data, table, convert(Vector{Symbol}, column_names), size, access_state
+    )
 end
 
 # == Print Table State =====================================================================

@@ -18,8 +18,17 @@ end
     _text__print(display::Display, char::Char) -> Nothing
 
 Print a single character `char` to the `display`.
+
+Notice that this method must write the character directly instead of forwarding to the
+`AbstractString` one. Otherwise, printing a table border would allocate one `String` per
+vertical line per row.
 """
-_text__print(display::Display, char::Char) = _text__print(display, string(char))
+function _text__print(display::Display, char::Char)
+    _text__check_eol(display) && return nothing
+    print(display.buf_line, char)
+    display.column += textwidth(char)
+    return nothing
+end
 
 """
     _text__print(display::Display, str::AbstractString, str_width::Int = -1) -> Nothing
@@ -41,7 +50,13 @@ end
 Print a single character `char` to the `display` with style given by the `crayon`.
 """
 function _text__styled_print(display::Display, char::Char, crayon::Crayon)
-    return _text__styled_print(display, string(char), crayon)
+    (!display.has_color || crayon == _TEXT__DEFAULT || crayon == _TEXT__EMPTY_CRAYON) &&
+        return _text__print(display, char)
+
+    _text__check_eol(display) && return nothing
+    print(display.buf_line, string(crayon), char, _TEXT__STRING_RESET)
+    display.column += textwidth(char)
+    return nothing
 end
 
 """
@@ -105,12 +120,23 @@ function _text__flush_line(
 end
 
 """
-    _text__print_aligned(display::Display, str::AbstractString, cell_width::Int, alignment::Symbol, crayon::Crayon = _TEXT__DEFAULT, fill::Bool = true) -> Nothing
+    _text__print_aligned(display::Display, str::AbstractString, cell_width::Int, alignment::Symbol, crayon::Crayon = _TEXT__DEFAULT, fill::Bool = true; kwargs...) -> Nothing
 
 Print a string `str` to the `display`, aligned according to `alignment` in a cell of width
 `cell_width`. The string is printed with the style given by `crayon`. The `alignment` can be
 `:l` (left), `:r` (right), or `:c` (center). If `fill` is `true`, the string is filled with
 spaces to fit the cell width.
+
+# Keywords
+
+- `left_margin::Int`: Number of spaces to print before the aligned cell.
+    (**Default**: 0)
+- `right_margin::Int`: Number of spaces to print after the aligned cell.
+    (**Default**: 0)
+
+Notice that the margins are **not** part of `cell_width`. They exist so that the caller does
+not need to build a new string just to pad the cell, which would allocate once per cell and
+would also force the padding to be measured again by `printable_textwidth`.
 """
 function _text__print_aligned(
     display::Display,
@@ -118,24 +144,24 @@ function _text__print_aligned(
     cell_width::Int,
     alignment::Symbol,
     crayon::Crayon = _TEXT__DEFAULT,
-    fill::Bool = true,
+    fill::Bool = true;
+    left_margin::Int = 0,
+    right_margin::Int = 0,
 )
     str_width = printable_textwidth(str)
     _text__check_eol(display) && return nothing
-
-    left_margin = 0
-    right_margin = 0
 
     if cell_width > str_width
         remaining = cell_width - str_width
 
         if alignment === :l
-            right_margin = fill ? remaining : 0
+            right_margin += fill ? remaining : 0
         elseif alignment === :c
-            left_margin = div(remaining, 2)
-            right_margin = fill ? remaining - left_margin : 0
+            Δ = div(remaining, 2)
+            left_margin += Δ
+            right_margin += fill ? remaining - Δ : 0
         elseif alignment === :r
-            left_margin = remaining
+            left_margin += remaining
         end
     end
 

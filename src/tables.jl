@@ -133,6 +133,11 @@ Acquire and cache the subset row for row `i`, including acquisition failures.
 function _row_table_subset(rtable::RowTable, i::Integer)
     access_state = rtable.access_state
 
+    # If this table does not implement `Tables.subset` at all, never try again. Otherwise, we
+    # would pay for a thrown and caught exception once per row because the cache below is
+    # row-local.
+    access_state.subset_supported || return false, nothing
+
     # Reset the row-local subset cache for a new requested row.
     if access_state.requested_row != i
         access_state.requested_row = i
@@ -153,9 +158,10 @@ function _row_table_subset(rtable::RowTable, i::Integer)
         # Record a successful subset acquisition.
         access_state.subset_succeeded = true
     catch
-        # Record a failed subset acquisition.
+        # Record a failed subset acquisition and never attempt it again for this table.
         access_state.subset_row = nothing
         access_state.subset_succeeded = false
+        access_state.subset_supported = false
     end
 
     # Return the cached subset acquisition status and row.
@@ -192,13 +198,16 @@ end
 
 function getindex(rtable::RowTable, i, j)
     column_name = rtable.column_names[j]
+    access_state = rtable.access_state
     subset_succeeded, subset_row = _row_table_subset(rtable, i)
 
-    if subset_succeeded
+    if subset_succeeded && access_state.subset_getcolumn_supported
         try
             return Tables.getcolumn(subset_row, column_name)
         catch
-            # Preserve the broad subset-to-iterator fallback semantics.
+            # Preserve the broad subset-to-iterator fallback semantics. As above, latch the
+            # capability so that the failure is paid for only once.
+            access_state.subset_getcolumn_supported = false
         end
     end
 

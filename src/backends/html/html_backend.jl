@@ -24,7 +24,10 @@ function _html__print(
 )
     context    = pspec.context
     table_data = pspec.table_data
-    renderer   = Val(pspec.renderer)
+    # NOTE: `Val(pspec.renderer)` infers to the abstract `Val` because
+    # `pspec.renderer` is a `Symbol`. Branching here keeps the renderer concrete, so the
+    # per-cell rendering calls are statically dispatched.
+    renderer   = pspec.renderer === :show ? Val(:show) : Val(:print)
     tf         = table_format
 
     ps     = PrintingTableState()

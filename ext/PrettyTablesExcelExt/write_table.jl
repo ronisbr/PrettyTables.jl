@@ -137,7 +137,6 @@ function _excel__write_table!(
 
     while action != :end_printing
         action, rs, ps = _next(ps, table_data)
-        _, next_rs, _  = _next(ps, table_data)
 
         action == :end_printing && break
 
@@ -190,6 +189,11 @@ function _excel__write_table!(
             max_col_length[jr] = max(max_col_length[jr], col_length)
 
         elseif action == :end_row
+            # Obtain the next row section since some decisions below depend on it. Notice
+            # that this must be done here, and not once per action, because the lookahead is
+            # a full run of the printing state iterator and only this branch consumes it.
+            _, next_rs, _ = _next(ps, table_data)
+
             XLSX.setRowHeight(sheet, ir + anchor_row_offset; height = max_row_height[ir])
 
             if rs == :column_labels && next_rs != :column_labels

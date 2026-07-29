@@ -18,7 +18,10 @@ function _typst__print(
 )
     context    = pspec.context
     table_data = pspec.table_data
-    renderer   = Val(pspec.renderer)
+    # NOTE: `Val(pspec.renderer)` infers to the abstract `Val` because
+    # `pspec.renderer` is a `Symbol`. Branching here keeps the renderer concrete, so the
+    # per-cell rendering calls are statically dispatched.
+    renderer   = pspec.renderer === :show ? Val(:show) : Val(:print)
     tf         = table_format
 
     ps     = PrintingTableState()
@@ -172,13 +175,14 @@ function _typst__print(
         action, rs, ps = _next(ps, table_data)
         action == :end_printing && break
 
-        # Obtain the next action since some actions depends on it.
-        next_action, next_rs, _ = _next(ps, table_data)
-
-        footnote = _current_cell_footnotes(table_data, action, ps.i, ps.j)
-
-        append = if !isnothing(footnote) && !isempty(footnote)
-            join(string.("#super[", footnote, "]"), ", ")
+        # Obtain the next action since some actions depend on it. Notice that only the
+        # `:new_row` and `:end_row` branches consume the lookahead, and that it is a full run
+        # of the printing state iterator. Hence, we must not pay for it on every cell.
+        next_action, next_rs = if (action == :new_row) || (action == :end_row)
+            na, nrs, _ = _next(ps, table_data)
+            na, nrs
+        else
+            :initialize, :initialize
         end
 
         if action == :new_row
@@ -393,6 +397,15 @@ function _typst__print(
 
             cell === _IGNORE_CELL && continue
 
+            # Compute the footnote superscripts to append to this cell. Notice that this must
+            # be done here, and not once per action, because the result is only ever consumed
+            # by a cell.
+            footnote = _current_cell_footnotes(table_data, action, ps.i, ps.j)
+
+            append = if !isnothing(footnote) && !isempty(footnote)
+                join(string.("#super[", footnote, "]"), ", ")
+            end
+
             # If we are in a column label, check if we must merge the cell.
             if (action == :column_label) && (cell isa MergeCells)
                 # Check if we have enough data columns to merge the cell.
@@ -538,7 +551,8 @@ function _typst__print(
             # Create the table cell.
             cell_properties, text_properties = _typst__cell_and_text_properties(vproperties)
 
-            cell_prefix = action ∈ [:footnote] ? "#super[$(ps.i)]" : ""
+            # NOTE: `action ∈ [:footnote]` would heap-allocate a `Vector{Symbol}` per cell.
+            cell_prefix = action == :footnote ? "#super[$(ps.i)]" : ""
 
             # If the type is `Markdown.MD` or if Typstry.jl is loaded and the cell is a
             # `TypstString`, we do not wrap it in a #text. Treat it as a raw Typst

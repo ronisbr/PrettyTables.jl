@@ -241,3 +241,27 @@ end
     )
     @test result == expected
 end
+
+@testset "fmt__round Does Not Use Exception Control Flow" begin
+    # `fmt__round` used to `try`/`catch` a `MethodError` for every non-numeric cell, which is
+    # orders of magnitude more expensive than rendering the cell itself. The guard is
+    # asserted through the allocation count, which is deterministic.
+    data = fill("abcdef", 50, 4)
+
+    pretty_table(String, data)
+    pretty_table(String, data; formatters = [fmt__round(2)])
+    pretty_table(String, data; formatters = [fmt__round(2, [1, 3])])
+
+    baseline = @allocated pretty_table(String, data)
+    rounded  = @allocated pretty_table(String, data; formatters = [fmt__round(2)])
+    columns  = @allocated pretty_table(String, data; formatters = [fmt__round(2, [1, 3])])
+
+    @test rounded <= 2 * baseline
+    @test columns <= 2 * baseline
+
+    # The formatter must still round the numeric cells.
+    @test occursin("1.23", pretty_table(String, [1.23456]; formatters = [fmt__round(2)]))
+
+    # And it must leave the non-numeric ones untouched.
+    @test occursin("abcdef", pretty_table(String, ["abcdef"]; formatters = [fmt__round(2)]))
+end

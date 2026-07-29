@@ -12,7 +12,10 @@ function _latex__print(
 )
     context    = pspec.context
     table_data = pspec.table_data
-    renderer   = Val(pspec.renderer)
+    # NOTE: `Val(pspec.renderer)` infers to the abstract `Val` because
+    # `pspec.renderer` is a `Symbol`. Branching here keeps the renderer concrete, so the
+    # per-cell rendering calls are statically dispatched.
+    renderer   = pspec.renderer === :show ? Val(:show) : Val(:print)
     tf         = table_format
 
     ps     = PrintingTableState()
@@ -95,9 +98,6 @@ function _latex__print(
 
         action == :end_printing && break
 
-        # Obtain the next action since some actions depends on it.
-        next_action, next_rs, _ = _next(ps, table_data)
-
         if action == :new_row
             empty!(merged_column_labels)
             first_element_in_row = true
@@ -113,6 +113,11 @@ function _latex__print(
             print(buf, " "^(ns * il))
 
         elseif action == :end_row
+            # Obtain the next row section since some decisions below depend on it. Notice
+            # that this must be done here, and not once per action, because the lookahead is
+            # a full run of the printing state iterator and only this branch consumes it.
+            _, next_rs, _ = _next(ps, table_data)
+
             println(buf, " \\\\")
 
             # == Handle the Horizontal Lines ===============================================

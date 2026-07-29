@@ -95,6 +95,10 @@ end
 Round the elements in the columns specified in the vector `columns` to the number of
 `digits`. If `columns` is not specified, the rounding will be applied to the entire table.
 
+!!! info
+
+    This formatter will be applied only to the cells that are of type `Number`.
+
 # Extended Help
 
 ## Examples
@@ -130,6 +134,12 @@ julia> pretty_table(data; formatters = [fmt__round(1, [1, 3])])
 """
 function fmt__round(digits::Int)
     return (v, _, _) -> begin
+        # Bail out before the `try` for anything that is not a number. Otherwise, every
+        # non-numeric cell would pay for a thrown and caught `MethodError`, which is orders
+        # of magnitude more expensive than rendering the cell. The `try` is kept as a
+        # secondary guard for exotic `Number` subtypes that do not support `round`.
+        !(v isa Number) && return v
+
         try
             return round(v; digits)
         catch
@@ -140,6 +150,8 @@ end
 
 function fmt__round(digits::Int, columns::AbstractVector{Int})
     return (v, _, j) -> begin
+        !(v isa Number) && return v
+
         for c in columns
             if j == c
                 try

@@ -89,7 +89,7 @@ end
 Render all the lines in the `cell`, applying the specifications for right and left padding
 and cropping.
 """
-function rendered_cell(cell::AbstractCustomTextCell)
+function rendered_cell(cell::AbstractCustomTextCell)::String
     return error(
         "The custom text cell of type `$(typeof(cell))` does not implement the API function `rendered_cell`.",
     )
@@ -101,7 +101,7 @@ end
 Render the `line` in the `cell`, applying the specifications for right and left padding
 and cropping.
 """
-function rendered_cell_line(cell::AbstractCustomTextCell, line::Int)
+function rendered_cell_line(cell::AbstractCustomTextCell, line::Int)::String
     line > 1 && return ""
     return rendered_cell(cell)
 end
@@ -116,7 +116,7 @@ specifications for right and left padding or cropping.
 
     If line breaks are not supported, `\n` must be escaped.
 """
-function printable_cell_text(cell::AbstractCustomTextCell)
+function printable_cell_text(cell::AbstractCustomTextCell)::String
     return error(
         "The custom text cell type `$(typeof(cell))` does not implement the API function `printable_cell_text`.",
     )

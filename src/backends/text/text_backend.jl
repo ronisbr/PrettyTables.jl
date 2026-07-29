@@ -35,7 +35,10 @@ function _text__print_table(
 )
     context    = pspec.context
     table_data = pspec.table_data
-    renderer   = Val(pspec.renderer)
+    # NOTE: `Val(pspec.renderer)` infers to the abstract `Val` because
+    # `pspec.renderer` is a `Symbol`. Branching here keeps the renderer concrete, so the
+    # per-cell rendering calls are statically dispatched.
+    renderer   = pspec.renderer === :show ? Val(:show) : Val(:print)
     tf         = table_format
 
     ps     = PrintingTableState()
@@ -95,23 +98,32 @@ function _text__print_table(
         )
     end
 
-    if minimum_data_column_widths isa Number
-        minimum_data_column_widths =
-            minimum_data_column_widths .+ 0 * (1:(table_data.num_columns))
+    # Normalize the width keywords into locals of a single concrete type. Notice that the
+    # previous scalar-to-vector broadcast produced a `StepRangeLen`, not a `Vector{Int}`, so
+    # these variables kept a `Union` for the rest of the function. Since they are indexed
+    # inside the per-cell loop and passed to functions declaring `AbstractVector{Int}`, that
+    # forced a runtime union resolution per access and a second specialization of those
+    # functions.
+    min_data_column_widths::Vector{Int} = if minimum_data_column_widths isa Number
+        fill(minimum_data_column_widths, table_data.num_columns)
+    else
+        collect(Int, minimum_data_column_widths)
     end
 
-    if maximum_data_column_widths isa Number
-        maximum_data_column_widths =
-            maximum_data_column_widths .+ 0 * (1:(table_data.num_columns))
+    max_data_column_widths::Vector{Int} = if maximum_data_column_widths isa Number
+        fill(maximum_data_column_widths, table_data.num_columns)
+    else
+        collect(Int, maximum_data_column_widths)
     end
 
     has_fixed_data_column_widths = false
-    if (fixed_data_column_widths isa Number) && (fixed_data_column_widths > 0)
-        fixed_data_column_widths =
-            fixed_data_column_widths .+ 0 * (1:(table_data.num_columns))
+
+    fix_data_column_widths::Vector{Int} = if fixed_data_column_widths isa Number
+        has_fixed_data_column_widths = fixed_data_column_widths > 0
+        fill(fixed_data_column_widths, table_data.num_columns)
+    else
         has_fixed_data_column_widths = true
-    elseif fixed_data_column_widths isa AbstractVector
-        has_fixed_data_column_widths = true
+        collect(Int, fixed_data_column_widths)
     end
 
     if alignment_anchor_regex isa Vector{Pair{Int, Vector{Regex}}}
@@ -184,8 +196,8 @@ function _text__print_table(
             aux = 0
             mc = 1
 
-            for j in eachindex(fixed_data_column_widths)
-                aux += fixed_data_column_widths[j] <= 0 ? 5 : fixed_data_column_widths[j]
+            for j in eachindex(fix_data_column_widths)
+                aux += fix_data_column_widths[j] <= 0 ? 5 : fix_data_column_widths[j]
                 aux > display.size[2] && break
                 mc += 1
             end
@@ -245,7 +257,7 @@ function _text__print_table(
     # account the required column width.
 
     row_labels, column_labels, table_str, summary_rows, footnotes = _text__render_table(
-        table_data, context, renderer, line_breaks, maximum_data_column_widths
+        table_data, context, renderer, line_breaks, max_data_column_widths
     )
 
     num_printed_data_rows, num_printed_data_columns = size(table_str)
@@ -329,7 +341,7 @@ function _text__print_table(
         for j in 1:num_printed_data_columns
             for i in 1:num_printed_data_rows
                 table_str[i, j] = _text__fit_cell_in_maximum_cell_width(
-                    table_str[i, j], maximum_data_column_widths[j], line_breaks
+                    table_str[i, j], max_data_column_widths[j], line_breaks
                 )
             end
 
@@ -338,7 +350,7 @@ function _text__print_table(
 
             for i in 1:size(summary_rows, 1)
                 summary_rows[i, j] = _text__fit_cell_in_maximum_cell_width(
-                    summary_rows[i, j], maximum_data_column_widths[j], line_breaks
+                    summary_rows[i, j], max_data_column_widths[j], line_breaks
                 )
             end
         end
@@ -355,7 +367,7 @@ function _text__print_table(
         vertical_lines_at_data_columns,
         column_label_width_based_on_first_line_only,
         line_breaks,
-        minimum_data_column_widths,
+        min_data_column_widths,
     )
 
     # Now, we crop the additional column labels if the user wants to do so.
@@ -386,7 +398,7 @@ function _text__print_table(
         column_labels,
         table_str,
         summary_rows,
-        fixed_data_column_widths,
+        fix_data_column_widths,
         auto_wrap,
         line_breaks,
     )
@@ -664,7 +676,6 @@ function _text__print_table(
         end
 
         action, rs, ps = _next(ps, table_data)
-        _, next_rs, _  = _next(ps, table_data)
 
         ir, jr = _update_data_cell_indices(action, rs, ps, ir, jr)
 
@@ -1128,7 +1139,10 @@ function _text__print_table(
         cell_printed  = false
         cell_width    = 1
         decoration    = _TEXT__DEFAULT
-        rendered_cell = ""
+        # NOTE: The type assertion keeps the per-cell loop free of dynamic dispatches. The
+        # generic `_text__render_cell` and the custom text cell API have no return type
+        # annotation on their user-facing side, so inference would otherwise give `Any` here.
+        rendered_cell::String = ""
         vline         = false
         vline_char    = tf.borders.column
 
@@ -1230,8 +1244,8 @@ function _text__print_table(
                 # limit for the cell. Otherwise, we will have access to a cropped string and
                 # we will not be able to call the API functions to actually reduce the
                 # rendered string width.
-                if (maximum_data_column_widths[jr] <= cell_width) ||
-                    (has_fixed_data_column_widths && (fixed_data_column_widths[jr] > 0))
+                if (max_data_column_widths[jr] <= cell_width) ||
+                    (has_fixed_data_column_widths && (fix_data_column_widths[jr] > 0))
                     if !line_breaks || (current_row_line == 1)
                         table_str[ir, jr] = CustomTextCell.printable_cell_text(cell)
 
@@ -1344,7 +1358,7 @@ function _text__print_table(
                 tf.vertical_line_after_data_columns && (vline = true)
             elseif ps.j ∈ vertical_lines_at_data_columns
                 vline = true
-                tf.suppress_vertical_lines_at_column_labels && (vline_char = " ")
+                tf.suppress_vertical_lines_at_column_labels && (vline_char = ' ')
             end
 
         elseif action ∈ (:column_label, :data, :summary_row_cell)
@@ -1354,7 +1368,7 @@ function _text__print_table(
                 vline = true
 
                 if (action == :column_label) && tf.suppress_vertical_lines_at_column_labels
-                    vline_char = " "
+                    vline_char = ' '
                 end
             end
 
@@ -1365,7 +1379,14 @@ function _text__print_table(
         end
 
         _text__print_aligned(
-            display, " " * rendered_cell * " ", cell_width + 2, alignment, decoration
+            display,
+            rendered_cell,
+            cell_width,
+            alignment,
+            decoration,
+            true;
+            left_margin = 1,
+            right_margin = 1,
         )
 
         vline && _text__styled_print(display, vline_char, style.table_border)
