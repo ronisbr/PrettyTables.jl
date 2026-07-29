@@ -1,6 +1,67 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 3.4.3
+-------------
+
+- ![Enhancement][badge-enhancement] Make printing a cropped view of a table independent of
+  the number of rows in the source table.
+- ![Enhancement][badge-enhancement] Speed up `fmt__round` by skipping the non-numeric cells
+  instead of relying on exception control flow.
+- ![Enhancement][badge-enhancement] Avoid running the printing state iterator twice per
+  action in the text, LaTeX, Typst, and Excel back ends.
+- ![Enhancement][badge-enhancement] Stop retrying `Tables.subset` on every row when the row
+  table does not support it.
+- ![Enhancement][badge-enhancement] Parameterize `ColumnTable` and `RowTable` so that the
+  cell access is no longer dynamically dispatched.
+- ![Enhancement][badge-enhancement] Reduce the number of allocations per cell in the text
+  back end.
+- ![Enhancement][badge-enhancement] Reduce the time to first print, notably for
+  `pretty_table(String, ...)`, `show(::IO, ::PrettyTable)`, and the first Excel export.
+- ![Bugfix][badge-bugfix] Escape all the Typst metacharacters in a cell. Previously, only
+  `#` was escaped, meaning that a `[` or a `]` silently broke the document.
+- ![Bugfix][badge-bugfix] Escape `^` in the LaTeX back end as `\textasciicircum{}` instead
+  of `\^`, which is the circumflex accent command.
+- ![Bugfix][badge-bugfix] Escape `\`, `[`, `]`, `<`, and `>` in the Markdown back end.
+- ![Bugfix][badge-bugfix] Apply the Markdown `code` style innermost, so that a bold or
+  italic code span is no longer rendered with literal markers.
+- ![Bugfix][badge-bugfix] Close the HTML table footer with `</tfoot>`, and tag the source
+  note rows with the `sourceNotes` class when the table has no footnotes.
+- ![Bugfix][badge-bugfix] Fix the Excel `:print` and `:show` renderers, which were
+  inverted, and pass the IO context to them.
+- ![Bugfix][badge-bugfix] Write every integer and floating point number as a native Excel
+  value, and render `nothing` as a blank cell.
+- ![Bugfix][badge-bugfix] Apply the first matching highlighter in the LaTeX back end, as
+  documented, and pass the object the user gave to `pretty_table` to the highlighter
+  callbacks in the LaTeX and Excel back ends.
+- ![Bugfix][badge-bugfix] Support `summary_rows` with Tables.jl inputs and with data whose
+  column axis is not 1-based.
+- ![Bugfix][badge-bugfix] Fix crashes with tables without columns, tables cropped to zero
+  rows, and tables whose width is exactly the display width.
+- ![Bugfix][badge-bugfix] Treat `maximum_number_of_columns == 0` as "no limit" in every
+  back end.
+- ![Bugfix][badge-bugfix] Compute the row number column width using `ndigits` and honor
+  `first_row_index`.
+- ![Bugfix][badge-bugfix] Validate the length of the data column width keywords in the text
+  and Excel back ends, and reject the invalid merge cell index 0.
+- ![Bugfix][badge-bugfix] Resolve `ExcelTableFormat` to `backend = :excel` and define
+  `fmt__excel_stringify` in the package.
+- ![Bugfix][badge-bugfix] Honor the alignment of a merged column label in the Typst back
+  end, draw an underline for every merged label, and escape the caption.
+- ![Bugfix][badge-bugfix] Stop the HTML diagonal continuation cell from inheriting the
+  style of the previous cell, and keep the backslashes when `allow_html_in_cells` is
+  `true`.
+- ![Bugfix][badge-bugfix] Draw the bottom rule of an Excel table independently of
+  `horizontal_line_at_beginning`, and set `vertical_line_after_continuation_column` in the
+  vertical line macros.
+- ![Bugfix][badge-bugfix] Do not write a file when `filename` is passed to
+  `pretty_table(XLSX.XLSXFile, ...)`.
+- ![Bugfix][badge-bugfix] Fix the multi-line row height, a stray ANSI reset when the color
+  is disabled, and the centering of custom text cells in the text back end.
+- ![Bugfix][badge-bugfix] Correct the documentation that described constructors and table
+  format presets that do not exist.
+- ![Info][badge-info] Fix typos and grammar in comments, docstrings, and error messages.
+
 Version 3.4.2
 -------------
 
