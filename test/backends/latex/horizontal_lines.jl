@@ -63,3 +63,32 @@
         @test result == expected
     end
 end
+
+@testset "Line Before a Row Group Label" begin
+    # `horizontal_line_before_row_group_label` had no coverage in this back end.
+    expected = """
+\\begin{tabular}{|r|r|r|}
+  \\hline
+  \\textbf{Col. 1} & \\textbf{Col. 2} & \\textbf{Col. 3} \\\\
+  \\hline
+  1 & 2 & 3 \\\\
+  \\hline
+  \\multicolumn{3}{|l|}{\\textbf{G}} \\\\
+  \\hline
+  4 & 5 & 6 \\\\
+  \\hline
+\\end{tabular}
+"""
+
+    result = pretty_table(
+        String,
+        [1 2 3; 4 5 6];
+        backend = :latex,
+        row_group_labels = [2 => "G"],
+        table_format = LatexTableFormat(;
+            horizontal_line_before_row_group_label = true
+        ),
+    )
+
+    @test result == expected
+end

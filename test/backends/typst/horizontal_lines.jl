@@ -49,3 +49,20 @@
         @test occursin("table.vline(x: 2, end: 3, stroke: 0.8pt),", result)
     end
 end
+
+@testset "Line Before a Row Group Label" begin
+    # `horizontal_line_before_row_group_label` had no coverage in this back end.
+    result = pretty_table(
+        String,
+        [1 2 3; 4 5 6];
+        backend = :typst,
+        row_group_labels = [2 => "G"],
+        table_format = TypstTableFormat(;
+            horizontal_line_before_row_group_label = true
+        ),
+    )
+
+    # One line before the row group label, and one after it.
+    @test occursin("table.hline(y: 2, stroke: 0.5pt,),", result)
+    @test occursin("table.hline(y: 3, stroke: 0.5pt,),", result)
+end
