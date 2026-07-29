@@ -15,11 +15,11 @@
 Convert the `cell` to a string using a specific `context` and `renderer`.
 """
 function _markdown__cell_to_str(cell::Any, context::IOContext, ::Val{:print})
-    return sprint(print, cell; context)
+    return _sprint_with_context(print, context, cell)
 end
 
 function _markdown__cell_to_str(cell::Any, context::IOContext, ::Val{:show})
-    return sprint(show, cell; context)
+    return _sprint_with_context(show, context, cell)
 end
 
 function _markdown__cell_to_str(cell::AbstractString, context::IOContext, ::Val{:show})

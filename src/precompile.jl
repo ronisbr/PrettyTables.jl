@@ -57,15 +57,26 @@ PrecompileTools.@setup_workload begin
 
     dict = Dict(:a => (1, 1), :b => (2, 2), :c => (3, 3))
 
-    # We will redirect the `stdout` and `stdin` so that we can execute the pager and input
-    # some commands without making visible changes to the user.
+    # We will redirect the `stdout` so that the workload does not produce visible output.
     old_stdout = Base.stdout
     new_stdout = redirect_stdout(devnull)
 
     # In HTML, we use `display` if we are rendering to `stdout`. However, even if we are
-    # redirecting it, the text is still begin shown in the display. Thus, we create a buffer
+    # redirecting it, the text is still being shown in the display. Thus, we create a buffer
     # for those cases.
     html_buf = IOBuffer()
+
+    # NOTE: Redirecting `stdout` to `devnull` means the workload above compiles the rendering
+    # path for `io::Base.DevNull`. Real users print to an `IOContext` wrapping a `TTY` or an
+    # `IOBuffer`, which is a different type. Hence, we must also exercise an explicit
+    # `IOContext{IOBuffer}` so that the first real print is not fully cold.
+    io_buf = IOContext(
+        IOBuffer(),
+        :color        => true,
+        :compact      => true,
+        :limit        => true,
+        :displaysize  => (25, 80),
+    )
 
     PrecompileTools.@compile_workload begin
         # == Input: Arrays =================================================================
@@ -249,7 +260,7 @@ PrecompileTools.@setup_workload begin
             matrix;
             backend = :markdown,
             highlighters = [
-                MarkdownHighlighter((data, i, j) -> i == 1, MarkdownStyle(; bold = :true))
+                MarkdownHighlighter((data, i, j) -> i == 1, MarkdownStyle(; bold = true))
             ],
         )
 
@@ -316,6 +327,27 @@ PrecompileTools.@setup_workload begin
         pretty_table(table; backend = :markdown)
         pretty_table(table; backend = :latex)
         pretty_table(html_buf, table; backend = :html)
+
+        # == Entry Points Used Outside a Redirected `stdout` ================================
+
+        # Printing to an explicit `IOContext` is what happens in the REPL and in every
+        # `pretty_table(String, ...)` call. Without these, the first real print pays for the
+        # code generation of the whole rendering path.
+        pretty_table(io_buf, matrix)
+        take!(io_buf.io)
+
+        pretty_table(io_buf, table)
+        take!(io_buf.io)
+
+        pretty_table(String, matrix)
+        pretty_table(String, table)
+
+        # `show(::IO, ::PrettyTable)` is a completely separate entry point.
+        show(io_buf, PrettyTable(matrix))
+        take!(io_buf.io)
+
+        show(io_buf, PrettyTable(table))
+        take!(io_buf.io)
     end
 
     # Restore stdout.

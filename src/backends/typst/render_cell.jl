@@ -10,14 +10,14 @@
 Convert the `cell` to a string using a specific `context` and `renderer`.
 """
 function _typst__cell_to_str(cell::Any, context::IOContext, ::Val{:print})
-    return sprint(print, cell; context)
+    return _sprint_with_context(print, context, cell)
 end
 
 function _typst__cell_to_str(cell::Any, context::IOContext, ::Val{:show})
     if showable(MIME("text/typst"), cell)
-        cell_str = sprint(show, MIME("text/typst"), cell; context)
+        cell_str = _sprint_with_context(show, context, MIME("text/typst"), cell)
     else
-        cell_str = sprint(show, cell; context)
+        cell_str = _sprint_with_context(show, context, cell)
     end
 
     return cell_str
@@ -25,7 +25,7 @@ end
 
 function _typst__cell_to_str(cell::AbstractString, context::IOContext, ::Val{:show})
     if showable(MIME("text/typst"), cell)
-        cell_str = sprint(show, MIME("text/typst"), cell; context)
+        cell_str = _sprint_with_context(show, context, MIME("text/typst"), cell)
     else
         cell_str = string(cell)
     end

@@ -5,6 +5,26 @@
 ############################################################################################
 
 """
+    _sprint_with_context(f::Function, context::IOContext, args...) -> String
+
+Call `f(io, args...)`, where `io` inherits the IO properties of `context`, and return
+everything that was written as a `String`.
+
+This function must be used instead of `sprint(f, args...; context)` in the cell rendering
+code. `sprint` builds its temporary `IOContext` around the *caller's* IO, so the resulting
+type changes with the object the user is printing to. Since the cell renderers deliberately
+declare `@nospecialize(context::IOContext)`, that made every new output IO type trigger a
+fresh inference and code generation of the whole rendering call, which showed up directly as
+time-to-first-print. Wrapping a plain `IOBuffer` instead pins the type to
+`IOContext{IOBuffer}` for every caller.
+"""
+function _sprint_with_context(f::F, @nospecialize(context::IOContext), args...) where {F}
+    buf = IOBuffer()
+    f(IOContext(buf, context), args...)
+    return String(take!(buf))
+end
+
+"""
     @_print(io, args...)
 
 Print `args` to `io`. Each argument in `args` is printed sequentially using `print`, and a

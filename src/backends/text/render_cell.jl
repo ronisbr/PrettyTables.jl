@@ -16,18 +16,18 @@ Convert the `cell` to a string using a specific `context` and `renderer`.
 """
 function _text__cell_to_str(cell::Any, @nospecialize(context::IOContext), ::Val{:print})
     cell isa String && return cell
-    return sprint(print, cell; context)
+    return _sprint_with_context(print, context, cell)
 end
 
 function _text__cell_to_str(cell::Any, @nospecialize(context::IOContext), ::Val{:show})
-    return sprint(show, MIME("text/plain"), cell; context)
+    return _sprint_with_context(show, context, MIME("text/plain"), cell)
 end
 
 function _text__cell_to_str(
     cell::AbstractString, @nospecialize(context::IOContext), ::Val{:show}
 )
     cell isa String && return cell
-    return sprint(print, cell; context)
+    return _sprint_with_context(print, context, cell)
 end
 
 function _text__cell_to_str(::UndefinedCell, @nospecialize(::IOContext), ::Val{:print})
@@ -134,7 +134,7 @@ function _text__render_cell(
         column_width = 80
     end
 
-    cell_str = sprint(Markdown.term, cell, column_width; context)
+    cell_str = _sprint_with_context(Markdown.term, context, cell, column_width)
 
     if !line_breaks
         cell_str = replace(cell_str, '\n' => "\\n")

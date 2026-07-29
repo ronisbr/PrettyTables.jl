@@ -156,4 +156,10 @@ function pretty_table(::Type{XLSX.XLSXFile}, @nospecialize(data::Any); kwargs...
     return pretty_table(data; filename = nothing, kwargs...)
 end
 
+############################################################################################
+#                                     Precompilation                                       #
+############################################################################################
+
+include("precompile.jl")
+
 end # module

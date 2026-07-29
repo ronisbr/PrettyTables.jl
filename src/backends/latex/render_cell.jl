@@ -15,14 +15,14 @@
 Convert the `cell` to a string using a specific `context` and `renderer`.
 """
 function _latex__cell_to_str(cell::Any, context::IOContext, ::Val{:print})
-    return sprint(print, cell; context)
+    return _sprint_with_context(print, context, cell)
 end
 
 function _latex__cell_to_str(cell::Any, context::IOContext, ::Val{:show})
     if showable(MIME("text/latex"), cell)
-        cell_str = sprint(show, MIME("text/latex"), cell; context)
+        cell_str = _sprint_with_context(show, context, MIME("text/latex"), cell)
     else
-        cell_str = sprint(show, cell; context)
+        cell_str = _sprint_with_context(show, context, cell)
     end
 
     return cell_str
