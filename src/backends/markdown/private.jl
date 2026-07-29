@@ -18,15 +18,28 @@ possible values for `alignment` are:
 - `:n`: No alignment information will be added to the string.
 """
 function _markdown__column_alignment_str(column_width::Int, alignment::Symbol)
-    if alignment == :l
+    if alignment ∈ (:l, :L)
         return ":" * "-"^(column_width - 1)
-    elseif alignment == :c
+    elseif alignment ∈ (:c, :C)
         return ":" * "-"^(column_width - 2) * ":"
-    elseif alignment == :r
+    elseif alignment ∈ (:r, :R)
         return "-"^(column_width - 1) * ":"
     else
         return "-"^(column_width)
     end
+end
+
+"""
+    _markdown__alignment(a::Symbol) -> Symbol
+
+Normalize the alignment symbol `a` to its lowercase form, so that the Markdown back end
+accepts `:L`, `:C`, and `:R` exactly like the HTML, LaTeX, and Typst back ends do.
+"""
+function _markdown__alignment(a::Symbol)
+    a === :L && return :l
+    a === :C && return :c
+    a === :R && return :r
+    return a
 end
 
 """
@@ -37,7 +50,7 @@ Print `str` to the buffer `buf` with `alignment` considering the `cell_width`.
 function _markdown__print_aligned(
     buf::IOContext, str::String, cell_width::Int, alignment::Symbol
 )
-    print(buf, align_string(str, cell_width, alignment; fill = true))
+    print(buf, align_string(str, cell_width, _markdown__alignment(alignment); fill = true))
     return nothing
 end
 

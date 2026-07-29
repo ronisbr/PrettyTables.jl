@@ -12,7 +12,7 @@ using PrettyTables: PrintingSpec, TableData, PrintingTableState, MergeCells
 # Import internal iterator and helpers.
 import PrettyTables: _next, _current_cell, _current_cell_alignment, _current_cell_footnotes
 import PrettyTables: _number_of_printed_columns, _number_of_printed_data_columns
-import PrettyTables: _get_data
+import PrettyTables: _get_data, _has_summary_rows
 import PrettyTables: _IGNORE_CELL, _EXCEL__NO_DECORATION
 
 # Also import Tables.jl for handling table data
@@ -149,11 +149,15 @@ julia> XLSX.writexlsx("myfile.xlsx", xf)
 ```
 """
 function pretty_table(::Type{XLSX.XLSXFile}, @nospecialize(data::Any); kwargs...)
-    # Force backend to :excel and filename to nothing.
-    !haskey(kwargs, :backend) &&
-        return pretty_table(data; backend = :excel, filename = nothing, kwargs...)
+    # Force `backend` to `:excel` and `filename` to `nothing`.
+    #
+    # NOTE: The overrides must be stripped from the user keywords first and then placed
+    # **last**. When keywords are splatted, the rightmost binding wins, so a user-supplied
+    # `filename` used to override the `nothing` here and write a file, contradicting both the
+    # documentation and this comment.
+    kw = Base.structdiff(NamedTuple(kwargs), NamedTuple{(:filename, :backend)})
 
-    return pretty_table(data; filename = nothing, kwargs...)
+    return pretty_table(data; kw..., backend = :excel, filename = nothing)
 end
 
 ############################################################################################

@@ -14,14 +14,19 @@ const _TEXT__EXPONENTS = ("⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "
 Render the superscript of a footnote.
 """
 function _text__render_footnote_superscript(number::Int)
+    # NOTE: `divrem` keeps the arithmetic in `Int`. The previous `floor(aux / 10)` promoted
+    # `aux` to `Float64`, which made both `aux` and the digit a `Union{Int, Float64}` and
+    # indexed the tuple with a float.
     aux = abs(number)
     str = ""
 
     while aux ≥ 1
-        i = aux % 10
-        str = _TEXT__EXPONENTS[i + 1] * str
-        aux = floor(aux / 10)
+        aux, r = divrem(aux, 10)
+        str = _TEXT__EXPONENTS[r + 1] * str
     end
+
+    # The minus sign must not be silently dropped.
+    number < 0 && (str = "⁻" * str)
 
     return str
 end

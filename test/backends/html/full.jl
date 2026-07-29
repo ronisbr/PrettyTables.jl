@@ -170,7 +170,7 @@
       <td style = "text-align: right;">&vellip;</td>
       <td style = "text-align: right;">&vellip;</td>
       <td style = "text-align: right;">&vellip;</td>
-      <td style = "text-align: right;">&dtdot;</td>
+      <td>&dtdot;</td>
     </tr>
     <tr class = "summaryRow">
       <td class = "summaryRowNumber" style = "font-weight: bold; text-align: right;"></td>
@@ -262,7 +262,7 @@
       <td style = "text-align: right;">&vellip;</td>
       <td style = "text-align: right;">&vellip;</td>
       <td style = "text-align: right;">&vellip;</td>
-      <td style = "text-align: right;">&dtdot;</td>
+      <td>&dtdot;</td>
     </tr>
     <tr class = "dataRow">
       <td class = "rowNumber" style = "font-weight: bold; text-align: right;">4</td>

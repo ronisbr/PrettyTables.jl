@@ -288,12 +288,28 @@ function _typst__print(
                         # columns. Hence, we need to add the offset regarding the previous
                         # columns if they exist.
                         Δc = table_data.show_row_number_column + _has_row_labels(table_data)
+
+                        # NOTE: Each merged cell needs its own line, so they must be written
+                        # out inside the loop. Assigning to `hline` here would keep only the
+                        # last one, exactly like the LaTeX back end accumulates one `\cline`
+                        # per merged cell.
                         for m in merged_column_labels
                             c₀ = Δc + m[1] - 1
                             c₁ = Δc + m[2]
 
-                            hline  = "y: $current_typst_line, start: $c₀, end: $c₁"
-                            stroke = tf.borders.merged_header_cell_line
+                            @_println(
+                                buf_hlines,
+                                hline_pad,
+                                "table.hline(y: ",
+                                current_typst_line,
+                                ", start: ",
+                                c₀,
+                                ", end: ",
+                                c₁,
+                                ", stroke: ",
+                                tf.borders.merged_header_cell_line,
+                                ",),"
+                            )
                         end
                     end
 
@@ -423,6 +439,12 @@ function _typst__print(
                 rendered_cell = _typst__render_cell(cell.data, buf, renderer)
 
                 alignment = cell.alignment
+
+                # NOTE: The `:column_label` property branch below never pushes an alignment,
+                # since only `:data` cells do. Hence, the alignment the user selected for a
+                # merged column label must be pushed here, exactly like the HTML and LaTeX
+                # back ends honor it.
+                push!(vproperties, "align" => _typst__alignment(alignment))
 
                 append!(
                     vproperties,
@@ -609,7 +631,11 @@ function _typst__print(
         _aprintln(buf, "),", il, ns)
 
         if caption isa AbstractString
-            _aprintln(buf, "caption: \"$caption\",", il, ns)
+            # The caption is emitted inside a Typst string literal, so an embedded `"` or
+            # `\` would break the document.
+            _aprintln(
+                buf, "caption: \"$(_typst__escape_string_literal(caption))\",", il, ns
+            )
             _aprintln(buf, "kind: auto,", il, ns)
         elseif caption isa TypstCaption
             _aprint(buf, _typst__process_caption(caption, il), il, ns)

@@ -801,7 +801,15 @@ function _text__print_table(
 
             # Check if we need to start processing multiple row lines.
             if line_breaks && (rs == :data) && (current_row_line == 0)
-                num_lines_in_row = maximum(count.(==('\n'), table_str[ir, :])) + 1
+                # NOTE: Only the columns that are actually printed may contribute to the
+                # height of the row. Otherwise, a column cropped away horizontally could add
+                # spurious blank lines. This also avoids allocating a `Vector` per row.
+                num_lines_in_row = 1
+
+                for jt in 1:last_printed_column_index
+                    n = count(==('\n'), table_str[ir, jt]) + 1
+                    n > num_lines_in_row && (num_lines_in_row = n)
+                end
                 current_row_line = 1
 
                 # Obtain the tokens for each line.
@@ -1282,7 +1290,10 @@ function _text__print_table(
                     CustomTextCell.right_padding!(cell, 0)
 
                 elseif alignment == :c
-                    Δ = div(cell_width - tw, 2, RoundUp)
+                    # NOTE: `_text__print_aligned` rounds the left margin **down**. Hence, a
+                    # custom text cell must do the same, or a plain string and a custom cell
+                    # with the same content would be centered differently in the same column.
+                    Δ = div(cell_width - tw, 2)
                     CustomTextCell.left_padding!(cell, Δ)
                     CustomTextCell.right_padding!(cell, cell_width - tw - Δ)
 
@@ -1361,15 +1372,14 @@ function _text__print_table(
                 tf.suppress_vertical_lines_at_column_labels && (vline_char = ' ')
             end
 
-        elseif action ∈ (:column_label, :data, :summary_row_cell)
+        # NOTE: `:column_label` is fully consumed by the branch above, which is also the one
+        # that honors `suppress_vertical_lines_at_column_labels`, and which uses the
+        # merged-cell-aware last column index. Hence, it must not be listed here.
+        elseif action ∈ (:data, :summary_row_cell)
             if jr == last_printed_column_index
                 tf.vertical_line_after_data_columns && (vline = true)
             elseif ps.j ∈ vertical_lines_at_data_columns
                 vline = true
-
-                if (action == :column_label) && tf.suppress_vertical_lines_at_column_labels
-                    vline_char = ' '
-                end
             end
 
         elseif action == :row_group_label

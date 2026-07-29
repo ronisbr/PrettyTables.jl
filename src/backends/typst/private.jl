@@ -249,15 +249,21 @@ function _typst__process_caption(c::TypstCaption, il::Int)
 
     !isnothing(position) && @_println(buf, ind, "position: ", position, ",")
 
-    @_println(buf, ind, "[", caption, "]")
+    @_println(buf, ind, "[", _typst__escape_str(caption), "]")
     @_println(buf, "),")
 
     if kind ∉ ("table", "auto", "image")
-        @_println(buf, "kind: \"", kind, "\",")
-        @_println(buf, "supplement: [", something(supplement, titlecase(kind)), "],")
+        @_println(buf, "kind: \"", _typst__escape_string_literal(kind), "\",")
+        @_println(
+            buf,
+            "supplement: [",
+            _typst__escape_str(something(supplement, titlecase(kind))),
+            "],"
+        )
     else
         @_println(buf, "kind: ", kind, ",")
-        !isnothing(supplement) && @_println(buf, "supplement: [", supplement, "],")
+        !isnothing(supplement) &&
+            @_println(buf, "supplement: [", _typst__escape_str(supplement), "],")
     end
 
     gap != "auto" && @_println(buf, "gap: ", gap, ",")
@@ -439,6 +445,25 @@ end
 
 function _typst__escape_str(s::AbstractString)
     return sprint(_typst__escape_str, s; sizehint = 2 * lastindex(s))
+end
+
+"""
+    _typst__escape_string_literal(s::AbstractString) -> String
+
+Escape `s` so that it can be embedded inside a Typst **string literal** (`"..."`).
+
+Notice that this is a different context from the one `_typst__escape_str` handles. Inside a
+string literal only the backslash and the double quote are special, and an unescaped double
+quote terminates the literal, breaking the document.
+"""
+function _typst__escape_string_literal(s::AbstractString)
+    buf = IOBuffer(; sizehint = lastindex(s))
+
+    for c in s
+        (c == '\\') || (c == '"') ? print(buf, '\\', c) : print(buf, c)
+    end
+
+    return String(take!(buf))
 end
 
 """

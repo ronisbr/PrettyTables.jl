@@ -271,6 +271,11 @@ function _html__print(
             il += 1
 
         elseif action == :diagonal_continuation_cell
+            # `vstyle` is a buffer reused across cells. Hence, it must be cleared here, just
+            # like the vertical continuation cell branch below does. Otherwise, this cell
+            # would inherit the style of whatever cell was rendered before it.
+            empty!(vstyle)
+
             _aprintln(
                 buf, _html__create_tag("td", "&dtdot;"; style = vstyle), il, ns; minify
             )

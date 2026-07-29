@@ -317,7 +317,11 @@ function _text__print_horizontal_line(
             _text__horizontal_line_intersection(display, ri, row, true)
     end
 
-    crayon != _TEXT__DEFAULT && _text__print(display, _TEXT__STRING_RESET)
+    # NOTE: The reset must be guarded by `has_color` exactly like the opening escape
+    # sequence is. Otherwise, a table styled with a non-default crayon would leak a bare
+    # `\e[0m` into an output where color is disabled.
+    (display.has_color && crayon != _TEXT__DEFAULT) &&
+        _text__print(display, _TEXT__STRING_RESET)
 
     return nothing
 end
@@ -475,7 +479,11 @@ function _text__print_column_label_horizontal_line(
             _text__horizontal_line_intersection(display, ri, row, true)
     end
 
-    crayon != _TEXT__DEFAULT && _text__print(display, _TEXT__STRING_RESET)
+    # NOTE: The reset must be guarded by `has_color` exactly like the opening escape
+    # sequence is. Otherwise, a table styled with a non-default crayon would leak a bare
+    # `\e[0m` into an output where color is disabled.
+    (display.has_color && crayon != _TEXT__DEFAULT) &&
+        _text__print(display, _TEXT__STRING_RESET)
 
     return nothing
 end
@@ -588,7 +596,11 @@ function _text__print_column_label_horizontal_line_only_at_merged_labels(
             _text__horizontal_line_intersection(display, ri, row, true)
     end
 
-    crayon != _TEXT__DEFAULT && _text__print(display, _TEXT__STRING_RESET)
+    # NOTE: The reset must be guarded by `has_color` exactly like the opening escape
+    # sequence is. Otherwise, a table styled with a non-default crayon would leak a bare
+    # `\e[0m` into an output where color is disabled.
+    (display.has_color && crayon != _TEXT__DEFAULT) &&
+        _text__print(display, _TEXT__STRING_RESET)
 
     return nothing
 end

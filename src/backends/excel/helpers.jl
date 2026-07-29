@@ -64,6 +64,7 @@ macro excel__all_vertical_lines()
             vertical_line_after_row_label_column  = true,
             vertical_lines_at_data_columns        = :all,
             vertical_line_after_data_columns      = true,
+            vertical_line_after_continuation_column = true,
         )...
     )
 end
@@ -125,6 +126,7 @@ macro excel__no_vertical_lines()
             vertical_line_after_row_label_column  = false,
             vertical_lines_at_data_columns        = :none,
             vertical_line_after_data_columns      = false,
+            vertical_line_after_continuation_column = false,
         )...
     )
 end

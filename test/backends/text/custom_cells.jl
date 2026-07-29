@@ -185,7 +185,7 @@
 ├────────┼────────────────────────────┼──────────────────────────────────────────────────────────────┤
 │   1    │ Ronan Arraes Jardim Chagas │ \e]8;;https://ronanarraes.com\e\\                 Ronan Arraes Jardim Chagas                 \e]8;;\e\\ │
 │   2    │           Google           │ \e]8;;https://google.com\e\\                           Google                           \e]8;;\e\\ │
-│   3    │           Apple            │ \e]8;;https://apple.com\e\\                            Apple                           \e]8;;\e\\ │
+│   3    │           Apple            │ \e]8;;https://apple.com\e\\                           Apple                            \e]8;;\e\\ │
 │   4    │          Emojis!           │ \e]8;;https://emojipedia.org/github/\e\\          😃😃😃😃😃😃😃😃😃😃😃😃😃😃😃😃😃😃😃😃          \e]8;;\e\\ │
 └────────┴────────────────────────────┴──────────────────────────────────────────────────────────────┘
 """

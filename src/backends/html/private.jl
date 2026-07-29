@@ -33,7 +33,10 @@ function _html__escape_str(
             c == '\''         ? (escape_html_chars ? print(io, "&apos;") : print(io, c)) :
             c == '\0'         ? print(io, Base.escape_nul(peek(a)))                      :
             c == '\e'         ? print(io, "\\e")                                         :
-            c == '\\'         ? print(io, "\\\\")                                        :
+            # When `escape_html_chars` is `false`, the user asked for the cell content to be
+            # emitted as raw HTML. Escaping the backslash would corrupt any inline CSS or
+            # JavaScript in it.
+            c == '\\'         ? (escape_html_chars ? print(io, "\\\\") : print(io, c))     :
             '\a' <= c <= '\r' ? print(io, '\\', "abtnvfr"[Int(c) - 6])                   :
             isprint(c)        ? print(io, c)                                             :
             print(io, "\\x", string(UInt32(c); base = 16, pad = 2))

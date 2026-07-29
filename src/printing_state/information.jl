@@ -37,10 +37,15 @@ function _current_table_row_section_info(rs::Symbol, action::Symbol, i::Number)
     section_desc = "Row $i"
 
     if rs == :table_header
+        # NOTE: The `else` branches are required. Without them the chain evaluates to
+        # `nothing` for any other action, and the `isempty` below would throw a `MethodError`
+        # instead of returning the `String` this function promises.
         section_desc = if action == :title
             "Title"
         elseif action == :subtitle
             "Subtitle"
+        else
+            ""
         end
 
     elseif rs == :table_footer
@@ -48,6 +53,8 @@ function _current_table_row_section_info(rs::Symbol, action::Symbol, i::Number)
             "Footnote $i"
         elseif action == :source_notes
             "Source Notes"
+        else
+            ""
         end
 
     elseif rs == :continuation_row

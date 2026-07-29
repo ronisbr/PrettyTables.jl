@@ -604,6 +604,18 @@ function _excel__write_table!(
 
     if table_format.horizontal_line_at_beginning
         XLSX.setBorder(sheet, content_start, all_cols; top = b.top_line)
+    end
+
+    # NOTE: The bottom rule must be an independent decision. It used to sit inside the block
+    # above, so turning off the line at the *beginning* of the table silently removed the
+    # line at its *end*. It follows the flag of the last section that is actually printed.
+    draw_bottom_line = if _has_summary_rows(table_data)
+        table_format.horizontal_line_after_summary_rows
+    else
+        table_format.horizontal_line_after_data_rows
+    end
+
+    if draw_bottom_line
         XLSX.setBorder(sheet, content_end, all_cols; bottom = b.bottom_line)
     end
 

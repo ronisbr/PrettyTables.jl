@@ -41,7 +41,7 @@
       <td style = "text-align: right;">&vellip;</td>
       <td style = "text-align: right;">&vellip;</td>
       <td style = "text-align: right;">&vellip;</td>
-      <td style = "text-align: right;">&dtdot;</td>
+      <td>&dtdot;</td>
     </tr>
   </tbody>
 </table>
@@ -86,7 +86,7 @@
       <td style = "text-align: right;">&vellip;</td>
       <td style = "text-align: right;">&vellip;</td>
       <td style = "text-align: right;">&vellip;</td>
-      <td style = "text-align: right;">&dtdot;</td>
+      <td>&dtdot;</td>
     </tr>
     <tr class = "dataRow">
       <td style = "text-align: right;">(100, 1)</td>
@@ -138,7 +138,7 @@
       <td style = "text-align: right;">&vellip;</td>
       <td style = "text-align: right;">&vellip;</td>
       <td style = "text-align: right;">&vellip;</td>
-      <td style = "text-align: right;">&dtdot;</td>
+      <td>&dtdot;</td>
     </tr>
   </tbody>
 </table>
