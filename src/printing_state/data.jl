@@ -157,8 +157,8 @@ function _current_cell_footnotes(table_data::TableData, cell_type::Symbol, i::In
 
         if (ct == cell_type) && (fi == i)
             if (
-                # Cell types that only requires testing the row index.
-                (ct ∈ (:title, :subtitle, :row_number, :row_label, :summary_row_number)) ||
+                # Cell types that only require testing the row index.
+                (ct ∈ (:title, :subtitle, :row_number, :row_label, :summary_row_label)) ||
                 (fj == j)
             )
                 if isnothing(current_footnotes)
