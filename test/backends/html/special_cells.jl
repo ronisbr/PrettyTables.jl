@@ -106,6 +106,17 @@
         @test result == expected
     end
 
+    @testset "Allow HTML in Cells With Line Breaks" begin
+        # The line breaks must be kept in raw HTML cells. Otherwise, we would corrupt the
+        # HTML code with a literal `\\n`.
+        matrix = ["<div>\na\n</div>";;]
+
+        result = pretty_table(String, matrix; backend = :html, allow_html_in_cells = true)
+
+        @test !occursin("\\n", result)
+        @test occursin("<div>", result)
+    end
+
     @testset "Line Breaks" begin
         matrix = ["First Line\nSecond Line" "Third Line\nFourth Line"]
 

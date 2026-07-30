@@ -25,7 +25,13 @@ function _html__escape_str(
     a = Iterators.Stateful(s)
     for c in a
         if Base.isascii(c)
-            c == '\n'         ? (replace_newline ? print(io, "<br>") : print(io, "\\n")) :
+            # When `escape_html_chars` is `false`, the user asked for the cell content to be
+            # emitted as raw HTML. Hence, we must keep the line breaks. Otherwise, we would
+            # corrupt the HTML code with a literal `\n`.
+            c == '\n'         ? (
+                replace_newline ? print(io, "<br>") :
+                escape_html_chars ? print(io, "\\n") : print(io, c)
+            ) :
             c == '&'          ? (escape_html_chars ? print(io, "&amp;") : print(io, c))  :
             c == '<'          ? (escape_html_chars ? print(io, "&lt;") : print(io, c))   :
             c == '>'          ? (escape_html_chars ? print(io, "&gt;") : print(io, c))   :
