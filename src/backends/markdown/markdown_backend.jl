@@ -214,10 +214,14 @@ function _markdown__print(
             f = table_data.first_row_index
             l = f + max(m, 1) - 1
 
+            # The row numbers are decorated with the style `row_number`. Hence, we must take
+            # the decoration width into account when computing the column width.
+            rnsw = _markdown__style_textwidth(style.row_number)
+
             row_number_column_width = max(
                 textwidth(decorated_row_number_column_label),
-                ndigits(f) + (f < 0),
-                ndigits(l) + (l < 0),
+                ndigits(f) + (f < 0) + rnsw,
+                ndigits(l) + (l < 0) + rnsw,
             )
         end
 
@@ -477,7 +481,9 @@ function _markdown__print(
             elseif action == :row_number
                 cell          = _current_cell(action, ps, table_data)
                 cell_width    = row_number_column_width
-                rendered_cell = _markdown__render_cell(cell, buf, renderer)
+                rendered_cell = _markdown__apply_style(
+                    style.row_number, _markdown__render_cell(cell, buf, renderer)
+                )
 
             elseif action == :data
                 cell_width    = printed_data_column_widths[jr]

@@ -17,9 +17,9 @@
     expected = """
 | **Row** | **Col. -3** | **Col. -2** | **Col. -1** |
 |--------:|------------:|------------:|------------:|
-|      -2 |      (1, 1) |      (1, 2) |      #undef |
-|      -1 |     nothing |     missing |      #undef |
-|       0 |      #undef |      #undef |      (3, 3) |
+|  **-2** |      (1, 1) |      (1, 2) |      #undef |
+|  **-1** |     nothing |     missing |      #undef |
+|   **0** |      #undef |      #undef |      (3, 3) |
 """
 
     result = pretty_table(
