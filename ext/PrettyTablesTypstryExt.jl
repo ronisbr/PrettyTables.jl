@@ -24,4 +24,21 @@ function PrettyTables._typst__render_cell(
     return sprint(show, MIME("text/typst"), cell)
 end
 
+# A `TypstString` cell must be treated as a raw Typst component.
+PrettyTables._typst__is_raw_typst_cell(::TypstString) = true
+
+# Try to render the table as an image if the current display supports it. This function
+# returns whether the table was displayed. Notice that it is called by
+# `PrettyTables._typst__display` through `Base.get_extension`.
+function _typst__display(output_str::String)
+    displayable(MIME("image/png")) || return false
+
+    try
+        display(MIME("image/png"), Typst(TypstText(output_str)))
+        return true
+    catch
+        return false
+    end
+end
+
 end

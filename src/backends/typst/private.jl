@@ -4,6 +4,29 @@
 #
 ############################################################################################
 
+# == Typstry.jl Integration ================================================================
+
+"""
+    _typst__is_raw_typst_cell(cell::Any) -> Bool
+
+Return whether the `cell` content must be treated as a raw Typst component. This function is
+overloaded by the Typstry.jl extension for `TypstString` cells.
+"""
+_typst__is_raw_typst_cell(::Any) = false
+
+"""
+    _typst__display(output_str::String) -> Bool
+
+Try to display the rendered table `output_str` using the available displays. This function
+returns whether the table was displayed. If Typstry.jl is loaded, the extension renders the
+table as an image, provided that the current display supports it.
+"""
+function _typst__display(output_str::String)
+    ext = Base.get_extension(PrettyTables, :PrettyTablesTypstryExt)
+    isnothing(ext) && return false
+    return ext._typst__display(output_str)::Bool
+end
+
 # == Alignment =============================================================================
 
 """

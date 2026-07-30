@@ -581,15 +581,11 @@ function _typst__print(
             # If the type is `Markdown.MD` or if Typstry.jl is loaded and the cell is a
             # `TypstString`, we do not wrap it in a #text. Treat it as a raw Typst
             # component.
-            cell_content =
-                if (
-                    (cell isa Markdown.MD) ||
-                    (isdefined(Main, :TypstString) && (cell isa Main.TypstString))
-                )
-                    rendered_cell
-                else
-                    _typst__text(rendered_cell, text_properties)
-                end
+            cell_content = if (cell isa Markdown.MD) || _typst__is_raw_typst_cell(cell)
+                rendered_cell
+            else
+                _typst__text(rendered_cell, text_properties)
+            end
 
             cell_str = _typst__table_cell(
                 cell_prefix * cell_content * something(append, ""),
@@ -656,10 +652,9 @@ function _typst__print(
 
     output_str = String(take!(buf_io))
 
-    # If we are printing to `stdout`, wrap the output in a `String` object.
-    if is_stdout && isdefined(Main, :Typst)
-        display("image/png", (Main.Typst ∘ Main.TypstText)(output_str))
-    else
+    # If we are printing to `stdout` and Typstry.jl is loaded, try to render the table using
+    # the available displays. If it is not possible, print the plain output.
+    if !(is_stdout && _typst__display(output_str))
         print(context, output_str)
     end
 
