@@ -287,8 +287,8 @@ Base.@nospecializeinfer function _pretty_table(
             end
         end
 
-        # Otherwise, we must push the current data to the vector.
-        push!(ptd, data)
+        # Otherwise, we must push the current data to the vector. This action is performed
+        # just before calling the printing backend so we can remove the data afterward.
     else
         context = IOContext(
             io,
@@ -475,12 +475,22 @@ Base.@nospecializeinfer function _pretty_table(
     # functions.
     is_stdout = (io === stdout) || ((io isa IOContext) && (io.io === stdout))
 
-    # Call the printing backend.
-    if backend == :excel
-        return _printing_backend(Val(backend), pspec; is_stdout, kwargs...)
-    else
-        _printing_backend(Val(backend), pspec; is_stdout, kwargs...)
+    # Register the current data in the circular reference vector while printing, removing
+    # it afterward. Hence, only the ancestors of the current table stay in the vector,
+    # avoiding false positives when the same object appears in two different cells.
+    !isnothing(ptd) && push!(ptd, data)
+
+    try
+        # Call the printing backend.
+        if backend == :excel
+            return _printing_backend(Val(backend), pspec; is_stdout, kwargs...)
+        else
+            _printing_backend(Val(backend), pspec; is_stdout, kwargs...)
+        end
+    finally
+        !isnothing(ptd) && pop!(ptd)
     end
+
     return nothing
 end
 
