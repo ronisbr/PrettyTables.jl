@@ -256,9 +256,10 @@ function _text__print_table(
     # For the text back end, we need to render the entire table before printing to take into
     # account the required column width.
 
-    row_labels, column_labels, table_str, summary_rows, footnotes = _text__render_table(
-        table_data, context, renderer, line_breaks, max_data_column_widths
-    )
+    row_labels, column_labels, table_str, summary_rows, summary_row_labels, footnotes =
+        _text__render_table(
+            table_data, context, renderer, line_breaks, max_data_column_widths
+        )
 
     num_printed_data_rows, num_printed_data_columns = size(table_str)
 
@@ -363,6 +364,7 @@ function _text__print_table(
         row_labels,
         column_labels,
         summary_rows,
+        summary_row_labels,
         table_str,
         vertical_lines_at_data_columns,
         column_label_width_based_on_first_line_only,
@@ -1181,7 +1183,7 @@ function _text__print_table(
         elseif action == :summary_row_label
             cell_width    = row_label_column_width
             decoration    = style.summary_row_label
-            rendered_cell = table_data.summary_row_labels[ir]
+            rendered_cell = summary_row_labels[ir]
 
         elseif action == :column_label
             cell_width    = printed_data_column_widths[jr]

@@ -28,6 +28,7 @@ widths.
 - `Union{Nothing, Matrix{String}}`: Rendered column labels.
 - `Matrix{String}`: Rendered data cells.
 - `Union{Nothing, Matrix{String}}`: Rendered summary rows.
+- `Union{Nothing, Vector{String}}`: Rendered summary row labels.
 - `Union{Nothing, Vector{String}}`: Rendered footnotes.
 """
 function _text__render_table(
@@ -59,6 +60,9 @@ function _text__render_table(
         _has_summary_rows(table_data) ?
         Matrix{String}(undef, num_summary_rows, num_printed_data_columns) : nothing
 
+    summary_row_labels =
+        _has_summary_rows(table_data) ? Vector{String}(undef, num_summary_rows) : nothing
+
     footnotes = _has_footnotes(table_data) ? Vector{String}(undef, num_footnotes) : nothing
 
     action = :initialize
@@ -76,8 +80,14 @@ function _text__render_table(
 
         ir, jr = _update_data_cell_indices(action, rs, ps, ir, jr)
 
-        action ∉ (:column_label, :data, :summary_row_cell, :row_label, :footnote) &&
-            continue
+        action ∉ (
+            :column_label,
+            :data,
+            :summary_row_cell,
+            :row_label,
+            :summary_row_label,
+            :footnote,
+        ) && continue
 
         # We should only break lines if we are in a data cell.
         lb = (action == :data) && line_breaks
@@ -117,6 +127,9 @@ function _text__render_table(
         elseif !isnothing(row_labels) && (action == :row_label)
             row_labels[ir] = rendered_cell
 
+        elseif !isnothing(summary_row_labels) && (action == :summary_row_label)
+            summary_row_labels[ir] = rendered_cell
+
         elseif !isnothing(footnotes) && (action == :footnote)
             id = ps.i
             footnotes[id] = _text__render_footnote_superscript(id) * ": " * rendered_cell
@@ -139,5 +152,5 @@ function _text__render_table(
         end
     end
 
-    return row_labels, column_labels, table_str, summary_rows, footnotes
+    return row_labels, column_labels, table_str, summary_rows, summary_row_labels, footnotes
 end

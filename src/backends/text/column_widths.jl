@@ -133,6 +133,7 @@ end
         row_labels,
         column_labels,
         summary_rows,
+        summary_row_labels,
         table_str,
         vertical_lines_at_data_columns,
         column_label_width_based_on_first_line_only,
@@ -148,6 +149,7 @@ Compute the printed column widths.
 - `row_labels::Union{Nothing, Vector{String}}`: Rendered row labels.
 - `column_labels::Union{Nothing, Matrix{String}}`: Rendered column labels.
 - `summary_rows::Union{Nothing, Matrix{String}}`: Rendered summary rows.
+- `summary_row_labels::Union{Nothing, Vector{String}}`: Rendered summary row labels.
 - `table_str::Matrix{String}`: Rendered data cells.
 - `vertical_lines_at_data_columns::AbstractVector{Int}`: List of columns where a vertical
     line must be drawn after the cell.
@@ -168,6 +170,7 @@ function _text__printed_column_widths(
     row_labels::Union{Nothing, Vector{String}},
     column_labels::Union{Nothing, Matrix{String}},
     summary_rows::Union{Nothing, Matrix{String}},
+    summary_row_labels::Union{Nothing, Vector{String}},
     table_str::Matrix{String},
     vertical_lines_at_data_columns::AbstractVector{Int},
     column_label_width_based_on_first_line_only::Bool,
@@ -205,8 +208,8 @@ function _text__printed_column_widths(
         row_label_column_width = max(
             printable_textwidth(table_data.stubhead_label),
             num_printed_data_rows > 0 ? maximum(printable_textwidth, row_labels) : 0,
-            if _has_summary_rows(table_data)
-                maximum(printable_textwidth, table_data.summary_row_labels)
+            if !isnothing(summary_row_labels)
+                maximum(printable_textwidth, summary_row_labels)
             else
                 0
             end,
