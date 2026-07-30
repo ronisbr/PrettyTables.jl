@@ -73,6 +73,12 @@ function _markdown__print(
         nothing
     end
 
+    summary_row_labels = if _has_summary_rows(table_data)
+        Vector{String}(undef, num_summary_rows)
+    else
+        nothing
+    end
+
     action = :initialize
 
     # We must store the index related to the rendered tables. These indices differ from the
@@ -87,7 +93,8 @@ function _markdown__print(
         ir, jr = _update_data_cell_indices(action, rs, ps, ir, jr)
 
         # Here, we only want actions related to table cells.
-        action ∉ (:column_label, :data, :summary_row_cell, :row_label) && continue
+        action ∉ (:column_label, :data, :summary_row_cell, :row_label, :summary_row_label) &&
+            continue
 
         cell = _current_cell(action, ps, table_data)
 
@@ -153,6 +160,11 @@ function _markdown__print(
             rendered_cell = _markdown__apply_style(style.row_label, rendered_cell)
 
             row_labels[ir] = rendered_cell
+
+        elseif !isnothing(summary_row_labels) && (action == :summary_row_label)
+            rendered_cell = _markdown__apply_style(style.summary_row_label, rendered_cell)
+
+            summary_row_labels[ir] = rendered_cell
         end
     end
 
@@ -213,9 +225,8 @@ function _markdown__print(
             row_label_column_width = max(
                 textwidth(decorated_stubhead_label),
                 num_printed_data_rows > 0 ? maximum(textwidth, row_labels) : 0,
-                if _has_summary_rows(table_data)
-                    maximum(textwidth, table_data.summary_row_labels) +
-                    _markdown__style_textwidth(style.summary_row_label)
+                if !isnothing(summary_row_labels)
+                    maximum(textwidth, summary_row_labels)
                 else
                     0
                 end,
@@ -450,7 +461,7 @@ function _markdown__print(
 
             elseif action == :summary_row_label
                 cell_width    = row_label_column_width
-                rendered_cell = _markdown__apply_style(style.summary_row_label, table_data.summary_row_labels[ir])
+                rendered_cell = summary_row_labels[ir]
 
             elseif action == :column_label
                 cell_width = printed_data_column_widths[jr]

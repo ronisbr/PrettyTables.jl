@@ -86,6 +86,7 @@ end
     include("./backends/markdown/cropping.jl")
     include("./backends/markdown/decorations.jl")
     include("./backends/markdown/default.jl")
+    include("./backends/markdown/footnotes.jl")
     include("./backends/markdown/full.jl")
     include("./backends/markdown/highlighters.jl")
     include("./backends/markdown/offset_arrays.jl")
