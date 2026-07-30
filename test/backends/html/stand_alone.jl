@@ -10,8 +10,8 @@
     expected = """
 <!DOCTYPE html>
 <html>
-<meta charset="UTF-8">
 <head>
+<meta charset="UTF-8">
 <style>
   table, td, th {
     border-collapse: collapse;
@@ -92,4 +92,18 @@
     result = pretty_table(String, matrix; backend = :html, stand_alone = true)
 
     @test result == expected
+end
+
+@testset "Stand Alone Tables With Table Div" begin
+    # The div that wraps the table must be closed before the end of the document.
+    result = pretty_table(
+        String,
+        [1 2];
+        backend = :html,
+        stand_alone = true,
+        wrap_table_in_div = true,
+    )
+
+    @test occursin("</div>\n</body>\n</html>", result)
+    @test !occursin("</html>\n</div>", result)
 end

@@ -91,8 +91,8 @@ function _html__print(
             """
             <!DOCTYPE html>
             <html>
-            <meta charset="UTF-8">
             <head>
+            <meta charset="UTF-8">
             <style>""",
             il,
             ns;
@@ -506,6 +506,11 @@ function _html__print(
     il -= 1
     _aprintln(buf, _html__close_tag("table"), il, ns; minify)
 
+    if wrap_table_in_div
+        il -= 1
+        _aprintln(buf, _html__close_tag("div"), il, ns; minify)
+    end
+
     if stand_alone
         _aprintln(
             buf,
@@ -516,11 +521,6 @@ function _html__print(
             ns;
             minify,
         )
-    end
-
-    if wrap_table_in_div
-        il -= 1
-        _aprintln(buf, _html__close_tag("div"), il, ns; minify)
     end
 
     # == Print the Buffer Into the IO ======================================================
