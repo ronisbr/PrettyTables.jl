@@ -9,8 +9,24 @@
 
 Return the normalized data cell at `(i, j)`, or `_UNDEFINED_CELL` if it is unassigned.
 """
-function _get_data_cell(data::Union{AbstractVecOrMat, ColumnTable}, i::Int, j::Int)
+function _get_data_cell(data::AbstractVecOrMat, i::Int, j::Int)
     return isassigned(data, i, j) ? getindex(data, i, j) : _UNDEFINED_CELL
+end
+
+"""
+    _get_data_cell(data::ColumnTable, i::Int, j::Int) -> Any
+
+Return a column-table cell using only one column retrieval, mapping an undefined reference
+to the undefined cell marker. This function is important for the performance since the
+column lookup is dynamic and happens once per data cell.
+"""
+function _get_data_cell(data::ColumnTable, i::Int, j::Int)
+    col = Tables.getcolumn(data.table, data.column_names[j])
+
+    # If the column is a `Tuple`, all the elements are defined.
+    (col isa Tuple) && return col[i]
+
+    return isassigned(col, i) ? col[i] : _UNDEFINED_CELL
 end
 
 """
