@@ -374,7 +374,7 @@ function _text__print_table(
 
     # Now, we crop the additional column labels if the user wants to do so.
     # TODO: What should we do with the merged column labels?
-    if column_label_width_based_on_first_line_only
+    if column_label_width_based_on_first_line_only && !isnothing(column_labels)
         for j in eachindex(printed_data_column_widths)
             cw  = printed_data_column_widths[j]
             cls = @views column_labels[:, j]
@@ -462,33 +462,36 @@ function _text__print_table(
             printed_data_column_widths[shrinkable_data_column] = cw
 
             # Shrink the column labels.
-            for i in 1:size(column_labels, 1)
-                # Compute the column limits of this column label.
-                j₀, j₁ = _column_label_limits(table_data, i, shrinkable_data_column)
+            if !isnothing(column_labels)
+                for i in 1:size(column_labels, 1)
+                    # Compute the column limits of this column label.
+                    j₀, j₁ = _column_label_limits(table_data, i, shrinkable_data_column)
 
-                # Compute the available width.
-                cell_width = 0
+                    # Compute the available width.
+                    cell_width = 0
 
-                # Make sure we are not accessing a column out of the bounds.
-                j₁ = min(j₁, num_printed_data_columns)
+                    # Make sure we are not accessing a column out of the bounds.
+                    j₁ = min(j₁, num_printed_data_columns)
 
-                for j in j₀:j₁
-                    cell_width += printed_data_column_widths[j] + 2
+                    for j in j₀:j₁
+                        cell_width += printed_data_column_widths[j] + 2
 
-                    # We must add a space if we have a vertical line in the merged cells.
-                    if (j != j₁) && (j ∈ vertical_lines_at_data_columns)
-                        cell_width += 1
+                        # We must add a space if we have a vertical line in the merged
+                        # cells.
+                        if (j != j₁) && (j ∈ vertical_lines_at_data_columns)
+                            cell_width += 1
+                        end
                     end
+
+                    # We already take into account 2 characters for the margin below.
+                    cell_width -= 2
+
+                    # We need to modify the first field of this column label to take into
+                    # account merged labels.
+                    column_labels[i, j₀] = _text__fit_cell_in_maximum_cell_width(
+                        column_labels[i, j₀], cell_width, line_breaks
+                    )
                 end
-
-                # We already take into account 2 characters for the margin below.
-                cell_width -= 2
-
-                # We need to modify the first field of this column label to take into
-                # account merged labels.
-                column_labels[i, j₀] = _text__fit_cell_in_maximum_cell_width(
-                    column_labels[i, j₀], cell_width, line_breaks
-                )
             end
 
             # Shrink the data cells.

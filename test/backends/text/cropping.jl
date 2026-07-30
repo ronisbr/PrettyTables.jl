@@ -862,6 +862,51 @@
     end
 end
 
+@testset "Shrinkable Column Without Column Labels" begin
+    matrix = [
+        "A"^20 "A"^10 "A"^5
+        "B"^10 "B"^20 "B"^10
+        "C"^5  "C"^5  "C"^20
+    ]
+
+    expected = """
+┌───┬──────────────────────┬──────────────────────
+│ … │           AAAAAAAAAA │                AAAA ⋯
+│ … │ BBBBBBBBBBBBBBBBBBBB │           BBBBBBBBB ⋯
+│ … │                CCCCC │ CCCCCCCCCCCCCCCCCCC ⋯
+└───┴──────────────────────┴──────────────────────
+                                  1 column omitted
+"""
+
+    result = pretty_table(
+        String,
+        matrix;
+        display_size           = (-1, 50),
+        show_column_labels     = false,
+        shrinkable_data_column = 1,
+    )
+
+    @test result == expected
+end
+
+@testset "First Line Column Label Width Without Column Labels" begin
+    expected = """
+┌─────┬─────┐
+│ 1.0 │ 1.0 │
+│ 1.0 │ 1.0 │
+└─────┴─────┘
+"""
+
+    result = pretty_table(
+        String,
+        ones(2, 2);
+        column_label_width_based_on_first_line_only = true,
+        show_column_labels                          = false,
+    )
+
+    @test result == expected
+end
+
 @testset "Shrinkable Column" begin
     matrix = [
         "A"^20 "A"^10 "A"^5
