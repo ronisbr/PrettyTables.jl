@@ -298,20 +298,24 @@ function _markdown__print(
 
         # Special treatment for table header and footer.
         if rs == :table_header
-            l = if action == :title
-                max(tf.title_heading_level, 1)
-            elseif action == :subtitle
-                max(tf.subtitle_heading_level, 1)
-            else
-                0
+            if action ∈ (:title, :subtitle)
+                l = action == :title ? tf.title_heading_level : tf.subtitle_heading_level
+
+                # If the heading level is not positive, the title or subtitle is printed as
+                # plain text.
+                if l > 0
+                    print(buf, "#"^l)
+                    print(buf, " ")
+                end
+
+                rendered_cell = _markdown__escape_str(
+                    _current_cell(action, ps, table_data), line_breaks, true
+                )
+
+                println(buf, rendered_cell)
+                println(buf)
             end
 
-            l <= 0 && continue
-
-            print(buf, "#"^l)
-            print(buf, " ")
-            println(buf, _current_cell(action, ps, table_data))
-            println(buf)
             continue
 
         elseif rs == :table_footer

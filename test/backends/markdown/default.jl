@@ -28,3 +28,28 @@
     result = pretty_table_markdown_backend(String, matrix)
     @test result == expected
 end
+
+@testset "Title and Subtitle" begin
+    # The title and subtitle must be escaped, and a heading level lower than 1 must print
+    # them as plain text.
+    expected = """
+# My \\*Title\\*
+
+Subtitle
+
+| **Col. 1** | **Col. 2** |
+|-----------:|-----------:|
+|          1 |          2 |
+"""
+
+    result = pretty_table(
+        String,
+        [1 2];
+        backend = :markdown,
+        subtitle = "Subtitle",
+        table_format = MarkdownTableFormat(; subtitle_heading_level = 0),
+        title = "My *Title*",
+    )
+
+    @test result == expected
+end
