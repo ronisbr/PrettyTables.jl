@@ -193,7 +193,7 @@ function _excel__split_attributes(attributes::Vector{ExcelPair})
     for (k, v) in attributes
         if startswith(k, "cell_fill_")
             pv = fill_attributes
-            sym = Symbol(replace(k, "cell_fill_" => ""))
+            sym = Symbol(@view k[(ncodeunits("cell_fill_") + 1):end])
         else
             pv = font_attributes
             sym = Symbol(k)
@@ -250,7 +250,7 @@ function _excel__apply_cell_style!(
     font_attributes, fill_attributes = _excel__split_attributes(style)
 
     if !isempty(font_attributes)
-        id = findfirst(==(:size), first.(font_attributes))
+        id = findfirst(p -> first(p) == :size, font_attributes)
         fontsize = isnothing(id) ? DEFAULT_FONT_SIZE : last(font_attributes[id])
 
         XLSX.setFont(sheet, row, col; font_attributes...)
