@@ -169,8 +169,11 @@ function _text__print_table(
             1:0
         end
     else
+        # Notice that a line after the last column label row is drawn by the option
+        # `horizontal_line_after_column_labels`. Hence, we must neglect it here. Otherwise,
+        # we would reserve a display line for a horizontal line that is never drawn.
         horizontal_lines_at_column_labels = filter(
-            x -> 1 <= x <= length(table_data.column_labels),
+            x -> 1 <= x <= length(table_data.column_labels) - 1,
             tf.horizontal_lines_at_column_labels::Vector{Int},
         )
     end

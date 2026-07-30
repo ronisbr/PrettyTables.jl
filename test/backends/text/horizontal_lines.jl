@@ -262,3 +262,34 @@ end
 
     @test result == expected
 end
+
+@testset "Horizontal Line at the Last Column Label" begin
+    # A line at the last column label row is never drawn because it is governed by
+    # `horizontal_line_after_column_labels`. Hence, it must not consume a display line when
+    # fitting the table vertically.
+    expected = """
+┌────────┬────────┐
+│ Col. 1 │ Col. 2 │
+├────────┼────────┤
+│     11 │     12 │
+│     21 │     22 │
+│     31 │     32 │
+│     41 │     42 │
+│     51 │     52 │
+│     61 │     62 │
+│     71 │     72 │
+│      ⋮ │      ⋮ │
+└────────┴────────┘
+    23 rows omitted
+"""
+
+    result = pretty_table(
+        String,
+        [10i + j for i in 1:30, j in 1:2];
+        display_size = (15, 80),
+        fit_table_in_display_vertically = true,
+        table_format = TextTableFormat(; horizontal_lines_at_column_labels = [1]),
+    )
+
+    @test result == expected
+end
