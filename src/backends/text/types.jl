@@ -148,12 +148,14 @@ Define the format of the tables printed with the text back end.
     after the row label column.
 - `vertical_lines_at_data_columns::Union{Symbol, Vector{Int}}`: A vertical line will be
     drawn after each data column index listed in this vector. If the symbol `:all` is
-    passed, a vertical line will be drawn after every data row. If the symbol `:none` is
+    passed, a vertical line will be drawn after every data column. If the symbol `:none` is
     passed, no vertical lines will be drawn after the data columns.
 - `vertical_line_after_data_columns::Bool`: If `true`, a vertical line will be drawn after
     the data columns.
 - `vertical_line_after_continuation_column::Bool`: If `true`, a vertical line will be
     drawn after the continuation column.
+- `suppress_vertical_lines_at_column_labels::Bool`: If `true`, the vertical lines inside
+    the column label rows will be suppressed.
 - `ellipsis_line_skip::Int`: Number of lines to skip when printing an ellipsis.
 """
 @kwdef struct TextTableFormat
@@ -257,8 +259,8 @@ Defines the default highlighter of a table when using the text backend.
 - `fd::Function`: Function with the signature `fd(h, data, i, j)` in which `h` is the
     highlighter. This function must return the `Crayon` to be applied to the cell that must
     be highlighted.
-- `_decoration::Crayon`: The `Crayon` to be applied to the highlighted cell if the default `fd`
-    is used.
+- `_decoration::Crayon`: The `Crayon` to be applied to the highlighted cell if the default
+    `fd` is used.
 
 # Remarks
 

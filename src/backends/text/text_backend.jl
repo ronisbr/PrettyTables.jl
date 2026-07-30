@@ -232,8 +232,8 @@ function _text__print_table(
         #
         #   1. Design the number of rendered rows assuming one line per row.
         #   2. Render the table.
-        #   2. Compute the number of rendered columns.
-        #   3. Re-design the number of rendered rows considering the actual number of lines.
+        #   3. Compute the number of rendered columns.
+        #   4. Re-design the number of rendered rows considering the actual number of lines.
 
         mr, suppress_hline_before_continuation_row, suppress_hline_after_continuation_row = _text__design_vertical_cropping(
             table_data,
@@ -285,11 +285,7 @@ function _text__print_table(
 
         num_summary_rows = apply_alignment_regex_to_summary_rows ? size(summary_rows, 1) : 0
 
-        column_str = Vector{String}(
-            undef,
-            num_printed_data_rows +
-            (apply_alignment_regex_to_summary_rows ? num_summary_rows : 0),
-        )
+        column_str = Vector{String}(undef, num_printed_data_rows + num_summary_rows)
 
         # Check if we have one set of regexes to be applied to all the columns or if the
         # user specified regexes for some columns.
@@ -455,7 +451,7 @@ function _text__print_table(
     # If we are limited by the display, we need to update the number of printed columns and
     # rows.
     if horizontally_limited_by_display
-        # Check if the user select one visible row to shrink to fit the table in the
+        # Check if the user selects one visible column to shrink to fit the table in the
         # display.
         if (1 <= shrinkable_data_column <= num_printed_data_columns)
             # Number of characters we should remove from the shrinkable data column to fit
@@ -921,7 +917,7 @@ function _text__print_table(
                 current_row_line += 1
 
                 if current_row_line <= num_lines_in_row
-                    # We if reached this point, we must render another line of the same row.
+                    # If we reached this point, we must render another line of the same row.
                     # Hence, we will restore that saved state at the beginning of the line,
                     # and render it again. Since we increased `current_row_line`, we will
                     # render the
@@ -1430,7 +1426,7 @@ function _text__print_table(
     end
 
     if overwrite_display
-        num_new_lines = max(count(==('\n'), output_str), 0)
+        num_new_lines = count(==('\n'), output_str)
         print(context, "\e[1F\e[2K"^num_new_lines * output_str)
     else
         print(context, output_str)

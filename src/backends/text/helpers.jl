@@ -147,7 +147,7 @@ macro text__all_vertical_lines()
 end
 
 """
-    text__no_horizontal_lines() -> Keywords for `TextTableFormat`
+    @text__no_horizontal_lines() -> Keywords for `TextTableFormat`
 
 Return the keyword arguments to be passed to [`TextTableFormat`](@ref) to suppress all
 horizontal lines.
@@ -210,7 +210,7 @@ macro text__no_horizontal_lines()
 end
 
 """
-    text__no_vertical_lines() -> Keywords for `TextTableFormat`
+    @text__no_vertical_lines() -> Keywords for `TextTableFormat`
 
 Return the keyword arguments to be passed to [`TextTableFormat`](@ref) to suppress all
 vertical lines.
