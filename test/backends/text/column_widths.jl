@@ -101,6 +101,83 @@ end
     @test result == expected
 end
 
+@testset "Merged Column Labels With Width Limits" verbose = true begin
+    matrix = ones(2, 3)
+    column_labels = [
+        [MultiColumn(3, "A very long merged column label")],
+        ["a", "b", "c"]
+    ]
+
+    # The merged column label must be cropped considering the entire merged span instead of
+    # only its first column.
+
+    @testset "Fixed Data Column Widths" begin
+        expected = """
+┌────────────────────────────────┐
+│ A very long merged column lab… │
+│        a │        b │        c │
+├──────────┼──────────┼──────────┤
+│      1.0 │      1.0 │      1.0 │
+│      1.0 │      1.0 │      1.0 │
+└──────────┴──────────┴──────────┘
+"""
+
+        result = pretty_table(
+            String,
+            matrix;
+            column_labels,
+            fixed_data_column_widths = 8,
+        )
+
+        @test result == expected
+    end
+
+    @testset "Maximum Data Column Widths" begin
+        expected = """
+┌────────────────────────────────┐
+│ A very long merged column lab… │
+│        a │        b │        c │
+├──────────┼──────────┼──────────┤
+│      1.0 │      1.0 │      1.0 │
+│      1.0 │      1.0 │      1.0 │
+└──────────┴──────────┴──────────┘
+"""
+
+        result = pretty_table(
+            String,
+            matrix;
+            column_labels,
+            maximum_data_column_widths = 8,
+        )
+
+        @test result == expected
+    end
+
+    @testset "Partially Merged Row" begin
+        expected = """
+┌───────────────┬───────┐
+│ A very long … │     x │
+│     a │     b │     c │
+├───────┼───────┼───────┤
+│   1.0 │   1.0 │   1.0 │
+│   1.0 │   1.0 │   1.0 │
+└───────┴───────┴───────┘
+"""
+
+        result = pretty_table(
+            String,
+            matrix;
+            column_labels = [
+                [MultiColumn(2, "A very long merged column label"), "x"],
+                ["a", "b", "c"]
+            ],
+            fixed_data_column_widths = 5,
+        )
+
+        @test result == expected
+    end
+end
+
 @testset "Summary Widths Without Data Rows" begin
     matrix = Matrix{Int}(undef, 0, 2)
 

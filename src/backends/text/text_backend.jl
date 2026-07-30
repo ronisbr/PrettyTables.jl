@@ -258,7 +258,12 @@ function _text__print_table(
 
     row_labels, column_labels, table_str, summary_rows, summary_row_labels, footnotes =
         _text__render_table(
-            table_data, context, renderer, line_breaks, max_data_column_widths
+            table_data,
+            context,
+            renderer,
+            line_breaks,
+            max_data_column_widths,
+            vertical_lines_at_data_columns,
         )
 
     num_printed_data_rows, num_printed_data_columns = size(table_str)
@@ -397,10 +402,12 @@ function _text__print_table(
     # TODO: This can be integrated in the first column width computation!
     has_fixed_data_column_widths && _text__fix_data_column_widths!(
         printed_data_column_widths,
+        table_data,
         column_labels,
         table_str,
         summary_rows,
         fix_data_column_widths,
+        vertical_lines_at_data_columns,
         auto_wrap,
         line_breaks,
     )

@@ -7,10 +7,12 @@
 """
     _text__fix_data_column_widths!(
         printed_data_column_widths::Vector{Int},
+        table_data::TableData,
         column_labels::Union{Nothing, Matrix{String}},
         table_str::Matrix{String},
         summary_rows::Union{Nothing, Matrix{String}},
         fixed_data_column_widths::AbstractVector{Int},
+        vertical_lines_at_data_columns::AbstractVector{Int},
         auto_wrap::Bool,
         line_breaks::Bool
     ) -> Nothing
@@ -21,27 +23,33 @@ at the data columns to fit the fixed width.
 # Arguments
 
 - `printed_data_column_widths::Vector{Int}`: Printed data column widths.
+- `table_data::TableData`: Table data.
 - `column_labels::Union{Nothing, Matrix{String}}`: Column labels.
 - `table_str::Matrix{String}`: Rendered data cells.
 - `summary_rows::Union{Nothing, Matrix{String}}`: Summary rows.
 - `fixed_data_column_widths::AbstractVector{Int}`: Fixed data column widths.
+- `vertical_lines_at_data_columns::AbstractVector{Int}`: List of columns where a vertical
+    line must be drawn after the cell. It is required to compute the available width of
+    merged column labels.
 - `auto_wrap::Bool`: If `true`, the strings will be auto wrapped at each column with a fixed
     width.
 - `line_breaks::Bool`: If `true`, the cells will be split into multiple lines if needed.
 """
 function _text__fix_data_column_widths!(
     printed_data_column_widths::Vector{Int},
+    table_data::TableData,
     column_labels::Union{Nothing, Matrix{String}},
     table_str::Matrix{String},
     summary_rows::Union{Nothing, Matrix{String}},
     fixed_data_column_widths::AbstractVector{Int},
+    vertical_lines_at_data_columns::AbstractVector{Int},
     auto_wrap::Bool,
     line_breaks::Bool,
 )
     for j in eachindex(printed_data_column_widths)
         fcw = fixed_data_column_widths[j - 1 + begin]
         (fcw <= 0) && continue
-        printed_data_column_widths[j] = fixed_data_column_widths[j - 1 + begin]
+        printed_data_column_widths[j] = fcw
 
         if auto_wrap
             for i in axes(table_str, 1)
@@ -50,42 +58,81 @@ function _text__fix_data_column_widths!(
         end
     end
 
-    for table in (column_labels, table_str, summary_rows)
+    for table in (table_str, summary_rows)
         isnothing(table) && continue
 
         for j in axes(table, 2)
             cw = printed_data_column_widths[j]
 
             for i in axes(table, 1)
-                str = table[i, j]
-
-                if !line_breaks
-                    tw = printable_textwidth(str)
-                    tw <= cw && continue
-
-                    str = first(right_crop(str, tw - cw + 1))
-                    str *= "…"
-                    table[i, j] = str
-                else
-                    tokens = split(str, '\n')
-
-                    for l in eachindex(tokens)
-                        line = tokens[l]
-                        tw   = printable_textwidth(line)
-                        tw <= cw && continue
-
-                        line = first(right_crop(line, tw - cw + 1))
-                        line *= "…"
-                        tokens[l] = line
-                    end
-
-                    table[i, j] = join(tokens, '\n')
-                end
+                table[i, j] = _text__crop_cell_to_width(table[i, j], cw, line_breaks)
             end
         end
     end
 
+    isnothing(column_labels) && return nothing
+
+    num_printed_data_columns = size(column_labels, 2)
+
+    for j in axes(column_labels, 2)
+        for i in axes(column_labels, 1)
+            # A merged column label spans multiple columns. Hence, its available width must
+            # be computed from all the spanned columns. Notice that we only need to crop the
+            # cell where the merged label is stored, which is the first one.
+            j₀, j₁ = _column_label_limits(table_data, i, j)
+
+            j != j₀ && continue
+
+            j₁ = min(j₁, num_printed_data_columns)
+
+            cw = 0
+
+            for k in j₀:j₁
+                cw += printed_data_column_widths[k]
+
+                # We must also take into account the margins and vertical lines between the
+                # merged columns.
+                if k != j₁
+                    cw += 2 + (k ∈ vertical_lines_at_data_columns)
+                end
+            end
+
+            column_labels[i, j] = _text__crop_cell_to_width(column_labels[i, j], cw, line_breaks)
+        end
+    end
+
     return nothing
+end
+
+"""
+    _text__crop_cell_to_width(str::String, cw::Int, line_breaks::Bool) -> String
+
+Crop each line of the cell `str` to fit the width `cw`, adding a continuation character at
+the end of the cropped lines. If `line_breaks` is `false`, `str` is treated as a single
+line.
+"""
+function _text__crop_cell_to_width(str::String, cw::Int, line_breaks::Bool)
+    if !line_breaks
+        tw = printable_textwidth(str)
+        tw <= cw && return str
+
+        str = first(right_crop(str, tw - cw + 1))
+        return str * "…"
+    end
+
+    tokens = split(str, '\n')
+
+    for l in eachindex(tokens)
+        line = tokens[l]
+        tw   = printable_textwidth(line)
+        tw <= cw && continue
+
+        line = first(right_crop(line, tw - cw + 1))
+        line *= "…"
+        tokens[l] = line
+    end
+
+    return join(tokens, '\n')
 end
 
 """
