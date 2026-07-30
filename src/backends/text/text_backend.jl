@@ -1168,8 +1168,10 @@ function _text__print_table(
         decoration    = _TEXT__DEFAULT
         # NOTE: The type assertion keeps the per-cell loop free of dynamic dispatches. The
         # generic `_text__render_cell` and the custom text cell API have no return type
-        # annotation on their user-facing side, so inference would otherwise give `Any` here.
-        rendered_cell::String = ""
+        # annotation on their user-facing side, so inference would otherwise give `Any`
+        # here. The union is concrete and small, and it avoids one string copy per line
+        # when a cell line is a `SubString`.
+        rendered_cell::Union{String, SubString{String}} = ""
         vline         = false
         vline_char    = tf.borders.column
 
@@ -1289,7 +1291,7 @@ function _text__print_table(
                     table_str[ir, jr]
                 else
                     if current_row_line <= length(tokens[jr])
-                        String(tokens[jr][current_row_line])
+                        tokens[jr][current_row_line]
                     else
                         ""
                     end
@@ -1335,7 +1337,7 @@ function _text__print_table(
                     tokens_jr = tokens[jr]
 
                     if current_row_line <= length(tokens_jr)
-                        String(tokens_jr[current_row_line])
+                        tokens_jr[current_row_line]
                     else
                         ""
                     end
