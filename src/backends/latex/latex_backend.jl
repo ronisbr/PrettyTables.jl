@@ -203,7 +203,9 @@ function _latex__print(
 
         elseif action == :row_group_label
             cell          = _current_cell(action, ps, table_data)
-            alignment     = _current_cell_alignment(action, ps, table_data)
+            alignment     = _latex__alignment_to_str(
+                _current_cell_alignment(action, ps, table_data)
+            )
             rendered_cell = _latex__render_cell(cell, buf, renderer)
             cs            = _number_of_printed_columns(table_data)
 
@@ -303,6 +305,18 @@ function _latex__print(
                         alignment *= "|"
                     end
 
+                    # The `\multicolumn` command also overrides the vertical line at the
+                    # table beginning, which belongs to the descriptor of the first column.
+                    # Hence, we must reconstruct it here.
+                    if (
+                        (ps.j == 1) &&
+                        !_has_row_labels(table_data) &&
+                        !table_data.show_row_number_column &&
+                        tf.vertical_line_at_beginning
+                    )
+                        alignment = "|" * alignment
+                    end
+
                     rendered_cell = _latex__render_cell(cell.data, buf, renderer)
 
                     # Apply the style to the text.
@@ -400,18 +414,37 @@ function _latex__print(
                     rendered_cell = _latex__add_environments(rendered_cell, envs)
                     rendered_cell = rendered_cell * footnote_str
 
-                    # Check if we need to override the alignment.
+                    # Check if we need to override the alignment. Notice that we must
+                    # normalize the alignment symbols before comparing them because, e.g.,
+                    # `:c` and `:C` lead to the same LaTeX column descriptor.
+                    alignment_str = _latex__alignment_to_str(alignment)
+
                     if (
                         action == :data &&
-                        alignment != _data_column_alignment(table_data, ps.j)
+                        alignment_str != _latex__alignment_to_str(
+                            _data_column_alignment(table_data, ps.j)
+                        )
                     )
-                        vline_before = (ps.j - 1) ∈ vertical_lines_at_data_columns
-                        vline_after  = ps.j ∈ vertical_lines_at_data_columns
+                        # The `\multicolumn` command overrides the column descriptor in the
+                        # preamble, including the vertical line after the cell. Hence, we
+                        # must reconstruct it here. The vertical line before the cell
+                        # belongs to the descriptor of the previous column, except when the
+                        # cell is at the very first table column.
+                        vline_before =
+                            (ps.j == 1) &&
+                            !_has_row_labels(table_data) &&
+                            !table_data.show_row_number_column &&
+                            tf.vertical_line_at_beginning
+
+                        vline_after = (ps.j ∈ vertical_lines_at_data_columns) || (
+                            (ps.j == _number_of_printed_data_columns(table_data)) &&
+                            tf.vertical_line_after_data_columns
+                        )
 
                         border₀ = vline_before ? "|" : ""
                         border₁ = vline_after ? "|" : ""
 
-                        rendered_cell = "\\multicolumn{1}{$border₀$alignment$border₁}{$rendered_cell}"
+                        rendered_cell = "\\multicolumn{1}{$border₀$alignment_str$border₁}{$rendered_cell}"
                     end
                 end
             end
