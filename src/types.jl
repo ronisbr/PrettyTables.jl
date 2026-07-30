@@ -106,7 +106,9 @@ const _UNDEFINED_CELL = UndefinedCell()
     row_labels::Union{Nothing, AbstractVector} = nothing
     row_group_labels::Union{Nothing, Vector{Pair{Int, String}}} = nothing
     summary_rows::Union{Nothing, Vector{Any}} = nothing
-    summary_row_labels::Union{Nothing, Vector{String}} = nothing
+    # NOTE: The abstract vector is required to store the lazy `SummaryLabelIterator`
+    # without materializing it into a `Vector{String}` at construction time.
+    summary_row_labels::Union{Nothing, AbstractVector{String}} = nothing
 
     # -- Cell Merging ----------------------------------------------------------------------
 
@@ -343,7 +345,7 @@ end
 Base.size(s::SummaryLabelIterator) = (length(s.summary_rows),)
 function Base.getindex(s::SummaryLabelIterator, i::Int)
     f_str = string(s.summary_rows[i])
-    first(f_str) == '#' && return "Summary $i"
+    startswith(f_str, '#') && return "Summary $i"
     return f_str
 end
 
