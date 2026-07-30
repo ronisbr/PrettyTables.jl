@@ -410,6 +410,12 @@ Base.@nospecializeinfer function _pretty_table(
 
     if show_first_column_label_only
         column_labels = [column_labels[1]]
+
+        # The merged cell specification can reference the dropped column label rows. Hence,
+        # we must keep only the specifications related to the first one.
+        if !isnothing(_merge_column_label_cells)
+            _merge_column_label_cells = filter(m -> m.i == 1, _merge_column_label_cells)
+        end
     end
 
     # If the difference between the `maximum_number_of_rows` and the actual number of

@@ -63,6 +63,46 @@ end
     @test result == expected
 end
 
+@testset "Show Only First Column Label With Merged Cells" begin
+    matrix = ones(Int, 2, 4)
+
+    # Merged cells in the dropped column label rows must be neglected.
+    expected = """
+┌───┬───┬───┬───┐
+│ A │ B │ C │ D │
+├───┼───┼───┼───┤
+│ 1 │ 1 │ 1 │ 1 │
+│ 1 │ 1 │ 1 │ 1 │
+└───┴───┴───┴───┘
+"""
+
+    result = pretty_table(
+        String,
+        matrix;
+        column_labels = [["A", "B", "C", "D"], [MultiColumn(2, "G"), EmptyCells(2)]],
+        show_first_column_label_only = true,
+    )
+    @test result == expected
+
+    # Merged cells in the first column label row must be kept.
+    expected = """
+┌───────┬───┬───┐
+│   G   │   │   │
+├───┬───┼───┼───┤
+│ 1 │ 1 │ 1 │ 1 │
+│ 1 │ 1 │ 1 │ 1 │
+└───┴───┴───┴───┘
+"""
+
+    result = pretty_table(
+        String,
+        matrix;
+        column_labels = [[MultiColumn(2, "G"), EmptyCells(2)], ["A", "B", "C", "D"]],
+        show_first_column_label_only = true,
+    )
+    @test result == expected
+end
+
 @testset "Zero-Column Tables" verbose = true begin
     # A table without columns must be rendered exactly the same whether or not the column
     # labels are shown, and it must never throw.
