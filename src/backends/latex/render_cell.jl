@@ -63,11 +63,7 @@ end
 
 # For Markdown cells, we must render always using `show` to obtain the correct decoration.
 function _latex__render_cell(
-    cell::Markdown.MD,
-    context::IOContext,
-    renderer::Union{Val{:print}, Val{:show}};
-    allow_html_in_cells::Bool = false,
-    line_breaks::Bool = false,
+    cell::Markdown.MD, context::IOContext, renderer::Union{Val{:print}, Val{:show}}
 )
     return replace(sprint(show, MIME("text/latex"), cell), "\n" => "")
 end

@@ -45,7 +45,7 @@ function _html__print(
 
         if length(column_label_titles) < num_column_label_rows
             error(
-                "The number of vectors in `column_label_titles` must be equal or greater than that in `column_labels`.",
+                "The number of vectors in `column_label_titles` must be equal to or greater than that in `column_labels`.",
             )
         end
 

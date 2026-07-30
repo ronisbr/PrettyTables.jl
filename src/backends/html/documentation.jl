@@ -65,7 +65,7 @@ contains the following two public fields:
     highlighter. This function must return a `Vector{Pair{String, String}}` with properties
     compatible with the `style` field that will be applied to the highlighted cell.
 
-A HTML highlighter can be constructed using three helpers:
+An HTML highlighter can be constructed using three helpers:
 
 ```julia
 HtmlHighlighter(f::Function, decoration::Vector{Pair{String, String}})
@@ -75,9 +75,8 @@ HtmlHighlighter(f::Function, decoration::HtmlPair)
 HtmlHighlighter(f::Function, fd::Function)
 ```
 
- The first will apply a fixed decoration to the highlighted cell specified in `decoration`,
- the second allows specifying decorations as a `Tuple`, and the third lets the user select
- the desired decoration by specifying the function `fd`.
+The first two apply a fixed decoration to the highlighted cell, whereas the third lets the
+user select the desired decoration by specifying the function `fd`.
 
 !!! note
 
@@ -133,10 +132,10 @@ contains the following fields:
 - `row_label::Vector{HtmlPair}`: Style for the row label.
 - `row_group_label::Vector{HtmlPair}`: Style for the row group label.
 - `first_line_column_label::Union{Vector{HtmlPair}, Vector{Vector{HtmlPair}}}`: Style for
-    the first line of the column labels. If a vector of `Vector{HtmlPair}}` is provided,
+    the first line of the column labels. If a vector of `Vector{HtmlPair}` is provided,
     each column label in the first line will use the corresponding style.
 - `column_label::Union{Vector{HtmlPair}, Vector{Vector{HtmlPair}}}`: Style for the rest of
-    the column labels. If a vector of `Vector{HtmlPair}}` is provided, each column label
+    the column labels. If a vector of `Vector{HtmlPair}` is provided, each column label
     will use the corresponding style.
 - `first_line_merged_column_label::Vector{HtmlPair}`: Style for the merged cells at the
     first column label line.
@@ -145,7 +144,7 @@ contains the following fields:
 - `summary_row_cell::Vector{HtmlPair}`: Style for the summary row cell.
 - `summary_row_label::Vector{HtmlPair}`: Style for the summary row label.
 - `footnote::Vector{HtmlPair}`: Style for the footnote.
-- `source_notes::Vector{HtmlPair}`: Style for the source notes.
+- `source_note::Vector{HtmlPair}`: Style for the source notes.
 
 Each field is a vector of [`HtmlPair`](@ref), *i.e.* `Pair{String, String}`, describing
 properties and values compatible with the HTML style attribute.

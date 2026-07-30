@@ -258,8 +258,8 @@ end
 const _MARKDOWN__ESCAPED_CHARACTERS = ('*', '_', '~', '`', '|', '[', ']', '<', '>')
 
 raw"""
-    _markdown__escape_str(@nospecialize(io::IO), s::AbstractString, replace_newline::Bool = false, escape_markdown_chars::Bool = true) -> Nothing
-    _markdown__escape_str(s::AbstractString, replace_newline::Bool = false, escape_markdown_chars::Bool = true) -> String
+    _markdown__escape_str(@nospecialize(io::IO), s::AbstractString, replace_newline::Bool, escape_markdown_chars::Bool) -> Nothing
+    _markdown__escape_str(s::AbstractString, replace_newline::Bool, escape_markdown_chars::Bool) -> String
 
 Print the string `s` in `io` escaping the characters for the markdown back end. If `io` is
 omitted, the escaped string is returned.
@@ -314,7 +314,7 @@ end
 # == Style =================================================================================
 
 """
-    _markdown__apply_style(d::MarkdownStyle, str::String) -> String
+    _markdown__apply_style(s::MarkdownStyle, str::String) -> String
 
 Apply the markdown style `s` to `str`.
 """

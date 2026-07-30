@@ -6,17 +6,17 @@
 
 # == Strings ===============================================================================
 
-"""
+raw"""
     _html__escape_str(@nospecialize(io::IO), s::AbstractString, replace_newline::Bool = false, escape_html_chars::Bool = true) -> Nothing
     _html__escape_str(s::AbstractString, replace_newline::Bool = false, escape_html_chars::Bool = true) -> String
 
 Print the string `s` in `io` escaping the characters for the HTML back end. If `io` is
 omitted, the escaped string is returned.
 
-If `replace_newline` is `true`, `\n` is replaced with `<br>`. Otherwise, it is escaped,
-leading to `\\n`.
+If `replace_newline` is `true`, `\n` is replaced with `<br>`. Otherwise, it is escaped when
+`escape_html_chars` is `true`, leading to `\\n`, and kept unchanged otherwise.
 
-If `escape_html_chars` is `true`, `&`, `<`, `>`, `"`, and `'`  will be replaced by HTML
+If `escape_html_chars` is `true`, `&`, `<`, `>`, `"`, and `'` will be replaced by HTML
 sequences.
 """
 function _html__escape_str(

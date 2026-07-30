@@ -63,7 +63,7 @@ struct HtmlHighlighter
         return new(f, _html__default_highlighter_fd, decoration)
     end
 
-    function HtmlHighlighter(f::Function, decoration::Vector{HtmlPair}, args...)
+    function HtmlHighlighter(f::Function, decoration::Vector{HtmlPair}, args::HtmlPair...)
         return new(f, _html__default_highlighter_fd, [decoration..., args...])
     end
 end
@@ -179,10 +179,10 @@ Define the style of the tables printed with the HTML back end.
 - `row_label::Vector{HtmlPair}`: Style for the row label.
 - `row_group_label::Vector{HtmlPair}`: Style for the row group label.
 - `first_line_column_label::Union{Vector{HtmlPair}, Vector{Vector{HtmlPair}}}`: Style for
-    the first line of the column labels. If a vector of `Vector{HtmlPair}}` is provided,
+    the first line of the column labels. If a vector of `Vector{HtmlPair}` is provided,
     each column label in the first line will use the corresponding style.
 - `column_label::Union{Vector{HtmlPair}, Vector{Vector{HtmlPair}}}`: Style for the rest of
-    the column labels. If a vector of `Vector{HtmlPair}}` is provided, each column label
+    the column labels. If a vector of `Vector{HtmlPair}` is provided, each column label
     will use the corresponding style.
 - `first_line_merged_column_label::Vector{HtmlPair}`: Style for the merged cells at the
     first column label line.
@@ -191,7 +191,7 @@ Define the style of the tables printed with the HTML back end.
 - `summary_row_cell::Vector{HtmlPair}`: Style for the summary row cell.
 - `summary_row_label::Vector{HtmlPair}`: Style for the summary row label.
 - `footnote::Vector{HtmlPair}`: Style for the footnote.
-- `source_notes::Vector{HtmlPair}`: Style for the source notes.
+- `source_note::Vector{HtmlPair}`: Style for the source notes.
 """
 @kwdef struct HtmlTableStyle{
     TFCL <: Union{Vector{HtmlPair}, Vector{Vector{HtmlPair}}},

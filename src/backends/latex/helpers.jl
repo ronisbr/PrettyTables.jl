@@ -153,7 +153,7 @@ macro latex__all_vertical_lines()
 end
 
 """
-    latex__no_horizontal_lines() -> Keywords for `LatexTableFormat`
+    @latex__no_horizontal_lines() -> Keywords for `LatexTableFormat`
 
 Return the keyword arguments to be passed to [`LatexTableFormat`](@ref) to suppress all
 horizontal lines.
@@ -220,7 +220,7 @@ macro latex__no_horizontal_lines()
 end
 
 """
-    latex__no_vertical_lines() -> Keywords for `LatexTableFormat`
+    @latex__no_vertical_lines() -> Keywords for `LatexTableFormat`
 
 Return the keyword arguments to be passed to [`LatexTableFormat`](@ref) to suppress all
 vertical lines.

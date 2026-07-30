@@ -103,7 +103,7 @@ function _latex__print(
             first_element_in_row = true
 
             # If we are in the very first row after the title section, we need to check if
-            # the user wants a vertical line before the table.
+            # the user wants a horizontal line before the table.
             if (rs != :table_header) && first_table_line && tf.horizontal_line_at_beginning
                 _aprintln(buf, tf.borders.top_line, il, ns)
                 first_table_line = false
