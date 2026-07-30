@@ -194,6 +194,12 @@ function _excel__write_table!(
             # a full run of the printing state iterator and only this branch consumes it.
             _, next_rs, _ = _next(ps, table_data)
 
+            # Track the last row inside the content area so the post-loop outer-border
+            # logic works even when the table has no data rows at all.
+            if rs != :table_header
+                last_written_row = ir + anchor_row_offset
+            end
+
             # NOTE: The row height is set once for every row in the post-loop block, which
             # already has the final value. Setting it here as well doubled the work.
 
@@ -208,8 +214,6 @@ function _excel__write_table!(
                 end
 
             elseif rs ∈ (:data, :continuation_row)
-                last_written_row = ir + anchor_row_offset
-
                 if next_rs ∉ (:data, :continuation_row)
                     table_format.horizontal_line_after_data_rows && XLSX.setBorder(
                         sheet,
@@ -238,8 +242,6 @@ function _excel__write_table!(
                 end
 
             elseif rs == :summary_row
-                last_written_row = ir + anchor_row_offset
-
                 if next_rs != :summary_row
                     table_format.horizontal_line_after_summary_rows && XLSX.setBorder(
                         sheet,
@@ -601,9 +603,12 @@ function _excel__write_table!(
     content_end = last_written_row > 0 ? last_written_row : ir + anchor_row_offset - 1
     all_rows = content_start:content_end
 
+    # If the table has no content rows at all, we must not draw the outer borders.
+    has_content = content_end >= content_start
+
     b = table_format.borders
 
-    if table_format.horizontal_line_at_beginning
+    if has_content && table_format.horizontal_line_at_beginning
         XLSX.setBorder(sheet, content_start, all_cols; top = b.top_line)
     end
 
@@ -616,20 +621,22 @@ function _excel__write_table!(
         table_format.horizontal_line_after_data_rows
     end
 
-    if draw_bottom_line
+    if has_content && draw_bottom_line
         XLSX.setBorder(sheet, content_end, all_cols; bottom = b.bottom_line)
     end
 
-    if table_format.vertical_line_at_beginning
+    if has_content && table_format.vertical_line_at_beginning
         XLSX.setBorder(sheet, all_rows, first(all_cols); left = b.left_line)
     end
 
-    if _is_horizontally_cropped(table_data)
-        table_format.vertical_line_after_continuation_column &&
-            XLSX.setBorder(sheet, all_rows, last(all_cols); right = b.right_line)
-    else
-        table_format.vertical_line_after_data_columns &&
-            XLSX.setBorder(sheet, all_rows, last(all_cols); right = b.right_line)
+    if has_content
+        if _is_horizontally_cropped(table_data)
+            table_format.vertical_line_after_continuation_column &&
+                XLSX.setBorder(sheet, all_rows, last(all_cols); right = b.right_line)
+        else
+            table_format.vertical_line_after_data_columns &&
+                XLSX.setBorder(sheet, all_rows, last(all_cols); right = b.right_line)
+        end
     end
 
     # Set column widths based on accumulated content lengths.

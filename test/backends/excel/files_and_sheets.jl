@@ -100,3 +100,20 @@
 
     isfile("test.xlsx") && rm("test.xlsx"; force = true)
 end
+
+@testset "Tables Without Data Rows" begin
+    # The outer border logic used a fallback that computed a row above the first table row,
+    # throwing an `XLSXError` for tables without data and summary rows.
+    result = pretty_table(XLSX.XLSXFile, Matrix{Float64}(undef, 0, 3))
+    @test result[1]["A1"] == "Col. 1"
+
+    result = pretty_table(
+        XLSX.XLSXFile, Matrix{Float64}(undef, 0, 3); anchor_cell = "B3"
+    )
+    @test result[1]["B3"] == "Col. 1"
+
+    result = pretty_table(
+        XLSX.XLSXFile, Matrix{Float64}(undef, 0, 3); show_column_labels = false
+    )
+    @test ismissing(result[1]["A1"])
+end
