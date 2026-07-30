@@ -88,7 +88,7 @@ function _current_cell(action::Symbol, state::PrintingTableState, table_data::Ta
 
     elseif action == :row_label
         rl = table_data.row_labels
-        return isnothing(rl) ? "" : table_data.row_labels[state.i - 1 + begin]
+        return isnothing(rl) ? "" : rl[state.i - 1 + begin]
 
     elseif action == :summary_row_label
         return table_data.summary_row_labels[state.i - 1 + begin]

@@ -6,7 +6,7 @@
 
 export EmptyCells, MultiColumn, MergeCells, PrettyTable
 
-# Tuple that defined a footnote.
+# Tuple that defines a footnote.
 const FootnoteTuple = Tuple{Symbol, Int, Int}
 
 """

@@ -32,7 +32,7 @@ function _guess_column_labels(data::AbstractVecOrMat)
     # validation.
     (data isa AbstractVector) && isempty(data) && return [String[]]
 
-    return [parent(["Col. $(string(i))" for i in axes(data, 2)])]
+    return [parent(["Col. $i" for i in axes(data, 2)])]
 end
 
 function _guess_column_labels(::AbstractDict{K, V}) where {K, V}
@@ -141,7 +141,7 @@ function _process_merge_column_label_specification(
         npc = length(column_label_line)
         npc != num_columns && throw(
             ArgumentError(
-                "The number of columns ($npc) obtained from the specifications in the line #$(l) of `column_label` does not match the number of columns in the table ($num_columns).",
+                "The number of columns ($npc) obtained from the specifications in the line #$(l) of `column_labels` does not match the number of columns in the table ($num_columns).",
             ),
         )
 

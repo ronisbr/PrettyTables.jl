@@ -7,8 +7,8 @@
 """
     _current_cell_alignment(action::Symbol, state::PrintingTableState, table_data::TableData) -> Symbol
 
-Return the alignment where the current cell specified by the `action` and the current
-printing table `state` of `table_data`.
+Return the alignment of the current cell specified by the `action` and the current printing
+table `state` of `table_data`.
 """
 function _current_cell_alignment(
     action::Symbol, state::PrintingTableState, table_data::TableData

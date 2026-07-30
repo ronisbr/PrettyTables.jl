@@ -20,7 +20,7 @@ function pretty_table(
 end
 
 function pretty_table(::Type{HTML}, @nospecialize(data::Any); kwargs...)
-    # If the keywords does not set the back end or the table format, use the HTML back end
+    # If the keywords do not set the back end or the table format, use the HTML back end
     # by default.
     str = if !haskey(kwargs, :backend) && !haskey(kwargs, :table_format)
         pretty_table(String, data; backend = :html, kwargs...)
@@ -33,7 +33,7 @@ end
 
 # We declare this function with all the common keywords and after we call an internal
 # function where all those keywords are arguments. In this case, we can use `@nospecialize`
-# in the first two arguments. The other options would be wrap the keywords inside a
+# in the first two arguments. The other option would be to wrap the keywords inside a
 # `kwargs...`. However, in the latter, we will not have keyword completion in REPL.
 function pretty_table(
     io::IO,
@@ -157,7 +157,8 @@ end
 # == PrettyTable Structure =================================================================
 
 function pretty_table(pt::PrettyTable; kwargs...)
-    return pretty_table(stdout, pt; kwargs...)
+    io = stdout isa Base.TTY ? IOContext(stdout, :limit => true) : stdout
+    return pretty_table(io, pt; kwargs...)
 end
 
 function pretty_table(@nospecialize(io::IO), pt::PrettyTable; kwargs...)
@@ -470,7 +471,7 @@ Base.@nospecializeinfer function _pretty_table(
         context, table_data, renderer, show_omitted_cell_summary, new_line_at_end
     )
 
-    # If backend is `:auto`, obtain the backend from the `table_format` keyword. It it does
+    # If backend is `:auto`, obtain the backend from the `table_format` keyword. If it does
     # not exist, use `:text`.
     if backend == :auto
         backend = _resolve_printing_backend(kwargs)
