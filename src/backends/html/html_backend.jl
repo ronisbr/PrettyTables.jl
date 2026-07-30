@@ -187,9 +187,11 @@ function _html__print(
     empty!(vproperties)
     push!(vproperties, "class" => table_class)
 
+    # NOTE: We must copy the style vector because the tag creation sorts it in place, and we
+    # must not mutate a vector that belongs to the user.
     _aprintln(
         buf,
-        _html__open_tag("table"; properties = vproperties, style = style.table),
+        _html__open_tag("table"; properties = vproperties, style = copy(style.table)),
         il,
         ns;
         minify,

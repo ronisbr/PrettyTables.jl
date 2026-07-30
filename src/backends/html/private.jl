@@ -91,35 +91,61 @@ function _html__add_alignment_to_style!(style::Vector{HtmlPair}, alignment::Symb
 end
 
 """
-    _html__create_style(style::Vector{HtmlPair}) -> String
+    _html__write_style(buf::IO, style::Union{Nothing, Vector{HtmlPair}}) -> Nothing
 
-Create the HTML style string using the information in the vector `style`.
+Write the HTML style attribute to `buf` using the information in the vector `style`.
+
+Notice that this function writes directly to `buf` instead of building intermediate strings.
+Otherwise, we would allocate multiple strings per printed cell.
 """
-function _html__create_style(style::Vector{HtmlPair})
-    # If there are no keys in the style vector, just return the tag.
-    isempty(style) && return ""
+function _html__write_style(buf::IO, style::Vector{HtmlPair})
+    # If there are no keys in the style vector, we have nothing to do.
+    isempty(style) && return nothing
 
     # Make sure the style is sorted by key.
     sort!(style)
 
+    # Every value can be empty, in which case there is no style to emit. Hence, we must
+    # check it before writing the attribute opening.
+    first_pair = true
+
     # NOTE: The separator is *prepended* to every entry but the first. Appending it and
     # skipping the last index left a trailing space whenever the last pair had an empty
     # value, as in `["a" => "1", "z" => ""]`.
-    style_str = ""
-    first_pair = true
-
     @inbounds for (key, value) in style
         # If the value is empty, then just continue.
         isempty(value) && continue
 
-        style_str *= first_pair ? "$key: $value;" : " $key: $value;"
+        if first_pair
+            print(buf, " style = \"")
+        else
+            print(buf, ' ')
+        end
+
+        print(buf, key)
+        print(buf, ": ")
+        print(buf, value)
+        print(buf, ';')
+
         first_pair = false
     end
 
-    # Every value was empty, so there is no style to emit.
-    first_pair && return ""
+    !first_pair && print(buf, '"')
 
-    return " style = \"" * style_str * "\""
+    return nothing
+end
+
+_html__write_style(::IO, ::Nothing) = nothing
+
+"""
+    _html__create_style(style::Union{Nothing, Vector{HtmlPair}}) -> String
+
+Create the HTML style string using the information in the vector `style`.
+"""
+function _html__create_style(style::Vector{HtmlPair})
+    buf = IOBuffer()
+    _html__write_style(buf, style)
+    return String(take!(buf))
 end
 
 _html__create_style(::Nothing) = ""
@@ -143,26 +169,48 @@ function _html__open_tag(
     properties::Union{Nothing, Vector{HtmlPair}} = nothing,
     style::Union{Nothing, Vector{HtmlPair}} = nothing,
 )
-    # Compile the text with the properties.
-    properties_str = ""
+    buf = IOBuffer()
+    _html__write_open_tag(buf, tag, properties, style)
+    return String(take!(buf))
+end
 
-    # Make sure the properties are sorted by key.
+"""
+    _html__write_open_tag(buf::IO, tag::String, properties::Union{Nothing, Vector{HtmlPair}}, style::Union{Nothing, Vector{HtmlPair}}) -> Nothing
+
+Write the string that opens the HTML `tag` to `buf`.
+
+Notice that this function writes directly to `buf` instead of building intermediate strings.
+Otherwise, we would allocate multiple strings per printed cell.
+"""
+function _html__write_open_tag(
+    buf::IO,
+    tag::String,
+    properties::Union{Nothing, Vector{HtmlPair}},
+    style::Union{Nothing, Vector{HtmlPair}},
+)
+    print(buf, '<')
+    print(buf, tag)
+
     if !isnothing(properties)
+        # Make sure the properties are sorted by key.
         sort!(properties)
 
         for (k, v) in properties
             if !isempty(v)
-                v_str = _html__escape_str(v)
-                properties_str *= " $k = \"$v_str\""
+                print(buf, ' ')
+                print(buf, k)
+                print(buf, " = \"")
+                _html__escape_str(buf, v)
+                print(buf, '"')
             end
         end
     end
 
-    # Compile the text with the style.
-    style_str = _html__create_style(style)
+    _html__write_style(buf, style)
 
-    # Return the tag.
-    return "<$(tag)$(properties_str)$(style_str)>"
+    print(buf, '>')
+
+    return nothing
 end
 
 """
@@ -190,7 +238,13 @@ function _html__create_tag(
     properties::Union{Nothing, Vector{HtmlPair}} = nothing,
     style::Union{Nothing, Vector{HtmlPair}} = nothing,
 )
-    return _html__open_tag(tag; properties, style) * content * _html__close_tag(tag)
+    buf = IOBuffer(; sizehint = 32 + ncodeunits(tag) * 2 + ncodeunits(content))
+    _html__write_open_tag(buf, tag, properties, style)
+    print(buf, content)
+    print(buf, "</")
+    print(buf, tag)
+    print(buf, '>')
+    return String(take!(buf))
 end
 
 # == Top Bar ===============================================================================
