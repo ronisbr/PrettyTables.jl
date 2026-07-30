@@ -236,7 +236,7 @@ end
 
     @testset "Typst" begin
         result = pretty_table(String, matrix; backend = :typst, footnotes)
-        @test occursin("[1#super[1], #super[2]],", result)
+        @test occursin("[1#super[1,2]],", result)
     end
 end
 

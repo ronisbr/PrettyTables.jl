@@ -419,7 +419,9 @@ function _typst__print(
             footnote = _current_cell_footnotes(table_data, action, ps.i, ps.j)
 
             append = if !isnothing(footnote) && !isempty(footnote)
-                join(string.("#super[", footnote, "]"), ", ")
+                # Notice that all the footnote numbers must be inside the same superscript.
+                # Otherwise, the separator would be rendered with the normal text size.
+                "#super[" * join(footnote, ",") * "]"
             end
 
             # If we are in a column label, check if we must merge the cell.

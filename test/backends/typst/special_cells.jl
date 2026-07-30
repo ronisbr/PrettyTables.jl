@@ -106,3 +106,16 @@ end
 
     @test occursin("rgb(\"#ff0000\")", result)
 end
+
+@testset "Multiple Footnotes in the Same Cell" begin
+    # All the footnote numbers must be inside the same superscript. Otherwise, the
+    # separator would be rendered with the normal text size.
+    result = pretty_table(
+        String,
+        [1 2];
+        backend = :typst,
+        footnotes = [(:data, 1, 1) => "A", (:data, 1, 1) => "B"],
+    )
+
+    @test occursin("#super[1,2]", result)
+end
