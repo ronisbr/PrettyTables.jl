@@ -82,4 +82,32 @@
 
         @test result == expected
     end
+
+    @testset "Omitted Cell Summary With Table Footer" begin
+        # The omitted cell summary row must be terminated with `\\\\` when the table footer
+        # is printed afterward. Otherwise, the footer cells would be rendered in the same
+        # tabular row, leading to an invalid LaTeX document.
+        expected = """
+\\begin{tabular}{|r|r|}
+  \\hline
+  \\textbf{Col. 1} & \\textbf{Col. 2} \\\\
+  \\hline
+  1\$^{1}\$ & 2 \\\\
+  \$\\vdots\$ & \$\\vdots\$ \\\\
+  \\hline
+  \\multicolumn{2}{r@{}}{\\textit{\\small{2 rows omitted}}} \\\\
+  \\multicolumn{2}{@{}l@{}}{\\small{\$^{1}\$Note}} \\\\
+\\end{tabular}
+"""
+
+        result = pretty_table(
+            String,
+            [1 2; 3 4; 5 6];
+            backend = :latex,
+            footnotes = [(:data, 1, 1) => "Note"],
+            maximum_number_of_rows = 1,
+        )
+
+        @test result == expected
+    end
 end

@@ -197,7 +197,14 @@ function _latex__print(
             if (!isempty(ocs) && next_rs ∈ (:table_footer, :end_printing) && !ocs_printed)
                 cs = _number_of_printed_columns(table_data)
                 ocs_styled = _latex__add_environments(ocs, style.omitted_cell_summary)
-                _aprintln(buf, "\\multicolumn{$cs}{r@{}}{$ocs_styled}", il, ns)
+
+                # If the table footer will be printed afterward, we must end the current
+                # tabular row. Otherwise, the footer cells would be printed in the same row,
+                # leading to an invalid LaTeX document.
+                has_footer = _has_footnotes(table_data) || !isempty(table_data.source_notes)
+                line_end   = (next_rs == :table_footer) && has_footer ? " \\\\" : ""
+
+                _aprintln(buf, "\\multicolumn{$cs}{r@{}}{$ocs_styled}$line_end", il, ns)
                 ocs_printed = true
             end
 
