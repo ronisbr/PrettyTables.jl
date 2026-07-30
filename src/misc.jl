@@ -197,9 +197,14 @@ function _align_column_with_regex!(
     # Variable to store in which column we must align the match.
     alignment_column = 0
 
+    # Cache the column of the first regex match at each row. Hence, we avoid running the
+    # regexes again in the second pass. `-1` means that no match was found.
+    match_columns = similar(column, Int)
+
     # We need to pass through the entire column searching for matches to compute in which
     # column we need to align them.
-    for row in column
+    for i in eachindex(column)
+        row = column[i]
         m = nothing
 
         for r in alignment_anchor_regex
@@ -211,7 +216,10 @@ function _align_column_with_regex!(
 
         if !isnothing(m)
             alignment_column_i = textwidth(@views row[1:first(m)])
+            match_columns[i] = alignment_column_i
         else
+            match_columns[i] = -1
+
             # If a match is not found, the alignment column depends on the user
             # selection.
 
@@ -238,17 +246,9 @@ function _align_column_with_regex!(
     for i in eachindex(column)
         row = column[i]
 
-        m = nothing
+        match_column_k = match_columns[i]
 
-        for r in alignment_anchor_regex
-            m_r = findfirst(r, row)
-            isnothing(m_r) && continue
-            m = m_r
-            break
-        end
-
-        if !isnothing(m)
-            match_column_k = textwidth(@views(row[1:first(m)]))
+        if match_column_k >= 0
             pad = alignment_column - match_column_k
         else
             # If a match is not found, the alignment column depends on the user selection.
@@ -297,10 +297,17 @@ function _align_column_with_regex!(
     # Variable to store in which column we must align the match.
     alignment_column = 0
 
+    # Cache the column of the first regex match at each line. Hence, we avoid running the
+    # regexes again in the second pass. `-1` means that no match was found.
+    match_columns = [similar(row, Int) for row in column]
+
     # We need to pass through the entire column searching for matches to compute in which
     # column we need to align them.
-    for row in column
-        for line in row
+    for i in eachindex(column)
+        row = column[i]
+
+        for l in eachindex(row)
+            line = row[l]
             m = nothing
 
             for r in alignment_anchor_regex
@@ -312,7 +319,10 @@ function _align_column_with_regex!(
 
             if !isnothing(m)
                 alignment_column_i = textwidth(@views line[1:first(m)])
+                match_columns[i][l] = alignment_column_i
             else
+                match_columns[i][l] = -1
+
                 # If a match is not found, the alignment column depends on the user
                 # selection.
 
@@ -343,17 +353,9 @@ function _align_column_with_regex!(
         for l in eachindex(row)
             line = row[l]
 
-            m = nothing
+            match_column_k = match_columns[i][l]
 
-            for r in alignment_anchor_regex
-                m_r = findfirst(r, line)
-                isnothing(m_r) && continue
-                m = m_r
-                break
-            end
-
-            if !isnothing(m)
-                match_column_k = textwidth(@views(line[1:first(m)]))
+            if match_column_k >= 0
                 pad = alignment_column - match_column_k
             else
                 # If a match is not found, the alignment column depends on the user
