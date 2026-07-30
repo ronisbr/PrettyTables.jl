@@ -219,9 +219,13 @@ function _typst__property_list(properties::Vector{TypstPair})
         print(buf, k)
 
         if !isempty(v)
-            v_str = _typst__escape_str(v)
-            starts_with_digit = isdigit(first(v_str))
+            starts_with_digit = isdigit(first(v))
             needs_quote = !starts_with_digit && (k ∈ _TYPST__STRING_ATTRIBUTES)
+
+            # The property values are emitted in Typst code mode. Hence, we must not apply
+            # the markup escaping here. If the value is emitted inside a string literal, we
+            # only need to escape the backslash and the double quote.
+            v_str = needs_quote ? _typst__escape_string_literal(v) : v
 
             print(buf, ": ")
             needs_quote && print(buf, "\"")
@@ -423,22 +427,22 @@ Print the string `s` in `io` escaping the characters for the Typst backend. If `
 omitted, the escaped string is returned.
 """
 function _typst__escape_str(io::IO, s::AbstractString)
-    a = Iterators.Stateful(s)
-
-    for c in a
+    for c in s
         if Base.isascii(c)
+            # Notice that Typst has no `\xNN` escape sequence. Hence, the non-printable
+            # characters must be emitted using the `\u{...}` escape sequence.
             c ∈ _TYPST__ESCAPED_CHARACTERS ? print(io, '\\', c) :
-            isprint(c) ? print(io, c) : print(io, "\\x", string(UInt32(c); base = 16, pad = 2))
+            isprint(c) ? print(io, c) : print(io, "\\u{", string(UInt32(c); base = 16), "}")
 
         elseif !Base.isoverlong(c) && !Base.ismalformed(c)
-            isprint(c)    ? print(io, c) :
-            c <= '\x7f'   ? print(io, "\\x", string(UInt32(c); base = 16, pad = 2)) :
-            c <= '\uffff' ? print(io, "\\u", string(UInt32(c); base = 16, pad = Base.need_full_hex(peek(a)) ? 4 : 2)) :
-            print(io, "\\U", string(UInt32(c); base = 16, pad = Base.need_full_hex(peek(a)) ? 8 : 4))
+            isprint(c) ? print(io, c) : print(io, "\\u{", string(UInt32(c); base = 16), "}")
+
         else # malformed or overlong
+            # We cannot represent these bytes in a valid Typst document. Hence, we replace
+            # each one with the Unicode replacement character.
             u = bswap(reinterpret(UInt32, c))
             while true
-                print(io, "\\x", string(u % UInt8; base = 16, pad = 2))
+                print(io, '\ufffd')
                 (u >>= 8) == 0 && break
             end
         end

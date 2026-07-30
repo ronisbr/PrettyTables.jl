@@ -267,7 +267,9 @@ end
     end
 
     @testset "Typst" begin
-        @test occursin("a\\xff\\xfeb", pretty_table(String, matrix; backend = :typst))
+        # Typst has no `\xNN` escape sequence. Hence, the malformed bytes are replaced by
+        # the Unicode replacement character.
+        @test occursin("a��b", pretty_table(String, matrix; backend = :typst))
     end
 end
 

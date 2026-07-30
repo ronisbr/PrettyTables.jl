@@ -85,3 +85,24 @@
         @test occursin("[c\\[d],", result)
     end
 end
+
+@testset "Non-Printable Characters" begin
+    # Typst has no `\xNN` escape sequence, and its Unicode escape requires braces. Hence,
+    # the non-printable characters must be emitted as `\u{...}`.
+    result = pretty_table(String, ["a\x01b​c" ;;]; backend = :typst)
+
+    @test occursin("[a\\u{1}b\\u{200b}c],", result)
+end
+
+@testset "Style Properties Are Not Markup Escaped" begin
+    # The style properties are emitted in Typst code mode. Hence, applying the markup
+    # escaping would corrupt values like `rgb("#ff0000")`.
+    result = pretty_table(
+        String,
+        [1 2];
+        backend = :typst,
+        style = TypstTableStyle(; first_line_column_label = ["fill" => "rgb(\"#ff0000\")"]),
+    )
+
+    @test occursin("rgb(\"#ff0000\")", result)
+end
