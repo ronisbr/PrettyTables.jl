@@ -85,6 +85,11 @@ second returned vector contains only valid text properties prefixed with `text-`
 prefix removed.
 """
 function _typst__cell_and_text_properties(vproperties::Vector{TypstPair})
+    # Most data cells have no properties at all. Hence, we return shared empty vectors to
+    # avoid two allocations per cell. Notice that the callers must not mutate the returned
+    # vectors.
+    isempty(vproperties) && return _TYPST__EMPTY_PROPERTIES, _TYPST__EMPTY_PROPERTIES
+
     # Separate cell and text attributes in a single pass to reduce allocations.
     cell_properties = TypstPair[]
     text_properties = TypstPair[]
@@ -125,12 +130,17 @@ Print a table cell to the output stream in Typst format.
 function _typst__print_cell(
     io::IO, cell::String, first_column::Bool, il::Int, ns::Int, minify::Bool
 )
-    cell_str = cell * ","
-
-    !minify && return _aprintln(io, cell_str, il, ns)
+    # Notice that the trailing comma is printed separately to avoid allocating a new string
+    # per cell.
+    if !minify
+        _aprint(io, cell, il, ns)
+        println(io, ',')
+        return nothing
+    end
 
     first_column || print(io, " ")
-    print(io, cell_str)
+    print(io, cell)
+    print(io, ',')
     return nothing
 end
 

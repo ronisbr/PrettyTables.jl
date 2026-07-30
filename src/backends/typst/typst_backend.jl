@@ -387,6 +387,10 @@ function _typst__print(
                     style.omitted_cell_summary
                 )
 
+                # We must copy the vector before pushing because the function above can
+                # return a shared empty vector that must not be mutated.
+                cell_properties = copy(cell_properties)
+
                 push!(
                     cell_properties,
                     "align"   => _typst__alignment(:r),

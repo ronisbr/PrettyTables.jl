@@ -80,6 +80,9 @@ const _TYPST__TEXT_ATTRIBUTES = [
 # -- Decorations ---------------------------------------------------------------------------
 
 const _TYPST__NO_DECORATION     = TypstPair[]
+
+# Shared empty vector returned when a cell has no properties. It must never be mutated.
+const _TYPST__EMPTY_PROPERTIES  = TypstPair[]
 const _TYPST__BOLD              = ["text-weight" => "bold"]
 const _TYPST__ITALIC            = ["text-style" => "italic"]
 const _TYPST__XLARGE_BOLD       = ["text-size" => "1.1em", "text-weight" => "bold"]
