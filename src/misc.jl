@@ -539,9 +539,11 @@ function _omitted_cell_summary(table_data::TableData, pspec::PrintingSpec)
     max_rows    = table_data.maximum_number_of_rows
     max_columns = table_data.maximum_number_of_columns
 
-    # Compute the number of omitted rows and columns.
+    # Compute the number of omitted rows and columns. Notice that the conventions differ:
+    # `maximum_number_of_rows == 0` crops the table to zero rows, whereas
+    # `maximum_number_of_columns == 0` means no column cropping.
     num_omitted_columns = (max_columns > 0) ? num_columns - max_columns : 0
-    num_omitted_rows    = (max_rows > 0) ? num_rows - max_rows : 0
+    num_omitted_rows    = (max_rows >= 0) ? num_rows - max_rows : 0
 
     return _omitted_cell_summary(num_omitted_rows, num_omitted_columns)
 end

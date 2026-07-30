@@ -72,4 +72,23 @@
 
         @test result == expected
     end
+
+    @testset "Omitted Cell Summary With Zero Maximum Number of Rows" begin
+        expected = """
+| **Col. 1** | **Col. 2** |
+|-----------:|-----------:|
+|          ⋮ |          ⋮ |
+
+*2 rows omitted*
+"""
+
+        result = pretty_table(
+            String,
+            [1 2; 3 4];
+            backend = :markdown,
+            maximum_number_of_rows = 0,
+        )
+
+        @test result == expected
+    end
 end
