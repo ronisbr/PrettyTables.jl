@@ -171,6 +171,10 @@ function _typst__print(
     # used to check if we need to print the horizontal line at the beginning of the table.
     first_table_line = true
 
+    # The highlighters must receive the object the user passed to `pretty_table`, not the
+    # internal table wrapper. Notice that this is loop invariant.
+    orig_data = _get_data(table_data.data)
+
     while action != :end_printing
         action, rs, ps = _next(ps, table_data)
         action == :end_printing && break
@@ -465,9 +469,7 @@ function _typst__print(
 
             # If we are in a data cell, we must check for highlighters.
             if action == :data
-                orig_data = _get_data(table_data.data)
-
-                if !isnothing(highlighters)
+                if !isempty(highlighters)
                     for h in highlighters
                         if h.f(orig_data, ps.i, ps.j)
                             _typst__merge_properties!(

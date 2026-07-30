@@ -204,6 +204,10 @@ function _html__print(
     body_opened = false
     foot_opened = false
 
+    # The highlighters must receive the object the user passed to `pretty_table`, not the
+    # internal table wrapper. Notice that this is loop invariant.
+    orig_data = _get_data(table_data.data)
+
     while action != :end_printing
         action, rs, ps = _next(ps, table_data)
 
@@ -377,15 +381,11 @@ function _html__print(
             end
 
             # If we are in a data cell, we must check for highlighters.
-            if action == :data
-                orig_data = _get_data(table_data.data)
-
-                if !isnothing(highlighters)
-                    for h in highlighters
-                        if h.f(orig_data, ps.i, ps.j)
-                            append!(vstyle, h.fd(h, orig_data, ps.i, ps.j))
-                            break
-                        end
+            if (action == :data) && !isempty(highlighters)
+                for h in highlighters
+                    if h.f(orig_data, ps.i, ps.j)
+                        append!(vstyle, h.fd(h, orig_data, ps.i, ps.j))
+                        break
                     end
                 end
             end

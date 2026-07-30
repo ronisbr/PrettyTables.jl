@@ -684,6 +684,10 @@ function _text__print_table(
         Vector{Vector{SubString{String}}}(undef, last_printed_column_index)
     end
 
+    # The highlighters must receive the object the user passed to `pretty_table`, not the
+    # internal table wrapper. Notice that this is loop invariant.
+    orig_data = _get_data(table_data.data)
+
     while action != :end_printing
         if current_row_line == 0
             saved_ps = ps
@@ -1342,8 +1346,6 @@ function _text__print_table(
 
             # Check if we must apply highlighters.
             if !isempty(highlighters)
-                orig_data = _get_data(table_data.data)
-
                 for h in highlighters
                     if h.f(orig_data, ps.i, ps.j)
                         decoration = h.fd(h, orig_data, ps.i, ps.j)::Crayon

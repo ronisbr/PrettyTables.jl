@@ -85,6 +85,10 @@ function _markdown__print(
     # actual table indices due to cropping.
     ir = jr = 0
 
+    # The highlighters must receive the object the user passed to `pretty_table`, not the
+    # internal table wrapper. Notice that this is loop invariant.
+    orig_data = _get_data(table_data.data)
+
     while action != :end_printing
         action, rs, ps = _next(ps, table_data)
 
@@ -138,8 +142,6 @@ function _markdown__print(
         elseif action == :data
             # Check if we must apply highlighters.
             if !isempty(highlighters)
-                orig_data = _get_data(table_data.data)
-
                 for h in highlighters
                     if h.f(orig_data, ps.i, ps.j)
                         d = h.fd(h, orig_data, ps.i, ps.j)
