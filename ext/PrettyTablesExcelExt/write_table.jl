@@ -485,27 +485,6 @@ function _excel__write_table!(
                         end
                     end
 
-                    # Apply highlighters in order, breaking after the first match.
-                    for highlighter in highlighters
-                        highlighter.f(orig_data, ps.i, ps.j) || continue
-
-                        decoration = highlighter.fd(highlighter, orig_data, ps.i, ps.j)
-
-                        hl_font_size = _excel__apply_cell_style!(
-                            sheet, sheet_row, sheet_col, decoration, nothing, "", false
-                        )
-
-                        hl_row_height, hl_col_length = _excel__cell_length_and_height(
-                            rendered_cell, hl_font_size
-                        )
-
-                        max_row_height[ir] = max(max_row_height[ir], hl_row_height)
-
-                        max_col_length[jr] = max(max_col_length[jr], hl_col_length)
-
-                        break
-                    end
-
                 elseif action == :summary_row_cell
                     cell_style = style.summary_row_cell
                     vertical_alignment = "top"
@@ -544,6 +523,30 @@ function _excel__write_table!(
 
                 max_row_height[ir] = max(max_row_height[ir], row_height)
                 max_col_length[jr] = max(max_col_length[jr], col_length)
+
+                # Apply highlighters in order, breaking after the first match. Notice that
+                # this must be performed after applying the section style. Otherwise, the
+                # highlighter decoration would be overwritten.
+                if action == :data
+                    for highlighter in highlighters
+                        highlighter.f(orig_data, ps.i, ps.j) || continue
+
+                        decoration = highlighter.fd(highlighter, orig_data, ps.i, ps.j)
+
+                        hl_font_size = _excel__apply_cell_style!(
+                            sheet, sheet_row, sheet_col, decoration, nothing, "", false
+                        )
+
+                        hl_row_height, hl_col_length = _excel__cell_length_and_height(
+                            rendered_cell, hl_font_size
+                        )
+
+                        max_row_height[ir] = max(max_row_height[ir], hl_row_height)
+                        max_col_length[jr] = max(max_col_length[jr], hl_col_length)
+
+                        break
+                    end
+                end
             end
         end
 
