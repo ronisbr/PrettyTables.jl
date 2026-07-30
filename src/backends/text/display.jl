@@ -31,6 +31,25 @@ function _text__print(display::Display, char::Char)
 end
 
 """
+    _text__print(display::Display, char::Char, n::Int) -> Nothing
+
+Print the character `char` repeated `n` times to the `display`.
+
+Notice that this method must write the characters directly instead of using `char^n`.
+Otherwise, printing a horizontal line would allocate one `String` per table column.
+"""
+function _text__print(display::Display, char::Char, n::Int)
+    _text__check_eol(display) && return nothing
+
+    for _ in 1:n
+        print(display.buf_line, char)
+    end
+
+    display.column += textwidth(char) * n
+    return nothing
+end
+
+"""
     _text__print(display::Display, str::AbstractString, str_width::Int = -1) -> Nothing
 
 Print a string `str` to the `display`, updating the column position. If `str_width` is
@@ -228,42 +247,41 @@ function _text__print_horizontal_line(
 
     tb = tf.borders
 
-    # Here, we obtain the characters for the left, middle, and right intersections. We also
-    # convert them to string.
+    # Here, we obtain the characters for the left, middle, and right intersections.
 
     local li, mi, ri
 
     if !row_group_label
         li = if top
-            string(tb.up_left_corner)
+            tb.up_left_corner
         elseif bottom
-            string(tb.bottom_left_corner)
+            tb.bottom_left_corner
         else
-            string(tb.left_intersection)
+            tb.left_intersection
         end
 
         mi = if top
-            string(tb.up_intersection)
+            tb.up_intersection
         elseif bottom
-            string(tb.bottom_intersection)
+            tb.bottom_intersection
         else
-            string(tb.middle_intersection)
+            tb.middle_intersection
         end
 
         ri = if top
-            string(tb.up_right_corner)
+            tb.up_right_corner
         elseif bottom
-            string(tb.bottom_right_corner)
+            tb.bottom_right_corner
         else
-            string(tb.right_intersection)
+            tb.right_intersection
         end
     else
-        li = string(tb.left_intersection)
-        mi = top ? string(tb.bottom_intersection) : string(tb.up_intersection)
-        ri = string(tb.right_intersection)
+        li = tb.left_intersection
+        mi = top ? tb.bottom_intersection : tb.up_intersection
+        ri = tb.right_intersection
     end
 
-    row = string(tb.row)
+    row = tb.row
 
     table_continuation_column = _is_horizontally_cropped(table_data)
 
@@ -278,7 +296,7 @@ function _text__print_horizontal_line(
     # -- Row Number Column -----------------------------------------------------------------
 
     if table_data.show_row_number_column
-        _text__print(display, row^(row_number_column_width + 2))
+        _text__print(display, row, row_number_column_width + 2)
         tf.vertical_line_after_row_number_column &&
             _text__horizontal_line_intersection(display, mi, row, false)
     end
@@ -286,7 +304,7 @@ function _text__print_horizontal_line(
     # -- Row Label Column ------------------------------------------------------------------
 
     if _has_row_labels(table_data)
-        _text__print(display, row^(row_label_column_width + 2))
+        _text__print(display, row, row_label_column_width + 2)
         tf.vertical_line_after_row_label_column &&
             _text__horizontal_line_intersection(display, mi, row, false)
     end
@@ -295,7 +313,7 @@ function _text__print_horizontal_line(
 
     for j in eachindex(printed_data_column_widths)
         cw = printed_data_column_widths[j]
-        _text__print(display, row^(cw + 2))
+        _text__print(display, row, cw + 2)
 
         if (j == last(eachindex(printed_data_column_widths)))
             tf.vertical_line_after_data_columns && _text__horizontal_line_intersection(
@@ -312,7 +330,7 @@ function _text__print_horizontal_line(
     # -- Table Continuation Column ---------------------------------------------------------
 
     if table_continuation_column
-        _text__print(display, row^3)
+        _text__print(display, row, 3)
         tf.vertical_line_after_continuation_column &&
             _text__horizontal_line_intersection(display, ri, row, true)
     end
@@ -366,20 +384,19 @@ function _text__print_column_label_horizontal_line(
     tb = tf.borders
     num_column_labels = length(table_data.column_labels)
 
-    # Here, we obtain the characters for the left, middle, and right intersections. We also
-    # convert them to string.
+    # Here, we obtain the characters for the left, middle, and right intersections.
 
     local li, mi, ri
 
-    ti = string(tb.up_intersection)
-    bi = string(tb.bottom_intersection)
+    ti = tb.up_intersection
+    bi = tb.bottom_intersection
 
     li = if top
-        string(tb.up_left_corner)
+        tb.up_left_corner
     elseif bottom
-        string(tb.bottom_left_corner)
+        tb.bottom_left_corner
     else
-        string(tb.left_intersection)
+        tb.left_intersection
     end
 
     mi = if top
@@ -387,18 +404,18 @@ function _text__print_column_label_horizontal_line(
     elseif bottom
         bi
     else
-        string(tb.middle_intersection)
+        tb.middle_intersection
     end
 
     ri = if top
-        string(tb.up_right_corner)
+        tb.up_right_corner
     elseif bottom
-        string(tb.bottom_right_corner)
+        tb.bottom_right_corner
     else
-        string(tb.right_intersection)
+        tb.right_intersection
     end
 
-    row = string(tb.row)
+    row = tb.row
 
     table_continuation_column = _is_horizontally_cropped(table_data)
 
@@ -413,7 +430,7 @@ function _text__print_column_label_horizontal_line(
     # -- Row Number Column -----------------------------------------------------------------
 
     if table_data.show_row_number_column
-        _text__print(display, row^(row_number_column_width + 2))
+        _text__print(display, row, row_number_column_width + 2)
         tf.vertical_line_after_row_number_column &&
             _text__horizontal_line_intersection(display, mi, row, false)
     end
@@ -421,7 +438,7 @@ function _text__print_column_label_horizontal_line(
     # -- Row Label Column ------------------------------------------------------------------
 
     if _has_row_labels(table_data)
-        _text__print(display, row^(row_label_column_width + 2))
+        _text__print(display, row, row_label_column_width + 2)
         tf.vertical_line_after_row_label_column &&
             _text__horizontal_line_intersection(display, mi, row, false)
     end
@@ -430,7 +447,7 @@ function _text__print_column_label_horizontal_line(
 
     for j in eachindex(printed_data_column_widths)
         cw = printed_data_column_widths[j]
-        _text__print(display, row^(cw + 2))
+        _text__print(display, row, cw + 2)
 
         if (j == last(eachindex(printed_data_column_widths)))
             tf.vertical_line_after_data_columns && _text__horizontal_line_intersection(
@@ -474,7 +491,7 @@ function _text__print_column_label_horizontal_line(
     # -- Table Continuation Column ---------------------------------------------------------
 
     if table_continuation_column
-        _text__print(display, row^3)
+        _text__print(display, row, 3)
         tf.vertical_line_after_continuation_column &&
             _text__horizontal_line_intersection(display, ri, row, true)
     end
@@ -521,10 +538,10 @@ function _text__print_column_label_horizontal_line_only_at_merged_labels(
     # == Auxiliary Variables ===============================================================
 
     tb  = tf.borders
-    ti  = string(tb.up_intersection)
-    ri  = string(tb.right_intersection)
-    col = string(tb.column)
-    row = string(tb.row)
+    ti  = tb.up_intersection
+    ri  = tb.right_intersection
+    col = tb.column
+    row = tb.row
 
     table_continuation_column = _is_horizontally_cropped(table_data)
 
@@ -539,14 +556,14 @@ function _text__print_column_label_horizontal_line_only_at_merged_labels(
     # -- Row Number Column -----------------------------------------------------------------
 
     if table_data.show_row_number_column
-        _text__print(display, " "^(row_number_column_width + 2))
+        _text__print(display, ' ', row_number_column_width + 2)
         tf.vertical_line_after_row_number_column && _text__print(display, col)
     end
 
     # -- Row Label Column ------------------------------------------------------------------
 
     if _has_row_labels(table_data)
-        _text__print(display, " "^(row_label_column_width + 2))
+        _text__print(display, ' ', row_label_column_width + 2)
         tf.vertical_line_after_row_label_column && _text__print(display, col)
     end
 
@@ -559,10 +576,10 @@ function _text__print_column_label_horizontal_line_only_at_merged_labels(
         cw = printed_data_column_widths[j]
 
         if !is_merged
-            _text__print(display, " "^(cw + 2))
+            _text__print(display, ' ', cw + 2)
         else
             _text__print(display, j == j₀ ? " " : row)
-            _text__print(display, row^cw)
+            _text__print(display, row, cw)
             _text__print(display, j == j₁ ? " " : row)
         end
 
@@ -591,7 +608,7 @@ function _text__print_column_label_horizontal_line_only_at_merged_labels(
     # -- Table Continuation Column ---------------------------------------------------------
 
     if table_continuation_column
-        _text__print(display, row^3)
+        _text__print(display, row, 3)
         tf.vertical_line_after_continuation_column &&
             _text__horizontal_line_intersection(display, ri, row, true)
     end
@@ -606,7 +623,7 @@ function _text__print_column_label_horizontal_line_only_at_merged_labels(
 end
 
 """
-    _text__horizontal_line_intersection(display::Display, intersection::String, row::String, final_intersection::Bool) -> Nothing
+    _text__horizontal_line_intersection(display::Display, intersection::Char, row::Char, final_intersection::Bool) -> Nothing
 
 Print to `display` the horizontal line `intersection` if we have enough space. Otherwise,
 print `row`. The argument `final_intersection` indicates that we are printing the final
@@ -614,7 +631,7 @@ intersection of the table. In that case, we print `intersection` if we have at l
 remaining spaces.
 """
 function _text__horizontal_line_intersection(
-    display::Display, intersection::String, row::String, final_intersection::Bool
+    display::Display, intersection::Char, row::Char, final_intersection::Bool
 )
     # If the display size is negative, it means we do not have a limit. Hence, just print
     # the intersection.
