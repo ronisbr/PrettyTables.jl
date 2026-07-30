@@ -194,7 +194,7 @@ function _typst__print(
             first_column = true
 
             # If we are in the very first row after the title section, we need to check if
-            # the user wants a vertical line before the table.
+            # the user wants a horizontal line before the table.
             if (rs != :table_header) && first_table_line && tf.horizontal_line_at_beginning
                 # Using only one argument in `print` to avoid intermediate string
                 # allocations.
@@ -567,7 +567,7 @@ function _typst__print(
                 _typst__merge_properties!(vproperties, style.footnote)
 
             elseif action == :source_notes
-                # The source notes must be a cell that spans the entire printed table.   
+                # The source notes must be a cell that spans the entire printed table.
                 push!(
                     vproperties,
                     "align"   => _typst__alignment(alignment),

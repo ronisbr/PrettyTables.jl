@@ -568,7 +568,7 @@ function _typst__get_data_column_widths(table_data::TableData, data_column_width
     return String(take!(buf))
 end
 
-""" 
+"""
     _typst__merge_properties!(bproperties::Vector{TypstPair}, nproperties::Vector{TypstPair}) -> Vector{TypstPair}
 
 Merge two Typst properties, `bproperties` and `nproperties`, giving priority to

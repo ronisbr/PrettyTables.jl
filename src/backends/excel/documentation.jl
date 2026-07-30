@@ -50,7 +50,8 @@ The Excel backend's return value depends on the following combination of keyword
     data column in Excel units. A scalar applies to all columns; a vector sets per-column
     minimums.
     (**Default**: `0.0`)
-- `mode::String`: `"w"` to create a new file or `"rw"` to open and update an existing one.
+- `mode::String`: `"w"` to create a new file or `"rw"` (or its alias `"wr"`) to open and
+    update an existing one.
     (**Default**: `"w"`)
 - `overwrite::Bool`: Allow overwriting an existing file when `mode = "w"`.
     (**Default**: `false`)
@@ -171,7 +172,8 @@ contains the following fields:
 - `horizontal_line_after_data_rows::Bool`: Draw a line under the data table section.
 - `horizontal_line_before_row_group_label::Bool`: Draw a line above each row group divider.
 - `horizontal_line_after_row_group_label::Bool`: Draw a line below each row group divider.
-- `horizontal_line_before_summary_rows::Bool`: Draw a line between consecutive summary rows.
+- `horizontal_line_before_summary_rows::Bool`: Draw a line between the data rows and the
+    summary rows.
 - `horizontal_line_after_summary_rows::Bool`: Draw a line under the last summary row.
 - `vertical_line_at_beginning::Bool`: Draw a vertical line on the left side of the content
     area (excludes title/subtitle and footnotes).
@@ -184,6 +186,8 @@ contains the following fields:
     after the specified column indices (e.g., `[1, 3]` draws after columns 1 and 3).
 - `vertical_line_after_data_columns::Bool`: Draw a vertical line on the right side of the
     content area (excludes title/subtitle and footnotes).
+- `vertical_line_after_continuation_column::Bool`: Draw a vertical line after the
+    continuation column when the table is horizontally cropped.
 
 We provide a few helpers to configure the table format. For more information, see the
 documentation of the following macros:
@@ -273,22 +277,18 @@ contains the following fields:
 - `row_label::Vector{ExcelPair}`: Style for the row label.
 - `row_group_label::Vector{ExcelPair}`: Style for the row group label.
 - `first_line_column_label::Union{Vector{ExcelPair}, Vector{Vector{ExcelPair}}}`: Style for
-    the first line of the column labels. If a vector of `Vector{ExcelPair}}` is provided,
+    the first line of the column labels. If a vector of `Vector{ExcelPair}` is provided,
     each column label in the first line will use the corresponding style.
 - `column_label::Union{Vector{ExcelPair}, Vector{Vector{ExcelPair}}}`: Style for the rest of
-    the column labels. If a vector of `Vector{ExcelPair}}` is provided, each column label
+    the column labels. If a vector of `Vector{ExcelPair}` is provided, each column label
     will use the corresponding style.
 - `first_line_merged_column_label::Vector{ExcelPair}`: Style for the merged cells at the
     first column label line.
 - `merged_column_label::Vector{ExcelPair}`: Style for the merged cells at the rest of the
     column labels.
-- `data_cell::Vector{ExcelPair}`: Style for the table cells. If a vector of
-    `Vector{ExcelPair}}` is provided, each column in the data table will use the
-    corresponding style.
+- `data_cell::Vector{ExcelPair}`: Style for the table cells.
 - `summary_row_label::Vector{ExcelPair}`: Style for the summary row label.
-- `summary_row_cell::Vector{ExcelPair}`: Style for the summary row cell. If a vector of
-    `Vector{ExcelPair}}` is provided, each column in the summary row will use the
-    corresponding style.
+- `summary_row_cell::Vector{ExcelPair}`: Style for the summary row cell.
 - `footnote::Vector{ExcelPair}`: Style for the footnotes.
 - `source_note::Vector{ExcelPair}`: Style for the source notes.
 

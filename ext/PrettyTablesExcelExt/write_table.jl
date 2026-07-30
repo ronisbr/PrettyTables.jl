@@ -369,7 +369,7 @@ function _excel__write_table!(
                 last_merged_col = ps.j + span - 1
                 if (last_merged_col == num_printed_data_cols)
                     # If we do not have a continuation column, we are in the last column.
-                    # The left border in this case is drawn at the end.
+                    # The right border in this case is drawn at the end.
                     table_format.vertical_line_after_data_columns &&
                         has_cont_column &&
                         XLSX.setBorder(
@@ -577,7 +577,7 @@ function _excel__write_table!(
             if !(action == :column_label && cell isa MergeCells)
                 if (ps.j == num_printed_data_cols)
                     # If we do not have a continuation column, we are in the last column.
-                    # The left border in this case is drawn at the end.
+                    # The right border in this case is drawn at the end.
                     table_format.vertical_line_after_data_columns &&
                         has_cont_column &&
                         XLSX.setBorder(

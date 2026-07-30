@@ -20,7 +20,8 @@ passed through to `_excel__write_table!`.
     If no sheet with that name exists it will be created. When an `XLSX.Worksheet`, that
     worksheet is updated in place and `nothing` is returned.
     (**Default**: `"prettytable"`)
-- `mode::String`: `"w"` to create a new file or `"rw"` to open and update an existing one.
+- `mode::String`: `"w"` to create a new file or `"rw"` (or its alias `"wr"`) to open and
+    update an existing one.
     (**Default**: `"w"`)
 - `overwrite::Bool`: Allow overwriting an existing file when `mode = "w"`.
     (**Default**: `false`)

@@ -146,7 +146,7 @@ struct TypstHighlighter
         return new(f, _typst__default_highlighter_fd, decoration)
     end
 
-    function TypstHighlighter(f::Function, decoration::Vector{TypstPair}, args...)
+    function TypstHighlighter(f::Function, decoration::Vector{TypstPair}, args::TypstPair...)
         return new(f, _typst__default_highlighter_fd, [decoration..., args...])
     end
 end
@@ -239,7 +239,7 @@ Define the format of the tables printed with the Typst back end.
     after the row label column.
 - `vertical_lines_at_data_columns::Union{Symbol, Vector{Int}}`: A vertical line will be
     drawn after each data column index listed in this vector. If the symbol `:all` is
-    passed, a vertical line will be drawn after every data row. If the symbol `:none` is
+    passed, a vertical line will be drawn after every data column. If the symbol `:none` is
     passed, no vertical lines will be drawn after the data columns.
 - `vertical_line_after_data_columns::Bool`: If `true`, a vertical line will be drawn after
     the data columns.
@@ -285,10 +285,10 @@ Define the style of the tables printed with the Typst back end.
 - `row_label::Vector{TypstPair}`: Style for the row label.
 - `row_group_label::Vector{TypstPair}`: Style for the row group label.
 - `first_line_column_label::Union{Vector{TypstPair}, Vector{Vector{TypstPair}}}`: Style for
-    the first line of the column labels. If a vector of `Vector{TypstPair}}` is provided,
+    the first line of the column labels. If a vector of `Vector{TypstPair}` is provided,
     each column label in the first line will use the corresponding style.
 - `column_label::Union{Vector{TypstPair}, Vector{Vector{TypstPair}}}`: Style for the rest of
-    the column labels. If a vector of `Vector{TypstPair}}` is provided, each column label
+    the column labels. If a vector of `Vector{TypstPair}` is provided, each column label
     will use the corresponding style.
 - `first_line_merged_column_label::Vector{TypstPair}`: Style for the merged cells at the
     first column label line.
@@ -298,7 +298,7 @@ Define the style of the tables printed with the Typst back end.
 - `summary_row_cell::Vector{TypstPair}`: Style for the summary row cell.
 - `summary_row_label::Vector{TypstPair}`: Style for the summary row label.
 - `footnote::Vector{TypstPair}`: Style for the footnote.
-- `source_notes::Vector{TypstPair}`: Style for the source notes.
+- `source_note::Vector{TypstPair}`: Style for the source notes.
 """
 @kwdef struct TypstTableStyle{
     TFCL <: Union{Vector{TypstPair}, Vector{Vector{TypstPair}}},

@@ -51,15 +51,6 @@ function _typst__render_cell(
     return _typst__escape_str(cell_str)
 end
 
-function _typst__render_cell(
-    cell::AbstractString, context::IOContext, renderer::Union{Val{:print}, Val{:show}}
-)
-    cell_str = _typst__cell_to_str(cell, context, renderer)
-
-    # Notice that the cell content is always escaped, since it is emitted inside a Typst content block.
-    return _typst__escape_str(cell_str)
-end
-
 function PrettyTables._typst__render_cell(
     cell::Markdown.MD, context::IOContext, renderer::Union{Val{:print}, Val{:show}}
 )

@@ -265,7 +265,7 @@ macro typst__all_vertical_lines()
 end
 
 """
-    typst__no_horizontal_lines() -> Keywords for `TypstTableFormat`
+    @typst__no_horizontal_lines() -> Keywords for `TypstTableFormat`
 
 Return the keyword arguments to be passed to [`TypstTableFormat`](@ref) to suppress all
 horizontal lines.
@@ -386,7 +386,7 @@ macro typst__no_horizontal_lines()
 end
 
 """
-    typst__no_vertical_lines() -> Keywords for `TypstTableFormat`
+    @typst__no_vertical_lines() -> Keywords for `TypstTableFormat`
 
 Return the keyword arguments to be passed to [`TypstTableFormat`](@ref) to suppress all
 vertical lines.

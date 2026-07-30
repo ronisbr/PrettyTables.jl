@@ -279,8 +279,8 @@ Define the table borders that will be used to form the Excel table.
     group divider.
 - `horizontal_line_after_row_group_label::Bool`: Whether to draw a line below each row
     group divider.
-- `horizontal_line_before_summary_rows::Bool`: Whether to draw a line under each summary
-    row (between multiple summary rows).
+- `horizontal_line_before_summary_rows::Bool`: Whether to draw a line between the data
+    rows and the summary rows.
 - `horizontal_line_after_summary_rows::Bool`: Whether to draw a line under the last
     summary row.
 - `vertical_line_at_beginning::Bool`: Whether to draw a vertical line at the left side of
@@ -341,22 +341,18 @@ Excel back end.
 - `row_label::Vector{ExcelPair}`: Style for the row label.
 - `row_group_label::Vector{ExcelPair}`: Style for the row group label.
 - `first_line_column_label::Union{Vector{ExcelPair}, Vector{Vector{ExcelPair}}}`: Style for
-    the first line of the column labels. If a vector of `Vector{ExcelPair}}` is provided,
+    the first line of the column labels. If a vector of `Vector{ExcelPair}` is provided,
     each column label in the first line will use the corresponding style.
 - `column_label::Union{Vector{ExcelPair}, Vector{Vector{ExcelPair}}}`: Style for the rest of
-    the column labels. If a vector of `Vector{ExcelPair}}` is provided, each column label
+    the column labels. If a vector of `Vector{ExcelPair}` is provided, each column label
     will use the corresponding style.
 - `first_line_merged_column_label::Vector{ExcelPair}`: Style for the merged cells at the
     first column label line.
 - `merged_column_label::Vector{ExcelPair}`: Style for the merged cells at the rest of the
     column labels.
-- `data_cell::Vector{ExcelPair}`: Style for the table cells. If a vector of
-    `Vector{ExcelPair}}` is provided, each column in the data table will use the
-    corresponding style.
+- `data_cell::Vector{ExcelPair}`: Style for the table cells.
 - `summary_row_label::Vector{ExcelPair}`: Style for the summary row label.
-- `summary_row_cell::Vector{ExcelPair}`: Style for the summary row cell. If a vector of
-    `Vector{ExcelPair}}` is provided, each column in the summary row will use the
-    corresponding style.
+- `summary_row_cell::Vector{ExcelPair}`: Style for the summary row cell.
 - `footnote::Vector{ExcelPair}`: Style for the footnotes.
 - `source_note::Vector{ExcelPair}`: Style for the source notes.
 
