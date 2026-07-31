@@ -1,6 +1,77 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 3.4.4
+-------------
+
+- ![Enhancement][badge-enhancement] Fetch the column only once per data cell when printing
+  tables that use the Tables.jl column access, halving the dynamic column lookups.
+- ![Enhancement][badge-enhancement] Evaluate the alignment anchor regexes only once per
+  line by caching the matches found in the first pass.
+- ![Enhancement][badge-enhancement] Avoid materializing the lazy iterator that creates the
+  default summary row labels.
+- ![Enhancement][badge-enhancement] Obtain the object passed to the highlighters once
+  before the printing loop instead of once per data cell in the text, HTML, Markdown, and
+  Typst back ends.
+- ![Enhancement][badge-enhancement] Reduce the number of allocations in the text back end
+  when printing horizontal lines and cells with line breaks.
+- ![Enhancement][badge-enhancement] Build the HTML tags by streaming into a buffer instead
+  of concatenating several intermediate strings per cell. The user style vector is also no
+  longer sorted in place when creating the table tag.
+- ![Enhancement][badge-enhancement] Reduce the number of allocations per cell in the Typst
+  and Excel back ends.
+- ![Bugfix][badge-bugfix] Fix a false positive in the circular reference check. The same
+  object printed in two different cells of an outer table was rendered as
+  `#= circular reference =#` the second time.
+- ![Bugfix][badge-bugfix] Fix the footnotes at summary row labels. They were only matched
+  if the user passed the column index 0, and the text and Markdown back ends never
+  rendered their markers.
+- ![Bugfix][badge-bugfix] Show the omitted cell summary in the HTML, LaTeX, Markdown, and
+  Typst back ends when `maximum_number_of_rows` is 0.
+- ![Bugfix][badge-bugfix] Fix an error when using `show_first_column_label_only` together
+  with merged cells in the additional column label rows.
+- ![Bugfix][badge-bugfix] Fix crashes in the text back end when using
+  `shrinkable_data_column` or `column_label_width_based_on_first_line_only` together with
+  `show_column_labels = false`.
+- ![Bugfix][badge-bugfix] Crop merged column labels in the text back end considering the
+  entire merged span instead of only their first column when using
+  `fixed_data_column_widths` or `maximum_data_column_widths`.
+- ![Bugfix][badge-bugfix] Stop reserving a display line for a horizontal line at the last
+  column label row, which is never drawn, when fitting the table vertically in the text
+  back end.
+- ![Bugfix][badge-bugfix] Fix the LaTeX `\multicolumn` column descriptors. The alignment
+  symbols are now normalized, the vertical line at the left of the cell is no longer
+  duplicated, and the borders at the table edges are kept.
+- ![Bugfix][badge-bugfix] Terminate the omitted cell summary row with `\\` in the LaTeX
+  back end when footnotes or source notes follow it. Otherwise, the document was invalid.
+- ![Bugfix][badge-bugfix] Fix the `LatexHighlighter` keyword constructor, which always
+  threw a `MethodError`.
+- ![Bugfix][badge-bugfix] Fix the tag order in stand-alone HTML documents. The
+  `<meta charset>` tag was emitted before `<head>`, and the div that wraps the table was
+  closed after `</html>`.
+- ![Bugfix][badge-bugfix] Keep the line breaks in raw HTML cells when using
+  `allow_html_in_cells = true` without `line_breaks`.
+- ![Bugfix][badge-bugfix] Apply the Markdown `row_number` style, which was documented with
+  a bold default but never used.
+- ![Bugfix][badge-bugfix] Escape the Markdown characters in the title and subtitle, and
+  allow rendering them as plain text by setting the heading level to 0.
+- ![Bugfix][badge-bugfix] Fix the Typst escaping. The style property values are no longer
+  markup-escaped, and the non-printable characters are emitted using the `\u{...}` escape
+  sequence instead of the invalid `\xNN` and `\uNNNN` forms.
+- ![Bugfix][badge-bugfix] Render all the footnote numbers of a Typst cell inside the same
+  superscript.
+- ![Bugfix][badge-bugfix] Fix the Typstry.jl integration when PrettyTables.jl is used
+  outside the REPL, and fall back to the plain output when the current display cannot
+  render images.
+- ![Bugfix][badge-bugfix] Fix an error in the Excel back end when printing tables without
+  data and summary rows.
+- ![Bugfix][badge-bugfix] Apply the Excel highlighters after the section style so that
+  their decoration is no longer overwritten, matching the other back ends.
+- ![Info][badge-info] Fix several documentation errors, including the `MergeCells` field
+  names, the missing `:typst` and `:excel` back ends in the lists, the documented default
+  of the `backend` keyword, wrong style field names, and the Excel back end documentation
+  that was not included in the package.
+
 Version 3.4.3
 -------------
 
