@@ -5,30 +5,42 @@
 ############################################################################################
 
 """
-    _text__render_table(table_data::TableData, @nospecialize(context::IOContext), renderer::Union{Val{:print}, Val{:show}}, line_breaks::Bool, maximum_data_column_widths::AbstractVector{Int})
+    _text__render_table(
+        table_data::TableData,
+        @nospecialize(context::IOContext),
+        renderer::Union{Val{:print}, Val{:show}},
+        line_breaks::Bool,
+        maximum_data_column_widths::AbstractVector{Int},
+        vertical_lines_at_data_columns::AbstractVector{Int}
+    )
 
 Render the table using the specification in `table_data`. When the cells are converted to
 `String`, we use the `context`, and the `renderer`.
 
-If `line_breaks` is `true`, we split each cell into multiple lines at every occurence of
+If `line_breaks` is `true`, we split each cell into multiple lines at every occurrence of
 `\\n`.
 
 `maximum_data_column_widths` must contain the user specification for the maximum data column
-widths.
+widths, whereas `vertical_lines_at_data_columns` must contain the list of columns where a
+vertical line is drawn after the cell. The latter is required to compute the available width
+of merged column labels.
 
 # Returns
 
 - `Union{Nothing, Vector{String}}`: Rendered row labels.
+- `Union{Nothing, Matrix{String}}`: Rendered column labels.
 - `Matrix{String}`: Rendered data cells.
-- `Union{Nothing, Vector{String}}`: Rendered summary rows.
-- `Vector{String}`: Rendered footnotes.
+- `Union{Nothing, Matrix{String}}`: Rendered summary rows.
+- `Union{Nothing, Vector{String}}`: Rendered summary row labels.
+- `Union{Nothing, Vector{String}}`: Rendered footnotes.
 """
 function _text__render_table(
     table_data::TableData,
     @nospecialize(context::IOContext),
     renderer::Union{Val{:print}, Val{:show}},
     line_breaks::Bool,
-    maximum_data_column_widths::AbstractVector{Int}
+    maximum_data_column_widths::AbstractVector{Int},
+    vertical_lines_at_data_columns::AbstractVector{Int},
 )
     num_column_label_lines   = length(table_data.column_labels)
     num_printed_data_columns = _number_of_printed_data_columns(table_data)
@@ -43,15 +55,17 @@ function _text__render_table(
         nothing
     end
 
-    row_labels = _has_row_labels(table_data) ?
-        Vector{String}(undef, num_printed_data_rows) :
-        nothing
+    row_labels =
+        _has_row_labels(table_data) ? Vector{String}(undef, num_printed_data_rows) : nothing
 
     table_str = Matrix{String}(undef, num_printed_data_rows, num_printed_data_columns)
 
-    summary_rows = _has_summary_rows(table_data) ?
-        Matrix{String}(undef, num_summary_rows, num_printed_data_columns) :
-        nothing
+    summary_rows =
+        _has_summary_rows(table_data) ?
+        Matrix{String}(undef, num_summary_rows, num_printed_data_columns) : nothing
+
+    summary_row_labels =
+        _has_summary_rows(table_data) ? Vector{String}(undef, num_summary_rows) : nothing
 
     footnotes = _has_footnotes(table_data) ? Vector{String}(undef, num_footnotes) : nothing
 
@@ -70,16 +84,51 @@ function _text__render_table(
 
         ir, jr = _update_data_cell_indices(action, rs, ps, ir, jr)
 
-        action ∉ (:column_label, :data, :summary_row_cell, :row_label, :footnote) && continue
+        action ∉ (
+            :column_label,
+            :data,
+            :summary_row_cell,
+            :row_label,
+            :summary_row_label,
+            :footnote,
+        ) && continue
 
         # We should only break lines if we are in a data cell.
         lb = (action == :data) && line_breaks
 
         cell = _current_cell(action, ps, table_data)
 
-        mw = (action ∈ (:column_label, :data, :summary_row_cell)) ?
-            maximum_data_column_widths[ps.j] :
-            -1
+        mw =
+            (action ∈ (:column_label, :data, :summary_row_cell)) ?
+            maximum_data_column_widths[ps.j] : -1
+
+        # A merged column label spans multiple columns. Hence, its maximum width must be
+        # computed from all the spanned columns.
+        if (action == :column_label) && (cell isa MergeCells)
+            j₀ = ps.j
+            j₁ = min(ps.j + cell.column_span - 1, num_printed_data_columns)
+
+            mw = 0
+
+            for j in j₀:j₁
+                mwj = maximum_data_column_widths[j]
+
+                # If any spanned column has no maximum width, the merged cell width is
+                # unlimited.
+                if mwj <= 0
+                    mw = -1
+                    break
+                end
+
+                mw += mwj
+
+                # We must also take into account the margins and vertical lines between the
+                # merged columns.
+                if j != j₁
+                    mw += 2 + (j ∈ vertical_lines_at_data_columns)
+                end
+            end
+        end
 
         rendered_cell = if cell !== _IGNORE_CELL
             _text__render_cell(cell, context, renderer, lb, mw)
@@ -110,6 +159,9 @@ function _text__render_table(
         elseif !isnothing(row_labels) && (action == :row_label)
             row_labels[ir] = rendered_cell
 
+        elseif !isnothing(summary_row_labels) && (action == :summary_row_label)
+            summary_row_labels[ir] = rendered_cell
+
         elseif !isnothing(footnotes) && (action == :footnote)
             id = ps.i
             footnotes[id] = _text__render_footnote_superscript(id) * ": " * rendered_cell
@@ -118,25 +170,19 @@ function _text__render_table(
         # If the user requested a maximum data column width, check the current size and crop
         # accordingly.
         if action == :column_label
-           column_labels[ir, jr] = _text__fit_cell_in_maximum_cell_width(
-               column_labels[ir, jr],
-               mw,
-               false
-           )
+            column_labels[ir, jr] = _text__fit_cell_in_maximum_cell_width(
+                column_labels[ir, jr], mw, false
+            )
         elseif action == :data
             table_str[ir, jr] = _text__fit_cell_in_maximum_cell_width(
-                table_str[ir, jr],
-                mw,
-                line_breaks
+                table_str[ir, jr], mw, line_breaks
             )
         elseif action == :summary_row_cell
             summary_rows[ir, jr] = _text__fit_cell_in_maximum_cell_width(
-                summary_rows[ir, jr],
-                mw,
-                false
+                summary_rows[ir, jr], mw, false
             )
         end
     end
 
-    return row_labels, column_labels, table_str, summary_rows, footnotes
+    return row_labels, column_labels, table_str, summary_rows, summary_row_labels, footnotes
 end

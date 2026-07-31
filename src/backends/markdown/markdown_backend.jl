@@ -14,7 +14,10 @@ function _markdown__print(
 )
     context    = pspec.context
     table_data = pspec.table_data
-    renderer   = Val(pspec.renderer)
+    # NOTE: `Val(pspec.renderer)` infers to the abstract `Val` because
+    # `pspec.renderer` is a `Symbol`. Branching here keeps the renderer concrete, so the
+    # per-cell rendering calls are statically dispatched.
+    renderer   = pspec.renderer === :show ? Val(:show) : Val(:print)
     tf         = table_format
 
     ps     = PrintingTableState()
@@ -29,17 +32,19 @@ function _markdown__print(
 
     # Check the style variables.
     if style.first_line_column_label isa Vector{MarkdownStyle}
-        length(style.first_line_column_label) != table_data.num_columns &&
-            throw(ArgumentError(
-                "The length of `first_line_column_label` in `style` must be equal to the number of columns ($(table_data.num_columns))."
-            ))
+        length(style.first_line_column_label) != table_data.num_columns && throw(
+            ArgumentError(
+                "The length of `first_line_column_label` in `style` must be equal to the number of columns ($(table_data.num_columns)).",
+            ),
+        )
     end
 
     if style.column_label isa Vector{MarkdownStyle}
-        length(style.column_label) != table_data.num_columns &&
-            throw(ArgumentError(
-                "The length of `column_label` in `style` must be equal to the number of columns ($(table_data.num_columns))."
-            ))
+        length(style.column_label) != table_data.num_columns && throw(
+            ArgumentError(
+                "The length of `column_label` in `style` must be equal to the number of columns ($(table_data.num_columns)).",
+            ),
+        )
     end
 
     # == Render the Table ==================================================================
@@ -68,11 +73,21 @@ function _markdown__print(
         nothing
     end
 
+    summary_row_labels = if _has_summary_rows(table_data)
+        Vector{String}(undef, num_summary_rows)
+    else
+        nothing
+    end
+
     action = :initialize
 
     # We must store the index related to the rendered tables. These indices differ from the
     # actual table indices due to cropping.
     ir = jr = 0
+
+    # The highlighters must receive the object the user passed to `pretty_table`, not the
+    # internal table wrapper. Notice that this is loop invariant.
+    orig_data = _get_data(table_data.data)
 
     while action != :end_printing
         action, rs, ps = _next(ps, table_data)
@@ -82,18 +97,13 @@ function _markdown__print(
         ir, jr = _update_data_cell_indices(action, rs, ps, ir, jr)
 
         # Here, we only want actions related to table cells.
-        action ∉ (:column_label, :data, :summary_row_cell, :row_label) && continue
+        action ∉ (:column_label, :data, :summary_row_cell, :row_label, :summary_row_label) &&
+            continue
 
         cell = _current_cell(action, ps, table_data)
 
         rendered_cell = if cell !== _IGNORE_CELL
-            _markdown__render_cell(
-                cell,
-                buf,
-                renderer;
-                allow_markdown_in_cells,
-                line_breaks
-            )
+            _markdown__render_cell(cell, buf, renderer; allow_markdown_in_cells, line_breaks)
         else
             ""
         end
@@ -124,7 +134,7 @@ function _markdown__print(
                         style.column_label
                     end
                 end,
-                rendered_cell
+                rendered_cell,
             )
 
             column_labels[ir, jr] = rendered_cell
@@ -132,8 +142,6 @@ function _markdown__print(
         elseif action == :data
             # Check if we must apply highlighters.
             if !isempty(highlighters)
-                orig_data = _get_data(table_data.data)
-
                 for h in highlighters
                     if h.f(orig_data, ps.i, ps.j)
                         d = h.fd(h, orig_data, ps.i, ps.j)
@@ -146,20 +154,19 @@ function _markdown__print(
             table_str[ir, jr] = rendered_cell
 
         elseif !isnothing(summary_rows) && (action == :summary_row_cell)
-            rendered_cell = _markdown__apply_style(
-                style.summary_row_cell,
-                rendered_cell
-            )
+            rendered_cell = _markdown__apply_style(style.summary_row_cell, rendered_cell)
 
             summary_rows[ir, jr] = rendered_cell
 
         elseif !isnothing(row_labels) && (action == :row_label)
-            rendered_cell = _markdown__apply_style(
-                style.row_label,
-                rendered_cell
-            )
+            rendered_cell = _markdown__apply_style(style.row_label, rendered_cell)
 
             row_labels[ir] = rendered_cell
+
+        elseif !isnothing(summary_row_labels) && (action == :summary_row_label)
+            rendered_cell = _markdown__apply_style(style.summary_row_label, rendered_cell)
+
+            summary_row_labels[ir] = rendered_cell
         end
     end
 
@@ -176,13 +183,11 @@ function _markdown__print(
 
     # Finally, we must apply the style to the other fields in the header.
     decorated_row_number_column_label = _markdown__apply_style(
-        style.row_number_label,
-        table_data.row_number_column_label
+        style.row_number_label, table_data.row_number_column_label
     )
 
     decorated_stubhead_label = _markdown__apply_style(
-        style.stubhead_label,
-        table_data.stubhead_label
+        style.stubhead_label, table_data.stubhead_label
     )
 
     # == Compute the Column Width ==========================================================
@@ -191,33 +196,46 @@ function _markdown__print(
     row_label_column_width     = 1
     printed_data_column_widths = ones(Int, num_printed_data_columns)
 
-    # We we are printing in compact mode, we do not need to compute the column widths.
+    # When we are printing in compact mode, we do not need to compute the column widths.
     if !tf.compact_table
         if table_data.show_row_number_column
-            m = if (_is_vertically_cropped(table_data) && (table_data.vertical_crop_mode == :bottom))
-                table_data.maximum_number_of_rows
-            else
-                table_data.num_rows
-            end
+            m =
+                if (
+                    _is_vertically_cropped(table_data) &&
+                    (table_data.vertical_crop_mode == :bottom)
+                )
+                    table_data.maximum_number_of_rows
+                else
+                    table_data.num_rows
+                end
+
+            # The printed row numbers run from `first_row_index` to `first_row_index + m - 1`,
+            # which can be negative when the data has a non 1-based row axis. Notice that
+            # `ndigits` must be used instead of `floor(Int, log10(m) + 1)` because the latter
+            # throws an `InexactError` for an empty table, where `log10(0) == -Inf`.
+            f = table_data.first_row_index
+            l = f + max(m, 1) - 1
+
+            # The row numbers are decorated with the style `row_number`. Hence, we must take
+            # the decoration width into account when computing the column width.
+            rnsw = _markdown__style_textwidth(style.row_number)
 
             row_number_column_width = max(
                 textwidth(decorated_row_number_column_label),
-                floor(Int, log10(m) + 1)
+                ndigits(f) + (f < 0) + rnsw,
+                ndigits(l) + (l < 0) + rnsw,
             )
         end
 
         if _has_row_labels(table_data)
             row_label_column_width = max(
                 textwidth(decorated_stubhead_label),
-
                 num_printed_data_rows > 0 ? maximum(textwidth, row_labels) : 0,
-
-                if _has_summary_rows(table_data)
-                    maximum(textwidth, table_data.summary_row_labels) +
-                    _markdown__style_textwidth(style.summary_row_label)
+                if !isnothing(summary_row_labels)
+                    maximum(textwidth, summary_row_labels)
                 else
                     0
-                end
+                end,
             )
         end
 
@@ -243,7 +261,8 @@ function _markdown__print(
         # add the information in the first column. Thus, we need to possibly increase this cell
         # accordingly.
         if _has_row_group_labels(table_data)
-            m = maximum(x -> textwidth(last(x)), table_data.row_group_labels) +
+            m =
+                maximum(x -> textwidth(last(x)), table_data.row_group_labels) +
                 _markdown__style_textwidth(style.row_group_label)
 
             if table_data.show_row_number_column
@@ -281,28 +300,30 @@ function _markdown__print(
 
         # Special treatment for table header and footer.
         if rs == :table_header
-            l = if action == :title
-                max(tf.title_heading_level, 1)
-            elseif action == :subtitle
-                max(tf.subtitle_heading_level, 1)
-            else
-                0
+            if action ∈ (:title, :subtitle)
+                l = action == :title ? tf.title_heading_level : tf.subtitle_heading_level
+
+                # If the heading level is not positive, the title or subtitle is printed as
+                # plain text.
+                if l > 0
+                    print(buf, "#"^l)
+                    print(buf, " ")
+                end
+
+                rendered_cell = _markdown__escape_str(
+                    _current_cell(action, ps, table_data), line_breaks, true
+                )
+
+                println(buf, rendered_cell)
+                println(buf)
             end
 
-            l <= 0 && continue
-
-            print(buf, "#"^l)
-            print(buf, " ")
-            println(buf, _current_cell(action, ps, table_data))
-            println(buf)
             continue
 
         elseif rs == :table_footer
             if action == :footnote
                 rendered_cell = _markdown__escape_str(
-                    _current_cell(action, ps, table_data),
-                    line_breaks,
-                    true
+                    _current_cell(action, ps, table_data), line_breaks, true
                 )
 
                 ps.i == 1 && println(buf)
@@ -311,9 +332,7 @@ function _markdown__print(
 
             elseif action == :source_notes
                 rendered_cell = _markdown__escape_str(
-                    _current_cell(action, ps, table_data),
-                    line_breaks,
-                    true
+                    _current_cell(action, ps, table_data), line_breaks, true
                 )
 
                 println(buf)
@@ -331,7 +350,7 @@ function _markdown__print(
                     table_data,
                     row_number_column_width,
                     row_label_column_width,
-                    printed_data_column_widths
+                    printed_data_column_widths,
                 )
                 header_printed = true
             end
@@ -366,7 +385,7 @@ function _markdown__print(
             print(buf, " |")
 
         elseif action == :end_row
-            # Obtain the next row section since some actions depends on it.
+            # Obtain the next row section since some actions depend on it.
             _, next_rs, _ = _next(ps, table_data)
 
             println(buf)
@@ -380,19 +399,19 @@ function _markdown__print(
                     table_data,
                     row_number_column_width,
                     row_label_column_width,
-                    printed_data_column_widths
+                    printed_data_column_widths,
                 )
 
-            elseif tf.line_before_summary_rows && (rs != :summary_row) &&
+            elseif tf.line_before_summary_rows &&
+                (rs != :summary_row) &&
                 (next_rs == :summary_row)
-
                 _markdown__print_separation_line(
                     buf,
                     table_data,
                     tf.horizontal_line_char,
                     row_number_column_width,
                     row_label_column_width,
-                    printed_data_column_widths
+                    printed_data_column_widths,
                 )
 
             elseif next_rs ∈ (:table_footer, :end_printing)
@@ -403,18 +422,16 @@ function _markdown__print(
 
                     if !isempty(ocs)
                         println(buf)
-                        println(buf, _markdown__apply_style(
-                            style.omitted_cell_summary,
-                            ocs
-                        ))
+                        println(
+                            buf, _markdown__apply_style(style.omitted_cell_summary, ocs)
+                        )
                     end
                 end
             end
 
         elseif action == :row_group_label
             row_group_label = _markdown__apply_style(
-                style.row_group_label,
-                _current_cell(action, ps, table_data)
+                style.row_group_label, _current_cell(action, ps, table_data)
             )
 
             # In this case, we write the row group to the first cell and fill the entire
@@ -426,7 +443,7 @@ function _markdown__print(
                 tf.horizontal_line_char,
                 row_number_column_width,
                 row_label_column_width,
-                printed_data_column_widths
+                printed_data_column_widths,
             )
 
         else
@@ -454,15 +471,12 @@ function _markdown__print(
 
             elseif action == :summary_row_label
                 cell_width    = row_label_column_width
-                rendered_cell = _markdown__apply_style(
-                    style.summary_row_label,
-                    table_data.summary_row_labels[ir]
-                )
+                rendered_cell = summary_row_labels[ir]
 
             elseif action == :column_label
                 cell_width = printed_data_column_widths[jr]
 
-                # If need to check if we are in a cell that should be merged. Since Markdown
+                # We need to check if we are in a cell that should be merged. Since Markdown
                 # does not support such an operation, we only fill the field with `-`.
                 rendered_cell = if _current_cell(action, ps, table_data) === _IGNORE_CELL
                     string(tf.horizontal_line_char)^cell_width
@@ -473,7 +487,9 @@ function _markdown__print(
             elseif action == :row_number
                 cell          = _current_cell(action, ps, table_data)
                 cell_width    = row_number_column_width
-                rendered_cell = _markdown__render_cell(cell, buf, renderer)
+                rendered_cell = _markdown__apply_style(
+                    style.row_number, _markdown__render_cell(cell, buf, renderer)
+                )
 
             elseif action == :data
                 cell_width    = printed_data_column_widths[jr]
@@ -482,7 +498,6 @@ function _markdown__print(
             elseif action == :summary_row_cell
                 cell_width    = printed_data_column_widths[jr]
                 rendered_cell = summary_rows[ir, jr]
-
             end
 
             if !tf.compact_table

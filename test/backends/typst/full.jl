@@ -47,7 +47,7 @@
       table.cell(fill: yellow,)[
         #text(fill: blue, weight: "extrabold",)[Col. 1]
       ],
-      table.cell(colspan: 2, fill: blue,)[
+      table.cell(colspan: 2, align: center, fill: blue,)[
         #text(fill: white, weight: "extrabold",)[Merged Column]#super[1]
       ],
       table.cell(fill: red,)[
@@ -199,7 +199,7 @@
       [#text(weight: "bold",)[Row]],
       [#text(weight: "bold",)[Rows]],
       [#text(weight: "bold",)[Col. 1]],
-      table.cell(colspan: 1,)[#text(weight: "bold",)[Merged Column]#super[1]],
+      table.cell(colspan: 1, align: center,)[#text(weight: "bold",)[Merged Column]#super[1]],
       [⋯],
     ),
     // == Table Body =======================================================================
@@ -310,7 +310,7 @@
       [#text(weight: "bold",)[Row]],
       [#text(weight: "bold",)[Rows]],
       [#text(weight: "bold",)[Col. 1]],
-      table.cell(colspan: 1,)[#text(weight: "bold",)[Merged Column]#super[1]],
+      table.cell(colspan: 1, align: center,)[#text(weight: "bold",)[Merged Column]#super[1]],
       [⋯],
     ),
     // == Table Body =======================================================================
@@ -413,7 +413,7 @@
       [#text(weight: "bold",)[Row]],
       [#text(weight: "bold",)[Rows]],
       [#text(weight: "bold",)[Col. 1]],
-      table.cell(colspan: 1,)[#text(weight: "bold",)[Merged Column]#super[1]],
+      table.cell(colspan: 1, align: center,)[#text(weight: "bold",)[Merged Column]#super[1]],
       [⋯],
     ),
     [#text(weight: "bold",)[1]],
@@ -516,7 +516,7 @@
       [
         #text(weight: "bold",)[Col. 1]
       ],
-      table.cell(colspan: 1,)[
+      table.cell(colspan: 1, align: center,)[
         #text(weight: "bold",)[Merged Column]#super[1]
       ],
       [

@@ -2,8 +2,8 @@
 #
 # Functions to define interfaces with Tables.jl.
 #
-# This file contains some overloads related to the structures `ColumnTable` `RowTable` so
-# that an element can be accessed by `table[i,j]`. This is required for the low-level
+# This file contains some overloads related to the structures `ColumnTable` and `RowTable`
+# so that an element can be accessed by `table[i,j]`. This is required for the low-level
 # interface of PrettyTables.jl when printing.
 #
 ############################################################################################
@@ -14,7 +14,7 @@ import Base: getindex, isassigned, length, size
 #                             Functions Related to ColumnTable                             #
 ############################################################################################
 
-function ColumnTable(data::Any)
+Base.@nospecializeinfer function ColumnTable(@nospecialize(data::Any))
     # Access the table using the columns.
     table = Tables.columns(data)
 
@@ -28,12 +28,7 @@ function ColumnTable(data::Any)
     return ColumnTable(data, table, names, (size_i, size_j))
 end
 
-function getindex(ctable::ColumnTable, inds...)
-    length(inds) != 2 && error("A element of type `ColumnTable` must be accesses using 2 indices.")
-
-    # Access index.
-    i, j = inds[1], inds[2]
-
+function getindex(ctable::ColumnTable, i, j)
     # Get the column name.
     column_name = ctable.column_names[j]
 
@@ -43,12 +38,15 @@ function getindex(ctable::ColumnTable, inds...)
     return element
 end
 
-function isassigned(ctable::ColumnTable, inds...)
-    length(inds) != 2 && error("A element of type `ColumnTable` must be accesses using 2 indices.")
+function getindex(ctable::ColumnTable, inds...)
+    if length(inds) != 2
+        error("An element of type `ColumnTable` must be accessed using 2 indices.")
+    end
 
-    # Access index.
-    i, j = inds[1], inds[2]
+    return getindex(ctable, inds[1], inds[2])
+end
 
+function isassigned(ctable::ColumnTable, i, j)
     # Get the column name.
     column_name = ctable.column_names[j]
 
@@ -63,6 +61,14 @@ function isassigned(ctable::ColumnTable, inds...)
     end
 end
 
+function isassigned(ctable::ColumnTable, inds...)
+    if length(inds) != 2
+        error("An element of type `ColumnTable` must be accessed using 2 indices.")
+    end
+
+    return isassigned(ctable, inds[1], inds[2])
+end
+
 axes(ctable::ColumnTable) = (Base.OneTo(ctable.size[1]), Base.OneTo(ctable.size[2]))
 
 function axes(ctable::ColumnTable, dim::Int)
@@ -74,6 +80,12 @@ length(ctable::ColumnTable) = ctable.size[1] * ctable.size[2]
 
 size(ctable::ColumnTable) = ctable.size
 
+# A whole-column query must be answered by the wrapper itself. Otherwise, it would be
+# forwarded to the user's object, which usually does not support `[:, j]` indexing. This is
+# the access pattern the summary rows use to obtain the column they must reduce.
+Base.maybeview(ctable::ColumnTable, ::Colon, j::Integer) =
+    Tables.getcolumn(ctable.table, ctable.column_names[j])
+
 Base.maybeview(ctable::ColumnTable, inds...) = Base.maybeview(ctable.data, inds...)
 
 _get_data(ctable::ColumnTable) = ctable.data
@@ -82,7 +94,7 @@ _get_data(ctable::ColumnTable) = ctable.data
 #                              Functions Related to RowTable                               #
 ############################################################################################
 
-function RowTable(data::Any)
+Base.@nospecializeinfer function RowTable(@nospecialize(data::Any))
     # Access the table using the rows.
     table = Tables.rows(data)
 
@@ -110,46 +122,110 @@ function RowTable(data::Any)
 
     size_j = length(names)::Int
 
-    return RowTable(data, table, names, (size_i, size_j))
+    return RowTable(data, table, names, (size_i, size_j), RowTableAccessState())
+end
+
+"""
+    _row_table_subset(rtable::RowTable, i::Integer) -> Tuple{Bool, Any}
+
+Acquire and cache the subset row for row `i`, including acquisition failures.
+"""
+function _row_table_subset(rtable::RowTable, i::Integer)
+    access_state = rtable.access_state
+
+    # If this table does not implement `Tables.subset` at all, never try again. Otherwise, we
+    # would pay for a thrown and caught exception once per row because the cache below is
+    # row-local.
+    access_state.subset_supported || return false, nothing
+
+    # Reset the row-local subset cache for a new requested row.
+    if access_state.requested_row != i
+        access_state.requested_row = i
+        access_state.subset_attempted = false
+        access_state.subset_succeeded = false
+        access_state.subset_row = nothing
+    end
+
+    # Return a previously cached subset acquisition result.
+    access_state.subset_attempted &&
+        return access_state.subset_succeeded, access_state.subset_row
+
+    # Mark the attempt before invoking user-provided table code.
+    access_state.subset_attempted = true
+    try
+        access_state.subset_row = Tables.subset(rtable.data, i; viewhint = true)
+
+        # Record a successful subset acquisition.
+        access_state.subset_succeeded = true
+    catch
+        # Record a failed subset acquisition and never attempt it again for this table.
+        access_state.subset_row = nothing
+        access_state.subset_succeeded = false
+        access_state.subset_supported = false
+    end
+
+    # Return the cached subset acquisition status and row.
+    return access_state.subset_succeeded, access_state.subset_row
+end
+
+"""
+    _row_table_iterator_row(rtable::RowTable, i::Integer) -> Any
+
+Acquire row `i` from the iterator, advancing forward or restarting for backward requests.
+"""
+function _row_table_iterator_row(rtable::RowTable, i::Integer)
+    access_state = rtable.access_state
+
+    if !access_state.iterator_started || i < access_state.iterator_row_index
+        step = iterate(rtable.table)
+        step === nothing && error("The row `i` does not exist.")
+
+        access_state.iterator_row, access_state.iterator_state = step
+        access_state.iterator_row_index = 1
+        access_state.iterator_started = true
+    end
+
+    while access_state.iterator_row_index < i
+        step = iterate(rtable.table, access_state.iterator_state)
+        step === nothing && error("The row `i` does not exist.")
+
+        access_state.iterator_row, access_state.iterator_state = step
+        access_state.iterator_row_index += 1
+    end
+
+    return access_state.iterator_row
+end
+
+function getindex(rtable::RowTable, i, j)
+    column_name = rtable.column_names[j]
+    access_state = rtable.access_state
+    subset_succeeded, subset_row = _row_table_subset(rtable, i)
+
+    if subset_succeeded && access_state.subset_getcolumn_supported
+        try
+            return Tables.getcolumn(subset_row, column_name)
+        catch
+            # Preserve the broad subset-to-iterator fallback semantics. As above, latch the
+            # capability so that the failure is paid for only once.
+            access_state.subset_getcolumn_supported = false
+        end
+    end
+
+    row = _row_table_iterator_row(rtable, i)
+    return Tables.getcolumn(row, column_name)
 end
 
 function getindex(rtable::RowTable, inds...)
-    length(inds) != 2 && error("A element of type `RowTable` must be accesses using 2 indices.")
-
-    # Access index.
-    i, j = inds[1], inds[2]
-
-    # Get the column name.
-    column_name = rtable.column_names[j]
-
-    # If we have `Tables.subset`, let's use it. Otherwise, we fallback to the row iteration
-    # as indicated here:
-    #
-    #   https://github.com/ronisbr/PrettyTables.jl/issues/220
-
-    try
-        row = Tables.subset(rtable.data, i; viewhint = true)
-        element = Tables.getcolumn(row, column_name)
-        return element
-
-    catch e
-        # Get the i-th row by iterating the row table.
-        it, state = iterate(rtable.table)
-
-        for _ in 2:i
-            it, state = iterate(rtable.table, state)
-            it === nothing && error("The row `i` does not exist.")
-        end
-
-        element = Tables.getcolumn(it, column_name)
-
-        return element
+    if length(inds) != 2
+        error("An element of type `RowTable` must be accessed using 2 indices.")
     end
+
+    return getindex(rtable, inds[1], inds[2])
 end
 
-function isassigned(rtable::RowTable, inds...)
+function isassigned(rtable::RowTable, i, j)
     try
-        getindex(rtable, inds...)
+        getindex(rtable, i, j)
         return true
     catch e
         if isa(e, UndefRefError)
@@ -158,6 +234,14 @@ function isassigned(rtable::RowTable, inds...)
             throw(e)
         end
     end
+end
+
+function isassigned(rtable::RowTable, inds...)
+    if length(inds) != 2
+        error("An element of type `RowTable` must be accessed using 2 indices.")
+    end
+
+    return isassigned(rtable, inds[1], inds[2])
 end
 
 axes(rtable::RowTable) = (Base.OneTo(rtable.size[1]), Base.OneTo(rtable.size[2]))
@@ -171,6 +255,13 @@ length(rtable::RowTable) = rtable.size[1] * rtable.size[2]
 
 size(rtable::RowTable) = rtable.size
 
+# A whole-column query must be answered by the wrapper itself. Otherwise, it would be
+# forwarded to the user's object, which usually does not support `[:, j]` indexing. Since a
+# row table has no columns, we must materialize one. Notice that the rows are walked forward,
+# meaning this is `O(num_rows)`, and that it is only paid once per summary row per column.
+Base.maybeview(rtable::RowTable, ::Colon, j::Integer) =
+    [rtable[i, j] for i in 1:rtable.size[1]]
+
 Base.maybeview(rtable::RowTable, inds...) = Base.maybeview(rtable.data, inds...)
 
 _get_data(rtable::RowTable) = rtable.data
@@ -179,7 +270,7 @@ _get_data(rtable::RowTable) = rtable.data
 #                                     Other Overloads                                      #
 ############################################################################################
 
-# `_getdata` is a function that returns the original matrix passed to `pretty_table`
+# `_get_data` is a function that returns the original matrix passed to `pretty_table`
 # function. This is required because when printing something compliant with Tables.jl, we
 # modify its type to be `ColumnTable` or `RowTable`. In this case, functions like
 # highlighters must receive the original data, not the transformed one.

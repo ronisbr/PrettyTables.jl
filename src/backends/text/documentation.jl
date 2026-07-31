@@ -55,7 +55,7 @@ the output.
 - `fixed_data_column_widths::Union{Int, Vector{Int}}`: If it is a `Vector{Int}`, this vector
     specifies the width of each column. If it is a `Int`, this number will be used as the
     width of all columns. If the width is equal to or lower than 0, it will be automatically
-    computed to fit the large cell in the column.
+    computed to fit the largest cell in the column.
     (**Default** = 0)
 - `highlighters::Vector{TextHighlighter}`: Highlighters to apply to the table. For more
     information, see the section **Text Highlighters** in the **Extended Help**.
@@ -63,14 +63,14 @@ the output.
     (**Default** = `false`)
 - `maximum_data_column_widths::Union{Int, Vector{Int}}`: If it is a `Vector{Int}`, this
     vector specifies the maximum width of each column. If it is an `Int`, this number will
-    be used as the maximum width of all columns. If the maximum width is equal or lower than
-    0, it will be ignored. Notice that the parameter `fixed_data_column_widths` has
+    be used as the maximum width of all columns. If the maximum width is equal to or lower
+    than 0, it will be ignored. Notice that the parameter `fixed_data_column_widths` has
     precedence over this one.
     (**Default** = 0)
 - `minimum_data_column_widths::Union{Int, Vector{Int}}`: If it is a `Vector{Int}`, this
     vector specifies the minimum width of each column. If it is an `Int`, this number will
-    be used as the minimum width of all columns. If the minimum width is equal or lower than
-    0, it will be ignored. Notice that the parameter `fixed_data_column_widths` has
+    be used as the minimum width of all columns. If the minimum width is equal to or lower
+    than 0, it will be ignored. Notice that the parameter `fixed_data_column_widths` has
     precedence over this one.
     (**Default** = 0)
 - `overwrite_display::Bool`: If `true`, the same number of lines in the printed table will
@@ -101,13 +101,13 @@ A set of highlighters can be passed as a `Vector{TextHighlighter}` to the `highl
 keyword. Each highlighter is an instance of the structure [`TextHighlighter`](@ref). It
 contains three fields:
 
-- `f::Function`: Function with the signature `f(data, i, j)` in which should return `true`
+- `f::Function`: Function with the signature `f(data, i, j)` which should return `true`
     if the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
 - `fd::Function`: Function with the signature `fd(h, data, i, j)` in which `h` is the
     highlighter. This function must return the `Crayon` to be applied to the cell that must
     be highlighted.
-- `crayon::Crayon`: The `Crayon` to be applied to the highlighted cell if the default `fd`
-    is used.
+- `_decoration::Crayon`: The `Crayon` to be applied to the highlighted cell if the default
+    `fd` is used.
 
 The function `f` has the following signature:
 
@@ -125,20 +125,20 @@ return a `Crayon` that will be applied to the cell.
 A highlighter can be constructed using three helpers:
 
 ```julia
-Highlighter(f::Function; kwargs...)
+TextHighlighter(f::Function; kwargs...)
 ```
 
 where it will construct a `Crayon` using the keywords in `kwargs` and apply it to the
 highlighted cell,
 
 ```julia
-Highlighter(f::Function, crayon::Crayon)
+TextHighlighter(f::Function, crayon::Crayon)
 ```
 
 where it will apply the `crayon` to the highlighted cell, and
 
 ```julia
-Highlighter(f::Function, fd::Function)
+TextHighlighter(f::Function, fd::Function)
 ```
 
 where it will apply the `Crayon` returned by the function `fd` to the highlighted cell.
@@ -190,7 +190,7 @@ contains the following fields:
     after the column labels.
 - `horizontal_lines_at_data_rows::Union{Symbol, Vector{Int}}`: A horizontal line will be
     drawn after each data row index listed in this vector. If the symbol `:all` is passed, a
-    horizontal line will be drawn after every data column. If the symbol `:none` is passed,
+    horizontal line will be drawn after every data row. If the symbol `:none` is passed,
     no horizontal lines will be drawn.
 - `horizontal_line_before_row_group_label::Bool`: If `true`, a horizontal line will be
     drawn before the row group label.
@@ -201,7 +201,7 @@ contains the following fields:
 - `horizontal_line_before_summary_rows::Bool`: If `true`, a horizontal line will be drawn
     before the summary rows. Notice that this line is the same as the one drawn if
     `horizontal_line_after_data_rows` is `true`. However, in this case, the line is omitted
-    if there is no summary rows.
+    if there are no summary rows.
 - `horizontal_line_after_summary_rows::Bool`: If `true`, a horizontal line will be drawn
     after the summary rows.
 - `vertical_line_at_beginning::Bool`: If `true`, a vertical line will be drawn at the
@@ -218,6 +218,8 @@ contains the following fields:
     the data columns.
 - `vertical_line_after_continuation_column::Bool`: If `true`, a vertical line will be
     drawn after the continuation column.
+- `suppress_vertical_lines_at_column_labels::Bool`: If `true`, the vertical lines inside
+    the column label rows will be suppressed.
 - `ellipsis_line_skip::Integer`: Number of lines to skip when printing an ellipsis.
 
 We provide a few helpers to configure the table format. For more information, see the
@@ -242,7 +244,7 @@ contains the following fields:
 - `row_group_label::Crayon`: Crayon with the style for the row group label.
 - `first_line_column_label::Union{Crayon, Vector{Crayon}}`: Crayon or crayons with the style
     for the first column label lines. If a vector of crayons is passed, it must have the
-    same length as the number columns in the table.
+    same length as the number of columns in the table.
 - `column_label::Union{Crayon, Vector{Crayon}}`: Crayon or crayons with the style for the
     rest of the column labels. If a vector of crayons is passed, it must have the same
     length as the number of columns in the table.

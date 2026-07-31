@@ -17,11 +17,7 @@
   \\hline
 \\end{tabular}
 """
-        result = pretty_table(
-            String,
-            matrix;
-            backend = :latex
-        )
+        result = pretty_table(String, matrix; backend = :latex)
 
         @test result == expected
     end
@@ -37,14 +33,8 @@
 \\end{tabular}
 """
 
-        result = pretty_table(
-            String,
-            matrix;
-            backend = :latex,
-            renderer = :show
-        )
+        result = pretty_table(String, matrix; backend = :latex, renderer = :show)
 
         @test result == expected
     end
 end
-

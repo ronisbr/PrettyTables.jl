@@ -37,10 +37,15 @@ function _current_table_row_section_info(rs::Symbol, action::Symbol, i::Number)
     section_desc = "Row $i"
 
     if rs == :table_header
+        # NOTE: The `else` branches are required. Without them the chain evaluates to
+        # `nothing` for any other action, and the `isempty` below would throw a `MethodError`
+        # instead of returning the `String` this function promises.
         section_desc = if action == :title
             "Title"
         elseif action == :subtitle
             "Subtitle"
+        else
+            ""
         end
 
     elseif rs == :table_footer
@@ -48,6 +53,8 @@ function _current_table_row_section_info(rs::Symbol, action::Symbol, i::Number)
             "Footnote $i"
         elseif action == :source_notes
             "Source Notes"
+        else
+            ""
         end
 
     elseif rs == :continuation_row
@@ -84,7 +91,7 @@ end
 """
     _has_row_group_labels(table_data::TableData)
 
-Return whether `table_data` has row group lables.
+Return whether `table_data` has row group labels.
 """
 function _has_row_group_labels(table_data::TableData)
     return !isnothing(table_data.row_group_labels)
@@ -114,8 +121,7 @@ be printed.
 """
 function _is_horizontally_cropped(table_data::TableData)
     return table_data.maximum_number_of_columns > 0 ?
-        table_data.num_columns > table_data.maximum_number_of_columns :
-        false
+           table_data.num_columns > table_data.maximum_number_of_columns : false
 end
 
 """
@@ -135,18 +141,27 @@ Return whether `table_data` is vertically cropped, meaning that a continuation r
 printed.
 """
 function _is_vertically_cropped(table_data::TableData)
-    return table_data.maximum_number_of_rows > 0 ?
-        table_data.num_rows > table_data.maximum_number_of_rows :
-        false
+    # NOTE: For rows, `maximum_number_of_rows == 0` means "crop to zero rows", whereas a
+    # negative value means "no limit". This is the convention `_next` and
+    # `_number_of_printed_data_rows` use. Testing for `> 0` here made a table cropped to zero
+    # rows be reported as not cropped, so the data columns were sized without accounting for
+    # the continuation row.
+    return table_data.maximum_number_of_rows >= 0 ?
+           table_data.num_rows > table_data.maximum_number_of_rows : false
 end
 
 """
     _number_of_printed_columns(table_data::TableData) -> Int
 
-Return the number of printed columns in `table_data`, which includes the continuation row.
+Return the number of printed columns in `table_data`, which includes the continuation column.
 """
 function _number_of_printed_columns(table_data::TableData)
-    data_columns = table_data.maximum_number_of_columns >= 0 ?
+    # NOTE: `maximum_number_of_columns <= 0` means "no limit", exactly like in `_next` and in
+    # `_number_of_printed_data_columns`. Testing for `>= 0` here made a `0` be treated as
+    # "crop to a single column", so the back ends laid out one column while the iterator fed
+    # them all of them.
+    data_columns =
+        table_data.maximum_number_of_columns > 0 ?
         # If we are cropping the table, we have one additional column for the continuation
         # characters.
         min(table_data.maximum_number_of_columns + 1, table_data.num_columns) :
@@ -166,7 +181,8 @@ end
 Return the number of printed data columns.
 """
 function _number_of_printed_data_columns(table_data::TableData)
-    data_columns = table_data.maximum_number_of_columns > 0 ?
+    data_columns =
+        table_data.maximum_number_of_columns > 0 ?
         min(table_data.maximum_number_of_columns, table_data.num_columns) :
         table_data.num_columns
 
@@ -179,9 +195,9 @@ end
 Return the number of printed data rows.
 """
 function _number_of_printed_data_rows(table_data::TableData)
-    data_rows = table_data.maximum_number_of_rows >= 0 ?
-        min(table_data.maximum_number_of_rows, table_data.num_rows) :
-        table_data.num_rows
+    data_rows =
+        table_data.maximum_number_of_rows >= 0 ?
+        min(table_data.maximum_number_of_rows, table_data.num_rows) : table_data.num_rows
 
     return data_rows
 end

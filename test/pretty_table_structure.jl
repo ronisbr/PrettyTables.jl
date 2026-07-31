@@ -11,10 +11,7 @@
         3 3.0 0x03 'c' "ghi" :symbol
     ]
 
-    pt = PrettyTable(
-        matrix;
-        backend = :text
-    )
+    pt = PrettyTable(matrix; backend = :text)
 
     expected = """
 ┌────────┬────────┬────────┬────────┬────────┬─────────┐
@@ -108,10 +105,7 @@ end
         3 3.0 0x03 'c' "ghi" :symbol
     ]
 
-    pt = PrettyTable(
-        matrix;
-        backend = :text
-    )
+    pt = PrettyTable(matrix; backend = :text)
 
     expected = """
 ┌────┬─────┬────┬────┬─────┬─────────┐
@@ -189,9 +183,7 @@ end
     ]
 
     pt = PrettyTable(
-        matrix;
-        backend = :text,
-        column_labels = ["#1", "#2", "#3", "#4", "#5", "#6"]
+        matrix; backend = :text, column_labels = ["#1", "#2", "#3", "#4", "#5", "#6"]
     )
 
     expected = """

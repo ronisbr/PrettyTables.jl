@@ -26,13 +26,7 @@
 \\end{tabular}
 """
 
-    result = pretty_table(
-        String,
-        omatrix;
-        backend = :latex,
-        show_row_number_column = true
-    )
+    result = pretty_table(String, omatrix; backend = :latex, show_row_number_column = true)
 
     @test result == expected
 end
-

@@ -22,7 +22,6 @@
     end
 
     @testset "Handle Correctly Empty Tables" begin
-
         expected = """
 Title
 Notes
@@ -52,10 +51,7 @@ Notes
 """
 
         result = pretty_table(
-            String,
-            matrix;
-            display_size = (15, 50),
-            show_column_labels = false
+            String, matrix; display_size = (15, 50), show_column_labels = false
         )
 
         @test result == expected
@@ -81,7 +77,7 @@ Notes
             matrix;
             display_size = (15, 50),
             show_column_labels = false,
-            vertical_crop_mode = :middle
+            vertical_crop_mode = :middle,
         )
 
         @test result == expected
@@ -92,7 +88,7 @@ Notes
 
         column_labels = [
             ["Var. Value", MultiColumn(2, "Failure State", :c)],
-            ["", "Failure Active", "Failure Latched" ]
+            ["", "Failure Active", "Failure Latched"],
         ]
 
         expected = """
@@ -114,9 +110,29 @@ Notes
             column_labels,
             table_format = TextTableFormat(;
                 horizontal_line_at_merged_column_labels = true
-            )
+            ),
         )
 
         @test result == expected
     end
+end
+
+@testset "Overwrite Display" begin
+    # `overwrite_display` prefixes the table with one "move up and erase line" sequence per
+    # line of output, so that a previously printed table is replaced in place.
+    io = IOContext(IOBuffer(), :color => false)
+
+    pretty_table(io, [1 2]; overwrite_display = true)
+
+    result = String(take!(io.io))
+
+    expected =
+        "\e[1F\e[2K"^5 *
+        "┌────────┬────────┐\n" *
+        "│ Col. 1 │ Col. 2 │\n" *
+        "├────────┼────────┤\n" *
+        "│      1 │      2 │\n" *
+        "└────────┴────────┘\n"
+
+    @test result == expected
 end

@@ -47,7 +47,7 @@
 └──────────┘
 """
 
-        result = pretty_table(String, ansi_table, maximum_data_column_widths = 8)
+        result = pretty_table(String, ansi_table; maximum_data_column_widths = 8)
         @test result == expected
 
         expected = """
@@ -61,7 +61,7 @@
 1 column omitted
 """
 
-        result = pretty_table(String, ansi_table, display_size = (-1, 10))
+        result = pretty_table(String, ansi_table; display_size = (-1, 10))
         @test result == expected
 
         # == From Functions ================================================================
@@ -75,9 +75,9 @@
         end
 
         ansi_table = [
-            AnsiTextCell(f, context = (:color => true,))
-            AnsiTextCell(f, context = (:color => true,))
-            AnsiTextCell(f, context = (:color => true,))
+            AnsiTextCell(f; context = (:color => true,))
+            AnsiTextCell(f; context = (:color => true,))
+            AnsiTextCell(f; context = (:color => true,))
         ]
 
         # -- No Crop -----------------------------------------------------------------------
@@ -108,7 +108,7 @@
 └──────────┘
 """
 
-        result = pretty_table(String, ansi_table, maximum_data_column_widths = 8)
+        result = pretty_table(String, ansi_table; maximum_data_column_widths = 8)
         @test result == expected
 
         expected = """
@@ -122,7 +122,7 @@
 1 column omitted
 """
 
-        result = pretty_table(String, ansi_table, display_size = (-1, 10))
+        result = pretty_table(String, ansi_table; display_size = (-1, 10))
         @test result == expected
 
         # -- Newlines ----------------------------------------------------------------------
@@ -185,16 +185,13 @@
 ├────────┼────────────────────────────┼──────────────────────────────────────────────────────────────┤
 │   1    │ Ronan Arraes Jardim Chagas │ \e]8;;https://ronanarraes.com\e\\                 Ronan Arraes Jardim Chagas                 \e]8;;\e\\ │
 │   2    │           Google           │ \e]8;;https://google.com\e\\                           Google                           \e]8;;\e\\ │
-│   3    │           Apple            │ \e]8;;https://apple.com\e\\                            Apple                           \e]8;;\e\\ │
+│   3    │           Apple            │ \e]8;;https://apple.com\e\\                           Apple                            \e]8;;\e\\ │
 │   4    │          Emojis!           │ \e]8;;https://emojipedia.org/github/\e\\          😃😃😃😃😃😃😃😃😃😃😃😃😃😃😃😃😃😃😃😃          \e]8;;\e\\ │
 └────────┴────────────────────────────┴──────────────────────────────────────────────────────────────┘
 """
 
         result = pretty_table(
-            String,
-            table;
-            alignment = :c,
-            fixed_data_column_widths = [-1, -1, 60]
+            String, table; alignment = :c, fixed_data_column_widths = [-1, -1, 60]
         )
         @test result == expected
 
@@ -209,11 +206,7 @@
 └────────┴────────────────────────────┴──────────────────────────────────────────┘
 """
 
-        result = pretty_table(
-            String,
-            table;
-            alignment = :l
-        )
+        result = pretty_table(String, table; alignment = :l)
         @test result == expected
 
         # == Highlighters ==================================================================
@@ -229,17 +222,9 @@
 └────────┴────────────────────────────┴──────────────────────────────────────────┘
 """
 
-        hl = TextHighlighter(
-            (data, i, j) -> j == 3,
-            crayon"yellow bold"
-        )
+        hl = TextHighlighter((data, i, j) -> j == 3, crayon"yellow bold")
 
-        result = pretty_table(
-            String,
-            table;
-            color = true,
-            highlighters = [hl]
-        )
+        result = pretty_table(String, table; color = true, highlighters = [hl])
         @test result == expected
 
         # == Cropping ======================================================================
@@ -257,11 +242,33 @@
 └────────┴───────────────┴────────────────────┘
 """
 
-        result = pretty_table(
-            String,
-            table;
-            fixed_data_column_widths = [-1, 13, 18]
-        )
+        result = pretty_table(String, table; fixed_data_column_widths = [-1, 13, 18])
+        @test result == expected
+
+        # -- Cell Reuse --------------------------------------------------------------------
+
+        url_cell = UrlTextCell("PrettyTables", "https://prettytables.jl")
+
+        expected = """
+┌────────┐
+│ Col. 1 │
+├────────┤
+│ \e]8;;https://prettytables.jl\e\\Prett…\e]8;;\e\\ │
+└────────┘
+"""
+
+        result = pretty_table(String, [url_cell]; fixed_data_column_widths = [6])
+        @test result == expected
+
+        expected = """
+┌──────────────┐
+│       Col. 1 │
+├──────────────┤
+│ \e]8;;https://prettytables.jl\e\\PrettyTables\e]8;;\e\\ │
+└──────────────┘
+"""
+
+        result = pretty_table(String, [url_cell])
         @test result == expected
 
         # -- Display Cropping --------------------------------------------------------------
@@ -278,11 +285,7 @@
                                   1 column omitted
 """
 
-        result = pretty_table(
-            String,
-            table;
-            display_size = (-1, 50)
-        )
+        result = pretty_table(String, table; display_size = (-1, 50))
         @test result == expected
 
         expected = """
@@ -297,12 +300,7 @@
                                   1 column omitted
 """
 
-        result = pretty_table(
-            String,
-            table;
-            alignment = :l,
-            display_size = (-1, 50)
-        )
+        result = pretty_table(String, table; alignment = :l, display_size = (-1, 50))
         @test result == expected
 
         expected = """
@@ -316,14 +314,8 @@
 └────────┴────────────────────────────┴───
                           1 column omitted
 """
-        result = pretty_table(
-            String,
-            table;
-            alignment = :l,
-            display_size = (-1, 42)
-        )
+        result = pretty_table(String, table; alignment = :l, display_size = (-1, 42))
         @test result == expected
-
 
         expected = """
 ┌────────┬────────────────────────────┬─────────
@@ -336,12 +328,7 @@
 └────────┴────────────────────────────┴─────────
                                 1 column omitted
 """
-        result = pretty_table(
-            String,
-            table;
-            alignment = :l,
-            display_size = (-1, 48)
-        )
+        result = pretty_table(String, table; alignment = :l, display_size = (-1, 48))
         @test result == expected
 
         # == Multi-line Cells ==============================================================
@@ -368,11 +355,7 @@
 └────────┴────────────────────────────┴──────────────────────────────────────────┘
 """
 
-        result = pretty_table(
-            String,
-            table;
-            line_breaks = true
-        )
+        result = pretty_table(String, table; line_breaks = true)
         @test result == expected
     end
 end

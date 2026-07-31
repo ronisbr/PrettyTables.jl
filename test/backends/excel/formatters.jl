@@ -34,14 +34,10 @@
                 ExcelFormatter((v, i, j) -> (i == 2), ["format" => "0.00"])
                 # `:summary_row` region matching the summary row index.
                 ExcelFormatter(
-                    (v, i, j) -> (i == 1),
-                    ["format" => "0.00000"];
-                    region = :summary_row
+                    (v, i, j) -> (i == 1), ["format" => "0.00000"]; region = :summary_row
                 )
                 ExcelFormatter(
-                    (v, i, j) -> (i == 2),
-                    ["format" => "0.000"];
-                    region = :summary_row
+                    (v, i, j) -> (i == 2), ["format" => "0.000"]; region = :summary_row
                 )
                 # `:data` region matching by column.
                 ExcelFormatter((v, i, j) -> (j == 1), ["format" => "#,##0_0_0"])
@@ -95,10 +91,7 @@
             XLSX.XLSXFile,
             matrix;
             excel_formatters = [
-                ExcelFormatter(
-                    (data, i, j) -> (data[i, j] > 5),
-                    ["format" => "0.00"],
-                ),
+                ExcelFormatter((data, i, j) -> (data[i, j] > 5), ["format" => "0.00"])
             ],
         )
 
@@ -159,43 +152,5 @@
         @test XLSX.getFormat(result[1], "C2").format["numFmt"]["formatCode"] == "hh:mm"
         @test XLSX.getFormat(result[1], "D2").format["numFmt"]["formatCode"] ==
             "yyyy-mm-dd\"T\"hh:mm:ss"
-    end
-end
-
-@testset "fmt__excel_stringify" verbose = true begin
-
-    # == Different Selectors ===============================================================
-
-    @testset "Different Selectors" verbose = true begin
-        matrix = ["hello" 3.1415926 (1, 4)]
-
-        f = pretty_table(matrix; backend = :excel, formatters = [fmt__excel_stringify()])
-        @test f["prettytable"]["A2"] == "hello"
-        @test f["prettytable"]["B2"] == 3.1415926
-        @test f["prettytable"]["C2"] == "(1, 4)"
-
-        f = pretty_table(matrix; backend = :excel, formatters = [fmt__excel_stringify(3)])
-        @test f["prettytable"]["A2"] == "hello"
-        @test f["prettytable"]["B2"] == 3.1415926
-        @test f["prettytable"]["C2"] == "(1, 4)"
-
-        f = pretty_table(matrix; backend = :excel, formatters = [fmt__excel_stringify(1:3)])
-        @test f["prettytable"]["A2"] == "hello"
-        @test f["prettytable"]["B2"] == 3.1415926
-        @test f["prettytable"]["C2"] == "(1, 4)"
-
-        f = pretty_table(
-            matrix; backend = :excel, formatters = [fmt__excel_stringify(1:2:3)]
-        )
-        @test f["prettytable"]["A2"] == "hello"
-        @test f["prettytable"]["B2"] == 3.1415926
-        @test f["prettytable"]["C2"] == "(1, 4)"
-
-        f = pretty_table(
-            matrix; backend = :excel, formatters = [fmt__excel_stringify([1, 2, 3])]
-        )
-        @test f["prettytable"]["A2"] == "hello"
-        @test f["prettytable"]["B2"] == 3.1415926
-        @test f["prettytable"]["C2"] == "(1, 4)"
     end
 end

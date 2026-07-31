@@ -18,15 +18,28 @@ possible values for `alignment` are:
 - `:n`: No alignment information will be added to the string.
 """
 function _markdown__column_alignment_str(column_width::Int, alignment::Symbol)
-    if alignment == :l
+    if alignment ∈ (:l, :L)
         return ":" * "-"^(column_width - 1)
-    elseif alignment == :c
+    elseif alignment ∈ (:c, :C)
         return ":" * "-"^(column_width - 2) * ":"
-    elseif alignment == :r
+    elseif alignment ∈ (:r, :R)
         return "-"^(column_width - 1) * ":"
     else
         return "-"^(column_width)
     end
+end
+
+"""
+    _markdown__alignment(a::Symbol) -> Symbol
+
+Normalize the alignment symbol `a` to its lowercase form, so that the Markdown back end
+accepts `:L`, `:C`, and `:R` exactly like the HTML, LaTeX, and Typst back ends do.
+"""
+function _markdown__alignment(a::Symbol)
+    a === :L && return :l
+    a === :C && return :c
+    a === :R && return :r
+    return a
 end
 
 """
@@ -35,12 +48,9 @@ end
 Print `str` to the buffer `buf` with `alignment` considering the `cell_width`.
 """
 function _markdown__print_aligned(
-    buf::IOContext,
-    str::String,
-    cell_width::Int,
-    alignment::Symbol
+    buf::IOContext, str::String, cell_width::Int, alignment::Symbol
 )
-    print(buf, align_string(str, cell_width, alignment; fill = true))
+    print(buf, align_string(str, cell_width, _markdown__alignment(alignment); fill = true))
     return nothing
 end
 
@@ -62,7 +72,7 @@ function _markdown__print_header_separator(
     table_data::TableData,
     row_number_column_width::Int,
     row_label_column_width::Int,
-    printed_data_column_widths::Vector{Int}
+    printed_data_column_widths::Vector{Int},
 )
     print(buf, "|")
 
@@ -105,7 +115,7 @@ end
 # == Rows ==================================================================================
 
 """
-    _markdown__row_group_line(buf::IOContext, row_group_label::String, table_data::TableData, char::Char, row_number_column_width::Int, row_label_column_width::Int, printed_data_column_widths::Vector{Int}) -> Nothing
+    _markdown__print_row_group_line(buf::IOContext, row_group_label::String, table_data::TableData, char::Char, row_number_column_width::Int, row_label_column_width::Int, printed_data_column_widths::Vector{Int}) -> Nothing
 
 Print the row group line to `buf`.
 
@@ -126,9 +136,8 @@ function _markdown__print_row_group_line(
     char::Char,
     row_number_column_width::Int,
     row_label_column_width::Int,
-    printed_data_column_widths::Vector{Int}
+    printed_data_column_widths::Vector{Int},
 )
-    s = string(char)
 
     # Check the initial column.
     cell_width = if table_data.show_row_number_column
@@ -150,24 +159,23 @@ function _markdown__print_row_group_line(
     if table_data.show_row_number_column
         if _has_row_labels(table_data)
             print(buf, " ")
-            print(buf, s^row_label_column_width)
+            print(buf, repeat(char, row_label_column_width))
             print(buf, " |")
         end
 
         print(buf, " ")
-        print(buf, s^first(printed_data_column_widths))
+        print(buf, repeat(char, first(printed_data_column_widths)))
         print(buf, " |")
 
     elseif _has_row_labels(table_data)
         print(buf, " ")
-        print(buf, s^first(printed_data_column_widths))
+        print(buf, repeat(char, first(printed_data_column_widths)))
         print(buf, " |")
-
     end
 
     for i in eachindex(printed_data_column_widths)[2:end]
         print(buf, " ")
-        print(buf, s^printed_data_column_widths[i])
+        print(buf, repeat(char, printed_data_column_widths[i]))
         print(buf, " |")
     end
 
@@ -179,7 +187,7 @@ function _markdown__print_row_group_line(
 end
 
 """
-    _markdown__row_separation_line(buf::IOContext, table_data::TableData, char::Char, row_number_column_width::Int, row_label_column_width::Int, printed_data_column_widths::Vector{Int}) -> Nothing
+    _markdown__print_separation_line(buf::IOContext, table_data::TableData, char::Char, row_number_column_width::Int, row_label_column_width::Int, printed_data_column_widths::Vector{Int}) -> Nothing
 
 Print a row separation line to `buf`.
 
@@ -198,16 +206,15 @@ function _markdown__print_separation_line(
     char::Char,
     row_number_column_width::Int,
     row_label_column_width::Int,
-    printed_data_column_widths::Vector{Int}
+    printed_data_column_widths::Vector{Int},
 )
-    s = string(char)
     print(buf, "|")
 
     # == Row Number Column =================================================================
 
     if table_data.show_row_number_column
         print(buf, " ")
-        print(buf, s^row_number_column_width)
+        print(buf, repeat(char, row_number_column_width))
         print(buf, " |")
     end
 
@@ -215,7 +222,7 @@ function _markdown__print_separation_line(
 
     if _has_row_labels(table_data)
         print(buf, " ")
-        print(buf, s^row_label_column_width)
+        print(buf, repeat(char, row_label_column_width))
         print(buf, " |")
     end
 
@@ -223,13 +230,13 @@ function _markdown__print_separation_line(
 
     for w in printed_data_column_widths
         print(buf, " ")
-        print(buf, s^w)
+        print(buf, repeat(char, w))
         print(buf, " |")
     end
 
     # == Continuation Column ===============================================================
 
-    _is_horizontally_cropped(table_data) && print(buf, " $s |")
+    _is_horizontally_cropped(table_data) && print(buf, " ", char, " |")
 
     println(buf)
 
@@ -238,45 +245,54 @@ end
 
 # == Strings ===============================================================================
 
-"""
-    _markdown__escape_str(@nospecialize(io::IO), s::AbstractString, replace_newline::Bool = false, escape_markdown_chars::Bool = true) -> Nothing
-    _markdown__escape_str(s::AbstractString, replace_newline::Bool = false, escape_markdown_chars::Bool = true) -> String
+# ASCII characters that carry a special meaning inside a Markdown table cell and, hence, must
+# be escaped with a backslash. Notice that `[` and `]` are particularly important because the
+# back end itself emits `[^N]` footnote references, meaning that unescaped user data can
+# collide with the generated markup, whereas `<` and `>` would otherwise be interpreted as
+# raw HTML or as an autolink.
+#
+# `#` and `!` are deliberately **not** escaped. `#` only starts an ATX heading at the
+# beginning of a line, which cannot happen inside a cell, and escaping it would corrupt the
+# `#= circular reference =#` and `#undef` sentinels this package emits. `!` is only special
+# when immediately followed by `[`, which is already escaped.
+const _MARKDOWN__ESCAPED_CHARACTERS = ('*', '_', '~', '`', '|', '[', ']', '<', '>')
+
+raw"""
+    _markdown__escape_str(@nospecialize(io::IO), s::AbstractString, replace_newline::Bool, escape_markdown_chars::Bool) -> Nothing
+    _markdown__escape_str(s::AbstractString, replace_newline::Bool, escape_markdown_chars::Bool) -> String
 
 Print the string `s` in `io` escaping the characters for the markdown back end. If `io` is
 omitted, the escaped string is returned.
 
 If `replace_newline` is `true`, `\n` is replaced with `<br>`. Otherwise, it is escaped,
-leading to `\\n`.
+leading to `\n`.
 
-If `escape_markdown_chars` is `true`, `*`, `_`, `~`, `\\``, and `|`  will be escaped.
+If `escape_markdown_chars` is `true`, the characters in `_MARKDOWN__ESCAPED_CHARACTERS`
+(`*`, `_`, `~`, `` ` ``, `|`, `[`, `]`, `<`, and `>`) will be escaped, as well as the
+backslash itself.
 """
 function _markdown__escape_str(
-    io::IO,
-    s::AbstractString,
-    replace_newline::Bool,
-    escape_markdown_chars::Bool
+    io::IO, s::AbstractString, replace_newline::Bool, escape_markdown_chars::Bool
 )
     a = Iterators.Stateful(s)
     for c in a
         if isascii(c)
-            c == '\n'          ? print(io, replace_newline ? "<br>" : "\\n") :
-            c == '*'           ? print(io, escape_markdown_chars ? "\\*" : "*") :
-            c == '_'           ? print(io, escape_markdown_chars ? "\\_" : "_") :
-            c == '~'           ? print(io, escape_markdown_chars ? "\\~" : "~") :
-            c == '`'           ? print(io, escape_markdown_chars ? "\\`" : "`") :
-            c == '|'           ? print(io, escape_markdown_chars ? "\\|" : "|") :
-            '\a' <= c <= '\r'  ? print(io, "\\", "abtnvfr"[Int(c)-6]) :
-            isprint(c)         ? print(io, c) :
-                                 print(io, "\\x", string(UInt32(c), base = 16, pad = 2))
+            c == '\n'         ? print(io, replace_newline ? "<br>" : "\\n") :
+            c == '\\'         ? print(io, escape_markdown_chars ? "\\\\" : "\\") :
+            c ∈ _MARKDOWN__ESCAPED_CHARACTERS ?
+                (escape_markdown_chars ? print(io, '\\', c) : print(io, c)) :
+            '\a' <= c <= '\r' ? print(io, "\\", "abtnvfr"[Int(c) - 6]) :
+            isprint(c)        ? print(io, c) :
+            print(io, "\\x", string(UInt32(c); base = 16, pad = 2))
         elseif !Base.isoverlong(c) && !Base.ismalformed(c)
-            isprint(c)         ? print(io, c) :
-            c <= '\x7f'        ? print(io, "\\x", string(UInt32(c), base = 16, pad = 2)) :
-            c <= '\uffff'      ? print(io, "\\u", string(UInt32(c), base = 16, pad = Base.need_full_hex(peek(a)) ? 4 : 2)) :
-                                 print(io, "\\U", string(UInt32(c), base = 16, pad = Base.need_full_hex(peek(a)) ? 8 : 4))
+            isprint(c)    ? print(io, c) :
+            c <= '\x7f'   ? print(io, "\\x", string(UInt32(c); base = 16, pad = 2)) :
+            c <= '\uffff' ? print(io, "\\u", string(UInt32(c); base = 16, pad = Base.need_full_hex(peek(a)) ? 4 : 2)) :
+            print(io, "\\U", string(UInt32(c); base = 16, pad = Base.need_full_hex(peek(a)) ? 8 : 4))
         else # malformed or overlong
             u = bswap(reinterpret(UInt32, c))
             while true
-                print(io, "\\x", string(u % UInt8, base = 16, pad = 2))
+                print(io, "\\x", string(u % UInt8; base = 16, pad = 2))
                 (u >>= 8) == 0 && break
             end
         end
@@ -284,32 +300,33 @@ function _markdown__escape_str(
 end
 
 function _markdown__escape_str(
-    s::AbstractString,
-    replace_newline::Bool,
-    escape_markdown_chars::Bool,
+    s::AbstractString, replace_newline::Bool, escape_markdown_chars::Bool
 )
     return sprint(
         _markdown__escape_str,
         s,
         replace_newline,
         escape_markdown_chars;
-        sizehint = lastindex(s)
+        sizehint = lastindex(s),
     )
 end
 
 # == Style =================================================================================
 
 """
-    _markdown__apply_style(d::MarkdownStyle, str::String) -> String
+    _markdown__apply_style(s::MarkdownStyle, str::String) -> String
 
 Apply the markdown style `s` to `str`.
 """
 function _markdown__apply_style(s::MarkdownStyle, str::String)
-    isempty(str)    && return str
-    s.bold          && (str = "**" * str * "**")
-    s.italic        && (str = "*"  * str * "*")
+    isempty(str) && return str
+    # NOTE: `code` must be applied innermost because a Markdown code span renders its
+    # content verbatim. Otherwise, the `bold`, `italic`, and `strikethrough` markers would
+    # be shown literally to the user.
+    s.code && (str = "`" * str * "`")
+    s.bold && (str = "**" * str * "**")
+    s.italic && (str = "*" * str * "*")
     s.strikethrough && (str = "~~" * str * "~~")
-    s.code          && (str = "`"  * str * "`")
 
     return str
 end
@@ -321,10 +338,10 @@ Return the additional textwidth required to apply the markdown style `s`.
 """
 function _markdown__style_textwidth(s::MarkdownStyle)
     Δ = 0
-    s.bold          && (Δ += 4)
-    s.italic        && (Δ += 2)
+    s.bold && (Δ += 4)
+    s.italic && (Δ += 2)
     s.strikethrough && (Δ += 4)
-    s.code          && (Δ += 2)
+    s.code && (Δ += 2)
 
     return Δ
 end

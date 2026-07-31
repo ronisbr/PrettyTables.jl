@@ -27,11 +27,7 @@ data = Any[
         └──────────┴──────────┴──────────┴──────────┘
         """
 
-    result = pretty_table(
-        String,
-        data;
-        formatters = [fmt__printf("%8.3f")]
-    )
+    result = pretty_table(String, data; formatters = [fmt__printf("%8.3f")])
     @test result == expected
 
     expected = """
@@ -47,11 +43,7 @@ data = Any[
         └──────────┴────────┴────────┴──────────┘
         """
 
-    result = pretty_table(
-        String,
-        data;
-        formatters = [fmt__printf("%8.3f",[1, 4])]
-    )
+    result = pretty_table(String, data; formatters = [fmt__printf("%8.3f", [1, 4])])
     @test result == expected
 
     expected = """
@@ -67,12 +59,7 @@ data = Any[
         └──────────┴────────┴────────┴──────────┘
         """
     result = pretty_table(
-        String,
-        data;
-        formatters = [
-            fmt__printf("%8.2f", [1]),
-            fmt__printf("%8.4f", [4])
-        ]
+        String, data; formatters = [fmt__printf("%8.2f", [1]), fmt__printf("%8.4f", [4])]
     )
     @test result == expected
 end
@@ -91,11 +78,7 @@ end
 └────────┴────────┴────────┴────────┘
 """
 
-    result = pretty_table(
-        String,
-        data;
-        formatters = [fmt__round(1)]
-    )
+    result = pretty_table(String, data; formatters = [fmt__round(1)])
     @test result == expected
 
     expected = """
@@ -111,11 +94,7 @@ end
         └────────┴────────┴────────┴────────┘
         """
 
-    result = pretty_table(
-        String,
-        data;
-        formatters = [fmt__round(1, [3, 1])]
-    )
+    result = pretty_table(String, data; formatters = [fmt__round(1, [3, 1])])
     @test result == expected
 
     # Check if `fmt__round` correctly avoid unsupported types.
@@ -135,11 +114,7 @@ end
 └────────┘
 """
 
-    result = pretty_table(
-        String,
-        v;
-        formatters = [fmt__round(2)]
-    )
+    result = pretty_table(String, v; formatters = [fmt__round(2)])
     @test result == expected
 
     expected = """
@@ -155,12 +130,7 @@ end
 └─────────┘
 """
 
-    result = pretty_table(
-        String,
-        v;
-        formatters = [fmt__round(2)],
-        renderer = :show
-    )
+    result = pretty_table(String, v; formatters = [fmt__round(2)], renderer = :show)
     @test result == expected
 end
 
@@ -168,8 +138,8 @@ end
     matrix = hcat(
         1:1:11,
         1:1.0:11,
-        [10^i for i in -5:1.:5],
-        [ i == 5 ? nothing : "Teste" for i in 1:11]
+        [10^i for i in -5:1.0:5],
+        [i == 5 ? nothing : "Teste" for i in 1:11],
     )
 
     expected = """
@@ -192,12 +162,7 @@ end
 \\end{tabular}
 """
 
-    result = pretty_table(
-        String,
-        matrix;
-        backend = :latex,
-        formatters = [fmt__latex_sn(1)]
-    )
+    result = pretty_table(String, matrix; backend = :latex, formatters = [fmt__latex_sn(1)])
     @test result == expected
 
     expected = """
@@ -220,12 +185,7 @@ end
 \\end{tabular}
 """
 
-    result = pretty_table(
-        String,
-        matrix;
-        backend = :latex,
-        formatters = [fmt__latex_sn(2)]
-    )
+    result = pretty_table(String, matrix; backend = :latex, formatters = [fmt__latex_sn(2)])
     @test result == expected
 
     expected = """
@@ -249,10 +209,7 @@ end
 """
 
     result = pretty_table(
-        String,
-        matrix;
-        backend = :latex,
-        formatters = [fmt__latex_sn(1, [1, 3])]
+        String, matrix; backend = :latex, formatters = [fmt__latex_sn(1, [1, 3])]
     )
     @test result == expected
 
@@ -280,7 +237,31 @@ end
         String,
         matrix;
         backend = :latex,
-        formatters = [fmt__latex_sn(1, [1]), fmt__latex_sn(3, [3])]
+        formatters = [fmt__latex_sn(1, [1]), fmt__latex_sn(3, [3])],
     )
     @test result == expected
+end
+
+@testset "fmt__round Does Not Use Exception Control Flow" begin
+    # `fmt__round` used to `try`/`catch` a `MethodError` for every non-numeric cell, which is
+    # orders of magnitude more expensive than rendering the cell itself. The guard is
+    # asserted through the allocation count, which is deterministic.
+    data = fill("abcdef", 50, 4)
+
+    pretty_table(String, data)
+    pretty_table(String, data; formatters = [fmt__round(2)])
+    pretty_table(String, data; formatters = [fmt__round(2, [1, 3])])
+
+    baseline = @allocated pretty_table(String, data)
+    rounded  = @allocated pretty_table(String, data; formatters = [fmt__round(2)])
+    columns  = @allocated pretty_table(String, data; formatters = [fmt__round(2, [1, 3])])
+
+    @test rounded <= 2 * baseline
+    @test columns <= 2 * baseline
+
+    # The formatter must still round the numeric cells.
+    @test occursin("1.23", pretty_table(String, [1.23456]; formatters = [fmt__round(2)]))
+
+    # And it must leave the non-numeric ones untouched.
+    @test occursin("abcdef", pretty_table(String, ["abcdef"]; formatters = [fmt__round(2)]))
 end

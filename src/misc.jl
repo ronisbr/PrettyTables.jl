@@ -5,10 +5,29 @@
 ############################################################################################
 
 """
+    _sprint_with_context(f::Function, context::IOContext, args...) -> String
+
+Call `f(io, args...)`, where `io` inherits the IO properties of `context`, and return
+everything that was written as a `String`.
+
+This function must be used instead of `sprint(f, args...; context)` in the cell rendering
+code. `sprint` builds its temporary `IOContext` around the *caller's* IO, so the resulting
+type changes with the object the user is printing to. Since the cell renderers deliberately
+declare `@nospecialize(context::IOContext)`, that made every new output IO type trigger a
+fresh inference and code generation of the whole rendering call, which showed up directly as
+time-to-first-print. Wrapping a plain `IOBuffer` instead pins the type to
+`IOContext{IOBuffer}` for every caller.
+"""
+function _sprint_with_context(f::F, @nospecialize(context::IOContext), args...) where {F}
+    buf = IOBuffer()
+    f(IOContext(buf, context), args...)
+    return String(take!(buf))
+end
+
+"""
     @_print(io, args...)
 
-Print `args` to `io`. Each argument in `args` is printed sequentially using `print`, and a
-final `println` is issued to terminate the line.
+Print `args` to `io`. Each argument in `args` is printed sequentially using `print`.
 
 This macro expands each argument into a separate `print` call, avoiding the overhead of
 string interpolation or concatenation, which reduces allocations.
@@ -17,7 +36,7 @@ macro _print(io, args...)
     return esc(
         quote
             $([:(print($io, $arg)) for arg in args]...)
-        end
+        end,
     )
 end
 
@@ -35,7 +54,7 @@ macro _println(io, args...)
         quote
             $([:(print($io, $arg)) for arg in args]...)
             println($io)
-        end
+        end,
     )
 end
 
@@ -56,7 +75,7 @@ function _aprint(
     str::String,
     indentation_level::Int = 0,
     indentation_spaces::Int = 2;
-    minify::Bool = false
+    minify::Bool = false,
 )
     if minify
         for t in eachsplit(str, '\n')
@@ -100,7 +119,7 @@ function _aprintln(
     str::String,
     indentation_level::Int = 0,
     indentation_spaces::Int = 2;
-    minify::Bool = false
+    minify::Bool = false,
 )
     _aprint(buf, str, indentation_level, indentation_spaces; minify)
     !minify && println(buf)
@@ -120,7 +139,7 @@ function _aprint_section_annotation(
     indentation_level::Int = 0,
     indentation_spaces::Int = 2,
     column_width::Int = 92,
-    fill_char::Char = '='
+    fill_char::Char = '=',
 )
     column_width < 0 && (column_width = 92)
 
@@ -145,15 +164,10 @@ function _aprintln_section_annotation(
     indentation_level::Int = 0,
     indentation_spaces::Int = 2,
     column_width::Int = 92,
-    fill_char::Char = '='
+    fill_char::Char = '=',
 )
     _aprint_section_annotation(
-        buf,
-        str,
-        indentation_level,
-        indentation_spaces,
-        column_width,
-        fill_char
+        buf, str, indentation_level, indentation_spaces, column_width, fill_char
     )
     println(buf)
 
@@ -183,9 +197,14 @@ function _align_column_with_regex!(
     # Variable to store in which column we must align the match.
     alignment_column = 0
 
+    # Cache the column of the first regex match at each row. Hence, we avoid running the
+    # regexes again in the second pass. `-1` means that no match was found.
+    match_columns = similar(column, Int)
+
     # We need to pass through the entire column searching for matches to compute in which
     # column we need to align them.
-    for row in column
+    for i in eachindex(column)
+        row = column[i]
         m = nothing
 
         for r in alignment_anchor_regex
@@ -197,7 +216,10 @@ function _align_column_with_regex!(
 
         if !isnothing(m)
             alignment_column_i = textwidth(@views row[1:first(m)])
+            match_columns[i] = alignment_column_i
         else
+            match_columns[i] = -1
+
             # If a match is not found, the alignment column depends on the user
             # selection.
 
@@ -224,17 +246,9 @@ function _align_column_with_regex!(
     for i in eachindex(column)
         row = column[i]
 
-        m = nothing
+        match_column_k = match_columns[i]
 
-        for r in alignment_anchor_regex
-            m_r = findfirst(r, row)
-            isnothing(m_r) && continue
-            m = m_r
-            break
-        end
-
-        if !isnothing(m)
-            match_column_k = textwidth(@views(row[1:first(m)]))
+        if match_column_k >= 0
             pad = alignment_column - match_column_k
         else
             # If a match is not found, the alignment column depends on the user selection.
@@ -279,14 +293,21 @@ function _align_column_with_regex!(
     column::AbstractVector{Vector{T}},
     alignment_anchor_regex::Vector{Regex},
     alignment_anchor_fallback::Symbol,
-) where T <: AbstractString
+) where {T <: AbstractString}
     # Variable to store in which column we must align the match.
     alignment_column = 0
 
+    # Cache the column of the first regex match at each line. Hence, we avoid running the
+    # regexes again in the second pass. `-1` means that no match was found.
+    match_columns = [similar(row, Int) for row in column]
+
     # We need to pass through the entire column searching for matches to compute in which
     # column we need to align them.
-    for row in column
-        for line in row
+    for i in eachindex(column)
+        row = column[i]
+
+        for l in eachindex(row)
+            line = row[l]
             m = nothing
 
             for r in alignment_anchor_regex
@@ -298,7 +319,10 @@ function _align_column_with_regex!(
 
             if !isnothing(m)
                 alignment_column_i = textwidth(@views line[1:first(m)])
+                match_columns[i][l] = alignment_column_i
             else
+                match_columns[i][l] = -1
+
                 # If a match is not found, the alignment column depends on the user
                 # selection.
 
@@ -329,17 +353,9 @@ function _align_column_with_regex!(
         for l in eachindex(row)
             line = row[l]
 
-            m = nothing
+            match_column_k = match_columns[i][l]
 
-            for r in alignment_anchor_regex
-                m_r = findfirst(r, line)
-                isnothing(m_r) && continue
-                m = m_r
-                break
-            end
-
-            if !isnothing(m)
-                match_column_k = textwidth(@views(line[1:first(m)]))
+            if match_column_k >= 0
                 pad = alignment_column - match_column_k
             else
                 # If a match is not found, the alignment column depends on the user
@@ -400,9 +416,7 @@ function _align_multline_column_with_regex!(
     # element is a line. Then, we perform the alignment and re-join the lines.
     v = split.(column, '\n')
     largest_cell_width = _align_column_with_regex!(
-        v,
-        alignment_anchor_regex,
-        alignment_anchor_fallback
+        v, alignment_anchor_regex, alignment_anchor_fallback
     )
 
     for i in 1:length(column)
@@ -422,8 +436,8 @@ function _auto_wrap(str::AbstractString, field_width::Int)
     (field_width <= 0) && throw(ArgumentError("`field_width` must be greater than 0."))
 
     # Buffers.
-    buf      = IOBuffer(sizehint = length(str)) # .......... Buffer to store the entire text
-    line_buf = IOBuffer(sizehint = length(str)) # ......... Buffer to store the current line
+    buf      = IOBuffer(; sizehint = length(str)) # .......... Buffer to store the entire text
+    line_buf = IOBuffer(; sizehint = length(str)) # ......... Buffer to store the current line
 
     # Auxiliary variables.
     state          = :text # .................................................. String state
@@ -445,7 +459,7 @@ function _auto_wrap(str::AbstractString, field_width::Int)
         line_overflow = line_width + ctw > field_width
 
         @views if (c == '\n') || (line_overflow && ((last_space == 0) || (c == ' ')))
-            # If the characer is a line break, if we have a line overflow and we do not have
+            # If the character is a line break, if we have a line overflow and we do not have
             # any space in this line, or if we have a line overflow and this character is a
             # space, we only flush the current line buffer to the output buffer.
             write(buf, take!(line_buf))
@@ -462,8 +476,8 @@ function _auto_wrap(str::AbstractString, field_width::Int)
 
             # If we have a last space in this line, break the line at that position, and
             # move the rest to another line.
-            l₀ = line[1:last_space - 1]
-            l₁ = line[last_space + 1:end]
+            l₀ = line[1:(last_space - 1)]
+            l₁ = line[(last_space + 1):end]
 
             write(buf, l₀)
             write(buf, '\n')
@@ -527,9 +541,11 @@ function _omitted_cell_summary(table_data::TableData, pspec::PrintingSpec)
     max_rows    = table_data.maximum_number_of_rows
     max_columns = table_data.maximum_number_of_columns
 
-    # Compute the number of omitted rows and columns.
+    # Compute the number of omitted rows and columns. Notice that the conventions differ:
+    # `maximum_number_of_rows == 0` crops the table to zero rows, whereas
+    # `maximum_number_of_columns == 0` means no column cropping.
     num_omitted_columns = (max_columns > 0) ? num_columns - max_columns : 0
-    num_omitted_rows    = (max_rows > 0)    ? num_rows    - max_rows    : 0
+    num_omitted_rows    = (max_rows >= 0) ? num_rows - max_rows : 0
 
     return _omitted_cell_summary(num_omitted_rows, num_omitted_columns)
 end
@@ -569,15 +585,15 @@ end
     _resolve_printing_backend(configurations) -> Symbol
 
 Return the printing backend to be used based on the `configurations` provided. Notice that
-it function must only be used when the user did not specify the backend directly using the
+this function must only be used when the user did not specify the backend directly using the
 `backend` keyword.
 """
 function _resolve_printing_backend(configurations)
     table_format = get(configurations, :table_format, nothing)
     backend = :text
 
-    if isnothing(table_format)
-        backend = :text
+    if table_format isa ExcelTableFormat
+        backend = :excel
     elseif table_format isa HtmlTableFormat
         backend = :html
     elseif table_format isa LatexTableFormat

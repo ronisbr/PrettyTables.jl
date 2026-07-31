@@ -7,7 +7,7 @@
 @testset "Alignment" verbose = true begin
     matrix = [(i, j) for i in 1:5, j in 1:5]
 
-    @testset "Alignment as a Symbol" verbose = true  begin
+    @testset "Alignment as a Symbol" verbose = true begin
         expected = """
 <table>
   <thead>
@@ -64,7 +64,7 @@
             matrix;
             alignment = :c,
             backend = :html,
-            cell_alignment = [(2, 3) => :r, (4, 5) => :l]
+            cell_alignment = [(2, 3) => :r, (4, 5) => :l],
         )
 
         @test result == expected
@@ -124,13 +124,13 @@
             matrix;
             alignment = :n,
             backend = :html,
-            cell_alignment = [(2, 3) => :r, (4, 5) => :l]
+            cell_alignment = [(2, 3) => :r, (4, 5) => :l],
         )
 
         @test result == expected
     end
 
-    @testset "Alignment as a Vector" verbose = true  begin
+    @testset "Alignment as a Vector" verbose = true begin
         expected = """
 <table>
   <thead>
@@ -187,7 +187,7 @@
             matrix;
             backend = :html,
             alignment = [:l, :c, :r, :l, :c],
-            cell_alignment = [(2, 3) => :r, (4, 5) => :l]
+            cell_alignment = [(2, 3) => :r, (4, 5) => :l],
         )
 
         @test result == expected
@@ -247,7 +247,7 @@
             matrix;
             backend = :html,
             alignment = [:l, :c, :r, :n, :X],
-            cell_alignment = [(2, 3) => :r, (4, 5) => :l]
+            cell_alignment = [(2, 3) => :r, (4, 5) => :l],
         )
 
         @test result == expected

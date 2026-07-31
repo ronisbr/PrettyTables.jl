@@ -36,12 +36,7 @@
 </table>
 """
 
-    result = pretty_table(
-        String,
-        matrix;
-        backend = :html,
-        maximum_column_width = "30px"
-    )
+    result = pretty_table(String, matrix; backend = :html, maximum_column_width = "30px")
 
     @test result == expected
 end

@@ -40,53 +40,52 @@ end
 
 _latex__add_environments(s::String, ::Nothing) = s
 
-"""
-    _latex__escape_str(@nospecialize(io::IO), s::AbstractString, replace_newline::Bool = false, escape_latex_chars::Bool = true) -> Nothing
-    _latex__escape_str(s::AbstractString, replace_newline::Bool = false, escape_latex_chars::Bool = true) -> String
+raw"""
+    _latex__escape_str(io::IO, s::AbstractString, esc::String = "") -> Nothing
+    _latex__escape_str(s::AbstractString, esc::String = "") -> String
 
-Print the string `s` in `io` escaping the characters for the latex back end. If `io` is
+Print the string `s` in `io` escaping the characters for the LaTeX back end. If `io` is
 omitted, the escaped string is returned.
 
-If `replace_newline` is `true`, `\n` is replaced with `<br>`. Otherwise, it is escaped,
-leading to `\\n`.
+Every character in `esc` is escaped by prefixing it with a backslash. On top of that, the
+LaTeX metacharacters `%`, `#`, `$`, `&`, `_`, `{`, and `}` are escaped, `^` and `~` are
+replaced by `\textasciicircum{}` and `\textasciitilde{}`, and the backslash itself is
+replaced by `\textbackslash{}`. Control and non-printable characters are emitted using a
+`\textbackslash{}x`, `\textbackslash{}u`, or `\textbackslash{}U` sequence.
 
-If `escape_latex_chars` is `true`, `&`, `<`, `>`, `"`, and `'`  will be replaced by latex
-sequences.
+Notice that `<`, `>`, `"`, and `'` are **not** escaped. Under the OT1 font encoding, `<` and
+`>` are typeset as `¡` and `¿`.
 """
-function _latex__escape_str(
-    io::IO,
-    s::AbstractString,
-    esc::String = ""
-)
+function _latex__escape_str(io::IO, s::AbstractString, esc::String = "")
     a = Iterators.Stateful(s)
     for c in a
         if c in esc
             print(io, '\\', c)
         elseif isascii(c)
-            c == '\0'          ? print(io, "\\textbackslash{}0") :
-            c == '\e'          ? print(io, "\\textbackslash{}e") :
-            c == '\\'          ? print(io, "\\textbackslash{}") :
-            '\a' <= c <= '\r'  ? print(io, "\\textbackslash{}", "abtnvfr"[Int(c)-6]) :
-            c == '%'           ? print(io, "\\%") :
-            c == '#'           ? print(io, "\\#") :
-            c == '\$'          ? print(io, "\\\$") :
-            c == '&'           ? print(io, "\\&") :
-            c == '_'           ? print(io, "\\_") :
-            c == '^'           ? print(io, "\\^") :
-            c == '{'           ? print(io, "\\{") :
-            c == '}'           ? print(io, "\\}") :
-            c == '~'           ? print(io, "\\textasciitilde{}") :
-            isprint(c)         ? print(io, c) :
-                                 print(io, "\\textbackslash{}x", string(UInt32(c), base = 16, pad = 2))
+            c == '\0'         ? print(io, "\\textbackslash{}0") :
+            c == '\e'         ? print(io, "\\textbackslash{}e") :
+            c == '\\'         ? print(io, "\\textbackslash{}") :
+            '\a' <= c <= '\r' ? print(io, "\\textbackslash{}", "abtnvfr"[Int(c) - 6]) :
+            c == '%'          ? print(io, "\\%") :
+            c == '#'          ? print(io, "\\#") :
+            c == '\$'         ? print(io, "\\\$") :
+            c == '&'          ? print(io, "\\&") :
+            c == '_'          ? print(io, "\\_") :
+            c == '^'          ? print(io, "\\textasciicircum{}") :
+            c == '{'          ? print(io, "\\{") :
+            c == '}'          ? print(io, "\\}") :
+            c == '~'          ? print(io, "\\textasciitilde{}") :
+            isprint(c)        ? print(io, c) :
+            print(io, "\\textbackslash{}x", string(UInt32(c); base = 16, pad = 2))
         elseif !Base.isoverlong(c) && !Base.ismalformed(c)
-            isprint(c)         ? print(io, c) :
-            c <= '\x7f'        ? print(io, "\\textbackslash{}x", string(UInt32(c), base = 16, pad = 2)) :
-            c <= '\uffff'      ? print(io, "\\textbackslash{}u", string(UInt32(c), base = 16, pad = Base.need_full_hex(peek(a)) ? 4 : 2)) :
-                                 print(io, "\\textbackslash{}U", string(UInt32(c), base = 16, pad = Base.need_full_hex(peek(a)) ? 8 : 4))
+            isprint(c)    ? print(io, c) :
+            c <= '\x7f'   ? print(io, "\\textbackslash{}x", string(UInt32(c); base = 16, pad = 2)) :
+            c <= '\uffff' ? print(io, "\\textbackslash{}u", string(UInt32(c); base = 16, pad = Base.need_full_hex(peek(a)) ? 4 : 2)) :
+            print(io, "\\textbackslash{}U", string(UInt32(c); base = 16, pad = Base.need_full_hex(peek(a)) ? 8 : 4))
         else # malformed or overlong
             u = bswap(reinterpret(UInt32, c))
             while true
-                print(io, "\\textbackslash{}x", string(u % UInt8, base = 16, pad = 2))
+                print(io, "\\textbackslash{}x", string(u % UInt8; base = 16, pad = 2))
                 (u >>= 8) == 0 && break
             end
         end
@@ -107,13 +106,11 @@ considering the table data `td`, table format `tf`, and the processed informatio
 vertical lines at data columns `vertical_lines_at_data_columns`.
 """
 function _latex__table_header_description(
-    td::TableData,
-    tf::LatexTableFormat,
-    vertical_lines_at_data_columns::AbstractVector{Int}
+    td::TableData, tf::LatexTableFormat, vertical_lines_at_data_columns::AbstractVector{Int}
 )
     num_columns = td.num_columns
 
-    desc = IOBuffer(sizehint = 2num_columns + 3)
+    desc = IOBuffer(; sizehint = 2num_columns + 3)
 
     # == Table Beginning ===================================================================
 
@@ -138,11 +135,7 @@ function _latex__table_header_description(
 
     # == Data Columns ======================================================================
 
-    nc = if td.maximum_number_of_columns >= 0
-        data_columns = min(td.maximum_number_of_columns, num_columns)
-    else
-        data_columns = num_columns
-    end
+    nc = _number_of_printed_data_columns(td)
 
     for i in 1:nc
         print(desc, _data_column_alignment(td, i) |> _latex__alignment_to_str)
@@ -153,7 +146,7 @@ function _latex__table_header_description(
             vline = true
         end
 
-        vline &&  print(desc, '|')
+        vline && print(desc, '|')
     end
 
     # == Continuation Column ===============================================================

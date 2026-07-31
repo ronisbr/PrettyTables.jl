@@ -67,20 +67,33 @@ function _excel__write_table!(
     num_leading_columns =
         num_printed_cols - num_printed_data_cols - _is_horizontally_cropped(table_data)
 
-    renderer = Val(pspec.renderer)
+    context  = pspec.context
+    renderer = pspec.renderer === :show ? Val(:show) : Val(:print)
+
+    # The width keywords are indexed per data column. Hence, we must check their length here
+    # to raise a meaningful error instead of a `BoundsError` deep in the back end.
+    for (name, v) in (
+        ("data_column_widths", data_column_widths),
+        ("minimum_data_column_widths", minimum_data_column_widths),
+        ("maximum_data_column_widths", maximum_data_column_widths),
+    )
+        (v isa AbstractVector) && (length(v) != num_cols) && throw(
+            ArgumentError(
+                "The length of `$name` ($(length(v))) must be equal to the number of columns ($num_cols).",
+            ),
+        )
+    end
 
     if data_column_widths isa Number
         data_column_widths = fill(Float64(data_column_widths), num_cols)
     end
 
     if minimum_data_column_widths isa Number
-        minimum_data_column_widths =
-            fill(Float64(minimum_data_column_widths), num_cols)
+        minimum_data_column_widths = fill(Float64(minimum_data_column_widths), num_cols)
     end
 
     if maximum_data_column_widths isa Number
-        maximum_data_column_widths =
-            fill(Float64(maximum_data_column_widths), num_cols)
+        maximum_data_column_widths = fill(Float64(maximum_data_column_widths), num_cols)
     end
 
     max_row_height = Dict{Int, Float64}()
@@ -116,11 +129,14 @@ function _excel__write_table!(
 
     ir = jr = 0
 
+    # The highlighters and the formatters must receive the object the user passed to
+    # `pretty_table`, not the internal table wrapper. Notice that this is loop invariant.
+    orig_data = _get_data(table_data.data)
+
     # == Main Loop =========================================================================
 
     while action != :end_printing
         action, rs, ps = _next(ps, table_data)
-        _, next_rs, _  = _next(ps, table_data)
 
         action == :end_printing && break
 
@@ -128,8 +144,6 @@ function _excel__write_table!(
 
         sheet_row = ir + anchor_row_offset
         sheet_col = jr + anchor_col_offset
-
-        # == New Row =======================================================================
 
         if action == :new_row
             ir += 1
@@ -145,8 +159,6 @@ function _excel__write_table!(
             if first_content_row == 0 && rs != :table_header
                 first_content_row = ir + anchor_row_offset
             end
-
-        # == Continuation Cells ============================================================
 
         elseif action ∈ (
             :horizontal_continuation_cell,
@@ -168,13 +180,7 @@ function _excel__write_table!(
             sheet[sheet_row, sheet_col] = rendered_cell
 
             fontsize = _excel__apply_cell_style!(
-                sheet,
-                sheet_row,
-                sheet_col,
-                style.data_cell,
-                alignment,
-                "bottom",
-                false,
+                sheet, sheet_row, sheet_col, style.data_cell, alignment, "bottom", false
             )
 
             row_height, col_length = _excel__cell_length_and_height(rendered_cell, fontsize)
@@ -182,10 +188,20 @@ function _excel__write_table!(
             max_row_height[ir] = max(max_row_height[ir], row_height)
             max_col_length[jr] = max(max_col_length[jr], col_length)
 
-        # == End Row =======================================================================
-
         elseif action == :end_row
-            XLSX.setRowHeight(sheet, ir + anchor_row_offset; height = max_row_height[ir])
+            # Obtain the next row section since some decisions below depend on it. Notice
+            # that this must be done here, and not once per action, because the lookahead is
+            # a full run of the printing state iterator and only this branch consumes it.
+            _, next_rs, _ = _next(ps, table_data)
+
+            # Track the last row inside the content area so the post-loop outer-border
+            # logic works even when the table has no data rows at all.
+            if rs != :table_header
+                last_written_row = ir + anchor_row_offset
+            end
+
+            # NOTE: The row height is set once for every row in the post-loop block, which
+            # already has the final value. Setting it here as well doubled the work.
 
             if rs == :column_labels && next_rs != :column_labels
                 if table_format.horizontal_line_after_column_labels
@@ -198,8 +214,6 @@ function _excel__write_table!(
                 end
 
             elseif rs ∈ (:data, :continuation_row)
-                last_written_row = ir + anchor_row_offset
-
                 if next_rs ∉ (:data, :continuation_row)
                     table_format.horizontal_line_after_data_rows && XLSX.setBorder(
                         sheet,
@@ -228,8 +242,6 @@ function _excel__write_table!(
                 end
 
             elseif rs == :summary_row
-                last_written_row = ir + anchor_row_offset
-
                 if next_rs != :summary_row
                     table_format.horizontal_line_after_summary_rows && XLSX.setBorder(
                         sheet,
@@ -259,13 +271,13 @@ function _excel__write_table!(
                 end
             end
 
-        # == Cell Actions ==================================================================
-
         else
+            # == Cell Actions ==============================================================
+
             cell = _current_cell(action, ps, table_data)
             cell === _IGNORE_CELL && continue
 
-            rendered_cell = _excel__render_cell(cell, renderer)
+            rendered_cell = _excel__render_cell(cell, context, renderer)
 
             alignment = _current_cell_alignment(action, ps, table_data)
 
@@ -315,9 +327,9 @@ function _excel__write_table!(
 
                 max_row_height[ir] = max(max_row_height[ir], row_height)
 
-            # -- Column labels (Merged Cell) -----------------------------------------------
-
             elseif (action == :column_label) && (cell isa MergeCells)
+                # -- Column labels (Merged Cell) -------------------------------------------
+
                 num_data_cols = _number_of_printed_data_columns(table_data)
                 span          = min(cell.column_span, num_data_cols - ps.j + 1)
 
@@ -357,7 +369,7 @@ function _excel__write_table!(
                 last_merged_col = ps.j + span - 1
                 if (last_merged_col == num_printed_data_cols)
                     # If we do not have a continuation column, we are in the last column.
-                    # The left border in this case is drawn at the end.
+                    # The right border in this case is drawn at the end.
                     table_format.vertical_line_after_data_columns &&
                         has_cont_column &&
                         XLSX.setBorder(
@@ -376,13 +388,14 @@ function _excel__write_table!(
                     )
                 end
 
-            # -- Other Cells ---------------------------------------------------------------
             else
+                # -- Other Cells -----------------------------------------------------------
+
                 vertical_alignment = "bottom"
                 cell_style         = _EXCEL__NO_DECORATION
                 wrap               = false
 
-                # -- Unmerged Column labels ------------------------------------------------
+                # .. Unmerged Column labels ................................................
 
                 if (action == :column_label)
                     style_var =
@@ -407,8 +420,6 @@ function _excel__write_table!(
                         )
                     end
 
-                # -- Row number Label ------------------------------------------------------
-
                 elseif action == :row_number_label
                     cell_style = ps.i == 1 ? style.row_number_label : _EXCEL__NO_DECORATION
                     vertical_alignment = "bottom"
@@ -424,14 +435,11 @@ function _excel__write_table!(
                         )
                     end
 
-                # -- Row Number / Summary Row Number ---------------------------------------
 
                 elseif action ∈ (:row_number, :summary_row_number)
                     cell_style = style.row_number
                     vertical_alignment = "top"
                     wrap = true
-
-                # -- Stubhead Label --------------------------------------------------------
 
                 elseif action == :stubhead_label
                     cell_style = ps.i == 1 ? style.stubhead_label : _EXCEL__NO_DECORATION
@@ -448,8 +456,6 @@ function _excel__write_table!(
                         )
                     end
 
-                # -- Row Label / Summary Row Label -----------------------------------------
-
                 elseif action == :row_label
                     cell_style = style.row_label
                     vertical_alignment = "top"
@@ -459,8 +465,6 @@ function _excel__write_table!(
                     cell_style = style.summary_row_label
                     vertical_alignment = "top"
                     wrap = true
-
-                # -- Data Cell -------------------------------------------------------------
 
                 elseif action == :data
                     cell_style = style.data_cell
@@ -473,38 +477,13 @@ function _excel__write_table!(
                         formatter.region === :data || continue
 
                         fmt_attributes = _excel__format_attributes(
-                            table_data, formatter, ps.i, ps.j
+                            orig_data, formatter, ps.i, ps.j
                         )
                         if !isnothing(fmt_attributes)
                             XLSX.setFormat(sheet, sheet_row, sheet_col; fmt_attributes...)
                             break
                         end
                     end
-
-                    # Apply highlighters in order, breaking after the first match.
-                    for highlighter in highlighters
-                        highlighter.f(table_data.data, ps.i, ps.j) || continue
-
-                        decoration = highlighter.fd(
-                            highlighter, table_data.data, ps.i, ps.j
-                        )
-
-                        hl_font_size = _excel__apply_cell_style!(
-                            sheet, sheet_row, sheet_col, decoration, nothing, "", false
-                        )
-
-                        hl_row_height, hl_col_length = _excel__cell_length_and_height(
-                            rendered_cell, hl_font_size
-                        )
-
-                        max_row_height[ir] = max(max_row_height[ir], hl_row_height)
-
-                        max_col_length[jr] = max(max_col_length[jr], hl_col_length)
-
-                        break
-                    end
-
-                # -- Summary Row Cell ------------------------------------------------------
 
                 elseif action == :summary_row_cell
                     cell_style = style.summary_row_cell
@@ -516,7 +495,7 @@ function _excel__write_table!(
                         formatter.region === :summary_row || continue
 
                         fmt_attributes = _excel__format_attributes(
-                            table_data, formatter, ps.i, ps.j
+                            orig_data, formatter, ps.i, ps.j
                         )
 
                         if !isnothing(fmt_attributes)
@@ -544,6 +523,30 @@ function _excel__write_table!(
 
                 max_row_height[ir] = max(max_row_height[ir], row_height)
                 max_col_length[jr] = max(max_col_length[jr], col_length)
+
+                # Apply highlighters in order, breaking after the first match. Notice that
+                # this must be performed after applying the section style. Otherwise, the
+                # highlighter decoration would be overwritten.
+                if action == :data
+                    for highlighter in highlighters
+                        highlighter.f(orig_data, ps.i, ps.j) || continue
+
+                        decoration = highlighter.fd(highlighter, orig_data, ps.i, ps.j)
+
+                        hl_font_size = _excel__apply_cell_style!(
+                            sheet, sheet_row, sheet_col, decoration, nothing, "", false
+                        )
+
+                        hl_row_height, hl_col_length = _excel__cell_length_and_height(
+                            rendered_cell, hl_font_size
+                        )
+
+                        max_row_height[ir] = max(max_row_height[ir], hl_row_height)
+                        max_col_length[jr] = max(max_col_length[jr], hl_col_length)
+
+                        break
+                    end
+                end
             end
         end
 
@@ -574,7 +577,7 @@ function _excel__write_table!(
             if !(action == :column_label && cell isa MergeCells)
                 if (ps.j == num_printed_data_cols)
                     # If we do not have a continuation column, we are in the last column.
-                    # The left border in this case is drawn at the end.
+                    # The right border in this case is drawn at the end.
                     table_format.vertical_line_after_data_columns &&
                         has_cont_column &&
                         XLSX.setBorder(
@@ -603,23 +606,40 @@ function _excel__write_table!(
     content_end = last_written_row > 0 ? last_written_row : ir + anchor_row_offset - 1
     all_rows = content_start:content_end
 
+    # If the table has no content rows at all, we must not draw the outer borders.
+    has_content = content_end >= content_start
+
     b = table_format.borders
 
-    if table_format.horizontal_line_at_beginning
+    if has_content && table_format.horizontal_line_at_beginning
         XLSX.setBorder(sheet, content_start, all_cols; top = b.top_line)
+    end
+
+    # NOTE: The bottom rule must be an independent decision. It used to sit inside the block
+    # above, so turning off the line at the *beginning* of the table silently removed the
+    # line at its *end*. It follows the flag of the last section that is actually printed.
+    draw_bottom_line = if _has_summary_rows(table_data)
+        table_format.horizontal_line_after_summary_rows
+    else
+        table_format.horizontal_line_after_data_rows
+    end
+
+    if has_content && draw_bottom_line
         XLSX.setBorder(sheet, content_end, all_cols; bottom = b.bottom_line)
     end
 
-    if table_format.vertical_line_at_beginning
+    if has_content && table_format.vertical_line_at_beginning
         XLSX.setBorder(sheet, all_rows, first(all_cols); left = b.left_line)
     end
 
-    if _is_horizontally_cropped(table_data)
-        table_format.vertical_line_after_continuation_column &&
-            XLSX.setBorder(sheet, all_rows, last(all_cols); right = b.right_line)
-    else
-        table_format.vertical_line_after_data_columns &&
-            XLSX.setBorder(sheet, all_rows, last(all_cols); right = b.right_line)
+    if has_content
+        if _is_horizontally_cropped(table_data)
+            table_format.vertical_line_after_continuation_column &&
+                XLSX.setBorder(sheet, all_rows, last(all_cols); right = b.right_line)
+        else
+            table_format.vertical_line_after_data_columns &&
+                XLSX.setBorder(sheet, all_rows, last(all_cols); right = b.right_line)
+        end
     end
 
     # Set column widths based on accumulated content lengths.

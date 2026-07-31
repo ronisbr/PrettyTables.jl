@@ -5,10 +5,10 @@
 ############################################################################################
 
 """
-    _next(state::PrintingTableState, table_data::TableData) -> Union{Symbol, Nothing}, PrintingTableState
+    _next(state::PrintingTableState, table_data::TableData) -> Tuple{Symbol, Symbol, PrintingTableState}
 
-Return the action the back end must perform and the new print table state given the current
-`state` and the `table_data`.
+Return the action the back end must perform, the current table row section, and the new
+print table state, given the current `state` and the `table_data`.
 """
 function _next(state::PrintingTableState, table_data::TableData)
     ps = state.state
@@ -43,7 +43,9 @@ function _next(state::PrintingTableState, table_data::TableData)
         elseif j == 1
             return :subtitle, :table_header, PrintingTableState(ps, 1, j + 1, rs)
         else
-            return :end_row, :table_header, PrintingTableState(_SUBTITLE, 0, 0, :column_labels)
+            return :end_row,
+            :table_header,
+            PrintingTableState(_SUBTITLE, 0, 0, :column_labels)
         end
     end
 
@@ -52,22 +54,51 @@ function _next(state::PrintingTableState, table_data::TableData)
     if ps < _NEW_ROW
         new_i = i + 1
 
-        # If we are started the column labels but the user does not want to show them, we
-        # must skip to the data section.
-        (rs == :column_labels) && !table_data.show_column_labels &&
-            return _next(PrintingTableState(_NEW_ROW - 1, 0, 0, :data), table_data)
+        # If we do not have any column, jump to the table footer. Notice that this check must
+        # come before the `show_column_labels` shortcut below. Otherwise, the shortcut would
+        # already have moved the row section away from `:column_labels`, and a table without
+        # columns would be rendered with empty rows.
+        (max_j == 0) && return _next(
+            PrintingTableState(_FOOTNOTES - 1, 0, 0, :table_footer), table_data
+        )
+
+        # If we started the column labels but the user does not want to show them, skip to
+        # the first section that has rows.
+        if (rs == :column_labels) && !table_data.show_column_labels
+            # If the maximum number of rows is 0, we must go to the continuation row. Notice
+            # that this rule also exists in the `:end_row` branch of the column labels, which
+            # this shortcut jumps over.
+            mr = table_data.maximum_number_of_rows
+
+            next_row_section = if (mr == 0) && (max_i > 0)
+                :continuation_row
+            elseif max_i > 0
+                :data
+            elseif !isnothing(table_data.summary_rows)
+                :summary_row
+            else
+                :table_footer
+            end
+
+            next_printing_state = if next_row_section == :table_footer
+                _END_ROW
+            else
+                _NEW_ROW - 1
+            end
+
+            return _next(
+                PrintingTableState(next_printing_state, 0, 0, next_row_section), table_data
+            )
+        end
 
         # Check if we are starting a row group label.
         if (rs == :data) && !isnothing(table_data.row_group_labels)
             for g in table_data.row_group_labels
-                g.first == new_i &&
-                    return :new_row, :row_group_label, PrintingTableState(_NEW_ROW, new_i, 0, :row_group_label)
+                g.first == new_i && return :new_row,
+                :row_group_label,
+                PrintingTableState(_NEW_ROW, new_i, 0, :row_group_label)
             end
         end
-
-        # If we do not have any column, jump to the table footer.
-        (rs == :column_labels) && (max_j == 0) &&
-            return _next(PrintingTableState(_FOOTNOTES - 1, 0, 0, :table_footer), table_data)
 
         return :new_row, rs, PrintingTableState(_NEW_ROW, new_i, 0, rs)
     end
@@ -92,7 +123,6 @@ function _next(state::PrintingTableState, table_data::TableData)
 
     if (ps < _ROW_LABEL_COLUMN) &&
         (!isnothing(table_data.row_labels) || !isnothing(table_data.summary_row_labels))
-
         action = if rs == :column_labels
             :stubhead_label
         elseif rs == :data
@@ -132,8 +162,8 @@ function _next(state::PrintingTableState, table_data::TableData)
         if j >= max_j
             return _next(PrintingTableState(_CONTINUATION_COLUMN, i, 0, rs), table_data)
         else
-            action = rs == :continuation_row ?
-                :diagonal_continuation_cell :
+            action =
+                rs == :continuation_row ? :diagonal_continuation_cell :
                 :horizontal_continuation_cell
 
             return action, rs, PrintingTableState(_CONTINUATION_COLUMN, i, 0, rs)
@@ -148,14 +178,22 @@ function _next(state::PrintingTableState, table_data::TableData)
                 # If the maximum number of row is 0, we must go to the continuation row.
                 mr = table_data.maximum_number_of_rows
 
-                ((mr == 0) && (max_i > 0)) &&
-                    return :end_row, rs, PrintingTableState(_NEW_ROW - 1, i, 0, :continuation_row)
+                ((mr == 0) && (max_i > 0)) && return :end_row,
+                rs,
+                PrintingTableState(_NEW_ROW - 1, i, 0, :continuation_row)
 
-                # If we have no data rows, we can go to the table footer.
+                # If we have no data rows, we can go to the summary rows.
+                if (table_data.num_rows == 0) && !isnothing(table_data.summary_rows)
+                    return :end_row,
+                    rs,
+                    PrintingTableState(_NEW_ROW - 1, 0, 0, :summary_row)
+                end
+
+                # If we have no data or summary rows, we can go to the table footer.
                 (max_i == 0) &&
                     return :end_row, rs, PrintingTableState(_END_ROW, 0, 0, :table_footer)
 
-        # If we reached the number of column labels, we must go to the data.
+                # If we reached the number of column labels, we must go to the data.
                 return :end_row, rs, PrintingTableState(_NEW_ROW - 1, 0, 0, :data)
             else
                 # Otherwise, print the next line with column labels.
@@ -177,13 +215,17 @@ function _next(state::PrintingTableState, table_data::TableData)
 
             if cont_row
                 # The user limited the number of rows and we printed the requested number.
-                return :end_row, rs, PrintingTableState(_NEW_ROW - 1, i, 0, :continuation_row)
+                return :end_row,
+                rs,
+                PrintingTableState(_NEW_ROW - 1, i, 0, :continuation_row)
 
             elseif i >= max_i
                 # If we reached the number of data lines, we must go to the summary row if
                 # the user wants it.
                 if !isnothing(table_data.summary_rows)
-                    return :end_row, rs, PrintingTableState(_NEW_ROW - 1, 0, 0, :summary_row)
+                    return :end_row,
+                    rs,
+                    PrintingTableState(_NEW_ROW - 1, 0, 0, :summary_row)
                 else
                     return :end_row, rs, PrintingTableState(_END_ROW, 0, 0, :table_footer)
                 end
@@ -199,8 +241,9 @@ function _next(state::PrintingTableState, table_data::TableData)
                 next_i = max_i - (mr - div(mr, 2, RoundUp)) + 1
 
                 # Check if we have more rows to be printed.
-                next_i <= max_i &&
-                    return :end_row, rs, PrintingTableState(_NEW_ROW - 1, next_i - 1, 0, :data)
+                next_i <= max_i && return :end_row,
+                rs,
+                PrintingTableState(_NEW_ROW - 1, next_i - 1, 0, :data)
 
                 # If there is no more rows to be printed, we can treat as we are in a bottom
                 # cropping.
@@ -243,7 +286,9 @@ function _next(state::PrintingTableState, table_data::TableData)
         elseif j == 1
             return :source_notes, :table_footer, PrintingTableState(ps, i, j + 1, rs)
         else
-            return :end_row, :table_footer, PrintingTableState(_SOURCENOTES, i, 0, :end_printing)
+            return :end_row,
+            :table_footer,
+            PrintingTableState(_SOURCENOTES, i, 0, :end_printing)
         end
     end
 
@@ -260,7 +305,7 @@ function _next(state::PrintingTableState, table_data::TableData)
         return :end_row, rs, PrintingTableState(_END_ROW_AFTER_GROUP, i, 0, rs)
 
     # After the row group label, we must change the row section to `:data`. Notice that
-    # there is not possibility to have a row group label outside the data rows.
+    # there is no possibility to have a row group label outside the data rows.
     ps < _NEW_ROW_AFTER_GROUP &&
         return :new_row, :data, PrintingTableState(_ROW_GROUP, i, 0, :data)
 
@@ -269,22 +314,20 @@ function _next(state::PrintingTableState, table_data::TableData)
 end
 
 function _update_data_cell_indices(
-    action::Symbol,
-    row_section::Symbol,
-    state::PrintingTableState,
-    i::Int,
-    j::Int
+    action::Symbol, row_section::Symbol, state::PrintingTableState, i::Int, j::Int
 )
     if (action == :new_row) && (row_section ∉ (:table_header, :continuation_row))
         i += 1
-        j  = 0
+        j = 0
 
-    elseif (action ∈ (
-        :row_number_vertical_continuation_cell,
-        :row_label_vertical_continuation_cell,
-        :row_label,
-        :row_number
-    ))
+    elseif (
+        action ∈ (
+            :row_number_vertical_continuation_cell,
+            :row_label_vertical_continuation_cell,
+            :row_label,
+            :row_number,
+        )
+    )
         j = 0
 
     elseif action == :row_group_label
@@ -298,8 +341,7 @@ function _update_data_cell_indices(
 
     elseif (action == :end_row) && (row_section != state.row_section)
         if (
-            (row_section != :continuation_row) &&
-            (state.row_section != :continuation_row)
+            (row_section != :continuation_row) && (state.row_section != :continuation_row)
         ) || (state.row_section == :summary_row)
             i = j = 0
         elseif state.row_section == :continuation_row

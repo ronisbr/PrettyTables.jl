@@ -85,3 +85,22 @@
         @test XLSX.getFont(result[1], "C5").font["color"] == Dict("rgb" => "FF0000FF")
     end
 end
+
+@testset "Highlighters Take Precedence Over the Data Cell Style" begin
+    # The highlighter decoration must be applied after the section style. Otherwise, the
+    # font attributes of `data_cell` would overwrite the highlighter.
+    result = pretty_table(
+        XLSX.XLSXFile,
+        [1 2; 3 4];
+        highlighters = [
+            ExcelHighlighter((data, i, j) -> data[i, j] > 2, ["color" => "red"]),
+        ],
+        style = ExcelTableStyle(; data_cell = ["italic" => "true"]),
+    )
+
+    font = XLSX.getFont(result[1], "A3").font
+
+    @test font["color"] == Dict("rgb" => "FFFF0000")
+    @test haskey(font, "i")
+    @test haskey(XLSX.getFont(result[1], "A2").font, "i")
+end

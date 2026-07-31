@@ -14,11 +14,7 @@
 |          a |          a |          a |    missing |    nothing |
 """
 
-        result = pretty_table(
-            String,
-            matrix;
-            backend = :markdown
-        )
+        result = pretty_table(String, matrix; backend = :markdown)
 
         @test result == expected
     end
@@ -30,12 +26,7 @@
 |        'a' |         :a |          a |    missing |    nothing |
 """
 
-        result = pretty_table(
-            String,
-            matrix;
-            backend = :markdown,
-            renderer = :show
-        )
+        result = pretty_table(String, matrix; backend = :markdown, renderer = :show)
 
         @test result == expected
 
@@ -50,10 +41,9 @@
             matrix;
             backend = :markdown,
             merge_column_label_cells = [MergeCells(1, 1, 2, "Merged Cell")],
-            renderer = :show
+            renderer = :show,
         )
 
         @test result == expected
     end
 end
-

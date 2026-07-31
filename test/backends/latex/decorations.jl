@@ -24,7 +24,7 @@
             String,
             matrix;
             backend = :latex,
-            style = LatexTableStyle(; first_line_column_label = ["textbf"])
+            style = LatexTableStyle(; first_line_column_label = ["textbf"]),
         )
 
         @test result == expected
@@ -45,14 +45,39 @@
             String,
             matrix;
             backend = :latex,
-            style = LatexTableStyle(; first_line_column_label = [
-                ["color{red}",   "textbf"],
-                ["color{blue}",  "textbf"],
-                ["color{green}", "textbf"]
-            ])
+            style = LatexTableStyle(;
+                first_line_column_label = [
+                    ["color{red}", "textbf"],
+                    ["color{blue}", "textbf"],
+                    ["color{green}", "textbf"],
+                ],
+            ),
+        )
+
+        @test result == expected
+    end
+    @testset "Per-Column Style for the Column Labels" begin
+        # `column_label` may be a single style applied to every column, or a vector holding
+        # one style per column. Only the scalar form was covered.
+        expected = """
+\\begin{tabular}{|r|r|}
+  \\hline
+  \\textbf{A} & \\textbf{B} \\\\
+  \\textbf{a} & \\textit{b} \\\\
+  \\hline
+  1 & 2 \\\\
+  \\hline
+\\end{tabular}
+"""
+
+        result = pretty_table(
+            String,
+            [1 2];
+            backend = :latex,
+            column_labels = [["A", "B"], ["a", "b"]],
+            style = LatexTableStyle(; column_label = [["textbf"], ["textit"]]),
         )
 
         @test result == expected
     end
 end
-

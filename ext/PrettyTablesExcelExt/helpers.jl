@@ -19,7 +19,7 @@ function _excel__alignment_string(s::Symbol)
     s == :r && return "right"
     s == :c && return "center"
 
-    # Return "left" for :l for any other value.
+    # Return "left" for `:l` or any other value.
     return "left"
 end
 
@@ -98,7 +98,9 @@ Create a formatter function that converts values XLSX.jl cannot handle directly 
 string representation. When `columns` is `nothing`, all values are stringified; otherwise
 only the columns listed in `columns` are converted.
 """
-function fmt__excel_stringify(columns::Union{Nothing, Int, AbstractVector{Int}} = nothing)
+function PrettyTables.fmt__excel_stringify(
+    columns::Union{Nothing, Int, AbstractVector{Int}} = nothing
+)
     return (v, _, j) -> begin
         (v isa XLSX.CellConcreteType) && return v
 
@@ -112,6 +114,8 @@ end
 
 """
     _excel__cell_length_and_height(text::Any, fontsize::Number) -> Tuple{Float64, Float64}
+
+Notice that the returned tuple is `(row_height, col_length)`, in that order.
 
 Compute the estimated Excel row height and column width for a cell containing `text`
 rendered at `fontsize`.
@@ -189,7 +193,7 @@ function _excel__split_attributes(attributes::Vector{ExcelPair})
     for (k, v) in attributes
         if startswith(k, "cell_fill_")
             pv = fill_attributes
-            sym = Symbol(replace(k, "cell_fill_" => ""))
+            sym = Symbol(@view k[(ncodeunits("cell_fill_") + 1):end])
         else
             pv = font_attributes
             sym = Symbol(k)
@@ -246,7 +250,7 @@ function _excel__apply_cell_style!(
     font_attributes, fill_attributes = _excel__split_attributes(style)
 
     if !isempty(font_attributes)
-        id = findfirst(==(:size), first.(font_attributes))
+        id = findfirst(p -> first(p) == :size, font_attributes)
         fontsize = isnothing(id) ? DEFAULT_FONT_SIZE : last(font_attributes[id])
 
         XLSX.setFont(sheet, row, col; font_attributes...)
@@ -272,20 +276,24 @@ end
 
 """
     _excel__format_attributes(
-        table_data::TableData,
+        @nospecialize(data::Any),
         excelFormatter::ExcelFormatter,
         current_row::Int,
         j::Int
     ) -> Union{Nothing, Vector{Pair{Symbol, Any}}}
 
-Apply `excelFormatter` to the cell at row `current_row` and column `j` and return the
-format attributes when the formatter condition is met, or `nothing` otherwise.
+Compute the format attributes `excelFormatter` yields for the cell at row `current_row` and
+column `j` of `data`, or return `nothing` when the formatter condition is not met. Notice
+that `data` must be the object the user passed to `pretty_table`, so that the formatter
+condition sees the same object in every back end.
 """
 function _excel__format_attributes(
-    table_data::TableData, excelFormatter::ExcelFormatter, current_row::Int, j::Int
+    @nospecialize(data::Any),
+    excelFormatter::ExcelFormatter,
+    current_row::Int,
+    j::Int,
 )
-    attributes =
-        excelFormatter.f(table_data.data, current_row, j) ? excelFormatter.numFmt : nothing
+    attributes = excelFormatter.f(data, current_row, j) ? excelFormatter.numFmt : nothing
 
     isnothing(attributes) && return nothing
 

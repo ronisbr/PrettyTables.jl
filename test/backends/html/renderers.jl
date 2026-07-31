@@ -30,11 +30,7 @@
   </tbody>
 </table>
 """
-        result = pretty_table(
-            String,
-            matrix;
-            backend = :html
-        )
+        result = pretty_table(String, matrix; backend = :html)
 
         @test result == expected
     end
@@ -63,12 +59,7 @@
 </table>
 """
 
-        result = pretty_table(
-            String,
-            matrix;
-            backend = :html,
-            renderer = :show
-        )
+        result = pretty_table(String, matrix; backend = :html, renderer = :show)
 
         @test result == expected
     end

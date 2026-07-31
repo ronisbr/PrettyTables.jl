@@ -4,16 +4,15 @@ using PrettyTables
 using XLSX
 
 # Import the functions we're overriding.
-import PrettyTables: _excel__print, _is_horizontally_cropped
-import PrettyTables: fmt__excel_stringify, pretty_table
+import PrettyTables: _excel__print, _is_horizontally_cropped, pretty_table
 
 # Import types we need.
-using PrettyTables: PrintingSpec, TableData, PrintingTableState
-using PrettyTables: MergeCells
+using PrettyTables: PrintingSpec, TableData, PrintingTableState, MergeCells
 
 # Import internal iterator and helpers.
 import PrettyTables: _next, _current_cell, _current_cell_alignment, _current_cell_footnotes
 import PrettyTables: _number_of_printed_columns, _number_of_printed_data_columns
+import PrettyTables: _get_data, _has_summary_rows
 import PrettyTables: _IGNORE_CELL, _EXCEL__NO_DECORATION
 
 # Also import Tables.jl for handling table data
@@ -44,7 +43,7 @@ passed through to `_excel__write_table!`.
     (**Default**: `"A1"`)
 - `filename::Union{Nothing, String}`: Path of the Excel file to write. When `nothing`, no
     file is created and an in-memory `XLSX.XLSXFile` is returned instead. When a string,
-    behaviour depends on `mode`.
+    behavior depends on `mode`.
     (**Default**: `nothing`)
 - `sheet::Union{String, XLSX.Worksheet}`: When a `String`, the name of the worksheet tab.
     If no sheet with that name exists it will be created. When an `XLSX.Worksheet`, that
@@ -95,7 +94,7 @@ function PrettyTables._excel__print(
     # Check arguments.
     mode ∉ ["w", "rw", "wr"] && throw(
         ArgumentError(
-            "Invalid mode \"$mode\". Must be either \"w\" to create a new file or \"rw\" to add a PrettyTable to an existing spreadsheet.",
+            "Invalid mode \"$mode\". Must be either \"w\" to create a new file, or \"rw\" (or its alias \"wr\") to add a PrettyTable to an existing spreadsheet.",
         ),
     )
 
@@ -150,11 +149,21 @@ julia> XLSX.writexlsx("myfile.xlsx", xf)
 ```
 """
 function pretty_table(::Type{XLSX.XLSXFile}, @nospecialize(data::Any); kwargs...)
-    # Force backend to :excel and filename to nothing.
-    !haskey(kwargs, :backend) &&
-        return pretty_table(data; backend = :excel, filename = nothing, kwargs...)
+    # Force `backend` to `:excel` and `filename` to `nothing`.
+    #
+    # NOTE: The overrides must be stripped from the user keywords first and then placed
+    # **last**. When keywords are splatted, the rightmost binding wins, so a user-supplied
+    # `filename` used to override the `nothing` here and write a file, contradicting both the
+    # documentation and this comment.
+    kw = Base.structdiff(NamedTuple(kwargs), NamedTuple{(:filename, :backend)})
 
-    return pretty_table(data; filename = nothing, kwargs...)
+    return pretty_table(data; kw..., backend = :excel, filename = nothing)
 end
+
+############################################################################################
+#                                     Precompilation                                       #
+############################################################################################
+
+include("precompile.jl")
 
 end # module

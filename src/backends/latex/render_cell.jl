@@ -15,14 +15,14 @@
 Convert the `cell` to a string using a specific `context` and `renderer`.
 """
 function _latex__cell_to_str(cell::Any, context::IOContext, ::Val{:print})
-    return sprint(print, cell; context)
+    return _sprint_with_context(print, context, cell)
 end
 
 function _latex__cell_to_str(cell::Any, context::IOContext, ::Val{:show})
     if showable(MIME("text/latex"), cell)
-        cell_str = sprint(show, MIME("text/latex"), cell; context)
+        cell_str = _sprint_with_context(show, context, MIME("text/latex"), cell)
     else
-        cell_str = sprint(show, cell; context)
+        cell_str = _sprint_with_context(show, context, cell)
     end
 
     return cell_str
@@ -41,9 +41,7 @@ _latex__cell_to_str(cell::UndefinedCell, context::IOContext, ::Val{:show}) = "#u
 Render the `cell` in latex back end using a specific `context` and `renderer`.
 """
 function _latex__render_cell(
-    cell::Any,
-    context::IOContext,
-    renderer::Union{Val{:print}, Val{:show}}
+    cell::Any, context::IOContext, renderer::Union{Val{:print}, Val{:show}}
 )
     cell_str = _latex__cell_to_str(cell, context, renderer)
 
@@ -52,28 +50,20 @@ function _latex__render_cell(
 end
 
 function _latex__render_cell(
-    cell::LatexCell,
-    context::IOContext,
-    renderer::Union{Val{:print}, Val{:show}}
+    cell::LatexCell, context::IOContext, renderer::Union{Val{:print}, Val{:show}}
 )
     return _latex__cell_to_str(cell.data, context, renderer)
 end
 
 function _latex__render_cell(
-    cell::LaTeXString,
-    context::IOContext,
-    renderer::Union{Val{:print}, Val{:show}}
+    cell::LaTeXString, context::IOContext, renderer::Union{Val{:print}, Val{:show}}
 )
     return _latex__cell_to_str(cell, context, renderer)
 end
 
 # For Markdown cells, we must render always using `show` to obtain the correct decoration.
 function _latex__render_cell(
-    cell::Markdown.MD,
-    context::IOContext,
-    renderer::Union{Val{:print}, Val{:show}};
-    allow_html_in_cells::Bool = false,
-    line_breaks::Bool = false,
+    cell::Markdown.MD, context::IOContext, renderer::Union{Val{:print}, Val{:show}}
 )
     return replace(sprint(show, MIME("text/latex"), cell), "\n" => "")
 end

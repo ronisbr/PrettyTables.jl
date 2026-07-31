@@ -10,14 +10,14 @@
 Convert the `cell` to a string using a specific `context` and `renderer`.
 """
 function _typst__cell_to_str(cell::Any, context::IOContext, ::Val{:print})
-    return sprint(print, cell; context)
+    return _sprint_with_context(print, context, cell)
 end
 
 function _typst__cell_to_str(cell::Any, context::IOContext, ::Val{:show})
     if showable(MIME("text/typst"), cell)
-        cell_str = sprint(show, MIME("text/typst"), cell; context)
+        cell_str = _sprint_with_context(show, context, MIME("text/typst"), cell)
     else
-        cell_str = sprint(show, cell; context)
+        cell_str = _sprint_with_context(show, context, cell)
     end
 
     return cell_str
@@ -25,7 +25,7 @@ end
 
 function _typst__cell_to_str(cell::AbstractString, context::IOContext, ::Val{:show})
     if showable(MIME("text/typst"), cell)
-        cell_str = sprint(show, MIME("text/typst"), cell; context)
+        cell_str = _sprint_with_context(show, context, MIME("text/typst"), cell)
     else
         cell_str = string(cell)
     end
@@ -43,31 +43,16 @@ _typst__cell_to_str(cell::UndefinedCell, context::IOContext, ::Val{:show}) = "#u
 Render the `cell` in Typst back end using a specific `context` and `renderer`.
 """
 function _typst__render_cell(
-    cell::Any,
-    context::IOContext,
-    renderer::Union{Val{:print}, Val{:show}},
+    cell::Any, context::IOContext, renderer::Union{Val{:print}, Val{:show}}
 )
     cell_str = _typst__cell_to_str(cell, context, renderer)
 
-    # If the user wants HTML code inside cell, we must not escape the HTML characters.
-    return _typst__escape_str(cell_str)
-end
-
-function _typst__render_cell(
-    cell::AbstractString,
-    context::IOContext,
-    renderer::Union{Val{:print}, Val{:show}},
-)
-    cell_str = _typst__cell_to_str(cell, context, renderer)
-
-    # If the user wants HTML code inside cell, we must not escape the HTML characters.
+    # Notice that the cell content is always escaped, since it is emitted inside a Typst content block.
     return _typst__escape_str(cell_str)
 end
 
 function PrettyTables._typst__render_cell(
-    cell::Markdown.MD,
-    context::IOContext,
-    renderer::Union{Val{:print}, Val{:show}},
+    cell::Markdown.MD, context::IOContext, renderer::Union{Val{:print}, Val{:show}}
 )
     # We will always render Markdown cells using `#raw` until we can obtain a good way to
     # convert Markdown to Typst.

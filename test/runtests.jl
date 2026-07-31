@@ -28,6 +28,7 @@ include("./types.jl")
 @testset "Internal Functions" verbose = true begin
     include("./internal/cell_alignment.jl")
     include("./internal/cell_data.jl")
+    include("./internal/performance.jl")
     include("./internal/print_state.jl")
 end
 
@@ -53,6 +54,7 @@ end
     include("./backends/html/decorations.jl")
     include("./backends/html/default.jl")
     include("./backends/html/divs.jl")
+    include("./backends/html/footnotes.jl")
     include("./backends/html/full.jl")
     include("./backends/html/highlighters.jl")
     include("./backends/html/issues.jl")
@@ -71,6 +73,7 @@ end
     include("./backends/latex/default.jl")
     include("./backends/latex/full.jl")
     include("./backends/latex/highlighters.jl")
+    include("./backends/latex/horizontal_lines.jl")
     include("./backends/latex/offset_arrays.jl")
     include("./backends/latex/renderers.jl")
     include("./backends/latex/special_cells.jl")
@@ -83,6 +86,7 @@ end
     include("./backends/markdown/cropping.jl")
     include("./backends/markdown/decorations.jl")
     include("./backends/markdown/default.jl")
+    include("./backends/markdown/footnotes.jl")
     include("./backends/markdown/full.jl")
     include("./backends/markdown/highlighters.jl")
     include("./backends/markdown/offset_arrays.jl")
@@ -99,6 +103,7 @@ end
     include("./backends/text/decorations.jl")
     include("./backends/text/default.jl")
     include("./backends/text/errors.jl")
+    include("./backends/text/footnotes.jl")
     include("./backends/text/full.jl")
     include("./backends/text/highlighters.jl")
     include("./backends/text/horizontal_lines.jl")
@@ -119,9 +124,11 @@ end
     include("./backends/typst/default.jl")
     include("./backends/typst/full.jl")
     include("./backends/typst/highlighters.jl")
+    include("./backends/typst/horizontal_lines.jl")
     include("./backends/typst/minify.jl")
     include("./backends/typst/offset_arrays.jl")
     include("./backends/typst/renderers.jl")
+    include("./backends/typst/special_cells.jl")
     include("./ext/pretty_tables_typstry_ext.jl")
 end
 

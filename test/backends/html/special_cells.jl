@@ -29,20 +29,11 @@
 </table>
 """
 
-        result = pretty_table(
-            String,
-            matrix;
-            backend = :html
-        )
+        result = pretty_table(String, matrix; backend = :html)
 
         @test result == expected
 
-        result = pretty_table(
-            String,
-            matrix;
-            backend = :html,
-            renderer = :show
-        )
+        result = pretty_table(String, matrix; backend = :html, renderer = :show)
 
         @test result == expected
     end
@@ -71,20 +62,11 @@
 </table>
 """
 
-        result = pretty_table(
-            String,
-            matrix;
-            backend = :html
-        )
+        result = pretty_table(String, matrix; backend = :html)
 
         @test result == expected
 
-        result = pretty_table(
-            String,
-            matrix;
-            backend = :html,
-            renderer = :show
-        )
+        result = pretty_table(String, matrix; backend = :html, renderer = :show)
 
         @test result == expected
     end
@@ -113,24 +95,26 @@
 </table>
 """
 
-        result = pretty_table(
-            String,
-            matrix;
-            backend = :html,
-            allow_html_in_cells = true
-        )
+        result = pretty_table(String, matrix; backend = :html, allow_html_in_cells = true)
 
         @test result == expected
 
         result = pretty_table(
-            String,
-            matrix;
-            backend = :html,
-            allow_html_in_cells = true,
-            renderer = :show
+            String, matrix; backend = :html, allow_html_in_cells = true, renderer = :show
         )
 
         @test result == expected
+    end
+
+    @testset "Allow HTML in Cells With Line Breaks" begin
+        # The line breaks must be kept in raw HTML cells. Otherwise, we would corrupt the
+        # HTML code with a literal `\\n`.
+        matrix = ["<div>\na\n</div>";;]
+
+        result = pretty_table(String, matrix; backend = :html, allow_html_in_cells = true)
+
+        @test !occursin("\\n", result)
+        @test occursin("<div>", result)
     end
 
     @testset "Line Breaks" begin
@@ -153,11 +137,7 @@
 </table>
 """
 
-        result = pretty_table(
-            String,
-            matrix;
-            backend = :html
-        )
+        result = pretty_table(String, matrix; backend = :html)
 
         @test result == expected
 
@@ -178,12 +158,7 @@
 </table>
 """
 
-        result = pretty_table(
-            String,
-            matrix;
-            backend = :html,
-            line_breaks = true
-        )
+        result = pretty_table(String, matrix; backend = :html, line_breaks = true)
 
         @test result == expected
     end
@@ -221,20 +196,11 @@
 </table>
 """
 
-        result = pretty_table(
-            String,
-            v;
-            backend = :html
-        )
+        result = pretty_table(String, v; backend = :html)
 
         @test result == expected
 
-        result = pretty_table(
-            String,
-            v;
-            backend = :html,
-            renderer = :show
-        )
+        result = pretty_table(String, v; backend = :html, renderer = :show)
 
         @test result == expected
     end
@@ -261,19 +227,10 @@
 </table>
 """
 
-        result = pretty_table(
-            String,
-            matrix;
-            backend = :html
-        )
+        result = pretty_table(String, matrix; backend = :html)
         @test result == expected
 
-        result = pretty_table(
-            String,
-            matrix;
-            backend = :html,
-            renderer = :show
-        )
+        result = pretty_table(String, matrix; backend = :html, renderer = :show)
         @test result == expected
     end
 end

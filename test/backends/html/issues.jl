@@ -36,7 +36,7 @@
             String,
             A;
             backend       = :html,
-            column_labels = [styled"<{red:Column 1}>", "<Column 2>"]
+            column_labels = [styled"<{red:Column 1}>", "<Column 2>"],
         )
 
         @test result == expected
@@ -67,7 +67,7 @@
             A;
             backend       = :html,
             column_labels = [styled"<{red:Column 1}>", "<Column 2>"],
-            renderer      = :show
+            renderer      = :show,
         )
     end
 end

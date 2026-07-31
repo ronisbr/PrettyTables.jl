@@ -26,8 +26,9 @@ following types are supported:
 1. `AbstractVector`: any vector can be printed.
 2. `AbstractMatrix`: any matrix can be printed.
 
-`pretty_table` currently supports printing tables for four backends: text, markdown, html,
-and latex. The desired backend can be set using the `backend` keyword argument.
+`pretty_table` currently supports printing tables for six backends: text, markdown, html,
+latex, typst, and excel. The desired backend can be set using the `backend` keyword
+argument.
 
 For more information, see the **Extended Help** section.
 
@@ -74,7 +75,7 @@ All those sections can be configured using keyword arguments as described below.
 
 ## Quick Start
 
-The following commands prints the table in `matrix` using the text backend with all the
+The following command prints the table in `matrix` using the text backend with all the
 available sections:
 
 ```julia-repl
@@ -120,8 +121,10 @@ Source Notes
 The following keywords are related to table configuration and are available in all backends:
 
 - `backend::Symbol`: Backend used to print the table. The available options are `:text`,
-    `:markdown`, `:html`, and `:latex`.
-    (**Default**: `:text`)
+    `:markdown`, `:html`, `:latex`, `:typst`, and `:excel`. If it is `:auto`, the backend is
+    obtained from the type of the keyword `table_format`, falling back to `:text` if the
+    latter is not present.
+    (**Default**: `:auto`)
 
 ### IOContext Arguments
 
@@ -208,14 +211,12 @@ can be specified using a symbol: `:l` for left, `:c` for center, or `:r` for rig
     (**Default**: `:c`)
 - `title_alignment::Symbol`: Alignment of the title.
     (**Default**: `:c`)
-- `cell_alignment::Union{Nothing, Vector{Pair{NTuple{2, Int}, Symbol}, Vector{Function}}`: A
-    vector of functions with the signature `f(data, i, j)` that overrides the alignment of
-    the cell `(i, j)` to the value returned by `f`. The function must return a valid
-    alignment symbol or `nothing`. In the latter, the cell alignment will not be modified.
-    If the function returns an invalid data, it will be discarded. For convenience, it can
-    also be a vector of `Pair{NTuple{2, Int}, Symbol}`, *i.e.*
-    `(i::Int, j::Int) => a::Symbol`, that overrides the alignment of the cell `(i, j)` to
-    `a`.
+- `cell_alignment::Union{Nothing, Vector{<:Function},
+    Vector{Pair{NTuple{2, Int}, Symbol}}}`: Either `nothing`, a vector of functions, or a
+    vector of coordinate/alignment pairs. Each function must have the signature
+    `f(data, i, j)` and return a valid alignment symbol or `nothing` for the cell `(i, j)`.
+    Returning `nothing` leaves the cell alignment unchanged. Each pair must have the form
+    `(i::Int, j::Int) => a::Symbol` and sets the alignment of cell `(i, j)` to `a`.
     (**Default** = `nothing`)
 
 !!! warning
@@ -259,6 +260,9 @@ following methods:
 - **Text backend**: `pretty_table_text_backend`.
 - **Markdown backend**: `pretty_table_markdown_backend`.
 - **HTML backend**: `pretty_table_html_backend`.
+- **LaTeX backend**: `pretty_table_latex_backend`.
+- **Typst backend**: `pretty_table_typst_backend`.
+- **Excel backend**: `pretty_table_excel_backend`.
 
 !!! warning
 
@@ -294,10 +298,10 @@ Adjacent column labels can be merged using the keyword `merge_column_label_cells
 contain a vector of `MergeCells` objects. Each object defines a new merged cell. The
 `MergeCells` object has the following fields:
 
-- `row::Int`: Row index of the merged cell.
-- `column::Int`: Column index of the merged cell.
+- `i::Int`: Row index of the merged cell.
+- `j::Int`: Column index of the merged cell.
 - `column_span::Int`: Number of columns spanned by the merged cell.
-- `data::String`: Data of the merged cell.
+- `data::Any`: Data of the merged cell.
 - `alignment::Symbol`: Alignment of the merged cell. The available options are `:l` for
     left, `:c` for center, and `:r` for right.
     (**Default**: `:c`)
@@ -319,7 +323,10 @@ we must set `merge_column_label_cells` to `:auto`, which is the default.
 `MultiColumn` has the following fields:
 
 - `column_span::Int`: Number of columns spanned by the merged cell.
-- `data::String`: Data of the merged cell.
+- `data::Any`: Data of the merged cell.
+- `alignment::Symbol`: Alignment of the merged cell. The available options are `:l` for
+    left, `:c` for center, and `:r` for right.
+    (**Default**: `:c`)
 
 `EmptyCells` has the following field:
 
@@ -359,7 +366,7 @@ row 3, we have the row group label named "Row Group #1".
 ### Summary Rows
 
 The summary rows can be specified by a vector of `Function`s. Each element defines a summary
-row and the function must have one the following signature:
+row and the function must have one of the following signatures:
 
 ```
 f(col)

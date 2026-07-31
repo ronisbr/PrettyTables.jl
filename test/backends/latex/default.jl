@@ -23,18 +23,10 @@
 \\end{tabular}
 """
 
-    result = pretty_table(
-        String,
-        matrix;
-        backend = :latex
-    )
+    result = pretty_table(String, matrix; backend = :latex)
     @test result == expected
 
-    result = pretty_table(
-        String,
-        matrix;
-        table_format = LatexTableFormat()
-    )
+    result = pretty_table(String, matrix; table_format = LatexTableFormat())
     @test result == expected
 
     result = pretty_table_latex_backend(String, matrix)

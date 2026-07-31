@@ -6,6 +6,18 @@
 
 export fmt__printf, fmt__round, fmt__latex_sn, fmt__excel_stringify
 
+"""
+    fmt__excel_stringify(columns::Union{Nothing, Int, AbstractVector{Int}} = nothing) -> Function
+
+Create a formatter function that converts values XLSX.jl cannot handle directly into their
+string representation. When `columns` is `nothing`, all values are stringified; otherwise
+only the columns listed in `columns` are converted.
+
+!!! note
+
+    This function is only available when the package XLSX.jl is loaded.
+"""
+function fmt__excel_stringify end
 
 """
     fmt__printf(fmt_str::String[, columns::AbstractVector{Int}]) -> Function
@@ -83,6 +95,10 @@ end
 Round the elements in the columns specified in the vector `columns` to the number of
 `digits`. If `columns` is not specified, the rounding will be applied to the entire table.
 
+!!! info
+
+    This formatter will be applied only to the cells that are of type `Number`.
+
 # Extended Help
 
 ## Examples
@@ -118,6 +134,12 @@ julia> pretty_table(data; formatters = [fmt__round(1, [1, 3])])
 """
 function fmt__round(digits::Int)
     return (v, _, _) -> begin
+        # Bail out before the `try` for anything that is not a number. Otherwise, every
+        # non-numeric cell would pay for a thrown and caught `MethodError`, which is orders
+        # of magnitude more expensive than rendering the cell. The `try` is kept as a
+        # secondary guard for exotic `Number` subtypes that do not support `round`.
+        !(v isa Number) && return v
+
         try
             return round(v; digits)
         catch
@@ -128,6 +150,8 @@ end
 
 function fmt__round(digits::Int, columns::AbstractVector{Int})
     return (v, _, j) -> begin
+        !(v isa Number) && return v
+
         for c in columns
             if j == c
                 try
@@ -198,7 +222,7 @@ function fmt__latex_sn(m_digits::Int)
         str = Printf.format(fmts, v)
 
         # Check if we have scientific notation.
-        aux = match(r"e[+,-][0-9]+", str)
+        aux = match(r"e[+-][0-9]+", str)
 
         if !isnothing(aux)
             exp_str = " \\cdot 10^{" * string(parse(Int, aux.match[2:end])) * "}"
@@ -223,7 +247,7 @@ function fmt__latex_sn(m_digits::Int, columns::AbstractVector{Int})
             str = Printf.format(fmts, v)
 
             # Check if we have scientific notation.
-            aux = match(r"e[+,-][0-9]+", str)
+            aux = match(r"e[+-][0-9]+", str)
 
             if !isnothing(aux)
                 exp_str = " \\cdot 10^{" * string(parse(Int, aux.match[2:end])) * "}"
@@ -236,63 +260,4 @@ function fmt__latex_sn(m_digits::Int, columns::AbstractVector{Int})
 
         return v
     end
-end
-
-"""
-    fmt__excel_stringify(columns)
-    fmt__excel_stringify()
-
-Create a formatter function that turns data types the Excel backend can't handle into their
-string representation.
-
-The Excel backend can only handle the following data types natively:
-
-    `String`, `Float64`, `Int`, `Bool`, `Dates.Date`, `Dates.Time`, `Dates.DateTime`, `Missing`,
-
-Passing any other data types will cause an error. However, converting these other data types
-to their string representation (using the `string()` function) allows them to pass without
-an issue.
-
-Pass a vector (or unit range) of column numbers to apply this formatter to specific columns,
-or leave the argument empty to apply it to the entire table.
-
-For example, the following matrix of tuples cannot be handled natively by the Excel backend,
-but using the stringify formatter allows it to be handled successfully as a matrix of
-strings:
-
-```
-julia> matrix = [(i, j) for i in 1:4, j in 1:4]
-4×4 Matrix{Tuple{Int64, Int64}}:
- (1, 1)  (1, 2)  (1, 3)  (1, 4)
- (2, 1)  (2, 2)  (2, 3)  (2, 4)
- (3, 1)  (3, 2)  (3, 3)  (3, 4)
- (4, 1)  (4, 2)  (4, 3)  (4, 4)
-
-julia> pt = pretty_table(matrix; backend=:excel, formatters = [fmt__excel_stringify(1:4)])
-XLSXFile("blank.xlsx") containing 1 Worksheet
-            sheetname size          range
--------------------------------------------------
-          prettytable 5x4           A1:D5
-
-julia> pt[1][:]
-5×4 Matrix{Any}:
- "Col. 1"  "Col. 2"  "Col. 3"  "Col. 4"
- "(1, 1)"  "(1, 2)"  "(1, 3)"  "(1, 4)"
- "(2, 1)"  "(2, 2)"  "(2, 3)"  "(2, 4)"
- "(3, 1)"  "(3, 2)"  "(3, 3)"  "(3, 4)"
- "(4, 1)"  "(4, 2)"  "(4, 3)"  "(4, 4)"
-```
-![image|320x500](../man/excel/excel_images/Excel_tuples.png)
-
-"""
-function fmt__excel_stringify(args...; kwargs...)
-    error("""
-    Excel backend requires the XLSX.jl package.
-
-    Please install and load it with:
-        using Pkg
-        Pkg.add("XLSX")
-        using XLSX    
-    Then retry your pretty_table call with backend = :excel.
-    """)
 end

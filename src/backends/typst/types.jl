@@ -6,7 +6,6 @@
 
 export TypstHighlighter, TypstTableBorders, TypstTableFormat, TypstTableStyle, TypstCaption
 
-import Base: show, tryparse, parse
 
 ############################################################################################
 #                                        Constants                                         #
@@ -20,32 +19,15 @@ const TypstAttrs = String
 # == Private ===============================================================================
 
 const _TYPST__ALIGNMENT_MAP = Dict(
-    :l => "left",
-    :L => "left",
-    :c => "center",
-    :C => "center",
-    :r => "right",
-    :R => "right"
+    :l => "left", :L => "left", :c => "center", :C => "center", :r => "right", :R => "right"
 )
 
 const _TYPST__CELL_ATTRIBUTES = [
-    "align",
-    "breakable",
-    "colspan",
-    "fill",
-    "inset",
-    "rowspan",
-    "stroke",
+    "align", "breakable", "colspan", "fill", "inset", "rowspan", "stroke"
 ]
 
 const _TYPST__TABLE_ATTRIBUTES = [
-    "rows",
-    "gutter",
-    "column-gutter",
-    "row-gutter",
-    "inset",
-    "fill",
-    "stroke",
+    "rows", "gutter", "column-gutter", "row-gutter", "inset", "fill", "stroke"
 ]
 
 const _TYPST__STRING_ATTRIBUTES = [
@@ -98,6 +80,9 @@ const _TYPST__TEXT_ATTRIBUTES = [
 # -- Decorations ---------------------------------------------------------------------------
 
 const _TYPST__NO_DECORATION     = TypstPair[]
+
+# Shared empty vector returned when a cell has no properties. It must never be mutated.
+const _TYPST__EMPTY_PROPERTIES  = TypstPair[]
 const _TYPST__BOLD              = ["text-weight" => "bold"]
 const _TYPST__ITALIC            = ["text-style" => "italic"]
 const _TYPST__XLARGE_BOLD       = ["text-size" => "1.1em", "text-weight" => "bold"]
@@ -118,27 +103,26 @@ Define the default highlighter of a table when using the Typst back end.
 
 # Fields
 
-- `f::Function`: Function with the signature `f(data, i, j)` in which should return `true`
+- `f::Function`: Function with the signature `f(data, i, j)` which should return `true`
     if the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
 - `fd::Function`: Function with the signature `f(h, data, i, j)` in which `h` is the
     highlighter. This function must return a `Vector{Pair{String, String}}` with properties
     compatible with the `style` field that will be applied to the highlighted cell.
-- `_decoration::Dict{String, String}`: The decoration to be applied to the highlighted cell
+- `_decoration::Vector{TypstPair}`: The decoration to be applied to the highlighted cell
     if the default `fd` is used.
 
 # Remarks
 
-This structure can be constructed using three helpers:
+This structure can be constructed using the following helpers:
 
-    TypstHighlighter(f::Function, decoration::Vector{Pair{String, String}})
+    TypstHighlighter(f::Function, decoration::TypstPair)
 
-    TypstHighlighter(f::Function, decorations::NTuple{N, Pair{String, String})
+    TypstHighlighter(f::Function, decoration::Vector{TypstPair})
 
     TypstHighlighter(f::Function, fd::Function)
 
-The first will apply a fixed decoration to the highlighted cell specified in `decoration`,
-whereas the second let the user select the desired decoration by specifying the function
-`fd`.
+The first two apply a fixed decoration to the highlighted cell, whereas the third lets the
+user select the desired decoration by specifying the function `fd`.
 """
 struct TypstHighlighter
     f::Function
@@ -162,7 +146,7 @@ struct TypstHighlighter
         return new(f, _typst__default_highlighter_fd, decoration)
     end
 
-    function TypstHighlighter(f::Function, decoration::Vector{TypstPair}, args...)
+    function TypstHighlighter(f::Function, decoration::Vector{TypstPair}, args::TypstPair...)
         return new(f, _typst__default_highlighter_fd, [decoration..., args...])
     end
 end
@@ -184,11 +168,11 @@ https://typst.app/docs/reference/visualize/stroke/
 - `top_line::String`: Stroke for the top border of the table.
     (**Default**: `"1.5pt"`)
 - `header_line::String`: Stroke for the line below the table header.
-    (**Default**: `"1.0pt"`)
+    (**Default**: `"0.8pt"`)
 - `merged_header_cell_line::String`: Stroke for the line below merged header cells.
     (**Default**: `"0.8pt"`)
 - `middle_line::String`: Stroke for horizontal lines inside the table body.
-    (**Default**: `"0.8pt"`)
+    (**Default**: `"0.5pt"`)
 - `bottom_line::String`: Stroke for the bottom border of the table.
     (**Default**: `"1.5pt"`)
 
@@ -212,9 +196,9 @@ https://typst.app/docs/reference/visualize/stroke/
 
     # == Vertical Lines ====================================================================
 
-    left_line::String               = "1.5pt"
-    center_line::String             = "0.8pt"
-    right_line::String              = "1.5pt"
+    left_line::String   = "1.5pt"
+    center_line::String = "0.8pt"
+    right_line::String  = "1.5pt"
 end
 
 """
@@ -228,12 +212,12 @@ Define the format of the tables printed with the Typst back end.
 - `horizontal_line_at_beginning::Bool`: If `true`, a horizontal line will be drawn at the
     beginning of the table.
 - `horizontal_line_at_merged_column_labels::Bool`: If `true`, a horizontal line will be
-    drawn on bottom of the merged column labels using `\\cline`.
+    drawn at the bottom of the merged column labels using `table.hline`.
 - `horizontal_line_after_column_labels::Bool`: If `true`, a horizontal line will be drawn
     after the column labels.
 - `horizontal_lines_at_data_rows::Union{Symbol, Vector{Int}}`: A horizontal line will be
     drawn after each data row index listed in this vector. If the symbol `:all` is passed, a
-    horizontal line will be drawn after every data column. If the symbol `:none` is passed,
+    horizontal line will be drawn after every data row. If the symbol `:none` is passed,
     no horizontal lines will be drawn after the data rows.
 - `horizontal_line_before_row_group_label::Bool`: If `true`, a horizontal line will be
     drawn before the row group label.
@@ -244,7 +228,7 @@ Define the format of the tables printed with the Typst back end.
 - `horizontal_line_before_summary_rows::Bool`: If `true`, a horizontal line will be drawn
     before the summary rows. Notice that this line is the same as the one drawn if
     `horizontal_line_after_data_rows` is `true`. However, in this case, the line is omitted
-    if there is no summary rows.
+    if there are no summary rows.
 - `horizontal_line_after_summary_rows::Bool`: If `true`, a horizontal line will be drawn
     after the summary rows.
 - `vertical_line_at_beginning::Bool`: If `true`, a vertical line will be drawn at the
@@ -301,10 +285,10 @@ Define the style of the tables printed with the Typst back end.
 - `row_label::Vector{TypstPair}`: Style for the row label.
 - `row_group_label::Vector{TypstPair}`: Style for the row group label.
 - `first_line_column_label::Union{Vector{TypstPair}, Vector{Vector{TypstPair}}}`: Style for
-    the first line of the column labels. If a vector of `Vector{TypstPair}}` is provided,
+    the first line of the column labels. If a vector of `Vector{TypstPair}` is provided,
     each column label in the first line will use the corresponding style.
 - `column_label::Union{Vector{TypstPair}, Vector{Vector{TypstPair}}}`: Style for the rest of
-    the column labels. If a vector of `Vector{TypstPair}}` is provided, each column label
+    the column labels. If a vector of `Vector{TypstPair}` is provided, each column label
     will use the corresponding style.
 - `first_line_merged_column_label::Vector{TypstPair}`: Style for the merged cells at the
     first column label line.
@@ -314,7 +298,7 @@ Define the style of the tables printed with the Typst back end.
 - `summary_row_cell::Vector{TypstPair}`: Style for the summary row cell.
 - `summary_row_label::Vector{TypstPair}`: Style for the summary row label.
 - `footnote::Vector{TypstPair}`: Style for the footnote.
-- `source_notes::Vector{TypstPair}`: Style for the source notes.
+- `source_note::Vector{TypstPair}`: Style for the source notes.
 """
 @kwdef struct TypstTableStyle{
     TFCL <: Union{Vector{TypstPair}, Vector{Vector{TypstPair}}},
@@ -347,10 +331,10 @@ Define a Typst caption configuration to be used by the Typst backend.
 # Fields
 
 - `caption::String`: Caption text.
-- `kind::Union{Auto, String}`: Caption kind forwarded to Typst (for example, `auto` or a
+- `kind::String`: Caption kind forwarded to Typst (for example, `auto` or a
     custom kind).
 - `supplement::Union{Nothing, String}`: Optional caption supplement.
-- `gap::Union{Auto, AbstractTypstLength}`: Gap between figure content and caption.
+- `gap::String`: Gap between figure content and caption.
 - `position::Union{Nothing, String}`: Optional caption position.
 """
 @kwdef struct TypstCaption

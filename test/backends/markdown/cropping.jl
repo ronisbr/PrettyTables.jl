@@ -23,7 +23,7 @@
             matrix;
             backend = :markdown,
             maximum_number_of_rows = 2,
-            maximum_number_of_columns = 3
+            maximum_number_of_columns = 3,
         )
 
         @test result == expected
@@ -46,7 +46,7 @@
             backend = :markdown,
             maximum_number_of_rows = 2,
             maximum_number_of_columns = 3,
-            vertical_crop_mode = :middle
+            vertical_crop_mode = :middle,
         )
 
         @test result == expected
@@ -67,7 +67,26 @@
             backend = :markdown,
             maximum_number_of_rows = 2,
             maximum_number_of_columns = 3,
-            show_omitted_cell_summary = false
+            show_omitted_cell_summary = false,
+        )
+
+        @test result == expected
+    end
+
+    @testset "Omitted Cell Summary With Zero Maximum Number of Rows" begin
+        expected = """
+| **Col. 1** | **Col. 2** |
+|-----------:|-----------:|
+|          ⋮ |          ⋮ |
+
+*2 rows omitted*
+"""
+
+        result = pretty_table(
+            String,
+            [1 2; 3 4];
+            backend = :markdown,
+            maximum_number_of_rows = 0,
         )
 
         @test result == expected

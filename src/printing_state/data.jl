@@ -5,16 +5,52 @@
 ############################################################################################
 
 """
+    _get_data_cell(data, i::Int, j::Int) -> Any
+
+Return the normalized data cell at `(i, j)`, or `_UNDEFINED_CELL` if it is unassigned.
+"""
+function _get_data_cell(data::AbstractVecOrMat, i::Int, j::Int)
+    return isassigned(data, i, j) ? getindex(data, i, j) : _UNDEFINED_CELL
+end
+
+"""
+    _get_data_cell(data::ColumnTable, i::Int, j::Int) -> Any
+
+Return a column-table cell using only one column retrieval, mapping an undefined reference
+to the undefined cell marker. This function is important for the performance since the
+column lookup is dynamic and happens once per data cell.
+"""
+function _get_data_cell(data::ColumnTable, i::Int, j::Int)
+    col = Tables.getcolumn(data.table, data.column_names[j])
+
+    # If the column is a `Tuple`, all the elements are defined.
+    (col isa Tuple) && return col[i]
+
+    return isassigned(col, i) ? col[i] : _UNDEFINED_CELL
+end
+
+"""
+    _get_data_cell(data::RowTable, i::Int, j::Int) -> Any
+
+Return a row-table cell using one retrieval, mapping an undefined reference to the undefined
+cell marker.
+"""
+function _get_data_cell(data::RowTable, i::Int, j::Int)
+    try
+        return getindex(data, i, j)
+    catch e
+        e isa UndefRefError && return _UNDEFINED_CELL
+        rethrow()
+    end
+end
+
+"""
     _current_cell(action::Symbol, state::PrintingTableState, table_data::TableData) -> Any
 
 Return the current data specified by the `action` and the current printing table `state` of
 `table_data`.
 """
-function _current_cell(
-    action::Symbol,
-    state::PrintingTableState,
-    table_data::TableData
-)
+function _current_cell(action::Symbol, state::PrintingTableState, table_data::TableData)
     if action == :title
         return table_data.title
 
@@ -30,7 +66,7 @@ function _current_cell(
         end
 
     elseif action == :row_number
-        return state.i - 1 + firstindex(table_data.data, 1)
+        return state.i - 1 + table_data.first_row_index
 
     elseif action == :summary_row_number
         return ""
@@ -52,13 +88,13 @@ function _current_cell(
 
     elseif action == :row_label
         rl = table_data.row_labels
-        return isnothing(rl) ? "" : table_data.row_labels[state.i - 1 + begin]
+        return isnothing(rl) ? "" : rl[state.i - 1 + begin]
 
     elseif action == :summary_row_label
         return table_data.summary_row_labels[state.i - 1 + begin]
 
     elseif action == :column_label
-        # Check if this cell must be merged or if is is part of a merged cell.
+        # Check if this cell must be merged or if it is part of a merged cell.
         if !isnothing(table_data.merge_column_label_cells)
             for mc in table_data.merge_column_label_cells
                 if (mc.i == state.i)
@@ -77,15 +113,7 @@ function _current_cell(
         i₀ = table_data.first_row_index
         j₀ = table_data.first_column_index
 
-        cell_data = if isassigned(
-            table_data.data,
-            state.i - 1 + i₀,
-            state.j - 1 + j₀
-        )
-            table_data.data[state.i - 1 + i₀, state.j - 1 + j₀]
-        else
-            _UNDEFINED_CELL
-        end
+        cell_data = _get_data_cell(table_data.data, state.i - 1 + i₀, state.j - 1 + j₀)
 
         if !isnothing(table_data.formatters)
             for f in table_data.formatters
@@ -98,11 +126,16 @@ function _current_cell(
     elseif action == :summary_row_cell
         f = table_data.summary_rows[state.i - 1 + begin]
 
-        col = @views table_data.data[:, state.j]
+        # The printing state column index is always 1-based, whereas the data can have an
+        # arbitrary column axis. Hence, we must offset it exactly like the `:data` action
+        # does. Otherwise, the summary would be computed from the wrong source column.
+        j₀ = table_data.first_column_index
+
+        col = @views table_data.data[:, state.j - 1 + j₀]
 
         applicable(f, col) && return f(col)
 
-        return f(table_data.data, state.j)
+        return f(table_data.data, state.j - 1 + j₀)
 
     elseif action == :footnote
         return table_data.footnotes[state.i - 1 + begin].second
@@ -119,15 +152,20 @@ function _current_cell(
 end
 
 """
-    _current_cell_footnotes(table_data::TableData, cell_type::Symbol, i::Int, j::Int) -> Union{Nothing, Vector{Int}}
+    _current_cell_footnotes(
+        table_data::TableData,
+        cell_type::Symbol,
+        i::Int,
+        j::Int
+    ) -> Union{Nothing, Vector{Int}}
 
-Return an array of integers with the footnotes defined in `table_data` for the `cell_type`
-at position `(i, j)`.
+Return the ordered footnote indices for the `cell_type` at `(i, j)`, or `nothing` if there
+are no matches.
 """
 function _current_cell_footnotes(table_data::TableData, cell_type::Symbol, i::Int, j::Int)
     isnothing(table_data.footnotes) && return nothing
 
-    current_footnotes = Int[]
+    current_footnotes = nothing
 
     for k in 1:length(table_data.footnotes)
         f, _ = table_data.footnotes[k - 1 + begin]
@@ -135,11 +173,15 @@ function _current_cell_footnotes(table_data::TableData, cell_type::Symbol, i::In
 
         if (ct == cell_type) && (fi == i)
             if (
-                # Cell types that only requires testing the row index.
-                (ct ∈ (:title, :subtitle, :row_number, :row_label, :summary_row_number)) ||
+                # Cell types that only require testing the row index.
+                (ct ∈ (:title, :subtitle, :row_number, :row_label, :summary_row_label)) ||
                 (fj == j)
             )
-                push!(current_footnotes, k)
+                if isnothing(current_footnotes)
+                    current_footnotes = Int[k]
+                else
+                    push!(current_footnotes, k)
+                end
             end
         end
     end

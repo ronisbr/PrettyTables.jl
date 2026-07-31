@@ -193,7 +193,7 @@
                     ["text-weight" => "bold", "text-fill" => "green"],
                 ),
             ],
-            caption = TypstCaption("Caption table", kind = "table"),
+            caption = TypstCaption("Caption table"; kind = "table"),
         )
         @test result == expected
     end
@@ -258,9 +258,9 @@
                     ["text-weight" => "bold", "text-fill" => "green"],
                 ),
             ],
-            style = TypstTableStyle(table = ["text-size"=>"1em"]),
+            style = TypstTableStyle(; table = ["text-size" => "1em"]),
             caption = TypstCaption(
-                "Custom kind", kind = "pretty-tables", supplement = "Pretty Tables"
+                "Custom kind"; kind = "pretty-tables", supplement = "Pretty Tables"
             ),
         )
         @test result == expected
@@ -326,9 +326,9 @@
                     ["text-weight" => "bold", "text-fill" => "green"],
                 ),
             ],
-            style = TypstTableStyle(table = ["text-size"=>"1em"]),
+            style = TypstTableStyle(; table = ["text-size" => "1em"]),
             caption = TypstCaption(
-                "Table with custom supplement", kind = "table", supplement = "Pretty Tables"
+                "Table with custom supplement"; kind = "table", supplement = "Pretty Tables"
             ),
         )
         @test result == expected

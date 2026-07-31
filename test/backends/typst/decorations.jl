@@ -9,7 +9,6 @@
     backend = :typst
 
     @testset "Decoration of Column Labels" begin
-
         expected = """
 #{
   table(
@@ -184,7 +183,23 @@
                         "weigth"      => "",
                     ],
                 ),
-            );
+            )
         end
+    end
+    @testset "Per-Column Style for the Column Labels" begin
+        # `column_label` may be a single style applied to every column, or a vector holding
+        # one style per column. Only the scalar form was covered.
+        result = pretty_table(
+            String,
+            [1 2];
+            backend = :typst,
+            column_labels = [["A", "B"], ["a", "b"]],
+            style = TypstTableStyle(;
+                column_label = [["text-fill" => "red"], ["text-fill" => "blue"]],
+            ),
+        )
+
+        @test occursin("red", result)
+        @test occursin("blue", result)
     end
 end

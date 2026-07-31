@@ -224,7 +224,7 @@ pretty_table(
 )
 ```
 
-![image|320x500](../excel/excel_images/Excel_table_style.png)
+![image|320x500](../excel/excel_images/excel_example_table_style.png)
 
 ## Excel borders and fill
 

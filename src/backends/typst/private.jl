@@ -4,6 +4,29 @@
 #
 ############################################################################################
 
+# == Typstry.jl Integration ================================================================
+
+"""
+    _typst__is_raw_typst_cell(cell::Any) -> Bool
+
+Return whether the `cell` content must be treated as a raw Typst component. This function is
+overloaded by the Typstry.jl extension for `TypstString` cells.
+"""
+_typst__is_raw_typst_cell(::Any) = false
+
+"""
+    _typst__display(output_str::String) -> Bool
+
+Try to display the rendered table `output_str` using the available displays. This function
+returns whether the table was displayed. If Typstry.jl is loaded, the extension renders the
+table as an image, provided that the current display supports it.
+"""
+function _typst__display(output_str::String)
+    ext = Base.get_extension(PrettyTables, :PrettyTablesTypstryExt)
+    isnothing(ext) && return false
+    return ext._typst__display(output_str)::Bool
+end
+
 # == Alignment =============================================================================
 
 """
@@ -22,7 +45,7 @@ Create the Typst alignment configuration string for the given `td::TableData`.
 function _typst__alignment_configuration(td::TableData)
     num_columns = td.num_columns
 
-    alignment_str = IOBuffer(sizehint = 8num_columns)
+    alignment_str = IOBuffer(; sizehint = 8num_columns)
 
     # == Row Number Column =================================================================
 
@@ -36,11 +59,7 @@ function _typst__alignment_configuration(td::TableData)
 
     # == Data Columns ======================================================================
 
-    nc = if td.maximum_number_of_columns >= 0
-        min(td.maximum_number_of_columns, num_columns)
-    else
-        num_columns
-    end
+    nc = _number_of_printed_data_columns(td)
 
     for i in 1:nc
         print(alignment_str, _typst__alignment(_data_column_alignment(td, i)) * ", ")
@@ -66,6 +85,11 @@ second returned vector contains only valid text properties prefixed with `text-`
 prefix removed.
 """
 function _typst__cell_and_text_properties(vproperties::Vector{TypstPair})
+    # Most data cells have no properties at all. Hence, we return shared empty vectors to
+    # avoid two allocations per cell. Notice that the callers must not mutate the returned
+    # vectors.
+    isempty(vproperties) && return _TYPST__EMPTY_PROPERTIES, _TYPST__EMPTY_PROPERTIES
+
     # Separate cell and text attributes in a single pass to reduce allocations.
     cell_properties = TypstPair[]
     text_properties = TypstPair[]
@@ -104,19 +128,19 @@ Print a table cell to the output stream in Typst format.
 - `minify::Bool`: If `true`, prints the cell in minified format.
 """
 function _typst__print_cell(
-    io::IO,
-    cell::String,
-    first_column::Bool,
-    il::Int,
-    ns::Int,
-    minify::Bool
+    io::IO, cell::String, first_column::Bool, il::Int, ns::Int, minify::Bool
 )
-    cell_str = cell * ","
-
-    !minify && return _aprintln(io, cell_str, il, ns)
+    # Notice that the trailing comma is printed separately to avoid allocating a new string
+    # per cell.
+    if !minify
+        _aprint(io, cell, il, ns)
+        println(io, ',')
+        return nothing
+    end
 
     first_column || print(io, " ")
-    print(io, cell_str)
+    print(io, cell)
+    print(io, ',')
     return nothing
 end
 
@@ -141,13 +165,15 @@ function _typst__table_cell(
     properties::Vector{TypstPair};
     il::Int = 2,
     ns::Int = 2,
-    wrap_column::Int = 92
+    wrap_column::Int = 92,
 )
     isempty(properties) && return _typst__table_cell(content; il, ns, wrap_column)
     return _typst__create_component("table.cell", content, properties; il, ns, wrap_column)
 end
 
-function _typst__table_cell(content::String; il::Int = 2, ns::Int = 2, wrap_column::Int = 92)
+function _typst__table_cell(
+    content::String; il::Int = 2, ns::Int = 2, wrap_column::Int = 92
+)
     cl = length(content)
     id_str = repeat(" ", ns)
 
@@ -160,14 +186,16 @@ end
 """
     _typst__create_component(component::String, content::String; kwargs...) -> String
 
-Create an HTML `component` with the `content`.
+Create a Typst `component` with the `content`.
 
 # Keywords
 
-- `properties::Union{Nothing, Vector{TypstPair}}`: Tag properties.
-    (**Default**: `nothing`)
-- `style::Union{Nothing, Vector{TypstPair}}`: Tag style.
-    (**Default**: `nothing`)
+- `il::Int`: Indentation level for formatting.
+    (**Default**: 0)
+- `ns::Int`: Number of spaces in each indentation level.
+    (**Default**: 2)
+- `wrap_column::Int`: Column width threshold for wrapping the content.
+    (**Default**: 92)
 """
 function _typst__create_component(
     component::String,
@@ -181,7 +209,8 @@ function _typst__create_component(
 
     line_length = length(open_tag) + length(content) + 1
 
-    !_typst__should_wrap(line_length, il, ns, wrap_column) && return open_tag * content * "]"
+    !_typst__should_wrap(line_length, il, ns, wrap_column) &&
+        return open_tag * content * "]"
 
     buf = IOBuffer()
 
@@ -201,8 +230,7 @@ end
 Create the string that opens the Typst `component` with the given `properties`.
 """
 function _typst__open_component(
-    component::String,
-    properties::Union{Nothing, Vector{TypstPair}} = nothing
+    component::String, properties::Union{Nothing, Vector{TypstPair}} = nothing
 )
     prop_str = isnothing(properties) ? "" : "($(_typst__property_list(properties)))"
     return "$component$prop_str["
@@ -214,7 +242,7 @@ end
 Create a Typst property list string from the given vector of `properties`.
 """
 function _typst__property_list(properties::Vector{TypstPair})
-    buf = IOBuffer(sizehint = length(properties) * 32)
+    buf = IOBuffer(; sizehint = length(properties) * 32)
     first_prop = true
 
     for (k, v) in properties
@@ -224,9 +252,13 @@ function _typst__property_list(properties::Vector{TypstPair})
         print(buf, k)
 
         if !isempty(v)
-            v_str = _typst__escape_str(v)
-            starts_with_digit = isdigit(first(v_str))
+            starts_with_digit = isdigit(first(v))
             needs_quote = !starts_with_digit && (k ∈ _TYPST__STRING_ATTRIBUTES)
+
+            # The property values are emitted in Typst code mode. Hence, we must not apply
+            # the markup escaping here. If the value is emitted inside a string literal, we
+            # only need to escape the backslash and the double quote.
+            v_str = needs_quote ? _typst__escape_string_literal(v) : v
 
             print(buf, ": ")
             needs_quote && print(buf, "\"")
@@ -256,15 +288,21 @@ function _typst__process_caption(c::TypstCaption, il::Int)
 
     !isnothing(position) && @_println(buf, ind, "position: ", position, ",")
 
-    @_println(buf, ind, "[", caption, "]")
+    @_println(buf, ind, "[", _typst__escape_str(caption), "]")
     @_println(buf, "),")
 
     if kind ∉ ("table", "auto", "image")
-        @_println(buf, "kind: \"", kind, "\",")
-        @_println(buf, "supplement: [", something(supplement, titlecase(kind)), "],")
+        @_println(buf, "kind: \"", _typst__escape_string_literal(kind), "\",")
+        @_println(
+            buf,
+            "supplement: [",
+            _typst__escape_str(something(supplement, titlecase(kind))),
+            "],"
+        )
     else
         @_println(buf, "kind: ", kind, ",")
-        !isnothing(supplement) && @_println(buf, "supplement: [", supplement, "],")
+        !isnothing(supplement) &&
+            @_println(buf, "supplement: [", _typst__escape_str(supplement), "],")
     end
 
     gap != "auto" && @_println(buf, "gap: ", gap, ",")
@@ -312,7 +350,7 @@ function _typst__vertical_lines!(
 
     current_typst_column = 0
 
-    # We must skit the title and subtitles since they must not have vertical lines.
+    # We must skip the title and subtitles since they must not have vertical lines.
     has_title    = !isempty(td.title)
     has_subtitle = !isempty(td.subtitle)
 
@@ -326,11 +364,33 @@ function _typst__vertical_lines!(
     _vline(x, stroke) = begin
         # Using only one argument in `print` to avoid intermediate string allocations.
         if vs == 0
-            @_println(buf, padding, "table.vline(x: ", x, ", end: ", nr, ", stroke: ", stroke, "),")
+            @_println(
+                buf,
+                padding,
+                "table.vline(x: ",
+                x,
+                ", end: ",
+                nr,
+                ", stroke: ",
+                stroke,
+                "),"
+            )
             return nothing
         end
 
-        @_println(buf, padding, "table.vline(x: ", x, ", start: ", vs, ", end: ", nr, ", stroke: ", stroke, "),")
+        @_println(
+            buf,
+            padding,
+            "table.vline(x: ",
+            x,
+            ", start: ",
+            vs,
+            ", end: ",
+            nr,
+            ", stroke: ",
+            stroke,
+            "),"
+        )
         return nothing
     end
 
@@ -356,11 +416,7 @@ function _typst__vertical_lines!(
 
     # == Data Columns ======================================================================
 
-    nc = if td.maximum_number_of_columns >= 0
-        min(td.maximum_number_of_columns, num_columns)
-    else
-        num_columns
-    end
+    nc = _number_of_printed_data_columns(td)
 
     for i in 1:nc
         current_typst_column += 1
@@ -390,6 +446,12 @@ end
 
 # == Strings ===============================================================================
 
+# ASCII characters that carry a special meaning in Typst markup and, hence, must be escaped
+# with a backslash when they occur inside a cell. Notice that the cell content is emitted
+# inside a Typst content block (`[...]`), meaning that an unbalanced `[` or `]` silently
+# breaks the entire document.
+const _TYPST__ESCAPED_CHARACTERS = ('\\', '#', '[', ']', '*', '_', '$', '<', '>', '@', '`', '~')
+
 """
     _typst__escape_str(io::IO, s::AbstractString) -> Nothing
     _typst__escape_str(s::AbstractString) -> String
@@ -398,22 +460,22 @@ Print the string `s` in `io` escaping the characters for the Typst backend. If `
 omitted, the escaped string is returned.
 """
 function _typst__escape_str(io::IO, s::AbstractString)
-    a = Iterators.Stateful(s)
-
-    for c in a
+    for c in s
         if Base.isascii(c)
-            c == '#'   ? print(io, "\\#") :
-            isprint(c) ? print(io, c) : print(io, "\\x", string(UInt32(c); base = 16, pad = 2))
+            # Notice that Typst has no `\xNN` escape sequence. Hence, the non-printable
+            # characters must be emitted using the `\u{...}` escape sequence.
+            c ∈ _TYPST__ESCAPED_CHARACTERS ? print(io, '\\', c) :
+            isprint(c) ? print(io, c) : print(io, "\\u{", string(UInt32(c); base = 16), "}")
 
         elseif !Base.isoverlong(c) && !Base.ismalformed(c)
-            isprint(c)    ? print(io, c) :
-            c <= '\x7f'   ? print(io, "\\x", string(UInt32(c); base = 16, pad = 2)) :
-            c <= '\uffff' ? print(io, "\\u", string(UInt32(c); base = 16, pad = Base.need_full_hex(peek(a)) ? 4 : 2)) :
-                            print(io, "\\U", string(UInt32(c); base = 16, pad = Base.need_full_hex(peek(a)) ? 8 : 4))
+            isprint(c) ? print(io, c) : print(io, "\\u{", string(UInt32(c); base = 16), "}")
+
         else # malformed or overlong
+            # We cannot represent these bytes in a valid Typst document. Hence, we replace
+            # each one with the Unicode replacement character.
             u = bswap(reinterpret(UInt32, c))
             while true
-                print(io, "\\x", string(u % UInt8; base = 16, pad = 2))
+                print(io, '\ufffd')
                 (u >>= 8) == 0 && break
             end
         end
@@ -425,6 +487,25 @@ function _typst__escape_str(s::AbstractString)
 end
 
 """
+    _typst__escape_string_literal(s::AbstractString) -> String
+
+Escape `s` so that it can be embedded inside a Typst **string literal** (`"..."`).
+
+Notice that this is a different context from the one `_typst__escape_str` handles. Inside a
+string literal only the backslash and the double quote are special, and an unescaped double
+quote terminates the literal, breaking the document.
+"""
+function _typst__escape_string_literal(s::AbstractString)
+    buf = IOBuffer(; sizehint = lastindex(s))
+
+    for c in s
+        (c == '\\') || (c == '"') ? print(buf, '\\', c) : print(buf, c)
+    end
+
+    return String(take!(buf))
+end
+
+"""
     _typst__should_wrap(str_length::Int, il::Int, ns::Int, wrap_column::Int) -> Bool
 
 Determine whether a string with length `str_length` should be wrapped in Typst backend based
@@ -433,8 +514,8 @@ the number of spaces per indentation level is `ns`, and the maximum column width
 wrapping is `wrap_column`.
 """
 function _typst__should_wrap(str_length::Int, il::Int, ns::Int, wrap_column::Int)
-    identation_length = (il - 1) * ns
-    return (wrap_column >= 0) && (identation_length + str_length) > wrap_column
+    indentation_length = (il - 1) * ns
+    return (wrap_column >= 0) && (indentation_length + str_length) > wrap_column
 end
 
 # == Styles ================================================================================
@@ -449,13 +530,12 @@ If `data_column_widths` is `nothing` (default), it defaults to "auto" for all co
 """
 function _typst__get_data_column_widths(table_data::TableData, ::Nothing)
     return _typst__get_data_column_widths(
-        table_data,
-        Base.Iterators.repeated("auto", table_data.num_columns)
+        table_data, Base.Iterators.repeated("auto", table_data.num_columns)
     )
 end
 
 function _typst__get_data_column_widths(table_data::TableData, data_column_widths)
-    buf = IOBuffer(sizehint = 8 * (table_data.num_columns + 3) + 2)
+    buf = IOBuffer(; sizehint = 8 * (table_data.num_columns + 3) + 2)
 
     print(buf, "(")
 
@@ -488,17 +568,25 @@ function _typst__get_data_column_widths(table_data::TableData, data_column_width
     return String(take!(buf))
 end
 
-""" 
+"""
     _typst__merge_properties!(bproperties::Vector{TypstPair}, nproperties::Vector{TypstPair}) -> Vector{TypstPair}
 
 Merge two Typst properties, `bproperties` and `nproperties`, giving priority to
 `nproperties` in case of conflicts.
 """
-function _typst__merge_properties!(bproperties::Vector{TypstPair}, nproperties::Vector{TypstPair})
-    nkeys = first.(nproperties)
-
+function _typst__merge_properties!(
+    bproperties::Vector{TypstPair}, nproperties::Vector{TypstPair}
+)
+    # NOTE: `first.(nproperties)` would allocate a `Vector{String}` on every merge. Scanning
+    # `nproperties` directly avoids it, and the vectors involved are tiny.
     filter!(bproperties) do l
-        first(l) ∉ nkeys
+        k = first(l)
+
+        for np in nproperties
+            first(np) == k && return false
+        end
+
+        return true
     end
 
     append!(bproperties, nproperties)

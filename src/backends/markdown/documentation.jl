@@ -34,7 +34,7 @@ A set of highlighters can be passed as a `Vector{MarkdownHighlighter}` to the `h
 keyword. Each highlighter is an instance of the structure [`MarkdownHighlighter`](@ref). It
 contains the following two public fields:
 
-- `f::Function`: Function with the signature `f(data, i, j)` in which should return `true`
+- `f::Function`: Function with the signature `f(data, i, j)` which should return `true`
     if the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
 - `fd::Function`: Function with the signature `fd(h, data, i, j)` in which `h` is the
     highlighter. This function must return the [`MarkdownStyle`](@ref) to be applied to the
@@ -62,14 +62,14 @@ MarkdownHighlighter(f::Function, decoration::MarkdownStyle)
 MarkdownHighlighter(f::Function, fd::Function)
 ```
 
+The first will apply a fixed decoration to the highlighted cell specified in `decoration`,
 whereas the second lets the user select the desired decoration by specifying the function
-`fd`.
 `fd`.
 
 !!! note
 
     If multiple highlighters are valid for the element `(i, j)`, the applied style will be
-    equal to the first match considering the order in the tuple `highlighters`.
+    equal to the first match considering the order in the vector `highlighters`.
 
 !!! note
 
@@ -96,7 +96,7 @@ that contains the following fields:
 
 - `row_number_label::MarkdownStyle`: Style for the row number label.
 - `row_number::MarkdownStyle`: Style for the row number.
-- `first_column_label::MarkdownStyle`: Style for the first line of the column labels.
+- `stubhead_label::MarkdownStyle`: Style for the stubhead label.
 - `row_label::MarkdownStyle`: Style for the row label.
 - `row_group_label::MarkdownStyle`: Style for the row group label.
 - `first_line_column_label::Union{MarkdownStyle, Vector{MarkdownStyle}}`: Style for the
@@ -114,7 +114,7 @@ that contains the following fields:
 Each field is an instance of the structure [`MarkdownStyle`](@ref) describing the style to
 be applied to the corresponding element.
 
-For example, if we want that the stubhead label is bold and italic, we must define:
+For example, if we want the stubhead label to be bold and italic, we must define:
 
 ```julia
 style = MarkdownTableStyle(

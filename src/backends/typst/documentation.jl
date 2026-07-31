@@ -65,14 +65,14 @@ A Typst highlighter can be constructed using three helpers:
 ```julia
 TypstHighlighter(f::Function, decoration::Vector{Pair{String, String}})
 
-TypstHighlighter(f::Function, decorations::NTuple{N, Pair{String, String}})
+TypstHighlighter(f::Function, decoration::TypstPair)
 
 TypstHighlighter(f::Function, fd::Function)
 ```
 
-The first applies a fixed decoration to the highlighted cell specified in `decoration`, the
-second allows specifying decorations as a `Tuple`, and the third lets the user select the
-desired decoration by specifying the function `fd`.
+The first two apply a fixed decoration to the highlighted cell specified in `decoration`,
+whereas the third lets the user select the desired decoration by specifying the function
+`fd`.
 
 !!! note
 
@@ -128,12 +128,12 @@ contains the following fields:
 - `horizontal_line_at_beginning::Bool`: If `true`, a horizontal line will be drawn at the
     beginning of the table.
 - `horizontal_line_at_merged_column_labels::Bool`: If `true`, a horizontal line will be
-    drawn on bottom of the merged column labels using `\\cline`.
+    drawn at the bottom of the merged column labels using `table.hline`.
 - `horizontal_line_after_column_labels::Bool`: If `true`, a horizontal line will be drawn
     after the column labels.
 - `horizontal_lines_at_data_rows::Union{Symbol, Vector{Int}}`: A horizontal line will be
     drawn after each data row index listed in this vector. If the symbol `:all` is passed, a
-    horizontal line will be drawn after every data column. If the symbol `:none` is passed,
+    horizontal line will be drawn after every data row. If the symbol `:none` is passed,
     no horizontal lines will be drawn after the data rows.
 - `horizontal_line_before_row_group_label::Bool`: If `true`, a horizontal line will be
     drawn before the row group label.
@@ -144,7 +144,7 @@ contains the following fields:
 - `horizontal_line_before_summary_rows::Bool`: If `true`, a horizontal line will be drawn
     before the summary rows. Notice that this line is the same as the one drawn if
     `horizontal_line_after_data_rows` is `true`. However, in this case, the line is omitted
-    if there is no summary rows.
+    if there are no summary rows.
 - `horizontal_line_after_summary_rows::Bool`: If `true`, a horizontal line will be drawn
     after the summary rows.
 - `vertical_line_at_beginning::Bool`: If `true`, a vertical line will be drawn at the
@@ -196,7 +196,8 @@ contains the following fields:
 - `summary_row_cell::Vector{TypstPair}`: Style for the summary row cell.
 - `summary_row_label::Vector{TypstPair}`: Style for the summary row label.
 - `footnote::Vector{TypstPair}`: Style for the footnote.
-- `source_notes::Vector{TypstPair}`: Style for the source notes.
+- `omitted_cell_summary::Vector{TypstPair}`: Style for the omitted cell summary.
+- `source_note::Vector{TypstPair}`: Style for the source notes.
 
 Each field is a vector of [`TypstPair`](@ref), *i.e.* `Pair{String, String}`, describing
 properties and values compatible with the Typst style attribute.

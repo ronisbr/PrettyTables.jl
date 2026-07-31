@@ -36,7 +36,10 @@ Source Notes
                 String,
                 matrix;
                 column_labels = [["Col. $i" for i in 1:4], ["$i" for i in 1:4]],
-                footnotes = [(:column_label, 1, 2) => "Footnote in column label", (:data, 2, 2) => "Footnote in data"],
+                footnotes = [
+                    (:column_label, 1, 2) => "Footnote in column label",
+                    (:data, 2, 2) => "Footnote in data",
+                ],
                 merge_column_label_cells = [MergeCells(1, 2, 2, "Merged Column", :c)],
                 row_group_labels = [2 => "Row Group"],
                 row_labels = ["Row $i" for i in 1:5],
@@ -80,7 +83,10 @@ Source Notes
                 matrix;
                 color = true,
                 column_labels = [["Col. $i" for i in 1:4], ["$i" for i in 1:4]],
-                footnotes = [(:column_label, 1, 2) => "Footnote in column label", (:data, 2, 2) => "Footnote in data"],
+                footnotes = [
+                    (:column_label, 1, 2) => "Footnote in column label",
+                    (:data, 2, 2) => "Footnote in data",
+                ],
                 merge_column_label_cells = [MergeCells(1, 2, 2, "Merged Column", :c)],
                 row_group_labels = [2 => "Row Group"],
                 row_labels = ["Row $i" for i in 1:5],
@@ -123,7 +129,10 @@ Source Notes
             result = pretty_table(
                 String,
                 matrix;
-                footnotes = [(:column_label, 1, 2) => "Footnote in column label", (:data, 2, 2) => "Footnote in data"],
+                footnotes = [
+                    (:column_label, 1, 2) => "Footnote in column label",
+                    (:data, 2, 2) => "Footnote in data",
+                ],
                 maximum_number_of_columns = 2,
                 maximum_number_of_rows = 2,
                 merge_column_label_cells = [MergeCells(1, 2, 2, "Merged Column", :c)],
@@ -167,7 +176,10 @@ Source Notes
                 String,
                 matrix;
                 color = true,
-                footnotes = [(:column_label, 1, 2) => "Footnote in column label", (:data, 2, 2) => "Footnote in data"],
+                footnotes = [
+                    (:column_label, 1, 2) => "Footnote in column label",
+                    (:data, 2, 2) => "Footnote in data",
+                ],
                 maximum_number_of_columns = 2,
                 maximum_number_of_rows = 2,
                 merge_column_label_cells = [MergeCells(1, 2, 2, "Merged Column", :c)],
@@ -209,7 +221,10 @@ Source Notes
             result = pretty_table(
                 String,
                 matrix;
-                footnotes = [(:column_label, 1, 2) => "Footnote in column label", (:data, 2, 2) => "Footnote in data"],
+                footnotes = [
+                    (:column_label, 1, 2) => "Footnote in column label",
+                    (:data, 2, 2) => "Footnote in data",
+                ],
                 maximum_number_of_columns = 2,
                 maximum_number_of_rows = 2,
                 merge_column_label_cells = [MergeCells(1, 2, 2, "Merged Column", :c)],
@@ -221,7 +236,7 @@ Source Notes
                 subtitle = "Table Subtitle",
                 summary_rows = [(data, i) -> 10i, (data, i) -> 20i],
                 title = "Table Title",
-                vertical_crop_mode = :middle
+                vertical_crop_mode = :middle,
             )
 
             @test result == expected
@@ -251,7 +266,10 @@ Source Notes
                 String,
                 matrix;
                 color = true,
-                footnotes = [(:column_label, 1, 2) => "Footnote in column label", (:data, 2, 2) => "Footnote in data"],
+                footnotes = [
+                    (:column_label, 1, 2) => "Footnote in column label",
+                    (:data, 2, 2) => "Footnote in data",
+                ],
                 maximum_number_of_columns = 2,
                 maximum_number_of_rows = 2,
                 merge_column_label_cells = [MergeCells(1, 2, 2, "Merged Column", :c)],
@@ -263,11 +281,10 @@ Source Notes
                 subtitle = "Table Subtitle",
                 summary_rows = [(data, i) -> 10i, (data, i) -> 20i],
                 title = "Table Title",
-                vertical_crop_mode = :middle
+                vertical_crop_mode = :middle,
             )
 
             @test result == expected
         end
     end
 end
-

@@ -15,10 +15,7 @@
         # not contain the `b` (bold) key that `style.row_number_label` would introduce.
         data = reshape(1:9, 3, 3)  # 3 rows, 3 columns
         result = pretty_table(
-            XLSX.XLSXFile,
-            data;
-            backend = :excel,
-            maximum_number_of_rows = 1,
+            XLSX.XLSXFile, data; backend = :excel, maximum_number_of_rows = 1
         )
 
         # Find the continuation row (the row containing \"⋮\") in column A.

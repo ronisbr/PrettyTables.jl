@@ -6,11 +6,7 @@
 
 @testset "Tables.jl Compatibility" begin
     # A NamedTuple is compliant with Tables.jl API.
-    table = (
-        x = Int64(1):Int64(3),
-        y = 'a':'c',
-        z = ["String 1";"String 2";"String 3"]
-    )
+    table = (x = Int64(1):Int64(3), y = 'a':'c', z = ["String 1"; "String 2"; "String 3"])
 
     # Thus, the following 5 calls must provide the same results.
     result_1 = pretty_table(String, table)
@@ -34,9 +30,7 @@
 
     # If the column labels is passed, it must replace the Tables.jl schema.
     result = pretty_table(
-        String,
-        table;
-        column_labels = ["My col. 1", "My col. 2", "My col. 3"]
+        String, table; column_labels = ["My col. 1", "My col. 2", "My col. 3"]
     )
 
     expected = """
@@ -52,8 +46,88 @@
     @test result == expected
 end
 
-@testset "Tables.jl without Schema" begin
+@testset "RowTable acquisition state" begin
+    mutable struct InstrumentedRowSource
+        rows::Vector{NamedTuple{(:a, :b), Tuple{Int, Int}}}
+        iterator_calls::Int
+        subset_calls::Dict{Int, Int}
+        subset_works::Bool
+    end
 
+    Tables.istable(::Type{InstrumentedRowSource}) = true
+    Tables.rowaccess(::Type{InstrumentedRowSource}) = true
+    Tables.rows(source::InstrumentedRowSource) = source
+    Tables.schema(::InstrumentedRowSource) = Tables.Schema((:a, :b), (Int, Int))
+    Base.length(source::InstrumentedRowSource) = length(source.rows)
+
+    function Base.iterate(source::InstrumentedRowSource)
+        isempty(source.rows) && return nothing
+        source.iterator_calls += 1
+        return source.rows[1], (:opaque_iterator_state, 2)
+    end
+
+    function Base.iterate(source::InstrumentedRowSource, state::Tuple{Symbol, Int})
+        i = state[2]
+        i > length(source.rows) && return nothing
+        source.iterator_calls += 1
+        return source.rows[i], (:opaque_iterator_state, i + 1)
+    end
+
+    function Tables.subset(source::InstrumentedRowSource, i::Int; viewhint = nothing)
+        source.subset_calls[i] = get(source.subset_calls, i, 0) + 1
+        source.subset_works || throw(ArgumentError("subset disabled"))
+        return source.rows[i]
+    end
+
+    make_source(; subset_works = false) = InstrumentedRowSource(
+        [(a = i, b = 10i) for i in 1:6], 0, Dict{Int, Int}(), subset_works
+    )
+
+    source = make_source()
+    rtable = PrettyTables.RowTable(source)
+    source.iterator_calls = 0
+    @test [rtable[i, 1] for i in 1:6] == collect(1:6)
+    @test source.iterator_calls == 6
+    @test all(==(1), values(source.subset_calls))
+
+    for i in (Int32(2), UInt(2))
+        source = make_source()
+        rtable = PrettyTables.RowTable(source)
+        source.iterator_calls = 0
+        @test (rtable[i, 1], rtable[i, 2]) == (2, 20)
+        @test source.iterator_calls == 2
+    end
+
+    source = make_source()
+    rtable = PrettyTables.RowTable(source)
+    source.iterator_calls = 0
+    @test (rtable[3, 1], rtable[3, 2]) == (3, 30)
+    @test source.iterator_calls == 3
+    @test get(source.subset_calls, 3, 0) == 1
+    @test rtable[1, 1] == 1
+    @test source.iterator_calls == 4
+    @test rtable[2, 2] == 20
+    @test source.iterator_calls == 5
+
+    out_of_range_failed = try
+        rtable[10, 1]
+        false
+    catch
+        true
+    end
+    @test out_of_range_failed
+    @test rtable[2, 1] == 2
+
+    source = make_source(; subset_works = true)
+    rtable = PrettyTables.RowTable(source)
+    source.iterator_calls = 0
+    @test [(rtable[i, 1], rtable[i, 2]) for i in 1:6] == [(i, 10i) for i in 1:6]
+    @test source.iterator_calls == 0
+    @test source.subset_calls == Dict(i => 1 for i in 1:6)
+    @test PrettyTables._get_data(rtable) === source
+end
+
+@testset "Tables.jl without Schema" begin
     expected = """
 ┌───┬───────┬─────┬───┐
 │ a │     b │   c │ d │
@@ -82,7 +156,8 @@ end
 
     Tables.columnaccess(::Type{<:MyColumnTable}) = true
     Tables.columns(m::MyColumnTable) = m
-    Tables.getcolumn(m::MyColumnTable, ::Type{T}, col::Int, nm::Symbol) where {T} = mat(m)[:, col]
+    Tables.getcolumn(m::MyColumnTable, ::Type{T}, col::Int, nm::Symbol) where {T} =
+        mat(m)[:, col]
     Tables.getcolumn(m::MyColumnTable, nm::Symbol) = mat(m)[:, lookup(m)[nm]]
     Tables.getcolumn(m::MyColumnTable, i::Int) = mat(m)[:, i]
     Tables.columnnames(m::MyColumnTable) = names(m)
@@ -96,11 +171,7 @@ end
         6     true      6.0     0x06
     ]
 
-    table = MyColumnTable(
-        [:a, :b, :c, :d],
-        Dict(:a => 1, :b => 2, :c => 3, :d => 4),
-        data
-    )
+    table = MyColumnTable([:a, :b, :c, :d], Dict(:a => 1, :b => 2, :c => 3, :d => 4), data)
 
     result = pretty_table(String, table)
 
@@ -129,7 +200,8 @@ end
     Tables.rows(m::MyRowTable) = m
     Base.eltype(m::MyRowTable{T}) where {T} = MyMatrixRow{T}
     Base.length(m::MyRowTable) = size(mat(m), 1)
-    Base.iterate(m::MyRowTable, st = 1) = st > length(m) ? nothing : (MyMatrixRow(st, m), st + 1)
+    Base.iterate(m::MyRowTable, st = 1) =
+        st > length(m) ? nothing : (MyMatrixRow(st, m), st + 1)
 
     Tables.getcolumn(m::MyMatrixRow, ::Type, col::Int, nm::Symbol) =
         getfield(getfield(m, :source), :matrix)[getfield(m, :row), col]
@@ -137,19 +209,13 @@ end
     Tables.getcolumn(m::MyMatrixRow, i::Int) =
         getfield(getfield(m, :source), :matrix)[getfield(m, :row), i]
 
-    Tables.getcolumn(m::MyMatrixRow, nm::Symbol) = getfield(
-        getfield(m, :source), :matrix)[
-            getfield(m, :row),
-            getfield(getfield(m, :source), :lookup)[nm]
-        ]
+    Tables.getcolumn(m::MyMatrixRow, nm::Symbol) = getfield(getfield(m, :source), :matrix)[
+        getfield(m, :row), getfield(getfield(m, :source), :lookup)[nm]
+    ]
 
     Tables.columnnames(m::MyMatrixRow) = names(getfield(m, :source))
 
-    table = MyRowTable(
-        [:a, :b, :c, :d],
-        Dict(:a => 1, :b => 2, :c => 3, :d => 4),
-        data
-    )
+    table = MyRowTable([:a, :b, :c, :d], Dict(:a => 1, :b => 2, :c => 3, :d => 4), data)
 
     # This test does not have a valid `Tables.subet` implementation.
     result = pretty_table(String, table)
@@ -164,8 +230,8 @@ end
 end
 
 @testset "Tables.jl with Custom Column Name Vector" begin
-    struct TestVec{T} <: AbstractArray{T,1}
-        data::Array{T,1}
+    struct TestVec{T} <: AbstractArray{T, 1}
+        data::Array{T, 1}
     end
 
     struct MinimalTable
@@ -173,27 +239,25 @@ end
         colnames::TestVec
     end
 
-    Base.IndexStyle(::Type{A}) where {A<:TestVec} = Base.IndexCartesian()
+    Base.IndexStyle(::Type{A}) where {A <: TestVec} = Base.IndexCartesian()
     Base.size(A::TestVec) = size(getfield(A, :data))
     Base.getindex(A::TestVec, index::Int) = getindex(getfield(A, :data), index)
-    Base.collect(::Type{T}, itr::TestVec) where {T} = TestVec(collect(T, getfield(itr, :data)))
+    Base.collect(::Type{T}, itr::TestVec) where {T} =
+        TestVec(collect(T, getfield(itr, :data)))
 
     Tables.istable(x::MinimalTable) = true
     Tables.columnaccess(::MinimalTable) = true
     Tables.columnnames(x::MinimalTable) = getfield(x, :colnames)
     Tables.columns(x::MinimalTable) = x
     Base.getindex(x::MinimalTable, i1, i2) = getindex(getfield(x, :data), i1, i2)
-    Base.getproperty(x::MinimalTable, s::Symbol) = getindex(x, :, findfirst(==(s), Tables.columnnames(x)))
+    Base.getproperty(x::MinimalTable, s::Symbol) =
+        getindex(x, :, findfirst(==(s), Tables.columnnames(x)))
     Base.convert(::Type{<:TestVec}, x::Array) = TestVec(x)
 
     data     = [10.0^(i + j) for i in 1:10, j in 1:5]
     mintable = MinimalTable(data, [:C1, :C2, :C3, :C4, :C5])
 
-    str_data = pretty_table(
-        String,
-        data;
-        column_labels = ["C1", "C2", "C3", "C4", "C5"]
-    )
+    str_data = pretty_table(String, data; column_labels = ["C1", "C2", "C3", "C4", "C5"])
 
     str_mintable = pretty_table(String, mintable)
 
@@ -223,12 +287,10 @@ end
     Tables.columnnames(m::MinimalColumnTable) = getfield(m, :colnames)
     Tables.columns(m::MinimalColumnTable) = m
     Tables.getcolumn(m::MinimalColumnTable, i::Int) = m.columns[i]
-    Tables.getcolumn(m::MinimalColumnTable, nm::Symbol) = getindex(m.columns, findfirst(==(nm), m.colnames))
+    Tables.getcolumn(m::MinimalColumnTable, nm::Symbol) =
+        getindex(m.columns, findfirst(==(nm), m.colnames))
 
-    table = MinimalColumnTable(
-        [Vector{Any}(undef, 3) for _ in 1:3],
-        [:A, :B, :C]
-    )
+    table = MinimalColumnTable([Vector{Any}(undef, 3) for _ in 1:3], [:A, :B, :C])
 
     table.columns[1][1] = UInt64(1)
     table.columns[2][2] = Int64(1)
@@ -247,10 +309,10 @@ end
     struct MinimalRowTable{T}
         rows::Vector{MinimalRow{T}}
 
-        function MinimalRowTable(data::Vector{Vector{T}}, colnames::Vector{Symbol}) where T
-            new{T}(
-                [MinimalRow{T}(data[i], colnames) for i in 1:length(data)],
-            )
+        function MinimalRowTable(
+            data::Vector{Vector{T}}, colnames::Vector{Symbol}
+        ) where {T}
+            return new{T}([MinimalRow{T}(data[i], colnames) for i in 1:length(data)],)
         end
     end
 
@@ -260,12 +322,10 @@ end
 
     Tables.columnnames(m::MinimalRow) = getfield(m, :colnames)
     Tables.getcolumn(m::MinimalRow, i::Int) = m.data[i]
-    Tables.getcolumn(m::MinimalRow, nm::Symbol) = getindex(m.data, findfirst(==(nm), m.colnames))
+    Tables.getcolumn(m::MinimalRow, nm::Symbol) =
+        getindex(m.data, findfirst(==(nm), m.colnames))
 
-    table = MinimalRowTable(
-        [Vector{Any}(undef, 3) for _ in 1:3],
-        [:A, :B, :C]
-    )
+    table = MinimalRowTable([Vector{Any}(undef, 3) for _ in 1:3], [:A, :B, :C])
 
     table.rows[1].data[1] = UInt64(1)
     table.rows[2].data[2] = Int64(1)
@@ -280,4 +340,134 @@ end
 
     result = pretty_table(String, table)
     @test result == expected
+end
+
+@testset "Summary Rows Over Tables.jl Sources" verbose = true begin
+    # `summary_rows` asks the wrapper for a whole column with `data[:, j]`. Since both
+    # `ColumnTable` and `RowTable` used to forward that query straight to the user's object,
+    # every Tables.jl input threw a `MethodError` before the summary could be computed.
+    expected = """
+┌──┬───────┬───────┐
+│  │     a │     b │
+│  │ Int64 │ Int64 │
+├──┼───────┼───────┤
+│  │     1 │     4 │
+│  │     2 │     5 │
+│  │     3 │     6 │
+├──┼───────┼───────┤
+│  │     6 │    15 │
+└──┴───────┴───────┘
+"""
+
+    @testset "NamedTuple" begin
+        result = pretty_table(
+            String,
+            (a = [1, 2, 3], b = [4, 5, 6]);
+            summary_rows = [sum],
+            summary_row_labels = [""],
+            show_row_number_column = false,
+        )
+
+        @test result == expected
+    end
+
+    @testset "Column Access" begin
+        result = pretty_table(
+            String,
+            Tables.columntable((a = [1, 2, 3], b = [4, 5, 6]));
+            summary_rows = [sum],
+            summary_row_labels = [""],
+            show_row_number_column = false,
+        )
+
+        @test result == expected
+    end
+
+    @testset "Row Access" begin
+        rows = [(a = 1, b = 4), (a = 2, b = 5), (a = 3, b = 6)]
+
+        result = pretty_table(
+            String,
+            Tables.rowtable(rows);
+            summary_rows = [sum],
+            summary_row_labels = [""],
+            show_row_number_column = false,
+        )
+
+        @test result == expected
+    end
+end
+
+@testset "Tables.jl Wrapper Edge Cases" verbose = true begin
+    @testset "Column Table With Tuple Columns" begin
+        # `isassigned` short-circuits to `true` when the column is a `Tuple`, since a tuple
+        # cannot hold an undefined element. Every existing column table test uses `Vector`
+        # columns, so that branch was never taken.
+        struct TupleColumnTable
+            columns::NamedTuple
+        end
+
+        Tables.istable(::Type{TupleColumnTable}) = true
+        Tables.columnaccess(::Type{TupleColumnTable}) = true
+        Tables.columns(t::TupleColumnTable) = t
+        Tables.columnnames(t::TupleColumnTable) = keys(getfield(t, :columns))
+        Tables.getcolumn(t::TupleColumnTable, nm::Symbol) = getfield(t, :columns)[nm]
+        Tables.getcolumn(t::TupleColumnTable, i::Int) = getfield(t, :columns)[i]
+        Tables.rowcount(t::TupleColumnTable) = length(first(getfield(t, :columns)))
+
+        expected = """
+┌───┬───┐
+│ a │ b │
+├───┼───┤
+│ 1 │ 4 │
+│ 2 │ 5 │
+│ 3 │ 6 │
+└───┴───┘
+"""
+
+        table = TupleColumnTable((a = (1, 2, 3), b = (4, 5, 6)))
+
+        @test pretty_table(String, table) == expected
+    end
+
+    @testset "Row Table Without Rows" verbose = true begin
+        # `RowTable` obtains the column names from the first row. When the table has no rows
+        # at all, it must fall back to the schema, and to an empty set of columns when there
+        # is no schema either. Neither fallback was covered.
+
+        @testset "With a Schema" begin
+            struct EmptyRowsWithSchema end
+
+            Tables.istable(::Type{EmptyRowsWithSchema}) = true
+            Tables.rowaccess(::Type{EmptyRowsWithSchema}) = true
+            Tables.rows(s::EmptyRowsWithSchema) = s
+            Tables.schema(::EmptyRowsWithSchema) = Tables.Schema((:a, :b), (Int, Int))
+            Base.length(::EmptyRowsWithSchema) = 0
+            Base.iterate(::EmptyRowsWithSchema, state = 1) = nothing
+
+            expected = """
+┌───────┬───────┐
+│     a │     b │
+│ Int64 │ Int64 │
+└───────┴───────┘
+"""
+
+            @test pretty_table(String, EmptyRowsWithSchema()) == expected
+        end
+
+        @testset "Without a Schema" begin
+            struct EmptyRowsNoSchema end
+
+            Tables.istable(::Type{EmptyRowsNoSchema}) = true
+            Tables.rowaccess(::Type{EmptyRowsNoSchema}) = true
+            Tables.rows(s::EmptyRowsNoSchema) = s
+            Tables.schema(::EmptyRowsNoSchema) = nothing
+            Base.length(::EmptyRowsNoSchema) = 0
+            Base.iterate(::EmptyRowsNoSchema, state = 1) = nothing
+
+            # Without rows and without a schema there is nothing to name, so the table has
+            # no columns and prints nothing.
+            @test pretty_table(String, EmptyRowsNoSchema()) == ""
+        end
+    end
 end

@@ -64,18 +64,11 @@
 └────────────────────┘
 """
 
-        result = pretty_table(
-            String,
-            v
-        )
+        result = pretty_table(String, v)
 
         @test result == expected
 
-        result = pretty_table(
-            String,
-            v;
-            renderer = :show
-        )
+        result = pretty_table(String, v; renderer = :show)
 
         @test result == expected
     end
@@ -96,12 +89,7 @@
 └──────────────┴────────┘
 """
 
-            result = pretty_table(
-                String,
-                matrix;
-                alignment = [:c, :l],
-                color = true
-            )
+            result = pretty_table(String, matrix; alignment = [:c, :l], color = true)
 
             @test result == expected
         end

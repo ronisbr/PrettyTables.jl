@@ -52,18 +52,10 @@
 </table>
 """
 
-    result = pretty_table(
-        String,
-        matrix;
-        backend = :html
-    )
+    result = pretty_table(String, matrix; backend = :html)
     @test result == expected
 
-    result = pretty_table(
-        String,
-        matrix;
-        table_format = HtmlTableFormat()
-    )
+    result = pretty_table(String, matrix; table_format = HtmlTableFormat())
     @test result == expected
 
     result = pretty_table_html_backend(String, matrix)
@@ -73,12 +65,7 @@
     @test typeof(result) == HTML{String}
     @test result.content == expected
 
-    result = pretty_table(
-        HTML,
-        matrix;
-        backend = :html
-    )
+    result = pretty_table(HTML, matrix; backend = :html)
     @test typeof(result) == HTML{String}
     @test result.content == expected
 end
-
