@@ -1,6 +1,11 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 3.4.5
+-------------
+
+- ![Info][badge-info] Some unnecessary files were removed.
+
 Version 3.4.4
 -------------
 
