@@ -409,6 +409,13 @@ Base.@nospecializeinfer function _pretty_table(
         summary_row_labels = SummaryLabelIterator(summary_rows)
     end
 
+    # If the column labels are hidden, the merged column label cells can never be rendered.
+    # Dropping the specification here avoids inconsistent border junctions and spurious
+    # width adjustments computed for labels that are not printed.
+    if !show_column_labels
+        _merge_column_label_cells = nothing
+    end
+
     if show_first_column_label_only
         column_labels = [column_labels[1]]
 

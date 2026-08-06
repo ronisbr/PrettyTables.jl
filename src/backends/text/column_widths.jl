@@ -311,8 +311,10 @@ function _text__printed_column_widths(
         printed_data_column_widths[j] = m
     end
 
-    # Resize the columns based on the merged cells.
-    if !isnothing(table_data.merge_column_label_cells)
+    # Resize the columns based on the merged cells. Notice that we must skip this step if
+    # the column labels are not rendered since we have no reference to compute the merged
+    # cell width.
+    if !isnothing(table_data.merge_column_label_cells) && !isnothing(column_labels)
         @views for mc in table_data.merge_column_label_cells
             mc.j > num_printed_data_columns && continue
 

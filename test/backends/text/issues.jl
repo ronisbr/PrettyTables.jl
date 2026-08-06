@@ -136,3 +136,25 @@ end
 
     @test result == expected
 end
+
+@testset "Merged Column Labels With Hidden Column Labels" begin
+    # If the column labels are hidden, a merged column label specification can never be
+    # rendered. Hence, it must be ignored instead of crashing the column width computation
+    # or changing the border junctions.
+    expected = """
+┌───┬───┬───┐
+│ 1 │ 2 │ 3 │
+│ 4 │ 5 │ 6 │
+│ 7 │ 8 │ 9 │
+└───┴───┴───┘
+"""
+
+    result = pretty_table(
+        String,
+        [1 2 3; 4 5 6; 7 8 9];
+        column_labels = [[MultiColumn(2, "M"), "c3"]],
+        show_column_labels = false,
+    )
+
+    @test result == expected
+end
