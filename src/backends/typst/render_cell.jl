@@ -23,6 +23,12 @@ function _typst__cell_to_str(cell::Any, context::IOContext, ::Val{:show})
     return cell_str
 end
 
+function _typst__cell_to_str(cell::AbstractString, context::IOContext, ::Val{:print})
+    # Notice that we must not use `string` here because it is the identity for any
+    # `AbstractString`, whereas the callers require a `String`.
+    return String(cell)
+end
+
 function _typst__cell_to_str(cell::AbstractString, context::IOContext, ::Val{:show})
     if showable(MIME("text/typst"), cell)
         cell_str = _sprint_with_context(show, context, MIME("text/typst"), cell)

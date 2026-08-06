@@ -18,6 +18,13 @@ function _html__cell_to_str(cell::Any, context::IOContext, ::Val{:print})
     return _sprint_with_context(print, context, cell)
 end
 
+function _html__cell_to_str(cell::AbstractString, context::IOContext, ::Val{:print})
+    # Escaping is performed afterward in `_html__render_cell`. Hence, we can return the
+    # string here without any allocation, avoiding the `sprint` overhead.
+    cell isa String && return cell
+    return String(cell)
+end
+
 function _html__cell_to_str(cell::Any, context::IOContext, ::Val{:show})
     if showable(MIME("text/html"), cell)
         cell_str = _sprint_with_context(show, context, MIME("text/html"), cell)

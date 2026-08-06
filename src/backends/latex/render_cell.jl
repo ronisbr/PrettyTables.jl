@@ -28,6 +28,12 @@ function _latex__cell_to_str(cell::Any, context::IOContext, ::Val{:show})
     return cell_str
 end
 
+function _latex__cell_to_str(cell::AbstractString, context::IOContext, ::Val{:print})
+    # Notice that we must not use `string` here because it is the identity for any
+    # `AbstractString`, whereas the callers require a `String`.
+    return String(cell)
+end
+
 function _latex__cell_to_str(cell::AbstractString, context::IOContext, ::Val{:show})
     return string(cell)
 end
