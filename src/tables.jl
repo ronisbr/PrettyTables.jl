@@ -204,7 +204,12 @@ function getindex(rtable::RowTable, i, j)
     if subset_succeeded && access_state.subset_getcolumn_supported
         try
             return Tables.getcolumn(subset_row, column_name)
-        catch
+        catch e
+            # A real undefined cell is not a capability failure of the subset path. Hence,
+            # we must rethrow it so the caller can convert it into an undefined cell marker
+            # instead of permanently downgrading every access to the iterator path.
+            e isa UndefRefError && rethrow()
+
             # Preserve the broad subset-to-iterator fallback semantics. As above, latch the
             # capability so that the failure is paid for only once.
             access_state.subset_getcolumn_supported = false
