@@ -25,24 +25,6 @@ function _sprint_with_context(f::F, @nospecialize(context::IOContext), args...) 
 end
 
 """
-    struct RenderContext
-
-Reusable rendering buffer. One instance is created per backend print call, meaning that the
-per-cell rendering pays for a single `String` allocation instead of a fresh `IOBuffer` plus
-`IOContext` per cell. The wrapped `IOContext` layers over the caller context so that
-`:__PRETTY_TABLES__DATA__`, `:compact`, and `:limit` still flow through.
-"""
-struct RenderContext
-    buf::IOBuffer
-    ctx::IOContext{IOBuffer}
-end
-
-function RenderContext(@nospecialize(context::IOContext))
-    buf = IOBuffer()
-    return RenderContext(buf, IOContext(buf, context))
-end
-
-"""
     _iocontext(context::Union{IOContext, RenderContext}) -> IOContext
 
 Return the underlying `IOContext`. It is required by APIs that must receive an `IOContext`,

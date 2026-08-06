@@ -83,6 +83,24 @@ const _IGNORE_CELL = __IGNORE_CELL__()
 struct UndefinedCell end
 const _UNDEFINED_CELL = UndefinedCell()
 
+"""
+    struct RenderContext
+
+Reusable rendering buffer. One instance is created per backend print call, meaning that the
+per-cell rendering pays for a single `String` allocation instead of a fresh `IOBuffer` plus
+`IOContext` per cell. The wrapped `IOContext` layers over the caller context so that
+`:__PRETTY_TABLES__DATA__`, `:compact`, and `:limit` still flow through.
+"""
+struct RenderContext
+    buf::IOBuffer
+    ctx::IOContext{IOBuffer}
+end
+
+function RenderContext(@nospecialize(context::IOContext))
+    buf = IOBuffer()
+    return RenderContext(buf, IOContext(buf, context))
+end
+
 @kwdef mutable struct TableData
     data::Any
 
