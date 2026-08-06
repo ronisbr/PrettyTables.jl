@@ -1,6 +1,30 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 3.4.6
+-------------
+
+- ![Enhancement][badge-enhancement] Render each cell only once in the text back end.
+  Previously, the printing pass fetched the cells again, running the formatters and the
+  summary row functions twice per cell.
+- ![Enhancement][badge-enhancement] Skip the `isassigned` check for arrays with an
+  `isbits` element type since they can never hold undefined references, halving the number
+  of accesses to the user data.
+- ![Enhancement][badge-enhancement] Keep the fast access path of row tables when a cell
+  contains an undefined reference. Previously, a single undefined cell downgraded every
+  subsequent access to the slower iterator path.
+- ![Enhancement][badge-enhancement] Reuse a rendering buffer across the entire table in
+  all back ends, meaning that converting a cell to a string now pays for a single
+  allocation instead of three.
+- ![Enhancement][badge-enhancement] Add a fast path for string cells rendered with the
+  default `:print` renderer in the HTML, LaTeX, Markdown, and Typst back ends, avoiding an
+  unnecessary `sprint` per cell.
+- ![Bugfix][badge-bugfix] Fix a crash in the text back end when merged column labels were
+  used together with `show_column_labels = false`.
+- ![Bugfix][badge-bugfix] Fix a crash in the text and Markdown back ends when a table with
+  rows but no columns was printed with summary rows.
+- ![Info][badge-info] Fix typos and outdated keyword references in the documentation.
+
 Version 3.4.5
 -------------
 
