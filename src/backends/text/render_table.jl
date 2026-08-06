@@ -33,6 +33,9 @@ of merged column labels.
 - `Union{Nothing, Matrix{String}}`: Rendered summary rows.
 - `Union{Nothing, Vector{String}}`: Rendered summary row labels.
 - `Union{Nothing, Vector{String}}`: Rendered footnotes.
+- `Union{Nothing, Dict{NTuple{2, Int}, AbstractCustomTextCell}}`: Custom text cells found
+    during the rendering, keyed by the rendered data cell indices, or `nothing` if the
+    table has none.
 """
 function _text__render_table(
     table_data::TableData,
@@ -72,6 +75,12 @@ function _text__render_table(
 
     footnotes = _has_footnotes(table_data) ? Vector{String}(undef, num_footnotes) : nothing
 
+    # Custom text cells must be accessed as live objects when printing. We record them here
+    # so the printing pass does not need to fetch the data cells again, which would re-run
+    # the formatters. Most tables have no custom cells, meaning that this variable stays
+    # `nothing` and the common path allocates nothing.
+    custom_cells = nothing
+
     action = :initialize
 
     # We must store the index related to the rendered tables. These indices differ from the
@@ -100,6 +109,14 @@ function _text__render_table(
         lb = (action == :data) && line_breaks
 
         cell = _current_cell(action, ps, table_data)
+
+        if (action == :data) && (cell isa AbstractCustomTextCell)
+            if isnothing(custom_cells)
+                custom_cells = Dict{NTuple{2, Int}, AbstractCustomTextCell}()
+            end
+
+            custom_cells[(ir, jr)] = cell
+        end
 
         mw =
             (action ∈ (:column_label, :data, :summary_row_cell)) ?
@@ -187,5 +204,6 @@ function _text__render_table(
         end
     end
 
-    return row_labels, column_labels, table_str, summary_rows, summary_row_labels, footnotes
+    return row_labels, column_labels, table_str, summary_rows, summary_row_labels,
+        footnotes, custom_cells
 end

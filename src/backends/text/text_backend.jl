@@ -259,8 +259,8 @@ function _text__print_table(
     # For the text back end, we need to render the entire table before printing to take into
     # account the required column width.
 
-    row_labels, column_labels, table_str, summary_rows, summary_row_labels, footnotes =
-        _text__render_table(
+    row_labels, column_labels, table_str, summary_rows, summary_row_labels, footnotes,
+        custom_cells = _text__render_table(
             table_data,
             context,
             renderer,
@@ -1157,8 +1157,11 @@ function _text__print_table(
 
         # If we reach this point, we are processing table cells.
 
+        # Notice that we only fetch the current cell in the branches that require the live
+        # object. All the other sections were already rendered by `_text__render_table`,
+        # and fetching the cell again would re-run the formatters and the summary row
+        # functions, duplicating the work and the accesses to the user data.
         alignment     = _current_cell_alignment(action, ps, table_data)
-        cell          = _current_cell(action, ps, table_data)
         cell_printed  = false
         cell_width    = 1
         decoration    = _TEXT__DEFAULT
@@ -1177,11 +1180,13 @@ function _text__print_table(
         # -- Width, Decoration, and Rendered String ----------------------------------------
 
         if action == :row_number_label
+            cell          = _current_cell(action, ps, table_data)
             cell_width    = row_number_column_width
             decoration    = style.row_number_label
             rendered_cell = _text__render_cell(cell, buf, renderer)
 
         elseif action == :stubhead_label
+            cell          = _current_cell(action, ps, table_data)
             cell_width    = row_label_column_width
             decoration    = style.stubhead_label
             rendered_cell = _text__render_cell(cell, buf, renderer)
@@ -1201,6 +1206,8 @@ function _text__print_table(
             rendered_cell = summary_row_labels[ir]
 
         elseif action == :column_label
+            # The live cell is required here to check for merged cells.
+            cell          = _current_cell(action, ps, table_data)
             cell_width    = printed_data_column_widths[jr]
             rendered_cell = column_labels[ir, jr]
             decoration    = if ir == 1
@@ -1256,11 +1263,16 @@ function _text__print_table(
             end
 
         elseif action == :row_number
+            cell          = _current_cell(action, ps, table_data)
             cell_width    = row_number_column_width
             decoration    = style.row_number
             rendered_cell = _text__render_cell(cell, buf, renderer)
 
         elseif action == :data
+            # Custom text cells were recorded during the rendering pass, avoiding a new
+            # fetch that would re-run the formatters.
+            cell = isnothing(custom_cells) ? nothing : get(custom_cells, (ir, jr), nothing)
+
             if cell isa AbstractCustomTextCell
                 cell_width = printed_data_column_widths[jr]
 
@@ -1358,7 +1370,7 @@ function _text__print_table(
             rendered_cell = summary_rows[ir, jr]
 
         elseif action == :row_group_label
-            alignment     = _current_cell_alignment(action, ps, table_data)
+            cell          = _current_cell(action, ps, table_data)
             cell_width    = printed_table_width - 4
             decoration    = style.row_group_label
             rendered_cell = _text__render_cell(cell, buf, renderer)

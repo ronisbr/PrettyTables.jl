@@ -412,3 +412,25 @@ end
         @test pretty_table(String, data) == expected
     end
 end
+
+@testset "Formatters and Summary Functions Run Once Per Cell" verbose = true begin
+    # The text back end renders the table before printing it. The printing pass must reuse
+    # the rendered strings instead of fetching the cells again, which would re-run the
+    # formatters and the summary row functions.
+    matrix = [i + j for i in 1:4, j in 1:3]
+
+    for backend in (:text, :html, :markdown)
+        @testset "$backend" begin
+            num_formatter_calls = Ref(0)
+            num_summary_calls   = Ref(0)
+
+            fmt = (v, i, j) -> (num_formatter_calls[] += 1; v)
+            sfn = col -> (num_summary_calls[] += 1; sum(col))
+
+            pretty_table(devnull, matrix; backend, formatters = [fmt], summary_rows = [sfn])
+
+            @test num_formatter_calls[] == 12
+            @test num_summary_calls[] == 3
+        end
+    end
+end
