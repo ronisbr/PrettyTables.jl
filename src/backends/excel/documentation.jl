@@ -38,7 +38,7 @@ The Excel backend's return value depends on the following combination of keyword
     (**Default**: `ExcelFormatter[]`)
 - `filename::Union{Nothing, String}`: Path of the Excel file to write. When `nothing`, no
     file is created and an in-memory `XLSX.XLSXFile` is returned instead. When a string,
-    behaviour depends on `mode`.
+    behavior depends on `mode`.
     (**Default**: `nothing`)
 - `highlighters::Vector{ExcelHighlighter}`: Highlighters to apply to the table. For more
     information, see the section **Excel Highlighters** in the **Extended Help**.

@@ -150,8 +150,8 @@ function _latex__print(
                     end
                 end
 
-                # Check if the next line is a row group label and the user request a line before
-                # it.
+                # Check if the next line is a row group label and the user requests a
+                # line before it.
             elseif (next_rs == :row_group_label) &&
                 tf.horizontal_line_before_row_group_label
                 hline_str *= tf.borders.middle_line

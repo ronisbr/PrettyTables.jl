@@ -60,7 +60,7 @@ whereas the second let the user select the desired decoration by specifying the 
 !!! note
 
     If multiple highlighters are valid for the element `(i, j)`, the applied style will be
-    equal to the first match considering the order in the tuple `highlighters`.
+    equal to the first match considering the order in the vector `highlighters`.
 
 !!! note
 

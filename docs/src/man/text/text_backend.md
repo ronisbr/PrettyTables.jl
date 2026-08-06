@@ -25,8 +25,8 @@ the output.
     `alignment_anchor_regex` will also be applied to the summary rows.
     (**Default** = `false`)
 - `auto_wrap::Bool`: If `true`, the text will be wrapped on spaces to fit the column. Notice
-  that this function requires `line_breaks = true` and the column must have a fixed size (see
-  `fixed_data_column_widths`).
+  that this option automatically enables `line_breaks` and the column must have a fixed
+  size (see `fixed_data_column_widths`).
   (**Default** = `false`)
 - `column_label_width_based_on_first_line_only::Bool`: If `true`, the column label width is
   based on the first line of the column. Hence, if the other column labels have a text width
@@ -34,8 +34,9 @@ the output.
   (**Default** = `false`)
 - `display_size::Tuple{Int, Int}`: A tuple of two integers that defines the display size
   (num. of rows, num. of columns) that is available to print the table. It is used to crop
-  the data depending on the value of the keyword `crop`. Notice that if a dimension is not
-  positive, it will be treated as unlimited.
+  the data depending on the values of the keywords `fit_table_in_display_horizontally` and
+  `fit_table_in_display_vertically`. Notice that if a dimension is not positive, it will be
+  treated as unlimited.
   (**Default** = `displaysize(io)`)
 - `equal_data_column_widths::Bool`: If `true`, the data columns will have the same width.
   (**Default** = `false`)
@@ -137,7 +138,7 @@ where it will apply the `Crayon` returned by the function `fd` to the highlighte
 !!! note
 
     If multiple highlighters are valid for the element `(i, j)`, the applied style will be
-    equal to the first match considering the order in the tuple `highlighters`.
+    equal to the first match considering the order in the vector `highlighters`.
 
 !!! note
 

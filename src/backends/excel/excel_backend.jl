@@ -14,7 +14,7 @@ passed through to `_excel__write_table!`.
 
 - `filename::Union{Nothing, String}`: Path of the Excel file to write. When `nothing`, no
     file is created and an in-memory `XLSX.XLSXFile` is returned instead. When a string,
-    behaviour depends on `mode`.
+    behavior depends on `mode`.
     (**Default**: `nothing`)
 - `sheet::Union{String, XLSX.Worksheet}`: When a `String`, the name of the worksheet tab.
     If no sheet with that name exists it will be created. When an `XLSX.Worksheet`, that

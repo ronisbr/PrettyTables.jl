@@ -920,8 +920,7 @@ function _text__print_table(
                     # If we reached this point, we must render another line of the same row.
                     # Hence, we will restore that saved state at the beginning of the line,
                     # and render it again. Since we increased `current_row_line`, we will
-                    # render the
-                    # next row.
+                    # render the next line of the same row.
                     ps = saved_ps
                     ir = saved_ir
                     continue

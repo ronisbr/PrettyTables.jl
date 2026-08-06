@@ -175,7 +175,7 @@ function _next(state::PrintingTableState, table_data::TableData)
             num_column_labels = length(table_data.column_labels)
 
             if i >= num_column_labels
-                # If the maximum number of row is 0, we must go to the continuation row.
+                # If the maximum number of rows is 0, we must go to the continuation row.
                 mr = table_data.maximum_number_of_rows
 
                 ((mr == 0) && (max_i > 0)) && return :end_row,
@@ -245,7 +245,7 @@ function _next(state::PrintingTableState, table_data::TableData)
                 rs,
                 PrintingTableState(_NEW_ROW - 1, next_i - 1, 0, :data)
 
-                # If there is no more rows to be printed, we can treat as we are in a bottom
+                # If there are no more rows to be printed, we can treat this as bottom
                 # cropping.
             end
 
