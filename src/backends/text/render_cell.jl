@@ -10,48 +10,70 @@
 # forward when rendering the cells.
 
 """
-    _text__cell_to_str(cell::Any, context::IOContext, renderer::Union{Val{:print}, Val{:show}}) -> String
+    _text__cell_to_str(cell::Any, context::Union{IOContext, RenderContext}, renderer::Union{Val{:print}, Val{:show}}) -> String
 
 Convert the `cell` to a string using a specific `context` and `renderer`.
 """
-function _text__cell_to_str(cell::Any, @nospecialize(context::IOContext), ::Val{:print})
+function _text__cell_to_str(
+    cell::Any,
+    @nospecialize(context::Union{IOContext, RenderContext}),
+    ::Val{:print}
+)
     cell isa String && return cell
     return _sprint_with_context(print, context, cell)
 end
 
-function _text__cell_to_str(cell::Any, @nospecialize(context::IOContext), ::Val{:show})
+function _text__cell_to_str(
+    cell::Any,
+    @nospecialize(context::Union{IOContext, RenderContext}),
+    ::Val{:show}
+)
     return _sprint_with_context(show, context, MIME("text/plain"), cell)
 end
 
 function _text__cell_to_str(
-    cell::AbstractString, @nospecialize(context::IOContext), ::Val{:show}
+    cell::AbstractString,
+    @nospecialize(context::Union{IOContext, RenderContext}),
+    ::Val{:show}
 )
     cell isa String && return cell
     return _sprint_with_context(print, context, cell)
 end
 
-function _text__cell_to_str(::UndefinedCell, @nospecialize(::IOContext), ::Val{:print})
-    return "#undef"
-end
-
-function _text__cell_to_str(::UndefinedCell, @nospecialize(::IOContext), ::Val{:show})
+function _text__cell_to_str(
+    ::UndefinedCell,
+    @nospecialize(_ctx::Union{IOContext, RenderContext}),
+    ::Val{:print}
+)
     return "#undef"
 end
 
 function _text__cell_to_str(
-    cell::MergeCells, @nospecialize(context::IOContext), renderer::Val{:print}
+    ::UndefinedCell,
+    @nospecialize(_ctx::Union{IOContext, RenderContext}),
+    ::Val{:show}
+)
+    return "#undef"
+end
+
+function _text__cell_to_str(
+    cell::MergeCells,
+    @nospecialize(context::Union{IOContext, RenderContext}),
+    renderer::Val{:print}
 )
     return _text__cell_to_str(cell.data, context, renderer)
 end
 
 function _text__cell_to_str(
-    cell::MergeCells, @nospecialize(context::IOContext), renderer::Val{:show}
+    cell::MergeCells,
+    @nospecialize(context::Union{IOContext, RenderContext}),
+    renderer::Val{:show}
 )
     return _text__cell_to_str(cell.data, context, renderer)
 end
 
 """
-    _text__render_cell(cell::Any, @nospecialize(context::IOContext), renderer::Union{Val{:print}, Val{:show}}, line_breaks::Bool = false, column_width::Int = -1) -> String
+    _text__render_cell(cell::Any, @nospecialize(context::Union{IOContext, RenderContext}), renderer::Union{Val{:print}, Val{:show}}, line_breaks::Bool = false, column_width::Int = -1) -> String
 
 Render the `cell` in text back end using a specific `context` and `renderer`.
 
@@ -61,7 +83,7 @@ used when rendering `Markdown.MD` cells.
 """
 function _text__render_cell(
     cell::Any,
-    @nospecialize(context::IOContext),
+    @nospecialize(context::Union{IOContext, RenderContext}),
     renderer::Union{Val{:print}, Val{:show}},
     line_breaks::Bool = false,
     column_width::Int = -1,
@@ -107,20 +129,20 @@ end
 
 function _text__render_cell(
     cell::AbstractCustomTextCell,
-    @nospecialize(context::IOContext),
+    @nospecialize(context::Union{IOContext, RenderContext}),
     renderer::Union{Val{:print}, Val{:show}},
     line_breaks::Bool = false,
     column_width::Int = -1,
 )::String
     # Here, we are rendering the cell for the first time. Hence, we need to initialize it.
-    CustomTextCell.init!(cell, context, renderer; line_breaks)
+    CustomTextCell.init!(cell, _iocontext(context), renderer; line_breaks)
 
     return CustomTextCell.printable_cell_text(cell)
 end
 
 function _text__render_cell(
     cell::Markdown.MD,
-    @nospecialize(context::IOContext),
+    @nospecialize(context::Union{IOContext, RenderContext}),
     renderer::Union{Val{:print}, Val{:show}},
     line_breaks::Bool = false,
     column_width::Int = -1,
@@ -146,7 +168,7 @@ end
 @static if VERSION >= v"1.11"
     function _text__render_cell(
         cell::Base.AnnotatedString,
-        @nospecialize(context::IOContext),
+        @nospecialize(context::Union{IOContext, RenderContext}),
         renderer::Union{Val{:print}, Val{:show}},
         line_breaks::Bool = false,
         column_width::Int = -1,

@@ -89,6 +89,9 @@ function _text__render_table(
 
     ps = PrintingTableState()
 
+    # Reusable render buffer: one allocation per table instead of three per cell.
+    rctx = RenderContext(context)
+
     while action != :end_printing
         action, rs, ps = _next(ps, table_data)
 
@@ -151,7 +154,7 @@ function _text__render_table(
         end
 
         rendered_cell = if cell !== _IGNORE_CELL
-            _text__render_cell(cell, context, renderer, lb, mw)
+            _text__render_cell(cell, rctx, renderer, lb, mw)
         else
             ""
         end
