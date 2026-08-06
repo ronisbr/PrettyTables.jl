@@ -398,12 +398,9 @@ function _latex__print(
                     elseif action == :summary_row_cell
                         envs = style.summary_row_cell
 
-                    elseif action == :footnote
-                        envs = style.footnote
-
-                    elseif action == :source_notes
-                        envs = style.source_note
-
+                    # Notice that `:footnote` and `:source_notes` cannot reach this point
+                    # because they are fully consumed by the dedicated `\multicolumn`
+                    # branches above.
                     else
                         # Here we have a data cell. Hence, let's check if we have a
                         # highlighter to apply.
