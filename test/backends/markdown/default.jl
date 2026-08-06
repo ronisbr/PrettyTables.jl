@@ -53,3 +53,16 @@ Subtitle
 
     @test result == expected
 end
+
+@testset "Summary Rows in Tables Without Columns" begin
+    # A table with rows but no columns has no printed cells. Hence, requesting summary rows
+    # must keep printing nothing instead of accessing undefined label references.
+    result = pretty_table(
+        String,
+        Matrix{Float64}(undef, 4, 0);
+        backend = :markdown,
+        summary_rows = [sum],
+    )
+
+    @test result == ""
+end

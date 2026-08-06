@@ -59,8 +59,11 @@ function _markdown__print(
         nothing
     end
 
+    # Notice that we must not allocate the label vectors with `undef` because the printing
+    # iterator does not fill them if the table has no printed columns, leading to undefined
+    # references when computing the column widths.
     row_labels = if _has_row_labels(table_data)
-        Vector{String}(undef, num_printed_data_rows)
+        fill("", num_printed_data_rows)
     else
         nothing
     end
@@ -74,7 +77,7 @@ function _markdown__print(
     end
 
     summary_row_labels = if _has_summary_rows(table_data)
-        Vector{String}(undef, num_summary_rows)
+        fill("", num_summary_rows)
     else
         nothing
     end
