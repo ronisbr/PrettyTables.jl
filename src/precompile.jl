@@ -59,7 +59,7 @@ PrecompileTools.@setup_workload begin
 
     # We will redirect the `stdout` so that the workload does not produce visible output.
     old_stdout = Base.stdout
-    new_stdout = redirect_stdout(devnull)
+    redirect_stdout(devnull)
 
     # In HTML, we use `display` if we are rendering to `stdout`. However, even if we are
     # redirecting it, the text is still being shown in the display. Thus, we create a buffer
@@ -78,278 +78,291 @@ PrecompileTools.@setup_workload begin
         :displaysize  => (25, 80),
     )
 
-    PrecompileTools.@compile_workload begin
-        # == Input: Arrays =================================================================
+    try
+        PrecompileTools.@compile_workload begin
+            # == Input: Arrays =============================================================
 
-        matrix = ones(10, 10)
+            matrix = ones(10, 10)
 
-        # -- General API -------------------------------------------------------------------
+            # -- General API ---------------------------------------------------------------
 
-        pretty_table(matrix; column_labels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
-        pretty_table(matrix; column_labels = [MultiColumn(5, "A"), EmptyCells(5)])
+            pretty_table(matrix; column_labels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+            pretty_table(matrix; column_labels = [MultiColumn(5, "A"), EmptyCells(5)])
 
-        # -- Text --------------------------------------------------------------------------
+            # -- Text ----------------------------------------------------------------------
 
-        pretty_table(matrix)
-        pretty_table(matrix; summary_rows = [sum, sum, sum])
+            pretty_table(matrix)
+            pretty_table(matrix; summary_rows = [sum, sum, sum])
 
-        pretty_table(
-            types;
-            alignment = :l,
-            fit_table_in_display_horizontally = false,
-            fit_table_in_display_vertically = false,
-        )
+            pretty_table(
+                types;
+                alignment = :l,
+                fit_table_in_display_horizontally = false,
+                fit_table_in_display_vertically = false,
+            )
 
-        pretty_table(
-            matrix; highlighters = [TextHighlighter((data, i, j) -> i == 1, crayon"bold")]
-        )
+            pretty_table(
+                matrix;
+                highlighters = [TextHighlighter((data, i, j) -> i == 1, crayon"bold")]
+            )
 
-        pretty_table(types)
+            pretty_table(types)
 
-        # .. Text Table Styles .............................................................
+            # .. Text Table Styles .........................................................
 
-        pretty_table(
-            matrix;
-            style = TextTableStyle(;
-                first_line_column_label = [crayon"bold yellow" for i in 1:10]
-            ),
-        )
+            pretty_table(
+                matrix;
+                style = TextTableStyle(;
+                    first_line_column_label = [crayon"bold yellow" for i in 1:10]
+                ),
+            )
 
-        pretty_table(
-            matrix;
-            style = TextTableStyle(; column_label = [crayon"bold yellow" for i in 1:10]),
-        )
+            pretty_table(
+                matrix;
+                style = TextTableStyle(;
+                    column_label = [crayon"bold yellow" for i in 1:10]
+                ),
+            )
 
-        pretty_table(
-            matrix;
-            style = TextTableStyle(;
-                first_line_column_label = [crayon"bold yellow" for i in 1:10],
-                column_label            = [crayon"bold yellow" for i in 1:10],
-            ),
-        )
+            pretty_table(
+                matrix;
+                style = TextTableStyle(;
+                    first_line_column_label = [crayon"bold yellow" for i in 1:10],
+                    column_label            = [crayon"bold yellow" for i in 1:10],
+                ),
+            )
 
-        # -- Options Used in DataFrames.jl -------------------------------------------------
+            # -- Options Used in DataFrames.jl ---------------------------------------------
 
-        style = TextTableStyle(; row_label = Crayon())
+            style = TextTableStyle(; row_label = Crayon())
 
-        table_format = TextTableFormat(;
-            @text__no_horizontal_lines,
-            @text__no_vertical_lines,
-            ellipsis_line_skip                    = 3,
-            horizontal_line_after_column_labels   = true,
-            horizontal_line_before_summary_rows   = true,
-            vertical_line_after_row_label_column  = true,
-            vertical_line_after_row_number_column = true,
-        )
+            table_format = TextTableFormat(;
+                @text__no_horizontal_lines,
+                @text__no_vertical_lines,
+                ellipsis_line_skip                    = 3,
+                horizontal_line_after_column_labels   = true,
+                horizontal_line_before_summary_rows   = true,
+                vertical_line_after_row_label_column  = true,
+                vertical_line_after_row_number_column = true,
+            )
 
-        hl = TextHighlighter((data, i, j) -> false, Crayon(; foreground = :dark_gray))
+            hl = TextHighlighter((data, i, j) -> false, Crayon(; foreground = :dark_gray))
 
-        pretty_table(
-            table;
-            alignment                         = [:l, :c, :r],
-            alignment_anchor_fallback         = :r,
-            alignment_anchor_regex            = [r"\."],
-            column_label_alignment            = :l,
-            column_labels                     = [["A", "B", "C"], ["A", "B", "C"]],
-            continuation_row_alignment        = :c,
-            display_size                      = (15, 33),
-            fit_table_in_display_horizontally = true,
-            fit_table_in_display_vertically   = true,
-            formatters                        = [(v, i, j) -> ismissing(v) ? "missing" : v],
-            highlighters                      = [hl],
-            maximum_data_column_widths        = [20, 20, 20],
-            new_line_at_end                   = false,
-            reserved_display_lines            = 2,
-            row_label_column_alignment        = :r,
-            row_labels                        = ["$i" for i in 1:10],
-            row_number_column_alignment       = :r,
-            row_number_column_label           = "Row",
-            show_first_column_label_only      = false,
-            show_row_number_column            = false,
-            stubhead_label                    = "Row",
-            style                             = style,
-            table_format                      = table_format,
-            title                             = "Test table",
-            title_alignment                   = :l,
-            vertical_crop_mode                = :middle,
-        )
+            pretty_table(
+                table;
+                alignment                         = [:l, :c, :r],
+                alignment_anchor_fallback         = :r,
+                alignment_anchor_regex            = [r"\."],
+                column_label_alignment            = :l,
+                column_labels                     = [["A", "B", "C"], ["A", "B", "C"]],
+                continuation_row_alignment        = :c,
+                display_size                      = (15, 33),
+                fit_table_in_display_horizontally = true,
+                fit_table_in_display_vertically   = true,
+                formatters                        = [
+                    (v, i, j) -> ismissing(v) ? "missing" : v
+                ],
+                highlighters                      = [hl],
+                maximum_data_column_widths        = [20, 20, 20],
+                new_line_at_end                   = false,
+                reserved_display_lines            = 2,
+                row_label_column_alignment        = :r,
+                row_labels                        = ["$i" for i in 1:10],
+                row_number_column_alignment       = :r,
+                row_number_column_label           = "Row",
+                show_first_column_label_only      = false,
+                show_row_number_column            = false,
+                stubhead_label                    = "Row",
+                style                             = style,
+                table_format                      = table_format,
+                title                             = "Test table",
+                title_alignment                   = :l,
+                vertical_crop_mode                = :middle,
+            )
 
-        # -- HTML --------------------------------------------------------------------------
+            # -- HTML ----------------------------------------------------------------------
 
-        pretty_table(html_buf, matrix; backend = :html)
+            pretty_table(html_buf, matrix; backend = :html)
 
-        pretty_table(
-            html_buf,
-            matrix;
-            backend = :html,
-            highlighters = [
-                HtmlHighlighter((data, i, j) -> i == 1, ["font-weight" => "bold"])
-            ],
-        )
+            pretty_table(
+                html_buf,
+                matrix;
+                backend = :html,
+                highlighters = [
+                    HtmlHighlighter((data, i, j) -> i == 1, ["font-weight" => "bold"])
+                ],
+            )
 
-        pretty_table(html_buf, types; backend = :html)
+            pretty_table(html_buf, types; backend = :html)
 
-        # .. HTML Table Styles .............................................................
+            # .. HTML Table Styles .........................................................
 
-        pretty_table(
-            html_buf,
-            matrix;
-            backend = :html,
-            style = HtmlTableStyle(;
-                first_line_column_label = [["color" => "red"] for i in 1:10]
-            ),
-        )
+            pretty_table(
+                html_buf,
+                matrix;
+                backend = :html,
+                style = HtmlTableStyle(;
+                    first_line_column_label = [["color" => "red"] for i in 1:10]
+                ),
+            )
 
-        pretty_table(
-            html_buf,
-            matrix;
-            backend = :html,
-            style = HtmlTableStyle(; column_label = [["color" => "red"] for i in 1:10]),
-        )
+            pretty_table(
+                html_buf,
+                matrix;
+                backend = :html,
+                style = HtmlTableStyle(; column_label = [["color" => "red"] for i in 1:10]),
+            )
 
-        pretty_table(
-            html_buf,
-            matrix;
-            backend = :html,
-            style = HtmlTableStyle(;
-                first_line_column_label = [["color" => "red"] for i in 1:10],
-                column_label            = [["color" => "red"] for i in 1:10],
-            ),
-        )
+            pretty_table(
+                html_buf,
+                matrix;
+                backend = :html,
+                style = HtmlTableStyle(;
+                    first_line_column_label = [["color" => "red"] for i in 1:10],
+                    column_label            = [["color" => "red"] for i in 1:10],
+                ),
+            )
 
-        # -- LaTeX -------------------------------------------------------------------------
+            # -- LaTeX ---------------------------------------------------------------------
 
-        pretty_table(matrix; backend = :latex)
+            pretty_table(matrix; backend = :latex)
 
-        pretty_table(
-            matrix;
-            backend = :latex,
-            highlighters = [LatexHighlighter((data, i, j) -> i == 1, ["textbf"])],
-        )
+            pretty_table(
+                matrix;
+                backend = :latex,
+                highlighters = [LatexHighlighter((data, i, j) -> i == 1, ["textbf"])],
+            )
 
-        pretty_table(types; backend = :latex)
+            pretty_table(types; backend = :latex)
 
-        # .. LaTeX Table Styles ............................................................
+            # .. LaTeX Table Styles ........................................................
 
-        pretty_table(
-            matrix;
-            backend = :latex,
-            style = LatexTableStyle(; first_line_column_label = [["textbf"] for i in 1:10]),
-        )
+            pretty_table(
+                matrix;
+                backend = :latex,
+                style = LatexTableStyle(;
+                    first_line_column_label = [["textbf"] for i in 1:10]
+                ),
+            )
 
-        pretty_table(
-            matrix;
-            backend = :latex,
-            style = LatexTableStyle(; column_label = [["textbf"] for i in 1:10]),
-        )
+            pretty_table(
+                matrix;
+                backend = :latex,
+                style = LatexTableStyle(; column_label = [["textbf"] for i in 1:10]),
+            )
 
-        pretty_table(
-            matrix;
-            backend = :latex,
-            style = LatexTableStyle(;
-                first_line_column_label = [["textbf"] for i in 1:10],
-                column_label            = [["textbf"] for i in 1:10],
-            ),
-        )
+            pretty_table(
+                matrix;
+                backend = :latex,
+                style = LatexTableStyle(;
+                    first_line_column_label = [["textbf"] for i in 1:10],
+                    column_label            = [["textbf"] for i in 1:10],
+                ),
+            )
 
-        # -- Markdown ----------------------------------------------------------------------
+            # -- Markdown ------------------------------------------------------------------
 
-        pretty_table(matrix; backend = :markdown)
+            pretty_table(matrix; backend = :markdown)
 
-        pretty_table(
-            matrix;
-            backend = :markdown,
-            highlighters = [
-                MarkdownHighlighter((data, i, j) -> i == 1, MarkdownStyle(; bold = true))
-            ],
-        )
+            pretty_table(
+                matrix;
+                backend = :markdown,
+                highlighters = [
+                    MarkdownHighlighter(
+                        (data, i, j) -> i == 1, MarkdownStyle(; bold = true)
+                    )
+                ],
+            )
 
-        pretty_table(types; backend = :markdown)
+            pretty_table(types; backend = :markdown)
 
-        # .. Markdown Table Styles .........................................................
+            # .. Markdown Table Styles .....................................................
 
-        pretty_table(
-            matrix;
-            backend = :markdown,
-            style = MarkdownTableStyle(;
-                first_line_column_label = [MarkdownStyle(; bold = true) for i in 1:10]
-            ),
-        )
+            pretty_table(
+                matrix;
+                backend = :markdown,
+                style = MarkdownTableStyle(;
+                    first_line_column_label = [MarkdownStyle(; bold = true) for i in 1:10]
+                ),
+            )
 
-        pretty_table(
-            matrix;
-            backend = :markdown,
-            style = MarkdownTableStyle(;
-                column_label = [MarkdownStyle(; italic = true) for i in 1:10]
-            ),
-        )
+            pretty_table(
+                matrix;
+                backend = :markdown,
+                style = MarkdownTableStyle(;
+                    column_label = [MarkdownStyle(; italic = true) for i in 1:10]
+                ),
+            )
 
-        pretty_table(
-            matrix;
-            backend = :markdown,
-            style = MarkdownTableStyle(;
-                first_line_column_label = [MarkdownStyle(; bold = true) for i in 1:10],
-                column_label            = [MarkdownStyle(; italic = true) for i in 1:10],
-            ),
-        )
+            pretty_table(
+                matrix;
+                backend = :markdown,
+                style = MarkdownTableStyle(;
+                    first_line_column_label = [MarkdownStyle(; bold = true) for i in 1:10],
+                    column_label            = [
+                        MarkdownStyle(; italic = true) for i in 1:10
+                    ],
+                ),
+            )
 
-        # == Typst =========================================================================
+            # == Typst =====================================================================
 
-        pretty_table(matrix; backend = :typst)
+            pretty_table(matrix; backend = :typst)
 
-        pretty_table(
-            matrix;
-            backend = :typst,
-            highlighters = [
-                TypstHighlighter((data, i, j) -> i == 1, ["text-fill" => "red"])
-            ],
-        )
+            pretty_table(
+                matrix;
+                backend = :typst,
+                highlighters = [
+                    TypstHighlighter((data, i, j) -> i == 1, ["text-fill" => "red"])
+                ],
+            )
 
-        pretty_table(types; backend = :typst)
+            pretty_table(types; backend = :typst)
 
-        #=        # == Excel =========================================================================
+            #=        # == Excel ===========================================================
 
-                pretty_table(matrix; backend = :excel)
+                    pretty_table(matrix; backend = :excel)
 
-                pretty_table(
-                    matrix;
-                    backend = :excel,
-                    highlighters = [
-                        ExcelHighlighter((data, i, j) -> i == 1, ["text-fill" => "red"])
-                    ]
-                )
+                    pretty_table(
+                        matrix;
+                        backend = :excel,
+                        highlighters = [
+                            ExcelHighlighter((data, i, j) -> i == 1, ["text-fill" => "red"])
+                        ]
+                    )
 
-                pretty_table(types; backend = :excel)
-        =#
-        # == Input: Tables.jl ==============================================================
+                    pretty_table(types; backend = :excel)
+            =#
+            # == Input: Tables.jl ==========================================================
 
-        pretty_table(table)
-        pretty_table(table; backend = :markdown)
-        pretty_table(table; backend = :latex)
-        pretty_table(html_buf, table; backend = :html)
+            pretty_table(table)
+            pretty_table(table; backend = :markdown)
+            pretty_table(table; backend = :latex)
+            pretty_table(html_buf, table; backend = :html)
 
-        # == Entry Points Used Outside a Redirected `stdout` ================================
+            # == Entry Points Used Outside a Redirected `stdout` ===========================
 
-        # Printing to an explicit `IOContext` is what happens in the REPL and in every
-        # `pretty_table(String, ...)` call. Without these, the first real print pays for the
-        # code generation of the whole rendering path.
-        pretty_table(io_buf, matrix)
-        take!(io_buf.io)
+            # Printing to an explicit `IOContext` is what happens in the REPL and in every
+            # `pretty_table(String, ...)` call. Without these, the first real print pays
+            # for the code generation of the whole rendering path.
+            pretty_table(io_buf, matrix)
+            take!(io_buf.io)
 
-        pretty_table(io_buf, table)
-        take!(io_buf.io)
+            pretty_table(io_buf, table)
+            take!(io_buf.io)
 
-        pretty_table(String, matrix)
-        pretty_table(String, table)
+            pretty_table(String, matrix)
+            pretty_table(String, table)
 
-        # `show(::IO, ::PrettyTable)` is a completely separate entry point.
-        show(io_buf, PrettyTable(matrix))
-        take!(io_buf.io)
+            # `show(::IO, ::PrettyTable)` is a completely separate entry point.
+            show(io_buf, PrettyTable(matrix))
+            take!(io_buf.io)
 
-        show(io_buf, PrettyTable(table))
-        take!(io_buf.io)
+            show(io_buf, PrettyTable(table))
+            take!(io_buf.io)
+        end
+    finally
+        # Restore stdout.
+        redirect_stdout(old_stdout)
     end
-
-    # Restore stdout.
-    redirect_stdout(old_stdout)
 end
