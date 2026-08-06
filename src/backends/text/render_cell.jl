@@ -10,7 +10,11 @@
 # context. Hence, we must pass it forward when rendering the cells.
 
 """
-    _text__cell_to_str(cell::Any, context::RenderContext, renderer::Union{Val{:print}, Val{:show}}) -> String
+    _text__cell_to_str(
+        cell::Any,
+        context::RenderContext,
+        renderer::Union{Val{:print}, Val{:show}}
+    ) -> String
 
 Convert the `cell` to a string using a specific `context` and `renderer`.
 """
@@ -40,7 +44,13 @@ function _text__cell_to_str(cell::MergeCells, context::RenderContext, renderer::
 end
 
 """
-    _text__render_cell(cell::Any, context::RenderContext, renderer::Union{Val{:print}, Val{:show}}, line_breaks::Bool = false, column_width::Int = -1) -> String
+    _text__render_cell(
+        cell::Any,
+        context::RenderContext,
+        renderer::Union{Val{:print}, Val{:show}},
+        line_breaks::Bool = false,
+        column_width::Int = -1
+    ) -> String
 
 Render the `cell` in text back end using a specific `context` and `renderer`.
 

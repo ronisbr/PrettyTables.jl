@@ -34,7 +34,14 @@ end
 # == Horizontal Cropping ===================================================================
 
 """
-    _text__is_printing_horizontally_limited(table_data::TableData, fit_table_in_display_horizontally::Bool, display_width::Int, num_printed_data_columns::Int, table_width_wo_cont_col::Int, vertical_line_after_continuation_column::Bool) -> Bool
+    _text__is_printing_horizontally_limited(
+        table_data::TableData,
+        fit_table_in_display_horizontally::Bool,
+        display_width::Int,
+        num_printed_data_columns::Int,
+        table_width_wo_cont_col::Int,
+        vertical_line_after_continuation_column::Bool
+    ) -> Bool
 
 Return `true` if the table printing is horizontally limited by the display, meaning that it
 will be cropped.
@@ -90,7 +97,15 @@ function _text__is_printing_horizontally_limited(
 end
 
 """
-    _text__number_of_printed_data_columns(display_width::Int, table_data::TableData, tf::TextTableFormat, vertical_lines_at_data_columns::AbstractVector{Int}, row_number_column_width::Int, row_label_column_width::Int, printed_data_column_widths::Vector{Int}) -> Int
+    _text__number_of_printed_data_columns(
+        display_width::Int,
+        table_data::TableData,
+        tf::TextTableFormat,
+        vertical_lines_at_data_columns::AbstractVector{Int},
+        row_number_column_width::Int,
+        row_label_column_width::Int,
+        printed_data_column_widths::Vector{Int}
+    ) -> Int
 
 Compute the number of printed data columns.
 
@@ -152,7 +167,10 @@ end
 # == Vertical Cropping =====================================================================
 
 """
-    _text__count_horizontal_lines(horizontal_lines::AbstractVector{Int}, last_row::Int) -> Int
+    _text__count_horizontal_lines(
+        horizontal_lines::AbstractVector{Int},
+        last_row::Int
+    ) -> Int
 
 Return how many of the rows in `1:last_row` have a horizontal line drawn after them
 according to `horizontal_lines`. Notice that a row is counted only once, even if it appears
@@ -192,7 +210,13 @@ function _text__count_horizontal_lines(horizontal_lines::AbstractVector{Int}, la
 end
 
 """
-    _text__number_of_required_lines(table_data::TableData, tf::TextTableFormat, horizontal_lines_at_column_labels::AbstractVector{Int}, horizontal_lines_at_data_rows::AbstractVector{Int}, new_line_at_end::Bool) -> NTuple{3, Int}
+    _text__number_of_required_lines(
+        table_data::TableData,
+        tf::TextTableFormat,
+        horizontal_lines_at_column_labels::AbstractVector{Int},
+        horizontal_lines_at_data_rows::AbstractVector{Int},
+        new_line_at_end::Bool
+    ) -> NTuple{3, Int}
 
 Compute the total number of lines required to print the table.
 
@@ -296,7 +320,15 @@ function _text__number_of_required_lines(
 end
 
 """
-    _text__design_vertical_cropping(table_data::TableData, tf::TextTableFormat, horizontal_lines_at_column_labels::AbstractVector{Int}, horizontal_lines_at_data_rows::AbstractVector{Int}, show_omitted_row_summary::Bool, display_number_of_rows::Int, new_line_at_end::Bool = true) -> Int, Bool, Bool
+    _text__design_vertical_cropping(
+        table_data::TableData,
+        tf::TextTableFormat,
+        horizontal_lines_at_column_labels::AbstractVector{Int},
+        horizontal_lines_at_data_rows::AbstractVector{Int},
+        show_omitted_row_summary::Bool,
+        display_number_of_rows::Int,
+        new_line_at_end::Bool = true
+    ) -> Int, Bool, Bool
 
 Design the vertical cropping of the table by computing how many data lines we can print and
 if we must suppress the horizontal line before or after the continuation line.
@@ -364,7 +396,7 @@ function _text__design_vertical_cropping(
 
         # In bottom mode, the continuation line will be at the end.
         available_lines =
-            display_number_of_rows - num_lines_before_data - num_lines_after_data - 1 # ........................................................... Continuation row
+            display_number_of_rows - num_lines_before_data - num_lines_after_data - 1
 
         num_printed_lines = 0
 
@@ -411,7 +443,7 @@ function _text__design_vertical_cropping(
         # NOTE: If we reach this point, we know that a continuation row must be printed.
 
         available_lines =
-            display_number_of_rows - num_lines_before_data - num_lines_after_data - 1 # ........................................................... Continuation row
+            display_number_of_rows - num_lines_before_data - num_lines_after_data - 1
 
         num_printed_lines = 0
 
@@ -487,7 +519,17 @@ function _text__design_vertical_cropping(
 end
 
 """
-    _text__design_vertical_cropping_with_line_breaks(table_data::TableData, table_str::Matrix{String}, tf::TextTableFormat, horizontal_lines_at_column_labels::AbstractVector{Int}, horizontal_lines_at_data_rows::AbstractVector{Int}, show_omitted_row_summary::Bool, display_number_of_rows::Int, new_line_at_end::Bool, num_printed_data_columns::Int) -> Tuple{Int, Bool, Bool}
+    _text__design_vertical_cropping_with_line_breaks(
+        table_data::TableData,
+        table_str::Matrix{String},
+        tf::TextTableFormat,
+        horizontal_lines_at_column_labels::AbstractVector{Int},
+        horizontal_lines_at_data_rows::AbstractVector{Int},
+        show_omitted_row_summary::Bool,
+        display_number_of_rows::Int,
+        new_line_at_end::Bool,
+        num_printed_data_columns::Int
+    ) -> Tuple{Int, Bool, Bool}
 
 Design the vertical cropping of the table when the user wants line breaks by computing how
 many data lines we can print and if we must suppress the horizontal line before the
@@ -550,7 +592,7 @@ function _text__design_vertical_cropping_with_line_breaks(
 
     # In bottom mode, the continuation line will be at the end.
     available_lines =
-        display_number_of_rows - num_lines_before_data - num_lines_after_data - 1 # ............................................................... Continuation row
+        display_number_of_rows - num_lines_before_data - num_lines_after_data - 1
 
     num_printed_lines = 0
     last_row_cropped  = false
@@ -610,7 +652,14 @@ end
 # == Table Dimensions ======================================================================
 
 """
-    _text__table_width_wo_cont_column(table_data::TableData, tf::TextTableFormat, vertical_lines_at_data_columns::AbstractVector{Int}, row_number_column_width::Int, row_label_column_width::Int, printed_data_column_widths::Vector{Int}) -> Int
+    _text__table_width_wo_cont_column(
+        table_data::TableData,
+        tf::TextTableFormat,
+        vertical_lines_at_data_columns::AbstractVector{Int},
+        row_number_column_width::Int,
+        row_label_column_width::Int,
+        printed_data_column_widths::Vector{Int}
+    ) -> Int
 
 Compute the width of the table without the continuation column.
 

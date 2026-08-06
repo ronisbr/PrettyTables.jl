@@ -10,7 +10,11 @@
 # context. Hence, we must pass it forward when rendering the cells.
 
 """
-    _markdown__cell_to_str(cell::Any, context::RenderContext, renderer::Union{Val{:print}, Val{:show}}) -> String
+    _markdown__cell_to_str(
+        cell::Any,
+        context::RenderContext,
+        renderer::Union{Val{:print}, Val{:show}}
+    ) -> String
 
 Convert the `cell` to a string using a specific `context` and `renderer`.
 """
@@ -44,7 +48,12 @@ function _markdown__cell_to_str(cell::MergeCells, context::RenderContext, ::Val{
 end
 
 """
-    _markdown__render_cell(cell::Any, context::RenderContext, renderer::Union{Val{:print}, Val{:show}}; kwargs...) -> String
+    _markdown__render_cell(
+        cell::Any,
+        context::RenderContext,
+        renderer::Union{Val{:print}, Val{:show}};
+        kwargs...
+    ) -> String
 
 Render the `cell` in markdown back end using a specific `context` and `renderer`.
 

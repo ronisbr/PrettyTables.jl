@@ -133,8 +133,8 @@ Acquire and cache the subset row for row `i`, including acquisition failures.
 function _row_table_subset(rtable::RowTable, i::Integer)
     access_state = rtable.access_state
 
-    # If this table does not implement `Tables.subset` at all, never try again. Otherwise, we
-    # would pay for a thrown and caught exception once per row because the cache below is
+    # If this table does not implement `Tables.subset` at all, never try again. Otherwise,
+    # we would pay for a thrown and caught exception once per row because the cache below is
     # row-local.
     access_state.subset_supported || return false, nothing
 
@@ -262,8 +262,9 @@ size(rtable::RowTable) = rtable.size
 
 # A whole-column query must be answered by the wrapper itself. Otherwise, it would be
 # forwarded to the user's object, which usually does not support `[:, j]` indexing. Since a
-# row table has no columns, we must materialize one. Notice that the rows are walked forward,
-# meaning this is `O(num_rows)`, and that it is only paid once per summary row per column.
+# row table has no columns, we must materialize one. Notice that the rows are walked
+# forward, meaning this is `O(num_rows)`, and that it is only paid once per summary row per
+# column.
 Base.maybeview(rtable::RowTable, ::Colon, j::Integer) =
     [rtable[i, j] for i in 1:rtable.size[1]]
 

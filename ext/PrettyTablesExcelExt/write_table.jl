@@ -125,7 +125,7 @@ function _excel__write_table!(
     has_cont_column = _is_horizontally_cropped(table_data)
 
     # Tracking variables used for post-loop operations and section transitions.
-    first_content_row = 0 # ... Absolute sheet row of first row outside the title/subtitle section
+    first_content_row = 0 # .. Absolute sheet row of 1st row outside the title/subtitle sec.
     last_written_row  = 0 # .................... Absolute sheet row of last data/summary row
 
     all_cols = (1 + anchor_col_offset):(num_printed_cols + anchor_col_offset)

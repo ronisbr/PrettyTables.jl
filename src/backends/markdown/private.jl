@@ -43,7 +43,12 @@ function _markdown__alignment(a::Symbol)
 end
 
 """
-    _markdown__print_aligned(buf::IOContext, str::String, cell_width::Int, alignment::Symbol) -> Nothing
+    _markdown__print_aligned(
+        buf::IOContext,
+        str::String,
+        cell_width::Int,
+        alignment::Symbol
+    ) -> Nothing
 
 Print `str` to the buffer `buf` with `alignment` considering the `cell_width`.
 """
@@ -55,7 +60,13 @@ function _markdown__print_aligned(
 end
 
 """
-    _markdown__print_header_separator(buf::IOContext, table_data::TableData, row_number_column_width::Int, row_label_column_width::Int, printed_data_column_widths::Vector{Int}) -> Nothing
+    _markdown__print_header_separator(
+        buf::IOContext,
+        table_data::TableData,
+        row_number_column_width::Int,
+        row_label_column_width::Int,
+        printed_data_column_widths::Vector{Int}
+    ) -> Nothing
 
 Print the markdown header separator with the column alignment information.
 
@@ -115,7 +126,15 @@ end
 # == Rows ==================================================================================
 
 """
-    _markdown__print_row_group_line(buf::IOContext, row_group_label::String, table_data::TableData, char::Char, row_number_column_width::Int, row_label_column_width::Int, printed_data_column_widths::Vector{Int}) -> Nothing
+    _markdown__print_row_group_line(
+        buf::IOContext,
+        row_group_label::String,
+        table_data::TableData,
+        char::Char,
+        row_number_column_width::Int,
+        row_label_column_width::Int,
+        printed_data_column_widths::Vector{Int}
+    ) -> Nothing
 
 Print the row group line to `buf`.
 
@@ -187,7 +206,14 @@ function _markdown__print_row_group_line(
 end
 
 """
-    _markdown__print_separation_line(buf::IOContext, table_data::TableData, char::Char, row_number_column_width::Int, row_label_column_width::Int, printed_data_column_widths::Vector{Int}) -> Nothing
+    _markdown__print_separation_line(
+        buf::IOContext,
+        table_data::TableData,
+        char::Char,
+        row_number_column_width::Int,
+        row_label_column_width::Int,
+        printed_data_column_widths::Vector{Int}
+    ) -> Nothing
 
 Print a row separation line to `buf`.
 
@@ -258,8 +284,17 @@ end
 const _MARKDOWN__ESCAPED_CHARACTERS = ('*', '_', '~', '`', '|', '[', ']', '<', '>')
 
 raw"""
-    _markdown__escape_str(@nospecialize(io::IO), s::AbstractString, replace_newline::Bool, escape_markdown_chars::Bool) -> Nothing
-    _markdown__escape_str(s::AbstractString, replace_newline::Bool, escape_markdown_chars::Bool) -> String
+    _markdown__escape_str(
+        @nospecialize(io::IO),
+        s::AbstractString,
+        replace_newline::Bool,
+        escape_markdown_chars::Bool
+    ) -> Nothing
+    _markdown__escape_str(
+        s::AbstractString,
+        replace_newline::Bool,
+        escape_markdown_chars::Bool
+    ) -> String
 
 Print the string `s` in `io` escaping the characters for the markdown back end. If `io` is
 omitted, the escaped string is returned.

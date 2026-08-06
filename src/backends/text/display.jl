@@ -94,7 +94,12 @@ function _text__styled_print(display::Display, str::AbstractString, crayon::Cray
 end
 
 """
-    _text__flush_line(display::Display, add_continuation_char::Bool = true, continuation_char::Char = '⋯'; crop_line::Bool = true) -> Nothing
+    _text__flush_line(
+        display::Display,
+        add_continuation_char::Bool = true,
+        continuation_char::Char = '⋯';
+        crop_line::Bool = true
+    ) -> Nothing
 
 Flush the current line buffer to the `display`, cropping and adding continuation characters
 if needed.
@@ -139,7 +144,15 @@ function _text__flush_line(
 end
 
 """
-    _text__print_aligned(display::Display, str::AbstractString, cell_width::Int, alignment::Symbol, crayon::Crayon = _TEXT__DEFAULT, fill::Bool = true; kwargs...) -> Nothing
+    _text__print_aligned(
+        display::Display,
+        str::AbstractString,
+        cell_width::Int,
+        alignment::Symbol,
+        crayon::Crayon = _TEXT__DEFAULT,
+        fill::Bool = true;
+        kwargs...
+    ) -> Nothing
 
 Print a string `str` to the `display`, aligned according to `alignment` in a cell of width
 `cell_width`. The string is printed with the style given by `crayon`. The `alignment` can be
@@ -205,7 +218,19 @@ function _text__print_aligned(
 end
 
 """
-    _text__print_horizontal_line(display::Display, tf::TextTableFormat, crayon::Crayon, table_data::TableData, vertical_lines_at_data_columns::AbstractVector{Int}, row_number_column_width::Int, row_label_column_width::Int, printed_data_column_widths::Vector{Int}, top::Bool = false, bottom::Bool = false, row_group_label::Bool = false) -> Nothing
+    _text__print_horizontal_line(
+        display::Display,
+        tf::TextTableFormat,
+        crayon::Crayon,
+        table_data::TableData,
+        vertical_lines_at_data_columns::AbstractVector{Int},
+        row_number_column_width::Int,
+        row_label_column_width::Int,
+        printed_data_column_widths::Vector{Int},
+        top::Bool = false,
+        bottom::Bool = false,
+        row_group_label::Bool = false
+    ) -> Nothing
 
 Print a horizontal line to `display`.
 
@@ -345,7 +370,19 @@ function _text__print_horizontal_line(
 end
 
 """
-    _text__print_column_label_horizontal_line(display::Display, tf::TextTableFormat, crayon::Crayon, table_data::TableData, row_number::Int, vertical_lines_at_data_columns::AbstractVector{Int}, row_number_column_width::Int, row_label_column_width::Int, printed_data_column_widths::Vector{Int}, top::Bool = false, bottom::Bool = false)
+    _text__print_column_label_horizontal_line(
+        display::Display,
+        tf::TextTableFormat,
+        crayon::Crayon,
+        table_data::TableData,
+        row_number::Int,
+        vertical_lines_at_data_columns::AbstractVector{Int},
+        row_number_column_width::Int,
+        row_label_column_width::Int,
+        printed_data_column_widths::Vector{Int},
+        top::Bool = false,
+        bottom::Bool = false
+    )
 
 Print a column label horizontal line to `display`.
 
@@ -506,7 +543,17 @@ function _text__print_column_label_horizontal_line(
 end
 
 """
-    _text__print_column_label_horizontal_line_only_at_merged_labels(display::Display, tf::TextTableFormat, crayon::Crayon, table_data::TableData, row_number::Int, vertical_lines_at_data_columns::AbstractVector{Int}, row_number_column_width::Int, row_label_column_width::Int, printed_data_column_widths::Vector{Int})
+    _text__print_column_label_horizontal_line_only_at_merged_labels(
+        display::Display,
+        tf::TextTableFormat,
+        crayon::Crayon,
+        table_data::TableData,
+        row_number::Int,
+        vertical_lines_at_data_columns::AbstractVector{Int},
+        row_number_column_width::Int,
+        row_label_column_width::Int,
+        printed_data_column_widths::Vector{Int}
+    )
 
 Print a column label line to `display` where a horizontal line is drawn only after merged
 column labels.
@@ -623,7 +670,12 @@ function _text__print_column_label_horizontal_line_only_at_merged_labels(
 end
 
 """
-    _text__horizontal_line_intersection(display::Display, intersection::Char, row::Char, final_intersection::Bool) -> Nothing
+    _text__horizontal_line_intersection(
+        display::Display,
+        intersection::Char,
+        row::Char,
+        final_intersection::Bool
+    ) -> Nothing
 
 Print to `display` the horizontal line `intersection` if we have enough space. Otherwise,
 print `row`. The argument `final_intersection` indicates that we are printing the final

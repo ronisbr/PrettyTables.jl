@@ -10,7 +10,21 @@
 const _EXCEL__RENDERER = Union{Val{:print}, Val{:show}}
 
 """
-    _excel__render_cell(cell::Any, context::RenderContext, renderer::Union{Val{:print}, Val{:show}}) -> Union{Missing, Bool, Int64, Float64, Dates.Date, Dates.DateTime, Dates.Time, AbstractString, XLSX.CellValue}
+    _excel__render_cell(
+        cell::Any,
+        context::RenderContext,
+        renderer::Union{Val{:print}, Val{:show}}
+    ) -> Union{
+        Missing,
+        Bool,
+        Int64,
+        Float64,
+        Dates.Date,
+        Dates.DateTime,
+        Dates.Time,
+        AbstractString,
+        XLSX.CellValue
+    }
 
 Render the `cell` in the Excel back end. If the cell type is supported natively by Excel, we
 return a value that Excel can store as such, that is, a value of type `Missing`, `Bool`,
@@ -68,7 +82,11 @@ function _excel__render_cell(cell::Any, context::RenderContext, renderer::_EXCEL
 end
 
 """
-    _excel__cell_to_str(cell::Any, context::RenderContext, renderer::Union{Val{:print}, Val{:show}}) -> String
+    _excel__cell_to_str(
+        cell::Any,
+        context::RenderContext,
+        renderer::Union{Val{:print}, Val{:show}}
+    ) -> String
 
 Convert `cell` to a `String` using `renderer` and the IO `context`. Notice that this function
 must not be called directly; use [`_excel__render_cell`](@ref) instead.

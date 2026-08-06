@@ -70,7 +70,13 @@ macro _println(io, args...)
 end
 
 """
-    _aprint(buf::IO, str::String, indentation_level::Int = 0, indentation_spaces::Int = 2; kwargs...) -> Nothing
+    _aprint(
+        buf::IO,
+        str::String,
+        indentation_level::Int = 0,
+        indentation_spaces::Int = 2;
+        kwargs...
+    ) -> Nothing
 
 Print `str` in the buffer `buf` aligned to the `indentation_level`. Each indentation level
 contains a number of spaces given by `indentation_spaces`.
@@ -113,7 +119,13 @@ function _aprint(
 end
 
 """
-    _aprintln(buf::IO, str::String, indentation_level::Int = 0, indentation_spaces::Int = 2; kwargs...) -> Nothing
+    _aprintln(
+        buf::IO,
+        str::String,
+        indentation_level::Int = 0,
+        indentation_spaces::Int = 2;
+        kwargs...
+    ) -> Nothing
 
 Print `str` in the buffer `buf` aligned to the `indentation_level` and adding a line break
 at the end. Each indentation level contains a number of spaces given by
@@ -138,7 +150,14 @@ function _aprintln(
 end
 
 """
-    _aprint_section_annotation(buf::IO, str::String, indentation_level::Int = 0, indentation_spaces::Int = 2, column_width::Int = 92, fill_char::Char = '=') -> Nothing
+    _aprint_section_annotation(
+        buf::IO,
+        str::String,
+        indentation_level::Int = 0,
+        indentation_spaces::Int = 2,
+        column_width::Int = 92,
+        fill_char::Char = '='
+    ) -> Nothing
 
 Print a section annotation line to `buf`. The annotation consists of `str` padded to
 `indentation_level` and followed by `fill_char` characters up to `column_width`. If
@@ -165,7 +184,14 @@ function _aprint_section_annotation(
 end
 
 """
-    _aprintln_section_annotation(buf::IO, str::String, indentation_level::Int = 0, indentation_spaces::Int = 2, column_width::Int = 92, fill_char::Char = '=') -> Nothing
+    _aprintln_section_annotation(
+        buf::IO,
+        str::String,
+        indentation_level::Int = 0,
+        indentation_spaces::Int = 2,
+        column_width::Int = 92,
+        fill_char::Char = '='
+    ) -> Nothing
 
 Same as `_aprint_section_annotation`, but appends a newline after the annotation.
 """
@@ -186,8 +212,16 @@ function _aprintln_section_annotation(
 end
 
 """
-    _align_column_with_regex!(column::AbstractVector{String}, alignment_anchor_regex::Vector{Regex}, alignment_anchor_fallback::Symbol) -> Int
-    _align_column_with_regex!(column::AbstractVector{Vector{String}}, alignment_anchor_regex::Vector{Regex}, alignment_anchor_fallback::Symbol) -> Int
+    _align_column_with_regex!(
+        column::AbstractVector{String},
+        alignment_anchor_regex::Vector{Regex},
+        alignment_anchor_fallback::Symbol
+    ) -> Int
+    _align_column_with_regex!(
+        column::AbstractVector{Vector{String}},
+        alignment_anchor_regex::Vector{Regex},
+        alignment_anchor_fallback::Symbol
+    ) -> Int
 
 Align the lines in the `column` at the first match obtained by the regex vector
 `alignment_anchor_regex`, falling back to `alignment_anchor_fallback` if a match is not
@@ -413,7 +447,11 @@ function _align_column_with_regex!(
 end
 
 """
-    _align_multline_column_with_regex!(column::AbstractVector{String}, alignment_anchor_regex::Vector{Regex}, alignment_anchor_fallback::Symbol,) -> Int
+    _align_multline_column_with_regex!(
+        column::AbstractVector{String},
+        alignment_anchor_regex::Vector{Regex},
+        alignment_anchor_fallback::Symbol,
+    ) -> Int
 
 Similar to `_align_column_with_regex!`, but each row will be split into multiple lines at
 `\n` before applying the alignment.
@@ -447,8 +485,8 @@ function _auto_wrap(str::AbstractString, field_width::Int)
     (field_width <= 0) && throw(ArgumentError("`field_width` must be greater than 0."))
 
     # Buffers.
-    buf      = IOBuffer(; sizehint = length(str)) # .......... Buffer to store the entire text
-    line_buf = IOBuffer(; sizehint = length(str)) # ......... Buffer to store the current line
+    buf      = IOBuffer(; sizehint = length(str)) # ........ Buffer to store the entire text
+    line_buf = IOBuffer(; sizehint = length(str)) # ....... Buffer to store the current line
 
     # Auxiliary variables.
     state          = :text # .................................................. String state
@@ -470,9 +508,9 @@ function _auto_wrap(str::AbstractString, field_width::Int)
         line_overflow = line_width + ctw > field_width
 
         @views if (c == '\n') || (line_overflow && ((last_space == 0) || (c == ' ')))
-            # If the character is a line break, if we have a line overflow and we do not have
-            # any space in this line, or if we have a line overflow and this character is a
-            # space, we only flush the current line buffer to the output buffer.
+            # If the character is a line break, if we have a line overflow and we do not
+            # have any space in this line, or if we have a line overflow and this character
+            # is a space, we only flush the current line buffer to the output buffer.
             write(buf, take!(line_buf))
             write(buf, '\n')
 

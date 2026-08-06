@@ -136,7 +136,11 @@ function _text__crop_cell_to_width(str::String, cw::Int, line_breaks::Bool)
 end
 
 """
-    _text__fit_cell_in_maximum_cell_width(cell_str::String, maximum_cell_width::Int, line_breaks::Bool) -> String
+    _text__fit_cell_in_maximum_cell_width(
+        cell_str::String,
+        maximum_cell_width::Int,
+        line_breaks::Bool
+    ) -> String
 
 Fit the cell with text `cell_str` in a field with a maximum width `maximum_cell_width`. If
 `line_breaks` is `true`, the cell will be split into multiple lines before fitting it.

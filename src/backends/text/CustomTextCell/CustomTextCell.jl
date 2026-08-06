@@ -42,7 +42,11 @@ function crop!(cell::AbstractCustomTextCell, field_width::Int)
 end
 
 """
-    init!(cell::AbstractCustomTextCell, context::IOContext, renderer::Union{Val{:print}, Val{:show}}) -> Nothing
+    init!(
+        cell::AbstractCustomTextCell,
+        context::IOContext,
+        renderer::Union{Val{:print}, Val{:show}}
+    ) -> Nothing
 
 Initialize the custom text `cell` using the `context` and `renderer`.
 

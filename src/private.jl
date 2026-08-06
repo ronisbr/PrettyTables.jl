@@ -66,7 +66,10 @@ Base.@nospecializeinfer function _preprocess_data(@nospecialize(data::Any))
 end
 
 """
-    _process_merge_column_label_specification(column_labels::Vector{T}, num_columns::Int) where T <: AbstractVector -> Vector{Vector{Any}}, Vector{MergeCells}
+    _process_merge_column_label_specification(
+        column_labels::Vector{T},
+        num_columns::Int
+    ) where T <: AbstractVector -> Vector{Vector{Any}}, Vector{MergeCells}
 
 Process the column label specification by replacing `MultiColumn` objects in `column_labels`
 and adding the correct specification to `merge_column_label_cells`. This function returns

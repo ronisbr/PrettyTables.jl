@@ -5,7 +5,11 @@
 ############################################################################################
 
 """
-    _typst__cell_to_str(cell::Any, context::RenderContext, renderer::Union{Val{:print}, Val{:show}}) -> String
+    _typst__cell_to_str(
+        cell::Any,
+        context::RenderContext,
+        renderer::Union{Val{:print}, Val{:show}}
+    ) -> String
 
 Convert the `cell` to a string using a specific `context` and `renderer`.
 """
@@ -44,7 +48,11 @@ _typst__cell_to_str(cell::UndefinedCell, context::RenderContext, ::Val{:print}) 
 _typst__cell_to_str(cell::UndefinedCell, context::RenderContext, ::Val{:show}) = "#undef"
 
 """
-    _typst__render_cell(cell::Any, context::RenderContext, renderer::Union{Val{:print}, Val{:show}}) -> String
+    _typst__render_cell(
+        cell::Any,
+        context::RenderContext,
+        renderer::Union{Val{:print}, Val{:show}}
+    ) -> String
 
 Render the `cell` in Typst back end using a specific `context` and `renderer`.
 """

@@ -75,7 +75,9 @@ end
 # == Attributes ============================================================================
 
 """
-    _typst__cell_and_text_properties(vproperties::Vector{TypstPair}) -> Tuple{Vector{TypstPair}, Vector{TypstPair}}
+    _typst__cell_and_text_properties(
+        vproperties::Vector{TypstPair}
+    ) -> Tuple{Vector{TypstPair}, Vector{TypstPair}}
 
 Split `vproperties` into the properties that must be applied to the Typst `table.cell` and
 those that must be applied to the text content.
@@ -114,7 +116,14 @@ end
 # == Cells =================================================================================
 
 """
-    _typst__print_cell(io::IO, cell::String, first_column::Bool, il::Int, ns::Int, minify::Bool)
+    _typst__print_cell(
+        io::IO,
+        cell::String,
+        first_column::Bool,
+        il::Int,
+        ns::Int,
+        minify::Bool
+    )
 
 Print a table cell to the output stream in Typst format.
 
@@ -145,7 +154,10 @@ function _typst__print_cell(
 end
 
 """
-    _typst__table_cell(content::String[, properties::Vector{TypstPair}]; kwargs...) -> String
+    _typst__table_cell(
+        content::String[, properties::Vector{TypstPair}];
+        kwargs...
+    ) -> String
 
 Create a Typst table cell with `content` and optional `properties`. If `properties` is not
 provided or empty, a basic cell is created with the content. If `properties` are provided, a
@@ -225,7 +237,10 @@ function _typst__create_component(
 end
 
 """
-    _typst__open_component(component::String, properties::Union{Nothing, Vector{TypstPair}} = nothing) -> String
+    _typst__open_component(
+        component::String,
+        properties::Union{Nothing, Vector{TypstPair}} = nothing
+    ) -> String
 
 Create the string that opens the Typst `component` with the given `properties`.
 """
@@ -327,7 +342,15 @@ end
 # == Lines =================================================================================
 
 """
-    _typst__vertical_lines!(buf::IO, td::TableData, tf::TypstTableFormat, total_inner_table_lines::Int, vertical_lines_at_data_columns::AbstractVector{Int}, il::Int, ns::Int) -> Nothing
+    _typst__vertical_lines!(
+        buf::IO,
+        td::TableData,
+        tf::TypstTableFormat,
+        total_inner_table_lines::Int,
+        vertical_lines_at_data_columns::AbstractVector{Int},
+        il::Int,
+        ns::Int
+    ) -> Nothing
 
 Print to `buf` the Typst vertical lines configurations considering the table data `td` and
 table format `tf`. `total_inner_table_lines` is the total number of rows in the inner table
@@ -569,7 +592,10 @@ function _typst__get_data_column_widths(table_data::TableData, data_column_width
 end
 
 """
-    _typst__merge_properties!(bproperties::Vector{TypstPair}, nproperties::Vector{TypstPair}) -> Vector{TypstPair}
+    _typst__merge_properties!(
+        bproperties::Vector{TypstPair},
+        nproperties::Vector{TypstPair}
+    ) -> Vector{TypstPair}
 
 Merge two Typst properties, `bproperties` and `nproperties`, giving priority to
 `nproperties` in case of conflicts.

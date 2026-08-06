@@ -7,8 +7,17 @@
 # == Strings ===============================================================================
 
 raw"""
-    _html__escape_str(@nospecialize(io::IO), s::AbstractString, replace_newline::Bool = false, escape_html_chars::Bool = true) -> Nothing
-    _html__escape_str(s::AbstractString, replace_newline::Bool = false, escape_html_chars::Bool = true) -> String
+    _html__escape_str(
+        @nospecialize(io::IO),
+        s::AbstractString,
+        replace_newline::Bool = false,
+        escape_html_chars::Bool = true
+    ) -> Nothing
+    _html__escape_str(
+        s::AbstractString,
+        replace_newline::Bool = false,
+        escape_html_chars::Bool = true
+    ) -> String
 
 Print the string `s` in `io` escaping the characters for the HTML back end. If `io` is
 omitted, the escaped string is returned.
@@ -175,7 +184,12 @@ function _html__open_tag(
 end
 
 """
-    _html__write_open_tag(buf::IO, tag::String, properties::Union{Nothing, Vector{HtmlPair}}, style::Union{Nothing, Vector{HtmlPair}}) -> Nothing
+    _html__write_open_tag(
+        buf::IO,
+        tag::String,
+        properties::Union{Nothing, Vector{HtmlPair}},
+        style::Union{Nothing, Vector{HtmlPair}}
+    ) -> Nothing
 
 Write the string that opens the HTML `tag` to `buf`.
 
@@ -250,7 +264,15 @@ end
 # == Top Bar ===============================================================================
 
 """
-    _html__print_top_bar_section(buf::IOContext, position::String, text::String, decoration::Union{Nothing, Vector{HtmlPair}}, il::Int, ns::Int; kwargs...)
+    _html__print_top_bar_section(
+        buf::IOContext,
+        position::String,
+        text::String,
+        decoration::Union{Nothing, Vector{HtmlPair}},
+        il::Int,
+        ns::Int;
+        kwargs...
+    )
 
 Print the HTML top bar section.
 

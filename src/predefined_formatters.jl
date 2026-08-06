@@ -7,7 +7,9 @@
 export fmt__printf, fmt__round, fmt__latex_sn, fmt__excel_stringify
 
 """
-    fmt__excel_stringify(columns::Union{Nothing, Int, AbstractVector{Int}} = nothing) -> Function
+    fmt__excel_stringify(
+        columns::Union{Nothing, Int, AbstractVector{Int}} = nothing
+    ) -> Function
 
 Create a formatter function that converts values XLSX.jl cannot handle directly into their
 string representation. When `columns` is `nothing`, all values are stringified; otherwise

@@ -10,7 +10,11 @@
 # context. Hence, we must pass it forward when rendering the cells.
 
 """
-    _latex__cell_to_str(cell::Any, context::RenderContext, renderer::Union{Val{:print}, Val{:show}}) -> String
+    _latex__cell_to_str(
+        cell::Any,
+        context::RenderContext,
+        renderer::Union{Val{:print}, Val{:show}}
+    ) -> String
 
 Convert the `cell` to a string using a specific `context` and `renderer`.
 """
@@ -42,7 +46,12 @@ _latex__cell_to_str(cell::UndefinedCell, context::RenderContext, ::Val{:print}) 
 _latex__cell_to_str(cell::UndefinedCell, context::RenderContext, ::Val{:show}) = "#undef"
 
 """
-    _latex__render_cell(cell::Any, context::RenderContext, renderer::Union{Val{:print}, Val{:show}}; kwargs...) -> String
+    _latex__render_cell(
+        cell::Any,
+        context::RenderContext,
+        renderer::Union{Val{:print}, Val{:show}};
+        kwargs...
+    ) -> String
 
 Render the `cell` in latex back end using a specific `context` and `renderer`.
 """
