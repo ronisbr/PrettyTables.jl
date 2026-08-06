@@ -24,6 +24,9 @@ function _markdown__print(
     buf_io = IOBuffer()
     buf    = IOContext(buf_io, context)
 
+    # Reusable render buffer: one allocation per table instead of three per cell.
+    rctx = RenderContext(context)
+
     # Obtain general information about the table.
     num_column_label_lines   = length(table_data.column_labels)
     num_printed_data_columns = _number_of_printed_data_columns(table_data)
@@ -106,7 +109,9 @@ function _markdown__print(
         cell = _current_cell(action, ps, table_data)
 
         rendered_cell = if cell !== _IGNORE_CELL
-            _markdown__render_cell(cell, buf, renderer; allow_markdown_in_cells, line_breaks)
+            _markdown__render_cell(
+                cell, rctx, renderer; allow_markdown_in_cells, line_breaks
+            )
         else
             ""
         end
@@ -491,7 +496,7 @@ function _markdown__print(
                 cell          = _current_cell(action, ps, table_data)
                 cell_width    = row_number_column_width
                 rendered_cell = _markdown__apply_style(
-                    style.row_number, _markdown__render_cell(cell, buf, renderer)
+                    style.row_number, _markdown__render_cell(cell, rctx, renderer)
                 )
 
             elseif action == :data

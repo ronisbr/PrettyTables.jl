@@ -22,6 +22,9 @@ function _latex__print(
     buf_io = IOBuffer()
     buf    = IOContext(buf_io, context)
 
+    # Reusable render buffer: one allocation per table instead of three per cell.
+    rctx = RenderContext(context)
+
     # Process the horizontal lines at data rows.
     if tf.horizontal_lines_at_data_rows isa Symbol
         horizontal_lines_at_data_rows = if tf.horizontal_lines_at_data_rows == :all
@@ -213,7 +216,7 @@ function _latex__print(
             alignment     = _latex__alignment_to_str(
                 _current_cell_alignment(action, ps, table_data)
             )
-            rendered_cell = _latex__render_cell(cell, buf, renderer)
+            rendered_cell = _latex__render_cell(cell, rctx, renderer)
             cs            = _number_of_printed_columns(table_data)
 
             # Check for vertical lines.
@@ -272,7 +275,7 @@ function _latex__print(
 
                     cs = _number_of_printed_columns(table_data)
 
-                    rendered_cell = _latex__render_cell(cell, buf, renderer)
+                    rendered_cell = _latex__render_cell(cell, rctx, renderer)
 
                     rendered_cell = _latex__add_environments(
                         rendered_cell, action == :title ? style.title : style.subtitle
@@ -324,7 +327,7 @@ function _latex__print(
                         alignment = "|" * alignment
                     end
 
-                    rendered_cell = _latex__render_cell(cell.data, buf, renderer)
+                    rendered_cell = _latex__render_cell(cell.data, rctx, renderer)
 
                     # Apply the style to the text.
                     envs =
@@ -341,7 +344,8 @@ function _latex__print(
                 elseif (action == :footnote)
                     alignment     = _latex__alignment_to_str(table_data.footnote_alignment)
                     cs            = _number_of_printed_columns(table_data)
-                    rendered_cell = "\$^{$(ps.i)}\$" * _latex__render_cell(cell, buf, renderer)
+                    rendered_cell =
+                        "\$^{$(ps.i)}\$" * _latex__render_cell(cell, rctx, renderer)
                     rendered_cell = _latex__add_environments(rendered_cell, style.footnote)
                     rendered_cell = rendered_cell * footnote_str
                     rendered_cell = "\\multicolumn{$cs}{@{}$alignment@{}}{$rendered_cell}"
@@ -349,13 +353,13 @@ function _latex__print(
                 elseif (action == :source_notes)
                     alignment     = _latex__alignment_to_str(table_data.footnote_alignment)
                     cs            = _number_of_printed_columns(table_data)
-                    rendered_cell = _latex__render_cell(cell, buf, renderer)
+                    rendered_cell = _latex__render_cell(cell, rctx, renderer)
                     rendered_cell = _latex__add_environments(rendered_cell, style.source_note)
                     rendered_cell = rendered_cell * footnote_str
                     rendered_cell = "\\multicolumn{$cs}{@{}$alignment@{}}{$rendered_cell}"
 
                 else
-                    rendered_cell = _latex__render_cell(cell, buf, renderer)
+                    rendered_cell = _latex__render_cell(cell, rctx, renderer)
                     alignment = _current_cell_alignment(action, ps, table_data)
 
                     # Apply the style to the cell.

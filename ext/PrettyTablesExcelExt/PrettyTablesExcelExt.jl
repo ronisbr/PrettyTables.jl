@@ -7,13 +7,13 @@ using XLSX
 import PrettyTables: _excel__print, _is_horizontally_cropped, pretty_table
 
 # Import types we need.
-using PrettyTables: PrintingSpec, TableData, PrintingTableState, MergeCells
+using PrettyTables: PrintingSpec, RenderContext, TableData, PrintingTableState, MergeCells
 
 # Import internal iterator and helpers.
 import PrettyTables: _next, _current_cell, _current_cell_alignment, _current_cell_footnotes
 import PrettyTables: _number_of_printed_columns, _number_of_printed_data_columns
 import PrettyTables: _get_data, _has_summary_rows
-import PrettyTables: _IGNORE_CELL, _EXCEL__NO_DECORATION
+import PrettyTables: _IGNORE_CELL, _EXCEL__NO_DECORATION, _sprint_with_context
 
 # Also import Tables.jl for handling table data
 using Tables

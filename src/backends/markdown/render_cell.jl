@@ -4,47 +4,47 @@
 #
 ############################################################################################
 
-# NOTE: The functions to render the cell must receive the current `IOContext` because we
-# need to check for circular dependency. We store the information about the objects being
-# printed inside the key `__PRETTY_TABLES__DATA__` in the IO context. Hence, we must pass it
-# forward when rendering the cells.
+# NOTE: The functions to render the cell must receive the current `RenderContext` because
+# its `IOContext` carries the information required to check for circular dependency. We
+# store the objects being printed inside the key `__PRETTY_TABLES__DATA__` in the IO
+# context. Hence, we must pass it forward when rendering the cells.
 
 """
-    _markdown__cell_to_str(cell::Any, context::IOContext, renderer::Union{Val{:print}, Val{:show}}) -> String
+    _markdown__cell_to_str(cell::Any, context::RenderContext, renderer::Union{Val{:print}, Val{:show}}) -> String
 
 Convert the `cell` to a string using a specific `context` and `renderer`.
 """
-function _markdown__cell_to_str(cell::Any, context::IOContext, ::Val{:print})
+function _markdown__cell_to_str(cell::Any, context::RenderContext, ::Val{:print})
     return _sprint_with_context(print, context, cell)
 end
 
-function _markdown__cell_to_str(cell::Any, context::IOContext, ::Val{:show})
+function _markdown__cell_to_str(cell::Any, context::RenderContext, ::Val{:show})
     return _sprint_with_context(show, context, cell)
 end
 
-function _markdown__cell_to_str(cell::AbstractString, context::IOContext, ::Val{:print})
+function _markdown__cell_to_str(cell::AbstractString, context::RenderContext, ::Val{:print})
     # Notice that we must not use `string` here because it is the identity for any
     # `AbstractString`, whereas the callers require a `String`.
     return String(cell)
 end
 
-function _markdown__cell_to_str(cell::AbstractString, context::IOContext, ::Val{:show})
+function _markdown__cell_to_str(cell::AbstractString, context::RenderContext, ::Val{:show})
     return string(cell)
 end
 
-_markdown__cell_to_str(cell::UndefinedCell, context::IOContext, ::Val{:print}) = "#undef"
-_markdown__cell_to_str(cell::UndefinedCell, context::IOContext, ::Val{:show}) = "#undef"
+_markdown__cell_to_str(::UndefinedCell, ::RenderContext, ::Val{:print}) = "#undef"
+_markdown__cell_to_str(::UndefinedCell, ::RenderContext, ::Val{:show}) = "#undef"
 
-function _markdown__cell_to_str(cell::MergeCells, context::IOContext, ::Val{:print})
+function _markdown__cell_to_str(cell::MergeCells, context::RenderContext, ::Val{:print})
     return _markdown__cell_to_str(cell.data, context, Val(:print))
 end
 
-function _markdown__cell_to_str(cell::MergeCells, context::IOContext, ::Val{:show})
+function _markdown__cell_to_str(cell::MergeCells, context::RenderContext, ::Val{:show})
     return _markdown__cell_to_str(cell.data, context, Val(:show))
 end
 
 """
-    _markdown__render_cell(cell::Any, context::IOContext, renderer::Union{Val{:print}, Val{:show}}; kwargs...) -> String
+    _markdown__render_cell(cell::Any, context::RenderContext, renderer::Union{Val{:print}, Val{:show}}; kwargs...) -> String
 
 Render the `cell` in markdown back end using a specific `context` and `renderer`.
 
@@ -58,7 +58,7 @@ Render the `cell` in markdown back end using a specific `context` and `renderer`
 """
 function _markdown__render_cell(
     cell::Any,
-    context::IOContext,
+    context::RenderContext,
     renderer::Union{Val{:print}, Val{:show}};
     allow_markdown_in_cells::Bool = false,
     line_breaks::Bool = false,
@@ -75,7 +75,7 @@ end
 # For Markdown cells, we just output the string.
 function _markdown__render_cell(
     cell::Markdown.MD,
-    context::IOContext,
+    context::RenderContext,
     renderer::Union{Val{:print}, Val{:show}};
     allow_markdown_in_cells::Bool = false,
     line_breaks::Bool = false,

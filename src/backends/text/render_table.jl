@@ -7,7 +7,7 @@
 """
     _text__render_table(
         table_data::TableData,
-        @nospecialize(context::IOContext),
+        rctx::RenderContext,
         renderer::Union{Val{:print}, Val{:show}},
         line_breaks::Bool,
         maximum_data_column_widths::AbstractVector{Int},
@@ -15,7 +15,7 @@
     )
 
 Render the table using the specification in `table_data`. When the cells are converted to
-`String`, we use the `context`, and the `renderer`.
+`String`, we use the render context `rctx`, and the `renderer`.
 
 If `line_breaks` is `true`, we split each cell into multiple lines at every occurrence of
 `\\n`.
@@ -39,7 +39,7 @@ of merged column labels.
 """
 function _text__render_table(
     table_data::TableData,
-    @nospecialize(context::IOContext),
+    rctx::RenderContext,
     renderer::Union{Val{:print}, Val{:show}},
     line_breaks::Bool,
     maximum_data_column_widths::AbstractVector{Int},
@@ -88,9 +88,6 @@ function _text__render_table(
     ir = jr = 0
 
     ps = PrintingTableState()
-
-    # Reusable render buffer: one allocation per table instead of three per cell.
-    rctx = RenderContext(context)
 
     while action != :end_printing
         action, rs, ps = _next(ps, table_data)

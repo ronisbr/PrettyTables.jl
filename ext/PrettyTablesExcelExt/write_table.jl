@@ -70,6 +70,9 @@ function _excel__write_table!(
     context  = pspec.context
     renderer = pspec.renderer === :show ? Val(:show) : Val(:print)
 
+    # Reusable render buffer: one allocation per table instead of three per cell.
+    rctx = RenderContext(context)
+
     # The width keywords are indexed per data column. Hence, we must check their length here
     # to raise a meaningful error instead of a `BoundsError` deep in the back end.
     for (name, v) in (
@@ -277,7 +280,7 @@ function _excel__write_table!(
             cell = _current_cell(action, ps, table_data)
             cell === _IGNORE_CELL && continue
 
-            rendered_cell = _excel__render_cell(cell, context, renderer)
+            rendered_cell = _excel__render_cell(cell, rctx, renderer)
 
             alignment = _current_cell_alignment(action, ps, table_data)
 

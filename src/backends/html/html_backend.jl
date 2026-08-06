@@ -34,6 +34,9 @@ function _html__print(
     buf_io = IOBuffer()
     buf    = IOContext(buf_io, context)
 
+    # Reusable render buffer: one allocation per table instead of three per cell.
+    rctx = RenderContext(context)
+
     # Create dictionaries to store properties and styles to decrease the number of
     # allocations.
     vproperties = Pair{String, String}[]
@@ -331,7 +334,7 @@ function _html__print(
 
                 push!(vproperties, "colspan" => string(cs))
                 rendered_cell = _html__render_cell(
-                    cell.data, buf, renderer; allow_html_in_cells, line_breaks
+                    cell.data, rctx, renderer; allow_html_in_cells, line_breaks
                 )
 
                 alignment = cell.alignment
@@ -347,7 +350,7 @@ function _html__print(
 
             else
                 rendered_cell = _html__render_cell(
-                    cell, buf, renderer; allow_html_in_cells, line_breaks
+                    cell, rctx, renderer; allow_html_in_cells, line_breaks
                 )
 
                 alignment = _current_cell_alignment(action, ps, table_data)

@@ -10,7 +10,7 @@
 const _EXCEL__RENDERER = Union{Val{:print}, Val{:show}}
 
 """
-    _excel__render_cell(cell::Any, context::IOContext, renderer::Union{Val{:print}, Val{:show}}) -> Union{Missing, Bool, Int64, Float64, Dates.Date, Dates.DateTime, Dates.Time, AbstractString, XLSX.CellValue}
+    _excel__render_cell(cell::Any, context::RenderContext, renderer::Union{Val{:print}, Val{:show}}) -> Union{Missing, Bool, Int64, Float64, Dates.Date, Dates.DateTime, Dates.Time, AbstractString, XLSX.CellValue}
 
 Render the `cell` in the Excel back end. If the cell type is supported natively by Excel, we
 return a value that Excel can store as such, that is, a value of type `Missing`, `Bool`,
@@ -28,13 +28,13 @@ function _excel__render_cell(
         AbstractString,
         XLSX.CellValue,
     },
-    ::IOContext,
+    ::RenderContext,
     ::_EXCEL__RENDERER,
 )
     return cell
 end
 
-function _excel__render_cell(cell::Bool, ::IOContext, ::_EXCEL__RENDERER)
+function _excel__render_cell(cell::Bool, ::RenderContext, ::_EXCEL__RENDERER)
     return cell
 end
 
@@ -42,41 +42,41 @@ end
 # Otherwise, for example, an `Int32` would be written as text, losing the right alignment and
 # becoming unusable in formulas. Notice that this is critical on 32-bit platforms, where
 # `Int === Int32`.
-function _excel__render_cell(cell::Integer, ::IOContext, ::_EXCEL__RENDERER)
+function _excel__render_cell(cell::Integer, ::RenderContext, ::_EXCEL__RENDERER)
     return Int64(cell)
 end
 
-function _excel__render_cell(cell::AbstractFloat, ::IOContext, ::_EXCEL__RENDERER)
+function _excel__render_cell(cell::AbstractFloat, ::RenderContext, ::_EXCEL__RENDERER)
     return Float64(cell)
 end
 
 # `nothing` must lead to a blank cell, exactly like `missing`.
-function _excel__render_cell(::Nothing, ::IOContext, ::_EXCEL__RENDERER)
+function _excel__render_cell(::Nothing, ::RenderContext, ::_EXCEL__RENDERER)
     return missing
 end
 
 function _excel__render_cell(
     cell::MergeCells,
-    context::IOContext,
+    context::RenderContext,
     renderer::_EXCEL__RENDERER,
 )
     return _excel__render_cell(cell.data, context, renderer)
 end
 
-function _excel__render_cell(cell::Any, context::IOContext, renderer::_EXCEL__RENDERER)
+function _excel__render_cell(cell::Any, context::RenderContext, renderer::_EXCEL__RENDERER)
     return _excel__cell_to_str(cell, context, renderer)
 end
 
 """
-    _excel__cell_to_str(cell::Any, context::IOContext, renderer::Union{Val{:print}, Val{:show}}) -> String
+    _excel__cell_to_str(cell::Any, context::RenderContext, renderer::Union{Val{:print}, Val{:show}}) -> String
 
 Convert `cell` to a `String` using `renderer` and the IO `context`. Notice that this function
 must not be called directly; use [`_excel__render_cell`](@ref) instead.
 """
-function _excel__cell_to_str(cell::Any, context::IOContext, ::Val{:print})
-    return sprint(print, cell; context)
+function _excel__cell_to_str(cell::Any, context::RenderContext, ::Val{:print})
+    return _sprint_with_context(print, context, cell)
 end
 
-function _excel__cell_to_str(cell::Any, context::IOContext, ::Val{:show})
-    return sprint(show, MIME("text/plain"), cell; context)
+function _excel__cell_to_str(cell::Any, context::RenderContext, ::Val{:show})
+    return _sprint_with_context(show, context, MIME("text/plain"), cell)
 end

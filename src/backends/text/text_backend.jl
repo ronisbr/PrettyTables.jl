@@ -43,7 +43,9 @@ function _text__print_table(
 
     ps     = PrintingTableState()
     buf_io = IOBuffer()
-    buf    = IOContext(buf_io, context)
+
+    # Reusable render buffer: one allocation per table instead of three per cell.
+    rctx = RenderContext(context)
 
     # == Process Input Variables ===========================================================
 
@@ -262,7 +264,7 @@ function _text__print_table(
     row_labels, column_labels, table_str, summary_rows, summary_row_labels, footnotes,
         custom_cells = _text__render_table(
             table_data,
-            context,
+            rctx,
             renderer,
             line_breaks,
             max_data_column_widths,
@@ -713,7 +715,7 @@ function _text__print_table(
                 alignment     = _current_cell_alignment(action, ps, table_data)
                 cell          = _current_cell(action, ps, table_data)
                 decoration    = action == :title ? style.title : style.subtitle
-                rendered_cell = _text__render_cell(cell, buf, renderer)
+                rendered_cell = _text__render_cell(cell, rctx, renderer)
 
                 _text__print_aligned(
                     display,
@@ -747,7 +749,7 @@ function _text__print_table(
                 alignment     = _current_cell_alignment(action, ps, table_data)
                 cell          = _current_cell(action, ps, table_data)
                 decoration    = style.source_note
-                rendered_cell = _text__render_cell(cell, buf, renderer)
+                rendered_cell = _text__render_cell(cell, rctx, renderer)
 
                 _text__print_aligned(
                     display,
@@ -1182,13 +1184,13 @@ function _text__print_table(
             cell          = _current_cell(action, ps, table_data)
             cell_width    = row_number_column_width
             decoration    = style.row_number_label
-            rendered_cell = _text__render_cell(cell, buf, renderer)
+            rendered_cell = _text__render_cell(cell, rctx, renderer)
 
         elseif action == :stubhead_label
             cell          = _current_cell(action, ps, table_data)
             cell_width    = row_label_column_width
             decoration    = style.stubhead_label
-            rendered_cell = _text__render_cell(cell, buf, renderer)
+            rendered_cell = _text__render_cell(cell, rctx, renderer)
 
         elseif action == :row_label
             cell_width    = row_label_column_width
@@ -1265,7 +1267,7 @@ function _text__print_table(
             cell          = _current_cell(action, ps, table_data)
             cell_width    = row_number_column_width
             decoration    = style.row_number
-            rendered_cell = _text__render_cell(cell, buf, renderer)
+            rendered_cell = _text__render_cell(cell, rctx, renderer)
 
         elseif action == :data
             # Custom text cells were recorded during the rendering pass, avoiding a new
@@ -1372,7 +1374,7 @@ function _text__print_table(
             cell          = _current_cell(action, ps, table_data)
             cell_width    = printed_table_width - 4
             decoration    = style.row_group_label
-            rendered_cell = _text__render_cell(cell, buf, renderer)
+            rendered_cell = _text__render_cell(cell, rctx, renderer)
         end
 
         # If we have multiple lines and we are not rendering a data cell, we must only

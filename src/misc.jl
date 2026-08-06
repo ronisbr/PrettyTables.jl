@@ -5,34 +5,19 @@
 ############################################################################################
 
 """
-    _sprint_with_context(f::Function, context::IOContext, args...) -> String
+    _sprint_with_context(f::Function, rc::RenderContext, args...) -> String
 
-Call `f(io, args...)`, where `io` inherits the IO properties of `context`, and return
+Call `f(io, args...)`, where `io` is the `IOContext` of the render context `rc`, and return
 everything that was written as a `String`.
 
 This function must be used instead of `sprint(f, args...; context)` in the cell rendering
 code. `sprint` builds its temporary `IOContext` around the *caller's* IO, so the resulting
-type changes with the object the user is printing to. Since the cell renderers deliberately
-declare `@nospecialize(context::IOContext)`, that made every new output IO type trigger a
-fresh inference and code generation of the whole rendering call, which showed up directly as
-time-to-first-print. Wrapping a plain `IOBuffer` instead pins the type to
-`IOContext{IOBuffer}` for every caller.
+type changes with the object the user is printing to, making every new output IO type
+trigger a fresh inference and code generation of the whole rendering call, which showed up
+directly as time-to-first-print. The render context pins the type to `IOContext{IOBuffer}`
+for every caller. Additionally, its buffer is reused across the entire table, meaning that
+each rendered cell pays only for the final `String` allocation.
 """
-function _sprint_with_context(f::F, @nospecialize(context::IOContext), args...) where {F}
-    buf = IOBuffer()
-    f(IOContext(buf, context), args...)
-    return String(take!(buf))
-end
-
-"""
-    _iocontext(context::Union{IOContext, RenderContext}) -> IOContext
-
-Return the underlying `IOContext`. It is required by APIs that must receive an `IOContext`,
-such as `CustomTextCell.init!`.
-"""
-_iocontext(rc::RenderContext) = rc.ctx
-_iocontext(@nospecialize(context::IOContext)) = context
-
 function _sprint_with_context(f::F, rc::RenderContext, args...) where {F}
     buf = rc.buf
     truncate(buf, 0)
@@ -41,6 +26,14 @@ function _sprint_with_context(f::F, rc::RenderContext, args...) where {F}
     n = buf.size
     return GC.@preserve buf unsafe_string(pointer(buf.data), n)
 end
+
+"""
+    _iocontext(rc::RenderContext) -> IOContext
+
+Return the underlying `IOContext` of the render context `rc`. It is required by APIs that
+must receive an `IOContext`, such as `CustomTextCell.init!`.
+"""
+_iocontext(rc::RenderContext) = rc.ctx
 
 """
     @_print(io, args...)

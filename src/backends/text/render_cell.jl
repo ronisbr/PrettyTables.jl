@@ -4,76 +4,43 @@
 #
 ############################################################################################
 
-# NOTE: The functions to render the cell must receive the current `IOContext` because we
-# need to check for circular dependency. We store the information about the objects being
-# printed inside the key `__PRETTY_TABLES__DATA__` in the IO context. Hence, we must pass it
-# forward when rendering the cells.
+# NOTE: The functions to render the cell must receive the current `RenderContext` because
+# its `IOContext` carries the information required to check for circular dependency. We
+# store the objects being printed inside the key `__PRETTY_TABLES__DATA__` in the IO
+# context. Hence, we must pass it forward when rendering the cells.
 
 """
-    _text__cell_to_str(cell::Any, context::Union{IOContext, RenderContext}, renderer::Union{Val{:print}, Val{:show}}) -> String
+    _text__cell_to_str(cell::Any, context::RenderContext, renderer::Union{Val{:print}, Val{:show}}) -> String
 
 Convert the `cell` to a string using a specific `context` and `renderer`.
 """
-function _text__cell_to_str(
-    cell::Any,
-    @nospecialize(context::Union{IOContext, RenderContext}),
-    ::Val{:print}
-)
+function _text__cell_to_str(cell::Any, context::RenderContext, ::Val{:print})
     cell isa String && return cell
     return _sprint_with_context(print, context, cell)
 end
 
-function _text__cell_to_str(
-    cell::Any,
-    @nospecialize(context::Union{IOContext, RenderContext}),
-    ::Val{:show}
-)
+function _text__cell_to_str(cell::Any, context::RenderContext, ::Val{:show})
     return _sprint_with_context(show, context, MIME("text/plain"), cell)
 end
 
-function _text__cell_to_str(
-    cell::AbstractString,
-    @nospecialize(context::Union{IOContext, RenderContext}),
-    ::Val{:show}
-)
+function _text__cell_to_str(cell::AbstractString, context::RenderContext, ::Val{:show})
     cell isa String && return cell
     return _sprint_with_context(print, context, cell)
 end
 
-function _text__cell_to_str(
-    ::UndefinedCell,
-    @nospecialize(_ctx::Union{IOContext, RenderContext}),
-    ::Val{:print}
-)
-    return "#undef"
-end
+_text__cell_to_str(cell::UndefinedCell, context::RenderContext, ::Val{:print}) = "#undef"
+_text__cell_to_str(cell::UndefinedCell, context::RenderContext, ::Val{:show}) = "#undef"
 
-function _text__cell_to_str(
-    ::UndefinedCell,
-    @nospecialize(_ctx::Union{IOContext, RenderContext}),
-    ::Val{:show}
-)
-    return "#undef"
-end
-
-function _text__cell_to_str(
-    cell::MergeCells,
-    @nospecialize(context::Union{IOContext, RenderContext}),
-    renderer::Val{:print}
-)
+function _text__cell_to_str(cell::MergeCells, context::RenderContext, renderer::Val{:print})
     return _text__cell_to_str(cell.data, context, renderer)
 end
 
-function _text__cell_to_str(
-    cell::MergeCells,
-    @nospecialize(context::Union{IOContext, RenderContext}),
-    renderer::Val{:show}
-)
+function _text__cell_to_str(cell::MergeCells, context::RenderContext, renderer::Val{:show})
     return _text__cell_to_str(cell.data, context, renderer)
 end
 
 """
-    _text__render_cell(cell::Any, @nospecialize(context::Union{IOContext, RenderContext}), renderer::Union{Val{:print}, Val{:show}}, line_breaks::Bool = false, column_width::Int = -1) -> String
+    _text__render_cell(cell::Any, context::RenderContext, renderer::Union{Val{:print}, Val{:show}}, line_breaks::Bool = false, column_width::Int = -1) -> String
 
 Render the `cell` in text back end using a specific `context` and `renderer`.
 
@@ -83,7 +50,7 @@ used when rendering `Markdown.MD` cells.
 """
 function _text__render_cell(
     cell::Any,
-    @nospecialize(context::Union{IOContext, RenderContext}),
+    context::RenderContext,
     renderer::Union{Val{:print}, Val{:show}},
     line_breaks::Bool = false,
     column_width::Int = -1,
@@ -129,7 +96,7 @@ end
 
 function _text__render_cell(
     cell::AbstractCustomTextCell,
-    @nospecialize(context::Union{IOContext, RenderContext}),
+    context::RenderContext,
     renderer::Union{Val{:print}, Val{:show}},
     line_breaks::Bool = false,
     column_width::Int = -1,
@@ -142,7 +109,7 @@ end
 
 function _text__render_cell(
     cell::Markdown.MD,
-    @nospecialize(context::Union{IOContext, RenderContext}),
+    context::RenderContext,
     renderer::Union{Val{:print}, Val{:show}},
     line_breaks::Bool = false,
     column_width::Int = -1,
@@ -168,7 +135,7 @@ end
 @static if VERSION >= v"1.11"
     function _text__render_cell(
         cell::Base.AnnotatedString,
-        @nospecialize(context::Union{IOContext, RenderContext}),
+        context::RenderContext,
         renderer::Union{Val{:print}, Val{:show}},
         line_breaks::Bool = false,
         column_width::Int = -1,

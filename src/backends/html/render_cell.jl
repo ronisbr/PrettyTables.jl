@@ -4,28 +4,28 @@
 #
 ############################################################################################
 
-# NOTE: The functions to render the cell must receive the current `IOContext` because we
-# need to check for circular dependency. We store the information about the objects being
-# printed inside the key `__PRETTY_TABLES__DATA__` in the IO context. Hence, we must pass it
-# forward when rendering the cells.
+# NOTE: The functions to render the cell must receive the current `RenderContext` because
+# its `IOContext` carries the information required to check for circular dependency. We
+# store the objects being printed inside the key `__PRETTY_TABLES__DATA__` in the IO
+# context. Hence, we must pass it forward when rendering the cells.
 
 """
-    _html__cell_to_str(cell::Any, context::IOContext, renderer::Union{Val{:print}, Val{:show}}) -> String
+    _html__cell_to_str(cell::Any, context::RenderContext, renderer::Union{Val{:print}, Val{:show}}) -> String
 
 Convert the `cell` to a string using a specific `context` and `renderer`.
 """
-function _html__cell_to_str(cell::Any, context::IOContext, ::Val{:print})
+function _html__cell_to_str(cell::Any, context::RenderContext, ::Val{:print})
     return _sprint_with_context(print, context, cell)
 end
 
-function _html__cell_to_str(cell::AbstractString, context::IOContext, ::Val{:print})
+function _html__cell_to_str(cell::AbstractString, context::RenderContext, ::Val{:print})
     # Escaping is performed afterward in `_html__render_cell`. Hence, we can return the
     # string here without any allocation, avoiding the `sprint` overhead.
     cell isa String && return cell
     return String(cell)
 end
 
-function _html__cell_to_str(cell::Any, context::IOContext, ::Val{:show})
+function _html__cell_to_str(cell::Any, context::RenderContext, ::Val{:show})
     if showable(MIME("text/html"), cell)
         cell_str = _sprint_with_context(show, context, MIME("text/html"), cell)
     else
@@ -35,7 +35,7 @@ function _html__cell_to_str(cell::Any, context::IOContext, ::Val{:show})
     return cell_str
 end
 
-function _html__cell_to_str(cell::AbstractString, context::IOContext, ::Val{:show})
+function _html__cell_to_str(cell::AbstractString, context::RenderContext, ::Val{:show})
     if showable(MIME("text/html"), cell)
         # This code handles, for example, StyledStrings.jl objects.
         cell_str = _sprint_with_context(show, context, MIME("text/html"), cell)
@@ -46,14 +46,14 @@ function _html__cell_to_str(cell::AbstractString, context::IOContext, ::Val{:sho
     return cell_str
 end
 
-_html__cell_to_str(cell::HTML, context::IOContext, ::Val{:print}) = cell.content
-_html__cell_to_str(cell::HTML, context::IOContext, ::Val{:show}) = cell.content
+_html__cell_to_str(cell::HTML, context::RenderContext, ::Val{:print}) = cell.content
+_html__cell_to_str(cell::HTML, context::RenderContext, ::Val{:show}) = cell.content
 
-_html__cell_to_str(cell::UndefinedCell, context::IOContext, ::Val{:print}) = "#undef"
-_html__cell_to_str(cell::UndefinedCell, context::IOContext, ::Val{:show}) = "#undef"
+_html__cell_to_str(cell::UndefinedCell, context::RenderContext, ::Val{:print}) = "#undef"
+_html__cell_to_str(cell::UndefinedCell, context::RenderContext, ::Val{:show}) = "#undef"
 
 """
-    _html__render_cell(cell::Any, context::IOContext, renderer::Union{Val{:print}, Val{:show}}; kwargs...) -> String
+    _html__render_cell(cell::Any, context::RenderContext, renderer::Union{Val{:print}, Val{:show}}; kwargs...) -> String
 
 Render the `cell` in HTML back end using a specific `context` and `renderer`.
 
@@ -67,7 +67,7 @@ Render the `cell` in HTML back end using a specific `context` and `renderer`.
 """
 function _html__render_cell(
     cell::Any,
-    context::IOContext,
+    context::RenderContext,
     renderer::Union{Val{:print}, Val{:show}};
     allow_html_in_cells::Bool = false,
     line_breaks::Bool = false,
@@ -83,7 +83,7 @@ end
 
 function _html__render_cell(
     cell::AbstractString,
-    context::IOContext,
+    context::RenderContext,
     renderer::Union{Val{:print}, Val{:show}};
     allow_html_in_cells::Bool = false,
     line_breaks::Bool = false,
@@ -105,7 +105,7 @@ end
 
 function _html__render_cell(
     cell::HTML,
-    context::IOContext,
+    context::RenderContext,
     renderer::Union{Val{:print}, Val{:show}};
     allow_html_in_cells::Bool = false,
     line_breaks::Bool = false,
@@ -116,7 +116,7 @@ end
 # For Markdown cells, we must render always using `show` to obtain the correct decoration.
 function _html__render_cell(
     cell::Markdown.MD,
-    context::IOContext,
+    context::RenderContext,
     renderer::Union{Val{:print}, Val{:show}};
     allow_html_in_cells::Bool = false,
     line_breaks::Bool = false,

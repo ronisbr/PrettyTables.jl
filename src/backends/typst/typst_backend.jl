@@ -28,6 +28,9 @@ function _typst__print(
     buf_io = IOBuffer()
     buf    = IOContext(buf_io, context)
 
+    # Reusable render buffer: one allocation per table instead of three per cell.
+    rctx = RenderContext(context)
+
     buf_hlines = IOBuffer()
     buf_tc     = IOBuffer()
 
@@ -446,7 +449,7 @@ function _typst__print(
                 push!(merged_column_labels, (ps.j, ps.j + cs - 1))
 
                 push!(vproperties, "colspan" => string(cs))
-                rendered_cell = _typst__render_cell(cell.data, buf, renderer)
+                rendered_cell = _typst__render_cell(cell.data, rctx, renderer)
 
                 alignment = cell.alignment
 
@@ -466,7 +469,7 @@ function _typst__print(
                 )
 
             else
-                rendered_cell = _typst__render_cell(cell, buf, renderer)
+                rendered_cell = _typst__render_cell(cell, rctx, renderer)
 
                 alignment = _current_cell_alignment(action, ps, table_data)
             end
