@@ -127,7 +127,7 @@ function CustomTextCell.rendered_cell_line(cell::AnsiTextCell, line::Int)
     left_padding_str  = " "^max(cell.left_padding, 0)
     right_padding_str = " "^max(cell.right_padding, 0)
     line_str          = cell.lines[line]
-    decoration_str    = convert(String, cell.decorations[line])
+    decoration_str    = String(cell.decorations[line])
 
     cropped_str, remaining_ansi = right_crop(line_str, cell.crop)
 

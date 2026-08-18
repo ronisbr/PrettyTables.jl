@@ -132,7 +132,7 @@ function _text__flush_line(
                 line, crop; keep_escape_seq = true, printable_string_width = str_width
             )
 
-            line = cropped_str * convert(String, parse_decoration(ansi)) * cont_str
+            line = cropped_str * String(parse_decoration(ansi)) * cont_str
         end
     end
 
