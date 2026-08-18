@@ -1,6 +1,11 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 3.4.7
+-------------
+
+- ![Enhancement][badge-enhancement] Add support for StringManipulation.jl v0.5.
+
 Version 3.4.6
 -------------
 
