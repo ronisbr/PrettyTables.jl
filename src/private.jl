@@ -21,7 +21,7 @@ function _guess_column_labels(data::Union{ColumnTable, RowTable})
     return column_labels
 end
 
-function _guess_column_labels(data::AbstractVecOrMat)
+function _guess_column_labels(data::AbstractVector)
     # A vector without elements is treated as having no columns, exactly like in
     # `_pretty_table`. A matrix, on the other hand, always has `size(data, 2)` columns, even
     # when it has no rows at all.
@@ -30,8 +30,12 @@ function _guess_column_labels(data::AbstractVecOrMat)
     # also true for a matrix with zero rows and a positive number of columns, which used to
     # produce an empty column label row that then failed the "one label per column"
     # validation.
-    (data isa AbstractVector) && isempty(data) && return [String[]]
+    isempty(data) && return [String[]]
 
+    return [String["Col. 1"]]
+end
+
+function _guess_column_labels(data::AbstractMatrix)
     return [parent(["Col. $i" for i in axes(data, 2)])]
 end
 
