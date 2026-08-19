@@ -1,6 +1,17 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 3.4.8
+-------------
+
+- ![Enhancement][badge-enhancement] Remove a type instability when creating the default
+  column labels for vectors and matrices.
+- ![Bugfix][badge-bugfix] Fix the Excel formatters on numeric cells. The formats were
+  applied before the cell value was assigned, and XLSX.jl resets integer-like number
+  formats such as `"#,##0"` to `"General"` in that case. (Issue [#318][gh-issue-318])
+- ![Bugfix][badge-bugfix] Fix an error when an Excel formatter uses a purely numeric format
+  string such as `"0"` (a format code) or `"39"` (a built-in format ID).
+
 Version 3.4.7
 -------------
 
@@ -617,7 +628,7 @@ Version 1.2.0
   to `UnitRange` if filtering is not present. Hence, the performance when
   printing huge tables cropped to the display size is highly improved by
   avoiding allocating big vectors. (Issue [#140][gh-issue-140]) (PR
-  [#144][gh-issue-144])
+  [#144][gh-pr-144])
 - ![Bugfix][badge-bugfix] The horizontal line selection is now consistent if the
   vertical cropping is set to `:middle`. (Issue [#133][gh-issue-133])
 
@@ -1145,7 +1156,6 @@ Version 0.1.0
 [gh-issue-133]: https://github.com/ronisbr/PrettyTables.jl/issues/133
 [gh-issue-140]: https://github.com/ronisbr/PrettyTables.jl/issues/140
 [gh-issue-142]: https://github.com/ronisbr/PrettyTables.jl/issues/142
-[gh-issue-144]: https://github.com/ronisbr/PrettyTables.jl/issues/144
 [gh-issue-146]: https://github.com/ronisbr/PrettyTables.jl/issues/146
 [gh-issue-149]: https://github.com/ronisbr/PrettyTables.jl/issues/149
 [gh-issue-150]: https://github.com/ronisbr/PrettyTables.jl/issues/150
@@ -1168,6 +1178,7 @@ Version 0.1.0
 [gh-issue-271]: https://github.com/ronisbr/PrettyTables.jl/issues/271
 [gh-issue-276]: https://github.com/ronisbr/PrettyTables.jl/issues/276
 [gh-issue-279]: https://github.com/ronisbr/PrettyTables.jl/issues/279
+[gh-issue-318]: https://github.com/ronisbr/PrettyTables.jl/issues/318
 
 [gh-pr-5]: https://github.com/ronisbr/PrettyTables.jl/pull/5
 [gh-pr-8]: https://github.com/ronisbr/PrettyTables.jl/pull/8
@@ -1180,8 +1191,8 @@ Version 0.1.0
 [gh-pr-56]: https://github.com/ronisbr/PrettyTables.jl/pull/56
 [gh-pr-63]: https://github.com/ronisbr/PrettyTables.jl/pull/63
 [gh-pr-135]: https://github.com/ronisbr/PrettyTables.jl/pull/135
-[gh-pr-140]: https://github.com/ronisbr/PrettyTables.jl/pull/140
 [gh-pr-143]: https://github.com/ronisbr/PrettyTables.jl/pull/143
+[gh-pr-144]: https://github.com/ronisbr/PrettyTables.jl/pull/144
 [gh-pr-182]: https://github.com/ronisbr/PrettyTables.jl/pull/182
 [gh-pr-186]: https://github.com/ronisbr/PrettyTables.jl/pull/186
 [gh-pr-199]: https://github.com/ronisbr/PrettyTables.jl/pull/199
