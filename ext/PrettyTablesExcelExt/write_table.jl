@@ -398,6 +398,8 @@ function _excel__write_table!(
                 cell_style         = _EXCEL__NO_DECORATION
                 wrap               = false
 
+                sheet[sheet_row, sheet_col] = rendered_cell
+
                 # .. Unmerged Column labels ................................................
 
                 if (action == :column_label)
@@ -507,8 +509,6 @@ function _excel__write_table!(
                         end
                     end
                 end
-
-                sheet[sheet_row, sheet_col] = rendered_cell
 
                 fontsize = _excel__apply_cell_style!(
                     sheet,
