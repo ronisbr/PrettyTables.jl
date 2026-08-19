@@ -107,6 +107,89 @@
         @test XLSX.getFormat(result[1], "C2").format["numFmt"]["formatCode"] == "General"
     end
 
+    # == Formats Must Survive the Cell Value Assignment ====================================
+
+    @testset "Formats Survive the Value Assignment" verbose = true begin
+        # Assigning an `Int64` or `Float64` value to a cell resets its number format to
+        # "General" unless XLSX.jl considers the current format float-like (e.g. "0.00").
+        # Hence, the formatters must be applied only after the rendered cell is assigned to
+        # the sheet (see issue #318). This regression requires numeric data cells together
+        # with integer-like formats because string cells never reset the format and
+        # float-like formats survive the assignment.
+        matrix = Any[
+            1000000.3 5
+            2000000.5 10
+        ]
+
+        result = pretty_table(
+            XLSX.XLSXFile,
+            matrix;
+            excel_formatters = [
+                # Integer-like format on a `Float64` column.
+                ExcelFormatter((v, i, j) -> (j == 1), ["format" => "#,##0"])
+                # Integer-like format on an `Int64` column.
+                ExcelFormatter((v, i, j) -> (j == 2), ["format" => "#,##0_0"])
+                # Integer-like format on the summary row, whose cells are also numeric.
+                ExcelFormatter(
+                    (v, i, j) -> true, ["format" => "#,##0"]; region = :summary_row
+                )
+            ],
+            summary_row_labels = ["Total"],
+            summary_rows = [(data, i) -> sum(@views data[:, i])],
+        )
+
+        # Data rows (Excel rows 2 and 3).
+        @test XLSX.getFormat(result[1], "B2").format["numFmt"]["formatCode"] == "#,##0"
+        @test XLSX.getFormat(result[1], "B3").format["numFmt"]["formatCode"] == "#,##0"
+        @test XLSX.getFormat(result[1], "C2").format["numFmt"]["formatCode"] == "#,##0_0"
+        @test XLSX.getFormat(result[1], "C3").format["numFmt"]["formatCode"] == "#,##0_0"
+
+        # Summary row (Excel row 4).
+        @test XLSX.getFormat(result[1], "B4").format["numFmt"]["formatCode"] == "#,##0"
+        @test XLSX.getFormat(result[1], "C4").format["numFmt"]["formatCode"] == "#,##0"
+    end
+
+    @testset "Issue 318 Reproduction" verbose = true begin
+        # Mirror the reproduction in issue #318, which uses a column table with `Float64`
+        # columns and both integer-like and float-like formats.
+        table = (
+            CMA                   = ["CMA1", "CMA2", "CMA3", "CMA4"],
+            Constituents          = [5, 10, 15, 20],
+            Total_amount          = [1000000.3, 2000000.5, 3000000.7, 4000001.9],
+            Total_Population      = [50000.7, 100000.5, 150000.3, 200000.1],
+            Per_Capita            = [20.2, 20.3, 20.5, 20.6],
+            Multiple_UK_PerCapita = [1.0, 1.2, 1.4, 1.6],
+        )
+
+        result = pretty_table(
+            XLSX.XLSXFile,
+            table;
+            excel_formatters = [
+                ExcelFormatter((v, i, j) -> (j == 3), ["format" => "#,##0"])
+                ExcelFormatter((v, i, j) -> (j == 4), ["format" => "#,##0.0"])
+                ExcelFormatter((v, i, j) -> (j == 5), ["format" => "#,##0"])
+                ExcelFormatter((v, i, j) -> (j == 6), ["format" => "#,##0.00"])
+            ],
+        )
+
+        # Column tables render two column label rows (the column names and the column
+        # types), so the data cells start at the third Excel row.
+        for row in 3:6
+            @test XLSX.getFormat(result[1], "C$row").format["numFmt"]["formatCode"] ==
+                "#,##0"
+            @test XLSX.getFormat(result[1], "D$row").format["numFmt"]["formatCode"] ==
+                "#,##0.0"
+            @test XLSX.getFormat(result[1], "E$row").format["numFmt"]["formatCode"] ==
+                "#,##0"
+            @test XLSX.getFormat(result[1], "F$row").format["numFmt"]["formatCode"] ==
+                "#,##0.00"
+        end
+
+        # Columns without a matching formatter must keep the default "General" format.
+        @test XLSX.getFormat(result[1], "A3").format["numFmt"]["formatCode"] == "General"
+        @test XLSX.getFormat(result[1], "B3").format["numFmt"]["formatCode"] == "General"
+    end
+
     # == Region Field and Constructors =====================================================
     @testset "Region Field and Constructors" verbose = true begin
         # The default region must be `:data`.
