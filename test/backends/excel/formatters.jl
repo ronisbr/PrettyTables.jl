@@ -190,6 +190,36 @@
         @test XLSX.getFormat(result[1], "B3").format["numFmt"]["formatCode"] == "General"
     end
 
+    # == Numeric Format Codes ==============================================================
+
+    @testset "Numeric Format Codes" verbose = true begin
+        # Purely numeric format strings must reach `XLSX.setFormat` as strings, where they
+        # select a format code like "0" or a built-in format ID like "39". Parsing them to
+        # `Int`, as done with the other attributes, makes `XLSX.setFormat` throw.
+        matrix = [
+            1234.5 1234.5
+            1234.5 1234.5
+        ]
+
+        result = pretty_table(
+            XLSX.XLSXFile,
+            matrix;
+            excel_formatters = [
+                # The format code "0" must be applied verbatim.
+                ExcelFormatter((v, i, j) -> (j == 1), ["format" => "0"])
+                # The format "39" selects the built-in format ID 39.
+                ExcelFormatter((v, i, j) -> (j == 2), ["format" => "39"])
+            ],
+        )
+
+        @test XLSX.getFormat(result[1], "A2").format["numFmt"]["formatCode"] == "0"
+        @test XLSX.getFormat(result[1], "A3").format["numFmt"]["formatCode"] == "0"
+        @test XLSX.getFormat(result[1], "B2").format["numFmt"]["formatCode"] ==
+            "#,##0.00_);(#,##0.00)"
+        @test XLSX.getFormat(result[1], "B3").format["numFmt"]["formatCode"] ==
+            "#,##0.00_);(#,##0.00)"
+    end
+
     # == Region Field and Constructors =====================================================
     @testset "Region Field and Constructors" verbose = true begin
         # The default region must be `:data`.

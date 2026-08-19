@@ -199,6 +199,14 @@ function _excel__split_attributes(attributes::Vector{ExcelPair})
             sym = Symbol(k)
         end
 
+        # `XLSX.setFormat` only accepts strings in the `format` keyword. Hence, we must not
+        # convert purely numeric values like "0" (a format code) or "39" (a built-in format
+        # ID) to `Int` here.
+        if k == "format"
+            push!(pv, sym => v)
+            continue
+        end
+
         processed_attribute = tryparse(Int, v)
 
         if isnothing(processed_attribute)
