@@ -70,6 +70,7 @@ end
     include("./backends/latex/alignment.jl")
     include("./backends/latex/circular_reference.jl")
     include("./backends/latex/cropping.jl")
+    include("./backends/latex/faces.jl")
     include("./backends/latex/decorations.jl")
     include("./backends/latex/default.jl")
     include("./backends/latex/full.jl")

@@ -136,27 +136,74 @@ Define the style of the tables printed with the latex back end.
 - `source_note::LatexEnvironments`: Latex environments with the style for the source notes.
 - `omitted_cell_summary::LatexEnvironments`: Latex environments with the style for the
     omitted cell summary.
+
+# Constructor
+
+    LatexTableStyle(; kwargs...)
+
+Create a style in which each field can be passed as a keyword. Every keyword also accepts a
+`Face`, which is converted with [`latex_decoration`](@ref). The keywords
+`first_line_column_label` and `column_label` also accept a vector with one decoration
+(LaTeX environments or `Face`) per column.
 """
-@kwdef struct LatexTableStyle{
+struct LatexTableStyle{
     TFCL <: Union{LatexEnvironments, Vector{LatexEnvironments}},
     TCL <: Union{LatexEnvironments, Vector{LatexEnvironments}},
 }
-    title::LatexEnvironments                          = _LATEX__LARGE_BOLD
-    subtitle::LatexEnvironments                       = _LATEX__ITALIC
-    row_number_label::LatexEnvironments               = _LATEX__BOLD
-    row_number::LatexEnvironments                     = _LATEX__DEFAULT
-    stubhead_label::LatexEnvironments                 = _LATEX__BOLD
-    row_label::LatexEnvironments                      = _LATEX__BOLD
-    row_group_label::LatexEnvironments                = _LATEX__BOLD
-    first_line_column_label::TFCL                     = _LATEX__BOLD
-    column_label::TCL                                 = _LATEX__ITALIC
-    first_line_merged_column_label::LatexEnvironments = _LATEX__BOLD
-    merged_column_label::LatexEnvironments            = _LATEX__BOLD
-    summary_row_cell::LatexEnvironments               = _LATEX__DEFAULT
-    summary_row_label::LatexEnvironments              = _LATEX__BOLD
-    footnote::LatexEnvironments                       = _LATEX__SMALL
-    source_note::LatexEnvironments                    = _LATEX__SMALL_ITALIC
-    omitted_cell_summary::LatexEnvironments           = _LATEX__SMALL_ITALIC
+    title::LatexEnvironments
+    subtitle::LatexEnvironments
+    row_number_label::LatexEnvironments
+    row_number::LatexEnvironments
+    stubhead_label::LatexEnvironments
+    row_label::LatexEnvironments
+    row_group_label::LatexEnvironments
+    first_line_column_label::TFCL
+    column_label::TCL
+    first_line_merged_column_label::LatexEnvironments
+    merged_column_label::LatexEnvironments
+    summary_row_cell::LatexEnvironments
+    summary_row_label::LatexEnvironments
+    footnote::LatexEnvironments
+    source_note::LatexEnvironments
+    omitted_cell_summary::LatexEnvironments
+end
+
+function LatexTableStyle(;
+    title                          = _LATEX__LARGE_BOLD,
+    subtitle                       = _LATEX__ITALIC,
+    row_number_label               = _LATEX__BOLD,
+    row_number                     = _LATEX__DEFAULT,
+    stubhead_label                 = _LATEX__BOLD,
+    row_label                      = _LATEX__BOLD,
+    row_group_label                = _LATEX__BOLD,
+    first_line_column_label        = _LATEX__BOLD,
+    column_label                   = _LATEX__ITALIC,
+    first_line_merged_column_label = _LATEX__BOLD,
+    merged_column_label            = _LATEX__BOLD,
+    summary_row_cell               = _LATEX__DEFAULT,
+    summary_row_label              = _LATEX__BOLD,
+    footnote                       = _LATEX__SMALL,
+    source_note                    = _LATEX__SMALL_ITALIC,
+    omitted_cell_summary           = _LATEX__SMALL_ITALIC,
+)
+    return LatexTableStyle(
+        _latex__decoration(title),
+        _latex__decoration(subtitle),
+        _latex__decoration(row_number_label),
+        _latex__decoration(row_number),
+        _latex__decoration(stubhead_label),
+        _latex__decoration(row_label),
+        _latex__decoration(row_group_label),
+        _latex__column_label_decoration(first_line_column_label),
+        _latex__column_label_decoration(column_label),
+        _latex__decoration(first_line_merged_column_label),
+        _latex__decoration(merged_column_label),
+        _latex__decoration(summary_row_cell),
+        _latex__decoration(summary_row_label),
+        _latex__decoration(footnote),
+        _latex__decoration(source_note),
+        _latex__decoration(omitted_cell_summary),
+    )
 end
 
 ############################################################################################
