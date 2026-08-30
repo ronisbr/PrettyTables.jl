@@ -87,6 +87,7 @@ include("./backends/excel/helpers.jl")
 include("./backends/excel/excel_backend.jl")
 
 include("./backends/typst/types.jl")
+include("./backends/typst/faces.jl")
 include("./backends/typst/documentation.jl")
 include("./backends/typst/helpers.jl")
 include("./backends/typst/typst_backend.jl")

@@ -191,3 +191,37 @@ end
     ) == String[]
     @test latex_decoration(Face(; foreground = :red)) == ["textcolor[HTML]{A51C2C}"]
 end
+
+@testset "Typst Decoration" begin
+    @test typst_decoration(Face()) == Pair{String, String}[]
+
+    @test typst_decoration(Face(; weight = :bold, foreground = "#ff0000")) ==
+        ["text-weight" => "bold", "text-fill" => "rgb(\"#ff0000\")"]
+
+    @test typst_decoration(
+        Face(;
+            font       = "Fira Sans",
+            height     = 120,
+            weight     = :normal,
+            slant      = :oblique,
+            foreground = "#ff0000",
+            background = 0x0000ff,
+        )
+    ) == [
+        "text-font"   => "Fira Sans",
+        "text-size"   => "12pt",
+        "text-weight" => "regular",
+        "text-style"  => "oblique",
+        "text-fill"   => "rgb(\"#ff0000\")",
+        "fill"        => "rgb(\"#0000ff\")",
+    ]
+
+    @test typst_decoration(Face(; height = 1.5, weight = :semilight)) ==
+        ["text-size" => "1.5em", "text-weight" => "light"]
+
+    # The default colors and the unsupported attributes are ignored.
+    @test typst_decoration(
+        Face(; foreground = :default, underline = true, strikethrough = true, inverse = true)
+    ) == Pair{String, String}[]
+    @test typst_decoration(Face(; foreground = :red)) == ["text-fill" => "rgb(\"#a51c2c\")"]
+end
