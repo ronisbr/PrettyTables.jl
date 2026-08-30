@@ -136,4 +136,45 @@
         @test h._decoration == Face(; foreground = :bright_black, background = :bright_red)
         @test h._sgr == "\e[90;101m"
     end
+
+    @testset "General Highlighter" begin
+        f = (data, i, j) -> i == 1
+
+        expected = pretty_table(
+            String,
+            matrix;
+            color = true,
+            highlighters = [TextHighlighter(f, Face(; weight = :bold, slant = :italic))],
+        )
+
+        h = Highlighter(f, Face(; weight = :bold, slant = :italic))
+        @test isnothing(h._text)
+        @test pretty_table(String, matrix; color = true, highlighters = [h]) == expected
+        @test h._text == "\e[1;3m"
+        @test pretty_table(String, matrix; color = true, highlighters = [h]) == expected
+
+        # The function `fd` can return a face or a crayon, which are not cached.
+        h = Highlighter(f, (h, data, i, j) -> Face(; weight = :bold, slant = :italic))
+        @test pretty_table(String, matrix; color = true, highlighters = [h]) == expected
+        @test isnothing(h._text)
+
+        h = Highlighter(f, (h, data, i, j) -> crayon"bold italics")
+        @test pretty_table(String, matrix; color = true, highlighters = [h]) == expected
+
+        # Highlighters of different types can be mixed, and the first match wins.
+        hs = AbstractHighlighter[
+            TextHighlighter((data, i, j) -> false, crayon"red"),
+            Highlighter(f, Face(; weight = :bold, slant = :italic)),
+            TextHighlighter(f, crayon"red"),
+        ]
+        @test pretty_table(String, matrix; color = true, highlighters = hs) == expected
+
+        # Highlighters of other back ends are not accepted.
+        @test_throws ArgumentError pretty_table(
+            String,
+            matrix;
+            color = true,
+            highlighters = [HtmlHighlighter(f, ["color" => "red"])],
+        )
+    end
 end

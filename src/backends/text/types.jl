@@ -460,7 +460,7 @@ end
 _text__default_highlighter_fd(h::TextHighlighter, ::Any, ::Int, ::Int) = h._decoration
 
 """
-    _text__highlighter_sgr(h::TextHighlighter, data, i::Int, j::Int) -> String
+    _text__highlighter_sgr(h::AbstractHighlighter, data, i::Int, j::Int) -> String
 
 Return the escape sequence of the highlighter `h` for the cell `(i, j)` of `data`.
 """
@@ -468,4 +468,12 @@ function _text__highlighter_sgr(h::TextHighlighter, data, i::Int, j::Int)
     # The default `fd` returns the stored face, whose escape sequence is already rendered.
     (h.fd === _text__default_highlighter_fd) && return h._sgr
     return _text__decoration_sgr(h.fd(h, data, i, j))
+end
+
+function _text__highlighter_sgr(h::AbstractHighlighter, ::Any, ::Int, ::Int)
+    throw(
+        ArgumentError(
+            "The text back end does not support highlighters of type `$(typeof(h))`."
+        )
+    )
 end

@@ -22,7 +22,7 @@ function _text__print_table(
     fit_table_in_display_horizontally::Bool = true,
     fit_table_in_display_vertically::Bool = true,
     fixed_data_column_widths::Union{Int, Vector{Int}} = 0,
-    highlighters::Vector{TextHighlighter} = _DEFAULT_TEXT_HIGHLIGHTER,
+    highlighters::Vector{<:AbstractHighlighter} = _DEFAULT_TEXT_HIGHLIGHTER,
     line_breaks::Bool = false,
     minimum_data_column_widths::Union{Int, Vector{Int}} = 0,
     maximum_data_column_widths::Union{Int, Vector{Int}} = 0,

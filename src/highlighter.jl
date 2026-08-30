@@ -120,3 +120,18 @@ _default_highlighter_fd(h::Highlighter, ::Any, ::Int, ::Int) = h._decoration
 # Return `true` if the highlighter `h` uses the default decoration function, in which case
 # the converted decoration can be cached.
 _has_default_fd(h::Highlighter) = h.fd === _default_highlighter_fd
+
+############################################################################################
+#                                      Text Back End                                       #
+############################################################################################
+
+function _text__highlighter_sgr(h::Highlighter, data, i::Int, j::Int)
+    _has_default_fd(h) || return _text__decoration_sgr(h.fd(h, data, i, j))
+
+    sgr = h._text
+    isnothing(sgr) || return sgr
+
+    sgr = _text__face_sgr(h._decoration)
+    h._text = sgr
+    return sgr
+end
