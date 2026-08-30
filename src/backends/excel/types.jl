@@ -79,7 +79,7 @@ highlighters = [
 ]
 ```
 """
-struct ExcelHighlighter
+struct ExcelHighlighter <: AbstractHighlighter
     f::Function
     fd::Function
 
