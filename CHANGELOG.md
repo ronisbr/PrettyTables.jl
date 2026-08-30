@@ -1,6 +1,30 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 3.5.0
+-------------
+
+- ![Feature][badge-feature] Add support for `StyledStrings.Face` as the decoration of the
+  text back end. Every field of `TextTableStyle` and the decoration of `TextHighlighter` are
+  now faces, and crayons are still accepted and converted to the equivalent faces. The
+  keyword constructor `TextHighlighter(f; kwargs...)` accepts the keywords of both `Face`
+  and `Crayon`. StyledStrings.jl is now a dependency, it is re-exported, and `Face` and
+  `SimpleColor` are exported.
+- ![Feature][badge-feature] Add `Highlighter`, a highlighter defined by a `Face` that works
+  with every back end, and the supertype `AbstractHighlighter` of all the highlighters. The
+  keyword `highlighters` accepts any vector of `AbstractHighlighter`.
+- ![Feature][badge-feature] Accept a `Face` in every keyword of `HtmlTableStyle`,
+  `LatexTableStyle`, `MarkdownTableStyle`, `TypstTableStyle`, and `ExcelTableStyle`, which
+  is converted to the decoration of the back end at construction. The conversion functions
+  `html_decoration`, `latex_decoration`, `markdown_decoration`, `typst_decoration`, and
+  `excel_decoration` are exported.
+- ![Enhancement][badge-enhancement] Render the escape sequences of the style of the text back
+  end once per table instead of once per cell.
+- ![Info][badge-info] The conversion from `Crayon` to `Face` is lossy: the attributes
+  `blink`, `conceal`, and `reset` are dropped, and the colors of the 256-color palette are
+  converted to 24-bit colors.
+- ![Info][badge-info] PrettyTables.jl now requires StringManipulation.jl v0.6.1.
+
 Version 3.4.8
 -------------
 
