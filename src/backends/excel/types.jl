@@ -380,25 +380,72 @@ style = ExcelTableStyle(
     title                          = ["bold" => "true", "color" => "orange", "size" => "18", "under" => "single"],
 )
 ```
+
+# Constructor
+
+    ExcelTableStyle(; kwargs...)
+
+Create a style in which each field can be passed as a keyword. Every keyword also accepts a
+`Face`, which is converted with [`excel_decoration`](@ref). The keywords
+`first_line_column_label` and `column_label` also accept a vector with one decoration
+(Excel attributes or `Face`) per column.
 """
-@kwdef struct ExcelTableStyle{
+struct ExcelTableStyle{
     TFCL <: Union{Vector{ExcelPair}, Vector{Vector{ExcelPair}}},
     TCL <: Union{Vector{ExcelPair}, Vector{Vector{ExcelPair}}},
 }
-    title::Vector{ExcelPair}                          = _EXCEL__XLARGE_BOLD
-    subtitle::Vector{ExcelPair}                       = _EXCEL__LARGE_ITALIC
-    row_number_label::Vector{ExcelPair}               = _EXCEL__BOLD
-    row_number::Vector{ExcelPair}                     = _EXCEL__BOLD
-    stubhead_label::Vector{ExcelPair}                 = _EXCEL__BOLD
-    row_label::Vector{ExcelPair}                      = _EXCEL__BOLD
-    row_group_label::Vector{ExcelPair}                = _EXCEL__BOLD
-    first_line_column_label::TFCL                     = _EXCEL__BOLD
-    column_label::TCL                                 = _EXCEL__NO_DECORATION
-    first_line_merged_column_label::Vector{ExcelPair} = _EXCEL__BOLD
-    merged_column_label::Vector{ExcelPair}            = _EXCEL__NO_DECORATION
-    data_cell::Vector{ExcelPair}                      = _EXCEL__NO_DECORATION
-    summary_row_label::Vector{ExcelPair}              = _EXCEL__BOLD
-    summary_row_cell::Vector{ExcelPair}               = _EXCEL__NO_DECORATION
-    footnote::Vector{ExcelPair}                       = _EXCEL__SMALL
-    source_note::Vector{ExcelPair}                    = _EXCEL__SMALL_ITALIC_GRAY
+    title::Vector{ExcelPair}
+    subtitle::Vector{ExcelPair}
+    row_number_label::Vector{ExcelPair}
+    row_number::Vector{ExcelPair}
+    stubhead_label::Vector{ExcelPair}
+    row_label::Vector{ExcelPair}
+    row_group_label::Vector{ExcelPair}
+    first_line_column_label::TFCL
+    column_label::TCL
+    first_line_merged_column_label::Vector{ExcelPair}
+    merged_column_label::Vector{ExcelPair}
+    data_cell::Vector{ExcelPair}
+    summary_row_label::Vector{ExcelPair}
+    summary_row_cell::Vector{ExcelPair}
+    footnote::Vector{ExcelPair}
+    source_note::Vector{ExcelPair}
+end
+
+function ExcelTableStyle(;
+    title                          = _EXCEL__XLARGE_BOLD,
+    subtitle                       = _EXCEL__LARGE_ITALIC,
+    row_number_label               = _EXCEL__BOLD,
+    row_number                     = _EXCEL__BOLD,
+    stubhead_label                 = _EXCEL__BOLD,
+    row_label                      = _EXCEL__BOLD,
+    row_group_label                = _EXCEL__BOLD,
+    first_line_column_label        = _EXCEL__BOLD,
+    column_label                   = _EXCEL__NO_DECORATION,
+    first_line_merged_column_label = _EXCEL__BOLD,
+    merged_column_label            = _EXCEL__NO_DECORATION,
+    data_cell                      = _EXCEL__NO_DECORATION,
+    summary_row_label              = _EXCEL__BOLD,
+    summary_row_cell               = _EXCEL__NO_DECORATION,
+    footnote                       = _EXCEL__SMALL,
+    source_note                    = _EXCEL__SMALL_ITALIC_GRAY,
+)
+    return ExcelTableStyle(
+        _excel__decoration(title),
+        _excel__decoration(subtitle),
+        _excel__decoration(row_number_label),
+        _excel__decoration(row_number),
+        _excel__decoration(stubhead_label),
+        _excel__decoration(row_label),
+        _excel__decoration(row_group_label),
+        _excel__column_label_decoration(first_line_column_label),
+        _excel__column_label_decoration(column_label),
+        _excel__decoration(first_line_merged_column_label),
+        _excel__decoration(merged_column_label),
+        _excel__decoration(data_cell),
+        _excel__decoration(summary_row_label),
+        _excel__decoration(summary_row_cell),
+        _excel__decoration(footnote),
+        _excel__decoration(source_note),
+    )
 end
