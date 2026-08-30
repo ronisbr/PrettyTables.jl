@@ -275,3 +275,32 @@ end
     ) == Pair{String, String}[]
     @test excel_decoration(Face(; foreground = :red)) == ["color" => "FFA51C2C"]
 end
+
+@testset "General Highlighter" begin
+    f = (data, i, j) -> i == 1
+
+    h = Highlighter(f, Face(; weight = :bold, foreground = :red))
+    @test h isa AbstractHighlighter
+    @test h.f === f
+    @test h.fd === PrettyTables._default_highlighter_fd
+    @test h._decoration == Face(; weight = :bold, foreground = :red)
+    @test h.fd(h, nothing, 1, 1) == Face(; weight = :bold, foreground = :red)
+    @test PrettyTables._has_default_fd(h)
+    @test isnothing(h._text) && isnothing(h._html) && isnothing(h._latex)
+    @test isnothing(h._markdown) && isnothing(h._typst) && isnothing(h._excel)
+
+    h = Highlighter(f, crayon"bold red")
+    @test h._decoration == Face(; weight = :bold, foreground = :red)
+
+    h = Highlighter(f; weight = :bold, foreground = :red)
+    @test h._decoration == Face(; weight = :bold, foreground = :red)
+
+    h = Highlighter(f; bold = true, foreground = :dark_gray)
+    @test h._decoration == Face(; weight = :bold, foreground = :bright_black)
+
+    fd = (h, data, i, j) -> Face(; slant = :italic)
+    h  = Highlighter(f, fd)
+    @test h.fd === fd
+    @test h._decoration == Face()
+    @test !PrettyTables._has_default_fd(h)
+end

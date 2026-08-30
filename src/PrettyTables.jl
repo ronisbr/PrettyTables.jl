@@ -96,6 +96,8 @@ include("./backends/typst/typst_backend.jl")
 include("./backends/typst/private.jl")
 include("./backends/typst/render_cell.jl")
 
+include("./highlighter.jl")
+
 include("./printing_state/alignment.jl")
 include("./printing_state/data.jl")
 include("./printing_state/information.jl")
