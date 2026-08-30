@@ -153,3 +153,21 @@ function _html__highlighter_decoration(h::Highlighter, data, i::Int, j::Int)
     h._html = decoration
     return decoration
 end
+
+############################################################################################
+#                                      LaTeX Back End                                      #
+############################################################################################
+
+function _latex__highlighter_decoration(h::Highlighter, data, i::Int, j::Int)
+    if !_has_default_fd(h)
+        d = h.fd(h, data, i, j)
+        return d isa Face ? latex_decoration(d) : d::LatexEnvironments
+    end
+
+    decoration = h._latex
+    isnothing(decoration) || return decoration
+
+    decoration = latex_decoration(h._decoration)
+    h._latex = decoration
+    return decoration
+end

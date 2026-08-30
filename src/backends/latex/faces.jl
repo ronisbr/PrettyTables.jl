@@ -73,3 +73,20 @@ _latex__column_label_decoration(face::Face)                             = latex_
 function _latex__column_label_decoration(decorations::AbstractVector)
     return LatexEnvironments[_latex__decoration(d) for d in decorations]
 end
+
+"""
+    _latex__highlighter_decoration(h::AbstractHighlighter, data, i::Int, j::Int) -> LatexEnvironments
+
+Return the LaTeX environments of the highlighter `h` for the cell `(i, j)` of `data`.
+"""
+function _latex__highlighter_decoration(h::LatexHighlighter, data, i::Int, j::Int)
+    return h.fd(h, data, i, j)::LatexEnvironments
+end
+
+function _latex__highlighter_decoration(h::AbstractHighlighter, ::Any, ::Int, ::Int)
+    throw(
+        ArgumentError(
+            "The LaTeX back end does not support highlighters of type `$(typeof(h))`."
+        )
+    )
+end

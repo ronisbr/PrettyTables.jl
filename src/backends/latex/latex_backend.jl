@@ -6,7 +6,7 @@
 
 function _latex__print(
     pspec::PrintingSpec;
-    highlighters::Union{Nothing, Vector{LatexHighlighter}} = nothing,
+    highlighters::Union{Nothing, Vector{<:AbstractHighlighter}} = nothing,
     style::LatexTableStyle = LatexTableStyle(),
     table_format::LatexTableFormat = LatexTableFormat(),
 )
@@ -412,7 +412,9 @@ function _latex__print(
                             # Apply the highlighters in order, stopping at the first match.
                             for h in highlighters
                                 if h.f(orig_data, ps.i, ps.j)
-                                    envs = h.fd(h, orig_data, ps.i, ps.j)
+                                    envs = _latex__highlighter_decoration(
+                                        h, orig_data, ps.i, ps.j
+                                    )
                                     break
                                 end
                             end

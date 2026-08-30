@@ -66,4 +66,51 @@
             style = LatexTableStyle(; column_label = [Face()]),
         )
     end
+
+    @testset "General Highlighter" begin
+        f = (data, i, j) -> i == 1
+
+        expected = """
+\\begin{tabular}{|r|r|}
+  \\hline
+  \\textbf{Col. 1} & \\textbf{Col. 2} \\\\
+  \\hline
+  \\textcolor[HTML]{FF0000}{\\textbf{1}} & \\textcolor[HTML]{FF0000}{\\textbf{2}} \\\\
+  3 & 4 \\\\
+  \\hline
+\\end{tabular}
+"""
+
+        h = Highlighter(f, Face(; weight = :bold, foreground = "#ff0000"))
+        @test isnothing(h._latex)
+        @test pretty_table(String, matrix; backend = :latex, highlighters = [h]) == expected
+        @test h._latex == ["textbf", "textcolor[HTML]{FF0000}"]
+        @test pretty_table(String, matrix; backend = :latex, highlighters = [h]) == expected
+
+        # The function `fd` can return a face or the native decoration, which are not cached.
+        h = Highlighter(
+            f, (h, data, i, j) -> Face(; weight = :bold, foreground = "#ff0000")
+        )
+        @test pretty_table(String, matrix; backend = :latex, highlighters = [h]) == expected
+        @test isnothing(h._latex)
+
+        h = Highlighter(f, (h, data, i, j) -> ["textbf", "textcolor[HTML]{FF0000}"])
+        @test pretty_table(String, matrix; backend = :latex, highlighters = [h]) == expected
+
+        # Highlighters of different types can be mixed, and the first match wins.
+        hs = AbstractHighlighter[
+            LatexHighlighter((data, i, j) -> false, ["textit"]),
+            Highlighter(f, Face(; weight = :bold, foreground = "#ff0000")),
+            LatexHighlighter(f, ["textit"]),
+        ]
+        @test pretty_table(String, matrix; backend = :latex, highlighters = hs) == expected
+
+        # Highlighters of other back ends are not accepted.
+        @test_throws ArgumentError pretty_table(
+            String,
+            matrix;
+            backend = :latex,
+            highlighters = [TextHighlighter(f, crayon"red")],
+        )
+    end
 end
