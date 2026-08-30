@@ -13,7 +13,7 @@ the output.
 
 # Keywords
 
-- `highlighters::Vector{LatexHighlighter}`: Highlighters to apply to the table. For more
+- `highlighters::Vector{<:AbstractHighlighter}`: Highlighters to apply to the table. For more
     information, see the section **LaTeX Highlighters** in the **Extended Help**.
 - `style::LatexTableStyle`: Style of the table. For more information, see the section
     **LaTeX Table Style** in the **Extended Help**.
@@ -25,8 +25,11 @@ the output.
 ## LaTeX Highlighters
 
 
-A set of highlighters can be passed as a `Vector{LatexHighlighter}` to the `highlighters`
-keyword. Each highlighter is an instance of the structure [`LatexHighlighter`](@ref). It
+A set of highlighters can be passed as a vector of `AbstractHighlighter` to the
+`highlighters` keyword. A highlighter can be an instance of the structure
+[`LatexHighlighter`](@ref), specific to this back end, or of the general
+[`Highlighter`](@ref), which is defined by a `Face` and works with every back end (see
+[Faces](@ref)). The face is converted with [`latex_decoration`](@ref). Each highlighter is an instance of the structure [`LatexHighlighter`](@ref). It
 contains the following two public fields:
 
 - `f::Function`: Function with the signature `f(data, i, j)` which should return `true`
@@ -174,5 +177,14 @@ style = LatexTableStyle(
     stubhead_label = ["textbf", "color{red}"]
 )
 ```
+
+Every keyword of the constructor of [`LatexTableStyle`](@ref) also accepts a `Face`, which is
+converted to LaTeX environments with [`latex_decoration`](@ref) (see [Faces](@ref)).
+
+!!! note
+
+    The LaTeX back end does not write any preamble. Hence, the packages **xcolor** and
+    **ulem** must be loaded in the document if a face has colors or a strikethrough.
+
 """
 pretty_table_latex_backend
