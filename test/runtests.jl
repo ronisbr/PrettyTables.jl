@@ -103,6 +103,7 @@ end
     include("./backends/text/decorations.jl")
     include("./backends/text/default.jl")
     include("./backends/text/errors.jl")
+    include("./backends/text/faces.jl")
     include("./backends/text/footnotes.jl")
     include("./backends/text/full.jl")
     include("./backends/text/highlighters.jl")
