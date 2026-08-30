@@ -158,4 +158,29 @@ end
 
         return String(take!(buf))
     end
+else
+    # Styled strings are rendered region by region, wrapping the styled ones in a `span` with
+    # the CSS properties of the face.
+    function _html__render_cell(
+        cell::StyledStrings.AnnotatedString,
+        context::RenderContext,
+        renderer::Union{Val{:print}, Val{:show}};
+        allow_html_in_cells::Bool = false,
+        line_breaks::Bool = false,
+    )
+        buf = IOBuffer()
+
+        for (text, face) in _face_regions(cell)
+            escaped = _html__escape_str(text, line_breaks, !allow_html_in_cells)
+            style   = isnothing(face) ? _HTML__NO_DECORATION : html_decoration(face)
+
+            if isempty(style) || isempty(escaped)
+                print(buf, escaped)
+            else
+                print(buf, _html__create_tag("span", escaped; style = style))
+            end
+        end
+
+        return String(take!(buf))
+    end
 end

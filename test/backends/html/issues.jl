@@ -69,5 +69,7 @@
             column_labels = [styled"<{red:Column 1}>", "<Column 2>"],
             renderer      = :show,
         )
+
+        @test result == expected
     end
 end
