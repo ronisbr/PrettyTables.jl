@@ -64,31 +64,31 @@ function _text__print(display::Display, str::AbstractString, str_width::Int = -1
 end
 
 """
-    _text__styled_print(display::Display, char::Char, crayon::Crayon) -> Nothing
+    _text__styled_print(display::Display, char::Char, sgr::String) -> Nothing
 
-Print a single character `char` to the `display` with style given by the `crayon`.
+Print a single character `char` to the `display` with the style given by the escape
+sequence `sgr`, which can be empty for no style.
 """
-function _text__styled_print(display::Display, char::Char, crayon::Crayon)
-    (!display.has_color || crayon == _TEXT__DEFAULT || crayon == _TEXT__EMPTY_CRAYON) &&
-        return _text__print(display, char)
+function _text__styled_print(display::Display, char::Char, sgr::String)
+    (!display.has_color || isempty(sgr)) && return _text__print(display, char)
 
     _text__check_eol(display) && return nothing
-    print(display.buf_line, string(crayon), char, _TEXT__STRING_RESET)
+    print(display.buf_line, sgr, char, _TEXT__STRING_RESET)
     display.column += textwidth(char)
     return nothing
 end
 
 """
-    _text__styled_print(display::Display, str::AbstractString, crayon::Crayon) -> Nothing
+    _text__styled_print(display::Display, str::AbstractString, sgr::String) -> Nothing
 
-Print a string `str` to the `display` with the style given by the `crayon`.
+Print a string `str` to the `display` with the style given by the escape sequence `sgr`,
+which can be empty for no style.
 """
-function _text__styled_print(display::Display, str::AbstractString, crayon::Crayon)
-    (!display.has_color || crayon == _TEXT__DEFAULT || crayon == _TEXT__EMPTY_CRAYON) &&
-        return _text__print(display, str)
+function _text__styled_print(display::Display, str::AbstractString, sgr::String)
+    (!display.has_color || isempty(sgr)) && return _text__print(display, str)
 
     _text__check_eol(display) && return nothing
-    print(display.buf_line, string(crayon), str, _TEXT__STRING_RESET)
+    print(display.buf_line, sgr, str, _TEXT__STRING_RESET)
     display.column += printable_textwidth(str)
     return nothing
 end
@@ -149,13 +149,14 @@ end
         str::AbstractString,
         cell_width::Int,
         alignment::Symbol,
-        crayon::Crayon = _TEXT__DEFAULT,
+        sgr::String = "",
         fill::Bool = true;
         kwargs...
     ) -> Nothing
 
 Print a string `str` to the `display`, aligned according to `alignment` in a cell of width
-`cell_width`. The string is printed with the style given by `crayon`. The `alignment` can be
+`cell_width`. The string is printed with the style given by the escape sequence `sgr`, which
+can be empty for no style. The `alignment` can be
 `:l` (left), `:r` (right), or `:c` (center). If `fill` is `true`, the string is filled with
 spaces to fit the cell width.
 
@@ -175,7 +176,7 @@ function _text__print_aligned(
     str::AbstractString,
     cell_width::Int,
     alignment::Symbol,
-    crayon::Crayon = _TEXT__DEFAULT,
+    sgr::String = "",
     fill::Bool = true;
     left_margin::Int = 0,
     right_margin::Int = 0,
@@ -197,9 +198,9 @@ function _text__print_aligned(
         end
     end
 
-    styled = display.has_color && crayon != _TEXT__DEFAULT && crayon != _TEXT__EMPTY_CRAYON
+    styled = display.has_color && !isempty(sgr)
 
-    styled && print(display.buf_line, string(crayon))
+    styled && print(display.buf_line, sgr)
 
     for _ in 1:left_margin
         write(display.buf_line, ' ')
@@ -221,7 +222,7 @@ end
     _text__print_horizontal_line(
         display::Display,
         tf::TextTableFormat,
-        crayon::Crayon,
+        sgr::String,
         table_data::TableData,
         vertical_lines_at_data_columns::AbstractVector{Int},
         row_number_column_width::Int,
@@ -238,7 +239,8 @@ Print a horizontal line to `display`.
 
 - `display::Display`: Display where the horizontal line will be printed.
 - `tf::TextTableFormat`: Table format.
-- `crayon::Crayon`: Crayon used to print the horizontal line.
+- `sgr::String`: Escape sequence used to print the horizontal line, or an empty string for
+    no style.
 - `table_data::TableData`: Table data.
 - `vertical_lines_at_data_columns::AbstractVector{Int}`: List of columns where a vertical
     line must be drawn after the cell.
@@ -258,7 +260,7 @@ Print a horizontal line to `display`.
 function _text__print_horizontal_line(
     display::Display,
     tf::TextTableFormat,
-    crayon::Crayon,
+    sgr::String,
     table_data::TableData,
     vertical_lines_at_data_columns::AbstractVector{Int},
     row_number_column_width::Int,
@@ -312,7 +314,7 @@ function _text__print_horizontal_line(
 
     # == Print the Horizontal Line =========================================================
 
-    (display.has_color && crayon != _TEXT__DEFAULT) && _text__print(display, string(crayon))
+    (display.has_color && !isempty(sgr)) && _text__print(display, sgr)
 
     # -- Left Intersection -----------------------------------------------------------------
 
@@ -361,9 +363,9 @@ function _text__print_horizontal_line(
     end
 
     # NOTE: The reset must be guarded by `has_color` exactly like the opening escape
-    # sequence is. Otherwise, a table styled with a non-default crayon would leak a bare
+    # sequence is. Otherwise, a table styled with a non-default face would leak a bare
     # `\e[0m` into an output where color is disabled.
-    (display.has_color && crayon != _TEXT__DEFAULT) &&
+    (display.has_color && !isempty(sgr)) &&
         _text__print(display, _TEXT__STRING_RESET)
 
     return nothing
@@ -373,7 +375,7 @@ end
     _text__print_column_label_horizontal_line(
         display::Display,
         tf::TextTableFormat,
-        crayon::Crayon,
+        sgr::String,
         table_data::TableData,
         row_number::Int,
         vertical_lines_at_data_columns::AbstractVector{Int},
@@ -390,7 +392,8 @@ Print a column label horizontal line to `display`.
 
 - `display::Display`: Display where the horizontal line will be printed.
 - `tf::TextTableFormat`: Table format.
-- `crayon::Crayon`: Crayon used to print the horizontal line.
+- `sgr::String`: Escape sequence used to print the horizontal line, or an empty string for
+    no style.
 - `table_data::TableData`: Table data.
 - `row_number::Int`: Column label row number before the horizontal line.
 - `vertical_lines_at_data_columns::AbstractVector{Int}`: List of columns where a vertical
@@ -406,7 +409,7 @@ Print a column label horizontal line to `display`.
 function _text__print_column_label_horizontal_line(
     display::Display,
     tf::TextTableFormat,
-    crayon::Crayon,
+    sgr::String,
     table_data::TableData,
     row_number::Int,
     vertical_lines_at_data_columns::AbstractVector{Int},
@@ -458,7 +461,7 @@ function _text__print_column_label_horizontal_line(
 
     # == Print the Horizontal Line =========================================================
 
-    (display.has_color && crayon != _TEXT__DEFAULT) && _text__print(display, string(crayon))
+    (display.has_color && !isempty(sgr)) && _text__print(display, sgr)
 
     # -- Left Intersection -----------------------------------------------------------------
 
@@ -534,9 +537,9 @@ function _text__print_column_label_horizontal_line(
     end
 
     # NOTE: The reset must be guarded by `has_color` exactly like the opening escape
-    # sequence is. Otherwise, a table styled with a non-default crayon would leak a bare
+    # sequence is. Otherwise, a table styled with a non-default face would leak a bare
     # `\e[0m` into an output where color is disabled.
-    (display.has_color && crayon != _TEXT__DEFAULT) &&
+    (display.has_color && !isempty(sgr)) &&
         _text__print(display, _TEXT__STRING_RESET)
 
     return nothing
@@ -546,7 +549,7 @@ end
     _text__print_column_label_horizontal_line_only_at_merged_labels(
         display::Display,
         tf::TextTableFormat,
-        crayon::Crayon,
+        sgr::String,
         table_data::TableData,
         row_number::Int,
         vertical_lines_at_data_columns::AbstractVector{Int},
@@ -562,7 +565,8 @@ column labels.
 
 - `display::Display`: Display where the horizontal line will be printed.
 - `tf::TextTableFormat`: Table format.
-- `crayon::Crayon`: Crayon used to print the horizontal line.
+- `sgr::String`: Escape sequence used to print the horizontal line, or an empty string for
+    no style.
 - `table_data::TableData`: Table data.
 - `row_number::Int`: Column label row number before the horizontal line.
 - `vertical_lines_at_data_columns::AbstractVector{Int}`: List of columns where a vertical
@@ -574,7 +578,7 @@ column labels.
 function _text__print_column_label_horizontal_line_only_at_merged_labels(
     display::Display,
     tf::TextTableFormat,
-    crayon::Crayon,
+    sgr::String,
     table_data::TableData,
     row_number::Int,
     vertical_lines_at_data_columns::AbstractVector{Int},
@@ -594,7 +598,7 @@ function _text__print_column_label_horizontal_line_only_at_merged_labels(
 
     # == Print the Horizontal Line =========================================================
 
-    (display.has_color && crayon != _TEXT__DEFAULT) && _text__print(display, string(crayon))
+    (display.has_color && !isempty(sgr)) && _text__print(display, sgr)
 
     # -- Left Intersection -----------------------------------------------------------------
 
@@ -661,9 +665,9 @@ function _text__print_column_label_horizontal_line_only_at_merged_labels(
     end
 
     # NOTE: The reset must be guarded by `has_color` exactly like the opening escape
-    # sequence is. Otherwise, a table styled with a non-default crayon would leak a bare
+    # sequence is. Otherwise, a table styled with a non-default face would leak a bare
     # `\e[0m` into an output where color is disabled.
-    (display.has_color && crayon != _TEXT__DEFAULT) &&
+    (display.has_color && !isempty(sgr)) &&
         _text__print(display, _TEXT__STRING_RESET)
 
     return nothing

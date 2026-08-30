@@ -92,17 +92,14 @@ Define the format of the borders in the tables printed with the text back end.
 end
 
 # Create some default decorations to reduce allocations.
-const _TEXT__BOLD                = crayon"bold"
-const _TEXT__BOLD_UNDERLINE      = crayon"bold underline"
-const _TEXT__CYAN                = crayon"fg:cyan"
-const _TEXT__DARK_GRAY           = crayon"fg:dark_gray"
-const _TEXT__DARK_GRAY_UNDERLINE = crayon"fg:dark_gray underline"
-const _TEXT__DEFAULT             = crayon"default"
-const _TEXT__EMPTY_CRAYON        = crayon""
-const _TEXT__RESET               = crayon"reset"
+const _TEXT__BOLD                = Face(; weight = :bold)
+const _TEXT__BOLD_UNDERLINE      = Face(; weight = :bold, underline = true)
+const _TEXT__CYAN                = Face(; foreground = :cyan)
+const _TEXT__DARK_GRAY           = Face(; foreground = :bright_black)
+const _TEXT__DARK_GRAY_UNDERLINE = Face(; foreground = :bright_black, underline = true)
+const _TEXT__DEFAULT             = Face()
 
-# The reset escape sequence. We use the literal string instead of `string(_TEXT__RESET)`
-# because Crayons may produce an empty string when colors are disabled at precompilation time.
+# The reset escape sequence.
 const _TEXT__STRING_RESET = "\e[0m"
 
 """
@@ -197,50 +194,190 @@ Define the style of the tables printed with the text back end.
 
 # Fields
 
-- `title::Crayon`: Crayon with the style for the title.
-- `subtitle::Crayon`: Crayon with the style for the subtitle.
-- `row_number_label::Crayon`: Crayon with the style for the row number label.
-- `row_number::Crayon`: Crayon with the style for the row numbers.
-- `stubhead_label::Crayon`:  Crayon with the style for the stubhead label.
-- `row_label::Crayon`: Crayon with the style for the row labels.
-- `row_group_label::Crayon`: Crayon with the style for the row group label.
-- `first_line_column_label::Union{Crayon, Vector{Crayon}}`: Crayon or crayons with the style
-    for the first column label lines. If a vector of crayons is passed, it must have the
-    same length as the number of columns in the table.
-- `column_label::Union{Crayon, Vector{Crayon}}`: Crayon or crayons with the style for the
-    rest of the column labels. If a vector of crayons is passed, it must have the same
+- `title::Face`: Face with the style for the title.
+- `subtitle::Face`: Face with the style for the subtitle.
+- `row_number_label::Face`: Face with the style for the row number label.
+- `row_number::Face`: Face with the style for the row numbers.
+- `stubhead_label::Face`:  Face with the style for the stubhead label.
+- `row_label::Face`: Face with the style for the row labels.
+- `row_group_label::Face`: Face with the style for the row group label.
+- `first_line_column_label::Union{Face, Vector{Face}}`: Face or faces with the style for
+    the first column label lines. If a vector of faces is passed, it must have the same
     length as the number of columns in the table.
-- `first_line_merged_column_label::Crayon`: Crayon with the style for the merged cells at
-    the first column label line.
-- `merged_column_label::Crayon`: Crayon with the style for the merged cells at the rest of
-    the column labels.
-- `summary_row_cell::Crayon`: Crayon with the style for the summary row cell.
-- `summary_row_label::Crayon`: Crayon with the style for the summary row label.
-- `footnote::Crayon`: Crayon with the style for the footnotes.
-- `source_note::Crayon`: Crayon with the style for the source notes.
-- `omitted_cell_summary::Crayon`: Crayon with the style for the omitted cell summary.
-- `table_border::Crayon`: Crayon with the style for the table border.
+- `column_label::Union{Face, Vector{Face}}`: Face or faces with the style for the rest of
+    the column labels. If a vector of faces is passed, it must have the same length as the
+    number of columns in the table.
+- `first_line_merged_column_label::Face`: Face with the style for the merged cells at the
+    first column label line.
+- `merged_column_label::Face`: Face with the style for the merged cells at the rest of the
+    column labels.
+- `summary_row_cell::Face`: Face with the style for the summary row cell.
+- `summary_row_label::Face`: Face with the style for the summary row label.
+- `footnote::Face`: Face with the style for the footnotes.
+- `source_note::Face`: Face with the style for the source notes.
+- `omitted_cell_summary::Face`: Face with the style for the omitted cell summary.
+- `table_border::Face`: Face with the style for the table border.
+
+# Constructor
+
+    TextTableStyle(; kwargs...)
+
+Create a style in which each field can be passed as a keyword. Every keyword accepts a
+`Face` or a `Crayon`, which is converted to the equivalent face. The keywords
+`first_line_column_label` and `column_label` also accept a vector of faces or crayons.
 """
-@kwdef struct TextTableStyle{
-    TFCL <: Union{Crayon, Vector{Crayon}}, TCL <: Union{Crayon, Vector{Crayon}}
+struct TextTableStyle{TFCL <: Union{Face, Vector{Face}}, TCL <: Union{Face, Vector{Face}}}
+    title::Face
+    subtitle::Face
+    row_number_label::Face
+    row_number::Face
+    stubhead_label::Face
+    row_label::Face
+    row_group_label::Face
+    first_line_column_label::TFCL
+    column_label::TCL
+    first_line_merged_column_label::Face
+    merged_column_label::Face
+    summary_row_cell::Face
+    summary_row_label::Face
+    footnote::Face
+    source_note::Face
+    omitted_cell_summary::Face
+    table_border::Face
+end
+
+function TextTableStyle(;
+    title                          = _TEXT__BOLD,
+    subtitle                       = _TEXT__DEFAULT,
+    row_number_label               = _TEXT__BOLD,
+    row_number                     = _TEXT__DEFAULT,
+    stubhead_label                 = _TEXT__BOLD,
+    row_label                      = _TEXT__BOLD,
+    row_group_label                = _TEXT__BOLD,
+    first_line_column_label        = _TEXT__BOLD,
+    column_label                   = _TEXT__DARK_GRAY,
+    first_line_merged_column_label = _TEXT__BOLD_UNDERLINE,
+    merged_column_label            = _TEXT__DARK_GRAY_UNDERLINE,
+    summary_row_cell               = _TEXT__DEFAULT,
+    summary_row_label              = _TEXT__BOLD,
+    footnote                       = _TEXT__DEFAULT,
+    source_note                    = _TEXT__DARK_GRAY,
+    omitted_cell_summary           = _TEXT__CYAN,
+    table_border                   = _TEXT__DEFAULT,
+)
+    return TextTableStyle(
+        _text__to_face(title),
+        _text__to_face(subtitle),
+        _text__to_face(row_number_label),
+        _text__to_face(row_number),
+        _text__to_face(stubhead_label),
+        _text__to_face(row_label),
+        _text__to_face(row_group_label),
+        _text__to_faces(first_line_column_label),
+        _text__to_faces(column_label),
+        _text__to_face(first_line_merged_column_label),
+        _text__to_face(merged_column_label),
+        _text__to_face(summary_row_cell),
+        _text__to_face(summary_row_label),
+        _text__to_face(footnote),
+        _text__to_face(source_note),
+        _text__to_face(omitted_cell_summary),
+        _text__to_face(table_border),
+    )
+end
+
+# Convert a decoration passed to `TextTableStyle` into a face.
+_text__to_face(face::Face)     = face
+_text__to_face(crayon::Crayon) = _face_from_crayon(crayon)
+
+# Convert a decoration, or a vector of decorations, passed to `TextTableStyle` into faces.
+_text__to_faces(decoration::Union{Face, Crayon}) = _text__to_face(decoration)
+_text__to_faces(faces::Vector{Face})             = faces
+_text__to_faces(decorations::AbstractVector)     = Face[_text__to_face(d) for d in decorations]
+
+"""
+    struct _TextRenderedStyle
+
+Escape sequences of every field of a [`TextTableStyle`](@ref), rendered once per table so
+that the per-cell loop only writes strings. All the fields are empty if the display has no
+color support.
+"""
+struct _TextRenderedStyle{
+    TFCL <: Union{String, Vector{String}}, TCL <: Union{String, Vector{String}}
 }
-    title::Crayon                          = _TEXT__BOLD
-    subtitle::Crayon                       = _TEXT__DEFAULT
-    row_number_label::Crayon               = _TEXT__BOLD
-    row_number::Crayon                     = _TEXT__DEFAULT
-    stubhead_label::Crayon                 = _TEXT__BOLD
-    row_label::Crayon                      = _TEXT__BOLD
-    row_group_label::Crayon                = _TEXT__BOLD
-    first_line_column_label::TFCL          = _TEXT__BOLD
-    column_label::TCL                      = _TEXT__DARK_GRAY
-    first_line_merged_column_label::Crayon = _TEXT__BOLD_UNDERLINE
-    merged_column_label::Crayon            = _TEXT__DARK_GRAY_UNDERLINE
-    summary_row_cell::Crayon               = _TEXT__DEFAULT
-    summary_row_label::Crayon              = _TEXT__BOLD
-    footnote::Crayon                       = _TEXT__DEFAULT
-    source_note::Crayon                    = _TEXT__DARK_GRAY
-    omitted_cell_summary::Crayon           = _TEXT__CYAN
-    table_border::Crayon                   = _TEXT__DEFAULT
+    title::String
+    subtitle::String
+    row_number_label::String
+    row_number::String
+    stubhead_label::String
+    row_label::String
+    row_group_label::String
+    first_line_column_label::TFCL
+    column_label::TCL
+    first_line_merged_column_label::String
+    merged_column_label::String
+    summary_row_cell::String
+    summary_row_label::String
+    footnote::String
+    source_note::String
+    omitted_cell_summary::String
+    table_border::String
+end
+
+function _TextRenderedStyle(style::TextTableStyle, has_color::Bool)
+    sgr(face::Face)          = has_color ? _text__face_sgr(face) : ""
+    sgr(faces::Vector{Face}) = String[sgr(f) for f in faces]
+
+    return _TextRenderedStyle(
+        sgr(style.title),
+        sgr(style.subtitle),
+        sgr(style.row_number_label),
+        sgr(style.row_number),
+        sgr(style.stubhead_label),
+        sgr(style.row_label),
+        sgr(style.row_group_label),
+        sgr(style.first_line_column_label),
+        sgr(style.column_label),
+        sgr(style.first_line_merged_column_label),
+        sgr(style.merged_column_label),
+        sgr(style.summary_row_cell),
+        sgr(style.summary_row_label),
+        sgr(style.footnote),
+        sgr(style.source_note),
+        sgr(style.omitted_cell_summary),
+        sgr(style.table_border),
+    )
+end
+
+"""
+    _text__face_sgr(face::Face) -> String
+
+Return the escape sequence that shows text with the attributes of `face`, or an empty string
+if `face` sets no attribute. The attributes that `face` turns off and the default colors of
+the terminal are omitted because every styled segment of the table starts after a reset.
+"""
+function _text__face_sgr(face::Face)
+    # The decoration is built with a reset so that the attributes turned off are omitted.
+    # Afterward, the reset is removed. Otherwise, `Face(; weight = :bold)` would be rendered
+    # as `\\e[22;1m` instead of `\\e[1m`.
+    return String(Decoration(Decoration(face); reset = false))
+end
+
+"""
+    _text__decoration_sgr(decoration::Union{Face, Crayon}) -> String
+
+Return the escape sequence of a `decoration` returned by a highlighter, which can be a `Face`
+or a `Crayon`.
+"""
+_text__decoration_sgr(face::Face)     = _text__face_sgr(face)
+_text__decoration_sgr(crayon::Crayon) = _text__face_sgr(_face_from_crayon(crayon))
+
+function _text__decoration_sgr(decoration)
+    throw(
+        ArgumentError(
+            "The decoration of a text highlighter must be a `Face` or a `Crayon`, not a `$(typeof(decoration))`."
+        )
+    )
 end
 
 ############################################################################################

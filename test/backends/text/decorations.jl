@@ -6,22 +6,22 @@
 
 @testset "Decorations" verbose = true begin
     @testset "Styled Print" begin
-        crayon = crayon"bold red"
+        sgr = PrettyTables._text__decoration_sgr(crayon"bold red")
         display = PrettyTables.Display(; has_color = true)
 
-        @test PrettyTables._text__styled_print(display, "abc", crayon) === nothing
+        @test PrettyTables._text__styled_print(display, "abc", sgr) === nothing
         @test take!(display.buf_line) == collect(codeunits("\e[31;1mabc\e[0m"))
         @test display.column == 3
 
         display = PrettyTables.Display(; size = (-1, 2), column = 2, has_color = true)
 
-        @test PrettyTables._text__styled_print(display, "ab", crayon) === nothing
+        @test PrettyTables._text__styled_print(display, "ab", sgr) === nothing
         @test take!(display.buf_line) == collect(codeunits("\e[31;1mab\e[0m"))
         @test display.column == 4
 
         display = PrettyTables.Display(; size = (-1, 2), column = 3, has_color = true)
 
-        @test PrettyTables._text__styled_print(display, "ab", crayon) === nothing
+        @test PrettyTables._text__styled_print(display, "ab", sgr) === nothing
         @test isempty(take!(display.buf_line))
         @test display.column == 3
     end
@@ -32,14 +32,14 @@
             cell_width,
             alignment;
             fill = true,
-            crayon = crayon"default",
+            sgr = "",
             has_color = false,
             column = 0,
             size = (-1, -1),
         )
             display = PrettyTables.Display(; has_color, column, size)
             result = PrettyTables._text__print_aligned(
-                display, str, cell_width, alignment, crayon, fill
+                display, str, cell_width, alignment, sgr, fill
             )
             return result, String(take!(display.buf_line)), display.column
         end
@@ -60,11 +60,14 @@
         @test render("x", 4, :unknown) == (nothing, "x", 1)
 
         @test render("x", 4, :c; has_color = true) == (nothing, " x  ", 4)
-        @test render("x", 4, :c; crayon = crayon"", has_color = true) ==
+        @test render("x", 4, :c; sgr = "", has_color = true) ==
             (nothing, " x  ", 4)
 
         colored = "\e[31;1m x  \e[0m"
-        @test render("x", 4, :c; crayon = crayon"bold red", has_color = true) ==
+        @test render(
+            "x", 4, :c; sgr = PrettyTables._text__decoration_sgr(crayon"bold red"),
+            has_color = true,
+        ) ==
             (nothing, colored, 4)
         @test count("\e[31;1m", colored) == 1
         @test count("\e[0m", colored) == 1

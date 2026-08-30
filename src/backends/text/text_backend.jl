@@ -74,6 +74,9 @@ function _text__print_table(
     # Create the structure that holds the display information.
     display = Display(display_size, 1, 0, get(context, :color, false), buf_io, IOBuffer())
 
+    # Render the escape sequences of the style once so that the loop only writes strings.
+    rstyle = _TextRenderedStyle(style, display.has_color)
+
     # Process the vertical lines at data columns.
     if tf.vertical_lines_at_data_columns isa Symbol
         vertical_lines_at_data_columns = if tf.vertical_lines_at_data_columns == :all
@@ -714,7 +717,7 @@ function _text__print_table(
             if action ∈ (:title, :subtitle)
                 alignment     = _current_cell_alignment(action, ps, table_data)
                 cell          = _current_cell(action, ps, table_data)
-                decoration    = action == :title ? style.title : style.subtitle
+                decoration    = action == :title ? rstyle.title : rstyle.subtitle
                 rendered_cell = _text__render_cell(cell, rctx, renderer)
 
                 _text__print_aligned(
@@ -733,7 +736,7 @@ function _text__print_table(
         elseif rs == :table_footer
             if action == :footnote
                 alignment  = _current_cell_alignment(action, ps, table_data)
-                decoration = style.footnote
+                decoration = rstyle.footnote
 
                 _text__print_aligned(
                     display,
@@ -748,7 +751,7 @@ function _text__print_table(
             elseif action == :source_notes
                 alignment     = _current_cell_alignment(action, ps, table_data)
                 cell          = _current_cell(action, ps, table_data)
-                decoration    = style.source_note
+                decoration    = rstyle.source_note
                 rendered_cell = _text__render_cell(cell, rctx, renderer)
 
                 _text__print_aligned(
@@ -775,7 +778,7 @@ function _text__print_table(
                 _text__print_column_label_horizontal_line(
                     display,
                     tf,
-                    style.table_border,
+                    rstyle.table_border,
                     table_data,
                     ir - 1,
                     vertical_lines_at_data_columns,
@@ -800,7 +803,7 @@ function _text__print_table(
                     _text__print_horizontal_line(
                         display,
                         tf,
-                        style.table_border,
+                        rstyle.table_border,
                         table_data,
                         vertical_lines_at_data_columns,
                         row_number_column_width,
@@ -836,7 +839,7 @@ function _text__print_table(
             end
 
             tf.vertical_line_at_beginning &&
-                _text__styled_print(display, tf.borders.column, style.table_border)
+                _text__styled_print(display, tf.borders.column, rstyle.table_border)
 
             continue
         end
@@ -846,13 +849,13 @@ function _text__print_table(
         if action == :diagonal_continuation_cell
             _text__print(display, " ⋱ ")
             tf.vertical_line_after_continuation_column &&
-                _text__styled_print(display, tf.borders.column, style.table_border)
+                _text__styled_print(display, tf.borders.column, rstyle.table_border)
             continue
 
         elseif action == :horizontal_continuation_cell
             _text__print(display, " ⋯ ")
             tf.vertical_line_after_continuation_column &&
-                _text__styled_print(display, tf.borders.column, style.table_border)
+                _text__styled_print(display, tf.borders.column, rstyle.table_border)
             continue
 
         elseif action ∈ _VERTICAL_CONTINUATION_CELL_ACTIONS
@@ -880,7 +883,7 @@ function _text__print_table(
             _text__print(display, " ")
             _text__print_aligned(display, "⋮", cell_width, alignment)
             _text__print(display, " ")
-            vline && _text__styled_print(display, tf.borders.column, style.table_border)
+            vline && _text__styled_print(display, tf.borders.column, rstyle.table_border)
 
             continue
         end
@@ -939,7 +942,7 @@ function _text__print_table(
                     _text__print_column_label_horizontal_line(
                         display,
                         tf,
-                        style.table_border,
+                        rstyle.table_border,
                         table_data,
                         ps.i,
                         vertical_lines_at_data_columns,
@@ -956,7 +959,7 @@ function _text__print_table(
                     _text__print_column_label_horizontal_line_only_at_merged_labels(
                         display,
                         tf,
-                        style.table_border,
+                        rstyle.table_border,
                         table_data,
                         ps.i,
                         vertical_lines_at_data_columns,
@@ -982,7 +985,7 @@ function _text__print_table(
                     _text__print_column_label_horizontal_line(
                         display,
                         tf,
-                        style.table_border,
+                        rstyle.table_border,
                         table_data,
                         length(table_data.column_labels),
                         vertical_lines_at_data_columns,
@@ -1013,7 +1016,7 @@ function _text__print_table(
                     _text__print_horizontal_line(
                         display,
                         tf,
-                        style.table_border,
+                        rstyle.table_border,
                         table_data,
                         vertical_lines_at_data_columns,
                         row_number_column_width,
@@ -1033,7 +1036,7 @@ function _text__print_table(
                 _text__print_horizontal_line(
                     display,
                     tf,
-                    style.table_border,
+                    rstyle.table_border,
                     table_data,
                     vertical_lines_at_data_columns,
                     row_number_column_width,
@@ -1052,7 +1055,7 @@ function _text__print_table(
                 _text__print_column_label_horizontal_line(
                     display,
                     tf,
-                    style.table_border,
+                    rstyle.table_border,
                     table_data,
                     length(table_data.column_labels),
                     vertical_lines_at_data_columns,
@@ -1082,7 +1085,7 @@ function _text__print_table(
                     _text__print_horizontal_line(
                         display,
                         tf,
-                        style.table_border,
+                        rstyle.table_border,
                         table_data,
                         vertical_lines_at_data_columns,
                         row_number_column_width,
@@ -1100,7 +1103,7 @@ function _text__print_table(
                     _text__print_horizontal_line(
                         display,
                         tf,
-                        style.table_border,
+                        rstyle.table_border,
                         table_data,
                         vertical_lines_at_data_columns,
                         row_number_column_width,
@@ -1122,7 +1125,7 @@ function _text__print_table(
                     _text__print_horizontal_line(
                         display,
                         tf,
-                        style.table_border,
+                        rstyle.table_border,
                         table_data,
                         vertical_lines_at_data_columns,
                         row_number_column_width,
@@ -1145,7 +1148,7 @@ function _text__print_table(
                 isempty(ocs) && continue
 
                 _text__print_aligned(
-                    display, ocs, printed_table_width, :r, style.omitted_cell_summary
+                    display, ocs, printed_table_width, :r, rstyle.omitted_cell_summary
                 )
 
                 _text__flush_line(display; crop_line = false)
@@ -1165,7 +1168,7 @@ function _text__print_table(
         alignment     = _current_cell_alignment(action, ps, table_data)
         cell_printed  = false
         cell_width    = 1
-        decoration    = _TEXT__DEFAULT
+        decoration    = ""
         # NOTE: The type assertion keeps the per-cell loop free of dynamic dispatches. The
         # generic `_text__render_cell` and the custom text cell API have no return type
         # annotation on their user-facing side, so inference would otherwise give `Any`
@@ -1183,18 +1186,18 @@ function _text__print_table(
         if action == :row_number_label
             cell          = _current_cell(action, ps, table_data)
             cell_width    = row_number_column_width
-            decoration    = style.row_number_label
+            decoration    = rstyle.row_number_label
             rendered_cell = _text__render_cell(cell, rctx, renderer)
 
         elseif action == :stubhead_label
             cell          = _current_cell(action, ps, table_data)
             cell_width    = row_label_column_width
-            decoration    = style.stubhead_label
+            decoration    = rstyle.stubhead_label
             rendered_cell = _text__render_cell(cell, rctx, renderer)
 
         elseif action == :row_label
             cell_width    = row_label_column_width
-            decoration    = style.row_label
+            decoration    = rstyle.row_label
             rendered_cell = row_labels[ir]
 
         elseif action == :summary_row_number
@@ -1203,7 +1206,7 @@ function _text__print_table(
 
         elseif action == :summary_row_label
             cell_width    = row_label_column_width
-            decoration    = style.summary_row_label
+            decoration    = rstyle.summary_row_label
             rendered_cell = summary_row_labels[ir]
 
         elseif action == :column_label
@@ -1212,16 +1215,16 @@ function _text__print_table(
             cell_width    = printed_data_column_widths[jr]
             rendered_cell = column_labels[ir, jr]
             decoration    = if ir == 1
-                if style.first_line_column_label isa Crayon
-                    style.first_line_column_label
+                if rstyle.first_line_column_label isa String
+                    rstyle.first_line_column_label
                 else
-                    style.first_line_column_label[jr]
+                    rstyle.first_line_column_label[jr]
                 end
             else
-                if style.column_label isa Crayon
-                    style.column_label
+                if rstyle.column_label isa String
+                    rstyle.column_label
                 else
-                    style.column_label[jr]
+                    rstyle.column_label[jr]
                 end
             end
 
@@ -1257,16 +1260,16 @@ function _text__print_table(
 
                 # Apply the correct decoration.
                 decoration = if ir == 1
-                    style.first_line_merged_column_label
+                    rstyle.first_line_merged_column_label
                 else
-                    style.merged_column_label
+                    rstyle.merged_column_label
                 end
             end
 
         elseif action == :row_number
             cell          = _current_cell(action, ps, table_data)
             cell_width    = row_number_column_width
-            decoration    = style.row_number
+            decoration    = rstyle.row_number
             rendered_cell = _text__render_cell(cell, rctx, renderer)
 
         elseif action == :data
@@ -1359,7 +1362,7 @@ function _text__print_table(
             if !isempty(highlighters)
                 for h in highlighters
                     if h.f(orig_data, ps.i, ps.j)
-                        decoration = h.fd(h, orig_data, ps.i, ps.j)::Crayon
+                        decoration = _text__decoration_sgr(h.fd(h, orig_data, ps.i, ps.j))
                         break
                     end
                 end
@@ -1367,13 +1370,13 @@ function _text__print_table(
 
         elseif action == :summary_row_cell
             cell_width    = printed_data_column_widths[jr]
-            decoration    = style.summary_row_cell
+            decoration    = rstyle.summary_row_cell
             rendered_cell = summary_rows[ir, jr]
 
         elseif action == :row_group_label
             cell          = _current_cell(action, ps, table_data)
             cell_width    = printed_table_width - 4
-            decoration    = style.row_group_label
+            decoration    = rstyle.row_group_label
             rendered_cell = _text__render_cell(cell, rctx, renderer)
         end
 
@@ -1427,7 +1430,7 @@ function _text__print_table(
             right_margin = 1,
         )
 
-        vline && _text__styled_print(display, vline_char, style.table_border)
+        vline && _text__styled_print(display, vline_char, rstyle.table_border)
     end
 
     # == Print the Buffer Into the IO ======================================================
