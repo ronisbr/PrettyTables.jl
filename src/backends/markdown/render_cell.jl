@@ -91,3 +91,25 @@ function _markdown__render_cell(
 )
     return replace(sprint(show, MIME("text/markdown"), cell), "\n" => "")
 end
+
+@static if VERSION >= v"1.11"
+    # Styled strings are rendered region by region, wrapping the styled ones in the Markdown
+    # markers of the face.
+    function _markdown__render_cell(
+        cell::Base.AnnotatedString,
+        context::RenderContext,
+        renderer::Union{Val{:print}, Val{:show}};
+        allow_markdown_in_cells::Bool = false,
+        line_breaks::Bool = false,
+    )
+        buf = IOBuffer()
+
+        for (text, face) in _face_regions(cell)
+            escaped = _markdown__escape_str(text, line_breaks, !allow_markdown_in_cells)
+            style   = isnothing(face) ? _MARKDOWN__NO_DECORATION : markdown_decoration(face)
+            print(buf, _markdown__apply_style(style, escaped))
+        end
+
+        return String(take!(buf))
+    end
+end

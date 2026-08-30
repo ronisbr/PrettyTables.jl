@@ -110,4 +110,41 @@
             highlighters = [TextHighlighter(f, crayon"red")],
         )
     end
+
+    @static if VERSION >= v"1.11"
+        @testset "Styled Strings" begin
+            matrix = [
+                styled"{yellow,bold:Yellow, Bold}" styled"{blue:Blue} & <x>"
+                styled"{red: Red}"                 styled"{(fg=green),(bg=blue):Green}_{italic:it}"
+            ]
+
+            expected = """
+|        **\\<A\\>** |        **B** |
+|-----------------:|-------------:|
+| **Yellow, Bold** | Blue & \\<x\\> |
+|              Red |  Green\\_*it* |
+"""
+
+            for renderer in (:print, :show)
+                result = pretty_table(
+                    String,
+                    matrix;
+                    backend = :markdown,
+                    column_labels = [styled"<{red:A}>", "B"],
+                    renderer = renderer,
+                )
+                @test result == expected
+            end
+
+            # The Markdown characters are not escaped if the user allows Markdown in the
+            # cells.
+            result = pretty_table(
+                String,
+                [styled"{bold:_a_}"];
+                backend = :markdown,
+                allow_markdown_in_cells = true,
+            )
+            @test occursin("**_a_**", result)
+        end
+    end
 end
