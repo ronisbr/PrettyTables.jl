@@ -15,17 +15,17 @@
 <table>
   <thead>
     <tr class = "columnLabelRow">
-      <th style = "font-weight: bold; text-align: right;"><Column 1></th>
-      <th style = "font-weight: bold; text-align: right;"><Column 2></th>
+      <th style = "font-weight: bold; text-align: right;">&lt;<span style = "color: #a51c2c;">Column 1</span>&gt;</th>
+      <th style = "font-weight: bold; text-align: right;">&lt;Column 2&gt;</th>
     </tr>
   </thead>
   <tbody>
     <tr class = "dataRow">
       <td style = "text-align: right;">(1, 1)</td>
-      <td style = "text-align: right;">(2, 3)</td>
+      <td style = "text-align: right;">(<span style = "color: #a51c2c;">2</span>, <span style = "color: #195eb3;">3</span>)</td>
     </tr>
     <tr class = "dataRow">
-      <td style = "text-align: right;">(2, 3)</td>
+      <td style = "text-align: right;">(<span style = "color: #25a268;">2</span>, <span style = "color: #e5a509;">3</span>)</td>
       <td style = "text-align: right;">(2, 4)</td>
     </tr>
   </tbody>
@@ -45,17 +45,17 @@
 <table>
   <thead>
     <tr class = "columnLabelRow">
-      <th style = "font-weight: bold; text-align: right;">&lt;<span style="color: #a51c2c">Column 1</span>&gt;</th>
+      <th style = "font-weight: bold; text-align: right;">&lt;<span style = "color: #a51c2c;">Column 1</span>&gt;</th>
       <th style = "font-weight: bold; text-align: right;">&lt;Column 2&gt;</th>
     </tr>
   </thead>
   <tbody>
     <tr class = "dataRow">
       <td style = "text-align: right;">(1, 1)</td>
-      <td style = "text-align: right;">(<span style="color: #a51c2c">2</span>, <span style="color: #195eb3">3</span>)</td>
+      <td style = "text-align: right;">(<span style = "color: #a51c2c;">2</span>, <span style = "color: #195eb3;">3</span>)</td>
     </tr>
     <tr class = "dataRow">
-      <td style = "text-align: right;">(<span style="color: #25a268">2</span>, <span style="color: #e5a509">3</span>)</td>
+      <td style = "text-align: right;">(<span style = "color: #25a268;">2</span>, <span style = "color: #e5a509;">3</span>)</td>
       <td style = "text-align: right;">(2, 4)</td>
     </tr>
   </tbody>

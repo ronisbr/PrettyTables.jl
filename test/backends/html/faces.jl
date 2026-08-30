@@ -131,4 +131,51 @@
             highlighters = [TextHighlighter(f, crayon"red")],
         )
     end
+
+    @static if VERSION >= v"1.11"
+        @testset "Styled Strings" begin
+            matrix = [
+                styled"{yellow,bold:Yellow, Bold}" styled"{blue:Blue} & <x>"
+                styled"{red: Red}"                 styled"{(fg=green),(bg=blue):Green}_{italic:it}"
+            ]
+
+            expected = """
+<table>
+  <thead>
+    <tr class = "columnLabelRow">
+      <th style = "font-weight: bold; text-align: right;">&lt;<span style = "color: #a51c2c;">A</span>&gt;</th>
+      <th style = "font-weight: bold; text-align: right;">B</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class = "dataRow">
+      <td style = "text-align: right;"><span style = "color: #e5a509; font-weight: bold;">Yellow, Bold</span></td>
+      <td style = "text-align: right;"><span style = "color: #195eb3;">Blue</span> &amp; &lt;x&gt;</td>
+    </tr>
+    <tr class = "dataRow">
+      <td style = "text-align: right;"><span style = "color: #a51c2c;"> Red</span></td>
+      <td style = "text-align: right;"><span style = "background-color: #195eb3; color: #25a268;">Green</span>_<span style = "font-style: italic;">it</span></td>
+    </tr>
+  </tbody>
+</table>
+"""
+
+            for renderer in (:print, :show)
+                result = pretty_table(
+                    String,
+                    matrix;
+                    backend = :html,
+                    column_labels = [styled"<{red:A}>", "B"],
+                    renderer = renderer,
+                )
+                @test result == expected
+            end
+
+            # The HTML characters are not escaped if the user allows HTML in the cells.
+            result = pretty_table(
+                String, [styled"{bold:<b>}"]; backend = :html, allow_html_in_cells = true
+            )
+            @test occursin("<span style = \"font-weight: bold;\"><b></span>", result)
+        end
+    end
 end
