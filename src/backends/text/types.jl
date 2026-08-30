@@ -188,12 +188,12 @@ Define the format of the tables printed with the text back end.
 end
 
 """
-    struct _TextRenderedStyle
+    struct TextRenderedStyle
 
 Escape sequences of every field of a [`TextTableStyle`](@ref), rendered once when the style
 is created so that the printing loop only writes strings.
 """
-struct _TextRenderedStyle{
+struct TextRenderedStyle{
     TFCL <: Union{String, Vector{String}}, TCL <: Union{String, Vector{String}}
 }
     title::String
@@ -261,7 +261,7 @@ Define the style of the tables printed with the text back end.
 - `source_note::Face`: Face with the style for the source notes.
 - `omitted_cell_summary::Face`: Face with the style for the omitted cell summary.
 - `table_border::Face`: Face with the style for the table border.
-- `_rendered::_TextRenderedStyle`: Private field with the escape sequences of every field,
+- `_rendered::TextRenderedStyle`: Private field with the escape sequences of every field,
     rendered when the style is created.
 
 # Constructor
@@ -275,7 +275,7 @@ Create a style in which each field can be passed as a keyword. Every keyword acc
 struct TextTableStyle{
     TFCL <: Union{Face, Vector{Face}},
     TCL <: Union{Face, Vector{Face}},
-    TR <: _TextRenderedStyle,
+    TR <: TextRenderedStyle,
 }
     title::Face
     subtitle::Face
@@ -337,7 +337,7 @@ function TextTableStyle(;
     omitted_cell_summary           = _text__to_face(omitted_cell_summary)
     table_border                   = _text__to_face(table_border)
 
-    rendered = _TextRenderedStyle(
+    rendered = TextRenderedStyle(
         _text__face_sgr(title),
         _text__face_sgr(subtitle),
         _text__face_sgr(row_number_label),
