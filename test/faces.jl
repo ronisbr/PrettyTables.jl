@@ -304,3 +304,27 @@ end
     @test h._decoration == Face()
     @test !PrettyTables._has_default_fd(h)
 end
+
+@static if VERSION >= v"1.11"
+    @testset "Face Regions" begin
+        regions = PrettyTables._face_regions(
+            styled"a{red,bold:b}c{(fg=blue),(bg=green):d}{error:e}{unknown_face_name:f}"
+        )
+
+        @test regions == [
+            ("a", nothing),
+            ("b", Face(; weight = :bold, foreground = :red)),
+            ("c", nothing),
+            ("d", Face(; foreground = :blue, background = :green)),
+            ("e", Face(; foreground = :bright_red)),
+            ("f", nothing),
+        ]
+
+        @test PrettyTables._face_regions(styled"plain") == [("plain", nothing)]
+        @test PrettyTables._face_regions(styled"") == [("", nothing)]
+
+        # Annotations other than faces are ignored.
+        str = Base.AnnotatedString("ab", [(1:1, :link, "https://ronanarraes.com")])
+        @test PrettyTables._face_regions(str) == [("a", nothing), ("b", nothing)]
+    end
+end

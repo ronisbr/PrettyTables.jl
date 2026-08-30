@@ -256,3 +256,41 @@ _face_color_from_value(v::Integer) = _face_color_from_xterm_256(v)
 _face_color_from_value(v::NTuple{3, Integer}) =
     (r = UInt8(v[1]), g = UInt8(v[2]), b = UInt8(v[3]))
 _face_color_from_value(v) = v
+
+############################################################################################
+#                                     Styled Strings                                      #
+############################################################################################
+
+@static if VERSION >= v"1.11"
+    """
+        _face_regions(str::Base.AnnotatedString) -> Vector{Tuple{String, Union{Nothing, Face}}}
+
+    Split the styled string `str` into regions with the same annotations, returning the text
+    of each region and its face, or `nothing` if the region has no face. The face only
+    contains the attributes set by the annotations; the default face is not merged.
+    """
+    function _face_regions(str::Base.AnnotatedString)
+        regions = Tuple{String, Union{Nothing, Face}}[]
+
+        for (text, annotations) in StyledStrings.eachregion(str)
+            face = nothing
+
+            for annotation in annotations
+                (annotation.label === :face) || continue
+                region_face = _annotation_face(annotation.value)
+                isnothing(region_face) && continue
+                face = isnothing(face) ? region_face : merge(face, region_face)
+            end
+
+            push!(regions, (String(text), face))
+        end
+
+        return regions
+    end
+
+    # Return the face of the value of a `:face` annotation, which can be a face or the name of
+    # a face, or `nothing` if the name is unknown.
+    _annotation_face(face::Face)   = face
+    _annotation_face(name::Symbol) = get(StyledStrings.FACES.current[], name, nothing)
+    _annotation_face(::Any)        = nothing
+end
