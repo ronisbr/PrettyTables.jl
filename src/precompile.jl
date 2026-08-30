@@ -115,6 +115,11 @@ PrecompileTools.@setup_workload begin
                 ]
             )
 
+            pretty_table(
+                matrix;
+                highlighters = [Highlighter((data, i, j) -> i == 1, Face(; foreground = :red))]
+            )
+
             pretty_table(types)
 
             # .. Text Table Styles .........................................................
