@@ -10,6 +10,9 @@
 const _DEFAULT_ALIGNMENT_ANCHOR_REGEX = Regex[]
 const _DEFAULT_TEXT_HIGHLIGHTER = TextHighlighter[]
 
+# Default style, created once because rendering its escape sequences allocates.
+const _DEFAULT_TEXT_TABLE_STYLE = TextTableStyle()
+
 function _text__print_table(
     pspec::PrintingSpec;
     alignment_anchor_fallback::Symbol = :l,
@@ -30,7 +33,7 @@ function _text__print_table(
     reserved_display_lines::Int = 0,
     shrinkable_data_column::Int = 0,
     shrinkable_column_minimum_width::Int = 0,
-    style::TextTableStyle = TextTableStyle(),
+    style::TextTableStyle = _DEFAULT_TEXT_TABLE_STYLE,
     table_format::TextTableFormat = TextTableFormat(),
 )
     context    = pspec.context
@@ -74,8 +77,9 @@ function _text__print_table(
     # Create the structure that holds the display information.
     display = Display(display_size, 1, 0, get(context, :color, false), buf_io, IOBuffer())
 
-    # Render the escape sequences of the style once so that the loop only writes strings.
-    rstyle = _TextRenderedStyle(style, display.has_color)
+    # The escape sequences of the style are rendered when it is created, so that the loop
+    # only writes strings. The printing functions skip them if the display has no color.
+    rstyle = style._rendered
 
     # Process the vertical lines at data columns.
     if tf.vertical_lines_at_data_columns isa Symbol

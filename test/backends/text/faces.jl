@@ -53,8 +53,13 @@
         )
 
         for field in fieldnames(TextTableStyle)
+            startswith(String(field), "_") && continue
             @test getfield(crayon_style, field) == getfield(face_style, field)
         end
+
+        @test face_style._rendered.table_border == "\e[34m"
+        @test face_style._rendered.row_label == "\e[31;1m"
+        @test face_style._rendered.subtitle == ""
 
         # The style must not add escape sequences if the color is disabled.
         style  = TextTableStyle(; table_border = Face(; foreground = :blue))

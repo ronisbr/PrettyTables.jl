@@ -188,6 +188,50 @@ Define the format of the tables printed with the text back end.
 end
 
 """
+    struct _TextRenderedStyle
+
+Escape sequences of every field of a [`TextTableStyle`](@ref), rendered once when the style
+is created so that the printing loop only writes strings.
+"""
+struct _TextRenderedStyle{
+    TFCL <: Union{String, Vector{String}}, TCL <: Union{String, Vector{String}}
+}
+    title::String
+    subtitle::String
+    row_number_label::String
+    row_number::String
+    stubhead_label::String
+    row_label::String
+    row_group_label::String
+    first_line_column_label::TFCL
+    column_label::TCL
+    first_line_merged_column_label::String
+    merged_column_label::String
+    summary_row_cell::String
+    summary_row_label::String
+    footnote::String
+    source_note::String
+    omitted_cell_summary::String
+    table_border::String
+end
+
+"""
+    _text__face_sgr(face::Face) -> String
+
+Return the escape sequence that shows text with the attributes of `face`, or an empty string
+if `face` sets no attribute. The attributes that `face` turns off and the default colors of
+the terminal are omitted because every styled segment of the table starts after a reset.
+"""
+function _text__face_sgr(face::Face)
+    # The decoration is built with a reset so that the attributes turned off are omitted.
+    # Afterward, the reset is removed. Otherwise, `Face(; weight = :bold)` would be rendered
+    # as `\\e[22;1m` instead of `\\e[1m`.
+    return String(Decoration(Decoration(face); reset = false))
+end
+
+_text__face_sgr(faces::Vector{Face}) = String[_text__face_sgr(f) for f in faces]
+
+"""
     struct TextTableStyle
 
 Define the style of the tables printed with the text back end.
@@ -217,6 +261,8 @@ Define the style of the tables printed with the text back end.
 - `source_note::Face`: Face with the style for the source notes.
 - `omitted_cell_summary::Face`: Face with the style for the omitted cell summary.
 - `table_border::Face`: Face with the style for the table border.
+- `_rendered::_TextRenderedStyle`: Private field with the escape sequences of every field,
+    rendered when the style is created.
 
 # Constructor
 
@@ -226,7 +272,11 @@ Create a style in which each field can be passed as a keyword. Every keyword acc
 `Face` or a `Crayon`, which is converted to the equivalent face. The keywords
 `first_line_column_label` and `column_label` also accept a vector of faces or crayons.
 """
-struct TextTableStyle{TFCL <: Union{Face, Vector{Face}}, TCL <: Union{Face, Vector{Face}}}
+struct TextTableStyle{
+    TFCL <: Union{Face, Vector{Face}},
+    TCL <: Union{Face, Vector{Face}},
+    TR <: _TextRenderedStyle,
+}
     title::Face
     subtitle::Face
     row_number_label::Face
@@ -244,6 +294,10 @@ struct TextTableStyle{TFCL <: Union{Face, Vector{Face}}, TCL <: Union{Face, Vect
     source_note::Face
     omitted_cell_summary::Face
     table_border::Face
+
+    # == Private Fields ====================================================================
+
+    _rendered::TR
 end
 
 function TextTableStyle(;
@@ -265,24 +319,63 @@ function TextTableStyle(;
     omitted_cell_summary           = _TEXT__CYAN,
     table_border                   = _TEXT__DEFAULT,
 )
+    title                          = _text__to_face(title)
+    subtitle                       = _text__to_face(subtitle)
+    row_number_label               = _text__to_face(row_number_label)
+    row_number                     = _text__to_face(row_number)
+    stubhead_label                 = _text__to_face(stubhead_label)
+    row_label                      = _text__to_face(row_label)
+    row_group_label                = _text__to_face(row_group_label)
+    first_line_column_label        = _text__to_faces(first_line_column_label)
+    column_label                   = _text__to_faces(column_label)
+    first_line_merged_column_label = _text__to_face(first_line_merged_column_label)
+    merged_column_label            = _text__to_face(merged_column_label)
+    summary_row_cell               = _text__to_face(summary_row_cell)
+    summary_row_label              = _text__to_face(summary_row_label)
+    footnote                       = _text__to_face(footnote)
+    source_note                    = _text__to_face(source_note)
+    omitted_cell_summary           = _text__to_face(omitted_cell_summary)
+    table_border                   = _text__to_face(table_border)
+
+    rendered = _TextRenderedStyle(
+        _text__face_sgr(title),
+        _text__face_sgr(subtitle),
+        _text__face_sgr(row_number_label),
+        _text__face_sgr(row_number),
+        _text__face_sgr(stubhead_label),
+        _text__face_sgr(row_label),
+        _text__face_sgr(row_group_label),
+        _text__face_sgr(first_line_column_label),
+        _text__face_sgr(column_label),
+        _text__face_sgr(first_line_merged_column_label),
+        _text__face_sgr(merged_column_label),
+        _text__face_sgr(summary_row_cell),
+        _text__face_sgr(summary_row_label),
+        _text__face_sgr(footnote),
+        _text__face_sgr(source_note),
+        _text__face_sgr(omitted_cell_summary),
+        _text__face_sgr(table_border),
+    )
+
     return TextTableStyle(
-        _text__to_face(title),
-        _text__to_face(subtitle),
-        _text__to_face(row_number_label),
-        _text__to_face(row_number),
-        _text__to_face(stubhead_label),
-        _text__to_face(row_label),
-        _text__to_face(row_group_label),
-        _text__to_faces(first_line_column_label),
-        _text__to_faces(column_label),
-        _text__to_face(first_line_merged_column_label),
-        _text__to_face(merged_column_label),
-        _text__to_face(summary_row_cell),
-        _text__to_face(summary_row_label),
-        _text__to_face(footnote),
-        _text__to_face(source_note),
-        _text__to_face(omitted_cell_summary),
-        _text__to_face(table_border),
+        title,
+        subtitle,
+        row_number_label,
+        row_number,
+        stubhead_label,
+        row_label,
+        row_group_label,
+        first_line_column_label,
+        column_label,
+        first_line_merged_column_label,
+        merged_column_label,
+        summary_row_cell,
+        summary_row_label,
+        footnote,
+        source_note,
+        omitted_cell_summary,
+        table_border,
+        rendered,
     )
 end
 
@@ -294,74 +387,6 @@ _text__to_face(crayon::Crayon) = _face_from_crayon(crayon)
 _text__to_faces(decoration::Union{Face, Crayon}) = _text__to_face(decoration)
 _text__to_faces(faces::Vector{Face})             = faces
 _text__to_faces(decorations::AbstractVector)     = Face[_text__to_face(d) for d in decorations]
-
-"""
-    struct _TextRenderedStyle
-
-Escape sequences of every field of a [`TextTableStyle`](@ref), rendered once per table so
-that the per-cell loop only writes strings. All the fields are empty if the display has no
-color support.
-"""
-struct _TextRenderedStyle{
-    TFCL <: Union{String, Vector{String}}, TCL <: Union{String, Vector{String}}
-}
-    title::String
-    subtitle::String
-    row_number_label::String
-    row_number::String
-    stubhead_label::String
-    row_label::String
-    row_group_label::String
-    first_line_column_label::TFCL
-    column_label::TCL
-    first_line_merged_column_label::String
-    merged_column_label::String
-    summary_row_cell::String
-    summary_row_label::String
-    footnote::String
-    source_note::String
-    omitted_cell_summary::String
-    table_border::String
-end
-
-function _TextRenderedStyle(style::TextTableStyle, has_color::Bool)
-    sgr(face::Face)          = has_color ? _text__face_sgr(face) : ""
-    sgr(faces::Vector{Face}) = String[sgr(f) for f in faces]
-
-    return _TextRenderedStyle(
-        sgr(style.title),
-        sgr(style.subtitle),
-        sgr(style.row_number_label),
-        sgr(style.row_number),
-        sgr(style.stubhead_label),
-        sgr(style.row_label),
-        sgr(style.row_group_label),
-        sgr(style.first_line_column_label),
-        sgr(style.column_label),
-        sgr(style.first_line_merged_column_label),
-        sgr(style.merged_column_label),
-        sgr(style.summary_row_cell),
-        sgr(style.summary_row_label),
-        sgr(style.footnote),
-        sgr(style.source_note),
-        sgr(style.omitted_cell_summary),
-        sgr(style.table_border),
-    )
-end
-
-"""
-    _text__face_sgr(face::Face) -> String
-
-Return the escape sequence that shows text with the attributes of `face`, or an empty string
-if `face` sets no attribute. The attributes that `face` turns off and the default colors of
-the terminal are omitted because every styled segment of the table starts after a reset.
-"""
-function _text__face_sgr(face::Face)
-    # The decoration is built with a reset so that the attributes turned off are omitted.
-    # Afterward, the reset is removed. Otherwise, `Face(; weight = :bold)` would be rendered
-    # as `\\e[22;1m` instead of `\\e[1m`.
-    return String(Decoration(Decoration(face); reset = false))
-end
 
 """
     _text__decoration_sgr(decoration::Union{Face, Crayon}) -> String

@@ -19,7 +19,7 @@ Version 3.5.0
   `html_decoration`, `latex_decoration`, `markdown_decoration`, `typst_decoration`, and
   `excel_decoration` are exported.
 - ![Enhancement][badge-enhancement] Render the escape sequences of the style of the text back
-  end once per table instead of once per cell.
+  end when the style is created instead of once per cell.
 - ![Info][badge-info] The conversion from `Crayon` to `Face` is lossy: the attributes
   `blink`, `conceal`, and `reset` are dropped, and the colors of the 256-color palette are
   converted to 24-bit colors.
