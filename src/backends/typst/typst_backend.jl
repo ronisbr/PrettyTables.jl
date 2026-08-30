@@ -9,7 +9,7 @@ function _typst__print(
     annotate::Bool = true,
     caption::Union{Nothing, String, TypstCaption} = nothing,
     data_column_widths::Union{Nothing, String, Vector{String}, Vector{Pair{Int, String}}} = nothing,
-    highlighters::Vector{TypstHighlighter} = TypstHighlighter[],
+    highlighters::Vector{<:AbstractHighlighter} = TypstHighlighter[],
     is_stdout::Bool = false,
     minify::Bool = false,
     style::TypstTableStyle = TypstTableStyle(),
@@ -480,7 +480,8 @@ function _typst__print(
                     for h in highlighters
                         if h.f(orig_data, ps.i, ps.j)
                             _typst__merge_properties!(
-                                vproperties, h.fd(h, orig_data, ps.i, ps.j)
+                                vproperties,
+                                _typst__highlighter_decoration(h, orig_data, ps.i, ps.j),
                             )
                             break
                         end

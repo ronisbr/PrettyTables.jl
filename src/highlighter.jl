@@ -171,3 +171,21 @@ function _latex__highlighter_decoration(h::Highlighter, data, i::Int, j::Int)
     h._latex = decoration
     return decoration
 end
+
+############################################################################################
+#                                      Typst Back End                                      #
+############################################################################################
+
+function _typst__highlighter_decoration(h::Highlighter, data, i::Int, j::Int)
+    if !_has_default_fd(h)
+        d = h.fd(h, data, i, j)
+        return d isa Face ? typst_decoration(d) : d::Vector{TypstPair}
+    end
+
+    decoration = h._typst
+    isnothing(decoration) || return decoration
+
+    decoration = typst_decoration(h._decoration)
+    h._typst = decoration
+    return decoration
+end

@@ -89,3 +89,20 @@ _typst__column_label_decoration(face::Face)                             = typst_
 function _typst__column_label_decoration(decorations::AbstractVector)
     return Vector{TypstPair}[_typst__decoration(d) for d in decorations]
 end
+
+"""
+    _typst__highlighter_decoration(h::AbstractHighlighter, data, i::Int, j::Int) -> Vector{TypstPair}
+
+Return the Typst properties of the highlighter `h` for the cell `(i, j)` of `data`.
+"""
+function _typst__highlighter_decoration(h::TypstHighlighter, data, i::Int, j::Int)
+    return h.fd(h, data, i, j)::Vector{TypstPair}
+end
+
+function _typst__highlighter_decoration(h::AbstractHighlighter, ::Any, ::Int, ::Int)
+    throw(
+        ArgumentError(
+            "The Typst back end does not support highlighters of type `$(typeof(h))`."
+        )
+    )
+end
