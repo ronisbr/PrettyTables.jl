@@ -14,6 +14,7 @@ using Tables
 using REPL
 
 @reexport using Crayons
+@reexport using StyledStrings
 
 import Base: @kwdef, axes, getindex, show
 import LaTeXStrings: LaTeXString

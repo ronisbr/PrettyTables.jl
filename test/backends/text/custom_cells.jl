@@ -139,13 +139,13 @@
 ├──────────┤
 │     \e[32;1mThis\e[0m\e[0m │
 │       \e[33;1mis\e[0m │
-│ \e[33m\e[1m\e[34;1mawesome!\e[0m │
+│ \e[33;1m\e[34;1mawesome!\e[0m │
 │     \e[32;1m😃😃\e[0m │
-│ \e[32m\e[1m      \e[33;1mis\e[0m │
-│ \e[33m\e[1m\e[34;1mawesome!\e[0m │
+│ \e[32;1m      \e[33;1mis\e[0m │
+│ \e[33;1m\e[34;1mawesome!\e[0m │
 │     \e[32;1mσ𝛕θ⍺\e[0m │
-│ \e[32m\e[1m      \e[33;1mis\e[0m │
-│ \e[33m\e[1m\e[34;1mawesome!\e[0m │
+│ \e[32;1m      \e[33;1mis\e[0m │
+│ \e[33;1m\e[34;1mawesome!\e[0m │
 └──────────┘
 """
 

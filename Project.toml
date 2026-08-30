@@ -14,6 +14,7 @@ Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 REPL = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
 Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
 StringManipulation = "892a3eda-7b42-436c-8928-eab12a02cf0e"
+StyledStrings = "f489334b-da3d-4c2e-b8f0-e476e12c162b"
 Tables = "bd369af6-aec1-5ad0-b16a-f7cc5008161c"
 
 [weakdeps]
@@ -33,7 +34,8 @@ PrecompileTools = "1"
 Printf = "1.10"
 REPL = "1.10"
 Reexport = "1"
-StringManipulation = "0.4, 0.5"
+StringManipulation = "0.6.1"
+StyledStrings = "1"
 Tables = "1"
 Test = "1.10"
 Typstry = "0.7.0"
@@ -43,9 +45,8 @@ julia = "1.10"
 [extras]
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 OffsetArrays = "6fe1bfb0-de20-5000-8ca7-80f57d26f881"
-StyledStrings = "f489334b-da3d-4c2e-b8f0-e476e12c162b"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 XLSX = "fdbf4ff8-1666-58a4-91e7-1b58723a45e0"
 
 [targets]
-test = ["OffsetArrays", "StyledStrings", "Test", "Typstry", "XLSX", "Dates"]
+test = ["OffsetArrays", "Test", "Typstry", "XLSX", "Dates"]
