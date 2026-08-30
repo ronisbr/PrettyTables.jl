@@ -82,3 +82,23 @@ function _latex__render_cell(
 )
     return replace(sprint(show, MIME("text/latex"), cell), "\n" => "")
 end
+
+@static if VERSION >= v"1.11"
+    # Styled strings are rendered region by region, wrapping the styled ones in the LaTeX
+    # environments of the face.
+    function _latex__render_cell(
+        cell::Base.AnnotatedString,
+        context::RenderContext,
+        renderer::Union{Val{:print}, Val{:show}},
+    )
+        buf = IOBuffer()
+
+        for (text, face) in _face_regions(cell)
+            escaped = _latex__escape_str(text)
+            envs    = isnothing(face) ? _LATEX__DEFAULT : latex_decoration(face)
+            print(buf, _latex__add_environments(escaped, envs))
+        end
+
+        return String(take!(buf))
+    end
+end

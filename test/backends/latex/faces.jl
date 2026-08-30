@@ -113,4 +113,35 @@
             highlighters = [TextHighlighter(f, crayon"red")],
         )
     end
+
+    @static if VERSION >= v"1.11"
+        @testset "Styled Strings" begin
+            matrix = [
+                styled"{yellow,bold:Yellow, Bold}" styled"{blue:Blue} & <x>"
+                styled"{red: Red}"                 styled"{(fg=green),(bg=blue):Green}_{italic:it}"
+            ]
+
+            expected = """
+\\begin{tabular}{|r|r|}
+  \\hline
+  \\textbf{<\\textcolor[HTML]{A51C2C}{A}>} & \\textbf{B} \\\\
+  \\hline
+  \\textcolor[HTML]{E5A509}{\\textbf{Yellow, Bold}} & \\textcolor[HTML]{195EB3}{Blue} \\& <x> \\\\
+  \\textcolor[HTML]{A51C2C}{ Red} & \\colorbox[HTML]{195EB3}{\\textcolor[HTML]{25A268}{Green}}\\_\\textit{it} \\\\
+  \\hline
+\\end{tabular}
+"""
+
+            for renderer in (:print, :show)
+                result = pretty_table(
+                    String,
+                    matrix;
+                    backend = :latex,
+                    column_labels = [styled"<{red:A}>", "B"],
+                    renderer = renderer,
+                )
+                @test result == expected
+            end
+        end
+    end
 end
