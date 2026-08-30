@@ -19,7 +19,7 @@ the output:
   is the width for that column. In this case, columns that are not specified will have
   width `auto`.
   (**Default** = `nothing`)
-- `highlighters::Vector{TypstHighlighter}`: Highlighters to apply to the table. For more
+- `highlighters::Vector{<:AbstractHighlighter}`: Highlighters to apply to the table. For more
   information, see the section [Typst Highlighters]@(ref).
   (**Default** = `TypstHighlighter[]`)
 - `minify::Bool`: If `true`, the generated Typst code will be minified by ignoring
@@ -41,8 +41,11 @@ the output:
 
 ## Typst Highlighters
 
-A set of highlighters can be passed as a `Vector{TypstHighlighter}` to the `highlighters`
-keyword. Each highlighter is an instance of the structure [`TypstHighlighter`](@ref). It
+A set of highlighters can be passed as a vector of `AbstractHighlighter` to the
+`highlighters` keyword. A highlighter can be an instance of the structure
+[`TypstHighlighter`](@ref), specific to this back end, or of the general
+[`Highlighter`](@ref), which is defined by a `Face` and works with every back end (see
+[Faces](@ref)). The face is converted with [`typst_decoration`](@ref). Each highlighter is an instance of the structure [`TypstHighlighter`](@ref). It
 contains the following two public fields:
 
 - `f::Function`: Function with the signature `f(data, i, j)`, which should return `true`
@@ -203,3 +206,6 @@ style = TypstTableStyle(
 The user can pass any property compatible with the Typst style attribute. If the prefix
 `text-` is used, the property will be applied to the text of the cell. Otherwise, it will be
 applied to the cell itself.
+
+Every keyword of the constructor of [`TypstTableStyle`](@ref) also accepts a `Face`, which is
+converted to Typst properties with [`typst_decoration`](@ref) (see [Faces](@ref)).
