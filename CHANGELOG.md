@@ -18,6 +18,10 @@ Version 3.5.0
   is converted to the decoration of the back end at construction. The conversion functions
   `html_decoration`, `latex_decoration`, `markdown_decoration`, `typst_decoration`, and
   `excel_decoration` are exported.
+- ![Feature][badge-feature] Render the styled strings of StyledStrings.jl in every back end
+  (Julia 1.11 or newer). The regions of the string are decorated with their faces using the
+  conversion of each back end; the Excel back end writes the plain text. The HTML back end
+  now renders them with `html_decoration` instead of the HTML writer of StyledStrings.jl.
 - ![Enhancement][badge-enhancement] Render the escape sequences of the style of the text back
   end when the style is created instead of once per cell.
 - ![Info][badge-info] The conversion from `Crayon` to `Face` is lossy: the attributes
