@@ -124,7 +124,7 @@ This structure can be constructed using the following helpers:
 The first two apply a fixed decoration to the highlighted cell, whereas the third lets the
 user select the desired decoration by specifying the function `fd`.
 """
-struct TypstHighlighter
+struct TypstHighlighter <: AbstractHighlighter
     f::Function
     fd::Function
 
