@@ -56,7 +56,7 @@ The first will apply a fixed decoration to the highlighted cell specified in `de
 whereas the second lets the user select the desired decoration by specifying the function
 `fd`.
 """
-struct MarkdownHighlighter
+struct MarkdownHighlighter <: AbstractHighlighter
     f::Function
     fd::Function
 
