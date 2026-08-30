@@ -16,6 +16,11 @@ using REPL
 @reexport using Crayons
 @reexport using StyledStrings
 
+# `Face` and `SimpleColor` are public in StyledStrings.jl but not exported. Hence, we export
+# them so that the user can style the tables without importing StyledStrings.jl.
+using StyledStrings: Face, SimpleColor
+export Face, SimpleColor
+
 import Base: @kwdef, axes, getindex, show
 import LaTeXStrings: LaTeXString
 
@@ -30,6 +35,7 @@ end
 ############################################################################################
 
 include("./types.jl")
+include("./faces.jl")
 
 ############################################################################################
 #                                         Includes                                         #

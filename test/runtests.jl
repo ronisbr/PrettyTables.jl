@@ -136,6 +136,10 @@ end
     include("./tables.jl")
 end
 
+@testset "Faces" verbose = true begin
+    include("./faces.jl")
+end
+
 @testset "General Tests" verbose = true begin
     include("./general.jl")
 end
