@@ -82,3 +82,17 @@ function html_decoration(face::Face)
 
     return d
 end
+
+# Convert a decoration passed to `HtmlTableStyle` into CSS properties.
+_html__decoration(decoration::Vector{HtmlPair}) = decoration
+_html__decoration(face::Face)                   = html_decoration(face)
+
+# Convert a decoration, or a vector with one decoration per column, passed to
+# `HtmlTableStyle` into CSS properties.
+_html__column_label_decoration(decoration::Vector{HtmlPair})          = decoration
+_html__column_label_decoration(decorations::Vector{Vector{HtmlPair}}) = decorations
+_html__column_label_decoration(face::Face)                            = html_decoration(face)
+
+function _html__column_label_decoration(decorations::AbstractVector)
+    return Vector{HtmlPair}[_html__decoration(d) for d in decorations]
+end

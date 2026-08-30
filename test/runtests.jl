@@ -52,6 +52,7 @@ end
     include("./backends/html/column_width.jl")
     include("./backends/html/cropping.jl")
     include("./backends/html/decorations.jl")
+    include("./backends/html/faces.jl")
     include("./backends/html/default.jl")
     include("./backends/html/divs.jl")
     include("./backends/html/footnotes.jl")

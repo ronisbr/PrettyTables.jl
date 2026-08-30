@@ -192,27 +192,78 @@ Define the style of the tables printed with the HTML back end.
 - `summary_row_label::Vector{HtmlPair}`: Style for the summary row label.
 - `footnote::Vector{HtmlPair}`: Style for the footnote.
 - `source_note::Vector{HtmlPair}`: Style for the source notes.
+
+# Constructor
+
+    HtmlTableStyle(; kwargs...)
+
+Create a style in which each field can be passed as a keyword. Every keyword also accepts a
+`Face`, which is converted with [`html_decoration`](@ref). The keywords
+`first_line_column_label` and `column_label` also accept a vector with one decoration (CSS
+properties or `Face`) per column.
 """
-@kwdef struct HtmlTableStyle{
+struct HtmlTableStyle{
     TFCL <: Union{Vector{HtmlPair}, Vector{Vector{HtmlPair}}},
     TCL <: Union{Vector{HtmlPair}, Vector{Vector{HtmlPair}}},
 }
-    top_left_string::Vector{HtmlPair}                = _HTML__NO_DECORATION
-    top_right_string::Vector{HtmlPair}               = _HTML__ITALIC
-    table::Vector{HtmlPair}                          = _HTML__NO_DECORATION
-    title::Vector{HtmlPair}                          = _HTML__XLARGE_BOLD
-    subtitle::Vector{HtmlPair}                       = _HTML__LARGE_ITALIC
-    row_number_label::Vector{HtmlPair}               = _HTML__BOLD
-    row_number::Vector{HtmlPair}                     = _HTML__BOLD
-    stubhead_label::Vector{HtmlPair}                 = _HTML__BOLD
-    row_label::Vector{HtmlPair}                      = _HTML__BOLD
-    row_group_label::Vector{HtmlPair}                = _HTML__BOLD
-    first_line_column_label::TFCL                    = _HTML__BOLD
-    column_label::TCL                                = _HTML__NO_DECORATION
-    first_line_merged_column_label::Vector{HtmlPair} = _HTML__MERGED_CELL
-    merged_column_label::Vector{HtmlPair}            = _HTML__MERGED_CELL
-    summary_row_cell::Vector{HtmlPair}               = _HTML__NO_DECORATION
-    summary_row_label::Vector{HtmlPair}              = _HTML__BOLD
-    footnote::Vector{HtmlPair}                       = _HTML__SMALL
-    source_note::Vector{HtmlPair}                    = _HTML__SMALL_ITALIC_GRAY
+    top_left_string::Vector{HtmlPair}
+    top_right_string::Vector{HtmlPair}
+    table::Vector{HtmlPair}
+    title::Vector{HtmlPair}
+    subtitle::Vector{HtmlPair}
+    row_number_label::Vector{HtmlPair}
+    row_number::Vector{HtmlPair}
+    stubhead_label::Vector{HtmlPair}
+    row_label::Vector{HtmlPair}
+    row_group_label::Vector{HtmlPair}
+    first_line_column_label::TFCL
+    column_label::TCL
+    first_line_merged_column_label::Vector{HtmlPair}
+    merged_column_label::Vector{HtmlPair}
+    summary_row_cell::Vector{HtmlPair}
+    summary_row_label::Vector{HtmlPair}
+    footnote::Vector{HtmlPair}
+    source_note::Vector{HtmlPair}
+end
+
+function HtmlTableStyle(;
+    top_left_string                = _HTML__NO_DECORATION,
+    top_right_string               = _HTML__ITALIC,
+    table                          = _HTML__NO_DECORATION,
+    title                          = _HTML__XLARGE_BOLD,
+    subtitle                       = _HTML__LARGE_ITALIC,
+    row_number_label               = _HTML__BOLD,
+    row_number                     = _HTML__BOLD,
+    stubhead_label                 = _HTML__BOLD,
+    row_label                      = _HTML__BOLD,
+    row_group_label                = _HTML__BOLD,
+    first_line_column_label        = _HTML__BOLD,
+    column_label                   = _HTML__NO_DECORATION,
+    first_line_merged_column_label = _HTML__MERGED_CELL,
+    merged_column_label            = _HTML__MERGED_CELL,
+    summary_row_cell               = _HTML__NO_DECORATION,
+    summary_row_label              = _HTML__BOLD,
+    footnote                       = _HTML__SMALL,
+    source_note                    = _HTML__SMALL_ITALIC_GRAY,
+)
+    return HtmlTableStyle(
+        _html__decoration(top_left_string),
+        _html__decoration(top_right_string),
+        _html__decoration(table),
+        _html__decoration(title),
+        _html__decoration(subtitle),
+        _html__decoration(row_number_label),
+        _html__decoration(row_number),
+        _html__decoration(stubhead_label),
+        _html__decoration(row_label),
+        _html__decoration(row_group_label),
+        _html__column_label_decoration(first_line_column_label),
+        _html__column_label_decoration(column_label),
+        _html__decoration(first_line_merged_column_label),
+        _html__decoration(merged_column_label),
+        _html__decoration(summary_row_cell),
+        _html__decoration(summary_row_label),
+        _html__decoration(footnote),
+        _html__decoration(source_note),
+    )
 end
