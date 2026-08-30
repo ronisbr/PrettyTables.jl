@@ -79,3 +79,29 @@ function PrettyTables._typst__render_cell(
           lang: "markdown",
         )"""
 end
+
+@static if VERSION >= v"1.11"
+    # Styled strings are rendered region by region, wrapping the styled ones in a `#text`
+    # component with the text properties of the face. The cell properties, like the
+    # background, cannot be applied to a region and they are ignored.
+    function _typst__render_cell(
+        cell::Base.AnnotatedString,
+        context::RenderContext,
+        renderer::Union{Val{:print}, Val{:show}},
+    )
+        buf = IOBuffer()
+
+        for (text, face) in _face_regions(cell)
+            escaped = _typst__escape_str(text)
+
+            if isnothing(face)
+                print(buf, escaped)
+            else
+                _, text_properties = _typst__cell_and_text_properties(typst_decoration(face))
+                print(buf, _typst__text(escaped, text_properties))
+            end
+        end
+
+        return String(take!(buf))
+    end
+end

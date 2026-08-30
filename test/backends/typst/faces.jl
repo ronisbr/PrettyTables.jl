@@ -119,4 +119,38 @@
             highlighters = [TextHighlighter(f, crayon"red")],
         )
     end
+
+    @static if VERSION >= v"1.11"
+        @testset "Styled Strings" begin
+            matrix = [
+                styled"{yellow,bold:Yellow, Bold}" styled"{blue:Blue} & <x>"
+                styled"{red: Red}"                 styled"{(fg=green),(bg=blue):Green}_{italic:it}"
+            ]
+
+            for renderer in (:print, :show)
+                result = pretty_table(
+                    String,
+                    matrix;
+                    backend = :typst,
+                    column_labels = [styled"<{red:A}>", "B"],
+                    renderer = renderer,
+                )
+
+                @test occursin(
+                    "[#text(weight: \"bold\",)[\\<#text(fill: rgb(\"#a51c2c\"),)[A]\\>]],",
+                    result,
+                )
+                @test occursin(
+                    "[#text(weight: \"bold\", fill: rgb(\"#e5a509\"),)[Yellow, Bold]],",
+                    result,
+                )
+                @test occursin("[#text(fill: rgb(\"#195eb3\"),)[Blue] & \\<x\\>],", result)
+                @test occursin("[#text(fill: rgb(\"#a51c2c\"),)[ Red]],", result)
+                @test occursin(
+                    "[#text(fill: rgb(\"#25a268\"),)[Green]\\_#text(style: \"italic\",)[it]],",
+                    result,
+                )
+            end
+        end
+    end
 end
