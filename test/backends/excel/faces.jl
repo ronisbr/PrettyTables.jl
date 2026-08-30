@@ -111,4 +111,18 @@
             XLSX.XLSXFile, matrix; highlighters = [TextHighlighter(f, crayon"red")]
         )
     end
+
+    @static if VERSION >= v"1.11"
+        @testset "Styled Strings" begin
+            # Excel cannot style regions of a cell. Hence, the text is written plain.
+            matrix = [styled"{yellow,bold:Yellow, Bold}" styled"{blue:Blue} & <x>"]
+            result = pretty_table(XLSX.XLSXFile, matrix; column_labels = [styled"{red:A}", "B"])
+            sheet  = result[1]
+
+            @test sheet["A1"] == "A"
+            @test sheet["A2"] == "Yellow, Bold"
+            @test sheet["B2"] == "Blue & <x>"
+            @test sheet["A2"] isa String
+        end
+    end
 end

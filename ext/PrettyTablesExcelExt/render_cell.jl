@@ -98,3 +98,12 @@ end
 function _excel__cell_to_str(cell::Any, context::RenderContext, ::Val{:show})
     return _sprint_with_context(show, context, MIME("text/plain"), cell)
 end
+
+@static if VERSION >= v"1.11"
+    # Excel cannot style regions of a cell. Hence, styled strings are written as plain text.
+    function _excel__render_cell(
+        cell::Base.AnnotatedString, ::RenderContext, ::_EXCEL__RENDERER
+    )
+        return String(cell)
+    end
+end
