@@ -86,6 +86,7 @@ end
     include("./backends/markdown/circular_reference.jl")
     include("./backends/markdown/compact.jl")
     include("./backends/markdown/cropping.jl")
+    include("./backends/markdown/faces.jl")
     include("./backends/markdown/decorations.jl")
     include("./backends/markdown/default.jl")
     include("./backends/markdown/footnotes.jl")

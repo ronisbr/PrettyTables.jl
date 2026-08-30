@@ -133,21 +133,60 @@ Define the style of the tables printed with the markdown back end.
 - `footnote::MarkdownStyle`: Style for the footnote.
 - `source_note::MarkdownStyle`: Style for the source note.
 - `omitted_cell_summary::MarkdownStyle`: Style for the omitted cell summary.
+
+# Constructor
+
+    MarkdownTableStyle(; kwargs...)
+
+Create a style in which each field can be passed as a keyword. Every keyword also accepts a
+`Face`, which is converted with [`markdown_decoration`](@ref). The keywords
+`first_line_column_label` and `column_label` also accept a vector with one decoration
+(`MarkdownStyle` or `Face`) per column.
 """
-@kwdef struct MarkdownTableStyle{
+struct MarkdownTableStyle{
     TFCL <: Union{MarkdownStyle, Vector{MarkdownStyle}},
     TCL <: Union{MarkdownStyle, Vector{MarkdownStyle}},
 }
-    row_number_label::MarkdownStyle     = _MARKDOWN__BOLD
-    row_number::MarkdownStyle           = _MARKDOWN__BOLD
-    stubhead_label::MarkdownStyle       = _MARKDOWN__BOLD
-    row_label::MarkdownStyle            = _MARKDOWN__BOLD
-    row_group_label::MarkdownStyle      = _MARKDOWN__BOLD
-    first_line_column_label::TFCL       = _MARKDOWN__BOLD
-    column_label::TCL                   = _MARKDOWN__CODE
-    summary_row_label::MarkdownStyle    = _MARKDOWN__BOLD
-    summary_row_cell::MarkdownStyle     = _MARKDOWN__NO_DECORATION
-    footnote::MarkdownStyle             = _MARKDOWN__NO_DECORATION
-    source_note::MarkdownStyle          = _MARKDOWN__NO_DECORATION
-    omitted_cell_summary::MarkdownStyle = _MARKDOWN__ITALIC
+    row_number_label::MarkdownStyle
+    row_number::MarkdownStyle
+    stubhead_label::MarkdownStyle
+    row_label::MarkdownStyle
+    row_group_label::MarkdownStyle
+    first_line_column_label::TFCL
+    column_label::TCL
+    summary_row_label::MarkdownStyle
+    summary_row_cell::MarkdownStyle
+    footnote::MarkdownStyle
+    source_note::MarkdownStyle
+    omitted_cell_summary::MarkdownStyle
+end
+
+function MarkdownTableStyle(;
+    row_number_label        = _MARKDOWN__BOLD,
+    row_number              = _MARKDOWN__BOLD,
+    stubhead_label          = _MARKDOWN__BOLD,
+    row_label               = _MARKDOWN__BOLD,
+    row_group_label         = _MARKDOWN__BOLD,
+    first_line_column_label = _MARKDOWN__BOLD,
+    column_label            = _MARKDOWN__CODE,
+    summary_row_label       = _MARKDOWN__BOLD,
+    summary_row_cell        = _MARKDOWN__NO_DECORATION,
+    footnote                = _MARKDOWN__NO_DECORATION,
+    source_note             = _MARKDOWN__NO_DECORATION,
+    omitted_cell_summary    = _MARKDOWN__ITALIC,
+)
+    return MarkdownTableStyle(
+        _markdown__decoration(row_number_label),
+        _markdown__decoration(row_number),
+        _markdown__decoration(stubhead_label),
+        _markdown__decoration(row_label),
+        _markdown__decoration(row_group_label),
+        _markdown__column_label_decoration(first_line_column_label),
+        _markdown__column_label_decoration(column_label),
+        _markdown__decoration(summary_row_label),
+        _markdown__decoration(summary_row_cell),
+        _markdown__decoration(footnote),
+        _markdown__decoration(source_note),
+        _markdown__decoration(omitted_cell_summary),
+    )
 end
