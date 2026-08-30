@@ -189,3 +189,21 @@ function _typst__highlighter_decoration(h::Highlighter, data, i::Int, j::Int)
     h._typst = decoration
     return decoration
 end
+
+############################################################################################
+#                                    Markdown Back End                                     #
+############################################################################################
+
+function _markdown__highlighter_decoration(h::Highlighter, data, i::Int, j::Int)
+    if !_has_default_fd(h)
+        d = h.fd(h, data, i, j)
+        return d isa Face ? markdown_decoration(d) : d::MarkdownStyle
+    end
+
+    decoration = h._markdown
+    isnothing(decoration) || return decoration
+
+    decoration = markdown_decoration(h._decoration)
+    h._markdown = decoration
+    return decoration
+end

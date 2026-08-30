@@ -7,7 +7,7 @@
 function _markdown__print(
     pspec::PrintingSpec;
     allow_markdown_in_cells::Bool = false,
-    highlighters::Vector{MarkdownHighlighter} = MarkdownHighlighter[],
+    highlighters::Vector{<:AbstractHighlighter} = MarkdownHighlighter[],
     line_breaks::Bool = false,
     style::MarkdownTableStyle = MarkdownTableStyle(),
     table_format::MarkdownTableFormat = MarkdownTableFormat(),
@@ -152,7 +152,7 @@ function _markdown__print(
             if !isempty(highlighters)
                 for h in highlighters
                     if h.f(orig_data, ps.i, ps.j)
-                        d = h.fd(h, orig_data, ps.i, ps.j)
+                        d = _markdown__highlighter_decoration(h, orig_data, ps.i, ps.j)
                         rendered_cell = _markdown__apply_style(d, rendered_cell)
                         break
                     end
