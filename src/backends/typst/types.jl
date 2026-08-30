@@ -299,28 +299,77 @@ Define the style of the tables printed with the Typst back end.
 - `summary_row_label::Vector{TypstPair}`: Style for the summary row label.
 - `footnote::Vector{TypstPair}`: Style for the footnote.
 - `source_note::Vector{TypstPair}`: Style for the source notes.
+
+# Constructor
+
+    TypstTableStyle(; kwargs...)
+
+Create a style in which each field can be passed as a keyword. Every keyword also accepts a
+`Face`, which is converted with [`typst_decoration`](@ref). The keywords
+`first_line_column_label` and `column_label` also accept a vector with one decoration
+(Typst properties or `Face`) per column.
 """
-@kwdef struct TypstTableStyle{
+struct TypstTableStyle{
     TFCL <: Union{Vector{TypstPair}, Vector{Vector{TypstPair}}},
     TCL <: Union{Vector{TypstPair}, Vector{Vector{TypstPair}}},
 }
-    table::Vector{TypstPair}                          = _TYPST__NO_DECORATION
-    title::Vector{TypstPair}                          = _TYPST__XLARGE_BOLD
-    subtitle::Vector{TypstPair}                       = _TYPST__LARGE_ITALIC
-    row_number_label::Vector{TypstPair}               = _TYPST__BOLD
-    row_number::Vector{TypstPair}                     = _TYPST__BOLD
-    stubhead_label::Vector{TypstPair}                 = _TYPST__BOLD
-    row_label::Vector{TypstPair}                      = _TYPST__BOLD
-    row_group_label::Vector{TypstPair}                = _TYPST__BOLD
-    first_line_column_label::TFCL                     = _TYPST__BOLD
-    column_label::TCL                                 = _TYPST__BOLD
-    first_line_merged_column_label::Vector{TypstPair} = _TYPST__MERGED_CELL
-    merged_column_label::Vector{TypstPair}            = _TYPST__MERGED_CELL
-    omitted_cell_summary::Vector{TypstPair}           = _TYPST__SMALL_ITALIC_GRAY
-    summary_row_cell::Vector{TypstPair}               = _TYPST__NO_DECORATION
-    summary_row_label::Vector{TypstPair}              = _TYPST__BOLD
-    footnote::Vector{TypstPair}                       = _TYPST__SMALL
-    source_note::Vector{TypstPair}                    = _TYPST__SMALL_ITALIC_GRAY
+    table::Vector{TypstPair}
+    title::Vector{TypstPair}
+    subtitle::Vector{TypstPair}
+    row_number_label::Vector{TypstPair}
+    row_number::Vector{TypstPair}
+    stubhead_label::Vector{TypstPair}
+    row_label::Vector{TypstPair}
+    row_group_label::Vector{TypstPair}
+    first_line_column_label::TFCL
+    column_label::TCL
+    first_line_merged_column_label::Vector{TypstPair}
+    merged_column_label::Vector{TypstPair}
+    omitted_cell_summary::Vector{TypstPair}
+    summary_row_cell::Vector{TypstPair}
+    summary_row_label::Vector{TypstPair}
+    footnote::Vector{TypstPair}
+    source_note::Vector{TypstPair}
+end
+
+function TypstTableStyle(;
+    table                          = _TYPST__NO_DECORATION,
+    title                          = _TYPST__XLARGE_BOLD,
+    subtitle                       = _TYPST__LARGE_ITALIC,
+    row_number_label               = _TYPST__BOLD,
+    row_number                     = _TYPST__BOLD,
+    stubhead_label                 = _TYPST__BOLD,
+    row_label                      = _TYPST__BOLD,
+    row_group_label                = _TYPST__BOLD,
+    first_line_column_label        = _TYPST__BOLD,
+    column_label                   = _TYPST__BOLD,
+    first_line_merged_column_label = _TYPST__MERGED_CELL,
+    merged_column_label            = _TYPST__MERGED_CELL,
+    omitted_cell_summary           = _TYPST__SMALL_ITALIC_GRAY,
+    summary_row_cell               = _TYPST__NO_DECORATION,
+    summary_row_label              = _TYPST__BOLD,
+    footnote                       = _TYPST__SMALL,
+    source_note                    = _TYPST__SMALL_ITALIC_GRAY,
+)
+    return TypstTableStyle(
+        _typst__decoration(table),
+        _typst__decoration(title),
+        _typst__decoration(subtitle),
+        _typst__decoration(row_number_label),
+        _typst__decoration(row_number),
+        _typst__decoration(stubhead_label),
+        _typst__decoration(row_label),
+        _typst__decoration(row_group_label),
+        _typst__column_label_decoration(first_line_column_label),
+        _typst__column_label_decoration(column_label),
+        _typst__decoration(first_line_merged_column_label),
+        _typst__decoration(merged_column_label),
+        _typst__decoration(omitted_cell_summary),
+        _typst__decoration(summary_row_cell),
+        _typst__decoration(summary_row_label),
+        _typst__decoration(footnote),
+        _typst__decoration(source_note),
+    )
 end
 
 """

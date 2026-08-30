@@ -121,6 +121,7 @@ end
     include("./backends/typst/alignment.jl")
     include("./backends/typst/caption.jl")
     include("./backends/typst/circular_reference.jl")
+    include("./backends/typst/faces.jl")
     include("./backends/typst/data_column_widths.jl")
     include("./backends/typst/cropping.jl")
     include("./backends/typst/decorations.jl")
