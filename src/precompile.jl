@@ -106,6 +106,15 @@ PrecompileTools.@setup_workload begin
                 highlighters = [TextHighlighter((data, i, j) -> i == 1, crayon"bold")]
             )
 
+            pretty_table(
+                matrix;
+                highlighters = [
+                    TextHighlighter((data, i, j) -> i == 1, Face(; weight = :bold)),
+                    TextHighlighter((data, i, j) -> i == 2; bold = true, foreground = :red),
+                    Highlighter((data, i, j) -> i == 3, Face(; foreground = :red)),
+                ]
+            )
+
             pretty_table(types)
 
             # .. Text Table Styles .........................................................
@@ -129,6 +138,15 @@ PrecompileTools.@setup_workload begin
                 style = TextTableStyle(;
                     first_line_column_label = [crayon"bold yellow" for i in 1:10],
                     column_label            = [crayon"bold yellow" for i in 1:10],
+                ),
+            )
+
+            pretty_table(
+                matrix;
+                style = TextTableStyle(;
+                    row_label               = Face(; weight = :bold),
+                    first_line_column_label = [Face(; foreground = :blue) for i in 1:10],
+                    column_label            = [Face(; foreground = :blue) for i in 1:10],
                 ),
             )
 
@@ -193,6 +211,14 @@ PrecompileTools.@setup_workload begin
                 ],
             )
 
+            pretty_table(
+                html_buf,
+                matrix;
+                backend = :html,
+                highlighters = [Highlighter((data, i, j) -> i == 1, Face(; weight = :bold))],
+                style = HtmlTableStyle(; title = Face(; weight = :bold)),
+            )
+
             pretty_table(html_buf, types; backend = :html)
 
             # .. HTML Table Styles .........................................................
@@ -231,6 +257,13 @@ PrecompileTools.@setup_workload begin
                 matrix;
                 backend = :latex,
                 highlighters = [LatexHighlighter((data, i, j) -> i == 1, ["textbf"])],
+            )
+
+            pretty_table(
+                matrix;
+                backend = :latex,
+                highlighters = [Highlighter((data, i, j) -> i == 1, Face(; weight = :bold))],
+                style = LatexTableStyle(; title = Face(; weight = :bold)),
             )
 
             pretty_table(types; backend = :latex)
@@ -274,6 +307,13 @@ PrecompileTools.@setup_workload begin
                 ],
             )
 
+            pretty_table(
+                matrix;
+                backend = :markdown,
+                highlighters = [Highlighter((data, i, j) -> i == 1, Face(; weight = :bold))],
+                style = MarkdownTableStyle(; row_label = Face(; weight = :bold)),
+            )
+
             pretty_table(types; backend = :markdown)
 
             # .. Markdown Table Styles .....................................................
@@ -315,6 +355,13 @@ PrecompileTools.@setup_workload begin
                 highlighters = [
                     TypstHighlighter((data, i, j) -> i == 1, ["text-fill" => "red"])
                 ],
+            )
+
+            pretty_table(
+                matrix;
+                backend = :typst,
+                highlighters = [Highlighter((data, i, j) -> i == 1, Face(; weight = :bold))],
+                style = TypstTableStyle(; title = Face(; weight = :bold)),
             )
 
             pretty_table(types; backend = :typst)
