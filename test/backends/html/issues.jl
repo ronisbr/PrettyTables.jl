@@ -5,11 +5,12 @@
 ############################################################################################
 
 @testset "Issues" verbose = true begin
-    @testset "StyledStrings Support" begin
-        A = [
-            (1, 1)                          styled"({red:2}, {blue:3})"
-            styled"({green:2}, {yellow:3})" "(2, 4)"
-        ]
+    @static if VERSION >= v"1.11"
+        @testset "StyledStrings Support" begin
+            A = [
+                (1, 1)                          styled"({red:2}, {blue:3})"
+                styled"({green:2}, {yellow:3})" "(2, 4)"
+            ]
 
         expected = """
 <table>
@@ -32,16 +33,16 @@
 </table>
 """
 
-        result = pretty_table(
-            String,
-            A;
-            backend       = :html,
-            column_labels = [styled"<{red:Column 1}>", "<Column 2>"],
-        )
+            result = pretty_table(
+                String,
+                A;
+                backend       = :html,
+                column_labels = [styled"<{red:Column 1}>", "<Column 2>"],
+            )
 
-        @test result == expected
+            @test result == expected
 
-        expected = """
+            expected = """
 <table>
   <thead>
     <tr class = "columnLabelRow">
@@ -62,12 +63,13 @@
 </table>
 """
 
-        result = pretty_table(
-            String,
-            A;
-            backend       = :html,
-            column_labels = [styled"<{red:Column 1}>", "<Column 2>"],
-            renderer      = :show,
-        )
+            result = pretty_table(
+                String,
+                A;
+                backend       = :html,
+                column_labels = [styled"<{red:Column 1}>", "<Column 2>"],
+                renderer      = :show,
+            )
+        end
     end
 end
