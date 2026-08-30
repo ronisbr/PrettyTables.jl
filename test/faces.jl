@@ -123,3 +123,40 @@ end
     @test PrettyTables._face_is_struck(Face(; strikethrough = true))
     @test !PrettyTables._face_is_struck(Face())
 end
+
+@testset "HTML Decoration" begin
+    @test html_decoration(Face()) == Pair{String, String}[]
+
+    @test html_decoration(Face(; weight = :bold, foreground = "#ff0000")) ==
+        ["color" => "#ff0000", "font-weight" => "bold"]
+
+    @test html_decoration(
+        Face(;
+            font          = "Fira Code",
+            height        = 125,
+            weight        = :light,
+            slant         = :oblique,
+            background    = 0x00ff00,
+            underline     = true,
+            strikethrough = true,
+        )
+    ) == [
+        "background-color" => "#00ff00",
+        "font-weight"      => "lighter",
+        "font-style"       => "oblique",
+        "font-family"      => "Fira Code",
+        "font-size"        => "12.5pt",
+        "text-decoration"  => "underline line-through",
+    ]
+
+    @test html_decoration(Face(; height = 1.5, weight = :normal, slant = :normal)) ==
+        ["font-weight" => "normal", "font-style" => "normal", "font-size" => "1.5em"]
+    @test html_decoration(Face(; underline = :red)) == ["text-decoration" => "underline"]
+    @test html_decoration(Face(; strikethrough = true)) ==
+        ["text-decoration" => "line-through"]
+
+    # The default colors, the unknown names, and the unsupported attributes are ignored.
+    @test html_decoration(Face(; foreground = :default, inverse = true, inherit = :error)) ==
+        Pair{String, String}[]
+    @test html_decoration(Face(; foreground = :red)) == ["color" => "#a51c2c"]
+end
