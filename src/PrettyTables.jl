@@ -65,6 +65,7 @@ include("./backends/html/private.jl")
 include("./backends/html/render_cell.jl")
 
 include("./backends/markdown/types.jl")
+include("./backends/markdown/faces.jl")
 include("./backends/markdown/documentation.jl")
 include("./backends/markdown/markdown_backend.jl")
 include("./backends/markdown/private.jl")

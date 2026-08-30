@@ -225,3 +225,14 @@ end
     ) == Pair{String, String}[]
     @test typst_decoration(Face(; foreground = :red)) == ["text-fill" => "rgb(\"#a51c2c\")"]
 end
+
+@testset "Markdown Decoration" begin
+    @test markdown_decoration(Face()) == MarkdownStyle()
+    @test markdown_decoration(Face(; weight = :bold, foreground = :red)) ==
+        MarkdownStyle(; bold = true)
+    @test markdown_decoration(
+        Face(; weight = :semibold, slant = :italic, strikethrough = true, underline = true)
+    ) == MarkdownStyle(; bold = true, italic = true, strikethrough = true)
+    @test markdown_decoration(Face(; weight = :light, slant = :oblique)) ==
+        MarkdownStyle(; italic = true)
+end
