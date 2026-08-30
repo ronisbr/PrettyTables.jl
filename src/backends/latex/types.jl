@@ -209,7 +209,7 @@ will wrap all the cells in the table in the following environment:
 Notice that the environments are applied in order, meaning that the **last** one in the
 vector ends up being the outermost.
 """
-struct LatexHighlighter
+struct LatexHighlighter <: AbstractHighlighter
     f::Function
     fd::Function
 
