@@ -236,3 +236,42 @@ end
     @test markdown_decoration(Face(; weight = :light, slant = :oblique)) ==
         MarkdownStyle(; italic = true)
 end
+
+@testset "Excel Decoration" begin
+    @test excel_decoration(Face()) == Pair{String, String}[]
+
+    @test excel_decoration(Face(; weight = :bold, foreground = "#ff0000")) ==
+        ["bold" => "true", "color" => "FFFF0000"]
+
+    @test excel_decoration(
+        Face(;
+            font          = "Fira Sans",
+            height        = 125,
+            weight        = :semibold,
+            slant         = :oblique,
+            foreground    = "#ff0000",
+            background    = 0x00ff00,
+            underline     = true,
+            strikethrough = true,
+        )
+    ) == [
+        "bold"              => "true",
+        "italic"            => "true",
+        "under"             => "single",
+        "strike"            => "true",
+        "name"              => "Fira Sans",
+        "size"              => "13",
+        "color"             => "FFFF0000",
+        "cell_fill_pattern" => "solid",
+        "cell_fill_fgColor" => "FF00FF00",
+    ]
+
+    @test excel_decoration(Face(; height = 120)) == ["size" => "12"]
+    @test excel_decoration(Face(; height = 4)) == ["size" => "1"]
+
+    # The light weights, the default colors, and the unsupported attributes are ignored.
+    @test excel_decoration(
+        Face(; weight = :light, height = 1.5, foreground = :default, inverse = true)
+    ) == Pair{String, String}[]
+    @test excel_decoration(Face(; foreground = :red)) == ["color" => "FFA51C2C"]
+end
