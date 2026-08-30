@@ -18,6 +18,7 @@ makedocs(
         "Home"                        => "index.md",
         "Quick Start"                 => "man/quick_start.md",
         "Usage"                       => "man/usage.md",
+        "Faces"                       => "man/faces.md",
         "Back Ends"                   => Any[
             "Text"                    => Any[
                 "Text Backend"        => "man/text/text_backend.md",

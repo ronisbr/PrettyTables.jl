@@ -100,7 +100,7 @@ julia> footnotes = [
 ]
 
 julia> highlighters = [
-    TextHighlighter((data, i, j) -> (j == 3) && (data[i, j] > 10), crayon"fg:red bold")
+    Highlighter((data, i, j) -> (j == 3) && (data[i, j] > 10), Face(; weight = :bold, foreground = :red))
     TextHighlighter((data, i, j) -> (j == 4) && (data[i, j] > 10), crayon"fg:blue bold")
 ]
 

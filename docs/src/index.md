@@ -34,7 +34,7 @@ column_labels = [
 
 hl_p = TextHighlighter(
     (data, i, j) -> (j == 4) && (data[i, j] > 9),
-    crayon"blue bold"
+    Face(; weight = :bold, foreground = :blue)
 );
 
 hl_v = TextHighlighter(
