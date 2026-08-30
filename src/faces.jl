@@ -63,20 +63,40 @@ const _XTERM_CUBE_LEVELS = (0x00, 0x5f, 0x87, 0xaf, 0xd7, 0xff)
 #                                     Face Attributes                                      #
 ############################################################################################
 
-# Return `true` if the weight of `face` is rendered as bold.
+"""
+    _face_is_bold(face::Face) -> Bool
+
+Return `true` if the weight of `face` is rendered as bold, or `false` otherwise.
+"""
 _face_is_bold(face::Face) = face.weight ∈ _FACE_BOLD_WEIGHTS
 
-# Return `true` if the weight of `face` is rendered as light (faint).
+"""
+    _face_is_light(face::Face) -> Bool
+
+Return `true` if the weight of `face` is rendered as light (faint), or `false` otherwise.
+"""
 _face_is_light(face::Face) = face.weight ∈ _FACE_LIGHT_WEIGHTS
 
-# Return `true` if the slant of `face` is rendered in italics.
+"""
+    _face_is_italic(face::Face) -> Bool
+
+Return `true` if the slant of `face` is rendered in italics, or `false` otherwise.
+"""
 _face_is_italic(face::Face) = face.slant ∈ _FACE_ITALIC_SLANTS
 
-# Return `true` if `face` turns the underline on. Notice that the underline can also be a
-# color or a tuple with a color and a style, both of which turn it on.
+"""
+    _face_is_underlined(face::Face) -> Bool
+
+Return `true` if `face` turns the underline on, or `false` otherwise. Notice that the
+underline can also be a color or a tuple with a color and a style, both of which turn it on.
+"""
 _face_is_underlined(face::Face) = !isnothing(face.underline) && (face.underline !== false)
 
-# Return `true` if `face` turns the strikethrough on.
+"""
+    _face_is_struck(face::Face) -> Bool
+
+Return `true` if `face` turns the strikethrough on, or `false` otherwise.
+"""
 _face_is_struck(face::Face) = face.strikethrough === true
 
 """
@@ -201,11 +221,20 @@ end
 
 # == Private Functions =====================================================================
 
-# Return the state of a face attribute given the Crayons.jl style: `nothing` if the style is
-# not set, or `true` / `false` if it is turned on / off.
+"""
+    _face_state_from_crayon(style::Crayons.ANSIStyle) -> Union{Nothing, Bool}
+
+Return the state of a face attribute given the Crayons.jl `style`: `nothing` if the style is
+not set, or `true` / `false` if it is turned on / off.
+"""
 _face_state_from_crayon(style::Crayons.ANSIStyle) = style.active ? style.on : nothing
 
-# Return the face color of the Crayons.jl color, or `nothing` if it is not set.
+"""
+    _face_color_from_crayon(color::Crayons.ANSIColor) -> Union{Nothing, Symbol, NamedTuple}
+
+Return the face color of the Crayons.jl `color`, which is the name of a terminal color, the
+named tuple `(; r, g, b)` of a 24-bit color, or `nothing` if the color is not set.
+"""
 function _face_color_from_crayon(color::Crayons.ANSIColor)
     color.active || return nothing
 
@@ -226,9 +255,14 @@ function _face_color_from_crayon(color::Crayons.ANSIColor)
     return nothing
 end
 
-# Return the face color of the `index` of the xterm 256-color palette. The 16 system colors
-# are returned by name so that they follow the terminal theme, whereas the other colors have
-# a fixed 24-bit value.
+"""
+    _face_color_from_xterm_256(index::Integer) -> Union{Symbol, NamedTuple}
+
+Return the face color of the `index` of the xterm 256-color palette. The 16 system colors are
+returned by name so that they follow the terminal theme, whereas the other colors are
+returned as the named tuple `(; r, g, b)` of their fixed 24-bit value. It throws an
+`ArgumentError` if `index` is not between 0 and 255.
+"""
 function _face_color_from_xterm_256(index::Integer)
     (0 <= index <= 255) || throw(
         ArgumentError("The index of the 256-color palette must be between 0 and 255.")
@@ -248,8 +282,14 @@ function _face_color_from_xterm_256(index::Integer)
     return (r = v, g = v, b = v)
 end
 
-# Return the face color of a value passed to the keywords `foreground` and `background`,
-# translating the forms accepted by `Crayon`. The other values are forwarded to `Face`.
+"""
+    _face_color_from_value(v::Any) -> Any
+
+Return the face color of the value `v` passed to the keywords `foreground` and `background`,
+translating the forms accepted by `Crayon`: the color names of Crayons.jl, the indices of
+the 256-color palette, tuples `(r, g, b)`, and `UInt32` values. The other values are
+forwarded to `Face` unchanged.
+"""
 _face_color_from_value(v::Symbol) = get(_CRAYON_COLOR_NAME_TO_FACE, v, v)
 _face_color_from_value(v::UInt32) = SimpleColor(v)
 _face_color_from_value(v::Integer) = _face_color_from_xterm_256(v)
@@ -288,8 +328,12 @@ _face_color_from_value(v) = v
         return regions
     end
 
-    # Return the face of the value of a `:face` annotation, which can be a face or the name of
-    # a face, or `nothing` if the name is unknown.
+    """
+        _annotation_face(value::Any) -> Union{Nothing, Face}
+
+    Return the face of the `value` of a `:face` annotation, which can be a face or the name
+    of a face, or `nothing` if the name is unknown or the value is not a face.
+    """
     _annotation_face(face::Face)   = face
     _annotation_face(name::Symbol) = get(StyledStrings.FACES.current[], name, nothing)
     _annotation_face(::Any)        = nothing

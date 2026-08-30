@@ -64,12 +64,20 @@ function excel_decoration(face::Face)
     return d
 end
 
-# Convert a decoration passed to `ExcelTableStyle` into Excel attributes.
+"""
+    _excel__decoration(decoration::Union{Vector{ExcelPair}, Face}) -> Vector{ExcelPair}
+
+Convert the `decoration` passed to `ExcelTableStyle`, Excel attributes or a face, into Excel attributes.
+"""
 _excel__decoration(decoration::Vector{ExcelPair}) = decoration
 _excel__decoration(face::Face)                    = excel_decoration(face)
 
-# Convert a decoration, or a vector with one decoration per column, passed to
-# `ExcelTableStyle` into Excel attributes.
+"""
+    _excel__column_label_decoration(decorations::Any) -> Union{Vector{ExcelPair}, Vector{Vector{ExcelPair}}}
+
+Convert the `decorations` passed to the column label fields of `ExcelTableStyle`, which can
+be Excel attributes, a face, or a vector with one of them per column, into Excel attributes or a vector of them.
+"""
 _excel__column_label_decoration(decoration::Vector{ExcelPair})          = decoration
 _excel__column_label_decoration(decorations::Vector{Vector{ExcelPair}}) = decorations
 _excel__column_label_decoration(face::Face)                             = excel_decoration(face)

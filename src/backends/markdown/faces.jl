@@ -32,12 +32,20 @@ function markdown_decoration(face::Face)
     )
 end
 
-# Convert a decoration passed to `MarkdownTableStyle` into a Markdown style.
+"""
+    _markdown__decoration(decoration::Union{MarkdownStyle, Face}) -> MarkdownStyle
+
+Convert the `decoration` passed to `MarkdownTableStyle`, a Markdown style or a face, into a Markdown style.
+"""
 _markdown__decoration(decoration::MarkdownStyle) = decoration
 _markdown__decoration(face::Face)                = markdown_decoration(face)
 
-# Convert a decoration, or a vector with one decoration per column, passed to
-# `MarkdownTableStyle` into Markdown styles.
+"""
+    _markdown__column_label_decoration(decorations::Any) -> Union{MarkdownStyle, Vector{MarkdownStyle}}
+
+Convert the `decorations` passed to the column label fields of `MarkdownTableStyle`, which can
+be a Markdown style, a face, or a vector with one of them per column, into a Markdown style or a vector of them.
+"""
 _markdown__column_label_decoration(decoration::MarkdownStyle)          = decoration
 _markdown__column_label_decoration(decorations::Vector{MarkdownStyle}) = decorations
 _markdown__column_label_decoration(face::Face)                         = markdown_decoration(face)

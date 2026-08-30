@@ -76,12 +76,20 @@ function typst_decoration(face::Face)
     return d
 end
 
-# Convert a decoration passed to `TypstTableStyle` into Typst properties.
+"""
+    _typst__decoration(decoration::Union{Vector{TypstPair}, Face}) -> Vector{TypstPair}
+
+Convert the `decoration` passed to `TypstTableStyle`, Typst properties or a face, into Typst properties.
+"""
 _typst__decoration(decoration::Vector{TypstPair}) = decoration
 _typst__decoration(face::Face)                    = typst_decoration(face)
 
-# Convert a decoration, or a vector with one decoration per column, passed to
-# `TypstTableStyle` into Typst properties.
+"""
+    _typst__column_label_decoration(decorations::Any) -> Union{Vector{TypstPair}, Vector{Vector{TypstPair}}}
+
+Convert the `decorations` passed to the column label fields of `TypstTableStyle`, which can
+be Typst properties, a face, or a vector with one of them per column, into Typst properties or a vector of them.
+"""
 _typst__column_label_decoration(decoration::Vector{TypstPair})          = decoration
 _typst__column_label_decoration(decorations::Vector{Vector{TypstPair}}) = decorations
 _typst__column_label_decoration(face::Face)                             = typst_decoration(face)

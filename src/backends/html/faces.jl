@@ -83,12 +83,20 @@ function html_decoration(face::Face)
     return d
 end
 
-# Convert a decoration passed to `HtmlTableStyle` into CSS properties.
+"""
+    _html__decoration(decoration::Union{Vector{HtmlPair}, Face}) -> Vector{HtmlPair}
+
+Convert the `decoration` passed to `HtmlTableStyle`, CSS properties or a face, into CSS properties.
+"""
 _html__decoration(decoration::Vector{HtmlPair}) = decoration
 _html__decoration(face::Face)                   = html_decoration(face)
 
-# Convert a decoration, or a vector with one decoration per column, passed to
-# `HtmlTableStyle` into CSS properties.
+"""
+    _html__column_label_decoration(decorations::Any) -> Union{Vector{HtmlPair}, Vector{Vector{HtmlPair}}}
+
+Convert the `decorations` passed to the column label fields of `HtmlTableStyle`, which can
+be CSS properties, a face, or a vector with one of them per column, into CSS properties or a vector of them.
+"""
 _html__column_label_decoration(decoration::Vector{HtmlPair})          = decoration
 _html__column_label_decoration(decorations::Vector{Vector{HtmlPair}}) = decorations
 _html__column_label_decoration(face::Face)                            = html_decoration(face)

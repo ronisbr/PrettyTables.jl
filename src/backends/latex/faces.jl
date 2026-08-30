@@ -60,12 +60,20 @@ function latex_decoration(face::Face)
     return envs
 end
 
-# Convert a decoration passed to `LatexTableStyle` into LaTeX environments.
+"""
+    _latex__decoration(decoration::Union{LatexEnvironments, Face}) -> LatexEnvironments
+
+Convert the `decoration` passed to `LatexTableStyle`, LaTeX environments or a face, into LaTeX environments.
+"""
 _latex__decoration(decoration::LatexEnvironments) = decoration
 _latex__decoration(face::Face)                    = latex_decoration(face)
 
-# Convert a decoration, or a vector with one decoration per column, passed to
-# `LatexTableStyle` into LaTeX environments.
+"""
+    _latex__column_label_decoration(decorations::Any) -> Union{LatexEnvironments, Vector{LatexEnvironments}}
+
+Convert the `decorations` passed to the column label fields of `LatexTableStyle`, which can
+be LaTeX environments, a face, or a vector with one of them per column, into LaTeX environments or a vector of them.
+"""
 _latex__column_label_decoration(decoration::LatexEnvironments)          = decoration
 _latex__column_label_decoration(decorations::Vector{LatexEnvironments}) = decorations
 _latex__column_label_decoration(face::Face)                             = latex_decoration(face)

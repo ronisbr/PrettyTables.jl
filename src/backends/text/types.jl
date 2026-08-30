@@ -229,6 +229,11 @@ function _text__face_sgr(face::Face)
     return String(Decoration(Decoration(face); reset = false))
 end
 
+"""
+    _text__face_sgr(faces::Vector{Face}) -> Vector{String}
+
+Return the escape sequence of every face in `faces`.
+"""
 _text__face_sgr(faces::Vector{Face}) = String[_text__face_sgr(f) for f in faces]
 
 """
@@ -379,11 +384,20 @@ function TextTableStyle(;
     )
 end
 
-# Convert a decoration passed to `TextTableStyle` into a face.
+"""
+    _text__to_face(decoration::Union{Face, Crayon}) -> Face
+
+Convert the `decoration` passed to `TextTableStyle`, a face or a crayon, into a face.
+"""
 _text__to_face(face::Face)     = face
 _text__to_face(crayon::Crayon) = _face_from_crayon(crayon)
 
-# Convert a decoration, or a vector of decorations, passed to `TextTableStyle` into faces.
+"""
+    _text__to_faces(decorations::Union{Face, Crayon, AbstractVector}) -> Union{Face, Vector{Face}}
+
+Convert the `decorations` passed to `TextTableStyle`, a face, a crayon, or a vector of them,
+into a face or a vector of faces.
+"""
 _text__to_faces(decoration::Union{Face, Crayon}) = _text__to_face(decoration)
 _text__to_faces(faces::Vector{Face})             = faces
 _text__to_faces(decorations::AbstractVector)     = Face[_text__to_face(d) for d in decorations]

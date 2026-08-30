@@ -115,10 +115,19 @@ mutable struct Highlighter <: AbstractHighlighter
     end
 end
 
+"""
+    _default_highlighter_fd(h::Highlighter, data::Any, i::Int, j::Int) -> Face
+
+Return the face stored in the highlighter `h`, which is the default decoration function.
+"""
 _default_highlighter_fd(h::Highlighter, ::Any, ::Int, ::Int) = h._decoration
 
-# Return `true` if the highlighter `h` uses the default decoration function, in which case
-# the converted decoration can be cached.
+"""
+    _has_default_fd(h::Highlighter) -> Bool
+
+Return `true` if the highlighter `h` uses the default decoration function, in which case the
+converted decoration can be cached, or `false` otherwise.
+"""
 _has_default_fd(h::Highlighter) = h.fd === _default_highlighter_fd
 
 ############################################################################################
