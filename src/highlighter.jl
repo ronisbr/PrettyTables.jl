@@ -207,3 +207,21 @@ function _markdown__highlighter_decoration(h::Highlighter, data, i::Int, j::Int)
     h._markdown = decoration
     return decoration
 end
+
+############################################################################################
+#                                      Excel Back End                                      #
+############################################################################################
+
+function _excel__highlighter_decoration(h::Highlighter, data, i::Int, j::Int)
+    if !_has_default_fd(h)
+        d = h.fd(h, data, i, j)
+        return d isa Face ? excel_decoration(d) : d::Vector{ExcelPair}
+    end
+
+    decoration = h._excel
+    isnothing(decoration) || return decoration
+
+    decoration = excel_decoration(h._decoration)
+    h._excel = decoration
+    return decoration
+end

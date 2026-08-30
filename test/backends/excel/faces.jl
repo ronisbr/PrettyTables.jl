@@ -64,4 +64,51 @@
         @test haskey(XLSX.getFont(sheet, "A2").font, "b")
         @test haskey(XLSX.getFont(sheet, "B2").font, "i")
     end
+
+    @testset "General Highlighter" begin
+        f = (data, i, j) -> i == 1
+
+        h = Highlighter(f, Face(; weight = :bold, foreground = "#ff0000"))
+        @test isnothing(h._excel)
+
+        result = pretty_table(XLSX.XLSXFile, matrix; highlighters = [h])
+        sheet  = result[1]
+
+        # The data starts at the second row because of the column labels.
+        @test XLSX.getFont(sheet, "A2").font["color"] == Dict("rgb" => "FFFF0000")
+        @test haskey(XLSX.getFont(sheet, "A2").font, "b")
+        @test XLSX.getFont(sheet, "B2").font["color"] == Dict("rgb" => "FFFF0000")
+        @test XLSX.getFont(sheet, "A3").font["color"] != Dict("rgb" => "FFFF0000")
+        @test h._excel == ["bold" => "true", "color" => "FFFF0000"]
+
+        # A background is a fill.
+        h = Highlighter(f, Face(; background = "#00ff00"))
+        result = pretty_table(XLSX.XLSXFile, matrix; highlighters = [h])
+        @test XLSX.getFill(result[1], "A2").fill["patternFill"] ==
+            Dict("patternType" => "solid", "fgrgb" => "FF00FF00")
+
+        # The function `fd` can return a face or the native decoration, which are not cached.
+        h = Highlighter(f, (h, data, i, j) -> Face(; foreground = "#ff0000"))
+        result = pretty_table(XLSX.XLSXFile, matrix; highlighters = [h])
+        @test XLSX.getFont(result[1], "A2").font["color"] == Dict("rgb" => "FFFF0000")
+        @test isnothing(h._excel)
+
+        h = Highlighter(f, (h, data, i, j) -> ["color" => "FFFF0000"])
+        result = pretty_table(XLSX.XLSXFile, matrix; highlighters = [h])
+        @test XLSX.getFont(result[1], "A2").font["color"] == Dict("rgb" => "FFFF0000")
+
+        # Highlighters of different types can be mixed, and the first match wins.
+        hs = AbstractHighlighter[
+            ExcelHighlighter((data, i, j) -> false, ["color" => "blue"]),
+            Highlighter(f, Face(; foreground = "#ff0000")),
+            ExcelHighlighter(f, ["color" => "blue"]),
+        ]
+        result = pretty_table(XLSX.XLSXFile, matrix; highlighters = hs)
+        @test XLSX.getFont(result[1], "A2").font["color"] == Dict("rgb" => "FFFF0000")
+
+        # Highlighters of other back ends are not accepted.
+        @test_throws ArgumentError pretty_table(
+            XLSX.XLSXFile, matrix; highlighters = [TextHighlighter(f, crayon"red")]
+        )
+    end
 end

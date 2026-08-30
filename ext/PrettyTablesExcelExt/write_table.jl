@@ -47,7 +47,7 @@ function _excel__write_table!(
     anchor_cell::String = "A1",
     data_column_widths::Union{Float64, Vector{Float64}} = 0.0,
     excel_formatters::Vector{ExcelFormatter} = ExcelFormatter[],
-    highlighters::Vector{ExcelHighlighter} = ExcelHighlighter[],
+    highlighters::Vector{<:AbstractHighlighter} = ExcelHighlighter[],
     maximum_data_column_widths::Union{Float64, Vector{Float64}} = 0.0,
     minimum_data_column_widths::Union{Float64, Vector{Float64}} = 0.0,
     style::ExcelTableStyle = ExcelTableStyle(),
@@ -534,7 +534,9 @@ function _excel__write_table!(
                     for highlighter in highlighters
                         highlighter.f(orig_data, ps.i, ps.j) || continue
 
-                        decoration = highlighter.fd(highlighter, orig_data, ps.i, ps.j)
+                        decoration = _excel__highlighter_decoration(
+                            highlighter, orig_data, ps.i, ps.j
+                        )
 
                         hl_font_size = _excel__apply_cell_style!(
                             sheet, sheet_row, sheet_col, decoration, nothing, "", false
