@@ -4,10 +4,27 @@
 #
 ############################################################################################
 
-export EmptyCells, MultiColumn, MergeCells, PrettyTable
+export AbstractHighlighter, EmptyCells, MultiColumn, MergeCells, PrettyTable
 
 # Tuple that defines a footnote.
 const FootnoteTuple = Tuple{Symbol, Int, Int}
+
+"""
+    abstract type AbstractHighlighter
+
+Supertype of the highlighters of all back ends. A highlighter has the fields:
+
+- `f::Function`: Function with the signature `f(data, i, j)` which should return `true` if
+    the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
+- `fd::Function`: Function with the signature `fd(h, data, i, j)` in which `h` is the
+    highlighter. This function must return the decoration to be applied to the highlighted
+    cell.
+
+The subtypes are the general [`Highlighter`](@ref), which can be used with every back end,
+and the back end highlighters `TextHighlighter`, `HtmlHighlighter`, `LatexHighlighter`,
+`MarkdownHighlighter`, `TypstHighlighter`, and `ExcelHighlighter`.
+"""
+abstract type AbstractHighlighter end
 
 """
     struct EmptyCells
