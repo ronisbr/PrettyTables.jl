@@ -122,6 +122,23 @@ excel_decoration(face)
     The LaTeX back end does not write any preamble. Hence, the packages **xcolor** (for the
     colors) and **ulem** (for the strikethrough) must be loaded in the document.
 
+## Styled Strings in Cells
+
+A cell (or a column label, row label, and so on) can be a styled string of StyledStrings.jl
+(Julia 1.11 or newer). Every back end renders the regions of the string with their faces,
+converted with the functions above: the text back end writes the escape sequences, the
+HTML back end wraps each region in a `span`, the LaTeX back end in the environments, the
+Markdown back end in the markers, and the Typst back end in a `text` component. The Excel
+back end writes the plain text because a cell cannot have styled regions.
+
+```@repl faces
+matrix = [styled"{bold:Bold} and {red:red}" styled"{(fg=blue),italic:Blue italics}"];
+
+pretty_table(matrix; backend = :markdown)
+
+pretty_table(matrix; backend = :latex)
+```
+
 ## Compatibility with Crayons.jl
 
 The text back end stores faces, but every place that accepts a `Face` also accepts a
