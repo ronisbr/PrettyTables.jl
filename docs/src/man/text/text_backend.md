@@ -51,7 +51,7 @@ the output.
   width of all columns. If the width is equal or lower than 0, it will be automatically
   computed to fit the large cell in the column.
   (**Default** = 0)
-- `highlighters::Vector{TextHighlighter}`: Highlighters to apply to the table. For more
+- `highlighters::Vector{<:AbstractHighlighter}`: Highlighters to apply to the table. For more
   information, see the section [Text Highlighters](@ref).
 - `line_breaks::Bool`: If `true`, a new line character will break the line inside the cells.
   (**Default** = `false`)
@@ -89,17 +89,19 @@ the output.
 
 ## Text Highlighters
 
-A set of highlighters can be passed as a `Vector{TextHighlighter}` to the `highlighters`
-keyword. Each highlighter is an instance of the structure [`TextHighlighter`](@ref). It
-contains three fields:
+A set of highlighters can be passed as a vector of `AbstractHighlighter` to the
+`highlighters` keyword. A highlighter is an instance of the structure
+[`TextHighlighter`](@ref), specific to this back end, or of the general
+[`Highlighter`](@ref), which works with every back end (see [Faces](@ref)). A
+`TextHighlighter` contains the following fields:
 
 - `f::Function`: Function with the signature `f(data, i, j)` in which should return `true`
   if the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
 - `fd::Function`: Function with the signature `f(h, data, i, j)` in which `h` is the
-  highlighter. This function must return the `Crayon` to be applied to the cell that must be
-  highlighted.
-- `crayon::Crayon`: The `Crayon` to be applied to the highlighted cell if the default `fd`
-  is used.
+  highlighter. This function must return the `Face` (or `Crayon`) to be applied to the cell
+  that must be highlighted.
+- `_decoration::Face`: The `Face` to be applied to the highlighted cell if the default
+  `fd` is used.
 
 The function `f` has the following signature:
 
@@ -112,28 +114,34 @@ element coordinates that are being tested. If this function returns `true`, the 
 `(i, j)` will be highlighted.
 
 If the function `f` returns true, the function `fd(h, data, i, j)` will be called and must
-return a `Crayon` that will be applied to the cell.
+return a `Face` (or a `Crayon`, converted to a face) that will be applied to the cell.
 
-A highlighter can be constructed using three helpers:
-
-```julia
-Highlighter(f::Function; kwargs...)
-```
-
-where it will construct a `Crayon` using the keywords in `kwargs` and apply it to the
-highlighted cell,
+A highlighter can be constructed using the following helpers:
 
 ```julia
-Highlighter(f::Function, crayon::Crayon)
+TextHighlighter(f::Function; kwargs...)
 ```
 
-where it will apply the `crayon` to the highlighted cell, and
+where it will construct a `Face` using the keywords in `kwargs` and apply it to the
+highlighted cell. The keywords can be the ones of `Face` (`weight`, `slant`, `foreground`,
+`background`, `underline`, `strikethrough`, `inverse`, ...) or the ones of `Crayon` (`bold`,
+`faint`, `italics`, `negative`, `foreground`, `background`, `underline`, `strikethrough`),
+which are translated to the equivalent face attributes,
 
 ```julia
-Highlighter(f::Function, fd::Function)
+TextHighlighter(f::Function, face::Face)
+TextHighlighter(f::Function, crayon::Crayon)
 ```
 
-where it will apply the `Crayon` returned by the function `fd` to the highlighted cell.
+where it will apply the `face` (or the `crayon`, converted to a face) to the highlighted
+cell, and
+
+```julia
+TextHighlighter(f::Function, fd::Function)
+```
+
+where it will apply the `Face` (or `Crayon`) returned by the function `fd` to the
+highlighted cell.
 
 !!! note
 
@@ -152,7 +160,7 @@ cells with value less than 5 in blue, we can define:
 ```julia
 hl_gt5 = TextHighlighter(
     (data, i, j) -> data[i, j] > 5,
-    crayon"red"
+    Face(; foreground = :red)
 )
 
 hl_lt5 = TextHighlighter(
@@ -225,33 +233,43 @@ documentation of the following macros:
 The text table style is defined using an object of type [`TextTableStyle`](@ref) that
 contains the following fields:
 
-- `title::Crayon`: Crayon with the style for the title.
-- `subtitle::Crayon`: Crayon with the style for the subtitle.
-- `row_number_label::Crayon`: Crayon with the style for the row number label.
-- `row_number::Crayon`: Crayon with the style for the row numbers.
-- `stubhead_label::Crayon`: Crayon with the style for the stubhead label.
-- `row_label::Crayon`: Crayon with the style for the row labels.
-- `row_group_label::Crayon`: Crayon with the style for the row group label.
-- `first_line_column_label::Union{Crayon, Vector{Crayon}}`: Crayon or crayons with the style
-    for the first column label lines. If a vector of crayons is passed, it must have the
+- `title::Face`: Face with the style for the title.
+- `subtitle::Face`: Face with the style for the subtitle.
+- `row_number_label::Face`: Face with the style for the row number label.
+- `row_number::Face`: Face with the style for the row numbers.
+- `stubhead_label::Face`: Face with the style for the stubhead label.
+- `row_label::Face`: Face with the style for the row labels.
+- `row_group_label::Face`: Face with the style for the row group label.
+- `first_line_column_label::Union{Face, Vector{Face}}`: Face or faces with the style
+    for the first column label lines. If a vector of faces is passed, it must have the
     same length as the number columns in the table.
-- `column_label::Union{Crayon, Vector{Crayon}}`: Crayon or crayons with the style for the
-    rest of the column labels. If a vector of crayons is passed, it must have the same
+- `column_label::Union{Face, Vector{Face}}`: Face or faces with the style for the
+    rest of the column labels. If a vector of faces is passed, it must have the same
     length as the number of columns in the table.
-- `first_line_merged_column_label::Crayon`: Crayon with the style for the merged cells at
+- `first_line_merged_column_label::Face`: Face with the style for the merged cells at
   the first column label line.
-- `merged_column_label::Crayon`: Crayon with the style for the merged cells at the rest of
+- `merged_column_label::Face`: Face with the style for the merged cells at the rest of
   the column labels.
-- `summary_row_cell::Crayon`: Crayon with the style for the summary row cell.
-- `summary_row_label::Crayon`: Crayon with the style for the summary row label.
-- `footnote::Crayon`: Crayon with the style for the footnotes.
-- `source_note::Crayon`: Crayon with the style for the source notes.
-- `omitted_cell_summary::Crayon`: Crayon with the style for the omitted cell summary.
-- `table_border::Crayon`: Crayon with the style for the table border.
+- `summary_row_cell::Face`: Face with the style for the summary row cell.
+- `summary_row_label::Face`: Face with the style for the summary row label.
+- `footnote::Face`: Face with the style for the footnotes.
+- `source_note::Face`: Face with the style for the source notes.
+- `omitted_cell_summary::Face`: Face with the style for the omitted cell summary.
+- `table_border::Face`: Face with the style for the table border.
 
-Each field is a `Crayon` describing the style for the corresponding element in the table.
+Each field is a `Face` describing the style for the corresponding element in the table.
+The keyword constructor also accepts a `Crayon` (or a vector of crayons) in every field,
+which is converted to the equivalent face (see [Faces](@ref)).
 
 For example, if we want the stubhead label to be bold and red, we must define:
+
+```julia
+style = TextTableStyle(
+    stubhead_label = Face(; weight = :bold, foreground = :red)
+)
+```
+
+or, equivalently, using a crayon:
 
 ```julia
 style = TextTableStyle(
