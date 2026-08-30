@@ -385,7 +385,7 @@ end
 ############################################################################################
 
 """
-    struct TextHighlighter
+    struct TextHighlighter <: AbstractHighlighter
 
 Defines the default highlighter of a table when using the text backend.
 
@@ -394,33 +394,40 @@ Defines the default highlighter of a table when using the text backend.
 - `f::Function`: Function with the signature `f(data, i, j)` which should return `true`
     if the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
 - `fd::Function`: Function with the signature `fd(h, data, i, j)` in which `h` is the
-    highlighter. This function must return the `Crayon` to be applied to the cell that must
-    be highlighted.
-- `_decoration::Crayon`: The `Crayon` to be applied to the highlighted cell if the default
-    `fd` is used.
+    highlighter. This function must return the `Face` (or `Crayon`) to be applied to the
+    cell that must be highlighted.
+- `_decoration::Face`: The `Face` to be applied to the highlighted cell if the default `fd`
+    is used.
+- `_sgr::String`: The escape sequence of `_decoration`, rendered at construction.
 
 # Remarks
 
-This structure can be constructed using three helpers:
+This structure can be constructed using the following helpers:
 
 ```julia
 TextHighlighter(f::Function; kwargs...)
 ```
 
-where it will construct a `Crayon` using the keywords in `kwargs` and apply it to the
-highlighted cell,
+where it will construct a `Face` using the keywords in `kwargs` and apply it to the
+highlighted cell. The keywords can be the ones of `Face` (`weight`, `slant`, `foreground`,
+`background`, `underline`, `strikethrough`, `inverse`, ...) or the ones of `Crayon` (`bold`,
+`faint`, `italics`, `negative`, `foreground`, `background`, `underline`, `strikethrough`),
+which are translated to the equivalent face attributes,
 
 ```julia
+TextHighlighter(f::Function, face::Face)
 TextHighlighter(f::Function, crayon::Crayon)
 ```
 
-where it will apply the `crayon` to the highlighted cell, and
+where it will apply the `face` (or the `crayon`, converted to a face) to the highlighted
+cell, and
 
 ```julia
 TextHighlighter(f::Function, fd::Function)
 ```
 
-where it will apply the `Crayon` returned by the function `fd` to the highlighted cell.
+where it will apply the `Face` (or `Crayon`) returned by the function `fd` to the
+highlighted cell.
 """
 struct TextHighlighter <: AbstractHighlighter
     f::Function
@@ -428,21 +435,37 @@ struct TextHighlighter <: AbstractHighlighter
 
     # == Private Fields ====================================================================
 
-    _decoration::Crayon
+    _decoration::Face
+    _sgr::String
 
     # == Constructors ======================================================================
 
     function TextHighlighter(f::Function, fd::Function)
-        return new(f, fd, _TEXT__DEFAULT)
+        return new(f, fd, _TEXT__DEFAULT, "")
     end
 
-    function TextHighlighter(f::Function, decoration::Crayon)
-        return new(f, _text__default_highlighter_fd, decoration)
+    function TextHighlighter(f::Function, face::Face)
+        return new(f, _text__default_highlighter_fd, face, _text__face_sgr(face))
+    end
+
+    function TextHighlighter(f::Function, crayon::Crayon)
+        return TextHighlighter(f, _face_from_crayon(crayon))
     end
 
     function TextHighlighter(f::Function; kwargs...)
-        return new(f, _text__default_highlighter_fd, Crayon(; kwargs...))
+        return TextHighlighter(f, _face_from_kwargs(; kwargs...))
     end
 end
 
 _text__default_highlighter_fd(h::TextHighlighter, ::Any, ::Int, ::Int) = h._decoration
+
+"""
+    _text__highlighter_sgr(h::TextHighlighter, data, i::Int, j::Int) -> String
+
+Return the escape sequence of the highlighter `h` for the cell `(i, j)` of `data`.
+"""
+function _text__highlighter_sgr(h::TextHighlighter, data, i::Int, j::Int)
+    # The default `fd` returns the stored face, whose escape sequence is already rendered.
+    (h.fd === _text__default_highlighter_fd) && return h._sgr
+    return _text__decoration_sgr(h.fd(h, data, i, j))
+end

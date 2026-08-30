@@ -1362,7 +1362,7 @@ function _text__print_table(
             if !isempty(highlighters)
                 for h in highlighters
                     if h.f(orig_data, ps.i, ps.j)
-                        decoration = _text__decoration_sgr(h.fd(h, orig_data, ps.i, ps.j))
+                        decoration = _text__highlighter_sgr(h, orig_data, ps.i, ps.j)
                         break
                     end
                 end
