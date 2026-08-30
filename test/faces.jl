@@ -160,3 +160,34 @@ end
         Pair{String, String}[]
     @test html_decoration(Face(; foreground = :red)) == ["color" => "#a51c2c"]
 end
+
+@testset "LaTeX Decoration" begin
+    @test latex_decoration(Face()) == String[]
+
+    @test latex_decoration(Face(; weight = :bold, foreground = "#ff0000")) ==
+        ["textbf", "textcolor[HTML]{FF0000}"]
+
+    @test latex_decoration(
+        Face(;
+            weight        = :semibold,
+            slant         = :italic,
+            foreground    = "#ff0000",
+            background    = 0x00ff00,
+            strikethrough = true,
+            underline     = true,
+        )
+    ) == [
+        "textbf",
+        "textit",
+        "underline",
+        "sout",
+        "textcolor[HTML]{FF0000}",
+        "colorbox[HTML]{00FF00}",
+    ]
+
+    # The light weights, the default colors, and the unsupported attributes are ignored.
+    @test latex_decoration(
+        Face(; weight = :light, height = 120, font = "Fira", foreground = :default)
+    ) == String[]
+    @test latex_decoration(Face(; foreground = :red)) == ["textcolor[HTML]{A51C2C}"]
+end
