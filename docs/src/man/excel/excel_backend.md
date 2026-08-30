@@ -33,7 +33,7 @@ The Excel backend return depends on the following combination of keywords:
     file is created and an in-memory `XLSX.XLSXFile` is returned instead. When a string,
     behavior depends on `mode`.
     (**Default**: `nothing`)
-- `highlighters::Vector{ExcelHighlighter}`: Highlighters to apply to the table. For more
+- `highlighters::Vector{<:AbstractHighlighter}`: Highlighters to apply to the table. For more
     information, see the section [Excel Highlighters](@ref).
 - `maximum_data_column_widths::Union{Float64, Vector{Float64}}`: Maximum width for each
     data column in Excel units. A scalar applies to all columns; a vector sets per-column
@@ -51,15 +51,18 @@ The Excel backend return depends on the following combination of keywords:
     If no sheet with that name exists it will be created. When an `XLSX.Worksheet`, that
     worksheet is updated in place and `nothing` is returned.
     (**Default**: `"prettytable"`)
-- `style::TextTableStyle`: Style of the table. For more information, see the section
+- `style::ExcelTableStyle`: Style of the table. For more information, see the section
     [Excel Table Style](@ref).
 - `table_format::ExcelTableFormat`: Excel table format used to render the table. For more
     information, see the section [Excel Table Format](@ref).
 
 ## Excel Highlighters
 
-A set of highlighters can be passed as a `Vector{ExcelHighlighter}` to the `highlighters`
-keyword. Each highlighter is an instance of the structure [`ExcelHighlighter`](@ref). It
+A set of highlighters can be passed as a vector of `AbstractHighlighter` to the
+`highlighters` keyword. A highlighter can be an instance of the structure
+[`ExcelHighlighter`](@ref), specific to this back end, or of the general
+[`Highlighter`](@ref), which is defined by a `Face` and works with every back end (see
+[Faces](@ref)). The face is converted with [`excel_decoration`](@ref). Each highlighter is an instance of the structure [`ExcelHighlighter`](@ref). It
 contains the following two public fields:
 
 - `f::Function`: Function with the signature `f(data, i, j)`, which should return `true`
@@ -306,3 +309,6 @@ style = ExcelTableStyle(
     title                          = ["bold" => "true", "cell_fill_pattern" => "solid", "cell_fill_fgColor" => "black"],
 )
 ```
+
+Every keyword of the constructor of [`ExcelTableStyle`](@ref) also accepts a `Face`, which is
+converted to Excel attributes with [`excel_decoration`](@ref) (see [Faces](@ref)).
