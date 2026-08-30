@@ -72,4 +72,63 @@
             style = HtmlTableStyle(; column_label = [Face()]),
         )
     end
+
+    @testset "General Highlighter" begin
+        f = (data, i, j) -> i == 1
+
+        expected = """
+<table>
+  <thead>
+    <tr class = "columnLabelRow">
+      <th style = "font-weight: bold; text-align: right;">Col. 1</th>
+      <th style = "font-weight: bold; text-align: right;">Col. 2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class = "dataRow">
+      <td style = "color: #ff0000; font-weight: bold; text-align: right;">1</td>
+      <td style = "color: #ff0000; font-weight: bold; text-align: right;">2</td>
+    </tr>
+    <tr class = "dataRow">
+      <td style = "text-align: right;">3</td>
+      <td style = "text-align: right;">4</td>
+    </tr>
+  </tbody>
+</table>
+"""
+
+        h = Highlighter(f, Face(; weight = :bold, foreground = "#ff0000"))
+        @test isnothing(h._html)
+        @test pretty_table(String, matrix; backend = :html, highlighters = [h]) == expected
+        @test h._html == ["color" => "#ff0000", "font-weight" => "bold"]
+        @test pretty_table(String, matrix; backend = :html, highlighters = [h]) == expected
+
+        # The function `fd` can return a face or the native decoration, which are not cached.
+        h = Highlighter(
+            f, (h, data, i, j) -> Face(; weight = :bold, foreground = "#ff0000")
+        )
+        @test pretty_table(String, matrix; backend = :html, highlighters = [h]) == expected
+        @test isnothing(h._html)
+
+        h = Highlighter(
+            f, (h, data, i, j) -> ["color" => "#ff0000", "font-weight" => "bold"]
+        )
+        @test pretty_table(String, matrix; backend = :html, highlighters = [h]) == expected
+
+        # Highlighters of different types can be mixed, and the first match wins.
+        hs = AbstractHighlighter[
+            HtmlHighlighter((data, i, j) -> false, ["color" => "blue"]),
+            Highlighter(f, Face(; weight = :bold, foreground = "#ff0000")),
+            HtmlHighlighter(f, ["color" => "blue"]),
+        ]
+        @test pretty_table(String, matrix; backend = :html, highlighters = hs) == expected
+
+        # Highlighters of other back ends are not accepted.
+        @test_throws ArgumentError pretty_table(
+            String,
+            matrix;
+            backend = :html,
+            highlighters = [TextHighlighter(f, crayon"red")],
+        )
+    end
 end

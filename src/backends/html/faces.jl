@@ -96,3 +96,20 @@ _html__column_label_decoration(face::Face)                            = html_dec
 function _html__column_label_decoration(decorations::AbstractVector)
     return Vector{HtmlPair}[_html__decoration(d) for d in decorations]
 end
+
+"""
+    _html__highlighter_decoration(h::AbstractHighlighter, data, i::Int, j::Int) -> Vector{HtmlPair}
+
+Return the CSS properties of the highlighter `h` for the cell `(i, j)` of `data`.
+"""
+function _html__highlighter_decoration(h::HtmlHighlighter, data, i::Int, j::Int)
+    return h.fd(h, data, i, j)::Vector{HtmlPair}
+end
+
+function _html__highlighter_decoration(h::AbstractHighlighter, ::Any, ::Int, ::Int)
+    throw(
+        ArgumentError(
+            "The HTML back end does not support highlighters of type `$(typeof(h))`."
+        )
+    )
+end

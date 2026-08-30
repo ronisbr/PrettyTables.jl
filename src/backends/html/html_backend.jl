@@ -8,7 +8,7 @@ function _html__print(
     pspec::PrintingSpec;
     allow_html_in_cells::Bool = false,
     column_label_titles::Union{Nothing, AbstractVector} = nothing,
-    highlighters::Vector{HtmlHighlighter} = HtmlHighlighter[],
+    highlighters::Vector{<:AbstractHighlighter} = HtmlHighlighter[],
     is_stdout::Bool = false,
     line_breaks::Bool = false,
     maximum_column_width::String = "",
@@ -389,7 +389,9 @@ function _html__print(
             if (action == :data) && !isempty(highlighters)
                 for h in highlighters
                     if h.f(orig_data, ps.i, ps.j)
-                        append!(vstyle, h.fd(h, orig_data, ps.i, ps.j))
+                        append!(
+                            vstyle, _html__highlighter_decoration(h, orig_data, ps.i, ps.j)
+                        )
                         break
                     end
                 end

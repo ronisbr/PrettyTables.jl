@@ -135,3 +135,21 @@ function _text__highlighter_sgr(h::Highlighter, data, i::Int, j::Int)
     h._text = sgr
     return sgr
 end
+
+############################################################################################
+#                                      HTML Back End                                       #
+############################################################################################
+
+function _html__highlighter_decoration(h::Highlighter, data, i::Int, j::Int)
+    if !_has_default_fd(h)
+        d = h.fd(h, data, i, j)
+        return d isa Face ? html_decoration(d) : d::Vector{HtmlPair}
+    end
+
+    decoration = h._html
+    isnothing(decoration) || return decoration
+
+    decoration = html_decoration(h._decoration)
+    h._html = decoration
+    return decoration
+end
