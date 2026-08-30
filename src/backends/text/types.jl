@@ -285,7 +285,7 @@ TextHighlighter(f::Function, fd::Function)
 
 where it will apply the `Crayon` returned by the function `fd` to the highlighted cell.
 """
-struct TextHighlighter
+struct TextHighlighter <: AbstractHighlighter
     f::Function
     fd::Function
 
