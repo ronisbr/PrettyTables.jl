@@ -30,8 +30,10 @@ Render the `cell` in the Excel back end. If the cell type is supported natively 
 return a value that Excel can store as such, that is, a value of type `Missing`, `Bool`,
 `Int64`, `Float64`, `Dates.Date`, `Dates.DateTime`, `Dates.Time`, `AbstractString`, or
 `XLSX.CellValue`. Integers and floating point numbers of any width are converted to `Int64`
-and `Float64`, respectively, so that they remain numeric values in the spreadsheet.
-Otherwise, we convert the cell to a `String` using the `renderer` and the IO `context`.
+and `Float64`, respectively, so that they remain numeric values in the spreadsheet. Styled
+strings are converted to `XLSX.RichTextString` so that the face regions become rich text
+runs in the spreadsheet. Otherwise, we convert the cell to a `String` using the `renderer`
+and the IO `context`.
 """
 function _excel__render_cell(
     cell::Union{
@@ -100,10 +102,42 @@ function _excel__cell_to_str(cell::Any, context::RenderContext, ::Val{:show})
 end
 
 @static if VERSION >= v"1.11"
-    # Excel cannot style regions of a cell. Hence, styled strings are written as plain text.
+    # Styled strings are converted to Excel's rich text format, where each face region
+    # becomes a run with its own font attributes.
     function _excel__render_cell(
         cell::Base.AnnotatedString, ::RenderContext, ::_EXCEL__RENDERER
     )
-        return String(cell)
+        regions = _face_regions(cell)
+
+        runs                = XLSX.RichTextRun[]
+        has_font_attributes = false
+
+        for (text, face) in regions
+            isempty(text) && continue
+
+            font_attributes = Pair{Symbol, Any}[]
+
+            if !isnothing(face)
+                # Fill attributes are dropped because Excel does not support per-run
+                # backgrounds.
+                font_attributes, _ = _excel__split_attributes(excel_decoration(face))
+
+                # The rich text run serializer only understands a boolean underline,
+                # whereas the cell font accepts values like "single".
+                for (k, p) in enumerate(font_attributes)
+                    (first(p) == :under) && (font_attributes[k] = :under => true)
+                end
+            end
+
+            has_font_attributes |= !isempty(font_attributes)
+
+            push!(runs, XLSX.RichTextRun(text, font_attributes))
+        end
+
+        # If no region carries font attributes, the string is effectively plain text.
+        # Notice that a rich text string requires at least one run.
+        (!has_font_attributes || isempty(runs)) && return String(cell)
+
+        return XLSX.RichTextString(runs)
     end
 end

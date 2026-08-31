@@ -16,6 +16,11 @@ import PrettyTables: _number_of_printed_columns, _number_of_printed_data_columns
 import PrettyTables: _get_data, _has_summary_rows
 import PrettyTables: _IGNORE_CELL, _EXCEL__NO_DECORATION, _sprint_with_context
 import PrettyTables: _excel__highlighter_decoration
+import PrettyTables: excel_decoration
+
+@static if VERSION >= v"1.11"
+    import PrettyTables: _face_regions
+end
 
 # Also import Tables.jl for handling table data
 using Tables

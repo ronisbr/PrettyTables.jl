@@ -289,7 +289,7 @@ function _excel__write_table!(
 
             if !isnothing(fn_indices) && !isempty(fn_indices)
                 fn_str = join(_excel__to_superscript.(fn_indices))
-                rendered_cell = string(rendered_cell) * fn_str
+                rendered_cell = _excel__append_superscript(rendered_cell, fn_str)
             end
 
             # -- Full-span Cells -----------------------------------------------------------

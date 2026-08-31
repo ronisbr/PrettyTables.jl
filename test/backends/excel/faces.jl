@@ -114,15 +114,62 @@
 
     @static if VERSION >= v"1.11"
         @testset "Styled Strings" begin
-            # Excel cannot style regions of a cell. Hence, the text is written plain.
             matrix = [styled"{yellow,bold:Yellow, Bold}" styled"{blue:Blue} & <x>"]
             result = pretty_table(XLSX.XLSXFile, matrix; column_labels = [styled"{red:A}", "B"])
             sheet  = result[1]
 
-            @test sheet["A1"] == "A"
-            @test sheet["A2"] == "Yellow, Bold"
+            # A cell with multiple face regions is written as rich text, keeping the plain
+            # text as the cell value.
+            rts = XLSX.getRichTextString(sheet, "B2")
+            @test rts isa XLSX.RichTextString
+            @test length(rts.runs) == 2
+            @test rts.runs[1].text == "Blue"
+            @test rts.runs[1].atts == Dict{Symbol, Any}(:color => "FF195EB3")
+            @test rts.runs[2].text == " & <x>"
+            @test isnothing(rts.runs[2].atts)
             @test sheet["B2"] == "Blue & <x>"
-            @test sheet["A2"] isa String
+
+            # A uniformly styled cell yields a single run, which XLSX.jl writes as plain
+            # text with a cell-level font.
+            @test sheet["A2"] == "Yellow, Bold"
+            @test isnothing(XLSX.getRichTextString(sheet, "A2"))
+            font = XLSX.getFont(sheet, "A2").font
+            @test haskey(font, "b")
+            @test font["color"] == Dict("rgb" => "FFE5A509")
+
+            # The same applies to a uniformly styled column label.
+            @test sheet["A1"] == "A"
+            @test isnothing(XLSX.getRichTextString(sheet, "A1"))
+            @test XLSX.getFont(sheet, "A1").font["color"] == Dict("rgb" => "FFA51C2C")
+
+            # Underline and strikethrough are converted to boolean run attributes.
+            result = pretty_table(
+                XLSX.XLSXFile,
+                [styled"{underline:under} {strikethrough:struck}" 1],
+            )
+            rts = XLSX.getRichTextString(result[1], "A2")
+            @test length(rts.runs) == 3
+            @test rts.runs[1].atts == Dict{Symbol, Any}(:under => true)
+            @test rts.runs[3].atts == Dict{Symbol, Any}(:strike => true)
+
+            # Footnote superscripts are appended as an additional unstyled run.
+            result = pretty_table(
+                XLSX.XLSXFile,
+                [styled"{blue:Blue} tail" 2];
+                footnotes = [(:data, 1, 1) => "Footnote"],
+            )
+            sheet = result[1]
+            rts   = XLSX.getRichTextString(sheet, "A2")
+            @test sheet["A2"] == "Blue tail¹"
+            @test length(rts.runs) == 3
+            @test rts.runs[3].text == "¹"
+            @test isnothing(rts.runs[3].atts)
+
+            # An annotated string without face annotations is written as plain text.
+            result = pretty_table(XLSX.XLSXFile, [Base.AnnotatedString("Plain") 1])
+            @test result[1]["A2"] == "Plain"
+            @test result[1]["A2"] isa String
+            @test isnothing(XLSX.getRichTextString(result[1], "A2"))
         end
     end
 end

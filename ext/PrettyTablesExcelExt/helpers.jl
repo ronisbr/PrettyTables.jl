@@ -44,6 +44,19 @@ function _excel__to_superscript(n::Int)
 end
 
 """
+    _excel__append_superscript(cell::Any, fn_str::String) -> Union{String, XLSX.RichTextString}
+
+Append the footnote superscript `fn_str` to the rendered `cell`. Rich text strings receive
+the superscript as an additional unstyled run so the existing runs are preserved, whereas
+any other value is converted to a `String` before the concatenation.
+"""
+_excel__append_superscript(cell::Any, fn_str::String) = string(cell) * fn_str
+
+function _excel__append_superscript(cell::XLSX.RichTextString, fn_str::String)
+    return cell * XLSX.RichTextString([XLSX.RichTextRun(fn_str, Pair{Symbol, Any}[])])
+end
+
+"""
     _excel__column_width_for_text(text_length::Number, font_size::Number) -> Number
 
 Estimate the Excel column width needed to display text of `text_length` characters rendered
@@ -77,6 +90,10 @@ string, returns 1.
 _excel__text_lines(text::AbstractString) = count('\n', text) + 1
 _excel__text_lines(::Any) = 1
 
+# Rich text strings do not support all the string operations used to compute the cell
+# dimensions. Hence, we must convert them to `String` first.
+_excel__text_lines(text::XLSX.RichTextString) = _excel__text_lines(String(text))
+
 """
     _excel__multilength(text::AbstractString) -> Number
 
@@ -88,6 +105,9 @@ function _excel__multilength(text::AbstractString)
 end
 
 _excel__multilength(::Any) = 0
+
+# See the note in `_excel__text_lines` about rich text strings.
+_excel__multilength(text::XLSX.RichTextString) = _excel__multilength(String(text))
 
 """
     fmt__excel_stringify(

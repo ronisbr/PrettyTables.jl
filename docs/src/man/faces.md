@@ -129,7 +129,12 @@ A cell (or a column label, row label, and so on) can be a styled string of Style
 converted with the functions above: the text back end writes the escape sequences, the
 HTML back end wraps each region in a `span`, the LaTeX back end in the environments, the
 Markdown back end in the markers, and the Typst back end in a `text` component. The Excel
-back end writes the plain text because a cell cannot have styled regions.
+back end converts the regions to Excel's rich text format (`XLSX.RichTextString`), where
+each region becomes a run with the font attributes of its face. Backgrounds are dropped
+because Excel does not support per-run fills, and a string whose regions carry no font
+attributes is written as plain text. Notice that XLSX.jl writes a rich text string with a
+single run as plain text with a cell-level font, and that a table style or highlighter
+applied to the cell takes precedence over the run attributes it sets.
 
 ```@repl faces
 matrix = [styled"{bold:Bold} and {red:red}" styled"{(fg=blue),italic:Blue italics}"];

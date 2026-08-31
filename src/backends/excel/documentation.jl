@@ -157,6 +157,10 @@ these are passed natively, then XLSX.jl will fail. To circumvent this, a predefi
 formatter has been provided which converts any unhandled types to strings (using
 `string()`). For more information, see [`fmt__excel_stringify`](@ref).
 
+Styled strings of StyledStrings.jl (Julia 1.11 or newer) are converted to Excel's rich
+text format, where each region of the string becomes a run with the font attributes of its
+face (see [Faces](@ref)).
+
 ## Excel Table Format
 
 The Excel table format is defined using an object of type [`ExcelTableFormat`](@ref) that
