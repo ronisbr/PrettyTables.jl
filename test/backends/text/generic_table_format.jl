@@ -27,10 +27,30 @@
 
     @test result == expected
 
-    # The line design fields must be ignored by the text back end.
+    # The line designs must be converted to the equivalent native line characters, and the
+    # line design colors must be converted to the equivalent line faces of the style.
+    expected = pretty_table(
+        String,
+        matrix;
+        color = true,
+        table_format = TextTableFormat(;
+            horizontal_lines_at_data_rows  = :all,
+            vertical_lines_at_data_columns = :none,
+            top_line                       = TextLineBorders(;
+                up_left_corner  = '╒',
+                up_right_corner = '╕',
+                up_intersection = '╤',
+                row             = '═',
+            ),
+            middle_line                    = TextLineBorders(; row = '╌'),
+        ),
+        style = TextTableStyle(; top_line = Face(; foreground = :red))
+    )
+
     result = pretty_table(
         String,
         matrix;
+        color = true,
         table_format = TableFormat(;
             horizontal_lines_at_data_rows  = :all,
             vertical_lines_at_data_columns = :none,

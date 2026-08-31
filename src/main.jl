@@ -601,6 +601,13 @@ function _printing_backend(::Val{:text}, pspec::PrintingSpec; is_stdout::Bool, k
     nt = _resolve_generic_configurations(
         values(kwargs), _text__table_format, _text__table_style
     )
+
+    # The colors of the line designs in a backend-agnostic table format must be converted
+    # to the line faces of the text table style since the text table format only stores
+    # characters.
+    tf = get(kwargs, :table_format, nothing)
+    (tf isa TableFormat) && (nt = _text__merge_line_style_colors(nt, tf))
+
     _text__print_table(pspec; nt...)
     return nothing
 end

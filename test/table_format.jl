@@ -182,6 +182,8 @@ end
     @testset "Empty LineStyle Keeps the Default Design" begin
         tf = TableFormat(; middle_line = LineStyle())
 
+        @test PrettyTables._text__table_format(tf).middle_line === nothing
+
         @test PrettyTables._typst__table_format(tf).borders.middle_line ==
             TypstTableBorders().middle_line
 
