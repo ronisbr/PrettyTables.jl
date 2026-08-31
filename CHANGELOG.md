@@ -20,8 +20,30 @@ Version 3.5.0
   `excel_decoration` are exported.
 - ![Feature][badge-feature] Render the styled strings of StyledStrings.jl in every back end
   (Julia 1.11 or newer). The regions of the string are decorated with their faces using the
-  conversion of each back end; the Excel back end writes the plain text. The HTML back end
-  now renders them with `html_decoration` instead of the HTML writer of StyledStrings.jl.
+  conversion of each back end. The HTML back end now renders them with `html_decoration`
+  instead of the HTML writer of StyledStrings.jl.
+- ![Feature][badge-feature] Convert styled strings to Excel's rich text format
+  (`XLSX.RichTextString`), where each region of the string becomes a run with the font
+  attributes of its face. Backgrounds are dropped because Excel does not support per-run
+  fills, and a string whose regions carry no font attributes is still written as plain
+  text.
+- ![Feature][badge-feature] Add the backend-agnostic table format `TableFormat` and the
+  line design `LineStyle`, allowing the user to configure the table lines (presence and
+  design) once for every back end. The keyword `table_format` now accepts `TableFormat` in
+  every back end: each set field overrides the corresponding field of the back end default
+  format, and every field left as `nothing` keeps the back end default. The conversion
+  functions `latex_line_style`, `typst_line_style`, and `excel_line_style` are exported.
+- ![Feature][badge-feature] Add the backend-agnostic table style `TableStyle`, which
+  describes the decoration of each table section with a `Face`. The keyword `style` now
+  accepts `TableStyle` in every back end with the same sparse override semantics as
+  `TableFormat`: each set field overrides the corresponding field of the back end default
+  style.
+- ![Info][badge-info] The conversion of `TableFormat` and `TableStyle` is a best effort:
+  the HTML back end currently ignores `TableFormat`, the text back end ignores the line
+  design, the Markdown back end only supports `horizontal_line_before_summary_rows` and
+  ignores the style fields its style type does not have, and the LaTeX back end ignores
+  the line width and color. With `backend = :auto`, a `TableFormat` does not select a back
+  end and the text back end is used.
 - ![Enhancement][badge-enhancement] Render the escape sequences of the style of the text back
   end when the style is created instead of once per cell.
 - ![Info][badge-info] The conversion from `Crayon` to `Face` is lossy: the attributes
