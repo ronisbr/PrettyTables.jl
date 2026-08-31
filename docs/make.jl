@@ -19,6 +19,7 @@ makedocs(
         "Quick Start"                 => "man/quick_start.md",
         "Usage"                       => "man/usage.md",
         "Faces"                       => "man/faces.md",
+        "Table Format and Style"      => "man/table_format.md",
         "Back Ends"                   => Any[
             "Text"                    => Any[
                 "Text Backend"        => "man/text/text_backend.md",
