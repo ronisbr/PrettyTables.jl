@@ -1,5 +1,9 @@
 # Text Backend
 
+```@setup text_backend
+using PrettyTables
+```
+
 The text backend can be selected by passing the keyword `backend = :text` to the function
 [`pretty_table`](@ref). In this case, we have the following additional keywords to configure
 the output.
@@ -177,6 +181,18 @@ The text table format is defined using an object of type [`TextTableFormat`](@re
 contains the following fields:
 
 - `borders::TextTableBorders`: Format of the borders.
+- `top_line::Union{Nothing, TextLineBorders}`: Characters of the top line.
+- `header_line::Union{Nothing, TextLineBorders}`: Characters of the lines at the column
+  labels.
+- `merged_header_cell_line::Union{Nothing, TextLineBorders}`: Characters of the lines under
+  the merged column labels.
+- `middle_line::Union{Nothing, TextLineBorders}`: Characters of the lines inside the table.
+- `bottom_line::Union{Nothing, TextLineBorders}`: Characters of the bottom line.
+- `left_line::Union{Nothing, Char}`: Character of the vertical line at the left of the
+  table.
+- `center_line::Union{Nothing, Char}`: Character of the vertical lines inside the table.
+- `right_line::Union{Nothing, Char}`: Character of the vertical line at the right of the
+  table.
 - `horizontal_line_at_beginning::Bool`: If `true`, a horizontal line will be drawn at the
   beginning of the table.
 - `horizontal_lines_at_column_labels::Union{Symbol, Vector{Int}}`: A horizontal line will be
@@ -228,6 +244,37 @@ documentation of the following macros:
 - [`@text__no_horizontal_lines`](@ref).
 - [`@text__no_vertical_lines`](@ref).
 
+### Line Characters
+
+The line character fields allow the user to customize the characters of each table line
+independently. The horizontal line fields accept a [`TextLineBorders`](@ref), whereas the
+vertical line fields accept a `Char`. Every field, and every character inside a
+[`TextLineBorders`](@ref), defaults to `nothing`, meaning that the corresponding character
+in `borders` is used. Hence, those fields sparsely override the characters in `borders` for
+a single line:
+
+```@repl text_backend
+pretty_table(
+    [1 2; 3 4];
+    table_format = TextTableFormat(;
+        header_line = TextLineBorders(;
+            left_intersection   = '╞',
+            middle_intersection = '╪',
+            right_intersection  = '╡',
+            row                 = '═',
+        ),
+        center_line = '┊',
+    )
+)
+```
+
+When printing with the backend-agnostic [`TableFormat`](@ref), each [`LineStyle`](@ref) is
+mapped to Unicode box-drawing characters, where the intersections between the lines are
+selected automatically from the crossing designs. For more information, see
+[Table Format and Style](@ref).
+
+The color of each line can be configured with the line faces of [`TextTableStyle`](@ref).
+
 ## Text Table Style
 
 The text table style is defined using an object of type [`TextTableStyle`](@ref) that
@@ -256,10 +303,28 @@ contains the following fields:
 - `source_note::Face`: Face with the style for the source notes.
 - `omitted_cell_summary::Face`: Face with the style for the omitted cell summary.
 - `table_border::Face`: Face with the style for the table border.
+- `top_line::Union{Nothing, Face}`: Face with the style for the top line.
+- `header_line::Union{Nothing, Face}`: Face with the style for the lines at the column
+  labels.
+- `merged_header_cell_line::Union{Nothing, Face}`: Face with the style for the lines under
+  the merged column labels.
+- `middle_line::Union{Nothing, Face}`: Face with the style for the lines inside the table.
+- `bottom_line::Union{Nothing, Face}`: Face with the style for the bottom line.
+- `left_line::Union{Nothing, Face}`: Face with the style for the vertical line at the left
+  of the table.
+- `center_line::Union{Nothing, Face}`: Face with the style for the vertical lines inside
+  the table.
+- `right_line::Union{Nothing, Face}`: Face with the style for the vertical line at the
+  right of the table.
 
 Each field is a `Face` describing the style for the corresponding element in the table.
 The keyword constructor also accepts a `Crayon` (or a vector of crayons) in every field,
 which is converted to the equivalent face (see [Faces](@ref)).
+
+The line faces default to `nothing`, meaning that the corresponding line is rendered with
+the face in `table_border`. When printing with the backend-agnostic [`TableFormat`](@ref),
+the color of each line design is converted to the corresponding line face, unless the line
+face is explicitly set, which has the highest precedence.
 
 For example, if we want the stubhead label to be bold and red, we must define:
 

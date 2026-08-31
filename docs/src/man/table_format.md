@@ -144,23 +144,29 @@ The following table summarizes the support:
 |:----------------------------|:-----|:-----|:------|:---------|:------|:------|
 | Horizontal line presence    | ✓    | –    | ✓     | partial¹ | ✓     | ✓     |
 | Vertical line presence      | ✓    | –    | ✓     | –        | ✓     | ✓     |
-| Line design: `style`        | –    | –    | ✓²    | –        | ✓³    | ✓     |
-| Line design: `width`        | –    | –    | –     | –        | ✓     | ✓     |
-| Line design: `color`        | –    | –    | –     | –        | ✓     | ✓     |
-| Table style                 | ✓    | ✓    | ✓     | partial⁴ | ✓     | ✓     |
+| Line design: `style`        | ✓²   | –    | ✓³    | –        | ✓⁴    | ✓     |
+| Line design: `width`        | ✓²   | –    | –     | –        | ✓     | ✓     |
+| Line design: `color`        | ✓    | –    | –     | –        | ✓     | ✓     |
+| Table style                 | ✓    | ✓    | ✓     | partial⁵ | ✓     | ✓     |
 
 1. Markdown only supports `horizontal_line_before_summary_rows`.
-2. The LaTeX dashed and dotted rules use `\hdashline`, which requires the package
+2. The text back end maps the designs to Unicode box-drawing characters, which only have
+   light and heavy weights (`:medium` maps to heavy) and no heavy double lines. The
+   intersections between the lines are selected automatically from the crossing designs,
+   falling back to the characters in `TextTableBorders` when Unicode does not provide the
+   required character. The line design colors are converted to the line faces of
+   `TextTableStyle`.
+3. The LaTeX dashed and dotted rules use `\hdashline`, which requires the package
    **arydshln** in the document. The designs of the merged header cell line and of the
    vertical lines cannot be changed.
-3. Typst strokes have no double variant, so `:double` falls back to `:solid`.
-4. Markdown ignores `title`, `subtitle`, `first_line_merged_column_label`, and
+4. Typst strokes have no double variant, so `:double` falls back to `:solid`.
+5. Markdown ignores `title`, `subtitle`, `first_line_merged_column_label`, and
    `merged_column_label` because its style type does not have those fields.
 
 Additional notes:
 
 - The HTML back end currently ignores [`TableFormat`](@ref) entirely. The table lines can
   be customized with the field `css` of `HtmlTableFormat`.
-- The text back end ignores the line design because it draws the table with a single
-  character set (see `TextTableBorders`). The color of all the table lines can be set with
-  the field `table_border` of `TextTableStyle`.
+- In the text back end, the color of each line follows the precedence: the line face in
+  `TextTableStyle` (for example, `middle_line`), the `color` of the line design, and the
+  face in the field `table_border` of `TextTableStyle`.
