@@ -385,6 +385,58 @@ PrecompileTools.@setup_workload begin
 
                     pretty_table(types; backend = :excel)
             =#
+            # == Backend-Agnostic Table Format and Style ===================================
+
+            generic_table_format = TableFormat(;
+                horizontal_lines_at_data_rows = :all,
+                header_line = LineStyle(; style = :dashed, color = :red),
+            )
+
+            generic_table_style = TableStyle(; title = Face(; weight = :bold))
+
+            # Passing only `table_format` or only `style` compiles a different keyword
+            # combination of the printing pipeline. These are the most common patterns, so
+            # we exercise them for both the generic and the native objects.
+            pretty_table(matrix; table_format = generic_table_format)
+            pretty_table(matrix; style = generic_table_style)
+            pretty_table(matrix; table_format = TextTableFormat())
+            pretty_table(matrix; style = TextTableStyle())
+
+            pretty_table(
+                matrix;
+                table_format = generic_table_format,
+                style = generic_table_style,
+            )
+
+            pretty_table(
+                html_buf,
+                matrix;
+                backend = :html,
+                table_format = generic_table_format,
+                style = generic_table_style,
+            )
+
+            pretty_table(
+                matrix;
+                backend = :latex,
+                table_format = generic_table_format,
+                style = generic_table_style,
+            )
+
+            pretty_table(
+                matrix;
+                backend = :markdown,
+                table_format = generic_table_format,
+                style = generic_table_style,
+            )
+
+            pretty_table(
+                matrix;
+                backend = :typst,
+                table_format = generic_table_format,
+                style = generic_table_style,
+            )
+
             # == Input: Tables.jl ==========================================================
 
             pretty_table(table)

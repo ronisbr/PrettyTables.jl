@@ -31,5 +31,24 @@ PrecompileTools.@setup_workload begin
         )
 
         pretty_table(table; backend = :excel, filename = nothing)
+
+        # The backend-agnostic table format and style must also be exercised so that the
+        # first export using them is not fully cold.
+        pretty_table(
+            matrix;
+            backend = :excel,
+            filename = nothing,
+            table_format = TableFormat(; horizontal_lines_at_data_rows = :all),
+            style = TableStyle(; title = Face(; weight = :bold)),
+        )
+
+        @static if VERSION >= v"1.11"
+            # Styled strings are converted to Excel's rich text format.
+            pretty_table(
+                [styled"{bold:Bold} and {red:red}" for i in 1:10, j in 1:2];
+                backend = :excel,
+                filename = nothing,
+            )
+        end
     end
 end
