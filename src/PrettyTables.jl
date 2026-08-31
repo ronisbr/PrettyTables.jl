@@ -61,6 +61,7 @@ include("./backends/latex/render_cell.jl")
 
 include("./backends/html/types.jl")
 include("./backends/html/faces.jl")
+include("./backends/html/table_format.jl")
 include("./backends/html/documentation.jl")
 include("./backends/html/html_backend.jl")
 include("./backends/html/private.jl")

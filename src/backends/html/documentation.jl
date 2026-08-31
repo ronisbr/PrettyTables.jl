@@ -34,15 +34,20 @@ the output.
     (**Default**: `false`)
 - `stand_alone::Bool`: If `true`, the output HTML code is a complete HTML document.
     (**Default**: `false`)
-- `style::HtmlTableStyle`: Style of the table. For more information, see the section
-    **HTML Table Style** in the **Extended Help**.
+- `style::Union{TableStyle, HtmlTableStyle}`: Style of the table. The fields of the
+    backend-agnostic [`TableStyle`](@ref) override the ones of the default HTML table
+    style. For more information, see the section **HTML Table Style** in the **Extended
+    Help**.
 - `table_class::String`: Class for the table.
     (**Default**: "")
 - `table_div_class::String`: Class for the div containing the table. It is only used if
     `wrap_table_in_div` is `true`.
     (**Default**: "")
-- `table_format::HtmlTableFormat`: HTML table format used to render the table. For more
-    information, see the section **HTML Table Format** in the **Extended Help**.
+- `table_format::Union{TableFormat, HtmlTableFormat}`: HTML table format used to render
+    the table. The backend-agnostic [`TableFormat`](@ref) is currently ignored by the HTML
+    back end, which uses the default HTML table format instead; the table lines can be
+    customized with the field `css`. For more information, see the section **HTML Table
+    Format** in the **Extended Help**.
 - `top_left_string::String`: String to put in the top left corner div.
     (**Default**: "")
 - `top_right_string::String`: String to put in the top right corner div. Notice that this
