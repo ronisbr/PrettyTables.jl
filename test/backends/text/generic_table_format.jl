@@ -36,13 +36,13 @@
         table_format = TextTableFormat(;
             horizontal_lines_at_data_rows  = :all,
             vertical_lines_at_data_columns = :none,
-            top_line                       = TextLineBorders(;
+            top_line                       = TextTableLine(;
                 up_left_corner  = '╒',
                 up_right_corner = '╕',
                 up_intersection = '╤',
                 row             = '═',
             ),
-            middle_line                    = TextLineBorders(; row = '╌'),
+            middle_line                    = TextTableLine(; row = '╌'),
         ),
         style = TextTableStyle(; top_line = Face(; foreground = :red))
     )

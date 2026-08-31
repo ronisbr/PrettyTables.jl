@@ -181,13 +181,13 @@ The text table format is defined using an object of type [`TextTableFormat`](@re
 contains the following fields:
 
 - `borders::TextTableBorders`: Format of the borders.
-- `top_line::Union{Nothing, TextLineBorders}`: Characters of the top line.
-- `header_line::Union{Nothing, TextLineBorders}`: Characters of the lines at the column
+- `top_line::Union{Nothing, TextTableLine}`: Characters of the top line.
+- `header_line::Union{Nothing, TextTableLine}`: Characters of the lines at the column
   labels.
-- `merged_header_cell_line::Union{Nothing, TextLineBorders}`: Characters of the lines under
+- `merged_header_cell_line::Union{Nothing, TextTableLine}`: Characters of the lines under
   the merged column labels.
-- `middle_line::Union{Nothing, TextLineBorders}`: Characters of the lines inside the table.
-- `bottom_line::Union{Nothing, TextLineBorders}`: Characters of the bottom line.
+- `middle_line::Union{Nothing, TextTableLine}`: Characters of the lines inside the table.
+- `bottom_line::Union{Nothing, TextTableLine}`: Characters of the bottom line.
 - `left_line::Union{Nothing, Char}`: Character of the vertical line at the left of the
   table.
 - `center_line::Union{Nothing, Char}`: Character of the vertical lines inside the table.
@@ -247,9 +247,9 @@ documentation of the following macros:
 ### Line Characters
 
 The line character fields allow the user to customize the characters of each table line
-independently. The horizontal line fields accept a [`TextLineBorders`](@ref), whereas the
+independently. The horizontal line fields accept a [`TextTableLine`](@ref), whereas the
 vertical line fields accept a `Char`. Every field, and every character inside a
-[`TextLineBorders`](@ref), defaults to `nothing`, meaning that the corresponding character
+[`TextTableLine`](@ref), defaults to `nothing`, meaning that the corresponding character
 in `borders` is used. Hence, those fields sparsely override the characters in `borders` for
 a single line:
 
@@ -257,7 +257,7 @@ a single line:
 pretty_table(
     [1 2; 3 4];
     table_format = TextTableFormat(;
-        header_line = TextLineBorders(;
+        header_line = TextTableLine(;
             left_intersection   = '╞',
             middle_intersection = '╪',
             right_intersection  = '╡',

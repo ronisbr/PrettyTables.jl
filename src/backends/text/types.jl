@@ -4,7 +4,7 @@
 #
 ############################################################################################
 
-export CustomTextCell, TextLineBorders, TextTableBorders, TextTableFormat, TextTableStyle
+export CustomTextCell, TextTableLine, TextTableBorders, TextTableFormat, TextTableStyle
 export TextHighlighter
 
 ############################################################################################
@@ -93,7 +93,7 @@ Define the format of the borders in the tables printed with the text back end.
 end
 
 """
-    struct TextLineBorders
+    struct TextTableLine
 
 Define the characters of a single horizontal line in the tables printed with the text back
 end. Every field defaults to `nothing`, meaning that the corresponding character in the
@@ -118,7 +118,7 @@ the characters of a single line.
     in the bottom part.
 - `row::Union{Nothing, Char}`: Character in the horizontal line.
 """
-@kwdef struct TextLineBorders
+@kwdef struct TextTableLine
     up_right_corner::Union{Nothing, Char}     = nothing
     up_left_corner::Union{Nothing, Char}      = nothing
     bottom_left_corner::Union{Nothing, Char}  = nothing
@@ -150,13 +150,13 @@ Define the format of the tables printed with the text back end.
 # Fields
 
 - `borders::TextTableBorders`: Format of the borders.
-- `top_line::Union{Nothing, TextLineBorders}`: Characters of the top line.
-- `header_line::Union{Nothing, TextLineBorders}`: Characters of the lines at the column
+- `top_line::Union{Nothing, TextTableLine}`: Characters of the top line.
+- `header_line::Union{Nothing, TextTableLine}`: Characters of the lines at the column
     labels.
-- `merged_header_cell_line::Union{Nothing, TextLineBorders}`: Characters of the lines under
+- `merged_header_cell_line::Union{Nothing, TextTableLine}`: Characters of the lines under
     the merged column labels.
-- `middle_line::Union{Nothing, TextLineBorders}`: Characters of the lines inside the table.
-- `bottom_line::Union{Nothing, TextLineBorders}`: Characters of the bottom line.
+- `middle_line::Union{Nothing, TextTableLine}`: Characters of the lines inside the table.
+- `bottom_line::Union{Nothing, TextTableLine}`: Characters of the bottom line.
 - `left_line::Union{Nothing, Char}`: Character of the vertical line at the left of the
     table.
 - `center_line::Union{Nothing, Char}`: Character of the vertical lines inside the table.
@@ -210,9 +210,9 @@ Define the format of the tables printed with the text back end.
 # Line Characters
 
 The line character fields allow the user to customize the characters of each table line
-independently. The horizontal line fields accept a [`TextLineBorders`](@ref), whereas the
+independently. The horizontal line fields accept a [`TextTableLine`](@ref), whereas the
 vertical line fields accept a `Char`. Every field, and every character inside a
-[`TextLineBorders`](@ref), defaults to `nothing`, meaning that the corresponding character
+[`TextTableLine`](@ref), defaults to `nothing`, meaning that the corresponding character
 in `borders` is used. Hence, those fields sparsely override the characters in `borders` for
 a single line.
 
@@ -225,11 +225,11 @@ The color of each line can be configured with the line faces of [`TextTableStyle
 
     # == Line Characters ===================================================================
 
-    top_line::Union{Nothing, TextLineBorders}                = nothing
-    header_line::Union{Nothing, TextLineBorders}             = nothing
-    merged_header_cell_line::Union{Nothing, TextLineBorders} = nothing
-    middle_line::Union{Nothing, TextLineBorders}             = nothing
-    bottom_line::Union{Nothing, TextLineBorders}             = nothing
+    top_line::Union{Nothing, TextTableLine}                = nothing
+    header_line::Union{Nothing, TextTableLine}             = nothing
+    merged_header_cell_line::Union{Nothing, TextTableLine} = nothing
+    middle_line::Union{Nothing, TextTableLine}             = nothing
+    bottom_line::Union{Nothing, TextTableLine}             = nothing
     left_line::Union{Nothing, Char}                          = nothing
     center_line::Union{Nothing, Char}                        = nothing
     right_line::Union{Nothing, Char}                         = nothing

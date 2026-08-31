@@ -161,7 +161,7 @@ PrecompileTools.@setup_workload begin
                 io_buf,
                 matrix;
                 table_format = TextTableFormat(;
-                    top_line = TextLineBorders(;
+                    top_line = TextTableLine(;
                         up_left_corner  = '╒',
                         up_right_corner = '╕',
                         up_intersection = '╤',

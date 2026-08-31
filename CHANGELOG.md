@@ -41,7 +41,7 @@ Version 3.5.0
 - ![Feature][badge-feature] Allow customizing each table line independently in the text
   back end. `TextTableFormat` now has the fields `top_line`, `header_line`,
   `merged_header_cell_line`, `middle_line`, `bottom_line` (accepting the new exported
-  object `TextLineBorders`), `left_line`, `center_line`, and `right_line` (accepting a
+  object `TextTableLine`), `left_line`, `center_line`, and `right_line` (accepting a
   `Char`), which sparsely override the characters in `borders` for a single line.
   `TextTableStyle` now has line faces with the same names to style each line
   independently, falling back to `table_border` when unset. The line design fields of

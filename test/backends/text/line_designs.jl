@@ -22,7 +22,7 @@
         result = pretty_table(
             String,
             matrix;
-            table_format = TextTableFormat(; header_line = TextLineBorders(; row = '='))
+            table_format = TextTableFormat(; header_line = TextTableLine(; row = '='))
         )
 
         @test result == expected
@@ -42,7 +42,7 @@
             String,
             matrix;
             table_format = TextTableFormat(;
-                header_line = TextLineBorders(;
+                header_line = TextTableLine(;
                     left_intersection   = '╞',
                     middle_intersection = '╪',
                     right_intersection  = '╡',
@@ -90,7 +90,7 @@
             matrix;
             table_format = TextTableFormat(;
                 borders     = text_table_borders__ascii_rounded,
-                header_line = TextLineBorders(;
+                header_line = TextTableLine(;
                     left_intersection   = '╞',
                     middle_intersection = '╪',
                     right_intersection  = '╡',

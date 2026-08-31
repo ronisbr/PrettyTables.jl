@@ -50,19 +50,19 @@ function _text__table_format(table_format::TableFormat)
     right_design  = _text__line_design(table_format.right_line)
 
     return TextTableFormat(;
-        top_line                = _text__horizontal_line_borders(
+        top_line                = _text__horizontal_table_line(
             top_design, left_design, center_design, right_design
         ),
-        header_line             = _text__horizontal_line_borders(
+        header_line             = _text__horizontal_table_line(
             header_design, left_design, center_design, right_design
         ),
-        merged_header_cell_line = _text__horizontal_line_borders(
+        merged_header_cell_line = _text__horizontal_table_line(
             merged_design, left_design, center_design, right_design
         ),
-        middle_line             = _text__horizontal_line_borders(
+        middle_line             = _text__horizontal_table_line(
             middle_design, left_design, center_design, right_design
         ),
-        bottom_line             = _text__horizontal_line_borders(
+        bottom_line             = _text__horizontal_table_line(
             bottom_design, left_design, center_design, right_design
         ),
         left_line               = isnothing(left_design) ?

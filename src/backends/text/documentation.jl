@@ -191,13 +191,13 @@ The text table format is defined using an object of type [`TextTableFormat`](@re
 contains the following fields:
 
 - `borders::TextTableBorders`: Format of the borders.
-- `top_line::Union{Nothing, TextLineBorders}`: Characters of the top line.
-- `header_line::Union{Nothing, TextLineBorders}`: Characters of the lines at the column
+- `top_line::Union{Nothing, TextTableLine}`: Characters of the top line.
+- `header_line::Union{Nothing, TextTableLine}`: Characters of the lines at the column
     labels.
-- `merged_header_cell_line::Union{Nothing, TextLineBorders}`: Characters of the lines
+- `merged_header_cell_line::Union{Nothing, TextTableLine}`: Characters of the lines
     under the merged column labels.
-- `middle_line::Union{Nothing, TextLineBorders}`: Characters of the lines inside the table.
-- `bottom_line::Union{Nothing, TextLineBorders}`: Characters of the bottom line.
+- `middle_line::Union{Nothing, TextTableLine}`: Characters of the lines inside the table.
+- `bottom_line::Union{Nothing, TextTableLine}`: Characters of the bottom line.
 - `left_line::Union{Nothing, Char}`: Character of the vertical line at the left of the
     table.
 - `center_line::Union{Nothing, Char}`: Character of the vertical lines inside the table.
@@ -250,7 +250,7 @@ contains the following fields:
 
 The line character fields allow the user to customize the characters of each table line
 independently, sparsely overriding the characters in `borders` for that line (see
-[`TextLineBorders`](@ref)). When printing with the backend-agnostic [`TableFormat`](@ref),
+[`TextTableLine`](@ref)). When printing with the backend-agnostic [`TableFormat`](@ref),
 each [`LineStyle`](@ref) is mapped to Unicode box-drawing characters, where the
 intersections between the lines are selected automatically from the crossing designs.
 

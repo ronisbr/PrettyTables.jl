@@ -26,7 +26,7 @@ const _TEXT__MIDDLE_INTERSECTIONS = ('┼', '╂', '╫', '┿', '╋', '\0', '�
 const _TEXT__BOTTOM_INTERSECTIONS = ('┴', '┸', '╨', '┷', '┻', '\0', '╧', '\0', '╩')
 
 # Object used when merging the characters of a line without customizations.
-const _TEXT__EMPTY_LINE_BORDERS = TextLineBorders()
+const _TEXT__EMPTY_TABLE_LINE = TextTableLine()
 
 ############################################################################################
 #                Conversion of the Backend-Agnostic Line Designs (LineStyle)               #
@@ -105,19 +105,19 @@ function _text__junction_char(
 end
 
 """
-    _text__horizontal_line_borders(
+    _text__horizontal_table_line(
         design::Union{Nothing, LineStyle},
         left_design::Union{Nothing, LineStyle},
         center_design::Union{Nothing, LineStyle},
         right_design::Union{Nothing, LineStyle}
-    ) -> Union{Nothing, TextLineBorders}
+    ) -> Union{Nothing, TextTableLine}
 
 Convert the [`LineStyle`](@ref) `design` of a horizontal line into a
-[`TextLineBorders`](@ref), taking the designs of the left, center, and right vertical lines
+[`TextTableLine`](@ref), taking the designs of the left, center, and right vertical lines
 into account to obtain the junction characters. The function returns `nothing` if no design
 modifies the horizontal line.
 """
-function _text__horizontal_line_borders(
+function _text__horizontal_table_line(
     design::Union{Nothing, LineStyle},
     left_design::Union{Nothing, LineStyle},
     center_design::Union{Nothing, LineStyle},
@@ -130,7 +130,7 @@ function _text__horizontal_line_borders(
         return nothing
     end
 
-    return TextLineBorders(;
+    return TextTableLine(;
         up_left_corner      = _text__junction_char(
             design, left_design, _TEXT__UP_LEFT_CORNERS
         ),
@@ -189,8 +189,8 @@ _text__line_char(user::Union{Nothing, Char}, default::Char) =
     isnothing(user) ? default : user
 
 """
-    _text__merge_line_borders(
-        line::Union{Nothing, TextLineBorders},
+    _text__merge_table_line(
+        line::Union{Nothing, TextTableLine},
         borders::TextTableBorders,
         center_char::Char
     ) -> TextTableBorders
@@ -199,14 +199,14 @@ Merge the characters of `line` over the ones of `borders`, returning the charact
 to draw a horizontal line. `center_char` is the resolved character of the center vertical
 line, stored in the field `column`.
 """
-function _text__merge_line_borders(
-    line::Union{Nothing, TextLineBorders},
+function _text__merge_table_line(
+    line::Union{Nothing, TextTableLine},
     borders::TextTableBorders,
     center_char::Char
 )
     if isnothing(line)
         (center_char == borders.column) && return borders
-        line = _TEXT__EMPTY_LINE_BORDERS
+        line = _TEXT__EMPTY_TABLE_LINE
     end
 
     return TextTableBorders(;
@@ -312,11 +312,11 @@ function _text__resolve_table_lines(tf::TextTableFormat, style::TextTableStyle)
     center_char = _text__line_char(tf.center_line, borders.column)
 
     return TextResolvedTableLines(
-        _text__merge_line_borders(tf.top_line, borders, center_char),
-        _text__merge_line_borders(tf.header_line, borders, center_char),
-        _text__merge_line_borders(tf.merged_header_cell_line, borders, center_char),
-        _text__merge_line_borders(tf.middle_line, borders, center_char),
-        _text__merge_line_borders(tf.bottom_line, borders, center_char),
+        _text__merge_table_line(tf.top_line, borders, center_char),
+        _text__merge_table_line(tf.header_line, borders, center_char),
+        _text__merge_table_line(tf.merged_header_cell_line, borders, center_char),
+        _text__merge_table_line(tf.middle_line, borders, center_char),
+        _text__merge_table_line(tf.bottom_line, borders, center_char),
         _text__line_sgr(style.top_line, rstyle.top_line, rstyle.table_border),
         _text__line_sgr(style.header_line, rstyle.header_line, rstyle.table_border),
         _text__line_sgr(
