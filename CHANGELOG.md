@@ -38,12 +38,23 @@ Version 3.5.0
   accepts `TableStyle` in every back end with the same sparse override semantics as
   `TableFormat`: each set field overrides the corresponding field of the back end default
   style.
+- ![Feature][badge-feature] Allow customizing each table line independently in the text
+  back end. `TextTableFormat` now has the fields `top_line`, `header_line`,
+  `merged_header_cell_line`, `middle_line`, `bottom_line` (accepting the new exported
+  object `TextLineBorders`), `left_line`, `center_line`, and `right_line` (accepting a
+  `Char`), which sparsely override the characters in `borders` for a single line.
+  `TextTableStyle` now has line faces with the same names to style each line
+  independently, falling back to `table_border` when unset. The line design fields of
+  `TableFormat` are now fully supported by the text back end: each `LineStyle` is mapped
+  to Unicode box-drawing characters, the intersections between the lines are selected
+  automatically from the crossing designs, and the line design colors are converted to the
+  line faces of the style.
 - ![Info][badge-info] The conversion of `TableFormat` and `TableStyle` is a best effort:
-  the HTML back end currently ignores `TableFormat`, the text back end ignores the line
-  design, the Markdown back end only supports `horizontal_line_before_summary_rows` and
-  ignores the style fields its style type does not have, and the LaTeX back end ignores
-  the line width and color. With `backend = :auto`, a `TableFormat` does not select a back
-  end and the text back end is used.
+  the HTML back end currently ignores `TableFormat`, the Markdown back end only supports
+  `horizontal_line_before_summary_rows` and ignores the style fields its style type does
+  not have, and the LaTeX back end ignores the line width and color. With
+  `backend = :auto`, a `TableFormat` does not select a back end and the text back end is
+  used.
 - ![Enhancement][badge-enhancement] Render the escape sequences of the style of the text back
   end when the style is created instead of once per cell.
 - ![Info][badge-info] The conversion from `Crayon` to `Face` is lossy: the attributes
