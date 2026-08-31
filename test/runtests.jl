@@ -40,6 +40,7 @@ end
     include("./backends/excel/files_and_sheets.jl")
     include("./backends/excel/fills.jl")
     include("./backends/excel/formats.jl")
+    include("./backends/excel/generic_table_format.jl")
     include("./backends/excel/formatters.jl")
     include("./backends/excel/heights_and_widths.jl")
     include("./backends/excel/highlighters.jl")
@@ -58,6 +59,7 @@ end
     include("./backends/html/divs.jl")
     include("./backends/html/footnotes.jl")
     include("./backends/html/full.jl")
+    include("./backends/html/generic_table_format.jl")
     include("./backends/html/highlighters.jl")
     include("./backends/html/issues.jl")
     include("./backends/html/minify.jl")
@@ -75,6 +77,7 @@ end
     include("./backends/latex/decorations.jl")
     include("./backends/latex/default.jl")
     include("./backends/latex/full.jl")
+    include("./backends/latex/generic_table_format.jl")
     include("./backends/latex/highlighters.jl")
     include("./backends/latex/horizontal_lines.jl")
     include("./backends/latex/offset_arrays.jl")
@@ -92,6 +95,7 @@ end
     include("./backends/markdown/default.jl")
     include("./backends/markdown/footnotes.jl")
     include("./backends/markdown/full.jl")
+    include("./backends/markdown/generic_table_format.jl")
     include("./backends/markdown/highlighters.jl")
     include("./backends/markdown/offset_arrays.jl")
     include("./backends/markdown/renderers.jl")
@@ -110,6 +114,7 @@ end
     include("./backends/text/faces.jl")
     include("./backends/text/footnotes.jl")
     include("./backends/text/full.jl")
+    include("./backends/text/generic_table_format.jl")
     include("./backends/text/highlighters.jl")
     include("./backends/text/horizontal_lines.jl")
     include("./backends/text/issues.jl")
@@ -129,6 +134,7 @@ end
     include("./backends/typst/decorations.jl")
     include("./backends/typst/default.jl")
     include("./backends/typst/full.jl")
+    include("./backends/typst/generic_table_format.jl")
     include("./backends/typst/highlighters.jl")
     include("./backends/typst/horizontal_lines.jl")
     include("./backends/typst/minify.jl")
@@ -144,6 +150,10 @@ end
 
 @testset "Faces" verbose = true begin
     include("./faces.jl")
+end
+
+@testset "Table Format" verbose = true begin
+    include("./table_format.jl")
 end
 
 @testset "General Tests" verbose = true begin
