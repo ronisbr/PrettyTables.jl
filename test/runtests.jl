@@ -119,6 +119,7 @@ end
     include("./backends/text/horizontal_lines.jl")
     include("./backends/text/issues.jl")
     include("./backends/text/line_breaks.jl")
+    include("./backends/text/line_designs.jl")
     include("./backends/text/offset_arrays.jl")
     include("./backends/text/renderers.jl")
     include("./backends/text/special_cells.jl")
