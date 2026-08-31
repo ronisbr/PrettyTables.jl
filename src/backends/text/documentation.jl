@@ -89,10 +89,15 @@ the output.
     be shrunk to fit the table in the display. If it is `0` or negative, no column will be
     shrinkable.
     (**Default** = 0)
-- `style::TextTableStyle`: Style of the table. For more information, see the section
-    **Text Table Style** in the **Extended Help**.
-- `table_format::TextTableFormat`: Text table format used to render the table. For more
-    information, see the section **Text Table Format** in the **Extended Help**.
+- `style::Union{TableStyle, TextTableStyle}`: Style of the table. The fields of the
+    backend-agnostic [`TableStyle`](@ref) override the ones of the default text table
+    style. For more information, see the section **Text Table Style** in the **Extended
+    Help**.
+- `table_format::Union{TableFormat, TextTableFormat}`: Text table format used to render
+    the table. The line presence fields of the backend-agnostic [`TableFormat`](@ref) are
+    fully supported, whereas the line design fields are ignored because the text back end
+    draws the table with a single character set. For more information, see the section
+    **Text Table Format** in the **Extended Help**.
 
 # Extended Help
 
