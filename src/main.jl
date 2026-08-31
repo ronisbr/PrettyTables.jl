@@ -20,10 +20,16 @@ function pretty_table(
 end
 
 function pretty_table(::Type{HTML}, @nospecialize(data::Any); kwargs...)
-    # If the keywords do not set the back end or the table format, use the HTML back end
-    # by default.
-    str = if !haskey(kwargs, :backend) && !haskey(kwargs, :table_format)
-        pretty_table(String, data; backend = :html, kwargs...)
+    # If the keywords do not set the back end, resolve it from the table format, using the
+    # HTML back end by default. Notice that a backend-agnostic `TableFormat` does not
+    # select a back end.
+    str = if !haskey(kwargs, :backend)
+        pretty_table(
+            String,
+            data;
+            backend = _resolve_printing_backend(kwargs; default = :html),
+            kwargs...
+        )
     else
         pretty_table(String, data; kwargs...)
     end
@@ -509,40 +515,93 @@ Base.@nospecializeinfer function _pretty_table(
 end
 
 """
+    _resolve_generic_configurations(kwargs::NamedTuple, table_format_converter::F1, table_style_converter::F2) where {F1 <: Function, F2 <: Function} -> NamedTuple
+
+Convert the `table_format` and `style` entries of `kwargs`, if present, using the back end
+converters `table_format_converter` and `table_style_converter`, keeping every other entry
+untouched.
+
+This function is the single place where the backend-agnostic `TableFormat` and `TableStyle`
+are converted to the back end native objects. Performing the conversion here is critical
+for the time to print the first table: the back end print functions only ever see the
+native types, so they reuse the method instances compiled during the package
+precompilation. If the generic objects reached the back end print functions, every large
+rendering body would be compiled again for the generic keyword types.
+"""
+function _resolve_generic_configurations(
+    kwargs::NamedTuple,
+    table_format_converter::F1,
+    table_style_converter::F2,
+) where {F1 <: Function, F2 <: Function}
+    haskey(kwargs, :table_format) && (
+        kwargs = merge(
+            kwargs,
+            (; table_format = table_format_converter(kwargs.table_format))
+        )
+    )
+
+    haskey(kwargs, :style) && (
+        kwargs = merge(kwargs, (; style = table_style_converter(kwargs.style)))
+    )
+
+    return kwargs
+end
+
+"""
     _printing_backend(::Val{backend}, pspec::PrintingSpec; is_stdout::Bool, kwargs...)
 
 Call the appropriate printing `backend` using the printing specification `pspec`. The
 keyword argument `is_stdout` is `true` if the user wants to output the table to the
-`stdout`.
+`stdout`. Notice that the backend-agnostic `table_format` and `style` objects are converted
+to the back end native types here, before the back end print function is called (see
+[`_resolve_generic_configurations`](@ref)).
 """
 function _printing_backend(::Val{:latex}, pspec::PrintingSpec; is_stdout::Bool, kwargs...)
-    _latex__print(pspec; kwargs...)
+    nt = _resolve_generic_configurations(
+        values(kwargs), _latex__table_format, _latex__table_style
+    )
+    _latex__print(pspec; nt...)
     return nothing
 end
 
 function _printing_backend(::Val{:html}, pspec::PrintingSpec; is_stdout::Bool, kwargs...)
-    _html__print(pspec; is_stdout, kwargs...)
+    nt = _resolve_generic_configurations(
+        values(kwargs), _html__table_format, _html__table_style
+    )
+    _html__print(pspec; is_stdout, nt...)
     return nothing
 end
 
 function _printing_backend(::Val{:typst}, pspec::PrintingSpec; is_stdout::Bool, kwargs...)
-    _typst__print(pspec; is_stdout, kwargs...)
+    nt = _resolve_generic_configurations(
+        values(kwargs), _typst__table_format, _typst__table_style
+    )
+    _typst__print(pspec; is_stdout, nt...)
     return nothing
 end
 
 function _printing_backend(::Val{:excel}, pspec::PrintingSpec; is_stdout::Bool, kwargs...)
-    return _excel__print(pspec; kwargs...)
+    nt = _resolve_generic_configurations(
+        values(kwargs), _excel__table_format, _excel__table_style
+    )
+    return _excel__print(pspec; nt...)
 end
 
 function _printing_backend(
     ::Val{:markdown}, pspec::PrintingSpec; is_stdout::Bool, kwargs...
 )
-    _markdown__print(pspec; kwargs...)
+    nt = _resolve_generic_configurations(
+        values(kwargs), _markdown__table_format, _markdown__table_style
+    )
+    _markdown__print(pspec; nt...)
     return nothing
 end
 
 function _printing_backend(::Val{:text}, pspec::PrintingSpec; is_stdout::Bool, kwargs...)
-    _text__print_table(pspec; kwargs...)
+    nt = _resolve_generic_configurations(
+        values(kwargs), _text__table_format, _text__table_style
+    )
+    _text__print_table(pspec; nt...)
     return nothing
 end
 

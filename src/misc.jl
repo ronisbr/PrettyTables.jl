@@ -631,15 +631,22 @@ function _omitted_cell_summary(num_omitted_rows::Int, num_omitted_columns::Int)
 end
 
 """
-    _resolve_printing_backend(configurations) -> Symbol
+    _resolve_printing_backend(configurations; kwargs...) -> Symbol
 
 Return the printing backend to be used based on the `configurations` provided. Notice that
 this function must only be used when the user did not specify the backend directly using the
 `backend` keyword.
+
+# Keywords
+
+- `default::Symbol`: Backend returned when the table format does not select a backend,
+    which happens when it is absent or when it is the backend-agnostic
+    [`TableFormat`](@ref).
+    (**Default**: `:text`)
 """
-function _resolve_printing_backend(configurations)
+function _resolve_printing_backend(configurations; default::Symbol = :text)
     table_format = get(configurations, :table_format, nothing)
-    backend = :text
+    backend = default
 
     if table_format isa ExcelTableFormat
         backend = :excel
