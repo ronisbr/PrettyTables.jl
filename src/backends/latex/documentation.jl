@@ -15,10 +15,16 @@ the output.
 
 - `highlighters::Vector{<:AbstractHighlighter}`: Highlighters to apply to the table. For more
     information, see the section **LaTeX Highlighters** in the **Extended Help**.
-- `style::LatexTableStyle`: Style of the table. For more information, see the section
-    **LaTeX Table Style** in the **Extended Help**.
-- `table_format::LatexTableFormat`: LaTeX table format used to render the table. For more
-    information, see the section **LaTeX Table Format** in the **Extended Help**.
+- `style::Union{TableStyle, LatexTableStyle}`: Style of the table. The fields of the
+    backend-agnostic [`TableStyle`](@ref) override the ones of the default LaTeX table
+    style. For more information, see the section **LaTeX Table Style** in the **Extended
+    Help**.
+- `table_format::Union{TableFormat, LatexTableFormat}`: LaTeX table format used to render
+    the table. The line presence fields of the backend-agnostic [`TableFormat`](@ref) are
+    fully supported, and the line design is converted by [`latex_line_style`](@ref) (best
+    effort: `width` and `color` are ignored, and the vertical line designs cannot be
+    changed). For more information, see the section **LaTeX Table Format** in the
+    **Extended Help**.
 
 # Extended Help
 

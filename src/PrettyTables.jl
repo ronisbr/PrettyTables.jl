@@ -52,6 +52,7 @@ include("./tables.jl")
 
 include("./backends/latex/types.jl")
 include("./backends/latex/faces.jl")
+include("./backends/latex/table_format.jl")
 include("./backends/latex/documentation.jl")
 include("./backends/latex/helpers.jl")
 include("./backends/latex/latex_backend.jl")
