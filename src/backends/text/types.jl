@@ -4,7 +4,8 @@
 #
 ############################################################################################
 
-export CustomTextCell, TextTableBorders, TextTableFormat, TextTableStyle, TextHighlighter
+export CustomTextCell, TextLineBorders, TextTableBorders, TextTableFormat, TextTableStyle
+export TextHighlighter
 
 ############################################################################################
 #                                     Custom Text Cell                                     #
@@ -91,6 +92,45 @@ Define the format of the borders in the tables printed with the text back end.
     row::Char                 = '─'
 end
 
+"""
+    struct TextLineBorders
+
+Define the characters of a single horizontal line in the tables printed with the text back
+end. Every field defaults to `nothing`, meaning that the corresponding character in the
+field `borders` of [`TextTableFormat`](@ref) is used. Hence, this object sparsely overrides
+the characters of a single line.
+
+# Fields
+
+- `up_right_corner::Union{Nothing, Char}`: Character in the up right corner.
+- `up_left_corner::Union{Nothing, Char}`: Character in the up left corner.
+- `bottom_left_corner::Union{Nothing, Char}`: Character in the bottom left corner.
+- `bottom_right_corner::Union{Nothing, Char}`: Character in the bottom right corner.
+- `up_intersection::Union{Nothing, Char}`: Character in the intersection of lines in the up
+    part.
+- `left_intersection::Union{Nothing, Char}`: Character in the intersection of lines in the
+    left part.
+- `right_intersection::Union{Nothing, Char}`: Character in the intersection of lines in the
+    right part.
+- `middle_intersection::Union{Nothing, Char}`: Character in the intersection of lines in
+    the middle of the table.
+- `bottom_intersection::Union{Nothing, Char}`: Character in the intersection of the lines
+    in the bottom part.
+- `row::Union{Nothing, Char}`: Character in the horizontal line.
+"""
+@kwdef struct TextLineBorders
+    up_right_corner::Union{Nothing, Char}     = nothing
+    up_left_corner::Union{Nothing, Char}      = nothing
+    bottom_left_corner::Union{Nothing, Char}  = nothing
+    bottom_right_corner::Union{Nothing, Char} = nothing
+    up_intersection::Union{Nothing, Char}     = nothing
+    left_intersection::Union{Nothing, Char}   = nothing
+    right_intersection::Union{Nothing, Char}  = nothing
+    middle_intersection::Union{Nothing, Char} = nothing
+    bottom_intersection::Union{Nothing, Char} = nothing
+    row::Union{Nothing, Char}                 = nothing
+end
+
 # Create some default decorations to reduce allocations.
 const _TEXT__BOLD                = Face(; weight = :bold)
 const _TEXT__BOLD_UNDERLINE      = Face(; weight = :bold, underline = true)
@@ -110,6 +150,18 @@ Define the format of the tables printed with the text back end.
 # Fields
 
 - `borders::TextTableBorders`: Format of the borders.
+- `top_line::Union{Nothing, TextLineBorders}`: Characters of the top line.
+- `header_line::Union{Nothing, TextLineBorders}`: Characters of the lines at the column
+    labels.
+- `merged_header_cell_line::Union{Nothing, TextLineBorders}`: Characters of the lines under
+    the merged column labels.
+- `middle_line::Union{Nothing, TextLineBorders}`: Characters of the lines inside the table.
+- `bottom_line::Union{Nothing, TextLineBorders}`: Characters of the bottom line.
+- `left_line::Union{Nothing, Char}`: Character of the vertical line at the left of the
+    table.
+- `center_line::Union{Nothing, Char}`: Character of the vertical lines inside the table.
+- `right_line::Union{Nothing, Char}`: Character of the vertical line at the right of the
+    table.
 - `horizontal_line_at_beginning::Bool`: If `true`, a horizontal line will be drawn at the
     beginning of the table.
 - `horizontal_lines_at_column_labels::Union{Symbol, Vector{Int}}`: A horizontal line will be
@@ -154,11 +206,33 @@ Define the format of the tables printed with the text back end.
 - `suppress_vertical_lines_at_column_labels::Bool`: If `true`, the vertical lines inside
     the column label rows will be suppressed.
 - `ellipsis_line_skip::Int`: Number of lines to skip when printing an ellipsis.
+
+# Line Characters
+
+The line character fields allow the user to customize the characters of each table line
+independently. The horizontal line fields accept a [`TextLineBorders`](@ref), whereas the
+vertical line fields accept a `Char`. Every field, and every character inside a
+[`TextLineBorders`](@ref), defaults to `nothing`, meaning that the corresponding character
+in `borders` is used. Hence, those fields sparsely override the characters in `borders` for
+a single line.
+
+The color of each line can be configured with the line faces of [`TextTableStyle`](@ref).
 """
 @kwdef struct TextTableFormat
     # == Border and Lines ==================================================================
 
     borders::TextTableBorders = TextTableBorders()
+
+    # == Line Characters ===================================================================
+
+    top_line::Union{Nothing, TextLineBorders}                = nothing
+    header_line::Union{Nothing, TextLineBorders}             = nothing
+    merged_header_cell_line::Union{Nothing, TextLineBorders} = nothing
+    middle_line::Union{Nothing, TextLineBorders}             = nothing
+    bottom_line::Union{Nothing, TextLineBorders}             = nothing
+    left_line::Union{Nothing, Char}                          = nothing
+    center_line::Union{Nothing, Char}                        = nothing
+    right_line::Union{Nothing, Char}                         = nothing
 
     # == Configuration for the Horizontal and Vertical Lines ===============================
 
@@ -188,6 +262,57 @@ Define the format of the tables printed with the text back end.
 end
 
 """
+    struct TextResolvedTableLines
+
+Store the characters and escape sequences used to draw each table line, resolved once per
+printed table from the line characters in [`TextTableFormat`](@ref) and the line faces in
+[`TextTableStyle`](@ref). Hence, the printing loop only reads characters and strings.
+
+# Fields
+
+- `top::TextTableBorders`: Characters of the top line.
+- `header::TextTableBorders`: Characters of the lines at the column labels.
+- `merged_header::TextTableBorders`: Characters of the lines under the merged column labels.
+- `middle::TextTableBorders`: Characters of the lines inside the table.
+- `bottom::TextTableBorders`: Characters of the bottom line.
+- `top_sgr::String`: Escape sequence of the top line.
+- `header_sgr::String`: Escape sequence of the lines at the column labels.
+- `merged_header_sgr::String`: Escape sequence of the lines under the merged column labels.
+- `middle_sgr::String`: Escape sequence of the lines inside the table.
+- `bottom_sgr::String`: Escape sequence of the bottom line.
+- `left_char::Char`: Character of the vertical line at the left of the table.
+- `center_char::Char`: Character of the vertical lines inside the table.
+- `right_char::Char`: Character of the vertical line at the right of the table.
+- `left_sgr::String`: Escape sequence of the vertical line at the left of the table.
+- `center_sgr::String`: Escape sequence of the vertical lines inside the table.
+- `right_sgr::String`: Escape sequence of the vertical line at the right of the table.
+
+The `column` field of each horizontal line character set contains the resolved center
+vertical line character.
+"""
+struct TextResolvedTableLines
+    top::TextTableBorders
+    header::TextTableBorders
+    merged_header::TextTableBorders
+    middle::TextTableBorders
+    bottom::TextTableBorders
+
+    top_sgr::String
+    header_sgr::String
+    merged_header_sgr::String
+    middle_sgr::String
+    bottom_sgr::String
+
+    left_char::Char
+    center_char::Char
+    right_char::Char
+
+    left_sgr::String
+    center_sgr::String
+    right_sgr::String
+end
+
+"""
     struct TextRenderedStyle
 
 Escape sequences of every field of a [`TextTableStyle`](@ref), rendered once when the style
@@ -213,6 +338,14 @@ struct TextRenderedStyle{
     source_note::String
     omitted_cell_summary::String
     table_border::String
+    top_line::String
+    header_line::String
+    merged_header_cell_line::String
+    middle_line::String
+    bottom_line::String
+    left_line::String
+    center_line::String
+    right_line::String
 end
 
 """
@@ -266,8 +399,26 @@ Define the style of the tables printed with the text back end.
 - `source_note::Face`: Face with the style for the source notes.
 - `omitted_cell_summary::Face`: Face with the style for the omitted cell summary.
 - `table_border::Face`: Face with the style for the table border.
+- `top_line::Union{Nothing, Face}`: Face with the style for the top line.
+- `header_line::Union{Nothing, Face}`: Face with the style for the lines at the column
+    labels.
+- `merged_header_cell_line::Union{Nothing, Face}`: Face with the style for the lines under
+    the merged column labels.
+- `middle_line::Union{Nothing, Face}`: Face with the style for the lines inside the table.
+- `bottom_line::Union{Nothing, Face}`: Face with the style for the bottom line.
+- `left_line::Union{Nothing, Face}`: Face with the style for the vertical line at the left
+    of the table.
+- `center_line::Union{Nothing, Face}`: Face with the style for the vertical lines inside
+    the table.
+- `right_line::Union{Nothing, Face}`: Face with the style for the vertical line at the
+    right of the table.
 - `_rendered::TextRenderedStyle`: Private field with the escape sequences of every field,
     rendered when the style is created.
+
+The line faces default to `nothing`, meaning that the corresponding line is rendered with
+the face in `table_border`. When printing with the backend-agnostic [`TableFormat`](@ref),
+the color of each line design is converted to the corresponding line face, unless the line
+face is explicitly set, which has the highest precedence.
 
 # Constructor
 
@@ -299,6 +450,14 @@ struct TextTableStyle{
     source_note::Face
     omitted_cell_summary::Face
     table_border::Face
+    top_line::Union{Nothing, Face}
+    header_line::Union{Nothing, Face}
+    merged_header_cell_line::Union{Nothing, Face}
+    middle_line::Union{Nothing, Face}
+    bottom_line::Union{Nothing, Face}
+    left_line::Union{Nothing, Face}
+    center_line::Union{Nothing, Face}
+    right_line::Union{Nothing, Face}
 
     # == Private Fields ====================================================================
 
@@ -323,6 +482,14 @@ function TextTableStyle(;
     source_note                    = _TEXT__DARK_GRAY,
     omitted_cell_summary           = _TEXT__CYAN,
     table_border                   = _TEXT__DEFAULT,
+    top_line                       = nothing,
+    header_line                    = nothing,
+    merged_header_cell_line        = nothing,
+    middle_line                    = nothing,
+    bottom_line                    = nothing,
+    left_line                      = nothing,
+    center_line                    = nothing,
+    right_line                     = nothing,
 )
     title                          = _text__to_face(title)
     subtitle                       = _text__to_face(subtitle)
@@ -341,6 +508,14 @@ function TextTableStyle(;
     source_note                    = _text__to_face(source_note)
     omitted_cell_summary           = _text__to_face(omitted_cell_summary)
     table_border                   = _text__to_face(table_border)
+    top_line                       = _text__to_optional_face(top_line)
+    header_line                    = _text__to_optional_face(header_line)
+    merged_header_cell_line        = _text__to_optional_face(merged_header_cell_line)
+    middle_line                    = _text__to_optional_face(middle_line)
+    bottom_line                    = _text__to_optional_face(bottom_line)
+    left_line                      = _text__to_optional_face(left_line)
+    center_line                    = _text__to_optional_face(center_line)
+    right_line                     = _text__to_optional_face(right_line)
 
     rendered = TextRenderedStyle(
         _text__face_sgr(title),
@@ -360,6 +535,14 @@ function TextTableStyle(;
         _text__face_sgr(source_note),
         _text__face_sgr(omitted_cell_summary),
         _text__face_sgr(table_border),
+        _text__optional_face_sgr(top_line),
+        _text__optional_face_sgr(header_line),
+        _text__optional_face_sgr(merged_header_cell_line),
+        _text__optional_face_sgr(middle_line),
+        _text__optional_face_sgr(bottom_line),
+        _text__optional_face_sgr(left_line),
+        _text__optional_face_sgr(center_line),
+        _text__optional_face_sgr(right_line),
     )
 
     return TextTableStyle(
@@ -380,6 +563,14 @@ function TextTableStyle(;
         source_note,
         omitted_cell_summary,
         table_border,
+        top_line,
+        header_line,
+        merged_header_cell_line,
+        middle_line,
+        bottom_line,
+        left_line,
+        center_line,
+        right_line,
         rendered,
     )
 end
@@ -391,6 +582,23 @@ Convert the `decoration` passed to `TextTableStyle`, a face or a crayon, into a 
 """
 _text__to_face(face::Face)     = face
 _text__to_face(crayon::Crayon) = _face_from_crayon(crayon)
+
+"""
+    _text__to_optional_face(decoration::Union{Nothing, Face, Crayon}) -> Union{Nothing, Face}
+
+Convert an optional `decoration` passed to `TextTableStyle` into a face, keeping `nothing`
+unchanged.
+"""
+_text__to_optional_face(::Nothing) = nothing
+_text__to_optional_face(decoration) = _text__to_face(decoration)
+
+"""
+    _text__optional_face_sgr(face::Union{Nothing, Face}) -> String
+
+Return the escape sequence of an optional `face`, or an empty string if `face` is `nothing`.
+"""
+_text__optional_face_sgr(::Nothing) = ""
+_text__optional_face_sgr(face::Face) = _text__face_sgr(face)
 
 """
     _text__to_faces(decorations::Union{Face, Crayon, AbstractVector}) -> Union{Face, Vector{Face}}

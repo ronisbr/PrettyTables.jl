@@ -94,10 +94,10 @@ the output.
     style. For more information, see the section **Text Table Style** in the **Extended
     Help**.
 - `table_format::Union{TableFormat, TextTableFormat}`: Text table format used to render
-    the table. The line presence fields of the backend-agnostic [`TableFormat`](@ref) are
-    fully supported, whereas the line design fields are ignored because the text back end
-    draws the table with a single character set. For more information, see the section
-    **Text Table Format** in the **Extended Help**.
+    the table. The line presence and line design fields of the backend-agnostic
+    [`TableFormat`](@ref) are fully supported, where the line designs are mapped to
+    box-drawing characters. For more information, see the section **Text Table Format** in
+    the **Extended Help**.
 
 # Extended Help
 
@@ -191,6 +191,18 @@ The text table format is defined using an object of type [`TextTableFormat`](@re
 contains the following fields:
 
 - `borders::TextTableBorders`: Format of the borders.
+- `top_line::Union{Nothing, TextLineBorders}`: Characters of the top line.
+- `header_line::Union{Nothing, TextLineBorders}`: Characters of the lines at the column
+    labels.
+- `merged_header_cell_line::Union{Nothing, TextLineBorders}`: Characters of the lines
+    under the merged column labels.
+- `middle_line::Union{Nothing, TextLineBorders}`: Characters of the lines inside the table.
+- `bottom_line::Union{Nothing, TextLineBorders}`: Characters of the bottom line.
+- `left_line::Union{Nothing, Char}`: Character of the vertical line at the left of the
+    table.
+- `center_line::Union{Nothing, Char}`: Character of the vertical lines inside the table.
+- `right_line::Union{Nothing, Char}`: Character of the vertical line at the right of the
+    table.
 - `horizontal_line_at_beginning::Bool`: If `true`, a horizontal line will be drawn at the
     beginning of the table.
 - `horizontal_lines_at_column_labels::Union{Symbol, Vector{Int}}`: A horizontal line will be
@@ -236,6 +248,12 @@ contains the following fields:
     the column label rows will be suppressed.
 - `ellipsis_line_skip::Integer`: Number of lines to skip when printing an ellipsis.
 
+The line character fields allow the user to customize the characters of each table line
+independently, sparsely overriding the characters in `borders` for that line (see
+[`TextLineBorders`](@ref)). When printing with the backend-agnostic [`TableFormat`](@ref),
+each [`LineStyle`](@ref) is mapped to Unicode box-drawing characters, where the
+intersections between the lines are selected automatically from the crossing designs.
+
 We provide a few helpers to configure the table format. For more information, see the
 documentation of the following macros:
 
@@ -272,10 +290,28 @@ contains the following fields:
 - `source_note::Face`: Face with the style for the source notes.
 - `omitted_cell_summary::Face`: Face with the style for the omitted cell summary.
 - `table_border::Face`: Face with the style for the table border.
+- `top_line::Union{Nothing, Face}`: Face with the style for the top line.
+- `header_line::Union{Nothing, Face}`: Face with the style for the lines at the column
+    labels.
+- `merged_header_cell_line::Union{Nothing, Face}`: Face with the style for the lines under
+    the merged column labels.
+- `middle_line::Union{Nothing, Face}`: Face with the style for the lines inside the table.
+- `bottom_line::Union{Nothing, Face}`: Face with the style for the bottom line.
+- `left_line::Union{Nothing, Face}`: Face with the style for the vertical line at the left
+    of the table.
+- `center_line::Union{Nothing, Face}`: Face with the style for the vertical lines inside
+    the table.
+- `right_line::Union{Nothing, Face}`: Face with the style for the vertical line at the
+    right of the table.
 
 Each field is a `Face` describing the style for the corresponding element in the table.
 The keyword constructor also accepts a `Crayon` (or a vector of crayons) in every field,
 which is converted to the equivalent face (see [Faces](@ref)).
+
+The line faces default to `nothing`, meaning that the corresponding line is rendered with
+the face in `table_border`. When printing with the backend-agnostic [`TableFormat`](@ref),
+the color of each line design is converted to the corresponding line face, unless the line
+face is explicitly set, which has the highest precedence.
 
 For example, if we want that the stubhead label is bold and red, we must define:
 

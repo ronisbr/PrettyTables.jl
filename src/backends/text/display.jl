@@ -222,6 +222,7 @@ end
     _text__print_horizontal_line(
         display::Display,
         tf::TextTableFormat,
+        tb::TextTableBorders,
         sgr::String,
         table_data::TableData,
         vertical_lines_at_data_columns::AbstractVector{Int},
@@ -239,6 +240,8 @@ Print a horizontal line to `display`.
 
 - `display::Display`: Display where the horizontal line will be printed.
 - `tf::TextTableFormat`: Table format.
+- `tb::TextTableBorders`: Characters used to draw the horizontal line, resolved for the
+    line being printed (see [`TextResolvedTableLines`](@ref)).
 - `sgr::String`: Escape sequence used to print the horizontal line, or an empty string for
     no style.
 - `table_data::TableData`: Table data.
@@ -260,6 +263,7 @@ Print a horizontal line to `display`.
 function _text__print_horizontal_line(
     display::Display,
     tf::TextTableFormat,
+    tb::TextTableBorders,
     sgr::String,
     table_data::TableData,
     vertical_lines_at_data_columns::AbstractVector{Int},
@@ -271,8 +275,6 @@ function _text__print_horizontal_line(
     row_group_label::Bool = false,
 )
     # == Auxiliary Variables ===============================================================
-
-    tb = tf.borders
 
     # Here, we obtain the characters for the left, middle, and right intersections.
 
@@ -375,6 +377,7 @@ end
     _text__print_column_label_horizontal_line(
         display::Display,
         tf::TextTableFormat,
+        tb::TextTableBorders,
         sgr::String,
         table_data::TableData,
         row_number::Int,
@@ -392,6 +395,8 @@ Print a column label horizontal line to `display`.
 
 - `display::Display`: Display where the horizontal line will be printed.
 - `tf::TextTableFormat`: Table format.
+- `tb::TextTableBorders`: Characters used to draw the horizontal line, resolved for the
+    line being printed (see [`TextResolvedTableLines`](@ref)).
 - `sgr::String`: Escape sequence used to print the horizontal line, or an empty string for
     no style.
 - `table_data::TableData`: Table data.
@@ -409,6 +414,7 @@ Print a column label horizontal line to `display`.
 function _text__print_column_label_horizontal_line(
     display::Display,
     tf::TextTableFormat,
+    tb::TextTableBorders,
     sgr::String,
     table_data::TableData,
     row_number::Int,
@@ -421,7 +427,6 @@ function _text__print_column_label_horizontal_line(
 )
     # == Auxiliary Variables ===============================================================
 
-    tb = tf.borders
     num_column_labels = length(table_data.column_labels)
 
     # Here, we obtain the characters for the left, middle, and right intersections.
@@ -549,7 +554,7 @@ end
     _text__print_column_label_horizontal_line_only_at_merged_labels(
         display::Display,
         tf::TextTableFormat,
-        sgr::String,
+        rl::TextResolvedTableLines,
         table_data::TableData,
         row_number::Int,
         vertical_lines_at_data_columns::AbstractVector{Int},
@@ -565,8 +570,9 @@ column labels.
 
 - `display::Display`: Display where the horizontal line will be printed.
 - `tf::TextTableFormat`: Table format.
-- `sgr::String`: Escape sequence used to print the horizontal line, or an empty string for
-    no style.
+- `rl::TextResolvedTableLines`: Resolved table lines. The horizontal line sections use the
+    characters and escape sequence of the lines under the merged column labels, whereas the
+    vertical line sections use the resolved vertical line characters.
 - `table_data::TableData`: Table data.
 - `row_number::Int`: Column label row number before the horizontal line.
 - `vertical_lines_at_data_columns::AbstractVector{Int}`: List of columns where a vertical
@@ -578,7 +584,7 @@ column labels.
 function _text__print_column_label_horizontal_line_only_at_merged_labels(
     display::Display,
     tf::TextTableFormat,
-    sgr::String,
+    rl::TextResolvedTableLines,
     table_data::TableData,
     row_number::Int,
     vertical_lines_at_data_columns::AbstractVector{Int},
@@ -588,10 +594,11 @@ function _text__print_column_label_horizontal_line_only_at_merged_labels(
 )
     # == Auxiliary Variables ===============================================================
 
-    tb  = tf.borders
+    tb  = rl.merged_header
+    sgr = rl.merged_header_sgr
     ti  = tb.up_intersection
     ri  = tb.right_intersection
-    col = tb.column
+    col = rl.center_char
     row = tb.row
 
     table_continuation_column = _is_horizontally_cropped(table_data)
@@ -602,7 +609,7 @@ function _text__print_column_label_horizontal_line_only_at_merged_labels(
 
     # -- Left Intersection -----------------------------------------------------------------
 
-    tf.vertical_line_at_beginning && _text__print(display, col)
+    tf.vertical_line_at_beginning && _text__print(display, rl.left_char)
 
     # -- Row Number Column -----------------------------------------------------------------
 
@@ -635,7 +642,8 @@ function _text__print_column_label_horizontal_line_only_at_merged_labels(
         end
 
         if (j == last(eachindex(printed_data_column_widths)))
-            tf.vertical_line_after_data_columns && _text__print(display, col)
+            tf.vertical_line_after_data_columns &&
+                _text__print(display, table_continuation_column ? col : rl.right_char)
 
         elseif j ∈ vertical_lines_at_data_columns
             # Check if we are in the middle of a merged column label.

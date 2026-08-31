@@ -81,6 +81,11 @@ function _text__print_table(
     # only writes strings. The printing functions skip them if the display has no color.
     rstyle = style._rendered
 
+    # Resolve the characters and escape sequences used to draw each table line, taking the
+    # line characters and line faces into account. If none is set, this object only
+    # references the characters in `tf.borders` and the escape sequence of `table_border`.
+    rl = _text__resolve_table_lines(tf, style)
+
     # Process the vertical lines at data columns.
     if tf.vertical_lines_at_data_columns isa Symbol
         vertical_lines_at_data_columns = if tf.vertical_lines_at_data_columns == :all
@@ -633,6 +638,11 @@ function _text__print_table(
 
     # == Print the Table ===================================================================
 
+    # If the table has a continuation column, the vertical line after the data columns is
+    # not at the right edge of the table. We compute this information here to select the
+    # correct vertical line character inside the loop.
+    table_continuation_column = _is_horizontally_cropped(table_data)
+
     ps     = PrintingTableState()
     action = :initialize
 
@@ -782,7 +792,8 @@ function _text__print_table(
                 _text__print_column_label_horizontal_line(
                     display,
                     tf,
-                    rstyle.table_border,
+                    rl.top,
+                    rl.top_sgr,
                     table_data,
                     ir - 1,
                     vertical_lines_at_data_columns,
@@ -807,7 +818,8 @@ function _text__print_table(
                     _text__print_horizontal_line(
                         display,
                         tf,
-                        rstyle.table_border,
+                        rl.middle,
+                        rl.middle_sgr,
                         table_data,
                         vertical_lines_at_data_columns,
                         row_number_column_width,
@@ -843,7 +855,7 @@ function _text__print_table(
             end
 
             tf.vertical_line_at_beginning &&
-                _text__styled_print(display, tf.borders.column, rstyle.table_border)
+                _text__styled_print(display, rl.left_char, rl.left_sgr)
 
             continue
         end
@@ -853,17 +865,19 @@ function _text__print_table(
         if action == :diagonal_continuation_cell
             _text__print(display, " ⋱ ")
             tf.vertical_line_after_continuation_column &&
-                _text__styled_print(display, tf.borders.column, rstyle.table_border)
+                _text__styled_print(display, rl.right_char, rl.right_sgr)
             continue
 
         elseif action == :horizontal_continuation_cell
             _text__print(display, " ⋯ ")
             tf.vertical_line_after_continuation_column &&
-                _text__styled_print(display, tf.borders.column, rstyle.table_border)
+                _text__styled_print(display, rl.right_char, rl.right_sgr)
             continue
 
         elseif action ∈ _VERTICAL_CONTINUATION_CELL_ACTIONS
-            alignment = _current_cell_alignment(action, ps, table_data)
+            alignment  = _current_cell_alignment(action, ps, table_data)
+            vline_char = rl.center_char
+            vline_sgr  = rl.center_sgr
 
             if action == :row_number_vertical_continuation_cell
                 cell_width = row_number_column_width
@@ -878,7 +892,14 @@ function _text__print_table(
                 vline = false
 
                 if jr == last_printed_column_index
-                    tf.vertical_line_after_data_columns && (vline = true)
+                    if tf.vertical_line_after_data_columns
+                        vline = true
+
+                        if !table_continuation_column
+                            vline_char = rl.right_char
+                            vline_sgr  = rl.right_sgr
+                        end
+                    end
                 elseif ps.j ∈ vertical_lines_at_data_columns
                     vline = true
                 end
@@ -887,7 +908,7 @@ function _text__print_table(
             _text__print(display, " ")
             _text__print_aligned(display, "⋮", cell_width, alignment)
             _text__print(display, " ")
-            vline && _text__styled_print(display, tf.borders.column, rstyle.table_border)
+            vline && _text__styled_print(display, vline_char, vline_sgr)
 
             continue
         end
@@ -946,7 +967,8 @@ function _text__print_table(
                     _text__print_column_label_horizontal_line(
                         display,
                         tf,
-                        rstyle.table_border,
+                        rl.header,
+                        rl.header_sgr,
                         table_data,
                         ps.i,
                         vertical_lines_at_data_columns,
@@ -963,7 +985,7 @@ function _text__print_table(
                     _text__print_column_label_horizontal_line_only_at_merged_labels(
                         display,
                         tf,
-                        rstyle.table_border,
+                        rl,
                         table_data,
                         ps.i,
                         vertical_lines_at_data_columns,
@@ -989,7 +1011,8 @@ function _text__print_table(
                     _text__print_column_label_horizontal_line(
                         display,
                         tf,
-                        rstyle.table_border,
+                        bottom ? rl.bottom : rl.header,
+                        bottom ? rl.bottom_sgr : rl.header_sgr,
                         table_data,
                         length(table_data.column_labels),
                         vertical_lines_at_data_columns,
@@ -1020,7 +1043,8 @@ function _text__print_table(
                     _text__print_horizontal_line(
                         display,
                         tf,
-                        rstyle.table_border,
+                        rl.middle,
+                        rl.middle_sgr,
                         table_data,
                         vertical_lines_at_data_columns,
                         row_number_column_width,
@@ -1040,7 +1064,8 @@ function _text__print_table(
                 _text__print_horizontal_line(
                     display,
                     tf,
-                    rstyle.table_border,
+                    bottom ? rl.bottom : rl.middle,
+                    bottom ? rl.bottom_sgr : rl.middle_sgr,
                     table_data,
                     vertical_lines_at_data_columns,
                     row_number_column_width,
@@ -1059,7 +1084,8 @@ function _text__print_table(
                 _text__print_column_label_horizontal_line(
                     display,
                     tf,
-                    rstyle.table_border,
+                    rl.middle,
+                    rl.middle_sgr,
                     table_data,
                     length(table_data.column_labels),
                     vertical_lines_at_data_columns,
@@ -1089,7 +1115,8 @@ function _text__print_table(
                     _text__print_horizontal_line(
                         display,
                         tf,
-                        rstyle.table_border,
+                        bottom ? rl.bottom : rl.middle,
+                        bottom ? rl.bottom_sgr : rl.middle_sgr,
                         table_data,
                         vertical_lines_at_data_columns,
                         row_number_column_width,
@@ -1107,7 +1134,8 @@ function _text__print_table(
                     _text__print_horizontal_line(
                         display,
                         tf,
-                        rstyle.table_border,
+                        rl.middle,
+                        rl.middle_sgr,
                         table_data,
                         vertical_lines_at_data_columns,
                         row_number_column_width,
@@ -1129,7 +1157,8 @@ function _text__print_table(
                     _text__print_horizontal_line(
                         display,
                         tf,
-                        rstyle.table_border,
+                        rl.bottom,
+                        rl.bottom_sgr,
                         table_data,
                         vertical_lines_at_data_columns,
                         row_number_column_width,
@@ -1180,7 +1209,8 @@ function _text__print_table(
         # when a cell line is a `SubString`.
         rendered_cell::Union{String, SubString{String}} = ""
         vline         = false
-        vline_char    = tf.borders.column
+        vline_char    = rl.center_char
+        vline_sgr     = rl.center_sgr
 
         mc_last_index = 0
         merged_cell   = false
@@ -1401,10 +1431,23 @@ function _text__print_table(
         elseif action == :column_label
             if (!merged_cell && (jr == last_printed_column_index)) ||
                 (merged_cell && (mc_last_index == last_printed_column_index))
-                tf.vertical_line_after_data_columns && (vline = true)
+                if tf.vertical_line_after_data_columns
+                    vline = true
+
+                    if !table_continuation_column
+                        vline_char = rl.right_char
+                        vline_sgr  = rl.right_sgr
+                    end
+                end
             elseif ps.j ∈ vertical_lines_at_data_columns
                 vline = true
-                tf.suppress_vertical_lines_at_column_labels && (vline_char = ' ')
+
+                if tf.suppress_vertical_lines_at_column_labels
+                    # The suppressed vertical line must keep the default border style so
+                    # that a line design or face never modifies the blank space.
+                    vline_char = ' '
+                    vline_sgr  = rstyle.table_border
+                end
             end
 
         # NOTE: `:column_label` is fully consumed by the branch above, which is also the one
@@ -1412,14 +1455,23 @@ function _text__print_table(
         # merged-cell-aware last column index. Hence, it must not be listed here.
         elseif action ∈ (:data, :summary_row_cell)
             if jr == last_printed_column_index
-                tf.vertical_line_after_data_columns && (vline = true)
+                if tf.vertical_line_after_data_columns
+                    vline = true
+
+                    if !table_continuation_column
+                        vline_char = rl.right_char
+                        vline_sgr  = rl.right_sgr
+                    end
+                end
             elseif ps.j ∈ vertical_lines_at_data_columns
                 vline = true
             end
 
         elseif action == :row_group_label
             if tf.vertical_line_after_data_columns && !horizontally_limited_by_display
-                vline = true
+                vline      = true
+                vline_char = rl.right_char
+                vline_sgr  = rl.right_sgr
             end
         end
 
@@ -1434,7 +1486,7 @@ function _text__print_table(
             right_margin = 1,
         )
 
-        vline && _text__styled_print(display, vline_char, rstyle.table_border)
+        vline && _text__styled_print(display, vline_char, vline_sgr)
     end
 
     # == Print the Buffer Into the IO ======================================================
