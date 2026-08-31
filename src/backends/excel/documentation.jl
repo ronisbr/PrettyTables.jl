@@ -59,10 +59,14 @@ The Excel backend's return value depends on the following combination of keyword
     If no sheet with that name exists it will be created. When an `XLSX.Worksheet`, that
     worksheet is updated in place and `nothing` is returned.
     (**Default**: `"prettytable"`)
-- `style::ExcelTableStyle`: Style of the table. For more information, see the section
-    **Excel Table Style** in the **Extended Help**.
-- `table_format::ExcelTableFormat`: Excel table format used to render the table. For more
-    information, see the section **Excel Table Format** in the **Extended Help**.
+- `style::Union{TableStyle, ExcelTableStyle}`: Style of the table. The fields of the
+    backend-agnostic [`TableStyle`](@ref) override the ones of the default Excel table
+    style. For more information, see the section **Excel Table Style** in the **Extended
+    Help**.
+- `table_format::Union{TableFormat, ExcelTableFormat}`: Excel table format used to render
+    the table. The backend-agnostic [`TableFormat`](@ref) is fully supported: its line
+    presence and design fields override the ones of the default Excel table format. For
+    more information, see the section **Excel Table Format** in the **Extended Help**.
 
 # Extended Help
 

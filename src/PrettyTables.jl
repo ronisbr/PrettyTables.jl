@@ -90,6 +90,7 @@ include("./backends/text/text_backend.jl")
 
 include("./backends/excel/types.jl")
 include("./backends/excel/faces.jl")
+include("./backends/excel/table_format.jl")
 include("./backends/excel/documentation.jl")
 include("./backends/excel/helpers.jl")
 include("./backends/excel/excel_backend.jl")
