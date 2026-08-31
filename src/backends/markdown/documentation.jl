@@ -21,10 +21,16 @@ configure the output.
 - `line_breaks::Bool`: If `true`, line breaks in the content of the cells (`\\n`) are
     replaced by `<br>`.
     (**Default**: `false`)
-- `style::MarkdownTableStyle`: Style of the table. For more information, see the section
+- `style::Union{TableStyle, MarkdownTableStyle}`: Style of the table. The fields of the
+    backend-agnostic [`TableStyle`](@ref) override the ones of the default Markdown table
+    style, except for `title`, `subtitle`, `first_line_merged_column_label`, and
+    `merged_column_label`, which are ignored. For more information, see the section
     **Markdown Table Style** in the **Extended Help**.
-- `table_format::MarkdownTableFormat`: Markdown table format used to render the table. For
-    more information, see the section **Markdown Table Format** in the **Extended Help**.
+- `table_format::Union{TableFormat, MarkdownTableFormat}`: Markdown table format used to
+    render the table. From the backend-agnostic [`TableFormat`](@ref), only
+    `horizontal_line_before_summary_rows` is honored because Markdown tables cannot express
+    the other lines. For more information, see the section **Markdown Table Format** in the
+    **Extended Help**.
 
 # Extended Help
 
