@@ -155,6 +155,27 @@ PrecompileTools.@setup_workload begin
                 ),
             )
 
+            # .. Text Line Characters and Faces ............................................
+
+            pretty_table(
+                io_buf,
+                matrix;
+                table_format = TextTableFormat(;
+                    top_line = TextLineBorders(;
+                        up_left_corner  = '╒',
+                        up_right_corner = '╕',
+                        up_intersection = '╤',
+                        row             = '═',
+                    ),
+                    center_line                   = '┃',
+                    horizontal_lines_at_data_rows = :all,
+                ),
+                style = TextTableStyle(;
+                    header_line = Face(; foreground = :blue),
+                    middle_line = Face(; foreground = :red),
+                ),
+            )
+
             # -- Options Used in DataFrames.jl ---------------------------------------------
 
             style = TextTableStyle(; row_label = Crayon())
