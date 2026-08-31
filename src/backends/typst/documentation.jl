@@ -32,11 +32,16 @@ the output:
 - `minify::Bool`: If `true`, the generated Typst code will be minified by ignoring
     `wrap_column` and printing the table columns in the same line.
     (**Default** = `false`)
-- `style::TypstTableStyle`: Style of the table. For more information, see the section
-    **Typst Table Style** in the **Extended Help**.
+- `style::Union{TableStyle, TypstTableStyle}`: Style of the table. The fields of the
+    backend-agnostic [`TableStyle`](@ref) override the ones of the default Typst table
+    style. For more information, see the section **Typst Table Style** in the **Extended
+    Help**.
     (**Default** = `TypstTableStyle()`)
-- `table_format::TypstTableFormat`: Typst table format used to render the table. For more
-    information, see the section **Typst Table Format** in the **Extended Help**.
+- `table_format::Union{TableFormat, TypstTableFormat}`: Typst table format used to render
+    the table. The backend-agnostic [`TableFormat`](@ref) is fully supported: its line
+    presence fields override the ones of the default Typst table format, and the line
+    design is converted to strokes by [`typst_line_style`](@ref). For more information, see
+    the section **Typst Table Format** in the **Extended Help**.
 - `wrap_column::Integer`: Indicates the column where the output will be wrapped.
     (**Default** = `92`)
 
