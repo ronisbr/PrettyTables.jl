@@ -36,6 +36,8 @@ end
 
 include("./types.jl")
 include("./faces.jl")
+include("./table_format.jl")
+include("./table_style.jl")
 
 ############################################################################################
 #                                         Includes                                         #
