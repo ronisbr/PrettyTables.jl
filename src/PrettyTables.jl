@@ -44,6 +44,7 @@ include("./table_style.jl")
 ############################################################################################
 
 include("./documentation.jl")
+include("./helpers.jl")
 include("./main.jl")
 include("./misc.jl")
 include("./predefined_formatters.jl")
