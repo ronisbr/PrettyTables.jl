@@ -292,12 +292,12 @@ end
 
     @testset "HTML" begin
         expected = """
-<table>
+<table style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
   <thead>
     <tr class = "columnLabelRow">
-      <th style = "font-weight: bold; text-align: right;">A</th>
-      <th style = "font-weight: bold; text-align: right;">B</th>
-      <th style = "font-weight: bold; text-align: right;">C</th>
+      <th style = "border-bottom: 1px solid black; border-left: 2px solid black; border-right: 1px solid black; font-weight: bold; text-align: right;">A</th>
+      <th style = "border-bottom: 1px solid black; border-right: 1px solid black; font-weight: bold; text-align: right;">B</th>
+      <th style = "border-bottom: 1px solid black; border-right: 2px solid black; font-weight: bold; text-align: right;">C</th>
     </tr>
   </thead>
 </table>

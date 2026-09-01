@@ -67,6 +67,7 @@ end
     include("./backends/html/renderers.jl")
     include("./backends/html/special_cells.jl")
     include("./backends/html/stand_alone.jl")
+    include("./backends/html/table_format.jl")
 end
 
 @testset "LaTeX Back End Tests" verbose = true begin

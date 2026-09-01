@@ -170,6 +170,7 @@ end
         # whereas the other back ends default it to `true`. The sparse merge must keep both.
         for (converter, expected) in (
             (PrettyTables._text__table_format,  false),
+            (PrettyTables._html__table_format,  true),
             (PrettyTables._latex__table_format, true),
             (PrettyTables._typst__table_format, true),
             (PrettyTables._excel__table_format, true),
@@ -198,6 +199,112 @@ end
         @test PrettyTables._markdown__table_format(
             TableFormat(; horizontal_line_before_summary_rows = false)
         ).line_before_summary_rows == false
+    end
+
+    @testset "HTML-Only Presence Fields" begin
+        # The HTML-only presence fields must be merged by the HTML converter and silently
+        # ignored by the other back ends.
+        tf = TableFormat(;
+            horizontal_line_before_column_labels = false,
+            horizontal_line_after_footnotes      = false,
+            horizontal_line_at_end               = false,
+        )
+
+        htf = PrettyTables._html__table_format(tf)
+        @test htf.horizontal_line_before_column_labels == false
+        @test htf.horizontal_line_after_footnotes      == false
+        @test htf.horizontal_line_at_end               == false
+
+        _test_table_format_equal(PrettyTables._typst__table_format(tf), TypstTableFormat())
+        _test_table_format_equal(PrettyTables._text__table_format(tf),  TextTableFormat())
+    end
+end
+
+@testset "Helper Macros" verbose = true begin
+    @testset "All Lines" begin
+        tf = TableFormat(; @all_horizontal_lines, @all_vertical_lines)
+
+        _test_table_format_equal(
+            PrettyTables._html__table_format(tf),
+            HtmlTableFormat(; @html__all_horizontal_lines, @html__all_vertical_lines)
+        )
+
+        _test_table_format_equal(
+            PrettyTables._text__table_format(tf),
+            TextTableFormat(;
+                @text__all_horizontal_lines,
+                @text__all_vertical_lines,
+                horizontal_line_at_merged_column_labels = true,
+            )
+        )
+
+        _test_table_format_equal(
+            PrettyTables._typst__table_format(tf),
+            TypstTableFormat(; @typst__all_horizontal_lines, @typst__all_vertical_lines)
+        )
+
+        _test_table_format_equal(
+            PrettyTables._latex__table_format(tf),
+            LatexTableFormat(; @latex__all_horizontal_lines, @latex__all_vertical_lines)
+        )
+
+        # `@excel__all_horizontal_lines` also sets the Excel-only field
+        # `horizontal_line_between_column_labels`, which the backend-agnostic table format
+        # cannot express. Hence, we must reset it to the default before comparing.
+        _test_table_format_equal(
+            PrettyTables._excel__table_format(tf),
+            ExcelTableFormat(;
+                @excel__all_horizontal_lines,
+                @excel__all_vertical_lines,
+                horizontal_line_between_column_labels = false,
+            )
+        )
+    end
+
+    @testset "No Lines" begin
+        tf = TableFormat(; @no_horizontal_lines, @no_vertical_lines)
+
+        _test_table_format_equal(
+            PrettyTables._html__table_format(tf),
+            HtmlTableFormat(; @html__no_horizontal_lines, @html__no_vertical_lines)
+        )
+
+        # `@text__no_vertical_lines` also sets the text-only field
+        # `suppress_vertical_lines_at_column_labels`, which the backend-agnostic table
+        # format cannot express. Hence, we must reset it to the default before comparing.
+        _test_table_format_equal(
+            PrettyTables._text__table_format(tf),
+            TextTableFormat(;
+                @text__no_horizontal_lines,
+                @text__no_vertical_lines,
+                suppress_vertical_lines_at_column_labels = false,
+            )
+        )
+
+        _test_table_format_equal(
+            PrettyTables._typst__table_format(tf),
+            TypstTableFormat(; @typst__no_horizontal_lines, @typst__no_vertical_lines)
+        )
+
+        _test_table_format_equal(
+            PrettyTables._latex__table_format(tf),
+            LatexTableFormat(; @latex__no_horizontal_lines, @latex__no_vertical_lines)
+        )
+
+        _test_table_format_equal(
+            PrettyTables._excel__table_format(tf),
+            ExcelTableFormat(; @excel__no_horizontal_lines, @excel__no_vertical_lines)
+        )
+    end
+
+    @testset "Merging Overrides" begin
+        tf = TableFormat(; @no_horizontal_lines, horizontal_line_at_beginning = true)
+        @test tf.horizontal_line_at_beginning == true
+        @test tf.horizontal_line_after_column_labels == false
+
+        tf = TableFormat(; @all_vertical_lines, vertical_line_at_beginning = false)
+        @test tf.vertical_line_at_beginning == false
+        @test tf.vertical_lines_at_data_columns == :all
     end
 end
 

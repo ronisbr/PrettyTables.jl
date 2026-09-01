@@ -14,7 +14,6 @@
 <meta charset="UTF-8">
 <style>
   table, td, th {
-    border-collapse: collapse;
     font-family: sans-serif;
   }
 
@@ -36,52 +35,20 @@
   tr.sourceNotes td {
     padding-bottom: 2px !important;
   }
-
-  table > *:first-child > tr:first-child {
-    border-top: 2px solid black;
-  }
-
-  table > *:last-child > tr:last-child {
-    border-bottom: 2px solid black;
-  }
-
-  thead > tr:nth-child(1 of .columnLabelRow) {
-    border-top: 1px solid black;
-  }
-
-  thead tr:last-child {
-    border-bottom: 1px solid black;
-  }
-
-  tbody tr:last-child {
-    border-bottom: 1px solid black;
-  }
-
-  tbody > tr:nth-child(1 of .summaryRow) {
-    border-top: 1px solid black;
-  }
-
-  tbody > tr:nth-last-child(1 of .summaryRow) {
-    border-bottom: 1px solid black;
-  }
-
-  tfoot tr:nth-last-child(1 of .footnote) {
-    border-bottom: 1px solid black;
-  }
 </style>
 </head>
 <body>
-<table>
+<table style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
   <thead>
     <tr class = "columnLabelRow">
-      <th style = "font-weight: bold; text-align: right;">Col. 1</th>
-      <th style = "font-weight: bold; text-align: right;">Col. 2</th>
+      <th style = "border-bottom: 1px solid black; border-left: 2px solid black; border-right: 1px solid black; font-weight: bold; text-align: right;">Col. 1</th>
+      <th style = "border-bottom: 1px solid black; border-right: 2px solid black; font-weight: bold; text-align: right;">Col. 2</th>
     </tr>
   </thead>
   <tbody>
     <tr class = "dataRow">
-      <td style = "text-align: right;">1</td>
-      <td style = "text-align: right;">2</td>
+      <td style = "border-bottom: 1px solid black; border-left: 2px solid black; border-right: 1px solid black; text-align: right;">1</td>
+      <td style = "border-bottom: 1px solid black; border-right: 2px solid black; text-align: right;">2</td>
     </tr>
   </tbody>
 </table>

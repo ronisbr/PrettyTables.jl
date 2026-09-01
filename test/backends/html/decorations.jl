@@ -9,29 +9,29 @@
         matrix = ones(3, 3)
 
         expected = """
-<table>
+<table style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
   <thead>
     <tr class = "columnLabelRow">
-      <th style = "color: yellow; text-align: right;">Col. 1</th>
-      <th style = "color: yellow; text-align: right;">Col. 2</th>
-      <th style = "color: yellow; text-align: right;">Col. 3</th>
+      <th style = "border-bottom: 1px solid black; border-left: 2px solid black; border-right: 1px solid black; color: yellow; text-align: right;">Col. 1</th>
+      <th style = "border-bottom: 1px solid black; border-right: 1px solid black; color: yellow; text-align: right;">Col. 2</th>
+      <th style = "border-bottom: 1px solid black; border-right: 2px solid black; color: yellow; text-align: right;">Col. 3</th>
     </tr>
   </thead>
   <tbody>
     <tr class = "dataRow">
-      <td style = "text-align: right;">1.0</td>
-      <td style = "text-align: right;">1.0</td>
-      <td style = "text-align: right;">1.0</td>
+      <td style = "border-left: 2px solid black; border-right: 1px solid black; text-align: right;">1.0</td>
+      <td style = "border-right: 1px solid black; text-align: right;">1.0</td>
+      <td style = "border-right: 2px solid black; text-align: right;">1.0</td>
     </tr>
     <tr class = "dataRow">
-      <td style = "text-align: right;">1.0</td>
-      <td style = "text-align: right;">1.0</td>
-      <td style = "text-align: right;">1.0</td>
+      <td style = "border-left: 2px solid black; border-right: 1px solid black; text-align: right;">1.0</td>
+      <td style = "border-right: 1px solid black; text-align: right;">1.0</td>
+      <td style = "border-right: 2px solid black; text-align: right;">1.0</td>
     </tr>
     <tr class = "dataRow">
-      <td style = "text-align: right;">1.0</td>
-      <td style = "text-align: right;">1.0</td>
-      <td style = "text-align: right;">1.0</td>
+      <td style = "border-bottom: 1px solid black; border-left: 2px solid black; border-right: 1px solid black; text-align: right;">1.0</td>
+      <td style = "border-bottom: 1px solid black; border-right: 1px solid black; text-align: right;">1.0</td>
+      <td style = "border-bottom: 1px solid black; border-right: 2px solid black; text-align: right;">1.0</td>
     </tr>
   </tbody>
 </table>
@@ -48,29 +48,29 @@
         @test result == expected
 
         expected = """
-<table>
+<table style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
   <thead>
     <tr class = "columnLabelRow">
-      <th style = "color: yellow; text-align: right;">Col. 1</th>
-      <th style = "color: blue; text-align: right;">Col. 2</th>
-      <th style = "color: red; text-align: right;">Col. 3</th>
+      <th style = "border-bottom: 1px solid black; border-left: 2px solid black; border-right: 1px solid black; color: yellow; text-align: right;">Col. 1</th>
+      <th style = "border-bottom: 1px solid black; border-right: 1px solid black; color: blue; text-align: right;">Col. 2</th>
+      <th style = "border-bottom: 1px solid black; border-right: 2px solid black; color: red; text-align: right;">Col. 3</th>
     </tr>
   </thead>
   <tbody>
     <tr class = "dataRow">
-      <td style = "text-align: right;">1.0</td>
-      <td style = "text-align: right;">1.0</td>
-      <td style = "text-align: right;">1.0</td>
+      <td style = "border-left: 2px solid black; border-right: 1px solid black; text-align: right;">1.0</td>
+      <td style = "border-right: 1px solid black; text-align: right;">1.0</td>
+      <td style = "border-right: 2px solid black; text-align: right;">1.0</td>
     </tr>
     <tr class = "dataRow">
-      <td style = "text-align: right;">1.0</td>
-      <td style = "text-align: right;">1.0</td>
-      <td style = "text-align: right;">1.0</td>
+      <td style = "border-left: 2px solid black; border-right: 1px solid black; text-align: right;">1.0</td>
+      <td style = "border-right: 1px solid black; text-align: right;">1.0</td>
+      <td style = "border-right: 2px solid black; text-align: right;">1.0</td>
     </tr>
     <tr class = "dataRow">
-      <td style = "text-align: right;">1.0</td>
-      <td style = "text-align: right;">1.0</td>
-      <td style = "text-align: right;">1.0</td>
+      <td style = "border-bottom: 1px solid black; border-left: 2px solid black; border-right: 1px solid black; text-align: right;">1.0</td>
+      <td style = "border-bottom: 1px solid black; border-right: 1px solid black; text-align: right;">1.0</td>
+      <td style = "border-bottom: 1px solid black; border-right: 2px solid black; text-align: right;">1.0</td>
     </tr>
   </tbody>
 </table>
@@ -99,7 +99,13 @@
             ),
         )
 
-        @test occursin("<th style = \"color: red; text-align: right;\">a</th>", result)
-        @test occursin("<th style = \"color: blue; text-align: right;\">b</th>", result)
+        @test occursin(
+            "<th style = \"border-bottom: 1px solid black; border-left: 2px solid black; border-right: 1px solid black; color: red; text-align: right;\">a</th>",
+            result
+        )
+        @test occursin(
+            "<th style = \"border-bottom: 1px solid black; border-right: 2px solid black; color: blue; text-align: right;\">b</th>",
+            result
+        )
     end
 end

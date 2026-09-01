@@ -9,21 +9,21 @@
         matrix = ["<BR>", "<p>Test<p>", "<p>&vellip;</p>"]
 
         expected = """
-<table>
+<table style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
   <thead>
     <tr class = "columnLabelRow">
-      <th style = "font-weight: bold; text-align: right;">Col. 1</th>
+      <th style = "border-bottom: 1px solid black; border-left: 2px solid black; border-right: 2px solid black; font-weight: bold; text-align: right;">Col. 1</th>
     </tr>
   </thead>
   <tbody>
     <tr class = "dataRow">
-      <td style = "text-align: right;">&lt;BR&gt;</td>
+      <td style = "border-left: 2px solid black; border-right: 2px solid black; text-align: right;">&lt;BR&gt;</td>
     </tr>
     <tr class = "dataRow">
-      <td style = "text-align: right;">&lt;p&gt;Test&lt;p&gt;</td>
+      <td style = "border-left: 2px solid black; border-right: 2px solid black; text-align: right;">&lt;p&gt;Test&lt;p&gt;</td>
     </tr>
     <tr class = "dataRow">
-      <td style = "text-align: right;">&lt;p&gt;&amp;vellip;&lt;/p&gt;</td>
+      <td style = "border-bottom: 1px solid black; border-left: 2px solid black; border-right: 2px solid black; text-align: right;">&lt;p&gt;&amp;vellip;&lt;/p&gt;</td>
     </tr>
   </tbody>
 </table>
@@ -42,21 +42,21 @@
         matrix = ["<BR>", "<p>Test<p>", html"<p>&vellip;</p>"]
 
         expected = """
-<table>
+<table style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
   <thead>
     <tr class = "columnLabelRow">
-      <th style = "font-weight: bold; text-align: right;">Col. 1</th>
+      <th style = "border-bottom: 1px solid black; border-left: 2px solid black; border-right: 2px solid black; font-weight: bold; text-align: right;">Col. 1</th>
     </tr>
   </thead>
   <tbody>
     <tr class = "dataRow">
-      <td style = "text-align: right;">&lt;BR&gt;</td>
+      <td style = "border-left: 2px solid black; border-right: 2px solid black; text-align: right;">&lt;BR&gt;</td>
     </tr>
     <tr class = "dataRow">
-      <td style = "text-align: right;">&lt;p&gt;Test&lt;p&gt;</td>
+      <td style = "border-left: 2px solid black; border-right: 2px solid black; text-align: right;">&lt;p&gt;Test&lt;p&gt;</td>
     </tr>
     <tr class = "dataRow">
-      <td style = "text-align: right;"><p>&vellip;</p></td>
+      <td style = "border-bottom: 1px solid black; border-left: 2px solid black; border-right: 2px solid black; text-align: right;"><p>&vellip;</p></td>
     </tr>
   </tbody>
 </table>
@@ -75,21 +75,21 @@
         matrix = ["<BR>", "<p>Test<p>", "<p>&vellip;</p>"]
 
         expected = """
-<table>
+<table style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
   <thead>
     <tr class = "columnLabelRow">
-      <th style = "font-weight: bold; text-align: right;">Col. 1</th>
+      <th style = "border-bottom: 1px solid black; border-left: 2px solid black; border-right: 2px solid black; font-weight: bold; text-align: right;">Col. 1</th>
     </tr>
   </thead>
   <tbody>
     <tr class = "dataRow">
-      <td style = "text-align: right;"><BR></td>
+      <td style = "border-left: 2px solid black; border-right: 2px solid black; text-align: right;"><BR></td>
     </tr>
     <tr class = "dataRow">
-      <td style = "text-align: right;"><p>Test<p></td>
+      <td style = "border-left: 2px solid black; border-right: 2px solid black; text-align: right;"><p>Test<p></td>
     </tr>
     <tr class = "dataRow">
-      <td style = "text-align: right;"><p>&vellip;</p></td>
+      <td style = "border-bottom: 1px solid black; border-left: 2px solid black; border-right: 2px solid black; text-align: right;"><p>&vellip;</p></td>
     </tr>
   </tbody>
 </table>
@@ -121,17 +121,17 @@
         matrix = ["First Line\nSecond Line" "Third Line\nFourth Line"]
 
         expected = """
-<table>
+<table style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
   <thead>
     <tr class = "columnLabelRow">
-      <th style = "font-weight: bold; text-align: right;">Col. 1</th>
-      <th style = "font-weight: bold; text-align: right;">Col. 2</th>
+      <th style = "border-bottom: 1px solid black; border-left: 2px solid black; border-right: 1px solid black; font-weight: bold; text-align: right;">Col. 1</th>
+      <th style = "border-bottom: 1px solid black; border-right: 2px solid black; font-weight: bold; text-align: right;">Col. 2</th>
     </tr>
   </thead>
   <tbody>
     <tr class = "dataRow">
-      <td style = "text-align: right;">First Line\\nSecond Line</td>
-      <td style = "text-align: right;">Third Line\\nFourth Line</td>
+      <td style = "border-bottom: 1px solid black; border-left: 2px solid black; border-right: 1px solid black; text-align: right;">First Line\\nSecond Line</td>
+      <td style = "border-bottom: 1px solid black; border-right: 2px solid black; text-align: right;">Third Line\\nFourth Line</td>
     </tr>
   </tbody>
 </table>
@@ -142,17 +142,17 @@
         @test result == expected
 
         expected = """
-<table>
+<table style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
   <thead>
     <tr class = "columnLabelRow">
-      <th style = "font-weight: bold; text-align: right;">Col. 1</th>
-      <th style = "font-weight: bold; text-align: right;">Col. 2</th>
+      <th style = "border-bottom: 1px solid black; border-left: 2px solid black; border-right: 1px solid black; font-weight: bold; text-align: right;">Col. 1</th>
+      <th style = "border-bottom: 1px solid black; border-right: 2px solid black; font-weight: bold; text-align: right;">Col. 2</th>
     </tr>
   </thead>
   <tbody>
     <tr class = "dataRow">
-      <td style = "text-align: right;">First Line<br>Second Line</td>
-      <td style = "text-align: right;">Third Line<br>Fourth Line</td>
+      <td style = "border-bottom: 1px solid black; border-left: 2px solid black; border-right: 1px solid black; text-align: right;">First Line<br>Second Line</td>
+      <td style = "border-bottom: 1px solid black; border-right: 2px solid black; text-align: right;">Third Line<br>Fourth Line</td>
     </tr>
   </tbody>
 </table>
@@ -170,27 +170,27 @@
         v[5] = π
 
         expected = """
-<table>
+<table style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
   <thead>
     <tr class = "columnLabelRow">
-      <th style = "font-weight: bold; text-align: right;">Col. 1</th>
+      <th style = "border-bottom: 1px solid black; border-left: 2px solid black; border-right: 2px solid black; font-weight: bold; text-align: right;">Col. 1</th>
     </tr>
   </thead>
   <tbody>
     <tr class = "dataRow">
-      <td style = "text-align: right;">UndefInitializer()</td>
+      <td style = "border-left: 2px solid black; border-right: 2px solid black; text-align: right;">UndefInitializer()</td>
     </tr>
     <tr class = "dataRow">
-      <td style = "text-align: right;">String</td>
+      <td style = "border-left: 2px solid black; border-right: 2px solid black; text-align: right;">String</td>
     </tr>
     <tr class = "dataRow">
-      <td style = "text-align: right;">#undef</td>
+      <td style = "border-left: 2px solid black; border-right: 2px solid black; text-align: right;">#undef</td>
     </tr>
     <tr class = "dataRow">
-      <td style = "text-align: right;">#undef</td>
+      <td style = "border-left: 2px solid black; border-right: 2px solid black; text-align: right;">#undef</td>
     </tr>
     <tr class = "dataRow">
-      <td style = "text-align: right;">π</td>
+      <td style = "border-bottom: 1px solid black; border-left: 2px solid black; border-right: 2px solid black; text-align: right;">π</td>
     </tr>
   </tbody>
 </table>
@@ -209,19 +209,19 @@
         matrix = [md"**Bold**" md"*Italic*" md"_**Bold and Italic**_"]
 
         expected = """
-<table>
+<table style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
   <thead>
     <tr class = "columnLabelRow">
-      <th style = "font-weight: bold; text-align: right;">Col. 1</th>
-      <th style = "font-weight: bold; text-align: right;">Col. 2</th>
-      <th style = "font-weight: bold; text-align: right;">Col. 3</th>
+      <th style = "border-bottom: 1px solid black; border-left: 2px solid black; border-right: 1px solid black; font-weight: bold; text-align: right;">Col. 1</th>
+      <th style = "border-bottom: 1px solid black; border-right: 1px solid black; font-weight: bold; text-align: right;">Col. 2</th>
+      <th style = "border-bottom: 1px solid black; border-right: 2px solid black; font-weight: bold; text-align: right;">Col. 3</th>
     </tr>
   </thead>
   <tbody>
     <tr class = "dataRow">
-      <td style = "text-align: right;"><div class="markdown"><p><strong>Bold</strong></p></div></td>
-      <td style = "text-align: right;"><div class="markdown"><p><em>Italic</em></p></div></td>
-      <td style = "text-align: right;"><div class="markdown"><p><em><strong>Bold and Italic</strong></em></p></div></td>
+      <td style = "border-bottom: 1px solid black; border-left: 2px solid black; border-right: 1px solid black; text-align: right;"><div class="markdown"><p><strong>Bold</strong></p></div></td>
+      <td style = "border-bottom: 1px solid black; border-right: 1px solid black; text-align: right;"><div class="markdown"><p><em>Italic</em></p></div></td>
+      <td style = "border-bottom: 1px solid black; border-right: 2px solid black; text-align: right;"><div class="markdown"><p><em><strong>Bold and Italic</strong></em></p></div></td>
     </tr>
   </tbody>
 </table>

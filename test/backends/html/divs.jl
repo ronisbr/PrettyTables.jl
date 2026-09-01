@@ -9,17 +9,17 @@
 
     expected = """
 <div style = "overflow-x: scroll;">
-  <table class = "myClass">
+  <table class = "myClass" style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
     <thead>
       <tr class = "columnLabelRow">
-        <th style = "font-weight: bold; text-align: right;">Col. 1</th>
-        <th style = "font-weight: bold; text-align: right;">Col. 2</th>
+        <th style = "border-bottom: 1px solid black; border-left: 2px solid black; border-right: 1px solid black; font-weight: bold; text-align: right;">Col. 1</th>
+        <th style = "border-bottom: 1px solid black; border-right: 2px solid black; font-weight: bold; text-align: right;">Col. 2</th>
       </tr>
     </thead>
     <tbody>
       <tr class = "dataRow">
-        <td style = "text-align: right;">1</td>
-        <td style = "text-align: right;">2</td>
+        <td style = "border-bottom: 1px solid black; border-left: 2px solid black; border-right: 1px solid black; text-align: right;">1</td>
+        <td style = "border-bottom: 1px solid black; border-right: 2px solid black; text-align: right;">2</td>
       </tr>
     </tbody>
   </table>
@@ -40,17 +40,17 @@
   <div style = "clear: both;"></div>
 </div>
 <div style = "overflow-x: scroll;">
-  <table class = "myClass">
+  <table class = "myClass" style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
     <thead>
       <tr class = "columnLabelRow">
-        <th style = "font-weight: bold; text-align: right;">Col. 1</th>
-        <th style = "font-weight: bold; text-align: right;">Col. 2</th>
+        <th style = "border-bottom: 1px solid black; border-left: 2px solid black; border-right: 1px solid black; font-weight: bold; text-align: right;">Col. 1</th>
+        <th style = "border-bottom: 1px solid black; border-right: 2px solid black; font-weight: bold; text-align: right;">Col. 2</th>
       </tr>
     </thead>
     <tbody>
       <tr class = "dataRow">
-        <td style = "text-align: right;">1</td>
-        <td style = "text-align: right;">2</td>
+        <td style = "border-bottom: 1px solid black; border-left: 2px solid black; border-right: 1px solid black; text-align: right;">1</td>
+        <td style = "border-bottom: 1px solid black; border-right: 2px solid black; text-align: right;">2</td>
       </tr>
     </tbody>
   </table>
@@ -79,17 +79,17 @@
   <div style = "clear: both;"></div>
 </div>
 <div style = "overflow-x: scroll;">
-  <table class = "myClass">
+  <table class = "myClass" style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
     <thead>
       <tr class = "columnLabelRow">
-        <th style = "font-weight: bold; text-align: right;">Col. 1</th>
-        <th style = "font-weight: bold; text-align: right;">Col. 2</th>
+        <th style = "border-bottom: 1px solid black; border-left: 2px solid black; border-right: 1px solid black; font-weight: bold; text-align: right;">Col. 1</th>
+        <th style = "border-bottom: 1px solid black; border-right: 2px solid black; font-weight: bold; text-align: right;">Col. 2</th>
       </tr>
     </thead>
     <tbody>
       <tr class = "dataRow">
-        <td style = "text-align: right;">1</td>
-        <td style = "text-align: right;">2</td>
+        <td style = "border-bottom: 1px solid black; border-left: 2px solid black; border-right: 1px solid black; text-align: right;">1</td>
+        <td style = "border-bottom: 1px solid black; border-right: 2px solid black; text-align: right;">2</td>
       </tr>
     </tbody>
   </table>
