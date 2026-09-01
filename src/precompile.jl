@@ -275,6 +275,38 @@ PrecompileTools.@setup_workload begin
                 ),
             )
 
+            # .. HTML Table Format .........................................................
+
+            pretty_table(
+                html_buf,
+                matrix;
+                backend = :html,
+                table_format = HtmlTableFormat(;
+                    horizontal_lines_at_data_rows  = :all,
+                    vertical_lines_at_data_columns = :all,
+                ),
+            )
+
+            pretty_table(
+                html_buf,
+                matrix;
+                backend = :html,
+                table_format = HtmlTableFormat(;
+                    @html__no_horizontal_lines,
+                    @html__no_vertical_lines,
+                ),
+            )
+
+            pretty_table(
+                html_buf,
+                matrix;
+                backend = :html,
+                table_format = TableFormat(;
+                    horizontal_lines_at_data_rows = :all,
+                    middle_line = LineStyle(; style = :dashed, color = :blue),
+                ),
+            )
+
             # -- LaTeX ---------------------------------------------------------------------
 
             pretty_table(matrix; backend = :latex)
