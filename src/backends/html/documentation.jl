@@ -44,9 +44,8 @@ the output.
     `wrap_table_in_div` is `true`.
     (**Default**: "")
 - `table_format::Union{TableFormat, HtmlTableFormat}`: HTML table format used to render
-    the table. The backend-agnostic [`TableFormat`](@ref) is currently ignored by the HTML
-    back end, which uses the default HTML table format instead; the table lines can be
-    customized with the field `css`. For more information, see the section **HTML Table
+    the table. The fields of the backend-agnostic [`TableFormat`](@ref) override the ones
+    of the default HTML table format. For more information, see the section **HTML Table
     Format** in the **Extended Help**.
 - `top_left_string::String`: String to put in the top left corner div.
     (**Default**: "")
@@ -116,13 +115,35 @@ highlighters = [hl_gt5, hl_lt5]
 
 ## HTML Table Format
 
-The HTML table format is defined using an object of type [`HtmlTableFormat`](@ref) that
-contains the following fields:
+The HTML table format is defined using an object of type [`HtmlTableFormat`](@ref). Besides
+the fields `css` and `table_width`, which are only applied if `stand_alone = true`, it
+contains the field `borders`, an object of type [`HtmlTableBorders`](@ref) with the CSS
+`border` shorthand value of each line role, and a set of boolean fields selecting which
+horizontal and vertical lines are drawn. For the list of fields, see the documentation of
+[`HtmlTableFormat`](@ref).
 
-- `css::String`: CSS to be injected at the end of the `<style>` section.
-- `table_width::String`: Table width.
+The table lines are emitted as inline styles in the table cells (the lines at the beginning
+and end of the table are emitted in the `<table>` element). Hence, they are applied in any
+rendering mode, including when the table is embedded in another document (Jupyter, Pluto,
+Documenter, etc.).
 
-Notice that this format is only applied if `stand_alone = true`.
+The following macros are available to help configuring the table lines:
+
+- `@html__all_horizontal_lines`: Return the keyword arguments to show all horizontal lines.
+- `@html__all_vertical_lines`: Return the keyword arguments to show all vertical lines.
+- `@html__no_horizontal_lines`: Return the keyword arguments to suppress all horizontal
+    lines.
+- `@html__no_vertical_lines`: Return the keyword arguments to suppress all vertical lines.
+
+For example, we can draw only the vertical lines as follows:
+
+```julia
+table_format = HtmlTableFormat(; @html__no_horizontal_lines, @html__all_vertical_lines)
+```
+
+The backend-agnostic [`TableFormat`](@ref) is also supported: its line designs are
+converted to CSS border values with [`html_line_style`](@ref), and its line presence fields
+override the corresponding fields of the default HTML table format.
 
 ## HTML Table Style
 

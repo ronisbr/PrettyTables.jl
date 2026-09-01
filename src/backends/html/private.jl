@@ -111,8 +111,13 @@ function _html__write_style(buf::IO, style::Vector{HtmlPair})
     # If there are no keys in the style vector, we have nothing to do.
     isempty(style) && return nothing
 
-    # Make sure the style is sorted by key.
-    sort!(style)
+    # Make sure the style is sorted by key. We must sort by the key only so that duplicated
+    # keys keep their insertion order, given that `sort!` is stable. Since the browser
+    # applies the last declaration of a duplicated key, a pair pushed later to `style`
+    # overrides a pair pushed earlier. The table borders rely on this contract: they are
+    # pushed first so that any other decoration (alignment, styles, or highlighters) can
+    # override them.
+    sort!(style; by = first)
 
     # Every value can be empty, in which case there is no style to emit. Hence, we must
     # check it before writing the attribute opening.
@@ -158,6 +163,57 @@ function _html__create_style(style::Vector{HtmlPair})
 end
 
 _html__create_style(::Nothing) = ""
+
+# == Table Borders =========================================================================
+
+"""
+    _html__push_cell_borders!(style::Vector{HtmlPair}, top::String, bottom::String, left::String, right::String) -> Nothing
+
+Push the cell borders to the vector `style`, skipping the sides with an empty border. This
+function must be called before pushing any other decoration to `style` so that the other
+decorations can override the borders.
+"""
+function _html__push_cell_borders!(
+    style::Vector{HtmlPair},
+    top::String,
+    bottom::String,
+    left::String,
+    right::String,
+)
+    !isempty(top)    && push!(style, "border-top"    => top)
+    !isempty(bottom) && push!(style, "border-bottom" => bottom)
+    !isempty(left)   && push!(style, "border-left"   => left)
+    !isempty(right)  && push!(style, "border-right"  => right)
+    return nothing
+end
+
+"""
+    _html__vertical_line_after_data_column(tf::HtmlTableFormat, j::Int, vertical_lines_at_data_columns::AbstractVector{Int}, num_printed_data_columns::Int, horizontally_cropped::Bool) -> String
+
+Return the border at the right of the data column `j`, or an empty string if the table
+format `tf` defines no vertical line at this position. `vertical_lines_at_data_columns`
+must be the processed version of the homonym field of `tf`.
+"""
+function _html__vertical_line_after_data_column(
+    tf::HtmlTableFormat,
+    j::Int,
+    vertical_lines_at_data_columns::AbstractVector{Int},
+    num_printed_data_columns::Int,
+    horizontally_cropped::Bool,
+)
+    if j < num_printed_data_columns
+        (j ∈ vertical_lines_at_data_columns) && return tf.borders.center_line
+    elseif horizontally_cropped
+        # If the table is horizontally cropped, the continuation column is at the right of
+        # the last printed data column. Hence, the line here is an internal one.
+        (tf.vertical_line_after_data_columns || (j ∈ vertical_lines_at_data_columns)) &&
+            return tf.borders.center_line
+    elseif tf.vertical_line_after_data_columns
+        return tf.borders.right_line
+    end
+
+    return ""
+end
 
 # == Tags ==================================================================================
 

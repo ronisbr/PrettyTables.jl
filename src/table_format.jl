@@ -139,9 +139,9 @@ Notice that `nothing` differs from `:none` in the fields that accept a `Symbol`:
 keeps the back end default, whereas `:none` explicitly disables the lines.
 
 The conversion to the back end native format is a best effort: the manual page **Table
-Format** describes which fields each back end honors. In particular, the HTML back end
-currently ignores this object entirely, the text back end ignores the line design fields,
-and the Markdown back end only supports `horizontal_line_before_summary_rows`.
+Format** describes which fields each back end honors. In particular, the text back end
+ignores the line design fields, and the Markdown back end only supports
+`horizontal_line_before_summary_rows`.
 
 # Fields
 
@@ -172,6 +172,11 @@ Each field below describes the design of one line role using a [`LineStyle`](@re
 - `horizontal_line_at_beginning::Union{Nothing, Bool}`: Whether to draw a horizontal line
     at the beginning of the table.
     (**Default**: `nothing`)
+- `horizontal_line_before_column_labels::Union{Nothing, Bool}`: Whether to draw a
+    horizontal line before the column labels when the table has a title or subtitle. This
+    field is only honored by the HTML back end, which places the title inside the ruled
+    area.
+    (**Default**: `nothing`)
 - `horizontal_line_after_column_labels::Union{Nothing, Bool}`: Whether to draw a horizontal
     line after the column labels.
     (**Default**: `nothing`)
@@ -195,6 +200,14 @@ Each field below describes the design of one line role using a [`LineStyle`](@re
     (**Default**: `nothing`)
 - `horizontal_line_after_summary_rows::Union{Nothing, Bool}`: Whether to draw a horizontal
     line after the summary rows.
+    (**Default**: `nothing`)
+- `horizontal_line_after_footnotes::Union{Nothing, Bool}`: Whether to draw a horizontal
+    line after the footnotes. This field is only honored by the HTML back end, which places
+    the footer inside the ruled area.
+    (**Default**: `nothing`)
+- `horizontal_line_at_end::Union{Nothing, Bool}`: Whether to draw a horizontal line at the
+    end of the table, below the footnotes and source notes. This field is only honored by
+    the HTML back end, which places the footer inside the ruled area.
     (**Default**: `nothing`)
 - `vertical_line_at_beginning::Union{Nothing, Bool}`: Whether to draw a vertical line at
     the beginning of the table.
@@ -230,6 +243,7 @@ Each field below describes the design of one line role using a [`LineStyle`](@re
     # == Line Presence =====================================================================
 
     horizontal_line_at_beginning::Union{Nothing, Bool}                 = nothing
+    horizontal_line_before_column_labels::Union{Nothing, Bool}         = nothing
     horizontal_line_after_column_labels::Union{Nothing, Bool}          = nothing
     horizontal_line_at_merged_column_labels::Union{Nothing, Bool}      = nothing
     horizontal_lines_at_data_rows::Union{Nothing, Symbol, Vector{Int}} = nothing
@@ -238,6 +252,8 @@ Each field below describes the design of one line role using a [`LineStyle`](@re
     horizontal_line_after_data_rows::Union{Nothing, Bool}              = nothing
     horizontal_line_before_summary_rows::Union{Nothing, Bool}          = nothing
     horizontal_line_after_summary_rows::Union{Nothing, Bool}           = nothing
+    horizontal_line_after_footnotes::Union{Nothing, Bool}              = nothing
+    horizontal_line_at_end::Union{Nothing, Bool}                       = nothing
     vertical_line_at_beginning::Union{Nothing, Bool}                   = nothing
     vertical_line_after_row_number_column::Union{Nothing, Bool}        = nothing
     vertical_line_after_row_label_column::Union{Nothing, Bool}         = nothing
@@ -274,8 +290,10 @@ end
 
 Merge the line presence fields of `tf` over the ones of the back end default table format
 `def`, returning a named tuple that can be splatted into the keyword constructor of the
-back end table format. `def` must have every line presence field of [`TableFormat`](@ref),
-which is the case for the table formats of the text, LaTeX, Typst, and Excel back ends.
+back end table format. `def` must have every line presence field shared by all back ends,
+which is the case for the table formats of the text, HTML, LaTeX, Typst, and Excel back
+ends. The HTML-only presence fields are not part of the returned tuple and must be merged
+by the HTML converter.
 """
 function _table_format_presence_fields(tf::TableFormat, def::Any)
     return (

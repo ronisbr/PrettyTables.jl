@@ -42,10 +42,10 @@ function _html__print(
     vproperties = Pair{String, String}[]
     vstyle      = Pair{String, String}[]
 
+    num_column_label_rows = length(table_data.column_labels)
+
     # Check the dimensions of header cell titles.
     if !isnothing(column_label_titles)
-        num_column_label_rows = length(table_data.column_labels)
-
         if length(column_label_titles) < num_column_label_rows
             error(
                 "The number of vectors in `column_label_titles` must be equal to or greater than that in `column_labels`.",
@@ -190,17 +190,77 @@ function _html__print(
     empty!(vproperties)
     push!(vproperties, "class" => table_class)
 
-    # NOTE: We must copy the style vector because the tag creation sorts it in place, and we
-    # must not mutate a vector that belongs to the user.
+    # The borders at the top and bottom of the table are emitted in the `<table>` element,
+    # avoiding the need to know which rows are the first and last ones. `border-collapse`
+    # is required so that adjacent cell borders are merged into a single line. Notice that
+    # the user style is appended afterward, allowing it to override the borders.
+    empty!(vstyle)
+    push!(vstyle, "border-collapse" => "collapse")
+
+    tf.horizontal_line_at_beginning && push!(vstyle, "border-top" => tf.borders.top_line)
+
+    tf.horizontal_line_at_end && push!(vstyle, "border-bottom" => tf.borders.bottom_line)
+
+    append!(vstyle, style.table)
+
     _aprintln(
         buf,
-        _html__open_tag("table"; properties = vproperties, style = copy(style.table)),
+        _html__open_tag("table"; properties = vproperties, style = vstyle),
         il,
         ns;
         minify,
     )
 
     il += 1
+
+    # == Table Borders =====================================================================
+
+    # Process the horizontal lines at data rows.
+    if tf.horizontal_lines_at_data_rows isa Symbol
+        horizontal_lines_at_data_rows = if tf.horizontal_lines_at_data_rows == :all
+            1:(table_data.num_rows)
+        else
+            1:0
+        end
+    else
+        horizontal_lines_at_data_rows = tf.horizontal_lines_at_data_rows::Vector{Int}
+    end
+
+    # Process the vertical lines at data columns.
+    if tf.vertical_lines_at_data_columns isa Symbol
+        vertical_lines_at_data_columns = if tf.vertical_lines_at_data_columns == :all
+            1:(table_data.num_columns)
+        else
+            1:0
+        end
+    else
+        vertical_lines_at_data_columns = tf.vertical_lines_at_data_columns::Vector{Int}
+    end
+
+    num_printed_data_columns = _number_of_printed_data_columns(table_data)
+    horizontally_cropped     = _is_horizontally_cropped(table_data)
+    num_summary_rows         = isnothing(table_data.summary_rows) ? 0 : length(table_data.summary_rows)
+    num_footnotes            = isnothing(table_data.footnotes) ? 0 : length(table_data.footnotes)
+
+    # Border at the right edge of the rows that span the entire table (title, subtitle, row
+    # group label, footnote, and source notes).
+    right_edge_border = if horizontally_cropped
+        tf.vertical_line_after_continuation_column ? tf.borders.right_line : ""
+    else
+        tf.vertical_line_after_data_columns ? tf.borders.right_line : ""
+    end
+
+    # Variables to store the borders of the current row, filled at each `:new_row` action.
+    row_border_top    = ""
+    row_border_bottom = ""
+
+    # `first_cell_in_row` indicates that the next printed cell is the first one in the
+    # current row, and, hence, it must contain the border at the left of the table.
+    first_cell_in_row = false
+
+    # Row section of the previous row, required to check if the column labels are preceded
+    # by a title or subtitle.
+    prev_rs = :none
 
     action = :initialize
 
@@ -253,6 +313,76 @@ function _html__print(
                 il += 1
             end
 
+            # == Row Borders ===============================================================
+
+            first_cell_in_row = true
+            row_border_top    = ""
+            row_border_bottom = ""
+
+            if rs == :column_labels
+                # The line before the column labels is only emitted when the table has a
+                # title or subtitle. Otherwise, this line coincides with the top border of
+                # the table.
+                (
+                    tf.horizontal_line_before_column_labels &&
+                    (ps.i == 1) &&
+                    (prev_rs == :table_header)
+                ) && (row_border_top = tf.borders.header_line)
+
+                (
+                    tf.horizontal_line_after_column_labels &&
+                    (ps.i == num_column_label_rows)
+                ) && (row_border_bottom = tf.borders.header_line)
+
+            elseif rs == :data
+                # The line after the data rows is emitted at the last data row. If the
+                # table is bottom cropped, the continuation row is the last row of this
+                # section.
+                (
+                    (ps.i ∈ horizontal_lines_at_data_rows) ||
+                    (tf.horizontal_line_after_data_rows && (ps.i == table_data.num_rows))
+                ) && (row_border_bottom = tf.borders.middle_line)
+
+            elseif rs == :continuation_row
+                # The continuation row is the last row of the data section if the table is
+                # bottom cropped. A middle-cropped table with at most one printed data row
+                # also ends with the continuation row.
+                (
+                    tf.horizontal_line_after_data_rows && (
+                        (table_data.vertical_crop_mode == :bottom) ||
+                        (table_data.maximum_number_of_rows <= 1)
+                    )
+                ) && (row_border_bottom = tf.borders.middle_line)
+
+            elseif rs == :row_group_label
+                tf.horizontal_line_before_row_group_label &&
+                    (row_border_top = tf.borders.middle_line)
+
+                tf.horizontal_line_after_row_group_label &&
+                    (row_border_bottom = tf.borders.middle_line)
+
+            elseif rs == :summary_row
+                (tf.horizontal_line_before_summary_rows && (ps.i == 1)) &&
+                    (row_border_top = tf.borders.middle_line)
+
+                (tf.horizontal_line_after_summary_rows && (ps.i == num_summary_rows)) &&
+                    (row_border_bottom = tf.borders.middle_line)
+
+            elseif rs == :table_footer
+                # NOTE: This condition must mirror the one the printing state iterator uses
+                # to decide whether it is emitting a footnote row or a source note row.
+                (
+                    tf.horizontal_line_after_footnotes &&
+                    (ps.state < _FOOTNOTES) &&
+                    !isnothing(table_data.footnotes) &&
+                    (ps.i == num_footnotes)
+                ) && (row_border_bottom = tf.borders.middle_line)
+            end
+
+            prev_rs = rs
+
+            # == Row Class =================================================================
+
             empty!(vproperties)
             class = if rs == :table_header
                 ps.state < _TITLE ? "title" : "subtitle"
@@ -285,17 +415,69 @@ function _html__print(
             # would inherit the style of whatever cell was rendered before it.
             empty!(vstyle)
 
+            left_border =
+                (first_cell_in_row && tf.vertical_line_at_beginning) ?
+                tf.borders.left_line : ""
+            first_cell_in_row = false
+
+            right_border =
+                tf.vertical_line_after_continuation_column ? tf.borders.right_line : ""
+
+            _html__push_cell_borders!(
+                vstyle, row_border_top, row_border_bottom, left_border, right_border
+            )
+
             _aprintln(
                 buf, _html__create_tag("td", "&dtdot;"; style = vstyle), il, ns; minify
             )
 
         elseif action == :horizontal_continuation_cell
+            empty!(vstyle)
+
+            left_border =
+                (first_cell_in_row && tf.vertical_line_at_beginning) ?
+                tf.borders.left_line : ""
+            first_cell_in_row = false
+
+            right_border =
+                tf.vertical_line_after_continuation_column ? tf.borders.right_line : ""
+
+            _html__push_cell_borders!(
+                vstyle, row_border_top, row_border_bottom, left_border, right_border
+            )
+
             tag = rs == :column_labels ? "th" : "td"
-            _aprintln(buf, _html__create_tag(tag, "&ctdot;"), il, ns; minify)
+            _aprintln(
+                buf, _html__create_tag(tag, "&ctdot;"; style = vstyle), il, ns; minify
+            )
 
         elseif action ∈ _VERTICAL_CONTINUATION_CELL_ACTIONS
             # Obtain the cell style.
             empty!(vstyle)
+
+            left_border =
+                (first_cell_in_row && tf.vertical_line_at_beginning) ?
+                tf.borders.left_line : ""
+            first_cell_in_row = false
+
+            right_border = if action == :row_number_vertical_continuation_cell
+                tf.vertical_line_after_row_number_column ? tf.borders.center_line : ""
+            elseif action == :row_label_vertical_continuation_cell
+                tf.vertical_line_after_row_label_column ? tf.borders.center_line : ""
+            else
+                _html__vertical_line_after_data_column(
+                    tf,
+                    ps.j,
+                    vertical_lines_at_data_columns,
+                    num_printed_data_columns,
+                    horizontally_cropped,
+                )
+            end
+
+            _html__push_cell_borders!(
+                vstyle, row_border_top, row_border_bottom, left_border, right_border
+            )
+
             alignment = _current_cell_alignment(action, ps, table_data)
             _html__add_alignment_to_style!(vstyle, alignment)
 
@@ -315,6 +497,42 @@ function _html__print(
 
             cell === _IGNORE_CELL && continue
 
+            # == Cell Borders ==============================================================
+
+            # The borders must be pushed to `vstyle` before any other decoration so that
+            # the latter can override the former.
+
+            left_border =
+                (first_cell_in_row && tf.vertical_line_at_beginning) ?
+                tf.borders.left_line : ""
+            first_cell_in_row = false
+
+            right_border = if action ∈ (:row_number_label, :row_number, :summary_row_number)
+                tf.vertical_line_after_row_number_column ? tf.borders.center_line : ""
+            elseif action ∈ (:stubhead_label, :row_label, :summary_row_label)
+                tf.vertical_line_after_row_label_column ? tf.borders.center_line : ""
+            elseif action ∈ (:title, :subtitle, :row_group_label, :footnote, :source_notes)
+                # These cells span the entire table. Hence, they only have the border at
+                # the right of the table.
+                right_edge_border
+            elseif (action == :column_label) && (cell isa MergeCells)
+                # The border at the right of a merged column label is pushed later, when
+                # the column span is clamped to the number of printed columns.
+                ""
+            else
+                _html__vertical_line_after_data_column(
+                    tf,
+                    ps.j,
+                    vertical_lines_at_data_columns,
+                    num_printed_data_columns,
+                    horizontally_cropped,
+                )
+            end
+
+            _html__push_cell_borders!(
+                vstyle, row_border_top, row_border_bottom, left_border, right_border
+            )
+
             # If we are in a column label, check for cell titles.
             if !isnothing(column_label_titles) && (action == :column_label)
                 title = column_label_titles[ps.i]
@@ -333,6 +551,27 @@ function _html__print(
                 end
 
                 push!(vproperties, "colspan" => string(cs))
+
+                # Now that the column span is clamped, we can push the borders of the
+                # merged cell. If the row already has the same border at the bottom, we do
+                # not need to push it again. Otherwise, the merged cell border is emitted
+                # after the row border, overriding it.
+                (
+                    tf.horizontal_line_at_merged_column_labels &&
+                    (tf.borders.merged_header_cell_line != row_border_bottom)
+                ) && push!(vstyle, "border-bottom" => tf.borders.merged_header_cell_line)
+
+                merged_right_border = _html__vertical_line_after_data_column(
+                    tf,
+                    ps.j + cs - 1,
+                    vertical_lines_at_data_columns,
+                    num_printed_data_columns,
+                    horizontally_cropped,
+                )
+
+                !isempty(merged_right_border) &&
+                    push!(vstyle, "border-right" => merged_right_border)
+
                 rendered_cell = _html__render_cell(
                     cell.data, rctx, renderer; allow_html_in_cells, line_breaks
                 )

@@ -4,7 +4,7 @@
 #
 ############################################################################################
 
-export HtmlHighlighter, HtmlTableFormat, HtmlTableStyle
+export HtmlHighlighter, HtmlTableBorders, HtmlTableFormat, HtmlTableStyle
 
 # Pair that defines HTML properties.
 const HtmlPair = Pair{String, String}
@@ -85,25 +85,12 @@ const _HTML__SMALL_ITALIC = ["font-size" => "small", "font-style" => "italic"]
 const _HTML__SMALL_ITALIC_GRAY = [
     "color" => "gray", "font-size" => "small", "font-style" => "italic"
 ]
-const _HTML__MERGED_CELL = ["border-bottom" => "1px solid black"]
 
-"""
-    HtmlTableFormat
-
-Format that will be used to print the HTML table. All parameters are strings compatible with
-the corresponding HTML property.
-
-# Fields
-
-- `css::String`: CSS to be injected at the end of the `<style>` section.
-- `table_width::String`: Table width.
-
-Notice that this format is only applied if `stand_alone = true`.
-"""
-@kwdef struct HtmlTableFormat
-    css::String = """
+# Default CSS injected in the `<style>` section when `stand_alone = true`. The table borders
+# are not defined here because they are emitted as inline styles, allowing them to appear in
+# any rendering mode.
+const _HTML__DEFAULT_CSS = """
     table, td, th {
-      border-collapse: collapse;
       font-family: sans-serif;
     }
 
@@ -124,41 +111,147 @@ Notice that this format is only applied if `stand_alone = true`.
 
     tr.sourceNotes td {
       padding-bottom: 2px !important;
-    }
-
-    table > *:first-child > tr:first-child {
-      border-top: 2px solid black;
-    }
-
-    table > *:last-child > tr:last-child {
-      border-bottom: 2px solid black;
-    }
-
-    thead > tr:nth-child(1 of .columnLabelRow) {
-      border-top: 1px solid black;
-    }
-
-    thead tr:last-child {
-      border-bottom: 1px solid black;
-    }
-
-    tbody tr:last-child {
-      border-bottom: 1px solid black;
-    }
-
-    tbody > tr:nth-child(1 of .summaryRow) {
-      border-top: 1px solid black;
-    }
-
-    tbody > tr:nth-last-child(1 of .summaryRow) {
-      border-bottom: 1px solid black;
-    }
-
-    tfoot tr:nth-last-child(1 of .footnote) {
-      border-bottom: 1px solid black;
     }"""
 
+"""
+    struct HtmlTableBorders
+
+Define the borders of a table printed with the HTML back end. All fields are strings with a
+CSS `border` shorthand value (e.g., `"1px dashed #0000ff"`).
+
+# Fields
+
+## Horizontal Lines
+
+- `top_line::String`: Border at the top of the table.
+    (**Default**: `"2px solid black"`)
+- `header_line::String`: Border of the lines surrounding the column labels.
+    (**Default**: `"1px solid black"`)
+- `merged_header_cell_line::String`: Border below merged column label cells.
+    (**Default**: `"1px solid black"`)
+- `middle_line::String`: Border of horizontal lines inside the table body.
+    (**Default**: `"1px solid black"`)
+- `bottom_line::String`: Border at the bottom of the table.
+    (**Default**: `"2px solid black"`)
+
+## Vertical Lines
+
+- `left_line::String`: Border at the left of the table.
+    (**Default**: `"2px solid black"`)
+- `center_line::String`: Border of vertical lines inside the table body.
+    (**Default**: `"1px solid black"`)
+- `right_line::String`: Border at the right of the table.
+    (**Default**: `"2px solid black"`)
+"""
+@kwdef struct HtmlTableBorders
+    # == Horizontal Lines ==================================================================
+
+    top_line::String                = "2px solid black"
+    header_line::String             = "1px solid black"
+    merged_header_cell_line::String = "1px solid black"
+    middle_line::String             = "1px solid black"
+    bottom_line::String             = "2px solid black"
+
+    # == Vertical Lines ====================================================================
+
+    left_line::String   = "2px solid black"
+    center_line::String = "1px solid black"
+    right_line::String  = "2px solid black"
+end
+
+"""
+    struct HtmlTableFormat
+
+Define the format of the tables printed with the HTML back end.
+
+# Fields
+
+- `css::String`: CSS to be injected at the end of the `<style>` section. Notice that this
+    field is only applied if `stand_alone = true`.
+- `table_width::String`: Table width. Notice that this field is only applied if
+    `stand_alone = true`.
+- `borders::HtmlTableBorders`: Format of the borders. The borders are emitted as inline
+    styles in the table cells. Hence, they are applied in any rendering mode.
+- `horizontal_line_at_beginning::Bool`: If `true`, a horizontal line will be drawn at the
+    beginning of the table.
+- `horizontal_line_before_column_labels::Bool`: If `true`, a horizontal line will be drawn
+    before the column labels when the table has a title or subtitle. (HTML back end only)
+- `horizontal_line_after_column_labels::Bool`: If `true`, a horizontal line will be drawn
+    after the column labels.
+- `horizontal_line_at_merged_column_labels::Bool`: If `true`, a horizontal line will be
+    drawn at the bottom of the merged column labels.
+- `horizontal_lines_at_data_rows::Union{Symbol, Vector{Int}}`: A horizontal line will be
+    drawn after each data row index listed in this vector. If the symbol `:all` is passed, a
+    horizontal line will be drawn after every data row. If the symbol `:none` is passed,
+    no horizontal lines will be drawn after the data rows.
+- `horizontal_line_before_row_group_label::Bool`: If `true`, a horizontal line will be
+    drawn before the row group label.
+- `horizontal_line_after_row_group_label::Bool`: If `true`, a horizontal line will be
+    drawn after the row group label.
+- `horizontal_line_after_data_rows::Bool`: If `true`, a horizontal line will be drawn
+    after the data rows.
+- `horizontal_line_before_summary_rows::Bool`: If `true`, a horizontal line will be drawn
+    before the summary rows. Notice that this line is the same as the one drawn if
+    `horizontal_line_after_data_rows` is `true`. However, in this case, the line is omitted
+    if there are no summary rows.
+- `horizontal_line_after_summary_rows::Bool`: If `true`, a horizontal line will be drawn
+    after the summary rows.
+- `horizontal_line_after_footnotes::Bool`: If `true`, a horizontal line will be drawn after
+    the footnotes when the table also has source notes. (HTML back end only)
+- `horizontal_line_at_end::Bool`: If `true`, a horizontal line will be drawn at the end of
+    the table, below the footnotes and source notes. (HTML back end only)
+- `vertical_line_at_beginning::Bool`: If `true`, a vertical line will be drawn at the
+    beginning of the table.
+- `vertical_line_after_row_number_column::Bool`: If `true`, a vertical line will be drawn
+    after the row number column.
+- `vertical_line_after_row_label_column::Bool`: If `true`, a vertical line will be drawn
+    after the row label column.
+- `vertical_lines_at_data_columns::Union{Symbol, Vector{Int}}`: A vertical line will be
+    drawn after each data column index listed in this vector. If the symbol `:all` is
+    passed, a vertical line will be drawn after every data column. If the symbol `:none` is
+    passed, no vertical lines will be drawn after the data columns.
+- `vertical_line_after_data_columns::Bool`: If `true`, a vertical line will be drawn after
+    the data columns.
+- `vertical_line_after_continuation_column::Bool`: If `true`, a vertical line will be
+    drawn after the continuation column.
+
+# Remarks
+
+The horizontal lines at the beginning and end of the table are emitted as inline borders of
+the `<table>` element, whereas all the other lines are emitted as inline borders of the row
+cells. When two lines meet at the same edge (for example, the line after the data rows and
+the line before the summary rows), the CSS border-collapsing rules select the wider border,
+and then the border with the higher style precedence.
+"""
+@kwdef struct HtmlTableFormat
+    css::String = _HTML__DEFAULT_CSS
     table_width::String = ""
+
+    # == Borders ===========================================================================
+
+    borders::HtmlTableBorders = HtmlTableBorders()
+
+    # == Configuration for the Horizontal and Vertical Lines ===============================
+
+    horizontal_line_at_beginning::Bool = true
+    horizontal_line_before_column_labels::Bool = true
+    horizontal_line_after_column_labels::Bool = true
+    horizontal_line_at_merged_column_labels::Bool = true
+    horizontal_lines_at_data_rows::Union{Symbol, Vector{Int}} = :none
+    horizontal_line_before_row_group_label::Bool = true
+    horizontal_line_after_row_group_label::Bool = true
+    horizontal_line_after_data_rows::Bool = true
+    horizontal_line_before_summary_rows::Bool = true
+    horizontal_line_after_summary_rows::Bool = true
+    horizontal_line_after_footnotes::Bool = true
+    horizontal_line_at_end::Bool = true
+
+    vertical_line_at_beginning::Bool = true
+    vertical_line_after_row_number_column::Bool = true
+    vertical_line_after_row_label_column::Bool = true
+    vertical_lines_at_data_columns::Union{Symbol, Vector{Int}} = :all
+    vertical_line_after_data_columns::Bool = true
+    vertical_line_after_continuation_column::Bool = true
 end
 
 """
@@ -239,8 +332,8 @@ function HtmlTableStyle(;
     row_group_label                = _HTML__BOLD,
     first_line_column_label        = _HTML__BOLD,
     column_label                   = _HTML__NO_DECORATION,
-    first_line_merged_column_label = _HTML__MERGED_CELL,
-    merged_column_label            = _HTML__MERGED_CELL,
+    first_line_merged_column_label = _HTML__NO_DECORATION,
+    merged_column_label            = _HTML__NO_DECORATION,
     summary_row_cell               = _HTML__NO_DECORATION,
     summary_row_label              = _HTML__BOLD,
     footnote                       = _HTML__SMALL,
