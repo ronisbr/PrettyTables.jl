@@ -64,10 +64,11 @@ keeps the back end default, whereas `:none` explicitly disables the lines.
 ### Line Presence
 
 The line presence fields of [`TableFormat`](@ref) select which lines are drawn. They have
-the same names as the corresponding fields of the table formats of the text, LaTeX, Typst,
-and Excel back ends:
+the same names as the corresponding fields of the table formats of the text, HTML, LaTeX,
+Typst, and Excel back ends:
 
 - `horizontal_line_at_beginning`
+- `horizontal_line_before_column_labels` (HTML back end only)
 - `horizontal_line_after_column_labels`
 - `horizontal_line_at_merged_column_labels`
 - `horizontal_lines_at_data_rows` (`:all`, `:none`, or a vector of row indices)
@@ -76,6 +77,8 @@ and Excel back ends:
 - `horizontal_line_after_data_rows`
 - `horizontal_line_before_summary_rows`
 - `horizontal_line_after_summary_rows`
+- `horizontal_line_after_footnotes` (HTML back end only)
+- `horizontal_line_at_end` (HTML back end only)
 - `vertical_line_at_beginning`
 - `vertical_line_after_row_number_column`
 - `vertical_line_after_row_label_column`
@@ -83,9 +86,38 @@ and Excel back ends:
 - `vertical_line_after_data_columns`
 - `vertical_line_after_continuation_column`
 
+The fields marked as HTML back end only exist because the HTML back end places the title
+and the footer inside the ruled area. They are silently ignored by the other back ends.
 The backend-specific fields (for example, `horizontal_lines_at_column_labels` of the text
 back end and `horizontal_line_between_column_labels` of the Excel back end) are not part of
 [`TableFormat`](@ref) and remain available in the native table formats.
+
+The following macros return the keyword arguments to show or suppress every horizontal or
+vertical line, which can be merged with additional keywords to override individual options:
+
+- `@all_horizontal_lines`: Return the keyword arguments to show all horizontal lines.
+- `@all_vertical_lines`: Return the keyword arguments to show all vertical lines.
+- `@no_horizontal_lines`: Return the keyword arguments to suppress all horizontal lines.
+- `@no_vertical_lines`: Return the keyword arguments to suppress all vertical lines.
+
+For example, the following object draws only the vertical lines and the horizontal line
+after the column labels in any back end:
+
+```@repl table_format
+pretty_table(
+    [1 2; 3 4];
+    table_format = TableFormat(;
+        @no_horizontal_lines,
+        @all_vertical_lines,
+        horizontal_line_after_column_labels = true,
+    )
+)
+```
+
+Each back end also provides the same macro quadruple for its native table format (for
+example, `@text__all_horizontal_lines` for `TextTableFormat` and
+`@html__no_vertical_lines` for `HtmlTableFormat`), which additionally covers the
+backend-specific presence fields.
 
 ### Line Design
 
@@ -142,12 +174,12 @@ The following table summarizes the support:
 
 | Aspect                      | Text | HTML | LaTeX | Markdown | Typst | Excel |
 |:----------------------------|:-----|:-----|:------|:---------|:------|:------|
-| Horizontal line presence    | ✓    | –    | ✓     | partial¹ | ✓     | ✓     |
-| Vertical line presence      | ✓    | –    | ✓     | –        | ✓     | ✓     |
-| Line design: `style`        | ✓²   | –    | ✓³    | –        | ✓⁴    | ✓     |
-| Line design: `width`        | ✓²   | –    | –     | –        | ✓     | ✓     |
-| Line design: `color`        | ✓    | –    | –     | –        | ✓     | ✓     |
-| Table style                 | ✓    | ✓    | ✓     | partial⁵ | ✓     | ✓     |
+| Horizontal line presence    | ✓    | ✓    | ✓     | partial¹ | ✓     | ✓     |
+| Vertical line presence      | ✓    | ✓    | ✓     | –        | ✓     | ✓     |
+| Line design: `style`        | ✓²   | ✓    | ✓³    | –        | ✓⁴    | ✓     |
+| Line design: `width`        | ✓²   | ✓⁵   | –     | –        | ✓     | ✓     |
+| Line design: `color`        | ✓    | ✓    | –     | –        | ✓     | ✓     |
+| Table style                 | ✓    | ✓    | ✓     | partial⁶ | ✓     | ✓     |
 
 1. Markdown only supports `horizontal_line_before_summary_rows`.
 2. The text back end maps the designs to Unicode box-drawing characters, which only have
@@ -160,13 +192,18 @@ The following table summarizes the support:
    **arydshln** in the document. The designs of the merged header cell line and of the
    vertical lines cannot be changed.
 4. Typst strokes have no double variant, so `:double` falls back to `:solid`.
-5. Markdown ignores `title`, `subtitle`, `first_line_merged_column_label`, and
+5. The HTML back end maps the widths `:thin`, `:medium`, and `:thick` to `1px`, `2px`, and
+   `3px`, respectively.
+6. Markdown ignores `title`, `subtitle`, `first_line_merged_column_label`, and
    `merged_column_label` because its style type does not have those fields.
 
 Additional notes:
 
-- The HTML back end currently ignores [`TableFormat`](@ref) entirely. The table lines can
-  be customized with the field `css` of `HtmlTableFormat`.
+- The HTML back end draws the table lines using inline styles in the table cells. Hence,
+  they are applied in any rendering mode. The presence fields
+  `horizontal_line_before_column_labels`, `horizontal_line_after_footnotes`, and
+  `horizontal_line_at_end` are only honored by the HTML back end because it places the
+  title and the footer inside the ruled area.
 - In the text back end, the color of each line follows the precedence: the line face in
   `TextTableStyle` (for example, `middle_line`), the `color` of the line design, and the
   face in the field `table_border` of `TextTableStyle`.

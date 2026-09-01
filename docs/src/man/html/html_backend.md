@@ -106,10 +106,65 @@ highlighters = [hl_gt5, hl_lt5]
 The HTML table format is defined using an object of type [`HtmlTableFormat`](@ref) that
 contains the following fields:
 
-- `css::String`: CSS to be injected at the end of the `<style>` section.
-- `table_width::String`: Table width.
+- `css::String`: CSS to be injected at the end of the `<style>` section. Notice that this
+  field is only applied if `stand_alone = true`.
+- `table_width::String`: Table width. Notice that this field is only applied if
+  `stand_alone = true`.
+- `borders::HtmlTableBorders`: Format of the borders. Each line role is a string with a CSS
+  `border` shorthand value (for example, `"1px dashed blue"`).
+- A set of boolean fields selecting which horizontal and vertical lines are drawn. For the
+  complete list, see the documentation of [`HtmlTableFormat`](@ref).
 
-Notice that this format is only applied if `stand_alone = true`.
+The table lines are emitted as inline styles in the table cells (the lines at the beginning
+and end of the table are emitted in the `<table>` element together with
+`border-collapse: collapse`). Hence, they are applied in any rendering mode, including when
+the table is embedded in another document (Jupyter, Pluto, Documenter, etc.).
+
+Compared to the other back ends, `HtmlTableFormat` has three additional line presence
+fields (`horizontal_line_before_column_labels`, `horizontal_line_after_footnotes`, and
+`horizontal_line_at_end`) because the HTML back end places the title and the footer inside
+the ruled area.
+
+The following macros are available to help configuring the table lines:
+
+- `@html__all_horizontal_lines`: Return the keyword arguments to show all horizontal lines.
+- `@html__all_vertical_lines`: Return the keyword arguments to show all vertical lines.
+- `@html__no_horizontal_lines`: Return the keyword arguments to suppress all horizontal
+  lines.
+- `@html__no_vertical_lines`: Return the keyword arguments to suppress all vertical lines.
+
+For example, we can draw only the vertical lines as follows:
+
+```julia
+table_format = HtmlTableFormat(; @html__no_horizontal_lines, @html__all_vertical_lines)
+```
+
+### Line Design
+
+We can change the design of the table lines by passing a custom [`HtmlTableBorders`](@ref)
+object to the field `borders`. For example, the following format renders the line after the
+column labels as a dotted green line and every line inside the table body as a dashed blue
+line:
+
+```julia
+table_format = HtmlTableFormat(;
+    borders = HtmlTableBorders(;
+        header_line = "2px dotted green",
+        middle_line = "1px dashed blue",
+    ),
+    horizontal_lines_at_data_rows = :all,
+)
+```
+
+The backend-agnostic [`TableFormat`](@ref) is also supported: its line designs are
+converted to CSS border values with [`html_line_style`](@ref), and its line presence fields
+override the corresponding fields of the default HTML table format.
+
+Since the lines are emitted as inline styles, any decoration applied later (alignment,
+styles, or highlighters) can override them by pushing another value for the same CSS
+property. Additionally, when two lines meet at the same edge (for example, the line after
+the data rows and the line before the summary rows), the CSS border-collapsing rules select
+the wider border, and then the border with the higher style precedence.
 
 ## HTML Table Style
 
