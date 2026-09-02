@@ -13,6 +13,9 @@ makedocs(
     ),
     sitename = "Pretty Tables",
     authors = "Ronan Arraes Jardim Chagas",
+    # The library page lists the public API only. Hence, we only check that the exported
+    # names are documented.
+    checkdocs = :exports,
     warnonly = [:missing_docs, :cross_references],
     pages = [
         "Home"                        => "index.md",
