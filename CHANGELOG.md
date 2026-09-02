@@ -67,6 +67,17 @@ Version 3.5.0
   `horizontal_line_before_column_labels`, `horizontal_line_after_footnotes`, and
   `horizontal_line_at_end`, which are only honored by the HTML back end and silently
   ignored by the others.
+- ![Feature][badge-feature] Accept a `Face`, a `Crayon`, and the keywords of both in the
+  constructors of `HtmlHighlighter`, `LatexHighlighter`, `MarkdownHighlighter`,
+  `TypstHighlighter`, and `ExcelHighlighter`, converting the face with the decoration
+  function of the back end, exactly like `Highlighter` and `TextHighlighter`. Every table
+  style, including `TableStyle`, also accepts a `Crayon` wherever it accepts a `Face`.
+- ![Feature][badge-feature] Export the native decoration types `HtmlPair`, `TypstPair`, and
+  `LatexEnvironments`, like `ExcelPair`.
+- ![Feature][badge-feature] Select the back end from a native table style (for example,
+  `style = HtmlTableStyle()`) when `backend = :auto` and the table format does not select
+  one. Passing the style or the table format of another back end now throws an
+  `ArgumentError` with a clear message instead of a `MethodError`.
 - ![Info][badge-info] The default HTML table look changed. The line presence defaults of
   `HtmlTableFormat` now match the other back ends: vertical lines are drawn at the
   beginning of the table, after the row number and row label columns, after every data
@@ -88,9 +99,46 @@ Version 3.5.0
   the text back end is used.
 - ![Enhancement][badge-enhancement] Render the escape sequences of the style of the text back
   end when the style is created instead of once per cell.
+- ![Enhancement][badge-enhancement] Reduce the time to print the first table. Each back end
+  now gathers its keywords in an options structure and compiles its rendering body once,
+  so a set of keywords not seen before (for example, `line_breaks = true`) costs a few
+  milliseconds instead of 150 to 230 ms in Julia 1.12, and a new highlighter vector type or
+  width keyword type no longer compiles the rendering body again. The keyword constructors
+  of `TextTableStyle`, `TextHighlighter`, and `Highlighter` are compiled once for every set
+  of keywords, and the data accessors are no longer specialized on the table type where it
+  does not pay off.
+- ![Enhancement][badge-enhancement] Emit the vertical lines of the HTML back end as the
+  borders of `<col>` elements and the horizontal lines as the borders of the `<tr>`
+  elements instead of inline borders in every cell. Since the table borders are collapsed,
+  the rendering is the same, but the output of a large table is about 40% smaller and it is
+  rendered faster. The line under a merged column label stays in the cell.
+- ![Enhancement][badge-enhancement] Keep the back end default for every unset aspect of a
+  `LineStyle` in the HTML, Typst, and Excel back ends. For example,
+  `TableFormat(; top_line = LineStyle(; color = :red))` now keeps the default width of the
+  top line instead of resetting it to the thinnest one. The conversion functions
+  `html_line_style`, `typst_line_style`, `excel_line_style`, and `latex_line_style` accept
+  the keyword `default` with the default line design.
+- ![Enhancement][badge-enhancement] Cover the lines between the column label rows and under
+  the merged column labels in `@text__all_horizontal_lines` and
+  `@text__no_horizontal_lines`, like the macros of the other back ends cover their
+  backend-specific fields.
+- ![Enhancement][badge-enhancement] Validate the positional constructor of `LineStyle`
+  exactly like the keyword constructor.
+- ![Enhancement][badge-enhancement] Convert the general `Highlighter` to the native
+  highlighter of the back end once per printed table. `Highlighter` is now immutable and
+  it can be shared between tasks.
 - ![Info][badge-info] The conversion from `Crayon` to `Face` is lossy: the attributes
-  `blink`, `conceal`, and `reset` are dropped, and the colors of the 256-color palette are
-  converted to 24-bit colors.
+  `blink`, `conceal`, and `reset` are dropped with a warning shown once per session, the
+  attributes explicitly turned off (for example, `bold = false`) and the default color of
+  the terminal are omitted because every styled segment starts after a reset, `bold` has
+  priority over `faint` when both are set, and the colors of the 256-color palette (except
+  the 16 system colors) are converted to 24-bit colors, which requires a terminal with
+  24-bit color support.
+- ![Info][badge-info] The line character fields of `TextTableFormat` are placed after the
+  other fields, and `TextTableFormat` and `HtmlTableFormat` keep positional constructors
+  with the fields of v3.4.8. Hence, the code that builds those objects positionally keeps
+  working. The decoration converters of the HTML, LaTeX, Typst, and Excel styles also
+  accept any vector, like the constructors of v3.4.8 did.
 - ![Info][badge-info] PrettyTables.jl now requires StringManipulation.jl v0.6.1.
 
 Version 3.4.8
