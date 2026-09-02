@@ -50,7 +50,17 @@ PrecompileTools.@setup_workload begin
         Bool[0 1; 0 1],
         ["S" "S"; "S" "S"],
         ['C' 'C'; 'C' 'C'],
+        :symbol,
+        nothing,
+        missing,
+        1 // 2,
     ]
+
+    # Tables of the most common element types. Notice that the accessors of the data are
+    # specialized on the table type, so each one compiles a few small functions.
+    int_matrix    = [1 2; 3 4]
+    string_matrix = ["S" "S"; "S" "S"]
+    bool_matrix   = [true false; false true]
 
     # A named tuple is compliant with Table.jl.
     table = (a = 1:1:10, b = ["S" for i in 1:10], c = ['C' for i in 1:10])
@@ -121,6 +131,9 @@ PrecompileTools.@setup_workload begin
             )
 
             pretty_table(types)
+            pretty_table(int_matrix)
+            pretty_table(string_matrix)
+            pretty_table(bool_matrix)
 
             # .. Text Table Styles .........................................................
 
@@ -447,9 +460,9 @@ PrecompileTools.@setup_workload begin
 
             generic_table_style = TableStyle(; title = Face(; weight = :bold))
 
-            # Passing only `table_format` or only `style` compiles a different keyword
-            # combination of the printing pipeline. These are the most common patterns, so
-            # we exercise them for both the generic and the native objects.
+            # Passing only `table_format` or only `style` compiles a different set of
+            # keywords of `pretty_table`, which is expensive. These are the most common
+            # patterns, so we exercise them for both the generic and the native objects.
             pretty_table(matrix; table_format = generic_table_format)
             pretty_table(matrix; style = generic_table_style)
             pretty_table(matrix; table_format = TextTableFormat())
