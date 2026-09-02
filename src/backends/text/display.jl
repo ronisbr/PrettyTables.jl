@@ -64,6 +64,25 @@ function _text__print(display::Display, str::AbstractString, str_width::Int = -1
 end
 
 """
+    _text__begin_styled_line(display::Display, sgr::String) -> Nothing
+    _text__end_styled_line(display::Display, sgr::String) -> Nothing
+
+Print to `display` the escape sequence `sgr` that starts a styled line, or the reset
+sequence that ends it, if `sgr` is not empty and the display has color. Both functions are
+guarded by the same condition. Otherwise, a table styled with a non-default face would leak
+a bare `\\e[0m` into an output where color is disabled.
+"""
+function _text__begin_styled_line(display::Display, sgr::String)
+    (display.has_color && !isempty(sgr)) && _text__print(display, sgr)
+    return nothing
+end
+
+function _text__end_styled_line(display::Display, sgr::String)
+    (display.has_color && !isempty(sgr)) && _text__print(display, _TEXT__STRING_RESET)
+    return nothing
+end
+
+"""
     _text__styled_print(display::Display, char::Char, sgr::String) -> Nothing
     _text__styled_print(display::Display, line::TextVerticalLine) -> Nothing
 
@@ -231,10 +250,8 @@ end
         vertical_lines_at_data_columns::AbstractVector{Int},
         row_number_column_width::Int,
         row_label_column_width::Int,
-        printed_data_column_widths::Vector{Int},
-        top::Bool = false,
-        bottom::Bool = false,
-        row_group_label::Bool = false
+        printed_data_column_widths::Vector{Int};
+        kwargs...
     ) -> Nothing
 
 Print a horizontal line to `display`.
@@ -251,6 +268,9 @@ Print a horizontal line to `display`.
 - `row_number_column_width::Int`: Row number column width.
 - `row_label_column_width::Int`: Row label column width.
 - `printed_data_column_widths::Vector{Int}`: Printed data column widths.
+
+# Keywords
+
 - `top::Bool`: If `true`, a top horizontal line will be drawn.
     (**Default**: false)
 - `bottom::Bool`: If `true`, a bottom horizontal line will be drawn.
@@ -260,6 +280,12 @@ Print a horizontal line to `display`.
     keyword `bottom` is neglected. To draw the bottom row label horizontal line, set `top`
     to `false`.
     (**Default**: false)
+- `column_label_row::Union{Nothing, Int}`: If it is an integer, the line is drawn after
+    this column label row (0 for the line before the first one), and the intersections take
+    into account the merged column labels above and below the line (see
+    `_text__column_label_intersection`). If it is `nothing`, the intersections are the ones
+    of a line inside the table.
+    (**Default**: `nothing`)
 """
 function _text__print_horizontal_line(
     display::Display,
@@ -269,15 +295,17 @@ function _text__print_horizontal_line(
     vertical_lines_at_data_columns::AbstractVector{Int},
     row_number_column_width::Int,
     row_label_column_width::Int,
-    printed_data_column_widths::Vector{Int},
+    printed_data_column_widths::Vector{Int};
     top::Bool = false,
     bottom::Bool = false,
     row_group_label::Bool = false,
+    column_label_row::Union{Nothing, Int} = nothing,
 )
     # == Auxiliary Variables ===============================================================
 
     tb  = line.chars
     sgr = line.sgr
+    row = tb.row
 
     # Here, we obtain the characters for the left, middle, and right intersections.
 
@@ -313,13 +341,11 @@ function _text__print_horizontal_line(
         ri = tb.right_intersection
     end
 
-    row = tb.row
-
     table_continuation_column = _is_horizontally_cropped(table_data)
 
     # == Print the Horizontal Line =========================================================
 
-    (display.has_color && !isempty(sgr)) && _text__print(display, sgr)
+    _text__begin_styled_line(display, sgr)
 
     # -- Left Intersection -----------------------------------------------------------------
 
@@ -355,7 +381,15 @@ function _text__print_horizontal_line(
                 !table_continuation_column,
             )
         elseif j ∈ vertical_lines_at_data_columns
-            _text__horizontal_line_intersection(display, mi, row, false)
+            intersection = if isnothing(column_label_row)
+                mi
+            else
+                _text__column_label_intersection(
+                    table_data, tf, tb, column_label_row, j, top, mi
+                )
+            end
+
+            _text__horizontal_line_intersection(display, intersection, row, false)
         end
     end
 
@@ -367,189 +401,58 @@ function _text__print_horizontal_line(
             _text__horizontal_line_intersection(display, ri, row, true)
     end
 
-    # NOTE: The reset must be guarded by `has_color` exactly like the opening escape
-    # sequence is. Otherwise, a table styled with a non-default face would leak a bare
-    # `\e[0m` into an output where color is disabled.
-    (display.has_color && !isempty(sgr)) &&
-        _text__print(display, _TEXT__STRING_RESET)
+    _text__end_styled_line(display, sgr)
 
     return nothing
 end
 
 """
-    _text__print_column_label_horizontal_line(
-        display::Display,
-        tf::TextTableFormat,
-        line::TextHorizontalLine,
+    _text__column_label_intersection(
         table_data::TableData,
+        tf::TextTableFormat,
+        tb::TextTableBorders,
         row_number::Int,
-        vertical_lines_at_data_columns::AbstractVector{Int},
-        row_number_column_width::Int,
-        row_label_column_width::Int,
-        printed_data_column_widths::Vector{Int},
-        top::Bool = false,
-        bottom::Bool = false
-    )
+        j::Int,
+        top::Bool,
+        mi::Char
+    ) -> Char
 
-Print a column label horizontal line to `display`.
-
-# Arguments
-
-- `display::Display`: Display where the horizontal line will be printed.
-- `tf::TextTableFormat`: Table format.
-- `line::TextHorizontalLine`: Characters and escape sequence used to draw the horizontal
-    line, resolved for the line being printed (see [`TextResolvedTableLines`](@ref)).
-- `table_data::TableData`: Table data.
-- `row_number::Int`: Column label row number before the horizontal line.
-- `vertical_lines_at_data_columns::AbstractVector{Int}`: List of columns where a vertical
-    line must be drawn after the cell.
-- `row_number_column_width::Int`: Row number column width.
-- `row_label_column_width::Int`: Row label column width.
-- `printed_data_column_widths::Vector{Int}`: Printed data column widths.
-- `top::Bool`: If `true`, a top horizontal line will be drawn.
-    (**Default**: false)
-- `bottom::Bool`: If `true`, a bottom horizontal line will be drawn.
-    (**Default**: false)
+Return the intersection character of the horizontal line drawn after the column label row
+`row_number` at the vertical line after the data column `j`, taking into account the merged
+column labels above and below the line. `tb` is the character set of the line, `top`
+indicates that the line is at the top of the table, and `mi` is the intersection used when
+the column labels above and below the line are not merged.
 """
-function _text__print_column_label_horizontal_line(
-    display::Display,
-    tf::TextTableFormat,
-    line::TextHorizontalLine,
+function _text__column_label_intersection(
     table_data::TableData,
+    tf::TextTableFormat,
+    tb::TextTableBorders,
     row_number::Int,
-    vertical_lines_at_data_columns::AbstractVector{Int},
-    row_number_column_width::Int,
-    row_label_column_width::Int,
-    printed_data_column_widths::Vector{Int},
-    top::Bool = false,
-    bottom::Bool = false,
+    j::Int,
+    top::Bool,
+    mi::Char,
 )
-    # == Auxiliary Variables ===============================================================
+    # We must compute if the cell at the top or at the bottom from the current horizontal
+    # line is merged. Notice that if we are at the top of the table, the effect is equal to
+    # have a merged cell above it.
+    top_j₀, top_j₁       = _column_label_limits(table_data, row_number, j + 1)
+    bottom_j₀, bottom_j₁ = _column_label_limits(table_data, row_number + 1, j + 1)
 
-    tb  = line.chars
-    sgr = line.sgr
+    tcm = (top_j₀ != top_j₁) && (j + 1 != top_j₀) || top
+    bcm = (bottom_j₀ != bottom_j₁) && (j + 1 != bottom_j₀)
 
-    num_column_labels = length(table_data.column_labels)
+    if tf.suppress_vertical_lines_at_column_labels
+        bcm = tcm = true
 
-    # Here, we obtain the characters for the left, middle, and right intersections.
-
-    local li, mi, ri
-
-    ti = tb.up_intersection
-    bi = tb.bottom_intersection
-
-    li = if top
-        tb.up_left_corner
-    elseif bottom
-        tb.bottom_left_corner
-    else
-        tb.left_intersection
+        # We must have a special treatment if this is the last column label since we must
+        # connect the vertical lines with those at the table.
+        row_number == length(table_data.column_labels) && (bcm = false)
     end
 
-    mi = if top
-        ti
-    elseif bottom
-        bi
-    else
-        tb.middle_intersection
-    end
-
-    ri = if top
-        tb.up_right_corner
-    elseif bottom
-        tb.bottom_right_corner
-    else
-        tb.right_intersection
-    end
-
-    row = tb.row
-
-    table_continuation_column = _is_horizontally_cropped(table_data)
-
-    # == Print the Horizontal Line =========================================================
-
-    (display.has_color && !isempty(sgr)) && _text__print(display, sgr)
-
-    # -- Left Intersection -----------------------------------------------------------------
-
-    tf.vertical_line_at_beginning && _text__print(display, li)
-
-    # -- Row Number Column -----------------------------------------------------------------
-
-    if table_data.show_row_number_column
-        _text__print(display, row, row_number_column_width + 2)
-        tf.vertical_line_after_row_number_column &&
-            _text__horizontal_line_intersection(display, mi, row, false)
-    end
-
-    # -- Row Label Column ------------------------------------------------------------------
-
-    if _has_row_labels(table_data)
-        _text__print(display, row, row_label_column_width + 2)
-        tf.vertical_line_after_row_label_column &&
-            _text__horizontal_line_intersection(display, mi, row, false)
-    end
-
-    # -- Data ------------------------------------------------------------------------------
-
-    for j in eachindex(printed_data_column_widths)
-        cw = printed_data_column_widths[j]
-        _text__print(display, row, cw + 2)
-
-        if (j == last(eachindex(printed_data_column_widths)))
-            tf.vertical_line_after_data_columns && _text__horizontal_line_intersection(
-                display,
-                table_continuation_column ? mi : ri,
-                row,
-                !table_continuation_column,
-            )
-        elseif j ∈ vertical_lines_at_data_columns
-            # We must compute if the cell at the top or at the bottom from the current
-            # horizontal line is merged. Notice that if we are at the top of the table, the
-            # effect is equal to have a merged cell above it.
-            top_j₀, top_j₁       = _column_label_limits(table_data, row_number, j + 1)
-            bottom_j₀, bottom_j₁ = _column_label_limits(table_data, row_number + 1, j + 1)
-
-            tcm = (top_j₀ != top_j₁) && (j + 1 != top_j₀) || top
-            bcm = (bottom_j₀ != bottom_j₁) && (j + 1 != bottom_j₀)
-
-            if tf.suppress_vertical_lines_at_column_labels
-                bcm = tcm = true
-
-                # We must have a special treatment if this is the last column label since we
-                # must connect the vertical lines with those at the table.
-                row_number == num_column_labels && (bcm = false)
-            end
-
-            aux = if tcm && bcm
-                row
-            elseif tcm && !bcm
-                ti
-            elseif !tcm && bcm
-                bi
-            else
-                mi
-            end
-
-            _text__horizontal_line_intersection(display, aux, row, false)
-        end
-    end
-
-    # -- Table Continuation Column ---------------------------------------------------------
-
-    if table_continuation_column
-        _text__print(display, row, 3)
-        tf.vertical_line_after_continuation_column &&
-            _text__horizontal_line_intersection(display, ri, row, true)
-    end
-
-    # NOTE: The reset must be guarded by `has_color` exactly like the opening escape
-    # sequence is. Otherwise, a table styled with a non-default face would leak a bare
-    # `\e[0m` into an output where color is disabled.
-    (display.has_color && !isempty(sgr)) &&
-        _text__print(display, _TEXT__STRING_RESET)
-
-    return nothing
+    (tcm && bcm) && return tb.row
+    tcm && return tb.up_intersection
+    bcm && return tb.bottom_intersection
+    return mi
 end
 
 """
@@ -607,7 +510,7 @@ function _text__print_column_label_horizontal_line_only_at_merged_labels(
 
     # == Print the Horizontal Line =========================================================
 
-    (display.has_color && !isempty(sgr)) && _text__print(display, sgr)
+    _text__begin_styled_line(display, sgr)
 
     # -- Left Intersection -----------------------------------------------------------------
 
@@ -674,13 +577,42 @@ function _text__print_column_label_horizontal_line_only_at_merged_labels(
             _text__horizontal_line_intersection(display, ri, row, true)
     end
 
-    # NOTE: The reset must be guarded by `has_color` exactly like the opening escape
-    # sequence is. Otherwise, a table styled with a non-default face would leak a bare
-    # `\e[0m` into an output where color is disabled.
-    (display.has_color && !isempty(sgr)) &&
-        _text__print(display, _TEXT__STRING_RESET)
+    _text__end_styled_line(display, sgr)
 
     return nothing
+end
+
+"""
+    _text__vertical_line_after_data_column(
+        tf::TextTableFormat,
+        rl::TextResolvedTableLines,
+        jr::Int,
+        j::Int,
+        last_printed_column_index::Int,
+        vertical_lines_at_data_columns::AbstractVector{Int},
+        table_continuation_column::Bool
+    ) -> Tuple{Bool, TextVerticalLine}
+
+Return whether a vertical line must be drawn after the printed data column `jr` (data
+column `j`) and the line to draw. The line after the last printed column
+(`last_printed_column_index`) is the right line of the table, unless the table has a
+continuation column (`table_continuation_column`), in which case it is a center line.
+"""
+function _text__vertical_line_after_data_column(
+    tf::TextTableFormat,
+    rl::TextResolvedTableLines,
+    jr::Int,
+    j::Int,
+    last_printed_column_index::Int,
+    vertical_lines_at_data_columns::AbstractVector{Int},
+    table_continuation_column::Bool,
+)
+    if jr == last_printed_column_index
+        tf.vertical_line_after_data_columns || return (false, rl.center)
+        return (true, table_continuation_column ? rl.center : rl.right)
+    end
+
+    return (j ∈ vertical_lines_at_data_columns, rl.center)
 end
 
 """
