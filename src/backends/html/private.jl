@@ -167,24 +167,57 @@ _html__create_style(::Nothing) = ""
 # == Table Borders =========================================================================
 
 """
-    _html__push_cell_borders!(style::Vector{HtmlPair}, top::String, bottom::String, left::String, right::String) -> Nothing
+    _html__column_borders(
+        tf::HtmlTableFormat,
+        table_data::TableData,
+        vertical_lines_at_data_columns::AbstractVector{Int},
+        num_printed_data_columns::Int,
+        horizontally_cropped::Bool
+    ) -> Vector{String}
 
-Push the cell borders to the vector `style`, skipping the sides with an empty border. This
-function must be called before pushing any other decoration to `style` so that the other
-decorations can override the borders.
+Return the border at the right of each printed column (the row number column, the row label
+column, the data columns, and the continuation column, in this order), or an empty string
+for the columns without a vertical line after them. `vertical_lines_at_data_columns` must
+be the processed version of the homonym field of `tf`.
 """
-function _html__push_cell_borders!(
-    style::Vector{HtmlPair},
-    top::String,
-    bottom::String,
-    left::String,
-    right::String,
+function _html__column_borders(
+    tf::HtmlTableFormat,
+    table_data::TableData,
+    vertical_lines_at_data_columns::AbstractVector{Int},
+    num_printed_data_columns::Int,
+    horizontally_cropped::Bool,
 )
-    !isempty(top)    && push!(style, "border-top"    => top)
-    !isempty(bottom) && push!(style, "border-bottom" => bottom)
-    !isempty(left)   && push!(style, "border-left"   => left)
-    !isempty(right)  && push!(style, "border-right"  => right)
-    return nothing
+    borders = String[]
+
+    table_data.show_row_number_column && push!(
+        borders,
+        tf.vertical_line_after_row_number_column ? tf.borders.center_line : ""
+    )
+
+    _has_row_labels(table_data) && push!(
+        borders,
+        tf.vertical_line_after_row_label_column ? tf.borders.center_line : ""
+    )
+
+    for j in 1:num_printed_data_columns
+        push!(
+            borders,
+            _html__vertical_line_after_data_column(
+                tf,
+                j,
+                vertical_lines_at_data_columns,
+                num_printed_data_columns,
+                horizontally_cropped,
+            )
+        )
+    end
+
+    horizontally_cropped && push!(
+        borders,
+        tf.vertical_line_after_continuation_column ? tf.borders.right_line : ""
+    )
+
+    return borders
 end
 
 """
@@ -365,4 +398,51 @@ function _html__print_top_bar_section(
 
     il -= 1
     return _aprintln(buf, _html__close_tag("div"), il, ns; minify)
+end
+
+# == Cell Classes and Styles ===============================================================
+
+# CSS class of the cells printed by each action. The cells without an entry have no class.
+const _HTML__CELL_CLASSES = Dict{Symbol, String}(
+    :row_number_label   => "rowNumberLabel",
+    :row_number         => "rowNumber",
+    :summary_row_number => "summaryRowNumber",
+    :stubhead_label     => "stubheadLabel",
+    :row_label          => "rowLabel",
+    :summary_row_label  => "summaryRowLabel",
+)
+
+"""
+    _html__cell_class(action::Symbol) -> String
+
+Return the CSS class of the cell printed by `action`, or an empty string if it has no class.
+"""
+_html__cell_class(action::Symbol) = get(_HTML__CELL_CLASSES, action, "")
+
+"""
+    _html__cell_style(style::HtmlTableStyle, action::Symbol, i::Int, j::Int) -> Vector{HtmlPair}
+
+Return the decoration in `style` of the cell printed by `action` at the row `i` and column
+`j`.
+"""
+function _html__cell_style(style::HtmlTableStyle, action::Symbol, i::Int, j::Int)
+    (action == :title)              && return style.title
+    (action == :subtitle)           && return style.subtitle
+    (action == :row_number_label)   && return style.row_number_label
+    (action == :row_number)         && return style.row_number
+    (action == :summary_row_number) && return style.row_number
+    (action == :stubhead_label)     && return style.stubhead_label
+    (action == :row_group_label)    && return style.row_group_label
+    (action == :row_label)          && return style.row_label
+    (action == :summary_row_label)  && return style.summary_row_label
+    (action == :summary_row_cell)   && return style.summary_row_cell
+    (action == :footnote)           && return style.footnote
+    (action == :source_notes)       && return style.source_note
+
+    if action == :column_label
+        s = (i == 1) ? style.first_line_column_label : style.column_label
+        return s isa Vector{Vector{HtmlPair}} ? s[j] : s
+    end
+
+    return _HTML__NO_DECORATION
 end

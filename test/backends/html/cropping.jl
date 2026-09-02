@@ -16,32 +16,38 @@
   <div style = "clear: both;"></div>
 </div>
 <table style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
+  <colgroup>
+    <col style = "border-left: 2px solid black; border-right: 1px solid black;">
+    <col style = "border-right: 1px solid black;">
+    <col style = "border-right: 1px solid black;">
+    <col style = "border-right: 2px solid black;">
+  </colgroup>
   <thead>
-    <tr class = "columnLabelRow">
-      <th style = "border-bottom: 1px solid black; border-left: 2px solid black; border-right: 1px solid black; font-weight: bold; text-align: right;">Col. 1</th>
-      <th style = "border-bottom: 1px solid black; border-right: 1px solid black; font-weight: bold; text-align: right;">Col. 2</th>
-      <th style = "border-bottom: 1px solid black; border-right: 1px solid black; font-weight: bold; text-align: right;">Col. 3</th>
-      <th style = "border-bottom: 1px solid black; border-right: 2px solid black;">&ctdot;</th>
+    <tr class = "columnLabelRow" style = "border-bottom: 1px solid black;">
+      <th style = "font-weight: bold; text-align: right;">Col. 1</th>
+      <th style = "font-weight: bold; text-align: right;">Col. 2</th>
+      <th style = "font-weight: bold; text-align: right;">Col. 3</th>
+      <th>&ctdot;</th>
     </tr>
   </thead>
   <tbody>
     <tr class = "dataRow">
-      <td style = "border-left: 2px solid black; border-right: 1px solid black; text-align: right;">(1, 1)</td>
-      <td style = "border-right: 1px solid black; text-align: right;">(1, 2)</td>
-      <td style = "border-right: 1px solid black; text-align: right;">(1, 3)</td>
-      <td style = "border-right: 2px solid black;">&ctdot;</td>
+      <td style = "text-align: right;">(1, 1)</td>
+      <td style = "text-align: right;">(1, 2)</td>
+      <td style = "text-align: right;">(1, 3)</td>
+      <td>&ctdot;</td>
     </tr>
     <tr class = "dataRow">
-      <td style = "border-left: 2px solid black; border-right: 1px solid black; text-align: right;">(2, 1)</td>
-      <td style = "border-right: 1px solid black; text-align: right;">(2, 2)</td>
-      <td style = "border-right: 1px solid black; text-align: right;">(2, 3)</td>
-      <td style = "border-right: 2px solid black;">&ctdot;</td>
+      <td style = "text-align: right;">(2, 1)</td>
+      <td style = "text-align: right;">(2, 2)</td>
+      <td style = "text-align: right;">(2, 3)</td>
+      <td>&ctdot;</td>
     </tr>
-    <tr>
-      <td style = "border-bottom: 1px solid black; border-left: 2px solid black; border-right: 1px solid black; text-align: right;">&vellip;</td>
-      <td style = "border-bottom: 1px solid black; border-right: 1px solid black; text-align: right;">&vellip;</td>
-      <td style = "border-bottom: 1px solid black; border-right: 1px solid black; text-align: right;">&vellip;</td>
-      <td style = "border-bottom: 1px solid black; border-right: 2px solid black;">&dtdot;</td>
+    <tr style = "border-bottom: 1px solid black;">
+      <td style = "text-align: right;">&vellip;</td>
+      <td style = "text-align: right;">&vellip;</td>
+      <td style = "text-align: right;">&vellip;</td>
+      <td>&dtdot;</td>
     </tr>
   </tbody>
 </table>
@@ -67,32 +73,38 @@
   <div style = "clear: both;"></div>
 </div>
 <table style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
+  <colgroup>
+    <col style = "border-left: 2px solid black; border-right: 1px solid black;">
+    <col style = "border-right: 1px solid black;">
+    <col style = "border-right: 1px solid black;">
+    <col style = "border-right: 2px solid black;">
+  </colgroup>
   <thead>
-    <tr class = "columnLabelRow">
-      <th style = "border-bottom: 1px solid black; border-left: 2px solid black; border-right: 1px solid black; font-weight: bold; text-align: right;">Col. 1</th>
-      <th style = "border-bottom: 1px solid black; border-right: 1px solid black; font-weight: bold; text-align: right;">Col. 2</th>
-      <th style = "border-bottom: 1px solid black; border-right: 1px solid black; font-weight: bold; text-align: right;">Col. 3</th>
-      <th style = "border-bottom: 1px solid black; border-right: 2px solid black;">&ctdot;</th>
+    <tr class = "columnLabelRow" style = "border-bottom: 1px solid black;">
+      <th style = "font-weight: bold; text-align: right;">Col. 1</th>
+      <th style = "font-weight: bold; text-align: right;">Col. 2</th>
+      <th style = "font-weight: bold; text-align: right;">Col. 3</th>
+      <th>&ctdot;</th>
     </tr>
   </thead>
   <tbody>
     <tr class = "dataRow">
-      <td style = "border-left: 2px solid black; border-right: 1px solid black; text-align: right;">(1, 1)</td>
-      <td style = "border-right: 1px solid black; text-align: right;">(1, 2)</td>
-      <td style = "border-right: 1px solid black; text-align: right;">(1, 3)</td>
-      <td style = "border-right: 2px solid black;">&ctdot;</td>
+      <td style = "text-align: right;">(1, 1)</td>
+      <td style = "text-align: right;">(1, 2)</td>
+      <td style = "text-align: right;">(1, 3)</td>
+      <td>&ctdot;</td>
     </tr>
     <tr>
-      <td style = "border-left: 2px solid black; border-right: 1px solid black; text-align: right;">&vellip;</td>
-      <td style = "border-right: 1px solid black; text-align: right;">&vellip;</td>
-      <td style = "border-right: 1px solid black; text-align: right;">&vellip;</td>
-      <td style = "border-right: 2px solid black;">&dtdot;</td>
+      <td style = "text-align: right;">&vellip;</td>
+      <td style = "text-align: right;">&vellip;</td>
+      <td style = "text-align: right;">&vellip;</td>
+      <td>&dtdot;</td>
     </tr>
-    <tr class = "dataRow">
-      <td style = "border-bottom: 1px solid black; border-left: 2px solid black; border-right: 1px solid black; text-align: right;">(100, 1)</td>
-      <td style = "border-bottom: 1px solid black; border-right: 1px solid black; text-align: right;">(100, 2)</td>
-      <td style = "border-bottom: 1px solid black; border-right: 1px solid black; text-align: right;">(100, 3)</td>
-      <td style = "border-bottom: 1px solid black; border-right: 2px solid black;">&ctdot;</td>
+    <tr class = "dataRow" style = "border-bottom: 1px solid black;">
+      <td style = "text-align: right;">(100, 1)</td>
+      <td style = "text-align: right;">(100, 2)</td>
+      <td style = "text-align: right;">(100, 3)</td>
+      <td>&ctdot;</td>
     </tr>
   </tbody>
 </table>
@@ -113,32 +125,38 @@
     @testset "Omitted Cell Summary" begin
         expected = """
 <table style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
+  <colgroup>
+    <col style = "border-left: 2px solid black; border-right: 1px solid black;">
+    <col style = "border-right: 1px solid black;">
+    <col style = "border-right: 1px solid black;">
+    <col style = "border-right: 2px solid black;">
+  </colgroup>
   <thead>
-    <tr class = "columnLabelRow">
-      <th style = "border-bottom: 1px solid black; border-left: 2px solid black; border-right: 1px solid black; font-weight: bold; text-align: right;">Col. 1</th>
-      <th style = "border-bottom: 1px solid black; border-right: 1px solid black; font-weight: bold; text-align: right;">Col. 2</th>
-      <th style = "border-bottom: 1px solid black; border-right: 1px solid black; font-weight: bold; text-align: right;">Col. 3</th>
-      <th style = "border-bottom: 1px solid black; border-right: 2px solid black;">&ctdot;</th>
+    <tr class = "columnLabelRow" style = "border-bottom: 1px solid black;">
+      <th style = "font-weight: bold; text-align: right;">Col. 1</th>
+      <th style = "font-weight: bold; text-align: right;">Col. 2</th>
+      <th style = "font-weight: bold; text-align: right;">Col. 3</th>
+      <th>&ctdot;</th>
     </tr>
   </thead>
   <tbody>
     <tr class = "dataRow">
-      <td style = "border-left: 2px solid black; border-right: 1px solid black; text-align: right;">(1, 1)</td>
-      <td style = "border-right: 1px solid black; text-align: right;">(1, 2)</td>
-      <td style = "border-right: 1px solid black; text-align: right;">(1, 3)</td>
-      <td style = "border-right: 2px solid black;">&ctdot;</td>
+      <td style = "text-align: right;">(1, 1)</td>
+      <td style = "text-align: right;">(1, 2)</td>
+      <td style = "text-align: right;">(1, 3)</td>
+      <td>&ctdot;</td>
     </tr>
     <tr class = "dataRow">
-      <td style = "border-left: 2px solid black; border-right: 1px solid black; text-align: right;">(2, 1)</td>
-      <td style = "border-right: 1px solid black; text-align: right;">(2, 2)</td>
-      <td style = "border-right: 1px solid black; text-align: right;">(2, 3)</td>
-      <td style = "border-right: 2px solid black;">&ctdot;</td>
+      <td style = "text-align: right;">(2, 1)</td>
+      <td style = "text-align: right;">(2, 2)</td>
+      <td style = "text-align: right;">(2, 3)</td>
+      <td>&ctdot;</td>
     </tr>
-    <tr>
-      <td style = "border-bottom: 1px solid black; border-left: 2px solid black; border-right: 1px solid black; text-align: right;">&vellip;</td>
-      <td style = "border-bottom: 1px solid black; border-right: 1px solid black; text-align: right;">&vellip;</td>
-      <td style = "border-bottom: 1px solid black; border-right: 1px solid black; text-align: right;">&vellip;</td>
-      <td style = "border-bottom: 1px solid black; border-right: 2px solid black;">&dtdot;</td>
+    <tr style = "border-bottom: 1px solid black;">
+      <td style = "text-align: right;">&vellip;</td>
+      <td style = "text-align: right;">&vellip;</td>
+      <td style = "text-align: right;">&vellip;</td>
+      <td>&dtdot;</td>
     </tr>
   </tbody>
 </table>

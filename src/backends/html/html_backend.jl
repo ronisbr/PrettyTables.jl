@@ -296,25 +296,48 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
     end
 
     num_printed_data_columns = _number_of_printed_data_columns(table_data)
+    num_printed_columns      = _number_of_printed_columns(table_data)
+    colspan_all              = string(num_printed_columns)
     horizontally_cropped     = _is_horizontally_cropped(table_data)
     num_summary_rows         = isnothing(table_data.summary_rows) ? 0 : length(table_data.summary_rows)
     num_footnotes            = isnothing(table_data.footnotes) ? 0 : length(table_data.footnotes)
 
-    # Border at the right edge of the rows that span the entire table (title, subtitle, row
-    # group label, footnote, and source notes).
-    right_edge_border = if horizontally_cropped
-        tf.vertical_line_after_continuation_column ? tf.borders.right_line : ""
-    else
-        tf.vertical_line_after_data_columns ? tf.borders.right_line : ""
+    # == Column Borders ====================================================================
+
+    # The vertical lines are emitted as the borders of `<col>` elements, which are applied
+    # to the edges of every cell in the column when the table borders are collapsed. Hence,
+    # the cells do not carry the vertical borders, reducing the output size considerably.
+    # The first column also carries the border at the left of the table.
+    column_borders = _html__column_borders(
+        tf,
+        table_data,
+        vertical_lines_at_data_columns,
+        num_printed_data_columns,
+        horizontally_cropped,
+    )
+
+    left_border = tf.vertical_line_at_beginning ? tf.borders.left_line : ""
+
+    if !isempty(column_borders) && (!isempty(left_border) || any(!isempty, column_borders))
+        _aprintln(buf, "<colgroup>", il, ns; minify)
+        il += 1
+
+        for (k, right_border) in enumerate(column_borders)
+            empty!(vstyle)
+            (k == 1) && !isempty(left_border) && push!(vstyle, "border-left" => left_border)
+            !isempty(right_border) && push!(vstyle, "border-right" => right_border)
+            _aprintln(buf, _html__open_tag("col"; style = vstyle), il, ns; minify)
+        end
+
+        il -= 1
+        _aprintln(buf, "</colgroup>", il, ns; minify)
     end
 
     # Variables to store the borders of the current row, filled at each `:new_row` action.
+    # They are emitted in the `<tr>` element and applied to every cell of the row when the
+    # table borders are collapsed.
     row_border_top    = ""
     row_border_bottom = ""
-
-    # `first_cell_in_row` indicates that the next printed cell is the first one in the
-    # current row, and, hence, it must contain the border at the left of the table.
-    first_cell_in_row = false
 
     # Row section of the previous row, required to check if the column labels are preceded
     # by a title or subtitle.
@@ -373,7 +396,6 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
 
             # == Row Borders ===============================================================
 
-            first_cell_in_row = true
             row_border_top    = ""
             row_border_bottom = ""
 
@@ -464,84 +486,41 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
             end
             push!(vproperties, "class" => class)
 
-            _aprintln(buf, _html__open_tag("tr"; properties = vproperties), il, ns; minify)
+            empty!(vstyle)
+            !isempty(row_border_top)    && push!(vstyle, "border-top"    => row_border_top)
+            !isempty(row_border_bottom) && push!(vstyle, "border-bottom" => row_border_bottom)
+
+            _aprintln(
+                buf,
+                _html__open_tag("tr"; properties = vproperties, style = vstyle),
+                il,
+                ns;
+                minify,
+            )
             il += 1
 
-        elseif action == :diagonal_continuation_cell
-            # `vstyle` is a buffer reused across cells. Hence, it must be cleared here, just
-            # like the vertical continuation cell branch below does. Otherwise, this cell
-            # would inherit the style of whatever cell was rendered before it.
+        elseif (action == :diagonal_continuation_cell) ||
+            (action == :horizontal_continuation_cell) ||
+            (action ∈ _VERTICAL_CONTINUATION_CELL_ACTIONS)
+            # `vstyle` is a buffer reused across cells. Hence, it must be cleared here.
+            # Otherwise, this cell would inherit the style of whatever cell was rendered
+            # before it.
             empty!(vstyle)
 
-            left_border =
-                (first_cell_in_row && tf.vertical_line_at_beginning) ?
-                tf.borders.left_line : ""
-            first_cell_in_row = false
-
-            right_border =
-                tf.vertical_line_after_continuation_column ? tf.borders.right_line : ""
-
-            _html__push_cell_borders!(
-                vstyle, row_border_top, row_border_bottom, left_border, right_border
-            )
-
-            _aprintln(
-                buf, _html__create_tag("td", "&dtdot;"; style = vstyle), il, ns; minify
-            )
-
-        elseif action == :horizontal_continuation_cell
-            empty!(vstyle)
-
-            left_border =
-                (first_cell_in_row && tf.vertical_line_at_beginning) ?
-                tf.borders.left_line : ""
-            first_cell_in_row = false
-
-            right_border =
-                tf.vertical_line_after_continuation_column ? tf.borders.right_line : ""
-
-            _html__push_cell_borders!(
-                vstyle, row_border_top, row_border_bottom, left_border, right_border
-            )
-
-            tag = rs == :column_labels ? "th" : "td"
-            _aprintln(
-                buf, _html__create_tag(tag, "&ctdot;"; style = vstyle), il, ns; minify
-            )
-
-        elseif action ∈ _VERTICAL_CONTINUATION_CELL_ACTIONS
-            # Obtain the cell style.
-            empty!(vstyle)
-
-            left_border =
-                (first_cell_in_row && tf.vertical_line_at_beginning) ?
-                tf.borders.left_line : ""
-            first_cell_in_row = false
-
-            right_border = if action == :row_number_vertical_continuation_cell
-                tf.vertical_line_after_row_number_column ? tf.borders.center_line : ""
-            elseif action == :row_label_vertical_continuation_cell
-                tf.vertical_line_after_row_label_column ? tf.borders.center_line : ""
+            content = if action == :diagonal_continuation_cell
+                "&dtdot;"
+            elseif action == :horizontal_continuation_cell
+                "&ctdot;"
             else
-                _html__vertical_line_after_data_column(
-                    tf,
-                    ps.j,
-                    vertical_lines_at_data_columns,
-                    num_printed_data_columns,
-                    horizontally_cropped,
-                )
+                alignment = _current_cell_alignment(action, ps, table_data)
+                _html__add_alignment_to_style!(vstyle, alignment)
+                "&vellip;"
             end
 
-            _html__push_cell_borders!(
-                vstyle, row_border_top, row_border_bottom, left_border, right_border
-            )
+            tag = (action == :horizontal_continuation_cell) && (rs == :column_labels) ?
+                "th" : "td"
 
-            alignment = _current_cell_alignment(action, ps, table_data)
-            _html__add_alignment_to_style!(vstyle, alignment)
-
-            _aprintln(
-                buf, _html__create_tag("td", "&vellip;"; style = vstyle), il, ns; minify
-            )
+            _aprintln(buf, _html__create_tag(tag, content; style = vstyle), il, ns; minify)
 
         elseif action == :end_row
             il -= 1
@@ -554,42 +533,6 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
             cell = _current_cell(action, ps, table_data)
 
             cell === _IGNORE_CELL && continue
-
-            # == Cell Borders ==============================================================
-
-            # The borders must be pushed to `vstyle` before any other decoration so that
-            # the latter can override the former.
-
-            left_border =
-                (first_cell_in_row && tf.vertical_line_at_beginning) ?
-                tf.borders.left_line : ""
-            first_cell_in_row = false
-
-            right_border = if action ∈ (:row_number_label, :row_number, :summary_row_number)
-                tf.vertical_line_after_row_number_column ? tf.borders.center_line : ""
-            elseif action ∈ (:stubhead_label, :row_label, :summary_row_label)
-                tf.vertical_line_after_row_label_column ? tf.borders.center_line : ""
-            elseif action ∈ (:title, :subtitle, :row_group_label, :footnote, :source_notes)
-                # These cells span the entire table. Hence, they only have the border at
-                # the right of the table.
-                right_edge_border
-            elseif (action == :column_label) && (cell isa MergeCells)
-                # The border at the right of a merged column label is pushed later, when
-                # the column span is clamped to the number of printed columns.
-                ""
-            else
-                _html__vertical_line_after_data_column(
-                    tf,
-                    ps.j,
-                    vertical_lines_at_data_columns,
-                    num_printed_data_columns,
-                    horizontally_cropped,
-                )
-            end
-
-            _html__push_cell_borders!(
-                vstyle, row_border_top, row_border_bottom, left_border, right_border
-            )
 
             # If we are in a column label, check for cell titles.
             if !isnothing(column_label_titles) && (action == :column_label)
@@ -610,25 +553,15 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
 
                 push!(vproperties, "colspan" => string(cs))
 
-                # Now that the column span is clamped, we can push the borders of the
-                # merged cell. If the row already has the same border at the bottom, we do
-                # not need to push it again. Otherwise, the merged cell border is emitted
-                # after the row border, overriding it.
+                # The line under the merged cell is a border of the cell, which has
+                # precedence over the border of the row when the table borders are
+                # collapsed. If the row already has the same border at the bottom, we do
+                # not need to push it. This border must be pushed before any other
+                # decoration so that the latter can override it.
                 (
                     tf.horizontal_line_at_merged_column_labels &&
                     (tf.borders.merged_header_cell_line != row_border_bottom)
                 ) && push!(vstyle, "border-bottom" => tf.borders.merged_header_cell_line)
-
-                merged_right_border = _html__vertical_line_after_data_column(
-                    tf,
-                    ps.j + cs - 1,
-                    vertical_lines_at_data_columns,
-                    num_printed_data_columns,
-                    horizontally_cropped,
-                )
-
-                !isempty(merged_right_border) &&
-                    push!(vstyle, "border-right" => merged_right_border)
 
                 rendered_cell = _html__render_cell(
                     cell.data, rctx, renderer; allow_html_in_cells, line_breaks
@@ -695,91 +628,17 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
             end
 
             # Obtain the cell class and style.
+            if action ∈ (:title, :subtitle, :row_group_label, :footnote, :source_notes)
+                # These cells span the entire printed table.
+                push!(vproperties, "colspan" => colspan_all)
 
-            if action == :title
-                push!(
-                    vproperties, "colspan" => string(_number_of_printed_columns(table_data))
-                )
-                append!(vstyle, style.title)
-
-            elseif action == :subtitle
-                push!(
-                    vproperties, "colspan" => string(_number_of_printed_columns(table_data))
-                )
-                append!(vstyle, style.subtitle)
-
-            elseif action == :row_number_label
-                push!(vproperties, "class" => "rowNumberLabel")
-                append!(vstyle, style.row_number_label)
-
-            elseif action == :row_number
-                push!(vproperties, "class" => "rowNumber")
-                append!(vstyle, style.row_number)
-
-            elseif action == :summary_row_number
-                push!(vproperties, "class" => "summaryRowNumber")
-                append!(vstyle, style.row_number)
-
-            elseif action == :stubhead_label
-                push!(vproperties, "class" => "stubheadLabel")
-                append!(vstyle, style.stubhead_label)
-
-            elseif action == :row_group_label
-                push!(
-                    vproperties, "colspan" => string(_number_of_printed_columns(table_data))
-                )
-                append!(vstyle, style.row_group_label)
-
-            elseif action == :row_label
-                push!(vproperties, "class" => "rowLabel")
-                append!(vstyle, style.row_label)
-
-            elseif action == :summary_row_label
-                push!(vproperties, "class" => "summaryRowLabel")
-                append!(vstyle, style.summary_row_label)
-
-            elseif action == :column_label
-                if ps.i == 1
-                    append!(
-                        vstyle,
-                        if style.first_line_column_label isa Vector{Vector{HtmlPair}}
-                            style.first_line_column_label[ps.j]
-                        else
-                            style.first_line_column_label
-                        end,
-                    )
-                else
-                    append!(
-                        vstyle,
-                        if style.column_label isa Vector{Vector{HtmlPair}}
-                            style.column_label[ps.j]
-                        else
-                            style.column_label
-                        end,
-                    )
-                end
-
-            elseif action == :summary_row_cell
-                append!(vstyle, style.summary_row_cell)
-
-            elseif action == :footnote
-                # The footnote must be a cell that spans the entire printed table.
-                push!(
-                    vproperties, "colspan" => string(_number_of_printed_columns(table_data))
-                )
-                append!(vstyle, style.footnote)
-                rendered_cell = "<sup>$(ps.i)</sup> " * rendered_cell
-
-            elseif action == :source_notes
-                # The source notes must be a cell that spans the entire printed table.
-                push!(
-                    vproperties, "colspan" => string(_number_of_printed_columns(table_data))
-                )
-                append!(vstyle, style.source_note)
-
+                (action == :footnote) &&
+                    (rendered_cell = "<sup>$(ps.i)</sup> " * rendered_cell)
             else
-                push!(vproperties, "class" => "")
+                push!(vproperties, "class" => _html__cell_class(action))
             end
+
+            append!(vstyle, _html__cell_style(style, action, ps.i, ps.j))
 
             # Create the row tag with the content.
             row_tag = rs == :column_labels ? "th" : "td"

@@ -171,7 +171,7 @@ Define the format of the tables printed with the HTML back end.
 - `table_width::String`: Table width. Notice that this field is only applied if
     `stand_alone = true`.
 - `borders::HtmlTableBorders`: Format of the borders. The borders are emitted as inline
-    styles in the table cells. Hence, they are applied in any rendering mode.
+    styles in the table elements. Hence, they are applied in any rendering mode.
 - `horizontal_line_at_beginning::Bool`: If `true`, a horizontal line will be drawn at the
     beginning of the table.
 - `horizontal_line_before_column_labels::Bool`: If `true`, a horizontal line will be drawn
@@ -218,10 +218,13 @@ Define the format of the tables printed with the HTML back end.
 # Remarks
 
 The horizontal lines at the beginning and end of the table are emitted as inline borders of
-the `<table>` element, whereas all the other lines are emitted as inline borders of the row
-cells. When two lines meet at the same edge (for example, the line after the data rows and
-the line before the summary rows), the CSS border-collapsing rules select the wider border,
-and then the border with the higher style precedence.
+the `<table>` element, the other horizontal lines are emitted as inline borders of the
+`<tr>` elements, and the vertical lines are emitted as inline borders of the `<col>`
+elements, except for the line under a merged column label, which is a border of the cell.
+Since the table borders are collapsed, those borders are applied to the edges of every cell
+of the row or column. When two lines meet at the same edge (for example, the line after the
+data rows and the line before the summary rows), the CSS border-collapsing rules select the
+wider border, and then the border with the higher style precedence.
 """
 @kwdef struct HtmlTableFormat
     css::String = _HTML__DEFAULT_CSS

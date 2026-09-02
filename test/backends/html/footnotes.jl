@@ -7,38 +7,43 @@
 @testset "Footnotes at Summary Row Labels" begin
     expected = """
 <table style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
+  <colgroup>
+    <col style = "border-left: 2px solid black; border-right: 1px solid black;">
+    <col style = "border-right: 1px solid black;">
+    <col style = "border-right: 2px solid black;">
+  </colgroup>
   <thead>
-    <tr class = "columnLabelRow">
-      <th class = "stubheadLabel" style = "border-bottom: 1px solid black; border-left: 2px solid black; border-right: 1px solid black; font-weight: bold; text-align: right;"></th>
-      <th style = "border-bottom: 1px solid black; border-right: 1px solid black; font-weight: bold; text-align: right;">Col. 1</th>
-      <th style = "border-bottom: 1px solid black; border-right: 2px solid black; font-weight: bold; text-align: right;">Col. 2</th>
+    <tr class = "columnLabelRow" style = "border-bottom: 1px solid black;">
+      <th class = "stubheadLabel" style = "font-weight: bold; text-align: right;"></th>
+      <th style = "font-weight: bold; text-align: right;">Col. 1</th>
+      <th style = "font-weight: bold; text-align: right;">Col. 2</th>
     </tr>
   </thead>
   <tbody>
     <tr class = "dataRow">
-      <td class = "rowLabel" style = "border-left: 2px solid black; border-right: 1px solid black; font-weight: bold; text-align: right;"></td>
-      <td style = "border-right: 1px solid black; text-align: right;">1</td>
-      <td style = "border-right: 2px solid black; text-align: right;">2</td>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;"></td>
+      <td style = "text-align: right;">1</td>
+      <td style = "text-align: right;">2</td>
     </tr>
-    <tr class = "dataRow">
-      <td class = "rowLabel" style = "border-bottom: 1px solid black; border-left: 2px solid black; border-right: 1px solid black; font-weight: bold; text-align: right;"></td>
-      <td style = "border-bottom: 1px solid black; border-right: 1px solid black; text-align: right;">3</td>
-      <td style = "border-bottom: 1px solid black; border-right: 2px solid black; text-align: right;">4</td>
+    <tr class = "dataRow" style = "border-bottom: 1px solid black;">
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;"></td>
+      <td style = "text-align: right;">3</td>
+      <td style = "text-align: right;">4</td>
     </tr>
-    <tr class = "summaryRow">
-      <td class = "summaryRowLabel" style = "border-left: 2px solid black; border-right: 1px solid black; border-top: 1px solid black; font-weight: bold; text-align: right;">Sum</td>
-      <td style = "border-right: 1px solid black; border-top: 1px solid black; text-align: right;">4</td>
-      <td style = "border-right: 2px solid black; border-top: 1px solid black; text-align: right;">6</td>
+    <tr class = "summaryRow" style = "border-top: 1px solid black;">
+      <td class = "summaryRowLabel" style = "font-weight: bold; text-align: right;">Sum</td>
+      <td style = "text-align: right;">4</td>
+      <td style = "text-align: right;">6</td>
     </tr>
-    <tr class = "summaryRow">
-      <td class = "summaryRowLabel" style = "border-bottom: 1px solid black; border-left: 2px solid black; border-right: 1px solid black; font-weight: bold; text-align: right;">Max<sup>1</sup></td>
-      <td style = "border-bottom: 1px solid black; border-right: 1px solid black; text-align: right;">3</td>
-      <td style = "border-bottom: 1px solid black; border-right: 2px solid black; text-align: right;">4</td>
+    <tr class = "summaryRow" style = "border-bottom: 1px solid black;">
+      <td class = "summaryRowLabel" style = "font-weight: bold; text-align: right;">Max<sup>1</sup></td>
+      <td style = "text-align: right;">3</td>
+      <td style = "text-align: right;">4</td>
     </tr>
   </tbody>
   <tfoot>
-    <tr class = "footnote">
-      <td colspan = "3" style = "border-bottom: 1px solid black; border-left: 2px solid black; border-right: 2px solid black; font-size: small; text-align: left;"><sup>1</sup> Footnote in summary row label</td>
+    <tr class = "footnote" style = "border-bottom: 1px solid black;">
+      <td colspan = "3" style = "font-size: small; text-align: left;"><sup>1</sup> Footnote in summary row label</td>
     </tr>
   </tfoot>
 </table>

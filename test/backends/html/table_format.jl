@@ -9,26 +9,32 @@
 
     expected = """
 <table style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
+  <colgroup>
+    <col style = "border-left: 2px solid black; border-right: 1px solid black;">
+    <col style = "border-right: 1px solid black;">
+    <col style = "border-right: 1px solid black;">
+    <col style = "border-right: 2px solid black;">
+  </colgroup>
   <thead>
-    <tr class = "columnLabelRow">
-      <th class = "rowNumberLabel" style = "border-bottom: 1px solid black; border-left: 2px solid black; border-right: 1px solid black; font-weight: bold; text-align: right;">Row</th>
-      <th class = "stubheadLabel" style = "border-bottom: 1px solid black; border-right: 1px solid black; font-weight: bold; text-align: right;"></th>
-      <th style = "border-bottom: 1px solid black; border-right: 1px solid black; font-weight: bold; text-align: right;">Col. 1</th>
-      <th style = "border-bottom: 1px solid black; border-right: 2px solid black; font-weight: bold; text-align: right;">Col. 2</th>
+    <tr class = "columnLabelRow" style = "border-bottom: 1px solid black;">
+      <th class = "rowNumberLabel" style = "font-weight: bold; text-align: right;">Row</th>
+      <th class = "stubheadLabel" style = "font-weight: bold; text-align: right;"></th>
+      <th style = "font-weight: bold; text-align: right;">Col. 1</th>
+      <th style = "font-weight: bold; text-align: right;">Col. 2</th>
     </tr>
   </thead>
   <tbody>
-    <tr class = "dataRow">
-      <td class = "rowNumber" style = "border-bottom: 1px solid black; border-left: 2px solid black; border-right: 1px solid black; font-weight: bold; text-align: right;">1</td>
-      <td class = "rowLabel" style = "border-bottom: 1px solid black; border-right: 1px solid black; font-weight: bold; text-align: right;">a</td>
-      <td style = "border-bottom: 1px solid black; border-right: 1px solid black; text-align: right;">1</td>
-      <td style = "border-bottom: 1px solid black; border-right: 2px solid black; text-align: right;">2</td>
+    <tr class = "dataRow" style = "border-bottom: 1px solid black;">
+      <td class = "rowNumber" style = "font-weight: bold; text-align: right;">1</td>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">a</td>
+      <td style = "text-align: right;">1</td>
+      <td style = "text-align: right;">2</td>
     </tr>
-    <tr class = "dataRow">
-      <td class = "rowNumber" style = "border-bottom: 1px solid black; border-left: 2px solid black; border-right: 1px solid black; font-weight: bold; text-align: right;">2</td>
-      <td class = "rowLabel" style = "border-bottom: 1px solid black; border-right: 1px solid black; font-weight: bold; text-align: right;">b</td>
-      <td style = "border-bottom: 1px solid black; border-right: 1px solid black; text-align: right;">3</td>
-      <td style = "border-bottom: 1px solid black; border-right: 2px solid black; text-align: right;">4</td>
+    <tr class = "dataRow" style = "border-bottom: 1px solid black;">
+      <td class = "rowNumber" style = "font-weight: bold; text-align: right;">2</td>
+      <td class = "rowLabel" style = "font-weight: bold; text-align: right;">b</td>
+      <td style = "text-align: right;">3</td>
+      <td style = "text-align: right;">4</td>
     </tr>
   </tbody>
 </table>
@@ -92,7 +98,8 @@ end
     matrix = [i + j / 10 for i in 1:3, j in 1:2]
 
     # Render the table with one modified table format keyword and return the rendered
-    # lines related to the table section identified by `needle`.
+    # lines related to the table section identified by `needle`. The first line is the
+    # `<tr>` element, which carries the horizontal lines of the row.
     function _render_lines(needle::String; kwargs...)
         output = pretty_table(
             String,
@@ -132,47 +139,50 @@ end
     @testset "Horizontal Line Before Column Labels" begin
         on  = _render_lines("columnLabelRow")
         off = _render_lines("columnLabelRow"; horizontal_line_before_column_labels = false)
-        @test all(l -> occursin("border-top: 1px solid black", l), on[2:(end - 1)])
+        @test occursin("border-top: 1px solid black", first(on))
         @test all(l -> !occursin("border-top", l), off)
     end
 
     @testset "Horizontal Line After Column Labels" begin
         on  = _render_lines("columnLabelRow")
         off = _render_lines("columnLabelRow"; horizontal_line_after_column_labels = false)
-        @test all(l -> occursin("border-bottom: 1px solid black", l), on[2:(end - 1)])
+        @test occursin("border-bottom: 1px solid black", first(on))
         @test all(l -> !occursin("border-bottom", l), off)
     end
 
     @testset "Horizontal Lines at Data Rows" begin
         on  = _render_lines("dataRow"; horizontal_lines_at_data_rows = [1])
         off = _render_lines("dataRow")
-        @test all(l -> occursin("border-bottom: 1px solid black", l), on[2:(end - 1)])
-        @test all(l -> !occursin("border-bottom", l), off[2:(end - 1)])
+        @test occursin("border-bottom: 1px solid black", first(on))
+        @test all(l -> !occursin("border-bottom", l), off)
+
+        # The cells never carry the horizontal lines of the row.
+        @test all(l -> !occursin("border-", l), on[2:(end - 1)])
     end
 
     @testset "Horizontal Lines Around the Row Group Label" begin
         on  = _render_lines("rowGroupLabel")
         off = _render_lines("rowGroupLabel"; horizontal_line_before_row_group_label = false, horizontal_line_after_row_group_label  = false)
-        @test occursin("border-top: 1px solid black", on[2])
-        @test occursin("border-bottom: 1px solid black", on[2])
-        @test !occursin("border-top", off[2])
-        @test !occursin("border-bottom", off[2])
+        @test occursin("border-top: 1px solid black", first(on))
+        @test occursin("border-bottom: 1px solid black", first(on))
+        @test !occursin("border-top", first(off))
+        @test !occursin("border-bottom", first(off))
     end
 
     @testset "Horizontal Lines Around the Summary Rows" begin
         on  = _render_lines("summaryRow")
         off = _render_lines("summaryRow"; horizontal_line_before_summary_rows = false, horizontal_line_after_summary_rows  = false)
-        @test all(l -> occursin("border-top: 1px solid black", l), on[2:(end - 1)])
-        @test all(l -> occursin("border-bottom: 1px solid black", l), on[2:(end - 1)])
-        @test all(l -> !occursin("border-top", l), off[2:(end - 1)])
-        @test all(l -> !occursin("border-bottom", l), off[2:(end - 1)])
+        @test occursin("border-top: 1px solid black", first(on))
+        @test occursin("border-bottom: 1px solid black", first(on))
+        @test !occursin("border-top", first(off))
+        @test !occursin("border-bottom", first(off))
     end
 
     @testset "Horizontal Line After Footnotes" begin
         on  = _render_lines("footnote")
         off = _render_lines("footnote"; horizontal_line_after_footnotes = false)
-        @test occursin("border-bottom: 1px solid black", on[2])
-        @test !occursin("border-bottom", off[2])
+        @test occursin("border-bottom: 1px solid black", first(on))
+        @test !occursin("border-bottom", first(off))
     end
 
     @testset "Vertical Lines" begin
@@ -191,24 +201,31 @@ end
             ),
         )
 
-        for l in split(output, '\n')
-            occursin("<td", l) || occursin("<th", l) || continue
+        # The vertical lines are the borders of the `<col>` elements: row number column,
+        # row label column, and the two data columns. The first one also carries the line
+        # at the beginning of the table, and the last one the line at the end.
+        cols = filter(l -> occursin("<col ", l), split(output, '\n'))
 
-            if occursin("rowNumberLabel", l) || occursin("rowNumber", l)
-                @test occursin("border-left: 2px solid black", l)
-                @test occursin("border-right: 1px solid black", l)
-            elseif occursin("stubheadLabel", l) || occursin("rowLabel", l)
-                @test occursin("border-right: 1px solid black", l)
-                @test !occursin("border-left", l)
-            end
+        @test length(cols) == 4
+        @test occursin("border-left: 2px solid black; border-right: 1px solid black;", cols[1])
+        @test occursin("style = \"border-right: 1px solid black;\"", cols[2])
+        @test occursin("style = \"border-right: 1px solid black;\"", cols[3])
+        @test occursin("style = \"border-right: 2px solid black;\"", cols[4])
+
+        # The cells never carry the vertical lines.
+        for l in split(output, '\n')
+            (occursin("<td", l) || occursin("<th", l)) && @test !occursin("border-", l)
         end
 
-        # The last data column must have the border at the right of the table.
-        @test occursin("border-right: 2px solid black; text-align: right;\">1.2", output)
+        # Without vertical lines, the column group is not emitted.
+        output = pretty_table(
+            String,
+            matrix;
+            backend = :html,
+            table_format = HtmlTableFormat(; @html__no_vertical_lines),
+        )
 
-        # The first data column must have the vertical line configured by
-        # `vertical_lines_at_data_columns`.
-        @test occursin("border-right: 1px solid black; text-align: right;\">1.1", output)
+        @test !occursin("<colgroup>", output)
     end
 end
 
@@ -249,7 +266,11 @@ end
         ],
     )
 
-    @test occursin("border-bottom: 1px solid black; border-bottom: 3px solid red;", output)
+    # The line after the data rows is a border of the `<tr>` element, whereas the border
+    # of the highlighter is a border of the cell, which has precedence when the table
+    # borders are collapsed.
+    @test occursin("<tr class = \"dataRow\" style = \"border-bottom: 1px solid black;\">", output)
+    @test occursin("<td style = \"border-bottom: 3px solid red; text-align: right;\">3</td>", output)
 
     # The user table style must override the borders of the `<table>` element.
     output = pretty_table(
@@ -269,14 +290,18 @@ end
 
     expected = """
 <table style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
+  <colgroup>
+    <col style = "border-left: 2px solid black; border-right: 1px solid black;">
+    <col style = "border-right: 2px solid black;">
+  </colgroup>
   <tbody>
     <tr class = "dataRow">
-      <td style = "border-left: 2px solid black; border-right: 1px solid black; text-align: right;">1</td>
-      <td style = "border-right: 2px solid black; text-align: right;">2</td>
+      <td style = "text-align: right;">1</td>
+      <td style = "text-align: right;">2</td>
     </tr>
-    <tr class = "dataRow">
-      <td style = "border-bottom: 1px solid black; border-left: 2px solid black; border-right: 1px solid black; text-align: right;">3</td>
-      <td style = "border-bottom: 1px solid black; border-right: 2px solid black; text-align: right;">4</td>
+    <tr class = "dataRow" style = "border-bottom: 1px solid black;">
+      <td style = "text-align: right;">3</td>
+      <td style = "text-align: right;">4</td>
     </tr>
   </tbody>
 </table>
