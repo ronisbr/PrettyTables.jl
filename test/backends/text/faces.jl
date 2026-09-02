@@ -153,15 +153,13 @@
         )
 
         h = Highlighter(f, Face(; weight = :bold, slant = :italic))
-        @test isnothing(h._text)
+        @test PrettyTables._text__native_highlighter(h)._sgr == "\e[1;3m"
         @test pretty_table(String, matrix; color = true, highlighters = [h]) == expected
-        @test h._text == "\e[1;3m"
         @test pretty_table(String, matrix; color = true, highlighters = [h]) == expected
 
         # The function `fd` can return a face or a crayon, which are not cached.
         h = Highlighter(f, (h, data, i, j) -> Face(; weight = :bold, slant = :italic))
         @test pretty_table(String, matrix; color = true, highlighters = [h]) == expected
-        @test isnothing(h._text)
 
         h = Highlighter(f, (h, data, i, j) -> crayon"bold italics")
         @test pretty_table(String, matrix; color = true, highlighters = [h]) == expected

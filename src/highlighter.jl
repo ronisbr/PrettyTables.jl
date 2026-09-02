@@ -7,7 +7,7 @@
 export Highlighter
 
 """
-    mutable struct Highlighter <: AbstractHighlighter
+    struct Highlighter <: AbstractHighlighter
 
 Highlighter defined by a `Face` of StyledStrings.jl, which can be used with every back end.
 
@@ -22,10 +22,6 @@ Highlighter defined by a `Face` of StyledStrings.jl, which can be used with ever
     so on).
 - `_decoration::Face`: The `Face` to be applied to the highlighted cell if the default `fd`
     is used.
-
-The other fields are private caches with the decoration of each back end, converted from
-`_decoration` the first time the highlighter is used with that back end. The conversion is
-pure, so that a concurrent use of the same highlighter can only convert it twice.
 
 # Remarks
 
@@ -55,10 +51,10 @@ Highlighter(f::Function, fd::Function)
 
 where it will apply the decoration returned by the function `fd` to the highlighted cell.
 
-The conversion of the face into the decoration of each back end is described in
-[`html_decoration`](@ref), [`latex_decoration`](@ref), [`markdown_decoration`](@ref),
-[`typst_decoration`](@ref), and [`excel_decoration`](@ref). The text back end renders the
-face using its escape sequence.
+Each back end converts this highlighter to its native highlighter once per printed table,
+converting the face with [`html_decoration`](@ref), [`latex_decoration`](@ref),
+[`markdown_decoration`](@ref), [`typst_decoration`](@ref), or [`excel_decoration`](@ref).
+The text back end renders the face using its escape sequence.
 
 # Examples
 
@@ -70,40 +66,22 @@ julia> pretty_table([1 10; 3 7]; highlighters = [hl])
 julia> pretty_table([1 10; 3 7]; backend = :html, highlighters = [hl])
 ```
 """
-mutable struct Highlighter <: AbstractHighlighter
-    const f::Function
-    const fd::Function
+struct Highlighter <: AbstractHighlighter
+    f::Function
+    fd::Function
 
     # == Private Fields ====================================================================
 
-    const _decoration::Face
-
-    # Decoration of each back end, converted from `_decoration` when first used.
-    _text::Union{Nothing, String}
-    _html::Union{Nothing, Vector{HtmlPair}}
-    _latex::Union{Nothing, LatexEnvironments}
-    _markdown::Union{Nothing, MarkdownStyle}
-    _typst::Union{Nothing, Vector{TypstPair}}
-    _excel::Union{Nothing, Vector{ExcelPair}}
+    _decoration::Face
 
     # == Constructors ======================================================================
 
     function Highlighter(f::Function, fd::Function)
-        return new(f, fd, Face(), nothing, nothing, nothing, nothing, nothing, nothing)
+        return new(f, fd, Face())
     end
 
     function Highlighter(f::Function, face::Face)
-        return new(
-            f,
-            _default_highlighter_fd,
-            face,
-            nothing,
-            nothing,
-            nothing,
-            nothing,
-            nothing,
-            nothing,
-        )
+        return new(f, _default_highlighter_fd, face)
     end
 
     function Highlighter(f::Function, crayon::Crayon)
@@ -126,111 +104,95 @@ _default_highlighter_fd(h::Highlighter, ::Any, ::Int, ::Int) = h._decoration
     _has_default_fd(h::Highlighter) -> Bool
 
 Return `true` if the highlighter `h` uses the default decoration function, in which case the
-converted decoration can be cached, or `false` otherwise.
+face can be converted to the native decoration once, or `false` otherwise.
 """
 _has_default_fd(h::Highlighter) = h.fd === _default_highlighter_fd
 
 ############################################################################################
-#                                      Text Back End                                       #
+#                            Conversion to the Native Highlighters                         #
 ############################################################################################
 
-function _text__highlighter_sgr(h::Highlighter, data, i::Int, j::Int)
-    _has_default_fd(h) || return _text__decoration_sgr(h.fd(h, data, i, j))
+"""
+    _native_highlighters(convert::Function, highlighters::Vector{AbstractHighlighter}) -> Vector{AbstractHighlighter}
 
-    sgr = h._text
-    isnothing(sgr) || return sgr
+Convert every general [`Highlighter`](@ref) in `highlighters` to the native highlighter of
+a back end using `convert`, returning a new vector. If `highlighters` has no general
+highlighter, it is returned unchanged.
 
-    sgr = _text__face_sgr(h._decoration)
-    h._text = sgr
-    return sgr
+This conversion is performed once per printed table. Hence, the face of a highlighter with
+the default decoration function is converted to the native decoration only once, and the
+printing loop only sees native highlighters.
+"""
+function _native_highlighters(convert::F, highlighters::Vector{AbstractHighlighter}) where F
+    any(h -> h isa Highlighter, highlighters) || return highlighters
+    return AbstractHighlighter[h isa Highlighter ? convert(h) : h for h in highlighters]
 end
 
-############################################################################################
-#                                      HTML Back End                                       #
-############################################################################################
+"""
+    _text__native_highlighter(h::Highlighter) -> TextHighlighter
+    _html__native_highlighter(h::Highlighter) -> HtmlHighlighter
+    _latex__native_highlighter(h::Highlighter) -> LatexHighlighter
+    _markdown__native_highlighter(h::Highlighter) -> MarkdownHighlighter
+    _typst__native_highlighter(h::Highlighter) -> TypstHighlighter
+    _excel__native_highlighter(h::Highlighter) -> ExcelHighlighter
 
-function _html__highlighter_decoration(h::Highlighter, data, i::Int, j::Int)
-    if !_has_default_fd(h)
-        d = h.fd(h, data, i, j)
-        return d isa Face ? html_decoration(d) : d::Vector{HtmlPair}
-    end
-
-    decoration = h._html
-    isnothing(decoration) || return decoration
-
-    decoration = html_decoration(h._decoration)
-    h._html = decoration
-    return decoration
+Convert the general highlighter `h` to the native highlighter of a back end. If `h` uses the
+default decoration function, its face is converted to the native decoration. Otherwise, the
+native highlighter calls the decoration function of `h` and converts the returned face,
+keeping a returned native decoration unchanged.
+"""
+function _text__native_highlighter(h::Highlighter)
+    _has_default_fd(h) && return TextHighlighter(h.f, h._decoration)
+    return TextHighlighter(h.f, (_, data, i, j) -> h.fd(h, data, i, j))
 end
 
-############################################################################################
-#                                      LaTeX Back End                                      #
-############################################################################################
-
-function _latex__highlighter_decoration(h::Highlighter, data, i::Int, j::Int)
-    if !_has_default_fd(h)
-        d = h.fd(h, data, i, j)
-        return d isa Face ? latex_decoration(d) : d::LatexEnvironments
-    end
-
-    decoration = h._latex
-    isnothing(decoration) || return decoration
-
-    decoration = latex_decoration(h._decoration)
-    h._latex = decoration
-    return decoration
+function _html__native_highlighter(h::Highlighter)
+    _has_default_fd(h) && return HtmlHighlighter(h.f, html_decoration(h._decoration))
+    return HtmlHighlighter(h.f, (_, data, i, j) -> _html__decoration(h.fd(h, data, i, j)))
 end
 
-############################################################################################
-#                                      Typst Back End                                      #
-############################################################################################
-
-function _typst__highlighter_decoration(h::Highlighter, data, i::Int, j::Int)
-    if !_has_default_fd(h)
-        d = h.fd(h, data, i, j)
-        return d isa Face ? typst_decoration(d) : d::Vector{TypstPair}
-    end
-
-    decoration = h._typst
-    isnothing(decoration) || return decoration
-
-    decoration = typst_decoration(h._decoration)
-    h._typst = decoration
-    return decoration
+function _latex__native_highlighter(h::Highlighter)
+    _has_default_fd(h) && return LatexHighlighter(h.f, latex_decoration(h._decoration))
+    return LatexHighlighter(h.f, (_, data, i, j) -> _latex__decoration(h.fd(h, data, i, j)))
 end
 
-############################################################################################
-#                                    Markdown Back End                                     #
-############################################################################################
-
-function _markdown__highlighter_decoration(h::Highlighter, data, i::Int, j::Int)
-    if !_has_default_fd(h)
-        d = h.fd(h, data, i, j)
-        return d isa Face ? markdown_decoration(d) : d::MarkdownStyle
-    end
-
-    decoration = h._markdown
-    isnothing(decoration) || return decoration
-
-    decoration = markdown_decoration(h._decoration)
-    h._markdown = decoration
-    return decoration
+function _markdown__native_highlighter(h::Highlighter)
+    _has_default_fd(h) && return MarkdownHighlighter(h.f, markdown_decoration(h._decoration))
+    return MarkdownHighlighter(
+        h.f, (_, data, i, j) -> _markdown__decoration(h.fd(h, data, i, j))
+    )
 end
 
-############################################################################################
-#                                      Excel Back End                                      #
-############################################################################################
-
-function _excel__highlighter_decoration(h::Highlighter, data, i::Int, j::Int)
-    if !_has_default_fd(h)
-        d = h.fd(h, data, i, j)
-        return d isa Face ? excel_decoration(d) : d::Vector{ExcelPair}
-    end
-
-    decoration = h._excel
-    isnothing(decoration) || return decoration
-
-    decoration = excel_decoration(h._decoration)
-    h._excel = decoration
-    return decoration
+function _typst__native_highlighter(h::Highlighter)
+    _has_default_fd(h) && return TypstHighlighter(h.f, typst_decoration(h._decoration))
+    return TypstHighlighter(h.f, (_, data, i, j) -> _typst__decoration(h.fd(h, data, i, j)))
 end
+
+function _excel__native_highlighter(h::Highlighter)
+    _has_default_fd(h) && return ExcelHighlighter(h.f, excel_decoration(h._decoration))
+    return ExcelHighlighter(h.f, (_, data, i, j) -> _excel__decoration(h.fd(h, data, i, j)))
+end
+
+"""
+    _text__native_highlighters(highlighters::Vector{AbstractHighlighter}) -> Vector{AbstractHighlighter}
+    _html__native_highlighters(highlighters::Vector{AbstractHighlighter}) -> Vector{AbstractHighlighter}
+    _latex__native_highlighters(highlighters::Vector{AbstractHighlighter}) -> Vector{AbstractHighlighter}
+    _markdown__native_highlighters(highlighters::Vector{AbstractHighlighter}) -> Vector{AbstractHighlighter}
+    _typst__native_highlighters(highlighters::Vector{AbstractHighlighter}) -> Vector{AbstractHighlighter}
+    _excel__native_highlighters(highlighters::Vector{AbstractHighlighter}) -> Vector{AbstractHighlighter}
+
+Convert every general highlighter in `highlighters` to the native highlighter of the back
+end (see `_native_highlighters`).
+"""
+_text__native_highlighters(hs::Vector{AbstractHighlighter}) =
+    _native_highlighters(_text__native_highlighter, hs)
+_html__native_highlighters(hs::Vector{AbstractHighlighter}) =
+    _native_highlighters(_html__native_highlighter, hs)
+_latex__native_highlighters(hs::Vector{AbstractHighlighter}) =
+    _native_highlighters(_latex__native_highlighter, hs)
+_markdown__native_highlighters(hs::Vector{AbstractHighlighter}) =
+    _native_highlighters(_markdown__native_highlighter, hs)
+_typst__native_highlighters(hs::Vector{AbstractHighlighter}) =
+    _native_highlighters(_typst__native_highlighter, hs)
+_excel__native_highlighters(hs::Vector{AbstractHighlighter}) =
+    _native_highlighters(_excel__native_highlighter, hs)

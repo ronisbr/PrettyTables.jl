@@ -66,7 +66,7 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
 
     allow_html_in_cells  = opts.allow_html_in_cells
     column_label_titles  = opts.column_label_titles
-    highlighters         = opts.highlighters
+    highlighters         = _html__native_highlighters(opts.highlighters)
     is_stdout            = opts.is_stdout
     line_breaks          = opts.line_breaks
     maximum_column_width = opts.maximum_column_width

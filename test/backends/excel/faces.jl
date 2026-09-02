@@ -69,7 +69,6 @@
         f = (data, i, j) -> i == 1
 
         h = Highlighter(f, Face(; weight = :bold, foreground = "#ff0000"))
-        @test isnothing(h._excel)
 
         result = pretty_table(XLSX.XLSXFile, matrix; highlighters = [h])
         sheet  = result[1]
@@ -79,7 +78,7 @@
         @test haskey(XLSX.getFont(sheet, "A2").font, "b")
         @test XLSX.getFont(sheet, "B2").font["color"] == Dict("rgb" => "FFFF0000")
         @test XLSX.getFont(sheet, "A3").font["color"] != Dict("rgb" => "FFFF0000")
-        @test h._excel == ["bold" => "true", "color" => "FFFF0000"]
+        @test PrettyTables._excel__native_highlighter(h)._decoration == ["bold" => "true", "color" => "FFFF0000"]
 
         # A background is a fill.
         h = Highlighter(f, Face(; background = "#00ff00"))
@@ -87,11 +86,10 @@
         @test XLSX.getFill(result[1], "A2").fill["patternFill"] ==
             Dict("patternType" => "solid", "fgrgb" => "FF00FF00")
 
-        # The function `fd` can return a face or the native decoration, which are not cached.
+        # The function `fd` can return a face or the native decoration.
         h = Highlighter(f, (h, data, i, j) -> Face(; foreground = "#ff0000"))
         result = pretty_table(XLSX.XLSXFile, matrix; highlighters = [h])
         @test XLSX.getFont(result[1], "A2").font["color"] == Dict("rgb" => "FFFF0000")
-        @test isnothing(h._excel)
 
         h = Highlighter(f, (h, data, i, j) -> ["color" => "FFFF0000"])
         result = pretty_table(XLSX.XLSXFile, matrix; highlighters = [h])

@@ -54,7 +54,7 @@ function _markdown__print_core(pspec::PrintingSpec, opts::MarkdownPrintOptions)
     # == Unpack the Options ================================================================
 
     allow_markdown_in_cells = opts.allow_markdown_in_cells
-    highlighters            = opts.highlighters
+    highlighters            = _markdown__native_highlighters(opts.highlighters)
     line_breaks             = opts.line_breaks
     style                   = opts.style
     table_format            = opts.table_format

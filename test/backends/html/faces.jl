@@ -106,17 +106,15 @@
 """
 
         h = Highlighter(f, Face(; weight = :bold, foreground = "#ff0000"))
-        @test isnothing(h._html)
         @test pretty_table(String, matrix; backend = :html, highlighters = [h]) == expected
-        @test h._html == ["color" => "#ff0000", "font-weight" => "bold"]
+        @test PrettyTables._html__native_highlighter(h)._decoration == ["color" => "#ff0000", "font-weight" => "bold"]
         @test pretty_table(String, matrix; backend = :html, highlighters = [h]) == expected
 
-        # The function `fd` can return a face or the native decoration, which are not cached.
+        # The function `fd` can return a face or the native decoration.
         h = Highlighter(
             f, (h, data, i, j) -> Face(; weight = :bold, foreground = "#ff0000")
         )
         @test pretty_table(String, matrix; backend = :html, highlighters = [h]) == expected
-        @test isnothing(h._html)
 
         h = Highlighter(
             f, (h, data, i, j) -> ["color" => "#ff0000", "font-weight" => "bold"]

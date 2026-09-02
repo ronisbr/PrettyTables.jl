@@ -85,7 +85,7 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
     fit_table_in_display_horizontally           = opts.fit_table_in_display_horizontally
     fit_table_in_display_vertically             = opts.fit_table_in_display_vertically
     fixed_data_column_widths                    = opts.fixed_data_column_widths
-    highlighters                                = opts.highlighters
+    highlighters                                = _text__native_highlighters(opts.highlighters)
     line_breaks                                 = opts.line_breaks
     minimum_data_column_widths                  = opts.minimum_data_column_widths
     maximum_data_column_widths                  = opts.maximum_data_column_widths

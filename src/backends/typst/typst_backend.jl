@@ -61,7 +61,7 @@ function _typst__print_core(pspec::PrintingSpec, opts::TypstPrintOptions)
     annotate           = opts.annotate
     caption            = opts.caption
     data_column_widths = opts.data_column_widths
-    highlighters       = opts.highlighters
+    highlighters       = _typst__native_highlighters(opts.highlighters)
     is_stdout          = opts.is_stdout
     minify             = opts.minify
     style              = opts.style

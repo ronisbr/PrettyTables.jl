@@ -51,7 +51,8 @@ end
 function _latex__print_core(pspec::PrintingSpec, opts::LatexPrintOptions)
     # == Unpack the Options ================================================================
 
-    highlighters = opts.highlighters
+    highlighters = isnothing(opts.highlighters) ?
+        nothing : _latex__native_highlighters(opts.highlighters)
     style        = opts.style
     table_format = opts.table_format
 

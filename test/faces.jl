@@ -286,8 +286,22 @@ end
     @test h._decoration == Face(; weight = :bold, foreground = :red)
     @test h.fd(h, nothing, 1, 1) == Face(; weight = :bold, foreground = :red)
     @test PrettyTables._has_default_fd(h)
-    @test isnothing(h._text) && isnothing(h._html) && isnothing(h._latex)
-    @test isnothing(h._markdown) && isnothing(h._typst) && isnothing(h._excel)
+
+    # The general highlighter is converted to the native highlighters once per table.
+    th = PrettyTables._text__native_highlighter(h)
+    @test th isa TextHighlighter
+    @test th._decoration == h._decoration
+    @test PrettyTables._html__native_highlighter(h)._decoration == html_decoration(h._decoration)
+    @test PrettyTables._latex__native_highlighter(h)._environments == latex_decoration(h._decoration)
+    @test PrettyTables._markdown__native_highlighter(h)._decoration == markdown_decoration(h._decoration)
+    @test PrettyTables._typst__native_highlighter(h)._decoration == typst_decoration(h._decoration)
+    @test PrettyTables._excel__native_highlighter(h)._decoration == excel_decoration(h._decoration)
+
+    hs = AbstractHighlighter[h, TextHighlighter(f, Face())]
+    nhs = PrettyTables._text__native_highlighters(hs)
+    @test nhs[1] isa TextHighlighter && nhs[2] === hs[2]
+    v = AbstractHighlighter[hs[2]]
+    @test PrettyTables._text__native_highlighters(v) === v
 
     h = Highlighter(f, crayon"bold red")
     @test h._decoration == Face(; weight = :bold, foreground = :red)
@@ -303,6 +317,12 @@ end
     @test h.fd === fd
     @test h._decoration == Face()
     @test !PrettyTables._has_default_fd(h)
+
+    # A custom decoration function is called by the native highlighter.
+    th = PrettyTables._text__native_highlighter(h)
+    @test th.fd(th, nothing, 1, 1) == Face(; slant = :italic)
+    @test PrettyTables._html__native_highlighter(h).fd(nothing, nothing, 1, 1) ==
+        html_decoration(Face(; slant = :italic))
 end
 
 @static if VERSION >= v"1.11"

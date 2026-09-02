@@ -65,7 +65,7 @@ function _excel__write_table_core!(
     anchor_cell                = opts.anchor_cell
     data_column_widths         = opts.data_column_widths
     excel_formatters           = opts.excel_formatters
-    highlighters               = opts.highlighters
+    highlighters               = _excel__native_highlighters(opts.highlighters)
     maximum_data_column_widths = opts.maximum_data_column_widths
     minimum_data_column_widths = opts.minimum_data_column_widths
     style                      = opts.style

@@ -76,18 +76,16 @@
 """
 
         h = Highlighter(f, Face(; weight = :bold, foreground = "#ff0000"))
-        @test isnothing(h._markdown)
         @test pretty_table(String, matrix; backend = :markdown, highlighters = [h]) ==
             expected
-        @test h._markdown == MarkdownStyle(; bold = true)
+        @test PrettyTables._markdown__native_highlighter(h)._decoration == MarkdownStyle(; bold = true)
         @test pretty_table(String, matrix; backend = :markdown, highlighters = [h]) ==
             expected
 
-        # The function `fd` can return a face or the native decoration, which are not cached.
+        # The function `fd` can return a face or the native decoration.
         h = Highlighter(f, (h, data, i, j) -> Face(; weight = :bold))
         @test pretty_table(String, matrix; backend = :markdown, highlighters = [h]) ==
             expected
-        @test isnothing(h._markdown)
 
         h = Highlighter(f, (h, data, i, j) -> MarkdownStyle(; bold = true))
         @test pretty_table(String, matrix; backend = :markdown, highlighters = [h]) ==

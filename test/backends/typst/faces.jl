@@ -67,7 +67,6 @@
         f = (data, i, j) -> i == 1
 
         h = Highlighter(f, Face(; weight = :bold, foreground = "#ff0000"))
-        @test isnothing(h._typst)
 
         expected = pretty_table(
             String,
@@ -82,7 +81,7 @@
 
         @test occursin("[#text(weight: \"bold\", fill: rgb(\"#ff0000\"),)[1]]", expected)
         @test pretty_table(String, matrix; backend = :typst, highlighters = [h]) == expected
-        @test h._typst == ["text-weight" => "bold", "text-fill" => "rgb(\"#ff0000\")"]
+        @test PrettyTables._typst__native_highlighter(h)._decoration == ["text-weight" => "bold", "text-fill" => "rgb(\"#ff0000\")"]
         @test pretty_table(String, matrix; backend = :typst, highlighters = [h]) == expected
 
         # A background is a cell property.
@@ -90,12 +89,11 @@
         result = pretty_table(String, matrix; backend = :typst, highlighters = [h])
         @test occursin("table.cell(fill: rgb(\"#00ff00\"),)[1]", result)
 
-        # The function `fd` can return a face or the native decoration, which are not cached.
+        # The function `fd` can return a face or the native decoration.
         h = Highlighter(
             f, (h, data, i, j) -> Face(; weight = :bold, foreground = "#ff0000")
         )
         @test pretty_table(String, matrix; backend = :typst, highlighters = [h]) == expected
-        @test isnothing(h._typst)
 
         h = Highlighter(
             f,
