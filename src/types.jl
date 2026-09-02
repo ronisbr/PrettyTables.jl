@@ -194,6 +194,32 @@ end
 
     # How we should vertically crop the table.
     vertical_crop_mode::Symbol = :bottom
+
+    # The data must not be specialized. Otherwise, this constructor is compiled again for
+    # every data type printed in the session.
+    Base.@nospecializeinfer function TableData(
+        @nospecialize(data), title, subtitle, stubhead_label, show_row_number_column,
+        row_number_column_label, column_labels, show_column_labels, row_labels,
+        row_group_labels, summary_rows, summary_row_labels, merge_column_label_cells,
+        footnotes, source_notes, title_alignment, subtitle_alignment, cell_alignment,
+        column_label_alignment, continuation_row_alignment, data_alignment,
+        row_number_column_alignment, row_label_column_alignment, row_group_label_alignment,
+        footnote_alignment, source_note_alignment, formatters, num_rows, num_columns,
+        first_row_index, first_column_index, maximum_number_of_columns,
+        maximum_number_of_rows, vertical_crop_mode,
+    )
+        return new(
+            data, title, subtitle, stubhead_label, show_row_number_column,
+            row_number_column_label, column_labels, show_column_labels, row_labels,
+            row_group_labels, summary_rows, summary_row_labels, merge_column_label_cells,
+            footnotes, source_notes, title_alignment, subtitle_alignment, cell_alignment,
+            column_label_alignment, continuation_row_alignment, data_alignment,
+            row_number_column_alignment, row_label_column_alignment,
+            row_group_label_alignment, footnote_alignment, source_note_alignment,
+            formatters, num_rows, num_columns, first_row_index, first_column_index,
+            maximum_number_of_columns, maximum_number_of_rows, vertical_crop_mode,
+        )
+    end
 end
 
 # == Tables.jl API =========================================================================

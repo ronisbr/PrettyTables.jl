@@ -92,9 +92,9 @@ vertical line with `vertical_design`, obtained from the lookup `table`. If both 
 `nothing`, meaning that the character in `TextTableBorders` must be used. An unset design
 is treated as a light line.
 """
-function _text__junction_char(
-    horizontal_design::Union{Nothing, LineStyle},
-    vertical_design::Union{Nothing, LineStyle},
+Base.@nospecializeinfer function _text__junction_char(
+    @nospecialize(horizontal_design::Union{Nothing, LineStyle}),
+    @nospecialize(vertical_design::Union{Nothing, LineStyle}),
     table::NTuple{9, Char}
 )
     (isnothing(horizontal_design) && isnothing(vertical_design)) && return nothing
@@ -116,12 +116,15 @@ Convert the [`LineStyle`](@ref) `design` of a horizontal line into a
 [`TextTableLine`](@ref), taking the designs of the left, center, and right vertical lines
 into account to obtain the junction characters. The function returns `nothing` if no design
 modifies the horizontal line.
+
+The arguments are not specialized. Otherwise, each combination of set and unset designs
+would compile this function again.
 """
-function _text__horizontal_table_line(
-    design::Union{Nothing, LineStyle},
-    left_design::Union{Nothing, LineStyle},
-    center_design::Union{Nothing, LineStyle},
-    right_design::Union{Nothing, LineStyle}
+Base.@nospecializeinfer function _text__horizontal_table_line(
+    @nospecialize(design::Union{Nothing, LineStyle}),
+    @nospecialize(left_design::Union{Nothing, LineStyle}),
+    @nospecialize(center_design::Union{Nothing, LineStyle}),
+    @nospecialize(right_design::Union{Nothing, LineStyle})
 )
     if (
         isnothing(design) && isnothing(left_design) && isnothing(center_design) &&

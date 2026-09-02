@@ -9,7 +9,7 @@
 
 Guess the column label associated with `data` in case the user did not pass a default value.
 """
-function _guess_column_labels(data::Union{ColumnTable, RowTable})
+Base.@nospecializeinfer function _guess_column_labels(@nospecialize(data::Union{ColumnTable, RowTable}))
     column_labels = [string.(data.column_names)]
     sch           = Tables.schema(_get_data(data))
 
@@ -35,7 +35,7 @@ function _guess_column_labels(data::AbstractVector)
     return [String["Col. 1"]]
 end
 
-function _guess_column_labels(data::AbstractMatrix)
+Base.@nospecializeinfer function _guess_column_labels(@nospecialize(data::AbstractMatrix))
     return [parent(["Col. $i" for i in axes(data, 2)])]
 end
 

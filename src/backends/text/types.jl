@@ -492,6 +492,136 @@ function TextTableStyle(;
     center_line                    = nothing,
     right_line                     = nothing,
 )
+    return _text__build_table_style(
+        title,
+        subtitle,
+        row_number_label,
+        row_number,
+        stubhead_label,
+        row_label,
+        row_group_label,
+        first_line_column_label,
+        column_label,
+        first_line_merged_column_label,
+        merged_column_label,
+        summary_row_cell,
+        summary_row_label,
+        footnote,
+        source_note,
+        omitted_cell_summary,
+        table_border,
+        top_line,
+        header_line,
+        merged_header_cell_line,
+        middle_line,
+        bottom_line,
+        left_line,
+        center_line,
+        right_line,
+    )
+end
+
+"""
+    _text__build_table_style(args...) -> TextTableStyle
+
+Build a `TextTableStyle` from the values passed to its keyword constructor, converting the
+crayons into faces and rendering the escape sequences.
+
+This function only forwards the arguments to `_text__build_table_style_core`, which
+performs the work. The arguments of both are not specialized (also during inference) and
+the functions are not inlined so that they are compiled once. Otherwise, each distinct set
+of keywords passed to `TextTableStyle` would infer the conversions and the rendering again,
+which is expensive.
+"""
+Base.@nospecializeinfer Base.@constprop :none @noinline function _text__build_table_style(
+    @nospecialize(title),
+    @nospecialize(subtitle),
+    @nospecialize(row_number_label),
+    @nospecialize(row_number),
+    @nospecialize(stubhead_label),
+    @nospecialize(row_label),
+    @nospecialize(row_group_label),
+    @nospecialize(first_line_column_label),
+    @nospecialize(column_label),
+    @nospecialize(first_line_merged_column_label),
+    @nospecialize(merged_column_label),
+    @nospecialize(summary_row_cell),
+    @nospecialize(summary_row_label),
+    @nospecialize(footnote),
+    @nospecialize(source_note),
+    @nospecialize(omitted_cell_summary),
+    @nospecialize(table_border),
+    @nospecialize(top_line),
+    @nospecialize(header_line),
+    @nospecialize(merged_header_cell_line),
+    @nospecialize(middle_line),
+    @nospecialize(bottom_line),
+    @nospecialize(left_line),
+    @nospecialize(center_line),
+    @nospecialize(right_line),
+)
+    return _text__build_table_style_core(
+        title,
+        subtitle,
+        row_number_label,
+        row_number,
+        stubhead_label,
+        row_label,
+        row_group_label,
+        first_line_column_label,
+        column_label,
+        first_line_merged_column_label,
+        merged_column_label,
+        summary_row_cell,
+        summary_row_label,
+        footnote,
+        source_note,
+        omitted_cell_summary,
+        table_border,
+        top_line,
+        header_line,
+        merged_header_cell_line,
+        middle_line,
+        bottom_line,
+        left_line,
+        center_line,
+        right_line,
+    )
+end
+
+"""
+    _text__build_table_style_core(args...) -> TextTableStyle
+
+Convert the values passed to the keyword constructor of `TextTableStyle` and render the
+escape sequences (see `_text__build_table_style`).
+"""
+Base.@nospecializeinfer Base.@constprop :none @noinline function _text__build_table_style_core(
+    @nospecialize(title),
+    @nospecialize(subtitle),
+    @nospecialize(row_number_label),
+    @nospecialize(row_number),
+    @nospecialize(stubhead_label),
+    @nospecialize(row_label),
+    @nospecialize(row_group_label),
+    @nospecialize(first_line_column_label),
+    @nospecialize(column_label),
+    @nospecialize(first_line_merged_column_label),
+    @nospecialize(merged_column_label),
+    @nospecialize(summary_row_cell),
+    @nospecialize(summary_row_label),
+    @nospecialize(footnote),
+    @nospecialize(source_note),
+    @nospecialize(omitted_cell_summary),
+    @nospecialize(table_border),
+    @nospecialize(top_line),
+    @nospecialize(header_line),
+    @nospecialize(merged_header_cell_line),
+    @nospecialize(middle_line),
+    @nospecialize(bottom_line),
+    @nospecialize(left_line),
+    @nospecialize(center_line),
+    @nospecialize(right_line),
+)
     title                          = _text__to_face(title)
     subtitle                       = _text__to_face(subtitle)
     row_number_label               = _text__to_face(row_number_label)

@@ -218,7 +218,11 @@ end
 # This function converts the common keywords to positional arguments. Hence, we can use
 # `@nospecialize` at the first two arguments and at the back end keywords, improving the
 # time to print the first table.
-Base.@nospecializeinfer function _pretty_table(
+#
+# NOTE: The constant propagation is disabled because the keyword entry point calls this
+# function with many constant default values. Otherwise, every new call site of
+# `pretty_table` would infer this entire function again with those constants.
+Base.@constprop :none Base.@nospecializeinfer function _pretty_table(
     @nospecialize(io::IO),
     @nospecialize(data::Any),
     backend::Symbol,

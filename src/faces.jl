@@ -164,14 +164,18 @@ function _face_from_crayon(crayon::Crayon)
     italics = _face_state_from_crayon(crayon.italics)
     slant   = isnothing(italics) ? nothing : (italics ? :italic : :normal)
 
-    return Face(;
+    # We call the positional constructor of `Face` (see `_face_from_pairs`).
+    return Face(
+        nothing,
+        nothing,
         weight,
         slant,
-        foreground    = _face_color_from_crayon(crayon.fg),
-        background    = _face_color_from_crayon(crayon.bg),
-        underline     = _face_state_from_crayon(crayon.underline),
-        strikethrough = _face_state_from_crayon(crayon.strikethrough),
-        inverse       = _face_state_from_crayon(crayon.negative),
+        _face_simple_color(_face_color_from_crayon(crayon.fg)),
+        _face_simple_color(_face_color_from_crayon(crayon.bg)),
+        _face_state_from_crayon(crayon.underline),
+        _face_state_from_crayon(crayon.strikethrough),
+        _face_state_from_crayon(crayon.negative),
+        Symbol[],
     )
 end
 
@@ -182,41 +186,151 @@ Create a face from the keywords `kwargs`, which can be the keywords of `Face` or
 `Crayon`. The latter are translated: `bold` and `faint` select the `weight`, `italics`
 selects the `slant`, `negative` selects the `inverse`, and `foreground` and `background`
 also accept the color names of Crayons.jl, the indices of the 256-color palette, tuples
-`(r, g, b)`, and `UInt32` values. The keywords `blink`, `conceal`, and `reset` are ignored,
-and the other ones are forwarded to `Face`.
+`(r, g, b)`, and `UInt32` values. The keywords `blink`, `conceal`, and `reset` have no
+counterpart in a face: they are ignored with a warning, shown once per session. The other
+keywords are forwarded to `Face`.
+
+The keywords are passed to `_face_from_pairs` without specialization, which is compiled
+once. Otherwise, each distinct set of keywords would compile the conversion again.
 """
-function _face_from_kwargs(; kwargs...)
-    face_kwargs = Dict{Symbol, Any}()
+_face_from_kwargs(; kwargs...) = _face_from_pairs(kwargs)
+
+"""
+    _face_from_pairs(kwargs::Any) -> Face
+
+Create a face from the keyword `kwargs`, which can be any iterable of pairs (see
+`_face_from_kwargs`). This function only gathers the pairs and forwards them to
+`_face_from_pairs_core`, keeping the method called by `_face_from_kwargs` tiny (see
+`_text__build_table_style` for the rationale).
+"""
+Base.@nospecializeinfer @noinline function _face_from_pairs(@nospecialize(kwargs))
+    pairs = Pair{Symbol, Any}[]
 
     for (k, v) in kwargs
+        push!(pairs, k => v)
+    end
+
+    return _face_from_pairs_core(pairs)
+end
+
+"""
+    _face_from_pairs_core(pairs::Vector{Pair{Symbol, Any}}) -> Face
+
+Create a face from the keyword `pairs` (see `_face_from_kwargs`).
+"""
+@noinline function _face_from_pairs_core(pairs::Vector{Pair{Symbol, Any}})
+    font          = nothing
+    height        = nothing
+    weight        = nothing
+    slant         = nothing
+    foreground    = nothing
+    background    = nothing
+    underline     = nothing
+    strikethrough = nothing
+    inverse       = nothing
+    inherit       = Symbol[]
+
+    for (k, v) in pairs
         isnothing(v) && continue
 
         if k === :bold
-            face_kwargs[:weight] = v ? :bold : :normal
+            weight = v ? :bold : :normal
 
         elseif k === :faint
             # The bold has priority over the faint if both are set.
-            (get(face_kwargs, :weight, nothing) === :bold) && continue
-            face_kwargs[:weight] = v ? :light : :normal
+            (weight === :bold) && continue
+            weight = v ? :light : :normal
 
         elseif k === :italics
-            face_kwargs[:slant] = v ? :italic : :normal
+            slant = v ? :italic : :normal
 
         elseif k === :negative
-            face_kwargs[:inverse] = v
+            inverse = v
 
-        elseif (k === :foreground) || (k === :background)
-            face_kwargs[k] = _face_color_from_value(v)
+        elseif k === :foreground
+            foreground = _face_simple_color(_face_color_from_value(v))
+
+        elseif k === :background
+            background = _face_simple_color(_face_color_from_value(v))
 
         elseif (k === :blink) || (k === :conceal) || (k === :reset)
-            continue
+            @warn(
+                "The keyword `$k` of `Crayon` has no counterpart in `Face` and it is ignored.",
+                maxlog = 1
+            )
 
-        else
-            face_kwargs[k] = v
+        elseif k === :font
+            font = v
+
+        elseif k === :height
+            height = v
+
+        elseif k === :weight
+            weight = v
+
+        elseif k === :slant
+            slant = v
+
+        elseif k === :underline
+            underline = _face_underline(v)
+
+        elseif k === :strikethrough
+            strikethrough = v
+
+        elseif k === :inverse
+            inverse = v
+
+        elseif k === :inherit
+            inherit = v isa Symbol ? [v] : v
+
+        # The keyword constructor of `Face` ignores the unknown keywords. We do the same.
         end
     end
 
-    return Face(; face_kwargs...)
+    # We call the positional constructor of `Face` so that the conversion does not depend on
+    # the keyword constructor of StyledStrings.jl, which is compiled for each set of
+    # keywords.
+    return Face(
+        font,
+        height,
+        weight,
+        slant,
+        foreground,
+        background,
+        underline,
+        strikethrough,
+        inverse,
+        inherit,
+    )
+end
+
+"""
+    _face_simple_color(color::Any) -> Union{Nothing, SimpleColor}
+
+Convert `color` to the object stored in the color fields of `Face`, mirroring the conversion
+performed by the keyword constructor of `Face`.
+"""
+_face_simple_color(::Nothing)                = nothing
+_face_simple_color(color::SimpleColor)       = color
+_face_simple_color(color::AbstractString)    = parse(SimpleColor, color)
+_face_simple_color(color::Any)               = convert(SimpleColor, color)
+
+"""
+    _face_underline(underline::Any) -> Any
+
+Convert `underline` to the object stored in the field `underline` of `Face`, mirroring the
+conversion performed by the keyword constructor of `Face`: a `Bool`, a color, a style name
+(`:straight`, `:double`, `:curly`, `:dotted`, or `:dashed`), or a tuple with a color and a
+style name.
+"""
+_face_underline(underline::Union{Nothing, Bool}) = underline
+_face_underline(underline::Tuple{Any, Symbol}) =
+    (_face_simple_color(underline[1]), underline[2])
+
+function _face_underline(underline::Any)
+    (underline in (:straight, :double, :curly, :dotted, :dashed)) &&
+        return (nothing, underline)
+    return _face_simple_color(underline)
 end
 
 # == Private Functions =====================================================================
