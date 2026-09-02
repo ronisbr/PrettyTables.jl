@@ -285,68 +285,62 @@ function _table_format_border(
     return converter(line_style)
 end
 
+# Line presence fields shared by every back end table format.
+const _TABLE_FORMAT_PRESENCE_FIELDS = (
+    :horizontal_line_at_beginning,
+    :horizontal_line_after_column_labels,
+    :horizontal_line_at_merged_column_labels,
+    :horizontal_lines_at_data_rows,
+    :horizontal_line_before_row_group_label,
+    :horizontal_line_after_row_group_label,
+    :horizontal_line_after_data_rows,
+    :horizontal_line_before_summary_rows,
+    :horizontal_line_after_summary_rows,
+    :vertical_line_at_beginning,
+    :vertical_line_after_row_number_column,
+    :vertical_line_after_row_label_column,
+    :vertical_lines_at_data_columns,
+    :vertical_line_after_data_columns,
+    :vertical_line_after_continuation_column,
+)
+
 """
     _table_format_presence_fields(tf::TableFormat, def::Any) -> NamedTuple
 
 Merge the line presence fields of `tf` over the ones of the back end default table format
 `def`, returning a named tuple that can be splatted into the keyword constructor of the
-back end table format. `def` must have every line presence field shared by all back ends,
-which is the case for the table formats of the text, HTML, LaTeX, Typst, and Excel back
-ends. The HTML-only presence fields are not part of the returned tuple and must be merged
-by the HTML converter.
+back end table format. `def` must have every line presence field shared by all back ends
+(see `_TABLE_FORMAT_PRESENCE_FIELDS`), which is the case for the table formats of the text,
+HTML, LaTeX, Typst, and Excel back ends. The HTML-only presence fields are not part of the
+returned tuple and must be merged by the HTML converter.
 """
 function _table_format_presence_fields(tf::TableFormat, def::Any)
-    return (
-        horizontal_line_at_beginning = _table_format_field(
-            tf.horizontal_line_at_beginning, def.horizontal_line_at_beginning
-        ),
-        horizontal_line_after_column_labels = _table_format_field(
-            tf.horizontal_line_after_column_labels, def.horizontal_line_after_column_labels
-        ),
-        horizontal_line_at_merged_column_labels = _table_format_field(
-            tf.horizontal_line_at_merged_column_labels,
-            def.horizontal_line_at_merged_column_labels
-        ),
-        horizontal_lines_at_data_rows = _table_format_field(
-            tf.horizontal_lines_at_data_rows, def.horizontal_lines_at_data_rows
-        ),
-        horizontal_line_before_row_group_label = _table_format_field(
-            tf.horizontal_line_before_row_group_label,
-            def.horizontal_line_before_row_group_label
-        ),
-        horizontal_line_after_row_group_label = _table_format_field(
-            tf.horizontal_line_after_row_group_label,
-            def.horizontal_line_after_row_group_label
-        ),
-        horizontal_line_after_data_rows = _table_format_field(
-            tf.horizontal_line_after_data_rows, def.horizontal_line_after_data_rows
-        ),
-        horizontal_line_before_summary_rows = _table_format_field(
-            tf.horizontal_line_before_summary_rows, def.horizontal_line_before_summary_rows
-        ),
-        horizontal_line_after_summary_rows = _table_format_field(
-            tf.horizontal_line_after_summary_rows, def.horizontal_line_after_summary_rows
-        ),
-        vertical_line_at_beginning = _table_format_field(
-            tf.vertical_line_at_beginning, def.vertical_line_at_beginning
-        ),
-        vertical_line_after_row_number_column = _table_format_field(
-            tf.vertical_line_after_row_number_column,
-            def.vertical_line_after_row_number_column
-        ),
-        vertical_line_after_row_label_column = _table_format_field(
-            tf.vertical_line_after_row_label_column,
-            def.vertical_line_after_row_label_column
-        ),
-        vertical_lines_at_data_columns = _table_format_field(
-            tf.vertical_lines_at_data_columns, def.vertical_lines_at_data_columns
-        ),
-        vertical_line_after_data_columns = _table_format_field(
-            tf.vertical_line_after_data_columns, def.vertical_line_after_data_columns
-        ),
-        vertical_line_after_continuation_column = _table_format_field(
-            tf.vertical_line_after_continuation_column,
-            def.vertical_line_after_continuation_column
-        ),
+    return NamedTuple{_TABLE_FORMAT_PRESENCE_FIELDS}(
+        map(_TABLE_FORMAT_PRESENCE_FIELDS) do f
+            _table_format_field(getfield(tf, f), getfield(def, f))
+        end
+    )
+end
+
+"""
+    _table_format_borders(tf::TableFormat, def::B, converter::Function; skip::Tuple = ()) where B -> B
+
+Convert the line designs of `tf` to the native borders of a back end using `converter`,
+returning an object with the same type as the default borders `def`. Every field of `def`
+must have the same name as a line design field of [`TableFormat`](@ref). A line design left
+as `nothing` in `tf`, or whose field name is in `skip`, keeps the default border of `def`
+(see `_table_format_border`).
+"""
+function _table_format_borders(
+    tf::TableFormat,
+    def::B,
+    converter::Function;
+    skip::Tuple = ()
+) where B
+    return B(
+        map(fieldnames(B)) do f
+            (f ∈ skip) && return getfield(def, f)
+            return _table_format_border(getfield(tf, f), converter, getfield(def, f))
+        end...
     )
 end

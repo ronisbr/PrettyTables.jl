@@ -66,40 +66,10 @@ of the default Excel table format. The Excel-only field
 _excel__table_format(table_format::ExcelTableFormat) = table_format
 
 function _excel__table_format(table_format::TableFormat)
-    def = ExcelTableFormat()
-    db  = def.borders
-
-    borders = ExcelTableBorders(;
-        top_line                = _table_format_border(
-            table_format.top_line, excel_line_style, db.top_line
-        ),
-        header_line             = _table_format_border(
-            table_format.header_line, excel_line_style, db.header_line
-        ),
-        merged_header_cell_line = _table_format_border(
-            table_format.merged_header_cell_line,
-            excel_line_style,
-            db.merged_header_cell_line
-        ),
-        middle_line             = _table_format_border(
-            table_format.middle_line, excel_line_style, db.middle_line
-        ),
-        bottom_line             = _table_format_border(
-            table_format.bottom_line, excel_line_style, db.bottom_line
-        ),
-        left_line               = _table_format_border(
-            table_format.left_line, excel_line_style, db.left_line
-        ),
-        center_line             = _table_format_border(
-            table_format.center_line, excel_line_style, db.center_line
-        ),
-        right_line              = _table_format_border(
-            table_format.right_line, excel_line_style, db.right_line
-        ),
-    )
+    def = _DEFAULT_EXCEL_TABLE_FORMAT
 
     return ExcelTableFormat(;
-        borders,
+        borders = _table_format_borders(table_format, def.borders, excel_line_style),
         _table_format_presence_fields(table_format, def)...
     )
 end

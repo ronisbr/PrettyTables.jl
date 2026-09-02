@@ -38,7 +38,7 @@ set, which has the highest precedence.
 _text__table_format(table_format::TextTableFormat) = table_format
 
 function _text__table_format(table_format::TableFormat)
-    def = TextTableFormat()
+    def = _DEFAULT_TEXT_TABLE_FORMAT
 
     top_design    = _text__line_design(table_format.top_line)
     header_design = _text__line_design(table_format.header_line)

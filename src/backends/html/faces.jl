@@ -83,48 +83,6 @@ function html_decoration(face::Face)
     return d
 end
 
-"""
-    _html__decoration(decoration::Union{Vector{HtmlPair}, Face}) -> Vector{HtmlPair}
-
-Convert the `decoration` passed to `HtmlTableStyle`, CSS properties or a face, into CSS properties.
-"""
-_html__decoration(decoration::Vector{HtmlPair}) = decoration
-_html__decoration(decoration::AbstractVector) = convert(Vector{HtmlPair}, decoration)
-_html__decoration(face::Face)                   = html_decoration(face)
-
-"""
-    _html__column_label_decoration(decorations::Any) -> Union{Vector{HtmlPair}, Vector{Vector{HtmlPair}}}
-
-Convert the `decorations` passed to the column label fields of `HtmlTableStyle`, which can
-be CSS properties, a face, or a vector with one of them per column, into CSS properties or a vector of them.
-"""
-_html__column_label_decoration(decoration::Vector{HtmlPair})          = decoration
-_html__column_label_decoration(decorations::Vector{Vector{HtmlPair}}) = decorations
-_html__column_label_decoration(face::Face)                            = html_decoration(face)
-
-function _html__column_label_decoration(decorations::AbstractVector)
-    # A vector of pairs (or an empty vector) is a single decoration, as accepted by the
-    # keyword constructor of the previous versions. Otherwise, the vector has one decoration
-    # per column.
-    (isempty(decorations) || all(d -> d isa Pair, decorations)) &&
-        return _html__decoration(decorations)
-
-    return Vector{HtmlPair}[_html__decoration(d) for d in decorations]
-end
-
-"""
-    _html__highlighter_decoration(h::AbstractHighlighter, data, i::Int, j::Int) -> Vector{HtmlPair}
-
-Return the CSS properties of the highlighter `h` for the cell `(i, j)` of `data`.
-"""
-function _html__highlighter_decoration(h::HtmlHighlighter, data, i::Int, j::Int)
-    return h.fd(h, data, i, j)::Vector{HtmlPair}
-end
-
-function _html__highlighter_decoration(h::AbstractHighlighter, ::Any, ::Int, ::Int)
-    throw(
-        ArgumentError(
-            "The HTML back end does not support highlighters of type `$(typeof(h))`."
-        )
-    )
-end
+# Define `_html__decoration`, `_html__column_label_decoration`, and
+# `_html__highlighter_decoration`.
+@_define_decoration_converters(html, "HTML", html_decoration, Vector{HtmlPair}, Pair)

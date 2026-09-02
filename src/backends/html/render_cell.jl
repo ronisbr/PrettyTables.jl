@@ -143,19 +143,12 @@ end
         allow_html_in_cells::Bool = false,
         line_breaks::Bool = false,
     )
-        buf = IOBuffer()
-
-        for (text, face) in _face_regions(cell)
+        return _render_face_regions(cell) do text, face
             escaped = _html__escape_str(text, line_breaks, !allow_html_in_cells)
             style   = isnothing(face) ? _HTML__NO_DECORATION : html_decoration(face)
 
-            if isempty(style) || isempty(escaped)
-                print(buf, escaped)
-            else
-                print(buf, _html__create_tag("span", escaped; style = style))
-            end
+            (isempty(style) || isempty(escaped)) && return escaped
+            return _html__create_tag("span", escaped; style = style)
         end
-
-        return String(take!(buf))
     end
 end

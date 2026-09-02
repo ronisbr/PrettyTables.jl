@@ -89,19 +89,11 @@ end
         context::RenderContext,
         renderer::Union{Val{:print}, Val{:show}},
     )
-        buf = IOBuffer()
-
-        for (text, face) in _face_regions(cell)
+        return _render_face_regions(cell) do text, face
             escaped = _typst__escape_str(text)
-
-            if isnothing(face)
-                print(buf, escaped)
-            else
-                _, text_properties = _typst__cell_and_text_properties(typst_decoration(face))
-                print(buf, _typst__text(escaped, text_properties))
-            end
+            isnothing(face) && return escaped
+            _, text_properties = _typst__cell_and_text_properties(typst_decoration(face))
+            return _typst__text(escaped, text_properties)
         end
-
-        return String(take!(buf))
     end
 end

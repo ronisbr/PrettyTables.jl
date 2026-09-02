@@ -76,48 +76,6 @@ function typst_decoration(face::Face)
     return d
 end
 
-"""
-    _typst__decoration(decoration::Union{Vector{TypstPair}, Face}) -> Vector{TypstPair}
-
-Convert the `decoration` passed to `TypstTableStyle`, Typst properties or a face, into Typst properties.
-"""
-_typst__decoration(decoration::Vector{TypstPair}) = decoration
-_typst__decoration(decoration::AbstractVector) = convert(Vector{TypstPair}, decoration)
-_typst__decoration(face::Face)                    = typst_decoration(face)
-
-"""
-    _typst__column_label_decoration(decorations::Any) -> Union{Vector{TypstPair}, Vector{Vector{TypstPair}}}
-
-Convert the `decorations` passed to the column label fields of `TypstTableStyle`, which can
-be Typst properties, a face, or a vector with one of them per column, into Typst properties or a vector of them.
-"""
-_typst__column_label_decoration(decoration::Vector{TypstPair})          = decoration
-_typst__column_label_decoration(decorations::Vector{Vector{TypstPair}}) = decorations
-_typst__column_label_decoration(face::Face)                             = typst_decoration(face)
-
-function _typst__column_label_decoration(decorations::AbstractVector)
-    # A vector of pairs (or an empty vector) is a single decoration, as accepted by the
-    # keyword constructor of the previous versions. Otherwise, the vector has one decoration
-    # per column.
-    (isempty(decorations) || all(d -> d isa Pair, decorations)) &&
-        return _typst__decoration(decorations)
-
-    return Vector{TypstPair}[_typst__decoration(d) for d in decorations]
-end
-
-"""
-    _typst__highlighter_decoration(h::AbstractHighlighter, data, i::Int, j::Int) -> Vector{TypstPair}
-
-Return the Typst properties of the highlighter `h` for the cell `(i, j)` of `data`.
-"""
-function _typst__highlighter_decoration(h::TypstHighlighter, data, i::Int, j::Int)
-    return h.fd(h, data, i, j)::Vector{TypstPair}
-end
-
-function _typst__highlighter_decoration(h::AbstractHighlighter, ::Any, ::Int, ::Int)
-    throw(
-        ArgumentError(
-            "The Typst back end does not support highlighters of type `$(typeof(h))`."
-        )
-    )
-end
+# Define `_typst__decoration`, `_typst__column_label_decoration`, and
+# `_typst__highlighter_decoration`.
+@_define_decoration_converters(typst, "Typst", typst_decoration, Vector{TypstPair}, Pair)

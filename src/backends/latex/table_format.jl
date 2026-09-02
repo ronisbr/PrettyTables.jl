@@ -49,26 +49,10 @@ with the column specification of the table environment.
 _latex__table_format(table_format::LatexTableFormat) = table_format
 
 function _latex__table_format(table_format::TableFormat)
-    def = LatexTableFormat()
-    db  = def.borders
-
-    borders = LatexTableBorders(;
-        top_line    = _table_format_border(
-            table_format.top_line, latex_line_style, db.top_line
-        ),
-        header_line = _table_format_border(
-            table_format.header_line, latex_line_style, db.header_line
-        ),
-        middle_line = _table_format_border(
-            table_format.middle_line, latex_line_style, db.middle_line
-        ),
-        bottom_line = _table_format_border(
-            table_format.bottom_line, latex_line_style, db.bottom_line
-        ),
-    )
+    def = _DEFAULT_LATEX_TABLE_FORMAT
 
     return LatexTableFormat(;
-        borders,
+        borders = _table_format_borders(table_format, def.borders, latex_line_style; skip = (:merged_header_cell_line,)),
         _table_format_presence_fields(table_format, def)...
     )
 end

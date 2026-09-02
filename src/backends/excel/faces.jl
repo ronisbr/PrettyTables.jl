@@ -64,48 +64,6 @@ function excel_decoration(face::Face)
     return d
 end
 
-"""
-    _excel__decoration(decoration::Union{Vector{ExcelPair}, Face}) -> Vector{ExcelPair}
-
-Convert the `decoration` passed to `ExcelTableStyle`, Excel attributes or a face, into Excel attributes.
-"""
-_excel__decoration(decoration::Vector{ExcelPair}) = decoration
-_excel__decoration(decoration::AbstractVector) = convert(Vector{ExcelPair}, decoration)
-_excel__decoration(face::Face)                    = excel_decoration(face)
-
-"""
-    _excel__column_label_decoration(decorations::Any) -> Union{Vector{ExcelPair}, Vector{Vector{ExcelPair}}}
-
-Convert the `decorations` passed to the column label fields of `ExcelTableStyle`, which can
-be Excel attributes, a face, or a vector with one of them per column, into Excel attributes or a vector of them.
-"""
-_excel__column_label_decoration(decoration::Vector{ExcelPair})          = decoration
-_excel__column_label_decoration(decorations::Vector{Vector{ExcelPair}}) = decorations
-_excel__column_label_decoration(face::Face)                             = excel_decoration(face)
-
-function _excel__column_label_decoration(decorations::AbstractVector)
-    # A vector of pairs (or an empty vector) is a single decoration, as accepted by the
-    # keyword constructor of the previous versions. Otherwise, the vector has one decoration
-    # per column.
-    (isempty(decorations) || all(d -> d isa Pair, decorations)) &&
-        return _excel__decoration(decorations)
-
-    return Vector{ExcelPair}[_excel__decoration(d) for d in decorations]
-end
-
-"""
-    _excel__highlighter_decoration(h::AbstractHighlighter, data, i::Int, j::Int) -> Vector{ExcelPair}
-
-Return the Excel attributes of the highlighter `h` for the cell `(i, j)` of `data`.
-"""
-function _excel__highlighter_decoration(h::ExcelHighlighter, data, i::Int, j::Int)
-    return h.fd(h, data, i, j)::Vector{ExcelPair}
-end
-
-function _excel__highlighter_decoration(h::AbstractHighlighter, ::Any, ::Int, ::Int)
-    throw(
-        ArgumentError(
-            "The Excel back end does not support highlighters of type `$(typeof(h))`."
-        )
-    )
-end
+# Define `_excel__decoration`, `_excel__column_label_decoration`, and
+# `_excel__highlighter_decoration`.
+@_define_decoration_converters(excel, "Excel", excel_decoration, Vector{ExcelPair}, Pair)

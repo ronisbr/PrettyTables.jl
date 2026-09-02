@@ -107,12 +107,10 @@ end
     function _excel__render_cell(
         cell::Base.AnnotatedString, ::RenderContext, ::_EXCEL__RENDERER
     )
-        regions = _face_regions(cell)
-
         runs                = XLSX.RichTextRun[]
         has_font_attributes = false
 
-        for (text, face) in regions
+        for (text, face) in _face_regions(cell)
             isempty(text) && continue
 
             font_attributes = Pair{Symbol, Any}[]
@@ -131,7 +129,7 @@ end
 
             has_font_attributes |= !isempty(font_attributes)
 
-            push!(runs, XLSX.RichTextRun(text, font_attributes))
+            push!(runs, XLSX.RichTextRun(String(text), font_attributes))
         end
 
         # If no region carries font attributes, the string is effectively plain text.

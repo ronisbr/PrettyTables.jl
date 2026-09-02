@@ -102,14 +102,10 @@ end
         allow_markdown_in_cells::Bool = false,
         line_breaks::Bool = false,
     )
-        buf = IOBuffer()
-
-        for (text, face) in _face_regions(cell)
+        return _render_face_regions(cell) do text, face
             escaped = _markdown__escape_str(text, line_breaks, !allow_markdown_in_cells)
             style   = isnothing(face) ? _MARKDOWN__NO_DECORATION : markdown_decoration(face)
-            print(buf, _markdown__apply_style(style, escaped))
+            return _markdown__apply_style(style, escaped)
         end
-
-        return String(take!(buf))
     end
 end

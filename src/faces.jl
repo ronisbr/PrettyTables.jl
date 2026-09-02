@@ -110,12 +110,15 @@ function _face_color_hex(color::Union{Nothing, SimpleColor}; uppercase::Bool = f
     rgb = face_color_rgb(color)
     isnothing(rgb) && return nothing
 
-    str =
-        string(rgb.r; base = 16, pad = 2) *
-        string(rgb.g; base = 16, pad = 2) *
-        string(rgb.b; base = 16, pad = 2)
+    digits = uppercase ? "0123456789ABCDEF" : "0123456789abcdef"
+    buf    = Base.StringVector(6)
 
-    return uppercase ? Base.uppercase(str) : str
+    for (k, v) in enumerate((rgb.r, rgb.g, rgb.b))
+        buf[2k - 1] = codeunit(digits, (v >> 4) + 1)
+        buf[2k]     = codeunit(digits, (v & 0x0f) + 1)
+    end
+
+    return String(buf)
 end
 
 """
@@ -425,19 +428,78 @@ _face_color_from_value(v::NTuple{3, Integer}) =
 _face_color_from_value(v) = v
 
 ############################################################################################
+#                                  Decoration Converters                                   #
+############################################################################################
+
+"""
+    @_define_decoration_converters(backend, name, converter, native, element)
+
+Define the private decoration converters of a back end whose native decoration is a vector:
+
+- `_<backend>__decoration(decoration)`: Convert the `decoration` passed to the table style
+    into the native decoration. It accepts the native decoration, any vector (converted to
+    the native one, as the `@kwdef` constructors of v3.4.8 did), or a `Face`, converted with
+    `converter`.
+- `_<backend>__column_label_decoration(decorations)`: Convert the `decorations` passed to
+    the column label fields of the table style into a native decoration or a vector with
+    one native decoration per column. A vector of `element`s (or an empty vector) is a
+    single decoration, whereas any other vector has one decoration per column.
+- `_<backend>__highlighter_decoration(h, data, i, j)`: Return the native decoration of the
+    highlighter `h` for the cell `(i, j)` of `data`, throwing an `ArgumentError` if the
+    back end does not support the highlighter type.
+
+`name` is the name of the back end shown in the error messages, and `native` is the type of
+the native decoration.
+"""
+macro _define_decoration_converters(backend, name, converter, native, element)
+    prefix       = String(backend)
+    decoration   = Symbol("_", prefix, "__decoration")
+    column_label = Symbol("_", prefix, "__column_label_decoration")
+    highlighter  = Symbol("_", prefix, "__highlighter_decoration")
+    Highlighter  = Symbol(uppercasefirst(prefix), "Highlighter")
+    error_msg    = "The $name back end does not support highlighters of type `"
+
+    return quote
+        $(esc(decoration))(decoration::$(esc(native)))      = decoration
+        $(esc(decoration))(decoration::AbstractVector)      = convert($(esc(native)), decoration)
+        $(esc(decoration))(face::Face)                      = $(esc(converter))(face)
+
+        $(esc(column_label))(decoration::$(esc(native)))           = decoration
+        $(esc(column_label))(decorations::Vector{$(esc(native))})  = decorations
+        $(esc(column_label))(face::Face)                           = $(esc(converter))(face)
+
+        function $(esc(column_label))(decorations::AbstractVector)
+            (isempty(decorations) || all(d -> d isa $(esc(element)), decorations)) &&
+                return $(esc(decoration))(decorations)
+
+            return $(esc(native))[$(esc(decoration))(d) for d in decorations]
+        end
+
+        function $(esc(highlighter))(h::$(esc(Highlighter)), data, i::Int, j::Int)
+            return h.fd(h, data, i, j)::$(esc(native))
+        end
+
+        function $(esc(highlighter))(h::AbstractHighlighter, ::Any, ::Int, ::Int)
+            throw(ArgumentError($error_msg * string(typeof(h)) * "`."))
+        end
+    end
+end
+
+############################################################################################
 #                                     Styled Strings                                      #
 ############################################################################################
 
 @static if VERSION >= v"1.11"
     """
-        _face_regions(str::Base.AnnotatedString) -> Vector{Tuple{String, Union{Nothing, Face}}}
+        _face_regions(str::Base.AnnotatedString) -> Vector{Tuple{SubString{String}, Union{Nothing, Face}}}
 
     Split the styled string `str` into regions with the same annotations, returning the text
-    of each region and its face, or `nothing` if the region has no face. The face only
-    contains the attributes set by the annotations; the default face is not merged.
+    of each region (a view into `str`) and its face, or `nothing` if the region has no face.
+    The face only contains the attributes set by the annotations; the default face is not
+    merged.
     """
     function _face_regions(str::Base.AnnotatedString)
-        regions = Tuple{String, Union{Nothing, Face}}[]
+        regions = Tuple{SubString{String}, Union{Nothing, Face}}[]
 
         for (text, annotations) in StyledStrings.eachregion(str)
             face = nothing
@@ -449,7 +511,9 @@ _face_color_from_value(v) = v
                 face = isnothing(face) ? region_face : merge(face, region_face)
             end
 
-            push!(regions, (String(text), face))
+            # The region is a view into `str` when possible, avoiding a copy per region.
+            region = text isa SubString{String} ? text : SubString{String}(String(text))
+            push!(regions, (region, face))
         end
 
         return regions
@@ -464,4 +528,21 @@ _face_color_from_value(v) = v
     _annotation_face(face::Face)   = face
     _annotation_face(name::Symbol) = get(StyledStrings.FACES.current[], name, nothing)
     _annotation_face(::Any)        = nothing
+
+    """
+        _render_face_regions(render_region::Function, str::Base.AnnotatedString) -> String
+
+    Render the styled string `str` region by region (see `_face_regions`), concatenating the
+    strings returned by `render_region(text, face)`, where `face` is `nothing` for the
+    regions without a face.
+    """
+    function _render_face_regions(render_region::F, str::Base.AnnotatedString) where F
+        buf = IOBuffer()
+
+        for (text, face) in _face_regions(str)
+            print(buf, render_region(text, face))
+        end
+
+        return String(take!(buf))
+    end
 end

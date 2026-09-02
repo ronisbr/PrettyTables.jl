@@ -91,14 +91,10 @@ end
         context::RenderContext,
         renderer::Union{Val{:print}, Val{:show}},
     )
-        buf = IOBuffer()
-
-        for (text, face) in _face_regions(cell)
+        return _render_face_regions(cell) do text, face
             escaped = _latex__escape_str(text)
             envs    = isnothing(face) ? _LATEX__DEFAULT : latex_decoration(face)
-            print(buf, _latex__add_environments(escaped, envs))
+            return _latex__add_environments(escaped, envs)
         end
-
-        return String(take!(buf))
     end
 end

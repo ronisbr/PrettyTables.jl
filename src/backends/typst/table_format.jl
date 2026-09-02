@@ -80,40 +80,10 @@ of the default Typst table format.
 _typst__table_format(table_format::TypstTableFormat) = table_format
 
 function _typst__table_format(table_format::TableFormat)
-    def = TypstTableFormat()
-    db  = def.borders
-
-    borders = TypstTableBorders(;
-        top_line                = _table_format_border(
-            table_format.top_line, typst_line_style, db.top_line
-        ),
-        header_line             = _table_format_border(
-            table_format.header_line, typst_line_style, db.header_line
-        ),
-        merged_header_cell_line = _table_format_border(
-            table_format.merged_header_cell_line,
-            typst_line_style,
-            db.merged_header_cell_line
-        ),
-        middle_line             = _table_format_border(
-            table_format.middle_line, typst_line_style, db.middle_line
-        ),
-        bottom_line             = _table_format_border(
-            table_format.bottom_line, typst_line_style, db.bottom_line
-        ),
-        left_line               = _table_format_border(
-            table_format.left_line, typst_line_style, db.left_line
-        ),
-        center_line             = _table_format_border(
-            table_format.center_line, typst_line_style, db.center_line
-        ),
-        right_line              = _table_format_border(
-            table_format.right_line, typst_line_style, db.right_line
-        ),
-    )
+    def = _DEFAULT_TYPST_TABLE_FORMAT
 
     return TypstTableFormat(;
-        borders,
+        borders = _table_format_borders(table_format, def.borders, typst_line_style),
         _table_format_presence_fields(table_format, def)...
     )
 end

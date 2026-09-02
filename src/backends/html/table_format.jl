@@ -56,40 +56,10 @@ of the default HTML table format.
 _html__table_format(table_format::HtmlTableFormat) = table_format
 
 function _html__table_format(table_format::TableFormat)
-    def = HtmlTableFormat()
-    db  = def.borders
-
-    borders = HtmlTableBorders(;
-        top_line                = _table_format_border(
-            table_format.top_line, html_line_style, db.top_line
-        ),
-        header_line             = _table_format_border(
-            table_format.header_line, html_line_style, db.header_line
-        ),
-        merged_header_cell_line = _table_format_border(
-            table_format.merged_header_cell_line,
-            html_line_style,
-            db.merged_header_cell_line
-        ),
-        middle_line             = _table_format_border(
-            table_format.middle_line, html_line_style, db.middle_line
-        ),
-        bottom_line             = _table_format_border(
-            table_format.bottom_line, html_line_style, db.bottom_line
-        ),
-        left_line               = _table_format_border(
-            table_format.left_line, html_line_style, db.left_line
-        ),
-        center_line             = _table_format_border(
-            table_format.center_line, html_line_style, db.center_line
-        ),
-        right_line              = _table_format_border(
-            table_format.right_line, html_line_style, db.right_line
-        ),
-    )
+    def = _DEFAULT_HTML_TABLE_FORMAT
 
     return HtmlTableFormat(;
-        borders,
+        borders = _table_format_borders(table_format, def.borders, html_line_style),
 
         # The following presence fields only exist in the HTML back end. Hence, they are
         # not returned by `_table_format_presence_fields` and must be merged here.
@@ -105,6 +75,7 @@ function _html__table_format(table_format::TableFormat)
             table_format.horizontal_line_at_end,
             def.horizontal_line_at_end
         ),
+
         _table_format_presence_fields(table_format, def)...
     )
 end
