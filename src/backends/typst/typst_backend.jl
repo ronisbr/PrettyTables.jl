@@ -4,18 +4,70 @@
 #
 ############################################################################################
 
-function _typst__print(
-    pspec::PrintingSpec;
-    annotate::Bool = true,
-    caption::Union{Nothing, String, TypstCaption} = nothing,
-    data_column_widths::Union{Nothing, String, Vector{String}, Vector{Pair{Int, String}}} = nothing,
-    highlighters::Vector{<:AbstractHighlighter} = TypstHighlighter[],
-    is_stdout::Bool = false,
-    minify::Bool = false,
-    style::TypstTableStyle = TypstTableStyle(),
-    table_format::TypstTableFormat = TypstTableFormat(),
-    wrap_column::Integer = 92,
-)
+# Default style and format, created once because constructing them allocates.
+const _DEFAULT_TYPST_TABLE_STYLE  = TypstTableStyle()
+const _DEFAULT_TYPST_TABLE_FORMAT = TypstTableFormat()
+
+############################################################################################
+#                                      Print Options                                       #
+############################################################################################
+
+"""
+    struct TypstPrintOptions
+
+Options of the Typst back end, with one field per keyword of `pretty_table` that is specific
+to this back end, plus `is_stdout`, which is `true` when the table is printed to `stdout`.
+The meaning and the default of each field are documented in the Typst back end section of
+`pretty_table`.
+
+The keywords are gathered in this structure so that the rendering body has a single
+positional signature. Otherwise, each distinct set of keywords passed by the user would
+create a new entry point into the body, and compiling an entry point into such a large
+function is expensive (hundreds of milliseconds in Julia 1.12) even when the body itself is
+already compiled.
+"""
+@kwdef struct TypstPrintOptions
+    annotate::Bool                                                                        = true
+    caption::Union{Nothing, String, TypstCaption}                                         = nothing
+    data_column_widths::Union{Nothing, String, Vector{String}, Vector{Pair{Int, String}}} = nothing
+    highlighters::Vector{AbstractHighlighter}                                             = _NO_HIGHLIGHTERS
+    is_stdout::Bool                                                                       = false
+    minify::Bool                                                                          = false
+    style::TypstTableStyle                                                                = _DEFAULT_TYPST_TABLE_STYLE
+    table_format::TypstTableFormat                                                        = _DEFAULT_TYPST_TABLE_FORMAT
+    wrap_column::Int                                                                      = 92
+end
+
+############################################################################################
+#                                      Entry Points                                       #
+############################################################################################
+
+# The keyword entry point only gathers the options. It is compiled once per set of keywords,
+# which is cheap because it is tiny.
+function _typst__print(pspec::PrintingSpec; kwargs...)
+    return _typst__print(pspec, TypstPrintOptions(; kwargs...))
+end
+
+# This method must be the only caller of the rendering body and it must not be inlined into
+# the keyword entry point. Otherwise, each keyword set would pay for a new entry point into
+# the body (see `TypstPrintOptions`).
+@noinline function _typst__print(pspec::PrintingSpec, opts::TypstPrintOptions)
+    return _typst__print_core(pspec, opts)
+end
+
+function _typst__print_core(pspec::PrintingSpec, opts::TypstPrintOptions)
+    # == Unpack the Options ================================================================
+
+    annotate           = opts.annotate
+    caption            = opts.caption
+    data_column_widths = opts.data_column_widths
+    highlighters       = opts.highlighters
+    is_stdout          = opts.is_stdout
+    minify             = opts.minify
+    style              = opts.style
+    table_format       = opts.table_format
+    wrap_column        = opts.wrap_column
+
     context    = pspec.context
     table_data = pspec.table_data
     # NOTE: `Val(pspec.renderer)` infers to the abstract `Val` because

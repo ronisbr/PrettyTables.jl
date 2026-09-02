@@ -7,15 +7,17 @@
 """
     _excel__write_table!(
         sheet::XLSX.Worksheet,
-        pspec::PrintingSpec;
-        kwargs...
+        pspec::PrintingSpec,
+        opts::ExcelPrintOptions
     ) -> Nothing
 
 Write the complete table described by `pspec` to `sheet` using the PrettyTables.jl
 printing iterator. Cell styling, borders, column widths, and row heights are all applied
 during the single pass over the iterator.
 
-# Keywords
+# Options
+
+The fields of `opts` are:
 
 - `anchor_cell::String`: Top-left cell of the table in A1 notation (e.g. `"B3"`).
     (**Default**: `"A1"`)
@@ -27,7 +29,8 @@ during the single pass over the iterator.
 - `excel_formatters::Vector{ExcelFormatter}`: Number-format rules applied to data and
     summary cells.
     (**Default**: `ExcelFormatter[]`)
-- `highlighters::Vector{ExcelHighlighter}`: Highlighters to apply to the table.
+- `highlighters::Vector{AbstractHighlighter}`: Highlighters to apply to the table.
+    (**Default**: `AbstractHighlighter[]`)
 - `minimum_data_column_widths::Union{Float64, Vector{Float64}}`: Minimum width for each
     data column in Excel units. A scalar applies to all columns; a vector sets per-column
     minimums.
@@ -41,18 +44,33 @@ during the single pass over the iterator.
 - `table_format::ExcelTableFormat`: Border and column-width configuration.
     (**Default**: `ExcelTableFormat()`)
 """
-function _excel__write_table!(
+# This method must be the only caller of the rendering body and it must not be inlined into
+# `_excel__print`. Otherwise, each keyword set would pay for a new entry point into the body
+# (see `ExcelPrintOptions`).
+@noinline function _excel__write_table!(
     sheet::XLSX.Worksheet,
-    pspec::PrintingSpec;
-    anchor_cell::String = "A1",
-    data_column_widths::Union{Float64, Vector{Float64}} = 0.0,
-    excel_formatters::Vector{ExcelFormatter} = ExcelFormatter[],
-    highlighters::Vector{<:AbstractHighlighter} = ExcelHighlighter[],
-    maximum_data_column_widths::Union{Float64, Vector{Float64}} = 0.0,
-    minimum_data_column_widths::Union{Float64, Vector{Float64}} = 0.0,
-    style::ExcelTableStyle = ExcelTableStyle(),
-    table_format::ExcelTableFormat = ExcelTableFormat(),
+    pspec::PrintingSpec,
+    opts::ExcelPrintOptions,
 )
+    return _excel__write_table_core!(sheet, pspec, opts)
+end
+
+function _excel__write_table_core!(
+    sheet::XLSX.Worksheet,
+    pspec::PrintingSpec,
+    opts::ExcelPrintOptions,
+)
+    # == Unpack the Options ================================================================
+
+    anchor_cell                = opts.anchor_cell
+    data_column_widths         = opts.data_column_widths
+    excel_formatters           = opts.excel_formatters
+    highlighters               = opts.highlighters
+    maximum_data_column_widths = opts.maximum_data_column_widths
+    minimum_data_column_widths = opts.minimum_data_column_widths
+    style                      = opts.style
+    table_format               = opts.table_format
+
     table_data = pspec.table_data
 
     c = XLSX.CellRef(anchor_cell)

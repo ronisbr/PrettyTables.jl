@@ -4,12 +4,57 @@
 #
 ############################################################################################
 
-function _latex__print(
-    pspec::PrintingSpec;
-    highlighters::Union{Nothing, Vector{<:AbstractHighlighter}} = nothing,
-    style::LatexTableStyle = LatexTableStyle(),
-    table_format::LatexTableFormat = LatexTableFormat(),
-)
+# Default style and format, created once because constructing them allocates.
+const _DEFAULT_LATEX_TABLE_STYLE  = LatexTableStyle()
+const _DEFAULT_LATEX_TABLE_FORMAT = LatexTableFormat()
+
+############################################################################################
+#                                      Print Options                                       #
+############################################################################################
+
+"""
+    struct LatexPrintOptions
+
+Options of the LaTeX back end, with one field per keyword of `pretty_table` that is
+specific to this back end. The meaning and the default of each field are documented in the
+LaTeX back end section of `pretty_table`.
+
+The keywords are gathered in this structure so that the rendering body has a single
+positional signature. Otherwise, each distinct set of keywords passed by the user would
+create a new entry point into the body, and compiling an entry point into such a large
+function is expensive (hundreds of milliseconds in Julia 1.12) even when the body itself is
+already compiled.
+"""
+@kwdef struct LatexPrintOptions
+    highlighters::Union{Nothing, Vector{AbstractHighlighter}} = nothing
+    style::LatexTableStyle                                    = _DEFAULT_LATEX_TABLE_STYLE
+    table_format::LatexTableFormat                            = _DEFAULT_LATEX_TABLE_FORMAT
+end
+
+############################################################################################
+#                                      Entry Points                                       #
+############################################################################################
+
+# The keyword entry point only gathers the options. It is compiled once per set of keywords,
+# which is cheap because it is tiny.
+function _latex__print(pspec::PrintingSpec; kwargs...)
+    return _latex__print(pspec, LatexPrintOptions(; kwargs...))
+end
+
+# This method must be the only caller of the rendering body and it must not be inlined into
+# the keyword entry point. Otherwise, each keyword set would pay for a new entry point into
+# the body (see `LatexPrintOptions`).
+@noinline function _latex__print(pspec::PrintingSpec, opts::LatexPrintOptions)
+    return _latex__print_core(pspec, opts)
+end
+
+function _latex__print_core(pspec::PrintingSpec, opts::LatexPrintOptions)
+    # == Unpack the Options ================================================================
+
+    highlighters = opts.highlighters
+    style        = opts.style
+    table_format = opts.table_format
+
     context    = pspec.context
     table_data = pspec.table_data
     # NOTE: `Val(pspec.renderer)` infers to the abstract `Val` because

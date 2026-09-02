@@ -152,11 +152,11 @@ function pretty_table(
         new_line_at_end,
         show_first_column_label_only,
         show_row_number_column,
-        vertical_crop_mode;
+        vertical_crop_mode,
 
         # == Other Keyword Arguments =======================================================
 
-        kwargs...,
+        kwargs,
     )
 end
 
@@ -216,7 +216,8 @@ end
 ############################################################################################
 
 # This function converts the common keywords to positional arguments. Hence, we can use
-# `@nospecialize` at the first two arguments, improving the time to print the first table.
+# `@nospecialize` at the first two arguments and at the back end keywords, improving the
+# time to print the first table.
 Base.@nospecializeinfer function _pretty_table(
     @nospecialize(io::IO),
     @nospecialize(data::Any),
@@ -272,8 +273,14 @@ Base.@nospecializeinfer function _pretty_table(
     new_line_at_end::Bool,
     show_first_column_label_only::Bool,
     show_row_number_column::Bool,
-    vertical_crop_mode::Symbol;
-    kwargs...,
+    vertical_crop_mode::Symbol,
+
+    # == Other Keyword Arguments ===========================================================
+
+    # NOTE: The keywords of the back end are passed as a positional argument without
+    # specialization so that this function is compiled only once. Otherwise, each distinct
+    # set of keywords passed by the user would compile this entire function again.
+    @nospecialize(kwargs),
 )
 
     # == Table Preprocessing ===============================================================

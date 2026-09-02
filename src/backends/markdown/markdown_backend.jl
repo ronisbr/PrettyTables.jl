@@ -4,14 +4,61 @@
 #
 ############################################################################################
 
-function _markdown__print(
-    pspec::PrintingSpec;
-    allow_markdown_in_cells::Bool = false,
-    highlighters::Vector{<:AbstractHighlighter} = MarkdownHighlighter[],
-    line_breaks::Bool = false,
-    style::MarkdownTableStyle = MarkdownTableStyle(),
-    table_format::MarkdownTableFormat = MarkdownTableFormat(),
-)
+# Default style and format, created once because constructing them allocates.
+const _DEFAULT_MARKDOWN_TABLE_STYLE  = MarkdownTableStyle()
+const _DEFAULT_MARKDOWN_TABLE_FORMAT = MarkdownTableFormat()
+
+############################################################################################
+#                                      Print Options                                       #
+############################################################################################
+
+"""
+    struct MarkdownPrintOptions
+
+Options of the Markdown back end, with one field per keyword of `pretty_table` that is
+specific to this back end. The meaning and the default of each field are documented in the
+Markdown back end section of `pretty_table`.
+
+The keywords are gathered in this structure so that the rendering body has a single
+positional signature. Otherwise, each distinct set of keywords passed by the user would
+create a new entry point into the body, and compiling an entry point into such a large
+function is expensive (hundreds of milliseconds in Julia 1.12) even when the body itself is
+already compiled.
+"""
+@kwdef struct MarkdownPrintOptions
+    allow_markdown_in_cells::Bool             = false
+    highlighters::Vector{AbstractHighlighter} = _NO_HIGHLIGHTERS
+    line_breaks::Bool                         = false
+    style::MarkdownTableStyle                 = _DEFAULT_MARKDOWN_TABLE_STYLE
+    table_format::MarkdownTableFormat         = _DEFAULT_MARKDOWN_TABLE_FORMAT
+end
+
+############################################################################################
+#                                      Entry Points                                       #
+############################################################################################
+
+# The keyword entry point only gathers the options. It is compiled once per set of keywords,
+# which is cheap because it is tiny.
+function _markdown__print(pspec::PrintingSpec; kwargs...)
+    return _markdown__print(pspec, MarkdownPrintOptions(; kwargs...))
+end
+
+# This method must be the only caller of the rendering body and it must not be inlined into
+# the keyword entry point. Otherwise, each keyword set would pay for a new entry point into
+# the body (see `MarkdownPrintOptions`).
+@noinline function _markdown__print(pspec::PrintingSpec, opts::MarkdownPrintOptions)
+    return _markdown__print_core(pspec, opts)
+end
+
+function _markdown__print_core(pspec::PrintingSpec, opts::MarkdownPrintOptions)
+    # == Unpack the Options ================================================================
+
+    allow_markdown_in_cells = opts.allow_markdown_in_cells
+    highlighters            = opts.highlighters
+    line_breaks             = opts.line_breaks
+    style                   = opts.style
+    table_format            = opts.table_format
+
     context    = pspec.context
     table_data = pspec.table_data
     # NOTE: `Val(pspec.renderer)` infers to the abstract `Val` because

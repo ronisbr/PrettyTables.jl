@@ -26,6 +26,9 @@ and the back end highlighters `TextHighlighter`, `HtmlHighlighter`, `LatexHighli
 """
 abstract type AbstractHighlighter end
 
+# Empty highlighter vector used as the default of every back end. It must never be mutated.
+const _NO_HIGHLIGHTERS = AbstractHighlighter[]
+
 """
     struct EmptyCells
 

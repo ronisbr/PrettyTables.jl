@@ -8,34 +8,101 @@
 # this only to the values that **are not** modified inside the algorithm. Otherwise, we will
 # not be thread safe.
 const _DEFAULT_ALIGNMENT_ANCHOR_REGEX = Regex[]
-const _DEFAULT_TEXT_HIGHLIGHTER = TextHighlighter[]
 
-# Default style, created once because rendering its escape sequences allocates.
-const _DEFAULT_TEXT_TABLE_STYLE = TextTableStyle()
+# Default style and format, created once because constructing them allocates.
+const _DEFAULT_TEXT_TABLE_STYLE  = TextTableStyle()
+const _DEFAULT_TEXT_TABLE_FORMAT = TextTableFormat()
 
-function _text__print_table(
-    pspec::PrintingSpec;
-    alignment_anchor_fallback::Symbol = :l,
-    alignment_anchor_regex::Union{Vector{Regex}, Vector{Pair{Int, Vector{Regex}}}} = _DEFAULT_ALIGNMENT_ANCHOR_REGEX,
-    apply_alignment_regex_to_summary_rows::Bool = false,
-    auto_wrap::Bool = false,
-    column_label_width_based_on_first_line_only::Bool = false,
-    display_size::NTuple{2, Int} = displaysize(pspec.context),
-    equal_data_column_widths::Bool = false,
-    fit_table_in_display_horizontally::Bool = true,
-    fit_table_in_display_vertically::Bool = true,
-    fixed_data_column_widths::Union{Int, Vector{Int}} = 0,
-    highlighters::Vector{<:AbstractHighlighter} = _DEFAULT_TEXT_HIGHLIGHTER,
-    line_breaks::Bool = false,
-    minimum_data_column_widths::Union{Int, Vector{Int}} = 0,
-    maximum_data_column_widths::Union{Int, Vector{Int}} = 0,
-    overwrite_display::Bool = false,
-    reserved_display_lines::Int = 0,
-    shrinkable_data_column::Int = 0,
-    shrinkable_column_minimum_width::Int = 0,
-    style::TextTableStyle = _DEFAULT_TEXT_TABLE_STYLE,
-    table_format::TextTableFormat = TextTableFormat(),
-)
+############################################################################################
+#                                      Print Options                                       #
+############################################################################################
+
+"""
+    struct TextPrintOptions
+
+Options of the text back end, with one field per keyword of `pretty_table` that is specific
+to this back end. The meaning and the default of each field are documented in the text back
+end section of `pretty_table`.
+
+The keywords are gathered in this structure so that the rendering body,
+`_text__print_table_core`, has a single positional signature. Otherwise, each distinct set
+of keywords passed by the user would create a new entry point into the body, and compiling
+an entry point into such a large function is expensive (hundreds of milliseconds in Julia
+1.12) even when the body itself is already compiled.
+
+`display_size` is `nothing` when the user did not pass it, in which case the size of the
+display is obtained from the printing context by the rendering body.
+"""
+@kwdef struct TextPrintOptions
+    alignment_anchor_fallback::Symbol                                              = :l
+    alignment_anchor_regex::Union{Vector{Regex}, Vector{Pair{Int, Vector{Regex}}}} = _DEFAULT_ALIGNMENT_ANCHOR_REGEX
+    apply_alignment_regex_to_summary_rows::Bool                                    = false
+    auto_wrap::Bool                                                                = false
+    column_label_width_based_on_first_line_only::Bool                              = false
+    display_size::Union{Nothing, NTuple{2, Int}}                                   = nothing
+    equal_data_column_widths::Bool                                                 = false
+    fit_table_in_display_horizontally::Bool                                        = true
+    fit_table_in_display_vertically::Bool                                          = true
+    fixed_data_column_widths::Union{Int, Vector{Int}}                              = 0
+    highlighters::Vector{AbstractHighlighter}                                      = _NO_HIGHLIGHTERS
+    line_breaks::Bool                                                              = false
+    minimum_data_column_widths::Union{Int, Vector{Int}}                            = 0
+    maximum_data_column_widths::Union{Int, Vector{Int}}                            = 0
+    overwrite_display::Bool                                                        = false
+    reserved_display_lines::Int                                                    = 0
+    shrinkable_data_column::Int                                                    = 0
+    shrinkable_column_minimum_width::Int                                           = 0
+    style::TextTableStyle                                                          = _DEFAULT_TEXT_TABLE_STYLE
+    table_format::TextTableFormat                                                  = _DEFAULT_TEXT_TABLE_FORMAT
+end
+
+############################################################################################
+#                                      Entry Points                                       #
+############################################################################################
+
+# The keyword entry point only gathers the options. It is compiled once per set of keywords,
+# which is cheap because it is tiny.
+function _text__print_table(pspec::PrintingSpec; kwargs...)
+    return _text__print_table(pspec, TextPrintOptions(; kwargs...))
+end
+
+# This method must be the only caller of the rendering body and it must not be inlined into
+# the keyword entry point. Otherwise, each keyword set would pay for a new entry point into
+# the body (see `TextPrintOptions`).
+@noinline function _text__print_table(pspec::PrintingSpec, opts::TextPrintOptions)
+    return _text__print_table_core(pspec, opts)
+end
+
+function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
+    # == Unpack the Options ================================================================
+
+    alignment_anchor_fallback                   = opts.alignment_anchor_fallback
+    alignment_anchor_regex                      = opts.alignment_anchor_regex
+    apply_alignment_regex_to_summary_rows       = opts.apply_alignment_regex_to_summary_rows
+    auto_wrap                                   = opts.auto_wrap
+    column_label_width_based_on_first_line_only = opts.column_label_width_based_on_first_line_only
+    equal_data_column_widths                    = opts.equal_data_column_widths
+    fit_table_in_display_horizontally           = opts.fit_table_in_display_horizontally
+    fit_table_in_display_vertically             = opts.fit_table_in_display_vertically
+    fixed_data_column_widths                    = opts.fixed_data_column_widths
+    highlighters                                = opts.highlighters
+    line_breaks                                 = opts.line_breaks
+    minimum_data_column_widths                  = opts.minimum_data_column_widths
+    maximum_data_column_widths                  = opts.maximum_data_column_widths
+    overwrite_display                           = opts.overwrite_display
+    reserved_display_lines                      = opts.reserved_display_lines
+    shrinkable_data_column                      = opts.shrinkable_data_column
+    shrinkable_column_minimum_width             = opts.shrinkable_column_minimum_width
+    style                                       = opts.style
+    table_format                                = opts.table_format
+
+    # If the user did not pass the display size, obtain it from the printing context.
+    display_size = if isnothing(opts.display_size)
+        displaysize(pspec.context)
+    else
+        opts.display_size
+    end
+
     context    = pspec.context
     table_data = pspec.table_data
     # NOTE: `Val(pspec.renderer)` infers to the abstract `Val` because
@@ -79,7 +146,7 @@ function _text__print_table(
 
     # The escape sequences of the style are rendered when it is created, so that the loop
     # only writes strings. The printing functions skip them if the display has no color.
-    rstyle = style._rendered
+    rstyle = style._rendered::TextRenderedStyle
 
     # Resolve the characters and escape sequences used to draw each table line, taking the
     # line characters and line faces into account. If none is set, this object only

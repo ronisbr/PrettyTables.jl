@@ -8,7 +8,7 @@ import PrettyTables: _excel__print, _is_horizontally_cropped, pretty_table
 
 # Import types we need.
 using PrettyTables: PrintingSpec, RenderContext, TableData, PrintingTableState, MergeCells
-using PrettyTables: AbstractHighlighter
+using PrettyTables: AbstractHighlighter, ExcelPrintOptions
 
 # Import internal iterator and helpers.
 import PrettyTables: _next, _current_cell, _current_cell_alignment, _current_cell_footnotes
@@ -41,7 +41,7 @@ include("write_table.jl")
     _excel__print(pspec::PrintingSpec; kwargs...) -> Union{Nothing, String, XLSX.XLSXFile}
 
 Write the table described by `pspec` to an Excel workbook. All other keyword arguments are
-passed through to `_excel__write_table!`.
+gathered in an `ExcelPrintOptions` and passed to `_excel__write_table!`.
 
 # Keywords
 
@@ -75,13 +75,14 @@ passed through to `_excel__write_table!`.
 """
 function PrettyTables._excel__print(
     pspec::PrintingSpec;
-    anchor_cell::String = "A1",
     filename::Union{Nothing, String} = nothing,
     mode::String = "w",
     overwrite::Bool = false,
     sheet::Union{String, XLSX.Worksheet} = "prettytable",
     kwargs...,
 )
+    opts = ExcelPrintOptions(; kwargs...)
+
     if isnothing(filename)
         if sheet isa String
             # Return in-memory XLSX object.
@@ -89,12 +90,12 @@ function PrettyTables._excel__print(
             sh = xf[1]
             sheet == sh.name || XLSX.renamesheet!(sh, sheet)
 
-            _excel__write_table!(sh, pspec; anchor_cell, kwargs...)
+            _excel__write_table!(sh, pspec, opts)
 
             return xf
         end
 
-        _excel__write_table!(sheet, pspec; anchor_cell, kwargs...)
+        _excel__write_table!(sheet, pspec, opts)
         return nothing
     end
 
@@ -120,7 +121,7 @@ function PrettyTables._excel__print(
             sh = xf[1]
             sheet == sh.name || XLSX.renamesheet!(sh, sheet)
 
-            _excel__write_table!(sh, pspec; anchor_cell, kwargs...)
+            _excel__write_table!(sh, pspec, opts)
         end
 
         return filename
@@ -132,7 +133,7 @@ function PrettyTables._excel__print(
     XLSX.hassheet(xf, sheet) || XLSX.addsheet!(xf, sheet)
     sh = xf[sheet]
 
-    _excel__write_table!(sh, pspec; anchor_cell, kwargs...)
+    _excel__write_table!(sh, pspec, opts)
 
     # Returning xf forces the user to save using XLSX.writexlsx, reducing the risk of
     # accidentally overwriting data.

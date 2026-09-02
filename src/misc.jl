@@ -644,7 +644,7 @@ this function must only be used when the user did not specify the backend direct
     [`TableFormat`](@ref).
     (**Default**: `:text`)
 """
-function _resolve_printing_backend(configurations; default::Symbol = :text)
+function _resolve_printing_backend(@nospecialize(configurations); default::Symbol = :text)
     table_format = get(configurations, :table_format, nothing)
     backend = default
 

@@ -317,10 +317,12 @@ end
 
 Escape sequences of every field of a [`TextTableStyle`](@ref), rendered once when the style
 is created so that the printing loop only writes strings.
+
+This structure is not parametric on purpose. The printing function receives the style
+through a field with the abstract type `TextTableStyle`, and the concrete type of this object
+allows the compiler to statically type every escape sequence used in the printing loop.
 """
-struct TextRenderedStyle{
-    TFCL <: Union{String, Vector{String}}, TCL <: Union{String, Vector{String}}
-}
+struct TextRenderedStyle
     title::String
     subtitle::String
     row_number_label::String
@@ -328,8 +330,8 @@ struct TextRenderedStyle{
     stubhead_label::String
     row_label::String
     row_group_label::String
-    first_line_column_label::TFCL
-    column_label::TCL
+    first_line_column_label::Union{String, Vector{String}}
+    column_label::Union{String, Vector{String}}
     first_line_merged_column_label::String
     merged_column_label::String
     summary_row_cell::String
@@ -431,7 +433,6 @@ Create a style in which each field can be passed as a keyword. Every keyword acc
 struct TextTableStyle{
     TFCL <: Union{Face, Vector{Face}},
     TCL <: Union{Face, Vector{Face}},
-    TR <: TextRenderedStyle,
 }
     title::Face
     subtitle::Face
@@ -461,7 +462,7 @@ struct TextTableStyle{
 
     # == Private Fields ====================================================================
 
-    _rendered::TR
+    _rendered::TextRenderedStyle
 end
 
 function TextTableStyle(;

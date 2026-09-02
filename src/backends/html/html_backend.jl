@@ -4,24 +4,82 @@
 #
 ############################################################################################
 
-function _html__print(
-    pspec::PrintingSpec;
-    allow_html_in_cells::Bool = false,
-    column_label_titles::Union{Nothing, AbstractVector} = nothing,
-    highlighters::Vector{<:AbstractHighlighter} = HtmlHighlighter[],
-    is_stdout::Bool = false,
-    line_breaks::Bool = false,
-    maximum_column_width::String = "",
-    minify::Bool = false,
-    stand_alone::Bool = false,
-    style::HtmlTableStyle = HtmlTableStyle(),
-    table_class::String = "",
-    table_div_class::String = "",
-    table_format::HtmlTableFormat = HtmlTableFormat(),
-    top_left_string::AbstractString = "",
-    top_right_string::AbstractString = "",
-    wrap_table_in_div::Bool = false,
-)
+# Default style and format, created once because constructing them allocates.
+const _DEFAULT_HTML_TABLE_STYLE  = HtmlTableStyle()
+const _DEFAULT_HTML_TABLE_FORMAT = HtmlTableFormat()
+
+############################################################################################
+#                                      Print Options                                       #
+############################################################################################
+
+"""
+    struct HtmlPrintOptions
+
+Options of the HTML back end, with one field per keyword of `pretty_table` that is specific
+to this back end, plus `is_stdout`, which is `true` when the table is printed to `stdout`.
+The meaning and the default of each field are documented in the HTML back end section of
+`pretty_table`.
+
+The keywords are gathered in this structure so that the rendering body has a single
+positional signature. Otherwise, each distinct set of keywords passed by the user would
+create a new entry point into the body, and compiling an entry point into such a large
+function is expensive (hundreds of milliseconds in Julia 1.12) even when the body itself is
+already compiled.
+"""
+@kwdef struct HtmlPrintOptions
+    allow_html_in_cells::Bool                           = false
+    column_label_titles::Union{Nothing, AbstractVector} = nothing
+    highlighters::Vector{AbstractHighlighter}           = _NO_HIGHLIGHTERS
+    is_stdout::Bool                                     = false
+    line_breaks::Bool                                   = false
+    maximum_column_width::String                        = ""
+    minify::Bool                                        = false
+    stand_alone::Bool                                   = false
+    style::HtmlTableStyle                               = _DEFAULT_HTML_TABLE_STYLE
+    table_class::String                                 = ""
+    table_div_class::String                             = ""
+    table_format::HtmlTableFormat                       = _DEFAULT_HTML_TABLE_FORMAT
+    top_left_string::String                             = ""
+    top_right_string::String                            = ""
+    wrap_table_in_div::Bool                             = false
+end
+
+############################################################################################
+#                                      Entry Points                                       #
+############################################################################################
+
+# The keyword entry point only gathers the options. It is compiled once per set of keywords,
+# which is cheap because it is tiny.
+function _html__print(pspec::PrintingSpec; kwargs...)
+    return _html__print(pspec, HtmlPrintOptions(; kwargs...))
+end
+
+# This method must be the only caller of the rendering body and it must not be inlined into
+# the keyword entry point. Otherwise, each keyword set would pay for a new entry point into
+# the body (see `HtmlPrintOptions`).
+@noinline function _html__print(pspec::PrintingSpec, opts::HtmlPrintOptions)
+    return _html__print_core(pspec, opts)
+end
+
+function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
+    # == Unpack the Options ================================================================
+
+    allow_html_in_cells  = opts.allow_html_in_cells
+    column_label_titles  = opts.column_label_titles
+    highlighters         = opts.highlighters
+    is_stdout            = opts.is_stdout
+    line_breaks          = opts.line_breaks
+    maximum_column_width = opts.maximum_column_width
+    minify               = opts.minify
+    stand_alone          = opts.stand_alone
+    style                = opts.style
+    table_class          = opts.table_class
+    table_div_class      = opts.table_div_class
+    table_format         = opts.table_format
+    top_left_string      = opts.top_left_string
+    top_right_string     = opts.top_right_string
+    wrap_table_in_div    = opts.wrap_table_in_div
+
     context    = pspec.context
     table_data = pspec.table_data
     # NOTE: `Val(pspec.renderer)` infers to the abstract `Val` because
