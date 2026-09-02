@@ -82,6 +82,7 @@ end
 Convert the `decoration` passed to `TypstTableStyle`, Typst properties or a face, into Typst properties.
 """
 _typst__decoration(decoration::Vector{TypstPair}) = decoration
+_typst__decoration(decoration::AbstractVector) = convert(Vector{TypstPair}, decoration)
 _typst__decoration(face::Face)                    = typst_decoration(face)
 
 """
@@ -95,6 +96,12 @@ _typst__column_label_decoration(decorations::Vector{Vector{TypstPair}}) = decora
 _typst__column_label_decoration(face::Face)                             = typst_decoration(face)
 
 function _typst__column_label_decoration(decorations::AbstractVector)
+    # A vector of pairs (or an empty vector) is a single decoration, as accepted by the
+    # keyword constructor of the previous versions. Otherwise, the vector has one decoration
+    # per column.
+    (isempty(decorations) || all(d -> d isa Pair, decorations)) &&
+        return _typst__decoration(decorations)
+
     return Vector{TypstPair}[_typst__decoration(d) for d in decorations]
 end
 

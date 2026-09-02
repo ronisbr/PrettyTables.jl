@@ -144,8 +144,9 @@ end
 Convert `crayon` into the face with the same attributes.
 
 The conversion is lossy: the blink, conceal, and reset attributes of the crayon have no
-counterpart in a face and they are dropped. A color of the 256-color palette is converted to
-its 24-bit value, except for the 16 system colors, which are converted to their names.
+counterpart in a face and they are dropped with a warning, shown once per session. A color
+of the 256-color palette is converted to its 24-bit value, except for the 16 system colors,
+which are converted to their names.
 """
 function _face_from_crayon(crayon::Crayon)
     bold  = _face_state_from_crayon(crayon.bold)
@@ -163,6 +164,18 @@ function _face_from_crayon(crayon::Crayon)
 
     italics = _face_state_from_crayon(crayon.italics)
     slant   = isnothing(italics) ? nothing : (italics ? :italic : :normal)
+
+    # The blink, conceal, and reset attributes have no counterpart in a face.
+    if (
+        (_face_state_from_crayon(crayon.blink) === true) ||
+        (_face_state_from_crayon(crayon.conceal) === true) ||
+        (_face_state_from_crayon(crayon.reset) === true)
+    )
+        @warn(
+            "The attributes `blink`, `conceal`, and `reset` of `Crayon` have no counterpart in `Face` and they are ignored.",
+            maxlog = 1
+        )
+    end
 
     # We call the positional constructor of `Face` (see `_face_from_pairs`).
     return Face(

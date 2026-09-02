@@ -451,7 +451,7 @@ julia> pt = PrettyTable(ones(3, 3))
 └────────┴────────┴────────┘
 
 julia> pt.table_format = TextTableFormat(; @text__no_vertical_lines)
-TextTableFormat(TextTableBorders('┐', '┌', '└', '┘', '┬', '├', '┤', '┼', '┴', '│', '─'), true, :none, true, :none, true, true, true, true, true, false, false, false, :none, false, false, true, 0)
+TextTableFormat(TextTableBorders('┐', '┌', '└', '┘', '┬', '├', '┤', '┼', '┴', '│', '─'), true, :none, false, true, :none, true, true, true, true, true, false, false, false, :none, false, false, true, 0, nothing, nothing, nothing, nothing, nothing, nothing, nothing, nothing)
 
 julia> pt
 ────────────────────────

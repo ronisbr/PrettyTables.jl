@@ -150,18 +150,6 @@ Define the format of the tables printed with the text back end.
 # Fields
 
 - `borders::TextTableBorders`: Format of the borders.
-- `top_line::Union{Nothing, TextTableLine}`: Characters of the top line.
-- `header_line::Union{Nothing, TextTableLine}`: Characters of the lines at the column
-    labels.
-- `merged_header_cell_line::Union{Nothing, TextTableLine}`: Characters of the lines under
-    the merged column labels.
-- `middle_line::Union{Nothing, TextTableLine}`: Characters of the lines inside the table.
-- `bottom_line::Union{Nothing, TextTableLine}`: Characters of the bottom line.
-- `left_line::Union{Nothing, Char}`: Character of the vertical line at the left of the
-    table.
-- `center_line::Union{Nothing, Char}`: Character of the vertical lines inside the table.
-- `right_line::Union{Nothing, Char}`: Character of the vertical line at the right of the
-    table.
 - `horizontal_line_at_beginning::Bool`: If `true`, a horizontal line will be drawn at the
     beginning of the table.
 - `horizontal_lines_at_column_labels::Union{Symbol, Vector{Int}}`: A horizontal line will be
@@ -206,6 +194,18 @@ Define the format of the tables printed with the text back end.
 - `suppress_vertical_lines_at_column_labels::Bool`: If `true`, the vertical lines inside
     the column label rows will be suppressed.
 - `ellipsis_line_skip::Int`: Number of lines to skip when printing an ellipsis.
+- `top_line::Union{Nothing, TextTableLine}`: Characters of the top line.
+- `header_line::Union{Nothing, TextTableLine}`: Characters of the lines at the column
+    labels.
+- `merged_header_cell_line::Union{Nothing, TextTableLine}`: Characters of the lines under
+    the merged column labels.
+- `middle_line::Union{Nothing, TextTableLine}`: Characters of the lines inside the table.
+- `bottom_line::Union{Nothing, TextTableLine}`: Characters of the bottom line.
+- `left_line::Union{Nothing, Char}`: Character of the vertical line at the left of the
+    table.
+- `center_line::Union{Nothing, Char}`: Character of the vertical lines inside the table.
+- `right_line::Union{Nothing, Char}`: Character of the vertical line at the right of the
+    table.
 
 # Line Characters
 
@@ -222,17 +222,6 @@ The color of each line can be configured with the line faces of [`TextTableStyle
     # == Border and Lines ==================================================================
 
     borders::TextTableBorders = TextTableBorders()
-
-    # == Line Characters ===================================================================
-
-    top_line::Union{Nothing, TextTableLine}                = nothing
-    header_line::Union{Nothing, TextTableLine}             = nothing
-    merged_header_cell_line::Union{Nothing, TextTableLine} = nothing
-    middle_line::Union{Nothing, TextTableLine}             = nothing
-    bottom_line::Union{Nothing, TextTableLine}             = nothing
-    left_line::Union{Nothing, Char}                          = nothing
-    center_line::Union{Nothing, Char}                        = nothing
-    right_line::Union{Nothing, Char}                         = nothing
 
     # == Configuration for the Horizontal and Vertical Lines ===============================
 
@@ -259,6 +248,73 @@ The color of each line can be configured with the line faces of [`TextTableStyle
     # == Other Configurations ==============================================================
 
     ellipsis_line_skip::Int = 0
+
+    # == Line Characters ===================================================================
+
+    # NOTE: These fields must be the last ones so that the positional constructor with the
+    # fields of v3.4.8 (see below) keeps working.
+    top_line::Union{Nothing, TextTableLine}                = nothing
+    header_line::Union{Nothing, TextTableLine}             = nothing
+    merged_header_cell_line::Union{Nothing, TextTableLine} = nothing
+    middle_line::Union{Nothing, TextTableLine}             = nothing
+    bottom_line::Union{Nothing, TextTableLine}             = nothing
+    left_line::Union{Nothing, Char}                        = nothing
+    center_line::Union{Nothing, Char}                      = nothing
+    right_line::Union{Nothing, Char}                       = nothing
+end
+
+# Positional constructor with the fields of v3.4.8, before the line character fields were
+# added, so that the code written for the previous versions keeps working.
+function TextTableFormat(
+    borders,
+    horizontal_line_at_beginning,
+    horizontal_lines_at_column_labels,
+    horizontal_line_at_merged_column_labels,
+    horizontal_line_after_column_labels,
+    horizontal_lines_at_data_rows,
+    horizontal_line_before_row_group_label,
+    horizontal_line_after_row_group_label,
+    horizontal_line_after_data_rows,
+    horizontal_line_before_summary_rows,
+    horizontal_line_after_summary_rows,
+    vertical_line_at_beginning,
+    vertical_line_after_row_number_column,
+    vertical_line_after_row_label_column,
+    vertical_lines_at_data_columns,
+    vertical_line_after_data_columns,
+    vertical_line_after_continuation_column,
+    suppress_vertical_lines_at_column_labels,
+    ellipsis_line_skip,
+)
+    return TextTableFormat(
+        borders,
+        horizontal_line_at_beginning,
+        horizontal_lines_at_column_labels,
+        horizontal_line_at_merged_column_labels,
+        horizontal_line_after_column_labels,
+        horizontal_lines_at_data_rows,
+        horizontal_line_before_row_group_label,
+        horizontal_line_after_row_group_label,
+        horizontal_line_after_data_rows,
+        horizontal_line_before_summary_rows,
+        horizontal_line_after_summary_rows,
+        vertical_line_at_beginning,
+        vertical_line_after_row_number_column,
+        vertical_line_after_row_label_column,
+        vertical_lines_at_data_columns,
+        vertical_line_after_data_columns,
+        vertical_line_after_continuation_column,
+        suppress_vertical_lines_at_column_labels,
+        ellipsis_line_skip,
+        nothing,
+        nothing,
+        nothing,
+        nothing,
+        nothing,
+        nothing,
+        nothing,
+        nothing,
+    )
 end
 
 """

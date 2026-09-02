@@ -254,6 +254,12 @@ and then the border with the higher style precedence.
     vertical_line_after_continuation_column::Bool = true
 end
 
+# Positional constructor with the fields of v3.4.8, before the border fields were added, so
+# that the code written for the previous versions keeps working.
+function HtmlTableFormat(css::AbstractString, table_width::AbstractString)
+    return HtmlTableFormat(; css = String(css), table_width = String(table_width))
+end
+
 """
     struct HtmlTableStyle
 

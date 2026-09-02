@@ -89,6 +89,7 @@ end
 Convert the `decoration` passed to `HtmlTableStyle`, CSS properties or a face, into CSS properties.
 """
 _html__decoration(decoration::Vector{HtmlPair}) = decoration
+_html__decoration(decoration::AbstractVector) = convert(Vector{HtmlPair}, decoration)
 _html__decoration(face::Face)                   = html_decoration(face)
 
 """
@@ -102,6 +103,12 @@ _html__column_label_decoration(decorations::Vector{Vector{HtmlPair}}) = decorati
 _html__column_label_decoration(face::Face)                            = html_decoration(face)
 
 function _html__column_label_decoration(decorations::AbstractVector)
+    # A vector of pairs (or an empty vector) is a single decoration, as accepted by the
+    # keyword constructor of the previous versions. Otherwise, the vector has one decoration
+    # per column.
+    (isempty(decorations) || all(d -> d isa Pair, decorations)) &&
+        return _html__decoration(decorations)
+
     return Vector{HtmlPair}[_html__decoration(d) for d in decorations]
 end
 

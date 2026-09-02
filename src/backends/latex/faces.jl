@@ -66,6 +66,7 @@ end
 Convert the `decoration` passed to `LatexTableStyle`, LaTeX environments or a face, into LaTeX environments.
 """
 _latex__decoration(decoration::LatexEnvironments) = decoration
+_latex__decoration(decoration::AbstractVector) = convert(LatexEnvironments, decoration)
 _latex__decoration(face::Face)                    = latex_decoration(face)
 
 """
@@ -79,6 +80,12 @@ _latex__column_label_decoration(decorations::Vector{LatexEnvironments}) = decora
 _latex__column_label_decoration(face::Face)                             = latex_decoration(face)
 
 function _latex__column_label_decoration(decorations::AbstractVector)
+    # A vector of strings (or an empty vector) is a single decoration, as accepted by the
+    # keyword constructor of the previous versions. Otherwise, the vector has one decoration
+    # per column.
+    (isempty(decorations) || all(d -> d isa AbstractString, decorations)) &&
+        return _latex__decoration(decorations)
+
     return LatexEnvironments[_latex__decoration(d) for d in decorations]
 end
 
