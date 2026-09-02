@@ -103,39 +103,17 @@ function _text__merge_line_style_colors(nt::NamedTuple, table_format::TableForma
 
     style = haskey(nt, :style) ? nt.style : _DEFAULT_TEXT_TABLE_STYLE
 
-    new_style = TextTableStyle(;
-        title                          = style.title,
-        subtitle                       = style.subtitle,
-        row_number_label               = style.row_number_label,
-        row_number                     = style.row_number,
-        stubhead_label                 = style.stubhead_label,
-        row_label                      = style.row_label,
-        row_group_label                = style.row_group_label,
-        first_line_column_label        = style.first_line_column_label,
-        column_label                   = style.column_label,
-        first_line_merged_column_label = style.first_line_merged_column_label,
-        merged_column_label            = style.merged_column_label,
-        summary_row_cell               = style.summary_row_cell,
-        summary_row_label              = style.summary_row_label,
-        footnote                       = style.footnote,
-        source_note                    = style.source_note,
-        omitted_cell_summary           = style.omitted_cell_summary,
-        table_border                   = style.table_border,
-        top_line                       = isnothing(style.top_line) ? top : style.top_line,
-        header_line                    = isnothing(style.header_line) ?
-            header : style.header_line,
-        merged_header_cell_line        = isnothing(style.merged_header_cell_line) ?
-            merged : style.merged_header_cell_line,
-        middle_line                    = isnothing(style.middle_line) ?
-            middle : style.middle_line,
-        bottom_line                    = isnothing(style.bottom_line) ?
-            bottom : style.bottom_line,
-        left_line                      = isnothing(style.left_line) ?
-            left : style.left_line,
-        center_line                    = isnothing(style.center_line) ?
-            center : style.center_line,
-        right_line                     = isnothing(style.right_line) ?
-            right : style.right_line,
+    # The line faces explicitly set in the style have precedence over the line design colors.
+    new_style = TextTableStyle(
+        style;
+        top_line                = something(style.top_line, top, Some(nothing)),
+        header_line             = something(style.header_line, header, Some(nothing)),
+        merged_header_cell_line = something(style.merged_header_cell_line, merged, Some(nothing)),
+        middle_line             = something(style.middle_line, middle, Some(nothing)),
+        bottom_line             = something(style.bottom_line, bottom, Some(nothing)),
+        left_line               = something(style.left_line, left, Some(nothing)),
+        center_line             = something(style.center_line, center, Some(nothing)),
+        right_line              = something(style.right_line, right, Some(nothing)),
     )
 
     return merge(nt, (style = new_style,))

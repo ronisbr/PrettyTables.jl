@@ -65,10 +65,14 @@ end
 
 """
     _text__styled_print(display::Display, char::Char, sgr::String) -> Nothing
+    _text__styled_print(display::Display, line::TextVerticalLine) -> Nothing
 
 Print a single character `char` to the `display` with the style given by the escape
-sequence `sgr`, which can be empty for no style.
+sequence `sgr`, which can be empty for no style, or the vertical `line`.
 """
+_text__styled_print(display::Display, line::TextVerticalLine) =
+    _text__styled_print(display, line.char, line.sgr)
+
 function _text__styled_print(display::Display, char::Char, sgr::String)
     (!display.has_color || isempty(sgr)) && return _text__print(display, char)
 
@@ -181,8 +185,8 @@ function _text__print_aligned(
     left_margin::Int = 0,
     right_margin::Int = 0,
 )
-    str_width = printable_textwidth(str)
     _text__check_eol(display) && return nothing
+    str_width = printable_textwidth(str)
 
     if cell_width > str_width
         remaining = cell_width - str_width
@@ -222,8 +226,7 @@ end
     _text__print_horizontal_line(
         display::Display,
         tf::TextTableFormat,
-        tb::TextTableBorders,
-        sgr::String,
+        line::TextHorizontalLine,
         table_data::TableData,
         vertical_lines_at_data_columns::AbstractVector{Int},
         row_number_column_width::Int,
@@ -240,10 +243,8 @@ Print a horizontal line to `display`.
 
 - `display::Display`: Display where the horizontal line will be printed.
 - `tf::TextTableFormat`: Table format.
-- `tb::TextTableBorders`: Characters used to draw the horizontal line, resolved for the
-    line being printed (see [`TextResolvedTableLines`](@ref)).
-- `sgr::String`: Escape sequence used to print the horizontal line, or an empty string for
-    no style.
+- `line::TextHorizontalLine`: Characters and escape sequence used to draw the horizontal
+    line, resolved for the line being printed (see [`TextResolvedTableLines`](@ref)).
 - `table_data::TableData`: Table data.
 - `vertical_lines_at_data_columns::AbstractVector{Int}`: List of columns where a vertical
     line must be drawn after the cell.
@@ -263,8 +264,7 @@ Print a horizontal line to `display`.
 function _text__print_horizontal_line(
     display::Display,
     tf::TextTableFormat,
-    tb::TextTableBorders,
-    sgr::String,
+    line::TextHorizontalLine,
     table_data::TableData,
     vertical_lines_at_data_columns::AbstractVector{Int},
     row_number_column_width::Int,
@@ -275,6 +275,9 @@ function _text__print_horizontal_line(
     row_group_label::Bool = false,
 )
     # == Auxiliary Variables ===============================================================
+
+    tb  = line.chars
+    sgr = line.sgr
 
     # Here, we obtain the characters for the left, middle, and right intersections.
 
@@ -377,8 +380,7 @@ end
     _text__print_column_label_horizontal_line(
         display::Display,
         tf::TextTableFormat,
-        tb::TextTableBorders,
-        sgr::String,
+        line::TextHorizontalLine,
         table_data::TableData,
         row_number::Int,
         vertical_lines_at_data_columns::AbstractVector{Int},
@@ -395,10 +397,8 @@ Print a column label horizontal line to `display`.
 
 - `display::Display`: Display where the horizontal line will be printed.
 - `tf::TextTableFormat`: Table format.
-- `tb::TextTableBorders`: Characters used to draw the horizontal line, resolved for the
-    line being printed (see [`TextResolvedTableLines`](@ref)).
-- `sgr::String`: Escape sequence used to print the horizontal line, or an empty string for
-    no style.
+- `line::TextHorizontalLine`: Characters and escape sequence used to draw the horizontal
+    line, resolved for the line being printed (see [`TextResolvedTableLines`](@ref)).
 - `table_data::TableData`: Table data.
 - `row_number::Int`: Column label row number before the horizontal line.
 - `vertical_lines_at_data_columns::AbstractVector{Int}`: List of columns where a vertical
@@ -414,8 +414,7 @@ Print a column label horizontal line to `display`.
 function _text__print_column_label_horizontal_line(
     display::Display,
     tf::TextTableFormat,
-    tb::TextTableBorders,
-    sgr::String,
+    line::TextHorizontalLine,
     table_data::TableData,
     row_number::Int,
     vertical_lines_at_data_columns::AbstractVector{Int},
@@ -426,6 +425,9 @@ function _text__print_column_label_horizontal_line(
     bottom::Bool = false,
 )
     # == Auxiliary Variables ===============================================================
+
+    tb  = line.chars
+    sgr = line.sgr
 
     num_column_labels = length(table_data.column_labels)
 
@@ -594,11 +596,11 @@ function _text__print_column_label_horizontal_line_only_at_merged_labels(
 )
     # == Auxiliary Variables ===============================================================
 
-    tb  = rl.merged_header
-    sgr = rl.merged_header_sgr
+    tb  = rl.merged_header.chars
+    sgr = rl.merged_header.sgr
     ti  = tb.up_intersection
     ri  = tb.right_intersection
-    col = rl.center_char
+    col = rl.center.char
     row = tb.row
 
     table_continuation_column = _is_horizontally_cropped(table_data)
@@ -609,7 +611,7 @@ function _text__print_column_label_horizontal_line_only_at_merged_labels(
 
     # -- Left Intersection -----------------------------------------------------------------
 
-    tf.vertical_line_at_beginning && _text__print(display, rl.left_char)
+    tf.vertical_line_at_beginning && _text__print(display, rl.left.char)
 
     # -- Row Number Column -----------------------------------------------------------------
 
@@ -643,7 +645,7 @@ function _text__print_column_label_horizontal_line_only_at_merged_labels(
 
         if (j == last(eachindex(printed_data_column_widths)))
             tf.vertical_line_after_data_columns &&
-                _text__print(display, table_continuation_column ? col : rl.right_char)
+                _text__print(display, table_continuation_column ? col : rl.right.char)
 
         elseif j ∈ vertical_lines_at_data_columns
             # Check if we are in the middle of a merged column label.

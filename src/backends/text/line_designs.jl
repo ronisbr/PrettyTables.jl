@@ -25,9 +25,6 @@ const _TEXT__RIGHT_INTERSECTIONS  = ('┤', '┨', '╢', '┥', '┫', '\0', '�
 const _TEXT__MIDDLE_INTERSECTIONS = ('┼', '╂', '╫', '┿', '╋', '\0', '╪', '\0', '╬')
 const _TEXT__BOTTOM_INTERSECTIONS = ('┴', '┸', '╨', '┷', '┻', '\0', '╧', '\0', '╩')
 
-# Object used when merging the characters of a line without customizations.
-const _TEXT__EMPTY_TABLE_LINE = TextTableLine()
-
 ############################################################################################
 #                Conversion of the Backend-Agnostic Line Designs (LineStyle)               #
 ############################################################################################
@@ -192,25 +189,14 @@ _text__line_char(user::Union{Nothing, Char}, default::Char) =
     isnothing(user) ? default : user
 
 """
-    _text__merge_table_line(
-        line::Union{Nothing, TextTableLine},
-        borders::TextTableBorders,
-        center_char::Char
-    ) -> TextTableBorders
+    _text__merge_table_line(line::Union{Nothing, TextTableLine}, borders::TextTableBorders) -> TextTableBorders
 
 Merge the characters of `line` over the ones of `borders`, returning the character set used
-to draw a horizontal line. `center_char` is the resolved character of the center vertical
-line, stored in the field `column`.
+to draw a horizontal line. The field `column` is not used to draw horizontal lines and it is
+copied from `borders`.
 """
-function _text__merge_table_line(
-    line::Union{Nothing, TextTableLine},
-    borders::TextTableBorders,
-    center_char::Char
-)
-    if isnothing(line)
-        (center_char == borders.column) && return borders
-        line = _TEXT__EMPTY_TABLE_LINE
-    end
+function _text__merge_table_line(line::Union{Nothing, TextTableLine}, borders::TextTableBorders)
+    isnothing(line) && return borders
 
     return TextTableBorders(;
         up_right_corner     = _text__line_char(
@@ -238,7 +224,7 @@ function _text__merge_table_line(
         bottom_intersection = _text__line_char(
             line.bottom_intersection, borders.bottom_intersection
         ),
-        column              = center_char,
+        column              = borders.column,
         row                 = _text__line_char(line.row, borders.row),
     )
 end
@@ -267,73 +253,33 @@ end
 
 Resolve the characters and escape sequences used to draw each table line from the line
 characters in `tf` and the line faces in `style`. This function is called once per printed
-table. If no line character or line face is set, every resolved character set is the object
-in the field `borders` of `tf` and every escape sequence is the one rendered for the field
-`table_border` of `style`, reproducing the default behavior without any transformation.
+table. If no line character or line face is set, every line uses the characters in the
+field `borders` of `tf` and the escape sequence rendered for the field `table_border` of
+`style`, reproducing the default behavior without any transformation.
 """
 function _text__resolve_table_lines(tf::TextTableFormat, style::TextTableStyle)
     borders = tf.borders
     rstyle  = style._rendered
+    tb_sgr  = rstyle.table_border
 
-    # If no line character or line face is set, we can reuse the characters in `borders`
-    # and the escape sequence of `table_border` for every line, skipping all the resolution.
-    no_line_chars =
-        isnothing(tf.top_line) && isnothing(tf.header_line) &&
-        isnothing(tf.merged_header_cell_line) && isnothing(tf.middle_line) &&
-        isnothing(tf.bottom_line) && isnothing(tf.left_line) &&
-        isnothing(tf.center_line) && isnothing(tf.right_line)
+    hline(line, face, sgr) = TextHorizontalLine(
+        _text__merge_table_line(line, borders),
+        _text__line_sgr(face, sgr, tb_sgr),
+    )
 
-    no_line_faces =
-        isnothing(style.top_line) && isnothing(style.header_line) &&
-        isnothing(style.merged_header_cell_line) && isnothing(style.middle_line) &&
-        isnothing(style.bottom_line) && isnothing(style.left_line) &&
-        isnothing(style.center_line) && isnothing(style.right_line)
-
-    if no_line_chars && no_line_faces
-        tb_sgr = rstyle.table_border
-
-        return TextResolvedTableLines(
-            borders,
-            borders,
-            borders,
-            borders,
-            borders,
-            tb_sgr,
-            tb_sgr,
-            tb_sgr,
-            tb_sgr,
-            tb_sgr,
-            borders.column,
-            borders.column,
-            borders.column,
-            tb_sgr,
-            tb_sgr,
-            tb_sgr,
-        )
-    end
-
-    center_char = _text__line_char(tf.center_line, borders.column)
+    vline(char, face, sgr) = TextVerticalLine(
+        _text__line_char(char, borders.column),
+        _text__line_sgr(face, sgr, tb_sgr),
+    )
 
     return TextResolvedTableLines(
-        _text__merge_table_line(tf.top_line, borders, center_char),
-        _text__merge_table_line(tf.header_line, borders, center_char),
-        _text__merge_table_line(tf.merged_header_cell_line, borders, center_char),
-        _text__merge_table_line(tf.middle_line, borders, center_char),
-        _text__merge_table_line(tf.bottom_line, borders, center_char),
-        _text__line_sgr(style.top_line, rstyle.top_line, rstyle.table_border),
-        _text__line_sgr(style.header_line, rstyle.header_line, rstyle.table_border),
-        _text__line_sgr(
-            style.merged_header_cell_line,
-            rstyle.merged_header_cell_line,
-            rstyle.table_border
-        ),
-        _text__line_sgr(style.middle_line, rstyle.middle_line, rstyle.table_border),
-        _text__line_sgr(style.bottom_line, rstyle.bottom_line, rstyle.table_border),
-        _text__line_char(tf.left_line, borders.column),
-        center_char,
-        _text__line_char(tf.right_line, borders.column),
-        _text__line_sgr(style.left_line, rstyle.left_line, rstyle.table_border),
-        _text__line_sgr(style.center_line, rstyle.center_line, rstyle.table_border),
-        _text__line_sgr(style.right_line, rstyle.right_line, rstyle.table_border),
+        hline(tf.top_line,                style.top_line,                rstyle.top_line),
+        hline(tf.header_line,             style.header_line,             rstyle.header_line),
+        hline(tf.merged_header_cell_line, style.merged_header_cell_line, rstyle.merged_header_cell_line),
+        hline(tf.middle_line,             style.middle_line,             rstyle.middle_line),
+        hline(tf.bottom_line,             style.bottom_line,             rstyle.bottom_line),
+        vline(tf.left_line,               style.left_line,               rstyle.left_line),
+        vline(tf.center_line,             style.center_line,             rstyle.center_line),
+        vline(tf.right_line,              style.right_line,              rstyle.right_line),
     )
 end

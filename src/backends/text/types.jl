@@ -318,54 +318,64 @@ function TextTableFormat(
 end
 
 """
-    struct TextResolvedTableLines
+    struct TextHorizontalLine
 
-Store the characters and escape sequences used to draw each table line, resolved once per
-printed table from the line characters in [`TextTableFormat`](@ref) and the line faces in
-[`TextTableStyle`](@ref). Hence, the printing loop only reads characters and strings.
+Characters and escape sequence used to draw a horizontal table line, resolved once per
+printed table (see [`TextResolvedTableLines`](@ref)).
 
 # Fields
 
-- `top::TextTableBorders`: Characters of the top line.
-- `header::TextTableBorders`: Characters of the lines at the column labels.
-- `merged_header::TextTableBorders`: Characters of the lines under the merged column labels.
-- `middle::TextTableBorders`: Characters of the lines inside the table.
-- `bottom::TextTableBorders`: Characters of the bottom line.
-- `top_sgr::String`: Escape sequence of the top line.
-- `header_sgr::String`: Escape sequence of the lines at the column labels.
-- `merged_header_sgr::String`: Escape sequence of the lines under the merged column labels.
-- `middle_sgr::String`: Escape sequence of the lines inside the table.
-- `bottom_sgr::String`: Escape sequence of the bottom line.
-- `left_char::Char`: Character of the vertical line at the left of the table.
-- `center_char::Char`: Character of the vertical lines inside the table.
-- `right_char::Char`: Character of the vertical line at the right of the table.
-- `left_sgr::String`: Escape sequence of the vertical line at the left of the table.
-- `center_sgr::String`: Escape sequence of the vertical lines inside the table.
-- `right_sgr::String`: Escape sequence of the vertical line at the right of the table.
+- `chars::TextTableBorders`: Characters of the line. The field `column` is not used.
+- `sgr::String`: Escape sequence of the line, or an empty string for no style.
+"""
+struct TextHorizontalLine
+    chars::TextTableBorders
+    sgr::String
+end
 
-The `column` field of each horizontal line character set contains the resolved center
-vertical line character.
+"""
+    struct TextVerticalLine
+
+Character and escape sequence used to draw a vertical table line, resolved once per printed
+table (see [`TextResolvedTableLines`](@ref)).
+
+# Fields
+
+- `char::Char`: Character of the line.
+- `sgr::String`: Escape sequence of the line, or an empty string for no style.
+"""
+struct TextVerticalLine
+    char::Char
+    sgr::String
+end
+
+"""
+    struct TextResolvedTableLines
+
+Store the lines used to draw the table, resolved once per printed table from the line
+characters in [`TextTableFormat`](@ref) and the line faces in [`TextTableStyle`](@ref).
+Hence, the printing loop only reads characters and strings.
+
+# Fields
+
+- `top::TextHorizontalLine`: Top line.
+- `header::TextHorizontalLine`: Lines at the column labels.
+- `merged_header::TextHorizontalLine`: Lines under the merged column labels.
+- `middle::TextHorizontalLine`: Lines inside the table.
+- `bottom::TextHorizontalLine`: Bottom line.
+- `left::TextVerticalLine`: Vertical line at the left of the table.
+- `center::TextVerticalLine`: Vertical lines inside the table.
+- `right::TextVerticalLine`: Vertical line at the right of the table.
 """
 struct TextResolvedTableLines
-    top::TextTableBorders
-    header::TextTableBorders
-    merged_header::TextTableBorders
-    middle::TextTableBorders
-    bottom::TextTableBorders
-
-    top_sgr::String
-    header_sgr::String
-    merged_header_sgr::String
-    middle_sgr::String
-    bottom_sgr::String
-
-    left_char::Char
-    center_char::Char
-    right_char::Char
-
-    left_sgr::String
-    center_sgr::String
-    right_sgr::String
+    top::TextHorizontalLine
+    header::TextHorizontalLine
+    merged_header::TextHorizontalLine
+    middle::TextHorizontalLine
+    bottom::TextHorizontalLine
+    left::TextVerticalLine
+    center::TextVerticalLine
+    right::TextVerticalLine
 end
 
 """
@@ -576,6 +586,21 @@ function TextTableStyle(;
         right_line,
     )
 end
+
+"""
+    TextTableStyle(style::TextTableStyle; kwargs...) -> TextTableStyle
+
+Create a copy of `style` in which the fields passed as keywords in `kwargs` are replaced,
+converting the crayons into faces and rendering the escape sequences again.
+"""
+function TextTableStyle(style::TextTableStyle; kwargs...)
+    return _text__build_table_style(
+        (get(kwargs, f, getfield(style, f)) for f in _TEXT__STYLE_FIELDS)...
+    )
+end
+
+# Public fields of `TextTableStyle`, in the order of its keyword constructor.
+const _TEXT__STYLE_FIELDS = fieldnames(TextTableStyle)[1:(end - 1)]
 
 """
     _text__build_table_style(args...) -> TextTableStyle

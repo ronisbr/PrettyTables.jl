@@ -111,7 +111,6 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
     renderer   = pspec.renderer === :show ? Val(:show) : Val(:print)
     tf         = table_format
 
-    ps     = PrintingTableState()
     buf_io = IOBuffer()
 
     # Reusable render buffer: one allocation per table instead of three per cell.
@@ -731,7 +730,7 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
     # Number of lines available in the display for the data section. Notice that it only
     # makes sense if the display is limiting the table.
     num_available_data_section_lines = if vertically_limited_by_display
-        total_table_lines, num_lines_before_data, num_lines_after_data = _text__number_of_required_lines(
+        _, num_lines_before_data, num_lines_after_data = _text__number_of_required_lines(
             table_data,
             tf,
             horizontal_lines_at_column_labels,
@@ -860,7 +859,6 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
                     display,
                     tf,
                     rl.top,
-                    rl.top_sgr,
                     table_data,
                     ir - 1,
                     vertical_lines_at_data_columns,
@@ -886,7 +884,6 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
                         display,
                         tf,
                         rl.middle,
-                        rl.middle_sgr,
                         table_data,
                         vertical_lines_at_data_columns,
                         row_number_column_width,
@@ -922,7 +919,7 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
             end
 
             tf.vertical_line_at_beginning &&
-                _text__styled_print(display, rl.left_char, rl.left_sgr)
+                _text__styled_print(display, rl.left)
 
             continue
         end
@@ -932,19 +929,18 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
         if action == :diagonal_continuation_cell
             _text__print(display, " ⋱ ")
             tf.vertical_line_after_continuation_column &&
-                _text__styled_print(display, rl.right_char, rl.right_sgr)
+                _text__styled_print(display, rl.right)
             continue
 
         elseif action == :horizontal_continuation_cell
             _text__print(display, " ⋯ ")
             tf.vertical_line_after_continuation_column &&
-                _text__styled_print(display, rl.right_char, rl.right_sgr)
+                _text__styled_print(display, rl.right)
             continue
 
         elseif action ∈ _VERTICAL_CONTINUATION_CELL_ACTIONS
             alignment  = _current_cell_alignment(action, ps, table_data)
-            vline_char = rl.center_char
-            vline_sgr  = rl.center_sgr
+            vl         = rl.center
 
             if action == :row_number_vertical_continuation_cell
                 cell_width = row_number_column_width
@@ -963,8 +959,7 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
                         vline = true
 
                         if !table_continuation_column
-                            vline_char = rl.right_char
-                            vline_sgr  = rl.right_sgr
+                            vl    = rl.right
                         end
                     end
                 elseif ps.j ∈ vertical_lines_at_data_columns
@@ -975,7 +970,7 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
             _text__print(display, " ")
             _text__print_aligned(display, "⋮", cell_width, alignment)
             _text__print(display, " ")
-            vline && _text__styled_print(display, vline_char, vline_sgr)
+            vline && _text__styled_print(display, vl)
 
             continue
         end
@@ -1035,7 +1030,6 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
                         display,
                         tf,
                         rl.header,
-                        rl.header_sgr,
                         table_data,
                         ps.i,
                         vertical_lines_at_data_columns,
@@ -1079,7 +1073,6 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
                         display,
                         tf,
                         bottom ? rl.bottom : rl.header,
-                        bottom ? rl.bottom_sgr : rl.header_sgr,
                         table_data,
                         length(table_data.column_labels),
                         vertical_lines_at_data_columns,
@@ -1111,7 +1104,6 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
                         display,
                         tf,
                         rl.middle,
-                        rl.middle_sgr,
                         table_data,
                         vertical_lines_at_data_columns,
                         row_number_column_width,
@@ -1132,7 +1124,6 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
                     display,
                     tf,
                     bottom ? rl.bottom : rl.middle,
-                    bottom ? rl.bottom_sgr : rl.middle_sgr,
                     table_data,
                     vertical_lines_at_data_columns,
                     row_number_column_width,
@@ -1152,7 +1143,6 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
                     display,
                     tf,
                     rl.middle,
-                    rl.middle_sgr,
                     table_data,
                     length(table_data.column_labels),
                     vertical_lines_at_data_columns,
@@ -1183,7 +1173,6 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
                         display,
                         tf,
                         bottom ? rl.bottom : rl.middle,
-                        bottom ? rl.bottom_sgr : rl.middle_sgr,
                         table_data,
                         vertical_lines_at_data_columns,
                         row_number_column_width,
@@ -1202,7 +1191,6 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
                         display,
                         tf,
                         rl.middle,
-                        rl.middle_sgr,
                         table_data,
                         vertical_lines_at_data_columns,
                         row_number_column_width,
@@ -1225,7 +1213,6 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
                         display,
                         tf,
                         rl.bottom,
-                        rl.bottom_sgr,
                         table_data,
                         vertical_lines_at_data_columns,
                         row_number_column_width,
@@ -1266,7 +1253,6 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
         # and fetching the cell again would re-run the formatters and the summary row
         # functions, duplicating the work and the accesses to the user data.
         alignment     = _current_cell_alignment(action, ps, table_data)
-        cell_printed  = false
         cell_width    = 1
         decoration    = ""
         # NOTE: The type assertion keeps the per-cell loop free of dynamic dispatches. The
@@ -1276,8 +1262,7 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
         # when a cell line is a `SubString`.
         rendered_cell::Union{String, SubString{String}} = ""
         vline         = false
-        vline_char    = rl.center_char
-        vline_sgr     = rl.center_sgr
+        vl            = rl.center
 
         mc_last_index = 0
         merged_cell   = false
@@ -1502,8 +1487,7 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
                     vline = true
 
                     if !table_continuation_column
-                        vline_char = rl.right_char
-                        vline_sgr  = rl.right_sgr
+                        vl    = rl.right
                     end
                 end
             elseif ps.j ∈ vertical_lines_at_data_columns
@@ -1512,8 +1496,7 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
                 if tf.suppress_vertical_lines_at_column_labels
                     # The suppressed vertical line must keep the default border style so
                     # that a line design or face never modifies the blank space.
-                    vline_char = ' '
-                    vline_sgr  = rstyle.table_border
+                    vl = TextVerticalLine(' ', rstyle.table_border)
                 end
             end
 
@@ -1526,8 +1509,7 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
                     vline = true
 
                     if !table_continuation_column
-                        vline_char = rl.right_char
-                        vline_sgr  = rl.right_sgr
+                        vl    = rl.right
                     end
                 end
             elseif ps.j ∈ vertical_lines_at_data_columns
@@ -1536,9 +1518,8 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
 
         elseif action == :row_group_label
             if tf.vertical_line_after_data_columns && !horizontally_limited_by_display
-                vline      = true
-                vline_char = rl.right_char
-                vline_sgr  = rl.right_sgr
+                vline = true
+                vl    = rl.right
             end
         end
 
@@ -1553,7 +1534,7 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
             right_margin = 1,
         )
 
-        vline && _text__styled_print(display, vline_char, vline_sgr)
+        vline && _text__styled_print(display, vl)
     end
 
     # == Print the Buffer Into the IO ======================================================
