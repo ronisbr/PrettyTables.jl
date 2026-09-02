@@ -8,9 +8,9 @@ the output.
 
 - `highlighters::Vector{<:AbstractHighlighter}`: Highlighters to apply to the table. For more
     information, see the section [LaTeX Highlighters]@(ref).
-- `style::LatexTableStyle`: Style of the table. For more information, see the section
+- `style::Union{TableStyle, LatexTableStyle}`: Style of the table. For more information, see the section
     [LaTeX Table Style](@ref).
-- `table_format::LatexTableFormat`: LaTeX table format used to render the table. For more
+- `table_format::Union{TableFormat, LatexTableFormat}`: LaTeX table format used to render the table. For more
     information, see the section [LaTeX Table Format](@ref).
 
 ## LaTeX Highlighters
@@ -19,7 +19,7 @@ A set of highlighters can be passed as a vector of `AbstractHighlighter` to the
 `highlighters` keyword. A highlighter can be an instance of the structure
 [`LatexHighlighter`](@ref), specific to this back end, or of the general
 [`Highlighter`](@ref), which is defined by a `Face` and works with every back end (see
-[Faces](@ref)). The face is converted with [`latex_decoration`](@ref). Each highlighter is an instance of the structure [`LatexHighlighter`](@ref). It
+[Faces](@ref)). The face is converted with [`latex_decoration`](@ref). The structure [`LatexHighlighter`](@ref)
 contains the following two public fields:
 
 - `f::Function`: Function with the signature `f(data, i, j)` in which should return `true`

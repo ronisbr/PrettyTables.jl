@@ -19,8 +19,8 @@ aspect of the line must be kept.
 
 Each back end converts this object to its native line design using the same approach as the
 conversion of `Face` to decorations. The conversion is a best effort: aspects a back end
-cannot express are silently ignored (for example, the text back end ignores the entire line
-design, and the LaTeX back end ignores `width` and `color`).
+cannot express are silently ignored (for example, the LaTeX back end ignores `width` and
+`color`, and the text back end maps the designs to the available box-drawing characters).
 
 # Fields
 
@@ -38,14 +38,36 @@ struct LineStyle
     style::Union{Nothing, Symbol}
     width::Union{Nothing, Symbol}
     color::Union{Nothing, SimpleColor}
+
+    # The positional constructor validates the values and normalizes the color exactly like
+    # the keyword constructor.
+    function LineStyle(style, width, color)
+        (isnothing(style) || style ∈ _LINE_STYLE_STYLES) || throw(
+            ArgumentError(
+                "The line style `:$style` is not supported. Valid values are `:solid`, " *
+                "`:dashed`, `:dotted`, and `:double`."
+            )
+        )
+
+        (isnothing(width) || width ∈ _LINE_STYLE_WIDTHS) || throw(
+            ArgumentError(
+                "The line width `:$width` is not supported. Valid values are `:thin`, " *
+                "`:medium`, and `:thick`."
+            )
+        )
+
+        return new(style, width, _line_style_color(color))
+    end
 end
 
 """
     LineStyle(; kwargs...) -> LineStyle
+    LineStyle(style, width, color) -> LineStyle
 
-Create a `LineStyle` from the keywords `style`, `width`, and `color`, validating the values
-and normalizing `color` to `SimpleColor`. The function throws an `ArgumentError` if `style`
-or `width` is not supported, or if `color` cannot be converted to a color.
+Create a `LineStyle` from the keywords (or the positional arguments) `style`, `width`, and
+`color`, validating the values and normalizing `color` to `SimpleColor`. The function throws
+an `ArgumentError` if `style` or `width` is not supported, or if `color` cannot be converted
+to a color.
 
 # Keywords
 
@@ -59,21 +81,7 @@ or `width` is not supported, or if `color` cannot be converted to a color.
     (**Default**: `nothing`)
 """
 function LineStyle(; style = nothing, width = nothing, color = nothing)
-    (isnothing(style) || style ∈ _LINE_STYLE_STYLES) || throw(
-        ArgumentError(
-            "The line style `:$style` is not supported. Valid values are `:solid`, " *
-            "`:dashed`, `:dotted`, and `:double`."
-        )
-    )
-
-    (isnothing(width) || width ∈ _LINE_STYLE_WIDTHS) || throw(
-        ArgumentError(
-            "The line width `:$width` is not supported. Valid values are `:thin`, " *
-            "`:medium`, and `:thick`."
-        )
-    )
-
-    return LineStyle(style, width, _line_style_color(color))
+    return LineStyle(style, width, color)
 end
 
 """
@@ -139,9 +147,8 @@ Notice that `nothing` differs from `:none` in the fields that accept a `Symbol`:
 keeps the back end default, whereas `:none` explicitly disables the lines.
 
 The conversion to the back end native format is a best effort: the manual page **Table
-Format** describes which fields each back end honors. In particular, the text back end
-ignores the line design fields, and the Markdown back end only supports
-`horizontal_line_before_summary_rows`.
+Format** describes which fields each back end honors. In particular, the Markdown back end
+only supports `horizontal_line_before_summary_rows`.
 
 # Fields
 
@@ -274,7 +281,9 @@ _table_format_field(user::Any, default::Any) = isnothing(user) ? default : user
     _table_format_border(line_style::Union{Nothing, LineStyle}, converter::Function, default::Any) -> Any
 
 Convert `line_style` to the back end native line design using `converter`, returning
-`default` if `line_style` is `nothing` or has every field set to `nothing`.
+`default` if `line_style` is `nothing` or has every field set to `nothing`. Otherwise,
+`default` is passed to `converter` through the keyword `default` so that the unset aspects of
+`line_style` keep the default line design.
 """
 function _table_format_border(
     line_style::Union{Nothing, LineStyle},
@@ -282,7 +291,7 @@ function _table_format_border(
     default::Any
 )
     (isnothing(line_style) || _line_style_is_empty(line_style)) && return default
-    return converter(line_style)
+    return converter(line_style; default)
 end
 
 # Line presence fields shared by every back end table format.

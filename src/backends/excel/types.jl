@@ -44,8 +44,6 @@ Define the default highlighter of a table when using the Excel back end.
 - `fd::Function`: Function with the signature `f(h, data, i, j)` in which `h` is the
     highlighter. This function must return a `Vector{ExcelPair}` with the styling attributes
     to apply to the highlighted cell.
-- `_decoration::Vector{ExcelPair}`: The decoration applied when the default `fd` is used.
-
 # Remarks
 
 An Excel highlighter can be constructed using the following helpers:
@@ -78,6 +76,16 @@ highlighters = [
     ),
 ]
 ```
+
+The following helpers create the decoration from a `Face` of StyledStrings.jl, converted
+with [`excel_decoration`](@ref), from a `Crayon`, converted to the equivalent face, or from the
+keywords of `Face` and `Crayon` (see [`Highlighter`](@ref)):
+
+    ExcelHighlighter(f::Function, face::Face)
+
+    ExcelHighlighter(f::Function, crayon::Crayon)
+
+    ExcelHighlighter(f::Function; kwargs...)
 """
 struct ExcelHighlighter <: AbstractHighlighter
     f::Function
@@ -99,6 +107,18 @@ struct ExcelHighlighter <: AbstractHighlighter
 
     function ExcelHighlighter(f::Function, decoration::Vector{ExcelPair})
         return new(f, _excel__default_highlighter_fd, decoration)
+    end
+
+    function ExcelHighlighter(f::Function, face::Face)
+        return ExcelHighlighter(f, excel_decoration(face))
+    end
+
+    function ExcelHighlighter(f::Function, crayon::Crayon)
+        return ExcelHighlighter(f, _face_from_crayon(crayon))
+    end
+
+    function ExcelHighlighter(f::Function; kwargs...)
+        return ExcelHighlighter(f, _face_from_kwargs(; kwargs...))
     end
 end
 
@@ -269,7 +289,7 @@ Define the table borders that will be used to form the Excel table.
 - `horizontal_line_between_column_labels::Bool`: Whether to draw a line between (unmerged)
     column header rows.
 - `horizontal_line_at_merged_column_labels::Bool`: Whether to draw a line under merged
-    column headers.
+    column headers. The default is `true`, whereas the text back end defaults to `false`.
 - `horizontal_lines_at_data_rows::Union{Symbol, Vector{Int}}`: Controls which data rows get
     an underline. `:all` draws a line after every data row; `:none` draws none; a
     `Vector{Int}` draws a line only after the listed row indices.
@@ -386,7 +406,7 @@ style = ExcelTableStyle(
     ExcelTableStyle(; kwargs...)
 
 Create a style in which each field can be passed as a keyword. Every keyword also accepts a
-`Face`, which is converted with [`excel_decoration`](@ref). The keywords
+`Face` (or a `Crayon`, converted to the equivalent face), which is converted with [`excel_decoration`](@ref). The keywords
 `first_line_column_label` and `column_label` also accept a vector with one decoration
 (Excel attributes or `Face`) per column.
 """

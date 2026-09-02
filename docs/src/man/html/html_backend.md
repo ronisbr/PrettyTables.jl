@@ -27,14 +27,14 @@ the output.
   (**Default**: `false`)
 - `stand_alone::Bool`: If `true`, the output HTML code is a complete HTML document.
   (**Default**: `false`)
-- `style::HtmlTableStyle`: Style of the table. For more information, see the section
+- `style::Union{TableStyle, HtmlTableStyle}`: Style of the table. For more information, see the section
   [HTML Table Style](@ref).
 - `table_class::String`: Class for the table.
   (**Default**: "")
 - `table_div_class::String`: Class for the div containing the table. It is only used if
   `wrap_table_in_div` is `true`.
   (**Default**: "")
-- `table_format::HtmlTableFormat`: HTML table format used to render the table. For more
+- `table_format::Union{TableFormat, HtmlTableFormat}`: HTML table format used to render the table. For more
   information, see the section [HTML Table Format](@ref).
 - `top_left_string::String`: String to put in the top left corner div.
   (**Default**: "")
@@ -50,7 +50,7 @@ A set of highlighters can be passed as a vector of `AbstractHighlighter` to the
 `highlighters` keyword. A highlighter can be an instance of the structure
 [`HtmlHighlighter`](@ref), specific to this back end, or of the general
 [`Highlighter`](@ref), which is defined by a `Face` and works with every back end (see
-[Faces](@ref)). The face is converted with [`html_decoration`](@ref). Each highlighter is an instance of the structure [`HtmlHighlighter`](@ref). It
+[Faces](@ref)). The face is converted with [`html_decoration`](@ref). The structure [`HtmlHighlighter`](@ref)
 contains the following two public fields:
 
 - `f::Function`: Function with the signature `f(data, i, j)` in which should return `true`

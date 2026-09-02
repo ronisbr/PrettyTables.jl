@@ -14,6 +14,14 @@ default text table style.
 _text__table_style(style::TextTableStyle) = style
 _text__table_style(style::TableStyle) = TextTableStyle(; _table_style_kwargs(style)...)
 
+function _text__table_style(style::Any)
+    throw(
+        ArgumentError(
+            "The text back end does not support a style of type `$(typeof(style))`. Use `TextTableStyle` or the backend-agnostic `TableStyle`."
+        )
+    )
+end
+
 """
     _text__table_format(table_format::Union{TableFormat, TextTableFormat}) -> TextTableFormat
 
@@ -36,6 +44,14 @@ The color of each line design is converted to the corresponding line face of
 set, which has the highest precedence.
 """
 _text__table_format(table_format::TextTableFormat) = table_format
+
+function _text__table_format(table_format::Any)
+    throw(
+        ArgumentError(
+            "The text back end does not support a table format of type `$(typeof(table_format))`. Use `TextTableFormat` or the backend-agnostic `TableFormat`."
+        )
+    )
+end
 
 function _text__table_format(table_format::TableFormat)
     def = _DEFAULT_TEXT_TABLE_FORMAT

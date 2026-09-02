@@ -19,9 +19,10 @@
 
     sheet = result[1]
 
-    # The header line is the bottom border of the column label row.
+    # The header line is the bottom border of the column label row. The unset width keeps
+    # the default header border width (medium).
     @test XLSX.getBorder(sheet, "A1").border["bottom"] ==
-        Dict("style" => "dashed", "rgb" => "FFFF0000")
+        Dict("style" => "mediumDashed", "rgb" => "FFFF0000")
 
     # The other borders must keep their defaults.
     @test XLSX.getBorder(sheet, "A1").border["top"] ==

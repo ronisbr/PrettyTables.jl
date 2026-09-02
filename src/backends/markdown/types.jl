@@ -41,9 +41,6 @@ Defines the default highlighter of a table when using the markdown backend.
 - `fd::Function`: Function with the signature `fd(h, data, i, j)` in which `h` is the
     highlighter. This function must return the `MarkdownStyle` to be applied to the
     cell that must be highlighted.
-- `_decoration::MarkdownStyle`: The decoration to be applied to the highlighted cell if
-    the default `fd` is used.
-
 # Remarks
 
 This structure can be constructed using two helpers:
@@ -55,6 +52,16 @@ This structure can be constructed using two helpers:
 The first will apply a fixed decoration to the highlighted cell specified in `decoration`
 whereas the second lets the user select the desired decoration by specifying the function
 `fd`.
+
+The following helpers create the decoration from a `Face` of StyledStrings.jl, converted
+with [`markdown_decoration`](@ref), from a `Crayon`, converted to the equivalent face, or from the
+keywords of `Face` and `Crayon` (see [`Highlighter`](@ref)):
+
+    MarkdownHighlighter(f::Function, face::Face)
+
+    MarkdownHighlighter(f::Function, crayon::Crayon)
+
+    MarkdownHighlighter(f::Function; kwargs...)
 """
 struct MarkdownHighlighter <: AbstractHighlighter
     f::Function
@@ -72,6 +79,18 @@ struct MarkdownHighlighter <: AbstractHighlighter
 
     function MarkdownHighlighter(f::Function, decoration::MarkdownStyle)
         return new(f, _markdown__default_highlighter_fd, decoration)
+    end
+
+    function MarkdownHighlighter(f::Function, face::Face)
+        return MarkdownHighlighter(f, markdown_decoration(face))
+    end
+
+    function MarkdownHighlighter(f::Function, crayon::Crayon)
+        return MarkdownHighlighter(f, _face_from_crayon(crayon))
+    end
+
+    function MarkdownHighlighter(f::Function; kwargs...)
+        return MarkdownHighlighter(f, _face_from_kwargs(; kwargs...))
     end
 end
 
@@ -139,7 +158,7 @@ Define the style of the tables printed with the markdown back end.
     MarkdownTableStyle(; kwargs...)
 
 Create a style in which each field can be passed as a keyword. Every keyword also accepts a
-`Face`, which is converted with [`markdown_decoration`](@ref). The keywords
+`Face` (or a `Crayon`, converted to the equivalent face), which is converted with [`markdown_decoration`](@ref). The keywords
 `first_line_column_label` and `column_label` also accept a vector with one decoration
 (`MarkdownStyle` or `Face`) per column.
 """

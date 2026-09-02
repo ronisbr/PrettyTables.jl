@@ -39,6 +39,7 @@ Convert the `decoration` passed to `MarkdownTableStyle`, a Markdown style or a f
 """
 _markdown__decoration(decoration::MarkdownStyle) = decoration
 _markdown__decoration(face::Face)                = markdown_decoration(face)
+_markdown__decoration(crayon::Crayon)            = markdown_decoration(_face_from_crayon(crayon))
 
 """
     _markdown__column_label_decoration(decorations::Any) -> Union{MarkdownStyle, Vector{MarkdownStyle}}
@@ -49,6 +50,7 @@ be a Markdown style, a face, or a vector with one of them per column, into a Mar
 _markdown__column_label_decoration(decoration::MarkdownStyle)          = decoration
 _markdown__column_label_decoration(decorations::Vector{MarkdownStyle}) = decorations
 _markdown__column_label_decoration(face::Face)                         = markdown_decoration(face)
+_markdown__column_label_decoration(crayon::Crayon)                     = _markdown__decoration(crayon)
 
 function _markdown__column_label_decoration(decorations::AbstractVector)
     return MarkdownStyle[_markdown__decoration(d) for d in decorations]

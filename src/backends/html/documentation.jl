@@ -63,7 +63,7 @@ A set of highlighters can be passed as a vector of `AbstractHighlighter` to the
 `highlighters` keyword. A highlighter can be an instance of the structure
 [`HtmlHighlighter`](@ref), specific to this back end, or of the general
 [`Highlighter`](@ref), which is defined by a `Face` and works with every back end (see
-[Faces](@ref)). The face is converted with [`html_decoration`](@ref). Each highlighter is an instance of the structure [`HtmlHighlighter`](@ref). It
+[Faces](@ref)). The face is converted with [`html_decoration`](@ref). The structure [`HtmlHighlighter`](@ref)
 contains the following two public fields:
 
 - `f::Function`: Function with the signature `f(data, i, j)` which should return `true`

@@ -4,9 +4,14 @@
 #
 ############################################################################################
 
-export HtmlHighlighter, HtmlTableBorders, HtmlTableFormat, HtmlTableStyle
+export HtmlHighlighter, HtmlPair, HtmlTableBorders, HtmlTableFormat, HtmlTableStyle
 
-# Pair that defines HTML properties.
+"""
+    const HtmlPair = Pair{String, String}
+
+Pair with a CSS property and its value, which is the native decoration of the HTML back end
+(for example, `"font-weight" => "bold"`).
+"""
 const HtmlPair = Pair{String, String}
 
 ############################################################################################
@@ -25,9 +30,6 @@ Define the default highlighter of a table when using the HTML back end.
 - `fd::Function`: Function with the signature `f(h, data, i, j)` in which `h` is the
     highlighter. This function must return a `Vector{Pair{String, String}}` with properties
     compatible with the `style` field that will be applied to the highlighted cell.
-- `_decoration::Vector{HtmlPair}`: The decoration to be applied to the highlighted cell
-    if the default `fd` is used.
-
 # Remarks
 
 This structure can be constructed using the following helpers:
@@ -40,6 +42,16 @@ This structure can be constructed using the following helpers:
 
 The first two apply a fixed decoration to the highlighted cell, whereas the third lets the
 user select the desired decoration by specifying the function `fd`.
+
+The following helpers create the decoration from a `Face` of StyledStrings.jl, converted
+with [`html_decoration`](@ref), from a `Crayon`, converted to the equivalent face, or from the
+keywords of `Face` and `Crayon` (see [`Highlighter`](@ref)):
+
+    HtmlHighlighter(f::Function, face::Face)
+
+    HtmlHighlighter(f::Function, crayon::Crayon)
+
+    HtmlHighlighter(f::Function; kwargs...)
 """
 struct HtmlHighlighter <: AbstractHighlighter
     f::Function
@@ -65,6 +77,18 @@ struct HtmlHighlighter <: AbstractHighlighter
 
     function HtmlHighlighter(f::Function, decoration::Vector{HtmlPair}, args::HtmlPair...)
         return new(f, _html__default_highlighter_fd, [decoration..., args...])
+    end
+
+    function HtmlHighlighter(f::Function, face::Face)
+        return HtmlHighlighter(f, html_decoration(face))
+    end
+
+    function HtmlHighlighter(f::Function, crayon::Crayon)
+        return HtmlHighlighter(f, _face_from_crayon(crayon))
+    end
+
+    function HtmlHighlighter(f::Function; kwargs...)
+        return HtmlHighlighter(f, _face_from_kwargs(; kwargs...))
     end
 end
 
@@ -179,7 +203,8 @@ Define the format of the tables printed with the HTML back end.
 - `horizontal_line_after_column_labels::Bool`: If `true`, a horizontal line will be drawn
     after the column labels.
 - `horizontal_line_at_merged_column_labels::Bool`: If `true`, a horizontal line will be
-    drawn at the bottom of the merged column labels.
+    drawn at the bottom of the merged column labels. The default is `true`, whereas the
+    text back end defaults to `false`.
 - `horizontal_lines_at_data_rows::Union{Symbol, Vector{Int}}`: A horizontal line will be
     drawn after each data row index listed in this vector. If the symbol `:all` is passed, a
     horizontal line will be drawn after every data row. If the symbol `:none` is passed,
@@ -300,7 +325,7 @@ Define the style of the tables printed with the HTML back end.
     HtmlTableStyle(; kwargs...)
 
 Create a style in which each field can be passed as a keyword. Every keyword also accepts a
-`Face`, which is converted with [`html_decoration`](@ref). The keywords
+`Face` (or a `Crayon`, converted to the equivalent face), which is converted with [`html_decoration`](@ref). The keywords
 `first_line_column_label` and `column_label` also accept a vector with one decoration (CSS
 properties or `Face`) per column.
 """

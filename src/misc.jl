@@ -633,9 +633,11 @@ end
 """
     _resolve_printing_backend(configurations; kwargs...) -> Symbol
 
-Return the printing backend to be used based on the `configurations` provided. Notice that
-this function must only be used when the user did not specify the backend directly using the
-`backend` keyword.
+Return the printing backend to be used based on the `configurations` provided, which is
+selected by the native table format in the entry `table_format` or, if it does not select a
+back end, by the native table style in the entry `style`. Notice that this function must
+only be used when the user did not specify the backend directly using the `backend`
+keyword.
 
 # Keywords
 
@@ -645,20 +647,16 @@ this function must only be used when the user did not specify the backend direct
     (**Default**: `:text`)
 """
 function _resolve_printing_backend(@nospecialize(configurations); default::Symbol = :text)
-    table_format = get(configurations, :table_format, nothing)
-    backend = default
-
-    if table_format isa ExcelTableFormat
-        backend = :excel
-    elseif table_format isa HtmlTableFormat
-        backend = :html
-    elseif table_format isa LatexTableFormat
-        backend = :latex
-    elseif table_format isa MarkdownTableFormat
-        backend = :markdown
-    elseif table_format isa TypstTableFormat
-        backend = :typst
-    end
-
-    return backend
+    backend = _backend_of(get(configurations, :table_format, nothing))
+    isnothing(backend) && (backend = _backend_of(get(configurations, :style, nothing)))
+    return something(backend, default)
 end
+
+"""
+    _backend_of(object::Any) -> Union{Nothing, Symbol}
+
+Return the back end selected by the native table format or table style `object`, or
+`nothing` if `object` does not select a back end. The methods for the native objects are
+defined in the `table_format.jl` file of each back end.
+"""
+_backend_of(::Any) = nothing

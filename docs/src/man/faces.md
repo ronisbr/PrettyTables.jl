@@ -146,14 +146,19 @@ pretty_table(matrix; backend = :latex)
 
 ## Compatibility with Crayons.jl
 
-The text back end stores faces, but every place that accepts a `Face` also accepts a
-`Crayon` of [Crayons.jl](https://github.com/KristofferC/Crayons.jl), which is converted to
-the equivalent face. The keyword constructors of `TextHighlighter` and `Highlighter` also
-accept the keywords of `Crayon` (`bold`, `faint`, `italics`, `negative`, `foreground`,
-`background`, `underline`, and `strikethrough`), translated to the equivalent attributes.
+Every place that accepts a `Face` also accepts a `Crayon` of
+[Crayons.jl](https://github.com/KristofferC/Crayons.jl), which is converted to the
+equivalent face: the table styles of every back end, `TableStyle`, and the highlighters.
+The keyword constructors of the highlighters also accept the keywords of `Crayon` (`bold`,
+`faint`, `italics`, `negative`, `foreground`, `background`, `underline`, and
+`strikethrough`), translated to the equivalent attributes.
 
-The conversion is lossy: the attributes `blink`, `conceal`, and `reset` are dropped, and the
-colors of the 256-color palette are converted to their 24-bit values (except the 16 system
-colors, which are converted to their names). The color names of Crayons.jl are translated to
-the ones of StyledStrings.jl (for example, `:dark_gray` becomes `:bright_black` and
-`:light_red` becomes `:bright_red`).
+The conversion is lossy: the attributes `blink`, `conceal`, and `reset` have no counterpart
+in a face and they are dropped with a warning, shown once per session; the attributes
+explicitly turned off (for example, `bold = false`) and the default color of the terminal
+are omitted because every styled segment of a table starts after a reset; `bold` has
+priority over `faint` when both are set; and the colors of the 256-color palette are
+converted to their 24-bit values (except the 16 system colors, which are converted to their
+names), which requires a terminal with 24-bit color support. The color names of Crayons.jl
+are translated to the ones of StyledStrings.jl (for example, `:dark_gray` becomes
+`:bright_black` and `:light_red` becomes `:bright_red`).

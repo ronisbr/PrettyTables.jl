@@ -23,7 +23,18 @@ of the default Markdown table style. The fields `title`, `subtitle`,
 `first_line_merged_column_label`, and `merged_column_label` are ignored because the
 Markdown table style does not have them.
 """
+# The native objects of this back end select it when `backend = :auto`.
+_backend_of(::Union{MarkdownTableFormat, MarkdownTableStyle}) = :markdown
+
 _markdown__table_style(style::MarkdownTableStyle) = style
+
+function _markdown__table_style(style::Any)
+    throw(
+        ArgumentError(
+            "The Markdown back end does not support a style of type `$(typeof(style))`. Use `MarkdownTableStyle` or the backend-agnostic `TableStyle`."
+        )
+    )
+end
 
 function _markdown__table_style(style::TableStyle)
     return MarkdownTableStyle(;
@@ -40,6 +51,14 @@ returned unchanged. For a backend-agnostic [`TableFormat`](@ref), only
 `line_before_summary_rows`) because Markdown tables cannot express the other lines.
 """
 _markdown__table_format(table_format::MarkdownTableFormat) = table_format
+
+function _markdown__table_format(table_format::Any)
+    throw(
+        ArgumentError(
+            "The Markdown back end does not support a table format of type `$(typeof(table_format))`. Use `MarkdownTableFormat` or the backend-agnostic `TableFormat`."
+        )
+    )
+end
 
 function _markdown__table_format(table_format::TableFormat)
     def = MarkdownTableFormat()

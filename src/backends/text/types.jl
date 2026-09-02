@@ -158,7 +158,8 @@ Define the format of the tables printed with the text back end.
     is passed, no horizontal lines will be drawn.
 - `horizontal_line_at_merged_column_labels::Bool`: If `true`, a horizontal line will be
     drawn at the merged column labels. Notice that the horizontal line drawn using the
-    option `horizontal_lines_at_column_labels` has precedence over this one.
+    option `horizontal_lines_at_column_labels` has precedence over this one. The default is
+    `false`, whereas the other back ends default to `true`.
 - `horizontal_line_after_column_labels::Bool`: If `true`, a horizontal line will be drawn
     after the column labels.
 - `horizontal_lines_at_data_rows::Union{Symbol, Vector{Int}}`: A horizontal line will be
@@ -480,8 +481,6 @@ Define the style of the tables printed with the text back end.
     the table.
 - `right_line::Union{Nothing, Face}`: Face with the style for the vertical line at the
     right of the table.
-- `_rendered::TextRenderedStyle`: Private field with the escape sequences of every field,
-    rendered when the style is created.
 
 The line faces default to `nothing`, meaning that the corresponding line is rendered with
 the face in `table_border`. When printing with the backend-agnostic [`TableFormat`](@ref),
@@ -855,9 +854,6 @@ Defines the default highlighter of a table when using the text backend.
 - `fd::Function`: Function with the signature `fd(h, data, i, j)` in which `h` is the
     highlighter. This function must return the `Face` (or `Crayon`) to be applied to the
     cell that must be highlighted.
-- `_decoration::Face`: The `Face` to be applied to the highlighted cell if the default `fd`
-    is used.
-- `_sgr::String`: The escape sequence of `_decoration`, rendered at construction.
 
 # Remarks
 

@@ -114,10 +114,11 @@ pretty_table(
 )
 ```
 
-Each back end also provides the same macro quadruple for its native table format (for
-example, `@text__all_horizontal_lines` for `TextTableFormat` and
-`@html__no_vertical_lines` for `HtmlTableFormat`), which additionally covers the
-backend-specific presence fields.
+The text, HTML, LaTeX, Typst, and Excel back ends also provide the same macro quadruple for
+their native table formats (for example, `@text__all_horizontal_lines` for
+`TextTableFormat` and `@html__no_vertical_lines` for `HtmlTableFormat`), which additionally
+cover the backend-specific presence fields. The Markdown back end has no macros because its
+table format has a single presence field.
 
 ### Line Design
 
@@ -139,6 +140,8 @@ The line roles follow the border fields of the Typst and Excel table formats:
 The conversion functions can also be called directly:
 
 ```@repl table_format
+html_line_style(LineStyle(; style = :dashed, width = :thick, color = :red))
+
 typst_line_style(LineStyle(; style = :dashed, width = :thick, color = :red))
 
 excel_line_style(LineStyle(; style = :dashed, color = 0xff0000))

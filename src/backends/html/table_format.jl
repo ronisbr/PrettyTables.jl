@@ -11,23 +11,39 @@ Convert `style` to a `HtmlTableStyle`. A native `HtmlTableStyle` is returned unc
 whereas the fields of a backend-agnostic [`TableStyle`](@ref) override the ones of the
 default HTML table style.
 """
+# The native objects of this back end select it when `backend = :auto`.
+_backend_of(::Union{HtmlTableFormat, HtmlTableStyle}) = :html
+
 _html__table_style(style::HtmlTableStyle) = style
 _html__table_style(style::TableStyle) = HtmlTableStyle(; _table_style_kwargs(style)...)
+
+function _html__table_style(style::Any)
+    throw(
+        ArgumentError(
+            "The HTML back end does not support a style of type `$(typeof(style))`. Use `HtmlTableStyle` or the backend-agnostic `TableStyle`."
+        )
+    )
+end
 
 export html_line_style
 
 """
-    html_line_style(line_style::LineStyle) -> String
+    html_line_style(line_style::LineStyle; default::String = "1px solid black") -> String
 
 Convert `line_style` into a CSS `border` shorthand value.
 
-The `width` is converted to `"1px"` (`:thin`), `"2px"` (`:medium`), or `"3px"` (`:thick`),
-defaulting to `"1px"` if unset. The `style` is converted to the border style `"solid"`,
-`"dashed"`, `"dotted"`, or `"double"`, defaulting to `"solid"` if unset. The `color` is
-converted to the hexadecimal form `"#rrggbb"`; a color that cannot be resolved to a 24-bit
-value falls back to `"black"`.
+The `width` is converted to `"1px"` (`:thin`), `"2px"` (`:medium`), or `"3px"` (`:thick`).
+The `style` is converted to the border style `"solid"`, `"dashed"`, `"dotted"`, or
+`"double"`. The `color` is converted to the hexadecimal form `"#rrggbb"`. Every unset field,
+or a color that cannot be resolved to a 24-bit value, keeps the corresponding component of
+the shorthand `default`, which must have the form `"<width> <style> <color>"`. If `default`
+does not have this form, the unset components are `"1px"`, `"solid"`, and `"black"`.
 """
-function html_line_style(line_style::LineStyle)
+function html_line_style(line_style::LineStyle; default::String = "1px solid black")
+    tokens = split(default)
+    default_width, default_style, default_color =
+        length(tokens) == 3 ? String.(tokens) : ("1px", "solid", "black")
+
     width = if line_style.width == :thin
         "1px"
     elseif line_style.width == :medium
@@ -35,13 +51,13 @@ function html_line_style(line_style::LineStyle)
     elseif line_style.width == :thick
         "3px"
     else
-        "1px"
+        default_width
     end
 
-    style = isnothing(line_style.style) ? "solid" : string(line_style.style)
+    style = isnothing(line_style.style) ? default_style : string(line_style.style)
 
     hex   = _face_color_hex(line_style.color)
-    color = isnothing(hex) ? "black" : "#" * hex
+    color = isnothing(hex) ? default_color : "#" * hex
 
     return width * " " * style * " " * color
 end
@@ -54,6 +70,14 @@ unchanged, whereas the fields of a backend-agnostic [`TableFormat`](@ref) overri
 of the default HTML table format.
 """
 _html__table_format(table_format::HtmlTableFormat) = table_format
+
+function _html__table_format(table_format::Any)
+    throw(
+        ArgumentError(
+            "The HTML back end does not support a table format of type `$(typeof(table_format))`. Use `HtmlTableFormat` or the backend-agnostic `TableFormat`."
+        )
+    )
+end
 
 function _html__table_format(table_format::TableFormat)
     def = _DEFAULT_HTML_TABLE_FORMAT

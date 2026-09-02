@@ -5,13 +5,18 @@
 ############################################################################################
 
 export LatexTableBorders, LatexTableFormat, LatexTableStyle
-export LatexHighlighter
+export LatexEnvironments, LatexHighlighter
 
 ############################################################################################
 #                                       Table Format                                       #
 ############################################################################################
 
-# Pair that defines LaTeX properties.
+"""
+    const LatexEnvironments = Vector{String}
+
+Vector with the LaTeX environments applied to a cell, which is the native decoration of the
+LaTeX back end (for example, `["textbf", "small"]`).
+"""
 const LatexEnvironments = Vector{String}
 
 # Create some default decorations to reduce allocations.
@@ -22,6 +27,27 @@ const _LATEX__LARGE_BOLD   = ["large", "textbf"]
 const _LATEX__SMALL        = ["small"]
 const _LATEX__SMALL_ITALIC = ["small", "textit"]
 
+"""
+    struct LatexTableBorders
+
+Define the horizontal rules of a table printed with the LaTeX back end. All fields are
+strings with a LaTeX command. The vertical lines are drawn with the column specification of
+the table environment and cannot be customized here.
+
+# Fields
+
+- `top_line::String`: Rule at the top of the table.
+    (**Default**: `"\\\\hline"`)
+- `header_line::String`: Rule of the lines surrounding the column labels.
+    (**Default**: `"\\\\hline"`)
+- `merged_header_cell_line::String`: Command of the rule under merged column label cells,
+    to which the back end appends the column range.
+    (**Default**: `"\\\\cline"`)
+- `middle_line::String`: Rule of the horizontal lines inside the table body.
+    (**Default**: `"\\\\hline"`)
+- `bottom_line::String`: Rule at the bottom of the table.
+    (**Default**: `"\\\\hline"`)
+"""
 @kwdef struct LatexTableBorders
     top_line::String                = "\\hline"
     header_line::String             = "\\hline"
@@ -41,7 +67,8 @@ Define the format of the tables printed with the LaTeX back end.
 - `horizontal_line_at_beginning::Bool`: If `true`, a horizontal line will be drawn at the
     beginning of the table.
 - `horizontal_line_at_merged_column_labels::Bool`: If `true`, a horizontal line will be
-    drawn at the bottom of the merged column labels using `\\cline`.
+    drawn at the bottom of the merged column labels using `\\cline`. The default is `true`,
+    whereas the text back end defaults to `false`.
 - `horizontal_line_after_column_labels::Bool`: If `true`, a horizontal line will be drawn
     after the column labels.
 - `horizontal_lines_at_data_rows::Union{Symbol, Vector{Int}}`: A horizontal line will be
@@ -142,7 +169,7 @@ Define the style of the tables printed with the latex back end.
     LatexTableStyle(; kwargs...)
 
 Create a style in which each field can be passed as a keyword. Every keyword also accepts a
-`Face`, which is converted with [`latex_decoration`](@ref). The keywords
+`Face` (or a `Crayon`, converted to the equivalent face), which is converted with [`latex_decoration`](@ref). The keywords
 `first_line_column_label` and `column_label` also accept a vector with one decoration
 (LaTeX environments or `Face`) per column.
 """
@@ -255,6 +282,16 @@ will wrap all the cells in the table in the following environment:
 
 Notice that the environments are applied in order, meaning that the **last** one in the
 vector ends up being the outermost.
+
+The following helpers create the decoration from a `Face` of StyledStrings.jl, converted
+with [`latex_decoration`](@ref), from a `Crayon`, converted to the equivalent face, or from the
+keywords of `Face` and `Crayon` (see [`Highlighter`](@ref)):
+
+    LatexHighlighter(f::Function, face::Face)
+
+    LatexHighlighter(f::Function, crayon::Crayon)
+
+    LatexHighlighter(f::Function; kwargs...)
 """
 struct LatexHighlighter <: AbstractHighlighter
     f::Function
@@ -272,6 +309,18 @@ struct LatexHighlighter <: AbstractHighlighter
 
     function LatexHighlighter(f::Function, envs::Vector{String})
         return new(f, _latex__default_highlighter_fd, envs)
+    end
+
+    function LatexHighlighter(f::Function, face::Face)
+        return LatexHighlighter(f, latex_decoration(face))
+    end
+
+    function LatexHighlighter(f::Function, crayon::Crayon)
+        return LatexHighlighter(f, _face_from_crayon(crayon))
+    end
+
+    function LatexHighlighter(f::Function; kwargs...)
+        return LatexHighlighter(f, _face_from_kwargs(; kwargs...))
     end
 end
 

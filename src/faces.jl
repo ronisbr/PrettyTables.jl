@@ -438,8 +438,8 @@ Define the private decoration converters of a back end whose native decoration i
 
 - `_<backend>__decoration(decoration)`: Convert the `decoration` passed to the table style
     into the native decoration. It accepts the native decoration, any vector (converted to
-    the native one, as the `@kwdef` constructors of v3.4.8 did), or a `Face`, converted with
-    `converter`.
+    the native one, as the `@kwdef` constructors of v3.4.8 did), a `Face`, converted with
+    `converter`, or a `Crayon`, converted to the equivalent face first.
 - `_<backend>__column_label_decoration(decorations)`: Convert the `decorations` passed to
     the column label fields of the table style into a native decoration or a vector with
     one native decoration per column. A vector of `element`s (or an empty vector) is a
@@ -463,10 +463,12 @@ macro _define_decoration_converters(backend, name, converter, native, element)
         $(esc(decoration))(decoration::$(esc(native)))      = decoration
         $(esc(decoration))(decoration::AbstractVector)      = convert($(esc(native)), decoration)
         $(esc(decoration))(face::Face)                      = $(esc(converter))(face)
+        $(esc(decoration))(crayon::Crayon)                  = $(esc(converter))(_face_from_crayon(crayon))
 
         $(esc(column_label))(decoration::$(esc(native)))           = decoration
         $(esc(column_label))(decorations::Vector{$(esc(native))})  = decorations
         $(esc(column_label))(face::Face)                           = $(esc(converter))(face)
+        $(esc(column_label))(crayon::Crayon)                       = $(esc(converter))(_face_from_crayon(crayon))
 
         function $(esc(column_label))(decorations::AbstractVector)
             (isempty(decorations) || all(d -> d isa $(esc(element)), decorations)) &&

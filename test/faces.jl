@@ -348,3 +348,46 @@ end
         @test PrettyTables._face_regions(str) == [("a", nothing), ("b", nothing)]
     end
 end
+
+@testset "Crayons in Styles and Highlighters" begin
+    f    = (data, i, j) -> i == 1
+    face = Face(; weight = :bold, foreground = :red)
+
+    # The back end highlighters accept a face, a crayon, and the keywords of both.
+    @test HtmlHighlighter(f, face)._decoration == html_decoration(face)
+    @test HtmlHighlighter(f, crayon"bold red")._decoration == html_decoration(face)
+    @test HtmlHighlighter(f; bold = true, foreground = :red)._decoration == html_decoration(face)
+
+    @test LatexHighlighter(f, face)._environments == latex_decoration(face)
+    @test LatexHighlighter(f, crayon"bold red")._environments == latex_decoration(face)
+    @test LatexHighlighter(f; weight = :bold, foreground = :red)._environments ==
+        latex_decoration(face)
+
+    @test MarkdownHighlighter(f, face)._decoration == markdown_decoration(face)
+    @test MarkdownHighlighter(f, crayon"bold")._decoration == MarkdownStyle(; bold = true)
+    @test MarkdownHighlighter(f; italics = true)._decoration == MarkdownStyle(; italic = true)
+
+    @test TypstHighlighter(f, face)._decoration == typst_decoration(face)
+    @test TypstHighlighter(f, crayon"bold red")._decoration == typst_decoration(face)
+    @test TypstHighlighter(f; bold = true, foreground = :red)._decoration ==
+        typst_decoration(face)
+
+    @test ExcelHighlighter(f, face)._decoration == excel_decoration(face)
+    @test ExcelHighlighter(f, crayon"bold red")._decoration == excel_decoration(face)
+    @test ExcelHighlighter(f; bold = true, foreground = :red)._decoration ==
+        excel_decoration(face)
+
+    # The table styles of every back end accept a crayon.
+    @test HtmlTableStyle(; title = crayon"bold red").title == html_decoration(face)
+    @test LatexTableStyle(; title = crayon"bold red").title == latex_decoration(face)
+    @test MarkdownTableStyle(; row_label = crayon"bold").row_label == MarkdownStyle(; bold = true)
+    @test TypstTableStyle(; title = crayon"bold red").title == typst_decoration(face)
+    @test ExcelTableStyle(; title = crayon"bold red").title == excel_decoration(face)
+    @test HtmlTableStyle(; first_line_column_label = [crayon"bold red", face]).first_line_column_label ==
+        [html_decoration(face), html_decoration(face)]
+
+    # The backend-agnostic style accepts crayons and vectors of crayons.
+    style = TableStyle(; title = crayon"bold red", column_label = [crayon"bold red", face])
+    @test style.title == face
+    @test style.column_label == [face, face]
+end

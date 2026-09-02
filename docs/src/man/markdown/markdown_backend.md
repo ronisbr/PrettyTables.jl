@@ -14,9 +14,9 @@ configure the output.
 - `line_breaks::Bool`: If `true`, line breaks in the content of the cells (`\\n`) are
   replaced by `<br>`.
   (**Default**: `false`)
-- `style::MarkdownTableStyle`: Style of the table. For more information, see the section
+- `style::Union{TableStyle, MarkdownTableStyle}`: Style of the table. For more information, see the section
   [Markdown Table Style](@ref).
-- `table_format::MarkdownTableFormat`: Markdown table format used to render the table. For
+- `table_format::Union{TableFormat, MarkdownTableFormat}`: Markdown table format used to render the table. For
   more information, see the section [Markdown Table Format](@ref).
 
 ## Markdown Highlighters
@@ -25,7 +25,7 @@ A set of highlighters can be passed as a vector of `AbstractHighlighter` to the
 `highlighters` keyword. A highlighter can be an instance of the structure
 [`MarkdownHighlighter`](@ref), specific to this back end, or of the general
 [`Highlighter`](@ref), which is defined by a `Face` and works with every back end (see
-[Faces](@ref)). The face is converted with [`markdown_decoration`](@ref). Each highlighter is an instance of the structure [`MarkdownHighlighter`](@ref). It
+[Faces](@ref)). The face is converted with [`markdown_decoration`](@ref). The structure [`MarkdownHighlighter`](@ref)
 contains the following two public fields:
 
 - `f::Function`: Function with the signature `f(data, i, j)` in which should return `true`

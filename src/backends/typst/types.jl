@@ -4,7 +4,7 @@
 #
 ############################################################################################
 
-export TypstHighlighter, TypstTableBorders, TypstTableFormat, TypstTableStyle, TypstCaption
+export TypstPair, TypstHighlighter, TypstTableBorders, TypstTableFormat, TypstTableStyle, TypstCaption
 
 
 ############################################################################################
@@ -13,6 +13,12 @@ export TypstHighlighter, TypstTableBorders, TypstTableFormat, TypstTableStyle, T
 
 # == Public ================================================================================
 
+"""
+    const TypstPair = Pair{String, String}
+
+Pair with a Typst property and its value, which is the native decoration of the Typst back
+end (for example, `"text-weight" => "bold"`).
+"""
 const TypstPair  = Pair{String, String}
 const TypstAttrs = String
 
@@ -108,9 +114,6 @@ Define the default highlighter of a table when using the Typst back end.
 - `fd::Function`: Function with the signature `f(h, data, i, j)` in which `h` is the
     highlighter. This function must return a `Vector{Pair{String, String}}` with properties
     compatible with the `style` field that will be applied to the highlighted cell.
-- `_decoration::Vector{TypstPair}`: The decoration to be applied to the highlighted cell
-    if the default `fd` is used.
-
 # Remarks
 
 This structure can be constructed using the following helpers:
@@ -123,6 +126,16 @@ This structure can be constructed using the following helpers:
 
 The first two apply a fixed decoration to the highlighted cell, whereas the third lets the
 user select the desired decoration by specifying the function `fd`.
+
+The following helpers create the decoration from a `Face` of StyledStrings.jl, converted
+with [`typst_decoration`](@ref), from a `Crayon`, converted to the equivalent face, or from the
+keywords of `Face` and `Crayon` (see [`Highlighter`](@ref)):
+
+    TypstHighlighter(f::Function, face::Face)
+
+    TypstHighlighter(f::Function, crayon::Crayon)
+
+    TypstHighlighter(f::Function; kwargs...)
 """
 struct TypstHighlighter <: AbstractHighlighter
     f::Function
@@ -148,6 +161,18 @@ struct TypstHighlighter <: AbstractHighlighter
 
     function TypstHighlighter(f::Function, decoration::Vector{TypstPair}, args::TypstPair...)
         return new(f, _typst__default_highlighter_fd, [decoration..., args...])
+    end
+
+    function TypstHighlighter(f::Function, face::Face)
+        return TypstHighlighter(f, typst_decoration(face))
+    end
+
+    function TypstHighlighter(f::Function, crayon::Crayon)
+        return TypstHighlighter(f, _face_from_crayon(crayon))
+    end
+
+    function TypstHighlighter(f::Function; kwargs...)
+        return TypstHighlighter(f, _face_from_kwargs(; kwargs...))
     end
 end
 
@@ -212,7 +237,8 @@ Define the format of the tables printed with the Typst back end.
 - `horizontal_line_at_beginning::Bool`: If `true`, a horizontal line will be drawn at the
     beginning of the table.
 - `horizontal_line_at_merged_column_labels::Bool`: If `true`, a horizontal line will be
-    drawn at the bottom of the merged column labels using `table.hline`.
+    drawn at the bottom of the merged column labels using `table.hline`. The default is
+    `true`, whereas the text back end defaults to `false`.
 - `horizontal_line_after_column_labels::Bool`: If `true`, a horizontal line will be drawn
     after the column labels.
 - `horizontal_lines_at_data_rows::Union{Symbol, Vector{Int}}`: A horizontal line will be
@@ -305,7 +331,7 @@ Define the style of the tables printed with the Typst back end.
     TypstTableStyle(; kwargs...)
 
 Create a style in which each field can be passed as a keyword. Every keyword also accepts a
-`Face`, which is converted with [`typst_decoration`](@ref). The keywords
+`Face` (or a `Crayon`, converted to the equivalent face), which is converted with [`typst_decoration`](@ref). The keywords
 `first_line_column_label` and `column_label` also accept a vector with one decoration
 (Typst properties or `Face`) per column.
 """

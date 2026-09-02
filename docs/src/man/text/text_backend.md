@@ -86,9 +86,9 @@ the output.
   shrunk to fit the table in the display. If it is `0` or negative, no column will be
   shrinkable.
   (**Default** = 0)
-- `style::TextTableStyle`: Style of the table. For more information, see the section
+- `style::Union{TableStyle, TextTableStyle}`: Style of the table. For more information, see the section
   [Text Table Style](@ref).
-- `table_format::TextTableFormat`: Text table format used to render the table. For more
+- `table_format::Union{TableFormat, TextTableFormat}`: Text table format used to render the table. For more
     information, see the section [Text Table Format](@ref).
 
 ## Text Highlighters

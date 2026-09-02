@@ -54,12 +54,13 @@ end
     @test typst_line_style(LineStyle(; width = :medium)) == "1pt"
     @test typst_line_style(LineStyle(; width = :thick))  == "1.5pt"
 
-    @test typst_line_style(LineStyle(; style = :solid))  == "(dash: \"solid\")"
-    @test typst_line_style(LineStyle(; style = :dashed)) == "(dash: \"dashed\")"
-    @test typst_line_style(LineStyle(; style = :dotted)) == "(dash: \"dotted\")"
+    # An unset width keeps the default thickness.
+    @test typst_line_style(LineStyle(; style = :solid))  == "(thickness: 1pt, dash: \"solid\")"
+    @test typst_line_style(LineStyle(; style = :dashed)) == "(thickness: 1pt, dash: \"dashed\")"
+    @test typst_line_style(LineStyle(; style = :dotted)) == "(thickness: 1pt, dash: \"dotted\")"
 
     # Typst strokes have no double variant, so `:double` falls back to solid.
-    @test typst_line_style(LineStyle(; style = :double)) == "(dash: \"solid\")"
+    @test typst_line_style(LineStyle(; style = :double)) == "(thickness: 1pt, dash: \"solid\")"
 
     @test typst_line_style(LineStyle(; style = :dashed, width = :medium)) ==
         "(thickness: 1pt, dash: \"dashed\")"
@@ -231,10 +232,12 @@ end
 
         _test_table_format_equal(
             PrettyTables._text__table_format(tf),
+            # `TableFormat` has no counterpart of the text-only field
+            # `horizontal_lines_at_column_labels`, which keeps the text default.
             TextTableFormat(;
                 @text__all_horizontal_lines,
                 @text__all_vertical_lines,
-                horizontal_line_at_merged_column_labels = true,
+                horizontal_lines_at_column_labels = :none,
             )
         )
 
@@ -400,4 +403,70 @@ end
     @test resolve(Dict{Symbol, Any}(); default = :html) == :html
     @test resolve(Dict(:table_format => LatexTableFormat())) == :latex
     @test resolve(Dict(:table_format => LatexTableFormat()); default = :html) == :latex
+end
+
+@testset "Line Style Defaults" begin
+    # An unset aspect keeps the corresponding aspect of the back end default line.
+    @test html_line_style(LineStyle(; color = :red); default = "2px solid black") ==
+        "2px solid #a51c2c"
+    @test html_line_style(LineStyle(; style = :dashed); default = "2px solid black") ==
+        "2px dashed black"
+    @test html_line_style(LineStyle(; width = :thick)) == "3px solid black"
+
+    @test typst_line_style(LineStyle(; color = :red); default = "1.5pt") ==
+        "(thickness: 1.5pt, paint: rgb(\"#a51c2c\"))"
+    @test typst_line_style(LineStyle(; style = :dashed)) == "(thickness: 1pt, dash: \"dashed\")"
+    @test typst_line_style(LineStyle(; width = :thick); default = "0.5pt") == "1.5pt"
+
+    @test excel_line_style(
+        LineStyle(; color = :red);
+        default = ["style" => "thick", "color" => "Black"]
+    ) == ["style" => "thick", "color" => "FFA51C2C"]
+    @test excel_line_style(
+        LineStyle(; style = :dashed);
+        default = ["style" => "medium", "color" => "Black"]
+    ) == ["style" => "mediumDashed", "color" => "Black"]
+
+    @test latex_line_style(LineStyle(; style = :dashed); default = "\\hline") == "\\hdashline"
+
+    tf = TableFormat(; top_line = LineStyle(; color = :red))
+    @test PrettyTables._html__table_format(tf).borders.top_line == "2px solid #a51c2c"
+    @test PrettyTables._typst__table_format(tf).borders.top_line ==
+        "(thickness: 1.5pt, paint: rgb(\"#a51c2c\"))"
+    @test PrettyTables._excel__table_format(tf).borders.top_line ==
+        ["style" => "thick", "color" => "FFA51C2C"]
+end
+
+@testset "Line Style Validation" begin
+    @test_throws ArgumentError LineStyle(:bogus, nothing, nothing)
+    @test_throws ArgumentError LineStyle(nothing, :huge, nothing)
+    @test_throws ArgumentError LineStyle(nothing, nothing, 1.0)
+
+    ls = LineStyle(:dashed, :thick, :red)
+    @test (ls.style == :dashed) && (ls.width == :thick) && (ls.color == SimpleColor(:red))
+end
+
+@testset "Foreign Styles and Formats" begin
+    @test_throws ArgumentError pretty_table(String, [1 2]; backend = :text, style = HtmlTableStyle())
+    @test_throws ArgumentError pretty_table(String, [1 2]; backend = :html, table_format = TextTableFormat())
+    @test_throws ArgumentError pretty_table(String, [1 2]; backend = :latex, style = TypstTableStyle())
+    @test_throws ArgumentError pretty_table(String, [1 2]; backend = :markdown, table_format = HtmlTableFormat())
+    @test_throws ArgumentError pretty_table(String, [1 2]; backend = :typst, style = LatexTableStyle())
+
+    # A native style selects the back end when the table format does not.
+    resolve = PrettyTables._resolve_printing_backend
+    @test resolve(Dict(:style => HtmlTableStyle())) == :html
+    @test resolve(Dict(:style => TypstTableStyle(), :table_format => TableFormat())) == :typst
+    @test resolve(Dict(:style => TableStyle())) == :text
+    @test occursin("<table", pretty_table(String, [1 2]; style = HtmlTableStyle()))
+end
+
+@testset "Text Line Macros" begin
+    tf = TextTableFormat(; @text__all_horizontal_lines)
+    @test tf.horizontal_lines_at_column_labels == :all
+    @test tf.horizontal_line_at_merged_column_labels
+
+    tf = TextTableFormat(; @text__no_horizontal_lines)
+    @test tf.horizontal_lines_at_column_labels == :none
+    @test !tf.horizontal_line_at_merged_column_labels
 end
