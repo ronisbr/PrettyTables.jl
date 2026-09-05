@@ -104,6 +104,10 @@ function pretty_table(
         data,
         backend,
 
+        # == Other Keyword Arguments =======================================================
+
+        kwargs,
+
         # == Arguments for the IOContext ===================================================
 
         compact_printing,
@@ -153,10 +157,6 @@ function pretty_table(
         show_first_column_label_only,
         show_row_number_column,
         vertical_crop_mode,
-
-        # == Other Keyword Arguments =======================================================
-
-        kwargs,
     )
 end
 
@@ -227,6 +227,15 @@ Base.@constprop :none Base.@nospecializeinfer function _pretty_table(
     @nospecialize(data::Any),
     backend::Symbol,
 
+    # == Other Keyword Arguments ===========================================================
+
+    # NOTE: The keywords of the back end are passed as a positional argument without
+    # specialization so that this function is compiled only once. Otherwise, each distinct
+    # set of keywords passed by the user would compile this entire function again. This
+    # argument must stay within the first 32 positional arguments because `@nospecialize`
+    # is ignored (with a warning) beyond that limit.
+    @nospecialize(kwargs),
+
     # == Arguments for the IOContext =======================================================
 
     compact_printing::Bool,
@@ -278,13 +287,6 @@ Base.@constprop :none Base.@nospecializeinfer function _pretty_table(
     show_first_column_label_only::Bool,
     show_row_number_column::Bool,
     vertical_crop_mode::Symbol,
-
-    # == Other Keyword Arguments ===========================================================
-
-    # NOTE: The keywords of the back end are passed as a positional argument without
-    # specialization so that this function is compiled only once. Otherwise, each distinct
-    # set of keywords passed by the user would compile this entire function again.
-    @nospecialize(kwargs),
 )
 
     # == Table Preprocessing ===============================================================
