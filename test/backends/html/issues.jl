@@ -13,13 +13,9 @@
             ]
 
         expected = """
-<table style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
-  <colgroup>
-    <col style = "border-left: 2px solid black; border-right: 1px solid black;">
-    <col style = "border-right: 2px solid black;">
-  </colgroup>
+<table>
   <thead>
-    <tr class = "columnLabelRow" style = "border-bottom: 1px solid black;">
+    <tr class = "columnLabelRow">
       <th style = "font-weight: bold; text-align: right;">&lt;<span style = "color: #a51c2c;">Column 1</span>&gt;</th>
       <th style = "font-weight: bold; text-align: right;">&lt;Column 2&gt;</th>
     </tr>
@@ -29,7 +25,7 @@
       <td style = "text-align: right;">(1, 1)</td>
       <td style = "text-align: right;">(<span style = "color: #a51c2c;">2</span>, <span style = "color: #195eb3;">3</span>)</td>
     </tr>
-    <tr class = "dataRow" style = "border-bottom: 1px solid black;">
+    <tr class = "dataRow">
       <td style = "text-align: right;">(<span style = "color: #25a268;">2</span>, <span style = "color: #e5a509;">3</span>)</td>
       <td style = "text-align: right;">(2, 4)</td>
     </tr>
@@ -47,13 +43,9 @@
             @test result == expected
 
             expected = """
-<table style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
-  <colgroup>
-    <col style = "border-left: 2px solid black; border-right: 1px solid black;">
-    <col style = "border-right: 2px solid black;">
-  </colgroup>
+<table>
   <thead>
-    <tr class = "columnLabelRow" style = "border-bottom: 1px solid black;">
+    <tr class = "columnLabelRow">
       <th style = "font-weight: bold; text-align: right;">&lt;<span style = "color: #a51c2c;">Column 1</span>&gt;</th>
       <th style = "font-weight: bold; text-align: right;">&lt;Column 2&gt;</th>
     </tr>
@@ -63,7 +55,7 @@
       <td style = "text-align: right;">(1, 1)</td>
       <td style = "text-align: right;">(<span style = "color: #a51c2c;">2</span>, <span style = "color: #195eb3;">3</span>)</td>
     </tr>
-    <tr class = "dataRow" style = "border-bottom: 1px solid black;">
+    <tr class = "dataRow">
       <td style = "text-align: right;">(<span style = "color: #25a268;">2</span>, <span style = "color: #e5a509;">3</span>)</td>
       <td style = "text-align: right;">(2, 4)</td>
     </tr>

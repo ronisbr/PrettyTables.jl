@@ -9,15 +9,7 @@
 
     @testset "Without Cropping" begin
         expected = """
-<table style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
-  <colgroup>
-    <col style = "border-left: 2px solid black; border-right: 1px solid black;">
-    <col style = "border-right: 1px solid black;">
-    <col style = "border-right: 1px solid black;">
-    <col style = "border-right: 1px solid black;">
-    <col style = "border-right: 1px solid black;">
-    <col style = "border-right: 2px solid black;">
-  </colgroup>
+<table>
   <thead>
     <tr class = "title">
       <td colspan = "6" style = "font-size: x-large; font-weight: bold; text-align: center;">Table Title</td>
@@ -25,14 +17,14 @@
     <tr class = "subtitle">
       <td colspan = "6" style = "font-size: large; font-style: italic; text-align: center;">Table Subtitle</td>
     </tr>
-    <tr class = "columnLabelRow" style = "border-top: 1px solid black;">
+    <tr class = "columnLabelRow">
       <th class = "rowNumberLabel" style = "font-weight: bold; text-align: right;">Row</th>
       <th class = "stubheadLabel" style = "font-weight: bold; text-align: right;">Rows</th>
       <th style = "font-weight: bold; text-align: right;">Col. 1</th>
-      <th colspan = "2" style = "border-bottom: 1px solid black; font-weight: bold; text-align: center;">Merged Column<sup>1</sup></th>
+      <th colspan = "2" style = "font-weight: bold; text-align: center;">Merged Column<sup>1</sup></th>
       <th style = "font-weight: bold; text-align: right;">Col. 4</th>
     </tr>
-    <tr class = "columnLabelRow" style = "border-bottom: 1px solid black;">
+    <tr class = "columnLabelRow">
       <th class = "rowNumberLabel" style = "font-weight: bold; text-align: right;"></th>
       <th class = "stubheadLabel" style = "font-weight: bold; text-align: right;"></th>
       <th style = "text-align: right;">1</th>
@@ -50,7 +42,7 @@
       <td style = "text-align: right;">(1, 3)</td>
       <td style = "text-align: right;">(1, 4)</td>
     </tr>
-    <tr class = "rowGroupLabel" style = "border-bottom: 1px solid black; border-top: 1px solid black;">
+    <tr class = "rowGroupLabel">
       <td colspan = "6" style = "font-weight: bold; text-align: left;">Row Group</td>
     </tr>
     <tr class = "dataRow">
@@ -69,7 +61,7 @@
       <td style = "text-align: right;">(3, 3)</td>
       <td style = "text-align: right;">(3, 4)</td>
     </tr>
-    <tr class = "dataRow" style = "border-bottom: 1px solid black;">
+    <tr class = "dataRow">
       <td class = "rowNumber" style = "font-weight: bold; text-align: right;">4</td>
       <td class = "rowLabel" style = "font-weight: bold; text-align: right;">Row 4</td>
       <td style = "text-align: right;">(4, 1)</td>
@@ -77,7 +69,7 @@
       <td style = "text-align: right;">(4, 3)</td>
       <td style = "text-align: right;">(4, 4)</td>
     </tr>
-    <tr class = "summaryRow" style = "border-top: 1px solid black;">
+    <tr class = "summaryRow">
       <td class = "summaryRowNumber" style = "font-weight: bold; text-align: right;"></td>
       <td class = "summaryRowLabel" style = "font-weight: bold; text-align: right;">Summary 1</td>
       <td style = "text-align: right;">10</td>
@@ -85,7 +77,7 @@
       <td style = "text-align: right;">30</td>
       <td style = "text-align: right;">40</td>
     </tr>
-    <tr class = "summaryRow" style = "border-bottom: 1px solid black;">
+    <tr class = "summaryRow">
       <td class = "summaryRowNumber" style = "font-weight: bold; text-align: right;"></td>
       <td class = "summaryRowLabel" style = "font-weight: bold; text-align: right;">Summary 2</td>
       <td style = "text-align: right;">20</td>
@@ -98,7 +90,7 @@
     <tr class = "footnote">
       <td colspan = "6" style = "font-size: small; text-align: left;"><sup>1</sup> Footnote in column label</td>
     </tr>
-    <tr class = "footnote" style = "border-bottom: 1px solid black;">
+    <tr class = "footnote">
       <td colspan = "6" style = "font-size: small; text-align: left;"><sup>2</sup> Footnote in data</td>
     </tr>
     <tr class = "sourceNotes">
@@ -139,14 +131,7 @@
   </div>
   <div style = "clear: both;"></div>
 </div>
-<table style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
-  <colgroup>
-    <col style = "border-left: 2px solid black; border-right: 1px solid black;">
-    <col style = "border-right: 1px solid black;">
-    <col style = "border-right: 1px solid black;">
-    <col style = "border-right: 1px solid black;">
-    <col style = "border-right: 2px solid black;">
-  </colgroup>
+<table>
   <thead>
     <tr class = "title">
       <td colspan = "5" style = "font-size: x-large; font-weight: bold; text-align: center;">Table Title</td>
@@ -154,7 +139,7 @@
     <tr class = "subtitle">
       <td colspan = "5" style = "font-size: large; font-style: italic; text-align: center;">Table Subtitle</td>
     </tr>
-    <tr class = "columnLabelRow" style = "border-bottom: 1px solid black; border-top: 1px solid black;">
+    <tr class = "columnLabelRow">
       <th class = "rowNumberLabel" style = "font-weight: bold; text-align: right;">Row</th>
       <th class = "stubheadLabel" style = "font-weight: bold; text-align: right;">Rows</th>
       <th style = "font-weight: bold; text-align: right;">Col. 1</th>
@@ -170,7 +155,7 @@
       <td style = "text-align: right;">(1, 2)</td>
       <td>&ctdot;</td>
     </tr>
-    <tr class = "rowGroupLabel" style = "border-bottom: 1px solid black; border-top: 1px solid black;">
+    <tr class = "rowGroupLabel">
       <td colspan = "5" style = "font-weight: bold; text-align: left;">Row Group</td>
     </tr>
     <tr class = "dataRow">
@@ -180,21 +165,21 @@
       <td style = "text-align: right;">(2, 2)<sup>2</sup></td>
       <td>&ctdot;</td>
     </tr>
-    <tr style = "border-bottom: 1px solid black;">
+    <tr>
       <td style = "text-align: right;">&vellip;</td>
       <td style = "text-align: right;">&vellip;</td>
       <td style = "text-align: right;">&vellip;</td>
       <td style = "text-align: right;">&vellip;</td>
       <td>&dtdot;</td>
     </tr>
-    <tr class = "summaryRow" style = "border-top: 1px solid black;">
+    <tr class = "summaryRow">
       <td class = "summaryRowNumber" style = "font-weight: bold; text-align: right;"></td>
       <td class = "summaryRowLabel" style = "font-weight: bold; text-align: right;">Summary 1</td>
       <td style = "text-align: right;">10</td>
       <td style = "text-align: right;">20</td>
       <td>&ctdot;</td>
     </tr>
-    <tr class = "summaryRow" style = "border-bottom: 1px solid black;">
+    <tr class = "summaryRow">
       <td class = "summaryRowNumber" style = "font-weight: bold; text-align: right;"></td>
       <td class = "summaryRowLabel" style = "font-weight: bold; text-align: right;">Summary 2</td>
       <td style = "text-align: right;">20</td>
@@ -206,7 +191,7 @@
     <tr class = "footnote">
       <td colspan = "5" style = "font-size: small; text-align: left;"><sup>1</sup> Footnote in column label</td>
     </tr>
-    <tr class = "footnote" style = "border-bottom: 1px solid black;">
+    <tr class = "footnote">
       <td colspan = "5" style = "font-size: small; text-align: left;"><sup>2</sup> Footnote in data</td>
     </tr>
     <tr class = "sourceNotes">
@@ -248,14 +233,7 @@
   </div>
   <div style = "clear: both;"></div>
 </div>
-<table style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
-  <colgroup>
-    <col style = "border-left: 2px solid black; border-right: 1px solid black;">
-    <col style = "border-right: 1px solid black;">
-    <col style = "border-right: 1px solid black;">
-    <col style = "border-right: 1px solid black;">
-    <col style = "border-right: 2px solid black;">
-  </colgroup>
+<table>
   <thead>
     <tr class = "title">
       <td colspan = "5" style = "font-size: x-large; font-weight: bold; text-align: center;">Table Title</td>
@@ -263,7 +241,7 @@
     <tr class = "subtitle">
       <td colspan = "5" style = "font-size: large; font-style: italic; text-align: center;">Table Subtitle</td>
     </tr>
-    <tr class = "columnLabelRow" style = "border-bottom: 1px solid black; border-top: 1px solid black;">
+    <tr class = "columnLabelRow">
       <th class = "rowNumberLabel" style = "font-weight: bold; text-align: right;">Row</th>
       <th class = "stubheadLabel" style = "font-weight: bold; text-align: right;">Rows</th>
       <th style = "font-weight: bold; text-align: right;">Col. 1</th>
@@ -286,21 +264,21 @@
       <td style = "text-align: right;">&vellip;</td>
       <td>&dtdot;</td>
     </tr>
-    <tr class = "dataRow" style = "border-bottom: 1px solid black;">
+    <tr class = "dataRow">
       <td class = "rowNumber" style = "font-weight: bold; text-align: right;">4</td>
       <td class = "rowLabel" style = "font-weight: bold; text-align: right;">Row 4</td>
       <td style = "text-align: right;">(4, 1)</td>
       <td style = "text-align: right;">(4, 2)</td>
       <td>&ctdot;</td>
     </tr>
-    <tr class = "summaryRow" style = "border-top: 1px solid black;">
+    <tr class = "summaryRow">
       <td class = "summaryRowNumber" style = "font-weight: bold; text-align: right;"></td>
       <td class = "summaryRowLabel" style = "font-weight: bold; text-align: right;">Summary 1</td>
       <td style = "text-align: right;">10</td>
       <td style = "text-align: right;">20</td>
       <td>&ctdot;</td>
     </tr>
-    <tr class = "summaryRow" style = "border-bottom: 1px solid black;">
+    <tr class = "summaryRow">
       <td class = "summaryRowNumber" style = "font-weight: bold; text-align: right;"></td>
       <td class = "summaryRowLabel" style = "font-weight: bold; text-align: right;">Summary 2</td>
       <td style = "text-align: right;">20</td>
@@ -312,7 +290,7 @@
     <tr class = "footnote">
       <td colspan = "5" style = "font-size: small; text-align: left;"><sup>1</sup> Footnote in column label</td>
     </tr>
-    <tr class = "footnote" style = "border-bottom: 1px solid black;">
+    <tr class = "footnote">
       <td colspan = "5" style = "font-size: small; text-align: left;"><sup>2</sup> Footnote in data</td>
     </tr>
     <tr class = "sourceNotes">
@@ -353,19 +331,15 @@
         result = pretty_table(String, [1 2]; backend = :html, source_notes = "src")
 
         expected = """
-<table style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
-  <colgroup>
-    <col style = "border-left: 2px solid black; border-right: 1px solid black;">
-    <col style = "border-right: 2px solid black;">
-  </colgroup>
+<table>
   <thead>
-    <tr class = "columnLabelRow" style = "border-bottom: 1px solid black;">
+    <tr class = "columnLabelRow">
       <th style = "font-weight: bold; text-align: right;">Col. 1</th>
       <th style = "font-weight: bold; text-align: right;">Col. 2</th>
     </tr>
   </thead>
   <tbody>
-    <tr class = "dataRow" style = "border-bottom: 1px solid black;">
+    <tr class = "dataRow">
       <td style = "text-align: right;">1</td>
       <td style = "text-align: right;">2</td>
     </tr>

@@ -250,14 +250,21 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
 
     # The borders at the top and bottom of the table are emitted in the `<table>` element,
     # avoiding the need to know which rows are the first and last ones. `border-collapse`
-    # is required so that adjacent cell borders are merged into a single line. Notice that
-    # the user style is appended afterward, allowing it to override the borders.
+    # is required so that adjacent cell borders are merged into a single line. However, it
+    # is only emitted when the format draws at least one line so that the default table has
+    # no border decoration. Notice that the user style is appended afterward, allowing it
+    # to override the borders.
     empty!(vstyle)
-    push!(vstyle, "border-collapse" => "collapse")
 
-    tf.horizontal_line_at_beginning && push!(vstyle, "border-top" => tf.borders.top_line)
+    if _html__has_any_table_line(tf)
+        push!(vstyle, "border-collapse" => "collapse")
 
-    tf.horizontal_line_at_end && push!(vstyle, "border-bottom" => tf.borders.bottom_line)
+        tf.horizontal_line_at_beginning &&
+            push!(vstyle, "border-top" => tf.borders.top_line)
+
+        tf.horizontal_line_at_end &&
+            push!(vstyle, "border-bottom" => tf.borders.bottom_line)
+    end
 
     append!(vstyle, style.table)
 

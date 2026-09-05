@@ -9,12 +9,9 @@
         matrix = ["<BR>", "<p>Test<p>", "<p>&vellip;</p>"]
 
         expected = """
-<table style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
-  <colgroup>
-    <col style = "border-left: 2px solid black; border-right: 2px solid black;">
-  </colgroup>
+<table>
   <thead>
-    <tr class = "columnLabelRow" style = "border-bottom: 1px solid black;">
+    <tr class = "columnLabelRow">
       <th style = "font-weight: bold; text-align: right;">Col. 1</th>
     </tr>
   </thead>
@@ -25,7 +22,7 @@
     <tr class = "dataRow">
       <td style = "text-align: right;">&lt;p&gt;Test&lt;p&gt;</td>
     </tr>
-    <tr class = "dataRow" style = "border-bottom: 1px solid black;">
+    <tr class = "dataRow">
       <td style = "text-align: right;">&lt;p&gt;&amp;vellip;&lt;/p&gt;</td>
     </tr>
   </tbody>
@@ -45,12 +42,9 @@
         matrix = ["<BR>", "<p>Test<p>", html"<p>&vellip;</p>"]
 
         expected = """
-<table style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
-  <colgroup>
-    <col style = "border-left: 2px solid black; border-right: 2px solid black;">
-  </colgroup>
+<table>
   <thead>
-    <tr class = "columnLabelRow" style = "border-bottom: 1px solid black;">
+    <tr class = "columnLabelRow">
       <th style = "font-weight: bold; text-align: right;">Col. 1</th>
     </tr>
   </thead>
@@ -61,7 +55,7 @@
     <tr class = "dataRow">
       <td style = "text-align: right;">&lt;p&gt;Test&lt;p&gt;</td>
     </tr>
-    <tr class = "dataRow" style = "border-bottom: 1px solid black;">
+    <tr class = "dataRow">
       <td style = "text-align: right;"><p>&vellip;</p></td>
     </tr>
   </tbody>
@@ -81,12 +75,9 @@
         matrix = ["<BR>", "<p>Test<p>", "<p>&vellip;</p>"]
 
         expected = """
-<table style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
-  <colgroup>
-    <col style = "border-left: 2px solid black; border-right: 2px solid black;">
-  </colgroup>
+<table>
   <thead>
-    <tr class = "columnLabelRow" style = "border-bottom: 1px solid black;">
+    <tr class = "columnLabelRow">
       <th style = "font-weight: bold; text-align: right;">Col. 1</th>
     </tr>
   </thead>
@@ -97,7 +88,7 @@
     <tr class = "dataRow">
       <td style = "text-align: right;"><p>Test<p></td>
     </tr>
-    <tr class = "dataRow" style = "border-bottom: 1px solid black;">
+    <tr class = "dataRow">
       <td style = "text-align: right;"><p>&vellip;</p></td>
     </tr>
   </tbody>
@@ -130,19 +121,15 @@
         matrix = ["First Line\nSecond Line" "Third Line\nFourth Line"]
 
         expected = """
-<table style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
-  <colgroup>
-    <col style = "border-left: 2px solid black; border-right: 1px solid black;">
-    <col style = "border-right: 2px solid black;">
-  </colgroup>
+<table>
   <thead>
-    <tr class = "columnLabelRow" style = "border-bottom: 1px solid black;">
+    <tr class = "columnLabelRow">
       <th style = "font-weight: bold; text-align: right;">Col. 1</th>
       <th style = "font-weight: bold; text-align: right;">Col. 2</th>
     </tr>
   </thead>
   <tbody>
-    <tr class = "dataRow" style = "border-bottom: 1px solid black;">
+    <tr class = "dataRow">
       <td style = "text-align: right;">First Line\\nSecond Line</td>
       <td style = "text-align: right;">Third Line\\nFourth Line</td>
     </tr>
@@ -155,19 +142,15 @@
         @test result == expected
 
         expected = """
-<table style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
-  <colgroup>
-    <col style = "border-left: 2px solid black; border-right: 1px solid black;">
-    <col style = "border-right: 2px solid black;">
-  </colgroup>
+<table>
   <thead>
-    <tr class = "columnLabelRow" style = "border-bottom: 1px solid black;">
+    <tr class = "columnLabelRow">
       <th style = "font-weight: bold; text-align: right;">Col. 1</th>
       <th style = "font-weight: bold; text-align: right;">Col. 2</th>
     </tr>
   </thead>
   <tbody>
-    <tr class = "dataRow" style = "border-bottom: 1px solid black;">
+    <tr class = "dataRow">
       <td style = "text-align: right;">First Line<br>Second Line</td>
       <td style = "text-align: right;">Third Line<br>Fourth Line</td>
     </tr>
@@ -187,12 +170,9 @@
         v[5] = π
 
         expected = """
-<table style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
-  <colgroup>
-    <col style = "border-left: 2px solid black; border-right: 2px solid black;">
-  </colgroup>
+<table>
   <thead>
-    <tr class = "columnLabelRow" style = "border-bottom: 1px solid black;">
+    <tr class = "columnLabelRow">
       <th style = "font-weight: bold; text-align: right;">Col. 1</th>
     </tr>
   </thead>
@@ -209,7 +189,7 @@
     <tr class = "dataRow">
       <td style = "text-align: right;">#undef</td>
     </tr>
-    <tr class = "dataRow" style = "border-bottom: 1px solid black;">
+    <tr class = "dataRow">
       <td style = "text-align: right;">π</td>
     </tr>
   </tbody>
@@ -229,21 +209,16 @@
         matrix = [md"**Bold**" md"*Italic*" md"_**Bold and Italic**_"]
 
         expected = """
-<table style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
-  <colgroup>
-    <col style = "border-left: 2px solid black; border-right: 1px solid black;">
-    <col style = "border-right: 1px solid black;">
-    <col style = "border-right: 2px solid black;">
-  </colgroup>
+<table>
   <thead>
-    <tr class = "columnLabelRow" style = "border-bottom: 1px solid black;">
+    <tr class = "columnLabelRow">
       <th style = "font-weight: bold; text-align: right;">Col. 1</th>
       <th style = "font-weight: bold; text-align: right;">Col. 2</th>
       <th style = "font-weight: bold; text-align: right;">Col. 3</th>
     </tr>
   </thead>
   <tbody>
-    <tr class = "dataRow" style = "border-bottom: 1px solid black;">
+    <tr class = "dataRow">
       <td style = "text-align: right;"><div class="markdown"><p><strong>Bold</strong></p></div></td>
       <td style = "text-align: right;"><div class="markdown"><p><em>Italic</em></p></div></td>
       <td style = "text-align: right;"><div class="markdown"><p><em><strong>Bold and Italic</strong></em></p></div></td>

@@ -9,14 +9,9 @@
         matrix = ones(3, 3)
 
         expected = """
-<table style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
-  <colgroup>
-    <col style = "border-left: 2px solid black; border-right: 1px solid black;">
-    <col style = "border-right: 1px solid black;">
-    <col style = "border-right: 2px solid black;">
-  </colgroup>
+<table>
   <thead>
-    <tr class = "columnLabelRow" style = "border-bottom: 1px solid black;">
+    <tr class = "columnLabelRow">
       <th style = "color: yellow; text-align: right;">Col. 1</th>
       <th style = "color: yellow; text-align: right;">Col. 2</th>
       <th style = "color: yellow; text-align: right;">Col. 3</th>
@@ -33,7 +28,7 @@
       <td style = "text-align: right;">1.0</td>
       <td style = "text-align: right;">1.0</td>
     </tr>
-    <tr class = "dataRow" style = "border-bottom: 1px solid black;">
+    <tr class = "dataRow">
       <td style = "text-align: right;">1.0</td>
       <td style = "text-align: right;">1.0</td>
       <td style = "text-align: right;">1.0</td>
@@ -53,14 +48,9 @@
         @test result == expected
 
         expected = """
-<table style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
-  <colgroup>
-    <col style = "border-left: 2px solid black; border-right: 1px solid black;">
-    <col style = "border-right: 1px solid black;">
-    <col style = "border-right: 2px solid black;">
-  </colgroup>
+<table>
   <thead>
-    <tr class = "columnLabelRow" style = "border-bottom: 1px solid black;">
+    <tr class = "columnLabelRow">
       <th style = "color: yellow; text-align: right;">Col. 1</th>
       <th style = "color: blue; text-align: right;">Col. 2</th>
       <th style = "color: red; text-align: right;">Col. 3</th>
@@ -77,7 +67,7 @@
       <td style = "text-align: right;">1.0</td>
       <td style = "text-align: right;">1.0</td>
     </tr>
-    <tr class = "dataRow" style = "border-bottom: 1px solid black;">
+    <tr class = "dataRow">
       <td style = "text-align: right;">1.0</td>
       <td style = "text-align: right;">1.0</td>
       <td style = "text-align: right;">1.0</td>

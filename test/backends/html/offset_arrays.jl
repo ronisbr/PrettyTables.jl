@@ -15,15 +15,9 @@
     omatrix = OffsetArray(matrix, -2:0, -3:-1)
 
     expected = """
-<table style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
-  <colgroup>
-    <col style = "border-left: 2px solid black; border-right: 1px solid black;">
-    <col style = "border-right: 1px solid black;">
-    <col style = "border-right: 1px solid black;">
-    <col style = "border-right: 2px solid black;">
-  </colgroup>
+<table>
   <thead>
-    <tr class = "columnLabelRow" style = "border-bottom: 1px solid black;">
+    <tr class = "columnLabelRow">
       <th class = "rowNumberLabel" style = "font-weight: bold; text-align: right;">Row</th>
       <th style = "font-weight: bold; text-align: right;">Col. -3</th>
       <th style = "font-weight: bold; text-align: right;">Col. -2</th>
@@ -43,7 +37,7 @@
       <td style = "text-align: right;">missing</td>
       <td style = "text-align: right;">#undef</td>
     </tr>
-    <tr class = "dataRow" style = "border-bottom: 1px solid black;">
+    <tr class = "dataRow">
       <td class = "rowNumber" style = "font-weight: bold; text-align: right;">0</td>
       <td style = "text-align: right;">#undef</td>
       <td style = "text-align: right;">#undef</td>

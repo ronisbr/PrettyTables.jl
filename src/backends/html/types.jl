@@ -203,8 +203,7 @@ Define the format of the tables printed with the HTML back end.
 - `horizontal_line_after_column_labels::Bool`: If `true`, a horizontal line will be drawn
     after the column labels.
 - `horizontal_line_at_merged_column_labels::Bool`: If `true`, a horizontal line will be
-    drawn at the bottom of the merged column labels. The default is `true`, whereas the
-    text back end defaults to `false`.
+    drawn at the bottom of the merged column labels.
 - `horizontal_lines_at_data_rows::Union{Symbol, Vector{Int}}`: A horizontal line will be
     drawn after each data row index listed in this vector. If the symbol `:all` is passed, a
     horizontal line will be drawn after every data row. If the symbol `:none` is passed,
@@ -242,6 +241,12 @@ Define the format of the tables printed with the HTML back end.
 
 # Remarks
 
+By default, the HTML back end draws no lines: every line presence field defaults to `false`
+(or `:none`), and the emitted code has no border decoration. Hence, the table appearance can
+be fully customized with CSS. The fields above (or the backend-agnostic
+[`TableFormat`](@ref)) can be used to draw lines as inline styles, which are applied in any
+rendering mode.
+
 The horizontal lines at the beginning and end of the table are emitted as inline borders of
 the `<table>` element, the other horizontal lines are emitted as inline borders of the
 `<tr>` elements, and the vertical lines are emitted as inline borders of the `<col>`
@@ -261,25 +266,28 @@ wider border, and then the border with the higher style precedence.
 
     # == Configuration for the Horizontal and Vertical Lines ===============================
 
-    horizontal_line_at_beginning::Bool = true
-    horizontal_line_before_column_labels::Bool = true
-    horizontal_line_after_column_labels::Bool = true
-    horizontal_line_at_merged_column_labels::Bool = true
+    # NOTE: The HTML back end draws no lines by default so that the emitted code has no
+    # border decoration, matching the behavior before the borders were introduced and
+    # keeping the output fully customizable with CSS.
+    horizontal_line_at_beginning::Bool = false
+    horizontal_line_before_column_labels::Bool = false
+    horizontal_line_after_column_labels::Bool = false
+    horizontal_line_at_merged_column_labels::Bool = false
     horizontal_lines_at_data_rows::Union{Symbol, Vector{Int}} = :none
-    horizontal_line_before_row_group_label::Bool = true
-    horizontal_line_after_row_group_label::Bool = true
-    horizontal_line_after_data_rows::Bool = true
-    horizontal_line_before_summary_rows::Bool = true
-    horizontal_line_after_summary_rows::Bool = true
-    horizontal_line_after_footnotes::Bool = true
-    horizontal_line_at_end::Bool = true
+    horizontal_line_before_row_group_label::Bool = false
+    horizontal_line_after_row_group_label::Bool = false
+    horizontal_line_after_data_rows::Bool = false
+    horizontal_line_before_summary_rows::Bool = false
+    horizontal_line_after_summary_rows::Bool = false
+    horizontal_line_after_footnotes::Bool = false
+    horizontal_line_at_end::Bool = false
 
-    vertical_line_at_beginning::Bool = true
-    vertical_line_after_row_number_column::Bool = true
-    vertical_line_after_row_label_column::Bool = true
-    vertical_lines_at_data_columns::Union{Symbol, Vector{Int}} = :all
-    vertical_line_after_data_columns::Bool = true
-    vertical_line_after_continuation_column::Bool = true
+    vertical_line_at_beginning::Bool = false
+    vertical_line_after_row_number_column::Bool = false
+    vertical_line_after_row_label_column::Bool = false
+    vertical_lines_at_data_columns::Union{Symbol, Vector{Int}} = :none
+    vertical_line_after_data_columns::Bool = false
+    vertical_line_after_continuation_column::Bool = false
 end
 
 # Positional constructor with the fields of v3.4.8, before the border fields were added, so

@@ -73,13 +73,9 @@
         f = (data, i, j) -> i == 1
 
         expected = """
-<table style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
-  <colgroup>
-    <col style = "border-left: 2px solid black; border-right: 1px solid black;">
-    <col style = "border-right: 2px solid black;">
-  </colgroup>
+<table>
   <thead>
-    <tr class = "columnLabelRow" style = "border-bottom: 1px solid black;">
+    <tr class = "columnLabelRow">
       <th style = "font-weight: bold; text-align: right;">Col. 1</th>
       <th style = "font-weight: bold; text-align: right;">Col. 2</th>
     </tr>
@@ -89,7 +85,7 @@
       <td style = "color: #ff0000; font-weight: bold; text-align: right;">1</td>
       <td style = "color: #ff0000; font-weight: bold; text-align: right;">2</td>
     </tr>
-    <tr class = "dataRow" style = "border-bottom: 1px solid black;">
+    <tr class = "dataRow">
       <td style = "text-align: right;">3</td>
       <td style = "text-align: right;">4</td>
     </tr>
@@ -138,13 +134,9 @@
             ]
 
             expected = """
-<table style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
-  <colgroup>
-    <col style = "border-left: 2px solid black; border-right: 1px solid black;">
-    <col style = "border-right: 2px solid black;">
-  </colgroup>
+<table>
   <thead>
-    <tr class = "columnLabelRow" style = "border-bottom: 1px solid black;">
+    <tr class = "columnLabelRow">
       <th style = "font-weight: bold; text-align: right;">&lt;<span style = "color: #a51c2c;">A</span>&gt;</th>
       <th style = "font-weight: bold; text-align: right;">B</th>
     </tr>
@@ -154,7 +146,7 @@
       <td style = "text-align: right;"><span style = "color: #e5a509; font-weight: bold;">Yellow, Bold</span></td>
       <td style = "text-align: right;"><span style = "color: #195eb3;">Blue</span> &amp; &lt;x&gt;</td>
     </tr>
-    <tr class = "dataRow" style = "border-bottom: 1px solid black;">
+    <tr class = "dataRow">
       <td style = "text-align: right;"><span style = "color: #a51c2c;"> Red</span></td>
       <td style = "text-align: right;"><span style = "background-color: #195eb3; color: #25a268;">Green</span>_<span style = "font-style: italic;">it</span></td>
     </tr>

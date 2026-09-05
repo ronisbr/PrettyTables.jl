@@ -4,6 +4,18 @@
 #
 ############################################################################################
 
+@testset "No Border Decoration by Default" begin
+    matrix = [1 2; 3 4]
+
+    output = pretty_table(String, matrix; backend = :html)
+
+    # The default HTML table format must not draw any line, so the emitted code has no
+    # border decoration and the table appearance can be fully customized with CSS.
+    @test occursin("<table>", output)
+    @test !occursin("border", output)
+    @test !occursin("<colgroup>", output)
+end
+
 @testset "Helper Macros" begin
     matrix = [1 2; 3 4]
 
@@ -54,7 +66,7 @@
     @test result == expected
 
     expected = """
-<table style = "border-collapse: collapse;">
+<table>
   <thead>
     <tr class = "columnLabelRow">
       <th class = "rowNumberLabel" style = "font-weight: bold; text-align: right;">Row</th>
@@ -123,29 +135,29 @@ end
     end
 
     @testset "Horizontal Line at Beginning" begin
-        on  = _render_lines("<table")
-        off = _render_lines("<table"; horizontal_line_at_beginning = false)
+        on  = _render_lines("<table"; horizontal_line_at_beginning = true)
+        off = _render_lines("<table")
         @test occursin("border-top: 2px solid black", first(on))
         @test !occursin("border-top", first(off))
     end
 
     @testset "Horizontal Line at End" begin
-        on  = _render_lines("<table")
-        off = _render_lines("<table"; horizontal_line_at_end = false)
+        on  = _render_lines("<table"; horizontal_line_at_end = true)
+        off = _render_lines("<table")
         @test occursin("border-bottom: 2px solid black", first(on))
         @test !occursin("border-bottom", first(off))
     end
 
     @testset "Horizontal Line Before Column Labels" begin
-        on  = _render_lines("columnLabelRow")
-        off = _render_lines("columnLabelRow"; horizontal_line_before_column_labels = false)
+        on  = _render_lines("columnLabelRow"; horizontal_line_before_column_labels = true)
+        off = _render_lines("columnLabelRow")
         @test occursin("border-top: 1px solid black", first(on))
         @test all(l -> !occursin("border-top", l), off)
     end
 
     @testset "Horizontal Line After Column Labels" begin
-        on  = _render_lines("columnLabelRow")
-        off = _render_lines("columnLabelRow"; horizontal_line_after_column_labels = false)
+        on  = _render_lines("columnLabelRow"; horizontal_line_after_column_labels = true)
+        off = _render_lines("columnLabelRow")
         @test occursin("border-bottom: 1px solid black", first(on))
         @test all(l -> !occursin("border-bottom", l), off)
     end
@@ -161,8 +173,8 @@ end
     end
 
     @testset "Horizontal Lines Around the Row Group Label" begin
-        on  = _render_lines("rowGroupLabel")
-        off = _render_lines("rowGroupLabel"; horizontal_line_before_row_group_label = false, horizontal_line_after_row_group_label  = false)
+        on  = _render_lines("rowGroupLabel"; horizontal_line_before_row_group_label = true, horizontal_line_after_row_group_label  = true)
+        off = _render_lines("rowGroupLabel")
         @test occursin("border-top: 1px solid black", first(on))
         @test occursin("border-bottom: 1px solid black", first(on))
         @test !occursin("border-top", first(off))
@@ -170,8 +182,8 @@ end
     end
 
     @testset "Horizontal Lines Around the Summary Rows" begin
-        on  = _render_lines("summaryRow")
-        off = _render_lines("summaryRow"; horizontal_line_before_summary_rows = false, horizontal_line_after_summary_rows  = false)
+        on  = _render_lines("summaryRow"; horizontal_line_before_summary_rows = true, horizontal_line_after_summary_rows  = true)
+        off = _render_lines("summaryRow")
         @test occursin("border-top: 1px solid black", first(on))
         @test occursin("border-bottom: 1px solid black", first(on))
         @test !occursin("border-top", first(off))
@@ -179,8 +191,8 @@ end
     end
 
     @testset "Horizontal Line After Footnotes" begin
-        on  = _render_lines("footnote")
-        off = _render_lines("footnote"; horizontal_line_after_footnotes = false)
+        on  = _render_lines("footnote"; horizontal_line_after_footnotes = true)
+        off = _render_lines("footnote")
         @test occursin("border-bottom: 1px solid black", first(on))
         @test !occursin("border-bottom", first(off))
     end
@@ -243,7 +255,10 @@ end
                 middle_line = "1px dashed blue",
                 bottom_line = "4px double red",
             ),
-            horizontal_lines_at_data_rows = [1],
+            horizontal_line_at_beginning        = true,
+            horizontal_line_after_column_labels = true,
+            horizontal_lines_at_data_rows       = [1],
+            horizontal_line_at_end              = true,
         ),
     )
 
@@ -264,6 +279,7 @@ end
         highlighters = [
             HtmlHighlighter((data, i, j) -> i == 2, ["border-bottom" => "3px solid red"])
         ],
+        table_format = HtmlTableFormat(; horizontal_line_after_data_rows = true),
     )
 
     # The line after the data rows is a border of the `<tr>` element, whereas the border
@@ -278,6 +294,7 @@ end
         matrix;
         backend = :html,
         style = HtmlTableStyle(; table = ["border-top" => "5px solid blue"]),
+        table_format = HtmlTableFormat(; horizontal_line_at_beginning = true),
     )
 
     @test occursin(
@@ -307,7 +324,22 @@ end
 </table>
 """
 
-    result = pretty_table(String, matrix; backend = :html, show_column_labels = false)
+    result = pretty_table(
+        String,
+        matrix;
+        backend = :html,
+        show_column_labels = false,
+        table_format = HtmlTableFormat(;
+            horizontal_line_at_beginning        = true,
+            horizontal_line_after_column_labels = true,
+            horizontal_line_after_data_rows     = true,
+            horizontal_line_at_end              = true,
+            vertical_line_at_beginning          = true,
+            vertical_lines_at_data_columns      = :all,
+            vertical_line_after_data_columns    = true,
+        ),
+    )
 
     @test result == expected
 end
+

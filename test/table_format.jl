@@ -167,11 +167,12 @@ end
     end
 
     @testset "Backend Default Divergences Are Preserved" begin
-        # The text back end defaults `horizontal_line_at_merged_column_labels` to `false`,
-        # whereas the other back ends default it to `true`. The sparse merge must keep both.
+        # The text and HTML back ends default `horizontal_line_at_merged_column_labels` to
+        # `false`, whereas the other back ends default it to `true`. The sparse merge must
+        # keep both.
         for (converter, expected) in (
             (PrettyTables._text__table_format,  false),
-            (PrettyTables._html__table_format,  true),
+            (PrettyTables._html__table_format,  false),
             (PrettyTables._latex__table_format, true),
             (PrettyTables._typst__table_format, true),
             (PrettyTables._excel__table_format, true),

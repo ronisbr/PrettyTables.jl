@@ -11,14 +11,9 @@
     ]
 
     expected = """
-<table style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
-  <colgroup>
-    <col style = "border-left: 2px solid black; border-right: 1px solid black;">
-    <col style = "border-right: 1px solid black;">
-    <col style = "border-right: 2px solid black;">
-  </colgroup>
+<table>
   <thead>
-    <tr class = "columnLabelRow" style = "border-bottom: 1px solid black;">
+    <tr class = "columnLabelRow">
       <th style = "font-weight: bold; text-align: right;">Col. 1</th>
       <th style = "font-weight: bold; text-align: right;">Col. 2</th>
       <th style = "font-weight: bold; text-align: right;">Col. 3</th>
@@ -30,7 +25,7 @@
       <td style = "color: red; text-align: right;">2</td>
       <td style = "color: green; font-weight: bold; text-align: right;">3</td>
     </tr>
-    <tr class = "dataRow" style = "border-bottom: 1px solid black;">
+    <tr class = "dataRow">
       <td style = "color: red; text-align: right;">4</td>
       <td style = "color: green; font-weight: bold; text-align: right;">5</td>
       <td style = "color: red; text-align: right;">6</td>

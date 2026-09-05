@@ -11,13 +11,7 @@
         column_label_titles = [[1, 2, 3, 4], nothing, ["5", "6", "7", "8"]]
 
         expected = """
-<table style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
-  <colgroup>
-    <col style = "border-left: 2px solid black; border-right: 1px solid black;">
-    <col style = "border-right: 1px solid black;">
-    <col style = "border-right: 1px solid black;">
-    <col style = "border-right: 2px solid black;">
-  </colgroup>
+<table>
   <thead>
     <tr class = "columnLabelRow">
       <th title = "1" style = "font-weight: bold; text-align: right;">(1, 1)</th>
@@ -31,7 +25,7 @@
       <th style = "text-align: right;">(2, 3)</th>
       <th style = "text-align: right;">(2, 4)</th>
     </tr>
-    <tr class = "columnLabelRow" style = "border-bottom: 1px solid black;">
+    <tr class = "columnLabelRow">
       <th title = "5" style = "text-align: right;">(3, 1)</th>
       <th title = "6" style = "text-align: right;">(3, 2)</th>
       <th title = "7" style = "text-align: right;">(3, 3)</th>
@@ -45,7 +39,7 @@
       <td style = "text-align: right;">(1, 3)</td>
       <td style = "text-align: right;">(1, 4)</td>
     </tr>
-    <tr class = "dataRow" style = "border-bottom: 1px solid black;">
+    <tr class = "dataRow">
       <td style = "text-align: right;">(2, 1)</td>
       <td style = "text-align: right;">(2, 2)</td>
       <td style = "text-align: right;">(2, 3)</td>

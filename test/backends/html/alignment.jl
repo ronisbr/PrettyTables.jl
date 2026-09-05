@@ -9,16 +9,9 @@
 
     @testset "Alignment as a Symbol" verbose = true begin
         expected = """
-<table style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
-  <colgroup>
-    <col style = "border-left: 2px solid black; border-right: 1px solid black;">
-    <col style = "border-right: 1px solid black;">
-    <col style = "border-right: 1px solid black;">
-    <col style = "border-right: 1px solid black;">
-    <col style = "border-right: 2px solid black;">
-  </colgroup>
+<table>
   <thead>
-    <tr class = "columnLabelRow" style = "border-bottom: 1px solid black;">
+    <tr class = "columnLabelRow">
       <th style = "font-weight: bold; text-align: center;">Col. 1</th>
       <th style = "font-weight: bold; text-align: center;">Col. 2</th>
       <th style = "font-weight: bold; text-align: center;">Col. 3</th>
@@ -55,7 +48,7 @@
       <td style = "text-align: center;">(4, 4)</td>
       <td style = "text-align: left;">(4, 5)</td>
     </tr>
-    <tr class = "dataRow" style = "border-bottom: 1px solid black;">
+    <tr class = "dataRow">
       <td style = "text-align: center;">(5, 1)</td>
       <td style = "text-align: center;">(5, 2)</td>
       <td style = "text-align: center;">(5, 3)</td>
@@ -77,16 +70,9 @@
         @test result == expected
 
         expected = """
-<table style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
-  <colgroup>
-    <col style = "border-left: 2px solid black; border-right: 1px solid black;">
-    <col style = "border-right: 1px solid black;">
-    <col style = "border-right: 1px solid black;">
-    <col style = "border-right: 1px solid black;">
-    <col style = "border-right: 2px solid black;">
-  </colgroup>
+<table>
   <thead>
-    <tr class = "columnLabelRow" style = "border-bottom: 1px solid black;">
+    <tr class = "columnLabelRow">
       <th style = "font-weight: bold;">Col. 1</th>
       <th style = "font-weight: bold;">Col. 2</th>
       <th style = "font-weight: bold;">Col. 3</th>
@@ -123,7 +109,7 @@
       <td>(4, 4)</td>
       <td style = "text-align: left;">(4, 5)</td>
     </tr>
-    <tr class = "dataRow" style = "border-bottom: 1px solid black;">
+    <tr class = "dataRow">
       <td>(5, 1)</td>
       <td>(5, 2)</td>
       <td>(5, 3)</td>
@@ -146,16 +132,9 @@
 
     @testset "Alignment as a Vector" verbose = true begin
         expected = """
-<table style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
-  <colgroup>
-    <col style = "border-left: 2px solid black; border-right: 1px solid black;">
-    <col style = "border-right: 1px solid black;">
-    <col style = "border-right: 1px solid black;">
-    <col style = "border-right: 1px solid black;">
-    <col style = "border-right: 2px solid black;">
-  </colgroup>
+<table>
   <thead>
-    <tr class = "columnLabelRow" style = "border-bottom: 1px solid black;">
+    <tr class = "columnLabelRow">
       <th style = "font-weight: bold; text-align: left;">Col. 1</th>
       <th style = "font-weight: bold; text-align: center;">Col. 2</th>
       <th style = "font-weight: bold; text-align: right;">Col. 3</th>
@@ -192,7 +171,7 @@
       <td style = "text-align: left;">(4, 4)</td>
       <td style = "text-align: left;">(4, 5)</td>
     </tr>
-    <tr class = "dataRow" style = "border-bottom: 1px solid black;">
+    <tr class = "dataRow">
       <td style = "text-align: left;">(5, 1)</td>
       <td style = "text-align: center;">(5, 2)</td>
       <td style = "text-align: right;">(5, 3)</td>
@@ -214,16 +193,9 @@
         @test result == expected
 
         expected = """
-<table style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
-  <colgroup>
-    <col style = "border-left: 2px solid black; border-right: 1px solid black;">
-    <col style = "border-right: 1px solid black;">
-    <col style = "border-right: 1px solid black;">
-    <col style = "border-right: 1px solid black;">
-    <col style = "border-right: 2px solid black;">
-  </colgroup>
+<table>
   <thead>
-    <tr class = "columnLabelRow" style = "border-bottom: 1px solid black;">
+    <tr class = "columnLabelRow">
       <th style = "font-weight: bold; text-align: left;">Col. 1</th>
       <th style = "font-weight: bold; text-align: center;">Col. 2</th>
       <th style = "font-weight: bold; text-align: right;">Col. 3</th>
@@ -260,7 +232,7 @@
       <td>(4, 4)</td>
       <td style = "text-align: left;">(4, 5)</td>
     </tr>
-    <tr class = "dataRow" style = "border-bottom: 1px solid black;">
+    <tr class = "dataRow">
       <td style = "text-align: left;">(5, 1)</td>
       <td style = "text-align: center;">(5, 2)</td>
       <td style = "text-align: right;">(5, 3)</td>

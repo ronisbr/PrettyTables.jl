@@ -122,10 +122,11 @@ contains the field `borders`, an object of type [`HtmlTableBorders`](@ref) with 
 horizontal and vertical lines are drawn. For the list of fields, see the documentation of
 [`HtmlTableFormat`](@ref).
 
-The table lines are emitted as inline styles in the table cells (the lines at the beginning
-and end of the table are emitted in the `<table>` element). Hence, they are applied in any
-rendering mode, including when the table is embedded in another document (Jupyter, Pluto,
-Documenter, etc.).
+By default, no lines are drawn and the emitted code has no border decoration, allowing the
+table appearance to be fully customized with CSS. When enabled, the table lines are emitted
+as inline styles in the table cells (the lines at the beginning and end of the table are
+emitted in the `<table>` element). Hence, they are applied in any rendering mode, including
+when the table is embedded in another document (Jupyter, Pluto, Documenter, etc.).
 
 The following macros are available to help configuring the table lines:
 
@@ -135,10 +136,10 @@ The following macros are available to help configuring the table lines:
     lines.
 - `@html__no_vertical_lines`: Return the keyword arguments to suppress all vertical lines.
 
-For example, we can draw only the vertical lines as follows:
+For example, we can draw all the vertical lines as follows:
 
 ```julia
-table_format = HtmlTableFormat(; @html__no_horizontal_lines, @html__all_vertical_lines)
+table_format = HtmlTableFormat(; @html__all_vertical_lines)
 ```
 
 The backend-agnostic [`TableFormat`](@ref) is also supported: its line designs are

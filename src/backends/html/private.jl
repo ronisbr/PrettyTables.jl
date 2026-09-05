@@ -167,6 +167,34 @@ _html__create_style(::Nothing) = ""
 # == Table Borders =========================================================================
 
 """
+    _html__has_any_table_line(tf::HtmlTableFormat) -> Bool
+
+Return whether the table format `tf` draws at least one horizontal or vertical line. If it
+does not, the table must be emitted without any border decoration, including the
+`border-collapse` style in the `<table>` element.
+"""
+function _html__has_any_table_line(tf::HtmlTableFormat)
+    return tf.horizontal_line_at_beginning ||
+        tf.horizontal_line_before_column_labels ||
+        tf.horizontal_line_after_column_labels ||
+        tf.horizontal_line_at_merged_column_labels ||
+        (tf.horizontal_lines_at_data_rows != :none) ||
+        tf.horizontal_line_before_row_group_label ||
+        tf.horizontal_line_after_row_group_label ||
+        tf.horizontal_line_after_data_rows ||
+        tf.horizontal_line_before_summary_rows ||
+        tf.horizontal_line_after_summary_rows ||
+        tf.horizontal_line_after_footnotes ||
+        tf.horizontal_line_at_end ||
+        tf.vertical_line_at_beginning ||
+        tf.vertical_line_after_row_number_column ||
+        tf.vertical_line_after_row_label_column ||
+        (tf.vertical_lines_at_data_columns != :none) ||
+        tf.vertical_line_after_data_columns ||
+        tf.vertical_line_after_continuation_column
+end
+
+"""
     _html__column_borders(
         tf::HtmlTableFormat,
         table_data::TableData,

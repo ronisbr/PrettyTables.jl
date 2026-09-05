@@ -202,8 +202,10 @@ The following table summarizes the support:
 
 Additional notes:
 
-- The HTML back end draws the table lines using inline styles in the table cells. Hence,
-  they are applied in any rendering mode. The presence fields
+- The HTML back end draws no lines by default, so the emitted code has no border
+  decoration and the table appearance can be fully customized with CSS. When enabled, the
+  table lines are drawn using inline styles in the table cells. Hence, they are applied in
+  any rendering mode. The presence fields
   `horizontal_line_before_column_labels`, `horizontal_line_after_footnotes`, and
   `horizontal_line_at_end` are only honored by the HTML back end because it places the
   title and the footer inside the ruled area.

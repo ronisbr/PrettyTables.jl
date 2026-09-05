@@ -305,8 +305,8 @@ PrecompileTools.@setup_workload begin
                 matrix;
                 backend = :html,
                 table_format = HtmlTableFormat(;
-                    @html__no_horizontal_lines,
-                    @html__no_vertical_lines,
+                    @html__all_horizontal_lines,
+                    @html__all_vertical_lines,
                 ),
             )
 

@@ -56,7 +56,8 @@ Version 3.5.0
   (`horizontal_line_before_column_labels`, `horizontal_line_after_footnotes`, and
   `horizontal_line_at_end`) since the HTML back end places the title and the footer inside
   the ruled area. The lines are emitted as inline styles in the table cells, so they are
-  applied in any rendering mode instead of only when `stand_alone = true`. The macros
+  applied in any rendering mode instead of only when `stand_alone = true`. Every line is
+  disabled by default, keeping the default output free of border decoration. The macros
   `@html__all_horizontal_lines`, `@html__all_vertical_lines`, `@html__no_horizontal_lines`,
   and `@html__no_vertical_lines` and the conversion function `html_line_style` are
   exported, and the HTML back end now fully supports the backend-agnostic `TableFormat`.
@@ -78,20 +79,17 @@ Version 3.5.0
   `style = HtmlTableStyle()`) when `backend = :auto` and the table format does not select
   one. Passing the style or the table format of another back end now throws an
   `ArgumentError` with a clear message instead of a `MethodError`.
-- ![Info][badge-info] The default HTML table look changed. The line presence defaults of
-  `HtmlTableFormat` now match the other back ends: vertical lines are drawn at the
-  beginning of the table, after the row number and row label columns, after every data
-  column, and after the continuation column, and horizontal lines are drawn around the row
-  group labels. Additionally, the borders are now emitted inline, so embedded tables
-  (Jupyter, Pluto, Documenter, etc.) show the default borders that previously appeared
-  only with `stand_alone = true`. The default `css` of `HtmlTableFormat` no longer
-  contains border rules, so custom CSS that overrode them must now disable the
-  corresponding line presence fields or use `!important`. Finally, the underline of merged
-  column labels moved from the defaults of `first_line_merged_column_label` and
-  `merged_column_label` in `HtmlTableStyle` to the field
-  `horizontal_line_at_merged_column_labels` of `HtmlTableFormat`. The previous borderless
-  look can be restored with
-  `HtmlTableFormat(; @html__no_vertical_lines, horizontal_line_before_row_group_label = false, horizontal_line_after_row_group_label = false)`.
+- ![Info][badge-info] The HTML back end draws no lines by default: every line presence
+  field of `HtmlTableFormat` defaults to `false` (or `:none`), and the default output has
+  no border decoration (no inline borders, no `border-collapse`, and no `<colgroup>`
+  elements), keeping the table appearance fully customizable with CSS. The default `css`
+  of `HtmlTableFormat` no longer contains border rules, so a stand-alone table is also
+  rendered without borders unless lines are enabled. The underline of merged column labels
+  moved from the defaults of `first_line_merged_column_label` and `merged_column_label` in
+  `HtmlTableStyle` to the field `horizontal_line_at_merged_column_labels` of
+  `HtmlTableFormat`, which is disabled by default like the other lines. A fully ruled
+  table can be obtained with
+  `HtmlTableFormat(; @html__all_horizontal_lines, @html__all_vertical_lines)`.
 - ![Info][badge-info] The conversion of `TableFormat` and `TableStyle` is a best effort:
   the Markdown back end only supports `horizontal_line_before_summary_rows` and ignores
   the style fields its style type does not have, and the LaTeX back end ignores the line

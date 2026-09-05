@@ -6,14 +6,9 @@
 
 @testset "Footnotes at Summary Row Labels" begin
     expected = """
-<table style = "border-bottom: 2px solid black; border-collapse: collapse; border-top: 2px solid black;">
-  <colgroup>
-    <col style = "border-left: 2px solid black; border-right: 1px solid black;">
-    <col style = "border-right: 1px solid black;">
-    <col style = "border-right: 2px solid black;">
-  </colgroup>
+<table>
   <thead>
-    <tr class = "columnLabelRow" style = "border-bottom: 1px solid black;">
+    <tr class = "columnLabelRow">
       <th class = "stubheadLabel" style = "font-weight: bold; text-align: right;"></th>
       <th style = "font-weight: bold; text-align: right;">Col. 1</th>
       <th style = "font-weight: bold; text-align: right;">Col. 2</th>
@@ -25,24 +20,24 @@
       <td style = "text-align: right;">1</td>
       <td style = "text-align: right;">2</td>
     </tr>
-    <tr class = "dataRow" style = "border-bottom: 1px solid black;">
+    <tr class = "dataRow">
       <td class = "rowLabel" style = "font-weight: bold; text-align: right;"></td>
       <td style = "text-align: right;">3</td>
       <td style = "text-align: right;">4</td>
     </tr>
-    <tr class = "summaryRow" style = "border-top: 1px solid black;">
+    <tr class = "summaryRow">
       <td class = "summaryRowLabel" style = "font-weight: bold; text-align: right;">Sum</td>
       <td style = "text-align: right;">4</td>
       <td style = "text-align: right;">6</td>
     </tr>
-    <tr class = "summaryRow" style = "border-bottom: 1px solid black;">
+    <tr class = "summaryRow">
       <td class = "summaryRowLabel" style = "font-weight: bold; text-align: right;">Max<sup>1</sup></td>
       <td style = "text-align: right;">3</td>
       <td style = "text-align: right;">4</td>
     </tr>
   </tbody>
   <tfoot>
-    <tr class = "footnote" style = "border-bottom: 1px solid black;">
+    <tr class = "footnote">
       <td colspan = "3" style = "font-size: small; text-align: left;"><sup>1</sup> Footnote in summary row label</td>
     </tr>
   </tfoot>

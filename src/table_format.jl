@@ -140,8 +140,8 @@ the user to switch back ends without rewriting the line configuration.
 Every field set to `nothing` keeps the default behavior of the selected back end. Hence, a
 `TableFormat` never replaces the back end table format entirely: each set field overrides
 only the corresponding field of the back end default format. For example, leaving
-`horizontal_line_at_merged_column_labels` as `nothing` keeps the text back end default
-(`false`) and the default of the other back ends (`true`).
+`horizontal_line_at_merged_column_labels` as `nothing` keeps the default of each back end
+(`false` in the text and HTML back ends and `true` in the LaTeX and Typst back ends).
 
 Notice that `nothing` differs from `:none` in the fields that accept a `Symbol`: `nothing`
 keeps the back end default, whereas `:none` explicitly disables the lines.
