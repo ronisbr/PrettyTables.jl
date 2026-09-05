@@ -195,6 +195,65 @@ function _html__has_any_table_line(tf::HtmlTableFormat)
 end
 
 """
+    _html__is_last_data_section_row(rs::Symbol, ps::PrintingTableState, table_data::TableData) -> Bool
+
+Return whether the row of section `rs` (`:data` or `:continuation_row`) being opened in the
+printing state `ps` is the last row of the data section. It is the last data row, or the
+continuation row if the table is bottom cropped. A middle-cropped table with at most one
+printed data row also ends with the continuation row.
+
+!!! note
+
+    These conditions must mirror the ones the printing state iterator uses to leave the
+    data section.
+"""
+function _html__is_last_data_section_row(
+    rs::Symbol,
+    ps::PrintingTableState,
+    table_data::TableData
+)
+    if rs == :data
+        return ps.i == table_data.num_rows
+    elseif rs == :continuation_row
+        return (table_data.vertical_crop_mode == :bottom) ||
+            (table_data.maximum_number_of_rows <= 1)
+    end
+
+    return false
+end
+
+"""
+    _html__is_last_ruled_row(rs::Symbol, ps::PrintingTableState, table_data::TableData, num_column_label_rows::Int) -> Bool
+
+Return whether the row of section `rs` being opened in the printing state `ps` is the last
+row of the ruled area, i.e. the last row before the footnotes and source notes. It is the
+last summary row, the last row of the data section if the table has no summary rows (see
+`_html__is_last_data_section_row`), or the last column label row if the table has
+neither data nor summary rows.
+
+!!! note
+
+    These conditions must mirror the ones the printing state iterator uses to move to the
+    table footer.
+"""
+function _html__is_last_ruled_row(
+    rs::Symbol,
+    ps::PrintingTableState,
+    table_data::TableData,
+    num_column_label_rows::Int
+)
+    if _has_summary_rows(table_data)
+        return (rs == :summary_row) && (ps.i == length(table_data.summary_rows))
+    elseif rs ∈ (:data, :continuation_row)
+        return _html__is_last_data_section_row(rs, ps, table_data)
+    elseif rs == :column_labels
+        return (ps.i == num_column_label_rows) && (table_data.num_rows == 0)
+    end
+
+    return false
+end
+
+"""
     _html__column_borders(
         tf::HtmlTableFormat,
         table_data::TableData,

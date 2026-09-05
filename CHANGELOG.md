@@ -54,10 +54,14 @@ Version 3.5.0
   `HtmlTableBorders`, whose line roles are CSS `border` shorthand strings) and the same
   line presence fields as the other back ends, plus three HTML-only ones
   (`horizontal_line_before_column_labels`, `horizontal_line_after_footnotes`, and
-  `horizontal_line_at_end`) since the HTML back end places the title and the footer inside
-  the ruled area. The lines are emitted as inline styles in the table cells, so they are
-  applied in any rendering mode instead of only when `stand_alone = true`. Every line is
-  disabled by default, keeping the default output free of border decoration. The macros
+  `horizontal_line_at_end`) since the HTML back end places the title inside the ruled area
+  and draws the line at the end of the table with a dedicated field. As in the text back
+  end, the footnotes and source notes are outside the ruled area: the line at the end of
+  the table is drawn after the last summary or data row, before them, and the vertical
+  lines at the edges of the table are hidden in their cells. The lines are emitted as
+  inline styles in the table elements, so they are applied in any rendering mode instead
+  of only when `stand_alone = true`. Every line is disabled by default, keeping the default
+  output free of border decoration. The macros
   `@html__all_horizontal_lines`, `@html__all_vertical_lines`, `@html__no_horizontal_lines`,
   and `@html__no_vertical_lines` and the conversion function `html_line_style` are
   exported, and the HTML back end now fully supports the backend-agnostic `TableFormat`.

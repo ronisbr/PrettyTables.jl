@@ -223,7 +223,10 @@ Define the format of the tables printed with the HTML back end.
 - `horizontal_line_after_footnotes::Bool`: If `true`, a horizontal line will be drawn after
     the footnotes when the table also has source notes. (HTML back end only)
 - `horizontal_line_at_end::Bool`: If `true`, a horizontal line will be drawn at the end of
-    the table, below the footnotes and source notes. (HTML back end only)
+    the table, i.e. after the last summary row or the last data row and before the
+    footnotes and source notes, which are outside the ruled area. This line has precedence
+    over the ones drawn at the same position by `horizontal_line_after_data_rows` and
+    `horizontal_line_after_summary_rows`. (HTML back end only)
 - `vertical_line_at_beginning::Bool`: If `true`, a vertical line will be drawn at the
     beginning of the table.
 - `vertical_line_after_row_number_column::Bool`: If `true`, a vertical line will be drawn
@@ -247,14 +250,19 @@ be fully customized with CSS. The fields above (or the backend-agnostic
 [`TableFormat`](@ref)) can be used to draw lines as inline styles, which are applied in any
 rendering mode.
 
-The horizontal lines at the beginning and end of the table are emitted as inline borders of
-the `<table>` element, the other horizontal lines are emitted as inline borders of the
-`<tr>` elements, and the vertical lines are emitted as inline borders of the `<col>`
-elements, except for the line under a merged column label, which is a border of the cell.
-Since the table borders are collapsed, those borders are applied to the edges of every cell
-of the row or column. When two lines meet at the same edge (for example, the line after the
-data rows and the line before the summary rows), the CSS border-collapsing rules select the
-wider border, and then the border with the higher style precedence.
+The horizontal line at the beginning of the table is emitted as an inline border of the
+`<table>` element, the other horizontal lines (including the line at the end of the table)
+are emitted as inline borders of the `<tr>` elements, and the vertical lines are emitted as
+inline borders of the `<col>` elements, except for the line under a merged column label,
+which is a border of the cell. Since the table borders are collapsed, those borders are
+applied to the edges of every cell of the row or column. When two lines meet at the same
+edge (for example, the line after the data rows and the line before the summary rows), the
+CSS border-collapsing rules select the wider border, and then the border with the higher
+style precedence.
+
+As in the text back end, the footnotes and source notes are outside the ruled area: the
+line at the end of the table is drawn before them, and the vertical lines at the edges of
+the table are hidden in their cells.
 """
 @kwdef struct HtmlTableFormat
     css::String = _HTML__DEFAULT_CSS

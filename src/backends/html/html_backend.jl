@@ -248,12 +248,17 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
     empty!(vproperties)
     push!(vproperties, "class" => table_class)
 
-    # The borders at the top and bottom of the table are emitted in the `<table>` element,
-    # avoiding the need to know which rows are the first and last ones. `border-collapse`
-    # is required so that adjacent cell borders are merged into a single line. However, it
-    # is only emitted when the format draws at least one line so that the default table has
-    # no border decoration. Notice that the user style is appended afterward, allowing it
-    # to override the borders.
+    # The border at the top of the table is emitted in the `<table>` element, avoiding the
+    # need to know which row is the first one. `border-collapse` is required so that
+    # adjacent cell borders are merged into a single line. However, it is only emitted when
+    # the format draws at least one line so that the default table has no border
+    # decoration. Notice that the user style is appended afterward, allowing it to override
+    # the borders.
+    #
+    # NOTE: The border at the bottom of the table cannot be emitted here. As in the text
+    # back end, the footnotes and source notes are outside the ruled area, so the line at
+    # the end of the table must precede them. Hence, it is emitted as the bottom border of
+    # the last row of the ruled area.
     empty!(vstyle)
 
     if _html__has_any_table_line(tf)
@@ -261,9 +266,6 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
 
         tf.horizontal_line_at_beginning &&
             push!(vstyle, "border-top" => tf.borders.top_line)
-
-        tf.horizontal_line_at_end &&
-            push!(vstyle, "border-bottom" => tf.borders.bottom_line)
     end
 
     append!(vstyle, style.table)
@@ -324,6 +326,11 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
     )
 
     left_border = tf.vertical_line_at_beginning ? tf.borders.left_line : ""
+
+    # The vertical lines at the edges of the table must be hidden in the footer cells,
+    # which are outside the ruled area (see the table footer cells below).
+    hide_footer_left_border  = !isempty(left_border)
+    hide_footer_right_border = !isempty(column_borders) && !isempty(last(column_borders))
 
     if !isempty(column_borders) && (!isempty(left_border) || any(!isempty, column_borders))
         _aprintln(buf, "<colgroup>", il, ns; minify)
@@ -422,23 +429,20 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
                 ) && (row_border_bottom = tf.borders.header_line)
 
             elseif rs == :data
-                # The line after the data rows is emitted at the last data row. If the
-                # table is bottom cropped, the continuation row is the last row of this
-                # section.
+                # The line after the data rows is emitted at the last row of the data
+                # section, which can be the continuation row if the table is cropped.
                 (
                     (ps.i ∈ horizontal_lines_at_data_rows) ||
-                    (tf.horizontal_line_after_data_rows && (ps.i == table_data.num_rows))
+                    (
+                        tf.horizontal_line_after_data_rows &&
+                        _html__is_last_data_section_row(rs, ps, table_data)
+                    )
                 ) && (row_border_bottom = tf.borders.middle_line)
 
             elseif rs == :continuation_row
-                # The continuation row is the last row of the data section if the table is
-                # bottom cropped. A middle-cropped table with at most one printed data row
-                # also ends with the continuation row.
                 (
-                    tf.horizontal_line_after_data_rows && (
-                        (table_data.vertical_crop_mode == :bottom) ||
-                        (table_data.maximum_number_of_rows <= 1)
-                    )
+                    tf.horizontal_line_after_data_rows &&
+                    _html__is_last_data_section_row(rs, ps, table_data)
                 ) && (row_border_bottom = tf.borders.middle_line)
 
             elseif rs == :row_group_label
@@ -465,6 +469,16 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
                     (ps.i == num_footnotes)
                 ) && (row_border_bottom = tf.borders.middle_line)
             end
+
+            # The line at the end of the table is drawn at the bottom of the last row of
+            # the ruled area, which precedes the footnotes and source notes as in the text
+            # back end. It has precedence over the middle line drawn at the same edge by
+            # the options above, mirroring the text back end, which draws the bottom line
+            # instead of the middle one in this position.
+            (
+                tf.horizontal_line_at_end &&
+                _html__is_last_ruled_row(rs, ps, table_data, num_column_label_rows)
+            ) && (row_border_bottom = tf.borders.bottom_line)
 
             prev_rs = rs
 
@@ -641,6 +655,17 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
 
                 (action == :footnote) &&
                     (rendered_cell = "<sup>$(ps.i)</sup> " * rendered_cell)
+
+                # The footnotes and source notes are outside the ruled area, as in the text
+                # back end. Hence, the vertical lines at the edges of the table, which are
+                # borders of the `<col>` elements applied to every cell of the column, must
+                # be hidden in those cells. `hidden` is required because `none` has the
+                # lowest precedence when the table borders are collapsed. These borders are
+                # pushed before the user style, allowing the latter to override them.
+                if action ∈ (:footnote, :source_notes)
+                    hide_footer_left_border  && push!(vstyle, "border-left"  => "hidden")
+                    hide_footer_right_border && push!(vstyle, "border-right" => "hidden")
+                end
             else
                 push!(vproperties, "class" => _html__cell_class(action))
             end

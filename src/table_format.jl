@@ -209,12 +209,13 @@ Each field below describes the design of one line role using a [`LineStyle`](@re
     line after the summary rows.
     (**Default**: `nothing`)
 - `horizontal_line_after_footnotes::Union{Nothing, Bool}`: Whether to draw a horizontal
-    line after the footnotes. This field is only honored by the HTML back end, which places
-    the footer inside the ruled area.
+    line after the footnotes. This field is only honored by the HTML back end.
     (**Default**: `nothing`)
 - `horizontal_line_at_end::Union{Nothing, Bool}`: Whether to draw a horizontal line at the
-    end of the table, below the footnotes and source notes. This field is only honored by
-    the HTML back end, which places the footer inside the ruled area.
+    end of the table, after the last summary row or the last data row and before the
+    footnotes and source notes. This field is only honored by the HTML back end. The other
+    back ends draw this line with `horizontal_line_after_data_rows` or
+    `horizontal_line_after_summary_rows`.
     (**Default**: `nothing`)
 - `vertical_line_at_beginning::Union{Nothing, Bool}`: Whether to draw a vertical line at
     the beginning of the table.
