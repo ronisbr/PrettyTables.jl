@@ -213,9 +213,9 @@ Each field below describes the design of one line role using a [`LineStyle`](@re
     (**Default**: `nothing`)
 - `horizontal_line_at_end::Union{Nothing, Bool}`: Whether to draw a horizontal line at the
     end of the table, after the last summary row or the last data row and before the
-    footnotes and source notes. This field is only honored by the HTML back end. The other
-    back ends draw this line with `horizontal_line_after_data_rows` or
-    `horizontal_line_after_summary_rows`.
+    footnotes and source notes, even when `horizontal_line_after_data_rows` and
+    `horizontal_line_after_summary_rows` are `false`. This field is only honored by the
+    HTML back end.
     (**Default**: `nothing`)
 - `vertical_line_at_beginning::Union{Nothing, Bool}`: Whether to draw a vertical line at
     the beginning of the table.

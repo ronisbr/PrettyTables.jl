@@ -58,10 +58,11 @@ Version 3.5.0
   and draws the line at the end of the table with a dedicated field. As in the text back
   end, the footnotes and source notes are outside the ruled area: the line at the end of
   the table is drawn after the last summary or data row, before them, and the vertical
-  lines at the edges of the table are hidden in their cells. The lines are emitted as
-  inline styles in the table elements, so they are applied in any rendering mode instead
-  of only when `stand_alone = true`. Every line is disabled by default, keeping the default
-  output free of border decoration. The macros
+  lines at the edges of the table are hidden in their cells. The line after the last row
+  of the ruled area uses the bottom line style, as in the other back ends. The lines are
+  emitted as inline styles in the table elements, so they are applied in any rendering
+  mode instead of only when `stand_alone = true`. Every line is disabled by default,
+  keeping the default output free of border decoration. The macros
   `@html__all_horizontal_lines`, `@html__all_vertical_lines`, `@html__no_horizontal_lines`,
   and `@html__no_vertical_lines` and the conversion function `html_line_style` are
   exported, and the HTML back end now fully supports the backend-agnostic `TableFormat`.

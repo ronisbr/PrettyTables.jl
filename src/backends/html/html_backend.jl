@@ -413,6 +413,14 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
             row_border_top    = ""
             row_border_bottom = ""
 
+            # As in the other back ends, the line drawn after the last row of the ruled
+            # area (the last summary row, the last row of the data section if the table has
+            # no summary rows, or the column labels if the table has no rows) uses the
+            # bottom line style instead of the header or middle one. Notice that the lines
+            # selected by `horizontal_lines_at_data_rows` are internal and never use it.
+            last_ruled_row =
+                _html__is_last_ruled_row(rs, ps, table_data, num_column_label_rows)
+
             if rs == :column_labels
                 # The line before the column labels is only emitted when the table has a
                 # title or subtitle. Otherwise, this line coincides with the top border of
@@ -423,27 +431,22 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
                     (prev_rs == :table_header)
                 ) && (row_border_top = tf.borders.header_line)
 
-                (
-                    tf.horizontal_line_after_column_labels &&
-                    (ps.i == num_column_label_rows)
-                ) && (row_border_bottom = tf.borders.header_line)
+                if tf.horizontal_line_after_column_labels && (ps.i == num_column_label_rows)
+                    row_border_bottom = last_ruled_row ?
+                        tf.borders.bottom_line : tf.borders.header_line
+                end
 
-            elseif rs == :data
+            elseif rs ∈ (:data, :continuation_row)
                 # The line after the data rows is emitted at the last row of the data
                 # section, which can be the continuation row if the table is cropped.
-                (
-                    (ps.i ∈ horizontal_lines_at_data_rows) ||
-                    (
-                        tf.horizontal_line_after_data_rows &&
-                        _html__is_last_data_section_row(rs, ps, table_data)
-                    )
-                ) && (row_border_bottom = tf.borders.middle_line)
-
-            elseif rs == :continuation_row
-                (
-                    tf.horizontal_line_after_data_rows &&
+                if tf.horizontal_line_after_data_rows &&
                     _html__is_last_data_section_row(rs, ps, table_data)
-                ) && (row_border_bottom = tf.borders.middle_line)
+                    row_border_bottom = last_ruled_row ?
+                        tf.borders.bottom_line : tf.borders.middle_line
+
+                elseif (rs == :data) && (ps.i ∈ horizontal_lines_at_data_rows)
+                    row_border_bottom = tf.borders.middle_line
+                end
 
             elseif rs == :row_group_label
                 tf.horizontal_line_before_row_group_label &&
@@ -456,8 +459,9 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
                 (tf.horizontal_line_before_summary_rows && (ps.i == 1)) &&
                     (row_border_top = tf.borders.middle_line)
 
+                # The last summary row is always the last row of the ruled area.
                 (tf.horizontal_line_after_summary_rows && (ps.i == num_summary_rows)) &&
-                    (row_border_bottom = tf.borders.middle_line)
+                    (row_border_bottom = tf.borders.bottom_line)
 
             elseif rs == :table_footer
                 # NOTE: This condition must mirror the one the printing state iterator uses
@@ -472,13 +476,9 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
 
             # The line at the end of the table is drawn at the bottom of the last row of
             # the ruled area, which precedes the footnotes and source notes as in the text
-            # back end. It has precedence over the middle line drawn at the same edge by
-            # the options above, mirroring the text back end, which draws the bottom line
-            # instead of the middle one in this position.
-            (
-                tf.horizontal_line_at_end &&
-                _html__is_last_ruled_row(rs, ps, table_data, num_column_label_rows)
-            ) && (row_border_bottom = tf.borders.bottom_line)
+            # back end, even if the options above do not draw a line there.
+            (tf.horizontal_line_at_end && last_ruled_row) &&
+                (row_border_bottom = tf.borders.bottom_line)
 
             prev_rs = rs
 

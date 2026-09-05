@@ -157,7 +157,7 @@ end
             @test !occursin("border-bottom", first(on))
         end
 
-        # It has precedence over the middle line drawn after the summary rows.
+        # It coincides with the line drawn after the summary rows.
         on = _render_lines(
             "summaryRow";
             horizontal_line_at_end             = true,
@@ -165,6 +165,68 @@ end
         )
         @test occursin("border-bottom: 2px solid black", first(on))
         @test !occursin("border-bottom: 1px solid black", first(on))
+    end
+
+    @testset "Bottom Line Style at the End of the Ruled Area" begin
+        # Without summary rows, the line after the data rows ends the ruled area.
+        output = pretty_table(
+            String,
+            matrix;
+            backend = :html,
+            table_format = HtmlTableFormat(; horizontal_line_after_data_rows = true),
+        )
+        @test count("border-bottom: 2px solid black", output) == 1
+        @test !occursin("border-bottom: 1px solid black", output)
+
+        # With summary rows, the line after the data rows is an internal line.
+        output = pretty_table(
+            String,
+            matrix;
+            backend = :html,
+            summary_rows = [(data, i) -> sum(data[:, i])],
+            table_format = HtmlTableFormat(; horizontal_line_after_data_rows = true),
+        )
+        @test count("border-bottom: 1px solid black", output) == 1
+        @test !occursin("border-bottom: 2px solid black", output)
+
+        # The lines at data rows are always internal, even at the last data row.
+        output = pretty_table(
+            String,
+            matrix;
+            backend = :html,
+            table_format = HtmlTableFormat(; horizontal_lines_at_data_rows = :all),
+        )
+        @test count("border-bottom: 1px solid black", output) == 3
+        @test !occursin("border-bottom: 2px solid black", output)
+
+        # If the table has no rows, the line after the column labels ends the ruled area.
+        output = pretty_table(
+            String,
+            Matrix{Int}(undef, 0, 2);
+            backend = :html,
+            table_format = HtmlTableFormat(; horizontal_line_after_column_labels = true),
+        )
+        @test occursin(
+            "<tr class = \"columnLabelRow\" style = \"border-bottom: 2px solid black;\">",
+            output
+        )
+
+        # The backend-agnostic format must produce the same look as the other back ends:
+        # a thick line after the summary rows without enabling `horizontal_line_at_end`.
+        output = pretty_table(
+            String,
+            matrix;
+            backend = :html,
+            summary_rows = [(data, i) -> sum(data[:, i])],
+            table_format = TableFormat(;
+                bottom_line                        = LineStyle(; width = :thick),
+                horizontal_line_after_summary_rows = true,
+            ),
+        )
+        @test occursin(
+            "<tr class = \"summaryRow\" style = \"border-bottom: 3px solid black;\">",
+            output
+        )
     end
 
     @testset "Horizontal Line Before Column Labels" begin
@@ -201,10 +263,12 @@ end
     end
 
     @testset "Horizontal Lines Around the Summary Rows" begin
+        # The line after the summary rows ends the ruled area, so it uses the bottom line
+        # style.
         on  = _render_lines("summaryRow"; horizontal_line_before_summary_rows = true, horizontal_line_after_summary_rows  = true)
         off = _render_lines("summaryRow")
         @test occursin("border-top: 1px solid black", first(on))
-        @test occursin("border-bottom: 1px solid black", first(on))
+        @test occursin("border-bottom: 2px solid black", first(on))
         @test !occursin("border-top", first(off))
         @test !occursin("border-bottom", first(off))
     end
@@ -310,7 +374,7 @@ end
     # The line after the data rows is a border of the `<tr>` element, whereas the border
     # of the highlighter is a border of the cell, which has precedence when the table
     # borders are collapsed.
-    @test occursin("<tr class = \"dataRow\" style = \"border-bottom: 1px solid black;\">", output)
+    @test occursin("<tr class = \"dataRow\" style = \"border-bottom: 2px solid black;\">", output)
     @test occursin("<td style = \"border-bottom: 3px solid red; text-align: right;\">3</td>", output)
 
     # The user table style must override the borders of the `<table>` element.

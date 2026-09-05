@@ -87,11 +87,11 @@ Typst, and Excel back ends:
 - `vertical_line_after_continuation_column`
 
 The fields marked as HTML back end only exist because the HTML back end places the title
-inside the ruled area, can draw a line between the footnotes and the source notes, and draws
-the line at the end of the table (after the last summary or data row, before the footnotes
-and source notes) with a dedicated field, whereas the other back ends draw it with
-`horizontal_line_after_data_rows` or `horizontal_line_after_summary_rows`. They are silently
-ignored by the other back ends.
+inside the ruled area, can draw a line between the footnotes and the source notes, and can
+force the line at the end of the table (after the last summary or data row, before the
+footnotes and source notes) even when `horizontal_line_after_data_rows` and
+`horizontal_line_after_summary_rows` are disabled. They are silently ignored by the other
+back ends.
 The backend-specific fields (for example, `horizontal_lines_at_column_labels` of the text
 back end and `horizontal_line_between_column_labels` of the Excel back end) are not part of
 [`TableFormat`](@ref) and remain available in the native table formats.
@@ -213,7 +213,8 @@ Additional notes:
   `horizontal_line_after_footnotes`, and `horizontal_line_at_end` are only honored by the
   HTML back end. As in the text back end, the footnotes and source notes are outside the
   ruled area: the line at the end of the table is drawn before them, and the vertical lines
-  at the edges of the table are hidden in their cells.
+  at the edges of the table are hidden in their cells. The line after the last row of the
+  ruled area uses the bottom line design, as in the other back ends.
 - In the text back end, the color of each line follows the precedence: the line face in
   `TextTableStyle` (for example, `middle_line`), the `color` of the line design, and the
   face in the field `table_border` of `TextTableStyle`.

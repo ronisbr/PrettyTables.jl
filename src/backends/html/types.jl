@@ -224,9 +224,8 @@ Define the format of the tables printed with the HTML back end.
     the footnotes when the table also has source notes. (HTML back end only)
 - `horizontal_line_at_end::Bool`: If `true`, a horizontal line will be drawn at the end of
     the table, i.e. after the last summary row or the last data row and before the
-    footnotes and source notes, which are outside the ruled area. This line has precedence
-    over the ones drawn at the same position by `horizontal_line_after_data_rows` and
-    `horizontal_line_after_summary_rows`. (HTML back end only)
+    footnotes and source notes, even when `horizontal_line_after_data_rows` and
+    `horizontal_line_after_summary_rows` are `false`. (HTML back end only)
 - `vertical_line_at_beginning::Bool`: If `true`, a vertical line will be drawn at the
     beginning of the table.
 - `vertical_line_after_row_number_column::Bool`: If `true`, a vertical line will be drawn
@@ -262,7 +261,12 @@ style precedence.
 
 As in the text back end, the footnotes and source notes are outside the ruled area: the
 line at the end of the table is drawn before them, and the vertical lines at the edges of
-the table are hidden in their cells.
+the table are hidden in their cells. Also as in the other back ends, the line drawn after
+the last row of the ruled area by `horizontal_line_after_summary_rows`,
+`horizontal_line_after_data_rows` (if the table has no summary rows), or
+`horizontal_line_after_column_labels` (if the table has no rows) uses the bottom line style
+instead of the middle or header one, whereas the lines selected by
+`horizontal_lines_at_data_rows` are internal and always use the middle line style.
 """
 @kwdef struct HtmlTableFormat
     css::String = _HTML__DEFAULT_CSS

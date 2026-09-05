@@ -125,9 +125,11 @@ Pluto, Documenter, etc.).
 Compared to the other back ends, `HtmlTableFormat` has three additional line presence
 fields: `horizontal_line_before_column_labels`, because the HTML back end places the title
 inside the ruled area; `horizontal_line_after_footnotes`, which draws a line between the
-footnotes and the source notes; and `horizontal_line_at_end`, which draws the line at the
-end of the table (after the last summary or data row) with the bottom line style. As in the
-text back end, the footnotes and source notes are outside the ruled area.
+footnotes and the source notes; and `horizontal_line_at_end`, which forces the line at the
+end of the table (after the last summary or data row) even when the lines after the data
+and summary rows are disabled. As in the text back end, the footnotes and source notes are
+outside the ruled area, and the line after the last row of the ruled area uses the bottom
+line style.
 
 The following macros are available to help configuring the table lines:
 
