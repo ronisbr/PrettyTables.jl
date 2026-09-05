@@ -555,3 +555,19 @@ end
     end
 end
 
+@testset "Line Fields Without Lines Emit No Border Decoration" begin
+    # Empty vectors in the fields that accept a list of indices select no lines, so the
+    # table must be emitted without `border-collapse`.
+    output = pretty_table(
+        String,
+        [1 2; 3 4];
+        backend = :html,
+        table_format = HtmlTableFormat(;
+            horizontal_lines_at_data_rows  = Int[],
+            vertical_lines_at_data_columns = Int[],
+        ),
+    )
+
+    @test occursin("<table>", output)
+    @test !occursin("border", output)
+end

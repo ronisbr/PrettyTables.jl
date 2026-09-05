@@ -178,7 +178,7 @@ function _html__has_any_table_line(tf::HtmlTableFormat)
         tf.horizontal_line_before_column_labels ||
         tf.horizontal_line_after_column_labels ||
         tf.horizontal_line_at_merged_column_labels ||
-        (tf.horizontal_lines_at_data_rows != :none) ||
+        _html__has_lines(tf.horizontal_lines_at_data_rows) ||
         tf.horizontal_line_before_row_group_label ||
         tf.horizontal_line_after_row_group_label ||
         tf.horizontal_line_after_data_rows ||
@@ -189,10 +189,16 @@ function _html__has_any_table_line(tf::HtmlTableFormat)
         tf.vertical_line_at_beginning ||
         tf.vertical_line_after_row_number_column ||
         tf.vertical_line_after_row_label_column ||
-        (tf.vertical_lines_at_data_columns != :none) ||
+        _html__has_lines(tf.vertical_lines_at_data_columns) ||
         tf.vertical_line_after_data_columns ||
         tf.vertical_line_after_continuation_column
 end
+
+# Return whether the field `lines` (`horizontal_lines_at_data_rows` or
+# `vertical_lines_at_data_columns`) selects at least one line. Notice that any symbol other
+# than `:all` selects no lines, and neither does an empty vector.
+_html__has_lines(lines::Symbol) = lines == :all
+_html__has_lines(lines::Vector{Int}) = !isempty(lines)
 
 """
     _html__is_last_data_section_row(rs::Symbol, ps::PrintingTableState, table_data::TableData) -> Bool
