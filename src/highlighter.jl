@@ -135,6 +135,7 @@ end
     _markdown__native_highlighter(h::Highlighter) -> MarkdownHighlighter
     _typst__native_highlighter(h::Highlighter) -> TypstHighlighter
     _excel__native_highlighter(h::Highlighter) -> ExcelHighlighter
+    _docx__native_highlighter(h::Highlighter) -> DocxHighlighter
 
 Convert the general highlighter `h` to the native highlighter of a back end. If `h` uses the
 default decoration function, its face is converted to the native decoration. Otherwise, the
@@ -173,6 +174,11 @@ function _excel__native_highlighter(h::Highlighter)
     return ExcelHighlighter(h.f, (_, data, i, j) -> _excel__decoration(h.fd(h, data, i, j)))
 end
 
+function _docx__native_highlighter(h::Highlighter)
+    _has_default_fd(h) && return DocxHighlighter(h.f, docx_decoration(h._decoration))
+    return DocxHighlighter(h.f, (_, data, i, j) -> _docx__decoration(h.fd(h, data, i, j)))
+end
+
 """
     _text__native_highlighters(highlighters::Vector{AbstractHighlighter}) -> Vector{AbstractHighlighter}
     _html__native_highlighters(highlighters::Vector{AbstractHighlighter}) -> Vector{AbstractHighlighter}
@@ -180,6 +186,7 @@ end
     _markdown__native_highlighters(highlighters::Vector{AbstractHighlighter}) -> Vector{AbstractHighlighter}
     _typst__native_highlighters(highlighters::Vector{AbstractHighlighter}) -> Vector{AbstractHighlighter}
     _excel__native_highlighters(highlighters::Vector{AbstractHighlighter}) -> Vector{AbstractHighlighter}
+    _docx__native_highlighters(highlighters::Vector{AbstractHighlighter}) -> Vector{AbstractHighlighter}
 
 Convert every general highlighter in `highlighters` to the native highlighter of the back
 end (see `_native_highlighters`).
@@ -196,3 +203,5 @@ _typst__native_highlighters(hs::Vector{AbstractHighlighter}) =
     _native_highlighters(_typst__native_highlighter, hs)
 _excel__native_highlighters(hs::Vector{AbstractHighlighter}) =
     _native_highlighters(_excel__native_highlighter, hs)
+_docx__native_highlighters(hs::Vector{AbstractHighlighter}) =
+    _native_highlighters(_docx__native_highlighter, hs)
