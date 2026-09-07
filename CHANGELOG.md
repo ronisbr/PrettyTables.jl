@@ -4,6 +4,20 @@ PrettyTables.jl Changelog
 Version 3.5.0
 -------------
 
+- ![Feature][badge-feature] Add the Word back end (`backend = :docx`), which renders the
+  table as a Word table using [WriteDocx.jl](https://github.com/PumasAI/WriteDocx.jl). It
+  writes a `.docx` file when the keyword `filename` is set and otherwise returns the
+  `WriteDocx.Table`, so that the table can be embedded in a larger document, also available
+  with `pretty_table(WriteDocx.Table, data; kwargs...)` and
+  `pretty_table(WriteDocx.Document, data; kwargs...)`. The back end supports the sections,
+  the highlighters (`DocxHighlighter`), the table format (`DocxTableFormat` and
+  `DocxTableBorders`), and the table style (`DocxTableStyle`), as well as the
+  backend-agnostic `TableFormat` and `TableStyle`. Footnote markers become superscript text
+  runs and each region of a styled string becomes a text run with the attributes of its
+  face. The functions `docx_decoration` and `docx_line_style`, the macros
+  `@docx__all_horizontal_lines`, `@docx__all_vertical_lines`,
+  `@docx__no_horizontal_lines`, and `@docx__no_vertical_lines`, and the function
+  `pretty_table_docx_backend` are exported.
 - ![Feature][badge-feature] Add support for `StyledStrings.Face` as the decoration of the
   text back end. Every field of `TextTableStyle` and the decoration of `TextHighlighter` are
   now faces, and crayons are still accepted and converted to the equivalent faces. The

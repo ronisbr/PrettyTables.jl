@@ -48,6 +48,9 @@ makedocs(
                 "Excel Backend"       => "man/excel/excel_backend.md",
                 "Examples"            => "man/excel/excel_examples.md",
             ],
+            "Word"                    => Any[
+                "Word Backend"        => "man/docx/docx_backend.md",
+            ],
         ],
         "Library"                     => "lib/library.md",
     ],

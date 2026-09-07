@@ -3,8 +3,8 @@
 ## Package Structure
 
 - Treat `src/PrettyTables.jl` as the module entrypoint. Preserve its include order: load core types and implementation first, keep each backend grouped, load printing-state files after the backends, and include `src/precompile.jl` last.
-- Keep backend implementations under `src/backends/{text,html,latex,markdown,typst,excel}` and put focused backend regressions in the corresponding `test/backends/...` directory.
-- Keep extension code under `ext/`. `PrettyTablesExcelExt` activates with XLSX and `PrettyTablesTypstryExt` activates with Typstry; both trigger packages belong to the root test target.
+- Keep backend implementations under `src/backends/{text,html,latex,markdown,typst,excel,docx}` and put focused backend regressions in the corresponding `test/backends/...` directory.
+- Keep extension code under `ext/`. `PrettyTablesExcelExt` activates with XLSX, `PrettyTablesTypstryExt` activates with Typstry, and `PrettyTablesWriteDocxExt` activates with WriteDocx; all trigger packages belong to the root test target.
 - Use the root `Project.toml` for package and test dependencies. Support Julia 1.10 or newer according to `[compat]`; tests use the root `[extras]` and `[targets]`, and there is no `test/Project.toml`.
 - Build documentation from `docs/`, which has its own `Project.toml` and `make.jl`.
 
