@@ -8,6 +8,7 @@ using OffsetArrays
 using StyledStrings
 using Tables
 using XLSX
+import WriteDocx as W
 using Dates
 
 # Force color output for tests to ensure ANSI escape codes are generated.
@@ -45,6 +46,15 @@ end
     include("./backends/excel/heights_and_widths.jl")
     include("./backends/excel/highlighters.jl")
     include("./backends/excel/styles.jl")
+end
+
+@testset "Word Back End Tests" verbose = true begin
+    include("./backends/docx/helpers.jl")
+    include("./backends/docx/structure.jl")
+    include("./backends/docx/table_format.jl")
+    include("./backends/docx/styles.jl")
+    include("./backends/docx/highlighters.jl")
+    include("./backends/docx/files.jl")
 end
 
 @testset "HTML Back End Tests" verbose = true begin
