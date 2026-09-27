@@ -122,7 +122,7 @@
             String,
             matrix;
             backend = :html,
-            highlighters = [TextHighlighter(f, crayon"red")],
+            highlighters = [TextHighlighter(f, Face(; foreground = :red))],
         )
     end
 

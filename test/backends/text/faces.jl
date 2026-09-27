@@ -166,9 +166,9 @@
 
         # Highlighters of different types can be mixed, and the first match wins.
         hs = AbstractHighlighter[
-            TextHighlighter((data, i, j) -> false, crayon"red"),
+            TextHighlighter((data, i, j) -> false, Face(; foreground = :red)),
             Highlighter(f, Face(; weight = :bold, slant = :italic)),
-            TextHighlighter(f, crayon"red"),
+            TextHighlighter(f, Face(; foreground = :red)),
         ]
         @test pretty_table(String, matrix; color = true, highlighters = hs) == expected
 

@@ -70,7 +70,7 @@ end
     table = pretty_table(
         W.Table,
         [1 2; 3 4];
-        highlighters = [Highlighter((data, i, j) -> data[i, j] == 4; bold = true)],
+        highlighters = [Highlighter((data, i, j) -> data[i, j] == 4; weight = :bold)],
     )
 
     @test only(docx_runs(docx_cell(table, 3, 2))).properties.bold == true
@@ -79,6 +79,6 @@ end
     @test_throws "does not support highlighters of type" pretty_table(
         W.Table,
         [1 2; 3 4];
-        highlighters = [TextHighlighter((data, i, j) -> true, crayon"red")]
+        highlighters = [TextHighlighter((data, i, j) -> true, Face(; foreground = :red))]
     )
 end

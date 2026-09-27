@@ -6,7 +6,7 @@
 
 @testset "Decorations" verbose = true begin
     @testset "Styled Print" begin
-        sgr = PrettyTables._text__decoration_sgr(crayon"bold red")
+        sgr = PrettyTables._text__decoration_sgr(Face(; weight = :bold, foreground = :red))
         display = PrettyTables.Display(; has_color = true)
 
         @test PrettyTables._text__styled_print(display, "abc", sgr) === nothing
@@ -64,10 +64,9 @@
             (nothing, " x  ", 4)
 
         colored = "\e[31;1m x  \e[0m"
-        @test render(
-            "x", 4, :c; sgr = PrettyTables._text__decoration_sgr(crayon"bold red"),
-            has_color = true,
-        ) ==
+        face    = Face(; weight = :bold, foreground = :red)
+        sgr     = PrettyTables._text__decoration_sgr(face)
+        @test render("x", 4, :c; sgr, has_color = true) ==
             (nothing, colored, 4)
         @test count("\e[31;1m", colored) == 1
         @test count("\e[0m", colored) == 1
@@ -93,7 +92,9 @@
             String,
             matrix;
             color = true,
-            style = TextTableStyle(; first_line_column_label = crayon"bold yellow"),
+            style = TextTableStyle(;
+                first_line_column_label = Face(; weight = :bold, foreground = :yellow)
+            ),
         )
 
         @test result == expected
@@ -114,9 +115,9 @@
             color = true,
             style = TextTableStyle(;
                 first_line_column_label = [
-                    crayon"bold yellow"
-                    crayon"bold blue"
-                    crayon"bold red"
+                    Face(; weight = :bold, foreground = :yellow)
+                    Face(; weight = :bold, foreground = :blue)
+                    Face(; weight = :bold, foreground = :red)
                 ],
             ),
         )
@@ -132,7 +133,9 @@ end
     # escape sequence leaks when color is disabled, lives in "Table Border Without Color".
     io = IOContext(IOBuffer(), :color => true)
 
-    pretty_table(io, [1 2]; style = TextTableStyle(; table_border = crayon"blue"))
+    pretty_table(
+        io, [1 2]; style = TextTableStyle(; table_border = Face(; foreground = :blue))
+    )
 
     result = String(take!(io.io))
 
@@ -149,7 +152,7 @@ end
 @testset "Table Border Without Color" begin
     # A non-default border crayon must not leak any escape sequence when color is disabled.
     result = pretty_table(
-        String, [1 2]; style = TextTableStyle(; table_border = crayon"blue")
+        String, [1 2]; style = TextTableStyle(; table_border = Face(; foreground = :blue))
     )
 
     @test !occursin("\e", result)

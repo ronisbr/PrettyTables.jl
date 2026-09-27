@@ -114,7 +114,7 @@
             String,
             matrix;
             backend = :typst,
-            highlighters = [TextHighlighter(f, crayon"red")],
+            highlighters = [TextHighlighter(f, Face(; foreground = :red))],
         )
     end
 

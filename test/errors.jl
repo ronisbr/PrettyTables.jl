@@ -66,11 +66,13 @@ end
     data = [1 2 3]
 
     @test_throws ArgumentError pretty_table(
-        String, data; style = TextTableStyle(; column_label = [crayon"bold"])
+        String, data; style = TextTableStyle(; column_label = [Face(; weight = :bold)])
     )
 
     @test_throws ArgumentError pretty_table(
-        String, data; style = TextTableStyle(; first_line_column_label = [crayon"bold"])
+        String,
+        data;
+        style = TextTableStyle(; first_line_column_label = [Face(; weight = :bold)])
     )
 
     @test_throws ArgumentError pretty_table(

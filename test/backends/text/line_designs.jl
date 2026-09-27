@@ -279,7 +279,7 @@
             matrix;
             color = true,
             table_format = TextTableFormat(; horizontal_lines_at_data_rows = :all),
-            style = TextTableStyle(; middle_line = Crayon(; foreground = :blue))
+            style = TextTableStyle(; middle_line = Face(; foreground = :blue))
         )
 
         result_face = pretty_table(

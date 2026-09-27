@@ -222,7 +222,9 @@
 └────────┴────────────────────────────┴──────────────────────────────────────────┘
 """
 
-        hl = TextHighlighter((data, i, j) -> j == 3, crayon"yellow bold")
+        hl = TextHighlighter(
+            (data, i, j) -> j == 3, Face(; weight = :bold, foreground = :yellow)
+        )
 
         result = pretty_table(String, table; color = true, highlighters = [hl])
         @test result == expected

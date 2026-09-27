@@ -24,9 +24,15 @@
         matrix;
         color = true,
         highlighters = [
-            TextHighlighter((data, i, j) -> data[i, j] % 2 == 0, crayon"bold fg:cyan")
-            TextHighlighter((data, i, j) -> data[i, j] % 2 == 0; bold = true)
-            TextHighlighter((data, i, j) -> data[i, j] % 2 != 0, crayon"bold italics")
+            TextHighlighter(
+                (data, i, j) -> data[i, j] % 2 == 0,
+                Face(; weight = :bold, foreground = :cyan)
+            )
+            TextHighlighter((data, i, j) -> data[i, j] % 2 == 0; weight = :bold)
+            TextHighlighter(
+                (data, i, j) -> data[i, j] % 2 != 0,
+                Face(; weight = :bold, slant = :italic)
+            )
         ],
     )
 

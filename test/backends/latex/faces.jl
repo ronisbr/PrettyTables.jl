@@ -108,7 +108,7 @@
             String,
             matrix;
             backend = :latex,
-            highlighters = [TextHighlighter(f, crayon"red")],
+            highlighters = [TextHighlighter(f, Face(; foreground = :red))],
         )
     end
 

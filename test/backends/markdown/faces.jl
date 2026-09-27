@@ -105,7 +105,7 @@
             String,
             matrix;
             backend = :markdown,
-            highlighters = [TextHighlighter(f, crayon"red")],
+            highlighters = [TextHighlighter(f, Face(; foreground = :red))],
         )
     end
 

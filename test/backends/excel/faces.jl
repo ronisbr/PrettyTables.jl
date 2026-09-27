@@ -106,7 +106,9 @@
 
         # Highlighters of other back ends are not accepted.
         @test_throws ArgumentError pretty_table(
-            XLSX.XLSXFile, matrix; highlighters = [TextHighlighter(f, crayon"red")]
+            XLSX.XLSXFile,
+            matrix;
+            highlighters = [TextHighlighter(f, Face(; foreground = :red))]
         )
     end
 
