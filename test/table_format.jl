@@ -510,6 +510,20 @@ end
         ["style" => "single", "size" => "16", "color" => "A51C2C"]
 end
 
+@testset "Line Style Color Validation" begin
+    @test_throws "The symbol `:notacolor` is not a known color." LineStyle(; color = :notacolor)
+    @test_throws "must be integers between 0 and 255." LineStyle(; color = (300, 0, 0))
+    @test_throws "is not a 24-bit color." LineStyle(; color = 0x01000000)
+    @test_throws "A line color cannot be created from an object of type" LineStyle(;
+        color = 1.0
+    )
+
+    # The color names of Crayons.jl and the default color are accepted.
+    @test LineStyle(; color = :light_red).color == SimpleColor(:bright_red)
+    @test LineStyle(; color = :default).color == SimpleColor(:default)
+    @test LineStyle(; color = (0, 128, 255)).color == SimpleColor(0, 128, 255)
+end
+
 @testset "Line Style Validation" begin
     @test_throws ArgumentError LineStyle(:bogus, nothing, nothing)
     @test_throws ArgumentError LineStyle(nothing, :huge, nothing)

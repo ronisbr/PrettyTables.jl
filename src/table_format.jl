@@ -92,9 +92,37 @@ value cannot be converted to a color.
 """
 _line_style_color(::Nothing) = nothing
 _line_style_color(color::SimpleColor) = color
-_line_style_color(color::Symbol) = SimpleColor(color)
-_line_style_color(color::UInt32) = SimpleColor(color)
-_line_style_color(color::NTuple{3, Integer}) = SimpleColor(color...)
+
+function _line_style_color(color::Symbol)
+    # `:default` means the default color of the back end. Any other name must be a known
+    # color, including the color names of Crayons.jl, or a face with a color.
+    color === :default && return SimpleColor(color)
+
+    c = _face_simple_color(_face_color_from_value(color))
+
+    (isnothing(c) || isnothing(_face_color_hex(c))) &&
+        throw(ArgumentError("The symbol `:$color` is not a known color."))
+
+    return c
+end
+
+function _line_style_color(color::UInt32)
+    color > 0xffffff && throw(
+        ArgumentError("The color `$(repr(color))` is not a 24-bit color.")
+    )
+
+    return SimpleColor(color)
+end
+
+function _line_style_color(color::NTuple{3, Integer})
+    all(c -> 0 <= c <= 255, color) || throw(
+        ArgumentError(
+            "The components of the color `$color` must be integers between 0 and 255."
+        )
+    )
+
+    return SimpleColor(color...)
+end
 
 function _line_style_color(color::AbstractString)
     c = tryparse(SimpleColor, String(color))
