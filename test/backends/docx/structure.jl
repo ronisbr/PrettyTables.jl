@@ -59,6 +59,27 @@
 
         footnote_runs = docx_runs(docx_cell(table, 10, 1))
         @test footnote_runs[1].properties.valign == W.VerticalAlignment.superscript
+
+        # The markers of multiple footnotes in the same cell are joined in one run.
+        fn_table = pretty_table(
+            W.Table,
+            [1 2];
+            title = "Title",
+            footnotes = [
+                (:title, 1, 1) => "First",
+                (:column_label, 1, 2) => "Second",
+                (:title, 1, 1) => "Third",
+            ],
+        )
+
+        title_runs = docx_runs(docx_cell(fn_table, 1, 1))
+        @test length(title_runs) == 2
+        @test only(title_runs[2].children).text == "1,3"
+        @test title_runs[2].properties.valign == W.VerticalAlignment.superscript
+        @test docx_text(docx_cell(fn_table, 2, 2)) == "Col. 22"
+        @test docx_row_text(fn_table, 4) == ["1First"]
+        @test docx_row_text(fn_table, 5) == ["2Second"]
+        @test docx_row_text(fn_table, 6) == ["3Third"]
     end
 
     @testset "Alignment" verbose = true begin
