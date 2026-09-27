@@ -8,7 +8,7 @@
 #
 ############################################################################################
 
-import Base: getindex, isassigned, length, size
+import Base: getindex, size
 
 ############################################################################################
 #                             Functions Related to ColumnTable                             #
@@ -46,37 +46,7 @@ function getindex(ctable::ColumnTable, inds...)
     return getindex(ctable, inds[1], inds[2])
 end
 
-function isassigned(ctable::ColumnTable, i, j)
-    # Get the column name.
-    column_name = ctable.column_names[j]
-
-    # Get the column.
-    col = Tables.getcolumn(ctable.table, column_name)
-
-    # If the column is a `Tuple`, then all the elements must be defined.
-    if col isa Tuple
-        return true
-    else
-        return isassigned(col, i)
-    end
-end
-
-function isassigned(ctable::ColumnTable, inds...)
-    if length(inds) != 2
-        error("An element of type `ColumnTable` must be accessed using 2 indices.")
-    end
-
-    return isassigned(ctable, inds[1], inds[2])
-end
-
 axes(ctable::ColumnTable) = (Base.OneTo(ctable.size[1]), Base.OneTo(ctable.size[2]))
-
-function axes(ctable::ColumnTable, dim::Int)
-    dim == 1 && return Base.OneTo(ctable.size[1])
-    return Base.OneTo(ctable.size[2])
-end
-
-length(ctable::ColumnTable) = ctable.size[1] * ctable.size[2]
 
 size(ctable::ColumnTable) = ctable.size
 
@@ -228,35 +198,7 @@ function getindex(rtable::RowTable, inds...)
     return getindex(rtable, inds[1], inds[2])
 end
 
-function isassigned(rtable::RowTable, i, j)
-    try
-        getindex(rtable, i, j)
-        return true
-    catch e
-        if isa(e, UndefRefError)
-            return false
-        else
-            throw(e)
-        end
-    end
-end
-
-function isassigned(rtable::RowTable, inds...)
-    if length(inds) != 2
-        error("An element of type `RowTable` must be accessed using 2 indices.")
-    end
-
-    return isassigned(rtable, inds[1], inds[2])
-end
-
 axes(rtable::RowTable) = (Base.OneTo(rtable.size[1]), Base.OneTo(rtable.size[2]))
-
-function axes(rtable::RowTable, dim::Int)
-    dim == 1 && return Base.OneTo(rtable.size[1])
-    return Base.OneTo(rtable.size[2])
-end
-
-length(rtable::RowTable) = rtable.size[1] * rtable.size[2]
 
 size(rtable::RowTable) = rtable.size
 

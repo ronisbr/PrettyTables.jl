@@ -57,6 +57,10 @@ Base.@nospecializeinfer function _preprocess_data(@nospecialize(data::AbstractVe
     return data
 end
 
+function _preprocess_data(@nospecialize(data::AbstractArray))
+    throw(ArgumentError("`pretty_table` does not support data with more than 2 dimensions."))
+end
+
 function _preprocess_data(dict::AbstractDict)
     return hcat(collect(keys(dict)), collect(values(dict)))
 end

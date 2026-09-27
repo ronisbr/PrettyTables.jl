@@ -4,6 +4,12 @@
 #
 ############################################################################################
 
+@testset "Data With More Than Two Dimensions" begin
+    @test_throws "does not support data with more than 2 dimensions" pretty_table(
+        String, ones(2, 2, 2)
+    )
+end
+
 @testset "Alignment Vector Length" begin
     data = [1 2 3 4]
     @test_throws ArgumentError pretty_table(data; alignment = [:c])

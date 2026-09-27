@@ -282,7 +282,7 @@ Base.@constprop :none Base.@nospecializeinfer function _pretty_table(
     formatters::Union{Nothing, Vector{T} where T <: Any},
     maximum_number_of_columns::Int,
     maximum_number_of_rows::Int,
-    merge_column_label_cells::Union{Nothing, Symbol, Vector{MergeCells}},
+    merge_column_label_cells::Union{Symbol, Vector{MergeCells}},
     new_line_at_end::Bool,
     show_first_column_label_only::Bool,
     show_row_number_column::Bool,
@@ -330,17 +330,12 @@ Base.@constprop :none Base.@nospecializeinfer function _pretty_table(
 
         first_row_index = first(first(ax))
         first_column_index = 1
-    elseif length(ax) == 2
+    else
+        # Notice that `_preprocess_data` rejects data with more than 2 dimensions.
         num_rows, num_columns = size(pdata)
 
         first_row_index = first(first(ax))
         first_column_index = first(last(ax))
-    else
-        throw(
-            ArgumentError(
-                "`pretty_table` does not support data with more than 2 dimensions."
-            ),
-        )
     end
 
     # If we reach this point and `column_labels` is nothing, we must guess it.
