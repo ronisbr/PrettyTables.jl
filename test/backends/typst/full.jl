@@ -142,7 +142,6 @@
                     ],
                     ["fill" => "red", "text-fill" => "rgb(30, 30, 30)"],
                     ["fill" => "red", "text-fill" => "rgb(30, 30, 30)"],
-                    ["fill" => "red", "text-fill" => "rgb(30, 30, 30)"],
                 ],
             ),
             column_labels = [["Col. $i" for i in 1:4], ["$i" for i in 1:4]],

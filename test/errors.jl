@@ -208,6 +208,32 @@ end
     @test !occursin("length(summary_rows)", msg)
 end
 
+@testset "Column Label Style Vector Length in Every Back End" begin
+    # Every back end must validate the length of the vectors with one style per column
+    # instead of throwing a `BoundsError`.
+    data = [1 2]
+    msg  = "The length of `first_line_column_label` in `style` must be equal to the number of columns (2)."
+
+    @test_throws msg pretty_table(
+        String,
+        data;
+        backend = :typst,
+        style = TypstTableStyle(; first_line_column_label = [["text-fill" => "red"]]),
+    )
+
+    @test_throws msg pretty_table(
+        XLSX.XLSXFile,
+        data;
+        style = ExcelTableStyle(; first_line_column_label = [["bold" => "true"]]),
+    )
+
+    @test_throws msg pretty_table(
+        W.Table,
+        data;
+        style = DocxTableStyle(; first_line_column_label = [["bold" => "true"]]),
+    )
+end
+
 @testset "Column Label Style Vector Length" begin
     # When `first_line_column_label` or `column_label` is given as a vector, it must hold
     # exactly one style per column. Only the `first_line_column_label` check was covered.

@@ -82,6 +82,13 @@ function _excel__write_table_core!(
     num_printed_cols = _number_of_printed_columns(table_data)
     num_printed_data_cols = _number_of_printed_data_columns(table_data)
 
+    _check_column_label_styles(
+        style.first_line_column_label,
+        style.column_label,
+        Vector{Vector{ExcelPair}},
+        num_cols,
+    )
+
     num_leading_columns =
         num_printed_cols - num_printed_data_cols - _is_horizontally_cropped(table_data)
 

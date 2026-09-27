@@ -82,21 +82,12 @@ function _markdown__print_core(pspec::PrintingSpec, opts::MarkdownPrintOptions)
     num_summary_rows         = _has_summary_rows(table_data) ? length(table_data.summary_rows) : 0
 
     # Check the style variables.
-    if style.first_line_column_label isa Vector{MarkdownStyle}
-        length(style.first_line_column_label) != table_data.num_columns && throw(
-            ArgumentError(
-                "The length of `first_line_column_label` in `style` must be equal to the number of columns ($(table_data.num_columns)).",
-            ),
-        )
-    end
-
-    if style.column_label isa Vector{MarkdownStyle}
-        length(style.column_label) != table_data.num_columns && throw(
-            ArgumentError(
-                "The length of `column_label` in `style` must be equal to the number of columns ($(table_data.num_columns)).",
-            ),
-        )
-    end
+    _check_column_label_styles(
+        style.first_line_column_label,
+        style.column_label,
+        Vector{MarkdownStyle},
+        table_data.num_columns,
+    )
 
     # == Render the Table ==================================================================
 

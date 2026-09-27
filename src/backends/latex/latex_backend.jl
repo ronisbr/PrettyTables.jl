@@ -81,21 +81,12 @@ function _latex__print_core(pspec::PrintingSpec, opts::LatexPrintOptions)
         _line_spec_indices(tf.vertical_lines_at_data_columns, table_data.num_columns)
 
     # Check the style variables.
-    if style.first_line_column_label isa Vector{LatexEnvironments}
-        length(style.first_line_column_label) != table_data.num_columns && throw(
-            ArgumentError(
-                "The length of `first_line_column_label` in `style` must be equal to the number of columns ($(table_data.num_columns)).",
-            ),
-        )
-    end
-
-    if style.column_label isa Vector{LatexEnvironments}
-        length(style.column_label) != table_data.num_columns && throw(
-            ArgumentError(
-                "The length of `column_label` in `style` must be equal to the number of columns ($(table_data.num_columns)).",
-            ),
-        )
-    end
+    _check_column_label_styles(
+        style.first_line_column_label,
+        style.column_label,
+        Vector{LatexEnvironments},
+        table_data.num_columns,
+    )
 
     # == Variables to Store Information About Indentation ==================================
 

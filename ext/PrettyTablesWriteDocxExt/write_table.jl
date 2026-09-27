@@ -58,6 +58,13 @@ function _docx__render_table_core(pspec::PrintingSpec, opts::DocxPrintOptions)
     num_cols              = table_data.num_columns
     num_printed_cols      = _number_of_printed_columns(table_data)
     num_printed_data_cols = _number_of_printed_data_columns(table_data)
+
+    _check_column_label_styles(
+        style.first_line_column_label,
+        style.column_label,
+        Vector{Vector{DocxPair}},
+        num_cols,
+    )
     has_cont_column       = _is_horizontally_cropped(table_data)
     num_leading_columns   = num_printed_cols - num_printed_data_cols - has_cont_column
 

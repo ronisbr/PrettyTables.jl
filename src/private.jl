@@ -254,3 +254,30 @@ function _check_backend_keywords(
 
     return nothing
 end
+
+"""
+    _check_column_label_styles(first_line_column_label, column_label, per_column::Type, num_columns::Int) -> Nothing
+
+Throw an `ArgumentError` if the style `first_line_column_label` or `column_label` of a back
+end is a vector with one decoration per column, i.e., an object of type `per_column`, whose
+length is not `num_columns`.
+"""
+function _check_column_label_styles(
+    @nospecialize(first_line_column_label),
+    @nospecialize(column_label),
+    @nospecialize(per_column::Type),
+    num_columns::Int,
+)
+    for (name, s) in (
+        ("first_line_column_label", first_line_column_label),
+        ("column_label", column_label),
+    )
+        (s isa per_column) && (length(s) != num_columns) && throw(
+            ArgumentError(
+                "The length of `$name` in `style` must be equal to the number of columns ($num_columns).",
+            ),
+        )
+    end
+
+    return nothing
+end

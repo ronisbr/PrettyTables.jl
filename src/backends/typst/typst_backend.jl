@@ -112,6 +112,14 @@ function _typst__print_core(pspec::PrintingSpec, opts::TypstPrintOptions)
         )
     end
 
+    # Check the style variables.
+    _check_column_label_styles(
+        style.first_line_column_label,
+        style.column_label,
+        Vector{Vector{TypstPair}},
+        table_data.num_columns,
+    )
+
     # If `minify` is `true`, we do not wrap lines.
     if minify
         wrap_column = -1
