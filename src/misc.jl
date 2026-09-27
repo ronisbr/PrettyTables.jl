@@ -28,6 +28,54 @@ function _sprint_with_context(f::F, rc::RenderContext, args...) where {F}
 end
 
 """
+    _cell_to_str(cell::Any, context::RenderContext, renderer::Union{Val{:print}, Val{:show}}, mime::Union{Nothing, MIME}) -> Tuple{String, Bool}
+
+Convert `cell` to a `String` using the `renderer` and the render `context`. If the renderer
+is `:show`, `mime` is not `nothing`, and `cell` can be shown in `mime`, the string is the
+`mime` representation of the cell and the second returned value is `true`, meaning that the
+string is already written in the back end format. Otherwise, the second returned value is
+`false`.
+"""
+function _cell_to_str(
+    @nospecialize(cell::Any), context::RenderContext, ::Val{:print}, @nospecialize(mime)
+)
+    return _sprint_with_context(print, context, cell), false
+end
+
+function _cell_to_str(
+    cell::AbstractString, context::RenderContext, ::Val{:print}, @nospecialize(mime)
+)
+    # Notice that we must not use `string` here because it is the identity for any
+    # `AbstractString`, whereas the callers require a `String`.
+    return (cell isa String ? cell : String(cell)), false
+end
+
+function _cell_to_str(
+    @nospecialize(cell::Any), context::RenderContext, ::Val{:show}, @nospecialize(mime)
+)
+    if !isnothing(mime) && showable(mime, cell)
+        return _sprint_with_context(show, context, mime, cell), true
+    end
+
+    return _sprint_with_context(show, context, cell), false
+end
+
+function _cell_to_str(
+    cell::AbstractString, context::RenderContext, ::Val{:show}, @nospecialize(mime)
+)
+    if !isnothing(mime) && showable(mime, cell)
+        return _sprint_with_context(show, context, mime, cell), true
+    end
+
+    return string(cell), false
+end
+
+_cell_to_str(::UndefinedCell, ::RenderContext, ::Val{:print}, @nospecialize(mime)) =
+    "#undef", false
+_cell_to_str(::UndefinedCell, ::RenderContext, ::Val{:show}, @nospecialize(mime)) =
+    "#undef", false
+
+"""
     _iocontext(rc::RenderContext) -> IOContext
 
 Return the underlying `IOContext` of the render context `rc`. It is required by APIs that

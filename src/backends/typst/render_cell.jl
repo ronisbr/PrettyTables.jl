@@ -5,49 +5,6 @@
 ############################################################################################
 
 """
-    _typst__cell_to_str(
-        cell::Any,
-        context::RenderContext,
-        renderer::Union{Val{:print}, Val{:show}}
-    ) -> String
-
-Convert the `cell` to a string using a specific `context` and `renderer`.
-"""
-function _typst__cell_to_str(cell::Any, context::RenderContext, ::Val{:print})
-    return _sprint_with_context(print, context, cell)
-end
-
-function _typst__cell_to_str(cell::Any, context::RenderContext, ::Val{:show})
-    if showable(MIME("text/typst"), cell)
-        cell_str = _sprint_with_context(show, context, MIME("text/typst"), cell)
-    else
-        cell_str = _sprint_with_context(show, context, cell)
-    end
-
-    return cell_str
-end
-
-function _typst__cell_to_str(cell::AbstractString, context::RenderContext, ::Val{:print})
-    # Notice that we must not use `string` here because it is the identity for any
-    # `AbstractString`, whereas the callers require a `String`.
-    return String(cell)
-end
-
-function _typst__cell_to_str(cell::AbstractString, context::RenderContext, ::Val{:show})
-    if showable(MIME("text/typst"), cell)
-        cell_str = _sprint_with_context(show, context, MIME("text/typst"), cell)
-    else
-        cell_str = string(cell)
-    end
-
-    return cell_str
-end
-
-_typst__cell_to_str(cell::UndefinedCell, context::RenderContext, ::Val{:print}) = "#undef"
-
-_typst__cell_to_str(cell::UndefinedCell, context::RenderContext, ::Val{:show}) = "#undef"
-
-"""
     _typst__render_cell(
         cell::Any,
         context::RenderContext,
@@ -59,7 +16,7 @@ Render the `cell` in Typst back end using a specific `context` and `renderer`.
 function _typst__render_cell(
     cell::Any, context::RenderContext, renderer::Union{Val{:print}, Val{:show}}
 )
-    cell_str = _typst__cell_to_str(cell, context, renderer)
+    cell_str, _ = _cell_to_str(cell, context, renderer, MIME("text/typst"))
 
     # Notice that the cell content is always escaped, since it is emitted inside a Typst content block.
     return _typst__escape_str(cell_str)
