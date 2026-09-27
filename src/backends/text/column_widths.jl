@@ -253,6 +253,17 @@ function _text__printed_column_widths(
             ndigits(f) + (f < 0),
             ndigits(l) + (l < 0),
         )
+
+        # The row numbers with footnotes are wider because of the footnote marks.
+        if !isnothing(table_data.footnotes)
+            for ((section, i, _), _) in table_data.footnotes
+                section === :row_number || continue
+                r = i - 1 + f
+                w = ndigits(r) + (r < 0)
+                w += textwidth(_text__footnote_marks(table_data, :row_number, i, 0))
+                row_number_column_width = max(row_number_column_width, w)
+            end
+        end
     end
 
     if !isnothing(row_labels)

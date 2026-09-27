@@ -380,3 +380,15 @@ function _markdown__style_textwidth(s::MarkdownStyle)
 
     return Δ
 end
+
+"""
+    _markdown__footnote_marks(table_data::TableData, section::Symbol, i::Int, j::Int) -> String
+
+Return the references to the footnotes in the cell `(i, j)` of the table `section`, or an
+empty string if the cell has no footnotes.
+"""
+function _markdown__footnote_marks(table_data::TableData, section::Symbol, i::Int, j::Int)
+    cell_footnotes = _current_cell_footnotes(table_data, section, i, j)
+    (isnothing(cell_footnotes) || isempty(cell_footnotes)) && return ""
+    return join("[^$f]" for f in cell_footnotes)
+end

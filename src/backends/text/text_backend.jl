@@ -799,7 +799,8 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
                 alignment     = _current_cell_alignment(action, ps, table_data)
                 cell          = _current_cell(action, ps, table_data)
                 decoration    = action == :title ? rstyle.title : rstyle.subtitle
-                rendered_cell = _text__render_cell(cell, rctx, renderer)
+                rendered_cell = _text__render_cell(cell, rctx, renderer) *
+                    _text__footnote_marks(table_data, action, ps.i, ps.j)
 
                 _text__print_aligned(
                     display,
@@ -1264,7 +1265,8 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
             cell          = _current_cell(action, ps, table_data)
             cell_width    = row_number_column_width
             decoration    = rstyle.row_number
-            rendered_cell = _text__render_cell(cell, rctx, renderer)
+            rendered_cell = _text__render_cell(cell, rctx, renderer) *
+                _text__footnote_marks(table_data, action, ps.i, ps.j)
 
         elseif action == :data
             # Custom text cells were recorded during the rendering pass, avoiding a new

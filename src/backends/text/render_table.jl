@@ -157,15 +157,7 @@ function _text__render_table(
         end
 
         # Check for footnotes.
-        cell_footnotes = _current_cell_footnotes(table_data, action, ps.i, ps.j)
-
-        if !isnothing(cell_footnotes) && !isempty(cell_footnotes)
-            for i in eachindex(cell_footnotes)
-                f = cell_footnotes[i]
-                rendered_cell *= _text__render_footnote_superscript(f)
-                (i != last(eachindex(cell_footnotes))) && (rendered_cell *= "ʼ")
-            end
-        end
+        rendered_cell *= _text__footnote_marks(table_data, action, ps.i, ps.j)
 
         if !isnothing(column_labels) && (action == :column_label)
             column_labels[ir, jr] = rendered_cell

@@ -165,14 +165,7 @@ function _markdown__print_core(pspec::PrintingSpec, opts::MarkdownPrintOptions)
         end
 
         # Check for footnotes.
-        footnotes = _current_cell_footnotes(table_data, action, ps.i, ps.j)
-
-        if !isnothing(footnotes) && !isempty(footnotes)
-            for i in eachindex(footnotes)
-                f = footnotes[i]
-                rendered_cell *= "[^$f]"
-            end
-        end
+        rendered_cell *= _markdown__footnote_marks(table_data, action, ps.i, ps.j)
 
         if table_data.show_column_labels && (action == :column_label)
             # Apply the style to the column label.
@@ -283,6 +276,17 @@ function _markdown__print_core(pspec::PrintingSpec, opts::MarkdownPrintOptions)
                 ndigits(f) + (f < 0) + rnsw,
                 ndigits(l) + (l < 0) + rnsw,
             )
+
+            # The row numbers with footnotes are wider because of the footnote references.
+            if !isnothing(table_data.footnotes)
+                for ((section, i, _), _) in table_data.footnotes
+                    section === :row_number || continue
+                    r = i - 1 + f
+                    w = ndigits(r) + (r < 0) + rnsw
+                    w += textwidth(_markdown__footnote_marks(table_data, :row_number, i, 0))
+                    row_number_column_width = max(row_number_column_width, w)
+                end
+            end
         end
 
         if _has_row_labels(table_data)
@@ -372,7 +376,7 @@ function _markdown__print_core(pspec::PrintingSpec, opts::MarkdownPrintOptions)
                     _current_cell(action, ps, table_data), line_breaks, true
                 )
 
-                println(buf, rendered_cell)
+                println(buf, rendered_cell, _markdown__footnote_marks(table_data, action, 1, 0))
                 println(buf)
             end
 
@@ -547,7 +551,7 @@ function _markdown__print_core(pspec::PrintingSpec, opts::MarkdownPrintOptions)
                 cell_width    = row_number_column_width
                 rendered_cell = _markdown__apply_style(
                     style.row_number, _markdown__render_cell(cell, rctx, renderer)
-                )
+                ) * _markdown__footnote_marks(table_data, action, ps.i, ps.j)
 
             elseif action == :data
                 cell_width    = printed_data_column_widths[jr]

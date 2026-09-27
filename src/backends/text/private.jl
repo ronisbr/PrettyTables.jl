@@ -9,6 +9,18 @@
 const _TEXT__EXPONENTS = ("⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹")
 
 """
+    _text__footnote_marks(table_data::TableData, section::Symbol, i::Int, j::Int) -> String
+
+Return the superscripts of the footnotes in the cell `(i, j)` of the table `section`, joined
+with `ʼ`, or an empty string if the cell has no footnotes.
+"""
+function _text__footnote_marks(table_data::TableData, section::Symbol, i::Int, j::Int)
+    cell_footnotes = _current_cell_footnotes(table_data, section, i, j)
+    (isnothing(cell_footnotes) || isempty(cell_footnotes)) && return ""
+    return join((_text__render_footnote_superscript(f) for f in cell_footnotes), "ʼ")
+end
+
+"""
     _text__render_footnote_superscript(number::Int) -> String
 
 Render the superscript of a footnote.
