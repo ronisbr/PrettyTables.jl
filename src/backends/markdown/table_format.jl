@@ -14,6 +14,9 @@ const _MARKDOWN__UNSUPPORTED_STYLE_FIELDS = (
     :merged_column_label,
 )
 
+# The native objects of this back end select it when `backend = :auto`.
+_backend_of(::Union{MarkdownTableFormat, MarkdownTableStyle}) = :markdown
+
 """
     _markdown__table_style(style::Union{TableStyle, MarkdownTableStyle}) -> MarkdownTableStyle
 
@@ -23,9 +26,6 @@ of the default Markdown table style. The fields `title`, `subtitle`,
 `first_line_merged_column_label`, and `merged_column_label` are ignored because the
 Markdown table style does not have them.
 """
-# The native objects of this back end select it when `backend = :auto`.
-_backend_of(::Union{MarkdownTableFormat, MarkdownTableStyle}) = :markdown
-
 _markdown__table_style(style::MarkdownTableStyle) = style
 
 function _markdown__table_style(style::Any)

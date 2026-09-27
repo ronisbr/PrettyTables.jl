@@ -4,6 +4,9 @@
 #
 ############################################################################################
 
+# The native objects of this back end select it when `backend = :auto`.
+_backend_of(::Union{DocxTableFormat, DocxTableStyle}) = :docx
+
 """
     _docx__table_style(style::Union{TableStyle, DocxTableStyle}) -> DocxTableStyle
 
@@ -11,9 +14,6 @@ Convert `style` to a `DocxTableStyle`. A native `DocxTableStyle` is returned unc
 whereas the fields of a backend-agnostic [`TableStyle`](@ref) override the ones of the
 default Word table style.
 """
-# The native objects of this back end select it when `backend = :auto`.
-_backend_of(::Union{DocxTableFormat, DocxTableStyle}) = :docx
-
 _docx__table_style(style::DocxTableStyle) = style
 _docx__table_style(style::TableStyle) = DocxTableStyle(; _table_style_kwargs(style)...)
 

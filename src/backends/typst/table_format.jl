@@ -4,6 +4,9 @@
 #
 ############################################################################################
 
+# The native objects of this back end select it when `backend = :auto`.
+_backend_of(::Union{TypstTableFormat, TypstTableStyle}) = :typst
+
 """
     _typst__table_style(style::Union{TableStyle, TypstTableStyle}) -> TypstTableStyle
 
@@ -11,9 +14,6 @@ Convert `style` to a `TypstTableStyle`. A native `TypstTableStyle` is returned u
 whereas the fields of a backend-agnostic [`TableStyle`](@ref) override the ones of the
 default Typst table style.
 """
-# The native objects of this back end select it when `backend = :auto`.
-_backend_of(::Union{TypstTableFormat, TypstTableStyle}) = :typst
-
 _typst__table_style(style::TypstTableStyle) = style
 _typst__table_style(style::TableStyle) = TypstTableStyle(; _table_style_kwargs(style)...)
 
