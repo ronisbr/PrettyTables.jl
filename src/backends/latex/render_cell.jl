@@ -22,8 +22,10 @@ Render the `cell` in latex back end using a specific `context` and `renderer`.
 function _latex__render_cell(
     cell::Any, context::RenderContext, renderer::Union{Val{:print}, Val{:show}}
 )
-    cell_str, _ = _cell_to_str(cell, context, renderer, MIME("text/latex"))
-    return _latex__escape_str(cell_str)
+    cell_str, is_latex = _cell_to_str(cell, context, renderer, MIME("text/latex"))
+
+    # If the cell was rendered using its LaTeX representation, we must emit it unchanged.
+    return is_latex ? cell_str : _latex__escape_str(cell_str)
 end
 
 function _latex__render_cell(

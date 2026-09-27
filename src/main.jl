@@ -315,7 +315,8 @@ Base.@constprop :none Base.@nospecializeinfer function _pretty_table(
         # circular dependency.
         for d in ptd
             if d === data
-                print(io, "#= circular reference =#")
+                (backend == :auto) && (backend = _resolve_printing_backend(kwargs))
+                print(io, _circular_reference_str(backend))
                 return nothing
             end
         end
@@ -681,6 +682,20 @@ function _validate_footnotes(
     end
 
     return nothing
+end
+
+"""
+    _circular_reference_str(backend::Symbol) -> String
+
+Return the sentinel printed in place of data that references itself, escaped for the
+`backend` if it is emitted as raw markup (e.g., when a cell is rendered using the MIME
+representation of the nested table).
+"""
+function _circular_reference_str(backend::Symbol)
+    str = "#= circular reference =#"
+    backend == :latex && return _latex__escape_str(str)
+    backend == :typst && return _typst__escape_str(str)
+    return str
 end
 
 """

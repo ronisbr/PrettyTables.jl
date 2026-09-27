@@ -160,3 +160,21 @@
         @test result == expected
     end
 end
+
+@testset "MIME Representation With the Show Renderer" begin
+    # With the renderer `:show`, the Typst representation of a cell must be emitted without
+    # escaping, whereas the text representation must be escaped.
+    struct RendererMimeCellTypst end
+    Base.show(io::IO, ::MIME"text/typst", ::RendererMimeCellTypst) = print(io, "*foo*")
+    Base.show(io::IO, ::RendererMimeCellTypst) = print(io, "FooCell")
+
+    result = pretty_table(
+        String, [RendererMimeCellTypst();;]; backend = :typst, renderer = :show
+    )
+    @test occursin("*foo*", result)
+
+    result = pretty_table(
+        String, [RendererMimeCellTypst();;]; backend = :typst, renderer = :print
+    )
+    @test occursin("FooCell", result)
+end

@@ -34,7 +34,10 @@ function _html__render_cell(
     allow_html_in_cells::Bool = false,
     line_breaks::Bool = false,
 )
-    cell_str, _ = _cell_to_str(cell, context, renderer, MIME("text/html"))
+    cell_str, is_html = _cell_to_str(cell, context, renderer, MIME("text/html"))
+
+    # If the cell was rendered using its HTML representation, we must emit it unchanged.
+    is_html && return cell_str
 
     # Check if we need to replace `\n` with `<br>`.
     replace_newline = line_breaks

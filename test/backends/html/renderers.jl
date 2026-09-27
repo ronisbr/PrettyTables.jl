@@ -64,3 +64,21 @@
         @test result == expected
     end
 end
+
+@testset "MIME Representation With the Show Renderer" begin
+    # With the renderer `:show`, the HTML representation of a cell must be emitted without
+    # escaping, whereas the text representation must be escaped.
+    struct RendererMimeCellHtml end
+    Base.show(io::IO, ::MIME"text/html", ::RendererMimeCellHtml) = print(io, "<b>foo</b>")
+    Base.show(io::IO, ::RendererMimeCellHtml) = print(io, "FooCell")
+
+    result = pretty_table(
+        String, [RendererMimeCellHtml();;]; backend = :html, renderer = :show
+    )
+    @test occursin("<b>foo</b>", result)
+
+    result = pretty_table(
+        String, [RendererMimeCellHtml();;]; backend = :html, renderer = :print
+    )
+    @test occursin("FooCell", result)
+end

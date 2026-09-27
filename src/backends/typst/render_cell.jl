@@ -16,10 +16,12 @@ Render the `cell` in Typst back end using a specific `context` and `renderer`.
 function _typst__render_cell(
     cell::Any, context::RenderContext, renderer::Union{Val{:print}, Val{:show}}
 )
-    cell_str, _ = _cell_to_str(cell, context, renderer, MIME("text/typst"))
+    cell_str, is_typst = _cell_to_str(cell, context, renderer, MIME("text/typst"))
 
-    # Notice that the cell content is always escaped, since it is emitted inside a Typst content block.
-    return _typst__escape_str(cell_str)
+    # If the cell was rendered using its Typst representation, we must emit it unchanged.
+    # Otherwise, the content must be escaped, since it is emitted inside a Typst content
+    # block.
+    return is_typst ? cell_str : _typst__escape_str(cell_str)
 end
 
 function PrettyTables._typst__render_cell(
