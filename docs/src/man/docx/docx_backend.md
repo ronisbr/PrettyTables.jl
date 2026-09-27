@@ -57,7 +57,7 @@ wrapped in a document with a single section.
     a document.
     (**Default**: `nothing`)
 - `highlighters::Vector{<:AbstractHighlighter}`: Highlighters to apply to the data cells.
-    For more information, see the section [Word Highlighters](@ref).
+    For more information, see the section [Word Highlighters](@ref docx-highlighters).
 - `maximum_data_column_widths::Union{Real, AbstractVector{<:Real}}`: Maximum width for each
     data column in points. A scalar applies to all columns; a vector sets per-column
     maximums.
@@ -70,9 +70,10 @@ wrapped in a document with a single section.
     `filename` already exists, an error is thrown.
     (**Default**: `false`)
 - `style::Union{TableStyle, DocxTableStyle}`: Style of the table. For more information, see
-    the section [Word Table Style](@ref).
+    the section [Word Table Style](@ref docx-table-style).
 - `table_format::Union{TableFormat, DocxTableFormat}`: Word table format used to render the
-    table. For more information, see the section [Word Table Format](@ref).
+    table. For more information, see the section
+    [Word Table Format](@ref docx-table-format).
 
 ## Table Sections
 
@@ -97,7 +98,7 @@ with the attributes of its face (see [Faces](@ref)). As in the Excel back end, t
 attributes of the table style and of the highlighter applied to the cell take precedence
 over the ones of the regions.
 
-## Word Highlighters
+## [Word Highlighters](@id docx-highlighters)
 
 A set of highlighters can be passed as a vector of `AbstractHighlighter` to the
 `highlighters` keyword. A highlighter can be an instance of the structure
@@ -148,7 +149,7 @@ highlighters = [
 ]
 ```
 
-## Word Table Format
+## [Word Table Format](@id docx-table-format)
 
 The Word table format is defined using an object of type [`DocxTableFormat`](@ref) that
 contains the following fields:
@@ -259,7 +260,7 @@ table_format = DocxTableFormat(;
 A backend-agnostic [`TableFormat`](@ref) is also accepted, in which case the line designs
 are converted with [`docx_line_style`](@ref).
 
-## Word Table Style
+## [Word Table Style](@id docx-table-style)
 
 The Word table style is defined using an object of type [`DocxTableStyle`](@ref) that
 contains the following fields:
