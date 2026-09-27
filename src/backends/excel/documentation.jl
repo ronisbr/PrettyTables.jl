@@ -28,10 +28,10 @@ The Excel backend's return value depends on the following combination of keyword
 
 - `anchor_cell::String`: Top-left cell of the table in A1 notation (e.g. `"B3"`).
     (**Default**: `"A1"`)
-- `data_column_widths::Union{Real, AbstractVector{<:Real}}`: Explicit width for each data column
-    in Excel units, overriding auto-calculated widths. A scalar applies to all columns; a
-    vector sets per-column widths. When set (> 0), `minimum_data_column_widths` and
-    `maximum_data_column_widths` are ignored for that column.
+- `data_column_widths::Union{Real, AbstractVector{<:Real}}`: Explicit width for each data
+    column in Excel units, overriding auto-calculated widths. A scalar applies to all
+    columns; a vector sets per-column widths. When set (> 0), `minimum_data_column_widths`
+    and `maximum_data_column_widths` are ignored for that column.
     (**Default**: `0.0`)
 - `excel_formatters::Vector{ExcelFormatter}`: Number-format rules applied to data and
     summary cells.

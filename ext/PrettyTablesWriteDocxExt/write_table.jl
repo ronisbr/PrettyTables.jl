@@ -15,9 +15,9 @@ converted to the Word objects afterward, when every border of every cell is know
 
 The fields of `opts` are:
 
-- `data_column_widths::Union{Real, AbstractVector{<:Real}}`: Explicit width for each data column
-    in points, overriding the estimated widths. A scalar applies to all columns; a vector
-    sets per-column widths. When set (> 0), `minimum_data_column_widths` and
+- `data_column_widths::Union{Real, AbstractVector{<:Real}}`: Explicit width for each data
+    column in points, overriding the estimated widths. A scalar applies to all columns; a
+    vector sets per-column widths. When set (> 0), `minimum_data_column_widths` and
     `maximum_data_column_widths` are ignored for that column.
     (**Default**: `0.0`)
 - `highlighters::Vector{AbstractHighlighter}`: Highlighters to apply to the data cells.

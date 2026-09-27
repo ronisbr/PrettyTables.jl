@@ -47,9 +47,9 @@ wrapped in a document with a single section.
 
 ## Keywords
 
-- `data_column_widths::Union{Real, AbstractVector{<:Real}}`: Explicit width for each data column
-    in points, overriding the estimated widths. A scalar applies to all columns; a vector
-    sets per-column widths. When set (> 0), `minimum_data_column_widths` and
+- `data_column_widths::Union{Real, AbstractVector{<:Real}}`: Explicit width for each data
+    column in points, overriding the estimated widths. A scalar applies to all columns; a
+    vector sets per-column widths. When set (> 0), `minimum_data_column_widths` and
     `maximum_data_column_widths` are ignored for that column.
     (**Default**: `0.0`)
 - `filename::Union{Nothing, String}`: Path of the Word file to write, which must end in
