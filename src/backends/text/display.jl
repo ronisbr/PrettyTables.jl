@@ -102,21 +102,6 @@ function _text__styled_print(display::Display, char::Char, sgr::String)
 end
 
 """
-    _text__styled_print(display::Display, str::AbstractString, sgr::String) -> Nothing
-
-Print a string `str` to the `display` with the style given by the escape sequence `sgr`,
-which can be empty for no style.
-"""
-function _text__styled_print(display::Display, str::AbstractString, sgr::String)
-    (!display.has_color || isempty(sgr)) && return _text__print(display, str)
-
-    _text__check_eol(display) && return nothing
-    print(display.buf_line, sgr, str, _TEXT__STRING_RESET)
-    display.column += printable_textwidth(str)
-    return nothing
-end
-
-"""
     _text__flush_line(
         display::Display,
         add_continuation_char::Bool = true,
@@ -161,7 +146,6 @@ function _text__flush_line(
 
     println(display.buf, rstrip(line))
     display.column = 0
-    display.row += 1
 
     return nothing
 end

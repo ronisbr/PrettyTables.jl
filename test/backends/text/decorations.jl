@@ -9,19 +9,19 @@
         sgr = PrettyTables._text__decoration_sgr(Face(; weight = :bold, foreground = :red))
         display = PrettyTables.Display(; has_color = true)
 
-        @test PrettyTables._text__styled_print(display, "abc", sgr) === nothing
-        @test take!(display.buf_line) == collect(codeunits("\e[31;1mabc\e[0m"))
-        @test display.column == 3
+        @test PrettyTables._text__styled_print(display, 'a', sgr) === nothing
+        @test take!(display.buf_line) == collect(codeunits("\e[31;1ma\e[0m"))
+        @test display.column == 1
 
         display = PrettyTables.Display(; size = (-1, 2), column = 2, has_color = true)
 
-        @test PrettyTables._text__styled_print(display, "ab", sgr) === nothing
-        @test take!(display.buf_line) == collect(codeunits("\e[31;1mab\e[0m"))
-        @test display.column == 4
+        @test PrettyTables._text__styled_print(display, 'a', sgr) === nothing
+        @test take!(display.buf_line) == collect(codeunits("\e[31;1ma\e[0m"))
+        @test display.column == 3
 
         display = PrettyTables.Display(; size = (-1, 2), column = 3, has_color = true)
 
-        @test PrettyTables._text__styled_print(display, "ab", sgr) === nothing
+        @test PrettyTables._text__styled_print(display, 'a', sgr) === nothing
         @test isempty(take!(display.buf_line))
         @test display.column == 3
     end

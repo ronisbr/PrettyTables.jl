@@ -35,15 +35,13 @@ Store the information of the display and the current cursor position.
 # Fields
 
 - `size::Tuple{Int, Int}`: Display size.
-- `row::Int`: Current row.
 - `column::Int`: Current column.
 - `has_color::Bool`: Indicates if the display has color support.
-- `buf_line::IOBuffer`:  Buffer that stores the current line.
 - `buf::IOBuffer`: Buffer that stores the entire output.
+- `buf_line::IOBuffer`: Buffer that stores the current line.
 """
 @kwdef mutable struct Display
     size::NTuple{2, Int} = (-1, -1)
-    row::Int             = 1
     column::Int          = 0
     has_color::Bool      = false
 

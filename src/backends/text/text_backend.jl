@@ -141,7 +141,7 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
     end
 
     # Create the structure that holds the display information.
-    display = Display(display_size, 1, 0, get(context, :color, false), buf_io, IOBuffer())
+    display = Display(display_size, 0, get(context, :color, false), buf_io, IOBuffer())
 
     # The escape sequences of the style are rendered when it is created, so that the loop
     # only writes strings. The printing functions skip them if the display has no color.
