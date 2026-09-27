@@ -61,8 +61,10 @@
         @test f["bottom"] === nothing
         @test f["right"] == Dict("rgb" => "FF000000", "style" => "thin")
 
+        # The line before the row group label is its top border, since the label does not
+        # end the data section.
         f = XLSX.getBorder(r, "A5").border
-        @test f["bottom"] == Dict("rgb" => "FF000000", "style" => "thin")
+        @test f["bottom"] === nothing
 
         f = XLSX.getBorder(r, "A6").border
         @test f["top"] == Dict("style" => "thin", "rgb" => "FF000000")
@@ -154,7 +156,7 @@
         @test f["right"] === nothing
 
         f = XLSX.getBorder(r, "A5").border
-        @test f["bottom"] == Dict("rgb" => "FF000000", "style" => "thin")
+        @test f["bottom"] === nothing
 
         f = XLSX.getBorder(r, "A6").border
         @test f["top"] == Dict("rgb" => "FF000000", "style" => "thin")
@@ -169,6 +171,47 @@
         @test XLSX.getBorder(r, "A9").border["bottom"] === nothing
         @test XLSX.getBorder(r, "A10").border["bottom"] === nothing
         @test XLSX.getBorder(r, "A11").border["bottom"] === nothing
+    end
+
+    # == Row Group Label Lines =============================================================
+
+    @testset "Row Group Label Lines" verbose = true begin
+        # A row group label does not end the data section. Hence, disabling the lines around
+        # it must remove every line between the data rows and the label.
+        result = pretty_table(
+            XLSX.XLSXFile,
+            [1 2; 3 4; 5 6];
+            row_group_labels = [2 => "Group"],
+            table_format = ExcelTableFormat(;
+                horizontal_line_before_row_group_label = false,
+                horizontal_line_after_row_group_label = false,
+            ),
+        )
+
+        r = result[1]
+
+        border_side(cell, side) = begin
+            b = XLSX.getBorder(r, cell)
+            isnothing(b) ? nothing : b.border[side]
+        end
+
+        @test border_side("A2", "bottom") === nothing
+        @test border_side("A3", "top") === nothing
+        @test border_side("A3", "bottom") === nothing
+
+        # The lines after the selected data rows are still drawn.
+        result = pretty_table(
+            XLSX.XLSXFile,
+            [1 2; 3 4; 5 6];
+            row_group_labels = [2 => "Group"],
+            table_format = ExcelTableFormat(;
+                horizontal_lines_at_data_rows = [1],
+                horizontal_line_before_row_group_label = false,
+            ),
+        )
+
+        @test XLSX.getBorder(result[1], "A2").border["bottom"] ==
+            Dict("style" => "thin", "rgb" => "FF000000")
     end
 
     # == Horizontal Lines at Data Rows ========================================================

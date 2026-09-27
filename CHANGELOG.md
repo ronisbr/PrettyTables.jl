@@ -161,6 +161,8 @@ Version 3.5.0
 - ![Info][badge-info] PrettyTables.jl now requires StringManipulation.jl v0.6.1.
 - ![Bugfix][badge-bugfix] Fix the outer lines of the Excel back end, which were drawn around
   the footnotes and the source notes instead of only around the content of the table.
+- ![Bugfix][badge-bugfix] Fix the line before the row group labels in the Excel back end,
+  which was drawn even if `horizontal_line_before_row_group_label` was `false`.
 
 Version 3.4.8
 -------------
