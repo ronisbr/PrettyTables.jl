@@ -346,16 +346,10 @@ function _latex__print_core(pspec::PrintingSpec, opts::LatexPrintOptions)
 
                     # We must check if we have a vertical line after the cell merge.
                     vline =
-                        if (
-                            (ps.j + cs - 1 ∈ vertical_lines_at_data_columns) || (
-                                (ps.j + cs - 1 == num_data_columns) &&
-                                tf.vertical_line_after_data_columns
-                            )
+                        (ps.j + cs - 1 ∈ vertical_lines_at_data_columns) || (
+                            (ps.j + cs - 1 == num_data_columns) &&
+                            tf.vertical_line_after_data_columns
                         )
-                            true
-                        else
-                            false
-                        end
 
                     if vline
                         alignment *= "|"
@@ -393,7 +387,6 @@ function _latex__print_core(pspec::PrintingSpec, opts::LatexPrintOptions)
                     rendered_cell =
                         "\$^{$(ps.i)}\$" * _latex__render_cell(cell, rctx, renderer)
                     rendered_cell = _latex__add_environments(rendered_cell, style.footnote)
-                    rendered_cell = rendered_cell * footnote_str
                     rendered_cell = "\\multicolumn{$cs}{@{}$alignment@{}}{$rendered_cell}"
 
                 elseif (action == :source_notes)
@@ -401,7 +394,6 @@ function _latex__print_core(pspec::PrintingSpec, opts::LatexPrintOptions)
                     cs            = _number_of_printed_columns(table_data)
                     rendered_cell = _latex__render_cell(cell, rctx, renderer)
                     rendered_cell = _latex__add_environments(rendered_cell, style.source_note)
-                    rendered_cell = rendered_cell * footnote_str
                     rendered_cell = "\\multicolumn{$cs}{@{}$alignment@{}}{$rendered_cell}"
 
                 else

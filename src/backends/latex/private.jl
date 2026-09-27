@@ -41,14 +41,13 @@ end
 _latex__add_environments(s::String, ::Nothing) = s
 
 raw"""
-    _latex__escape_str(io::IO, s::AbstractString, esc::String = "") -> Nothing
-    _latex__escape_str(s::AbstractString, esc::String = "") -> String
+    _latex__escape_str(io::IO, s::AbstractString) -> Nothing
+    _latex__escape_str(s::AbstractString) -> String
 
 Print the string `s` in `io` escaping the characters for the LaTeX back end. If `io` is
 omitted, the escaped string is returned.
 
-Every character in `esc` is escaped by prefixing it with a backslash. On top of that, the
-LaTeX metacharacters `%`, `#`, `$`, `&`, `_`, `{`, and `}` are escaped, `^` and `~` are
+The LaTeX metacharacters `%`, `#`, `$`, `&`, `_`, `{`, and `}` are escaped, `^` and `~` are
 replaced by `\textasciicircum{}` and `\textasciitilde{}`, and the backslash itself is
 replaced by `\textbackslash{}`. Control and non-printable characters are emitted using a
 `\textbackslash{}x`, `\textbackslash{}u`, or `\textbackslash{}U` sequence.
@@ -56,12 +55,10 @@ replaced by `\textbackslash{}`. Control and non-printable characters are emitted
 Notice that `<`, `>`, `"`, and `'` are **not** escaped. Under the OT1 font encoding, `<` and
 `>` are typeset as `¡` and `¿`.
 """
-function _latex__escape_str(io::IO, s::AbstractString, esc::String = "")
+function _latex__escape_str(io::IO, s::AbstractString)
     a = Iterators.Stateful(s)
     for c in a
-        if c in esc
-            print(io, '\\', c)
-        elseif isascii(c)
+        if isascii(c)
             c == '\0'         ? print(io, "\\textbackslash{}0") :
             c == '\e'         ? print(io, "\\textbackslash{}e") :
             c == '\\'         ? print(io, "\\textbackslash{}") :
@@ -92,8 +89,8 @@ function _latex__escape_str(io::IO, s::AbstractString, esc::String = "")
     end
 end
 
-function _latex__escape_str(s::AbstractString, esc::String = "")
-    return sprint(_latex__escape_str, s, esc; sizehint = lastindex(s))
+function _latex__escape_str(s::AbstractString)
+    return sprint(_latex__escape_str, s; sizehint = lastindex(s))
 end
 
 # == Table =================================================================================
