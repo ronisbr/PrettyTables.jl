@@ -547,3 +547,27 @@ end
 
     @test pretty_table(String, dict) == expected
 end
+
+@testset "Summary Rows With Two Arguments" verbose = true begin
+    # The summary row functions with two arguments can access the columns of a Tables.jl
+    # source using `data[:, j]`.
+    table = (a = [1, 2], b = [3, 4])
+
+    expected = """
+┌───────────┬───────┬───────┐
+│           │     a │     b │
+│           │ Int64 │ Int64 │
+├───────────┼───────┼───────┤
+│           │     1 │     3 │
+│           │     2 │     4 │
+├───────────┼───────┼───────┤
+│ Summary 1 │     3 │     7 │
+└───────────┴───────┴───────┘
+"""
+
+    @test pretty_table(String, table; summary_rows = [(d, j) -> sum(d[:, j])]) == expected
+
+    # The same applies to columns with arbitrary axes.
+    table = (a = OffsetArray([1, 2], 0:1), b = OffsetArray([3, 4], 0:1))
+    @test pretty_table(String, table; summary_rows = [(d, j) -> sum(d[:, j])]) == expected
+end

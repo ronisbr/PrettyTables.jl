@@ -32,10 +32,11 @@ function getindex(ctable::ColumnTable, i, j)
     # Get the column name.
     column_name = ctable.column_names[j]
 
-    # Get the element. Notice that `i` is the position of the row, which must be converted
-    # to an index of the column because it can have arbitrary axes.
+    # Get the element. Notice that an integer `i` is the position of the row, which must be
+    # converted to an index of the column because it can have arbitrary axes. Any other index
+    # (e.g., `:` in `data[:, j]`) is forwarded to the column.
     col     = Tables.getcolumn(ctable.table, column_name)
-    element = col[firstindex(col) + i - 1]
+    element = i isa Integer ? col[firstindex(col) + i - 1] : col[i]
 
     return element
 end
