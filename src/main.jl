@@ -347,10 +347,14 @@ Base.@constprop :none Base.@nospecializeinfer function _pretty_table(
         end
     end
 
-    # If the element type of column labels is not an `AbstractVector`, we must wrap it into
-    # a vector because the user probably only wants one row for the column label.
-    if !(eltype(column_labels) <: AbstractVector)
+    # If the elements of the column labels are not vectors, we must wrap it into a vector
+    # because the user probably only wants one row for the column label. Notice that we must
+    # check the elements if the element type is abstract, e.g., in a `Vector{Any}` with one
+    # vector per row.
+    if !_is_vector_of_label_rows(column_labels)
         column_labels = [column_labels]
+    elseif !(eltype(column_labels) <: AbstractVector)
+        column_labels = AbstractVector[row for row in column_labels]
     end
 
     isempty(column_labels) && throw(
@@ -605,6 +609,18 @@ function _resolve_generic_configurations(
     )
 
     return kwargs
+end
+
+"""
+    _is_vector_of_label_rows(column_labels::AbstractVector) -> Bool
+
+Return `true` if `column_labels` is a vector in which each element is a row of column labels,
+or `false` if it is a single row of column labels.
+"""
+function _is_vector_of_label_rows(@nospecialize(column_labels::AbstractVector))
+    eltype(column_labels) <: AbstractVector && return true
+    isempty(column_labels) && return false
+    return all(x -> x isa AbstractVector, column_labels)
 end
 
 """

@@ -498,3 +498,14 @@ end
 
     @test result == expected
 end
+
+@testset "Column Labels in a Vector of Any" verbose = true begin
+    # A `Vector{Any}` with one vector per row must be interpreted as multiple rows of column
+    # labels, exactly like a `Vector{Vector{String}}`.
+    @test pretty_table(String, [1 2]; column_labels = Any[["a", "b"], ["c", "d"]]) ==
+        pretty_table(String, [1 2]; column_labels = [["a", "b"], ["c", "d"]])
+
+    # A `Vector{Any}` of labels is a single row.
+    @test pretty_table(String, [1 2]; column_labels = Any["a", 1]) ==
+        pretty_table(String, [1 2]; column_labels = [["a", 1]])
+end
