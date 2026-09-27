@@ -30,7 +30,9 @@ julia> Pkg.add("PrettyTables")
 ## Example
 
 We present in the following an example showing some of the features available in
-**PrettyTables.jl**.
+**PrettyTables.jl**. The highlighters, the table format, and the table style are defined
+using the backend-agnostic types `Highlighter`, `TableFormat`, and `TableStyle`, so the same
+configuration can be used with every back end.
 
 ```julia
 julia> using PrettyTables, StyledStrings
@@ -100,22 +102,30 @@ julia> footnotes = [
 ]
 
 julia> highlighters = [
-    Highlighter((data, i, j) -> (j == 3) && (data[i, j] > 10), Face(; weight = :bold, foreground = :red))
-    TextHighlighter((data, i, j) -> (j == 4) && (data[i, j] > 10), crayon"fg:blue bold")
+    Highlighter(
+        (data, i, j) -> (j == 3) && (data[i, j] > 10),
+        Face(; weight = :bold, foreground = :red)
+    ),
+    Highlighter(
+        (data, i, j) -> (j == 4) && (data[i, j] > 10),
+        Face(; weight = :bold, foreground = :blue)
+    ),
 ]
 
-julia> table_format = TextTableFormat(;
+julia> table_format = TableFormat(;
     # Remove vertical lines.
-    @text__no_vertical_lines
+    @no_vertical_lines
 )
 
-julia> style = TextTableStyle(
-    column_label                   = crayon"bold",
-    first_line_merged_column_label = crayon"fg:yellow bold underline",
-    footnote                       = crayon"fg:cyan",
-    row_group_label                = crayon"fg:magenta bold",
-    subtitle                       = crayon"italics",
-    title                          = crayon"fg:yellow bold",
+julia> style = TableStyle(;
+    column_label                   = Face(; weight = :bold),
+    first_line_merged_column_label = Face(;
+        weight = :bold, foreground = :yellow, underline = true
+    ),
+    footnote                       = Face(; foreground = :cyan),
+    row_group_label                = Face(; weight = :bold, foreground = :magenta),
+    subtitle                       = Face(; slant = :italic),
+    title                          = Face(; weight = :bold, foreground = :yellow),
 )
 
 # == Printing the Table ====================================================================
