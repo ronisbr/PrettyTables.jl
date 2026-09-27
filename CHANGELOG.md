@@ -162,6 +162,10 @@ Version 3.5.0
   `data_column_widths`, `minimum_data_column_widths`, and `maximum_data_column_widths` of
   the Excel back end, which previously required `Float64` values.
 - ![Info][badge-info] PrettyTables.jl now requires StringManipulation.jl v0.6.1.
+- ![Breaking][badge-breaking] A dictionary that complies with the Tables.jl API (e.g., a
+  dictionary of column vectors with `Symbol` or `String` keys) is now printed as a table,
+  like any other Tables.jl source, instead of a two-column table with its keys and values.
+  The other dictionaries are still printed as keys and values.
 - ![Enhancement][badge-enhancement] Validate every alignment symbol, throwing an
   `ArgumentError` if it is not `:l`, `:c`, `:r`, or `:n` (or their uppercase versions).
   Invalid symbols were silently accepted, misaligning the cells in the text back end. The

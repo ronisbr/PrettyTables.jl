@@ -516,3 +516,35 @@ end
     @test Base.IteratorSize(Tables.rows(UnknownLengthRows(3))) isa Base.SizeUnknown
     @test pretty_table(String, UnknownLengthRows(3)) == expected
 end
+
+@testset "Dictionaries" verbose = true begin
+    # A dictionary that complies with the Tables.jl API is printed as a table.
+    dict = Dict(:a => [1, 2])
+
+    expected = """
+┌───────┐
+│     a │
+│ Int64 │
+├───────┤
+│     1 │
+│     2 │
+└───────┘
+"""
+
+    @test pretty_table(String, dict) == expected
+
+    # The other dictionaries are printed as keys and values.
+    dict = Dict(:a => 1)
+
+    expected = """
+┌──────┬────────┐
+│ Keys │ Values │
+│ Symbol │  Int64 │
+├──────┼────────┤
+│    a │      1 │
+└──────┴────────┘
+"""
+
+    @test startswith(pretty_table(String, dict), "┌")
+    @test occursin("Keys", pretty_table(String, dict))
+end

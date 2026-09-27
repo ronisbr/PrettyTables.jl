@@ -62,6 +62,11 @@ function _preprocess_data(@nospecialize(data::AbstractArray))
 end
 
 function _preprocess_data(dict::AbstractDict)
+    # A dictionary that complies with the Tables.jl API, e.g., a dictionary of column
+    # vectors, is printed as a table. Otherwise, we print its keys and values.
+    Tables.istable(dict) &&
+        return Tables.columnaccess(dict) ? ColumnTable(dict) : RowTable(dict)
+
     return hcat(collect(keys(dict)), collect(values(dict)))
 end
 

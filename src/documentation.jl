@@ -25,6 +25,11 @@ following types are supported:
 
 1. `AbstractVector`: any vector can be printed.
 2. `AbstractMatrix`: any matrix can be printed.
+3. `AbstractDict`: the keys and the values are printed in two columns. Notice that a
+    dictionary that complies with the Tables.jl API (e.g., a dictionary of column vectors
+    with `Symbol` or `String` keys) is printed as a table instead.
+
+Data with more than two dimensions is not supported.
 
 `pretty_table` currently supports printing tables for seven backends: text, markdown, html,
 latex, typst, excel, and docx (Word). The desired backend can be set using the `backend`
