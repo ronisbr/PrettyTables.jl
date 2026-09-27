@@ -113,4 +113,61 @@
             @test only(docx_runs(docx_cell(table, 2, 1))).properties.italic == true
         end
     end
+
+    @static if VERSION >= v"1.11"
+        @testset "Styled Strings" begin
+            matrix = [styled"{red,bold:Red} plain" styled"{(fg=blue):Blue}"]
+
+            # Each face region becomes a run with the attributes of its face.
+            table = pretty_table(W.Table, matrix)
+            runs  = docx_runs(docx_cell(table, 2, 1))
+
+            @test length(runs) == 2
+            @test runs[1].properties.bold == true
+            @test docx_hex(runs[1].properties.color) == "A51C2C"
+            @test runs[2].properties.bold === nothing
+            @test runs[2].properties.color === nothing
+
+            # The section style takes precedence over the face of the regions, whereas the
+            # attributes the style does not define are kept.
+            table = pretty_table(
+                W.Table,
+                matrix;
+                style = DocxTableStyle(; data_cell = ["color" => "00FF00"])
+            )
+
+            runs = docx_runs(docx_cell(table, 2, 1))
+            @test runs[1].properties.bold == true
+            @test docx_hex(runs[1].properties.color) == "00FF00"
+            @test docx_hex(runs[2].properties.color) == "00FF00"
+
+            # The highlighter also takes precedence over the face of the regions.
+            table = pretty_table(
+                W.Table,
+                matrix;
+                highlighters = [
+                    DocxHighlighter((data, i, j) -> j == 2, ["color" => "FF00FF"])
+                ],
+            )
+
+            @test docx_hex(docx_runs(docx_cell(table, 2, 1))[1].properties.color) == "A51C2C"
+            @test docx_hex(only(docx_runs(docx_cell(table, 2, 2))).properties.color) ==
+                "FF00FF"
+
+            # The background of the regions is dropped because Word shades the entire cell.
+            table = pretty_table(W.Table, [styled"{(bg=green):Green}";;])
+            @test docx_shading(docx_cell(table, 2, 1)) === nothing
+
+            # The footnote markers are unstyled superscript runs.
+            table = pretty_table(
+                W.Table, matrix; footnotes = [(:data, 1, 1) => "Footnote"]
+            )
+
+            runs = docx_runs(docx_cell(table, 2, 1))
+            @test length(runs) == 3
+            @test docx_text(docx_cell(table, 2, 1)) == "Red plain1"
+            @test runs[3].properties.valign == W.VerticalAlignment.superscript
+            @test runs[3].properties.color === nothing
+        end
+    end
 end

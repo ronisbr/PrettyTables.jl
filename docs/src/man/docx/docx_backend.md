@@ -72,6 +72,11 @@ rendered as a Word line break, keeping the cell content in a single paragraph. A
 cell is rendered as a Word tab. The ANSI escape sequences and the characters that cannot be
 written in a Word document (for example, the null character) are removed from the text.
 
+Each region of a styled string of StyledStrings.jl (Julia 1.11 or newer) becomes a text run
+with the attributes of its face (see [Faces](@ref)). As in the Excel back end, the attributes
+of the table style and of the highlighter applied to the cell take precedence over the ones
+of the regions.
+
 ## Word Highlighters
 
 A set of highlighters can be passed as a vector of `AbstractHighlighter` to the

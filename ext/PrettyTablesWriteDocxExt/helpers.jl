@@ -311,8 +311,9 @@ end
 """
     _docx__runs(cell::DocxCell) -> Vector{W.Run}
 
-Convert the runs of `cell` to Word text runs, merging the decoration of the cell with the
-one of each run. A line break inside the text of a run becomes a Word line break so that
+Convert the runs of `cell` to Word text runs, merging the decoration of each run with the
+one of the cell. Notice that the latter, which contains the section style and the
+highlighter decoration, takes precedence as in the Excel back end. A line break inside the text of a run becomes a Word line break so that
 the entire cell content stays in one paragraph, and a tab becomes a Word tab. The text is
 sanitized with [`_docx__sanitize_text`](@ref).
 """
@@ -320,10 +321,12 @@ function _docx__runs(cell::DocxCell)
     runs = W.Run[]
 
     for r in cell.runs
+        # The last occurrence of an attribute wins. Hence, the cell decoration must come
+        # after the run decoration.
         decoration = if isempty(r.decoration)
             cell.decoration
         else
-            vcat(cell.decoration, r.decoration)
+            vcat(r.decoration, cell.decoration)
         end
 
         properties = _docx__run_properties(decoration, r.superscript)
