@@ -187,12 +187,12 @@ can be specified using a symbol: `:l` for left, `:c` for center, or `:r` for rig
   output of the cells. For more information, see the section [Formatters](@ref).
   (**Default**: `nothing`)
 - `maximum_number_of_columns::Int`: Maximum number of columns to be printed. If the table
-  has more columns than this value, the table will be truncated. If it is negative, all
-  columns will be printed.
+  has more columns than this value, the table will be truncated. If it is 0, only the
+  continuation column is printed. If it is negative, all columns will be printed.
   (**Default**: `-1`)
 - `maximum_number_of_rows::Int`: Maximum number of rows to be printed. If the table has more
-  rows than this value, the table will be truncated. If it is negative, all rows will be
-  printed.
+  rows than this value, the table will be truncated. If it is 0, only the continuation row
+  is printed. If it is negative, all rows will be printed.
   (**Default**: `-1`)
 - `merge_column_label_cells::Union{Symbol, Vector{MergeCells}}`: Merged cells in the column
   labels. For more information, see the section [Column Labels](@ref).
