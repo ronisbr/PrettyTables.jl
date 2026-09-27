@@ -217,7 +217,9 @@ can be specified using a symbol: `:l` for left, `:c` for center, or `:r` for rig
     vector of coordinate/alignment pairs. Each function must have the signature
     `f(data, i, j)` and return a valid alignment symbol or `nothing` for the cell `(i, j)`.
     Returning `nothing` leaves the cell alignment unchanged. Each pair must have the form
-    `(i::Int, j::Int) => a::Symbol` and sets the alignment of cell `(i, j)` to `a`.
+    `(i::Int, j::Int) => a::Symbol` and sets the alignment of cell `(i, j)` to `a`. In both
+    cases, `i` and `j` are the indices of the cell in `data`, which can have arbitrary axes
+    (e.g., an `OffsetArray`).
     (**Default** = `nothing`)
 
 !!! warning
@@ -437,8 +439,11 @@ It must be a `Vector{Function}` in which each function has the following signatu
 
     f(v, i, j)
 
-where `v` is the value in the cell, `i` is the row number, and `j` is the column number.
-It must return the formatted value of the cell `(i, j)` that has the value `v`. Notice
+where `v` is the value in the cell, and `i` and `j` are the row and column indices of the
+cell in the data. It must return the formatted value of the cell `(i, j)` that has the value
+`v`. Notice that `i` and `j` are the indices in the object passed to `pretty_table`, which
+can differ from the position of the cell in the printed table if the data has arbitrary axes
+(e.g., an `OffsetArray`). Notice
 that the returned value will be converted to string after using the function `sprint`.
 
 This keyword can also be `nothing`, meaning that no formatter will be used.

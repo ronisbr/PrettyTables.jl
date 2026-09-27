@@ -23,6 +23,10 @@ Highlighter defined by a `Face` of StyledStrings.jl, which can be used with ever
 - `_decoration::Face`: The `Face` to be applied to the highlighted cell if the default `fd`
     is used.
 
+Notice that `i` and `j` are the indices of the cell in `data`, which is the object passed to
+`pretty_table`. Hence, `data[i, j]` is always the cell value, even if `data` has arbitrary
+axes (e.g., an `OffsetArray`).
+
 # Remarks
 
 This structure can be constructed using the following helpers:

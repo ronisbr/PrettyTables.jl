@@ -162,6 +162,11 @@ Version 3.5.0
   `data_column_widths`, `minimum_data_column_widths`, and `maximum_data_column_widths` of
   the Excel back end, which previously required `Float64` values.
 - ![Info][badge-info] PrettyTables.jl now requires StringManipulation.jl v0.6.1.
+- ![Bugfix][badge-bugfix] Pass the indices of the cell in the data object to every user
+  function (formatters, highlighters, cell alignment functions, and Excel formatters).
+  Previously, they received the 1-based position of the cell in the printed table, making
+  `data[i, j]` throw or return the wrong value for data with arbitrary axes, such as
+  `OffsetArray`s, whereas the summary row functions already received the data indices.
 - ![Bugfix][badge-bugfix] Fix the outer lines of the Excel back end, which were drawn around
   the footnotes and the source notes instead of only around the content of the table.
 - ![Bugfix][badge-bugfix] Fix the line before the row group labels in the Excel back end,
