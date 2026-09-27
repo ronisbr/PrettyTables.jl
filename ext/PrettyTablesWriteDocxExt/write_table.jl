@@ -261,7 +261,7 @@ function _docx__render_table_core(pspec::PrintingSpec, opts::DocxPrintOptions)
             elseif (action == :column_label) && (table_cell isa MergeCells)
                 # -- Column Labels (Merged Cell) -------------------------------------------
 
-                span = min(table_cell.column_span, num_printed_data_cols - ps.j + 1)
+                span = _merged_cell_span(table_data, table_cell, ps.j)
 
                 cell_style =
                     ps.i == 1 ? style.first_line_merged_column_label :

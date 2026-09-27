@@ -550,14 +550,7 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
 
             # If we are in a column label, check if we must merge the cell.
             if (action == :column_label) && (cell isa MergeCells)
-                # Check if we have enough data columns to merge the cell.
-                num_data_columns = _number_of_printed_data_columns(table_data)
-
-                cs = if (ps.j + cell.column_span - 1) > num_data_columns
-                    num_data_columns - ps.j + 1
-                else
-                    cell.column_span
-                end
+                cs = _merged_cell_span(table_data, cell, ps.j)
 
                 push!(vproperties, "colspan" => string(cs))
 

@@ -318,14 +318,8 @@ function _latex__print_core(pspec::PrintingSpec, opts::LatexPrintOptions)
                     rendered_cell = "\\multicolumn{$cs}{@{}$alignment@{}}{$rendered_cell}"
 
                 elseif (action == :column_label) && (cell isa MergeCells)
-                    # Check if we have enough data columns to merge the cell.
                     num_data_columns = _number_of_printed_data_columns(table_data)
-
-                    cs = if (ps.j + cell.column_span - 1) > num_data_columns
-                        num_data_columns - ps.j + 1
-                    else
-                        cell.column_span
-                    end
+                    cs               = _merged_cell_span(table_data, cell, ps.j)
 
                     push!(merged_column_labels, (ps.j, ps.j + cs - 1))
 

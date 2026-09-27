@@ -346,8 +346,7 @@ function _excel__write_table_core!(
             elseif (action == :column_label) && (cell isa MergeCells)
                 # -- Column labels (Merged Cell) -------------------------------------------
 
-                num_data_cols = _number_of_printed_data_columns(table_data)
-                span          = min(cell.column_span, num_data_cols - ps.j + 1)
+                span = _merged_cell_span(table_data, cell, ps.j)
 
                 sheet[sheet_row, sheet_col] = rendered_cell
 

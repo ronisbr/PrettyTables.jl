@@ -230,3 +230,14 @@ function _line_spec_indices(spec::Union{Symbol, Vector{Int}}, n::Int)
     spec isa Vector{Int} && return spec
     return spec == :all ? (1:n) : (1:0)
 end
+
+"""
+    _merged_cell_span(table_data::TableData, cell::MergeCells, j::Int) -> Int
+
+Return the number of printed data columns spanned by the merged column label `cell`, which
+starts at the data column `j` of `table_data`. The span is limited to the printed data
+columns because the table can be horizontally cropped.
+"""
+function _merged_cell_span(table_data::TableData, cell::MergeCells, j::Int)
+    return min(cell.column_span, _number_of_printed_data_columns(table_data) - j + 1)
+end
