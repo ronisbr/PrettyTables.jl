@@ -150,13 +150,18 @@ Convert the border style `name` of a [`DocxPair`](@ref) to the Word border style
 function _docx__border_style(name::String)
     style = Symbol(name)
 
-    isdefined(W.BorderStyle, style) || throw(
+    # Notice that we must search the instances instead of checking whether `style` is
+    # defined in the enum module. Otherwise, names like `T`, which is the enum type, would be
+    # accepted.
+    for s in instances(W.BorderStyle.T)
+        (Symbol(s) === style) && return s
+    end
+
+    throw(
         ArgumentError(
             "\"$name\" is not a valid Word border style. See `WriteDocx.BorderStyle`."
         ),
     )
-
-    return getproperty(W.BorderStyle, style)::W.BorderStyle.T
 end
 
 """
@@ -167,13 +172,16 @@ Convert the underline pattern `name` of a [`DocxPair`](@ref) to the Word underli
 function _docx__underline_pattern(name::String)
     pattern = Symbol(name)
 
-    isdefined(W.UnderlinePattern, pattern) || throw(
+    # See the note in `_docx__border_style`.
+    for p in instances(W.UnderlinePattern.T)
+        (Symbol(p) === pattern) && return p
+    end
+
+    throw(
         ArgumentError(
             "\"$name\" is not a valid Word underline pattern. See `WriteDocx.UnderlinePattern`."
         ),
     )
-
-    return getproperty(W.UnderlinePattern, pattern)::W.UnderlinePattern.T
 end
 
 """

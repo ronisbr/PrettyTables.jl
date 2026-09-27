@@ -186,4 +186,20 @@ end
             borders = DocxTableBorders(; top_line = ["style" => "wiggly"])
         )
     )
+
+    # Names defined in the enum module that are not enum values, like the enum type `T`,
+    # must also be rejected.
+    @test_throws ArgumentError pretty_table(
+        W.Table,
+        [1 2; 3 4];
+        style = DocxTableStyle(; data_cell = ["underline" => "T"])
+    )
+
+    @test_throws ArgumentError pretty_table(
+        W.Table,
+        [1 2; 3 4];
+        table_format = DocxTableFormat(;
+            borders = DocxTableBorders(; top_line = ["style" => "T"])
+        )
+    )
 end
