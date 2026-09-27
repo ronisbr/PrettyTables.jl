@@ -73,6 +73,12 @@ end
     )
 end
 
+@testset "Invalid Back End" begin
+    @test_throws "Invalid back end `:foo`. The available back ends are `:auto`, `:text`, `:markdown`, `:html`, `:latex`, `:typst`, `:excel`, and `:docx`." pretty_table(
+        String, [1 2]; backend = :foo
+    )
+end
+
 @testset "Merge Cell Specifications" begin
     data = [1 2 3 4]
     merge_column_label_cells = [MergeCells(1, 1, 2, :c), MergeCells(1, 2, 2, :c)]

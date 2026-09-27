@@ -6,6 +6,9 @@
 
 export pretty_table
 
+# Back ends that can be selected using the keyword `backend`.
+const _AVAILABLE_BACKENDS = (:text, :markdown, :html, :latex, :typst, :excel, :docx)
+
 function pretty_table(@nospecialize(data::Any); kwargs...)
     io = stdout isa Base.TTY ? IOContext(stdout, :limit => true) : stdout
     return pretty_table(io, data; kwargs...)
@@ -290,6 +293,14 @@ Base.@constprop :none Base.@nospecializeinfer function _pretty_table(
 )
 
     # == Table Preprocessing ===============================================================
+
+    (backend == :auto) || (backend ∈ _AVAILABLE_BACKENDS) || throw(
+        ArgumentError(
+            "Invalid back end `:$backend`. The available back ends are `:auto`, " *
+            join(("`:$b`" for b in _AVAILABLE_BACKENDS), ", ", ", and ") *
+            "."
+        )
+    )
 
     # Check for circular dependency.
     ptd = get(io, :__PRETTY_TABLES__DATA__, nothing)
