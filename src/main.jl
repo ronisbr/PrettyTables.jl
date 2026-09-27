@@ -353,6 +353,12 @@ Base.@constprop :none Base.@nospecializeinfer function _pretty_table(
         column_labels = [column_labels]
     end
 
+    isempty(column_labels) && throw(
+        ArgumentError(
+            "`column_labels` must have at least one row of labels. Use `show_column_labels = false` to hide the column labels."
+        )
+    )
+
     # If the user provided the `column_labels` and set `merge_column_label_cells` to
     # `:auto`, we will rebuild those two parameters to take into account the merged columns.
     local _merge_column_label_cells

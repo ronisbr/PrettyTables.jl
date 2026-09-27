@@ -67,6 +67,12 @@ end
         pretty_table(String, data; row_labels = ["a", "b"])
 end
 
+@testset "Column Labels Without Rows" begin
+    @test_throws "`column_labels` must have at least one row of labels." pretty_table(
+        String, [1 2]; column_labels = Vector{String}[]
+    )
+end
+
 @testset "Merge Cell Specifications" begin
     data = [1 2 3 4]
     merge_column_label_cells = [MergeCells(1, 1, 2, :c), MergeCells(1, 2, 2, :c)]
