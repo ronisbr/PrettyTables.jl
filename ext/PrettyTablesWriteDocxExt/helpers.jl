@@ -280,11 +280,41 @@ function _docx__shading(decoration::Vector{DocxPair})
 end
 
 """
+    _docx__is_valid_char(c::Char) -> Bool
+
+Return `true` if the character `c` can be written in a Word document, *i.e.*, if it is
+allowed in XML 1.0, or `false` otherwise. Notice that the carriage return is also rejected
+because the line breaks are represented by the line feed.
+"""
+function _docx__is_valid_char(c::Char)
+    isvalid(c) || return false
+
+    return (c == '\t') ||
+        (c == '\n') ||
+        ('\x20' <= c <= '\ud7ff') ||
+        ('\ue000' <= c <= '\ufffd') ||
+        ('\U10000' <= c <= '\U10ffff')
+end
+
+"""
+    _docx__sanitize_text(text::String) -> String
+
+Remove from `text` the ANSI escape sequences and the characters that cannot be written in a
+Word document (see [`_docx__is_valid_char`](@ref)). Otherwise, the XML library would either
+throw an error (null character) or replace them with the replacement character.
+"""
+function _docx__sanitize_text(text::String)
+    all(_docx__is_valid_char, text) && return text
+    return filter(_docx__is_valid_char, remove_decorations(text))
+end
+
+"""
     _docx__runs(cell::DocxCell) -> Vector{W.Run}
 
 Convert the runs of `cell` to Word text runs, merging the decoration of the cell with the
 one of each run. A line break inside the text of a run becomes a Word line break so that
-the entire cell content stays in one paragraph.
+the entire cell content stays in one paragraph, and a tab becomes a Word tab. The text is
+sanitized with [`_docx__sanitize_text`](@ref).
 """
 function _docx__runs(cell::DocxCell)
     runs = W.Run[]
@@ -299,9 +329,13 @@ function _docx__runs(cell::DocxCell)
         properties = _docx__run_properties(decoration, r.superscript)
         children   = Any[]
 
-        for (k, line) in enumerate(eachsplit(r.text, '\n'))
+        for (k, line) in enumerate(eachsplit(_docx__sanitize_text(r.text), '\n'))
             (k > 1) && push!(children, W.Break())
-            isempty(line) || push!(children, W.Text(String(line)))
+
+            for (l, segment) in enumerate(eachsplit(line, '\t'))
+                (l > 1) && push!(children, W.Tab())
+                isempty(segment) || push!(children, W.Text(String(segment)))
+            end
         end
 
         push!(runs, W.Run(children, properties))

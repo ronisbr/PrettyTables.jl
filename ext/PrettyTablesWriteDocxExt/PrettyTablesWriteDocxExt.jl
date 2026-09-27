@@ -17,7 +17,7 @@ import PrettyTables: _get_data, _has_summary_rows
 import PrettyTables: _IGNORE_CELL, _DOCX__NO_DECORATION, _sprint_with_context
 import PrettyTables: _docx__highlighter_decoration, _docx__native_highlighters
 import PrettyTables: _face_color_hex, _face_from_kwargs
-import PrettyTables: docx_decoration
+import PrettyTables: docx_decoration, remove_decorations
 
 @static if VERSION >= v"1.11"
     import PrettyTables: _face_regions

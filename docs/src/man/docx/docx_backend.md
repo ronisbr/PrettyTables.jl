@@ -68,7 +68,9 @@ Word decides the column widths from the cell content. Hence, this back end has n
 configure them.
 
 Footnote markers are rendered as superscript text runs, and a line break inside a cell is
-rendered as a Word line break, keeping the cell content in a single paragraph.
+rendered as a Word line break, keeping the cell content in a single paragraph. A tab inside a
+cell is rendered as a Word tab. The ANSI escape sequences and the characters that cannot be
+written in a Word document (for example, the null character) are removed from the text.
 
 ## Word Highlighters
 

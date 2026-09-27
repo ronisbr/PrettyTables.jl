@@ -83,6 +83,30 @@ end
         @test docx_text(docx_cell(table, 2, 1)) == "First\nSecond"
     end
 
+    @testset "Tabs and Carriage Returns" verbose = true begin
+        table = pretty_table(W.Table, ["A\tB\r\nC";;])
+        runs  = docx_runs(docx_cell(table, 2, 1))
+
+        @test map(typeof, only(runs).children) == [W.Text, W.Tab, W.Text, W.Break, W.Text]
+        @test docx_text(docx_cell(table, 2, 1)) == "A\tB\nC"
+    end
+
+    @testset "Invalid Characters" verbose = true begin
+        # The ANSI escape sequences are removed and the characters that are not allowed in
+        # XML are dropped. Otherwise, the null character would throw an error when saving the
+        # document and the other ones would be replaced by the replacement character.
+        table = pretty_table(W.Table, ["\e[31mRed\e[0m" "A\0B\x01C"])
+
+        @test docx_text(docx_cell(table, 2, 1)) == "Red"
+        @test docx_text(docx_cell(table, 2, 2)) == "ABC"
+
+        mktempdir() do dir
+            filename = joinpath(dir, "table.docx")
+            @test pretty_table(W.Table, ["A\0B";;]) isa W.Table
+            @test pretty_table(["A\0B";;]; backend = :docx, filename) == filename
+        end
+    end
+
     @testset "Renderers" verbose = true begin
         @test docx_text(docx_cell(pretty_table(W.Table, ["str";;]), 2, 1)) == "str"
 

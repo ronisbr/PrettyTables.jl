@@ -19,6 +19,7 @@ function docx_text(cell::W.TableCell)
         for child in run.children
             (child isa W.Text) && print(buf, child.text)
             (child isa W.Break) && print(buf, '\n')
+            (child isa W.Tab) && print(buf, '\t')
         end
     end
 
