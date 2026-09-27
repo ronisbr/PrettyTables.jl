@@ -60,6 +60,14 @@ end
 
     @test from_kwargs() == Face()
 
+    # The weight defined by `bold` and `faint` must not depend on the keyword order, and it
+    # must match the conversion of the equivalent crayon.
+    @test from_kwargs(; faint = true, bold = false) == from_kwargs(; bold = false, faint = true)
+    @test from_kwargs(; faint = true, bold = false).weight ==
+        PrettyTables._face_from_crayon(Crayon(; faint = true, bold = false)).weight
+    @test from_kwargs(; faint = true, bold = true).weight == :bold
+    @test from_kwargs(; bold = true, weight = :light).weight == :light
+
     # == Face Keywords =====================================================================
 
     @test from_kwargs(; weight = :bold, slant = :italic, foreground = :bright_red) ==

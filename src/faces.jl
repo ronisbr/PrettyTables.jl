@@ -142,6 +142,22 @@ end
 ############################################################################################
 
 """
+    _face_weight_from_bold_faint(bold::Union{Nothing, Bool}, faint::Union{Nothing, Bool}) -> Union{Nothing, Symbol}
+
+Return the face weight equivalent to the attributes `bold` and `faint` of a `Crayon`, where
+`nothing` means that the attribute is not set. The bold has priority over the faint if both
+are set.
+"""
+function _face_weight_from_bold_faint(
+    bold::Union{Nothing, Bool}, faint::Union{Nothing, Bool}
+)
+    bold === true && return :bold
+    faint === true && return :light
+    ((bold === false) || (faint === false)) && return :normal
+    return nothing
+end
+
+"""
     _face_from_crayon(crayon::Crayon) -> Face
 
 Convert `crayon` into the face with the same attributes.
@@ -152,18 +168,10 @@ of the 256-color palette is converted to its 24-bit value, except for the 16 sys
 which are converted to their names.
 """
 function _face_from_crayon(crayon::Crayon)
-    bold  = _face_state_from_crayon(crayon.bold)
-    faint = _face_state_from_crayon(crayon.faint)
-
-    weight = if bold === true
-        :bold
-    elseif faint === true
-        :light
-    elseif (bold === false) || (faint === false)
-        :normal
-    else
-        nothing
-    end
+    weight = _face_weight_from_bold_faint(
+        _face_state_from_crayon(crayon.bold),
+        _face_state_from_crayon(crayon.faint),
+    )
 
     italics = _face_state_from_crayon(crayon.italics)
     slant   = isnothing(italics) ? nothing : (italics ? :italic : :normal)
@@ -235,6 +243,8 @@ end
 Create a face from the keyword `pairs` (see `_face_from_kwargs`).
 """
 @noinline function _face_from_pairs_core(pairs::Vector{Pair{Symbol, Any}})
+    bold          = nothing
+    faint         = nothing
     font          = nothing
     height        = nothing
     weight        = nothing
@@ -250,12 +260,10 @@ Create a face from the keyword `pairs` (see `_face_from_kwargs`).
         isnothing(v) && continue
 
         if k === :bold
-            weight = v ? :bold : :normal
+            bold = v::Bool
 
         elseif k === :faint
-            # The bold has priority over the faint if both are set.
-            (weight === :bold) && continue
-            weight = v ? :light : :normal
+            faint = v::Bool
 
         elseif k === :italics
             slant = v ? :italic : :normal
@@ -302,6 +310,10 @@ Create a face from the keyword `pairs` (see `_face_from_kwargs`).
         # The keyword constructor of `Face` ignores the unknown keywords. We do the same.
         end
     end
+
+    # The weight defined by the keywords `bold` and `faint` of `Crayon` must not depend on
+    # their order. Notice that the keyword `weight` of `Face` takes precedence.
+    isnothing(weight) && (weight = _face_weight_from_bold_faint(bold, faint))
 
     # We call the positional constructor of `Face` so that the conversion does not depend on
     # the keyword constructor of StyledStrings.jl, which is compiled for each set of
