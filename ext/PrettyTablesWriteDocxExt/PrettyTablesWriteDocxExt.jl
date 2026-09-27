@@ -47,6 +47,8 @@ gathered in a `DocxPrintOptions` and passed to `_docx__render_table`.
     `.docx`. When `nothing`, no file is created and the `WriteDocx.Table` is returned
     instead, allowing it to be embedded in a larger document.
     (**Default**: `nothing`)
+- `overwrite::Bool`: Allow overwriting an existing file.
+    (**Default**: `false`)
 
 # Returns
 
@@ -56,8 +58,13 @@ gathered in a `DocxPrintOptions` and passed to `_docx__render_table`.
 function PrettyTables._docx__print(
     pspec::PrintingSpec;
     filename::Union{Nothing, String} = nothing,
+    overwrite::Bool = false,
     kwargs...,
 )
+    # Check the file before rendering the table to fail as soon as possible.
+    (!isnothing(filename) && !overwrite && isfile(filename)) &&
+        error("File \"$filename\" already exists and `overwrite = false`.")
+
     opts  = DocxPrintOptions(; kwargs...)
     table = _docx__render_table(pspec, opts)
 

@@ -51,6 +51,9 @@ wrapped in a document with a single section.
     `.docx`. When `nothing`, the `WriteDocx.Table` is returned instead of being written to
     a document.
     (**Default**: `nothing`)
+- `overwrite::Bool`: Allow overwriting an existing file. If it is `false` and the file
+    `filename` already exists, an error is thrown.
+    (**Default**: `false`)
 - `highlighters::Vector{<:AbstractHighlighter}`: Highlighters to apply to the data cells.
     For more information, see the section [Word Highlighters](@ref).
 - `style::Union{TableStyle, DocxTableStyle}`: Style of the table. For more information, see

@@ -17,8 +17,8 @@ const _DEFAULT_DOCX_TABLE_FORMAT = DocxTableFormat()
 
 Options of the Word back end, with one field per keyword of `pretty_table` that is specific
 to the rendered table. The meaning and the default of each field are documented in the Word
-back end section of `pretty_table`. The keyword related to the file (`filename`) is handled
-by `_docx__print`.
+back end section of `pretty_table`. The keywords related to the file (`filename` and
+`overwrite`) are handled by `_docx__print`.
 
 The keywords are gathered in this structure so that the rendering body has a single
 positional signature. Otherwise, each distinct set of keywords passed by the user would
@@ -48,6 +48,8 @@ gathered in a [`DocxPrintOptions`](@ref) and passed to `_docx__render_table`.
     `.docx`. When `nothing`, no file is created and the `WriteDocx.Table` is returned
     instead, allowing it to be embedded in a larger document.
     (**Default**: `nothing`)
+- `overwrite::Bool`: Allow overwriting an existing file.
+    (**Default**: `false`)
 
 # Returns
 

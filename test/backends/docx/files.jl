@@ -18,6 +18,20 @@
             backend = :docx,
             filename = joinpath(dir, "table.txt")
         )
+
+        # An existing file is only replaced if `overwrite = true`.
+        write(filename, "Not a Word document")
+
+        @test_throws "already exists and `overwrite = false`" pretty_table(
+            matrix;
+            backend = :docx,
+            filename
+        )
+
+        @test read(filename, String) == "Not a Word document"
+
+        @test pretty_table(matrix; backend = :docx, filename, overwrite = true) == filename
+        @test read(filename, String) != "Not a Word document"
     end
 
     @test pretty_table(matrix; backend = :docx) isa W.Table

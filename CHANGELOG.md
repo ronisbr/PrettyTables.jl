@@ -6,9 +6,10 @@ Version 3.5.0
 
 - ![Feature][badge-feature] Add the Word back end (`backend = :docx`), which renders the
   table as a Word table using [WriteDocx.jl](https://github.com/PumasAI/WriteDocx.jl). It
-  writes a `.docx` file when the keyword `filename` is set and otherwise returns the
-  `WriteDocx.Table`, so that the table can be embedded in a larger document, also available
-  with `pretty_table(WriteDocx.Table, data; kwargs...)` and
+  writes a `.docx` file when the keyword `filename` is set (an existing file is only
+  replaced if `overwrite = true`) and otherwise returns the `WriteDocx.Table`, so that the
+  table can be embedded in a larger document, also available with
+  `pretty_table(WriteDocx.Table, data; kwargs...)` and
   `pretty_table(WriteDocx.Document, data; kwargs...)`. The back end supports the sections,
   the highlighters (`DocxHighlighter`), the table format (`DocxTableFormat` and
   `DocxTableBorders`), and the table style (`DocxTableStyle`), as well as the
