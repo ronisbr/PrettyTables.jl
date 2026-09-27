@@ -394,6 +394,24 @@ Base.@constprop :none Base.@nospecializeinfer function _pretty_table(
         )
     end
 
+    if (column_label_alignment isa AbstractVector) &&
+        (length(column_label_alignment) != num_columns)
+        throw(
+            ArgumentError(
+                "The length of vector `column_label_alignment` ($(length(column_label_alignment))) must be equal to the number of columns ($num_columns).",
+            ),
+        )
+    end
+
+    # Notice that the extra row labels are ignored.
+    if !isnothing(row_labels) && (length(row_labels) < num_rows)
+        throw(
+            ArgumentError(
+                "The vector `row_labels` ($(length(row_labels))) must have at least one element per row ($num_rows).",
+            ),
+        )
+    end
+
     if cell_alignment isa Vector{Pair{NTuple{2, Int}, Symbol}}
         # If it is a `Vector{Pair{NTuple{2, Int}, Symbol}}`, it contains a set of `(i, j) =>
         # alignment` with the desired `alignment` for the cell `(i, j)`. Thus, we need to

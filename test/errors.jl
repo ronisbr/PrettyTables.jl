@@ -51,6 +51,22 @@ end
     @test_throws "Invalid alignment `:x`." MergeCells(1, 1, 2, "A", :x)
 end
 
+@testset "Column Label Alignment and Row Label Lengths" begin
+    data = [1 2; 3 4]
+
+    @test_throws "The length of vector `column_label_alignment` (1) must be equal to the number of columns (2)." pretty_table(
+        String, data; column_label_alignment = [:l]
+    )
+
+    @test_throws "The vector `row_labels` (1) must have at least one element per row (2)." pretty_table(
+        String, data; row_labels = ["a"]
+    )
+
+    # The extra row labels are ignored.
+    @test pretty_table(String, data; row_labels = ["a", "b", "c"]) ==
+        pretty_table(String, data; row_labels = ["a", "b"])
+end
+
 @testset "Merge Cell Specifications" begin
     data = [1 2 3 4]
     merge_column_label_cells = [MergeCells(1, 1, 2, :c), MergeCells(1, 2, 2, :c)]

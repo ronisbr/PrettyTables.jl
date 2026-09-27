@@ -87,7 +87,7 @@ julia> result = pretty_table(
     footnotes                = [(:column_label, 1, 2) => "Footnote in column label", (:data, 2, 2) => "Footnote in data"],
     merge_column_label_cells = [MergeCells(1, 2, 2, "Merged Column", :c)],
     row_group_labels         = [2                     => "Row Group"],
-    row_labels               = ["Row \$i" for i in 1:5],
+    row_labels               = ["Row \$i" for i in 1:3],
     show_row_number_column   = true,
     source_notes             = "Source Notes",
     stubhead_label           = "Rows",
@@ -156,7 +156,8 @@ The following keywords are related to table configuration and are available in a
 - `row_number_column_label::String`: Label of the row number column.
     (**Default**: "Row")
 - `row_labels::Union{Nothing, AbstractVector}`: Row labels. If it is `nothing`, the column
-    with row labels is omitted.
+    with row labels is omitted. It must have at least one element per row, and the extra
+    elements are ignored.
     (**Default**: `nothing`)
 - `row_group_labels::Union{Nothing, Vector{Pair{Int, String}}}`: Row group labels. If it is
     `nothing`, no row group label is printed. For more information on how to specify the row
