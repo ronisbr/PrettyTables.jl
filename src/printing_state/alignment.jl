@@ -68,15 +68,15 @@ function _current_cell_alignment(
         !isnothing(table_data.continuation_row_alignment) &&
             return Symbol(table_data.continuation_row_alignment)
 
-        new_action = if action == :row_number_vertical_continuation_cell
-            :row_number
-        elseif action == :row_label_vertical_continuation_cell
-            :row_label
-        else
-            :data
-        end
+        action == :row_number_vertical_continuation_cell &&
+            return table_data.row_number_column_alignment
 
-        return _current_cell_alignment(new_action, state, table_data)
+        action == :row_label_vertical_continuation_cell &&
+            return table_data.row_label_column_alignment
+
+        # Notice that we must not consult `cell_alignment` here because the continuation row
+        # does not correspond to any data row.
+        return _data_column_alignment(table_data, state.j)
 
     elseif action == :footnote
         return table_data.footnote_alignment

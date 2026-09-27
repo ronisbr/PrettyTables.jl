@@ -180,7 +180,7 @@ function _next(state::PrintingTableState, table_data::TableData)
 
                 ((mr == 0) && (max_i > 0)) && return :end_row,
                 rs,
-                PrintingTableState(_NEW_ROW - 1, i, 0, :continuation_row)
+                PrintingTableState(_NEW_ROW - 1, 0, 0, :continuation_row)
 
                 # If we have no data rows, we can go to the summary rows.
                 if (table_data.num_rows == 0) && !isnothing(table_data.summary_rows)

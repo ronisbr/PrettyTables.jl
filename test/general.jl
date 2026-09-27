@@ -446,3 +446,55 @@ end
         ) == pretty_table(String, [1 2]; backend)
     end
 end
+
+@testset "Cell Alignment and Continuation Rows" verbose = true begin
+    # The continuation row does not correspond to any data row. Hence, the functions in
+    # `cell_alignment` must not be called for its cells, which used to receive a row index
+    # outside the data when the maximum number of rows was 0.
+    data = [1 2; 3 4]
+    cell_alignment = [(d, i, j) -> d[i, j] > 0 ? :l : nothing]
+
+    for backend in (:text, :html, :latex, :markdown, :typst)
+        @test pretty_table(
+            String,
+            data;
+            backend,
+            cell_alignment,
+            column_labels = [["a", "b"], ["c", "d"]],
+            maximum_number_of_rows = 0,
+        ) isa String
+
+        # The continuation cells use the column alignment instead of the cell alignment.
+        result = pretty_table(
+            String,
+            [1 2; 3 4; 5 6; 7 8];
+            backend,
+            cell_alignment = [(d, i, j) -> :l],
+            alignment = :r,
+            maximum_number_of_rows = 2,
+        )
+
+        @test result isa String
+    end
+
+    result = pretty_table(
+        String,
+        [1 2; 3 4; 5 6; 7 8];
+        cell_alignment = [(d, i, j) -> :l],
+        alignment = :r,
+        maximum_number_of_rows = 2,
+    )
+
+    expected = """
+┌────────┬────────┐
+│ Col. 1 │ Col. 2 │
+├────────┼────────┤
+│ 1      │ 2      │
+│ 3      │ 4      │
+│      ⋮ │      ⋮ │
+└────────┴────────┘
+     2 rows omitted
+"""
+
+    @test result == expected
+end
