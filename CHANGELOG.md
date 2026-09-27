@@ -175,6 +175,13 @@ Version 3.5.0
   Invalid symbols were silently accepted, misaligning the cells in the text back end. The
   uppercase symbols now work in every back end, and the text back end renders `:n` as left
   alignment.
+- ![Bugfix][badge-bugfix] Escape the plain text of every cell in the HTML back end when the
+  renderer is `:print`. A string whose type can be shown as HTML, such as a view into a
+  styled string, was emitted without escaping, allowing the injection of HTML code.
+  Furthermore, the views into styled strings are now rendered as styled strings in every
+  back end.
+- ![Bugfix][badge-bugfix] Emit the HTML, LaTeX, or Typst representation of a cell unchanged
+  when the renderer is `:show`, instead of escaping it.
 - ![Bugfix][badge-bugfix] Validate the length of the vectors with one column label style
   per column in the Typst back end and in the Excel and Word extensions, like the other back
   ends do. A shorter vector used to throw a `BoundsError`, whereas the extra styles of a

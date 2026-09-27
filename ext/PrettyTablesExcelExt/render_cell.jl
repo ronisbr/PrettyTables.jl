@@ -105,7 +105,7 @@ end
     # Styled strings are converted to Excel's rich text format, where each face region
     # becomes a run with its own font attributes.
     function _excel__render_cell(
-        cell::Base.AnnotatedString, ::RenderContext, ::_EXCEL__RENDERER
+        cell::_StyledString, ::RenderContext, ::_EXCEL__RENDERER
     )
         runs                = XLSX.RichTextRun[]
         has_font_attributes = false

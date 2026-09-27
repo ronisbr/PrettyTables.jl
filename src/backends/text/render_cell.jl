@@ -144,7 +144,7 @@ end
 
 @static if VERSION >= v"1.11"
     function _text__render_cell(
-        cell::Base.AnnotatedString,
+        cell::_StyledString,
         context::RenderContext,
         renderer::Union{Val{:print}, Val{:show}},
         line_breaks::Bool = false,

@@ -44,7 +44,7 @@ end
     # component with the text properties of the face. The cell properties, like the
     # background, cannot be applied to a region and they are ignored.
     function _typst__render_cell(
-        cell::Base.AnnotatedString,
+        cell::_StyledString,
         context::RenderContext,
         renderer::Union{Val{:print}, Val{:show}},
     )

@@ -20,7 +20,7 @@ import PrettyTables: _excel__highlighter_decoration, _excel__native_highlighters
 import PrettyTables: excel_decoration
 
 @static if VERSION >= v"1.11"
-    import PrettyTables: _face_regions
+    import PrettyTables: _StyledString, _face_regions
 end
 
 # Also import Tables.jl for handling table data

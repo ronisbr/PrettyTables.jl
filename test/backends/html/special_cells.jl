@@ -234,3 +234,36 @@
         @test result == expected
     end
 end
+
+@static if VERSION >= v"1.11"
+    @testset "Views Into Styled Strings" begin
+        # A view into a styled string must be rendered as a styled string, escaping the text.
+        # It used to be emitted without escaping, allowing the injection of HTML code.
+        s   = styled"{bold:<script>x</script>} & more"
+        sub = SubString(s, 1, lastindex(s))
+
+        result = pretty_table(String, [sub;;]; backend = :html)
+
+        @test !occursin("<script>", result)
+        @test occursin("&lt;script&gt;", result)
+        @test occursin("font-weight: bold", result)
+    end
+end
+
+@testset "Strings Showable as HTML With the Print Renderer" begin
+    # With the renderer `:print`, a string whose type has an HTML representation must be
+    # escaped, since only its plain text is rendered.
+    struct HtmlShowableString <: AbstractString
+        s::String
+    end
+
+    Base.iterate(x::HtmlShowableString) = iterate(x.s)
+    Base.iterate(x::HtmlShowableString, i::Int) = iterate(x.s, i)
+    Base.ncodeunits(x::HtmlShowableString) = ncodeunits(x.s)
+    Base.codeunit(x::HtmlShowableString, i::Integer) = codeunit(x.s, i)
+    Base.isvalid(x::HtmlShowableString, i::Integer) = isvalid(x.s, i)
+    Base.show(io::IO, ::MIME"text/html", x::HtmlShowableString) = print(io, x.s)
+
+    result = pretty_table(String, [HtmlShowableString("<b>x</b>");;]; backend = :html)
+    @test occursin("&lt;b&gt;x&lt;/b&gt;", result)
+end

@@ -21,7 +21,7 @@ import PrettyTables: _face_color_hex, _face_from_kwargs
 import PrettyTables: docx_decoration, remove_decorations
 
 @static if VERSION >= v"1.11"
-    import PrettyTables: _face_regions
+    import PrettyTables: _StyledString, _face_regions
 end
 
 ############################################################################################

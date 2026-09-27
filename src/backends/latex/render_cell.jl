@@ -51,7 +51,7 @@ end
     # Styled strings are rendered region by region, wrapping the styled ones in the LaTeX
     # environments of the face.
     function _latex__render_cell(
-        cell::Base.AnnotatedString,
+        cell::_StyledString,
         context::RenderContext,
         renderer::Union{Val{:print}, Val{:show}},
     )

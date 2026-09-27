@@ -54,7 +54,7 @@ end
 @static if VERSION >= v"1.11"
     # Each face region of a styled string becomes a run with its own properties.
     function _docx__render_cell(
-        cell::Base.AnnotatedString, ::RenderContext, ::_DOCX__RENDERER
+        cell::_StyledString, ::RenderContext, ::_DOCX__RENDERER
     )
         runs = DocxRun[]
 

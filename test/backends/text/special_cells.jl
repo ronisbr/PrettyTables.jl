@@ -95,3 +95,13 @@
         end
     end
 end
+
+@static if VERSION >= v"1.11"
+    @testset "Views Into Styled Strings" begin
+        # A view into a styled string must keep its faces.
+        s = styled"{bold:Bold} text"
+
+        @test pretty_table(String, [SubString(s, 1, lastindex(s));;]; color = true) ==
+            pretty_table(String, [s;;]; color = true)
+    end
+end

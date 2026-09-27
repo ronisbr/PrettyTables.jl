@@ -58,7 +58,7 @@ end
     # Styled strings are rendered region by region, wrapping the styled ones in the Markdown
     # markers of the face.
     function _markdown__render_cell(
-        cell::Base.AnnotatedString,
+        cell::_StyledString,
         context::RenderContext,
         renderer::Union{Val{:print}, Val{:show}};
         allow_markdown_in_cells::Bool = false,

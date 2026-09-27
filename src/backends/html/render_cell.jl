@@ -46,27 +46,6 @@ function _html__render_cell(
     return _html__escape_str(cell_str, replace_newline, !allow_html_in_cells)
 end
 
-function _html__render_cell(
-    cell::AbstractString,
-    context::RenderContext,
-    renderer::Union{Val{:print}, Val{:show}};
-    allow_html_in_cells::Bool = false,
-    line_breaks::Bool = false,
-)
-    cell_str, _ = _cell_to_str(cell, context, renderer, MIME("text/html"))
-
-    # Check if we need to replace `\n` with `<br>`.
-    replace_newline = line_breaks
-
-    # If the string is showable as HTML, we assume it contains HTML code and we do not
-    # escape it.
-    if showable(MIME("text/html"), cell)
-        allow_html_in_cells = true
-    end
-
-    # If the user wants HTML code inside cell, we must not escape the HTML characters.
-    return _html__escape_str(cell_str, replace_newline, !allow_html_in_cells)
-end
 
 function _html__render_cell(
     cell::HTML,
@@ -93,7 +72,7 @@ end
     # Styled strings are rendered region by region, wrapping the styled ones in a `span` with
     # the CSS properties of the face.
     function _html__render_cell(
-        cell::Base.AnnotatedString,
+        cell::_StyledString,
         context::RenderContext,
         renderer::Union{Val{:print}, Val{:show}};
         allow_html_in_cells::Bool = false,

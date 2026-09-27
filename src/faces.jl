@@ -504,14 +504,23 @@ end
 ############################################################################################
 
 @static if VERSION >= v"1.11"
+    # Styled strings, including the views into them. Notice that a view must be rendered as a
+    # styled string. Otherwise, it would be treated as a plain string and its faces would be
+    # lost.
+    const _StyledString = Union{Base.AnnotatedString, SubString{<:Base.AnnotatedString}}
+
     """
         _face_regions(str::Base.AnnotatedString) -> Vector{Tuple{SubString{String}, Union{Nothing, Face}}}
+        _face_regions(str::SubString{<:Base.AnnotatedString}) -> Vector{Tuple{SubString{String}, Union{Nothing, Face}}}
 
     Split the styled string `str` into regions with the same annotations, returning the text
     of each region (a view into `str`) and its face, or `nothing` if the region has no face.
     The face only contains the attributes set by the annotations; the default face is not
     merged.
     """
+    _face_regions(str::SubString{<:Base.AnnotatedString}) =
+        _face_regions(Base.AnnotatedString(str))
+
     function _face_regions(str::Base.AnnotatedString)
         regions = Tuple{SubString{String}, Union{Nothing, Face}}[]
 
@@ -550,7 +559,7 @@ end
     strings returned by `render_region(text, face)`, where `face` is `nothing` for the
     regions without a face.
     """
-    function _render_face_regions(render_region::F, str::Base.AnnotatedString) where F
+    function _render_face_regions(render_region::F, str::_StyledString) where F
         buf = IOBuffer()
 
         for (text, face) in _face_regions(str)
