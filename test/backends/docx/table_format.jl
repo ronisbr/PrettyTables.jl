@@ -98,6 +98,46 @@
     end
 end
 
+@testset "Row Group Label Lines" verbose = true begin
+    matrix = [1 2; 3 4; 5 6]
+
+    # The lines around the row group label are drawn by the label row.
+    table = pretty_table(W.Table, matrix; row_group_labels = [2 => "Group"])
+
+    @test docx_row_text(table, 3) == ["Group"]
+    @test docx_border_size(docx_cell(table, 3, 1), :top) == 4
+    @test docx_border_size(docx_cell(table, 3, 1), :bottom) == 4
+
+    # A row group label does not end the data section. Hence, disabling the lines around it
+    # must remove every line between the data rows and the label.
+    table = pretty_table(
+        W.Table,
+        matrix;
+        row_group_labels = [2 => "Group"],
+        table_format = DocxTableFormat(;
+            horizontal_line_before_row_group_label = false,
+            horizontal_line_after_row_group_label = false,
+        ),
+    )
+
+    @test docx_border(docx_cell(table, 2, 1), :bottom) === nothing
+    @test docx_border(docx_cell(table, 3, 1), :top) === nothing
+    @test docx_border(docx_cell(table, 3, 1), :bottom) === nothing
+
+    # The lines after the data rows are still drawn before the row group label.
+    table = pretty_table(
+        W.Table,
+        matrix;
+        row_group_labels = [2 => "Group"],
+        table_format = DocxTableFormat(;
+            horizontal_lines_at_data_rows = [1],
+            horizontal_line_before_row_group_label = false,
+        ),
+    )
+
+    @test docx_border_size(docx_cell(table, 2, 1), :bottom) == 4
+end
+
 @testset "Backend-Agnostic Table Format" verbose = true begin
     matrix = [1 2; 3 4]
 

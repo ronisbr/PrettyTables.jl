@@ -170,7 +170,10 @@ function _docx__render_table_core(pspec::PrintingSpec, opts::DocxPrintOptions)
                     _docx__set_bottom!(row, borders.header_line)
 
             elseif rs ∈ (:data, :continuation_row)
-                if next_rs ∉ (:data, :continuation_row)
+                # Notice that a row group label does not end the data section. Hence, the
+                # line before it is controlled only by `horizontal_lines_at_data_rows` and
+                # `horizontal_line_before_row_group_label`, as in the text back end.
+                if next_rs ∉ (:data, :continuation_row, :row_group_label)
                     (
                         table_format.horizontal_line_after_data_rows || (
                             (next_rs == :summary_row) &&
