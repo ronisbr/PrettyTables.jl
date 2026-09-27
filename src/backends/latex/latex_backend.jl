@@ -448,10 +448,12 @@ function _latex__print_core(pspec::PrintingSpec, opts::LatexPrintOptions)
                         # highlighter to apply.
                         if !isnothing(highlighters)
                             # Apply the highlighters in order, stopping at the first match.
+                            di, dj = _data_indices(table_data, ps.i, ps.j)
+
                             for h in highlighters
-                                if h.f(orig_data, ps.i, ps.j)
+                                if h.f(orig_data, di, dj)
                                     envs = _latex__highlighter_decoration(
-                                        h, orig_data, ps.i, ps.j
+                                        h, orig_data, di, dj
                                     )
                                     break
                                 end

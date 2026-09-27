@@ -71,3 +71,54 @@ end
 
     @test result == expected
 end
+
+@testset "User Functions Receive the Data Indices" begin
+    # Every user function must receive the indices of the cell in the object passed to
+    # `pretty_table`, so that `data[i, j]` works for arrays with arbitrary axes.
+    data = OffsetArray([10 20; 30 40], -1:0, 5:6)
+
+    received = Tuple{Int, Int}[]
+
+    formatters = [(v, i, j) -> (push!(received, (i, j)); v)]
+    pretty_table(String, data; formatters)
+    @test sort(received) == [(-1, 5), (-1, 6), (0, 5), (0, 6)]
+
+    highlighters = [
+        TextHighlighter((d, i, j) -> d[i, j] > 25, Face(; foreground = :red))
+    ]
+
+    expected = """
+┌────────┬────────┐
+│\e[1m Col. 5 \e[0m│\e[1m Col. 6 \e[0m│
+├────────┼────────┤
+│     10 │     20 │
+│\e[31m     30 \e[0m│\e[31m     40 \e[0m│
+└────────┴────────┘
+"""
+
+    @test pretty_table(String, data; color = true, highlighters) == expected
+
+    cell_alignment = [(d, i, j) -> d[i, j] == 20 ? :l : nothing]
+
+    expected = """
+┌────────┬────────┐
+│ Col. 5 │ Col. 6 │
+├────────┼────────┤
+│     10 │ 20     │
+│     30 │     40 │
+└────────┴────────┘
+"""
+
+    @test pretty_table(String, data; cell_alignment) == expected
+
+    # The same applies to the other back ends.
+    for backend in (:html, :latex, :markdown, :typst)
+        @test pretty_table(
+            String,
+            data;
+            backend,
+            cell_alignment,
+            highlighters = [Highlighter((d, i, j) -> d[i, j] > 25, Face(; weight = :bold))],
+        ) isa String
+    end
+end

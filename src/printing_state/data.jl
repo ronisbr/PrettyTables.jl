@@ -49,6 +49,18 @@ function _get_data_cell(data::RowTable, i::Int, j::Int)
 end
 
 """
+    _data_indices(table_data::TableData, i::Int, j::Int) -> NTuple{2, Int}
+
+Convert the 1-based position `(i, j)` of a data cell in the printed table to the indices of
+that cell in the object passed by the user, which can have arbitrary axes (e.g., an
+`OffsetArray`). Those are the indices passed to every user function (formatters,
+highlighters, and cell alignment functions), so that `data[i, j]` always works.
+"""
+function _data_indices(table_data::TableData, i::Int, j::Int)
+    return i - 1 + table_data.first_row_index, j - 1 + table_data.first_column_index
+end
+
+"""
     _current_cell(action::Symbol, state::PrintingTableState, table_data::TableData) -> Any
 
 Return the current data specified by the `action` and the current printing table `state` of
@@ -114,14 +126,13 @@ function _current_cell(action::Symbol, state::PrintingTableState, table_data::Ta
         return table_data.column_labels[state.i - 1 + begin][state.j - 1 + begin]
 
     elseif action == :data
-        i₀ = table_data.first_row_index
-        j₀ = table_data.first_column_index
+        di, dj = _data_indices(table_data, state.i, state.j)
 
-        cell_data = _get_data_cell(table_data.data, state.i - 1 + i₀, state.j - 1 + j₀)
+        cell_data = _get_data_cell(table_data.data, di, dj)
 
         if !isnothing(table_data.formatters)
             for f in table_data.formatters
-                cell_data = f(cell_data, state.i, state.j)
+                cell_data = f(cell_data, di, dj)
             end
         end
 

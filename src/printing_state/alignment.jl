@@ -44,10 +44,11 @@ function _current_cell_alignment(
     elseif (action == :data) || (action == :summary_row_cell)
         # First, we check if we have a special cell alignment.
         if (action == :data) && !isnothing(table_data.cell_alignment)
-            data = _get_data(table_data.data)
+            data   = _get_data(table_data.data)
+            di, dj = _data_indices(table_data, state.i, state.j)
 
             for f in table_data.cell_alignment
-                fa = f(data, state.i, state.j)::Union{Nothing, Symbol}
+                fa = f(data, di, dj)::Union{Nothing, Symbol}
                 !isnothing(fa) && return fa
             end
         end

@@ -638,10 +638,12 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
 
             # If we are in a data cell, we must check for highlighters.
             if (action == :data) && !isempty(highlighters)
+                di, dj = _data_indices(table_data, ps.i, ps.j)
+
                 for h in highlighters
-                    if h.f(orig_data, ps.i, ps.j)
+                    if h.f(orig_data, di, dj)
                         append!(
-                            vstyle, _html__highlighter_decoration(h, orig_data, ps.i, ps.j)
+                            vstyle, _html__highlighter_decoration(h, orig_data, di, dj)
                         )
                         break
                     end

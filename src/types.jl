@@ -24,6 +24,10 @@ Supertype of the highlighters of all back ends. A highlighter has the fields:
     highlighter. This function must return the decoration to be applied to the highlighted
     cell.
 
+Notice that `i` and `j` are the indices of the cell in `data`, which is the object passed to
+`pretty_table`. Hence, `data[i, j]` is always the cell value, even if `data` has arbitrary
+axes (e.g., an `OffsetArray`).
+
 The subtypes are the general [`Highlighter`](@ref), which can be used with every back end,
 and the back end highlighters `TextHighlighter`, `HtmlHighlighter`, `LatexHighlighter`,
 `MarkdownHighlighter`, `TypstHighlighter`, `ExcelHighlighter`, and `DocxHighlighter`.

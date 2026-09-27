@@ -351,11 +351,13 @@ function _docx__render_table_core(pspec::PrintingSpec, opts::DocxPrintOptions)
                 # that the decoration must come after the one of the section so that it
                 # overrides it.
                 if action == :data
+                    di, dj = _data_indices(table_data, ps.i, ps.j)
+
                     for highlighter in highlighters
-                        highlighter.f(orig_data, ps.i, ps.j) || continue
+                        highlighter.f(orig_data, di, dj) || continue
 
                         decoration = _docx__highlighter_decoration(
-                            highlighter, orig_data, ps.i, ps.j
+                            highlighter, orig_data, di, dj
                         )
 
                         cell.decoration = vcat(cell.decoration, decoration)

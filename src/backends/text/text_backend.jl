@@ -1353,9 +1353,11 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
 
             # Check if we must apply highlighters.
             if !isempty(highlighters)
+                di, dj = _data_indices(table_data, ps.i, ps.j)
+
                 for h in highlighters
-                    if h.f(orig_data, ps.i, ps.j)
-                        decoration = _text__highlighter_sgr(h, orig_data, ps.i, ps.j)
+                    if h.f(orig_data, di, dj)
+                        decoration = _text__highlighter_sgr(h, orig_data, di, dj)
                         break
                     end
                 end

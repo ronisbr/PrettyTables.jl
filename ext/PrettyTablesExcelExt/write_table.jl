@@ -500,7 +500,7 @@ function _excel__write_table_core!(
                         formatter.region === :data || continue
 
                         fmt_attributes = _excel__format_attributes(
-                            orig_data, formatter, ps.i, ps.j
+                            orig_data, formatter, _data_indices(table_data, ps.i, ps.j)...
                         )
                         if !isnothing(fmt_attributes)
                             XLSX.setFormat(sheet, sheet_row, sheet_col; fmt_attributes...)
@@ -514,11 +514,14 @@ function _excel__write_table_core!(
                     wrap = false
 
                     for formatter in excel_formatters
-                        # `:summary_row` formatters match the summary row index.
+                        # `:summary_row` formatters match the summary row index and the
+                        # column index in the data.
                         formatter.region === :summary_row || continue
 
+                        _, dj = _data_indices(table_data, 1, ps.j)
+
                         fmt_attributes = _excel__format_attributes(
-                            orig_data, formatter, ps.i, ps.j
+                            orig_data, formatter, ps.i, dj
                         )
 
                         if !isnothing(fmt_attributes)
@@ -549,11 +552,13 @@ function _excel__write_table_core!(
                 # this must be performed after applying the section style. Otherwise, the
                 # highlighter decoration would be overwritten.
                 if action == :data
+                    di, dj = _data_indices(table_data, ps.i, ps.j)
+
                     for highlighter in highlighters
-                        highlighter.f(orig_data, ps.i, ps.j) || continue
+                        highlighter.f(orig_data, di, dj) || continue
 
                         decoration = _excel__highlighter_decoration(
-                            highlighter, orig_data, ps.i, ps.j
+                            highlighter, orig_data, di, dj
                         )
 
                         hl_font_size = _excel__apply_cell_style!(

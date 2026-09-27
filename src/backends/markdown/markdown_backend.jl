@@ -197,9 +197,11 @@ function _markdown__print_core(pspec::PrintingSpec, opts::MarkdownPrintOptions)
         elseif action == :data
             # Check if we must apply highlighters.
             if !isempty(highlighters)
+                di, dj = _data_indices(table_data, ps.i, ps.j)
+
                 for h in highlighters
-                    if h.f(orig_data, ps.i, ps.j)
-                        d = _markdown__highlighter_decoration(h, orig_data, ps.i, ps.j)
+                    if h.f(orig_data, di, dj)
+                        d = _markdown__highlighter_decoration(h, orig_data, di, dj)
                         rendered_cell = _markdown__apply_style(d, rendered_cell)
                         break
                     end
