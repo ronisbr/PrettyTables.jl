@@ -196,9 +196,9 @@ end
 # == Components ============================================================================
 
 """
-    _typst__create_component(component::String, content::String; kwargs...) -> String
+    _typst__create_component(component::String, content::String, properties::Vector{TypstPair}; kwargs...) -> String
 
-Create a Typst `component` with the `content`.
+Create a Typst `component` with the `content` and the `properties`.
 
 # Keywords
 
@@ -212,7 +212,7 @@ Create a Typst `component` with the `content`.
 function _typst__create_component(
     component::String,
     content::String,
-    properties::Union{Nothing, Vector{TypstPair}} = nothing;
+    properties::Vector{TypstPair};
     il::Int = 0,
     ns::Int = 2,
     wrap_column::Int = 92,
@@ -237,18 +237,12 @@ function _typst__create_component(
 end
 
 """
-    _typst__open_component(
-        component::String,
-        properties::Union{Nothing, Vector{TypstPair}} = nothing
-    ) -> String
+    _typst__open_component(component::String, properties::Vector{TypstPair}) -> String
 
 Create the string that opens the Typst `component` with the given `properties`.
 """
-function _typst__open_component(
-    component::String, properties::Union{Nothing, Vector{TypstPair}} = nothing
-)
-    prop_str = isnothing(properties) ? "" : "($(_typst__property_list(properties)))"
-    return "$component$prop_str["
+function _typst__open_component(component::String, properties::Vector{TypstPair})
+    return "$component($(_typst__property_list(properties)))["
 end
 
 """

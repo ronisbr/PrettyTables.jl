@@ -19,8 +19,7 @@ export TypstPair, TypstHighlighter, TypstTableBorders, TypstTableFormat, TypstTa
 Pair with a Typst property and its value, which is the native decoration of the Typst back
 end (for example, `"text-weight" => "bold"`).
 """
-const TypstPair  = Pair{String, String}
-const TypstAttrs = String
+const TypstPair = Pair{String, String}
 
 # == Private ===============================================================================
 
