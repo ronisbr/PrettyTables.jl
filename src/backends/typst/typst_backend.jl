@@ -323,110 +323,53 @@ function _typst__print_core(pspec::PrintingSpec, opts::TypstPrintOptions)
 
             # == Handle the Horizontal Lines ===============================================
 
-            hline  = ""
-            stroke = ""
+            if (rs == :column_labels) && (next_rs == :column_labels)
+                if tf.horizontal_line_at_merged_column_labels
+                    # The specification in `merged_column_labels` refers to the data
+                    # columns. Hence, we need to add the offset regarding the previous
+                    # columns if they exist.
+                    Δc = table_data.show_row_number_column + _has_row_labels(table_data)
 
-            # Print the horizontal line after the column labels.
-            if (rs == :table_header) &&
-                (next_rs != :table_header) &&
-                tf.horizontal_line_at_beginning
-                hline  = "y: $(current_typst_line)"
-                stroke = tf.borders.top_line
+                    # Each merged cell needs its own line, exactly like the LaTeX back end
+                    # accumulates one `\cline` per merged cell.
+                    for m in merged_column_labels
+                        c₀ = Δc + m[1] - 1
+                        c₁ = Δc + m[2]
 
-                first_table_line = false
-
-            elseif (rs == :column_labels)
-                if ps.row_section == :column_labels
-                    if tf.horizontal_line_at_merged_column_labels
-                        # The specification in `merged_column_labels` refers to the data
-                        # columns. Hence, we need to add the offset regarding the previous
-                        # columns if they exist.
-                        Δc = table_data.show_row_number_column + _has_row_labels(table_data)
-
-                        # NOTE: Each merged cell needs its own line, so they must be written
-                        # out inside the loop. Assigning to `hline` here would keep only the
-                        # last one, exactly like the LaTeX back end accumulates one `\cline`
-                        # per merged cell.
-                        for m in merged_column_labels
-                            c₀ = Δc + m[1] - 1
-                            c₁ = Δc + m[2]
-
-                            @_println(
-                                buf_hlines,
-                                hline_pad,
-                                "table.hline(y: ",
-                                current_typst_line,
-                                ", start: ",
-                                c₀,
-                                ", end: ",
-                                c₁,
-                                ", stroke: ",
-                                tf.borders.merged_header_cell_line,
-                                ",),"
-                            )
-                        end
+                        @_println(
+                            buf_hlines,
+                            hline_pad,
+                            "table.hline(y: ",
+                            current_typst_line,
+                            ", start: ",
+                            c₀,
+                            ", end: ",
+                            c₁,
+                            ", stroke: ",
+                            tf.borders.merged_header_cell_line,
+                            ",),"
+                        )
                     end
-
-                elseif tf.horizontal_line_after_column_labels
-                    hline  = "y: $(current_typst_line)"
-                    stroke = tf.borders.header_line
                 end
+            else
+                role = _horizontal_line_after_row(
+                    tf, rs, next_rs, ps.i, horizontal_lines_at_data_rows
+                )
 
-                # Check if the next line is a row group label and the user requests a
-                # line before it.
-            elseif (next_rs == :row_group_label) &&
-                tf.horizontal_line_before_row_group_label
-                hline  = "y: $(current_typst_line)"
-                stroke = tf.borders.middle_line
+                if role != :none
+                    first_table_line = false
 
-                # Check if we must print a horizontal line after the current data row.
-            elseif (rs == :data) && (ps.i ∈ horizontal_lines_at_data_rows)
-                hline  = "y: $(current_typst_line)"
-                stroke = tf.borders.middle_line
-
-            elseif (
-                (rs ∈ (:data, :continuation_row)) &&
-                (next_rs ∈ (:summary_row, :table_footer, :end_printing)) &&
-                tf.horizontal_line_after_data_rows
-            )
-                hline  = "y: $(current_typst_line)"
-                stroke = tf.borders.middle_line
-
-            elseif (
-                (rs ∈ (:data, :continuation_row)) &&
-                (next_rs == :summary_row) &&
-                tf.horizontal_line_before_summary_rows
-            )
-                hline  = "y: $(current_typst_line)"
-                stroke = tf.borders.middle_line
-
-            elseif (rs == :row_group_label) && tf.horizontal_line_after_row_group_label
-                hline  = "y: $(current_typst_line)"
-                stroke = tf.borders.middle_line
-
-                # Check if we must print the horizontal line at the end of the table.
-            elseif (rs == :summary_row) &&
-                (next_rs != :summary_row) &&
-                tf.horizontal_line_after_summary_rows
-                hline  = "y: $(current_typst_line)"
-                stroke = tf.borders.middle_line
+                    @_println(
+                        buf_hlines,
+                        hline_pad,
+                        "table.hline(y: ",
+                        current_typst_line,
+                        ", stroke: ",
+                        getfield(tf.borders, role),
+                        ",),"
+                    )
+                end
             end
-
-            # If the next section is the end of the table and we need to draw a horizontal
-            # line, we should change it to the bottom line.
-            if next_rs ∈ (:table_footer, :end_printing) && !isempty(hline)
-                stroke = tf.borders.bottom_line
-            end
-
-            !isempty(hline) && @_println(
-                buf_hlines,
-                hline_pad,
-                "table.hline(",
-                hline,
-                ", stroke: ",
-                stroke,
-                ",),"
-            )
 
             # == Omitted Cell Summary ======================================================
 

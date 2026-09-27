@@ -151,71 +151,27 @@ function _latex__print_core(pspec::PrintingSpec, opts::LatexPrintOptions)
 
             hline_str = ""
 
-            # Print the horizontal line at the beginning of the table, which is drawn after
-            # the title and subtitle.
-            if (rs == :table_header) &&
-                (next_rs != :table_header) &&
-                tf.horizontal_line_at_beginning
-                hline_str *= tf.borders.top_line
-                first_table_line = false
-
-            elseif (rs == :column_labels)
-                if ps.row_section == :column_labels
-                    if tf.horizontal_line_at_merged_column_labels
-                        # The specification in `merged_column_labels` refers to the data
-                        # columns. Hence, we need to add the offset regarding the previous
-                        # columns if they exist.
-                        Δc = table_data.show_row_number_column + _has_row_labels(table_data)
-                        for m in merged_column_labels
-                            c₀ = Δc + m[1]
-                            c₁ = Δc + m[2]
-                            hline_str *= "$(tf.borders.merged_header_cell_line){$c₀-$c₁}"
-                        end
-                    end
-                else
-                    if tf.horizontal_line_after_column_labels
-                        hline_str *= tf.borders.header_line
+            if (rs == :column_labels) && (next_rs == :column_labels)
+                if tf.horizontal_line_at_merged_column_labels
+                    # The specification in `merged_column_labels` refers to the data
+                    # columns. Hence, we need to add the offset regarding the previous
+                    # columns if they exist.
+                    Δc = table_data.show_row_number_column + _has_row_labels(table_data)
+                    for m in merged_column_labels
+                        c₀ = Δc + m[1]
+                        c₁ = Δc + m[2]
+                        hline_str *= "$(tf.borders.merged_header_cell_line){$c₀-$c₁}"
                     end
                 end
+            else
+                role = _horizontal_line_after_row(
+                    tf, rs, next_rs, ps.i, horizontal_lines_at_data_rows
+                )
 
-                # Check if the next line is a row group label and the user requests a
-                # line before it.
-            elseif (next_rs == :row_group_label) &&
-                tf.horizontal_line_before_row_group_label
-                hline_str *= tf.borders.middle_line
-
-                # Check if we must print a horizontal line after the current data row.
-            elseif (rs == :data) && (ps.i ∈ horizontal_lines_at_data_rows)
-                hline_str *= tf.borders.middle_line
-
-            elseif (
-                (rs ∈ (:data, :continuation_row)) &&
-                (next_rs ∈ (:summary_row, :table_footer, :end_printing)) &&
-                tf.horizontal_line_after_data_rows
-            )
-                hline_str *= tf.borders.middle_line
-
-            elseif (
-                (rs ∈ (:data, :continuation_row)) &&
-                (next_rs == :summary_row) &&
-                tf.horizontal_line_before_summary_rows
-            )
-                hline_str *= tf.borders.middle_line
-
-            elseif (rs == :row_group_label) && tf.horizontal_line_after_row_group_label
-                hline_str *= tf.borders.middle_line
-
-                # Check if we must print the horizontal line at the end of the table.
-            elseif (rs == :summary_row) &&
-                (next_rs != :summary_row) &&
-                tf.horizontal_line_after_summary_rows
-                hline_str *= tf.borders.middle_line
-            end
-
-            # If the next section is the end of the table and we need to draw a horizontal
-            # line, we should change it to the bottom line.
-            if next_rs ∈ (:table_footer, :end_printing) && !isempty(hline_str)
-                hline_str = tf.borders.bottom_line
+                if role != :none
+                    hline_str = getfield(tf.borders, role)
+                    first_table_line = false
+                end
             end
 
             !isempty(hline_str) && _aprintln(buf, hline_str, il, ns)

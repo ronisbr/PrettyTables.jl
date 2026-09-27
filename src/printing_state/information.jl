@@ -232,6 +232,75 @@ function _line_spec_indices(spec::Union{Symbol, Vector{Int}}, n::Int)
 end
 
 """
+    _horizontal_line_after_row(tf, rs::Symbol, next_rs::Symbol, i::Int, horizontal_lines_at_data_rows::AbstractVector{Int}) -> Symbol
+
+Return the field of the borders in the table format `tf` with the horizontal line that must
+be drawn after the current row, or `:none` if no line must be drawn. `rs` and `next_rs` are
+the row sections of the current and next rows, `i` is the row index of the printing state
+after the current row ends, and `horizontal_lines_at_data_rows` contains the data rows after
+which a line must be drawn.
+
+The lines under the merged column labels, which are drawn after every column label row but
+the last one, are not handled here because each back end draws them differently.
+
+Notice that the printing state resets `i` when the data section ends. Hence, only
+`horizontal_line_after_data_rows` controls the line after the last data row.
+"""
+function _horizontal_line_after_row(
+    tf,
+    rs::Symbol,
+    next_rs::Symbol,
+    i::Int,
+    horizontal_lines_at_data_rows::AbstractVector{Int}
+)
+    role = if (rs == :table_header) &&
+        (next_rs != :table_header) &&
+        tf.horizontal_line_at_beginning
+        :top_line
+
+    elseif rs == :column_labels
+        ((next_rs != :column_labels) && tf.horizontal_line_after_column_labels) ?
+            :header_line : :none
+
+    elseif (next_rs == :row_group_label) && tf.horizontal_line_before_row_group_label
+        :middle_line
+
+    elseif (rs == :data) && (i ∈ horizontal_lines_at_data_rows)
+        :middle_line
+
+    elseif (
+        (rs ∈ (:data, :continuation_row)) &&
+        (next_rs ∈ (:summary_row, :table_footer, :end_printing)) &&
+        tf.horizontal_line_after_data_rows
+    )
+        :middle_line
+
+    elseif (
+        (rs ∈ (:data, :continuation_row)) &&
+        (next_rs == :summary_row) &&
+        tf.horizontal_line_before_summary_rows
+    )
+        :middle_line
+
+    elseif (rs == :row_group_label) && tf.horizontal_line_after_row_group_label
+        :middle_line
+
+    elseif (rs == :summary_row) &&
+        (next_rs != :summary_row) &&
+        tf.horizontal_line_after_summary_rows
+        :middle_line
+
+    else
+        :none
+    end
+
+    # A line before the end of the table is the bottom line.
+    ((role != :none) && (next_rs ∈ (:table_footer, :end_printing))) && return :bottom_line
+
+    return role
+end
+
+"""
     _merged_cell_span(table_data::TableData, cell::MergeCells, j::Int) -> Int
 
 Return the number of printed data columns spanned by the merged column label `cell`, which
