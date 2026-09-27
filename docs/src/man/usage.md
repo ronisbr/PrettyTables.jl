@@ -110,7 +110,8 @@ The following keywords are related to table configuration and are available in a
 - `row_number_column_label::String`: Label of the row number column.
   (**Default**: "Row")
 - `row_labels::Union{Nothing, AbstractVector}`: Row labels. If it is `nothing`, the column
-  with row labels is omitted.
+  with row labels is omitted. It must have at least one element per row, and the extra
+  elements are ignored.
   (**Default**: `nothing`)
 - `row_group_labels::Union{Nothing, Vector{Pair{Int, String}}}`: Row group labels. If it is
   `nothing`, no row group label is printed. For more information on how to specify the row
