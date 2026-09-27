@@ -415,6 +415,10 @@ Base.@constprop :none Base.@nospecializeinfer function _pretty_table(
         column_label_alignment = alignment
     end
 
+    if isnothing(summary_rows) && !isnothing(summary_row_labels)
+        throw(ArgumentError("`summary_row_labels` requires `summary_rows`."))
+    end
+
     if !isnothing(summary_rows) && !isnothing(summary_row_labels)
         length(summary_rows) != length(summary_row_labels) && throw(
             ArgumentError(

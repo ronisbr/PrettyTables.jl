@@ -41,7 +41,19 @@ end
 @testset "Vertical Crop Mode" begin
     for backend in (:text, :html, :latex, :markdown, :typst)
         @test_throws "The vertical crop mode must be `:bottom` or `:middle`." pretty_table(
-            String, collect(1:10); backend, maximum_number_of_rows = 4, vertical_crop_mode = :top
+            String,
+            collect(1:10);
+            backend,
+            maximum_number_of_rows = 4,
+            vertical_crop_mode = :top,
+        )
+    end
+end
+
+@testset "Summary Row Labels Without Summary Rows" begin
+    for backend in (:text, :html, :latex, :markdown, :typst)
+        @test_throws "`summary_row_labels` requires `summary_rows`." pretty_table(
+            String, [1 2]; backend, summary_row_labels = ["x"]
         )
     end
 end
