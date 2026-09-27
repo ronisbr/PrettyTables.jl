@@ -151,19 +151,6 @@ end
 
 _html__write_style(::IO, ::Nothing) = nothing
 
-"""
-    _html__create_style(style::Union{Nothing, Vector{HtmlPair}}) -> String
-
-Create the HTML style string using the information in the vector `style`.
-"""
-function _html__create_style(style::Vector{HtmlPair})
-    buf = IOBuffer()
-    _html__write_style(buf, style)
-    return String(take!(buf))
-end
-
-_html__create_style(::Nothing) = ""
-
 # == Table Borders =========================================================================
 
 """
