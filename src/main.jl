@@ -515,7 +515,7 @@ Base.@constprop :none Base.@nospecializeinfer function _pretty_table(
 
     try
         # Call the printing backend.
-        if backend == :excel
+        if backend ∈ (:excel, :docx)
             return _printing_backend(Val(backend), pspec; is_stdout, kwargs...)
         else
             _printing_backend(Val(backend), pspec; is_stdout, kwargs...)
@@ -600,6 +600,13 @@ function _printing_backend(::Val{:excel}, pspec::PrintingSpec; is_stdout::Bool, 
     return _excel__print(pspec; nt...)
 end
 
+function _printing_backend(::Val{:docx}, pspec::PrintingSpec; is_stdout::Bool, kwargs...)
+    nt = _resolve_generic_configurations(
+        values(kwargs), _docx__table_format, _docx__table_style
+    )
+    return _docx__print(pspec; nt...)
+end
+
 function _printing_backend(
     ::Val{:markdown}, pspec::PrintingSpec; is_stdout::Bool, kwargs...
 )
@@ -633,6 +640,7 @@ export pretty_table_markdown_backend
 export pretty_table_text_backend
 export pretty_table_typst_backend
 export pretty_table_excel_backend
+export pretty_table_docx_backend
 
 function pretty_table_text_backend(args...; kwargs...)
     return pretty_table(args...; backend = :text, kwargs...)
@@ -656,4 +664,8 @@ end
 
 function pretty_table_excel_backend(args...; kwargs...)
     return pretty_table(args...; backend = :excel, kwargs...)
+end
+
+function pretty_table_docx_backend(args...; kwargs...)
+    return pretty_table(args...; backend = :docx, kwargs...)
 end

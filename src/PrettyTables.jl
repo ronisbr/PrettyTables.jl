@@ -98,6 +98,13 @@ include("./backends/excel/documentation.jl")
 include("./backends/excel/helpers.jl")
 include("./backends/excel/excel_backend.jl")
 
+include("./backends/docx/types.jl")
+include("./backends/docx/faces.jl")
+include("./backends/docx/table_format.jl")
+include("./backends/docx/documentation.jl")
+include("./backends/docx/helpers.jl")
+include("./backends/docx/docx_backend.jl")
+
 include("./backends/typst/types.jl")
 include("./backends/typst/faces.jl")
 include("./backends/typst/table_format.jl")
