@@ -32,6 +32,11 @@ PrecompileTools.@setup_workload begin
 
         pretty_table(table; backend = :docx, filename = nothing)
 
+        # The methods that return the WriteDocx objects are the main entry points to embed
+        # the table in a larger document.
+        pretty_table(W.Table, matrix)
+        pretty_table(W.Document, matrix)
+
         # The backend-agnostic table format and style must also be exercised so that the
         # first export using them is not fully cold.
         pretty_table(
