@@ -88,14 +88,14 @@ out the columns exactly at the computed widths and wraps the text that does not 
 widths of the row number, row label, and continuation columns are always estimated.
 
 Footnote markers are rendered as superscript text runs, and a line break inside a cell is
-rendered as a Word line break, keeping the cell content in a single paragraph. A tab inside a
-cell is rendered as a Word tab. The ANSI escape sequences and the characters that cannot be
-written in a Word document (for example, the null character) are removed from the text.
+rendered as a Word line break, keeping the cell content in a single paragraph. A tab inside
+a cell is rendered as a Word tab. The ANSI escape sequences and the characters that cannot
+be written in a Word document (for example, the null character) are removed from the text.
 
 Each region of a styled string of StyledStrings.jl (Julia 1.11 or newer) becomes a text run
-with the attributes of its face (see [Faces](@ref)). As in the Excel back end, the attributes
-of the table style and of the highlighter applied to the cell take precedence over the ones
-of the regions.
+with the attributes of its face (see [Faces](@ref)). As in the Excel back end, the
+attributes of the table style and of the highlighter applied to the cell take precedence
+over the ones of the regions.
 
 ## Word Highlighters
 
@@ -290,16 +290,16 @@ contains the following fields:
 Each field corresponds to a table element and should be a vector of `DocxPair`, *i.e.*
 `Pair{String, String}`, with the following keys:
 
-| Key            | Value                                                                       |
-|:---------------|:----------------------------------------------------------------------------|
-| `"bold"`       | `"true"` or `"false"`.                                                      |
-| `"italic"`     | `"true"` or `"false"`.                                                      |
-| `"strike"`     | `"true"` or `"false"`.                                                      |
-| `"underline"`  | A `WriteDocx.UnderlinePattern`, *e.g.* `"single"`, `"double"`, or `"wave"`.  |
-| `"color"`      | Text color as a 6-digit hexadecimal string, *e.g.* `"FF0000"`.              |
-| `"background"` | Cell background as a 6-digit hexadecimal string.                            |
-| `"font"`       | Font name, *e.g.* `"Palatino"`.                                             |
-| `"size"`       | Font size in points, *e.g.* `"14"`.                                         |
+| Key            | Value                                                          |
+|:---------------|:---------------------------------------------------------------|
+| `"bold"`       | `"true"` or `"false"`.                                         |
+| `"italic"`     | `"true"` or `"false"`.                                         |
+| `"strike"`     | `"true"` or `"false"`.                                         |
+| `"underline"`  | A `WriteDocx.UnderlinePattern`, *e.g.* `"single"` or `"wave"`. |
+| `"color"`      | Text color as a 6-digit hexadecimal string, *e.g.* `"FF0000"`. |
+| `"background"` | Cell background as a 6-digit hexadecimal string.               |
+| `"font"`       | Font name, *e.g.* `"Palatino"`.                                |
+| `"size"`       | Font size in points, *e.g.* `"14"` or `"10.5"`.                |
 
 The colors accept a 6-digit hexadecimal string (with or without the leading `#`) or one of
 the color names supported by Crayons.jl.

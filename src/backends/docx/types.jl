@@ -301,16 +301,16 @@ back end.
 Each field corresponds to a table element and should be a vector of `DocxPair`, *i.e.*
 `Pair{String, String}`, with the following keys:
 
-| Key            | Value                                                                     |
-|:---------------|:--------------------------------------------------------------------------|
-| `"bold"`       | `"true"` or `"false"`.                                                    |
-| `"italic"`     | `"true"` or `"false"`.                                                    |
-| `"strike"`     | `"true"` or `"false"`.                                                    |
-| `"underline"`  | A `WriteDocx.UnderlinePattern`, *e.g.* `"single"`, `"double"`, or `"wave"`. |
-| `"color"`      | Text color as a 6-digit hexadecimal string, *e.g.* `"FF0000"`.            |
-| `"background"` | Cell background as a 6-digit hexadecimal string.                          |
-| `"font"`       | Font name, *e.g.* `"Palatino"`.                                           |
-| `"size"`       | Font size in points, *e.g.* `"14"`.                                       |
+| Key            | Value                                                          |
+|:---------------|:---------------------------------------------------------------|
+| `"bold"`       | `"true"` or `"false"`.                                         |
+| `"italic"`     | `"true"` or `"false"`.                                         |
+| `"strike"`     | `"true"` or `"false"`.                                         |
+| `"underline"`  | A `WriteDocx.UnderlinePattern`, *e.g.* `"single"` or `"wave"`. |
+| `"color"`      | Text color as a 6-digit hexadecimal string, *e.g.* `"FF0000"`. |
+| `"background"` | Cell background as a 6-digit hexadecimal string.               |
+| `"font"`       | Font name, *e.g.* `"Palatino"`.                                |
+| `"size"`       | Font size in points, *e.g.* `"14"` or `"10.5"`.                |
 
 It is only necessary to define those fields for which the default style needs to be
 overwritten. For example:
