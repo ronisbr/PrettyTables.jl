@@ -325,6 +325,11 @@ check if there is an applicable method for the first signature and use it if it 
 Otherwise, it will use the second signature. This verification is performed using the method
 `applicable` and `col` is obtained by `@view data[:, j]`.
 
+Notice that `j` is the index of the column in the data, which can have arbitrary axes (e.g.,
+an `OffsetArray`). If the data is a Tables.jl source, `data` is a wrapper that supports the
+indexing of a matrix, e.g., `data[:, j]`, whose `j`th column is the `j`th column of the
+table.
+
 If we want, for example, to create two summary rows, one with the sum of the column values
 and other with their mean, we can define:
 
