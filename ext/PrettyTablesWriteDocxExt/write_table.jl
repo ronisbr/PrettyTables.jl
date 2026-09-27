@@ -15,8 +15,21 @@ converted to the Word objects afterward, when every border of every cell is know
 
 The fields of `opts` are:
 
+- `data_column_widths::Union{Float64, Vector{Float64}}`: Explicit width for each data column
+    in points, overriding the estimated widths. A scalar applies to all columns; a vector
+    sets per-column widths. When set (> 0), `minimum_data_column_widths` and
+    `maximum_data_column_widths` are ignored for that column.
+    (**Default**: `0.0`)
 - `highlighters::Vector{AbstractHighlighter}`: Highlighters to apply to the data cells.
     (**Default**: `AbstractHighlighter[]`)
+- `maximum_data_column_widths::Union{Float64, Vector{Float64}}`: Maximum width for each
+    data column in points. A scalar applies to all columns; a vector sets per-column
+    maximums.
+    (**Default**: `0.0`)
+- `minimum_data_column_widths::Union{Float64, Vector{Float64}}`: Minimum width for each
+    data column in points. A scalar applies to all columns; a vector sets per-column
+    minimums.
+    (**Default**: `0.0`)
 - `style::DocxTableStyle`: Text and cell style for each table section.
     (**Default**: `DocxTableStyle()`)
 - `table_format::DocxTableFormat`: Border configuration.
@@ -32,21 +45,66 @@ end
 function _docx__render_table_core(pspec::PrintingSpec, opts::DocxPrintOptions)
     # == Unpack the Options ================================================================
 
-    highlighters = _docx__native_highlighters(opts.highlighters)
-    style        = opts.style
-    table_format = opts.table_format
-    borders      = table_format.borders
+    data_column_widths         = opts.data_column_widths
+    highlighters               = _docx__native_highlighters(opts.highlighters)
+    maximum_data_column_widths = opts.maximum_data_column_widths
+    minimum_data_column_widths = opts.minimum_data_column_widths
+    style                      = opts.style
+    table_format               = opts.table_format
+    borders                    = table_format.borders
 
     table_data = pspec.table_data
 
+    num_cols              = table_data.num_columns
     num_printed_cols      = _number_of_printed_columns(table_data)
     num_printed_data_cols = _number_of_printed_data_columns(table_data)
+    has_cont_column       = _is_horizontally_cropped(table_data)
+    num_leading_columns   = num_printed_cols - num_printed_data_cols - has_cont_column
 
     context  = pspec.context
     renderer = pspec.renderer === :show ? Val(:show) : Val(:print)
 
     # Reusable render buffer: one allocation per table instead of three per cell.
     rctx = RenderContext(context)
+
+    # == Column Widths =====================================================================
+
+    # The width keywords are indexed per data column. Hence, we must check their length here
+    # to raise a meaningful error instead of a `BoundsError` deep in the back end.
+    for (name, v) in (
+        ("data_column_widths", data_column_widths),
+        ("minimum_data_column_widths", minimum_data_column_widths),
+        ("maximum_data_column_widths", maximum_data_column_widths),
+    )
+        (v isa AbstractVector) && (length(v) != num_cols) && throw(
+            ArgumentError(
+                "The length of `$name` ($(length(v))) must be equal to the number of columns ($num_cols).",
+            ),
+        )
+    end
+
+    # If any width is configured, Word must lay out the columns exactly at the computed
+    # widths. Otherwise, it adjusts them to the content.
+    fixed_layout = any(
+        v -> any(>(0), v),
+        (data_column_widths, minimum_data_column_widths, maximum_data_column_widths),
+    )
+
+    if data_column_widths isa Number
+        data_column_widths = fill(Float64(data_column_widths), num_cols)
+    end
+
+    if minimum_data_column_widths isa Number
+        minimum_data_column_widths = fill(Float64(minimum_data_column_widths), num_cols)
+    end
+
+    if maximum_data_column_widths isa Number
+        maximum_data_column_widths = fill(Float64(maximum_data_column_widths), num_cols)
+    end
+
+    # Estimated width [pt] of the content of each column, including the horizontal margins.
+    cell_padding   = table_format.cell_margins[2] + table_format.cell_margins[4]
+    max_col_length = zeros(Float64, num_printed_cols)
 
     # == Iterator Setup ====================================================================
 
@@ -67,9 +125,10 @@ function _docx__render_table_core(pspec::PrintingSpec, opts::DocxPrintOptions)
     ps     = PrintingTableState()
     action = :initialize
 
-    has_cont_column = _is_horizontally_cropped(table_data)
-
     rows = DocxRow[]
+
+    # Index of the table column (in the grid) of the current cell.
+    jr = 0
 
     # The highlighters must receive the object the user passed to `pretty_table`, not the
     # internal table wrapper. Notice that this is loop invariant.
@@ -93,6 +152,7 @@ function _docx__render_table_core(pspec::PrintingSpec, opts::DocxPrintOptions)
                 rs ∈ (:table_header, :column_labels)
 
             push!(rows, row)
+            jr = 0
             continue
         end
 
@@ -140,6 +200,10 @@ function _docx__render_table_core(pspec::PrintingSpec, opts::DocxPrintOptions)
 
         # == Cell Actions ==================================================================
 
+        # Notice that each cell action, including the ones ignored because they are inside a
+        # merged cell, corresponds to one column of the table grid.
+        jr += 1
+
         if action ∈ (
             :horizontal_continuation_cell,
             :diagonal_continuation_cell,
@@ -157,6 +221,8 @@ function _docx__render_table_core(pspec::PrintingSpec, opts::DocxPrintOptions)
 
             cell = DocxCell([DocxRun(text)], :c, :center, style.data_cell)
             push!(row.cells, cell)
+
+            max_col_length[jr] = max(max_col_length[jr], _docx__cell_width(cell, cell_padding))
 
         else
             table_cell = _current_cell(action, ps, table_data)
@@ -297,6 +363,12 @@ function _docx__render_table_core(pspec::PrintingSpec, opts::DocxPrintOptions)
                     end
                 end
 
+                # The width must be estimated after applying the highlighters because they
+                # can change the font size.
+                max_col_length[jr] = max(
+                    max_col_length[jr], _docx__cell_width(cell, cell_padding)
+                )
+
                 if (action == :column_label) || (action == :row_number_label) ||
                     (action == :stubhead_label)
                     (
@@ -382,7 +454,20 @@ function _docx__render_table_core(pspec::PrintingSpec, opts::DocxPrintOptions)
         end
     end
 
-    return _docx__table(rows, table_format.cell_margins)
+    column_widths = Float64[
+        _docx__get_col_width(
+            col,
+            max_col_length,
+            num_leading_columns,
+            num_printed_data_cols,
+            data_column_widths,
+            minimum_data_column_widths,
+            maximum_data_column_widths,
+        )
+        for col in 1:num_printed_cols
+    ]
+
+    return _docx__table(rows, table_format.cell_margins, column_widths, fixed_layout)
 end
 
 """

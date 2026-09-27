@@ -55,6 +55,7 @@ end
     include("./backends/docx/styles.jl")
     include("./backends/docx/highlighters.jl")
     include("./backends/docx/faces.jl")
+    include("./backends/docx/widths.jl")
     include("./backends/docx/files.jl")
 end
 

@@ -7,6 +7,10 @@
 # Border of a cell side that must not be drawn. It must never be mutated.
 const _DOCX__NO_BORDER = DocxPair[]
 
+# Font size [pt] used by Word when neither the document nor the decoration defines one. It is
+# only used to estimate the column widths.
+const _DOCX__DEFAULT_FONT_SIZE = 10.0
+
 """
     struct DocxRun
 
@@ -348,11 +352,12 @@ function _docx__runs(cell::DocxCell)
 end
 
 """
-    _docx__table_cell(cell::DocxCell) -> W.TableCell
+    _docx__table_cell(cell::DocxCell, width::Union{Nothing, W.Length}) -> W.TableCell
 
-Convert `cell` to a Word table cell.
+Convert `cell` to a Word table cell with `width`. If `width` is `nothing`, Word decides the
+width of the cell.
 """
-function _docx__table_cell(cell::DocxCell)
+function _docx__table_cell(cell::DocxCell, width::Union{Nothing, W.Length})
     paragraph = W.Paragraph(
         _docx__runs(cell);
         justification = _docx__justification(cell.alignment)
@@ -371,6 +376,7 @@ function _docx__table_cell(cell::DocxCell)
 
     return W.TableCell(
         [paragraph];
+        width,
         borders,
         shading  = _docx__shading(cell.decoration),
         valign   = _docx__valign(cell.valign),
@@ -379,25 +385,154 @@ function _docx__table_cell(cell::DocxCell)
 end
 
 """
-    _docx__table(rows::Vector{DocxRow}, cell_margins::NTuple{4, Float64}) -> W.Table
+    _docx__table(rows::Vector{DocxRow}, cell_margins::NTuple{4, Float64}, column_widths::Vector{Float64}, fixed_layout::Bool) -> W.Table
 
 Convert the accumulated `rows` to a Word table, applying `cell_margins`, in points, to every
-cell.
+cell. `column_widths` contains the width of each table column in points and it is written as
+the table grid.
+
+If `fixed_layout` is `true`, Word lays the columns out exactly at `column_widths`. Hence, the
+width of the table and of each cell are also set to the ones computed from `column_widths`.
+Otherwise, Word adjusts the columns to the content, using the grid only as the initial
+widths.
 """
-function _docx__table(rows::Vector{DocxRow}, cell_margins::NTuple{4, Float64})
+function _docx__table(
+    rows::Vector{DocxRow},
+    cell_margins::NTuple{4, Float64},
+    column_widths::Vector{Float64},
+    fixed_layout::Bool,
+)
     table_rows = map(rows) do row
-        return W.TableRow(
-            map(_docx__table_cell, row.cells);
-            header = row.header ? true : nothing,
-        )
+        cells = W.TableCell[]
+        col   = 1
+
+        for cell in row.cells
+            last_col = min(col + cell.gridspan - 1, length(column_widths))
+
+            width = if fixed_layout && (col <= last_col)
+                sum(@view column_widths[col:last_col]) * W.pt
+            else
+                nothing
+            end
+
+            push!(cells, _docx__table_cell(cell, width))
+            col += cell.gridspan
+        end
+
+        return W.TableRow(cells; header = row.header ? true : nothing)
     end
 
     top, start, bottom, stop = map(m -> m * W.pt, cell_margins)
 
     return W.Table(
         table_rows;
-        margins = W.TableLevelCellMargins(; top, start, bottom, stop)
+        grid    = W.Point[w * W.pt for w in column_widths],
+        layout  = fixed_layout ? W.TableLayout.fixed : nothing,
+        margins = W.TableLevelCellMargins(; top, start, bottom, stop),
+        width   = fixed_layout ? sum(column_widths; init = 0.0) * W.pt : nothing,
     )
+end
+
+############################################################################################
+#                                      Column Widths                                       #
+############################################################################################
+
+"""
+    _docx__font_size(decoration::Vector{DocxPair}, fallback::Float64) -> Float64
+
+Return the font size, in points, defined by the last `"size"` attribute in `decoration`, or
+`fallback` if there is none.
+"""
+function _docx__font_size(decoration::Vector{DocxPair}, fallback::Float64)
+    size = fallback
+
+    for (k, v) in decoration
+        (k == "size") && (size = parse(Float64, v))
+    end
+
+    return size
+end
+
+"""
+    _docx__text_width(text::AbstractString, font_size::Float64) -> Float64
+
+Estimate the width, in points, of the single-line `text` rendered with `font_size` points.
+"""
+function _docx__text_width(text::AbstractString, font_size::Float64)
+    # Empirical approximation of the average character width of the proportional fonts,
+    # equal to the one used by the Excel back end.
+    return 0.55 * textwidth(text) * font_size
+end
+
+"""
+    _docx__cell_width(cell::DocxCell, padding::Float64) -> Float64
+
+Estimate the width, in points, required to display the content of `cell` in a single line
+per line break, adding `padding`, which must contain the horizontal cell margins.
+"""
+function _docx__cell_width(cell::DocxCell, padding::Float64)
+    cell_font_size = _docx__font_size(cell.decoration, 0.0)
+    max_width      = 0.0
+    line_width     = 0.0
+
+    for r in cell.runs
+        # The cell decoration takes precedence over the run decoration.
+        font_size = if cell_font_size > 0
+            cell_font_size
+        else
+            _docx__font_size(r.decoration, _DOCX__DEFAULT_FONT_SIZE)
+        end
+
+        for (k, line) in enumerate(eachsplit(r.text, '\n'))
+            if k > 1
+                max_width  = max(max_width, line_width)
+                line_width = 0.0
+            end
+
+            line_width += _docx__text_width(line, font_size)
+        end
+    end
+
+    return max(max_width, line_width) + padding
+end
+
+"""
+    _docx__get_col_width(col::Int, max_col_length::Vector{Float64}, num_leading_columns::Int, num_printed_data_columns::Int, data_column_widths::AbstractVector{Float64}, minimum_data_column_widths::AbstractVector{Float64}, maximum_data_column_widths::AbstractVector{Float64}) -> Float64
+
+Resolve the width, in points, of the table column `col`. The columns that are not data
+columns (row number, row label, and continuation columns) keep the estimated width in
+`max_col_length`. For the data columns, a positive entry in `data_column_widths` takes
+precedence; otherwise the estimated width is clamped between the corresponding entries of
+`minimum_data_column_widths` and `maximum_data_column_widths` (values ≤ 0 are ignored).
+"""
+function _docx__get_col_width(
+    col::Int,
+    max_col_length::Vector{Float64},
+    num_leading_columns::Int,
+    num_printed_data_columns::Int,
+    data_column_widths::AbstractVector{Float64},
+    minimum_data_column_widths::AbstractVector{Float64},
+    maximum_data_column_widths::AbstractVector{Float64},
+)
+    j = col - num_leading_columns
+
+    # Do not limit the columns that are not data columns.
+    !(1 <= j <= num_printed_data_columns) && return max_col_length[col]
+
+    # A positive explicit width overrides everything.
+    dw = data_column_widths[j]
+    dw > 0 && return dw
+
+    # Clamp the estimated width between the minimum and the maximum.
+    col_width = max_col_length[col]
+
+    min_w = minimum_data_column_widths[j]
+    min_w > 0 && (col_width = max(col_width, min_w))
+
+    max_w = maximum_data_column_widths[j]
+    max_w > 0 && (col_width = min(col_width, max_w))
+
+    return col_width
 end
 
 """

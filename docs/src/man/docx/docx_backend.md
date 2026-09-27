@@ -47,15 +47,28 @@ wrapped in a document with a single section.
 
 ## Keywords
 
+- `data_column_widths::Union{Float64, Vector{Float64}}`: Explicit width for each data column
+    in points, overriding the estimated widths. A scalar applies to all columns; a vector
+    sets per-column widths. When set (> 0), `minimum_data_column_widths` and
+    `maximum_data_column_widths` are ignored for that column.
+    (**Default**: `0.0`)
 - `filename::Union{Nothing, String}`: Path of the Word file to write, which must end in
     `.docx`. When `nothing`, the `WriteDocx.Table` is returned instead of being written to
     a document.
     (**Default**: `nothing`)
+- `highlighters::Vector{<:AbstractHighlighter}`: Highlighters to apply to the data cells.
+    For more information, see the section [Word Highlighters](@ref).
+- `maximum_data_column_widths::Union{Float64, Vector{Float64}}`: Maximum width for each
+    data column in points. A scalar applies to all columns; a vector sets per-column
+    maximums.
+    (**Default**: `0.0`)
+- `minimum_data_column_widths::Union{Float64, Vector{Float64}}`: Minimum width for each
+    data column in points. A scalar applies to all columns; a vector sets per-column
+    minimums.
+    (**Default**: `0.0`)
 - `overwrite::Bool`: Allow overwriting an existing file. If it is `false` and the file
     `filename` already exists, an error is thrown.
     (**Default**: `false`)
-- `highlighters::Vector{<:AbstractHighlighter}`: Highlighters to apply to the data cells.
-    For more information, see the section [Word Highlighters](@ref).
 - `style::Union{TableStyle, DocxTableStyle}`: Style of the table. For more information, see
     the section [Word Table Style](@ref).
 - `table_format::Union{TableFormat, DocxTableFormat}`: Word table format used to render the
@@ -67,8 +80,12 @@ The Word table has one row per table section. The title, the subtitle, the row g
 the footnotes, and the source notes are rendered in rows that span the entire table width,
 whereas the other sections are rendered in the corresponding cells.
 
-Word decides the column widths from the cell content. Hence, this back end has no keyword to
-configure them.
+The back end estimates the width of each column from its content and writes it to the table
+grid. By default, Word uses those widths only as a starting point and adjusts the columns to
+the content. If any of the keywords `data_column_widths`, `minimum_data_column_widths`, or
+`maximum_data_column_widths` is set, the table uses a fixed layout, meaning that Word lays
+out the columns exactly at the computed widths and wraps the text that does not fit. The
+widths of the row number, row label, and continuation columns are always estimated.
 
 Footnote markers are rendered as superscript text runs, and a line break inside a cell is
 rendered as a Word line break, keeping the cell content in a single paragraph. A tab inside a
