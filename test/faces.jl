@@ -276,6 +276,48 @@ end
     @test excel_decoration(Face(; foreground = :red)) == ["color" => "FFA51C2C"]
 end
 
+@testset "Word Decoration" begin
+    @test docx_decoration(Face()) == Pair{String, String}[]
+
+    @test docx_decoration(Face(; weight = :bold, foreground = "#ff0000")) ==
+        ["bold" => "true", "color" => "FF0000"]
+
+    @test docx_decoration(
+        Face(;
+            font          = "Fira Sans",
+            height        = 125,
+            weight        = :semibold,
+            slant         = :oblique,
+            foreground    = "#ff0000",
+            background    = 0x00ff00,
+            underline     = true,
+            strikethrough = true,
+        )
+    ) == [
+        "bold"       => "true",
+        "italic"     => "true",
+        "underline"  => "single",
+        "strike"     => "true",
+        "font"       => "Fira Sans",
+        "size"       => "12.5",
+        "color"      => "FF0000",
+        "background" => "00FF00",
+    ]
+
+    # The height is rounded to half points, which is the resolution of Word.
+    @test docx_decoration(Face(; height = 120)) == ["size" => "12"]
+    @test docx_decoration(Face(; height = 105)) == ["size" => "10.5"]
+    @test docx_decoration(Face(; height = 107)) == ["size" => "10.5"]
+    @test docx_decoration(Face(; height = 108)) == ["size" => "11"]
+    @test docx_decoration(Face(; height = 1)) == ["size" => "0.5"]
+
+    # The light weights, the default colors, and the unsupported attributes are ignored.
+    @test docx_decoration(
+        Face(; weight = :light, height = 1.5, foreground = :default, inverse = true)
+    ) == Pair{String, String}[]
+    @test docx_decoration(Face(; foreground = :red)) == ["color" => "A51C2C"]
+end
+
 @testset "General Highlighter" begin
     f = (data, i, j) -> i == 1
 
@@ -296,6 +338,7 @@ end
     @test PrettyTables._markdown__native_highlighter(h)._decoration == markdown_decoration(h._decoration)
     @test PrettyTables._typst__native_highlighter(h)._decoration == typst_decoration(h._decoration)
     @test PrettyTables._excel__native_highlighter(h)._decoration == excel_decoration(h._decoration)
+    @test PrettyTables._docx__native_highlighter(h)._decoration == docx_decoration(h._decoration)
 
     hs = AbstractHighlighter[h, TextHighlighter(f, Face())]
     nhs = PrettyTables._text__native_highlighters(hs)
@@ -377,12 +420,18 @@ end
     @test ExcelHighlighter(f; bold = true, foreground = :red)._decoration ==
         excel_decoration(face)
 
+    @test DocxHighlighter(f, face)._decoration == docx_decoration(face)
+    @test DocxHighlighter(f, crayon"bold red")._decoration == docx_decoration(face)
+    @test DocxHighlighter(f; bold = true, foreground = :red)._decoration ==
+        docx_decoration(face)
+
     # The table styles of every back end accept a crayon.
     @test HtmlTableStyle(; title = crayon"bold red").title == html_decoration(face)
     @test LatexTableStyle(; title = crayon"bold red").title == latex_decoration(face)
     @test MarkdownTableStyle(; row_label = crayon"bold").row_label == MarkdownStyle(; bold = true)
     @test TypstTableStyle(; title = crayon"bold red").title == typst_decoration(face)
     @test ExcelTableStyle(; title = crayon"bold red").title == excel_decoration(face)
+    @test DocxTableStyle(; title = crayon"bold red").title == docx_decoration(face)
     @test HtmlTableStyle(; first_line_column_label = [crayon"bold red", face]).first_line_column_label ==
         [html_decoration(face), html_decoration(face)]
 

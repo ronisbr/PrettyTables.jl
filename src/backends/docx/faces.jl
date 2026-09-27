@@ -14,16 +14,16 @@ can be passed to a [`DocxHighlighter`](@ref) or to a field of [`DocxTableStyle`]
 
 The conversion is:
 
-| Face Attribute                | Word Attribute             |
-|:------------------------------|:---------------------------|
-| `font`                        | `font`                     |
-| `height` (`Int`, deci-points) | `size` (rounded to points) |
-| `weight`                      | `bold => "true"`           |
-| `slant`                       | `italic => "true"`         |
-| `foreground`                  | `color => "RRGGBB"`        |
-| `background`                  | `background => "RRGGBB"`   |
-| `underline`                   | `underline => "single"`    |
-| `strikethrough`               | `strike => "true"`         |
+| Face Attribute                | Word Attribute                  |
+|:------------------------------|:--------------------------------|
+| `font`                        | `font`                          |
+| `height` (`Int`, deci-points) | `size` (rounded to half points) |
+| `weight`                      | `bold => "true"`                |
+| `slant`                       | `italic => "true"`              |
+| `foreground`                  | `color => "RRGGBB"`             |
+| `background`                  | `background => "RRGGBB"`        |
+| `underline`                   | `underline => "single"`         |
+| `strikethrough`               | `strike => "true"`              |
 
 The colors are resolved with `StringManipulation.face_color_rgb`, so that the default color
 of the terminal and unknown names are ignored. The light weights, a `Float64` `height`, the
@@ -49,8 +49,9 @@ function docx_decoration(face::Face)
     isnothing(face.font) || push!(d, "font" => face.font)
 
     if face.height isa Int
-        size = max(1, round(Int, face.height / 10, RoundNearestTiesUp))
-        push!(d, "size" => string(size))
+        # Word supports font sizes in half points.
+        size = max(1, round(Int, face.height / 5, RoundNearestTiesUp)) / 2
+        push!(d, "size" => isinteger(size) ? string(Int(size)) : string(size))
     end
 
     fg = _face_color_hex(face.foreground; uppercase = true)
