@@ -10,7 +10,11 @@
 const _DOCX__RENDERER = Union{Val{:print}, Val{:show}}
 
 """
-    _docx__render_cell(cell::Any, context::RenderContext, renderer::Union{Val{:print}, Val{:show}}) -> Vector{DocxRun}
+    _docx__render_cell(
+        cell::Any,
+        context::RenderContext,
+        renderer::Union{Val{:print}, Val{:show}}
+    ) -> Vector{DocxRun}
 
 Render the `cell` in the Word back end, returning the text runs that form the cell content.
 The cell is converted to a `String` using the `renderer` and the IO `context`, whereas a
@@ -30,7 +34,11 @@ function _docx__render_cell(
 end
 
 """
-    _docx__cell_to_str(cell::Any, context::RenderContext, renderer::Union{Val{:print}, Val{:show}}) -> String
+    _docx__cell_to_str(
+        cell::Any,
+        context::RenderContext,
+        renderer::Union{Val{:print}, Val{:show}}
+    ) -> String
 
 Convert `cell` to a `String` using `renderer` and the IO `context`. Notice that this function
 must not be called directly; use [`_docx__render_cell`](@ref) instead.
