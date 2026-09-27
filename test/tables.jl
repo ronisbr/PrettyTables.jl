@@ -537,14 +537,13 @@ end
     dict = Dict(:a => 1)
 
     expected = """
-┌──────┬────────┐
-│ Keys │ Values │
+┌────────┬────────┐
+│   Keys │ Values │
 │ Symbol │  Int64 │
-├──────┼────────┤
-│    a │      1 │
-└──────┴────────┘
+├────────┼────────┤
+│      a │      1 │
+└────────┴────────┘
 """
 
-    @test startswith(pretty_table(String, dict), "┌")
-    @test occursin("Keys", pretty_table(String, dict))
+    @test pretty_table(String, dict) == expected
 end
