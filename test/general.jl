@@ -509,3 +509,14 @@ end
     @test pretty_table(String, [1 2]; column_labels = Any["a", 1]) ==
         pretty_table(String, [1 2]; column_labels = [["a", 1]])
 end
+
+@testset "HTML Output With Automatic Back End" verbose = true begin
+    # `backend = :auto` must behave exactly like omitting the keyword.
+    @test pretty_table(HTML, [1 2]; backend = :auto).content ==
+        pretty_table(HTML, [1 2]).content
+
+    @test startswith(pretty_table(HTML, [1 2]; backend = :auto).content, "<table>")
+
+    pt = PrettyTable([1 2]; backend = :auto)
+    @test startswith(pretty_table(HTML, pt).content, "<table>")
+end

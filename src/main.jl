@@ -23,15 +23,15 @@ function pretty_table(
 end
 
 function pretty_table(::Type{HTML}, @nospecialize(data::Any); kwargs...)
-    # If the keywords do not set the back end, resolve it from the table format, using the
-    # HTML back end by default. Notice that a backend-agnostic `TableFormat` does not
-    # select a back end.
-    str = if !haskey(kwargs, :backend)
+    # If the keywords do not set the back end, or set it to `:auto`, resolve it from the table
+    # format, using the HTML back end by default. Notice that a backend-agnostic
+    # `TableFormat` does not select a back end.
+    str = if get(kwargs, :backend, :auto) == :auto
         pretty_table(
             String,
             data;
+            kwargs...,
             backend = _resolve_printing_backend(kwargs; default = :html),
-            kwargs...
         )
     else
         pretty_table(String, data; kwargs...)
