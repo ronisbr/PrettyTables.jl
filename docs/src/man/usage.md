@@ -350,9 +350,17 @@ The footnotes are specified by a vector of `Pair{FootnoteTuple, String}`. Each e
 defines a new footnote. The `FootnoteTuple` is a `Tuple` with the following elements:
 
 - `section::Symbol`: Section to which the footnote must be applied. The available options
-  are `:column_label`, `:data`, `:row_label`, `:summary_row_label`, and `:summary_row_cell`.
-- `i::Int`: Row index of the footnote considering the desired section.
-- `j::Int`: Column index of the footnote considering the desired section.
+  are `:title`, `:subtitle`, `:column_label`, `:data`, `:row_number`, `:row_label`,
+  `:summary_row_label`, and `:summary_row_cell`.
+- `i::Int`: Row index of the footnote considering the desired section. It must be 1 for the
+  title and the subtitle.
+- `j::Int`: Column index of the footnote considering the desired section. It is not used by
+  the sections that span the entire row (`:title`, `:subtitle`, `:row_number`,
+  `:row_label`, and `:summary_row_label`).
+
+Notice that `i` and `j` are the 1-based positions of the cell in the section, even if the
+data has arbitrary axes. An `ArgumentError` is thrown if a footnote references an unknown
+section or a cell outside its section.
 
 The second element of the `Pair` is the footnote text.
 
