@@ -53,6 +53,7 @@ end
     include("./backends/docx/alignment.jl")
     include("./backends/docx/column_headers.jl")
     include("./backends/docx/continuation_cells.jl")
+    include("./backends/docx/generic_table_format.jl")
     include("./backends/docx/structure.jl")
     include("./backends/docx/table_format.jl")
     include("./backends/docx/styles.jl")

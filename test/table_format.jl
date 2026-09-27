@@ -105,6 +105,35 @@ end
         ["style" => "thin", "color" => "Black"]
 end
 
+@testset "Word Line Style" begin
+    # The style and the width are independent in Word.
+    for (kwargs, expected_style, expected_size) in (
+        ((;),                                  "single", "4"),
+        ((; width = :medium),                  "single", "8"),
+        ((; width = :thick),                   "single", "16"),
+        ((; style = :solid, width = :thin),    "single", "4"),
+        ((; style = :dashed),                  "dashed", "4"),
+        ((; style = :dashed, width = :thick),  "dashed", "16"),
+        ((; style = :dotted),                  "dotted", "4"),
+        ((; style = :dotted, width = :medium), "dotted", "8"),
+        ((; style = :double),                  "double", "4"),
+        ((; style = :double, width = :thick),  "double", "16"),
+    )
+        @test docx_line_style(LineStyle(; kwargs...)) ==
+            ["style" => expected_style, "size" => expected_size, "color" => "000000"]
+    end
+
+    @test docx_line_style(LineStyle(; color = 0xff0000)) ==
+        ["style" => "single", "size" => "4", "color" => "FF0000"]
+
+    @test docx_line_style(LineStyle(; color = :red)) ==
+        ["style" => "single", "size" => "4", "color" => "A51C2C"]
+
+    # An unresolvable color falls back to black.
+    @test docx_line_style(LineStyle(; color = :default)) ==
+        ["style" => "single", "size" => "4", "color" => "000000"]
+end
+
 @testset "LaTeX Line Style" begin
     @test latex_line_style(LineStyle())                  == "\\hline"
     @test latex_line_style(LineStyle(; style = :solid))  == "\\hline"
@@ -125,6 +154,7 @@ end
             (PrettyTables._markdown__table_format, MarkdownTableFormat),
             (PrettyTables._typst__table_format,    TypstTableFormat),
             (PrettyTables._excel__table_format,    ExcelTableFormat),
+            (PrettyTables._docx__table_format,     DocxTableFormat),
         )
             _test_table_format_equal(converter(TableFormat()), T())
         end
@@ -148,6 +178,9 @@ end
 
         etf = ExcelTableFormat()
         @test PrettyTables._excel__table_format(etf) === etf
+
+        dtf = DocxTableFormat()
+        @test PrettyTables._docx__table_format(dtf) === dtf
     end
 
     @testset "Single Field Override" begin
@@ -176,6 +209,7 @@ end
             (PrettyTables._latex__table_format, true),
             (PrettyTables._typst__table_format, true),
             (PrettyTables._excel__table_format, true),
+            (PrettyTables._docx__table_format,  true),
         )
             ntf = converter(TableFormat())
             @test ntf.horizontal_line_at_merged_column_labels == expected
@@ -195,6 +229,9 @@ end
 
         @test PrettyTables._excel__table_format(tf).borders.middle_line ==
             ExcelTableBorders().middle_line
+
+        @test PrettyTables._docx__table_format(tf).borders.middle_line ==
+            DocxTableBorders().middle_line
     end
 
     @testset "Markdown Mapping" begin
@@ -263,6 +300,16 @@ end
                 horizontal_line_between_column_labels = false,
             )
         )
+
+        # The same applies to the Word-only field `horizontal_line_between_column_labels`.
+        _test_table_format_equal(
+            PrettyTables._docx__table_format(tf),
+            DocxTableFormat(;
+                @docx__all_horizontal_lines,
+                @docx__all_vertical_lines,
+                horizontal_line_between_column_labels = false,
+            )
+        )
     end
 
     @testset "No Lines" begin
@@ -299,6 +346,11 @@ end
             PrettyTables._excel__table_format(tf),
             ExcelTableFormat(; @excel__no_horizontal_lines, @excel__no_vertical_lines)
         )
+
+        _test_table_format_equal(
+            PrettyTables._docx__table_format(tf),
+            DocxTableFormat(; @docx__no_horizontal_lines, @docx__no_vertical_lines)
+        )
     end
 
     @testset "Merging Overrides" begin
@@ -333,6 +385,7 @@ end
             (PrettyTables._markdown__table_style, MarkdownTableStyle),
             (PrettyTables._typst__table_style,    TypstTableStyle),
             (PrettyTables._excel__table_style,    ExcelTableStyle),
+            (PrettyTables._docx__table_style,     DocxTableStyle),
         )
             _test_table_style_equal(converter(TableStyle()), T())
         end
@@ -356,6 +409,9 @@ end
 
         es = ExcelTableStyle()
         @test PrettyTables._excel__table_style(es) === es
+
+        ds = DocxTableStyle()
+        @test PrettyTables._docx__table_style(ds) === ds
     end
 
     @testset "Single Field Override" begin
@@ -368,6 +424,7 @@ end
             (PrettyTables._markdown__table_style, MarkdownTableStyle),
             (PrettyTables._typst__table_style,    TypstTableStyle),
             (PrettyTables._excel__table_style,    ExcelTableStyle),
+            (PrettyTables._docx__table_style,     DocxTableStyle),
         )
             _test_table_style_equal(
                 converter(TableStyle(; row_label = face)),
@@ -428,6 +485,19 @@ end
         default = ["style" => "medium", "color" => "Black"]
     ) == ["style" => "mediumDashed", "color" => "Black"]
 
+    @test docx_line_style(
+        LineStyle(; color = :red);
+        default = ["style" => "double", "size" => "16", "color" => "000000"]
+    ) == ["style" => "double", "size" => "16", "color" => "A51C2C"]
+    @test docx_line_style(
+        LineStyle(; style = :dashed);
+        default = ["style" => "single", "size" => "8", "color" => "FF0000"]
+    ) == ["style" => "dashed", "size" => "8", "color" => "FF0000"]
+
+    # The attributes missing in the default fall back to a thin black single line.
+    @test docx_line_style(LineStyle(; width = :thick); default = DocxPair[]) ==
+        ["style" => "single", "size" => "16", "color" => "000000"]
+
     @test latex_line_style(LineStyle(; style = :dashed); default = "\\hline") == "\\hdashline"
 
     tf = TableFormat(; top_line = LineStyle(; color = :red))
@@ -436,6 +506,8 @@ end
         "(thickness: 1.5pt, paint: rgb(\"#a51c2c\"))"
     @test PrettyTables._excel__table_format(tf).borders.top_line ==
         ["style" => "thick", "color" => "FFA51C2C"]
+    @test PrettyTables._docx__table_format(tf).borders.top_line ==
+        ["style" => "single", "size" => "16", "color" => "A51C2C"]
 end
 
 @testset "Line Style Validation" begin
