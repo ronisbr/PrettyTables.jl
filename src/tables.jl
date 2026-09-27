@@ -70,6 +70,12 @@ Base.@nospecializeinfer function RowTable(@nospecialize(data::Any))
     # Access the table using the rows.
     table = Tables.rows(data)
 
+    # If the row iterator does not know its length (e.g., a streaming source), we must
+    # collect the rows. Otherwise, we cannot compute the number of rows.
+    if !(Base.IteratorSize(table) isa Union{Base.HasLength, Base.HasShape})
+        table = collect(table)
+    end
+
     # Compute the number of rows.
     size_i = length(table)::Int
 

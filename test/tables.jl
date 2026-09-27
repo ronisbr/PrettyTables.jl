@@ -492,3 +492,27 @@ end
     columns = (a = OffsetArray([1, 2, 3], 0:2),)
     @test pretty_table(String, columns) == expected
 end
+
+@testset "Row Tables With Unknown Length" verbose = true begin
+    # A valid row source can return an iterator with unknown length.
+    struct UnknownLengthRows
+        n::Int
+    end
+
+    Tables.istable(::Type{UnknownLengthRows}) = true
+    Tables.rowaccess(::Type{UnknownLengthRows}) = true
+    Tables.rows(x::UnknownLengthRows) = ((a = i, b = 2i) for i in 1:x.n if true)
+
+    expected = """
+┌───┬───┐
+│ a │ b │
+├───┼───┤
+│ 1 │ 2 │
+│ 2 │ 4 │
+│ 3 │ 6 │
+└───┴───┘
+"""
+
+    @test Base.IteratorSize(Tables.rows(UnknownLengthRows(3))) isa Base.SizeUnknown
+    @test pretty_table(String, UnknownLengthRows(3)) == expected
+end
