@@ -210,6 +210,21 @@ function _excel__get_col_width(
     return col_width
 end
 
+"""
+    _excel__data_column_widths(widths::Union{Real, AbstractVector{<:Real}}, num_columns::Int) -> Vector{Float64}
+
+Convert `widths` to a vector with the width of each of the `num_columns` data columns. A
+scalar applies to all columns. Notice that the length of a vector must be checked before
+calling this function.
+"""
+function _excel__data_column_widths(widths::Real, num_columns::Int)
+    return fill(Float64(widths), num_columns)
+end
+
+function _excel__data_column_widths(widths::AbstractVector{<:Real}, ::Int)
+    return collect(Float64, widths)
+end
+
 function _excel__split_attributes(attributes::Vector{ExcelPair})
     font_attributes = Pair{Symbol, Any}[]
     fill_attributes = Pair{Symbol, Any}[]

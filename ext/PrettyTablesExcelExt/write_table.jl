@@ -21,7 +21,7 @@ The fields of `opts` are:
 
 - `anchor_cell::String`: Top-left cell of the table in A1 notation (e.g. `"B3"`).
     (**Default**: `"A1"`)
-- `data_column_widths::Union{Float64, Vector{Float64}}`: Explicit width for each data column
+- `data_column_widths::Union{Real, AbstractVector{<:Real}}`: Explicit width for each data column
     in Excel units, overriding auto-calculated widths. A scalar applies to all columns; a
     vector sets per-column widths. When set (> 0), `minimum_data_column_widths` and
     `maximum_data_column_widths` are ignored for that column.
@@ -31,11 +31,11 @@ The fields of `opts` are:
     (**Default**: `ExcelFormatter[]`)
 - `highlighters::Vector{AbstractHighlighter}`: Highlighters to apply to the table.
     (**Default**: `AbstractHighlighter[]`)
-- `minimum_data_column_widths::Union{Float64, Vector{Float64}}`: Minimum width for each
+- `minimum_data_column_widths::Union{Real, AbstractVector{<:Real}}`: Minimum width for each
     data column in Excel units. A scalar applies to all columns; a vector sets per-column
     minimums.
     (**Default**: `0.0`)
-- `maximum_data_column_widths::Union{Float64, Vector{Float64}}`: Maximum width for each
+- `maximum_data_column_widths::Union{Real, AbstractVector{<:Real}}`: Maximum width for each
     data column in Excel units. A scalar applies to all columns; a vector sets per-column
     maximums.
     (**Default**: `0.0`)
@@ -105,17 +105,13 @@ function _excel__write_table_core!(
         )
     end
 
-    if data_column_widths isa Number
-        data_column_widths = fill(Float64(data_column_widths), num_cols)
-    end
+    data_column_widths = _excel__data_column_widths(data_column_widths, num_cols)
 
-    if minimum_data_column_widths isa Number
-        minimum_data_column_widths = fill(Float64(minimum_data_column_widths), num_cols)
-    end
+    minimum_data_column_widths =
+        _excel__data_column_widths(minimum_data_column_widths, num_cols)
 
-    if maximum_data_column_widths isa Number
-        maximum_data_column_widths = fill(Float64(maximum_data_column_widths), num_cols)
-    end
+    maximum_data_column_widths =
+        _excel__data_column_widths(maximum_data_column_widths, num_cols)
 
     max_row_height = Dict{Int, Float64}()
     max_col_length = zeros(Float64, num_printed_cols)

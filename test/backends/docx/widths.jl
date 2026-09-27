@@ -153,6 +153,19 @@ docx_cell_width(cell::W.TableCell) = convert(W.Point, cell.properties.width.valu
         @test docx_cell_width(docx_cell(table, 2, 2)) ≈ 40
     end
 
+    @testset "Integer Column Widths" verbose = true begin
+        # The width keywords accept any real number.
+        for kwargs in (
+            (; data_column_widths = 72),
+            (; data_column_widths = [72, 72]),
+            (; minimum_data_column_widths = 72, maximum_data_column_widths = [72, 72.0]),
+        )
+            table = pretty_table(W.Table, [1 2]; kwargs...)
+            @test docx_grid(table) ≈ [72, 72]
+            @test table.properties.layout == W.TableLayout.fixed
+        end
+    end
+
     @testset "Errors" verbose = true begin
         for kw in (
             :data_column_widths,

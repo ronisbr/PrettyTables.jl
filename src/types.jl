@@ -9,6 +9,10 @@ export AbstractHighlighter, EmptyCells, MultiColumn, MergeCells, PrettyTable
 # Tuple that defines a footnote.
 const FootnoteTuple = Tuple{Symbol, Int, Int}
 
+# Widths of the data columns in the Excel and Word back ends. A scalar applies to all
+# columns, whereas a vector contains one width per column.
+const DataColumnWidths = Union{Real, AbstractVector{<:Real}}
+
 """
     abstract type AbstractHighlighter
 

@@ -438,6 +438,21 @@ end
 ############################################################################################
 
 """
+    _docx__data_column_widths(widths::Union{Real, AbstractVector{<:Real}}, num_columns::Int) -> Vector{Float64}
+
+Convert `widths` to a vector with the width of each of the `num_columns` data columns. A
+scalar applies to all columns. Notice that the length of a vector must be checked before
+calling this function.
+"""
+function _docx__data_column_widths(widths::Real, num_columns::Int)
+    return fill(Float64(widths), num_columns)
+end
+
+function _docx__data_column_widths(widths::AbstractVector{<:Real}, ::Int)
+    return collect(Float64, widths)
+end
+
+"""
     _docx__font_size(decoration::Vector{DocxPair}, fallback::Float64) -> Float64
 
 Return the font size, in points, defined by the last `"size"` attribute in `decoration`, or

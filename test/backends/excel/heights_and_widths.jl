@@ -222,4 +222,19 @@
         @test XLSX.getColumnWidth(result[1], 1, 2) ≈ 11.7109375
         @test XLSX.getColumnWidth(result[1], 1, 3) ≈ XLSX.getColumnWidth(estimated[1], 1, 3)
     end
+
+    # == Integer Column Widths =============================================================
+
+    @testset "Integer Column Widths" verbose = true begin
+        # The width keywords accept any real number.
+        for kwargs in (
+            (; data_column_widths = 10),
+            (; data_column_widths = [10, 10]),
+            (; minimum_data_column_widths = 10, maximum_data_column_widths = [10, 10.0]),
+        )
+            result = pretty_table(XLSX.XLSXFile, [1 2]; kwargs...)
+            @test XLSX.getColumnWidth(result[1], 1, 1) ≈ 10.7109375
+            @test XLSX.getColumnWidth(result[1], 1, 2) ≈ 10.7109375
+        end
+    end
 end

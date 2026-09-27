@@ -28,7 +28,7 @@ The Excel backend's return value depends on the following combination of keyword
 
 - `anchor_cell::String`: Top-left cell of the table in A1 notation (e.g. `"B3"`).
     (**Default**: `"A1"`)
-- `data_column_widths::Union{Float64, Vector{Float64}}`: Explicit width for each data column
+- `data_column_widths::Union{Real, AbstractVector{<:Real}}`: Explicit width for each data column
     in Excel units, overriding auto-calculated widths. A scalar applies to all columns; a
     vector sets per-column widths. When set (> 0), `minimum_data_column_widths` and
     `maximum_data_column_widths` are ignored for that column.
@@ -42,11 +42,11 @@ The Excel backend's return value depends on the following combination of keyword
     (**Default**: `nothing`)
 - `highlighters::Vector{<:AbstractHighlighter}`: Highlighters to apply to the table. For more
     information, see the section **Excel Highlighters** in the **Extended Help**.
-- `maximum_data_column_widths::Union{Float64, Vector{Float64}}`: Maximum width for each
+- `maximum_data_column_widths::Union{Real, AbstractVector{<:Real}}`: Maximum width for each
     data column in Excel units. A scalar applies to all columns; a vector sets per-column
     maximums.
     (**Default**: `0.0`)
-- `minimum_data_column_widths::Union{Float64, Vector{Float64}}`: Minimum width for each
+- `minimum_data_column_widths::Union{Real, AbstractVector{<:Real}}`: Minimum width for each
     data column in Excel units. A scalar applies to all columns; a vector sets per-column
     minimums.
     (**Default**: `0.0`)

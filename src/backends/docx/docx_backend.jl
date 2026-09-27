@@ -27,12 +27,12 @@ function is expensive (hundreds of milliseconds in Julia 1.12) even when the bod
 already compiled.
 """
 @kwdef struct DocxPrintOptions
-    data_column_widths::Union{Float64, Vector{Float64}}         = 0.0
-    highlighters::Vector{AbstractHighlighter}                   = _NO_HIGHLIGHTERS
-    maximum_data_column_widths::Union{Float64, Vector{Float64}} = 0.0
-    minimum_data_column_widths::Union{Float64, Vector{Float64}} = 0.0
-    style::DocxTableStyle                                       = _DEFAULT_DOCX_TABLE_STYLE
-    table_format::DocxTableFormat                               = _DEFAULT_DOCX_TABLE_FORMAT
+    data_column_widths::DataColumnWidths         = 0.0
+    highlighters::Vector{AbstractHighlighter}    = _NO_HIGHLIGHTERS
+    maximum_data_column_widths::DataColumnWidths = 0.0
+    minimum_data_column_widths::DataColumnWidths = 0.0
+    style::DocxTableStyle                        = _DEFAULT_DOCX_TABLE_STYLE
+    table_format::DocxTableFormat                = _DEFAULT_DOCX_TABLE_FORMAT
 end
 
 ############################################################################################

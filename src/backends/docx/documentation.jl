@@ -23,7 +23,7 @@ The back end's return value depends on the keyword `filename`:
 
 ## Keywords
 
-- `data_column_widths::Union{Float64, Vector{Float64}}`: Explicit width for each data column
+- `data_column_widths::Union{Real, AbstractVector{<:Real}}`: Explicit width for each data column
     in points, overriding the estimated widths. A scalar applies to all columns; a vector
     sets per-column widths. When set (> 0), `minimum_data_column_widths` and
     `maximum_data_column_widths` are ignored for that column.
@@ -35,11 +35,11 @@ The back end's return value depends on the keyword `filename`:
 - `highlighters::Vector{AbstractHighlighter}`: Highlighters to apply to the data cells. See
     [`DocxHighlighter`](@ref).
     (**Default**: `AbstractHighlighter[]`)
-- `maximum_data_column_widths::Union{Float64, Vector{Float64}}`: Maximum width for each
+- `maximum_data_column_widths::Union{Real, AbstractVector{<:Real}}`: Maximum width for each
     data column in points. A scalar applies to all columns; a vector sets per-column
     maximums.
     (**Default**: `0.0`)
-- `minimum_data_column_widths::Union{Float64, Vector{Float64}}`: Minimum width for each
+- `minimum_data_column_widths::Union{Real, AbstractVector{<:Real}}`: Minimum width for each
     data column in points. A scalar applies to all columns; a vector sets per-column
     minimums.
     (**Default**: `0.0`)

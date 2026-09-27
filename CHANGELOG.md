@@ -158,6 +158,9 @@ Version 3.5.0
   with the fields of v3.4.8. Hence, the code that builds those objects positionally keeps
   working. The decoration converters of the HTML, LaTeX, Typst, and Excel styles also
   accept any vector, like the constructors of v3.4.8 did.
+- ![Enhancement][badge-enhancement] Accept any real number in the keywords
+  `data_column_widths`, `minimum_data_column_widths`, and `maximum_data_column_widths` of
+  the Excel back end, which previously required `Float64` values.
 - ![Info][badge-info] PrettyTables.jl now requires StringManipulation.jl v0.6.1.
 - ![Bugfix][badge-bugfix] Fix the outer lines of the Excel back end, which were drawn around
   the footnotes and the source notes instead of only around the content of the table.

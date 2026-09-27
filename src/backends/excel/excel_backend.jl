@@ -30,14 +30,14 @@ function is expensive (hundreds of milliseconds in Julia 1.12) even when the bod
 already compiled.
 """
 @kwdef struct ExcelPrintOptions
-    anchor_cell::String                                         = "A1"
-    data_column_widths::Union{Float64, Vector{Float64}}         = 0.0
-    excel_formatters::Vector{ExcelFormatter}                    = _NO_EXCEL_FORMATTERS
-    highlighters::Vector{AbstractHighlighter}                   = _NO_HIGHLIGHTERS
-    maximum_data_column_widths::Union{Float64, Vector{Float64}} = 0.0
-    minimum_data_column_widths::Union{Float64, Vector{Float64}} = 0.0
-    style::ExcelTableStyle                                      = _DEFAULT_EXCEL_TABLE_STYLE
-    table_format::ExcelTableFormat                              = _DEFAULT_EXCEL_TABLE_FORMAT
+    anchor_cell::String                          = "A1"
+    data_column_widths::DataColumnWidths         = 0.0
+    excel_formatters::Vector{ExcelFormatter}     = _NO_EXCEL_FORMATTERS
+    highlighters::Vector{AbstractHighlighter}    = _NO_HIGHLIGHTERS
+    maximum_data_column_widths::DataColumnWidths = 0.0
+    minimum_data_column_widths::DataColumnWidths = 0.0
+    style::ExcelTableStyle                       = _DEFAULT_EXCEL_TABLE_STYLE
+    table_format::ExcelTableFormat               = _DEFAULT_EXCEL_TABLE_FORMAT
 end
 
 ############################################################################################
