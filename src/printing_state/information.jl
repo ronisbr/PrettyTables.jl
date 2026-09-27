@@ -120,7 +120,9 @@ Return whether `table_data` is horizontally cropped, meaning that a continuation
 be printed.
 """
 function _is_horizontally_cropped(table_data::TableData)
-    return table_data.maximum_number_of_columns > 0 ?
+    # NOTE: Like for the rows, `maximum_number_of_columns == 0` means "crop to zero
+    # columns", whereas a negative value means "no limit".
+    return table_data.maximum_number_of_columns >= 0 ?
            table_data.num_columns > table_data.maximum_number_of_columns : false
 end
 
@@ -156,12 +158,12 @@ end
 Return the number of printed columns in `table_data`, which includes the continuation column.
 """
 function _number_of_printed_columns(table_data::TableData)
-    # NOTE: `maximum_number_of_columns <= 0` means "no limit", exactly like in `_next` and in
-    # `_number_of_printed_data_columns`. Testing for `>= 0` here made a `0` be treated as
-    # "crop to a single column", so the back ends laid out one column while the iterator fed
-    # them all of them.
+    # NOTE: `maximum_number_of_columns < 0` means "no limit" and `0` means "crop to zero
+    # columns", exactly like in `_next` and in `_number_of_printed_data_columns`. All of
+    # them must agree. Otherwise, the back ends would lay out a number of columns different
+    # from the one the iterator feeds them.
     data_columns =
-        table_data.maximum_number_of_columns > 0 ?
+        table_data.maximum_number_of_columns >= 0 ?
         # If we are cropping the table, we have one additional column for the continuation
         # characters.
         min(table_data.maximum_number_of_columns + 1, table_data.num_columns) :
@@ -182,7 +184,7 @@ Return the number of printed data columns.
 """
 function _number_of_printed_data_columns(table_data::TableData)
     data_columns =
-        table_data.maximum_number_of_columns > 0 ?
+        table_data.maximum_number_of_columns >= 0 ?
         min(table_data.maximum_number_of_columns, table_data.num_columns) :
         table_data.num_columns
 

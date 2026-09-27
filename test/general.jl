@@ -165,22 +165,46 @@ end
 end
 
 @testset "Maximum Number of Columns Equal to Zero" begin
-    # `maximum_number_of_columns == 0` means "no limit", exactly like a negative value. Some
-    # back ends used to treat it as "crop to a single column", laying out one column while
-    # the iterator fed them all of them, which produced uncompilable LaTeX and Typst.
+    # Like for the rows, `maximum_number_of_columns == 0` crops the table to zero data
+    # columns, printing only the continuation column, whereas a negative value means "no
+    # limit". Every back end must lay out the same number of columns the iterator feeds it.
     matrix = [1 2 3; 4 5 6]
 
     for backend in (:text, :latex, :markdown, :typst, :html)
-        limited   = pretty_table(String, matrix; backend, maximum_number_of_columns = 0)
-        unlimited = pretty_table(String, matrix; backend)
+        result = pretty_table(
+            String, [111 222 333; 444 555 666]; backend, maximum_number_of_columns = 0
+        )
 
-        @test limited == unlimited
+        @test occursin("3 columns omitted", result)
+        @test !occursin("555", result)
+
+        @test pretty_table(String, matrix; backend, maximum_number_of_columns = -1) ==
+            pretty_table(String, matrix; backend)
     end
 
-    @test occursin("{|r|r|r|}", pretty_table(
+    expected = """
+┌───┐
+│ ⋯ │
+├───┤
+│ ⋯ │
+│ ⋯ │
+└───┘
+3 columns omitted
+"""
+
+    @test pretty_table(String, matrix; maximum_number_of_columns = 0) == expected
+
+    @test occursin("{|c|}", pretty_table(
         String,
         matrix;
         backend = :latex,
+        maximum_number_of_columns = 0,
+    ))
+
+    @test occursin("columns: (auto,),", pretty_table(
+        String,
+        matrix;
+        backend = :typst,
         maximum_number_of_columns = 0,
     ))
 end

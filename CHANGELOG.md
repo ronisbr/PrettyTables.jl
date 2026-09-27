@@ -162,6 +162,10 @@ Version 3.5.0
   `data_column_widths`, `minimum_data_column_widths`, and `maximum_data_column_widths` of
   the Excel back end, which previously required `Float64` values.
 - ![Info][badge-info] PrettyTables.jl now requires StringManipulation.jl v0.6.1.
+- ![Breaking][badge-breaking] `maximum_number_of_columns = 0` now crops the table to zero
+  data columns, printing only the continuation column, exactly like
+  `maximum_number_of_rows = 0` does for the rows. Previously, it meant "no limit", which is
+  still the meaning of a negative value (the default).
 - ![Breaking][badge-breaking] A dictionary that complies with the Tables.jl API (e.g., a
   dictionary of column vectors with `Symbol` or `String` keys) is now printed as a table,
   like any other Tables.jl source, instead of a two-column table with its keys and values.

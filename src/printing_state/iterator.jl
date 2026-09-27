@@ -140,7 +140,7 @@ function _next(state::PrintingTableState, table_data::TableData)
         mc = table_data.maximum_number_of_columns
 
         # Check if we reached the maximum number of columns or the end of line.
-        if ((mc > 0) && (j >= mc)) || (j >= max_j)
+        if ((mc >= 0) && (j >= mc)) || (j >= max_j)
             return _next(PrintingTableState(_DATA, i, j, rs), table_data)
         end
 

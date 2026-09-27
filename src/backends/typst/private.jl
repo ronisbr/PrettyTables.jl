@@ -552,37 +552,34 @@ function _typst__get_data_column_widths(table_data::TableData, ::Nothing)
 end
 
 function _typst__get_data_column_widths(table_data::TableData, data_column_widths)
-    buf = IOBuffer(; sizehint = 8 * (table_data.num_columns + 3) + 2)
-
-    print(buf, "(")
+    widths = String[]
 
     # == Row Number Column =================================================================
 
-    table_data.show_row_number_column && print(buf, "auto, ")
+    table_data.show_row_number_column && push!(widths, "auto")
 
     # == Row Labels ========================================================================
 
-    _has_row_labels(table_data) && print(buf, "auto, ")
+    _has_row_labels(table_data) && push!(widths, "auto")
 
     # == Data Columns ======================================================================
 
     num_printed_data_columns = _number_of_printed_data_columns(table_data)
 
-    i = 1
-    for width in data_column_widths
-        @_print(buf, width, ",")
-        i += 1
-        i > num_printed_data_columns && break
-        print(buf, " ")
+    # Notice that we must check the number of printed data columns before adding a width
+    # because it can be 0.
+    for (k, width) in enumerate(data_column_widths)
+        k > num_printed_data_columns && break
+        push!(widths, string(width))
     end
 
     # == Continuation Column ===============================================================
 
-    num_printed_data_columns < table_data.num_columns && print(buf, " auto,")
+    num_printed_data_columns < table_data.num_columns && push!(widths, "auto")
 
-    print(buf, ")")
+    isempty(widths) && return "()"
 
-    return String(take!(buf))
+    return "(" * join(widths, ", ") * ",)"
 end
 
 """
