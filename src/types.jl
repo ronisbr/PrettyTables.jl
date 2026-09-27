@@ -290,6 +290,10 @@ Mutable, constant-space state used to acquire rows from a `RowTable`.
 - `subset_supported::Bool`: Whether `Tables.subset` can be used with this table at all. It
     starts as `true` and is latched to `false` at the first failure.
     (**Default**: `true`)
+- `subset_getcolumn_supported::Bool`: Whether `Tables.getcolumn` can be used with the rows
+    returned by `Tables.subset`. It starts as `true` and is latched to `false` at the first
+    failure.
+    (**Default**: `true`)
 - `requested_row::Int`: Row index associated with the cached subset acquisition.
     (**Default**: `0`)
 - `subset_attempted::Bool`: Whether subset acquisition was attempted for `requested_row`.

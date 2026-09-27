@@ -159,7 +159,7 @@ function _row_table_iterator_row(rtable::RowTable, i::Integer)
 
     if !access_state.iterator_started || i < access_state.iterator_row_index
         step = iterate(rtable.table)
-        step === nothing && error("The row `i` does not exist.")
+        step === nothing && error("The row `$i` does not exist.")
 
         access_state.iterator_row, access_state.iterator_state = step
         access_state.iterator_row_index = 1
@@ -168,7 +168,7 @@ function _row_table_iterator_row(rtable::RowTable, i::Integer)
 
     while access_state.iterator_row_index < i
         step = iterate(rtable.table, access_state.iterator_state)
-        step === nothing && error("The row `i` does not exist.")
+        step === nothing && error("The row `$i` does not exist.")
 
         access_state.iterator_row, access_state.iterator_state = step
         access_state.iterator_row_index += 1

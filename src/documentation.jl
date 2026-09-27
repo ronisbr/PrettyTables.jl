@@ -127,9 +127,10 @@ The following keywords are related to table configuration and are available in a
 
 - `backend::Symbol`: Backend used to print the table. The available options are `:text`,
     `:markdown`, `:html`, `:latex`, `:typst`, `:excel`, and `:docx`. If it is `:auto`, the
-    backend is obtained from the type of the keyword `table_format`, falling back to `:text`
-    if the latter is not present or if it is the backend-agnostic [`TableFormat`](@ref),
-    which does not select a backend.
+    backend is obtained from the type of the keyword `table_format` or, if the latter does
+    not select a backend, from the type of the keyword `style`, falling back to `:text` if
+    none of them is present or if they are the backend-agnostic [`TableFormat`](@ref) and
+    [`TableStyle`](@ref), which do not select a backend.
     (**Default**: `:auto`)
 
 ### IOContext Arguments
@@ -424,10 +425,17 @@ The footnotes are specified by a vector of `Pair{FootnoteTuple, String}`. Each e
 defines a new footnote. The `FootnoteTuple` is a `Tuple` with the following elements:
 
 - `section::Symbol`: Section to which the footnote must be applied. The available options
-    are `:column_label`, `:data`, `:row_label`, `:summary_row_label`, and
-    `:summary_row_cell`.
-- `i::Int`: Row index of the footnote considering the desired section.
-- `j::Int`: Column index of the footnote considering the desired section.
+    are `:title`, `:subtitle`, `:column_label`, `:data`, `:row_number`, `:row_label`,
+    `:summary_row_label`, and `:summary_row_cell`.
+- `i::Int`: Row index of the footnote considering the desired section. It must be 1 for the
+    title and the subtitle.
+- `j::Int`: Column index of the footnote considering the desired section. It is not used by
+    the sections that span the entire row (`:title`, `:subtitle`, `:row_number`,
+    `:row_label`, and `:summary_row_label`).
+
+Notice that `i` and `j` are the 1-based positions of the cell in the section, even if the
+data has arbitrary axes. An `ArgumentError` is thrown if a footnote references an unknown
+section or a cell outside its section.
 
 The second element of the `Pair` is the footnote text.
 
@@ -453,8 +461,8 @@ where `v` is the value in the cell, and `i` and `j` are the row and column indic
 cell in the data. It must return the formatted value of the cell `(i, j)` that has the value
 `v`. Notice that `i` and `j` are the indices in the object passed to `pretty_table`, which
 can differ from the position of the cell in the printed table if the data has arbitrary axes
-(e.g., an `OffsetArray`). Notice
-that the returned value will be converted to string after using the function `sprint`.
+(e.g., an `OffsetArray`). Notice that the returned value will be converted to string after
+using the function `sprint`.
 
 This keyword can also be `nothing`, meaning that no formatter will be used.
 
