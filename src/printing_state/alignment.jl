@@ -49,7 +49,7 @@ function _current_cell_alignment(
 
             for f in table_data.cell_alignment
                 fa = f(data, di, dj)::Union{Nothing, Symbol}
-                !isnothing(fa) && return fa
+                !isnothing(fa) && return _normalize_alignment(fa)
             end
         end
 

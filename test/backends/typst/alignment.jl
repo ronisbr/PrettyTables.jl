@@ -147,7 +147,7 @@
             matrix;
             backend = :typst,
             data_column_widths = ["1fr", "1fr", "1fr", "1fr", "1fr"],
-            alignment = [:l, :c, :r, :n, :X],
+            alignment = [:l, :c, :r, :n, :r],
             cell_alignment = [(2, 3) => :r, (4, 5) => :l],
         )
 

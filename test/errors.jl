@@ -17,6 +17,40 @@ end
     @test_throws ArgumentError pretty_table(data; alignment = [:c, :c, :c, :c, :c])
 end
 
+@testset "Invalid Alignments" begin
+    data = [1 2]
+
+    for kw in (
+        :alignment,
+        :column_label_alignment,
+        :continuation_row_alignment,
+        :footnote_alignment,
+        :row_group_label_alignment,
+        :row_label_column_alignment,
+        :row_number_column_alignment,
+        :source_note_alignment,
+        :subtitle_alignment,
+        :title_alignment,
+    )
+        @test_throws "Invalid alignment `:center`." pretty_table(
+            String, data; (kw => :center,)...
+        )
+    end
+
+    @test_throws "Invalid alignment `:x`." pretty_table(String, data; alignment = [:l, :x])
+
+    @test_throws "Invalid alignment `:x`." pretty_table(
+        String, data; cell_alignment = [(d, i, j) -> :x]
+    )
+
+    @test_throws "Invalid alignment `:x`." pretty_table(
+        String, data; cell_alignment = [(1, 1) => :x]
+    )
+
+    @test_throws "Invalid alignment `:x`." MultiColumn(2, "A", :x)
+    @test_throws "Invalid alignment `:x`." MergeCells(1, 1, 2, "A", :x)
+end
+
 @testset "Merge Cell Specifications" begin
     data = [1 2 3 4]
     merge_column_label_cells = [MergeCells(1, 1, 2, :c), MergeCells(1, 2, 2, :c)]

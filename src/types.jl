@@ -59,6 +59,32 @@ struct EmptyCells
 end
 
 """
+    _normalize_alignment(alignment::Symbol) -> Symbol
+    _normalize_alignment(alignment::AbstractVector{Symbol}) -> Vector{Symbol}
+    _normalize_alignment(::Nothing) -> Nothing
+
+Return the lowercase version of the `alignment`, which must be `:l` (left), `:c` (center),
+`:r` (right), or `:n` (no alignment information), or their uppercase versions. Otherwise,
+throw an `ArgumentError`.
+"""
+function _normalize_alignment(alignment::Symbol)
+    (alignment ∈ (:l, :c, :r, :n)) && return alignment
+    alignment === :L && return :l
+    alignment === :C && return :c
+    alignment === :R && return :r
+    alignment === :N && return :n
+
+    throw(
+        ArgumentError(
+            "Invalid alignment `:$alignment`. The valid alignments are `:l`, `:c`, `:r`, and `:n`."
+        )
+    )
+end
+
+_normalize_alignment(alignment::AbstractVector{Symbol}) = map(_normalize_alignment, alignment)
+_normalize_alignment(::Nothing) = nothing
+
+"""
     struct MultiColumn
 
 Specification for merging columns at the column label rows.
@@ -85,7 +111,7 @@ struct MultiColumn
         column_span < 2 && throw(
             ArgumentError("The `column_span` of `MultiColumn` must be greater than 1.")
         )
-        return new(column_span, data, alignment)
+        return new(column_span, data, _normalize_alignment(alignment))
     end
 end
 
@@ -101,7 +127,7 @@ end
     end
 
     function MergeCells(i::Int, j::Int, column_span::Int, data::Any, alignment::Symbol)
-        return new(i, j, column_span, data, alignment)
+        return new(i, j, column_span, data, _normalize_alignment(alignment))
     end
 end
 

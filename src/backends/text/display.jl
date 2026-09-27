@@ -194,7 +194,9 @@ function _text__print_aligned(
     if cell_width > str_width
         remaining = cell_width - str_width
 
-        if alignment === :l
+        # Notice that the text back end cannot omit the alignment. Hence, `:n` (no
+        # alignment information) is rendered as left alignment.
+        if (alignment === :l) || (alignment === :n)
             right_margin += fill ? remaining : 0
         elseif alignment === :c
             Δ = div(remaining, 2)

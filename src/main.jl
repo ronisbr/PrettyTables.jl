@@ -411,6 +411,19 @@ Base.@constprop :none Base.@nospecializeinfer function _pretty_table(
         end]
     end
 
+    # Validate the alignments and convert them to lowercase symbols so that every back end
+    # receives only `:l`, `:c`, or `:r`.
+    alignment                   = _normalize_alignment(alignment)
+    column_label_alignment      = _normalize_alignment(column_label_alignment)
+    continuation_row_alignment  = _normalize_alignment(continuation_row_alignment)
+    footnote_alignment          = _normalize_alignment(footnote_alignment)
+    row_group_label_alignment   = _normalize_alignment(row_group_label_alignment)
+    row_label_column_alignment  = _normalize_alignment(row_label_column_alignment)
+    row_number_column_alignment = _normalize_alignment(row_number_column_alignment)
+    source_note_alignment       = _normalize_alignment(source_note_alignment)
+    subtitle_alignment          = _normalize_alignment(subtitle_alignment)
+    title_alignment             = _normalize_alignment(title_alignment)
+
     if isnothing(column_label_alignment)
         column_label_alignment = alignment
     end

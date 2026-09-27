@@ -162,6 +162,11 @@ Version 3.5.0
   `data_column_widths`, `minimum_data_column_widths`, and `maximum_data_column_widths` of
   the Excel back end, which previously required `Float64` values.
 - ![Info][badge-info] PrettyTables.jl now requires StringManipulation.jl v0.6.1.
+- ![Enhancement][badge-enhancement] Validate every alignment symbol, throwing an
+  `ArgumentError` if it is not `:l`, `:c`, `:r`, or `:n` (or their uppercase versions).
+  Invalid symbols were silently accepted, misaligning the cells in the text back end. The
+  uppercase symbols now work in every back end, and the text back end renders `:n` as left
+  alignment.
 - ![Bugfix][badge-bugfix] Pass the indices of the cell in the data object to every user
   function (formatters, highlighters, cell alignment functions, and Excel formatters).
   Previously, they received the 1-based position of the cell in the printed table, making

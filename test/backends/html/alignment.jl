@@ -246,7 +246,7 @@
             String,
             matrix;
             backend = :html,
-            alignment = [:l, :c, :r, :n, :X],
+            alignment = [:l, :c, :r, :n, :r],
             cell_alignment = [(2, 3) => :r, (4, 5) => :l],
         )
 

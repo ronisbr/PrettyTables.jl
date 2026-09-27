@@ -191,6 +191,11 @@ can be specified using a symbol: `:l` for left, `:c` for center, or `:r` for rig
     `Symbol`, which will be used for all columns, or a vector of `Symbol`s, one for each
     column.
     (**Default**: `:r`)
+
+Every alignment in the keywords above and in `cell_alignment` must be `:l` (left), `:c`
+(center), `:r` (right), or `:n` (no alignment information), or their uppercase versions.
+Otherwise, an `ArgumentError` is thrown. The back ends that cannot omit the alignment
+information render `:n` as their default alignment (left in the text back end).
 - `column_label_alignment::Union{Nothing, Symbol, Vector{Symbol}}`: Alignment of the column
     labels. It can be a `Symbol`, which will be used for all columns, a vector of `Symbol`s,
     one for each column, or `nothing`, which will use the value of `alignment`.

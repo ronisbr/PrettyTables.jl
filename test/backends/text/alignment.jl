@@ -490,3 +490,19 @@ end
         table_format = TextTableFormat(; @text__all_horizontal_lines),
     )
 end
+
+@testset "Uppercase Alignments" begin
+    # The uppercase alignments are accepted by every back end and must be equivalent to the
+    # lowercase ones.
+    data = [1 22; 333 4]
+
+    @test pretty_table(String, data; alignment = [:L, :C]) ==
+        pretty_table(String, data; alignment = [:l, :c])
+
+    @test pretty_table(String, data; title = "T", title_alignment = :R) ==
+        pretty_table(String, data; title = "T", title_alignment = :r)
+
+    # The text back end renders the absence of alignment information as left alignment.
+    @test pretty_table(String, data; alignment = :n) ==
+        pretty_table(String, data; alignment = :l)
+end
