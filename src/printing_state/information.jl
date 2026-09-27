@@ -218,3 +218,15 @@ function _print_row_group_label(table_data::TableData, i::Int)
 
     return false
 end
+
+"""
+    _line_spec_indices(spec::Union{Symbol, Vector{Int}}, n::Int) -> Union{UnitRange{Int}, Vector{Int}}
+
+Convert the specification `spec` of the lines at the data rows or data columns in a table
+format, which can be `:all`, `:none`, or a vector with the indices, to the indices of the
+rows or columns after which a line must be drawn, considering that there are `n` of them.
+"""
+function _line_spec_indices(spec::Union{Symbol, Vector{Int}}, n::Int)
+    spec isa Vector{Int} && return spec
+    return spec == :all ? (1:n) : (1:0)
+end

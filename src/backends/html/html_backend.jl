@@ -284,26 +284,12 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
     # == Table Borders =====================================================================
 
     # Process the horizontal lines at data rows.
-    if tf.horizontal_lines_at_data_rows isa Symbol
-        horizontal_lines_at_data_rows = if tf.horizontal_lines_at_data_rows == :all
-            1:(table_data.num_rows)
-        else
-            1:0
-        end
-    else
-        horizontal_lines_at_data_rows = tf.horizontal_lines_at_data_rows::Vector{Int}
-    end
+    horizontal_lines_at_data_rows =
+        _line_spec_indices(tf.horizontal_lines_at_data_rows, table_data.num_rows)
 
     # Process the vertical lines at data columns.
-    if tf.vertical_lines_at_data_columns isa Symbol
-        vertical_lines_at_data_columns = if tf.vertical_lines_at_data_columns == :all
-            1:(table_data.num_columns)
-        else
-            1:0
-        end
-    else
-        vertical_lines_at_data_columns = tf.vertical_lines_at_data_columns::Vector{Int}
-    end
+    vertical_lines_at_data_columns =
+        _line_spec_indices(tf.vertical_lines_at_data_columns, table_data.num_columns)
 
     num_printed_data_columns = _number_of_printed_data_columns(table_data)
     num_printed_columns      = _number_of_printed_columns(table_data)

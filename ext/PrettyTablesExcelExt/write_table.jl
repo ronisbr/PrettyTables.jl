@@ -120,18 +120,13 @@ function _excel__write_table_core!(
 
     # Preprocess Union{Symbol,Vector{Int}} fields into concrete index iterables,
     # mirroring the Typst backend's handling.
-    horizontal_lines_at_data_rows = if table_format.horizontal_lines_at_data_rows isa Symbol
-        table_format.horizontal_lines_at_data_rows == :all ? (1:typemax(Int)) : (1:0)
-    else
-        table_format.horizontal_lines_at_data_rows::Vector{Int}
-    end
+    horizontal_lines_at_data_rows = _line_spec_indices(
+        table_format.horizontal_lines_at_data_rows, table_data.num_rows
+    )
 
-    vertical_lines_at_data_columns =
-        if table_format.vertical_lines_at_data_columns isa Symbol
-            table_format.vertical_lines_at_data_columns == :all ? (1:typemax(Int)) : (1:0)
-        else
-            table_format.vertical_lines_at_data_columns::Vector{Int}
-        end
+    vertical_lines_at_data_columns = _line_spec_indices(
+        table_format.vertical_lines_at_data_columns, table_data.num_columns
+    )
 
     ps     = PrintingTableState()
     action = :initialize
