@@ -382,6 +382,10 @@ Base.@constprop :none Base.@nospecializeinfer function _pretty_table(
         throw(ArgumentError("The renderer must be `:print` or `:show`."))
     end
 
+    if (vertical_crop_mode != :bottom) && (vertical_crop_mode != :middle)
+        throw(ArgumentError("The vertical crop mode must be `:bottom` or `:middle`."))
+    end
+
     if (alignment isa AbstractVector) && (length(alignment) != num_columns)
         throw(
             ArgumentError(

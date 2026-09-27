@@ -38,6 +38,14 @@ end
     @test_throws ArgumentError pretty_table(data; renderer = :something)
 end
 
+@testset "Vertical Crop Mode" begin
+    for backend in (:text, :html, :latex, :markdown, :typst)
+        @test_throws "The vertical crop mode must be `:bottom` or `:middle`." pretty_table(
+            String, collect(1:10); backend, maximum_number_of_rows = 4, vertical_crop_mode = :top
+        )
+    end
+end
+
 @testset "Summary Row and Summary Row Label Lengths" begin
     data = [
         1 2 3
