@@ -675,6 +675,7 @@ function _excel__write_table_core!(
             i,
             max_col_length,
             num_leading_columns,
+            num_printed_data_cols,
             data_column_widths,
             minimum_data_column_widths,
             maximum_data_column_widths,

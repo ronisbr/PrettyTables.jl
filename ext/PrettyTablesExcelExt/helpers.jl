@@ -166,29 +166,33 @@ end
         col::Int,
         max_col_length::Vector{Float64},
         col_offset::Int,
+        num_printed_data_columns::Int,
         data_column_widths::AbstractVector{Float64},
         min_data_column_widths::AbstractVector{Float64},
         max_data_column_widths::AbstractVector{Float64}
     ) -> Float64
 
-Resolve the Excel column width for column `col`. Columns at or before `col_offset`
-(row-number and row-label columns) are returned as-is from `max_col_length`. For data
-columns, a positive entry in `data_column_widths` takes precedence; otherwise the
-auto-calculated width is clamped between the corresponding entries of
-`min_data_column_widths` and `max_data_column_widths` (values ≤ 0 are ignored).
+Resolve the Excel column width for column `col`. Columns that are not data columns, *i.e.*,
+the ones at or before `col_offset` (row-number and row-label columns) and the ones after the
+`num_printed_data_columns` data columns (continuation column), are returned as-is from
+`max_col_length`. For data columns, a positive entry in `data_column_widths` takes
+precedence; otherwise the auto-calculated width is clamped between the corresponding entries
+of `min_data_column_widths` and `max_data_column_widths` (values ≤ 0 are ignored).
 """
 function _excel__get_col_width(
     col::Int,
     max_col_length::Vector{Float64},
     col_offset::Int,
+    num_printed_data_columns::Int,
     data_column_widths::AbstractVector{Float64},
     min_data_column_widths::AbstractVector{Float64},
     max_data_column_widths::AbstractVector{Float64},
 )
-    # Don't limit non-data cells.
-    col <= col_offset && return max_col_length[col]
-
     j = col - col_offset
+
+    # Don't limit non-data cells. Notice that the continuation column must not use the widths
+    # of the first hidden data column.
+    !(1 <= j <= num_printed_data_columns) && return max_col_length[col]
 
     # A positive explicit width overrides everything.
     dw = data_column_widths[j]

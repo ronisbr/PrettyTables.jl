@@ -163,6 +163,8 @@ Version 3.5.0
   the footnotes and the source notes instead of only around the content of the table.
 - ![Bugfix][badge-bugfix] Fix the line before the row group labels in the Excel back end,
   which was drawn even if `horizontal_line_before_row_group_label` was `false`.
+- ![Bugfix][badge-bugfix] Fix the width of the continuation column in the Excel back end,
+  which used the widths configured for the first hidden data column.
 
 Version 3.4.8
 -------------

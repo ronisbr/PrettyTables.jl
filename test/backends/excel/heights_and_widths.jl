@@ -200,4 +200,26 @@
             @test XLSX.getRowHeight(result[1], j, 1) ≈ 17.6109375
         end
     end
+
+    # == Continuation Column Width =========================================================
+
+    @testset "Continuation Column Width" verbose = true begin
+        # The continuation column must keep its estimated width instead of using the width
+        # configured for the first hidden data column.
+        matrix = [1 2 3 4]
+
+        estimated = pretty_table(XLSX.XLSXFile, matrix; maximum_number_of_columns = 2)
+
+        result = pretty_table(
+            XLSX.XLSXFile,
+            matrix;
+            maximum_number_of_columns = 2,
+            data_column_widths = [10.0, 11.0, 30.0, 40.0],
+            minimum_data_column_widths = 25.0,
+        )
+
+        @test XLSX.getColumnWidth(result[1], 1, 1) ≈ 10.7109375
+        @test XLSX.getColumnWidth(result[1], 1, 2) ≈ 11.7109375
+        @test XLSX.getColumnWidth(result[1], 1, 3) ≈ XLSX.getColumnWidth(estimated[1], 1, 3)
+    end
 end
