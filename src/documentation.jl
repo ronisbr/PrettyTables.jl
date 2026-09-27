@@ -185,17 +185,16 @@ The following keywords are related to table configuration and are available in a
 ### Alignment Arguments
 
 The following keyword arguments define the alignment of the table sections. The alignment
-can be specified using a symbol: `:l` for left, `:c` for center, or `:r` for right.
+can be specified using a symbol: `:l` for left, `:c` for center, `:r` for right, or `:n` for
+no alignment information, or their uppercase versions. Any other symbol, including the ones
+returned by the functions in `cell_alignment`, throws an `ArgumentError`. The back ends that
+cannot omit the alignment information render `:n` as their default alignment (left in the
+text back end).
 
 - `alignment::Union{Symbol, Vector{Symbol}}`: Alignment of the table data. It can be a
     `Symbol`, which will be used for all columns, or a vector of `Symbol`s, one for each
     column.
     (**Default**: `:r`)
-
-Every alignment in the keywords above and in `cell_alignment` must be `:l` (left), `:c`
-(center), `:r` (right), or `:n` (no alignment information), or their uppercase versions.
-Otherwise, an `ArgumentError` is thrown. The back ends that cannot omit the alignment
-information render `:n` as their default alignment (left in the text back end).
 - `column_label_alignment::Union{Nothing, Symbol, Vector{Symbol}}`: Alignment of the column
     labels. It can be a `Symbol`, which will be used for all columns, a vector of `Symbol`s,
     one for each column, or `nothing`, which will use the value of `alignment`.
