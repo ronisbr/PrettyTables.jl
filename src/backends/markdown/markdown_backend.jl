@@ -40,6 +40,7 @@ end
 # The keyword entry point only gathers the options. It is compiled once per set of keywords,
 # which is cheap because it is tiny.
 function _markdown__print(pspec::PrintingSpec; kwargs...)
+    _check_backend_keywords(MarkdownPrintOptions, kwargs, "Markdown")
     return _markdown__print(pspec, MarkdownPrintOptions(; kwargs...))
 end
 

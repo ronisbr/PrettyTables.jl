@@ -79,6 +79,28 @@ end
     )
 end
 
+@testset "Unsupported Back End Keywords" begin
+    for (backend, name) in (
+        (:text, "text"),
+        (:html, "HTML"),
+        (:latex, "LaTeX"),
+        (:markdown, "Markdown"),
+        (:typst, "Typst"),
+    )
+        @test_throws "The keyword `line_break` is not supported by the $name back end." pretty_table(
+            String, [1 2]; backend, line_break = true
+        )
+    end
+
+    @test_throws "The keyword `line_break` is not supported by the Excel back end." pretty_table(
+        XLSX.XLSXFile, [1 2]; line_break = true
+    )
+
+    @test_throws "The keyword `line_break` is not supported by the Word back end." pretty_table(
+        W.Table, [1 2]; line_break = true
+    )
+end
+
 @testset "Merge Cell Specifications" begin
     data = [1 2 3 4]
     merge_column_label_cells = [MergeCells(1, 1, 2, :c), MergeCells(1, 2, 2, :c)]

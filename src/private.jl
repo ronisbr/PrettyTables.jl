@@ -229,3 +229,23 @@ function _validate_merge_cell_specification(table_data::TableData)
 
     return nothing
 end
+
+"""
+    _check_backend_keywords(options::Type, kwargs, backend::String) -> Nothing
+
+Throw an `ArgumentError` if `kwargs` has a keyword that is not a field of the structure
+`options`, which holds the options of the `backend`. Otherwise, a misspelled keyword would
+throw a `MethodError` about the internal constructor of `options`.
+"""
+function _check_backend_keywords(
+    @nospecialize(options::Type), @nospecialize(kwargs), backend::String
+)
+    valid = fieldnames(options)
+
+    for k in keys(kwargs)
+        k ∈ valid && continue
+        throw(ArgumentError("The keyword `$k` is not supported by the $backend back end."))
+    end
+
+    return nothing
+end

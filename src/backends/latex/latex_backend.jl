@@ -38,6 +38,7 @@ end
 # The keyword entry point only gathers the options. It is compiled once per set of keywords,
 # which is cheap because it is tiny.
 function _latex__print(pspec::PrintingSpec; kwargs...)
+    _check_backend_keywords(LatexPrintOptions, kwargs, "LaTeX")
     return _latex__print(pspec, LatexPrintOptions(; kwargs...))
 end
 

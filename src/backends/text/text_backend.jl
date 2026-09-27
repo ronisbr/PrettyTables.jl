@@ -63,6 +63,7 @@ end
 # The keyword entry point only gathers the options. It is compiled once per set of keywords,
 # which is cheap because it is tiny.
 function _text__print_table(pspec::PrintingSpec; kwargs...)
+    _check_backend_keywords(TextPrintOptions, kwargs, "text")
     return _text__print_table(pspec, TextPrintOptions(; kwargs...))
 end
 

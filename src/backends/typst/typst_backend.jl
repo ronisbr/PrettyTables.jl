@@ -45,6 +45,7 @@ end
 # The keyword entry point only gathers the options. It is compiled once per set of keywords,
 # which is cheap because it is tiny.
 function _typst__print(pspec::PrintingSpec; kwargs...)
+    _check_backend_keywords(TypstPrintOptions, kwargs, "Typst")
     return _typst__print(pspec, TypstPrintOptions(; kwargs...))
 end
 

@@ -51,6 +51,7 @@ end
 # The keyword entry point only gathers the options. It is compiled once per set of keywords,
 # which is cheap because it is tiny.
 function _html__print(pspec::PrintingSpec; kwargs...)
+    _check_backend_keywords(HtmlPrintOptions, kwargs, "HTML")
     return _html__print(pspec, HtmlPrintOptions(; kwargs...))
 end
 

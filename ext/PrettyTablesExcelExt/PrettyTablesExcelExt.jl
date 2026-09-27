@@ -13,7 +13,7 @@ using PrettyTables: AbstractHighlighter, ExcelPrintOptions
 # Import internal iterator and helpers.
 import PrettyTables: _next, _current_cell, _current_cell_alignment, _current_cell_footnotes
 import PrettyTables: _number_of_printed_columns, _number_of_printed_data_columns
-import PrettyTables: _data_indices, _get_data, _has_summary_rows
+import PrettyTables: _check_backend_keywords, _data_indices, _get_data, _has_summary_rows
 import PrettyTables: _IGNORE_CELL, _EXCEL__NO_DECORATION, _sprint_with_context
 import PrettyTables: _excel__highlighter_decoration, _excel__native_highlighters
 import PrettyTables: excel_decoration
@@ -81,6 +81,7 @@ function PrettyTables._excel__print(
     sheet::Union{String, XLSX.Worksheet} = "prettytable",
     kwargs...,
 )
+    _check_backend_keywords(ExcelPrintOptions, kwargs, "Excel")
     opts = ExcelPrintOptions(; kwargs...)
 
     if isnothing(filename)
