@@ -33,8 +33,8 @@ The Excel backend return depends on the following combination of keywords:
     file is created and an in-memory `XLSX.XLSXFile` is returned instead. When a string,
     behavior depends on `mode`.
     (**Default**: `nothing`)
-- `highlighters::Vector{<:AbstractHighlighter}`: Highlighters to apply to the table. For more
-    information, see the section [Excel Highlighters](@ref).
+- `highlighters::Vector{<:AbstractHighlighter}`: Highlighters to apply to the table. For
+    more information, see the section [Excel Highlighters](@ref).
 - `maximum_data_column_widths::Union{Real, AbstractVector{<:Real}}`: Maximum width for each
     data column in Excel units. A scalar applies to all columns; a vector sets per-column
     maximums.
@@ -43,7 +43,8 @@ The Excel backend return depends on the following combination of keywords:
     data column in Excel units. A scalar applies to all columns; a vector sets per-column
     minimums.
     (**Default**: `0.0`)
-- `mode::String`: `"w"` to create a new file or `"rw"` to open and update an existing one.
+- `mode::String`: `"w"` to create a new file or `"rw"` (or its alias `"wr"`) to open and
+    update an existing one.
     (**Default**: `"w"`)
 - `overwrite::Bool`: Allow overwriting an existing file when `mode = "w"`.
     (**Default**: `false`)
@@ -51,10 +52,10 @@ The Excel backend return depends on the following combination of keywords:
     If no sheet with that name exists it will be created. When an `XLSX.Worksheet`, that
     worksheet is updated in place and `nothing` is returned.
     (**Default**: `"prettytable"`)
-- `style::Union{TableStyle, ExcelTableStyle}`: Style of the table. For more information, see the section
-    [Excel Table Style](@ref).
-- `table_format::Union{TableFormat, ExcelTableFormat}`: Excel table format used to render the table. For more
-    information, see the section [Excel Table Format](@ref).
+- `style::Union{TableStyle, ExcelTableStyle}`: Style of the table. For more information, see
+    the section [Excel Table Style](@ref).
+- `table_format::Union{TableFormat, ExcelTableFormat}`: Excel table format used to render
+    the table. For more information, see the section [Excel Table Format](@ref).
 
 ## Excel Highlighters
 
@@ -62,8 +63,8 @@ A set of highlighters can be passed as a vector of `AbstractHighlighter` to the
 `highlighters` keyword. A highlighter can be an instance of the structure
 [`ExcelHighlighter`](@ref), specific to this back end, or of the general
 [`Highlighter`](@ref), which is defined by a `Face` and works with every back end (see
-[Faces](@ref)). The face is converted with [`excel_decoration`](@ref). The structure [`ExcelHighlighter`](@ref)
-contains the following two public fields:
+[Faces](@ref)). The face is converted with [`excel_decoration`](@ref). The structure
+[`ExcelHighlighter`](@ref) contains the following two public fields:
 
 - `f::Function`: Function with the signature `f(data, i, j)`, which should return `true`
   if the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
@@ -165,7 +166,8 @@ contains the following fields:
 - `horizontal_line_after_data_rows::Bool`: Draw a line under the data table section.
 - `horizontal_line_before_row_group_label::Bool`: Draw a line above each row group divider.
 - `horizontal_line_after_row_group_label::Bool`: Draw a line below each row group divider.
-- `horizontal_line_before_summary_rows::Bool`: Draw a line between consecutive summary rows.
+- `horizontal_line_before_summary_rows::Bool`: Draw a line between the data rows and the
+    summary rows.
 - `horizontal_line_after_summary_rows::Bool`: Draw a line under the last summary row.
 - `vertical_line_at_beginning::Bool`: Draw a vertical line on the left side of the content
     area (excludes title/subtitle and footnotes).
@@ -178,6 +180,8 @@ contains the following fields:
     after the specified column indices (e.g., `[1, 3]` draws after columns 1 and 3).
 - `vertical_line_after_data_columns::Bool`: Draw a vertical line on the right side of the
     content area (excludes title/subtitle and footnotes).
+- `vertical_line_after_continuation_column::Bool`: Draw a vertical line after the
+    continuation column when the table is horizontally cropped.
 
 We provide a few helpers to configure the table format. For more information, see the
 documentation of the following macros:
@@ -267,22 +271,18 @@ contains the following fields:
 - `row_label::Vector{ExcelPair}`: Style for the row label.
 - `row_group_label::Vector{ExcelPair}`: Style for the row group label.
 - `first_line_column_label::Union{Vector{ExcelPair}, Vector{Vector{ExcelPair}}}`: Style for
-    the first line of the column labels. If a vector of `Vector{ExcelPair}}` is provided,
+    the first line of the column labels. If a vector of `Vector{ExcelPair}` is provided,
     each column label in the first line will use the corresponding style.
 - `column_label::Union{Vector{ExcelPair}, Vector{Vector{ExcelPair}}}`: Style for the rest of
-    the column labels. If a vector of `Vector{ExcelPair}}` is provided, each column label
+    the column labels. If a vector of `Vector{ExcelPair}` is provided, each column label
     will use the corresponding style.
 - `first_line_merged_column_label::Vector{ExcelPair}`: Style for the merged cells at the
     first column label line.
 - `merged_column_label::Vector{ExcelPair}`: Style for the merged cells at the rest of the
     column labels.
-- `data_cell::Vector{ExcelPair}`: Style for the table cells. If a vector of
-    `Vector{ExcelPair}}` is provided, each column in the data table will use the
-    corresponding style.
+- `data_cell::Vector{ExcelPair}`: Style for the table cells.
 - `summary_row_label::Vector{ExcelPair}`: Style for the summary row label.
-- `summary_row_cell::Vector{ExcelPair}`: Style for the summary row cell. If a vector of
-    `Vector{ExcelPair}}` is provided, each column in the summary row will use the
-    corresponding style.
+- `summary_row_cell::Vector{ExcelPair}`: Style for the summary row cell.
 - `footnote::Vector{ExcelPair}`: Style for the footnotes.
 - `source_note::Vector{ExcelPair}`: Style for the source notes.
 
@@ -310,5 +310,5 @@ style = ExcelTableStyle(
 )
 ```
 
-Every keyword of the constructor of [`ExcelTableStyle`](@ref) also accepts a `Face`, which is
-converted to Excel attributes with [`excel_decoration`](@ref) (see [Faces](@ref)).
+Every keyword of the constructor of [`ExcelTableStyle`](@ref) also accepts a `Face`, which
+is converted to Excel attributes with [`excel_decoration`](@ref) (see [Faces](@ref)).
