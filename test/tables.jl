@@ -471,3 +471,24 @@ end
         end
     end
 end
+
+@testset "Tables With Arbitrary Axes" verbose = true begin
+    expected = """
+┌───────┐
+│     a │
+│ Int64 │
+├───────┤
+│     1 │
+│     2 │
+│     3 │
+└───────┘
+"""
+
+    # Row table whose storage is not 1-based.
+    rows = OffsetArray([(a = 1,), (a = 2,), (a = 3,)], 0:2)
+    @test pretty_table(String, rows) == expected
+
+    # Column table whose columns are not 1-based.
+    columns = (a = OffsetArray([1, 2, 3], 0:2),)
+    @test pretty_table(String, columns) == expected
+end

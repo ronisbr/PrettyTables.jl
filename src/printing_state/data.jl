@@ -30,7 +30,11 @@ function _get_data_cell(data::ColumnTable, i::Int, j::Int)
     # If the column is a `Tuple`, all the elements are defined.
     (col isa Tuple) && return col[i]
 
-    return isassigned(col, i) ? col[i] : _UNDEFINED_CELL
+    # Notice that `i` is the position of the row, which must be converted to an index of the
+    # column because it can have arbitrary axes.
+    ind = firstindex(col) + i - 1
+
+    return isassigned(col, ind) ? col[ind] : _UNDEFINED_CELL
 end
 
 """

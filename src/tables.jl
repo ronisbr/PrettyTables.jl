@@ -32,8 +32,10 @@ function getindex(ctable::ColumnTable, i, j)
     # Get the column name.
     column_name = ctable.column_names[j]
 
-    # Get the element.
-    element = Tables.getcolumn(ctable.table, column_name)[i]
+    # Get the element. Notice that `i` is the position of the row, which must be converted
+    # to an index of the column because it can have arbitrary axes.
+    col     = Tables.getcolumn(ctable.table, column_name)
+    element = col[firstindex(col) + i - 1]
 
     return element
 end
@@ -123,7 +125,10 @@ function _row_table_subset(rtable::RowTable, i::Integer)
     # Mark the attempt before invoking user-provided table code.
     access_state.subset_attempted = true
     try
-        access_state.subset_row = Tables.subset(rtable.data, i; viewhint = true)
+        # Notice that `i` is the position of the row. If the table is a vector of rows, which
+        # can have arbitrary axes, we must convert it to an index of that vector.
+        ind = rtable.data isa AbstractVector ? firstindex(rtable.data) + i - 1 : i
+        access_state.subset_row = Tables.subset(rtable.data, ind; viewhint = true)
 
         # Record a successful subset acquisition.
         access_state.subset_succeeded = true
