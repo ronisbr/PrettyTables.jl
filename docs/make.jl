@@ -50,6 +50,7 @@ makedocs(
             ],
             "Word"                    => Any[
                 "Word Backend"        => "man/docx/docx_backend.md",
+                "Examples"            => "man/docx/docx_examples.md",
             ],
         ],
         "Library"                     => "lib/library.md",
