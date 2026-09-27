@@ -53,7 +53,8 @@ where it will apply the decoration returned by the function `fd` to the highligh
 
 Each back end converts this highlighter to its native highlighter once per printed table,
 converting the face with [`html_decoration`](@ref), [`latex_decoration`](@ref),
-[`markdown_decoration`](@ref), [`typst_decoration`](@ref), or [`excel_decoration`](@ref).
+[`markdown_decoration`](@ref), [`typst_decoration`](@ref), [`excel_decoration`](@ref), or
+[`docx_decoration`](@ref).
 The text back end renders the face using its escape sequence.
 
 # Examples

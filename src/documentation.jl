@@ -26,9 +26,9 @@ following types are supported:
 1. `AbstractVector`: any vector can be printed.
 2. `AbstractMatrix`: any matrix can be printed.
 
-`pretty_table` currently supports printing tables for six backends: text, markdown, html,
-latex, typst, and excel. The desired backend can be set using the `backend` keyword
-argument.
+`pretty_table` currently supports printing tables for seven backends: text, markdown, html,
+latex, typst, excel, and docx (Word). The desired backend can be set using the `backend`
+keyword argument.
 
 For more information, see the **Extended Help** section.
 
@@ -264,6 +264,7 @@ following methods:
 - **LaTeX backend**: `pretty_table_latex_backend`.
 - **Typst backend**: `pretty_table_typst_backend`.
 - **Excel backend**: `pretty_table_excel_backend`.
+- **Word backend**: `pretty_table_docx_backend`.
 
 !!! warning
 

@@ -65,7 +65,7 @@ keeps the back end default, whereas `:none` explicitly disables the lines.
 
 The line presence fields of [`TableFormat`](@ref) select which lines are drawn. They have
 the same names as the corresponding fields of the table formats of the text, HTML, LaTeX,
-Typst, and Excel back ends:
+Typst, Excel, and Word back ends:
 
 - `horizontal_line_at_beginning`
 - `horizontal_line_before_column_labels` (HTML back end only)
@@ -93,8 +93,8 @@ footnotes and source notes) even when `horizontal_line_after_data_rows` and
 `horizontal_line_after_summary_rows` are disabled. They are silently ignored by the other
 back ends.
 The backend-specific fields (for example, `horizontal_lines_at_column_labels` of the text
-back end and `horizontal_line_between_column_labels` of the Excel back end) are not part of
-[`TableFormat`](@ref) and remain available in the native table formats.
+back end and `horizontal_line_between_column_labels` of the Excel and Word back ends) are
+not part of [`TableFormat`](@ref) and remain available in the native table formats.
 
 The following macros return the keyword arguments to show or suppress every horizontal or
 vertical line, which can be merged with additional keywords to override individual options:
@@ -118,8 +118,8 @@ pretty_table(
 )
 ```
 
-The text, HTML, LaTeX, Typst, and Excel back ends also provide the same macro quadruple for
-their native table formats (for example, `@text__all_horizontal_lines` for
+The text, HTML, LaTeX, Typst, Excel, and Word back ends also provide the same macro
+quadruple for their native table formats (for example, `@text__all_horizontal_lines` for
 `TextTableFormat` and `@html__no_vertical_lines` for `HtmlTableFormat`), which additionally
 cover the backend-specific presence fields. The Markdown back end has no macros because its
 table format has a single presence field.
@@ -135,7 +135,7 @@ fields, all defaulting to `nothing` (keep the back end default):
 - `color`: a named color (`Symbol`), a 24-bit color (`UInt32` or `"#rrggbb"`), a tuple
   `(r, g, b)`, or a `SimpleColor`.
 
-The line roles follow the border fields of the Typst and Excel table formats:
+The line roles follow the border fields of the Typst, Excel, and Word table formats:
 
 - `top_line`, `header_line`, `merged_header_cell_line`, `middle_line`, and `bottom_line`
   for the horizontal lines.
@@ -149,6 +149,8 @@ html_line_style(LineStyle(; style = :dashed, width = :thick, color = :red))
 typst_line_style(LineStyle(; style = :dashed, width = :thick, color = :red))
 
 excel_line_style(LineStyle(; style = :dashed, color = 0xff0000))
+
+docx_line_style(LineStyle(; style = :double, width = :medium, color = :blue))
 
 latex_line_style(LineStyle(; style = :double))
 ```
@@ -171,22 +173,22 @@ pretty_table([1 2; 3 4]; style = style)
 ```
 
 The backend-specific style fields (for example, `table_border` of `TextTableStyle` and
-`data_cell` of `ExcelTableStyle`) are not part of [`TableStyle`](@ref) and remain available
-in the native table styles.
+`data_cell` of `ExcelTableStyle` and `DocxTableStyle`) are not part of [`TableStyle`](@ref)
+and remain available in the native table styles.
 
 ## Back End Support
 
 The conversion is a best effort: aspects a back end cannot express are silently ignored.
 The following table summarizes the support:
 
-| Aspect                      | Text | HTML | LaTeX | Markdown | Typst | Excel |
-|:----------------------------|:-----|:-----|:------|:---------|:------|:------|
-| Horizontal line presence    | ✓    | ✓    | ✓     | partial¹ | ✓     | ✓     |
-| Vertical line presence      | ✓    | ✓    | ✓     | –        | ✓     | ✓     |
-| Line design: `style`        | ✓²   | ✓    | ✓³    | –        | ✓⁴    | ✓     |
-| Line design: `width`        | ✓²   | ✓⁵   | –     | –        | ✓     | ✓     |
-| Line design: `color`        | ✓    | ✓    | –     | –        | ✓     | ✓     |
-| Table style                 | ✓    | ✓    | ✓     | partial⁶ | ✓     | ✓     |
+| Aspect                      | Text | HTML | LaTeX | Markdown | Typst | Excel | Word |
+|:----------------------------|:-----|:-----|:------|:---------|:------|:------|:-----|
+| Horizontal line presence    | ✓    | ✓    | ✓     | partial¹ | ✓     | ✓     | ✓    |
+| Vertical line presence      | ✓    | ✓    | ✓     | –        | ✓     | ✓     | ✓    |
+| Line design: `style`        | ✓²   | ✓    | ✓³    | –        | ✓⁴    | ✓     | ✓    |
+| Line design: `width`        | ✓²   | ✓⁵   | –     | –        | ✓     | ✓     | ✓⁷   |
+| Line design: `color`        | ✓    | ✓    | –     | –        | ✓     | ✓     | ✓    |
+| Table style                 | ✓    | ✓    | ✓     | partial⁶ | ✓     | ✓     | ✓    |
 
 1. Markdown only supports `horizontal_line_before_summary_rows`.
 2. The text back end maps the designs to Unicode box-drawing characters, which only have
@@ -203,6 +205,8 @@ The following table summarizes the support:
    `3px`, respectively.
 6. Markdown ignores `title`, `subtitle`, `first_line_merged_column_label`, and
    `merged_column_label` because its style type does not have those fields.
+7. The Word back end maps the widths `:thin`, `:medium`, and `:thick` to 0.5 pt, 1 pt, and
+   2 pt, respectively.
 
 Additional notes:
 

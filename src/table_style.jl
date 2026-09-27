@@ -20,13 +20,13 @@ a `TableStyle` never replaces the back end table style entirely: each set field 
 only the corresponding field of the back end default style. The faces are converted to the
 native decorations by the keyword constructors of the back end style types (see
 [`html_decoration`](@ref), [`latex_decoration`](@ref), [`markdown_decoration`](@ref),
-[`typst_decoration`](@ref), and [`excel_decoration`](@ref)).
+[`typst_decoration`](@ref), [`excel_decoration`](@ref), and [`docx_decoration`](@ref)).
 
 The conversion is a best effort: the Markdown back end ignores `title`, `subtitle`,
 `first_line_merged_column_label`, and `merged_column_label` because its style type does not
 have those fields. The backend-specific style fields (for example, `table_border` of the
-text back end and `data_cell` of the Excel back end) are not part of `TableStyle` and
-remain available in the native table styles.
+text back end and `data_cell` of the Excel and Word back ends) are not part of `TableStyle`
+and remain available in the native table styles.
 
 # Fields
 

@@ -26,7 +26,7 @@ Supertype of the highlighters of all back ends. A highlighter has the fields:
 
 The subtypes are the general [`Highlighter`](@ref), which can be used with every back end,
 and the back end highlighters `TextHighlighter`, `HtmlHighlighter`, `LatexHighlighter`,
-`MarkdownHighlighter`, `TypstHighlighter`, and `ExcelHighlighter`.
+`MarkdownHighlighter`, `TypstHighlighter`, `ExcelHighlighter`, and `DocxHighlighter`.
 """
 abstract type AbstractHighlighter end
 

@@ -321,8 +321,8 @@ Merge the line presence fields of `tf` over the ones of the back end default tab
 `def`, returning a named tuple that can be splatted into the keyword constructor of the
 back end table format. `def` must have every line presence field shared by all back ends
 (see `_TABLE_FORMAT_PRESENCE_FIELDS`), which is the case for the table formats of the text,
-HTML, LaTeX, Typst, and Excel back ends. The HTML-only presence fields are not part of the
-returned tuple and must be merged by the HTML converter.
+HTML, LaTeX, Typst, Excel, and Word back ends. The HTML-only presence fields are not part of
+the returned tuple and must be merged by the HTML converter.
 """
 function _table_format_presence_fields(tf::TableFormat, def::Any)
     return NamedTuple{_TABLE_FORMAT_PRESENCE_FIELDS}(
