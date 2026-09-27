@@ -427,6 +427,13 @@ Base.@constprop :none Base.@nospecializeinfer function _pretty_table(
         )
     end
 
+    # An empty vector of summary rows means that there are no summary rows. Otherwise, the
+    # printing state would enter the summary row section and access the first element.
+    if !isnothing(summary_rows) && isempty(summary_rows)
+        summary_rows       = nothing
+        summary_row_labels = nothing
+    end
+
     if !isnothing(summary_rows) && isnothing(summary_row_labels)
         summary_row_labels = SummaryLabelIterator(summary_rows)
     end

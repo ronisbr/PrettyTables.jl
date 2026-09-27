@@ -434,3 +434,15 @@ end
         end
     end
 end
+
+@testset "Empty Summary Rows" verbose = true begin
+    # An empty vector of summary rows must be equivalent to not passing summary rows.
+    for backend in (:text, :html, :latex, :markdown, :typst)
+        @test pretty_table(String, [1 2]; backend, summary_rows = Function[]) ==
+            pretty_table(String, [1 2]; backend)
+
+        @test pretty_table(
+            String, [1 2]; backend, summary_rows = [], summary_row_labels = String[]
+        ) == pretty_table(String, [1 2]; backend)
+    end
+end
