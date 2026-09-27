@@ -78,8 +78,12 @@ All those sections can be configured using keyword arguments as described below.
 The following keywords are related to table configuration and are available in all backends:
 
 - `backend::Symbol`: Backend used to print the table. The available options are `:text`,
-  `:markdown`, `:html`, and `:latex`.
-  (**Default**: `:text`)
+  `:markdown`, `:html`, `:latex`, `:typst`, `:excel`, and `:docx`. If it is `:auto`, the
+  backend is obtained from the type of the keyword `table_format` or, if the latter does
+  not select a backend, from the type of the keyword `style`, falling back to `:text` if
+  none of them is present or if they are the backend-agnostic [`TableFormat`](@ref) and
+  [`TableStyle`](@ref), which do not select a backend.
+  (**Default**: `:auto`)
 
 ### IOContext Arguments
 
