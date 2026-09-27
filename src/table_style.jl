@@ -136,6 +136,14 @@ _table_style_face(::Nothing)       = nothing
 _table_style_face(face::Face)      = face
 _table_style_face(crayon::Crayon)  = _face_from_crayon(crayon)
 
+function _table_style_face(decoration::Any)
+    throw(
+        ArgumentError(
+            "`TableStyle` does not support decorations of type `$(typeof(decoration))`. Use a `Face` or a `Crayon`."
+        )
+    )
+end
+
 """
     _table_style_faces(decorations::Any) -> Union{Nothing, Face, Vector{Face}}
 
@@ -144,7 +152,14 @@ crayon, or a vector of them, into a face or a vector of faces, keeping `nothing`
 """
 _table_style_faces(decoration::Union{Nothing, Face, Crayon}) = _table_style_face(decoration)
 _table_style_faces(faces::Vector{Face})                       = faces
-_table_style_faces(decorations::AbstractVector) = Face[_table_style_face(d) for d in decorations]
+function _table_style_faces(decorations::AbstractVector)
+    return Face[
+        isnothing(d) ? throw(
+            ArgumentError("The vectors of decorations in `TableStyle` cannot have `nothing`.")
+        ) : _table_style_face(d)
+        for d in decorations
+    ]
+end
 
 """
     _table_style_kwargs(style::TableStyle; drop::Tuple = ()) -> Vector{Pair{Symbol, Any}}

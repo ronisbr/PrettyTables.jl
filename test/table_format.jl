@@ -510,6 +510,20 @@ end
         ["style" => "single", "size" => "16", "color" => "A51C2C"]
 end
 
+@testset "Table Style Validation" begin
+    @test_throws "The vectors of decorations in `TableStyle` cannot have `nothing`." TableStyle(;
+        first_line_column_label = [Face(), nothing]
+    )
+
+    @test_throws "`TableStyle` does not support decorations of type `String`." TableStyle(;
+        title = "bold"
+    )
+
+    @test_throws "`TableStyle` does not support decorations of type `String`." TableStyle(;
+        column_label = [Face(), "bold"]
+    )
+end
+
 @testset "Line Style Color Validation" begin
     @test_throws "The symbol `:notacolor` is not a known color." LineStyle(; color = :notacolor)
     @test_throws "must be integers between 0 and 255." LineStyle(; color = (300, 0, 0))
