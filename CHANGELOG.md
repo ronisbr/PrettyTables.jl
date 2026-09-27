@@ -159,6 +159,8 @@ Version 3.5.0
   working. The decoration converters of the HTML, LaTeX, Typst, and Excel styles also
   accept any vector, like the constructors of v3.4.8 did.
 - ![Info][badge-info] PrettyTables.jl now requires StringManipulation.jl v0.6.1.
+- ![Bugfix][badge-bugfix] Fix the outer lines of the Excel back end, which were drawn around
+  the footnotes and the source notes instead of only around the content of the table.
 
 Version 3.4.8
 -------------

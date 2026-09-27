@@ -216,8 +216,9 @@ function _excel__write_table_core!(
             _, next_rs, _ = _next(ps, table_data)
 
             # Track the last row inside the content area so the post-loop outer-border
-            # logic works even when the table has no data rows at all.
-            if rs != :table_header
+            # logic works even when the table has no data rows at all. Notice that the
+            # footnotes and the source notes are outside the content area.
+            if rs ∉ (:table_header, :table_footer)
                 last_written_row = ir + anchor_row_offset
             end
 

@@ -75,6 +75,23 @@
         @test XLSX.getBorder(r, "A9").border["bottom"] === nothing
         @test XLSX.getBorder(r, "A10").border["bottom"] === nothing
         @test XLSX.getBorder(r, "A11").border["bottom"] === nothing
+
+        # The outer lines must not extend over the footnotes and the source notes.
+        border_side(cell, side) = begin
+            b = XLSX.getBorder(r, cell)
+            isnothing(b) ? nothing : b.border[side]
+        end
+
+        for row in 9:12
+            @test border_side("A$row", "left") === nothing
+            @test border_side("A$row", "bottom") === nothing
+            @test border_side("E$row", "right") === nothing
+        end
+
+        @test XLSX.getBorder(r, "A8").border["left"] ==
+            Dict("style" => "thick", "rgb" => "FF000000")
+        @test XLSX.getBorder(r, "E8").border["right"] ==
+            Dict("style" => "thick", "rgb" => "FF000000")
     end
 
     # == No Vertical Lines with Row Group Borders =============================================
