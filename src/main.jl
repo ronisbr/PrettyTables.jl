@@ -206,9 +206,11 @@ function show(io::IO, pt::PrettyTable)
     end
 
     # For the text backend, we need to reserve one display line because the `show` function
-    # adds a new line at the end.
+    # adds a new line at the end. Notice that we must keep the lines reserved by the user.
     if backend == :text
-        return pretty_table(io, pt; new_line_at_end = false, reserved_display_lines = 1)
+        reserved_display_lines = get(pt.configurations, :reserved_display_lines, 0) + 1
+
+        return pretty_table(io, pt; new_line_at_end = false, reserved_display_lines)
     else
         return pretty_table(io, pt; new_line_at_end = false)
     end

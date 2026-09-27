@@ -201,3 +201,22 @@ end
 
     @test result == expected
 end
+
+@testset "Reserved Display Lines in show" begin
+    # `show` must reserve one line in addition to the lines reserved by the user.
+    pt = PrettyTable(
+        reshape(1:40, 20, 2);
+        reserved_display_lines = 5,
+        fit_table_in_display_vertically = true,
+    )
+
+    io = IOContext(IOBuffer(), :displaysize => (20, 80), :limit => true)
+    show(io, pt)
+    lines_show = count(==('\n'), String(take!(io.io)))
+
+    io = IOContext(IOBuffer(), :displaysize => (20, 80), :limit => true)
+    pretty_table(io, pt; new_line_at_end = false, reserved_display_lines = 6)
+    lines_expected = count(==('\n'), String(take!(io.io)))
+
+    @test lines_show == lines_expected
+end
