@@ -106,3 +106,44 @@ end
     @test occursin("\\multicolumn{2}{", result)
     @test !occursin("\\multicolumn{4}{", result)
 end
+
+@testset "Line Roles" begin
+    # The rule after the title uses `top_line`, the rule after the column labels uses
+    # `header_line`, and the rules around the row group labels use `middle_line`.
+    expected = """
+\\begin{tabular}{|r|r|r|}
+  \\multicolumn{3}{@{}c@{}}{\\textbf{\\large{T}}} \\\\
+  \\toprule
+   & \\textbf{Col. 1} & \\textbf{Col. 2} \\\\
+  \\midrule
+   & 1 & 2 \\\\
+  \\hline
+  \\multicolumn{3}{|l|}{\\textbf{G}} \\\\
+  \\hline
+   & 3 & 4 \\\\
+  \\hline
+  \\textbf{S} & 4 & 6 \\\\
+  \\bottomrule
+\\end{tabular}
+"""
+
+    result = pretty_table(
+        String,
+        [1 2; 3 4];
+        backend = :latex,
+        row_group_labels = [2 => "G"],
+        summary_row_labels = ["S"],
+        summary_rows = [(data, j) -> sum(data[:, j])],
+        table_format = LatexTableFormat(;
+            borders = LatexTableBorders(;
+                top_line    = "\\toprule",
+                header_line = "\\midrule",
+                middle_line = "\\hline",
+                bottom_line = "\\bottomrule",
+            ),
+        ),
+        title = "T",
+    )
+
+    @test result == expected
+end

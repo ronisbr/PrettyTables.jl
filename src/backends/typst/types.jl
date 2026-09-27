@@ -189,13 +189,15 @@ https://typst.app/docs/reference/visualize/stroke/
 
 ## Horizontal Lines
 
-- `top_line::String`: Stroke for the top border of the table.
+- `top_line::String`: Stroke for the top border of the table, which is drawn after the
+    title and subtitle.
     (**Default**: `"1.5pt"`)
-- `header_line::String`: Stroke for the line below the table header.
+- `header_line::String`: Stroke for the line after the column labels.
     (**Default**: `"0.8pt"`)
 - `merged_header_cell_line::String`: Stroke for the line below merged header cells.
     (**Default**: `"0.8pt"`)
-- `middle_line::String`: Stroke for horizontal lines inside the table body.
+- `middle_line::String`: Stroke for horizontal lines inside the table body, including the
+    lines around the row group labels.
     (**Default**: `"0.5pt"`)
 - `bottom_line::String`: Stroke for the bottom border of the table.
     (**Default**: `"1.5pt"`)

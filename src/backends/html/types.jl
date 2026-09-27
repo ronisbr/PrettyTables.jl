@@ -147,13 +147,15 @@ CSS `border` shorthand value (e.g., `"1px dashed #0000ff"`).
 
 ## Horizontal Lines
 
-- `top_line::String`: Border at the top of the table.
+- `top_line::String`: Border at the top of the table and of the line before the column
+    labels when the table has a title or subtitle.
     (**Default**: `"2px solid black"`)
-- `header_line::String`: Border of the lines surrounding the column labels.
+- `header_line::String`: Border of the line after the column labels.
     (**Default**: `"1px solid black"`)
 - `merged_header_cell_line::String`: Border below merged column label cells.
     (**Default**: `"1px solid black"`)
-- `middle_line::String`: Border of horizontal lines inside the table body.
+- `middle_line::String`: Border of horizontal lines inside the table body, including the
+    lines around the row group labels.
     (**Default**: `"1px solid black"`)
 - `bottom_line::String`: Border at the bottom of the table.
     (**Default**: `"2px solid black"`)

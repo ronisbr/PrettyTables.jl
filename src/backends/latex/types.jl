@@ -36,14 +36,16 @@ the table environment and cannot be customized here.
 
 # Fields
 
-- `top_line::String`: Rule at the top of the table.
+- `top_line::String`: Rule at the top of the table, which is drawn after the title and
+    subtitle.
     (**Default**: `"\\\\hline"`)
-- `header_line::String`: Rule of the lines surrounding the column labels.
+- `header_line::String`: Rule after the column labels.
     (**Default**: `"\\\\hline"`)
 - `merged_header_cell_line::String`: Command of the rule under merged column label cells,
     to which the back end appends the column range.
     (**Default**: `"\\\\cline"`)
-- `middle_line::String`: Rule of the horizontal lines inside the table body.
+- `middle_line::String`: Rule of the horizontal lines inside the table body, including
+    the lines around the row group labels.
     (**Default**: `"\\\\hline"`)
 - `bottom_line::String`: Rule at the bottom of the table.
     (**Default**: `"\\\\hline"`)

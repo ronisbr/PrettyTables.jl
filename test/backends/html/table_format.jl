@@ -232,7 +232,9 @@ end
     @testset "Horizontal Line Before Column Labels" begin
         on  = _render_lines("columnLabelRow"; horizontal_line_before_column_labels = true)
         off = _render_lines("columnLabelRow")
-        @test occursin("border-top: 1px solid black", first(on))
+
+        # The line before the column labels uses the top line style.
+        @test occursin("border-top: 2px solid black", first(on))
         @test all(l -> !occursin("border-top", l), off)
     end
 
@@ -357,6 +359,37 @@ end
     @test occursin("border-bottom: 4px double red", lines[i])
 end
 
+@testset "Line Roles" begin
+    # The line before the column labels uses `top_line`, the line after them uses
+    # `header_line`, and the lines around the row group labels use `middle_line`.
+    output = pretty_table(
+        String,
+        [1 2; 3 4];
+        backend = :html,
+        row_group_labels = [2 => "G"],
+        table_format = HtmlTableFormat(;
+            @html__all_horizontal_lines,
+            borders = HtmlTableBorders(;
+                top_line    = "1px solid red",
+                header_line = "2px solid red",
+                middle_line = "3px solid red",
+                bottom_line = "4px solid red",
+            ),
+        ),
+        title = "T",
+    )
+
+    @test occursin(
+        "<tr class = \"columnLabelRow\" style = \"border-bottom: 2px solid red; border-top: 1px solid red;\">",
+        output,
+    )
+
+    @test occursin(
+        "<tr class = \"rowGroupLabel\" style = \"border-bottom: 3px solid red; border-top: 3px solid red;\">",
+        output,
+    )
+end
+
 @testset "Border Override Precedence" begin
     matrix = [1 2; 3 4]
 
@@ -451,7 +484,7 @@ end
     <tr class = "title">
       <td colspan = "3" style = "font-size: x-large; font-weight: bold; text-align: center;">Title</td>
     </tr>
-    <tr class = "columnLabelRow" style = "border-bottom: 1px solid black; border-top: 1px solid black;">
+    <tr class = "columnLabelRow" style = "border-bottom: 1px solid black; border-top: 2px solid black;">
       <th class = "stubheadLabel" style = "font-weight: bold; text-align: right;"></th>
       <th style = "font-weight: bold; text-align: right;">Col. 1</th>
       <th style = "font-weight: bold; text-align: right;">Col. 2</th>

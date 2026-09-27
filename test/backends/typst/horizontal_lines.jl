@@ -66,3 +66,37 @@ end
     @test occursin("table.hline(y: 2, stroke: 0.5pt,),", result)
     @test occursin("table.hline(y: 3, stroke: 0.5pt,),", result)
 end
+
+@testset "Line Roles" begin
+    # The line after the title uses `top_line`, the line after the column labels uses
+    # `header_line`, and the lines around the row group labels use `middle_line`.
+    result = pretty_table(
+        String,
+        [1 2; 3 4];
+        annotate = false,
+        backend = :typst,
+        row_group_labels = [2 => "G"],
+        summary_row_labels = ["S"],
+        summary_rows = [(data, j) -> sum(data[:, j])],
+        table_format = TypstTableFormat(;
+            borders = TypstTableBorders(;
+                top_line    = "1pt",
+                header_line = "2pt",
+                middle_line = "3pt",
+                bottom_line = "4pt",
+            ),
+        ),
+        title = "T",
+    )
+
+    hlines = filter(l -> occursin("table.hline", l), split(result, '\n'))
+
+    @test hlines == [
+        "    table.hline(y: 1, stroke: 1pt,),",
+        "    table.hline(y: 2, stroke: 2pt,),",
+        "    table.hline(y: 3, stroke: 3pt,),",
+        "    table.hline(y: 4, stroke: 3pt,),",
+        "    table.hline(y: 5, stroke: 3pt,),",
+        "    table.hline(y: 6, stroke: 4pt,),",
+    ]
+end

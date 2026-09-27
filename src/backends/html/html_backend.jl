@@ -402,12 +402,13 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
             if rs == :column_labels
                 # The line before the column labels is only emitted when the table has a
                 # title or subtitle. Otherwise, this line coincides with the top border of
-                # the table.
+                # the table. As in the other back ends, the line before the first row after
+                # the title and subtitle uses the top line style.
                 (
                     tf.horizontal_line_before_column_labels &&
                     (ps.i == 1) &&
                     (prev_rs == :table_header)
-                ) && (row_border_top = tf.borders.header_line)
+                ) && (row_border_top = tf.borders.top_line)
 
                 if tf.horizontal_line_after_column_labels && (ps.i == num_column_label_rows)
                     row_border_bottom = last_ruled_row ?

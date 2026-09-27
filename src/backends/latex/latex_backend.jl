@@ -151,11 +151,12 @@ function _latex__print_core(pspec::PrintingSpec, opts::LatexPrintOptions)
 
             hline_str = ""
 
-            # Print the horizontal line after the column labels.
+            # Print the horizontal line at the beginning of the table, which is drawn after
+            # the title and subtitle.
             if (rs == :table_header) &&
                 (next_rs != :table_header) &&
                 tf.horizontal_line_at_beginning
-                hline_str *= tf.borders.header_line
+                hline_str *= tf.borders.top_line
                 first_table_line = false
 
             elseif (rs == :column_labels)
@@ -202,13 +203,13 @@ function _latex__print_core(pspec::PrintingSpec, opts::LatexPrintOptions)
                 hline_str *= tf.borders.middle_line
 
             elseif (rs == :row_group_label) && tf.horizontal_line_after_row_group_label
-                hline_str *= tf.borders.header_line
+                hline_str *= tf.borders.middle_line
 
                 # Check if we must print the horizontal line at the end of the table.
             elseif (rs == :summary_row) &&
                 (next_rs != :summary_row) &&
                 tf.horizontal_line_after_summary_rows
-                hline_str *= tf.borders.header_line
+                hline_str *= tf.borders.middle_line
             end
 
             # If the next section is the end of the table and we need to draw a horizontal

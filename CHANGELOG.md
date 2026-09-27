@@ -180,6 +180,12 @@ Version 3.5.0
   styled string, was emitted without escaping, allowing the injection of HTML code.
   Furthermore, the views into styled strings are now rendered as styled strings in every
   back end.
+- ![Bugfix][badge-bugfix] Use the same border for each horizontal line in the HTML, LaTeX,
+  and Typst back ends: `top_line` for the line before the first row after the title and
+  subtitle, `header_line` only for the line after the column labels, and `middle_line` for
+  the lines around the row group labels. The LaTeX back end used `header_line` for the line
+  after the title and after the row group labels, and the HTML back end used it for the
+  line before the column labels.
 - ![Bugfix][badge-bugfix] Emit the HTML, LaTeX, or Typst representation of a cell unchanged
   when the renderer is `:show`, instead of escaping it.
 - ![Bugfix][badge-bugfix] Validate the length of the vectors with one column label style
