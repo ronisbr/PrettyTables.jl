@@ -39,14 +39,6 @@ end
 _markdown__cell_to_str(::UndefinedCell, ::RenderContext, ::Val{:print}) = "#undef"
 _markdown__cell_to_str(::UndefinedCell, ::RenderContext, ::Val{:show}) = "#undef"
 
-function _markdown__cell_to_str(cell::MergeCells, context::RenderContext, ::Val{:print})
-    return _markdown__cell_to_str(cell.data, context, Val(:print))
-end
-
-function _markdown__cell_to_str(cell::MergeCells, context::RenderContext, ::Val{:show})
-    return _markdown__cell_to_str(cell.data, context, Val(:show))
-end
-
 """
     _markdown__render_cell(
         cell::Any,

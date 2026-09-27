@@ -147,6 +147,10 @@ function _markdown__print_core(pspec::PrintingSpec, opts::MarkdownPrintOptions)
 
         cell = _current_cell(action, ps, table_data)
 
+        # The content of a merged cell must be rendered like any other cell. Otherwise, the
+        # special rendering of, e.g., Markdown and styled strings would be lost.
+        (cell isa MergeCells) && (cell = cell.data)
+
         rendered_cell = if cell !== _IGNORE_CELL
             _markdown__render_cell(
                 cell, rctx, renderer; allow_markdown_in_cells, line_breaks
