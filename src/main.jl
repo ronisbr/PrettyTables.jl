@@ -405,6 +405,14 @@ Base.@constprop :none Base.@nospecializeinfer function _pretty_table(
         throw(ArgumentError("The renderer must be `:print` or `:show`."))
     end
 
+    !isnothing(footnotes) && _validate_footnotes(
+        footnotes,
+        num_rows,
+        num_columns,
+        length(column_labels),
+        isnothing(summary_rows) ? 0 : length(summary_rows),
+    )
+
     if (vertical_crop_mode != :bottom) && (vertical_crop_mode != :middle)
         throw(ArgumentError("The vertical crop mode must be `:bottom` or `:middle`."))
     end
@@ -622,6 +630,57 @@ function _resolve_generic_configurations(
     )
 
     return kwargs
+end
+
+"""
+    _validate_footnotes(footnotes::Vector{Pair{FootnoteTuple, String}}, num_rows::Int, num_columns::Int, num_column_label_rows::Int, num_summary_rows::Int) -> Nothing
+
+Throw an `ArgumentError` if a footnote in `footnotes` references an unknown section or a cell
+outside that section, considering a table with `num_rows` data rows, `num_columns` data
+columns, `num_column_label_rows` rows of column labels, and `num_summary_rows` summary rows.
+Notice that the footnotes referencing a cell that is not printed because the table is
+cropped are valid.
+"""
+function _validate_footnotes(
+    footnotes::Vector{Pair{FootnoteTuple, String}},
+    num_rows::Int,
+    num_columns::Int,
+    num_column_label_rows::Int,
+    num_summary_rows::Int,
+)
+    for ((section, i, j), _) in footnotes
+        # Number of rows and columns of the section. A column range of `nothing` means that
+        # the column index is not used.
+        rows, columns = if section ∈ (:title, :subtitle)
+            1, nothing
+        elseif section === :column_label
+            num_column_label_rows, num_columns
+        elseif section === :data
+            num_rows, num_columns
+        elseif section ∈ (:row_number, :row_label)
+            num_rows, nothing
+        elseif section === :summary_row_label
+            num_summary_rows, nothing
+        elseif section === :summary_row_cell
+            num_summary_rows, num_columns
+        else
+            throw(
+                ArgumentError(
+                    "Invalid footnote section `:$section`. The available sections are `:title`, `:subtitle`, `:column_label`, `:data`, `:row_number`, `:row_label`, `:summary_row_label`, and `:summary_row_cell`."
+                )
+            )
+        end
+
+        if !(1 <= i <= rows) || (!isnothing(columns) && !(1 <= j <= columns))
+            throw(
+                ArgumentError(
+                    "The footnote `($(repr(section)), $i, $j)` references a cell outside the section `:$section`."
+                )
+            )
+        end
+    end
+
+    return nothing
 end
 
 """

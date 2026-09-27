@@ -101,6 +101,44 @@ end
     )
 end
 
+@testset "Footnotes" begin
+    data = [1 2; 3 4]
+    kw = (; summary_rows = [(d, j) -> 0])
+
+    @test_throws "Invalid footnote section `:foo`." pretty_table(
+        String, data; kw..., footnotes = [(:foo, 1, 1) => "F"]
+    )
+
+    @test_throws "Invalid footnote section `:stubhead_label`." pretty_table(
+        String, data; kw..., footnotes = [(:stubhead_label, 1, 1) => "F"]
+    )
+
+    for (section, i, j) in (
+        (:title, 2, 1),
+        (:subtitle, 0, 1),
+        (:column_label, 2, 1),
+        (:column_label, 1, 3),
+        (:data, 3, 1),
+        (:data, 1, 0),
+        (:row_number, 3, 1),
+        (:row_label, 0, 1),
+        (:summary_row_label, 2, 1),
+        (:summary_row_cell, 1, 3),
+    )
+        @test_throws "references a cell outside the section `:$section`." pretty_table(
+            String, data; kw..., footnotes = [(section, i, j) => "F"]
+        )
+    end
+
+    # The column index is not used by the sections that span the entire row.
+    @test pretty_table(String, data; footnotes = [(:row_label, 1, 10) => "F"]) isa String
+
+    # A footnote in a cell that is not printed because the table is cropped is valid.
+    @test pretty_table(
+        String, data; maximum_number_of_rows = 1, footnotes = [(:data, 2, 2) => "F"]
+    ) isa String
+end
+
 @testset "Merge Cell Specifications" begin
     data = [1 2 3 4]
     merge_column_label_cells = [MergeCells(1, 1, 2, :c), MergeCells(1, 2, 2, :c)]
