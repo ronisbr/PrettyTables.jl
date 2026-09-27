@@ -51,6 +51,7 @@ end
 @testset "Word Back End Tests" verbose = true begin
     include("./backends/docx/helpers.jl")
     include("./backends/docx/alignment.jl")
+    include("./backends/docx/column_headers.jl")
     include("./backends/docx/structure.jl")
     include("./backends/docx/table_format.jl")
     include("./backends/docx/styles.jl")
