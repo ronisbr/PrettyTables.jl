@@ -221,7 +221,9 @@ function _docx__render_table_core(pspec::PrintingSpec, opts::DocxPrintOptions)
             cell = DocxCell([DocxRun(text)], :c, :center, style.data_cell)
             push!(row.cells, cell)
 
-            max_col_length[jr] = max(max_col_length[jr], _docx__cell_width(cell, cell_padding))
+            max_col_length[jr] = max(
+                max_col_length[jr], _docx__cell_width(cell, cell_padding)
+            )
 
         else
             table_cell = _current_cell(action, ps, table_data)

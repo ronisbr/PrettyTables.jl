@@ -7,8 +7,8 @@
 # Border of a cell side that must not be drawn. It must never be mutated.
 const _DOCX__NO_BORDER = DocxPair[]
 
-# Font size [pt] used by Word when neither the document nor the decoration defines one. It is
-# only used to estimate the column widths.
+# Font size [pt] used by Word when neither the document nor the decoration defines one. It
+# is only used to estimate the column widths.
 const _DOCX__DEFAULT_FONT_SIZE = 10.0
 
 """
@@ -155,8 +155,8 @@ function _docx__border_style(name::String)
     style = Symbol(name)
 
     # Notice that we must search the instances instead of checking whether `style` is
-    # defined in the enum module. Otherwise, names like `T`, which is the enum type, would be
-    # accepted.
+    # defined in the enum module. Otherwise, names like `T`, which is the enum type, would
+    # be accepted.
     for s in instances(W.BorderStyle.T)
         (Symbol(s) === style) && return s
     end
@@ -317,9 +317,10 @@ end
 
 Convert the runs of `cell` to Word text runs, merging the decoration of each run with the
 one of the cell. Notice that the latter, which contains the section style and the
-highlighter decoration, takes precedence as in the Excel back end. A line break inside the text of a run becomes a Word line break so that
-the entire cell content stays in one paragraph, and a tab becomes a Word tab. The text is
-sanitized with [`_docx__sanitize_text`](@ref).
+highlighter decoration, takes precedence as in the Excel back end. A line break inside the
+text of a run becomes a Word line break so that the entire cell content stays in one
+paragraph, and a tab becomes a Word tab. The text is sanitized with
+[`_docx__sanitize_text`](@ref).
 """
 function _docx__runs(cell::DocxCell)
     runs = W.Run[]
@@ -385,16 +386,21 @@ function _docx__table_cell(cell::DocxCell, width::Union{Nothing, W.Length})
 end
 
 """
-    _docx__table(rows::Vector{DocxRow}, cell_margins::NTuple{4, Float64}, column_widths::Vector{Float64}, fixed_layout::Bool) -> W.Table
+    _docx__table(
+        rows::Vector{DocxRow},
+        cell_margins::NTuple{4, Float64},
+        column_widths::Vector{Float64},
+        fixed_layout::Bool
+    ) -> W.Table
 
 Convert the accumulated `rows` to a Word table, applying `cell_margins`, in points, to every
 cell. `column_widths` contains the width of each table column in points and it is written as
 the table grid.
 
-If `fixed_layout` is `true`, Word lays the columns out exactly at `column_widths`. Hence, the
-width of the table and of each cell are also set to the ones computed from `column_widths`.
-Otherwise, Word adjusts the columns to the content, using the grid only as the initial
-widths.
+If `fixed_layout` is `true`, Word lays the columns out exactly at `column_widths`. Hence,
+the width of the table and of each cell are also set to the ones computed from
+`column_widths`. Otherwise, Word adjusts the columns to the content, using the grid only as
+the initial widths.
 """
 function _docx__table(
     rows::Vector{DocxRow},
@@ -438,7 +444,10 @@ end
 ############################################################################################
 
 """
-    _docx__data_column_widths(widths::Union{Real, AbstractVector{<:Real}}, num_columns::Int) -> Vector{Float64}
+    _docx__data_column_widths(
+        widths::Union{Real, AbstractVector{<:Real}},
+        num_columns::Int
+    ) -> Vector{Float64}
 
 Convert `widths` to a vector with the width of each of the `num_columns` data columns. A
 scalar applies to all columns. Notice that the length of a vector must be checked before
@@ -512,7 +521,15 @@ function _docx__cell_width(cell::DocxCell, padding::Float64)
 end
 
 """
-    _docx__get_col_width(col::Int, max_col_length::Vector{Float64}, num_leading_columns::Int, num_printed_data_columns::Int, data_column_widths::AbstractVector{Float64}, minimum_data_column_widths::AbstractVector{Float64}, maximum_data_column_widths::AbstractVector{Float64}) -> Float64
+    _docx__get_col_width(
+        col::Int,
+        max_col_length::Vector{Float64},
+        num_leading_columns::Int,
+        num_printed_data_columns::Int,
+        data_column_widths::AbstractVector{Float64},
+        minimum_data_column_widths::AbstractVector{Float64},
+        maximum_data_column_widths::AbstractVector{Float64}
+    ) -> Float64
 
 Resolve the width, in points, of the table column `col`. The columns that are not data
 columns (row number, row label, and continuation columns) keep the estimated width in

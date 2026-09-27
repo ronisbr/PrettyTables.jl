@@ -190,8 +190,8 @@ function _excel__get_col_width(
 )
     j = col - col_offset
 
-    # Don't limit non-data cells. Notice that the continuation column must not use the widths
-    # of the first hidden data column.
+    # Don't limit non-data cells. Notice that the continuation column must not use the
+    # widths of the first hidden data column.
     !(1 <= j <= num_printed_data_columns) && return max_col_length[col]
 
     # A positive explicit width overrides everything.
@@ -211,7 +211,10 @@ function _excel__get_col_width(
 end
 
 """
-    _excel__data_column_widths(widths::Union{Real, AbstractVector{<:Real}}, num_columns::Int) -> Vector{Float64}
+    _excel__data_column_widths(
+        widths::Union{Real, AbstractVector{<:Real}},
+        num_columns::Int
+    ) -> Vector{Float64}
 
 Convert `widths` to a vector with the width of each of the `num_columns` data columns. A
 scalar applies to all columns. Notice that the length of a vector must be checked before
