@@ -65,7 +65,9 @@ function _text__fix_data_column_widths!(
             cw = printed_data_column_widths[j]
 
             for i in axes(table, 1)
-                table[i, j] = _text__crop_cell_to_width(table[i, j], cw, line_breaks)
+                table[i, j] = _text__fit_cell_in_maximum_cell_width(
+                    table[i, j], cw, line_breaks
+                )
             end
         end
     end
@@ -88,7 +90,9 @@ function _text__fix_data_column_widths!(
                 printed_data_column_widths, j₀, j₁, vertical_lines_at_data_columns
             )
 
-            column_labels[i, j] = _text__crop_cell_to_width(column_labels[i, j], cw, line_breaks)
+            column_labels[i, j] = _text__fit_cell_in_maximum_cell_width(
+                column_labels[i, j], cw, line_breaks
+            )
         end
     end
 
@@ -124,77 +128,40 @@ function _text__span_width(
 end
 
 """
-    _text__crop_cell_to_width(str::String, cw::Int, line_breaks::Bool) -> String
-
-Crop each line of the cell `str` to fit the width `cw`, adding a continuation character at
-the end of the cropped lines. If `line_breaks` is `false`, `str` is treated as a single
-line.
-"""
-function _text__crop_cell_to_width(str::String, cw::Int, line_breaks::Bool)
-    if !line_breaks
-        tw = printable_textwidth(str)
-        tw <= cw && return str
-
-        str = first(right_crop(str, tw - cw + 1))
-        return str * "…"
-    end
-
-    tokens = split(str, '\n')
-
-    for l in eachindex(tokens)
-        line = tokens[l]
-        tw   = printable_textwidth(line)
-        tw <= cw && continue
-
-        line = first(right_crop(line, tw - cw + 1))
-        line *= "…"
-        tokens[l] = line
-    end
-
-    return join(tokens, '\n')
-end
-
-"""
     _text__fit_cell_in_maximum_cell_width(
         cell_str::String,
         maximum_cell_width::Int,
         line_breaks::Bool
     ) -> String
 
-Fit the cell with text `cell_str` in a field with a maximum width `maximum_cell_width`. If
-`line_breaks` is `true`, the cell will be split into multiple lines before fitting it.
+Fit the cell with text `cell_str` in a field with a maximum width `maximum_cell_width`,
+cropping each line that does not fit and adding a continuation character at its end. If
+`line_breaks` is `false`, `cell_str` is treated as a single line. If `maximum_cell_width` is
+lower than 1, the cell is returned unchanged.
 """
 function _text__fit_cell_in_maximum_cell_width(
     cell_str::String, maximum_cell_width::Int, line_breaks::Bool
 )
     maximum_cell_width < 1 && return cell_str
 
-    if !line_breaks
-        tw = printable_textwidth(cell_str)
-        tw <= maximum_cell_width && return cell_str
-
-        cell_str, _ = right_crop(cell_str, tw - maximum_cell_width + 1)
-        cell_str *= "…"
-    else
-        tokens = split(cell_str, '\n')
-        fitted_tokens = Vector{String}(undef, length(tokens))
-
-        for k in eachindex(tokens)
-            t  = tokens[k]
-            tw = printable_textwidth(t)
-
-            if tw > maximum_cell_width
-                t = first(right_crop(t, tw - maximum_cell_width + 1))
-                t *= "…"
-            end
-
-            fitted_tokens[k] = t
-        end
-
-        cell_str = join(fitted_tokens, '\n')
+    if !line_breaks || !occursin('\n', cell_str)
+        return _text__fit_line_in_width(cell_str, maximum_cell_width)
     end
 
-    return cell_str
+    lines = eachsplit(cell_str, '\n')
+    return join((_text__fit_line_in_width(l, maximum_cell_width) for l in lines), '\n')
+end
+
+"""
+    _text__fit_line_in_width(line::AbstractString, width::Int) -> String
+
+Crop the `line` to fit in `width`, adding a continuation character at its end, if its
+printable width is larger than `width`.
+"""
+function _text__fit_line_in_width(line::AbstractString, width::Int)
+    tw = printable_textwidth(line)
+    tw <= width && return String(line)
+    return first(right_crop(line, tw - width + 1)) * "…"
 end
 
 """

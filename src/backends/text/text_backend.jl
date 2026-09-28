@@ -442,13 +442,7 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
             cls = @views column_labels[:, j]
 
             for i in eachindex(cls)
-                str = cls[i]
-                tw  = printable_textwidth(str)
-
-                tw <= cw && continue
-
-                str, _ = right_crop(str, tw - printed_data_column_widths[j] + 1)
-                cls[i] = str * "…"
+                cls[i] = _text__fit_cell_in_maximum_cell_width(cls[i], cw, false)
             end
         end
     end
