@@ -105,7 +105,7 @@
         # `^` must be escaped as `\textasciicircum{}`. Notice that `\^` is the circumflex
         # *accent* command, which takes the next character as its argument. Hence, `a\^b`
         # would typeset `b` with a circumflex instead of showing a literal caret.
-        matrix = ["a^b" "c%d" "e&f" "g_h" "i#j" "k{l}" "m~n" "o\\p" "q\$r"]
+        matrix = ["a^b" "c%d" "e&f" "g_h" "i#j" "k{l}" "m~n" "o\\p" "q\$r" "s|t" "u\"v"]
 
         result = pretty_table(String, matrix; backend = :latex)
 
@@ -118,6 +118,10 @@
         @test occursin("m\\textasciitilde{}n", result)
         @test occursin("o\\textbackslash{}p", result)
         @test occursin("q\\\$r", result)
+
+        # Under the OT1 font encoding, `|` and `"` are typeset as `—` and `”`.
+        @test occursin("s\\textbar{}t", result)
+        @test occursin("u\\textquotedbl{}v", result)
     end
 end
 

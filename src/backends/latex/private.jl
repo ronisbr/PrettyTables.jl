@@ -42,11 +42,13 @@ omitted, the escaped string is returned.
 
 The LaTeX metacharacters `%`, `#`, `$`, `&`, `_`, `{`, and `}` are escaped, `^` and `~` are
 replaced by `\textasciicircum{}` and `\textasciitilde{}`, and the backslash itself is
-replaced by `\textbackslash{}`. Control and non-printable characters are emitted using a
-`\textbackslash{}x`, `\textbackslash{}u`, or `\textbackslash{}U` sequence.
+replaced by `\textbackslash{}`. The characters `|` and `"`, which are typeset as `—` and
+`”` under the OT1 font encoding, are replaced by `\textbar{}` and `\textquotedbl{}`.
+Control and non-printable characters are emitted using a `\textbackslash{}x`,
+`\textbackslash{}u`, or `\textbackslash{}U` sequence.
 
-Notice that `<`, `>`, `"`, and `'` are **not** escaped. Under the OT1 font encoding, `<` and
-`>` are typeset as `¡` and `¿`.
+Notice that `<`, `>`, and `'` are **not** escaped. Under the OT1 font encoding, `<` and `>`
+are typeset as `¡` and `¿`.
 """
 function _latex__escape_str(io::IO, s::AbstractString)
     a = Iterators.Stateful(s)
@@ -65,6 +67,8 @@ function _latex__escape_str(io::IO, s::AbstractString)
             c == '{'          ? print(io, "\\{") :
             c == '}'          ? print(io, "\\}") :
             c == '~'          ? print(io, "\\textasciitilde{}") :
+            c == '|'          ? print(io, "\\textbar{}") :
+            c == '"'          ? print(io, "\\textquotedbl{}") :
             isprint(c)        ? print(io, c) :
             print(io, "\\textbackslash{}x", string(UInt32(c); base = 16, pad = 2))
         elseif !Base.isoverlong(c) && !Base.ismalformed(c)
