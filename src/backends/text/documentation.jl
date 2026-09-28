@@ -61,6 +61,8 @@ the output.
 - `highlighters::Vector{<:AbstractHighlighter}`: Highlighters to apply to the table. For more
     information, see the section **Text Highlighters** in the **Extended Help**.
 - `line_breaks::Bool`: If `true`, a new line character will break the line inside the cells.
+    Notice that, if the display limits the number of printed rows, the table is cropped at
+    the bottom even if `vertical_crop_mode` is `:middle`.
     (**Default** = `false`)
 - `maximum_data_column_widths::Union{Int, Vector{Int}}`: If it is a `Vector{Int}`, this
     vector specifies the maximum width of each column. If it is an `Int`, this number will

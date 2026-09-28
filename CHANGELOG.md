@@ -196,6 +196,9 @@ Version 3.5.0
   label added a column to the table.
 - ![Bugfix][badge-bugfix] Escape the stubhead label and the row number column label in the
   Markdown back end, as the column labels.
+- ![Bugfix][badge-bugfix] Keep the middle cropping of text tables with line breaks if the
+  display does not limit the number of printed rows. It was always replaced by the bottom
+  cropping when the table had to fit in the display.
 - ![Bugfix][badge-bugfix] Consider the line of the omitted cell summary when fitting a text
   table whose data columns are omitted in the display height. It was only considered if
   data rows were also omitted, making the table one line taller than the display.

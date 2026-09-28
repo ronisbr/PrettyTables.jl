@@ -287,12 +287,6 @@ function _text__print_table_core(
     suppress_hline_after_continuation_row  = false
 
     if fit_table_in_display_vertically && (display_size[1] > 0)
-        # We do not support middle cropping when using line breaks since it will require a
-        # much more complex algorithm, decreasing the maintainability.
-        if line_breaks
-            table_data.vertical_crop_mode = :bottom
-        end
-
         # NOTE: In case we have line breaks, this design is only preliminary. In this case,
         # we perform the following actions:
         #
@@ -306,7 +300,7 @@ function _text__print_table_core(
         # display.
         omitted_columns = omitted_columns || _is_horizontally_cropped(table_data)
 
-        mr, suppress_hline_before_continuation_row, suppress_hline_after_continuation_row = _text__design_vertical_cropping(
+        design = _text__design_vertical_cropping(
             table_data,
             tf,
             horizontal_lines_at_column_labels,
@@ -317,6 +311,32 @@ function _text__print_table_core(
             omitted_columns,
         )
 
+        # We do not support the middle cropping by the display when using line breaks since
+        # it will require a much more complex algorithm, decreasing the maintainability.
+        # Hence, if the display limits the rows even with one line per row, we must use the
+        # bottom cropping. Otherwise, the middle cropping is checked again after rendering
+        # the table (see below).
+        if (
+            line_breaks &&
+            (table_data.vertical_crop_mode == :middle) &&
+            (first(design) < _number_of_printed_data_rows(table_data))
+        )
+            table_data.vertical_crop_mode = :bottom
+
+            design = _text__design_vertical_cropping(
+                table_data,
+                tf,
+                horizontal_lines_at_column_labels,
+                horizontal_lines_at_data_rows,
+                pspec.show_omitted_cell_summary,
+                display.size[1],
+                pspec.new_line_at_end,
+                omitted_columns,
+            )
+        end
+
+        mr, suppress_hline_before_continuation_row, suppress_hline_after_continuation_row = design
+
         if table_data.maximum_number_of_rows >= 0
             vertically_limited_by_display = mr < table_data.maximum_number_of_rows
             table_data.maximum_number_of_rows = min(table_data.maximum_number_of_rows, mr)
@@ -324,6 +344,7 @@ function _text__print_table_core(
             vertically_limited_by_display = mr < table_data.num_rows
             table_data.maximum_number_of_rows = mr
         end
+
     end
 
     # == Render the Table ==================================================================
@@ -681,12 +702,49 @@ function _text__print_table_core(
     # can print considering the multiple lines.
 
     if fit_table_in_display_vertically && (display_size[1] > 0) && line_breaks
+        num_design_rows = size(table_str, 1)
+
+        # If the user cropped the table in the middle, the rendered rows are the ones at the
+        # beginning and at the end of the table. If this table does not fit in the display,
+        # we must crop it at the bottom, which is the only mode supported with line breaks,
+        # using only the rendered rows at the beginning of the table.
+        if (table_data.vertical_crop_mode == :middle) && _is_vertically_cropped(table_data)
+            middle_cropped_table_lines = _text__middle_cropped_table_lines(
+                table_data,
+                table_str,
+                tf,
+                horizontal_lines_at_column_labels,
+                horizontal_lines_at_data_rows,
+                pspec.show_omitted_cell_summary,
+                pspec.new_line_at_end,
+                last_printed_column_index,
+            )
+
+            if middle_cropped_table_lines > display.size[1]
+                num_design_rows = div(num_design_rows, 2, RoundUp)
+                table_data.vertical_crop_mode = :bottom
+                table_data.maximum_number_of_rows = num_design_rows
+            else
+                # The lines of the middle cropping were counted without suppressing any
+                # horizontal line.
+                suppress_hline_before_continuation_row = false
+                suppress_hline_after_continuation_row  = false
+            end
+        end
+    end
+
+    if (
+        fit_table_in_display_vertically &&
+        (display_size[1] > 0) &&
+        line_breaks &&
+        (table_data.vertical_crop_mode == :bottom || !_is_vertically_cropped(table_data))
+    )
         # Notice that `mr` contains the number of fully printed data rows. Furthermore, if
         # `lrc` is `true`, the last row is cropped, meaning that we need to print `mr + 1`
         # rows from the rendered table.
         mr, lrc, suppress_hline_before_continuation_row = _text__design_vertical_cropping_with_line_breaks(
             table_data,
-            table_str,
+            @view(table_str[1:num_design_rows, :]),
             tf,
             horizontal_lines_at_column_labels,
             horizontal_lines_at_data_rows,
@@ -716,6 +774,11 @@ function _text__print_table_core(
         # variables.
         num_printed_data_rows = table_data.maximum_number_of_rows
         num_omitted_data_rows = table_data.num_rows - mr
+
+        # Only the bottom cropping is supported if the display crops a table with line
+        # breaks. Notice that, if the table was not cropped by the user, all the rows were
+        # rendered in order.
+        _is_vertically_cropped(table_data) && (table_data.vertical_crop_mode = :bottom)
     end
 
     # == Print the Table ===================================================================

@@ -1483,6 +1483,56 @@ end
         @test !occursin("G2", result)
     end
 
+    @testset "Middle Cropping With Line Breaks" begin
+        # The middle cropping must be kept if the display does not limit the rows.
+        expected = """
+┌────────┐
+│ Col. 1 │
+├────────┤
+│      1 │
+│      2 │
+│      ⋮ │
+│     19 │
+│     20 │
+└────────┘
+16 rows omitted
+"""
+
+        result = pretty_table(
+            String,
+            collect(1:20);
+            display_size = (100, 80),
+            line_breaks = true,
+            maximum_number_of_rows = 4,
+            vertical_crop_mode = :middle,
+        )
+
+        @test result == expected
+
+        # Otherwise, the bottom cropping must be used.
+        expected = """
+┌────────┐
+│ Col. 1 │
+├────────┤
+│      a │
+│      b │
+│      ⋮ │
+└────────┘
+19 rows omitted
+"""
+
+        result = pretty_table(
+            String,
+            fill("a\nb", 20);
+            display_size = (10, 80),
+            line_breaks = true,
+            maximum_number_of_rows = 4,
+            vertical_crop_mode = :middle,
+        )
+
+        @test result == expected
+    end
+
     @testset "Omitted Cell Summary With Omitted Columns" begin
         # If data columns are omitted, the omitted cell summary is printed even if the
         # table is not cropped vertically. Hence, its line must be considered.

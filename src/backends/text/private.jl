@@ -260,11 +260,12 @@ end
         table_data::TableData,
         tf::TextTableFormat,
         horizontal_lines_at_data_rows::AbstractVector{Int},
-        i::Int
+        i::Int,
+        num_lines::Int = 1
     ) -> Tuple{Int, Bool}
 
-Return the number of lines owned by the data row `i` when it is printed after the
-continuation row in the middle cropping. It includes the row group label before the row and
+Return the number of lines owned by the data row `i`, which has `num_lines` lines, when it
+is printed after the continuation row in the middle cropping. It includes the row group label before the row and
 the line above it. The second returned value indicates whether the line above the row was
 included and can be suppressed if the row is the first one after the continuation row.
 """
@@ -273,6 +274,7 @@ function _text__bottom_data_row_lines(
     tf::TextTableFormat,
     horizontal_lines_at_data_rows::AbstractVector{Int},
     i::Int,
+    num_lines::Int = 1,
 )
     # A row group label draws the line before it, which cannot be suppressed.
     if _print_row_group_label(table_data, i)
@@ -280,12 +282,12 @@ function _text__bottom_data_row_lines(
             table_data, tf, horizontal_lines_at_data_rows, i
         )
 
-        return 1 + group_lines, false
+        return num_lines + group_lines, false
     end
 
     hline = (i - 1) ∈ horizontal_lines_at_data_rows
 
-    return 1 + hline, hline
+    return num_lines + hline, hline
 end
 
 """
@@ -567,9 +569,87 @@ function _text__design_vertical_cropping(
 end
 
 """
-    _text__design_vertical_cropping_with_line_breaks(
+    _text__row_lines(table_str::AbstractMatrix{String}, i::Int, last_column::Int) -> Int
+
+Return the number of lines of the rendered row `i` in `table_str` considering the columns
+up to `last_column`.
+"""
+function _text__row_lines(table_str::AbstractMatrix{String}, i::Int, last_column::Int)
+    n = 0
+
+    for j in 1:last_column
+        n = max(n, count(==('\n'), table_str[i, j]))
+    end
+
+    return n + 1
+end
+
+"""
+    _text__middle_cropped_table_lines(
         table_data::TableData,
         table_str::Matrix{String},
+        tf::TextTableFormat,
+        horizontal_lines_at_column_labels::AbstractVector{Int},
+        horizontal_lines_at_data_rows::AbstractVector{Int},
+        show_omitted_row_summary::Bool,
+        new_line_at_end::Bool,
+        last_printed_column_index::Int
+    ) -> Int
+
+Return the number of lines required to print the table cropped in the middle by the user
+when it has line breaks. `table_str` must contain the rendered rows, which are the ones at
+the beginning and at the end of the table, and the columns up to
+`last_printed_column_index` are considered to compute the row heights.
+"""
+function _text__middle_cropped_table_lines(
+    table_data::TableData,
+    table_str::Matrix{String},
+    tf::TextTableFormat,
+    horizontal_lines_at_column_labels::AbstractVector{Int},
+    horizontal_lines_at_data_rows::AbstractVector{Int},
+    show_omitted_row_summary::Bool,
+    new_line_at_end::Bool,
+    last_printed_column_index::Int,
+)
+    _, num_lines_before_data, num_lines_after_data = _text__number_of_required_lines(
+        table_data,
+        tf,
+        horizontal_lines_at_column_labels,
+        horizontal_lines_at_data_rows,
+        new_line_at_end,
+    )
+
+    num_rendered_rows = size(table_str, 1)
+    num_top_rows      = div(num_rendered_rows, 2, RoundUp)
+    last_column       = clamp(last_printed_column_index, 0, size(table_str, 2))
+
+    # The continuation row and the omitted cell summary are always printed.
+    num_lines =
+        num_lines_before_data + num_lines_after_data + show_omitted_row_summary + 1
+
+    for r in 1:num_rendered_rows
+        row_lines = _text__row_lines(table_str, r, last_column)
+
+        num_lines += if r <= num_top_rows
+            first(_text__data_row_lines(
+                table_data, tf, horizontal_lines_at_data_rows, r, row_lines
+            ))
+        else
+            i = table_data.num_rows - num_rendered_rows + r
+
+            first(_text__bottom_data_row_lines(
+                table_data, tf, horizontal_lines_at_data_rows, i, row_lines
+            ))
+        end
+    end
+
+    return num_lines
+end
+
+"""
+    _text__design_vertical_cropping_with_line_breaks(
+        table_data::TableData,
+        table_str::AbstractMatrix{String},
         tf::TextTableFormat,
         horizontal_lines_at_column_labels::AbstractVector{Int},
         horizontal_lines_at_data_rows::AbstractVector{Int},
@@ -588,7 +668,8 @@ breaks.
 # Arguments
 
 - `table_data::TableData`: Table data.
-- `table_str::Matrix{String}`: Rendered table cells.
+- `table_str::AbstractMatrix{String}`: Rendered table cells, whose rows must be the data
+    rows at the beginning of the table.
 - `tf::TextTableFormat`: Table format.
 - `horizontal_lines_at_column_labels::AbstractVector{Int}`: Horizontal lines at column
     labels.
@@ -609,7 +690,7 @@ breaks.
 """
 function _text__design_vertical_cropping_with_line_breaks(
     table_data::TableData,
-    table_str::Matrix{String},
+    table_str::AbstractMatrix{String},
     tf::TextTableFormat,
     horizontal_lines_at_column_labels::AbstractVector{Int},
     horizontal_lines_at_data_rows::AbstractVector{Int},
@@ -644,9 +725,6 @@ function _text__design_vertical_cropping_with_line_breaks(
 
     num_rendered_rows = min(size(table_str, 1), num_rows)
 
-    # Number of lines in the row `i`.
-    row_lines(i) = 1 + maximum(j -> count(==('\n'), table_str[i, j]), 1:last_column)
-
     # If all the rows were rendered, we must check if we can draw the entire table, meaning
     # that a continuation line is not necessary. In this case, we replace the one line per
     # row in the total number of lines by the actual number of lines. Notice that the
@@ -655,7 +733,7 @@ function _text__design_vertical_cropping_with_line_breaks(
         total_table_lines += show_omitted_row_summary && omitted_columns
 
         for i in 1:num_rows
-            total_table_lines += row_lines(i) - 1
+            total_table_lines += _text__row_lines(table_str, i, last_column) - 1
         end
 
         (total_table_lines <= display_number_of_rows) && return num_rows, false, false
@@ -674,8 +752,9 @@ function _text__design_vertical_cropping_with_line_breaks(
     last_row_cropped  = false
 
     for i in 1:num_rendered_rows
-        Δ, hline = _text__data_row_lines(
-            table_data, tf, horizontal_lines_at_data_rows, i, row_lines(i)
+        row_lines = _text__row_lines(table_str, i, last_column)
+        Δ, hline  = _text__data_row_lines(
+            table_data, tf, horizontal_lines_at_data_rows, i, row_lines
         )
 
         num_remaining_lines = available_lines - num_printed_lines
