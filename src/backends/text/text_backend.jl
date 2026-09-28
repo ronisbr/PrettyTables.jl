@@ -819,20 +819,12 @@ function _text__print_table_core(
             num_omitted_data_columns > 0,
         )
 
-        if table_data.maximum_number_of_rows >= 0
-            vertically_limited_by_display =
-                vertically_limited_by_display || (mr < table_data.maximum_number_of_rows)
+        # Notice that the maximum number of rows is not negative here because it was set by
+        # the preliminary design.
+        vertically_limited_by_display =
+            vertically_limited_by_display || (mr < table_data.maximum_number_of_rows)
 
-            table_data.maximum_number_of_rows = min(
-                table_data.maximum_number_of_rows, mr + lrc
-            )
-        else
-            vertically_limited_by_display =
-                vertically_limited_by_display ||
-                (num_printed_data_rows < table_data.num_rows)
-
-            table_data.maximum_number_of_rows = mr + lrc
-        end
+        table_data.maximum_number_of_rows = min(table_data.maximum_number_of_rows, mr + lrc)
 
         # Now that we have the number of fully printed data rows, we must update those
         # variables.
