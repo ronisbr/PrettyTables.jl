@@ -196,6 +196,9 @@ Version 3.5.0
   label added a column to the table.
 - ![Bugfix][badge-bugfix] Escape the stubhead label and the row number column label in the
   Markdown back end, as the column labels.
+- ![Bugfix][badge-bugfix] Always crop the custom text cells to the column width. A custom
+  cell in the shrinkable column crossed the column border if the maximum column width was
+  larger than the shrunk width.
 - ![Bugfix][badge-bugfix] Erase the last line of the previous table when overwriting the
   display with a text table that does not end with a new line. The characters of this line
   that were not overwritten remained in the display.

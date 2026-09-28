@@ -1437,22 +1437,16 @@ function _text__print_table_core(
             if cell isa AbstractCustomTextCell
                 cell_width = printed_data_column_widths[jr]
 
-                # If the text on this cell must be cropped, we must regenerate the printable
-                # cell text. It can happen if we have a fixed data column width or an upper
-                # limit for the cell. Otherwise, we will have access to a cropped string and
-                # we will not be able to call the API functions to actually reduce the
-                # rendered string width.
-                if (max_data_column_widths[jr] <= cell_width) ||
-                    (has_fixed_data_column_widths && (fix_data_column_widths[jr] > 0))
-                    if !line_breaks || (current_row_line == 1)
-                        table_str[ir, jr] = CustomTextCell.printable_cell_text(cell)
+                # The rendered cell text can be cropped, e.g., by a fixed or maximum width or
+                # by the shrinkable column. Hence, we must regenerate the printable cell text.
+                # Otherwise, we would measure a cropped string and we would not call the API
+                # functions to actually reduce the rendered string width.
+                if !line_breaks || (current_row_line == 1)
+                    table_str[ir, jr] = CustomTextCell.printable_cell_text(cell)
 
-                        # Here, we have line breaks and we are in the first line. Hence, we
-                        # must regenerate the line tokens.
-                        if line_breaks
-                            tokens[jr] = split(table_str[ir, jr], '\n')
-                        end
-                    end
+                    # Here, we have line breaks and we are in the first line. Hence, we must
+                    # regenerate the line tokens.
+                    line_breaks && (tokens[jr] = split(table_str[ir, jr], '\n'))
                 end
 
                 # We need to manually align the string by adding left and right padding.

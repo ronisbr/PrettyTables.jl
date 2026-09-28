@@ -415,3 +415,29 @@ end
 
     @test remove_links(result) == expected
 end
+
+@testset "Custom Cells in the Shrinkable Column" begin
+    # The custom cell must be cropped to the shrunk width even if the maximum column width
+    # is larger than it.
+    remove_ansi(str) = replace(str, r"\e\[[0-9;]*m" => "")
+
+    expected = """
+┌────────┬──────────┬────────┐
+│ Col. 1 │   Col. 2 │ Col. 3 │
+├────────┼──────────┼────────┤
+│      a │ a very … │      c │
+│      a │        b │      c │
+└────────┴──────────┴────────┘
+"""
+
+    cell   = AnsiTextCell("\e[31ma very long text in col 2\e[0m")
+    result = pretty_table(
+        String,
+        Any["a" cell "c"; "a" "b" "c"];
+        display_size = (-1, 30),
+        maximum_data_column_widths = 100,
+        shrinkable_data_column = 2,
+    )
+
+    @test remove_ansi(result) == expected
+end
