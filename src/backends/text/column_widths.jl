@@ -70,10 +70,13 @@ function _text__fix_data_column_widths!(
         end
     end
 
+    # Only the columns with a fixed width can be narrower than their cells, since the other
+    # ones can only be widened when the widths are equalized.
     for table in (table_str, summary_rows)
         isnothing(table) && continue
 
         for j in axes(table, 2)
+            (fixed_data_column_widths[j - 1 + begin] <= 0) && continue
             cw = printed_data_column_widths[j]
 
             for i in axes(table, 1)
@@ -98,6 +101,10 @@ function _text__fix_data_column_widths!(
             j != j₀ && continue
 
             j₁ = min(j₁, num_printed_data_columns)
+
+            # Only the labels spanning a column with a fixed width can be cropped.
+            any(k -> fixed_data_column_widths[k - 1 + begin] > 0, j₀:j₁) || continue
+
             cw = _text__span_width(
                 printed_data_column_widths, j₀, j₁, vertical_lines_at_data_columns
             )
