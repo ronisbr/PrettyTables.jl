@@ -66,3 +66,17 @@
         @test !occursin("`**Col. 1**`", result)
     end
 end
+
+@testset "White Spaces Around Styled Text" begin
+    # The emphasis markers next to a white space are not recognized by Markdown. Hence, the
+    # white spaces must be kept outside the markers.
+    expected = """
+|  **a**  |   |
+|--------:|--:|
+|       1 | 2 |
+"""
+
+    result = pretty_table(String, [1 2]; backend = :markdown, column_labels = [" a ", ""])
+
+    @test result == expected
+end

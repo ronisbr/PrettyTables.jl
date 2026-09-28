@@ -368,19 +368,27 @@ end
 """
     _markdown__apply_style(s::MarkdownStyle, str::String) -> String
 
-Apply the markdown style `s` to `str`.
+Apply the markdown style `s` to `str`. The leading and trailing white spaces of `str` are
+kept outside the style markers because the emphasis markers next to a white space are not
+recognized by Markdown.
 """
 function _markdown__apply_style(s::MarkdownStyle, str::String)
-    isempty(str) && return str
+    core = strip(str)
+    isempty(core) && return str
+
+    lead  = SubString(str, 1, core.offset)
+    trail = SubString(str, core.offset + ncodeunits(core) + 1)
+
     # NOTE: `code` must be applied innermost because a Markdown code span renders its
     # content verbatim. Otherwise, the `bold`, `italic`, and `strikethrough` markers would
     # be shown literally to the user.
-    s.code && (str = _markdown__code_span(str))
-    s.bold && (str = "**" * str * "**")
-    s.italic && (str = "*" * str * "*")
-    s.strikethrough && (str = "~~" * str * "~~")
+    styled = String(core)
+    s.code && (styled = _markdown__code_span(styled))
+    s.bold && (styled = "**" * styled * "**")
+    s.italic && (styled = "*" * styled * "*")
+    s.strikethrough && (styled = "~~" * styled * "~~")
 
-    return str
+    return lead * styled * trail
 end
 
 """
