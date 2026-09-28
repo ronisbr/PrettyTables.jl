@@ -66,3 +66,50 @@ end
 
     @test result == ""
 end
+
+@testset "Header Separator Without Column Labels" begin
+    # If the column labels are hidden, the header separator must be printed before the
+    # first row of the table body, whatever its section.
+    expected = """
+|-:|-:|
+| ⋮ | ⋮ |
+"""
+
+    result = pretty_table(
+        String,
+        [1 2; 3 4];
+        backend = :markdown,
+        maximum_number_of_rows = 0,
+        show_column_labels = false,
+        show_omitted_cell_summary = false,
+    )
+
+    @test result == expected
+
+    expected = """
+|------:|--:|
+| **G** | ─ |
+|     1 | 2 |
+|     3 | 4 |
+"""
+
+    result = pretty_table(
+        String,
+        [1 2; 3 4];
+        backend = :markdown,
+        row_group_labels = [1 => "G"],
+        show_column_labels = false,
+    )
+
+    @test result == expected
+
+    result = pretty_table(
+        String,
+        zeros(Int, 0, 2);
+        backend = :markdown,
+        show_column_labels = false,
+        summary_rows = [(data, j) -> 0],
+    )
+
+    @test startswith(result, "|---")
+end

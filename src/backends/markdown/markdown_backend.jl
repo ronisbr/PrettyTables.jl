@@ -426,8 +426,10 @@ function _markdown__print_core(pspec::PrintingSpec, opts::MarkdownPrintOptions)
         end
 
         if action == :new_row
-            # In case we do not have column labels, we must at least print the header line.
-            if !header_printed && (rs == :data)
+            # In case we do not have column labels, we must at least print the header line
+            # before the first row of the table body, which can also be a row group label,
+            # the continuation row, or a summary row.
+            if !header_printed && (rs ∉ (:table_header, :column_labels, :table_footer))
                 _markdown__print_header_separator(
                     buf,
                     table_data,
