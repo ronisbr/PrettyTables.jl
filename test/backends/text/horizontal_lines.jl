@@ -398,3 +398,68 @@ end
 
     @test result == expected
 end
+
+@testset "Long Row Group Labels" begin
+    # The table must be widened to fit the row group labels.
+    expected = """
+┌──────────────┬──────────────┐
+│       Col. 1 │       Col. 2 │
+├──────────────┼──────────────┤
+│            1 │            2 │
+├──────────────┴──────────────┤
+│ A very long row group label │
+├──────────────┬──────────────┤
+│            3 │            4 │
+└──────────────┴──────────────┘
+"""
+
+    result = pretty_table(
+        String, [1 2; 3 4]; row_group_labels = [2 => "A very long row group label"]
+    )
+
+    @test result == expected
+
+    # The columns with fixed widths must not be widened.
+    expected = """
+┌──────┬──────────────────────┐
+│ Col… │               Col. 2 │
+├──────┼──────────────────────┤
+│    1 │                    2 │
+├──────┴──────────────────────┤
+│ A very long row group label │
+├──────┬──────────────────────┤
+│    3 │                    4 │
+└──────┴──────────────────────┘
+"""
+
+    result = pretty_table(
+        String,
+        [1 2; 3 4];
+        fixed_data_column_widths = [4, 0],
+        row_group_labels = [2 => "A very long row group label"],
+    )
+
+    @test result == expected
+
+    # If no column can be widened, the label must be cropped.
+    expected = """
+┌──────┬──────┐
+│ Col… │ Col… │
+├──────┼──────┤
+│    1 │    2 │
+├──────┴──────┤
+│ A very lon… │
+├──────┬──────┤
+│    3 │    4 │
+└──────┴──────┘
+"""
+
+    result = pretty_table(
+        String,
+        [1 2; 3 4];
+        fixed_data_column_widths = 4,
+        row_group_labels = [2 => "A very long row group label"],
+    )
+
+    @test result == expected
+end

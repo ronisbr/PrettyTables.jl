@@ -165,6 +165,49 @@ function _text__fit_line_in_width(line::AbstractString, width::Int)
 end
 
 """
+    _text__row_group_labels_width(
+        table_data::TableData,
+        rctx::RenderContext,
+        renderer::Union{Val{:print}, Val{:show}}
+    ) -> Int
+
+Return the largest printable width of the row group labels that are printed, rendered using
+the render context `rctx` and the `renderer`.
+"""
+function _text__row_group_labels_width(
+    table_data::TableData, rctx::RenderContext, renderer::Union{Val{:print}, Val{:show}}
+)
+    _has_row_group_labels(table_data) || return 0
+
+    num_rows         = table_data.num_rows
+    num_printed_rows = _number_of_printed_data_rows(table_data)
+
+    # Number of rows printed before the continuation row.
+    num_top_rows = if table_data.vertical_crop_mode == :bottom
+        num_printed_rows
+    else
+        div(num_printed_rows, 2, RoundUp)
+    end
+
+    # The rows after this one are printed after the continuation row.
+    first_bottom_row = num_rows - (num_printed_rows - num_top_rows)
+
+    row_group_labels = table_data.row_group_labels
+    w = 0
+
+    for (k, (i, label)) in enumerate(row_group_labels)
+        ((1 <= i <= num_top_rows) || (first_bottom_row < i <= num_rows)) || continue
+
+        # Only the first label of each row is printed.
+        any(m -> first(row_group_labels[m]) == i, 1:(k - 1)) && continue
+
+        w = max(w, printable_textwidth(_text__render_cell(label, rctx, renderer)))
+    end
+
+    return w
+end
+
+"""
     _text__printed_column_widths(
         table_data,
         row_labels,

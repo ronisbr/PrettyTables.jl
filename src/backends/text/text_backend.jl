@@ -505,6 +505,45 @@ function _text__print_table_core(
         printed_data_column_widths .= maximum(printed_data_column_widths; init = 0)
     end
 
+    # == Row Group Labels ==================================================================
+
+    # The row group labels span the entire table. Hence, if a printed label is wider than
+    # the table, we must widen the data columns, distributing the additional width among
+    # the ones without a fixed width. Otherwise, the label is cropped when printed. Notice
+    # that the continuation column is not considered here because it depends on the
+    # horizontal printing limit, which depends on the column widths.
+    if _has_row_group_labels(table_data) && (num_printed_data_columns > 0)
+        available_width =
+            _text__table_width_wo_cont_column(
+                table_data,
+                tf,
+                vertical_lines_at_data_columns,
+                row_number_column_width,
+                row_label_column_width,
+                printed_data_column_widths,
+            ) -
+            tf.vertical_line_at_beginning -
+            tf.vertical_line_after_data_columns -
+            2
+
+        Δw = _text__row_group_labels_width(table_data, rctx, renderer) - available_width
+
+        if Δw > 0
+            columns = if has_fixed_data_column_widths
+                filter(j -> fix_data_column_widths[j] <= 0, 1:num_printed_data_columns)
+            else
+                1:num_printed_data_columns
+            end
+
+            n = length(columns)
+
+            # The remainder of the division is added to the last columns.
+            for (k, j) in enumerate(columns)
+                printed_data_column_widths[j] += div(Δw, n) + (k > n - rem(Δw, n))
+            end
+        end
+    end
+
     # == Horizontal Printing Limit =========================================================
 
     # In text back end, the printed column can be limited either by the user specification
@@ -1484,7 +1523,12 @@ function _text__print_table_core(
             cell          = _current_cell(action, ps, table_data)
             cell_width    = row_group_label_width
             decoration    = rstyle.row_group_label
-            rendered_cell = _text__render_cell(cell, rctx, renderer)
+
+            # The label is cropped if the table could not be widened to fit it, e.g., if
+            # the data columns have fixed widths.
+            rendered_cell = _text__fit_cell_in_maximum_cell_width(
+                _text__render_cell(cell, rctx, renderer), cell_width, false
+            )
         end
 
         # If we have multiple lines and we are not rendering a data cell, we must only
