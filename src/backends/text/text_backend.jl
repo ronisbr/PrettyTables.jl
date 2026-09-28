@@ -1372,10 +1372,11 @@ function _text__print_table_core(
             end
 
         elseif action == :row_number
-            cell          = _current_cell(action, ps, table_data)
+            # The row number is an integer. Hence, we can convert it directly, avoiding a
+            # call to the generic rendering function.
             cell_width    = row_number_column_width
             decoration    = rstyle.row_number
-            rendered_cell = _text__render_cell(cell, rctx, renderer) *
+            rendered_cell = string(ps.i - 1 + table_data.first_row_index) *
                 _text__footnote_marks(table_data, action, ps.i, ps.j)
 
         elseif action == :data
