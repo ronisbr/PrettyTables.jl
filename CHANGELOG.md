@@ -196,6 +196,9 @@ Version 3.5.0
   label added a column to the table.
 - ![Bugfix][badge-bugfix] Escape the stubhead label and the row number column label in the
   Markdown back end, as the column labels.
+- ![Bugfix][badge-bugfix] Consider the continuation column when shrinking the shrinkable
+  column of a text table. The column was not shrunk enough, and the display cropped the
+  continuation column and the right border.
 - ![Bugfix][badge-bugfix] Assume the minimum width of the columns (three characters) when
   limiting the number of rendered columns of a text table to the display width. The limit
   assumed five characters per column, omitting narrow columns that fit in the display.

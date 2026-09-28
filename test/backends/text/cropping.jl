@@ -1658,3 +1658,26 @@ end
 
     @test result == expected
 end
+
+@testset "Shrinkable Column With Continuation Column" begin
+    # The continuation column must be considered when shrinking the column.
+    expected = """
+┌────────┬──────┬────────┬───┐
+│ Col. 1 │ Col… │ Col. 3 │ ⋯ │
+├────────┼──────┼────────┼───┤
+│      a │ a v… │      c │ ⋯ │
+│      a │    b │      c │ ⋯ │
+└────────┴──────┴────────┴───┘
+              1 column omitted
+"""
+
+    result = pretty_table(
+        String,
+        ["a" "a very long text in col 2" "c" "d"; "a" "b" "c" "d"];
+        display_size = (-1, 30),
+        maximum_number_of_columns = 3,
+        shrinkable_data_column = 2,
+    )
+
+    @test result == expected
+end

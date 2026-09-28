@@ -602,8 +602,11 @@ function _text__print_table_core(
         # display.
         if (1 <= shrinkable_data_column <= num_printed_data_columns)
             # Number of characters we should remove from the shrinkable data column to fit
-            # the table in the display.
+            # the table in the display, including the continuation column, if any.
             Δc = table_width_wo_cont_col - display_size[2]
+
+            _is_horizontally_cropped(table_data) &&
+                (Δc += 3 + tf.vertical_line_after_continuation_column)
 
             # Compute the new column width.
             cw = max(
