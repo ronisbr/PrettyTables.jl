@@ -122,23 +122,9 @@ function _text__number_of_printed_data_columns(
 )
     display_width <= 0 && return table_data.num_columns
 
-    current_column = 0
-    current_column +=
-        tf.vertical_line_at_beginning +
-        (
-            if table_data.show_row_number_column
-                row_number_column_width + tf.vertical_line_after_row_number_column + 2
-            else
-                0
-            end
-        ) +
-        (
-            if _has_row_labels(table_data)
-                row_label_column_width + tf.vertical_line_after_row_label_column + 2
-            else
-                0
-            end
-        )
+    current_column = _text__width_before_data_columns(
+        table_data, tf, row_number_column_width, row_label_column_width
+    )
 
     num_printed_data_columns = 0
 
@@ -643,6 +629,37 @@ end
 # == Table Dimensions ======================================================================
 
 """
+    _text__width_before_data_columns(
+        table_data::TableData,
+        tf::TextTableFormat,
+        row_number_column_width::Int,
+        row_label_column_width::Int
+    ) -> Int
+
+Return the width of the table before the first data column, which contains the vertical line
+at the beginning of the table, the row number column, and the row label column, including
+their margins and vertical lines.
+"""
+function _text__width_before_data_columns(
+    table_data::TableData,
+    tf::TextTableFormat,
+    row_number_column_width::Int,
+    row_label_column_width::Int,
+)
+    w = Int(tf.vertical_line_at_beginning)
+
+    if table_data.show_row_number_column
+        w += row_number_column_width + tf.vertical_line_after_row_number_column + 2
+    end
+
+    if _has_row_labels(table_data)
+        w += row_label_column_width + tf.vertical_line_after_row_label_column + 2
+    end
+
+    return w
+end
+
+"""
     _text__table_width_wo_cont_column(
         table_data::TableData,
         tf::TextTableFormat,
@@ -672,23 +689,9 @@ function _text__table_width_wo_cont_column(
     row_label_column_width::Int,
     printed_data_column_widths::Vector{Int},
 )
-    current_column = 0
-    current_column +=
-        tf.vertical_line_at_beginning +
-        (
-            if table_data.show_row_number_column
-                row_number_column_width + tf.vertical_line_after_row_number_column + 2
-            else
-                0
-            end
-        ) +
-        (
-            if _has_row_labels(table_data)
-                row_label_column_width + tf.vertical_line_after_row_label_column + 2
-            else
-                0
-            end
-        )
+    current_column = _text__width_before_data_columns(
+        table_data, tf, row_number_column_width, row_label_column_width
+    )
 
     for j in eachindex(printed_data_column_widths)
         current_column += 2 + printed_data_column_widths[j]
