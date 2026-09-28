@@ -364,9 +364,9 @@ Base.@constprop :none Base.@nospecializeinfer function _pretty_table(
 
     # Convert the column labels to a vector of rows, each one a `Vector{Any}`, which is how
     # they are stored in the table data.
-    column_labels = _column_label_rows(column_labels)
+    label_rows = _column_label_rows(column_labels)::Vector{Vector{Any}}
 
-    isempty(column_labels) && throw(
+    isempty(label_rows) && throw(
         ArgumentError(
             "`column_labels` must have at least one row of labels. Use `show_column_labels = false` to hide the column labels."
         )
@@ -378,8 +378,8 @@ Base.@constprop :none Base.@nospecializeinfer function _pretty_table(
 
     if merge_column_label_cells isa Symbol
         if merge_column_label_cells == :auto
-            column_labels, _merge_column_label_cells = _process_merge_column_label_specification(
-                column_labels, num_columns
+            label_rows, _merge_column_label_cells = _process_merge_column_label_specification(
+                label_rows, num_columns
             )
         else
             _merge_column_label_cells = nothing
@@ -389,7 +389,7 @@ Base.@constprop :none Base.@nospecializeinfer function _pretty_table(
     end
 
     # Check the column labels.
-    for cl in column_labels
+    for cl in label_rows
         length(cl) != num_columns && throw(
             ArgumentError(
                 "Each vector in `column_labels` must have the same number of elements as the table columns ($num_columns).",
@@ -405,7 +405,7 @@ Base.@constprop :none Base.@nospecializeinfer function _pretty_table(
         footnotes,
         num_rows,
         num_columns,
-        length(column_labels),
+        length(label_rows),
         isnothing(summary_rows) ? 0 : length(summary_rows),
     )
 
@@ -509,7 +509,7 @@ Base.@constprop :none Base.@nospecializeinfer function _pretty_table(
     end
 
     if show_first_column_label_only
-        column_labels = [column_labels[1]]
+        label_rows = [label_rows[1]]
 
         # The merged cell specification can reference the dropped column label rows. Hence,
         # we must keep only the specifications related to the first one.
@@ -538,7 +538,7 @@ Base.@constprop :none Base.@nospecializeinfer function _pretty_table(
         stubhead_label,
         show_row_number_column,
         row_number_column_label,
-        column_labels,
+        label_rows,
         show_column_labels,
         row_labels,
         row_group_labels,
@@ -707,8 +707,12 @@ function _is_vector_of_label_rows(@nospecialize(column_labels::AbstractVector))
     eltype(column_labels) <: AbstractVector && return true
     isempty(column_labels) && return false
 
-    for i in eachindex(column_labels)
-        (column_labels[i] isa AbstractVector) || return false
+    # Notice that we must not iterate over `eachindex(column_labels)` because its type is not
+    # inferred, leading to one dynamic dispatch per iteration.
+    i₀ = firstindex(column_labels)::Int
+
+    for k in 1:(length(column_labels)::Int)
+        (column_labels[i₀ + k - 1] isa AbstractVector) || return false
     end
 
     return true
@@ -725,15 +729,21 @@ processing of the column labels for each new type of labels.
 Base.@nospecializeinfer function _column_label_rows(
     @nospecialize(column_labels::AbstractVector)
 )
+    # A vector of strings or symbols, the most common specification, is a single row of
+    # column labels. We check it first because the generic path performs dynamic dispatches.
+    (column_labels isa Union{Vector{String}, Vector{Symbol}}) &&
+        return [_vector_any(column_labels)]
+
     # If the elements of the column labels are not vectors, the user probably only wants one
     # row of column labels.
     _is_vector_of_label_rows(column_labels) || return [_vector_any(column_labels)]
 
-    rows = Vector{Vector{Any}}(undef, length(column_labels))
-    k    = 0
+    n    = length(column_labels)::Int
+    i₀   = firstindex(column_labels)::Int
+    rows = Vector{Vector{Any}}(undef, n)
 
-    for i in eachindex(column_labels)
-        rows[k += 1] = _vector_any(column_labels[i])
+    for k in 1:n
+        rows[k] = _vector_any(column_labels[i₀ + k - 1])
     end
 
     return rows

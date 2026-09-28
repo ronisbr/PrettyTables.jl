@@ -72,11 +72,20 @@ it must be used to store the vectors whose element types depend on the user inpu
 vectors of functions, avoiding the compilation of `convert` for each new type.
 """
 Base.@nospecializeinfer function _vector_any(@nospecialize(v::AbstractVector))
-    r = Vector{Any}(undef, length(v))
-    k = 0
+    # The most common vectors are converted directly. Otherwise, each element would require
+    # a dynamic dispatch, which is expensive compared to the time to print a small table.
+    v isa Vector{Any}    && return copy(v)
+    v isa Vector{String} && return Vector{Any}(v)
+    v isa Vector{Symbol} && return Vector{Any}(v)
 
-    for i in eachindex(v)
-        r[k += 1] = v[i]
+    # Notice that we must not iterate over `eachindex(v)` because its type is not inferred,
+    # leading to one dynamic dispatch per iteration.
+    n  = length(v)::Int
+    i₀ = firstindex(v)::Int
+    r  = Vector{Any}(undef, n)
+
+    for k in 1:n
+        r[k] = v[i₀ + k - 1]
     end
 
     return r

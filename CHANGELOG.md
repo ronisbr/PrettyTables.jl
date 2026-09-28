@@ -123,8 +123,8 @@ Version 3.5.0
   formatters, the matrices with elements of type `Any`, the vectors with missing values,
   `pretty_table(HTML, data)`, and the `String` output with a custom style. For example,
   the time to print the first table with `fmt__printf` was reduced from about 170 ms to
-  about 24 ms, with a title from about 42 ms to about 27 ms, and with
-  `pretty_table(HTML, data)` from about 55 ms to about 29 ms. The time to load the package
+  about 24 ms, with a title from about 42 ms to about 21 ms, and with
+  `pretty_table(HTML, data)` from about 55 ms to about 24 ms. The time to load the package
   increased by about 2 ms.
 - ![Enhancement][badge-enhancement] Compile the text back end only once for all the
   specifications of the lines at the column labels, data rows, and data columns (`:all`,
