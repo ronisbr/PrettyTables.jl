@@ -196,6 +196,10 @@ Version 3.5.0
   label added a column to the table.
 - ![Bugfix][badge-bugfix] Escape the stubhead label and the row number column label in the
   Markdown back end, as the column labels.
+- ![Bugfix][badge-bugfix] Compute the width of the row group labels in the text back end
+  considering only the vertical lines drawn at the edges of the table, and draw the line at
+  the right edge of the labels only if the other rows have it. The right border of the
+  labels was shifted when the table had no vertical line at the beginning or at the end.
 - ![Bugfix][badge-bugfix] Reset the style of the horizontal lines of the text back end that
   are cropped at the display edge. The style leaked into the rest of the output.
 - ![Bugfix][badge-bugfix] Reset the cropping of the custom text cells when they fit in the

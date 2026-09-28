@@ -330,3 +330,71 @@ end
 
     @test result == expected
 end
+
+@testset "Row Group Label Width" begin
+    # The width of the row group label must consider only the vertical lines drawn at the
+    # edges of the table.
+    expected = """
+────────┬────────┐
+ Col. 1 │ Col. 2 │
+────────┴────────┤
+ Group           │
+────────┬────────┤
+      1 │      2 │
+      3 │      4 │
+────────┴────────┘
+"""
+
+    result = pretty_table(
+        String,
+        [1 2; 3 4];
+        row_group_labels = [1 => "Group"],
+        table_format = TextTableFormat(; vertical_line_at_beginning = false),
+    )
+
+    @test result == expected
+
+    expected = """
+────────────────
+ Col. 1  Col. 2
+────────────────
+          Group
+────────────────
+      1       2
+      3       4
+────────────────
+"""
+
+    result = pretty_table(
+        String,
+        [1 2; 3 4];
+        row_group_label_alignment = :r,
+        row_group_labels = [1 => "Group"],
+        table_format = TextTableFormat(; @text__no_vertical_lines),
+    )
+
+    @test result == expected
+
+    expected = """
+┌────────┬────────┬───
+│ Col. 1 │ Col. 2 │ ⋯
+├────────┴────────┴───
+│               Group
+├────────┬────────┬───
+│      1 │      2 │ ⋯
+│      3 │      4 │ ⋯
+└────────┴────────┴───
+      1 column omitted
+"""
+
+    result = pretty_table(
+        String,
+        [1 2 3; 3 4 5];
+        maximum_number_of_columns = 2,
+        row_group_label_alignment = :r,
+        row_group_labels = [1 => "Group"],
+        table_format = TextTableFormat(; vertical_line_after_continuation_column = false),
+    )
+
+    @test result == expected
+end

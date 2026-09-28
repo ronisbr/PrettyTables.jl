@@ -788,6 +788,19 @@ function _text__print_table_core(
     # correct vertical line character inside the loop.
     table_continuation_column = _is_horizontally_cropped(table_data)
 
+    # The row group labels span the entire table. Hence, the vertical line after them is the
+    # one at the right edge of the table, which is not printed if the display crops the
+    # table. Notice that the width of the label must not include the vertical lines at the
+    # edges of the table and the margins.
+    row_group_label_vline = !horizontally_limited_by_display && (
+        table_continuation_column ?
+        tf.vertical_line_after_continuation_column :
+        tf.vertical_line_after_data_columns
+    )
+
+    row_group_label_width =
+        printed_table_width - tf.vertical_line_at_beginning - row_group_label_vline - 2
+
     ps     = PrintingTableState()
     action = :initialize
 
@@ -1469,7 +1482,7 @@ function _text__print_table_core(
 
         elseif action == :row_group_label
             cell          = _current_cell(action, ps, table_data)
-            cell_width    = printed_table_width - 4
+            cell_width    = row_group_label_width
             decoration    = rstyle.row_group_label
             rendered_cell = _text__render_cell(cell, rctx, renderer)
         end
@@ -1525,7 +1538,7 @@ function _text__print_table_core(
             )
 
         elseif action == :row_group_label
-            if tf.vertical_line_after_data_columns && !horizontally_limited_by_display
+            if row_group_label_vline
                 vline = true
                 vl    = rl.right
             end
