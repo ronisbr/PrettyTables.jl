@@ -293,3 +293,40 @@ end
 
     @test result == expected
 end
+
+@testset "Row Group Label at the First Row Without Column Labels" begin
+    # There is nothing above the row group label to separate. Hence, the line before it
+    # must not be drawn, and the top line must not have intersections.
+    expected = """
+┌───────┐
+│ Group │
+├───┬───┤
+│ 1 │ 2 │
+│ 3 │ 4 │
+└───┴───┘
+"""
+
+    result = pretty_table(
+        String, [1 2; 3 4]; row_group_labels = [1 => "Group"], show_column_labels = false
+    )
+
+    @test result == expected
+
+    expected = """
+│ Group │
+├───┬───┤
+│ 1 │ 2 │
+│ 3 │ 4 │
+└───┴───┘
+"""
+
+    result = pretty_table(
+        String,
+        [1 2; 3 4];
+        row_group_labels = [1 => "Group"],
+        show_column_labels = false,
+        table_format = TextTableFormat(; horizontal_line_at_beginning = false),
+    )
+
+    @test result == expected
+end

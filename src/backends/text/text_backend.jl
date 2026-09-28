@@ -811,6 +811,12 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
 
         if action == :new_row
 
+            # If the table begins with a row group label, which happens when the column
+            # labels are hidden, there is nothing above it to separate. Hence, the line
+            # before it is not drawn, and the top line, if any, has no intersections.
+            first_row_group_label = (rs == :row_group_label) && (ps.i == 1) &&
+                !table_data.show_column_labels
+
             # If this is the very first row, we must check if a horizontal line must be
             # printed.
             if tf.horizontal_line_at_beginning && !top_line_printed
@@ -824,7 +830,8 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
                     row_label_column_width,
                     printed_data_column_widths;
                     top = true,
-                    column_label_row = ir - 1,
+                    column_label_row = first_row_group_label ? nothing : ir - 1,
+                    top_row_group_label = first_row_group_label,
                 )
 
                 _text__flush_line(display, false)
@@ -832,15 +839,18 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
                 top_line_printed = true
             end
 
-            if rs == :row_group_label
+            if (rs == :row_group_label) && !first_row_group_label
                 # We must draw the horizontal line here if the user requested, if the last
                 # row has a horizontal line due to the intersections, or if the last row was
                 # a column label and the user wants a line after it. Notice that `ps.i` is
                 # the data index of the row after the label, which differs from the rendered
                 # index `ir` in the middle cropping.
                 if tf.horizontal_line_before_row_group_label ||
-                    (ps.i - 1 ∈ horizontal_lines_at_data_rows) ||
-                    (ps.i == 1 && tf.horizontal_line_after_column_labels)
+                    (ps.i - 1 ∈ horizontal_lines_at_data_rows) || (
+                        (ps.i == 1) &&
+                        table_data.show_column_labels &&
+                        tf.horizontal_line_after_column_labels
+                    )
                     _text__print_horizontal_line(
                         display,
                         tf,

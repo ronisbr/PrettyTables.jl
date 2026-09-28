@@ -272,6 +272,10 @@ Print a horizontal line to `display`.
     `_text__column_label_intersection`). If it is `nothing`, the intersections are the ones
     of a line inside the table.
     (**Default**: `nothing`)
+- `top_row_group_label::Bool`: If `true`, the line is the top line of the table and the
+    first row is a row group label, which spans the entire table. Hence, the line has the
+    top corners but no intersections.
+    (**Default**: false)
 """
 function _text__print_horizontal_line(
     display::Display,
@@ -286,6 +290,7 @@ function _text__print_horizontal_line(
     bottom::Bool = false,
     row_group_label::Bool = false,
     column_label_row::Union{Nothing, Int} = nothing,
+    top_row_group_label::Bool = false,
 )
     # == Auxiliary Variables ===============================================================
 
@@ -297,7 +302,12 @@ function _text__print_horizontal_line(
 
     local li, mi, ri
 
-    if !row_group_label
+    if top_row_group_label
+        li = tb.up_left_corner
+        mi = row
+        ri = tb.up_right_corner
+
+    elseif !row_group_label
         li = if top
             tb.up_left_corner
         elseif bottom
