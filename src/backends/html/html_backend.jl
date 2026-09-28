@@ -646,17 +646,15 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
 
             append!(vstyle, _html__cell_style(style, action, ps.i, ps.j))
 
-            # Create the row tag with the content.
+            # Create the row tag with the content. Notice that the content must be written
+            # verbatim. Otherwise, the indentation or the minification would change the
+            # content of, e.g., `<pre>` elements with line breaks.
             row_tag = rs == :column_labels ? "th" : "td"
-            _aprintln(
-                buf,
-                _html__create_tag(
-                    row_tag, rendered_cell; properties = vproperties, style = vstyle
-                ),
-                il,
-                ns;
-                minify,
-            )
+
+            !minify && print(buf, " "^max(il * ns, 0))
+            _html__write_open_tag(buf, row_tag, vproperties, vstyle)
+            @_print(buf, rendered_cell, "</", row_tag, '>')
+            !minify && println(buf)
         end
     end
 

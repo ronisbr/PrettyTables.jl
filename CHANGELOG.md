@@ -189,6 +189,9 @@ Version 3.5.0
 - ![Bugfix][badge-bugfix] The HTML back end no longer draws the line after the last data row
   when `horizontal_lines_at_data_rows` contains it. As in the other back ends, this line is
   only drawn if `horizontal_line_after_data_rows` is `true`.
+- ![Bugfix][badge-bugfix] Write the cell content verbatim in the HTML back end. The
+  minification removed the line breaks and the leading spaces of each line of the content,
+  whereas the indentation added spaces to them, corrupting, for example, `<pre>` elements.
 - ![Bugfix][badge-bugfix] Escape the style properties in the HTML back end. A quote in a
   property, such as a quoted font family, closed the `style` attribute.
 - ![Bugfix][badge-bugfix] Escape the attribute values, such as the column label titles, as
