@@ -1051,8 +1051,14 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
             elseif (rs == :continuation_row) && !suppress_hline_after_continuation_row
                 bottom = next_rs ∈ (:table_footer, :end_printing)
 
-                if (ps.i ∈ horizontal_lines_at_data_rows) ||
-                    ((next_rs !== :data) && tf.horizontal_line_after_data_rows)
+                # In the middle cropping, `ps.i` is the data row before the first row printed
+                # after the continuation row. Notice that a row group label draws its own
+                # line and that the line after the data rows is only drawn if the data
+                # section ends here.
+                if ((ps.i ∈ horizontal_lines_at_data_rows) && (next_rs == :data)) || (
+                    (next_rs ∈ (:summary_row, :table_footer, :end_printing)) &&
+                    tf.horizontal_line_after_data_rows
+                )
                     hline = bottom ? rl.bottom : rl.middle
                 end
 

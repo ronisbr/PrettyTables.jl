@@ -1244,3 +1244,71 @@ end
 
     @test String(take!(io.io)) == expected
 end
+
+@testset "Line After the Continuation Row" begin
+    # In the middle cropping, the line after the data rows must not be drawn after the
+    # continuation row if data rows follow it, and a row group label after the
+    # continuation row draws its own line.
+    expected = """
+┌────────┐
+│ Col. 1 │
+│      1 │
+│      2 │
+│      3 │
+│      4 │
+│      ⋮ │
+│ G2     │
+├────────┤
+│     17 │
+│     18 │
+│     19 │
+│     20 │
+└────────┘
+12 rows omitted
+"""
+
+    result = pretty_table(
+        String,
+        collect(1:20);
+        maximum_number_of_rows = 8,
+        row_group_labels = [17 => "G2"],
+        table_format = TextTableFormat(;
+            horizontal_line_after_column_labels = false,
+            horizontal_line_before_row_group_label = false,
+        ),
+        vertical_crop_mode = :middle,
+    )
+
+    @test result == expected
+
+    expected = """
+┌────────┐
+│ Col. 1 │
+├────────┤
+│      1 │
+│      2 │
+│      3 │
+│      4 │
+│      ⋮ │
+├────────┤
+│ G2     │
+├────────┤
+│     17 │
+│     18 │
+│     19 │
+│     20 │
+└────────┘
+12 rows omitted
+"""
+
+    result = pretty_table(
+        String,
+        collect(1:20);
+        maximum_number_of_rows = 8,
+        row_group_labels = [17 => "G2"],
+        table_format = TextTableFormat(; horizontal_lines_at_data_rows = [16]),
+        vertical_crop_mode = :middle,
+    )
+
+    @test result == expected
+end
