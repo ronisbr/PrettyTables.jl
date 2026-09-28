@@ -6,8 +6,7 @@ using Markdown
 using Typstry
 
 function PrettyTables.pretty_table(::Type{Typst}, @nospecialize(data::Any); kwargs...)
-    # If the keywords do not set the back end or the table format, use the Typst back end
-    # by default.
+    # If the keywords do not set the back end, use the Typst back end by default.
     str = if !haskey(kwargs, :backend)
         pretty_table(String, data; backend = :typst, kwargs...)
     else

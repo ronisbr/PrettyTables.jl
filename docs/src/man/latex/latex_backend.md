@@ -7,7 +7,7 @@ the output.
 ## Keywords
 
 - `highlighters::Vector{<:AbstractHighlighter}`: Highlighters to apply to the table. For more
-    information, see the section [LaTeX Highlighters]@(ref).
+    information, see the section [LaTeX Highlighters](@ref).
 - `style::Union{TableStyle, LatexTableStyle}`: Style of the table. For more information, see the section
     [LaTeX Table Style](@ref).
 - `table_format::Union{TableFormat, LatexTableFormat}`: LaTeX table format used to render the table. For more

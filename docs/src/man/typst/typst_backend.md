@@ -20,8 +20,8 @@ the output:
   width `auto`.
   (**Default** = `nothing`)
 - `highlighters::Vector{<:AbstractHighlighter}`: Highlighters to apply to the table. For more
-  information, see the section [Typst Highlighters]@(ref).
-  (**Default** = `TypstHighlighter[]`)
+  information, see the section [Typst Highlighters](@ref).
+  (**Default** = `AbstractHighlighter[]`)
 - `line_breaks::Bool`: If `true`, line breaks in the content of the cells (`\n`) are
   rendered as Typst line breaks. Otherwise, they are escaped.
   (**Default** = `false`)
