@@ -119,6 +119,13 @@ Version 3.5.0
   the style fields its style type does not have, and the LaTeX back end ignores the line
   width and color. With `backend = :auto`, a `TableFormat` does not select a back end and
   the text back end is used.
+- ![Enhancement][badge-enhancement] Precompile the most common keywords, the predefined
+  formatters, the matrices with elements of type `Any`, the vectors with missing values,
+  `pretty_table(HTML, data)`, and the `String` output with a custom style. For example,
+  the time to print the first table with `fmt__printf` was reduced from about 170 ms to
+  about 24 ms, with a title from about 42 ms to about 20 ms, and with
+  `pretty_table(HTML, data)` from about 55 ms to about 23 ms. The time to load the package
+  increased by about 2 ms.
 - ![Enhancement][badge-enhancement] Compile the keyword method of `pretty_table` only once
   for each set of keywords, regardless of the IO and of the data. For example, the time to
   print the first matrix of `Float64` to an `IOBuffer` was reduced from about 27 ms to

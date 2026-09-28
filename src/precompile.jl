@@ -62,10 +62,16 @@ PrecompileTools.@setup_workload begin
     string_matrix = ["S" "S"; "S" "S"]
     bool_matrix   = [true false; false true]
 
-    # A named tuple is compliant with Table.jl.
-    table = (a = 1:1:10, b = ["S" for i in 1:10], c = ['C' for i in 1:10])
+    # Data with element types commonly found in data sets: mixed types and missing values.
+    any_matrix     = Any[1 2.0 "S"; 3 4.0 "S"]
+    missing_vector = Union{Missing, Float64}[1.0, missing, 3.0]
 
-    dict = Dict(:a => (1, 1), :b => (2, 2), :c => (3, 3))
+    # A named tuple is compliant with Tables.jl.
+    #
+    # NOTE: The Tables.jl sources, such as named tuples, row tables, and dictionaries, are
+    # not exercised with more types because the code compiled for them is specialized on the
+    # table type, which is almost always different in the user's code.
+    table = (a = 1:1:10, b = ["S" for i in 1:10], c = ['C' for i in 1:10])
 
     # We will redirect the `stdout` so that the workload does not produce visible output.
     old_stdout = Base.stdout
@@ -134,6 +140,8 @@ PrecompileTools.@setup_workload begin
             pretty_table(int_matrix)
             pretty_table(string_matrix)
             pretty_table(bool_matrix)
+            pretty_table(any_matrix)
+            pretty_table(missing_vector)
 
             # .. Text Table Styles .........................................................
 
@@ -496,6 +504,30 @@ PrecompileTools.@setup_workload begin
             pretty_table(table; backend = :latex)
             pretty_table(html_buf, table; backend = :html)
 
+            # == Common Keywords ===========================================================
+
+            # The method of `pretty_table` with the keywords is compiled for each set of
+            # keywords and their types. Since it is not specialized on the IO or on the data,
+            # the sets used here are reused by any table printed to any IO.
+            pretty_table(matrix; title = "Title")
+            pretty_table(matrix; alignment = :c)
+            pretty_table(matrix; alignment = [:l, :c, :r, :l, :c, :r, :l, :c, :r, :l])
+            pretty_table(matrix; column_labels = ["$i" for i in 1:10])
+            pretty_table(matrix; column_labels = [Symbol("$i") for i in 1:10])
+            pretty_table(matrix; row_labels = ["$i" for i in 1:10])
+            pretty_table(matrix; show_row_number_column = true)
+            pretty_table(matrix; line_breaks = true)
+            pretty_table(matrix; alignment_anchor_regex = [r"\."])
+
+            # The predefined formatters are closures whose types depend on their arguments.
+            # The `Printf` formats are also compiled for each conversion.
+            pretty_table(matrix; formatters = [fmt__round(2)])
+            pretty_table(matrix; formatters = [fmt__round(2, [1, 2])])
+            pretty_table(matrix; formatters = [fmt__printf("%5.3f")])
+            pretty_table(matrix; formatters = [fmt__printf("%5.3f", [1, 2])])
+            pretty_table(matrix; formatters = [fmt__printf("%.3e")])
+            pretty_table(int_matrix; formatters = [fmt__printf("%d")])
+
             # == Entry Points Used Outside a Redirected `stdout` ===========================
 
             # Printing to an explicit `IOContext` is what happens in the REPL and in every
@@ -509,6 +541,8 @@ PrecompileTools.@setup_workload begin
 
             pretty_table(String, matrix)
             pretty_table(String, table)
+            pretty_table(String, matrix; style = TextTableStyle())
+            pretty_table(HTML, matrix)
 
             # `show(::IO, ::PrettyTable)` is a completely separate entry point.
             show(io_buf, PrettyTable(matrix))
