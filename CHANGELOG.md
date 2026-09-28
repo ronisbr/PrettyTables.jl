@@ -196,6 +196,8 @@ Version 3.5.0
   label added a column to the table.
 - ![Bugfix][badge-bugfix] Escape the stubhead label and the row number column label in the
   Markdown back end, as the column labels.
+- ![Bugfix][badge-bugfix] Escape the line breaks in the text of `UrlTextCell`, which is
+  always rendered in a single line. A line break broke the table row.
 - ![Bugfix][badge-bugfix] Consider the continuation column when shrinking the shrinkable
   column of a text table. The column was not shrunk enough, and the display cropped the
   continuation column and the right border.

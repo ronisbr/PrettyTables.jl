@@ -396,3 +396,22 @@ end
 
     @test remove_ansi(result) == expected
 end
+
+@testset "Line Breaks in URL Cells" begin
+    # The URL cell is always rendered in a single line. Hence, the line breaks in its text
+    # must be escaped.
+    remove_links(str) = replace(str, r"\e\]8;;[^\e]*\e\\\\" => "")
+
+    expected = """
+┌──────────────┐
+│       Col. 1 │
+├──────────────┤
+│ line1\\nline2 │
+│          abc │
+└──────────────┘
+"""
+
+    result = pretty_table(String, [UrlTextCell("line1\nline2", "https://x.org"), "abc"])
+
+    @test remove_links(result) == expected
+end

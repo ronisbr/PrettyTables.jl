@@ -71,7 +71,11 @@ end
 function CustomTextCell.printable_cell_text(cell::UrlTextCell)
     left_padding_str  = " "^max(cell.left_padding, 0)
     right_padding_str = " "^max(cell.right_padding, 0)
-    full_str          = left_padding_str * cell.text * right_padding_str
+
+    # The URL cell is always rendered in a single line. Hence, the line breaks in its text
+    # must be escaped. Otherwise, they would break the table row.
+    text     = replace(cell.text, '\n' => "\\n")
+    full_str = left_padding_str * text * right_padding_str
     cropped_str       = first(right_crop(full_str, cell.crop)) * cell.suffix
 
     return cropped_str
