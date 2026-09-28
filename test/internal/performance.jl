@@ -8,11 +8,19 @@
     # `_text__count_horizontal_lines` replaced a scan over every row of the source table.
     # Hence, it must reproduce that scan exactly while being independent of `last_row`.
     naive(hlines, last_row) = count(i -> i ∈ hlines, 1:last_row)
+    count_lines(spec, n, last_row) = PrettyTables._text__count_horizontal_lines(
+        PrettyTables._line_spec_indices(spec, n), last_row
+    )
 
-    @testset "Ranges" begin
-        for hlines in (1:0, 1:1, 1:5, 3:7, 1:1000), last_row in (0, 1, 4, 10)
-            @test PrettyTables._text__count_horizontal_lines(hlines, last_row) ==
-                naive(hlines, last_row)
+    @testset "All" begin
+        for n in (0, 1, 5, 1000), last_row in (0, 1, 4, 10)
+            @test count_lines(:all, n, last_row) == naive(1:n, last_row)
+        end
+    end
+
+    @testset "None" begin
+        for n in (0, 1, 5, 1000), last_row in (0, 1, 4, 10)
+            @test count_lines(:none, n, last_row) == 0
         end
     end
 
@@ -20,14 +28,13 @@
         for hlines in (Int[], [1], [2, 4], [1, 2, 3], [5, 1, 9], [-3, 0, 2]),
             last_row in (0, 1, 4, 10)
 
-            @test PrettyTables._text__count_horizontal_lines(hlines, last_row) ==
-                naive(hlines, last_row)
+            @test count_lines(hlines, 10, last_row) == naive(hlines, last_row)
         end
     end
 
     @testset "Duplicated Entries Are Counted Once" begin
-        @test PrettyTables._text__count_horizontal_lines([2, 2, 2], 5) == 1
-        @test PrettyTables._text__count_horizontal_lines([1, 2, 2, 3], 5) == 3
+        @test count_lines([2, 2, 2], 10, 5) == 1
+        @test count_lines([1, 2, 2, 3], 10, 5) == 3
     end
 end
 

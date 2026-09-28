@@ -281,7 +281,7 @@ end
     _html__column_borders(
         tf::HtmlTableFormat,
         table_data::TableData,
-        vertical_lines_at_data_columns::AbstractVector{Int},
+        vertical_lines_at_data_columns::_LineIndices,
         num_printed_data_columns::Int,
         horizontally_cropped::Bool
     ) -> Vector{String}
@@ -294,7 +294,7 @@ be the processed version of the homonym field of `tf`.
 function _html__column_borders(
     tf::HtmlTableFormat,
     table_data::TableData,
-    vertical_lines_at_data_columns::AbstractVector{Int},
+    vertical_lines_at_data_columns::_LineIndices,
     num_printed_data_columns::Int,
     horizontally_cropped::Bool,
 )
@@ -332,7 +332,7 @@ function _html__column_borders(
 end
 
 """
-    _html__vertical_line_after_data_column(tf::HtmlTableFormat, j::Int, vertical_lines_at_data_columns::AbstractVector{Int}, num_printed_data_columns::Int, horizontally_cropped::Bool) -> String
+    _html__vertical_line_after_data_column(tf::HtmlTableFormat, j::Int, vertical_lines_at_data_columns::_LineIndices, num_printed_data_columns::Int, horizontally_cropped::Bool) -> String
 
 Return the border at the right of the data column `j`, or an empty string if the table
 format `tf` defines no vertical line at this position. `vertical_lines_at_data_columns`
@@ -341,7 +341,7 @@ must be the processed version of the homonym field of `tf`.
 function _html__vertical_line_after_data_column(
     tf::HtmlTableFormat,
     j::Int,
-    vertical_lines_at_data_columns::AbstractVector{Int},
+    vertical_lines_at_data_columns::_LineIndices,
     num_printed_data_columns::Int,
     horizontally_cropped::Bool,
 )

@@ -218,19 +218,25 @@ function _print_row_group_label(table_data::TableData, i::Int)
 end
 
 """
-    _line_spec_indices(spec::Union{Symbol, Vector{Int}}, n::Int) -> Union{UnitRange{Int}, Vector{Int}}
+    _line_spec_indices(spec::Union{Symbol, Vector{Int}}, n::Int) -> _LineIndices
 
 Convert the specification `spec` of the lines at the data rows or data columns in a table
 format, which can be `:all`, `:none`, or a vector with the indices, to the indices of the
 rows or columns after which a line must be drawn, considering that there are `n` of them.
 """
 function _line_spec_indices(spec::Union{Symbol, Vector{Int}}, n::Int)
-    spec isa Vector{Int} && return spec
-    return spec == :all ? (1:n) : (1:0)
+    spec isa Vector{Int} && return _LineIndices(false, n, spec)
+    return _LineIndices(spec == :all, n, Int[])
 end
 
 """
-    _horizontal_line_after_row(tf, rs::Symbol, next_rs::Symbol, i::Int, horizontal_lines_at_data_rows::AbstractVector{Int}) -> Symbol
+    _horizontal_line_after_row(
+        tf,
+        rs::Symbol,
+        next_rs::Symbol,
+        i::Int,
+        horizontal_lines_at_data_rows::_LineIndices
+    ) -> Symbol
 
 Return the field of the borders in the table format `tf` with the horizontal line that must
 be drawn after the current row, or `:none` if no line must be drawn. `rs` and `next_rs` are
@@ -245,11 +251,7 @@ Notice that the printing state resets `i` when the data section ends. Hence, onl
 `horizontal_line_after_data_rows` controls the line after the last data row.
 """
 function _horizontal_line_after_row(
-    tf,
-    rs::Symbol,
-    next_rs::Symbol,
-    i::Int,
-    horizontal_lines_at_data_rows::AbstractVector{Int}
+    tf, rs::Symbol, next_rs::Symbol, i::Int, horizontal_lines_at_data_rows::_LineIndices
 )
     role = if (rs == :table_header) &&
         (next_rs != :table_header) &&

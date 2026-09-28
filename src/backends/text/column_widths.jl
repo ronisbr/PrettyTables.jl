@@ -12,7 +12,7 @@
         table_str::Matrix{String},
         summary_rows::Union{Nothing, Matrix{String}},
         fixed_data_column_widths::AbstractVector{Int},
-        vertical_lines_at_data_columns::AbstractVector{Int},
+        vertical_lines_at_data_columns::_LineIndices,
         auto_wrap::Bool,
         line_breaks::Bool,
         equal_data_column_widths::Bool
@@ -29,7 +29,7 @@ at the data columns to fit the fixed width.
 - `table_str::Matrix{String}`: Rendered data cells.
 - `summary_rows::Union{Nothing, Matrix{String}}`: Summary rows.
 - `fixed_data_column_widths::AbstractVector{Int}`: Fixed data column widths.
-- `vertical_lines_at_data_columns::AbstractVector{Int}`: List of columns where a vertical
+- `vertical_lines_at_data_columns::_LineIndices`: List of columns where a vertical
     line must be drawn after the cell. It is required to compute the available width of
     merged column labels.
 - `auto_wrap::Bool`: If `true`, the strings will be auto wrapped at each column with a fixed
@@ -42,11 +42,13 @@ at the data columns to fit the fixed width.
 function _text__fix_data_column_widths!(
     printed_data_column_widths::Vector{Int},
     table_data::TableData,
-    column_labels::Union{Nothing, Matrix{String}},
+    # The optional sections are not specialized. Otherwise, this function would be compiled
+    # for each combination of sections present in the table.
+    @nospecialize(column_labels::Union{Nothing, Matrix{String}}),
     table_str::Matrix{String},
-    summary_rows::Union{Nothing, Matrix{String}},
+    @nospecialize(summary_rows::Union{Nothing, Matrix{String}}),
     fixed_data_column_widths::AbstractVector{Int},
-    vertical_lines_at_data_columns::AbstractVector{Int},
+    vertical_lines_at_data_columns::_LineIndices,
     auto_wrap::Bool,
     line_breaks::Bool,
     equal_data_column_widths::Bool,
@@ -133,7 +135,7 @@ end
         widths::AbstractVector{Int},
         j₀::Int,
         j₁::Int,
-        vertical_lines_at_data_columns::AbstractVector{Int}
+        vertical_lines_at_data_columns::_LineIndices
     ) -> Int
 
 Return the width available for the content of a cell that spans the data columns `j₀:j₁`,
@@ -144,7 +146,7 @@ function _text__span_width(
     widths::AbstractVector{Int},
     j₀::Int,
     j₁::Int,
-    vertical_lines_at_data_columns::AbstractVector{Int},
+    vertical_lines_at_data_columns::_LineIndices,
 )
     w = 0
 
@@ -260,7 +262,7 @@ Compute the printed column widths.
 - `summary_rows::Union{Nothing, Matrix{String}}`: Rendered summary rows.
 - `summary_row_labels::Union{Nothing, Vector{String}}`: Rendered summary row labels.
 - `table_str::Matrix{String}`: Rendered data cells.
-- `vertical_lines_at_data_columns::AbstractVector{Int}`: List of columns where a vertical
+- `vertical_lines_at_data_columns::_LineIndices`: List of columns where a vertical
     line must be drawn after the cell.
 - `column_label_width_based_on_first_line_only::Bool`: If `true`, the column label width
     will be computed based on the first line only.
@@ -276,12 +278,14 @@ Compute the printed column widths.
 """
 function _text__printed_column_widths(
     table_data::TableData,
-    row_labels::Union{Nothing, Vector{String}},
-    column_labels::Union{Nothing, Matrix{String}},
-    summary_rows::Union{Nothing, Matrix{String}},
-    summary_row_labels::Union{Nothing, Vector{String}},
+    # The optional sections are not specialized. Otherwise, this function would be compiled
+    # for each combination of sections present in the table.
+    @nospecialize(row_labels::Union{Nothing, Vector{String}}),
+    @nospecialize(column_labels::Union{Nothing, Matrix{String}}),
+    @nospecialize(summary_rows::Union{Nothing, Matrix{String}}),
+    @nospecialize(summary_row_labels::Union{Nothing, Vector{String}}),
     table_str::Matrix{String},
-    vertical_lines_at_data_columns::AbstractVector{Int},
+    vertical_lines_at_data_columns::_LineIndices,
     column_label_width_based_on_first_line_only::Bool,
     line_breaks::Bool,
     minimum_data_column_widths::AbstractVector{Int},

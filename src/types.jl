@@ -547,3 +547,28 @@ function Base.setproperty!(pt::PrettyTable, field::Symbol, value::Any)
     field in fieldnames(PrettyTable) && return setfield!(pt, field, value)
     return getfield(pt, :configurations)[field] = value
 end
+
+# == Line Indices ==========================================================================
+
+"""
+    struct _LineIndices
+
+Indices of the rows or columns after which a line must be drawn, which are all the `n` rows
+or columns if `all` is `true`, or the elements of `indices` otherwise. Only the membership of
+an index can be checked (`i ∈ lines`).
+
+Notice that this structure has the same concrete type for all the line specifications of the
+table formats (`:all`, `:none`, or a vector of indices). Otherwise, the functions that
+receive them would be compiled for each combination of specifications. Moreover, it does not
+allocate a vector with every index when the specification is `:all`, which would be
+`O(n)` for tables with a large number of rows.
+"""
+struct _LineIndices
+    all::Bool
+    n::Int
+    indices::Vector{Int}
+end
+
+function Base.in(i::Integer, lines::_LineIndices)
+    return lines.all ? (1 <= i <= lines.n) : (i ∈ lines.indices)
+end

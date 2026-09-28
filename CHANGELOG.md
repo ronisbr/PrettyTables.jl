@@ -119,6 +119,12 @@ Version 3.5.0
   the style fields its style type does not have, and the LaTeX back end ignores the line
   width and color. With `backend = :auto`, a `TableFormat` does not select a back end and
   the text back end is used.
+- ![Enhancement][badge-enhancement] Compile the text back end only once for all the
+  specifications of the lines at the column labels, data rows, and data columns (`:all`,
+  `:none`, or a vector of indices) and for all the combinations of optional sections. For
+  example, the time to print the first table with row labels, summary rows, and hidden
+  column labels was reduced from about 100 ms to about 83 ms, and the compiled package is
+  about 0.5 MB smaller.
 - ![Enhancement][badge-enhancement] Compile the preprocessing of the table only once for all
   the types of the formatters, summary rows, cell alignments, row labels, and column labels.
   For example, the time to print the first table with a new formatter function was reduced

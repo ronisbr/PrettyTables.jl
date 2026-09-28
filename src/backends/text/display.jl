@@ -236,7 +236,7 @@ end
         tf::TextTableFormat,
         line::TextHorizontalLine,
         table_data::TableData,
-        vertical_lines_at_data_columns::AbstractVector{Int},
+        vertical_lines_at_data_columns::_LineIndices,
         row_number_column_width::Int,
         row_label_column_width::Int,
         printed_data_column_widths::Vector{Int};
@@ -252,7 +252,7 @@ Print a horizontal line to `display`.
 - `line::TextHorizontalLine`: Characters and escape sequence used to draw the horizontal
     line, resolved for the line being printed (see [`TextResolvedTableLines`](@ref)).
 - `table_data::TableData`: Table data.
-- `vertical_lines_at_data_columns::AbstractVector{Int}`: List of columns where a vertical
+- `vertical_lines_at_data_columns::_LineIndices`: List of columns where a vertical
     line must be drawn after the cell.
 - `row_number_column_width::Int`: Row number column width.
 - `row_label_column_width::Int`: Row label column width.
@@ -285,7 +285,7 @@ function _text__print_horizontal_line(
     tf::TextTableFormat,
     line::TextHorizontalLine,
     table_data::TableData,
-    vertical_lines_at_data_columns::AbstractVector{Int},
+    vertical_lines_at_data_columns::_LineIndices,
     row_number_column_width::Int,
     row_label_column_width::Int,
     printed_data_column_widths::Vector{Int};
@@ -461,7 +461,7 @@ end
         rl::TextResolvedTableLines,
         table_data::TableData,
         row_number::Int,
-        vertical_lines_at_data_columns::AbstractVector{Int},
+        vertical_lines_at_data_columns::_LineIndices,
         row_number_column_width::Int,
         row_label_column_width::Int,
         printed_data_column_widths::Vector{Int}
@@ -479,7 +479,7 @@ column labels.
     vertical line sections use the resolved vertical line characters.
 - `table_data::TableData`: Table data.
 - `row_number::Int`: Column label row number before the horizontal line.
-- `vertical_lines_at_data_columns::AbstractVector{Int}`: List of columns where a vertical
+- `vertical_lines_at_data_columns::_LineIndices`: List of columns where a vertical
     line must be drawn after the cell.
 - `row_number_column_width::Int`: Row number column width.
 - `row_label_column_width::Int`: Row label column width.
@@ -491,7 +491,7 @@ function _text__print_column_label_horizontal_line_only_at_merged_labels(
     rl::TextResolvedTableLines,
     table_data::TableData,
     row_number::Int,
-    vertical_lines_at_data_columns::AbstractVector{Int},
+    vertical_lines_at_data_columns::_LineIndices,
     row_number_column_width::Int,
     row_label_column_width::Int,
     printed_data_column_widths::Vector{Int},
@@ -588,7 +588,7 @@ end
         jr::Int,
         j::Int,
         last_printed_column_index::Int,
-        vertical_lines_at_data_columns::AbstractVector{Int},
+        vertical_lines_at_data_columns::_LineIndices,
         table_continuation_column::Bool
     ) -> Tuple{Bool, TextVerticalLine}
 
@@ -603,7 +603,7 @@ function _text__vertical_line_after_data_column(
     jr::Int,
     j::Int,
     last_printed_column_index::Int,
-    vertical_lines_at_data_columns::AbstractVector{Int},
+    vertical_lines_at_data_columns::_LineIndices,
     table_continuation_column::Bool,
 )
     if jr == last_printed_column_index

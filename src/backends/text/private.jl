@@ -92,7 +92,7 @@ end
         display_width::Int,
         table_data::TableData,
         tf::TextTableFormat,
-        vertical_lines_at_data_columns::AbstractVector{Int},
+        vertical_lines_at_data_columns::_LineIndices,
         row_number_column_width::Int,
         row_label_column_width::Int,
         printed_data_column_widths::Vector{Int}
@@ -105,7 +105,7 @@ Compute the number of printed data columns.
 - `display_width::Int`: Display width.
 - `table_data::TableData`: Table data.
 - `tf::TextTableFormat`: Table format.
-- `vertical_lines_at_data_columns::AbstractVector{Int}`: List of columns where a vertical
+- `vertical_lines_at_data_columns::_LineIndices`: List of columns where a vertical
     line must be drawn after the cell.
 - `row_number_column_width::Int`: Row number column width.
 - `row_label_column_width::Int`: Row label column width.
@@ -115,7 +115,7 @@ function _text__number_of_printed_data_columns(
     display_width::Int,
     table_data::TableData,
     tf::TextTableFormat,
-    vertical_lines_at_data_columns::AbstractVector{Int},
+    vertical_lines_at_data_columns::_LineIndices,
     row_number_column_width::Int,
     row_label_column_width::Int,
     printed_data_column_widths::Vector{Int},
@@ -156,41 +156,26 @@ end
 #     above it instead of the line after it.
 
 """
-    _text__count_horizontal_lines(
-        horizontal_lines::AbstractVector{Int},
-        last_row::Int
-    ) -> Int
+    _text__count_horizontal_lines(horizontal_lines::_LineIndices, last_row::Int) -> Int
 
 Return how many of the rows in `1:last_row` have a horizontal line drawn after them
 according to `horizontal_lines`. Notice that a row is counted only once, even if it appears
-more than once in `horizontal_lines`.
+more than once in the indices.
 
-This function must be `O(length(horizontal_lines))`, never `O(last_row)`, because `last_row`
-can be the number of rows of a very large table that is only shown cropped.
+This function must be `O(number of indices)`, never `O(last_row)`, because `last_row` can
+be the number of rows of a very large table that is only shown cropped.
 """
-function _text__count_horizontal_lines(
-    horizontal_lines::AbstractUnitRange{Int}, last_row::Int
-)
+function _text__count_horizontal_lines(horizontal_lines::_LineIndices, last_row::Int)
     (last_row < 1) && return 0
-
-    # A range is sorted and has no duplicates. Hence, we only need the size of the
-    # intersection with `1:last_row`.
-    l = max(first(horizontal_lines), 1)
-    u = min(last(horizontal_lines), last_row)
-
-    return max(0, u - l + 1)
-end
-
-function _text__count_horizontal_lines(horizontal_lines::AbstractVector{Int}, last_row::Int)
-    (last_row < 1) && return 0
-    return count(i -> 1 <= i <= last_row, unique(horizontal_lines))
+    horizontal_lines.all && return min(horizontal_lines.n, last_row)
+    return count(i -> 1 <= i <= last_row, unique(horizontal_lines.indices))
 end
 
 """
     _text__row_group_label_lines(
         table_data::TableData,
         tf::TextTableFormat,
-        horizontal_lines_at_data_rows::AbstractVector{Int},
+        horizontal_lines_at_data_rows::_LineIndices,
         i::Int
     ) -> Int
 
@@ -200,7 +185,7 @@ the label itself and the lines around it, or 0 if this row has no row group labe
 function _text__row_group_label_lines(
     table_data::TableData,
     tf::TextTableFormat,
-    horizontal_lines_at_data_rows::AbstractVector{Int},
+    horizontal_lines_at_data_rows::_LineIndices,
     i::Int,
 )
     _print_row_group_label(table_data, i) || return 0
@@ -226,7 +211,7 @@ end
     _text__data_row_lines(
         table_data::TableData,
         tf::TextTableFormat,
-        horizontal_lines_at_data_rows::AbstractVector{Int},
+        horizontal_lines_at_data_rows::_LineIndices,
         i::Int,
         num_lines::Int
     ) -> Tuple{Int, Bool}
@@ -239,7 +224,7 @@ was included, meaning that it can be suppressed before the continuation row.
 function _text__data_row_lines(
     table_data::TableData,
     tf::TextTableFormat,
-    horizontal_lines_at_data_rows::AbstractVector{Int},
+    horizontal_lines_at_data_rows::_LineIndices,
     i::Int,
     num_lines::Int,
 )
@@ -259,7 +244,7 @@ end
     _text__bottom_data_row_lines(
         table_data::TableData,
         tf::TextTableFormat,
-        horizontal_lines_at_data_rows::AbstractVector{Int},
+        horizontal_lines_at_data_rows::_LineIndices,
         i::Int,
         num_lines::Int = 1
     ) -> Tuple{Int, Bool}
@@ -272,7 +257,7 @@ included and can be suppressed if the row is the first one after the continuatio
 function _text__bottom_data_row_lines(
     table_data::TableData,
     tf::TextTableFormat,
-    horizontal_lines_at_data_rows::AbstractVector{Int},
+    horizontal_lines_at_data_rows::_LineIndices,
     i::Int,
     num_lines::Int = 1,
 )
@@ -294,8 +279,8 @@ end
     _text__number_of_required_lines(
         table_data::TableData,
         tf::TextTableFormat,
-        horizontal_lines_at_column_labels::AbstractVector{Int},
-        horizontal_lines_at_data_rows::AbstractVector{Int},
+        horizontal_lines_at_column_labels::_LineIndices,
+        horizontal_lines_at_data_rows::_LineIndices,
         new_line_at_end::Bool
     ) -> NTuple{3, Int}
 
@@ -306,9 +291,9 @@ has one line.
 
 - `table_data::TableData`: Table data.
 - `tf::TextTableFormat`: Table format.
-- `horizontal_lines_at_column_labels::AbstractVector{Int}`: Horizontal lines at column
+- `horizontal_lines_at_column_labels::_LineIndices`: Horizontal lines at column
     labels.
-- `horizontal_lines_at_data_rows::AbstractVector{Int}`: Horizontal lines at data rows.
+- `horizontal_lines_at_data_rows::_LineIndices`: Horizontal lines at data rows.
 - `new_line_at_end::Bool`: If `true`, we must add a new line at the end of the table.
 
 # Returns
@@ -320,8 +305,8 @@ has one line.
 function _text__number_of_required_lines(
     table_data::TableData,
     tf::TextTableFormat,
-    horizontal_lines_at_column_labels::AbstractVector{Int},
-    horizontal_lines_at_data_rows::AbstractVector{Int},
+    horizontal_lines_at_column_labels::_LineIndices,
+    horizontal_lines_at_data_rows::_LineIndices,
     new_line_at_end::Bool,
 )
     # Compute the number of lines we must have before printing the data.
@@ -335,7 +320,9 @@ function _text__number_of_required_lines(
 
         num_lines_before_data +=
             num_column_label_rows +
-            length(horizontal_lines_at_column_labels) +
+            _text__count_horizontal_lines(
+                horizontal_lines_at_column_labels, num_column_label_rows - 1
+            ) +
             tf.horizontal_line_after_column_labels
 
         # The lines at the merged column labels are only drawn after the rows without a
@@ -419,8 +406,8 @@ end
     _text__design_vertical_cropping(
         table_data::TableData,
         tf::TextTableFormat,
-        horizontal_lines_at_column_labels::AbstractVector{Int},
-        horizontal_lines_at_data_rows::AbstractVector{Int},
+        horizontal_lines_at_column_labels::_LineIndices,
+        horizontal_lines_at_data_rows::_LineIndices,
         show_omitted_row_summary::Bool,
         display_number_of_rows::Int,
         new_line_at_end::Bool = true,
@@ -434,9 +421,9 @@ if we must suppress the horizontal line before or after the continuation line.
 
 - `table_data::TableData`: Table data.
 - `tf::TextTableFormat`: Table format.
-- `horizontal_lines_at_column_labels::AbstractVector{Int}`: Horizontal lines at column
+- `horizontal_lines_at_column_labels::_LineIndices`: Horizontal lines at column
     labels.
-- `horizontal_lines_at_data_rows::AbstractVector{Int}`: Horizontal lines at data rows.
+- `horizontal_lines_at_data_rows::_LineIndices`: Horizontal lines at data rows.
 - `show_omitted_row_summary::Bool`: If `true`, we must show the omitted row summary.
 - `display_number_of_rows::Int`: Number of rows in the display.
 - `new_line_at_end::Bool`: If `true`, we must add a new line at the end of the table.
@@ -452,8 +439,8 @@ if we must suppress the horizontal line before or after the continuation line.
 function _text__design_vertical_cropping(
     table_data::TableData,
     tf::TextTableFormat,
-    horizontal_lines_at_column_labels::AbstractVector{Int},
-    horizontal_lines_at_data_rows::AbstractVector{Int},
+    horizontal_lines_at_column_labels::_LineIndices,
+    horizontal_lines_at_data_rows::_LineIndices,
     show_omitted_row_summary::Bool,
     display_number_of_rows::Int,
     new_line_at_end::Bool,
@@ -589,8 +576,8 @@ end
         table_data::TableData,
         table_str::Matrix{String},
         tf::TextTableFormat,
-        horizontal_lines_at_column_labels::AbstractVector{Int},
-        horizontal_lines_at_data_rows::AbstractVector{Int},
+        horizontal_lines_at_column_labels::_LineIndices,
+        horizontal_lines_at_data_rows::_LineIndices,
         show_omitted_row_summary::Bool,
         new_line_at_end::Bool,
         last_printed_column_index::Int
@@ -605,8 +592,8 @@ function _text__middle_cropped_table_lines(
     table_data::TableData,
     table_str::Matrix{String},
     tf::TextTableFormat,
-    horizontal_lines_at_column_labels::AbstractVector{Int},
-    horizontal_lines_at_data_rows::AbstractVector{Int},
+    horizontal_lines_at_column_labels::_LineIndices,
+    horizontal_lines_at_data_rows::_LineIndices,
     show_omitted_row_summary::Bool,
     new_line_at_end::Bool,
     last_printed_column_index::Int,
@@ -651,8 +638,8 @@ end
         table_data::TableData,
         table_str::AbstractMatrix{String},
         tf::TextTableFormat,
-        horizontal_lines_at_column_labels::AbstractVector{Int},
-        horizontal_lines_at_data_rows::AbstractVector{Int},
+        horizontal_lines_at_column_labels::_LineIndices,
+        horizontal_lines_at_data_rows::_LineIndices,
         show_omitted_row_summary::Bool,
         display_number_of_rows::Int,
         new_line_at_end::Bool,
@@ -671,9 +658,9 @@ breaks.
 - `table_str::AbstractMatrix{String}`: Rendered table cells, whose rows must be the data
     rows at the beginning of the table.
 - `tf::TextTableFormat`: Table format.
-- `horizontal_lines_at_column_labels::AbstractVector{Int}`: Horizontal lines at column
+- `horizontal_lines_at_column_labels::_LineIndices`: Horizontal lines at column
     labels.
-- `horizontal_lines_at_data_rows::AbstractVector{Int}`: Horizontal lines at data rows.
+- `horizontal_lines_at_data_rows::_LineIndices`: Horizontal lines at data rows.
 - `show_omitted_row_summary::Bool`: If `true`, we must show the omitted row summary.
 - `display_number_of_rows::Int`: Number of rows in the display.
 - `new_line_at_end::Bool`: If `true`, we must add a new line at the end of the table.
@@ -692,8 +679,8 @@ function _text__design_vertical_cropping_with_line_breaks(
     table_data::TableData,
     table_str::AbstractMatrix{String},
     tf::TextTableFormat,
-    horizontal_lines_at_column_labels::AbstractVector{Int},
-    horizontal_lines_at_data_rows::AbstractVector{Int},
+    horizontal_lines_at_column_labels::_LineIndices,
+    horizontal_lines_at_data_rows::_LineIndices,
     show_omitted_row_summary::Bool,
     display_number_of_rows::Int,
     new_line_at_end::Bool,
@@ -885,7 +872,7 @@ end
     _text__table_width_wo_cont_column(
         table_data::TableData,
         tf::TextTableFormat,
-        vertical_lines_at_data_columns::AbstractVector{Int},
+        vertical_lines_at_data_columns::_LineIndices,
         row_number_column_width::Int,
         row_label_column_width::Int,
         printed_data_column_widths::Vector{Int}
@@ -897,7 +884,7 @@ Compute the width of the table without the continuation column.
 
 - `table_data::TableData`: Table data.
 - `tf::TextTableFormat`: Table format.
-- `vertical_lines_at_data_columns::AbstractVector{Int}`: List of columns where a vertical
+- `vertical_lines_at_data_columns::_LineIndices`: List of columns where a vertical
     line must be drawn after the cell.
 - `row_number_column_width::Int`: Row number column width.
 - `row_label_column_width::Int`: Row label column width.
@@ -906,7 +893,7 @@ Compute the width of the table without the continuation column.
 function _text__table_width_wo_cont_column(
     table_data::TableData,
     tf::TextTableFormat,
-    vertical_lines_at_data_columns::AbstractVector{Int},
+    vertical_lines_at_data_columns::_LineIndices,
     row_number_column_width::Int,
     row_label_column_width::Int,
     printed_data_column_widths::Vector{Int},

@@ -96,7 +96,7 @@ end
     _latex__table_header_description(
         td::TableData,
         tf::LatexTableFormat,
-        vertical_lines_at_data_columns::AbstractVector{Int}
+        vertical_lines_at_data_columns::_LineIndices
     ) -> String
 
 Create the LaTeX table header description with the column alignments and vertical lines
@@ -104,7 +104,7 @@ considering the table data `td`, table format `tf`, and the processed informatio
 vertical lines at data columns `vertical_lines_at_data_columns`.
 """
 function _latex__table_header_description(
-    td::TableData, tf::LatexTableFormat, vertical_lines_at_data_columns::AbstractVector{Int}
+    td::TableData, tf::LatexTableFormat, vertical_lines_at_data_columns::_LineIndices
 )
     num_columns = td.num_columns
 

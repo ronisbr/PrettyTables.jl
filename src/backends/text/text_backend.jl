@@ -230,22 +230,13 @@ function _text__print_table_core(
 
     # == Table Fitting in the Display ======================================================
 
-    # Process the horizontal lines at column labels.
-    if tf.horizontal_lines_at_column_labels isa Symbol
-        horizontal_lines_at_column_labels = if tf.horizontal_lines_at_column_labels == :all
-            1:(length(table_data.column_labels) - 1)
-        else
-            1:0
-        end
-    else
-        # Notice that a line after the last column label row is drawn by the option
-        # `horizontal_line_after_column_labels`. Hence, we must neglect it here. Otherwise,
-        # we would reserve a display line for a horizontal line that is never drawn.
-        horizontal_lines_at_column_labels = filter(
-            x -> 1 <= x <= length(table_data.column_labels) - 1,
-            tf.horizontal_lines_at_column_labels::Vector{Int},
-        )
-    end
+    # Process the horizontal lines at column labels. Notice that a line after the last column
+    # label row is drawn by the option `horizontal_line_after_column_labels`. Hence, we must
+    # neglect it here. Otherwise, we would reserve a display line for a horizontal line that
+    # is never drawn.
+    horizontal_lines_at_column_labels = _line_spec_indices(
+        tf.horizontal_lines_at_column_labels, length(table_data.column_labels) - 1
+    )
 
     # Process the horizontal lines at data rows.
     horizontal_lines_at_data_rows =

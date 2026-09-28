@@ -11,7 +11,7 @@
         renderer::Union{Val{:print}, Val{:show}},
         line_breaks::Bool,
         maximum_data_column_widths::AbstractVector{Int},
-        vertical_lines_at_data_columns::AbstractVector{Int}
+        vertical_lines_at_data_columns::_LineIndices
     )
 
 Render the table using the specification in `table_data`. When the cells are converted to
@@ -40,10 +40,12 @@ of merged column labels.
 function _text__render_table(
     table_data::TableData,
     rctx::RenderContext,
-    renderer::Union{Val{:print}, Val{:show}},
+    # The renderer is only forwarded to the cell rendering, which is dispatched at runtime.
+    # Hence, specializing this function on it would only compile it twice.
+    @nospecialize(renderer::Union{Val{:print}, Val{:show}}),
     line_breaks::Bool,
     maximum_data_column_widths::AbstractVector{Int},
-    vertical_lines_at_data_columns::AbstractVector{Int},
+    vertical_lines_at_data_columns::_LineIndices,
 )
     num_column_label_lines   = length(table_data.column_labels)
     num_printed_data_columns = _number_of_printed_data_columns(table_data)

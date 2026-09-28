@@ -341,7 +341,7 @@ end
         td::TableData,
         tf::TypstTableFormat,
         total_inner_table_lines::Int,
-        vertical_lines_at_data_columns::AbstractVector{Int},
+        vertical_lines_at_data_columns::_LineIndices,
         il::Int,
         ns::Int
     ) -> Nothing
@@ -358,7 +358,7 @@ function _typst__vertical_lines!(
     td::TableData,
     tf::TypstTableFormat,
     total_inner_table_lines::Int,
-    vertical_lines_at_data_columns::AbstractVector{Int},
+    vertical_lines_at_data_columns::_LineIndices,
     il::Int,
     ns::Int,
 )
