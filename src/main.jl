@@ -481,8 +481,13 @@ Base.@constprop :none Base.@nospecializeinfer function _pretty_table(
         summary_row_labels = nothing
     end
 
-    if !isnothing(summary_rows) && isnothing(summary_row_labels)
-        summary_row_labels = SummaryLabelIterator(summary_rows)
+    # The summary rows are stored as a `Vector{Any}` in the table data and in the default
+    # summary row labels. Hence, we convert them once here, so that both share the same
+    # vector.
+    if !isnothing(summary_rows)
+        summary_rows = convert(Vector{Any}, summary_rows)::Vector{Any}
+        isnothing(summary_row_labels) &&
+            (summary_row_labels = SummaryLabelIterator(summary_rows))
     end
 
     # If the column labels are hidden, the merged column label cells can never be rendered.
