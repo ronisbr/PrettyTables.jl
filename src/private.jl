@@ -20,7 +20,7 @@ Base.@nospecializeinfer function _guess_column_labels(@nospecialize(data::Union{
     if !isnothing(sch)
         types = String[]
 
-        for T in sch.types
+        for T in _schema_types(sch)
             push!(types, _compact_type_str(T)::String)
         end
 
@@ -28,6 +28,18 @@ Base.@nospecializeinfer function _guess_column_labels(@nospecialize(data::Union{
     end
 
     return column_labels
+end
+
+"""
+    _schema_types(sch::Tables.Schema) -> Any
+
+Return the column types of the Tables.jl schema `sch`. Notice that the property `types` of
+the schema builds the tuple of types using a generator, which is compiled for each schema
+type. Hence, we obtain the types from the type parameter of the schema when it is available.
+"""
+function _schema_types(sch::Tables.Schema{names, types}) where {names, types}
+    types === nothing && return sch.types
+    return fieldtypes(types)
 end
 
 function _guess_column_labels(data::AbstractVector)
@@ -50,6 +62,24 @@ end
 
 function _guess_column_labels(::AbstractDict{K, V}) where {K, V}
     return [["Keys", "Values"], [_compact_type_str(K), _compact_type_str(V)]]
+end
+
+"""
+    _vector_any(v::AbstractVector) -> Vector{Any}
+
+Copy the elements of `v` to a new `Vector{Any}`. This function is compiled only once. Hence,
+it must be used to store the vectors whose element types depend on the user input, e.g., the
+vectors of functions, avoiding the compilation of `convert` for each new type.
+"""
+Base.@nospecializeinfer function _vector_any(@nospecialize(v::AbstractVector))
+    r = Vector{Any}(undef, length(v))
+    k = 0
+
+    for i in eachindex(v)
+        r[k += 1] = v[i]
+    end
+
+    return r
 end
 
 """

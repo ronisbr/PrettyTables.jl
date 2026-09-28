@@ -119,6 +119,11 @@ Version 3.5.0
   the style fields its style type does not have, and the LaTeX back end ignores the line
   width and color. With `backend = :auto`, a `TableFormat` does not select a back end and
   the text back end is used.
+- ![Enhancement][badge-enhancement] Compile the preprocessing of the table only once for all
+  the types of the formatters, summary rows, cell alignments, row labels, and column labels.
+  For example, the time to print the first table with a new formatter function was reduced
+  from about 115 ms to about 45 ms, and with symbols as column labels, from about 115 ms to
+  about 30 ms.
 - ![Enhancement][badge-enhancement] Load REPL.jl only in Julia 1.11 and 1.12, where it avoids
   a long precompilation time. In Julia 1.13 or newer, this change reduces the time to load
   the package by about 50 ms.

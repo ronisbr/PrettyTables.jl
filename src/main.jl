@@ -245,11 +245,15 @@ Base.@constprop :none Base.@nospecializeinfer function _pretty_table(
     subtitle::String,
     stubhead_label::String,
     row_number_column_label::String,
-    row_labels::Union{Nothing, AbstractVector},
+    # NOTE: The arguments whose types depend on the user input, e.g., the type of the
+    # functions in `summary_rows` or `formatters`, are not specialized. Otherwise, each new
+    # type would compile this entire function again. Notice that all of them are within the
+    # first 32 positional arguments, the limit of `@nospecialize`.
+    @nospecialize(row_labels::Union{Nothing, AbstractVector}),
     row_group_labels::Union{Nothing, Vector{Pair{Int, String}}},
-    column_labels::Union{Nothing, AbstractVector},
+    @nospecialize(column_labels::Union{Nothing, AbstractVector}),
     show_column_labels::Bool,
-    summary_rows::Union{Nothing, Vector{T} where T <: Any},
+    @nospecialize(summary_rows::Union{Nothing, Vector{T} where T <: Any}),
     summary_row_labels::Union{Nothing, Vector{String}},
     footnotes::Union{Nothing, Vector{Pair{FootnoteTuple, String}}},
     source_notes::String,
@@ -269,10 +273,12 @@ Base.@constprop :none Base.@nospecializeinfer function _pretty_table(
 
     # == Other Configurations ==============================================================
 
-    cell_alignment::Union{
-        Nothing, Vector{Pair{NTuple{2, Int}, Symbol}}, Vector{F} where F <: Function
-    },
-    formatters::Union{Nothing, Vector{T} where T <: Any},
+    @nospecialize(
+        cell_alignment::Union{
+            Nothing, Vector{Pair{NTuple{2, Int}, Symbol}}, Vector{F} where F <: Function
+        }
+    ),
+    @nospecialize(formatters::Union{Nothing, Vector{T} where T <: Any}),
     maximum_number_of_columns::Int,
     maximum_number_of_rows::Int,
     merge_column_label_cells::Union{Symbol, Vector{MergeCells}},
@@ -349,15 +355,9 @@ Base.@constprop :none Base.@nospecializeinfer function _pretty_table(
         end
     end
 
-    # If the elements of the column labels are not vectors, we must wrap it into a vector
-    # because the user probably only wants one row for the column label. Notice that we must
-    # check the elements if the element type is abstract, e.g., in a `Vector{Any}` with one
-    # vector per row.
-    if !_is_vector_of_label_rows(column_labels)
-        column_labels = [column_labels]
-    elseif !(eltype(column_labels) <: AbstractVector)
-        column_labels = AbstractVector[row for row in column_labels]
-    end
+    # Convert the column labels to a vector of rows, each one a `Vector{Any}`, which is how
+    # they are stored in the table data.
+    column_labels = _column_label_rows(column_labels)
 
     isempty(column_labels) && throw(
         ArgumentError(
@@ -489,7 +489,7 @@ Base.@constprop :none Base.@nospecializeinfer function _pretty_table(
     # summary row labels. Hence, we convert them once here, so that both share the same
     # vector.
     if !isnothing(summary_rows)
-        summary_rows = convert(Vector{Any}, summary_rows)::Vector{Any}
+        summary_rows = _vector_any(summary_rows)
         isnothing(summary_row_labels) &&
             (summary_row_labels = SummaryLabelIterator(summary_rows))
     end
@@ -517,6 +517,10 @@ Base.@constprop :none Base.@nospecializeinfer function _pretty_table(
     if (maximum_number_of_rows > 0) && (num_rows == maximum_number_of_rows + 1)
         maximum_number_of_rows = maximum_number_of_rows + 1
     end
+
+    # The functions are stored as a `Vector{Any}` in the table data (see `_vector_any`).
+    !isnothing(cell_alignment) && (cell_alignment = _vector_any(cell_alignment))
+    !isnothing(formatters) && (formatters = _vector_any(formatters))
 
     # == Table Data and Printing Specification =============================================
 
@@ -695,7 +699,37 @@ or `false` if it is a single row of column labels.
 function _is_vector_of_label_rows(@nospecialize(column_labels::AbstractVector))
     eltype(column_labels) <: AbstractVector && return true
     isempty(column_labels) && return false
-    return all(x -> x isa AbstractVector, column_labels)
+
+    for i in eachindex(column_labels)
+        (column_labels[i] isa AbstractVector) || return false
+    end
+
+    return true
+end
+
+"""
+    _column_label_rows(column_labels::AbstractVector) -> Vector{Vector{Any}}
+
+Convert the `column_labels` passed by the user, which can be a single row of labels or a
+vector of rows, to a vector of rows, each one a `Vector{Any}`. This function is compiled only
+once. Hence, the column labels must be converted with it, avoiding the compilation of the
+processing of the column labels for each new type of labels.
+"""
+Base.@nospecializeinfer function _column_label_rows(
+    @nospecialize(column_labels::AbstractVector)
+)
+    # If the elements of the column labels are not vectors, the user probably only wants one
+    # row of column labels.
+    _is_vector_of_label_rows(column_labels) || return [_vector_any(column_labels)]
+
+    rows = Vector{Vector{Any}}(undef, length(column_labels))
+    k    = 0
+
+    for i in eachindex(column_labels)
+        rows[k += 1] = _vector_any(column_labels[i])
+    end
+
+    return rows
 end
 
 """
