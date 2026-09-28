@@ -26,9 +26,9 @@ function is expensive (hundreds of milliseconds in Julia 1.12) even when the bod
 already compiled.
 """
 @kwdef struct LatexPrintOptions
-    highlighters::Union{Nothing, Vector{AbstractHighlighter}} = nothing
-    style::LatexTableStyle                                    = _DEFAULT_LATEX_TABLE_STYLE
-    table_format::LatexTableFormat                            = _DEFAULT_LATEX_TABLE_FORMAT
+    highlighters::Vector{AbstractHighlighter} = _NO_HIGHLIGHTERS
+    style::LatexTableStyle                    = _DEFAULT_LATEX_TABLE_STYLE
+    table_format::LatexTableFormat            = _DEFAULT_LATEX_TABLE_FORMAT
 end
 
 ############################################################################################
@@ -52,8 +52,7 @@ end
 function _latex__print_core(pspec::PrintingSpec, opts::LatexPrintOptions)
     # == Unpack the Options ================================================================
 
-    highlighters = isnothing(opts.highlighters) ?
-        nothing : _latex__native_highlighters(opts.highlighters)
+    highlighters = _latex__native_highlighters(opts.highlighters)
     style        = opts.style
     table_format = opts.table_format
 
@@ -373,19 +372,14 @@ function _latex__print_core(pspec::PrintingSpec, opts::LatexPrintOptions)
                     # because they are fully consumed by the dedicated `\multicolumn`
                     # branches above.
                     else
-                        # Here we have a data cell. Hence, let's check if we have a
-                        # highlighter to apply.
-                        if !isnothing(highlighters)
-                            # Apply the highlighters in order, stopping at the first match.
-                            di, dj = _data_indices(table_data, ps.i, ps.j)
+                        # Here we have a data cell. Hence, apply the highlighters in
+                        # order, stopping at the first match.
+                        di, dj = _data_indices(table_data, ps.i, ps.j)
 
-                            for h in highlighters
-                                if h.f(orig_data, di, dj)
-                                    envs = _latex__highlighter_decoration(
-                                        h, orig_data, di, dj
-                                    )
-                                    break
-                                end
+                        for h in highlighters
+                            if h.f(orig_data, di, dj)
+                                envs = _latex__highlighter_decoration(h, orig_data, di, dj)
+                                break
                             end
                         end
                     end
