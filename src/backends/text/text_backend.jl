@@ -469,16 +469,24 @@ function _text__print_table_core(
         min_data_column_widths,
     )
 
-    # Now, we crop the additional column labels if the user wants to do so.
-    # TODO: What should we do with the merged column labels?
+    # Now, we crop the additional column labels if the user wants to do so. Notice that a
+    # merged column label is stored in its first column and it must be cropped to the width
+    # of all the spanned columns.
     if column_label_width_based_on_first_line_only && !isnothing(column_labels)
-        for j in eachindex(printed_data_column_widths)
-            cw  = printed_data_column_widths[j]
-            cls = @views column_labels[:, j]
+        for j in axes(column_labels, 2), i in axes(column_labels, 1)
+            j₀, j₁ = _column_label_limits(table_data, i, j)
+            j != j₀ && continue
 
-            for i in eachindex(cls)
-                cls[i] = _text__fit_cell_in_maximum_cell_width(cls[i], cw, false)
-            end
+            cw = _text__span_width(
+                printed_data_column_widths,
+                j₀,
+                min(j₁, num_printed_data_columns),
+                vertical_lines_at_data_columns,
+            )
+
+            column_labels[i, j] = _text__fit_cell_in_maximum_cell_width(
+                column_labels[i, j], cw, false
+            )
         end
     end
 

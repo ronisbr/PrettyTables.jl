@@ -196,6 +196,10 @@ Version 3.5.0
   label added a column to the table.
 - ![Bugfix][badge-bugfix] Escape the stubhead label and the row number column label in the
   Markdown back end, as the column labels.
+- ![Bugfix][badge-bugfix] Handle the merged column labels when
+  `column_label_width_based_on_first_line_only` is `true` in the text back end. The merged
+  labels after the first line widened the columns and were cropped to the width of a single
+  column.
 - ![Bugfix][badge-bugfix] Widen the text table to fit the printed row group labels,
   distributing the additional width among the data columns without a fixed width. If no
   column can be widened, the label is cropped. A long label crossed the right border of the

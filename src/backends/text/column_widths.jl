@@ -362,6 +362,10 @@ function _text__printed_column_widths(
         @views for mc in table_data.merge_column_label_cells
             mc.j > num_printed_data_columns && continue
 
+            # If the user wants to crop the additional column labels, only the merged cells
+            # at the first line must be considered.
+            (column_label_width_based_on_first_line_only && (mc.i > 1)) && continue
+
             j₀ = mc.j
             j₁ = min(mc.j + mc.column_span - 1, num_printed_data_columns)
 

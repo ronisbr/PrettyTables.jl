@@ -269,3 +269,26 @@ end
         @test render(14) == expected
     end
 end
+
+@testset "Column Label Width Based on the First Line With Merged Cells" begin
+    # The merged cells after the first line must not widen the columns, and they must be
+    # cropped to the width of all the spanned columns.
+    expected = """
+┌───┬───┐
+│ a │ b │
+│ abcd… │
+├───┬───┤
+│ 1 │ 2 │
+│ 3 │ 4 │
+└───┴───┘
+"""
+
+    result = pretty_table(
+        String,
+        [1 2; 3 4];
+        column_label_width_based_on_first_line_only = true,
+        column_labels = [["a", "b"], [MultiColumn(2, "abcdefgh")]],
+    )
+
+    @test result == expected
+end
