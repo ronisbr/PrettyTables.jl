@@ -143,6 +143,18 @@ end
 
 # == Vertical Cropping =====================================================================
 
+# NOTE: The functions below must count exactly the lines drawn by the printing loop in
+# `_text__print_table_core`. Each line is counted only once, by the element that owns it:
+#
+#   - The line after the column labels is owned by the column labels, even if the first data
+#     row has a row group label, in which case it is drawn as the line before the label.
+#   - The horizontal line after a data row is owned by that row, unless the next data row
+#     has a row group label. In this case, the line is drawn as the line before the label, if
+#     the label is printed, and it is owned by the label.
+#   - The line after the last data row is owned by the section after the data rows.
+#   - In the middle cropping, each row printed after the continuation row owns the line
+#     above it instead of the line after it.
+
 """
     _text__count_horizontal_lines(
         horizontal_lines::AbstractVector{Int},
@@ -171,19 +183,109 @@ end
 
 function _text__count_horizontal_lines(horizontal_lines::AbstractVector{Int}, last_row::Int)
     (last_row < 1) && return 0
+    return count(i -> 1 <= i <= last_row, unique(horizontal_lines))
+end
 
-    n = 0
+"""
+    _text__row_group_label_lines(
+        table_data::TableData,
+        tf::TextTableFormat,
+        horizontal_lines_at_data_rows::AbstractVector{Int},
+        i::Int
+    ) -> Int
 
-    for (k, i) in enumerate(horizontal_lines)
-        (1 <= i <= last_row) || continue
+Return the number of lines owned by the row group label before the data row `i`, including
+the label itself and the lines around it, or 0 if this row has no row group label.
+"""
+function _text__row_group_label_lines(
+    table_data::TableData,
+    tf::TextTableFormat,
+    horizontal_lines_at_data_rows::AbstractVector{Int},
+    i::Int,
+)
+    _print_row_group_label(table_data, i) || return 0
 
-        # Skip a row we have already counted.
-        (i ∈ view(horizontal_lines, 1:(k - 1))) && continue
-
-        n += 1
+    line_before = if i == 1
+        # At the first data row, the line before the label is the line after the column
+        # labels, which is owned by the column labels if the user wants it. If the column
+        # labels are hidden, there is no line before the label.
+        table_data.show_column_labels &&
+            tf.horizontal_line_before_row_group_label &&
+            !tf.horizontal_line_after_column_labels
+    else
+        # The horizontal line after the previous data row is drawn as the line before the
+        # label.
+        tf.horizontal_line_before_row_group_label ||
+            ((i - 1) ∈ horizontal_lines_at_data_rows)
     end
 
-    return n
+    return 1 + line_before + tf.horizontal_line_after_row_group_label
+end
+
+"""
+    _text__data_row_lines(
+        table_data::TableData,
+        tf::TextTableFormat,
+        horizontal_lines_at_data_rows::AbstractVector{Int},
+        i::Int,
+        num_lines::Int
+    ) -> Tuple{Int, Bool}
+
+Return the number of lines owned by the data row `i`, which has `num_lines` lines, when it is
+printed before the continuation row. It includes the row group label before the row and the
+horizontal line after it. The second returned value indicates whether this horizontal line
+was included, meaning that it can be suppressed before the continuation row.
+"""
+function _text__data_row_lines(
+    table_data::TableData,
+    tf::TextTableFormat,
+    horizontal_lines_at_data_rows::AbstractVector{Int},
+    i::Int,
+    num_lines::Int,
+)
+    hline =
+        (i < table_data.num_rows) &&
+        (i ∈ horizontal_lines_at_data_rows) &&
+        !_print_row_group_label(table_data, i + 1)
+
+    group_lines = _text__row_group_label_lines(
+        table_data, tf, horizontal_lines_at_data_rows, i
+    )
+
+    return num_lines + group_lines + hline, hline
+end
+
+"""
+    _text__bottom_data_row_lines(
+        table_data::TableData,
+        tf::TextTableFormat,
+        horizontal_lines_at_data_rows::AbstractVector{Int},
+        i::Int
+    ) -> Tuple{Int, Bool}
+
+Return the number of lines owned by the data row `i` when it is printed after the
+continuation row in the middle cropping. It includes the row group label before the row and
+the line above it. The second returned value indicates whether the line above the row was
+included and can be suppressed if the row is the first one after the continuation row.
+"""
+function _text__bottom_data_row_lines(
+    table_data::TableData,
+    tf::TextTableFormat,
+    horizontal_lines_at_data_rows::AbstractVector{Int},
+    i::Int,
+)
+    # A row group label draws the line before it, which cannot be suppressed.
+    if _print_row_group_label(table_data, i)
+        group_lines = _text__row_group_label_lines(
+            table_data, tf, horizontal_lines_at_data_rows, i
+        )
+
+        return 1 + group_lines, false
+    end
+
+    hline = (i - 1) ∈ horizontal_lines_at_data_rows
+
+    return 1 + hline, hline
 end
 
 """
@@ -195,7 +297,8 @@ end
         new_line_at_end::Bool
     ) -> NTuple{3, Int}
 
-Compute the total number of lines required to print the table.
+Compute the total number of lines required to print the table, assuming that each data row
+has one line.
 
 # Arguments
 
@@ -226,10 +329,22 @@ function _text__number_of_required_lines(
         tf.horizontal_line_at_beginning
 
     if table_data.show_column_labels
+        num_column_label_rows = length(table_data.column_labels)
+
         num_lines_before_data +=
-            length(table_data.column_labels) +
+            num_column_label_rows +
             length(horizontal_lines_at_column_labels) +
             tf.horizontal_line_after_column_labels
+
+        # The lines at the merged column labels are only drawn after the rows without a
+        # horizontal line.
+        if tf.horizontal_line_at_merged_column_labels
+            for i in 1:(num_column_label_rows - 1)
+                (i ∉ horizontal_lines_at_column_labels) &&
+                    _has_merged_cells(table_data, i) &&
+                    (num_lines_before_data += 1)
+            end
+        end
     end
 
     # Compute the number of lines we must have after printing the data.
@@ -268,21 +383,23 @@ function _text__number_of_required_lines(
     if _has_row_group_labels(table_data)
         row_group_labels = table_data.row_group_labels
 
-        lines_per_row_group_label =
-            1 +
-            tf.horizontal_line_before_row_group_label +
-            tf.horizontal_line_after_row_group_label
-
         for (k, rg) in enumerate(row_group_labels)
             i = first(rg)
 
             (1 <= i <= num_rows) || continue
 
             # If two groups start at the same row, only one label is printed. Hence, we must
-            # count that row only once, exactly like the previous per-row scan did.
+            # count that row only once.
             any(m -> first(row_group_labels[m]) == i, 1:(k - 1)) && continue
 
-            num_non_data_lines += lines_per_row_group_label
+            num_non_data_lines += _text__row_group_label_lines(
+                table_data, tf, horizontal_lines_at_data_rows, i
+            )
+
+            # The horizontal line after the previous data row is owned by the label, but it
+            # was counted above.
+            ((i > 1) && ((i - 1) ∈ horizontal_lines_at_data_rows)) &&
+                (num_non_data_lines -= 1)
         end
     end
 
@@ -336,6 +453,7 @@ function _text__design_vertical_cropping(
     display_number_of_rows::Int,
     new_line_at_end::Bool,
 )
+    num_rows      = table_data.num_rows
     num_data_rows = 0
 
     # This variable indicates if we must suppress the horizontal line before the
@@ -355,137 +473,83 @@ function _text__design_vertical_cropping(
         new_line_at_end,
     )
 
+    # The user can limit the number of printed rows, in which case the table is cropped
+    # even if it fits in the display.
+    mr_user  = table_data.maximum_number_of_rows
+    max_rows = (0 <= mr_user < num_rows) ? mr_user : num_rows
+
     # Check if we can draw the entire table, meaning that a continuation line is not
     # necessary.
-    (total_table_lines <= display_number_of_rows) &&
-        return table_data.num_rows, false, false
+    (max_rows == num_rows) && (total_table_lines <= display_number_of_rows) &&
+        return num_rows, false, false
 
-    # We need one additional line to show the omitted row summary, if required, since we
-    # must crop the table here.
-    num_lines_after_data += show_omitted_row_summary
+    # We need one additional line to show the omitted row summary, if required, and one line
+    # for the continuation row, since we must crop the table here.
+    available_lines =
+        display_number_of_rows -
+        num_lines_before_data -
+        num_lines_after_data -
+        show_omitted_row_summary -
+        1
 
-    required_lines_for_row_group_label =
-        1 +
-        tf.horizontal_line_before_row_group_label +
-        tf.horizontal_line_after_row_group_label
+    num_printed_lines = 0
 
-    if table_data.vertical_crop_mode == :bottom
+    # In the bottom cropping, we only add the rows from the beginning of the table. In the
+    # middle cropping, we alternately add one row from the beginning and one row from the
+    # end of the table until we reach the number of available lines. Notice that sometimes
+    # we might have a blank space because we have non-data lines to print that consume
+    # display lines, such as row group labels and horizontal lines.
+    num_iterations = table_data.vertical_crop_mode == :bottom ? num_rows : div(num_rows, 2)
 
-        # In bottom mode, the continuation line will be at the end.
-        available_lines =
-            display_number_of_rows - num_lines_before_data - num_lines_after_data - 1
+    for row in 1:num_iterations
+        num_data_rows >= max_rows && break
 
-        num_printed_lines = 0
+        # == Row at the Beginning of the Table =============================================
 
-        for i in 1:(table_data.num_rows)
-            hline               = i ∈ horizontal_lines_at_data_rows
-            row_group_label     = _print_row_group_label(table_data, i)
-            num_remaining_lines = available_lines - num_printed_lines
+        Δ, hline = _text__data_row_lines(
+            table_data, tf, horizontal_lines_at_data_rows, row, 1
+        )
 
-            # Compute the number of lines required for the current row.
-            Δ = 1 + hline + (row_group_label ? required_lines_for_row_group_label : 0)
+        num_remaining_lines = available_lines - num_printed_lines
 
-            # If the next line is a row group label and we must draw the horizontal line
-            # here, we will need to remove this horizontal line.
-            if _print_row_group_label(table_data, i + 1) &&
-                tf.horizontal_line_before_row_group_label &&
-                hline
-                Δ -= 1
+        # Check if we have enough vertical space to display the row. If not, try to remove
+        # the horizontal line before the continuation line to make it fit.
+        if num_remaining_lines < Δ
+            if hline && (Δ - num_remaining_lines == 1)
+                suppress_hline_before_continuation_row = true
+                num_data_rows += 1
             end
 
-            # Check if we have enough vertical space to display the line. If not, try to
-            # remove horizontal line before the continuation line to make it fit.
-            if num_remaining_lines < Δ
-                if hline && (Δ - num_remaining_lines == 1)
-                    suppress_hline_before_continuation_row = true
-                    num_data_rows += 1
-                end
-
-                break
-            end
-
-            # If we reach this point, we can print the data row.
-            num_data_rows     += 1
-            num_printed_lines += Δ
+            break
         end
 
-    else
-        # To design the number of data rows we can print, we will process one line at the
-        # beginning of the table and one line at the end of table counting the number of
-        # printed lines. When it reaches the maximum number of lines we have, we stop the
-        # algorithm. Notice that sometimes we might have a blank space because we have
-        # non-data rows to print that consumes display lines, such as row group labels and
-        # horizontal lines.
-        #
-        # NOTE: If we reach this point, we know that a continuation row must be printed.
+        num_data_rows     += 1
+        num_printed_lines += Δ
 
-        available_lines =
-            display_number_of_rows - num_lines_before_data - num_lines_after_data - 1
+        (table_data.vertical_crop_mode == :bottom) && continue
+        (num_data_rows >= max_rows) && break
 
-        num_printed_lines = 0
+        # == Row at the End of the Table ===================================================
 
-        for row in 1:div(table_data.num_rows, 2, RoundDown)
+        Δ, hline = _text__bottom_data_row_lines(
+            table_data, tf, horizontal_lines_at_data_rows, num_rows - row + 1
+        )
 
-            # == Line at the Beginning of the Table ========================================
+        num_remaining_lines = available_lines - num_printed_lines
 
-            i = row
-
-            hline               = i ∈ horizontal_lines_at_data_rows
-            row_group_label     = _print_row_group_label(table_data, i)
-            num_remaining_lines = available_lines - num_printed_lines
-
-            # Compute the number of lines required for the current row.
-            Δ = 1 + hline + (row_group_label ? required_lines_for_row_group_label : 0)
-
-            # If the next line is a row group label and we must draw the horizontal line
-            # here, we will need to remove this horizontal line.
-            if _print_row_group_label(table_data, i + 1) &&
-                tf.horizontal_line_before_row_group_label &&
-                hline
-                Δ -= 1
+        # Check if we have enough vertical space to display the row. If not, try to remove
+        # the horizontal line after the continuation line to make it fit.
+        if num_remaining_lines < Δ
+            if hline && (Δ - num_remaining_lines == 1)
+                suppress_hline_after_continuation_row = true
+                num_data_rows += 1
             end
 
-            # Check if we have enough vertical space to display the line. If not, try to
-            # remove horizontal line before the continuation line to make it fit.
-            if num_remaining_lines < Δ
-                if hline && (Δ - num_remaining_lines == 1)
-                    suppress_hline_before_continuation_row = true
-                    num_data_rows += 1
-                end
-
-                break
-            end
-
-            # If we reach this point, we can print the data row.
-            num_data_rows     += 1
-            num_printed_lines += Δ
-
-            # == Line at the End of the Table ==============================================
-
-            i = table_data.num_rows - row + 1
-
-            hline               = i ∈ horizontal_lines_at_data_rows
-            row_group_label     = _print_row_group_label(table_data, i)
-            num_remaining_lines = available_lines - num_printed_lines
-
-            # Compute the number of lines required for the current row.
-            Δ = 1 + hline + (row_group_label ? required_lines_for_row_group_label : 0)
-
-            # Check if we have enough vertical space to display the line. If not, try to
-            # remove horizontal line before the continuation line to make it fit.
-            if num_remaining_lines < Δ
-                if hline && (Δ - num_remaining_lines == 1)
-                    suppress_hline_after_continuation_row = true
-                    num_data_rows += 1
-                end
-
-                break
-            end
-
-            # If we reach this point, we can print the data row.
-            num_data_rows     += 1
-            num_printed_lines += Δ
+            break
         end
+
+        num_data_rows     += 1
+        num_printed_lines += Δ
     end
 
     return (
@@ -505,7 +569,7 @@ end
         show_omitted_row_summary::Bool,
         display_number_of_rows::Int,
         new_line_at_end::Bool,
-        num_printed_data_columns::Int
+        last_printed_column_index::Int
     ) -> Tuple{Int, Bool, Bool}
 
 Design the vertical cropping of the table when the user wants line breaks by computing how
@@ -524,7 +588,8 @@ breaks.
 - `show_omitted_row_summary::Bool`: If `true`, we must show the omitted row summary.
 - `display_number_of_rows::Int`: Number of rows in the display.
 - `new_line_at_end::Bool`: If `true`, we must add a new line at the end of the table.
-- `num_printed_data_columns::Int`: Number of printed data columns.
+- `last_printed_column_index::Int`: Index of the last printed data column, including the
+    one that is partially printed, since all of them contribute to the row heights.
 
 # Returns
 
@@ -541,15 +606,19 @@ function _text__design_vertical_cropping_with_line_breaks(
     show_omitted_row_summary::Bool,
     display_number_of_rows::Int,
     new_line_at_end::Bool,
-    num_printed_data_columns::Int,
+    last_printed_column_index::Int,
 )
+    num_rows      = table_data.num_rows
     num_data_rows = 0
+
+    # If the table has no columns, no data row can be cropped.
+    size(table_str, 2) == 0 && return num_rows, false, false
 
     # This variable indicates if we must suppress the horizontal line before the
     # continuation row if it exists.
     suppress_hline_before_continuation_row = false
 
-    # Compute the number of required lines to print the table.
+    # Compute the number of required lines to print the table assuming one line per row.
     total_table_lines, num_lines_before_data, num_lines_after_data = _text__number_of_required_lines(
         table_data,
         tf,
@@ -558,51 +627,49 @@ function _text__design_vertical_cropping_with_line_breaks(
         new_line_at_end,
     )
 
-    # We need one additional line to show the omitted row summary, if required, since we
-    # must crop the table here.
-    num_lines_after_data += show_omitted_row_summary
+    # Notice that the upper clamp is required because the table can have more columns than
+    # the rendered ones.
+    last_column = clamp(last_printed_column_index, 1, size(table_str, 2))
 
-    required_lines_for_row_group_label =
-        1 +
-        tf.horizontal_line_before_row_group_label +
-        tf.horizontal_line_after_row_group_label
+    num_rendered_rows = min(size(table_str, 1), num_rows)
 
-    # In bottom mode, the continuation line will be at the end.
+    # Number of lines in the row `i`.
+    row_lines(i) = 1 + maximum(j -> count(==('\n'), table_str[i, j]), 1:last_column)
+
+    # If all the rows were rendered, we must check if we can draw the entire table, meaning
+    # that a continuation line is not necessary. In this case, we replace the one line per
+    # row in the total number of lines by the actual number of lines.
+    if num_rendered_rows == num_rows
+        for i in 1:num_rows
+            total_table_lines += row_lines(i) - 1
+        end
+
+        (total_table_lines <= display_number_of_rows) && return num_rows, false, false
+    end
+
+    # We need one additional line to show the omitted row summary, if required, and one line
+    # for the continuation row, since we must crop the table here.
     available_lines =
-        display_number_of_rows - num_lines_before_data - num_lines_after_data - 1
+        display_number_of_rows -
+        num_lines_before_data -
+        num_lines_after_data -
+        show_omitted_row_summary -
+        1
 
     num_printed_lines = 0
     last_row_cropped  = false
 
-    # We need this verification if we are not printing one entire column to avoid problems
-    # in the algorithm. Notice that the upper clamp is required because the table can have no
-    # columns at all, in which case there is nothing to measure.
-    num_printed_data_columns = clamp(num_printed_data_columns, 1, size(table_str, 2))
+    for i in 1:num_rendered_rows
+        Δ, hline = _text__data_row_lines(
+            table_data, tf, horizontal_lines_at_data_rows, i, row_lines(i)
+        )
 
-    # If the table has no columns, no data row can be cropped.
-    size(table_str, 2) == 0 && return table_data.num_rows, false, false
-
-    @views for i in 1:min(size(table_str, 1), table_data.num_rows)
-        hline               = i ∈ horizontal_lines_at_data_rows
-        row_group_label     = _print_row_group_label(table_data, i)
         num_remaining_lines = available_lines - num_printed_lines
 
-        # Compute the number of lines in this row.
-        num_lines = maximum(count.(==('\n'), table_str[i, 1:num_printed_data_columns])) + 1
-
-        # Compute the number of lines required for the current row.
-        Δ = num_lines + hline + (row_group_label ? required_lines_for_row_group_label : 0)
-
-        # If the next line is a row group label and we must draw the horizontal line
-        # here, we will need to remove this horizontal line.
-        if _print_row_group_label(table_data, i + 1) &&
-            tf.horizontal_line_before_row_group_label &&
-            hline
-            Δ -= 1
-        end
-
-        # Check if we have enough vertical space to display the line. If not, try to
-        # remove horizontal line before the continuation line to make it fit.
+        # Check if we have enough vertical space to display the row. If not, try to remove
+        # the horizontal line before the continuation line to make it fit. Otherwise, the
+        # row is printed partially if at least one of its lines fits after the row group
+        # label before it. Otherwise, the label would be printed without data.
         if num_remaining_lines == Δ
             num_data_rows += 1
             break
@@ -614,11 +681,14 @@ function _text__design_vertical_cropping_with_line_breaks(
                 break
             end
 
-            last_row_cropped = true
+            last_row_cropped =
+                num_remaining_lines > _text__row_group_label_lines(
+                    table_data, tf, horizontal_lines_at_data_rows, i
+                )
+
             break
         end
 
-        # If we reach this point, we can print the data row.
         num_data_rows     += 1
         num_printed_lines += Δ
     end

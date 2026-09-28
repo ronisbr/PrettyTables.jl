@@ -246,9 +246,10 @@
 ├────────┬────────┬────────┬────────┬────────┬────────
 │ (1, 1) │ (1, 2) │ (1, 3) │ (1, 4) │ (1, 5) │ (1, 6 ⋯
 ├────────┼────────┼────────┼────────┼────────┼────────
+│ (2, 1) │ (2, 2) │ (2, 3) │ (2, 4) │ (2, 5) │ (2, 6 ⋯
 │      ⋮ │      ⋮ │      ⋮ │      ⋮ │      ⋮ │       ⋱
 └────────┴────────┴────────┴────────┴────────┴────────
-                        95 columns and 99 rows omitted
+                        95 columns and 98 rows omitted
 """
 
             result = pretty_table(
@@ -550,17 +551,18 @@
             # == Row Group Labels ==========================================================
 
             expected = """
-            ┌────────┬────────┬────────┬────────┬────────┬────────
-            │ Col. 1 │ Col. 2 │ Col. 3 │ Col. 4 │ Col. 5 │ Col.  ⋯
-            ├────────┴────────┴────────┴────────┴────────┴────────
-            │ Row Group 1
-            ├────────┬────────┬────────┬────────┬────────┬────────
-            │ (1, 1) │ (1, 2) │ (1, 3) │ (1, 4) │ (1, 5) │ (1, 6 ⋯
-            ├────────┼────────┼────────┼────────┼────────┼────────
-            │      ⋮ │      ⋮ │      ⋮ │      ⋮ │      ⋮ │       ⋱
-            └────────┴────────┴────────┴────────┴────────┴────────
-                                    95 columns and 99 rows omitted
-            """
+┌──────────┬──────────┬──────────┬──────────┬─────────
+│   Col. 1 │   Col. 2 │   Col. 3 │   Col. 4 │   Col. ⋯
+├──────────┴──────────┴──────────┴──────────┴─────────
+│ Row Group 1
+├──────────┬──────────┬──────────┬──────────┬─────────
+│   (1, 1) │   (1, 2) │   (1, 3) │   (1, 4) │   (1,  ⋯
+├──────────┼──────────┼──────────┼──────────┼─────────
+│        ⋮ │        ⋮ │        ⋮ │        ⋮ │        ⋱
+│ (100, 1) │ (100, 2) │ (100, 3) │ (100, 4) │ (100,  ⋯
+└──────────┴──────────┴──────────┴──────────┴─────────
+                        96 columns and 98 rows omitted
+"""
 
             result = pretty_table(
                 String,
@@ -582,6 +584,7 @@
 │   (1, 1) │   (1, 2) │   (1, 3) │   (1, 4) │   (1,  ⋯
 ├──────────┼──────────┼──────────┼──────────┼─────────
 │        ⋮ │        ⋮ │        ⋮ │        ⋮ │        ⋱
+├──────────┼──────────┼──────────┼──────────┼─────────
 │ (100, 1) │ (100, 2) │ (100, 3) │ (100, 4) │ (100,  ⋯
 └──────────┴──────────┴──────────┴──────────┴─────────
                         96 columns and 98 rows omitted
@@ -1378,4 +1381,143 @@ end
     )
 
     @test result == expected
+end
+
+@testset "Display Height Budget" verbose = true begin
+    # The table must never use more lines than the display height minus the line with the
+    # cursor and one margin line.
+    num_lines(str) = count(==('\n'), str)
+
+    @testset "Horizontal Line Replaced by a Row Group Label" begin
+        result = pretty_table(
+            String,
+            collect(1:30);
+            display_size = (12, 80),
+            row_group_labels = [4 => "G"],
+            table_format = TextTableFormat(; horizontal_lines_at_data_rows = :all),
+        )
+
+        @test num_lines(result) <= 10
+    end
+
+    @testset "Line After the Continuation Row in the Middle Cropping" begin
+        for hl in 36:39
+            result = pretty_table(
+                String,
+                collect(1:40);
+                display_size = (14, 80),
+                table_format = TextTableFormat(; horizontal_lines_at_data_rows = [hl]),
+                vertical_crop_mode = :middle,
+            )
+
+            @test num_lines(result) <= 12
+        end
+    end
+
+    @testset "Lines at the Merged Column Labels" begin
+        result = pretty_table(
+            String,
+            reshape(1:100, 50, 2);
+            column_labels = [[MultiColumn(2, "AB")], ["a", "b"]],
+            display_size = (12, 80),
+            table_format = TextTableFormat(; horizontal_line_at_merged_column_labels = true),
+        )
+
+        @test num_lines(result) <= 10
+    end
+
+    @testset "Row Group Label at the First Row" begin
+        # The line after the column labels is also the line before the row group label.
+        # Hence, it must be counted only once.
+        result = pretty_table(
+            String,
+            reshape(1:200, 100, 2);
+            display_size = (13, 80),
+            row_group_labels = [1 => "Group"],
+            table_format = TextTableFormat(; horizontal_lines_at_data_rows = :all),
+        )
+
+        @test num_lines(result) == 11
+        @test occursin("│      2 │    102 │", result)
+    end
+
+    @testset "Line Breaks" verbose = true begin
+        # A table that fits must not be cropped.
+        expected = """
+┌────────┐
+│ Col. 1 │
+├────────┤
+│      a │
+│      b │
+│      c │
+└────────┘
+"""
+
+        result = pretty_table(
+            String, ["a", "b", "c"]; display_size = (9, 80), line_breaks = true
+        )
+
+        @test result == expected
+
+        # The row heights must consider the partially printed column.
+        result = pretty_table(
+            String,
+            ["a" "1\n2\n3\n4\n5"; "b" "1\n2\n3\n4\n5"; "c" "x"];
+            display_size = (12, 14),
+            line_breaks = true,
+        )
+
+        @test num_lines(result) <= 10
+
+        # A row group label must not be printed if none of the lines of its row fits.
+        result = pretty_table(
+            String,
+            fill("1\n2", 9, 1);
+            display_size = (13, 80),
+            line_breaks = true,
+            row_group_labels = [3 => "G2"],
+            table_format = TextTableFormat(; horizontal_line_before_row_group_label = false),
+        )
+
+        @test num_lines(result) <= 11
+        @test !occursin("G2", result)
+    end
+
+    @testset "Maximum Number of Rows" begin
+        # The design must not suppress the line after the continuation row if the rows
+        # limited by the user fit in the display.
+        result = pretty_table(
+            String,
+            reshape(1:32, 8, 4);
+            display_size = (17, 20),
+            maximum_number_of_rows = 4,
+            row_group_labels = [3 => "G3"],
+            show_row_number_column = true,
+            summary_rows = [(data, j) -> 0],
+            table_format = TextTableFormat(;
+                horizontal_line_at_beginning = false,
+                horizontal_line_before_row_group_label = false,
+                horizontal_lines_at_data_rows = :all,
+            ),
+            title = "T",
+            vertical_crop_mode = :middle,
+        )
+
+        @test result == pretty_table(
+            String,
+            reshape(1:32, 8, 4);
+            display_size = (-1, 20),
+            maximum_number_of_rows = 4,
+            row_group_labels = [3 => "G3"],
+            show_row_number_column = true,
+            summary_rows = [(data, j) -> 0],
+            table_format = TextTableFormat(;
+                horizontal_line_at_beginning = false,
+                horizontal_line_before_row_group_label = false,
+                horizontal_lines_at_data_rows = :all,
+            ),
+            title = "T",
+            vertical_crop_mode = :middle,
+        )
+    end
 end

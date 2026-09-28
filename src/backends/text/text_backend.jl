@@ -636,7 +636,7 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
             pspec.show_omitted_cell_summary,
             display.size[1],
             pspec.new_line_at_end,
-            num_printed_data_columns,
+            last_printed_column_index,
         )
 
         if table_data.maximum_number_of_rows >= 0
@@ -1061,14 +1061,19 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
                 column_label_row = length(table_data.column_labels)
 
             # Check if we must print a horizontal line after the continuation row.
-            elseif (rs == :continuation_row) && !suppress_hline_after_continuation_row
+            elseif rs == :continuation_row
                 bottom = next_rs ∈ (:table_footer, :end_printing)
 
                 # In the middle cropping, `ps.i` is the data row before the first row printed
                 # after the continuation row. Notice that a row group label draws its own
-                # line and that the line after the data rows is only drawn if the data
+                # line, that only this line can be suppressed to fit the table in the
+                # display, and that the line after the data rows is only drawn if the data
                 # section ends here.
-                if ((ps.i ∈ horizontal_lines_at_data_rows) && (next_rs == :data)) || (
+                if (
+                    (ps.i ∈ horizontal_lines_at_data_rows) &&
+                    (next_rs == :data) &&
+                    !suppress_hline_after_continuation_row
+                ) || (
                     (next_rs ∈ (:summary_row, :table_footer, :end_printing)) &&
                     tf.horizontal_line_after_data_rows
                 )
