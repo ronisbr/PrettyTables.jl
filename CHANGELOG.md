@@ -196,6 +196,9 @@ Version 3.5.0
   label added a column to the table.
 - ![Bugfix][badge-bugfix] Escape the stubhead label and the row number column label in the
   Markdown back end, as the column labels.
+- ![Bugfix][badge-bugfix] Erase the last line of the previous table when overwriting the
+  display with a text table that does not end with a new line. The characters of this line
+  that were not overwritten remained in the display.
 - ![Bugfix][badge-bugfix] Escape the line breaks in the text of `UrlTextCell`, which is
   always rendered in a single line. A line break broke the table row.
 - ![Bugfix][badge-bugfix] Consider the continuation column when shrinking the shrinkable

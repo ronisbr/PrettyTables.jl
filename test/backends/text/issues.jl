@@ -135,6 +135,23 @@ end
         "└────────┴────────┘\n"
 
     @test result == expected
+
+    # If the table does not end with a new line, the cursor is at the last line of the
+    # previous table, which must also be erased.
+    pretty_table(io, [1 2]; new_line_at_end = false, overwrite_display = true)
+
+    result = String(take!(io.io))
+
+    expected =
+        "\r\e[2K" *
+        "\e[1F\e[2K"^4 *
+        "┌────────┬────────┐\n" *
+        "│ Col. 1 │ Col. 2 │\n" *
+        "├────────┼────────┤\n" *
+        "│      1 │      2 │\n" *
+        "└────────┴────────┘"
+
+    @test result == expected
 end
 
 @testset "Merged Column Labels With Hidden Column Labels" begin

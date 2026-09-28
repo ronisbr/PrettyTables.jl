@@ -1636,8 +1636,12 @@ function _text__print_table_core(
     end
 
     if overwrite_display
+        # We must move the cursor up and erase one line for each line in the output. If the
+        # table does not end with a new line, the cursor is at its last line, which must
+        # also be erased.
         num_new_lines = count(==('\n'), output_str)
-        print(context, "\e[1F\e[2K"^num_new_lines * output_str)
+        clear_str     = pspec.new_line_at_end ? "" : "\r\e[2K"
+        print(context, clear_str * "\e[1F\e[2K"^num_new_lines * output_str)
     else
         print(context, output_str)
     end
