@@ -8,7 +8,8 @@ the output.
 
 - `allow_html_in_cells::Bool`: If `true`, the content of the cells can contain HTML code.
   This can be useful to render tables with more complex content, but it can also be a
-  security risk if the content is not sanitized.
+  security risk if the content is not sanitized. Notice that the title, subtitle, row group
+  labels, footnotes, and source notes are always escaped.
   (**Default**: `false`)
 - `column_label_titles::Union{Nothing, AbstractVector}`: Titles for the column labels, which are
   shown as tooltips. If `nothing`, no titles are added. Otherwise, it must have one element

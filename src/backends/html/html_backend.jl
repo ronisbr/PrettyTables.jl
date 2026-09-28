@@ -573,8 +573,17 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
                 alignment = cell.alignment
 
             else
+                # The HTML code is only allowed in the table cells. The sections that span
+                # the entire table are always escaped.
+                spans_table =
+                    action ∈ (:title, :subtitle, :row_group_label, :footnote, :source_notes)
+
                 rendered_cell = _html__render_cell(
-                    cell, rctx, renderer; allow_html_in_cells, line_breaks
+                    cell,
+                    rctx,
+                    renderer;
+                    allow_html_in_cells = allow_html_in_cells && !spans_table,
+                    line_breaks,
                 )
 
                 alignment = _current_cell_alignment(action, ps, table_data)

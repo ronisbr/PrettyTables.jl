@@ -117,6 +117,30 @@
         @test occursin("<div>", result)
     end
 
+    @testset "Allow HTML Only in the Cells" begin
+        # The sections that span the entire table must always be escaped.
+        result = pretty_table(
+            String,
+            ["<b>x</b>";;];
+            allow_html_in_cells = true,
+            backend             = :html,
+            column_labels       = ["<em>L</em>"],
+            footnotes           = [(:data, 1, 1) => "<s>F</s>"],
+            row_group_labels    = [1 => "<u>G</u>"],
+            source_notes        = "<a>S</a>",
+            subtitle            = "<i>ST</i>",
+            title               = "<i>T</i>",
+        )
+
+        @test occursin(">&lt;i&gt;T&lt;/i&gt;</td>", result)
+        @test occursin(">&lt;i&gt;ST&lt;/i&gt;</td>", result)
+        @test occursin(">&lt;u&gt;G&lt;/u&gt;</td>", result)
+        @test occursin("<sup>1</sup> &lt;s&gt;F&lt;/s&gt;</td>", result)
+        @test occursin(">&lt;a&gt;S&lt;/a&gt;</td>", result)
+        @test occursin("><em>L</em></th>", result)
+        @test occursin("><b>x</b><sup>1</sup></td>", result)
+    end
+
     @testset "Line Breaks" begin
         matrix = ["First Line\nSecond Line" "Third Line\nFourth Line"]
 
