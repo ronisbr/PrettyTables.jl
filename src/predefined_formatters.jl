@@ -65,29 +65,15 @@ julia> pretty_table(data; formatters = [fmt__printf("%5.3f", [1, 3])])
 └────────┴──────────┴────────┘
 ```
 """
-function fmt__printf(fmt_str::String)
-    # For efficiency, compute the `Format` object outside.
-    fmt = Printf.Format(fmt_str)
-
-    return (v, _, _) -> begin
-        !(v isa Number) && return v
-
-        return Printf.format(fmt, v)
-    end
-end
-
-function fmt__printf(fmt_str::String, columns::AbstractVector{Int})
+function fmt__printf(
+    fmt_str::String, columns::Union{Nothing, AbstractVector{Int}} = nothing
+)
     # For efficiency, compute the `Format` object outside.
     fmt = Printf.Format(fmt_str)
 
     return (v, _, j) -> begin
-        !(v isa Number) && return v
-
-        for c in columns
-            j == c && return Printf.format(fmt, v)
-        end
-
-        return v
+        ((v isa Number) && _fmt__in_columns(j, columns)) || return v
+        return Printf.format(fmt, v)
     end
 end
 
@@ -134,37 +120,19 @@ julia> pretty_table(data; formatters = [fmt__round(1, [1, 3])])
 └────────┴──────────┴────────┘
 ```
 """
-function fmt__round(digits::Int)
-    return (v, _, _) -> begin
+function fmt__round(digits::Int, columns::Union{Nothing, AbstractVector{Int}} = nothing)
+    return (v, _, j) -> begin
         # Bail out before the `try` for anything that is not a number. Otherwise, every
         # non-numeric cell would pay for a thrown and caught `MethodError`, which is orders
         # of magnitude more expensive than rendering the cell. The `try` is kept as a
         # secondary guard for exotic `Number` subtypes that do not support `round`.
-        !(v isa Number) && return v
+        ((v isa Number) && _fmt__in_columns(j, columns)) || return v
 
         try
             return round(v; digits)
         catch
             return v
         end
-    end
-end
-
-function fmt__round(digits::Int, columns::AbstractVector{Int})
-    return (v, _, j) -> begin
-        !(v isa Number) && return v
-
-        for c in columns
-            if j == c
-                try
-                    return round(v; digits)
-                catch
-                    return v
-                end
-            end
-        end
-
-        return v
     end
 end
 
@@ -214,12 +182,14 @@ julia> pretty_table(data; formatters = [fmt__latex_sn(1)], backend = :latex)
 \\end{tabular}
 ```
 """
-function fmt__latex_sn(m_digits::Int)
+function fmt__latex_sn(
+    m_digits::Int, columns::Union{Nothing, AbstractVector{Int}} = nothing
+)
     # Precompute Format objects.
     fmts = Printf.Format("%." * string(m_digits) * "g")
 
-    return (v, _, _) -> begin
-        !(v isa Number) && return v
+    return (v, _, j) -> begin
+        ((v isa Number) && _fmt__in_columns(j, columns)) || return v
 
         str = Printf.format(fmts, v)
 
@@ -236,30 +206,11 @@ function fmt__latex_sn(m_digits::Int)
     end
 end
 
-function fmt__latex_sn(m_digits::Int, columns::AbstractVector{Int})
-    # Precompute Format objects.
-    fmts = Printf.Format("%." * string(m_digits) * "g")
+"""
+    _fmt__in_columns(j::Int, columns::Union{Nothing, AbstractVector{Int}}) -> Bool
 
-    return (v, _, j) -> begin
-        !(v isa Number) && return v
-
-        for c in columns
-            j != c && continue
-
-            str = Printf.format(fmts, v)
-
-            # Check if we have scientific notation.
-            aux = match(r"e[+-][0-9]+", str)
-
-            if !isnothing(aux)
-                exp_str = " \\cdot 10^{" * string(parse(Int, aux.match[2:end])) * "}"
-                str = replace(str, r"e.*" => exp_str)
-                str = "\$" * str * "\$"
-            end
-
-            return LatexCell(str)
-        end
-
-        return v
-    end
-end
+Return whether the column `j` must be formatted given the `columns` passed to a predefined
+formatter, which is `nothing` if the formatter applies to all the columns.
+"""
+_fmt__in_columns(::Int, ::Nothing) = true
+_fmt__in_columns(j::Int, columns::AbstractVector{Int}) = j ∈ columns
