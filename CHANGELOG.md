@@ -189,6 +189,10 @@ Version 3.5.0
 - ![Bugfix][badge-bugfix] The HTML back end no longer draws the line after the last data row
   when `horizontal_lines_at_data_rows` contains it. As in the other back ends, this line is
   only drawn if `horizontal_line_after_data_rows` is `true`.
+- ![Bugfix][badge-bugfix] Keep the insertion order of the CSS properties of the same family
+  (e.g., `border` and `border-bottom`) in the HTML back end, so that a shorthand property in
+  the user style overrides the longhand properties set by the back end. The properties were
+  sorted by name, placing the shorthand before its longhands.
 - ![Bugfix][badge-bugfix] Keep the line breaks of `Markdown.MD` cells in the HTML back end,
   preserving the content of code blocks, and replace them with spaces in the LaTeX and
   Markdown back ends (or with `<br>` if `line_breaks` is `true` in the Markdown back end).

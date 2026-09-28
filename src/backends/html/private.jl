@@ -125,13 +125,15 @@ function _html__write_style(buf::IO, style::Vector{HtmlPair})
     # If there are no keys in the style vector, we have nothing to do.
     isempty(style) && return nothing
 
-    # Make sure the style is sorted by key. We must sort by the key only so that duplicated
-    # keys keep their insertion order, given that `sort!` is stable. Since the browser
-    # applies the last declaration of a duplicated key, a pair pushed later to `style`
-    # overrides a pair pushed earlier. The table borders rely on this contract: they are
-    # pushed first so that any other decoration (alignment, styles, or highlighters) can
-    # override them.
-    sort!(style; by = first)
+    # Make sure the style is sorted by the property family, i.e., the part of the key before
+    # the first `-`. Since `sort!` is stable, the properties of the same family keep their
+    # insertion order, including the duplicated keys. The browser applies the last
+    # declaration of a property. Hence, a pair pushed later to `style` overrides a pair
+    # pushed earlier, even if one of them is a shorthand, such as `border`, and the other is
+    # one of its longhands, such as `border-bottom`. The table borders rely on this
+    # contract: they are pushed first so that any other decoration (alignment, styles, or
+    # highlighters) can override them.
+    sort!(style; by = _html__property_family)
 
     # Every value can be empty, in which case there is no style to emit. Hence, we must
     # check it before writing the attribute opening.
@@ -166,6 +168,19 @@ function _html__write_style(buf::IO, style::Vector{HtmlPair})
 end
 
 _html__write_style(::IO, ::Nothing) = nothing
+
+"""
+    _html__property_family(property::HtmlPair) -> SubString{String}
+
+Return the family of the CSS `property`, which is the part of its key before the first `-`.
+For example, `border`, `border-bottom`, and `border-bottom-color` belong to the family
+`border`.
+"""
+function _html__property_family(property::HtmlPair)
+    key = first(property)
+    i   = findfirst('-', key)
+    return SubString(key, 1, isnothing(i) ? lastindex(key) : prevind(key, i))
+end
 
 # == Table Borders =========================================================================
 

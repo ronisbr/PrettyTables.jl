@@ -141,4 +141,22 @@
             output,
         )
     end
+
+    @testset "Shorthand Properties" begin
+        # A shorthand property pushed after one of its longhands must override it. Hence,
+        # the properties of the same family must keep their insertion order.
+        output = pretty_table(
+            String,
+            [1 2];
+            backend = :html,
+            column_labels = [[MultiColumn(2, "M")], ["a", "b"]],
+            style = HtmlTableStyle(; first_line_merged_column_label = ["border" => "none"]),
+            table_format = HtmlTableFormat(; horizontal_line_at_merged_column_labels = true),
+        )
+
+        @test occursin(
+            "<th colspan = \"2\" style = \"border-bottom: 1px solid black; border: none; text-align: center;\">M</th>",
+            output,
+        )
+    end
 end

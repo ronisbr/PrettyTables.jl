@@ -393,12 +393,12 @@ end
     )
 
     @test occursin(
-        "<tr class = \"columnLabelRow\" style = \"border-bottom: 2px solid red; border-top: 1px solid red;\">",
+        "<tr class = \"columnLabelRow\" style = \"border-top: 1px solid red; border-bottom: 2px solid red;\">",
         output,
     )
 
     @test occursin(
-        "<tr class = \"rowGroupLabel\" style = \"border-bottom: 3px solid red; border-top: 3px solid red;\">",
+        "<tr class = \"rowGroupLabel\" style = \"border-top: 3px solid red; border-bottom: 3px solid red;\">",
         output,
     )
 end
@@ -497,7 +497,7 @@ end
     <tr class = "title">
       <td colspan = "3" style = "font-size: x-large; font-weight: bold; text-align: center;">Title</td>
     </tr>
-    <tr class = "columnLabelRow" style = "border-bottom: 1px solid black; border-top: 2px solid black;">
+    <tr class = "columnLabelRow" style = "border-top: 2px solid black; border-bottom: 1px solid black;">
       <th class = "stubheadLabel" style = "font-weight: bold; text-align: right;"></th>
       <th style = "font-weight: bold; text-align: right;">Col. 1</th>
       <th style = "font-weight: bold; text-align: right;">Col. 2</th>
@@ -514,7 +514,7 @@ end
       <td style = "text-align: right;">3</td>
       <td style = "text-align: right;">4</td>
     </tr>
-    <tr class = "summaryRow" style = "border-bottom: 2px solid black; border-top: 1px solid black;">
+    <tr class = "summaryRow" style = "border-top: 1px solid black; border-bottom: 2px solid black;">
       <td class = "summaryRowLabel" style = "font-weight: bold; text-align: right;">Summary 1</td>
       <td style = "text-align: right;">4</td>
       <td style = "text-align: right;">6</td>
