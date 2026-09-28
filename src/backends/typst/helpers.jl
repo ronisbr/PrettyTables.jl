@@ -13,7 +13,7 @@ export @typst__no_horizontal_lines, @typst__no_vertical_lines
 Return the keyword arguments to be passed to [`TypstTableFormat`](@ref) to show all
 horizontal lines.
 
-We can use the output of this function when creating the text table format object. For
+We can use the output of this function when creating the Typst table format object. For
 example, the following code creates a Typst table format with all horizontal lines:
 
 ```julia
@@ -142,7 +142,7 @@ end
 Return the keyword arguments to be passed to [`TypstTableFormat`](@ref) to show all vertical
 lines.
 
-We can use the output of this function when creating the text table format object. For
+We can use the output of this function when creating the Typst table format object. For
 example, the following code creates a Typst table format with all vertical lines:
 
 ```julia
@@ -270,7 +270,7 @@ end
 Return the keyword arguments to be passed to [`TypstTableFormat`](@ref) to suppress all
 horizontal lines.
 
-We can use the output of this function when creating the text table format object. For
+We can use the output of this function when creating the Typst table format object. For
 example, the following code creates a Typst table format without horizontal lines:
 
 ```julia
@@ -391,7 +391,7 @@ end
 Return the keyword arguments to be passed to [`TypstTableFormat`](@ref) to suppress all
 vertical lines.
 
-We can use the output of this function when creating the text table format object. For
+We can use the output of this function when creating the Typst table format object. For
 example, the following code creates a Typst table format without vertical lines:
 
 ```julia

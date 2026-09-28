@@ -13,7 +13,7 @@ export @latex__no_horizontal_lines, @latex__no_vertical_lines
 Return the keyword arguments to be passed to [`LatexTableFormat`](@ref) to show all
 horizontal lines.
 
-We can use the output of this function when creating the text table format object. For
+We can use the output of this function when creating the LaTeX table format object. For
 example, the following code creates a LaTeX table format with all horizontal lines:
 
 ```julia
@@ -88,7 +88,7 @@ end
 Return the keyword arguments to be passed to [`LatexTableFormat`](@ref) to show all vertical
 lines.
 
-We can use the output of this function when creating the text table format object. For
+We can use the output of this function when creating the LaTeX table format object. For
 example, the following code creates a LaTeX table format with all vertical lines:
 
 ```julia
@@ -158,7 +158,7 @@ end
 Return the keyword arguments to be passed to [`LatexTableFormat`](@ref) to suppress all
 horizontal lines.
 
-We can use the output of this function when creating the text table format object. For
+We can use the output of this function when creating the LaTeX table format object. For
 example, the following code creates a LaTeX table format without horizontal lines:
 
 ```julia
@@ -225,7 +225,7 @@ end
 Return the keyword arguments to be passed to [`LatexTableFormat`](@ref) to suppress all
 vertical lines.
 
-We can use the output of this function when creating the text table format object. For
+We can use the output of this function when creating the LaTeX table format object. For
 example, the following code creates a LaTeX table format without vertical lines:
 
 ```julia
