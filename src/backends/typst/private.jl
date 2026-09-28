@@ -32,10 +32,10 @@ end
 """
     _typst__alignment(a::Symbol) -> String
 
-Get the Typst alignment string corresponding to the given alignment symbol `a`. If the
-alignment symbol is not recognized, it defaults to "right".
+Get the Typst alignment string corresponding to the given alignment symbol `a`. The
+alignment `:n` (no alignment information) defaults to "right".
 """
-_typst__alignment(a::Symbol) = get(_TYPST__ALIGNMENT_MAP, a, "right")
+_typst__alignment(a::Symbol) = _alignment_name(a, "right")
 
 """
     _typst__alignment_configuration(td::TableData) -> String

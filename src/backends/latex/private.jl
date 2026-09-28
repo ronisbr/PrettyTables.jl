@@ -9,17 +9,10 @@
 """
     _latex__alignment_to_str(a::Symbol) -> String
 
-Convert the alignment `a` to the corresponding string for LaTeX.
+Convert the alignment `a` to the corresponding string for LaTeX. The alignment `:n` (no
+alignment information) is converted to `"r"`.
 """
-function _latex__alignment_to_str(a::Symbol)
-    return if a ∈ (:l, :L)
-        "l"
-    elseif a ∈ (:c, :C)
-        "c"
-    else
-        "r"
-    end
-end
+_latex__alignment_to_str(a::Symbol) = (a === :l) ? "l" : (a === :c) ? "c" : "r"
 
 """
     _latex__add_environments(str::String, envs::Union{Nothing, Vector{String}}) -> String

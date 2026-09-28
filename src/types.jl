@@ -85,6 +85,20 @@ _normalize_alignment(alignment::AbstractVector{Symbol}) = map(_normalize_alignme
 _normalize_alignment(::Nothing) = nothing
 
 """
+    _alignment_name(alignment::Symbol, default::String) -> String
+
+Return the name of the normalized `alignment`: `"left"` for `:l`, `"center"` for `:c`, and
+`"right"` for `:r`. Any other alignment, i.e., `:n` (no alignment information), returns
+`default`.
+"""
+function _alignment_name(alignment::Symbol, default::String)
+    alignment === :l && return "left"
+    alignment === :c && return "center"
+    alignment === :r && return "right"
+    return default
+end
+
+"""
     struct MultiColumn
 
 Specification for merging columns at the column label rows.

@@ -23,10 +23,6 @@ const TypstPair = Pair{String, String}
 
 # == Private ===============================================================================
 
-const _TYPST__ALIGNMENT_MAP = Dict(
-    :l => "left", :L => "left", :c => "center", :C => "center", :r => "right", :R => "right"
-)
-
 const _TYPST__CELL_ATTRIBUTES = [
     "align", "breakable", "colspan", "fill", "inset", "rowspan", "stroke"
 ]

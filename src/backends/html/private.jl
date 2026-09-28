@@ -80,23 +80,15 @@ end
 
 # == Styles ================================================================================
 
-const _HTML__ALIGNMENT_MAP = Dict(
-    :l => "left", :L => "left", :c => "center", :C => "center", :r => "right", :R => "right"
-)
-
 """
     _html__add_alignment_to_style!(style::Vector{HtmlPair}, alignment::Symbol) -> Nothing
 
-Add the HTML alignment property to `style` according to the `alignment` symbol.
+Add the HTML alignment property to `style` according to the `alignment` symbol. The
+alignment `:n` (no alignment information) does not add any property.
 """
 function _html__add_alignment_to_style!(style::Vector{HtmlPair}, alignment::Symbol)
-    if (alignment == :n) || (alignment == :N)
-        return nothing
-    elseif haskey(_HTML__ALIGNMENT_MAP, alignment)
-        return push!(style, "text-align" => _HTML__ALIGNMENT_MAP[alignment])
-    else
-        return push!(style, "text-align" => _HTML__ALIGNMENT_MAP[:r])
-    end
+    alignment === :n && return nothing
+    return push!(style, "text-align" => _alignment_name(alignment, "right"))
 end
 
 """

@@ -378,8 +378,8 @@ function _latex__print_core(pspec::PrintingSpec, opts::LatexPrintOptions)
                     rendered_cell = rendered_cell * footnote_str
 
                     # Check if we need to override the alignment. Notice that we must
-                    # normalize the alignment symbols before comparing them because, e.g.,
-                    # `:c` and `:C` lead to the same LaTeX column descriptor.
+                    # compare the column descriptors because, e.g., `:r` and `:n` lead to
+                    # the same one.
                     alignment_str = _latex__alignment_to_str(alignment)
 
                     if (

@@ -13,15 +13,10 @@ const SUPERSCRIPT_DIGITS = ['⁰', '¹', '²', '³', '⁴', '⁵', '⁶', '⁷',
 """
     _excel__alignment_string(s::Symbol) -> String
 
-Convert the alignment symbol `s` to a string for use in `XLSX.setAlignment`.
+Convert the alignment symbol `s` to a string for use in `XLSX.setAlignment`. The alignment
+`:n` (no alignment information) is converted to `"left"`.
 """
-function _excel__alignment_string(s::Symbol)
-    s == :r && return "right"
-    s == :c && return "center"
-
-    # Return "left" for `:l` or any other value.
-    return "left"
-end
+_excel__alignment_string(s::Symbol) = _alignment_name(s, "left")
 
 """
     _excel__unempty_row!(sheet::XLSX.Worksheet, row::Number, cols::UnitRange) -> Nothing
