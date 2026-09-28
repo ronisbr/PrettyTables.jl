@@ -6,12 +6,16 @@ using Reexport
 using StringManipulation
 using Tables
 
-# We add REPL.jl as dependency only to decrease the enormous precompilation time observed
-# after Julia 1.11. For more information, check:
+# We add REPL.jl as dependency only to decrease the enormous precompilation time observed in
+# Julia 1.11 and 1.12. For more information, check:
 #
 #   https://github.com/JuliaLang/julia/issues/56080
 #
-using REPL
+# In Julia 1.13 or newer, loading it does not reduce the precompilation time, but it increases
+# the time to load the package by about 50 ms.
+@static if v"1.11" <= VERSION < v"1.13"
+    using REPL
+end
 
 @reexport using Crayons
 @reexport using StyledStrings

@@ -119,6 +119,9 @@ Version 3.5.0
   the style fields its style type does not have, and the LaTeX back end ignores the line
   width and color. With `backend = :auto`, a `TableFormat` does not select a back end and
   the text back end is used.
+- ![Enhancement][badge-enhancement] Load REPL.jl only in Julia 1.11 and 1.12, where it avoids
+  a long precompilation time. In Julia 1.13 or newer, this change reduces the time to load
+  the package by about 50 ms.
 - ![Enhancement][badge-enhancement] `TextTableStyle` is now a mutable structure with constant
   fields, reducing the time to print the first table with a custom text style from about
   160 ms to about 40 ms. The equality and the hash still consider its fields.
