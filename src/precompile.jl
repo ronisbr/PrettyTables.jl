@@ -506,9 +506,8 @@ PrecompileTools.@setup_workload begin
 
             # == Common Keywords ===========================================================
 
-            # The method of `pretty_table` with the keywords is compiled for each set of
-            # keywords and their types. Since it is not specialized on the IO or on the data,
-            # the sets used here are reused by any table printed to any IO.
+            # The keywords enable code paths and argument types that are compiled only when
+            # they are used. Hence, we exercise the most common ones.
             pretty_table(matrix; title = "Title")
             pretty_table(matrix; alignment = :c)
             pretty_table(matrix; alignment = [:l, :c, :r, :l, :c, :r, :l, :c, :r, :l])

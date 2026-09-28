@@ -46,13 +46,18 @@ end
 # in the first two arguments. The other option would be to wrap the keywords inside a
 # `kwargs...`. However, in the latter, we will not have keyword completion in REPL.
 #
-# NOTE: This method is compiled for each set of keywords and their types. Hence, it must not
-# be specialized on the IO or on the data. Otherwise, it would be compiled for every
-# combination of them, and the sets compiled in the precompilation workload, which prints to
-# a redirected `stdout`, would not be reused when printing to another IO.
+# NOTE: This method must not be specialized on its arguments. Otherwise, its keyword sorter
+# would be compiled for every combination of the IO, the data, and the set of keywords, and
+# the code compiled in the precompilation workload, which prints to a redirected `stdout`,
+# would not be reused when printing to another IO. We must use the block form of
+# `@nospecialize` because the annotation of an argument is also applied to the method that
+# receives the keywords, where the IO and the data are after the 32nd argument, which is not
+# supported and prints a warning.
+@nospecialize
+
 function pretty_table(
-    @nospecialize(io::IO),
-    @nospecialize(data::Any);
+    io::IO,
+    data::Any;
     backend::Symbol = :auto,
 
     # == Arguments for the IOContext =======================================================
@@ -168,6 +173,8 @@ function pretty_table(
         vertical_crop_mode,
     )
 end
+
+@specialize
 
 # == PrettyTable Structure =================================================================
 
