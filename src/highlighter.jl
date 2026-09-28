@@ -147,41 +147,37 @@ default decoration function, its face is converted to the native decoration. Oth
 native highlighter calls the decoration function of `h` and converts the returned face,
 keeping a returned native decoration unchanged.
 """
-function _text__native_highlighter(h::Highlighter)
-    _has_default_fd(h) && return TextHighlighter(h.f, h._decoration)
-    return TextHighlighter(h.f, (_, data, i, j) -> h.fd(h, data, i, j))
-end
+_text__native_highlighter(h::Highlighter) =
+    _native_highlighter(TextHighlighter, identity, identity, h)
+_html__native_highlighter(h::Highlighter) =
+    _native_highlighter(HtmlHighlighter, html_decoration, _html__decoration, h)
+_latex__native_highlighter(h::Highlighter) =
+    _native_highlighter(LatexHighlighter, latex_decoration, _latex__decoration, h)
+_markdown__native_highlighter(h::Highlighter) =
+    _native_highlighter(MarkdownHighlighter, markdown_decoration, _markdown__decoration, h)
+_typst__native_highlighter(h::Highlighter) =
+    _native_highlighter(TypstHighlighter, typst_decoration, _typst__decoration, h)
+_excel__native_highlighter(h::Highlighter) =
+    _native_highlighter(ExcelHighlighter, excel_decoration, _excel__decoration, h)
+_docx__native_highlighter(h::Highlighter) =
+    _native_highlighter(DocxHighlighter, docx_decoration, _docx__decoration, h)
 
-function _html__native_highlighter(h::Highlighter)
-    _has_default_fd(h) && return HtmlHighlighter(h.f, html_decoration(h._decoration))
-    return HtmlHighlighter(h.f, (_, data, i, j) -> _html__decoration(h.fd(h, data, i, j)))
-end
+"""
+    _native_highlighter(::Type{T}, decoration::Function, dynamic_decoration::Function, h::Highlighter) -> T
 
-function _latex__native_highlighter(h::Highlighter)
-    _has_default_fd(h) && return LatexHighlighter(h.f, latex_decoration(h._decoration))
-    return LatexHighlighter(h.f, (_, data, i, j) -> _latex__decoration(h.fd(h, data, i, j)))
-end
-
-function _markdown__native_highlighter(h::Highlighter)
-    _has_default_fd(h) && return MarkdownHighlighter(h.f, markdown_decoration(h._decoration))
-    return MarkdownHighlighter(
-        h.f, (_, data, i, j) -> _markdown__decoration(h.fd(h, data, i, j))
-    )
-end
-
-function _typst__native_highlighter(h::Highlighter)
-    _has_default_fd(h) && return TypstHighlighter(h.f, typst_decoration(h._decoration))
-    return TypstHighlighter(h.f, (_, data, i, j) -> _typst__decoration(h.fd(h, data, i, j)))
-end
-
-function _excel__native_highlighter(h::Highlighter)
-    _has_default_fd(h) && return ExcelHighlighter(h.f, excel_decoration(h._decoration))
-    return ExcelHighlighter(h.f, (_, data, i, j) -> _excel__decoration(h.fd(h, data, i, j)))
-end
-
-function _docx__native_highlighter(h::Highlighter)
-    _has_default_fd(h) && return DocxHighlighter(h.f, docx_decoration(h._decoration))
-    return DocxHighlighter(h.f, (_, data, i, j) -> _docx__decoration(h.fd(h, data, i, j)))
+Convert the general highlighter `h` to the native highlighter of type `T`. If `h` uses the
+default decoration function, its face is converted once with `decoration`. Otherwise, the
+native highlighter calls the decoration function of `h` and converts the returned object
+with `dynamic_decoration`.
+"""
+function _native_highlighter(
+    ::Type{T},
+    decoration::F1,
+    dynamic_decoration::F2,
+    h::Highlighter
+) where {T <: AbstractHighlighter, F1, F2}
+    _has_default_fd(h) && return T(h.f, decoration(h._decoration))
+    return T(h.f, (_, data, i, j) -> dynamic_decoration(h.fd(h, data, i, j)))
 end
 
 """
