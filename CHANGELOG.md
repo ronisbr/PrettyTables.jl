@@ -193,6 +193,9 @@ Version 3.5.0
   label added a column to the table.
 - ![Bugfix][badge-bugfix] Escape the stubhead label and the row number column label in the
   Markdown back end, as the column labels.
+- ![Bugfix][badge-bugfix] Always escape the pipes in the Markdown back end, including in
+  `Markdown.MD` cells and when `allow_markdown_in_cells` is `true`, unless they are already
+  escaped. A pipe split the table cell.
 - ![Bugfix][badge-bugfix] Do not escape the Markdown characters inside code spans in the
   Markdown back end, which render their content verbatim, except the pipe. The code span
   delimiter is now longer than any sequence of backticks in the content.

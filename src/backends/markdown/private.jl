@@ -291,16 +291,23 @@ leading to `\n`.
 
 If `escape_markdown_chars` is `true`, the characters in `_MARKDOWN__ESCAPED_CHARACTERS`
 (`*`, `_`, `~`, `` ` ``, `|`, `[`, `]`, `<`, and `>`) will be escaped, as well as the
-backslash itself.
+backslash itself. Otherwise, only the pipes that are not already escaped, i.e., that are
+not preceded by an odd number of backslashes, are escaped because they would split the
+table cell.
 """
 function _markdown__escape_str(
     io::IO, s::AbstractString, replace_newline::Bool, escape_markdown_chars::Bool
 )
     a = Iterators.Stateful(s)
+
+    # Number of consecutive backslashes before the current character.
+    num_backslashes = 0
+
     for c in a
         if isascii(c)
             c == '\n'         ? print(io, replace_newline ? "<br>" : "\\n") :
             c == '\\'         ? print(io, escape_markdown_chars ? "\\\\" : "\\") :
+            c == '|'          ? print(io, (escape_markdown_chars || iseven(num_backslashes)) ? "\\|" : "|") :
             c ∈ _MARKDOWN__ESCAPED_CHARACTERS ?
                 (escape_markdown_chars ? print(io, '\\', c) : print(io, c)) :
             '\a' <= c <= '\r' ? print(io, "\\", "abtnvfr"[Int(c) - 6]) :
@@ -318,8 +325,19 @@ function _markdown__escape_str(
                 (u >>= 8) == 0 && break
             end
         end
+
+        num_backslashes = (c == '\\') ? num_backslashes + 1 : 0
     end
 end
+
+"""
+    _markdown__escape_pipes(s::AbstractString) -> String
+
+Escape the pipes in `s` that are not already escaped, i.e., that are not preceded by an odd
+number of backslashes, since they would split a table cell.
+"""
+_markdown__escape_pipes(s::AbstractString) =
+    replace(s, r"(?<!\\)((?:\\\\)*)\|" => s"\1\\|")
 
 function _markdown__escape_str(
     s::AbstractString, replace_newline::Bool, escape_markdown_chars::Bool

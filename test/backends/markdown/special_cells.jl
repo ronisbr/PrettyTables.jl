@@ -305,3 +305,21 @@ end
 
     @test result == expected
 end
+
+@testset "Pipes in Markdown Cells" begin
+    # A pipe must always be escaped inside a table. Otherwise, it would split the cell.
+    expected = """
+| **Col. 1** | **Col. 2** | **Col. 3** | **Col. 4** |
+|-----------:|-----------:|-----------:|-----------:|
+|     a \\| b |       x\\|y |       p\\|q |     r\\\\\\|s |
+"""
+
+    result = pretty_table(
+        String,
+        [md"a | b" "x|y" "p\\|q" "r\\\\|s"];
+        allow_markdown_in_cells = true,
+        backend = :markdown,
+    )
+
+    @test result == expected
+end

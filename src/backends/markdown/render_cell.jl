@@ -54,7 +54,7 @@ function _markdown__render_cell(
     allow_markdown_in_cells::Bool = false,
     line_breaks::Bool = false,
 )
-    str = strip(sprint(show, MIME("text/markdown"), cell))
+    str = _markdown__escape_pipes(strip(sprint(show, MIME("text/markdown"), cell)))
     return line_breaks ? replace(str, "\n" => "<br>") : replace(str, r"\s*\n\s*" => " ")
 end
 
