@@ -102,4 +102,24 @@
         @test occursin("<th style = \"color: red; text-align: right;\">a</th>", result)
         @test occursin("<th style = \"color: blue; text-align: right;\">b</th>", result)
     end
+
+    @testset "Escaping of the Style Properties" begin
+        # The style is an attribute value. Hence, a quote in a property must not close it.
+        output = pretty_table(
+            String,
+            [1;;];
+            backend = :html,
+            style = HtmlTableStyle(;
+                first_line_column_label = [
+                    "font-family" => "\"Times New Roman\", 'Serif'",
+                    "background"  => "url(\"a.png?x=1&y=<2>\")",
+                ],
+            ),
+        )
+
+        @test occursin(
+            "<th style = \"background: url(&quot;a.png?x=1&amp;y=&lt;2&gt;&quot;); font-family: &quot;Times New Roman&quot;, &apos;Serif&apos;; text-align: right;\">Col. 1</th>",
+            output,
+        )
+    end
 end

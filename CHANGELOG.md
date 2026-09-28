@@ -189,6 +189,8 @@ Version 3.5.0
 - ![Bugfix][badge-bugfix] The HTML back end no longer draws the line after the last data row
   when `horizontal_lines_at_data_rows` contains it. As in the other back ends, this line is
   only drawn if `horizontal_line_after_data_rows` is `true`.
+- ![Bugfix][badge-bugfix] Escape the style properties in the HTML back end. A quote in a
+  property, such as a quoted font family, closed the `style` attribute.
 - ![Bugfix][badge-bugfix] Emit the HTML, LaTeX, or Typst representation of a cell unchanged
   when the renderer is `:show`, instead of escaping it.
 - ![Bugfix][badge-bugfix] Validate the length of the vectors with one column label style

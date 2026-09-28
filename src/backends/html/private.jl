@@ -78,6 +78,26 @@ function _html__escape_str(
     )
 end
 
+"""
+    _html__escape_attribute(io::IO, s::AbstractString) -> Nothing
+
+Print the string `s` in `io` escaping the characters that cannot appear verbatim in a
+double-quoted HTML attribute value: `&`, `<`, `>`, `"`, and `'`. The other characters are
+kept unchanged because the attribute value is not Julia code.
+"""
+function _html__escape_attribute(io::IO, s::AbstractString)
+    for c in s
+        c == '&'  ? print(io, "&amp;")  :
+        c == '<'  ? print(io, "&lt;")   :
+        c == '>'  ? print(io, "&gt;")   :
+        c == '"'  ? print(io, "&quot;") :
+        c == '\'' ? print(io, "&apos;") :
+        print(io, c)
+    end
+
+    return nothing
+end
+
 # == Styles ================================================================================
 
 """
@@ -128,9 +148,11 @@ function _html__write_style(buf::IO, style::Vector{HtmlPair})
             print(buf, ' ')
         end
 
-        print(buf, key)
+        # The style is an attribute value. Hence, the properties must be escaped, allowing,
+        # for example, quoted font families.
+        _html__escape_attribute(buf, key)
         print(buf, ": ")
-        print(buf, value)
+        _html__escape_attribute(buf, value)
         print(buf, ';')
 
         first_pair = false
