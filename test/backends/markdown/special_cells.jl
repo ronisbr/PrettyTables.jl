@@ -227,3 +227,23 @@ end
 
     @test result == expected
 end
+
+@testset "Escaping of the Stubhead and Row Number Labels" begin
+    expected = """
+| **R\\|N** | **S\\_T** | **Col. 1** | **Col. 2** |
+|---------:|---------:|-----------:|-----------:|
+|    **1** |    **a** |          1 |          2 |
+"""
+
+    result = pretty_table(
+        String,
+        [1 2];
+        backend = :markdown,
+        row_labels = ["a"],
+        row_number_column_label = "R|N",
+        show_row_number_column = true,
+        stubhead_label = "S_T",
+    )
+
+    @test result == expected
+end

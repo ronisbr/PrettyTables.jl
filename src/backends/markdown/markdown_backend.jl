@@ -227,13 +227,18 @@ function _markdown__print_core(pspec::PrintingSpec, opts::MarkdownPrintOptions)
         end
     end
 
-    # Finally, we must apply the style to the other fields in the header.
+    # Finally, we must escape and apply the style to the other fields in the header, which
+    # are cells as the column labels.
     decorated_row_number_column_label = _markdown__apply_style(
-        style.row_number_label, table_data.row_number_column_label
+        style.row_number_label,
+        _markdown__escape_str(
+            table_data.row_number_column_label, line_breaks, !allow_markdown_in_cells
+        ),
     )
 
     decorated_stubhead_label = _markdown__apply_style(
-        style.stubhead_label, table_data.stubhead_label
+        style.stubhead_label,
+        _markdown__escape_str(table_data.stubhead_label, line_breaks, !allow_markdown_in_cells),
     )
 
     # == Compute the Column Width ==========================================================

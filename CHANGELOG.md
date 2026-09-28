@@ -191,6 +191,8 @@ Version 3.5.0
   only drawn if `horizontal_line_after_data_rows` is `true`.
 - ![Bugfix][badge-bugfix] Escape the row group labels in the Markdown back end. A `|` in a
   label added a column to the table.
+- ![Bugfix][badge-bugfix] Escape the stubhead label and the row number column label in the
+  Markdown back end, as the column labels.
 - ![Bugfix][badge-bugfix] Escape `|` and `"` as `\textbar{}` and `\textquotedbl{}` in the
   LaTeX back end. Under the default OT1 font encoding, they were typeset as `—` and `”`.
 - ![Bugfix][badge-bugfix] Align the source notes with `source_note_alignment` in the LaTeX
