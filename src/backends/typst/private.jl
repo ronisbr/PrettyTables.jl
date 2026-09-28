@@ -516,11 +516,25 @@ function _typst__line_start_markup_index(s::AbstractString)
 end
 
 """
+    _typst__next_char_is(s::AbstractString, i::Int, c::Char) -> Bool
+
+Return whether the character after the index `i` of `s` is `c`.
+"""
+function _typst__next_char_is(s::AbstractString, i::Int, c::Char)
+    j = nextind(s, i)
+    return (j <= lastindex(s)) && (s[j] == c)
+end
+
+"""
     _typst__escape_str(io::IO, s::AbstractString) -> Nothing
     _typst__escape_str(s::AbstractString) -> String
 
 Print the string `s` in `io` escaping the characters for the Typst backend. If `io` is
 omitted, the escaped string is returned.
+
+Besides the characters with a special meaning, a `-` or `.` followed by the same character
+is escaped because Typst converts the sequences `--`, `---`, and `...` into dashes and an
+ellipsis.
 """
 function _typst__escape_str(io::IO, s::AbstractString)
     markup_index = _typst__line_start_markup_index(s)
@@ -529,7 +543,11 @@ function _typst__escape_str(io::IO, s::AbstractString)
         if Base.isascii(c)
             # Notice that Typst has no `\xNN` escape sequence. Hence, the non-printable
             # characters must be emitted using the `\u{...}` escape sequence.
-            (c ∈ _TYPST__ESCAPED_CHARACTERS) || (i == markup_index) ? print(io, '\\', c) :
+            (
+                (c ∈ _TYPST__ESCAPED_CHARACTERS) ||
+                (i == markup_index) ||
+                (((c == '-') || (c == '.')) && _typst__next_char_is(s, i, c))
+            ) ? print(io, '\\', c) :
             isprint(c) ? print(io, c) : print(io, "\\u{", string(UInt32(c); base = 16), "}")
 
         elseif !Base.isoverlong(c) && !Base.ismalformed(c)

@@ -188,3 +188,12 @@ end
         @test occursin("[#text(weight: \"bold\",)[a]\\(b)]", result)
     end
 end
+
+@testset "Dashes and Ellipsis" begin
+    # Typst converts `--`, `---`, and `...` into dashes and an ellipsis.
+    result = pretty_table(String, ["a--b" "a---b" "a..." "a-b" "-1"]; backend = :typst)
+
+    for escaped in ("[a\\--b]", "[a\\-\\--b]", "[a\\.\\..]", "[a-b]", "[-1]")
+        @test occursin(escaped, result)
+    end
+end
