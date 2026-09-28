@@ -104,14 +104,15 @@ function _typst__print_core(pspec::PrintingSpec, opts::TypstPrintOptions)
         )
 
     elseif data_column_widths isa Vector{Pair{Int, String}}
-        dc = data_column_widths
-        data_column_widths = Base.Generator(
-            i -> begin
-                id = findfirst(==(i), first.(dc))
-                isnothing(id) && return "auto"
-                return last(dc[id])
-            end, 1:(table_data.num_columns)
-        )
+        # The columns without a width specification are `auto`. Notice that the pairs are
+        # processed in reverse order so that the first pair of a column has precedence.
+        widths = fill("auto", table_data.num_columns)
+
+        for (j, w) in Iterators.reverse(data_column_widths)
+            (1 <= j <= table_data.num_columns) && (widths[j] = w)
+        end
+
+        data_column_widths = widths
     end
 
     # Check the style variables.
