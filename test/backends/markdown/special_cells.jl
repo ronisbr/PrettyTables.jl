@@ -247,3 +247,38 @@ end
 
     @test result == expected
 end
+
+@testset "Lower Column Label Rows Under Merged Cells" begin
+    # Markdown does not support merged cells. Hence, only the lines hidden by a merged cell
+    # must be filled, keeping the other lines of the column.
+    expected = """
+| **M**<br>`a` | ───<br>`b` | **C**<br>`c` |
+|-------------:|-----------:|-------------:|
+|            1 |          2 |            3 |
+"""
+
+    result = pretty_table(
+        String,
+        [1 2 3];
+        backend = :markdown,
+        column_labels = [[MultiColumn(2, "M"), "C"], ["a", "b", "c"]],
+    )
+
+    @test result == expected
+
+    # If all the lines of a column are hidden, the entire cell is filled.
+    expected = """
+| **M**<br>`N` | ────── | **C**<br>`c` |
+|-------------:|-------:|-------------:|
+|            1 |      2 |            3 |
+"""
+
+    result = pretty_table(
+        String,
+        [1 2 3];
+        backend = :markdown,
+        column_labels = [[MultiColumn(2, "M"), "C"], [MultiColumn(2, "N"), "c"]],
+    )
+
+    @test result == expected
+end

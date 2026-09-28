@@ -101,6 +101,10 @@ function _markdown__print_core(pspec::PrintingSpec, opts::MarkdownPrintOptions)
         nothing
     end
 
+    # Markdown does not support merged cells. Hence, we must store which column labels are
+    # hidden by a merged cell to fill them with the horizontal line character.
+    hidden_column_labels = falses(num_column_label_lines, num_printed_data_columns)
+
     # Notice that we must not allocate the label vectors with `undef` because the printing
     # iterator does not fill them if the table has no printed columns, leading to undefined
     # references when computing the column widths.
@@ -181,7 +185,8 @@ function _markdown__print_core(pspec::PrintingSpec, opts::MarkdownPrintOptions)
                 rendered_cell,
             )
 
-            column_labels[ir, jr] = rendered_cell
+            column_labels[ir, jr]        = rendered_cell
+            hidden_column_labels[ir, jr] = cell === _IGNORE_CELL
 
         elseif action == :data
             # Check if we must apply highlighters.
@@ -217,13 +222,26 @@ function _markdown__print_core(pspec::PrintingSpec, opts::MarkdownPrintOptions)
     end
 
     # We now must unify the column labels into one cell because Markdown does not support
-    # headers with multiple lines.
+    # headers with multiple lines. The lines hidden by a merged cell are filled with the
+    # horizontal line character using the width of the widest line in the column. Notice
+    # that a column in which all the lines are hidden is filled when printing the table
+    # because its width is not known yet.
     if !isnothing(column_labels)
-        for j in last(axes(column_labels))
-            for i in first(axes(column_labels))
-                i == first(first(axes(column_labels))) && continue
-                column_labels[1, j] *= "<br>" * column_labels[i, j]
+        fill_str = string(tf.horizontal_line_char)
+
+        for j in axes(column_labels, 2)
+            w = 1
+
+            for i in axes(column_labels, 1)
+                hidden_column_labels[i, j] && continue
+                w = max(w, textwidth(column_labels[i, j]))
             end
+
+            for i in axes(column_labels, 1)
+                hidden_column_labels[i, j] && (column_labels[i, j] = fill_str^w)
+            end
+
+            column_labels[1, j] = join(@view(column_labels[:, j]), "<br>")
         end
     end
 
@@ -541,9 +559,10 @@ function _markdown__print_core(pspec::PrintingSpec, opts::MarkdownPrintOptions)
             elseif action == :column_label
                 cell_width = printed_data_column_widths[jr]
 
-                # We need to check if we are in a cell that should be merged. Since Markdown
-                # does not support such an operation, we only fill the field with `-`.
-                rendered_cell = if _current_cell(action, ps, table_data) === _IGNORE_CELL
+                # We need to check if all the lines of this column are hidden by merged
+                # cells. Since Markdown does not support such an operation, we only fill the
+                # field with the horizontal line character.
+                rendered_cell = if all(@view(hidden_column_labels[:, jr]))
                     string(tf.horizontal_line_char)^cell_width
                 else
                     column_labels[ir, jr]
