@@ -13,8 +13,17 @@ Base.@nospecializeinfer function _guess_column_labels(@nospecialize(data::Union{
     column_labels = [string.(data.column_names)]
     sch           = Tables.schema(_get_data(data))
 
+    # NOTE: The vector must be built explicitly, asserting the type of its elements, because
+    # the schema is not inferred. Otherwise, the result would be converted, and the conversion
+    # is invalidated by methods defined by other packages, such as `convert(::Type{String},
+    # ::T)`.
     if !isnothing(sch)
-        types::Vector{String} = _compact_type_str.([sch.types...])
+        types = String[]
+
+        for T in sch.types
+            push!(types, _compact_type_str(T)::String)
+        end
+
         push!(column_labels, types)
     end
 

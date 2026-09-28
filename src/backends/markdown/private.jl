@@ -273,12 +273,12 @@ const _MARKDOWN__ESCAPED_CHARACTERS = ('*', '_', '~', '`', '|', '[', ']', '<', '
 raw"""
     _markdown__escape_str(
         @nospecialize(io::IO),
-        s::AbstractString,
+        s::Union{String, SubString{String}},
         replace_newline::Bool,
         escape_markdown_chars::Bool
     ) -> Nothing
     _markdown__escape_str(
-        s::AbstractString,
+        s::Union{String, SubString{String}},
         replace_newline::Bool,
         escape_markdown_chars::Bool
     ) -> String
@@ -296,7 +296,7 @@ not preceded by an odd number of backslashes, are escaped because they would spl
 table cell.
 """
 function _markdown__escape_str(
-    io::IO, s::AbstractString, replace_newline::Bool, escape_markdown_chars::Bool
+    io::IO, s::_PlainString, replace_newline::Bool, escape_markdown_chars::Bool
 )
     a = Iterators.Stateful(s)
 
@@ -331,16 +331,16 @@ function _markdown__escape_str(
 end
 
 """
-    _markdown__escape_pipes(s::AbstractString) -> String
+    _markdown__escape_pipes(s::Union{String, SubString{String}}) -> String
 
 Escape the pipes in `s` that are not already escaped, i.e., that are not preceded by an odd
 number of backslashes, since they would split a table cell.
 """
-_markdown__escape_pipes(s::AbstractString) =
+_markdown__escape_pipes(s::_PlainString) =
     replace(s, r"(?<!\\)((?:\\\\)*)\|" => s"\1\\|")
 
 function _markdown__escape_str(
-    s::AbstractString, replace_newline::Bool, escape_markdown_chars::Bool
+    s::_PlainString, replace_newline::Bool, escape_markdown_chars::Bool
 )
     return sprint(
         _markdown__escape_str,
@@ -352,15 +352,15 @@ function _markdown__escape_str(
 end
 
 """
-    _markdown__row_group_label(label::Any, line_breaks::Bool) -> String
+    _markdown__row_group_label(label::String, line_breaks::Bool) -> String
 
-Return the row group `label` converted to string and escaped for the Markdown back end. The
+Return the row group `label` escaped for the Markdown back end. The
 line breaks are replaced with `<br>` if `line_breaks` is `true`. Notice that, as the title
 and the footnotes, the row group labels are always escaped because they are not table
 cells.
 """
-function _markdown__row_group_label(label::Any, line_breaks::Bool)
-    return _markdown__escape_str(string(label), line_breaks, true)
+function _markdown__row_group_label(label::String, line_breaks::Bool)
+    return _markdown__escape_str(label, line_breaks, true)
 end
 
 # == Style =================================================================================

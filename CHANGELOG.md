@@ -119,6 +119,11 @@ Version 3.5.0
   the style fields its style type does not have, and the LaTeX back end ignores the line
   width and color. With `backend = :auto`, a `TableFormat` does not select a back end and
   the text back end is used.
+- ![Enhancement][badge-enhancement] Avoid the invalidation of the compiled code of the
+  package when other packages define new string types or conversions to `String`, which
+  forced the text back end to be compiled again. For example, the time to print the first
+  table after loading InlineStrings.jl (a dependency of CSV.jl) was reduced from about
+  700 ms to about 30 ms.
 - ![Enhancement][badge-enhancement] Render the escape sequences of the style of the text back
   end when the style is created instead of once per cell.
 - ![Enhancement][badge-enhancement] Reduce the time to print the first table. Each back end

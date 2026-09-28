@@ -472,7 +472,7 @@ const _TYPST__ESCAPED_CHARACTERS =
     ('\\', '#', '[', ']', '*', '_', '$', '<', '>', '@', '`', '~', '/')
 
 """
-    _typst__line_start_markup_index(s::AbstractString) -> Int
+    _typst__line_start_markup_index(s::Union{String, SubString{String}}) -> Int
 
 Return the index of the character in `s` that must be escaped so that the beginning of `s`
 is not interpreted as a markup that Typst only recognizes at the beginning of a line, or 0
@@ -480,7 +480,7 @@ if there is no such markup. Those markups are the headings (`=`), the bullet lis
 and the numbered lists (`+` or a number followed by `.`), which must be followed by a white
 space. Notice that the content of every cell or component begins a line.
 """
-function _typst__line_start_markup_index(s::AbstractString)
+function _typst__line_start_markup_index(s::_PlainString)
     l = lastindex(s)
     i = firstindex(s)
 
@@ -516,18 +516,18 @@ function _typst__line_start_markup_index(s::AbstractString)
 end
 
 """
-    _typst__next_char_is(s::AbstractString, i::Int, c::Char) -> Bool
+    _typst__next_char_is(s::Union{String, SubString{String}}, i::Int, c::Char) -> Bool
 
 Return whether the character after the index `i` of `s` is `c`.
 """
-function _typst__next_char_is(s::AbstractString, i::Int, c::Char)
+function _typst__next_char_is(s::_PlainString, i::Int, c::Char)
     j = nextind(s, i)
     return (j <= lastindex(s)) && (s[j] == c)
 end
 
 """
-    _typst__escape_str(io::IO, s::AbstractString, line_breaks::Bool = false) -> Nothing
-    _typst__escape_str(s::AbstractString, line_breaks::Bool = false) -> String
+    _typst__escape_str(io::IO, s::Union{String, SubString{String}}, line_breaks::Bool = false) -> Nothing
+    _typst__escape_str(s::Union{String, SubString{String}}, line_breaks::Bool = false) -> String
 
 Print the string `s` in `io` escaping the characters for the Typst backend. If `io` is
 omitted, the escaped string is returned.
@@ -539,7 +539,7 @@ Besides the characters with a special meaning, a `-` or `.` followed by the same
 is escaped because Typst converts the sequences `--`, `---`, and `...` into dashes and an
 ellipsis.
 """
-function _typst__escape_str(io::IO, s::AbstractString, line_breaks::Bool = false)
+function _typst__escape_str(io::IO, s::_PlainString, line_breaks::Bool = false)
     markup_index = _typst__line_start_markup_index(s)
 
     for (i, c) in pairs(s)
@@ -571,7 +571,7 @@ function _typst__escape_str(io::IO, s::AbstractString, line_breaks::Bool = false
     end
 end
 
-function _typst__escape_str(s::AbstractString, line_breaks::Bool = false)
+function _typst__escape_str(s::_PlainString, line_breaks::Bool = false)
     return sprint(_typst__escape_str, s, line_breaks; sizehint = 2 * lastindex(s))
 end
 
@@ -588,7 +588,7 @@ function _typst__escape_after_component(str::String)
 end
 
 """
-    _typst__escape_string_literal(s::AbstractString) -> String
+    _typst__escape_string_literal(s::Union{String, SubString{String}}) -> String
 
 Escape `s` so that it can be embedded inside a Typst **string literal** (`"..."`).
 
@@ -596,7 +596,7 @@ Notice that this is a different context from the one `_typst__escape_str` handle
 string literal only the backslash and the double quote are special, and an unescaped double
 quote terminates the literal, breaking the document.
 """
-function _typst__escape_string_literal(s::AbstractString)
+function _typst__escape_string_literal(s::_PlainString)
     buf = IOBuffer(; sizehint = lastindex(s))
 
     for c in s

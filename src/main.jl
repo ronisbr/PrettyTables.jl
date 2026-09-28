@@ -169,8 +169,12 @@ end
 # passed to the function have precedence over them. The method without the IO is not
 # required because the generic one already dispatches to the method with the IO.
 
+# NOTE: The call is dynamic because the keywords are only known at runtime. Moreover, it must
+# not be inferred. Otherwise, a method that changes the conversions of the keyword values,
+# such as `convert(::Type{String}, ::T)`, would invalidate this method and, consequently, the
+# generic methods of `pretty_table`, which can dispatch to it.
 function pretty_table(@nospecialize(io::IO), pt::PrettyTable; kwargs...)
-    return pretty_table(io, pt.data; pt.configurations..., kwargs...)
+    return Base.invokelatest(pretty_table, io, pt.data; pt.configurations..., kwargs...)
 end
 
 function pretty_table(::Type{String}, pt::PrettyTable; color::Bool = false, kwargs...)

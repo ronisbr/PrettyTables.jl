@@ -136,6 +136,11 @@ end
     end
 end
 
+# Strings whose methods are not invalidated when a package defines a new string type. The
+# functions that process plain strings in the back ends must accept only them. Otherwise, they
+# could be compiled for `AbstractString`, and a new string type would invalidate them.
+const _PlainString = Union{String, SubString{String}}
+
 struct __IGNORE_CELL__ end
 const _IGNORE_CELL = __IGNORE_CELL__()
 

@@ -139,8 +139,12 @@ function _text__render_table(
             end
         end
 
+        # NOTE: The type assertion is required because `cell` is not inferred. Otherwise,
+        # the string operations below would depend on methods of `AbstractString`, which
+        # are invalidated when a package defines a new string type, forcing the entire
+        # text back end to be compiled again.
         rendered_cell = if cell !== _IGNORE_CELL
-            _text__render_cell(cell, rctx, renderer, lb, mw)
+            _text__render_cell(cell, rctx, renderer, lb, mw)::String
         else
             ""
         end

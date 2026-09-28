@@ -243,18 +243,23 @@ end
 Create a face from the keyword `pairs` (see `_face_from_kwargs`).
 """
 @noinline function _face_from_pairs_core(pairs::Vector{Pair{Symbol, Any}})
-    bold          = nothing
-    faint         = nothing
-    font          = nothing
-    height        = nothing
-    weight        = nothing
-    slant         = nothing
-    foreground    = nothing
-    background    = nothing
-    underline     = nothing
-    strikethrough = nothing
-    inverse       = nothing
-    inherit       = Symbol[]
+    # NOTE: The variables are typed with the types of the fields of `Face`, and the values
+    # are type-asserted instead of converted. Otherwise, the values of type `Any` would be
+    # converted, and the conversion is invalidated by methods defined by other packages,
+    # such as `convert(::Type{String}, ::T)`.
+    bold::Union{Nothing, Bool}                   = nothing
+    faint::Union{Nothing, Bool}                  = nothing
+    font::Union{Nothing, String}                 = nothing
+    height::Union{Nothing, Float64, Int}         = nothing
+    weight::Union{Nothing, Symbol}               = nothing
+    slant::Union{Nothing, Symbol}                = nothing
+    foreground::Union{Nothing, SimpleColor}      = nothing
+    background::Union{Nothing, SimpleColor}      = nothing
+    underline::Union{Nothing, Bool, SimpleColor, Tuple{Union{Nothing, SimpleColor}, Symbol}} =
+        nothing
+    strikethrough::Union{Nothing, Bool}          = nothing
+    inverse::Union{Nothing, Bool}                = nothing
+    inherit::Vector{Symbol}                      = Symbol[]
 
     for (k, v) in pairs
         isnothing(v) && continue
@@ -266,16 +271,16 @@ Create a face from the keyword `pairs` (see `_face_from_kwargs`).
             faint = v::Bool
 
         elseif k === :italics
-            slant = v ? :italic : :normal
+            slant = v::Bool ? :italic : :normal
 
         elseif k === :negative
-            inverse = v
+            inverse = v::Bool
 
         elseif k === :foreground
-            foreground = _face_simple_color(_face_color_from_value(v))
+            foreground = _face_simple_color(_face_color_from_value(v))::SimpleColor
 
         elseif k === :background
-            background = _face_simple_color(_face_color_from_value(v))
+            background = _face_simple_color(_face_color_from_value(v))::SimpleColor
 
         elseif (k === :blink) || (k === :conceal) || (k === :reset)
             @warn(
@@ -284,28 +289,31 @@ Create a face from the keyword `pairs` (see `_face_from_kwargs`).
             )
 
         elseif k === :font
-            font = v
+            font = v::String
 
         elseif k === :height
-            height = v
+            height = v::Union{Float64, Int}
 
         elseif k === :weight
-            weight = v
+            weight = v::Symbol
 
         elseif k === :slant
-            slant = v
+            slant = v::Symbol
 
         elseif k === :underline
-            underline = _face_underline(v)
+            underline =
+                _face_underline(v)::Union{
+                    Bool, SimpleColor, Tuple{Union{Nothing, SimpleColor}, Symbol}
+                }
 
         elseif k === :strikethrough
-            strikethrough = v
+            strikethrough = v::Bool
 
         elseif k === :inverse
-            inverse = v
+            inverse = v::Bool
 
         elseif k === :inherit
-            inherit = v isa Symbol ? [v] : v
+            inherit = v isa Symbol ? Symbol[v] : v::Vector{Symbol}
 
         # The keyword constructor of `Face` ignores the unknown keywords. We do the same.
         end
@@ -518,10 +526,14 @@ end
     The face only contains the attributes set by the annotations; the default face is not
     merged.
     """
-    _face_regions(str::SubString{<:Base.AnnotatedString}) =
+    # NOTE: The type parameters must be explicit so that the methods are specialized on the
+    # concrete styled string type. Otherwise, they could be compiled for the abstract
+    # `AnnotatedString`, whose methods are invalidated when a package defines a new string
+    # type.
+    _face_regions(str::SubString{Base.AnnotatedString{S}}) where {S <: AbstractString} =
         _face_regions(Base.AnnotatedString(str))
 
-    function _face_regions(str::Base.AnnotatedString)
+    function _face_regions(str::Base.AnnotatedString{S}) where {S <: AbstractString}
         regions = Tuple{SubString{String}, Union{Nothing, Face}}[]
 
         for (text, annotations) in StyledStrings.eachregion(str)

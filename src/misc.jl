@@ -35,15 +35,19 @@ is `:show`, `mime` is not `nothing`, and `cell` can be shown in `mime`, the stri
 `mime` representation of the cell and the second returned value is `true`, meaning that the
 string is already written in the back end format. Otherwise, the second returned value is
 `false`.
+
+Notice that the type of `mime` must be declared, even if it is not specialized. Otherwise,
+`showable` and `show` would be inferred with the methods that receive the MIME type as a
+string, which are invalidated when a package defines a new string type.
 """
 function _cell_to_str(
-    @nospecialize(cell::Any), context::RenderContext, ::Val{:print}, @nospecialize(mime)
+    @nospecialize(cell::Any), context::RenderContext, ::Val{:print}, @nospecialize(mime::Union{Nothing, MIME})
 )
     return _sprint_with_context(print, context, cell), false
 end
 
 function _cell_to_str(
-    cell::AbstractString, context::RenderContext, ::Val{:print}, @nospecialize(mime)
+    cell::AbstractString, context::RenderContext, ::Val{:print}, @nospecialize(mime::Union{Nothing, MIME})
 )
     # Notice that we must not use `string` here because it is the identity for any
     # `AbstractString`, whereas the callers require a `String`.
@@ -51,7 +55,7 @@ function _cell_to_str(
 end
 
 function _cell_to_str(
-    @nospecialize(cell::Any), context::RenderContext, ::Val{:show}, @nospecialize(mime)
+    @nospecialize(cell::Any), context::RenderContext, ::Val{:show}, @nospecialize(mime::Union{Nothing, MIME})
 )
     if !isnothing(mime) && showable(mime, cell)
         return _sprint_with_context(show, context, mime, cell), true
@@ -61,7 +65,7 @@ function _cell_to_str(
 end
 
 function _cell_to_str(
-    cell::AbstractString, context::RenderContext, ::Val{:show}, @nospecialize(mime)
+    cell::AbstractString, context::RenderContext, ::Val{:show}, @nospecialize(mime::Union{Nothing, MIME})
 )
     if !isnothing(mime) && showable(mime, cell)
         return _sprint_with_context(show, context, mime, cell), true
@@ -70,9 +74,9 @@ function _cell_to_str(
     return string(cell), false
 end
 
-_cell_to_str(::UndefinedCell, ::RenderContext, ::Val{:print}, @nospecialize(mime)) =
+_cell_to_str(::UndefinedCell, ::RenderContext, ::Val{:print}, @nospecialize(mime::Union{Nothing, MIME})) =
     "#undef", false
-_cell_to_str(::UndefinedCell, ::RenderContext, ::Val{:show}, @nospecialize(mime)) =
+_cell_to_str(::UndefinedCell, ::RenderContext, ::Val{:show}, @nospecialize(mime::Union{Nothing, MIME})) =
     "#undef", false
 
 """

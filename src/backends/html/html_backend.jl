@@ -547,7 +547,9 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
             # If we are in a column label, check for cell titles.
             if !isnothing(column_label_titles) && (action == :column_label)
                 title = column_label_titles[ps.i]
-                !isnothing(title) && push!(vproperties, "title" => string(title[ps.j]))
+                # NOTE: `sprint` is used instead of `string` because it is inferred to return
+                # a `String` even for an untyped argument.
+                !isnothing(title) && push!(vproperties, "title" => sprint(print, title[ps.j]))
             end
 
             # If we are in a column label, check if we must merge the cell.
