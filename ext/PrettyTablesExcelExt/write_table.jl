@@ -305,12 +305,11 @@ function _excel__write_table_core!(
             alignment = _current_cell_alignment(action, ps, table_data)
 
             # Footnote superscripts to append to this cell.
-            fn_indices = _current_cell_footnotes(table_data, action, ps.i, ps.j)
-
-            if !isnothing(fn_indices) && !isempty(fn_indices)
-                fn_str = join(_excel__to_superscript.(fn_indices))
-                rendered_cell = _excel__append_superscript(rendered_cell, fn_str)
-            end
+            fn_str = _current_cell_footnote_marks(
+                _excel__to_superscript, table_data, action, ps.i, ps.j, ""
+            )
+            !isempty(fn_str) &&
+                (rendered_cell = _excel__append_superscript(rendered_cell, fn_str))
 
             # -- Full-span Cells -----------------------------------------------------------
 

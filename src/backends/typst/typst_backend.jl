@@ -417,13 +417,13 @@ function _typst__print_core(pspec::PrintingSpec, opts::TypstPrintOptions)
             # Compute the footnote superscripts to append to this cell. Notice that this must
             # be done here, and not once per action, because the result is only ever consumed
             # by a cell.
-            footnote = _current_cell_footnotes(table_data, action, ps.i, ps.j)
-
-            append = if !isnothing(footnote) && !isempty(footnote)
-                # Notice that all the footnote numbers must be inside the same superscript.
-                # Otherwise, the separator would be rendered with the normal text size.
-                "#super[" * join(footnote, ",") * "]"
-            end
+            #
+            # Notice that all the footnote numbers must be inside the same superscript.
+            # Otherwise, the separator would be rendered with the normal text size.
+            footnote_str = _current_cell_footnote_marks(
+                string, table_data, action, ps.i, ps.j, ","
+            )
+            append = isempty(footnote_str) ? nothing : "#super[" * footnote_str * "]"
 
             # If we are in a column label, check if we must merge the cell.
             if (action == :column_label) && (cell isa MergeCells)

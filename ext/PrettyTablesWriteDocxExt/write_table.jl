@@ -235,12 +235,10 @@ function _docx__render_table_core(pspec::PrintingSpec, opts::DocxPrintOptions)
             alignment = _current_cell_alignment(action, ps, table_data)
 
             # Footnote markers are appended as superscript runs.
-            fn_indices = _current_cell_footnotes(table_data, action, ps.i, ps.j)
-
-            if !isnothing(fn_indices) && !isempty(fn_indices)
-                marker = join(fn_indices, ",")
-                push!(runs, DocxRun(marker, _DOCX__NO_DECORATION, true))
-            end
+            marker = _current_cell_footnote_marks(
+                string, table_data, action, ps.i, ps.j, ","
+            )
+            !isempty(marker) && push!(runs, DocxRun(marker, _DOCX__NO_DECORATION, true))
 
             if action ∈ (:title, :subtitle, :row_group_label, :footnote, :source_notes)
                 # -- Full-Span Cells -------------------------------------------------------

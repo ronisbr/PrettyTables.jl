@@ -215,20 +215,10 @@ function _latex__print_core(pspec::PrintingSpec, opts::LatexPrintOptions)
 
         else
             # Check for footnotes.
-            footnotes    = _current_cell_footnotes(table_data, action, ps.i, ps.j)
-            footnote_str = ""
-
-            if !isnothing(footnotes) && !isempty(footnotes)
-                footnote_str = "\$^{"
-                for i in eachindex(footnotes)
-                    f = footnotes[i]
-                    if i != last(eachindex(footnotes))
-                        footnote_str *= "$f,"
-                    else
-                        footnote_str *= "$f}\$"
-                    end
-                end
-            end
+            footnote_str = _current_cell_footnote_marks(
+                string, table_data, action, ps.i, ps.j, ","
+            )
+            !isempty(footnote_str) && (footnote_str = "\$^{" * footnote_str * "}\$")
 
             rendered_cell = nothing
 

@@ -207,3 +207,30 @@ function _current_cell_footnotes(table_data::TableData, cell_type::Symbol, i::In
 
     return current_footnotes
 end
+
+"""
+    _current_cell_footnote_marks(
+        convert::Function,
+        table_data::TableData,
+        cell_type::Symbol,
+        i::Int,
+        j::Int,
+        delim::String
+    ) -> String
+
+Return the references to the footnotes of the `cell_type` at `(i, j)`, in which each
+footnote index is converted to a string by `convert` and the results are joined with
+`delim`, or an empty string if there are no matches.
+"""
+function _current_cell_footnote_marks(
+    convert::F,
+    table_data::TableData,
+    cell_type::Symbol,
+    i::Int,
+    j::Int,
+    delim::String
+) where F
+    footnotes = _current_cell_footnotes(table_data, cell_type, i, j)
+    isnothing(footnotes) && return ""
+    return join((convert(f) for f in footnotes), delim)
+end

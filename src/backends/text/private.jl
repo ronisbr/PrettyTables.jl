@@ -15,9 +15,9 @@ Return the superscripts of the footnotes in the cell `(i, j)` of the table `sect
 with `ʼ`, or an empty string if the cell has no footnotes.
 """
 function _text__footnote_marks(table_data::TableData, section::Symbol, i::Int, j::Int)
-    cell_footnotes = _current_cell_footnotes(table_data, section, i, j)
-    (isnothing(cell_footnotes) || isempty(cell_footnotes)) && return ""
-    return join((_text__render_footnote_superscript(f) for f in cell_footnotes), "ʼ")
+    return _current_cell_footnote_marks(
+        _text__render_footnote_superscript, table_data, section, i, j, "ʼ"
+    )
 end
 
 """

@@ -597,19 +597,10 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
             end
 
             # Check for footnotes.
-            footnotes = _current_cell_footnotes(table_data, action, ps.i, ps.j)
-
-            if !isnothing(footnotes) && !isempty(footnotes)
-                rendered_cell *= "<sup>"
-                for i in eachindex(footnotes)
-                    f = footnotes[i]
-                    if i != last(eachindex(footnotes))
-                        rendered_cell *= "$f,"
-                    else
-                        rendered_cell *= "$f</sup>"
-                    end
-                end
-            end
+            footnote_str = _current_cell_footnote_marks(
+                string, table_data, action, ps.i, ps.j, ","
+            )
+            !isempty(footnote_str) && (rendered_cell *= "<sup>" * footnote_str * "</sup>")
 
             # If we are in a data cell, we must check for highlighters.
             if (action == :data) && !isempty(highlighters)

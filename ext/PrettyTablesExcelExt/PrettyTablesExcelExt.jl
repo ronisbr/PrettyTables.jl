@@ -11,7 +11,8 @@ using PrettyTables: PrintingSpec, RenderContext, TableData, PrintingTableState, 
 using PrettyTables: AbstractHighlighter, ExcelPrintOptions
 
 # Import internal iterator and helpers.
-import PrettyTables: _next, _current_cell, _current_cell_alignment, _current_cell_footnotes
+import PrettyTables: _next, _current_cell, _current_cell_alignment
+import PrettyTables: _current_cell_footnote_marks
 import PrettyTables: _number_of_printed_columns, _number_of_printed_data_columns
 import PrettyTables: _check_backend_keywords, _data_indices, _get_data, _has_summary_rows
 import PrettyTables: _check_column_label_styles, _line_spec_indices, _merged_cell_span

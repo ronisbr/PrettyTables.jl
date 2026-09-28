@@ -388,7 +388,5 @@ Return the references to the footnotes in the cell `(i, j)` of the table `sectio
 empty string if the cell has no footnotes.
 """
 function _markdown__footnote_marks(table_data::TableData, section::Symbol, i::Int, j::Int)
-    cell_footnotes = _current_cell_footnotes(table_data, section, i, j)
-    (isnothing(cell_footnotes) || isempty(cell_footnotes)) && return ""
-    return join("[^$f]" for f in cell_footnotes)
+    return _current_cell_footnote_marks(f -> "[^$f]", table_data, section, i, j, "")
 end
