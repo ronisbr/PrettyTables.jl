@@ -497,18 +497,18 @@ function _markdown__print_core(pspec::PrintingSpec, opts::MarkdownPrintOptions)
                     printed_data_column_widths,
                 )
 
-            elseif next_rs ∈ (:table_footer, :end_printing)
-                # We reach this point only once because the Markdown table ends here. Thus,
-                # we need to check if we must print the omitted cell summary.
-                if pspec.show_omitted_cell_summary
-                    ocs = _omitted_cell_summary(table_data, pspec)
+            end
 
-                    if !isempty(ocs)
-                        println(buf)
-                        println(
-                            buf, _markdown__apply_style(style.omitted_cell_summary, ocs)
-                        )
-                    end
+            # We reach this point only once because the Markdown table ends here. Thus, we
+            # need to check if we must print the omitted cell summary. Notice that this
+            # check must not be part of the conditions above because the last row can be
+            # the column labels, after which the header separator is printed.
+            if (next_rs ∈ (:table_footer, :end_printing)) && pspec.show_omitted_cell_summary
+                ocs = _omitted_cell_summary(table_data, pspec)
+
+                if !isempty(ocs)
+                    println(buf)
+                    println(buf, _markdown__apply_style(style.omitted_cell_summary, ocs))
                 end
             end
 

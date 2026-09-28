@@ -92,3 +92,19 @@
         @test result == expected
     end
 end
+
+@testset "Omitted Cell Summary After the Column Labels" begin
+    # The omitted cell summary must be printed even if the column labels are the last row.
+    expected = """
+| **Col. 1** | ⋯ |
+|-----------:|---|
+
+*2 columns omitted*
+"""
+
+    result = pretty_table(
+        String, zeros(0, 3); backend = :markdown, maximum_number_of_columns = 1
+    )
+
+    @test result == expected
+end
