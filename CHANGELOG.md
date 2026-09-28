@@ -196,6 +196,9 @@ Version 3.5.0
   label added a column to the table.
 - ![Bugfix][badge-bugfix] Escape the stubhead label and the row number column label in the
   Markdown back end, as the column labels.
+- ![Bugfix][badge-bugfix] Assume the minimum width of the columns (three characters) when
+  limiting the number of rendered columns of a text table to the display width. The limit
+  assumed five characters per column, omitting narrow columns that fit in the display.
 - ![Bugfix][badge-bugfix] Keep at least one display line when `reserved_display_lines` is
   equal to or larger than the display height in the text back end. The reserved lines were
   ignored in this case, printing a taller table than when reserving fewer lines.

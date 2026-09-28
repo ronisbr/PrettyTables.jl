@@ -1636,3 +1636,25 @@ end
     @test num_lines(11) == num_lines(12) == num_lines(20)
     @test num_lines(0) >= num_lines(5) >= num_lines(11)
 end
+
+@testset "Narrow Columns Cropped by the Display" begin
+    # The number of rendered columns must not assume a minimum width larger than the one of
+    # the narrowest columns. Otherwise, columns that fit in the display would be omitted.
+    expected = """
+┌───────────────────────────────────────
+│ 1  1  1  1  1  1  1  1  1  1  1  1   ⋯
+│ 1  1  1  1  1  1  1  1  1  1  1  1   ⋯
+└───────────────────────────────────────
+                      18 columns omitted
+"""
+
+    result = pretty_table(
+        String,
+        ones(Int, 2, 30);
+        display_size = (-1, 40),
+        show_column_labels = false,
+        table_format = TextTableFormat(; vertical_lines_at_data_columns = :none),
+    )
+
+    @test result == expected
+end

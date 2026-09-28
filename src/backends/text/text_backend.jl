@@ -263,9 +263,12 @@ function _text__print_table_core(
     horizontal_lines_at_data_rows =
         _line_spec_indices(tf.horizontal_lines_at_data_rows, table_data.num_rows)
 
-    # Limit the number of rendered columns given the display size if the user wants.
+    # Limit the number of rendered columns given the display size if the user wants. Notice
+    # that this is only an upper bound, since the number of printed columns is computed
+    # after the column widths. Hence, we assume the minimum width of each column, which is
+    # 3 characters (one character and the margins).
     if fit_table_in_display_horizontally && (display_size[2] > 0)
-        mc = div(display.size[2], 5, RoundUp)
+        mc = div(display.size[2], 3, RoundUp)
 
         # If the user provided a fixed data column width, we can use it to check how many
         # columns we can display.
@@ -274,7 +277,8 @@ function _text__print_table_core(
             mc = 1
 
             for j in eachindex(fix_data_column_widths)
-                aux += fix_data_column_widths[j] <= 0 ? 5 : fix_data_column_widths[j]
+                fcw  = fix_data_column_widths[j]
+                aux += fcw <= 0 ? 3 : fcw + 2
                 aux > display.size[2] && break
                 mc += 1
             end
