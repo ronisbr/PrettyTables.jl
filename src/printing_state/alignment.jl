@@ -19,10 +19,9 @@ function _current_cell_alignment(
     elseif (action == :subtitle)
         return table_data.subtitle_alignment
 
-    elseif (action == :row_number_label) || (action == :row_number)
-        return table_data.row_number_column_alignment
-
-    elseif action == :summary_row_number
+    elseif (action == :row_number_label) ||
+        (action == :row_number) ||
+        (action == :summary_row_number)
         return table_data.row_number_column_alignment
 
     elseif (action == :stubhead_label) ||
@@ -53,12 +52,7 @@ function _current_cell_alignment(
             end
         end
 
-        a = table_data.data_alignment
-        if a isa Symbol
-            return a
-        else
-            return a[state.j]
-        end
+        return _data_column_alignment(table_data, state.j)
 
     elseif action ∈ _VERTICAL_CONTINUATION_CELL_ACTIONS
         # Check if the continuation cell has a custom alignment. Otherwise, use the current
