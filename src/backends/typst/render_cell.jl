@@ -52,7 +52,9 @@ end
     )
         return _render_face_regions(cell) do text, face
             escaped = _typst__escape_str(text)
-            isnothing(face) && return escaped
+
+            # The region without a face can follow a `#text` component of a styled region.
+            isnothing(face) && return _typst__escape_after_component(escaped)
             _, text_properties = _typst__cell_and_text_properties(typst_decoration(face))
             return _typst__text(escaped, text_properties)
         end

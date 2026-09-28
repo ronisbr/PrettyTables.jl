@@ -193,6 +193,9 @@ Version 3.5.0
   label added a column to the table.
 - ![Bugfix][badge-bugfix] Escape the stubhead label and the row number column label in the
   Markdown back end, as the column labels.
+- ![Bugfix][badge-bugfix] Escape a `.` or `(` right after a component in the Typst back
+  end, such as the footnote superscript or a styled region of a styled string. Typst parsed
+  it as a field access or a function call on the component, breaking the document.
 - ![Bugfix][badge-bugfix] Escape the double quotes and backslashes of the `Markdown.MD`
   cells in the Typst back end, which are emitted inside string literals.
 - ![Bugfix][badge-bugfix] Escape the slashes in the Typst back end, since `//` and `/*`

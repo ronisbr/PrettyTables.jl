@@ -596,6 +596,11 @@ function _typst__print_core(pspec::PrintingSpec, opts::TypstPrintOptions)
                 _typst__text(rendered_cell, text_properties)
             end
 
+            # The content must not be parsed as a field access or a function call on the
+            # footnote superscript.
+            !isempty(cell_prefix) &&
+                (cell_content = _typst__escape_after_component(cell_content))
+
             cell_str = _typst__table_cell(
                 cell_prefix * cell_content * something(append, ""),
                 cell_properties;

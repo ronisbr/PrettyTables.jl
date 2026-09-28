@@ -552,6 +552,18 @@ function _typst__escape_str(s::AbstractString)
 end
 
 """
+    _typst__escape_after_component(str::String) -> String
+
+Escape the first character of `str` if it is `.` or `(`, which must be done when `str` is
+placed right after a Typst component, such as `#text(...)[...]`. Otherwise, Typst would
+parse the text as a field access or a function call on the component.
+"""
+function _typst__escape_after_component(str::String)
+    (startswith(str, '.') || startswith(str, '(')) && return "\\" * str
+    return str
+end
+
+"""
     _typst__escape_string_literal(s::AbstractString) -> String
 
 Escape `s` so that it can be embedded inside a Typst **string literal** (`"..."`).

@@ -166,3 +166,25 @@ end
         result,
     )
 end
+
+@testset "Text After Components" begin
+    # A `.` or `(` right after a component would be parsed as a field access or a function
+    # call on it. Hence, it must be escaped.
+    result = pretty_table(
+        String,
+        [1 2];
+        backend = :typst,
+        footnotes = [(:data, 1, 1) => ".e", (:data, 1, 2) => "(f)"],
+        style = TypstTableStyle(; footnote = TypstPair[]),
+    )
+
+    @test occursin("[#super[1]\\.e]", result)
+    @test occursin("[#super[2]\\(f)]", result)
+
+    @static if VERSION >= v"1.11"
+        result = pretty_table(String, [styled"{bold:x}.y" styled"{bold:a}(b)"]; backend = :typst)
+
+        @test occursin("[#text(weight: \"bold\",)[x]\\.y]", result)
+        @test occursin("[#text(weight: \"bold\",)[a]\\(b)]", result)
+    end
+end
