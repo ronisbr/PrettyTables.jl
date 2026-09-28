@@ -6,7 +6,7 @@
     4     true      4.0     0x04
     5    false      5.0     0x05
     6     true      6.0     0x06
-]</code></pre><hr/><pre><code class="language-julia-repl hljs">julia&gt; pretty_table(A)</code></pre><img src="../text_example_01.svg" alt="Text Example 01"><hr/><pre><code class="language-julia-repl hljs">julia&gt; pretty_table(A; style = TextTableStyle(; table_border = crayon&quot;yellow&quot;))</code></pre><img src="../text_example_02.svg" alt="Text Example 02"><hr/><pre><code class="language-julia-repl hljs">julia&gt; data = [
+]</code></pre><hr/><pre><code class="language-julia-repl hljs">julia&gt; pretty_table(A)</code></pre><img src="../text_example_01.svg" alt="Text Example 01"><hr/><pre><code class="language-julia-repl hljs">julia&gt; pretty_table(A; style = TextTableStyle(; table_border = Face(; foreground = :yellow)))</code></pre><img src="../text_example_02.svg" alt="Text Example 02"><hr/><pre><code class="language-julia-repl hljs">julia&gt; data = [
     10.0 6.5
      3.0 3.0
      0.1 1.0
@@ -33,9 +33,9 @@ julia&gt; pretty_table(
     row_labels,
     stubhead_label = &quot;Effect&quot;,
     style = TextTableStyle(;
-        first_line_merged_column_label = crayon&quot;bold yellow&quot;,
-        stubhead_label = crayon&quot;bold yellow&quot;,
-        summary_row_label = crayon&quot;bold cyan&quot;
+        first_line_merged_column_label = Face(; weight = :bold, foreground = :yellow),
+        stubhead_label = Face(; weight = :bold, foreground = :yellow),
+        summary_row_label = Face(; weight = :bold, foreground = :cyan)
     ),
     summary_row_labels = [&quot;Total&quot;],
     summary_rows = [(data, i) -&gt; sum(data[:, i])],
@@ -55,12 +55,12 @@ julia&gt; column_labels = [
 
 julia&gt; hl_p = TextHighlighter(
     (data, i, j) -&gt; (j == 4) &amp;&amp; (data[i, j] &gt; 9),
-    crayon&quot;bold blue&quot;
+    Face(; weight = :bold, foreground = :blue)
 )
 
 julia&gt; hl_v = TextHighlighter(
     (data, i, j) -&gt; (j == 3) &amp;&amp; (data[i, j] &gt; 9),
-    crayon&quot;bold red&quot;
+    Face(; weight = :bold, foreground = :red)
 )
 
 julia&gt; pretty_table(
@@ -68,6 +68,20 @@ julia&gt; pretty_table(
     column_labels = column_labels,
     highlighters  = [hl_p, hl_v],
     style = TextTableStyle(;
-        first_line_column_label = crayon&quot;bold yellow&quot;,
+        first_line_column_label = Face(; weight = :bold, foreground = :yellow),
     )
-)</code></pre><img src="../text_example_04.svg" alt="Text Example 04"></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../predefined_formats/">« Pre-defined Formats</a><a class="docs-footer-nextpage" href="../../html/html_backend/">HTML Backend »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.19.0 on <span class="colophon-date" title="Monday 28 September 2026 10:37">Monday 28 September 2026</span>. Using Julia version 1.13.1.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+)</code></pre><img src="../text_example_04.svg" alt="Text Example 04"><hr/><p>This example uses options that are specific to the text back end: the predefined rounded borders and the faces of the table border and of the line after the column labels.</p><pre><code class="language-julia-repl hljs">julia&gt; pretty_table(
+    A;
+    column_labels = [&quot;Integer&quot;, &quot;Bool&quot;, &quot;Float&quot;, &quot;Hex&quot;],
+    show_row_number_column = true,
+    style = TextTableStyle(;
+        first_line_column_label = Face(; weight = :bold, foreground = :cyan),
+        header_line             = Face(; foreground = :cyan),
+        row_number              = Face(; foreground = :bright_black),
+        table_border            = Face(; foreground = :bright_black),
+    ),
+    table_format = TextTableFormat(;
+        borders = text_table_borders__unicode_rounded,
+        vertical_lines_at_data_columns = :none,
+    ),
+)</code></pre><img src="../text_example_05.svg" alt="Text Example 05"></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../predefined_formats/">« Pre-defined Formats</a><a class="docs-footer-nextpage" href="../../html/html_backend/">HTML Backend »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.19.0 on <span class="colophon-date" title="Monday 28 September 2026 16:02">Monday 28 September 2026</span>. Using Julia version 1.13.1.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
