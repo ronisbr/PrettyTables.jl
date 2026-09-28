@@ -128,25 +128,14 @@ function _text__render_table(
             j₀ = ps.j
             j₁ = min(ps.j + cell.column_span - 1, num_printed_data_columns)
 
-            mw = 0
-
-            for j in j₀:j₁
-                mwj = maximum_data_column_widths[j]
-
-                # If any spanned column has no maximum width, the merged cell width is
-                # unlimited.
-                if mwj <= 0
-                    mw = -1
-                    break
-                end
-
-                mw += mwj
-
-                # We must also take into account the margins and vertical lines between the
-                # merged columns.
-                if j != j₁
-                    mw += 2 + (j ∈ vertical_lines_at_data_columns)
-                end
+            # If any spanned column has no maximum width, the merged cell width is
+            # unlimited.
+            mw = if any(j -> maximum_data_column_widths[j] <= 0, j₀:j₁)
+                -1
+            else
+                _text__span_width(
+                    maximum_data_column_widths, j₀, j₁, vertical_lines_at_data_columns
+                )
             end
         end
 

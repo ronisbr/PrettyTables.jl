@@ -530,24 +530,12 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
                     # Compute the column limits of this column label.
                     j₀, j₁ = _column_label_limits(table_data, i, shrinkable_data_column)
 
-                    # Compute the available width.
-                    cell_width = 0
-
-                    # Make sure we are not accessing a column out of the bounds.
+                    # Compute the available width, making sure we are not accessing a
+                    # column out of the bounds.
                     j₁ = min(j₁, num_printed_data_columns)
-
-                    for j in j₀:j₁
-                        cell_width += printed_data_column_widths[j] + 2
-
-                        # We must add a space if we have a vertical line in the merged
-                        # cells.
-                        if (j != j₁) && (j ∈ vertical_lines_at_data_columns)
-                            cell_width += 1
-                        end
-                    end
-
-                    # We already take into account 2 characters for the margin below.
-                    cell_width -= 2
+                    cell_width = _text__span_width(
+                        printed_data_column_widths, j₀, j₁, vertical_lines_at_data_columns
+                    )
 
                     # We need to modify the first field of this column label to take into
                     # account merged labels.
@@ -1206,19 +1194,9 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
                 j₀ = jr
                 j₁ = min(jr + cell.column_span - 1, last_printed_column_index)
 
-                cell_width = 0
-
-                for j in j₀:j₁
-                    cell_width += printed_data_column_widths[j] + 2
-
-                    # We must add a space if we have a vertical line in the merged cells.
-                    if (j != j₁) && (j ∈ vertical_lines_at_data_columns)
-                        cell_width += 1
-                    end
-                end
-
-                # We already take into account 2 characters for the margin below.
-                cell_width -= 2
+                cell_width = _text__span_width(
+                    printed_data_column_widths, j₀, j₁, vertical_lines_at_data_columns
+                )
 
                 # We must store that this is a merged cell and also what is the last column
                 # index of it. It is necessary when drawing the vertical lines. The user

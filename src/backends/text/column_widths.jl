@@ -84,24 +84,43 @@ function _text__fix_data_column_widths!(
             j != j₀ && continue
 
             j₁ = min(j₁, num_printed_data_columns)
-
-            cw = 0
-
-            for k in j₀:j₁
-                cw += printed_data_column_widths[k]
-
-                # We must also take into account the margins and vertical lines between the
-                # merged columns.
-                if k != j₁
-                    cw += 2 + (k ∈ vertical_lines_at_data_columns)
-                end
-            end
+            cw = _text__span_width(
+                printed_data_column_widths, j₀, j₁, vertical_lines_at_data_columns
+            )
 
             column_labels[i, j] = _text__crop_cell_to_width(column_labels[i, j], cw, line_breaks)
         end
     end
 
     return nothing
+end
+
+"""
+    _text__span_width(
+        widths::AbstractVector{Int},
+        j₀::Int,
+        j₁::Int,
+        vertical_lines_at_data_columns::AbstractVector{Int}
+    ) -> Int
+
+Return the width available for the content of a cell that spans the data columns `j₀:j₁`,
+whose widths are `widths`. It includes the margins and the vertical lines between the
+spanned columns.
+"""
+function _text__span_width(
+    widths::AbstractVector{Int},
+    j₀::Int,
+    j₁::Int,
+    vertical_lines_at_data_columns::AbstractVector{Int},
+)
+    w = 0
+
+    for j in j₀:j₁
+        w += widths[j]
+        (j != j₁) && (w += 2 + (j ∈ vertical_lines_at_data_columns))
+    end
+
+    return w
 end
 
 """
@@ -336,15 +355,9 @@ function _text__printed_column_widths(
             j₀ = mc.j
             j₁ = min(mc.j + mc.column_span - 1, num_printed_data_columns)
 
-            total_width = 0
-
-            for j in j₀:j₁
-                total_width += printed_data_column_widths[j]
-
-                if j != j₁
-                    total_width += 2 + (j ∈ vertical_lines_at_data_columns)
-                end
-            end
+            total_width = _text__span_width(
+                printed_data_column_widths, j₀, j₁, vertical_lines_at_data_columns
+            )
 
             mctw = printable_textwidth(column_labels[mc.i, mc.j])
 
