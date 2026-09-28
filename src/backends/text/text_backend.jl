@@ -1404,26 +1404,30 @@ function _text__print_table_core(
                     CustomTextCell.add_suffix!(cell, "…")
                     CustomTextCell.left_padding!(cell, 0)
                     CustomTextCell.right_padding!(cell, 0)
-
-                elseif alignment == :r
-                    Δ = cell_width - tw
-                    CustomTextCell.left_padding!(cell, Δ)
-                    CustomTextCell.right_padding!(cell, 0)
-
-                elseif alignment == :c
-                    # NOTE: `_text__print_aligned` rounds the left margin **down**. Hence, a
-                    # custom text cell must do the same, or a plain string and a custom cell
-                    # with the same content would be centered differently in the same column.
-                    Δ = div(cell_width - tw, 2)
-                    CustomTextCell.left_padding!(cell, Δ)
-                    CustomTextCell.right_padding!(cell, cell_width - tw - Δ)
-
                 else
-                    # We must add a right padding because the custom cell must fill the
-                    # entire space, leading to a correct cell decoration.
+                    # The cropping must be reset because it can remain from another line of
+                    # this cell or from another position of the same cell object.
+                    CustomTextCell.crop!(cell, 0)
+                    CustomTextCell.add_suffix!(cell, "")
+
+                    # The custom cell must fill the entire space, leading to a correct cell
+                    # decoration.
                     Δ = cell_width - tw
-                    CustomTextCell.left_padding!(cell, 0)
-                    CustomTextCell.right_padding!(cell, Δ)
+
+                    # NOTE: `_text__print_aligned` rounds the left margin **down** when
+                    # centering. Hence, a custom text cell must do the same, or a plain
+                    # string and a custom cell with the same content would be centered
+                    # differently in the same column.
+                    left_padding = if alignment == :r
+                        Δ
+                    elseif alignment == :c
+                        div(Δ, 2)
+                    else
+                        0
+                    end
+
+                    CustomTextCell.left_padding!(cell, left_padding)
+                    CustomTextCell.right_padding!(cell, Δ - left_padding)
                 end
 
                 rendered_cell = if !line_breaks

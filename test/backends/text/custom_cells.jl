@@ -361,3 +361,38 @@
         @test result == expected
     end
 end
+
+@testset "Custom Cells Cropped in One Line or Position" begin
+    # The cropping of a custom cell must not remain in the other lines of the cell or in
+    # the other positions of the same cell object.
+    remove_ansi(str) = replace(str, r"\e\[[0-9;]*m" => "")
+
+    expected = """
+┌──────────┐
+│   Col. 1 │
+├──────────┤
+│ this is… │
+│       ab │
+│       cd │
+└──────────┘
+"""
+
+    cell   = AnsiTextCell("\e[31mthis is a long line\nab\ncd\e[0m")
+    result = pretty_table(String, [cell]; fixed_data_column_widths = 8, line_breaks = true)
+
+    @test remove_ansi(result) == expected
+
+    expected = """
+┌──────┬──────────┐
+│ Col… │   Col. 2 │
+├──────┼──────────┤
+│ abc… │ abcdefgh │
+│    x │        y │
+└──────┴──────────┘
+"""
+
+    cell   = AnsiTextCell("\e[31mabcdefgh\e[0m")
+    result = pretty_table(String, [cell cell; "x" "y"]; maximum_data_column_widths = [4, 0])
+
+    @test remove_ansi(result) == expected
+end

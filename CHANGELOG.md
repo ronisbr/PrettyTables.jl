@@ -196,6 +196,9 @@ Version 3.5.0
   label added a column to the table.
 - ![Bugfix][badge-bugfix] Escape the stubhead label and the row number column label in the
   Markdown back end, as the column labels.
+- ![Bugfix][badge-bugfix] Reset the cropping of the custom text cells when they fit in the
+  column. The cropping of a line was applied to the other lines of the cell, and the one of
+  a position was applied to the other positions of the same cell object.
 - ![Bugfix][badge-bugfix] Keep the middle cropping of text tables with line breaks if the
   display does not limit the number of printed rows. It was always replaced by the bottom
   cropping when the table had to fit in the display.
