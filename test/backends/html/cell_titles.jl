@@ -81,7 +81,9 @@
         column_labels = [[(i, j) for j in 1:4] for i in 1:3]
 
         column_label_titles = [[1, 2, 3, 4], ["5", "6", "7", "8"]]
-        @test_throws Exception pretty_table(
+        @test_throws ArgumentError(
+            "The length of `column_label_titles` (2) must be equal to or greater than the number of column label rows (3)."
+        ) pretty_table(
             matrix;
             backend             = :html,
             column_labels       = column_labels,
@@ -89,7 +91,9 @@
         )
 
         column_label_titles = [[1, 2, 3, 4], nothing, ["5", "6", "7", "8", "9"]]
-        @test_throws Exception pretty_table(
+        @test_throws ArgumentError(
+            "The length of the row 3 of `column_label_titles` (5) must be equal to the number of columns (4)."
+        ) pretty_table(
             matrix;
             backend             = :html,
             column_labels       = column_labels,
@@ -97,7 +101,9 @@
         )
 
         column_label_titles = [[1, 2, 3], nothing, ["5", "6", "7", "8"]]
-        @test_throws Exception pretty_table(
+        @test_throws ArgumentError(
+            "The length of the row 1 of `column_label_titles` (3) must be equal to the number of columns (4)."
+        ) pretty_table(
             matrix;
             backend             = :html,
             column_labels       = column_labels,

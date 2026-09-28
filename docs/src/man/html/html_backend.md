@@ -10,11 +10,11 @@ the output.
   This can be useful to render tables with more complex content, but it can also be a
   security risk if the content is not sanitized.
   (**Default**: `false`)
-- `column_label_titles::Union{Nothing, AbstractVector}`: Titles for the column labels. If
-  `nothing`, no titles are added. If a vector is passed, it must have the same length as the
-  number of column label rows. Each element in the vector can be `nothing` (no title for
-  that row) or an element with the title for that row. Notice that this element will be
-  converted to string using the function `string`.
+- `column_label_titles::Union{Nothing, AbstractVector}`: Titles for the column labels, which are
+  shown as tooltips. If `nothing`, no titles are added. Otherwise, it must have one element
+  for each column label row, and the additional elements are ignored. Each element can be
+  `nothing` (no titles in that row) or a vector with one title for each column. The titles
+  are converted to string using the function `string`.
   (**Default**: `nothing`)
 - `highlighters::Vector{<:AbstractHighlighter}`: Highlighters to apply to the table. For more
   information, see the section [HTML Highlighters](@ref).

@@ -105,19 +105,25 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
 
     # Check the dimensions of header cell titles.
     if !isnothing(column_label_titles)
-        if length(column_label_titles) < num_column_label_rows
-            error(
-                "The number of vectors in `column_label_titles` must be equal to or greater than that in `column_labels`.",
+        num_title_rows = length(column_label_titles)
+
+        if num_title_rows < num_column_label_rows
+            throw(
+                ArgumentError(
+                    "The length of `column_label_titles` ($num_title_rows) must be equal to or greater than the number of column label rows ($num_column_label_rows)."
+                )
             )
         end
 
-        for k in eachindex(column_label_titles)
-            if (
-                !isnothing(column_label_titles[k]) &&
-                (length(column_label_titles[k]) != table_data.num_columns)
-            )
-                error(
-                    "The number of elements in each row of `column_label_titles` must match the number of columns in the table.",
+        for (k, titles) in enumerate(column_label_titles)
+            isnothing(titles) && continue
+            num_titles = length(titles)
+
+            if num_titles != table_data.num_columns
+                throw(
+                    ArgumentError(
+                        "The length of the row $k of `column_label_titles` ($num_titles) must be equal to the number of columns ($(table_data.num_columns))."
+                    )
                 )
             end
         end
