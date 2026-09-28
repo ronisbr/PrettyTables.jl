@@ -466,8 +466,54 @@ end
 # ASCII characters that carry a special meaning in Typst markup and, hence, must be escaped
 # with a backslash when they occur inside a cell. Notice that the cell content is emitted
 # inside a Typst content block (`[...]`), meaning that an unbalanced `[` or `]` silently
-# breaks the entire document.
-const _TYPST__ESCAPED_CHARACTERS = ('\\', '#', '[', ']', '*', '_', '$', '<', '>', '@', '`', '~')
+# breaks the entire document. The slash must be escaped because `//` and `/*` start a
+# comment and `/ ` starts a term list.
+const _TYPST__ESCAPED_CHARACTERS =
+    ('\\', '#', '[', ']', '*', '_', '$', '<', '>', '@', '`', '~', '/')
+
+"""
+    _typst__line_start_markup_index(s::AbstractString) -> Int
+
+Return the index of the character in `s` that must be escaped so that the beginning of `s`
+is not interpreted as a markup that Typst only recognizes at the beginning of a line, or 0
+if there is no such markup. Those markups are the headings (`=`), the bullet lists (`-`),
+and the numbered lists (`+` or a number followed by `.`), which must be followed by a white
+space. Notice that the content of every cell or component begins a line.
+"""
+function _typst__line_start_markup_index(s::AbstractString)
+    l = lastindex(s)
+    i = firstindex(s)
+
+    # The markup can be indented.
+    while (i <= l) && (s[i] ∈ (' ', '\t'))
+        i = nextind(s, i)
+    end
+
+    i > l && return 0
+
+    c = s[i]
+    j = nextind(s, i)
+
+    if c == '='
+        # A heading can start with multiple `=`.
+        while (j <= l) && (s[j] == '=')
+            j = nextind(s, j)
+        end
+    elseif isdigit(c)
+        while (j <= l) && isdigit(s[j])
+            j = nextind(s, j)
+        end
+
+        # The dot of a numbered list must be escaped instead of the number.
+        ((j <= l) && (s[j] == '.')) || return 0
+        i = j
+        j = nextind(s, j)
+    elseif (c != '-') && (c != '+')
+        return 0
+    end
+
+    return ((j <= l) && isspace(s[j])) ? i : 0
+end
 
 """
     _typst__escape_str(io::IO, s::AbstractString) -> Nothing
@@ -477,11 +523,13 @@ Print the string `s` in `io` escaping the characters for the Typst backend. If `
 omitted, the escaped string is returned.
 """
 function _typst__escape_str(io::IO, s::AbstractString)
-    for c in s
+    markup_index = _typst__line_start_markup_index(s)
+
+    for (i, c) in pairs(s)
         if Base.isascii(c)
             # Notice that Typst has no `\xNN` escape sequence. Hence, the non-printable
             # characters must be emitted using the `\u{...}` escape sequence.
-            c ∈ _TYPST__ESCAPED_CHARACTERS ? print(io, '\\', c) :
+            (c ∈ _TYPST__ESCAPED_CHARACTERS) || (i == markup_index) ? print(io, '\\', c) :
             isprint(c) ? print(io, c) : print(io, "\\u{", string(UInt32(c); base = 16), "}")
 
         elseif !Base.isoverlong(c) && !Base.ismalformed(c)

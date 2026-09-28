@@ -119,3 +119,29 @@ end
 
     @test occursin("#super[1,2]", result)
 end
+
+@testset "Comments and Line-Start Markup" begin
+    # `//` and `/*` start a comment, and some markups are only recognized at the beginning
+    # of a line, which is the case of the beginning of every cell.
+    result = pretty_table(
+        String,
+        ["a // b" "a /* b" "/ t: d" "= x" "== x" "- x" "+ x" "12. x" "  - x" "-1.5" "=x"];
+        backend = :typst,
+    )
+
+    for escaped in (
+        "[a \\/\\/ b]",
+        "[a \\/\\* b]",
+        "[\\/ t: d]",
+        "[\\= x]",
+        "[\\== x]",
+        "[\\- x]",
+        "[\\+ x]",
+        "[12\\. x]",
+        "[  \\- x]",
+        "[-1.5]",
+        "[=x]",
+    )
+        @test occursin(escaped, result)
+    end
+end

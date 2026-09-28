@@ -193,6 +193,9 @@ Version 3.5.0
   label added a column to the table.
 - ![Bugfix][badge-bugfix] Escape the stubhead label and the row number column label in the
   Markdown back end, as the column labels.
+- ![Bugfix][badge-bugfix] Escape the slashes in the Typst back end, since `//` and `/*`
+  started a comment that broke the document, and the markups that Typst recognizes at the
+  beginning of a cell (headings, lists, and term lists).
 - ![Bugfix][badge-bugfix] Keep the leading and trailing white spaces of a cell outside the
   style markers in the Markdown back end. Markdown does not recognize emphasis markers next
   to a white space, showing them literally.
