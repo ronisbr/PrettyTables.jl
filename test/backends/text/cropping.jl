@@ -1483,6 +1483,45 @@ end
         @test !occursin("G2", result)
     end
 
+    @testset "Omitted Cell Summary With Omitted Columns" begin
+        # If data columns are omitted, the omitted cell summary is printed even if the
+        # table is not cropped vertically. Hence, its line must be considered.
+        expected = """
+┌────────┬────────┬────────┬──
+│ Col. 1 │ Col. 2 │ Col. 3 │ ⋯
+├────────┼────────┼────────┼──
+│      1 │      1 │      1 │ ⋯
+│      ⋮ │      ⋮ │      ⋮ │ ⋱
+└────────┴────────┴────────┴──
+ 27 columns and 2 rows omitted
+"""
+
+        result = pretty_table(String, ones(Int, 3, 30); display_size = (9, 30))
+
+        @test result == expected
+
+        # The same must happen if the omitted columns are only known after computing the
+        # column widths, in which case the middle cropping must be designed again.
+        expected = """
+│ Col. 1 │ Col. 2 │ Col. 3 │ ⋯
+├────────┼────────┼────────┼──
+│      ⋮ │      ⋮ │      ⋮ │ ⋱
+└────────┴────────┴────────┴──
+    1 column and 1 row omitted
+"""
+
+        result = pretty_table(
+            String,
+            [1 2 3 4];
+            display_size = (7, 30),
+            row_group_labels = [1 => "G1"],
+            table_format = TextTableFormat(; horizontal_line_at_beginning = false),
+            vertical_crop_mode = :middle,
+        )
+
+        @test result == expected
+    end
+
     @testset "Maximum Number of Rows" begin
         # The design must not suppress the line after the continuation row if the rows
         # limited by the user fit in the display.

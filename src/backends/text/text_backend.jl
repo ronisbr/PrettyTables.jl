@@ -74,7 +74,15 @@ end
     return _text__print_table_core(pspec, opts)
 end
 
-function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
+function _text__print_table_core(
+    pspec::PrintingSpec, opts::TextPrintOptions, omitted_columns::Bool = false
+)
+    # The fields of the table data modified by the fitting of the table in the display. They
+    # must be restored if the process is restarted (see the section "Omitted Columns").
+    user_maximum_number_of_columns = pspec.table_data.maximum_number_of_columns
+    user_maximum_number_of_rows    = pspec.table_data.maximum_number_of_rows
+    user_vertical_crop_mode        = pspec.table_data.vertical_crop_mode
+
     # == Unpack the Options ================================================================
 
     alignment_anchor_fallback                   = opts.alignment_anchor_fallback
@@ -293,6 +301,11 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
         #   3. Compute the number of rendered columns.
         #   4. Re-design the number of rendered rows considering the actual number of lines.
 
+        # Notice that, at this point, we only know if data columns will be omitted by the
+        # user specification or by our estimate of the number of columns that fits in the
+        # display.
+        omitted_columns = omitted_columns || _is_horizontally_cropped(table_data)
+
         mr, suppress_hline_before_continuation_row, suppress_hline_after_continuation_row = _text__design_vertical_cropping(
             table_data,
             tf,
@@ -301,6 +314,7 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
             pspec.show_omitted_cell_summary,
             display.size[1],
             pspec.new_line_at_end,
+            omitted_columns,
         )
 
         if table_data.maximum_number_of_rows >= 0
@@ -594,6 +608,49 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
     num_omitted_data_columns = table_data.num_columns - num_printed_data_columns
     num_omitted_data_rows    = table_data.num_rows - num_printed_data_rows
 
+    # If data columns are omitted, the omitted cell summary is printed even if the table is
+    # not cropped vertically. Hence, if the vertical cropping design did not consider this
+    # line and its result would change, we must restart the process considering it. Notice
+    # that the rendering must be restarted because, in the middle cropping, the rendered
+    # rows depend on the number of printed rows. When we have line breaks, the vertical
+    # cropping is designed again below.
+    if (
+        !omitted_columns &&
+        (num_omitted_data_columns > 0) &&
+        pspec.show_omitted_cell_summary &&
+        fit_table_in_display_vertically &&
+        (display_size[1] > 0) &&
+        !line_breaks
+    )
+        current_maximum_number_of_rows    = table_data.maximum_number_of_rows
+        table_data.maximum_number_of_rows = user_maximum_number_of_rows
+
+        new_design = _text__design_vertical_cropping(
+            table_data,
+            tf,
+            horizontal_lines_at_column_labels,
+            horizontal_lines_at_data_rows,
+            pspec.show_omitted_cell_summary,
+            display.size[1],
+            pspec.new_line_at_end,
+            true,
+        )
+
+        old_design = (
+            mr,
+            suppress_hline_before_continuation_row,
+            suppress_hline_after_continuation_row,
+        )
+
+        if new_design != old_design
+            table_data.maximum_number_of_columns = user_maximum_number_of_columns
+            table_data.vertical_crop_mode        = user_vertical_crop_mode
+            return _text__print_table_core(pspec, opts, true)
+        end
+
+        table_data.maximum_number_of_rows = current_maximum_number_of_rows
+    end
+
     # We must compute what will be the last printed column index to draw the correct
     # vertical lines. Notice that, at this point, we might be printing a column partially.
     last_printed_column_index = if horizontally_limited_by_display
@@ -637,6 +694,7 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
             display.size[1],
             pspec.new_line_at_end,
             last_printed_column_index,
+            num_omitted_data_columns > 0,
         )
 
         if table_data.maximum_number_of_rows >= 0

@@ -421,7 +421,8 @@ end
         horizontal_lines_at_data_rows::AbstractVector{Int},
         show_omitted_row_summary::Bool,
         display_number_of_rows::Int,
-        new_line_at_end::Bool = true
+        new_line_at_end::Bool = true,
+        omitted_columns::Bool = false
     ) -> Int, Bool, Bool
 
 Design the vertical cropping of the table by computing how many data lines we can print and
@@ -437,6 +438,8 @@ if we must suppress the horizontal line before or after the continuation line.
 - `show_omitted_row_summary::Bool`: If `true`, we must show the omitted row summary.
 - `display_number_of_rows::Int`: Number of rows in the display.
 - `new_line_at_end::Bool`: If `true`, we must add a new line at the end of the table.
+- `omitted_columns::Bool`: If `true`, some data columns are omitted. Hence, the omitted
+    cell summary is printed even if the table is not cropped vertically.
 
 # Returns
 
@@ -452,6 +455,7 @@ function _text__design_vertical_cropping(
     show_omitted_row_summary::Bool,
     display_number_of_rows::Int,
     new_line_at_end::Bool,
+    omitted_columns::Bool = false,
 )
     num_rows      = table_data.num_rows
     num_data_rows = 0
@@ -479,7 +483,10 @@ function _text__design_vertical_cropping(
     max_rows = (0 <= mr_user < num_rows) ? mr_user : num_rows
 
     # Check if we can draw the entire table, meaning that a continuation line is not
-    # necessary.
+    # necessary. Notice that the omitted cell summary is printed if data columns are
+    # omitted.
+    total_table_lines += show_omitted_row_summary && omitted_columns
+
     (max_rows == num_rows) && (total_table_lines <= display_number_of_rows) &&
         return num_rows, false, false
 
@@ -569,7 +576,8 @@ end
         show_omitted_row_summary::Bool,
         display_number_of_rows::Int,
         new_line_at_end::Bool,
-        last_printed_column_index::Int
+        last_printed_column_index::Int,
+        omitted_columns::Bool = false
     ) -> Tuple{Int, Bool, Bool}
 
 Design the vertical cropping of the table when the user wants line breaks by computing how
@@ -590,6 +598,8 @@ breaks.
 - `new_line_at_end::Bool`: If `true`, we must add a new line at the end of the table.
 - `last_printed_column_index::Int`: Index of the last printed data column, including the
     one that is partially printed, since all of them contribute to the row heights.
+- `omitted_columns::Bool`: If `true`, some data columns are omitted. Hence, the omitted
+    cell summary is printed even if the table is not cropped vertically.
 
 # Returns
 
@@ -607,6 +617,7 @@ function _text__design_vertical_cropping_with_line_breaks(
     display_number_of_rows::Int,
     new_line_at_end::Bool,
     last_printed_column_index::Int,
+    omitted_columns::Bool = false,
 )
     num_rows      = table_data.num_rows
     num_data_rows = 0
@@ -638,8 +649,11 @@ function _text__design_vertical_cropping_with_line_breaks(
 
     # If all the rows were rendered, we must check if we can draw the entire table, meaning
     # that a continuation line is not necessary. In this case, we replace the one line per
-    # row in the total number of lines by the actual number of lines.
+    # row in the total number of lines by the actual number of lines. Notice that the
+    # omitted cell summary is printed if data columns are omitted.
     if num_rendered_rows == num_rows
+        total_table_lines += show_omitted_row_summary && omitted_columns
+
         for i in 1:num_rows
             total_table_lines += row_lines(i) - 1
         end
