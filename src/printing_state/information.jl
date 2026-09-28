@@ -170,9 +170,7 @@ function _number_of_printed_columns(table_data::TableData)
         table_data.num_columns
 
     total_columns =
-        data_columns +
-        table_data.show_row_number_column +
-        (!isnothing(table_data.row_labels) || !isnothing(table_data.summary_row_labels))
+        data_columns + table_data.show_row_number_column + _has_row_labels(table_data)
 
     return total_columns
 end

@@ -121,8 +121,7 @@ function _next(state::PrintingTableState, table_data::TableData)
         return action, rs, PrintingTableState(_ROW_NUMBER_COLUMN, i, 0, rs)
     end
 
-    if (ps < _ROW_LABEL_COLUMN) &&
-        (!isnothing(table_data.row_labels) || !isnothing(table_data.summary_row_labels))
+    if (ps < _ROW_LABEL_COLUMN) && _has_row_labels(table_data)
         action = if rs == :column_labels
             :stubhead_label
         elseif rs == :data
