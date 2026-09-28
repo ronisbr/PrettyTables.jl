@@ -196,6 +196,8 @@ Version 3.5.0
   label added a column to the table.
 - ![Bugfix][badge-bugfix] Escape the stubhead label and the row number column label in the
   Markdown back end, as the column labels.
+- ![Bugfix][badge-bugfix] Reset the style of the horizontal lines of the text back end that
+  are cropped at the display edge. The style leaked into the rest of the output.
 - ![Bugfix][badge-bugfix] Reset the cropping of the custom text cells when they fit in the
   column. The cropping of a line was applied to the other lines of the cell, and the one of
   a position was applied to the other positions of the same cell object.

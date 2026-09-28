@@ -78,7 +78,10 @@ function _text__begin_styled_line(display::Display, sgr::String)
 end
 
 function _text__end_styled_line(display::Display, sgr::String)
-    (display.has_color && !isempty(sgr)) && _text__print(display, _TEXT__STRING_RESET)
+    # The reset sequence must be written even if the line is past the display width, since
+    # the line can be cropped at the display edge. Otherwise, the style would leak into the
+    # rest of the output. Notice that the escape sequence does not change the column.
+    (display.has_color && !isempty(sgr)) && print(display.buf_line, _TEXT__STRING_RESET)
     return nothing
 end
 

@@ -157,3 +157,22 @@ end
 
     @test !occursin("\e", result)
 end
+
+@testset "Style of Horizontal Lines Cropped at the Display Edge" begin
+    # The reset sequence must be written even if the horizontal line is cropped at the
+    # display edge. Otherwise, the style would leak into the rest of the output.
+    result = pretty_table(
+        String,
+        fill(123456, 2, 30);
+        color = true,
+        display_size = (-1, 40),
+        show_omitted_cell_summary = false,
+        style = TextTableStyle(; table_border = crayon"blue"),
+    )
+
+    lines = split(chomp(result), '\n')
+
+    @test lines[1] == "\e[34m┌────────┬────────┬────────┬────────┬───\e[0m"
+    @test lines[3] == "\e[34m├────────┼────────┼────────┼────────┼───\e[0m"
+    @test lines[6] == "\e[34m└────────┴────────┴────────┴────────┴───\e[0m"
+end
