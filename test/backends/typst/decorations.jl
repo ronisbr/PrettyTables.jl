@@ -203,3 +203,21 @@
         @test occursin("blue", result)
     end
 end
+
+@testset "Style of Merged Column Labels" begin
+    # The merged column labels must only receive the style of the merged cells, which can
+    # also override their alignment.
+    output = pretty_table(
+        String,
+        [1 2];
+        annotate = false,
+        backend = :typst,
+        column_labels = [[MultiColumn(2, "M")], ["a", "b"]],
+        style = TypstTableStyle(;
+            first_line_column_label        = ["text-fill" => "blue"],
+            first_line_merged_column_label = ["text-fill" => "red", "align" => "left"],
+        ),
+    )
+
+    @test occursin("table.cell(colspan: 2, align: left,)[#text(fill: red,)[M]],", output)
+end

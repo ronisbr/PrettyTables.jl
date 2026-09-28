@@ -122,4 +122,23 @@
             output,
         )
     end
+
+    @testset "Style of Merged Column Labels" begin
+        # The merged column labels must only receive the style of the merged cells.
+        output = pretty_table(
+            String,
+            [1 2];
+            backend = :html,
+            column_labels = [[MultiColumn(2, "M")], ["a", "b"]],
+            style = HtmlTableStyle(;
+                first_line_column_label        = ["color" => "blue"],
+                first_line_merged_column_label = ["color" => "red"],
+            ),
+        )
+
+        @test occursin(
+            "<th colspan = \"2\" style = \"color: red; text-align: center;\">M</th>",
+            output,
+        )
+    end
 end

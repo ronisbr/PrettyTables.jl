@@ -47,8 +47,8 @@
       table.cell(fill: yellow,)[
         #text(fill: blue, weight: "extrabold",)[Col. 1]
       ],
-      table.cell(colspan: 2, align: center, fill: blue,)[
-        #text(fill: white, weight: "extrabold",)[Merged Column]#super[1]
+      table.cell(colspan: 2, align: center,)[
+        #text(weight: "bold",)[Merged Column]#super[1]
       ],
       table.cell(fill: red,)[
         #text(fill: rgb(30, 30, 30),)[Col. 4]

@@ -442,7 +442,8 @@ function _typst__print_core(pspec::PrintingSpec, opts::TypstPrintOptions)
                 # back ends honor it.
                 push!(vproperties, "align" => _typst__alignment(alignment))
 
-                append!(
+                # The style of the merged column labels can override the alignment.
+                _typst__merge_properties!(
                     vproperties,
                     if ps.i == 1
                         style.first_line_merged_column_label
@@ -520,7 +521,9 @@ function _typst__print_core(pspec::PrintingSpec, opts::TypstPrintOptions)
             elseif action == :summary_row_label
                 _typst__merge_properties!(vproperties, style.summary_row_label)
 
-            elseif action == :column_label
+            # The merged column labels only receive the style of the merged cells, which
+            # was merged above.
+            elseif (action == :column_label) && !(cell isa MergeCells)
                 if ps.i == 1
                     _typst__merge_properties!(
                         vproperties,

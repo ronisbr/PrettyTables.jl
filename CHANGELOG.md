@@ -189,6 +189,11 @@ Version 3.5.0
 - ![Bugfix][badge-bugfix] The HTML back end no longer draws the line after the last data row
   when `horizontal_lines_at_data_rows` contains it. As in the other back ends, this line is
   only drawn if `horizontal_line_after_data_rows` is `true`.
+- ![Bugfix][badge-bugfix] Apply only the style of the merged cells to the merged column
+  labels in the HTML and Typst back ends, as in the other back ends. The style of the column
+  labels was also applied, overriding it. The default style of the merged cells is now bold
+  in the first line of the column labels (HTML and Typst) and in the other lines (Typst),
+  keeping the default appearance of the tables.
 - ![Bugfix][badge-bugfix] Write the cell content verbatim in the HTML back end. The
   minification removed the line breaks and the leading spaces of each line of the content,
   whereas the indentation added spaces to them, corrupting, for example, `<pre>` elements.

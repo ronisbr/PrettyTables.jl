@@ -91,7 +91,6 @@ const _TYPST__LARGE_ITALIC      = ["text-size" => "1.1em", "text-style" => "ital
 const _TYPST__SMALL             = ["text-size" => "0.9em"]
 const _TYPST__SMALL_ITALIC      = ["text-size" => "0.9em", "text-style" => "italic"]
 const _TYPST__SMALL_ITALIC_GRAY = ["text-fill" => "gray", "text-size" => "0.9em", "text-style" => "italic"]
-const _TYPST__MERGED_CELL       = TypstPair[]
 
 ############################################################################################
 #                                          Types                                           #
@@ -367,8 +366,8 @@ function TypstTableStyle(;
     row_group_label                = _TYPST__BOLD,
     first_line_column_label        = _TYPST__BOLD,
     column_label                   = _TYPST__BOLD,
-    first_line_merged_column_label = _TYPST__MERGED_CELL,
-    merged_column_label            = _TYPST__MERGED_CELL,
+    first_line_merged_column_label = _TYPST__BOLD,
+    merged_column_label            = _TYPST__BOLD,
     omitted_cell_summary           = _TYPST__SMALL_ITALIC_GRAY,
     summary_row_cell               = _TYPST__NO_DECORATION,
     summary_row_label              = _TYPST__BOLD,

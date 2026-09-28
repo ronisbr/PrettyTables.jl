@@ -571,15 +571,6 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
 
                 alignment = cell.alignment
 
-                append!(
-                    vstyle,
-                    if ps.i == 1
-                        style.first_line_merged_column_label
-                    else
-                        style.merged_column_label
-                    end,
-                )
-
             else
                 rendered_cell = _html__render_cell(
                     cell, rctx, renderer; allow_html_in_cells, line_breaks
@@ -644,7 +635,16 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
                 push!(vproperties, "class" => _html__cell_class(action))
             end
 
-            append!(vstyle, _html__cell_style(style, action, ps.i, ps.j))
+            # The merged column labels only receive the style of the merged cells.
+            append!(
+                vstyle,
+                if (action == :column_label) && (cell isa MergeCells)
+                    ps.i == 1 ? style.first_line_merged_column_label :
+                    style.merged_column_label
+                else
+                    _html__cell_style(style, action, ps.i, ps.j)
+                end,
+            )
 
             # Create the row tag with the content. Notice that the content must be written
             # verbatim. Otherwise, the indentation or the minification would change the

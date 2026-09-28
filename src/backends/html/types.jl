@@ -389,7 +389,7 @@ function HtmlTableStyle(;
     row_group_label                = _HTML__BOLD,
     first_line_column_label        = _HTML__BOLD,
     column_label                   = _HTML__NO_DECORATION,
-    first_line_merged_column_label = _HTML__NO_DECORATION,
+    first_line_merged_column_label = _HTML__BOLD,
     merged_column_label            = _HTML__NO_DECORATION,
     summary_row_cell               = _HTML__NO_DECORATION,
     summary_row_label              = _HTML__BOLD,
