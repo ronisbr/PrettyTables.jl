@@ -500,22 +500,24 @@ function _text__print_table_core(
     # to the correct size if necessary.
     #
     # TODO: This can be integrated in the first column width computation!
-    has_fixed_data_column_widths && _text__fix_data_column_widths!(
-        printed_data_column_widths,
-        table_data,
-        column_labels,
-        table_str,
-        summary_rows,
-        fix_data_column_widths,
-        vertical_lines_at_data_columns,
-        auto_wrap,
-        line_breaks,
-    )
+    if has_fixed_data_column_widths
+        _text__fix_data_column_widths!(
+            printed_data_column_widths,
+            table_data,
+            column_labels,
+            table_str,
+            summary_rows,
+            fix_data_column_widths,
+            vertical_lines_at_data_columns,
+            auto_wrap,
+            line_breaks,
+            equal_data_column_widths,
+        )
 
-    # If the user wants equal data column widths, make every column width equal to the
-    # largest one.
-    if equal_data_column_widths
-        # `init` is required because the table can have no columns at all.
+    elseif equal_data_column_widths
+        # If the user wants equal data column widths, make every column width equal to the
+        # largest one. Notice that `init` is required because the table can have no columns
+        # at all.
         printed_data_column_widths .= maximum(printed_data_column_widths; init = 0)
     end
 

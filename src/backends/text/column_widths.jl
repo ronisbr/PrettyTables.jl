@@ -14,7 +14,8 @@
         fixed_data_column_widths::AbstractVector{Int},
         vertical_lines_at_data_columns::AbstractVector{Int},
         auto_wrap::Bool,
-        line_breaks::Bool
+        line_breaks::Bool,
+        equal_data_column_widths::Bool
     ) -> Nothing
 
 Fix the data column widths given the user specification. This function also crops the cells
@@ -34,6 +35,9 @@ at the data columns to fit the fixed width.
 - `auto_wrap::Bool`: If `true`, the strings will be auto wrapped at each column with a fixed
     width.
 - `line_breaks::Bool`: If `true`, the cells will be split into multiple lines if needed.
+- `equal_data_column_widths::Bool`: If `true`, all the data columns will have the width of
+    the widest one. Notice that the widths must be equalized before wrapping and cropping
+    the cells. Otherwise, the cells of the widened columns would remain cropped.
 """
 function _text__fix_data_column_widths!(
     printed_data_column_widths::Vector{Int},
@@ -45,13 +49,21 @@ function _text__fix_data_column_widths!(
     vertical_lines_at_data_columns::AbstractVector{Int},
     auto_wrap::Bool,
     line_breaks::Bool,
+    equal_data_column_widths::Bool,
 )
     for j in eachindex(printed_data_column_widths)
         fcw = fixed_data_column_widths[j - 1 + begin]
-        (fcw <= 0) && continue
-        printed_data_column_widths[j] = fcw
+        (fcw > 0) && (printed_data_column_widths[j] = fcw)
+    end
 
-        if auto_wrap
+    # `init` is required because the table can have no columns at all.
+    equal_data_column_widths &&
+        (printed_data_column_widths .= maximum(printed_data_column_widths; init = 0))
+
+    if auto_wrap
+        for j in eachindex(printed_data_column_widths)
+            (fixed_data_column_widths[j - 1 + begin] <= 0) && continue
+
             for i in axes(table_str, 1)
                 table_str[i, j] = _auto_wrap(table_str[i, j], printed_data_column_widths[j])
             end

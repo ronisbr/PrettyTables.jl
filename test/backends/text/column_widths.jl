@@ -311,3 +311,24 @@ end
 
     @test result == expected
 end
+
+@testset "Equal Data Column Widths With Fixed Widths" begin
+    # The widths must be equalized before cropping the cells. Otherwise, the cells of the
+    # widened columns would remain cropped.
+    expected = """
+┌────────────┬────────────┐
+│     Col. 1 │     Col. 2 │
+├────────────┼────────────┤
+│ abcdefghi… │          x │
+└────────────┴────────────┘
+"""
+
+    result = pretty_table(
+        String,
+        ["abcdefghijklmnop" "x"];
+        equal_data_column_widths = true,
+        fixed_data_column_widths = [10, 3],
+    )
+
+    @test result == expected
+end
