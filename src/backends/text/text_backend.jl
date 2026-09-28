@@ -383,72 +383,33 @@ function _text__print_table_core(
         # Check if we have one set of regexes to be applied to all the columns or if the
         # user specified regexes for some columns.
         if alignment_anchor_regex isa Vector{Regex}
-            regex = alignment_anchor_regex
-
-            @views for j in axes(table_str, 2)
-                column_str[1:num_printed_data_rows] .= table_str[:, j]
-
-                if apply_alignment_regex_to_summary_rows
-                    column_str[(num_printed_data_rows + 1):end] .= summary_rows[:, j]
-                end
-
-                if !line_breaks
-                    _align_column_with_regex!(column_str, regex, alignment_anchor_fallback)
-                else
-                    _align_multline_column_with_regex!(
-                        column_str, regex, alignment_anchor_fallback
-                    )
-                end
-
-                table_str[:, j] = column_str[1:num_printed_data_rows]
-
-                if apply_alignment_regex_to_summary_rows
-                    summary_rows[:, j] .= column_str[(num_printed_data_rows + 1):end]
-                end
-            end
-        else
-            @views for r in alignment_anchor_regex
-                j, regex = r
-
-                j > num_printed_data_columns && continue
-
-                column_str[1:num_printed_data_rows] .= table_str[:, j]
-
-                if apply_alignment_regex_to_summary_rows
-                    column_str[(num_printed_data_rows + 1):end] .= summary_rows[:, j]
-                end
-
-                if !line_breaks
-                    _align_column_with_regex!(column_str, regex, alignment_anchor_fallback)
-                else
-                    _align_multline_column_with_regex!(
-                        column_str, regex, alignment_anchor_fallback
-                    )
-                end
-
-                table_str[:, j] = column_str[1:num_printed_data_rows]
-
-                if apply_alignment_regex_to_summary_rows
-                    summary_rows[:, j] .= column_str[(num_printed_data_rows + 1):end]
-                end
-            end
-        end
-
-        # Since we modified the cell width to align the text, we must check if we need
-        # additional cropping to comply with the maximum cell width specification.
-        for j in 1:num_printed_data_columns
-            for i in 1:num_printed_data_rows
-                table_str[i, j] = _text__fit_cell_in_maximum_cell_width(
-                    table_str[i, j], max_data_column_widths[j], line_breaks
+            for j in 1:num_printed_data_columns
+                _text__align_column_with_regex!(
+                    table_str,
+                    summary_rows,
+                    column_str,
+                    j,
+                    alignment_anchor_regex,
+                    alignment_anchor_fallback,
+                    apply_alignment_regex_to_summary_rows,
+                    max_data_column_widths[j],
+                    line_breaks,
                 )
             end
+        else
+            for (j, regex) in alignment_anchor_regex
+                j > num_printed_data_columns && continue
 
-            # Check if the summary rows were modified by the alignment regex.
-            (isnothing(summary_rows) || !apply_alignment_regex_to_summary_rows) && continue
-
-            for i in 1:size(summary_rows, 1)
-                summary_rows[i, j] = _text__fit_cell_in_maximum_cell_width(
-                    summary_rows[i, j], max_data_column_widths[j], line_breaks
+                _text__align_column_with_regex!(
+                    table_str,
+                    summary_rows,
+                    column_str,
+                    j,
+                    regex,
+                    alignment_anchor_fallback,
+                    apply_alignment_regex_to_summary_rows,
+                    max_data_column_widths[j],
+                    line_breaks,
                 )
             end
         end

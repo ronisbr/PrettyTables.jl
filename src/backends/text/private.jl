@@ -789,6 +789,65 @@ function _text__design_vertical_cropping_with_line_breaks(
     return num_data_rows, last_row_cropped, suppress_hline_before_continuation_row
 end
 
+# == Alignment Regex =======================================================================
+
+"""
+    _text__align_column_with_regex!(
+        table_str::Matrix{String},
+        summary_rows::Union{Nothing, Matrix{String}},
+        column_str::Vector{String},
+        j::Int,
+        regex::Vector{Regex},
+        fallback::Symbol,
+        apply_to_summary_rows::Bool,
+        maximum_width::Int,
+        line_breaks::Bool
+    ) -> Nothing
+
+Align the rendered cells of the data column `j` in `table_str`, and in `summary_rows` if
+`apply_to_summary_rows` is `true`, using the alignment anchor `regex` and the `fallback`
+alignment. `column_str` is a buffer with one element for each aligned cell. Since the
+alignment changes the cell widths, the cells are cropped again to the `maximum_width` of the
+column.
+"""
+function _text__align_column_with_regex!(
+    table_str::Matrix{String},
+    summary_rows::Union{Nothing, Matrix{String}},
+    column_str::Vector{String},
+    j::Int,
+    regex::Vector{Regex},
+    fallback::Symbol,
+    apply_to_summary_rows::Bool,
+    maximum_width::Int,
+    line_breaks::Bool,
+)
+    num_rows = size(table_str, 1)
+
+    @views column_str[1:num_rows] .= table_str[:, j]
+
+    if apply_to_summary_rows
+        @views column_str[(num_rows + 1):end] .= summary_rows[:, j]
+    end
+
+    if !line_breaks
+        _align_column_with_regex!(column_str, regex, fallback)
+    else
+        _align_multline_column_with_regex!(column_str, regex, fallback)
+    end
+
+    for (k, str) in enumerate(column_str)
+        cropped_str = _text__fit_cell_in_maximum_cell_width(str, maximum_width, line_breaks)
+
+        if k <= num_rows
+            table_str[k, j] = cropped_str
+        else
+            summary_rows[k - num_rows, j] = cropped_str
+        end
+    end
+
+    return nothing
+end
+
 # == Table Dimensions ======================================================================
 
 """
