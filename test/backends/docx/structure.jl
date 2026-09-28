@@ -45,7 +45,16 @@
 
     # The rows above the data are repeated after every page break.
     @test map(r -> r.properties.header, table.rows) == [
-        true, true, true, true, nothing, nothing, nothing, nothing, nothing, nothing,
+        true,
+        true,
+        true,
+        true,
+        nothing,
+        nothing,
+        nothing,
+        nothing,
+        nothing,
+        nothing,
         nothing,
     ]
 
@@ -151,8 +160,7 @@ end
     @static if VERSION >= v"1.11"
         @testset "Styled Strings" verbose = true begin
             table = pretty_table(
-                W.Table,
-                [styled"{bold:Bold} and {(foreground=red):red}";;]
+                W.Table, [styled"{bold:Bold} and {(foreground=red):red}";;]
             )
 
             runs = docx_runs(docx_cell(table, 2, 1))

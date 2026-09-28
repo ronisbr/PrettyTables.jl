@@ -57,9 +57,7 @@
 
     @testset "Merged Columns in Middle Two Columns" verbose = true begin
         column_labels = [
-            units,
-            [EmptyCells(1), MultiColumn(2, "Estimated Data"), EmptyCells(1)],
-            names,
+            units, [EmptyCells(1), MultiColumn(2, "Estimated Data"), EmptyCells(1)], names
         ]
 
         table = pretty_table(W.Table, data; column_labels)
@@ -116,7 +114,9 @@
             W.Table,
             data;
             column_labels,
-            table_format = DocxTableFormat(; horizontal_line_at_merged_column_labels = false),
+            table_format = DocxTableFormat(;
+                horizontal_line_at_merged_column_labels = false
+            ),
         )
 
         @test docx_border(docx_cell(table, 1, 3), :bottom) === nothing
@@ -175,7 +175,7 @@
                 borders = DocxTableBorders(;
                     merged_header_cell_line = [
                         "style" => "double", "size" => "12", "color" => "FF0000"
-                    ]
+                    ],
                 ),
             ),
             style = DocxTableStyle(;

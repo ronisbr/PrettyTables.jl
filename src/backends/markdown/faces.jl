@@ -38,8 +38,8 @@ end
 Convert the `decoration` passed to `MarkdownTableStyle`, a Markdown style or a face, into a Markdown style.
 """
 _markdown__decoration(decoration::MarkdownStyle) = decoration
-_markdown__decoration(face::Face)                = markdown_decoration(face)
-_markdown__decoration(crayon::Crayon)            = markdown_decoration(_face_from_crayon(crayon))
+_markdown__decoration(face::Face) = markdown_decoration(face)
+_markdown__decoration(crayon::Crayon) = markdown_decoration(_face_from_crayon(crayon))
 
 """
     _markdown__column_label_decoration(decorations::Any) -> Union{MarkdownStyle, Vector{MarkdownStyle}}
@@ -47,10 +47,10 @@ _markdown__decoration(crayon::Crayon)            = markdown_decoration(_face_fro
 Convert the `decorations` passed to the column label fields of `MarkdownTableStyle`, which can
 be a Markdown style, a face, or a vector with one of them per column, into a Markdown style or a vector of them.
 """
-_markdown__column_label_decoration(decoration::MarkdownStyle)          = decoration
+_markdown__column_label_decoration(decoration::MarkdownStyle) = decoration
 _markdown__column_label_decoration(decorations::Vector{MarkdownStyle}) = decorations
-_markdown__column_label_decoration(face::Face)                         = markdown_decoration(face)
-_markdown__column_label_decoration(crayon::Crayon)                     = _markdown__decoration(crayon)
+_markdown__column_label_decoration(face::Face) = markdown_decoration(face)
+_markdown__column_label_decoration(crayon::Crayon) = _markdown__decoration(crayon)
 
 function _markdown__column_label_decoration(decorations::AbstractVector)
     return MarkdownStyle[_markdown__decoration(d) for d in decorations]
@@ -66,9 +66,9 @@ function _markdown__highlighter_decoration(h::MarkdownHighlighter, data, i::Int,
 end
 
 function _markdown__highlighter_decoration(h::AbstractHighlighter, ::Any, ::Int, ::Int)
-    throw(
+    return throw(
         ArgumentError(
             "The Markdown back end does not support highlighters of type `$(typeof(h))`."
-        )
+        ),
     )
 end

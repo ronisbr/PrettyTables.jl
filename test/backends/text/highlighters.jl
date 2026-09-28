@@ -26,12 +26,11 @@
         highlighters = [
             TextHighlighter(
                 (data, i, j) -> data[i, j] % 2 == 0,
-                Face(; weight = :bold, foreground = :cyan)
+                Face(; weight = :bold, foreground = :cyan),
             )
             TextHighlighter((data, i, j) -> data[i, j] % 2 == 0; weight = :bold)
             TextHighlighter(
-                (data, i, j) -> data[i, j] % 2 != 0,
-                Face(; weight = :bold, slant = :italic)
+                (data, i, j) -> data[i, j] % 2 != 0, Face(; weight = :bold, slant = :italic)
             )
         ],
     )

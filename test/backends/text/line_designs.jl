@@ -22,7 +22,7 @@
         result = pretty_table(
             String,
             matrix;
-            table_format = TextTableFormat(; header_line = TextTableLine(; row = '='))
+            table_format = TextTableFormat(; header_line = TextTableLine(; row = '=')),
         )
 
         @test result == expected
@@ -47,8 +47,8 @@
                     middle_intersection = '╪',
                     right_intersection  = '╡',
                     row                 = '═',
-                )
-            )
+                ),
+            ),
         )
 
         @test result == expected
@@ -65,9 +65,7 @@
 """
 
         result = pretty_table(
-            String,
-            matrix;
-            table_format = TextTableFormat(; center_line = '┊')
+            String, matrix; table_format = TextTableFormat(; center_line = '┊')
         )
 
         @test result == expected
@@ -89,14 +87,14 @@
             String,
             matrix;
             table_format = TextTableFormat(;
-                borders     = text_table_borders__ascii_rounded,
+                borders = text_table_borders__ascii_rounded,
                 header_line = TextTableLine(;
                     left_intersection   = '╞',
                     middle_intersection = '╪',
                     right_intersection  = '╡',
                     row                 = '═',
                 ),
-            )
+            ),
         )
 
         @test result == expected
@@ -120,7 +118,7 @@
             table_format = TableFormat(;
                 top_line    = LineStyle(; style = :double),
                 bottom_line = LineStyle(; style = :double),
-            )
+            ),
         )
 
         @test result == expected
@@ -143,7 +141,7 @@
             table_format = TableFormat(;
                 header_line = LineStyle(; width = :thick),
                 center_line = LineStyle(; width = :medium),
-            )
+            ),
         )
 
         @test result == expected
@@ -166,7 +164,7 @@
             table_format = TableFormat(;
                 middle_line                   = LineStyle(; style = :dashed),
                 horizontal_lines_at_data_rows = :all,
-            )
+            ),
         )
 
         @test result == expected
@@ -189,7 +187,7 @@
                 center_line = LineStyle(; style = :dotted),
                 left_line   = LineStyle(; width = :thick),
                 right_line  = LineStyle(; style = :double),
-            )
+            ),
         )
 
         @test result == expected
@@ -213,7 +211,7 @@
             table_format = TableFormat(;
                 header_line = LineStyle(; width = :thick),
                 center_line = LineStyle(; style = :double),
-            )
+            ),
         )
 
         @test result == expected
@@ -243,7 +241,7 @@
             style = TextTableStyle(;
                 middle_line  = Face(; foreground = :blue),
                 table_border = Face(; foreground = :green),
-            )
+            ),
         )
 
         @test result == expected
@@ -267,7 +265,7 @@
             table_format = TableFormat(;
                 middle_line                   = LineStyle(; style = :dashed, color = :red),
                 horizontal_lines_at_data_rows = :all,
-            )
+            ),
         )
 
         @test result == expected
@@ -279,7 +277,7 @@
             matrix;
             color = true,
             table_format = TextTableFormat(; horizontal_lines_at_data_rows = :all),
-            style = TextTableStyle(; middle_line = Face(; foreground = :blue))
+            style = TextTableStyle(; middle_line = Face(; foreground = :blue)),
         )
 
         result_face = pretty_table(
@@ -287,7 +285,7 @@
             matrix;
             color = true,
             table_format = TextTableFormat(; horizontal_lines_at_data_rows = :all),
-            style = TextTableStyle(; middle_line = Face(; foreground = :blue))
+            style = TextTableStyle(; middle_line = Face(; foreground = :blue)),
         )
 
         @test result_crayon == result_face
@@ -312,7 +310,7 @@
                 middle_line                   = LineStyle(; style = :dashed, color = :red),
                 horizontal_lines_at_data_rows = :all,
             ),
-            style = TextTableStyle(; middle_line = Face(; foreground = :blue))
+            style = TextTableStyle(; middle_line = Face(; foreground = :blue)),
         )
 
         @test result == expected
@@ -340,7 +338,7 @@
             table_format = TableFormat(;
                 horizontal_line_at_merged_column_labels = true,
                 merged_header_cell_line                 = LineStyle(; width = :thick),
-            )
+            ),
         )
 
         @test result == expected
@@ -363,10 +361,9 @@
             matrix;
             color = true,
             table_format = TextTableFormat(;
-                suppress_vertical_lines_at_column_labels = true,
-                center_line = '║',
+                suppress_vertical_lines_at_column_labels = true, center_line = '║'
             ),
-            style = TextTableStyle(; center_line = Face(; foreground = :red))
+            style = TextTableStyle(; center_line = Face(; foreground = :red)),
         )
 
         @test result == expected
@@ -395,7 +392,7 @@
             table_format = TableFormat(;
                 right_line  = LineStyle(; style = :double),
                 center_line = LineStyle(; width = :thick),
-            )
+            ),
         )
 
         @test result == expected
@@ -418,7 +415,7 @@
             [i + j for i in 1:3, j in 1:4];
             display_size = (-1, 18),
             fit_table_in_display_horizontally = true,
-            table_format = TableFormat(; header_line = LineStyle(; width = :thick))
+            table_format = TableFormat(; header_line = LineStyle(; width = :thick)),
         )
 
         @test result == expected
@@ -447,7 +444,7 @@
                 middle_line = LineStyle(; style = :dashed),
                 bottom_line = LineStyle(; style = :double),
                 right_line  = LineStyle(; width = :thick),
-            )
+            ),
         )
 
         @test result == expected
@@ -465,7 +462,7 @@
         result = pretty_table(
             String,
             Matrix{Int}(undef, 0, 2);
-            table_format = TableFormat(; bottom_line = LineStyle(; style = :double))
+            table_format = TableFormat(; bottom_line = LineStyle(; style = :double)),
         )
 
         @test result == expected

@@ -155,7 +155,9 @@
 
     @testset "UrlTextCell" begin
         table = [
-            1 "Ronan Arraes Jardim Chagas" UrlTextCell("Ronan Arraes Jardim Chagas", "https://ronanarraes.com")
+            1 "Ronan Arraes Jardim Chagas" UrlTextCell(
+                "Ronan Arraes Jardim Chagas", "https://ronanarraes.com"
+            )
             2 "Google" UrlTextCell("Google", "https://google.com")
             3 "Apple" UrlTextCell("Apple", "https://apple.com")
             4 "Emojis!" UrlTextCell("😃"^20, "https://emojipedia.org/github/")
@@ -336,7 +338,9 @@
         # == Multi-line Cells ==============================================================
 
         table = [
-            1 "Website\nRonan Arraes Jardim Chagas" UrlTextCell("Ronan Arraes Jardim Chagas", "https://ronanarraes.com")
+            1 "Website\nRonan Arraes Jardim Chagas" UrlTextCell(
+                "Ronan Arraes Jardim Chagas", "https://ronanarraes.com"
+            )
             2 "Website\nGoogle" UrlTextCell("Google", "https://google.com")
             3 "Website\nApple" UrlTextCell("Apple", "https://apple.com")
             4 "Website\nEmojis!" UrlTextCell("😃"^20, "https://emojipedia.org/github/")
@@ -430,7 +434,7 @@ end
 └────────┴──────────┴────────┘
 """
 
-    cell   = AnsiTextCell("\e[31ma very long text in col 2\e[0m")
+    cell = AnsiTextCell("\e[31ma very long text in col 2\e[0m")
     result = pretty_table(
         String,
         Any["a" cell "c"; "a" "b" "c"];

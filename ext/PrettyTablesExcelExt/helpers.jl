@@ -333,10 +333,7 @@ that `data` must be the object the user passed to `pretty_table`, so that the fo
 condition sees the same object in every back end.
 """
 function _excel__format_attributes(
-    @nospecialize(data::Any),
-    excelFormatter::ExcelFormatter,
-    current_row::Int,
-    j::Int,
+    @nospecialize(data::Any), excelFormatter::ExcelFormatter, current_row::Int, j::Int
 )
     attributes = excelFormatter.f(data, current_row, j) ? excelFormatter.numFmt : nothing
 

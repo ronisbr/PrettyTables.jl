@@ -103,10 +103,7 @@ end
 
 @testset "Merged Column Labels With Width Limits" verbose = true begin
     matrix = ones(2, 3)
-    column_labels = [
-        [MultiColumn(3, "A very long merged column label")],
-        ["a", "b", "c"]
-    ]
+    column_labels = [[MultiColumn(3, "A very long merged column label")], ["a", "b", "c"]]
 
     # The merged column label must be cropped considering the entire merged span instead of
     # only its first column.
@@ -122,12 +119,7 @@ end
 └──────────┴──────────┴──────────┘
 """
 
-        result = pretty_table(
-            String,
-            matrix;
-            column_labels,
-            fixed_data_column_widths = 8,
-        )
+        result = pretty_table(String, matrix; column_labels, fixed_data_column_widths = 8)
 
         @test result == expected
     end
@@ -143,12 +135,7 @@ end
 └──────────┴──────────┴──────────┘
 """
 
-        result = pretty_table(
-            String,
-            matrix;
-            column_labels,
-            maximum_data_column_widths = 8,
-        )
+        result = pretty_table(String, matrix; column_labels, maximum_data_column_widths = 8)
 
         @test result == expected
     end
@@ -168,8 +155,7 @@ end
             String,
             matrix;
             column_labels = [
-                [MultiColumn(2, "A very long merged column label"), "x"],
-                ["a", "b", "c"]
+                [MultiColumn(2, "A very long merged column label"), "x"], ["a", "b", "c"]
             ],
             fixed_data_column_widths = 5,
         )

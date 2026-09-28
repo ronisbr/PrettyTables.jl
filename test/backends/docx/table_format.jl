@@ -30,9 +30,8 @@
             W.Table,
             matrix;
             table_format = DocxTableFormat(;
-                @docx__no_horizontal_lines,
-                @docx__no_vertical_lines
-            )
+                @docx__no_horizontal_lines, @docx__no_vertical_lines
+            ),
         )
 
         for row in 1:3, cell in docx_cells(table, row)
@@ -45,9 +44,8 @@
             W.Table,
             matrix;
             table_format = DocxTableFormat(;
-                @docx__all_horizontal_lines,
-                @docx__all_vertical_lines
-            )
+                @docx__all_horizontal_lines, @docx__all_vertical_lines
+            ),
         )
 
         @test docx_border_size(docx_cell(table, 2, 1), :bottom) == 4
@@ -61,8 +59,8 @@
             table_format = DocxTableFormat(;
                 borders = DocxTableBorders(;
                     top_line = ["style" => "double", "size" => "12", "color" => "FF0000"]
-                )
-            )
+                ),
+            ),
         )
 
         border = docx_border(docx_cell(table, 1, 1), :top)
@@ -81,7 +79,7 @@
         table = pretty_table(
             W.Table,
             matrix;
-            table_format = DocxTableFormat(; cell_margins = (0.0, 1.0, 0.0, 1.0))
+            table_format = DocxTableFormat(; cell_margins = (0.0, 1.0, 0.0, 1.0)),
         )
 
         @test convert(W.Point, table.properties.margins.stop).value == 1
@@ -91,7 +89,7 @@
         table = pretty_table(
             W.Table,
             matrix;
-            table_format = DocxTableFormat(; repeat_header_rows_at_page_breaks = false)
+            table_format = DocxTableFormat(; repeat_header_rows_at_page_breaks = false),
         )
 
         @test all(r -> isnothing(r.properties.header), table.rows)
@@ -313,7 +311,7 @@ end
             horizontal_lines_at_data_rows = :all,
             vertical_lines_at_data_columns = :none,
             top_line = LineStyle(; style = :dashed, width = :medium, color = "#00ff00"),
-        )
+        ),
     )
 
     @test docx_border_size(docx_cell(table, 2, 1), :bottom) == 4
@@ -329,14 +327,10 @@ end
     @test pretty_table(matrix; style = DocxTableStyle()) isa W.Table
 
     @test_throws "does not support a table format of type" pretty_table(
-        matrix;
-        backend = :docx,
-        table_format = TypstTableFormat()
+        matrix; backend = :docx, table_format = TypstTableFormat()
     )
 
     @test_throws "does not support a style of type" pretty_table(
-        matrix;
-        backend = :docx,
-        style = TypstTableStyle()
+        matrix; backend = :docx, style = TypstTableStyle()
     )
 end

@@ -4,8 +4,8 @@
 #
 ############################################################################################
 
-export TypstPair, TypstHighlighter, TypstTableBorders, TypstTableFormat, TypstTableStyle, TypstCaption
-
+export TypstPair, TypstHighlighter, TypstTableBorders, TypstTableFormat, TypstTableStyle
+export TypstCaption
 
 ############################################################################################
 #                                        Constants                                         #
@@ -80,7 +80,7 @@ const _TYPST__TEXT_ATTRIBUTES = [
 
 # -- Decorations ---------------------------------------------------------------------------
 
-const _TYPST__NO_DECORATION     = TypstPair[]
+const _TYPST__NO_DECORATION = TypstPair[]
 
 # Shared empty vector returned when a cell has no properties. It must never be mutated.
 const _TYPST__EMPTY_PROPERTIES  = TypstPair[]
@@ -153,7 +153,9 @@ struct TypstHighlighter <: AbstractHighlighter
         return new(f, _typst__default_highlighter_fd, decoration)
     end
 
-    function TypstHighlighter(f::Function, decoration::Vector{TypstPair}, args::TypstPair...)
+    function TypstHighlighter(
+        f::Function, decoration::Vector{TypstPair}, args::TypstPair...
+    )
         return new(f, _typst__default_highlighter_fd, [decoration..., args...])
     end
 

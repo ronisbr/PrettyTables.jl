@@ -43,9 +43,9 @@ function _next(state::PrintingTableState, table_data::TableData)
         elseif j == 1
             return :subtitle, :table_header, PrintingTableState(ps, 1, j + 1, rs)
         else
-            return :end_row,
-            :table_header,
-            PrintingTableState(_SUBTITLE, 0, 0, :column_labels)
+            return (
+                :end_row, :table_header, PrintingTableState(_SUBTITLE, 0, 0, :column_labels)
+            )
         end
     end
 
@@ -94,9 +94,11 @@ function _next(state::PrintingTableState, table_data::TableData)
         # Check if we are starting a row group label.
         if (rs == :data) && !isnothing(table_data.row_group_labels)
             for g in table_data.row_group_labels
-                g.first == new_i && return :new_row,
-                :row_group_label,
-                PrintingTableState(_NEW_ROW, new_i, 0, :row_group_label)
+                g.first == new_i && return (
+                    :new_row,
+                    :row_group_label,
+                    PrintingTableState(_NEW_ROW, new_i, 0, :row_group_label),
+                )
             end
         end
 
@@ -177,15 +179,17 @@ function _next(state::PrintingTableState, table_data::TableData)
                 # If the maximum number of rows is 0, we must go to the continuation row.
                 mr = table_data.maximum_number_of_rows
 
-                ((mr == 0) && (max_i > 0)) && return :end_row,
-                rs,
-                PrintingTableState(_NEW_ROW - 1, 0, 0, :continuation_row)
+                ((mr == 0) && (max_i > 0)) && return (
+                    :end_row,
+                    rs,
+                    PrintingTableState(_NEW_ROW - 1, 0, 0, :continuation_row),
+                )
 
                 # If we have no data rows, we can go to the summary rows.
                 if (table_data.num_rows == 0) && !isnothing(table_data.summary_rows)
-                    return :end_row,
-                    rs,
-                    PrintingTableState(_NEW_ROW - 1, 0, 0, :summary_row)
+                    return (
+                        :end_row, rs, PrintingTableState(_NEW_ROW - 1, 0, 0, :summary_row)
+                    )
                 end
 
                 # If we have no data or summary rows, we can go to the table footer.
@@ -214,17 +218,17 @@ function _next(state::PrintingTableState, table_data::TableData)
 
             if cont_row
                 # The user limited the number of rows and we printed the requested number.
-                return :end_row,
-                rs,
-                PrintingTableState(_NEW_ROW - 1, i, 0, :continuation_row)
+                return (
+                    :end_row, rs, PrintingTableState(_NEW_ROW - 1, i, 0, :continuation_row)
+                )
 
             elseif i >= max_i
                 # If we reached the number of data lines, we must go to the summary row if
                 # the user wants it.
                 if !isnothing(table_data.summary_rows)
-                    return :end_row,
-                    rs,
-                    PrintingTableState(_NEW_ROW - 1, 0, 0, :summary_row)
+                    return (
+                        :end_row, rs, PrintingTableState(_NEW_ROW - 1, 0, 0, :summary_row)
+                    )
                 else
                     return :end_row, rs, PrintingTableState(_END_ROW, 0, 0, :table_footer)
                 end
@@ -240,9 +244,9 @@ function _next(state::PrintingTableState, table_data::TableData)
                 next_i = max_i - (mr - div(mr, 2, RoundUp)) + 1
 
                 # Check if we have more rows to be printed.
-                next_i <= max_i && return :end_row,
-                rs,
-                PrintingTableState(_NEW_ROW - 1, next_i - 1, 0, :data)
+                next_i <= max_i && return (
+                    :end_row, rs, PrintingTableState(_NEW_ROW - 1, next_i - 1, 0, :data)
+                )
 
                 # If there are no more rows to be printed, we can treat this as bottom
                 # cropping.
@@ -285,9 +289,11 @@ function _next(state::PrintingTableState, table_data::TableData)
         elseif j == 1
             return :source_notes, :table_footer, PrintingTableState(ps, i, j + 1, rs)
         else
-            return :end_row,
-            :table_footer,
-            PrintingTableState(_SOURCENOTES, i, 0, :end_printing)
+            return (
+                :end_row,
+                :table_footer,
+                PrintingTableState(_SOURCENOTES, i, 0, :end_printing),
+            )
         end
     end
 

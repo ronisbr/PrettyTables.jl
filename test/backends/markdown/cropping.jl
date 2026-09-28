@@ -83,10 +83,7 @@
 """
 
         result = pretty_table(
-            String,
-            [1 2; 3 4];
-            backend = :markdown,
-            maximum_number_of_rows = 0,
+            String, [1 2; 3 4]; backend = :markdown, maximum_number_of_rows = 0
         )
 
         @test result == expected

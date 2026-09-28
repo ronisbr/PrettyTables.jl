@@ -192,12 +192,7 @@ end
 
     # The error message used to interpolate the `length` *function* instead of calling it.
     msg = try
-        pretty_table(
-            String,
-            data;
-            summary_rows = [sum],
-            summary_row_labels = ["a", "b"],
-        )
+        pretty_table(String, data; summary_rows = [sum], summary_row_labels = ["a", "b"])
         ""
     catch e
         sprint(showerror, e)
@@ -246,11 +241,14 @@ end
     @test_throws ArgumentError pretty_table(
         String,
         data;
-        style = TextTableStyle(; first_line_column_label = [Face(; weight = :bold)])
+        style = TextTableStyle(; first_line_column_label = [Face(; weight = :bold)]),
     )
 
     @test_throws ArgumentError pretty_table(
-        String, data; backend = :latex, style = LatexTableStyle(; column_label = [["textbf"]])
+        String,
+        data;
+        backend = :latex,
+        style = LatexTableStyle(; column_label = [["textbf"]]),
     )
 
     @test_throws ArgumentError pretty_table(

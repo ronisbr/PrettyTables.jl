@@ -43,8 +43,7 @@
 
         # A style with faces and one with the equivalent crayons must have the same fields.
         crayon_style = TextTableStyle(;
-            table_border = crayon"blue",
-            row_label    = crayon"bold red",
+            table_border = crayon"blue", row_label = crayon"bold red"
         )
 
         face_style = TextTableStyle(;

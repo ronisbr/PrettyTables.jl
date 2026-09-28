@@ -507,8 +507,7 @@ julia> pretty_table([1 2; 3 4]; row_labels = ["A", "B"], stubhead_label = "Label
 ```
 """
 mutable struct TextTableStyle{
-    TFCL <: Union{Face, Vector{Face}},
-    TCL <: Union{Face, Vector{Face}},
+    TFCL <: Union{Face, Vector{Face}}, TCL <: Union{Face, Vector{Face}}
 }
     const title::Face
     const subtitle::Face
@@ -824,7 +823,7 @@ end
 
 Convert the `decoration` passed to `TextTableStyle`, a face or a crayon, into a face.
 """
-_text__to_face(face::Face)     = face
+_text__to_face(face::Face) = face
 _text__to_face(crayon::Crayon) = _face_from_crayon(crayon)
 
 """
@@ -851,8 +850,8 @@ Convert the `decorations` passed to `TextTableStyle`, a face, a crayon, or a vec
 into a face or a vector of faces.
 """
 _text__to_faces(decoration::Union{Face, Crayon}) = _text__to_face(decoration)
-_text__to_faces(faces::Vector{Face})             = faces
-_text__to_faces(decorations::AbstractVector)     = Face[_text__to_face(d) for d in decorations]
+_text__to_faces(faces::Vector{Face}) = faces
+_text__to_faces(decorations::AbstractVector) = Face[_text__to_face(d) for d in decorations]
 
 """
     _text__decoration_sgr(decoration::Union{Face, Crayon}) -> String
@@ -860,14 +859,14 @@ _text__to_faces(decorations::AbstractVector)     = Face[_text__to_face(d) for d 
 Return the escape sequence of a `decoration` returned by a highlighter, which can be a `Face`
 or a `Crayon`.
 """
-_text__decoration_sgr(face::Face)     = _text__face_sgr(face)
+_text__decoration_sgr(face::Face) = _text__face_sgr(face)
 _text__decoration_sgr(crayon::Crayon) = _text__face_sgr(_face_from_crayon(crayon))
 
 function _text__decoration_sgr(decoration)
-    throw(
+    return throw(
         ArgumentError(
-            "The decoration of a text highlighter must be a `Face` or a `Crayon`, not a `$(typeof(decoration))`."
-        )
+            "The decoration of a text highlighter must be a `Face` or a `Crayon`, not a `$(typeof(decoration))`.",
+        ),
     )
 end
 
@@ -968,9 +967,9 @@ function _text__highlighter_sgr(h::TextHighlighter, data, i::Int, j::Int)
 end
 
 function _text__highlighter_sgr(h::AbstractHighlighter, ::Any, ::Int, ::Int)
-    throw(
+    return throw(
         ArgumentError(
             "The text back end does not support highlighters of type `$(typeof(h))`."
-        )
+        ),
     )
 end

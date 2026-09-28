@@ -25,9 +25,7 @@ PrecompileTools.@setup_workload begin
             matrix;
             backend = :excel,
             filename = nothing,
-            highlighters = [
-                ExcelHighlighter((data, i, j) -> i == 1, ["bold" => "true"]),
-            ],
+            highlighters = [ExcelHighlighter((data, i, j) -> i == 1, ["bold" => "true"])],
         )
 
         pretty_table(table; backend = :excel, filename = nothing)

@@ -48,17 +48,13 @@ The fields of `opts` are:
 # `_excel__print`. Otherwise, each keyword set would pay for a new entry point into the body
 # (see `ExcelPrintOptions`).
 @noinline function _excel__write_table!(
-    sheet::XLSX.Worksheet,
-    pspec::PrintingSpec,
-    opts::ExcelPrintOptions,
+    sheet::XLSX.Worksheet, pspec::PrintingSpec, opts::ExcelPrintOptions
 )
     return _excel__write_table_core!(sheet, pspec, opts)
 end
 
 function _excel__write_table_core!(
-    sheet::XLSX.Worksheet,
-    pspec::PrintingSpec,
-    opts::ExcelPrintOptions,
+    sheet::XLSX.Worksheet, pspec::PrintingSpec, opts::ExcelPrintOptions
 )
     # == Unpack the Options ================================================================
 
@@ -105,20 +101,24 @@ function _excel__write_table_core!(
         ("minimum_data_column_widths", minimum_data_column_widths),
         ("maximum_data_column_widths", maximum_data_column_widths),
     )
-        (v isa AbstractVector) && (length(v) != num_cols) && throw(
-            ArgumentError(
-                "The length of `$name` ($(length(v))) must be equal to the number of columns ($num_cols).",
-            ),
-        )
+        (v isa AbstractVector) &&
+            (length(v) != num_cols) &&
+            throw(
+                ArgumentError(
+                    "The length of `$name` ($(length(v))) must be equal to the number of columns ($num_cols).",
+                ),
+            )
     end
 
     data_column_widths = _excel__data_column_widths(data_column_widths, num_cols)
 
-    minimum_data_column_widths =
-        _excel__data_column_widths(minimum_data_column_widths, num_cols)
+    minimum_data_column_widths = _excel__data_column_widths(
+        minimum_data_column_widths, num_cols
+    )
 
-    maximum_data_column_widths =
-        _excel__data_column_widths(maximum_data_column_widths, num_cols)
+    maximum_data_column_widths = _excel__data_column_widths(
+        maximum_data_column_widths, num_cols
+    )
 
     max_row_height = Dict{Int, Float64}()
     max_col_length = zeros(Float64, num_printed_cols)
@@ -457,7 +457,6 @@ function _excel__write_table_core!(
                             bottom = table_format.borders.middle_line,
                         )
                     end
-
 
                 elseif action ∈ (:row_number, :summary_row_number)
                     cell_style = style.row_number

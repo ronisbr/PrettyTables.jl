@@ -34,32 +34,61 @@ function _html__escape_str(
     a = Iterators.Stateful(s)
     for c in a
         if Base.isascii(c)
-            # When `escape_html_chars` is `false`, the user asked for the cell content to be
-            # emitted as raw HTML. Hence, we must keep the line breaks. Otherwise, we would
-            # corrupt the HTML code with a literal `\n`.
-            c == '\n'         ? (
-                replace_newline ? print(io, "<br>") :
-                escape_html_chars ? print(io, "\\n") : print(io, c)
-            ) :
-            c == '&'          ? (escape_html_chars ? print(io, "&amp;") : print(io, c))  :
-            c == '<'          ? (escape_html_chars ? print(io, "&lt;") : print(io, c))   :
-            c == '>'          ? (escape_html_chars ? print(io, "&gt;") : print(io, c))   :
-            c == '"'          ? (escape_html_chars ? print(io, "&quot;") : print(io, c)) :
-            c == '\''         ? (escape_html_chars ? print(io, "&apos;") : print(io, c)) :
-            c == '\0'         ? print(io, Base.escape_nul(peek(a)))                      :
-            c == '\e'         ? print(io, "\\e")                                         :
-            # When `escape_html_chars` is `false`, the user asked for the cell content to be
-            # emitted as raw HTML. Escaping the backslash would corrupt any inline CSS or
-            # JavaScript in it.
-            c == '\\'         ? (escape_html_chars ? print(io, "\\\\") : print(io, c))     :
-            '\a' <= c <= '\r' ? print(io, '\\', "abtnvfr"[Int(c) - 6])                   :
-            isprint(c)        ? print(io, c)                                             :
-            print(io, "\\x", string(UInt32(c); base = 16, pad = 2))
+            if c == '\n'
+                # When `escape_html_chars` is `false`, the user asked for the cell content
+                # to be emitted as raw HTML. Hence, we must keep the line breaks. Otherwise,
+                # we would corrupt the HTML code with a literal `\n`.
+                if replace_newline
+                    print(io, "<br>")
+                elseif escape_html_chars
+                    print(io, "\\n")
+                else
+                    print(io, c)
+                end
+            elseif c == '&'
+                escape_html_chars ? print(io, "&amp;") : print(io, c)
+            elseif c == '<'
+                escape_html_chars ? print(io, "&lt;") : print(io, c)
+            elseif c == '>'
+                escape_html_chars ? print(io, "&gt;") : print(io, c)
+            elseif c == '"'
+                escape_html_chars ? print(io, "&quot;") : print(io, c)
+            elseif c == '\''
+                escape_html_chars ? print(io, "&apos;") : print(io, c)
+            elseif c == '\0'
+                print(io, Base.escape_nul(peek(a)))
+            elseif c == '\e'
+                print(io, "\\e")
+            elseif c == '\\'
+                # When `escape_html_chars` is `false`, the user asked for the cell content
+                # to be emitted as raw HTML. Escaping the backslash would corrupt any inline
+                # CSS or JavaScript in it.
+                escape_html_chars ? print(io, "\\\\") : print(io, c)
+            elseif '\a' <= c <= '\r'
+                print(io, '\\', "abtnvfr"[Int(c) - 6])
+            elseif isprint(c)
+                print(io, c)
+            else
+                print(io, "\\x", string(UInt32(c); base = 16, pad = 2))
+            end
         elseif !Base.isoverlong(c) && !Base.ismalformed(c)
-            isprint(c)    ? print(io, c) :
-            c <= '\x7f'   ? print(io, "\\x", string(UInt32(c); base = 16, pad = 2)) :
-            c <= '\uffff' ? print(io, "\\u", string(UInt32(c); base = 16, pad = Base.need_full_hex(peek(a)) ? 4 : 2)) :
-            print(io, "\\U", string(UInt32(c); base = 16, pad = Base.need_full_hex(peek(a)) ? 8 : 4))
+            if isprint(c)
+                print(io, c)
+            elseif c <= '\x7f'
+                print(io, "\\x", string(UInt32(c); base = 16, pad = 2))
+            elseif c <= '\uffff'
+                print(
+                    io,
+                    "\\u",
+                    string(UInt32(c); base = 16, pad = Base.need_full_hex(peek(a)) ? 4 : 2),
+                )
+            else
+                print(
+                    io,
+                    "\\U",
+                    string(UInt32(c); base = 16, pad = Base.need_full_hex(peek(a)) ? 8 : 4),
+                )
+            end
         else # malformed or overlong
             u = bswap(reinterpret(UInt32, c))
             while true
@@ -88,13 +117,21 @@ characters are kept unchanged because the attribute value is not Julia code.
 """
 function _html__escape_attribute(io::IO, s::AbstractString)
     for c in s
-        c == '\n' ? print(io, "&#10;")  :
-        c == '&'  ? print(io, "&amp;")  :
-        c == '<'  ? print(io, "&lt;")   :
-        c == '>'  ? print(io, "&gt;")   :
-        c == '"'  ? print(io, "&quot;") :
-        c == '\'' ? print(io, "&apos;") :
-        print(io, c)
+        if c == '\n'
+            print(io, "&#10;")
+        elseif c == '&'
+            print(io, "&amp;")
+        elseif c == '<'
+            print(io, "&lt;")
+        elseif c == '>'
+            print(io, "&gt;")
+        elseif c == '"'
+            print(io, "&quot;")
+        elseif c == '\''
+            print(io, "&apos;")
+        else
+            print(io, c)
+        end
     end
 
     return nothing
@@ -193,23 +230,23 @@ does not, the table must be emitted without any border decoration, including the
 """
 function _html__has_any_table_line(tf::HtmlTableFormat)
     return tf.horizontal_line_at_beginning ||
-        tf.horizontal_line_before_column_labels ||
-        tf.horizontal_line_after_column_labels ||
-        tf.horizontal_line_at_merged_column_labels ||
-        _html__has_lines(tf.horizontal_lines_at_data_rows) ||
-        tf.horizontal_line_before_row_group_label ||
-        tf.horizontal_line_after_row_group_label ||
-        tf.horizontal_line_after_data_rows ||
-        tf.horizontal_line_before_summary_rows ||
-        tf.horizontal_line_after_summary_rows ||
-        tf.horizontal_line_after_footnotes ||
-        tf.horizontal_line_at_end ||
-        tf.vertical_line_at_beginning ||
-        tf.vertical_line_after_row_number_column ||
-        tf.vertical_line_after_row_label_column ||
-        _html__has_lines(tf.vertical_lines_at_data_columns) ||
-        tf.vertical_line_after_data_columns ||
-        tf.vertical_line_after_continuation_column
+           tf.horizontal_line_before_column_labels ||
+           tf.horizontal_line_after_column_labels ||
+           tf.horizontal_line_at_merged_column_labels ||
+           _html__has_lines(tf.horizontal_lines_at_data_rows) ||
+           tf.horizontal_line_before_row_group_label ||
+           tf.horizontal_line_after_row_group_label ||
+           tf.horizontal_line_after_data_rows ||
+           tf.horizontal_line_before_summary_rows ||
+           tf.horizontal_line_after_summary_rows ||
+           tf.horizontal_line_after_footnotes ||
+           tf.horizontal_line_at_end ||
+           tf.vertical_line_at_beginning ||
+           tf.vertical_line_after_row_number_column ||
+           tf.vertical_line_after_row_label_column ||
+           _html__has_lines(tf.vertical_lines_at_data_columns) ||
+           tf.vertical_line_after_data_columns ||
+           tf.vertical_line_after_continuation_column
 end
 
 # Return whether the field `lines` (`horizontal_lines_at_data_rows` or
@@ -232,15 +269,13 @@ printed data row also ends with the continuation row.
     data section.
 """
 function _html__is_last_data_section_row(
-    rs::Symbol,
-    ps::PrintingTableState,
-    table_data::TableData
+    rs::Symbol, ps::PrintingTableState, table_data::TableData
 )
     if rs == :data
         return ps.i == table_data.num_rows
     elseif rs == :continuation_row
         return (table_data.vertical_crop_mode == :bottom) ||
-            (table_data.maximum_number_of_rows <= 1)
+               (table_data.maximum_number_of_rows <= 1)
     end
 
     return false
@@ -261,10 +296,7 @@ neither data nor summary rows.
     table footer.
 """
 function _html__is_last_ruled_row(
-    rs::Symbol,
-    ps::PrintingTableState,
-    table_data::TableData,
-    num_column_label_rows::Int
+    rs::Symbol, ps::PrintingTableState, table_data::TableData, num_column_label_rows::Int
 )
     if _has_summary_rows(table_data)
         return (rs == :summary_row) && (ps.i == length(table_data.summary_rows))
@@ -301,13 +333,11 @@ function _html__column_borders(
     borders = String[]
 
     table_data.show_row_number_column && push!(
-        borders,
-        tf.vertical_line_after_row_number_column ? tf.borders.center_line : ""
+        borders, tf.vertical_line_after_row_number_column ? tf.borders.center_line : ""
     )
 
     _has_row_labels(table_data) && push!(
-        borders,
-        tf.vertical_line_after_row_label_column ? tf.borders.center_line : ""
+        borders, tf.vertical_line_after_row_label_column ? tf.borders.center_line : ""
     )
 
     for j in 1:num_printed_data_columns
@@ -319,13 +349,12 @@ function _html__column_borders(
                 vertical_lines_at_data_columns,
                 num_printed_data_columns,
                 horizontally_cropped,
-            )
+            ),
         )
     end
 
     horizontally_cropped && push!(
-        borders,
-        tf.vertical_line_after_continuation_column ? tf.borders.right_line : ""
+        borders, tf.vertical_line_after_continuation_column ? tf.borders.right_line : ""
     )
 
     return borders
@@ -537,18 +566,18 @@ Return the decoration in `style` of the cell printed by `action` at the row `i` 
 `j`.
 """
 function _html__cell_style(style::HtmlTableStyle, action::Symbol, i::Int, j::Int)
-    (action == :title)              && return style.title
-    (action == :subtitle)           && return style.subtitle
-    (action == :row_number_label)   && return style.row_number_label
-    (action == :row_number)         && return style.row_number
+    (action == :title) && return style.title
+    (action == :subtitle) && return style.subtitle
+    (action == :row_number_label) && return style.row_number_label
+    (action == :row_number) && return style.row_number
     (action == :summary_row_number) && return style.row_number
-    (action == :stubhead_label)     && return style.stubhead_label
-    (action == :row_group_label)    && return style.row_group_label
-    (action == :row_label)          && return style.row_label
-    (action == :summary_row_label)  && return style.summary_row_label
-    (action == :summary_row_cell)   && return style.summary_row_cell
-    (action == :footnote)           && return style.footnote
-    (action == :source_notes)       && return style.source_note
+    (action == :stubhead_label) && return style.stubhead_label
+    (action == :row_group_label) && return style.row_group_label
+    (action == :row_label) && return style.row_label
+    (action == :summary_row_label) && return style.summary_row_label
+    (action == :summary_row_cell) && return style.summary_row_cell
+    (action == :footnote) && return style.footnote
+    (action == :source_notes) && return style.source_note
 
     if action == :column_label
         s = (i == 1) ? style.first_line_column_label : style.column_label

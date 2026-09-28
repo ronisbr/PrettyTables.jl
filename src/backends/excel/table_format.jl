@@ -18,10 +18,10 @@ _excel__table_style(style::ExcelTableStyle) = style
 _excel__table_style(style::TableStyle) = ExcelTableStyle(; _table_style_kwargs(style)...)
 
 function _excel__table_style(style::Any)
-    throw(
+    return throw(
         ArgumentError(
-            "The Excel back end does not support a style of type `$(typeof(style))`. Use `ExcelTableStyle` or the backend-agnostic `TableStyle`."
-        )
+            "The Excel back end does not support a style of type `$(typeof(style))`. Use `ExcelTableStyle` or the backend-agnostic `TableStyle`.",
+        ),
     )
 end
 
@@ -48,21 +48,30 @@ cannot be resolved to a 24-bit value keeps the color in `default`.
 """
 function excel_line_style(
     line_style::LineStyle;
-    default::Vector{ExcelPair} = ExcelPair["style" => "thin", "color" => "Black"]
+    default::Vector{ExcelPair} = ExcelPair["style" => "thin", "color" => "Black"],
 )
     default_style = something(_excel__pair_value(default, "style"), "thin")
     default_color = something(_excel__pair_value(default, "color"), "Black")
 
     # The default border style carries a width and a style. We only need them when the
     # corresponding field of the line style is unset.
-    default_width_symbol =
-        (default_style == "thick") ? :thick :
-        startswith(default_style, "medium") ? :medium : :thin
+    default_width_symbol = if (default_style == "thick")
+        :thick
+    elseif startswith(default_style, "medium")
+        :medium
+    else
+        :thin
+    end
 
-    default_style_symbol =
-        occursin("ashed", default_style) ? :dashed :
-        (default_style == "dotted") ? :dotted :
-        (default_style == "double") ? :double : :solid
+    default_style_symbol = if occursin("ashed", default_style)
+        :dashed
+    elseif (default_style == "dotted")
+        :dotted
+    elseif (default_style == "double")
+        :double
+    else
+        :solid
+    end
 
     style = isnothing(line_style.style) ? default_style_symbol : line_style.style
     width = isnothing(line_style.width) ? default_width_symbol : line_style.width
@@ -107,10 +116,10 @@ of the default Excel table format. The Excel-only field
 _excel__table_format(table_format::ExcelTableFormat) = table_format
 
 function _excel__table_format(table_format::Any)
-    throw(
+    return throw(
         ArgumentError(
-            "The Excel back end does not support a table format of type `$(typeof(table_format))`. Use `ExcelTableFormat` or the backend-agnostic `TableFormat`."
-        )
+            "The Excel back end does not support a table format of type `$(typeof(table_format))`. Use `ExcelTableFormat` or the backend-agnostic `TableFormat`.",
+        ),
     )
 end
 
@@ -119,6 +128,6 @@ function _excel__table_format(table_format::TableFormat)
 
     return ExcelTableFormat(;
         borders = _table_format_borders(table_format, def.borders, excel_line_style),
-        _table_format_presence_fields(table_format, def)...
+        _table_format_presence_fields(table_format, def)...,
     )
 end

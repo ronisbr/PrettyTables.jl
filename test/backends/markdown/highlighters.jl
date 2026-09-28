@@ -54,8 +54,7 @@
         seen = []
 
         h = MarkdownHighlighter(
-            (d, i, j) -> (push!(seen, typeof(d)); false),
-            MarkdownStyle(; bold = true),
+            (d, i, j) -> (push!(seen, typeof(d)); false), MarkdownStyle(; bold = true)
         )
 
         pretty_table(String, data; backend = :markdown, highlighters = [h])

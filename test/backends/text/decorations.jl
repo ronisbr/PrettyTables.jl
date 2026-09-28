@@ -60,14 +60,12 @@
         @test render("x", 4, :unknown) == (nothing, "x", 1)
 
         @test render("x", 4, :c; has_color = true) == (nothing, " x  ", 4)
-        @test render("x", 4, :c; sgr = "", has_color = true) ==
-            (nothing, " x  ", 4)
+        @test render("x", 4, :c; sgr = "", has_color = true) == (nothing, " x  ", 4)
 
         colored = "\e[31;1m x  \e[0m"
         face    = Face(; weight = :bold, foreground = :red)
         sgr     = PrettyTables._text__decoration_sgr(face)
-        @test render("x", 4, :c; sgr, has_color = true) ==
-            (nothing, colored, 4)
+        @test render("x", 4, :c; sgr, has_color = true) == (nothing, colored, 4)
         @test count("\e[31;1m", colored) == 1
         @test count("\e[0m", colored) == 1
 

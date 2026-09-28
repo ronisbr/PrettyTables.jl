@@ -95,7 +95,7 @@
             backend = :html,
             column_labels = [["A", "B"], ["a", "b"]],
             style = HtmlTableStyle(;
-                column_label = [["color" => "red"], ["color" => "blue"]],
+                column_label = [["color" => "red"], ["color" => "blue"]]
             ),
         )
 
@@ -137,8 +137,7 @@
         )
 
         @test occursin(
-            "<th colspan = \"2\" style = \"color: red; text-align: center;\">M</th>",
-            output,
+            "<th colspan = \"2\" style = \"color: red; text-align: center;\">M</th>", output
         )
     end
 
@@ -151,7 +150,9 @@
             backend = :html,
             column_labels = [[MultiColumn(2, "M")], ["a", "b"]],
             style = HtmlTableStyle(; first_line_merged_column_label = ["border" => "none"]),
-            table_format = HtmlTableFormat(; horizontal_line_at_merged_column_labels = true),
+            table_format = HtmlTableFormat(;
+                horizontal_line_at_merged_column_labels = true
+            ),
         )
 
         @test occursin(

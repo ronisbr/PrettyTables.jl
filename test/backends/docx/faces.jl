@@ -50,7 +50,8 @@
             column_label            = [Face(; weight = :bold), Face(; slant = :italic)],
         )
 
-        @test style.first_line_column_label == [["color" => "FF0000"], ["color" => "0000FF"]]
+        @test style.first_line_column_label ==
+            [["color" => "FF0000"], ["color" => "0000FF"]]
         @test style.column_label == [["bold" => "true"], ["italic" => "true"]]
 
         table = pretty_table(
@@ -131,9 +132,7 @@
             # The section style takes precedence over the face of the regions, whereas the
             # attributes the style does not define are kept.
             table = pretty_table(
-                W.Table,
-                matrix;
-                style = DocxTableStyle(; data_cell = ["color" => "00FF00"])
+                W.Table, matrix; style = DocxTableStyle(; data_cell = ["color" => "00FF00"])
             )
 
             runs = docx_runs(docx_cell(table, 2, 1))
@@ -150,7 +149,8 @@
                 ],
             )
 
-            @test docx_hex(docx_runs(docx_cell(table, 2, 1))[1].properties.color) == "A51C2C"
+            @test docx_hex(docx_runs(docx_cell(table, 2, 1))[1].properties.color) ==
+                "A51C2C"
             @test docx_hex(only(docx_runs(docx_cell(table, 2, 2))).properties.color) ==
                 "FF00FF"
 
@@ -159,9 +159,7 @@
             @test docx_shading(docx_cell(table, 2, 1)) === nothing
 
             # The footnote markers are unstyled superscript runs.
-            table = pretty_table(
-                W.Table, matrix; footnotes = [(:data, 1, 1) => "Footnote"]
-            )
+            table = pretty_table(W.Table, matrix; footnotes = [(:data, 1, 1) => "Footnote"])
 
             runs = docx_runs(docx_cell(table, 2, 1))
             @test length(runs) == 3

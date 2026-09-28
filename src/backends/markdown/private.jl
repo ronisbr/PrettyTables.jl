@@ -305,19 +305,39 @@ function _markdown__escape_str(
 
     for c in a
         if isascii(c)
-            c == '\n'         ? print(io, replace_newline ? "<br>" : "\\n") :
-            c == '\\'         ? print(io, escape_markdown_chars ? "\\\\" : "\\") :
-            c == '|'          ? print(io, (escape_markdown_chars || iseven(num_backslashes)) ? "\\|" : "|") :
-            c ∈ _MARKDOWN__ESCAPED_CHARACTERS ?
-                (escape_markdown_chars ? print(io, '\\', c) : print(io, c)) :
-            '\a' <= c <= '\r' ? print(io, "\\", "abtnvfr"[Int(c) - 6]) :
-            isprint(c)        ? print(io, c) :
-            print(io, "\\x", string(UInt32(c); base = 16, pad = 2))
+            if c == '\n'
+                print(io, replace_newline ? "<br>" : "\\n")
+            elseif c == '\\'
+                print(io, escape_markdown_chars ? "\\\\" : "\\")
+            elseif c == '|'
+                print(io, (escape_markdown_chars || iseven(num_backslashes)) ? "\\|" : "|")
+            elseif c ∈ _MARKDOWN__ESCAPED_CHARACTERS
+                escape_markdown_chars ? print(io, '\\', c) : print(io, c)
+            elseif '\a' <= c <= '\r'
+                print(io, "\\", "abtnvfr"[Int(c) - 6])
+            elseif isprint(c)
+                print(io, c)
+            else
+                print(io, "\\x", string(UInt32(c); base = 16, pad = 2))
+            end
         elseif !Base.isoverlong(c) && !Base.ismalformed(c)
-            isprint(c)    ? print(io, c) :
-            c <= '\x7f'   ? print(io, "\\x", string(UInt32(c); base = 16, pad = 2)) :
-            c <= '\uffff' ? print(io, "\\u", string(UInt32(c); base = 16, pad = Base.need_full_hex(peek(a)) ? 4 : 2)) :
-            print(io, "\\U", string(UInt32(c); base = 16, pad = Base.need_full_hex(peek(a)) ? 8 : 4))
+            if isprint(c)
+                print(io, c)
+            elseif c <= '\x7f'
+                print(io, "\\x", string(UInt32(c); base = 16, pad = 2))
+            elseif c <= '\uffff'
+                print(
+                    io,
+                    "\\u",
+                    string(UInt32(c); base = 16, pad = Base.need_full_hex(peek(a)) ? 4 : 2),
+                )
+            else
+                print(
+                    io,
+                    "\\U",
+                    string(UInt32(c); base = 16, pad = Base.need_full_hex(peek(a)) ? 8 : 4),
+                )
+            end
         else # malformed or overlong
             u = bswap(reinterpret(UInt32, c))
             while true
@@ -336,8 +356,7 @@ end
 Escape the pipes in `s` that are not already escaped, i.e., that are not preceded by an odd
 number of backslashes, since they would split a table cell.
 """
-_markdown__escape_pipes(s::_PlainString) =
-    replace(s, r"(?<!\\)((?:\\\\)*)\|" => s"\1\\|")
+_markdown__escape_pipes(s::_PlainString) = replace(s, r"(?<!\\)((?:\\\\)*)\|" => s"\1\\|")
 
 function _markdown__escape_str(
     s::_PlainString, replace_newline::Bool, escape_markdown_chars::Bool

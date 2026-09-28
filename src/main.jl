@@ -297,13 +297,15 @@ Base.@constprop :none Base.@nospecializeinfer function _pretty_table(
 
     # == Table Preprocessing ===============================================================
 
-    (backend == :auto) || (backend ∈ _AVAILABLE_BACKENDS) || throw(
-        ArgumentError(
-            "Invalid back end `:$backend`. The available back ends are `:auto`, " *
-            join(("`:$b`" for b in _AVAILABLE_BACKENDS), ", ", ", and ") *
-            "."
+    (backend == :auto) ||
+        (backend ∈ _AVAILABLE_BACKENDS) ||
+        throw(
+            ArgumentError(
+                "Invalid back end `:$backend`. The available back ends are `:auto`, " *
+                join(("`:$b`" for b in _AVAILABLE_BACKENDS), ", ", ", and ") *
+                ".",
+            ),
         )
-    )
 
     # Check for circular dependency.
     ptd = get(io, :__PRETTY_TABLES__DATA__, nothing)
@@ -322,9 +324,9 @@ Base.@constprop :none Base.@nospecializeinfer function _pretty_table(
             end
         end
 
+    else
         # Otherwise, we must push the current data to the vector. This action is performed
         # just before calling the printing backend so we can remove the data afterward.
-    else
         context = IOContext(
             io,
             :__PRETTY_TABLES__DATA__ => Any[data],
@@ -368,8 +370,8 @@ Base.@constprop :none Base.@nospecializeinfer function _pretty_table(
 
     isempty(label_rows) && throw(
         ArgumentError(
-            "`column_labels` must have at least one row of labels. Use `show_column_labels = false` to hide the column labels."
-        )
+            "`column_labels` must have at least one row of labels. Use `show_column_labels = false` to hide the column labels.",
+        ),
     )
 
     # If the user provided the `column_labels` and set `merge_column_label_cells` to
@@ -614,20 +616,16 @@ precompilation. If the generic objects reached the back end print functions, eve
 rendering body would be compiled again for the generic keyword types.
 """
 function _resolve_generic_configurations(
-    kwargs::NamedTuple,
-    table_format_converter::F1,
-    table_style_converter::F2,
+    kwargs::NamedTuple, table_format_converter::F1, table_style_converter::F2
 ) where {F1 <: Function, F2 <: Function}
     haskey(kwargs, :table_format) && (
         kwargs = merge(
-            kwargs,
-            (; table_format = table_format_converter(kwargs.table_format))
+            kwargs, (; table_format = table_format_converter(kwargs.table_format))
         )
     )
 
-    haskey(kwargs, :style) && (
-        kwargs = merge(kwargs, (; style = table_style_converter(kwargs.style)))
-    )
+    haskey(kwargs, :style) &&
+        (kwargs = merge(kwargs, (; style = table_style_converter(kwargs.style))))
 
     return kwargs
 end
@@ -666,16 +664,16 @@ function _validate_footnotes(
         else
             throw(
                 ArgumentError(
-                    "Invalid footnote section `:$section`. The available sections are `:title`, `:subtitle`, `:column_label`, `:data`, `:row_number`, `:row_label`, `:summary_row_label`, and `:summary_row_cell`."
-                )
+                    "Invalid footnote section `:$section`. The available sections are `:title`, `:subtitle`, `:column_label`, `:data`, `:row_number`, `:row_label`, `:summary_row_label`, and `:summary_row_cell`.",
+                ),
             )
         end
 
         if !(1 <= i <= rows) || (!isnothing(columns) && !(1 <= j <= columns))
             throw(
                 ArgumentError(
-                    "The footnote `($(repr(section)), $i, $j)` references a cell outside the section `:$section`."
-                )
+                    "The footnote `($(repr(section)), $i, $j)` references a cell outside the section `:$section`.",
+                ),
             )
         end
     end

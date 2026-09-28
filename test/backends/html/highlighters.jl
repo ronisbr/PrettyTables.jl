@@ -88,8 +88,7 @@
         seen = []
 
         h = HtmlHighlighter(
-            (d, i, j) -> (push!(seen, typeof(d)); false),
-            ["color" => "red"],
+            (d, i, j) -> (push!(seen, typeof(d)); false), ["color" => "red"]
         )
 
         pretty_table(String, data; backend = :html, highlighters = [h])

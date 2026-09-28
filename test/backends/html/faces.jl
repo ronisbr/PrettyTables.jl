@@ -58,8 +58,12 @@
 
         @test occursin("<th style = \"color: #ff0000; text-align: right;\">A</th>", result)
         @test occursin("<th style = \"color: blue; text-align: right;\">B</th>", result)
-        @test occursin("<th style = \"font-weight: bold; text-align: right;\">C</th>", result)
-        @test occursin("<th style = \"font-style: italic; text-align: right;\">D</th>", result)
+        @test occursin(
+            "<th style = \"font-weight: bold; text-align: right;\">C</th>", result
+        )
+        @test occursin(
+            "<th style = \"font-style: italic; text-align: right;\">D</th>", result
+        )
 
         @test_throws ArgumentError pretty_table(
             String,
@@ -95,7 +99,8 @@
 
         h = Highlighter(f, Face(; weight = :bold, foreground = "#ff0000"))
         @test pretty_table(String, matrix; backend = :html, highlighters = [h]) == expected
-        @test PrettyTables._html__native_highlighter(h)._decoration == ["color" => "#ff0000", "font-weight" => "bold"]
+        @test PrettyTables._html__native_highlighter(h)._decoration ==
+            ["color" => "#ff0000", "font-weight" => "bold"]
         @test pretty_table(String, matrix; backend = :html, highlighters = [h]) == expected
 
         # The function `fd` can return a face or the native decoration.

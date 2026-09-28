@@ -13,8 +13,8 @@
         XLSX.XLSXFile,
         matrix;
         table_format = TableFormat(;
-            header_line = LineStyle(; style = :dashed, color = 0xff0000),
-        )
+            header_line = LineStyle(; style = :dashed, color = 0xff0000)
+        ),
     )
 
     sheet = result[1]
@@ -33,7 +33,7 @@
     result = pretty_table(
         XLSX.XLSXFile,
         matrix;
-        table_format = TableFormat(; horizontal_line_at_beginning = false)
+        table_format = TableFormat(; horizontal_line_at_beginning = false),
     )
 
     @test XLSX.getBorder(result[1], "A1").border["top"] === nothing
@@ -43,7 +43,7 @@
     result = pretty_table(
         XLSX.XLSXFile,
         matrix;
-        table_format = ExcelTableFormat(; horizontal_line_at_beginning = false)
+        table_format = ExcelTableFormat(; horizontal_line_at_beginning = false),
     )
 
     @test XLSX.getBorder(result[1], "A1").border["top"] === nothing
@@ -54,8 +54,8 @@
         XLSX.XLSXFile,
         matrix;
         style = TableStyle(;
-            first_line_column_label = Face(; slant = :italic, foreground = 0xff0000),
-        )
+            first_line_column_label = Face(; slant = :italic, foreground = 0xff0000)
+        ),
     )
 
     font = XLSX.getFont(result[1], "A1").font

@@ -17,8 +17,7 @@
             matrix;
             backend = :typst,
             table_format = TypstTableFormat(;
-                horizontal_lines_at_data_rows  = [1],
-                vertical_lines_at_data_columns = [1],
+                horizontal_lines_at_data_rows = [1], vertical_lines_at_data_columns = [1]
             ),
         )
 
@@ -37,8 +36,7 @@
             matrix;
             backend = :typst,
             table_format = TypstTableFormat(;
-                horizontal_lines_at_data_rows  = :all,
-                vertical_lines_at_data_columns = :all,
+                horizontal_lines_at_data_rows = :all, vertical_lines_at_data_columns = :all
             ),
         )
 
@@ -57,9 +55,7 @@ end
         [1 2 3; 4 5 6];
         backend = :typst,
         row_group_labels = [2 => "G"],
-        table_format = TypstTableFormat(;
-            horizontal_line_before_row_group_label = true
-        ),
+        table_format = TypstTableFormat(; horizontal_line_before_row_group_label = true),
     )
 
     # One line before the row group label, and one after it.

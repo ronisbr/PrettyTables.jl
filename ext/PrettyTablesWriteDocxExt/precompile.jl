@@ -25,9 +25,7 @@ PrecompileTools.@setup_workload begin
             matrix;
             backend = :docx,
             filename = nothing,
-            highlighters = [
-                DocxHighlighter((data, i, j) -> i == 1, ["bold" => "true"]),
-            ],
+            highlighters = [DocxHighlighter((data, i, j) -> i == 1, ["bold" => "true"])],
         )
 
         pretty_table(table; backend = :docx, filename = nothing)

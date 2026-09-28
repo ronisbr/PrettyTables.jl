@@ -86,8 +86,8 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
     # NOTE: `Val(pspec.renderer)` infers to the abstract `Val` because
     # `pspec.renderer` is a `Symbol`. Branching here keeps the renderer concrete, so the
     # per-cell rendering calls are statically dispatched.
-    renderer   = pspec.renderer === :show ? Val(:show) : Val(:print)
-    tf         = table_format
+    renderer = pspec.renderer === :show ? Val(:show) : Val(:print)
+    tf       = table_format
 
     ps     = PrintingTableState()
     buf_io = IOBuffer()
@@ -110,8 +110,8 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
         if num_title_rows < num_column_label_rows
             throw(
                 ArgumentError(
-                    "The length of `column_label_titles` ($num_title_rows) must be equal to or greater than the number of column label rows ($num_column_label_rows)."
-                )
+                    "The length of `column_label_titles` ($num_title_rows) must be equal to or greater than the number of column label rows ($num_column_label_rows).",
+                ),
             )
         end
 
@@ -122,8 +122,8 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
             if num_titles != table_data.num_columns
                 throw(
                     ArgumentError(
-                        "The length of the row $k of `column_label_titles` ($num_titles) must be equal to the number of columns ($(table_data.num_columns))."
-                    )
+                        "The length of the row $k of `column_label_titles` ($num_titles) must be equal to the number of columns ($(table_data.num_columns)).",
+                    ),
                 )
             end
         end
@@ -281,12 +281,14 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
     # == Table Borders =====================================================================
 
     # Process the horizontal lines at data rows.
-    horizontal_lines_at_data_rows =
-        _line_spec_indices(tf.horizontal_lines_at_data_rows, table_data.num_rows)
+    horizontal_lines_at_data_rows = _line_spec_indices(
+        tf.horizontal_lines_at_data_rows, table_data.num_rows
+    )
 
     # Process the vertical lines at data columns.
-    vertical_lines_at_data_columns =
-        _line_spec_indices(tf.vertical_lines_at_data_columns, table_data.num_columns)
+    vertical_lines_at_data_columns = _line_spec_indices(
+        tf.vertical_lines_at_data_columns, table_data.num_columns
+    )
 
     num_printed_data_columns = _number_of_printed_data_columns(table_data)
     num_printed_columns      = _number_of_printed_columns(table_data)
@@ -403,8 +405,9 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
             # no summary rows, or the column labels if the table has no rows) uses the
             # bottom line style instead of the header or middle one. Notice that the lines
             # selected by `horizontal_lines_at_data_rows` are internal and never use it.
-            last_ruled_row =
-                _html__is_last_ruled_row(rs, ps, table_data, num_column_label_rows)
+            last_ruled_row = _html__is_last_ruled_row(
+                rs, ps, table_data, num_column_label_rows
+            )
 
             if rs == :column_labels
                 # The line before the column labels is only emitted when the table has a
@@ -418,8 +421,8 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
                 ) && (row_border_top = tf.borders.top_line)
 
                 if tf.horizontal_line_after_column_labels && (ps.i == num_column_label_rows)
-                    row_border_bottom = last_ruled_row ?
-                        tf.borders.bottom_line : tf.borders.header_line
+                    row_border_bottom =
+                        last_ruled_row ? tf.borders.bottom_line : tf.borders.header_line
                 end
 
             elseif rs ∈ (:data, :continuation_row)
@@ -428,10 +431,10 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
                 # the other back ends, only `horizontal_line_after_data_rows` controls this
                 # line, even if `horizontal_lines_at_data_rows` contains the last row.
                 if _html__is_last_data_section_row(rs, ps, table_data)
-                    tf.horizontal_line_after_data_rows && (
-                        row_border_bottom = last_ruled_row ?
-                            tf.borders.bottom_line : tf.borders.middle_line
-                    )
+                    if tf.horizontal_line_after_data_rows
+                        row_border_bottom =
+                            last_ruled_row ? tf.borders.bottom_line : tf.borders.middle_line
+                    end
 
                 elseif (rs == :data) && (ps.i ∈ horizontal_lines_at_data_rows)
                     row_border_bottom = tf.borders.middle_line
@@ -489,16 +492,20 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
                 # to decide whether it is emitting a footnote row or a source note row.
                 # Otherwise, a table with source notes but without footnotes would tag its
                 # source note rows with the `footnote` class.
-                (ps.state < _FOOTNOTES) && !isnothing(table_data.footnotes) ?
-                    "footnote" : "sourceNotes"
+                if (ps.state < _FOOTNOTES) && !isnothing(table_data.footnotes)
+                    "footnote"
+                else
+                    "sourceNotes"
+                end
             else
                 ""
             end
             push!(vproperties, "class" => class)
 
             empty!(vstyle)
-            !isempty(row_border_top)    && push!(vstyle, "border-top"    => row_border_top)
-            !isempty(row_border_bottom) && push!(vstyle, "border-bottom" => row_border_bottom)
+            !isempty(row_border_top) && push!(vstyle, "border-top" => row_border_top)
+            !isempty(row_border_bottom) &&
+                push!(vstyle, "border-bottom" => row_border_bottom)
 
             _aprintln(
                 buf,
@@ -527,8 +534,11 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
                 "&vellip;"
             end
 
-            tag = (action == :horizontal_continuation_cell) && (rs == :column_labels) ?
-                "th" : "td"
+            tag = if (action == :horizontal_continuation_cell) && (rs == :column_labels)
+                "th"
+            else
+                "td"
+            end
 
             _aprintln(buf, _html__create_tag(tag, content; style = vstyle), il, ns; minify)
 
@@ -549,7 +559,8 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
                 title = column_label_titles[ps.i]
                 # NOTE: `sprint` is used instead of `string` because it is inferred to return
                 # a `String` even for an untyped argument.
-                !isnothing(title) && push!(vproperties, "title" => sprint(print, title[ps.j]))
+                !isnothing(title) &&
+                    push!(vproperties, "title" => sprint(print, title[ps.j]))
             end
 
             # If we are in a column label, check if we must merge the cell.
@@ -613,9 +624,7 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
 
                 for h in highlighters
                     if h.f(orig_data, di, dj)
-                        append!(
-                            vstyle, _html__highlighter_decoration(h, orig_data, di, dj)
-                        )
+                        append!(vstyle, _html__highlighter_decoration(h, orig_data, di, dj))
                         break
                     end
                 end
@@ -636,7 +645,7 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
                 # lowest precedence when the table borders are collapsed. These borders are
                 # pushed before the user style, allowing the latter to override them.
                 if action ∈ (:footnote, :source_notes)
-                    hide_footer_left_border  && push!(vstyle, "border-left"  => "hidden")
+                    hide_footer_left_border && push!(vstyle, "border-left" => "hidden")
                     hide_footer_right_border && push!(vstyle, "border-right" => "hidden")
                 end
             else

@@ -107,9 +107,7 @@ end
     result = pretty_table(XLSX.XLSXFile, Matrix{Float64}(undef, 0, 3))
     @test result[1]["A1"] == "Col. 1"
 
-    result = pretty_table(
-        XLSX.XLSXFile, Matrix{Float64}(undef, 0, 3); anchor_cell = "B3"
-    )
+    result = pretty_table(XLSX.XLSXFile, Matrix{Float64}(undef, 0, 3); anchor_cell = "B3")
     @test result[1]["B3"] == "Col. 1"
 
     result = pretty_table(

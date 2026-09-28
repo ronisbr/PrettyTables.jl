@@ -74,9 +74,9 @@ function CustomTextCell.printable_cell_text(cell::UrlTextCell)
 
     # The URL cell is always rendered in a single line. Hence, the line breaks in its text
     # must be escaped. Otherwise, they would break the table row.
-    text     = replace(cell.text, '\n' => "\\n")
-    full_str = left_padding_str * text * right_padding_str
-    cropped_str       = first(right_crop(full_str, cell.crop)) * cell.suffix
+    text        = replace(cell.text, '\n' => "\\n")
+    full_str    = left_padding_str * text * right_padding_str
+    cropped_str = first(right_crop(full_str, cell.crop)) * cell.suffix
 
     return cropped_str
 end

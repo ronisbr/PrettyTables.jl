@@ -41,13 +41,19 @@ Notice that the type of `mime` must be declared, even if it is not specialized. 
 string, which are invalidated when a package defines a new string type.
 """
 function _cell_to_str(
-    @nospecialize(cell::Any), context::RenderContext, ::Val{:print}, @nospecialize(mime::Union{Nothing, MIME})
+    @nospecialize(cell::Any),
+    context::RenderContext,
+    ::Val{:print},
+    @nospecialize(mime::Union{Nothing, MIME})
 )
     return _sprint_with_context(print, context, cell), false
 end
 
 function _cell_to_str(
-    cell::AbstractString, context::RenderContext, ::Val{:print}, @nospecialize(mime::Union{Nothing, MIME})
+    cell::AbstractString,
+    context::RenderContext,
+    ::Val{:print},
+    @nospecialize(mime::Union{Nothing, MIME})
 )
     # Notice that we must not use `string` here because it is the identity for any
     # `AbstractString`, whereas the callers require a `String`.
@@ -55,7 +61,10 @@ function _cell_to_str(
 end
 
 function _cell_to_str(
-    @nospecialize(cell::Any), context::RenderContext, ::Val{:show}, @nospecialize(mime::Union{Nothing, MIME})
+    @nospecialize(cell::Any),
+    context::RenderContext,
+    ::Val{:show},
+    @nospecialize(mime::Union{Nothing, MIME})
 )
     if !isnothing(mime) && showable(mime, cell)
         return _sprint_with_context(show, context, mime, cell), true
@@ -65,7 +74,10 @@ function _cell_to_str(
 end
 
 function _cell_to_str(
-    cell::AbstractString, context::RenderContext, ::Val{:show}, @nospecialize(mime::Union{Nothing, MIME})
+    cell::AbstractString,
+    context::RenderContext,
+    ::Val{:show},
+    @nospecialize(mime::Union{Nothing, MIME})
 )
     if !isnothing(mime) && showable(mime, cell)
         return _sprint_with_context(show, context, mime, cell), true
@@ -74,10 +86,23 @@ function _cell_to_str(
     return string(cell), false
 end
 
-_cell_to_str(::UndefinedCell, ::RenderContext, ::Val{:print}, @nospecialize(mime::Union{Nothing, MIME})) =
-    "#undef", false
-_cell_to_str(::UndefinedCell, ::RenderContext, ::Val{:show}, @nospecialize(mime::Union{Nothing, MIME})) =
-    "#undef", false
+function _cell_to_str(
+    ::UndefinedCell,
+    ::RenderContext,
+    ::Val{:print},
+    @nospecialize(mime::Union{Nothing, MIME})
+)
+    return "#undef", false
+end
+
+function _cell_to_str(
+    ::UndefinedCell,
+    ::RenderContext,
+    ::Val{:show},
+    @nospecialize(mime::Union{Nothing, MIME})
+)
+    return "#undef", false
+end
 
 """
     _iocontext(rc::RenderContext) -> IOContext
@@ -96,11 +121,9 @@ This macro expands each argument into a separate `print` call, avoiding the over
 string interpolation or concatenation, which reduces allocations.
 """
 macro _print(io, args...)
-    return esc(
-        quote
-            $([:(print($io, $arg)) for arg in args]...)
-        end,
-    )
+    return esc(quote
+        $([:(print($io, $arg)) for arg in args]...)
+    end)
 end
 
 """
@@ -113,12 +136,10 @@ This macro expands each argument into a separate `print` call, avoiding the over
 string interpolation or concatenation, which reduces allocations.
 """
 macro _println(io, args...)
-    return esc(
-        quote
-            $([:(print($io, $arg)) for arg in args]...)
-            println($io)
-        end,
-    )
+    return esc(quote
+        $([:(print($io, $arg)) for arg in args]...)
+        println($io)
+    end)
 end
 
 """

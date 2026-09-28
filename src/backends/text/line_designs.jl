@@ -92,11 +92,11 @@ is treated as a light line.
 Base.@nospecializeinfer function _text__junction_char(
     @nospecialize(horizontal_design::Union{Nothing, LineStyle}),
     @nospecialize(vertical_design::Union{Nothing, LineStyle}),
-    table::NTuple{9, Char}
+    table::NTuple{9, Char},
 )
     (isnothing(horizontal_design) && isnothing(vertical_design)) && return nothing
     h = isnothing(horizontal_design) ? 1 : _text__line_class(horizontal_design)
-    v = isnothing(vertical_design)   ? 1 : _text__line_class(vertical_design)
+    v = isnothing(vertical_design) ? 1 : _text__line_class(vertical_design)
     c = table[3 * (h - 1) + v]
     return (c == '\0') ? nothing : c
 end
@@ -124,32 +124,32 @@ Base.@nospecializeinfer function _text__horizontal_table_line(
     @nospecialize(right_design::Union{Nothing, LineStyle})
 )
     if (
-        isnothing(design) && isnothing(left_design) && isnothing(center_design) &&
+        isnothing(design) &&
+        isnothing(left_design) &&
+        isnothing(center_design) &&
         isnothing(right_design)
     )
         return nothing
     end
 
     return TextTableLine(;
-        up_left_corner      = _text__junction_char(
-            design, left_design, _TEXT__UP_LEFT_CORNERS
-        ),
-        up_right_corner     = _text__junction_char(
+        up_left_corner = _text__junction_char(design, left_design, _TEXT__UP_LEFT_CORNERS),
+        up_right_corner = _text__junction_char(
             design, right_design, _TEXT__UP_RIGHT_CORNERS
         ),
-        bottom_left_corner  = _text__junction_char(
+        bottom_left_corner = _text__junction_char(
             design, left_design, _TEXT__BOTTOM_LEFT_CORNERS
         ),
         bottom_right_corner = _text__junction_char(
             design, right_design, _TEXT__BOTTOM_RIGHT_CORNERS
         ),
-        up_intersection     = _text__junction_char(
+        up_intersection = _text__junction_char(
             design, center_design, _TEXT__UP_INTERSECTIONS
         ),
-        left_intersection   = _text__junction_char(
+        left_intersection = _text__junction_char(
             design, left_design, _TEXT__LEFT_INTERSECTIONS
         ),
-        right_intersection  = _text__junction_char(
+        right_intersection = _text__junction_char(
             design, right_design, _TEXT__RIGHT_INTERSECTIONS
         ),
         middle_intersection = _text__junction_char(
@@ -158,8 +158,7 @@ Base.@nospecializeinfer function _text__horizontal_table_line(
         bottom_intersection = _text__junction_char(
             design, center_design, _TEXT__BOTTOM_INTERSECTIONS
         ),
-        row                 = isnothing(design) ?
-            nothing : _text__horizontal_line_char(design),
+        row = isnothing(design) ? nothing : _text__horizontal_line_char(design),
     )
 end
 
@@ -195,27 +194,25 @@ Merge the characters of `line` over the ones of `borders`, returning the charact
 to draw a horizontal line. The field `column` is not used to draw horizontal lines and it is
 copied from `borders`.
 """
-function _text__merge_table_line(line::Union{Nothing, TextTableLine}, borders::TextTableBorders)
+function _text__merge_table_line(
+    line::Union{Nothing, TextTableLine}, borders::TextTableBorders
+)
     isnothing(line) && return borders
 
     return TextTableBorders(;
-        up_right_corner     = _text__line_char(
-            line.up_right_corner, borders.up_right_corner
-        ),
-        up_left_corner      = _text__line_char(line.up_left_corner, borders.up_left_corner),
-        bottom_left_corner  = _text__line_char(
+        up_right_corner = _text__line_char(line.up_right_corner, borders.up_right_corner),
+        up_left_corner = _text__line_char(line.up_left_corner, borders.up_left_corner),
+        bottom_left_corner = _text__line_char(
             line.bottom_left_corner, borders.bottom_left_corner
         ),
         bottom_right_corner = _text__line_char(
             line.bottom_right_corner, borders.bottom_right_corner
         ),
-        up_intersection     = _text__line_char(
-            line.up_intersection, borders.up_intersection
-        ),
-        left_intersection   = _text__line_char(
+        up_intersection = _text__line_char(line.up_intersection, borders.up_intersection),
+        left_intersection = _text__line_char(
             line.left_intersection, borders.left_intersection
         ),
-        right_intersection  = _text__line_char(
+        right_intersection = _text__line_char(
             line.right_intersection, borders.right_intersection
         ),
         middle_intersection = _text__line_char(
@@ -224,8 +221,8 @@ function _text__merge_table_line(line::Union{Nothing, TextTableLine}, borders::T
         bottom_intersection = _text__line_char(
             line.bottom_intersection, borders.bottom_intersection
         ),
-        column              = borders.column,
-        row                 = _text__line_char(line.row, borders.row),
+        column = borders.column,
+        row = _text__line_char(line.row, borders.row),
     )
 end
 
@@ -241,9 +238,7 @@ line `face` in [`TextTableStyle`](@ref) if it is set, or the escape sequence
 `table_border_sgr` of the field `table_border` in [`TextTableStyle`](@ref) otherwise.
 """
 function _text__line_sgr(
-    face::Union{Nothing, Face},
-    rendered_sgr::String,
-    table_border_sgr::String
+    face::Union{Nothing, Face}, rendered_sgr::String, table_border_sgr::String
 )
     return isnothing(face) ? table_border_sgr : rendered_sgr
 end
@@ -263,23 +258,25 @@ function _text__resolve_table_lines(tf::TextTableFormat, style::TextTableStyle)
     tb_sgr  = rstyle.table_border
 
     hline(line, face, sgr) = TextHorizontalLine(
-        _text__merge_table_line(line, borders),
-        _text__line_sgr(face, sgr, tb_sgr),
+        _text__merge_table_line(line, borders), _text__line_sgr(face, sgr, tb_sgr)
     )
 
     vline(char, face, sgr) = TextVerticalLine(
-        _text__line_char(char, borders.column),
-        _text__line_sgr(face, sgr, tb_sgr),
+        _text__line_char(char, borders.column), _text__line_sgr(face, sgr, tb_sgr)
     )
 
     return TextResolvedTableLines(
-        hline(tf.top_line,                style.top_line,                rstyle.top_line),
-        hline(tf.header_line,             style.header_line,             rstyle.header_line),
-        hline(tf.merged_header_cell_line, style.merged_header_cell_line, rstyle.merged_header_cell_line),
-        hline(tf.middle_line,             style.middle_line,             rstyle.middle_line),
-        hline(tf.bottom_line,             style.bottom_line,             rstyle.bottom_line),
-        vline(tf.left_line,               style.left_line,               rstyle.left_line),
-        vline(tf.center_line,             style.center_line,             rstyle.center_line),
-        vline(tf.right_line,              style.right_line,              rstyle.right_line),
+        hline(tf.top_line, style.top_line, rstyle.top_line),
+        hline(tf.header_line, style.header_line, rstyle.header_line),
+        hline(
+            tf.merged_header_cell_line,
+            style.merged_header_cell_line,
+            rstyle.merged_header_cell_line,
+        ),
+        hline(tf.middle_line, style.middle_line, rstyle.middle_line),
+        hline(tf.bottom_line, style.bottom_line, rstyle.bottom_line),
+        vline(tf.left_line, style.left_line, rstyle.left_line),
+        vline(tf.center_line, style.center_line, rstyle.center_line),
+        vline(tf.right_line, style.right_line, rstyle.right_line),
     )
 end

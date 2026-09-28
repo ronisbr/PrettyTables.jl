@@ -74,8 +74,8 @@ function PrettyTables._docx__print(
     if isnothing(filename)
         !isnothing(default_font) && throw(
             ArgumentError(
-                "The keyword `default_font` is only applied to the documents created by the Word back end, i.e., when `filename` is set or when calling `pretty_table(WriteDocx.Document, data; kwargs...)`. The default font of a returned `WriteDocx.Table` is defined by the styles of the document that contains it."
-            )
+                "The keyword `default_font` is only applied to the documents created by the Word back end, i.e., when `filename` is set or when calling `pretty_table(WriteDocx.Document, data; kwargs...)`. The default font of a returned `WriteDocx.Table` is defined by the styles of the document that contains it.",
+            ),
         )
     else
         (!overwrite && isfile(filename)) &&
@@ -131,7 +131,7 @@ function pretty_table(
     ::Type{W.Document},
     @nospecialize(data::Any);
     default_font::Union{Nothing, String} = nothing,
-    kwargs...
+    kwargs...,
 )
     font = _docx__default_font(default_font)
     return _docx__document(pretty_table(W.Table, data; kwargs...), font)

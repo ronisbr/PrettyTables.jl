@@ -106,7 +106,7 @@ function _docx__hex_color(value::String)
 
     isnothing(named_hex) && throw(
         ArgumentError(
-            "The color \"$value\" is neither a 6-digit hexadecimal string nor a known color name."
+            "The color \"$value\" is neither a 6-digit hexadecimal string nor a known color name.",
         ),
     )
 
@@ -122,7 +122,9 @@ function _docx__parse_bool(value::String)
     (value == "true") && return true
     (value == "false") && return false
 
-    throw(ArgumentError("The value \"$value\" must be either \"true\" or \"false\"."))
+    return throw(
+        ArgumentError("The value \"$value\" must be either \"true\" or \"false\".")
+    )
 end
 
 """
@@ -165,7 +167,7 @@ function _docx__border_style(name::String)
         (Symbol(s) === style) && return s
     end
 
-    throw(
+    return throw(
         ArgumentError(
             "\"$name\" is not a valid Word border style. See `WriteDocx.BorderStyle`."
         ),
@@ -185,9 +187,9 @@ function _docx__underline_pattern(name::String)
         (Symbol(p) === pattern) && return p
     end
 
-    throw(
+    return throw(
         ArgumentError(
-            "\"$name\" is not a valid Word underline pattern. See `WriteDocx.UnderlinePattern`."
+            "\"$name\" is not a valid Word underline pattern. See `WriteDocx.UnderlinePattern`.",
         ),
     )
 end
@@ -259,9 +261,7 @@ function _docx__run_properties(decoration::Vector{DocxPair}, superscript::Bool)
 
     valign = superscript ? W.VerticalAlignment.superscript : nothing
 
-    return W.RunProperties(;
-        bold, italic, strike, underline, color, size, fonts, valign
-    )
+    return W.RunProperties(; bold, italic, strike, underline, color, size, fonts, valign)
 end
 
 """
@@ -298,10 +298,10 @@ function _docx__is_valid_char(c::Char)
     isvalid(c) || return false
 
     return (c == '\t') ||
-        (c == '\n') ||
-        ('\x20' <= c <= '\ud7ff') ||
-        ('\ue000' <= c <= '\ufffd') ||
-        ('\U10000' <= c <= '\U10ffff')
+           (c == '\n') ||
+           ('\x20' <= c <= '\ud7ff') ||
+           ('\ue000' <= c <= '\ufffd') ||
+           ('\U10000' <= c <= '\U10ffff')
 end
 
 """
@@ -364,8 +364,7 @@ width of the cell.
 """
 function _docx__table_cell(cell::DocxCell, width::Union{Nothing, W.Length})
     paragraph = W.Paragraph(
-        _docx__runs(cell);
-        justification = _docx__justification(cell.alignment)
+        _docx__runs(cell); justification = _docx__justification(cell.alignment)
     )
 
     top    = _docx__border(cell.top)

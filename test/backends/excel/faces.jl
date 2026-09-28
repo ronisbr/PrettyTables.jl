@@ -78,7 +78,8 @@
         @test haskey(XLSX.getFont(sheet, "A2").font, "b")
         @test XLSX.getFont(sheet, "B2").font["color"] == Dict("rgb" => "FFFF0000")
         @test XLSX.getFont(sheet, "A3").font["color"] != Dict("rgb" => "FFFF0000")
-        @test PrettyTables._excel__native_highlighter(h)._decoration == ["bold" => "true", "color" => "FFFF0000"]
+        @test PrettyTables._excel__native_highlighter(h)._decoration ==
+            ["bold" => "true", "color" => "FFFF0000"]
 
         # A background is a fill.
         h = Highlighter(f, Face(; background = "#00ff00"))
@@ -108,7 +109,7 @@
         @test_throws ArgumentError pretty_table(
             XLSX.XLSXFile,
             matrix;
-            highlighters = [TextHighlighter(f, Face(; foreground = :red))]
+            highlighters = [TextHighlighter(f, Face(; foreground = :red))],
         )
     end
 
@@ -144,8 +145,7 @@
 
             # Underline and strikethrough are converted to boolean run attributes.
             result = pretty_table(
-                XLSX.XLSXFile,
-                [styled"{underline:under} {strikethrough:struck}" 1],
+                XLSX.XLSXFile, [styled"{underline:under} {strikethrough:struck}" 1]
             )
             rts = XLSX.getRichTextString(result[1], "A2")
             @test length(rts.runs) == 3
@@ -159,7 +159,7 @@
                 footnotes = [(:data, 1, 1) => "Footnote"],
             )
             sheet = result[1]
-            rts   = XLSX.getRichTextString(sheet, "A2")
+            rts = XLSX.getRichTextString(sheet, "A2")
             @test sheet["A2"] == "Blue tail¹"
             @test length(rts.runs) == 3
             @test rts.runs[3].text == "¹"

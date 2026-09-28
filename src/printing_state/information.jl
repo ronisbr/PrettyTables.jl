@@ -253,46 +253,50 @@ Notice that the printing state resets `i` when the data section ends. Hence, onl
 function _horizontal_line_after_row(
     tf, rs::Symbol, next_rs::Symbol, i::Int, horizontal_lines_at_data_rows::_LineIndices
 )
-    role = if (rs == :table_header) &&
-        (next_rs != :table_header) &&
-        tf.horizontal_line_at_beginning
-        :top_line
+    role =
+        if (rs == :table_header) &&
+            (next_rs != :table_header) &&
+            tf.horizontal_line_at_beginning
+            :top_line
 
-    elseif rs == :column_labels
-        ((next_rs != :column_labels) && tf.horizontal_line_after_column_labels) ?
-            :header_line : :none
+        elseif rs == :column_labels
+            if (next_rs != :column_labels) && tf.horizontal_line_after_column_labels
+                :header_line
+            else
+                :none
+            end
 
-    elseif (next_rs == :row_group_label) && tf.horizontal_line_before_row_group_label
-        :middle_line
+        elseif (next_rs == :row_group_label) && tf.horizontal_line_before_row_group_label
+            :middle_line
 
-    elseif (rs == :data) && (i ∈ horizontal_lines_at_data_rows)
-        :middle_line
+        elseif (rs == :data) && (i ∈ horizontal_lines_at_data_rows)
+            :middle_line
 
-    elseif (
-        (rs ∈ (:data, :continuation_row)) &&
-        (next_rs ∈ (:summary_row, :table_footer, :end_printing)) &&
-        tf.horizontal_line_after_data_rows
-    )
-        :middle_line
+        elseif (
+            (rs ∈ (:data, :continuation_row)) &&
+            (next_rs ∈ (:summary_row, :table_footer, :end_printing)) &&
+            tf.horizontal_line_after_data_rows
+        )
+            :middle_line
 
-    elseif (
-        (rs ∈ (:data, :continuation_row)) &&
-        (next_rs == :summary_row) &&
-        tf.horizontal_line_before_summary_rows
-    )
-        :middle_line
+        elseif (
+            (rs ∈ (:data, :continuation_row)) &&
+            (next_rs == :summary_row) &&
+            tf.horizontal_line_before_summary_rows
+        )
+            :middle_line
 
-    elseif (rs == :row_group_label) && tf.horizontal_line_after_row_group_label
-        :middle_line
+        elseif (rs == :row_group_label) && tf.horizontal_line_after_row_group_label
+            :middle_line
 
-    elseif (rs == :summary_row) &&
-        (next_rs != :summary_row) &&
-        tf.horizontal_line_after_summary_rows
-        :middle_line
+        elseif (rs == :summary_row) &&
+            (next_rs != :summary_row) &&
+            tf.horizontal_line_after_summary_rows
+            :middle_line
 
-    else
-        :none
-    end
+        else
+            :none
+        end
 
     # A line before the end of the table is the bottom line.
     ((role != :none) && (next_rs ∈ (:table_footer, :end_printing))) && return :bottom_line

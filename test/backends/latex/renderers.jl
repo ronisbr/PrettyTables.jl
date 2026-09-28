@@ -43,7 +43,8 @@ end
     # With the renderer `:show`, the Latex representation of a cell must be emitted without
     # escaping, whereas the text representation must be escaped.
     struct RendererMimeCellLatex end
-    Base.show(io::IO, ::MIME"text/latex", ::RendererMimeCellLatex) = print(io, "\\textbf{foo}")
+    Base.show(io::IO, ::MIME"text/latex", ::RendererMimeCellLatex) =
+        print(io, "\\textbf{foo}")
     Base.show(io::IO, ::RendererMimeCellLatex) = print(io, "FooCell")
 
     result = pretty_table(

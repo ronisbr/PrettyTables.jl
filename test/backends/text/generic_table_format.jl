@@ -11,18 +11,16 @@
         String,
         matrix;
         table_format = TextTableFormat(;
-            horizontal_lines_at_data_rows  = :all,
-            vertical_lines_at_data_columns = :none,
-        )
+            horizontal_lines_at_data_rows = :all, vertical_lines_at_data_columns = :none
+        ),
     )
 
     result = pretty_table(
         String,
         matrix;
         table_format = TableFormat(;
-            horizontal_lines_at_data_rows  = :all,
-            vertical_lines_at_data_columns = :none,
-        )
+            horizontal_lines_at_data_rows = :all, vertical_lines_at_data_columns = :none
+        ),
     )
 
     @test result == expected
@@ -34,17 +32,17 @@
         matrix;
         color = true,
         table_format = TextTableFormat(;
-            horizontal_lines_at_data_rows  = :all,
+            horizontal_lines_at_data_rows = :all,
             vertical_lines_at_data_columns = :none,
-            top_line                       = TextTableLine(;
+            top_line = TextTableLine(;
                 up_left_corner  = '╒',
                 up_right_corner = '╕',
                 up_intersection = '╤',
                 row             = '═',
             ),
-            middle_line                    = TextTableLine(; row = '╌'),
+            middle_line = TextTableLine(; row = '╌'),
         ),
-        style = TextTableStyle(; top_line = Face(; foreground = :red))
+        style = TextTableStyle(; top_line = Face(; foreground = :red)),
     )
 
     result = pretty_table(
@@ -56,7 +54,7 @@
             vertical_lines_at_data_columns = :none,
             top_line                       = LineStyle(; style = :double, color = :red),
             middle_line                    = LineStyle(; style = :dashed),
-        )
+        ),
     )
 
     @test result == expected
@@ -70,15 +68,12 @@
     face = Face(; slant = :italic, foreground = :blue)
 
     @test pretty_table(
-        String,
-        matrix;
-        color = true,
-        style = TableStyle(; first_line_column_label = face)
+        String, matrix; color = true, style = TableStyle(; first_line_column_label = face)
     ) == pretty_table(
         String,
         matrix;
         color = true,
-        style = TextTableStyle(; first_line_column_label = face)
+        style = TextTableStyle(; first_line_column_label = face),
     )
 
     @test pretty_table(String, matrix; color = true, style = TableStyle()) ==

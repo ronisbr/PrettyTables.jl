@@ -76,8 +76,8 @@ function _typst__print_core(pspec::PrintingSpec, opts::TypstPrintOptions)
     # NOTE: `Val(pspec.renderer)` infers to the abstract `Val` because
     # `pspec.renderer` is a `Symbol`. Branching here keeps the renderer concrete, so the
     # per-cell rendering calls are statically dispatched.
-    renderer   = pspec.renderer === :show ? Val(:show) : Val(:print)
-    tf         = table_format
+    renderer = pspec.renderer === :show ? Val(:show) : Val(:print)
+    tf       = table_format
 
     ps     = PrintingTableState()
     buf_io = IOBuffer()
@@ -129,12 +129,14 @@ function _typst__print_core(pspec::PrintingSpec, opts::TypstPrintOptions)
     end
 
     # Process the horizontal lines at data rows.
-    horizontal_lines_at_data_rows =
-        _line_spec_indices(tf.horizontal_lines_at_data_rows, table_data.num_rows)
+    horizontal_lines_at_data_rows = _line_spec_indices(
+        tf.horizontal_lines_at_data_rows, table_data.num_rows
+    )
 
     # Process the vertical lines at data columns.
-    vertical_lines_at_data_columns =
-        _line_spec_indices(tf.vertical_lines_at_data_columns, table_data.num_columns)
+    vertical_lines_at_data_columns = _line_spec_indices(
+        tf.vertical_lines_at_data_columns, table_data.num_columns
+    )
 
     # Create dictionaries to store properties to decrease the number of allocations.
     vproperties = Pair{String, String}[]
@@ -328,9 +330,11 @@ function _typst__print_core(pspec::PrintingSpec, opts::TypstPrintOptions)
                 _aprintln(buf_tc, "),", il, ns)
                 head_opened = false
 
-                annotate && (next_rs != :end_printing) && _aprintln_section_annotation(
-                    buf_tc, "// == Table Body", il, ns, wrap_column, '='
-                )
+                annotate &&
+                    (next_rs != :end_printing) &&
+                    _aprintln_section_annotation(
+                        buf_tc, "// == Table Body", il, ns, wrap_column, '='
+                    )
 
                 body_opened = true
             end
@@ -535,9 +539,9 @@ function _typst__print_core(pspec::PrintingSpec, opts::TypstPrintOptions)
             elseif action == :summary_row_label
                 _typst__merge_properties!(vproperties, style.summary_row_label)
 
-            # The merged column labels only receive the style of the merged cells, which
-            # was merged above.
             elseif (action == :column_label) && !(cell isa MergeCells)
+                # The merged column labels only receive the style of the merged cells, which
+                # was merged above.
                 if ps.i == 1
                     _typst__merge_properties!(
                         vproperties,

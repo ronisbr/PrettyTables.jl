@@ -62,7 +62,8 @@ end
 
     # The weight defined by `bold` and `faint` must not depend on the keyword order, and it
     # must match the conversion of the equivalent crayon.
-    @test from_kwargs(; faint = true, bold = false) == from_kwargs(; bold = false, faint = true)
+    @test from_kwargs(; faint = true, bold = false) ==
+        from_kwargs(; bold = false, faint = true)
     @test from_kwargs(; faint = true, bold = false).weight ==
         PrettyTables._face_from_crayon(Crayon(; faint = true, bold = false)).weight
     @test from_kwargs(; faint = true, bold = true).weight == :bold
@@ -147,7 +148,7 @@ end
             background    = 0x00ff00,
             underline     = true,
             strikethrough = true,
-        )
+        ),
     ) == [
         "background-color" => "#00ff00",
         "font-weight"      => "lighter",
@@ -164,8 +165,9 @@ end
         ["text-decoration" => "line-through"]
 
     # The default colors, the unknown names, and the unsupported attributes are ignored.
-    @test html_decoration(Face(; foreground = :default, inverse = true, inherit = :error)) ==
-        Pair{String, String}[]
+    @test html_decoration(
+        Face(; foreground = :default, inverse = true, inherit = :error)
+    ) == Pair{String, String}[]
     @test html_decoration(Face(; foreground = :red)) == ["color" => "#a51c2c"]
 end
 
@@ -183,7 +185,7 @@ end
             background    = 0x00ff00,
             strikethrough = true,
             underline     = true,
-        )
+        ),
     ) == [
         "textbf",
         "textit",
@@ -214,7 +216,7 @@ end
             slant      = :oblique,
             foreground = "#ff0000",
             background = 0x0000ff,
-        )
+        ),
     ) == [
         "text-font"   => "Fira Sans",
         "text-size"   => "12pt",
@@ -229,7 +231,9 @@ end
 
     # The default colors and the unsupported attributes are ignored.
     @test typst_decoration(
-        Face(; foreground = :default, underline = true, strikethrough = true, inverse = true)
+        Face(;
+            foreground = :default, underline = true, strikethrough = true, inverse = true
+        ),
     ) == Pair{String, String}[]
     @test typst_decoration(Face(; foreground = :red)) == ["text-fill" => "rgb(\"#a51c2c\")"]
 end
@@ -261,7 +265,7 @@ end
             background    = 0x00ff00,
             underline     = true,
             strikethrough = true,
-        )
+        ),
     ) == [
         "bold"              => "true",
         "italic"            => "true",
@@ -300,7 +304,7 @@ end
             background    = 0x00ff00,
             underline     = true,
             strikethrough = true,
-        )
+        ),
     ) == [
         "bold"       => "true",
         "italic"     => "true",
@@ -341,12 +345,18 @@ end
     th = PrettyTables._text__native_highlighter(h)
     @test th isa TextHighlighter
     @test th._decoration == h._decoration
-    @test PrettyTables._html__native_highlighter(h)._decoration == html_decoration(h._decoration)
-    @test PrettyTables._latex__native_highlighter(h)._environments == latex_decoration(h._decoration)
-    @test PrettyTables._markdown__native_highlighter(h)._decoration == markdown_decoration(h._decoration)
-    @test PrettyTables._typst__native_highlighter(h)._decoration == typst_decoration(h._decoration)
-    @test PrettyTables._excel__native_highlighter(h)._decoration == excel_decoration(h._decoration)
-    @test PrettyTables._docx__native_highlighter(h)._decoration == docx_decoration(h._decoration)
+    @test PrettyTables._html__native_highlighter(h)._decoration ==
+        html_decoration(h._decoration)
+    @test PrettyTables._latex__native_highlighter(h)._environments ==
+        latex_decoration(h._decoration)
+    @test PrettyTables._markdown__native_highlighter(h)._decoration ==
+        markdown_decoration(h._decoration)
+    @test PrettyTables._typst__native_highlighter(h)._decoration ==
+        typst_decoration(h._decoration)
+    @test PrettyTables._excel__native_highlighter(h)._decoration ==
+        excel_decoration(h._decoration)
+    @test PrettyTables._docx__native_highlighter(h)._decoration ==
+        docx_decoration(h._decoration)
 
     hs = AbstractHighlighter[h, TextHighlighter(f, Face())]
     nhs = PrettyTables._text__native_highlighters(hs)
@@ -407,7 +417,8 @@ end
     # The back end highlighters accept a face, a crayon, and the keywords of both.
     @test HtmlHighlighter(f, face)._decoration == html_decoration(face)
     @test HtmlHighlighter(f, crayon"bold red")._decoration == html_decoration(face)
-    @test HtmlHighlighter(f; bold = true, foreground = :red)._decoration == html_decoration(face)
+    @test HtmlHighlighter(f; bold = true, foreground = :red)._decoration ==
+        html_decoration(face)
 
     @test LatexHighlighter(f, face)._environments == latex_decoration(face)
     @test LatexHighlighter(f, crayon"bold red")._environments == latex_decoration(face)
@@ -416,7 +427,8 @@ end
 
     @test MarkdownHighlighter(f, face)._decoration == markdown_decoration(face)
     @test MarkdownHighlighter(f, crayon"bold")._decoration == MarkdownStyle(; bold = true)
-    @test MarkdownHighlighter(f; italics = true)._decoration == MarkdownStyle(; italic = true)
+    @test MarkdownHighlighter(f; italics = true)._decoration ==
+        MarkdownStyle(; italic = true)
 
     @test TypstHighlighter(f, face)._decoration == typst_decoration(face)
     @test TypstHighlighter(f, crayon"bold red")._decoration == typst_decoration(face)
@@ -436,7 +448,8 @@ end
     # The table styles of every back end accept a crayon.
     @test HtmlTableStyle(; title = crayon"bold red").title == html_decoration(face)
     @test LatexTableStyle(; title = crayon"bold red").title == latex_decoration(face)
-    @test MarkdownTableStyle(; row_label = crayon"bold").row_label == MarkdownStyle(; bold = true)
+    @test MarkdownTableStyle(; row_label = crayon"bold").row_label ==
+        MarkdownStyle(; bold = true)
     @test TypstTableStyle(; title = crayon"bold red").title == typst_decoration(face)
     @test ExcelTableStyle(; title = crayon"bold red").title == excel_decoration(face)
     @test DocxTableStyle(; title = crayon"bold red").title == docx_decoration(face)

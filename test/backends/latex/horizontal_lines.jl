@@ -29,8 +29,7 @@
             matrix;
             backend = :latex,
             table_format = LatexTableFormat(;
-                horizontal_lines_at_data_rows  = [1],
-                vertical_lines_at_data_columns = [1],
+                horizontal_lines_at_data_rows = [1], vertical_lines_at_data_columns = [1]
             ),
         )
 
@@ -55,8 +54,7 @@
             matrix;
             backend = :latex,
             table_format = LatexTableFormat(;
-                horizontal_lines_at_data_rows  = :all,
-                vertical_lines_at_data_columns = :all,
+                horizontal_lines_at_data_rows = :all, vertical_lines_at_data_columns = :all
             ),
         )
 
@@ -85,9 +83,7 @@ end
         [1 2 3; 4 5 6];
         backend = :latex,
         row_group_labels = [2 => "G"],
-        table_format = LatexTableFormat(;
-            horizontal_line_before_row_group_label = true
-        ),
+        table_format = LatexTableFormat(; horizontal_line_before_row_group_label = true),
     )
 
     @test result == expected

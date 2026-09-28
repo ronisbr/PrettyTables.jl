@@ -195,7 +195,7 @@
             backend = :typst,
             column_labels = [["A", "B"], ["a", "b"]],
             style = TypstTableStyle(;
-                column_label = [["text-fill" => "red"], ["text-fill" => "blue"]],
+                column_label = [["text-fill" => "red"], ["text-fill" => "blue"]]
             ),
         )
 

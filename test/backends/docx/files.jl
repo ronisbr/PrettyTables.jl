@@ -14,18 +14,14 @@
         @test isfile(filename)
 
         @test_throws "Path does not end in .docx" pretty_table(
-            matrix;
-            backend = :docx,
-            filename = joinpath(dir, "table.txt")
+            matrix; backend = :docx, filename = joinpath(dir, "table.txt")
         )
 
         # An existing file is only replaced if `overwrite = true`.
         write(filename, "Not a Word document")
 
         @test_throws "already exists and `overwrite = false`" pretty_table(
-            matrix;
-            backend = :docx,
-            filename
+            matrix; backend = :docx, filename
         )
 
         @test read(filename, String) == "Not a Word document"
@@ -68,19 +64,15 @@ end
             pretty_table(matrix; backend = :docx, filename)
             @test occursin(
                 "<w:rFonts w:ascii=\"Calibri\" w:hAnsi=\"Calibri\"/>",
-                docx_file_styles(filename)
+                docx_file_styles(filename),
             )
 
             pretty_table(
-                matrix;
-                backend = :docx,
-                default_font = "Arial",
-                filename,
-                overwrite = true
+                matrix; backend = :docx, default_font = "Arial", filename, overwrite = true
             )
             @test occursin(
                 "<w:rFonts w:ascii=\"Arial\" w:hAnsi=\"Arial\"/>",
-                docx_file_styles(filename)
+                docx_file_styles(filename),
             )
         end
     end
@@ -92,7 +84,7 @@ end
             W.Document,
             matrix;
             default_font = "Arial",
-            style = DocxTableStyle(; data_cell = ["font" => "Courier New"])
+            style = DocxTableStyle(; data_cell = ["font" => "Courier New"]),
         )
 
         table = only(only(document.body.sections).children)
@@ -109,25 +101,18 @@ end
         # The default font of a returned table is defined by the document that contains it.
         @test_throws ArgumentError pretty_table(W.Table, matrix; default_font = "Arial")
         @test_throws "only applied to the documents created by the Word back end" pretty_table(
-            matrix;
-            backend = :docx,
-            default_font = "Arial"
+            matrix; backend = :docx, default_font = "Arial"
         )
 
         @test_throws "must not be an empty string" pretty_table(
-            W.Document,
-            matrix;
-            default_font = ""
+            W.Document, matrix; default_font = ""
         )
 
         mktempdir() do dir
             filename = joinpath(dir, "table.docx")
 
             @test_throws "must not be an empty string" pretty_table(
-                matrix;
-                backend = :docx,
-                default_font = "",
-                filename
+                matrix; backend = :docx, default_font = "", filename
             )
 
             @test !isfile(filename)

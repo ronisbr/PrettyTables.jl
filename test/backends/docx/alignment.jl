@@ -7,7 +7,8 @@
 docx_justification(table::W.Table, row::Int, col::Int) =
     docx_paragraph(docx_cell(table, row, col)).properties.justification
 
-docx_valign(table::W.Table, row::Int, col::Int) = docx_cell(table, row, col).properties.valign
+docx_valign(table::W.Table, row::Int, col::Int) =
+    docx_cell(table, row, col).properties.valign
 
 @testset "Alignment" verbose = true begin
     data = [1 2 3; 4 5 6; 7 8 9]
@@ -126,10 +127,7 @@ docx_valign(table::W.Table, row::Int, col::Int) = docx_cell(table, row, col).pro
         table = pretty_table(
             W.Table,
             data;
-            column_labels = [
-                [MultiColumn(2, "Merged", :r), "C"],
-                ["A", "B", "C"],
-            ],
+            column_labels = [[MultiColumn(2, "Merged", :r), "C"], ["A", "B", "C"]],
         )
 
         # The merged cells use their own alignment.

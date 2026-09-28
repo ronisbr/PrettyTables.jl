@@ -14,9 +14,8 @@
         matrix;
         backend = :latex,
         table_format = LatexTableFormat(;
-            horizontal_lines_at_data_rows = :all,
-            vertical_line_at_beginning    = false,
-        )
+            horizontal_lines_at_data_rows = :all, vertical_line_at_beginning = false
+        ),
     )
 
     result = pretty_table(
@@ -24,9 +23,8 @@
         matrix;
         backend = :latex,
         table_format = TableFormat(;
-            horizontal_lines_at_data_rows = :all,
-            vertical_line_at_beginning    = false,
-        )
+            horizontal_lines_at_data_rows = :all, vertical_line_at_beginning = false
+        ),
     )
 
     @test result == expected
@@ -40,7 +38,7 @@
         table_format = TableFormat(;
             header_line = LineStyle(; style = :dashed),
             bottom_line = LineStyle(; style = :double),
-        )
+        ),
     )
 
     @test occursin("\\hdashline", result)
@@ -54,21 +52,17 @@
         String,
         matrix;
         backend = :latex,
-        style = TableStyle(; first_line_column_label = face)
+        style = TableStyle(; first_line_column_label = face),
     ) == pretty_table(
         String,
         matrix;
         backend = :latex,
-        style = LatexTableStyle(; first_line_column_label = face)
+        style = LatexTableStyle(; first_line_column_label = face),
     )
 
     # == Empty Generic Table Format and Style ==============================================
 
     @test pretty_table(
-        String,
-        matrix;
-        backend = :latex,
-        style = TableStyle(),
-        table_format = TableFormat()
+        String, matrix; backend = :latex, style = TableStyle(), table_format = TableFormat()
     ) == pretty_table(String, matrix; backend = :latex)
 end

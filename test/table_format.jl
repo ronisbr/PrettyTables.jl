@@ -7,7 +7,7 @@
 # Compare two table formats field by field, descending into the `borders` field since some
 # border types contain vectors, which are not compared elementwise by the default `==` of
 # immutable structures.
-function _test_table_format_equal(a::T, b::T) where T
+function _test_table_format_equal(a::T, b::T) where {T}
     for f in fieldnames(T)
         va = getfield(a, f)
         vb = getfield(b, f)
@@ -36,9 +36,9 @@ end
     @test ls.color == SimpleColor(:red)
 
     @testset "Color Normalization" begin
-        @test LineStyle(; color = 0xff0000).color           == SimpleColor(0xff0000)
-        @test LineStyle(; color = "#ff0000").color          == SimpleColor(0xff0000)
-        @test LineStyle(; color = (255, 0, 0)).color        == SimpleColor(0xff0000)
+        @test LineStyle(; color = 0xff0000).color == SimpleColor(0xff0000)
+        @test LineStyle(; color = "#ff0000").color == SimpleColor(0xff0000)
+        @test LineStyle(; color = (255, 0, 0)).color == SimpleColor(0xff0000)
         @test LineStyle(; color = SimpleColor(:cyan)).color == SimpleColor(:cyan)
     end
 
@@ -50,17 +50,21 @@ end
 end
 
 @testset "Typst Line Style" begin
-    @test typst_line_style(LineStyle(; width = :thin))   == "0.5pt"
+    @test typst_line_style(LineStyle(; width = :thin)) == "0.5pt"
     @test typst_line_style(LineStyle(; width = :medium)) == "1pt"
-    @test typst_line_style(LineStyle(; width = :thick))  == "1.5pt"
+    @test typst_line_style(LineStyle(; width = :thick)) == "1.5pt"
 
     # An unset width keeps the default thickness.
-    @test typst_line_style(LineStyle(; style = :solid))  == "(thickness: 1pt, dash: \"solid\")"
-    @test typst_line_style(LineStyle(; style = :dashed)) == "(thickness: 1pt, dash: \"dashed\")"
-    @test typst_line_style(LineStyle(; style = :dotted)) == "(thickness: 1pt, dash: \"dotted\")"
+    @test typst_line_style(LineStyle(; style = :solid)) ==
+        "(thickness: 1pt, dash: \"solid\")"
+    @test typst_line_style(LineStyle(; style = :dashed)) ==
+        "(thickness: 1pt, dash: \"dashed\")"
+    @test typst_line_style(LineStyle(; style = :dotted)) ==
+        "(thickness: 1pt, dash: \"dotted\")"
 
     # Typst strokes have no double variant, so `:double` falls back to solid.
-    @test typst_line_style(LineStyle(; style = :double)) == "(thickness: 1pt, dash: \"solid\")"
+    @test typst_line_style(LineStyle(; style = :double)) ==
+        "(thickness: 1pt, dash: \"solid\")"
 
     @test typst_line_style(LineStyle(; style = :dashed, width = :medium)) ==
         "(thickness: 1pt, dash: \"dashed\")"
@@ -79,16 +83,16 @@ end
 @testset "Excel Line Style" begin
     # The full (style × width) matrix.
     for (kwargs, expected_style) in (
-        ((;),                                  "thin"),
-        ((; width = :medium),                  "medium"),
-        ((; width = :thick),                   "thick"),
-        ((; style = :dashed),                  "dashed"),
+        ((;), "thin"),
+        ((; width = :medium), "medium"),
+        ((; width = :thick), "thick"),
+        ((; style = :dashed), "dashed"),
         ((; style = :dashed, width = :medium), "mediumDashed"),
-        ((; style = :dashed, width = :thick),  "mediumDashed"),
-        ((; style = :dotted),                  "dotted"),
-        ((; style = :dotted, width = :thick),  "dotted"),
-        ((; style = :double),                  "double"),
-        ((; style = :double, width = :thick),  "double"),
+        ((; style = :dashed, width = :thick), "mediumDashed"),
+        ((; style = :dotted), "dotted"),
+        ((; style = :dotted, width = :thick), "dotted"),
+        ((; style = :double), "double"),
+        ((; style = :double, width = :thick), "double"),
     )
         @test excel_line_style(LineStyle(; kwargs...)) ==
             ["style" => expected_style, "color" => "Black"]
@@ -108,16 +112,16 @@ end
 @testset "Word Line Style" begin
     # The style and the width are independent in Word.
     for (kwargs, expected_style, expected_size) in (
-        ((;),                                  "single", "4"),
-        ((; width = :medium),                  "single", "8"),
-        ((; width = :thick),                   "single", "16"),
-        ((; style = :solid, width = :thin),    "single", "4"),
-        ((; style = :dashed),                  "dashed", "4"),
-        ((; style = :dashed, width = :thick),  "dashed", "16"),
-        ((; style = :dotted),                  "dotted", "4"),
+        ((;), "single", "4"),
+        ((; width = :medium), "single", "8"),
+        ((; width = :thick), "single", "16"),
+        ((; style = :solid, width = :thin), "single", "4"),
+        ((; style = :dashed), "dashed", "4"),
+        ((; style = :dashed, width = :thick), "dashed", "16"),
+        ((; style = :dotted), "dotted", "4"),
         ((; style = :dotted, width = :medium), "dotted", "8"),
-        ((; style = :double),                  "double", "4"),
-        ((; style = :double, width = :thick),  "double", "16"),
+        ((; style = :double), "double", "4"),
+        ((; style = :double, width = :thick), "double", "16"),
     )
         @test docx_line_style(LineStyle(; kwargs...)) ==
             ["style" => expected_style, "size" => expected_size, "color" => "000000"]
@@ -135,8 +139,8 @@ end
 end
 
 @testset "LaTeX Line Style" begin
-    @test latex_line_style(LineStyle())                  == "\\hline"
-    @test latex_line_style(LineStyle(; style = :solid))  == "\\hline"
+    @test latex_line_style(LineStyle()) == "\\hline"
+    @test latex_line_style(LineStyle(; style = :solid)) == "\\hline"
     @test latex_line_style(LineStyle(; style = :double)) == "\\hline\\hline"
     @test latex_line_style(LineStyle(; style = :dashed)) == "\\hdashline"
     @test latex_line_style(LineStyle(; style = :dotted)) == "\\hdashline[1pt/1pt]"
@@ -148,13 +152,13 @@ end
 @testset "Sparse Merge" verbose = true begin
     @testset "Empty TableFormat Reproduces the Back End Defaults" begin
         for (converter, T) in (
-            (PrettyTables._text__table_format,     TextTableFormat),
-            (PrettyTables._html__table_format,     HtmlTableFormat),
-            (PrettyTables._latex__table_format,    LatexTableFormat),
+            (PrettyTables._text__table_format, TextTableFormat),
+            (PrettyTables._html__table_format, HtmlTableFormat),
+            (PrettyTables._latex__table_format, LatexTableFormat),
             (PrettyTables._markdown__table_format, MarkdownTableFormat),
-            (PrettyTables._typst__table_format,    TypstTableFormat),
-            (PrettyTables._excel__table_format,    ExcelTableFormat),
-            (PrettyTables._docx__table_format,     DocxTableFormat),
+            (PrettyTables._typst__table_format, TypstTableFormat),
+            (PrettyTables._excel__table_format, ExcelTableFormat),
+            (PrettyTables._docx__table_format, DocxTableFormat),
         )
             _test_table_format_equal(converter(TableFormat()), T())
         end
@@ -188,14 +192,14 @@ end
             PrettyTables._latex__table_format(
                 TableFormat(; vertical_lines_at_data_columns = :none)
             ),
-            LatexTableFormat(; vertical_lines_at_data_columns = :none)
+            LatexTableFormat(; vertical_lines_at_data_columns = :none),
         )
 
         _test_table_format_equal(
             PrettyTables._typst__table_format(
                 TableFormat(; horizontal_lines_at_data_rows = [1, 3])
             ),
-            TypstTableFormat(; horizontal_lines_at_data_rows = [1, 3])
+            TypstTableFormat(; horizontal_lines_at_data_rows = [1, 3]),
         )
     end
 
@@ -204,12 +208,12 @@ end
         # `false`, whereas the other back ends default it to `true`. The sparse merge must
         # keep both.
         for (converter, expected) in (
-            (PrettyTables._text__table_format,  false),
-            (PrettyTables._html__table_format,  false),
+            (PrettyTables._text__table_format, false),
+            (PrettyTables._html__table_format, false),
             (PrettyTables._latex__table_format, true),
             (PrettyTables._typst__table_format, true),
             (PrettyTables._excel__table_format, true),
-            (PrettyTables._docx__table_format,  true),
+            (PrettyTables._docx__table_format, true),
         )
             ntf = converter(TableFormat())
             @test ntf.horizontal_line_at_merged_column_labels == expected
@@ -251,11 +255,11 @@ end
 
         htf = PrettyTables._html__table_format(tf)
         @test htf.horizontal_line_before_column_labels == false
-        @test htf.horizontal_line_after_footnotes      == false
-        @test htf.horizontal_line_at_end               == false
+        @test htf.horizontal_line_after_footnotes == false
+        @test htf.horizontal_line_at_end == false
 
         _test_table_format_equal(PrettyTables._typst__table_format(tf), TypstTableFormat())
-        _test_table_format_equal(PrettyTables._text__table_format(tf),  TextTableFormat())
+        _test_table_format_equal(PrettyTables._text__table_format(tf), TextTableFormat())
     end
 end
 
@@ -265,7 +269,7 @@ end
 
         _test_table_format_equal(
             PrettyTables._html__table_format(tf),
-            HtmlTableFormat(; @html__all_horizontal_lines, @html__all_vertical_lines)
+            HtmlTableFormat(; @html__all_horizontal_lines, @html__all_vertical_lines),
         )
 
         _test_table_format_equal(
@@ -276,17 +280,17 @@ end
                 @text__all_horizontal_lines,
                 @text__all_vertical_lines,
                 horizontal_lines_at_column_labels = :none,
-            )
+            ),
         )
 
         _test_table_format_equal(
             PrettyTables._typst__table_format(tf),
-            TypstTableFormat(; @typst__all_horizontal_lines, @typst__all_vertical_lines)
+            TypstTableFormat(; @typst__all_horizontal_lines, @typst__all_vertical_lines),
         )
 
         _test_table_format_equal(
             PrettyTables._latex__table_format(tf),
-            LatexTableFormat(; @latex__all_horizontal_lines, @latex__all_vertical_lines)
+            LatexTableFormat(; @latex__all_horizontal_lines, @latex__all_vertical_lines),
         )
 
         # `@excel__all_horizontal_lines` also sets the Excel-only field
@@ -298,7 +302,7 @@ end
                 @excel__all_horizontal_lines,
                 @excel__all_vertical_lines,
                 horizontal_line_between_column_labels = false,
-            )
+            ),
         )
 
         # The same applies to the Word-only field `horizontal_line_between_column_labels`.
@@ -308,7 +312,7 @@ end
                 @docx__all_horizontal_lines,
                 @docx__all_vertical_lines,
                 horizontal_line_between_column_labels = false,
-            )
+            ),
         )
     end
 
@@ -317,7 +321,7 @@ end
 
         _test_table_format_equal(
             PrettyTables._html__table_format(tf),
-            HtmlTableFormat(; @html__no_horizontal_lines, @html__no_vertical_lines)
+            HtmlTableFormat(; @html__no_horizontal_lines, @html__no_vertical_lines),
         )
 
         # `@text__no_vertical_lines` also sets the text-only field
@@ -329,27 +333,27 @@ end
                 @text__no_horizontal_lines,
                 @text__no_vertical_lines,
                 suppress_vertical_lines_at_column_labels = false,
-            )
+            ),
         )
 
         _test_table_format_equal(
             PrettyTables._typst__table_format(tf),
-            TypstTableFormat(; @typst__no_horizontal_lines, @typst__no_vertical_lines)
+            TypstTableFormat(; @typst__no_horizontal_lines, @typst__no_vertical_lines),
         )
 
         _test_table_format_equal(
             PrettyTables._latex__table_format(tf),
-            LatexTableFormat(; @latex__no_horizontal_lines, @latex__no_vertical_lines)
+            LatexTableFormat(; @latex__no_horizontal_lines, @latex__no_vertical_lines),
         )
 
         _test_table_format_equal(
             PrettyTables._excel__table_format(tf),
-            ExcelTableFormat(; @excel__no_horizontal_lines, @excel__no_vertical_lines)
+            ExcelTableFormat(; @excel__no_horizontal_lines, @excel__no_vertical_lines),
         )
 
         _test_table_format_equal(
             PrettyTables._docx__table_format(tf),
-            DocxTableFormat(; @docx__no_horizontal_lines, @docx__no_vertical_lines)
+            DocxTableFormat(; @docx__no_horizontal_lines, @docx__no_vertical_lines),
         )
     end
 
@@ -379,13 +383,13 @@ end
 @testset "TableStyle" verbose = true begin
     @testset "Empty TableStyle Reproduces the Back End Defaults" begin
         for (converter, T) in (
-            (PrettyTables._text__table_style,     TextTableStyle),
-            (PrettyTables._html__table_style,     HtmlTableStyle),
-            (PrettyTables._latex__table_style,    LatexTableStyle),
+            (PrettyTables._text__table_style, TextTableStyle),
+            (PrettyTables._html__table_style, HtmlTableStyle),
+            (PrettyTables._latex__table_style, LatexTableStyle),
             (PrettyTables._markdown__table_style, MarkdownTableStyle),
-            (PrettyTables._typst__table_style,    TypstTableStyle),
-            (PrettyTables._excel__table_style,    ExcelTableStyle),
-            (PrettyTables._docx__table_style,     DocxTableStyle),
+            (PrettyTables._typst__table_style, TypstTableStyle),
+            (PrettyTables._excel__table_style, ExcelTableStyle),
+            (PrettyTables._docx__table_style, DocxTableStyle),
         )
             _test_table_style_equal(converter(TableStyle()), T())
         end
@@ -418,17 +422,16 @@ end
         face = Face(; weight = :bold, foreground = :red)
 
         for (converter, T) in (
-            (PrettyTables._text__table_style,     TextTableStyle),
-            (PrettyTables._html__table_style,     HtmlTableStyle),
-            (PrettyTables._latex__table_style,    LatexTableStyle),
+            (PrettyTables._text__table_style, TextTableStyle),
+            (PrettyTables._html__table_style, HtmlTableStyle),
+            (PrettyTables._latex__table_style, LatexTableStyle),
             (PrettyTables._markdown__table_style, MarkdownTableStyle),
-            (PrettyTables._typst__table_style,    TypstTableStyle),
-            (PrettyTables._excel__table_style,    ExcelTableStyle),
-            (PrettyTables._docx__table_style,     DocxTableStyle),
+            (PrettyTables._typst__table_style, TypstTableStyle),
+            (PrettyTables._excel__table_style, ExcelTableStyle),
+            (PrettyTables._docx__table_style, DocxTableStyle),
         )
             _test_table_style_equal(
-                converter(TableStyle(; row_label = face)),
-                T(; row_label = face)
+                converter(TableStyle(; row_label = face)), T(; row_label = face)
             )
         end
     end
@@ -438,7 +441,7 @@ end
 
         _test_table_style_equal(
             PrettyTables._html__table_style(TableStyle(; column_label = faces)),
-            HtmlTableStyle(; column_label = faces)
+            HtmlTableStyle(; column_label = faces),
         )
     end
 
@@ -447,7 +450,7 @@ end
             PrettyTables._markdown__table_style(
                 TableStyle(; title = Face(; weight = :bold))
             ),
-            MarkdownTableStyle()
+            MarkdownTableStyle(),
         )
     end
 end
@@ -473,32 +476,32 @@ end
 
     @test typst_line_style(LineStyle(; color = :red); default = "1.5pt") ==
         "(thickness: 1.5pt, paint: rgb(\"#a51c2c\"))"
-    @test typst_line_style(LineStyle(; style = :dashed)) == "(thickness: 1pt, dash: \"dashed\")"
+    @test typst_line_style(LineStyle(; style = :dashed)) ==
+        "(thickness: 1pt, dash: \"dashed\")"
     @test typst_line_style(LineStyle(; width = :thick); default = "0.5pt") == "1.5pt"
 
     @test excel_line_style(
-        LineStyle(; color = :red);
-        default = ["style" => "thick", "color" => "Black"]
+        LineStyle(; color = :red); default = ["style" => "thick", "color" => "Black"]
     ) == ["style" => "thick", "color" => "FFA51C2C"]
     @test excel_line_style(
-        LineStyle(; style = :dashed);
-        default = ["style" => "medium", "color" => "Black"]
+        LineStyle(; style = :dashed); default = ["style" => "medium", "color" => "Black"]
     ) == ["style" => "mediumDashed", "color" => "Black"]
 
     @test docx_line_style(
         LineStyle(; color = :red);
-        default = ["style" => "double", "size" => "16", "color" => "000000"]
+        default = ["style" => "double", "size" => "16", "color" => "000000"],
     ) == ["style" => "double", "size" => "16", "color" => "A51C2C"]
     @test docx_line_style(
         LineStyle(; style = :dashed);
-        default = ["style" => "single", "size" => "8", "color" => "FF0000"]
+        default = ["style" => "single", "size" => "8", "color" => "FF0000"],
     ) == ["style" => "dashed", "size" => "8", "color" => "FF0000"]
 
     # The attributes missing in the default fall back to a thin black single line.
     @test docx_line_style(LineStyle(; width = :thick); default = DocxPair[]) ==
         ["style" => "single", "size" => "16", "color" => "000000"]
 
-    @test latex_line_style(LineStyle(; style = :dashed); default = "\\hline") == "\\hdashline"
+    @test latex_line_style(LineStyle(; style = :dashed); default = "\\hline") ==
+        "\\hdashline"
 
     tf = TableFormat(; top_line = LineStyle(; color = :red))
     @test PrettyTables._html__table_format(tf).borders.top_line == "2px solid #a51c2c"
@@ -525,7 +528,9 @@ end
 end
 
 @testset "Line Style Color Validation" begin
-    @test_throws "The symbol `:notacolor` is not a known color." LineStyle(; color = :notacolor)
+    @test_throws "The symbol `:notacolor` is not a known color." LineStyle(;
+        color = :notacolor
+    )
     @test_throws "must be integers between 0 and 255." LineStyle(; color = (300, 0, 0))
     @test_throws "is not a 24-bit color." LineStyle(; color = 0x01000000)
     @test_throws "A line color cannot be created from an object of type" LineStyle(;
@@ -548,16 +553,27 @@ end
 end
 
 @testset "Foreign Styles and Formats" begin
-    @test_throws ArgumentError pretty_table(String, [1 2]; backend = :text, style = HtmlTableStyle())
-    @test_throws ArgumentError pretty_table(String, [1 2]; backend = :html, table_format = TextTableFormat())
-    @test_throws ArgumentError pretty_table(String, [1 2]; backend = :latex, style = TypstTableStyle())
-    @test_throws ArgumentError pretty_table(String, [1 2]; backend = :markdown, table_format = HtmlTableFormat())
-    @test_throws ArgumentError pretty_table(String, [1 2]; backend = :typst, style = LatexTableStyle())
+    @test_throws ArgumentError pretty_table(
+        String, [1 2]; backend = :text, style = HtmlTableStyle()
+    )
+    @test_throws ArgumentError pretty_table(
+        String, [1 2]; backend = :html, table_format = TextTableFormat()
+    )
+    @test_throws ArgumentError pretty_table(
+        String, [1 2]; backend = :latex, style = TypstTableStyle()
+    )
+    @test_throws ArgumentError pretty_table(
+        String, [1 2]; backend = :markdown, table_format = HtmlTableFormat()
+    )
+    @test_throws ArgumentError pretty_table(
+        String, [1 2]; backend = :typst, style = LatexTableStyle()
+    )
 
     # A native style selects the back end when the table format does not.
     resolve = PrettyTables._resolve_printing_backend
     @test resolve(Dict(:style => HtmlTableStyle())) == :html
-    @test resolve(Dict(:style => TypstTableStyle(), :table_format => TableFormat())) == :typst
+    @test resolve(Dict(:style => TypstTableStyle(), :table_format => TableFormat())) ==
+        :typst
     @test resolve(Dict(:style => TableStyle())) == :text
     @test occursin("<table", pretty_table(String, [1 2]; style = HtmlTableStyle()))
 end

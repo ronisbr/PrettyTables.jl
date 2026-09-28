@@ -168,7 +168,7 @@ function make_source(source_name::String)
         return [NamedTuple{names}(Tuple(matrix[row, :])) for row in axes(matrix, 1)]
     end
 
-    throw(ArgumentError("unknown worker source '$source_name'"))
+    return throw(ArgumentError("unknown worker source '$source_name'"))
 end
 
 """

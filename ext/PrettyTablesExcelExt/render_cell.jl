@@ -72,9 +72,7 @@ function _excel__render_cell(::Nothing, ::RenderContext, ::_EXCEL__RENDERER)
 end
 
 function _excel__render_cell(
-    cell::MergeCells,
-    context::RenderContext,
-    renderer::_EXCEL__RENDERER,
+    cell::MergeCells, context::RenderContext, renderer::_EXCEL__RENDERER
 )
     return _excel__render_cell(cell.data, context, renderer)
 end
@@ -104,9 +102,7 @@ end
 @static if VERSION >= v"1.11"
     # Styled strings are converted to Excel's rich text format, where each face region
     # becomes a run with its own font attributes.
-    function _excel__render_cell(
-        cell::_StyledString, ::RenderContext, ::_EXCEL__RENDERER
-    )
+    function _excel__render_cell(cell::_StyledString, ::RenderContext, ::_EXCEL__RENDERER)
         runs                = XLSX.RichTextRun[]
         has_font_attributes = false
 

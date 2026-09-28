@@ -12,7 +12,11 @@
 Convert the alignment `a` to the corresponding string for LaTeX. The alignment `:n` (no
 alignment information) is converted to `"r"`.
 """
-_latex__alignment_to_str(a::Symbol) = (a === :l) ? "l" : (a === :c) ? "c" : "r"
+function _latex__alignment_to_str(a::Symbol)
+    (a === :l) && return "l"
+    (a === :c) && return "c"
+    return "r"
+end
 
 """
     _latex__add_environments(str::String, envs::Union{Nothing, Vector{String}}) -> String
@@ -54,28 +58,59 @@ function _latex__escape_str(io::IO, s::AbstractString)
     a = Iterators.Stateful(s)
     for c in a
         if isascii(c)
-            c == '\0'         ? print(io, "\\textbackslash{}0") :
-            c == '\e'         ? print(io, "\\textbackslash{}e") :
-            c == '\\'         ? print(io, "\\textbackslash{}") :
-            '\a' <= c <= '\r' ? print(io, "\\textbackslash{}", "abtnvfr"[Int(c) - 6]) :
-            c == '%'          ? print(io, "\\%") :
-            c == '#'          ? print(io, "\\#") :
-            c == '\$'         ? print(io, "\\\$") :
-            c == '&'          ? print(io, "\\&") :
-            c == '_'          ? print(io, "\\_") :
-            c == '^'          ? print(io, "\\textasciicircum{}") :
-            c == '{'          ? print(io, "\\{") :
-            c == '}'          ? print(io, "\\}") :
-            c == '~'          ? print(io, "\\textasciitilde{}") :
-            c == '|'          ? print(io, "\\textbar{}") :
-            c == '"'          ? print(io, "\\textquotedbl{}") :
-            isprint(c)        ? print(io, c) :
-            print(io, "\\textbackslash{}x", string(UInt32(c); base = 16, pad = 2))
+            if c == '\0'
+                print(io, "\\textbackslash{}0")
+            elseif c == '\e'
+                print(io, "\\textbackslash{}e")
+            elseif c == '\\'
+                print(io, "\\textbackslash{}")
+            elseif '\a' <= c <= '\r'
+                print(io, "\\textbackslash{}", "abtnvfr"[Int(c) - 6])
+            elseif c == '%'
+                print(io, "\\%")
+            elseif c == '#'
+                print(io, "\\#")
+            elseif c == '\$'
+                print(io, "\\\$")
+            elseif c == '&'
+                print(io, "\\&")
+            elseif c == '_'
+                print(io, "\\_")
+            elseif c == '^'
+                print(io, "\\textasciicircum{}")
+            elseif c == '{'
+                print(io, "\\{")
+            elseif c == '}'
+                print(io, "\\}")
+            elseif c == '~'
+                print(io, "\\textasciitilde{}")
+            elseif c == '|'
+                print(io, "\\textbar{}")
+            elseif c == '"'
+                print(io, "\\textquotedbl{}")
+            elseif isprint(c)
+                print(io, c)
+            else
+                print(io, "\\textbackslash{}x", string(UInt32(c); base = 16, pad = 2))
+            end
         elseif !Base.isoverlong(c) && !Base.ismalformed(c)
-            isprint(c)    ? print(io, c) :
-            c <= '\x7f'   ? print(io, "\\textbackslash{}x", string(UInt32(c); base = 16, pad = 2)) :
-            c <= '\uffff' ? print(io, "\\textbackslash{}u", string(UInt32(c); base = 16, pad = Base.need_full_hex(peek(a)) ? 4 : 2)) :
-            print(io, "\\textbackslash{}U", string(UInt32(c); base = 16, pad = Base.need_full_hex(peek(a)) ? 8 : 4))
+            if isprint(c)
+                print(io, c)
+            elseif c <= '\x7f'
+                print(io, "\\textbackslash{}x", string(UInt32(c); base = 16, pad = 2))
+            elseif c <= '\uffff'
+                print(
+                    io,
+                    "\\textbackslash{}u",
+                    string(UInt32(c); base = 16, pad = Base.need_full_hex(peek(a)) ? 4 : 2),
+                )
+            else
+                print(
+                    io,
+                    "\\textbackslash{}U",
+                    string(UInt32(c); base = 16, pad = Base.need_full_hex(peek(a)) ? 8 : 4),
+                )
+            end
         else # malformed or overlong
             u = bswap(reinterpret(UInt32, c))
             while true

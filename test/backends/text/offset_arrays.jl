@@ -83,9 +83,7 @@ end
     pretty_table(String, data; formatters)
     @test sort(received) == [(-1, 5), (-1, 6), (0, 5), (0, 6)]
 
-    highlighters = [
-        TextHighlighter((d, i, j) -> d[i, j] > 25, Face(; foreground = :red))
-    ]
+    highlighters = [TextHighlighter((d, i, j) -> d[i, j] > 25, Face(; foreground = :red))]
 
     expected = """
 ┌────────┬────────┐

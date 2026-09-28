@@ -65,8 +65,8 @@ function _docx__render_table_core(pspec::PrintingSpec, opts::DocxPrintOptions)
         Vector{Vector{DocxPair}},
         num_cols,
     )
-    has_cont_column       = _is_horizontally_cropped(table_data)
-    num_leading_columns   = num_printed_cols - num_printed_data_cols - has_cont_column
+    has_cont_column     = _is_horizontally_cropped(table_data)
+    num_leading_columns = num_printed_cols - num_printed_data_cols - has_cont_column
 
     context  = pspec.context
     renderer = pspec.renderer === :show ? Val(:show) : Val(:print)
@@ -83,11 +83,13 @@ function _docx__render_table_core(pspec::PrintingSpec, opts::DocxPrintOptions)
         ("minimum_data_column_widths", minimum_data_column_widths),
         ("maximum_data_column_widths", maximum_data_column_widths),
     )
-        (v isa AbstractVector) && (length(v) != num_cols) && throw(
-            ArgumentError(
-                "The length of `$name` ($(length(v))) must be equal to the number of columns ($num_cols).",
-            ),
-        )
+        (v isa AbstractVector) &&
+            (length(v) != num_cols) &&
+            throw(
+                ArgumentError(
+                    "The length of `$name` ($(length(v))) must be equal to the number of columns ($num_cols).",
+                ),
+            )
     end
 
     # If any width is configured, Word must lay out the columns exactly at the computed
@@ -99,11 +101,13 @@ function _docx__render_table_core(pspec::PrintingSpec, opts::DocxPrintOptions)
 
     data_column_widths = _docx__data_column_widths(data_column_widths, num_cols)
 
-    minimum_data_column_widths =
-        _docx__data_column_widths(minimum_data_column_widths, num_cols)
+    minimum_data_column_widths = _docx__data_column_widths(
+        minimum_data_column_widths, num_cols
+    )
 
-    maximum_data_column_widths =
-        _docx__data_column_widths(maximum_data_column_widths, num_cols)
+    maximum_data_column_widths = _docx__data_column_widths(
+        maximum_data_column_widths, num_cols
+    )
 
     # Estimated width [pt] of the content of each column, including the horizontal margins.
     cell_padding   = table_format.cell_margins[2] + table_format.cell_margins[4]
@@ -253,11 +257,7 @@ function _docx__render_table_core(pspec::PrintingSpec, opts::DocxPrintOptions)
                 valign = action ∈ (:title, :subtitle) ? :bottom : :center
 
                 cell = DocxCell(
-                    runs,
-                    alignment,
-                    valign,
-                    cell_style;
-                    gridspan = max(1, num_printed_cols)
+                    runs, alignment, valign, cell_style; gridspan = max(1, num_printed_cols)
                 )
 
                 push!(row.cells, cell)
@@ -273,11 +273,7 @@ function _docx__render_table_core(pspec::PrintingSpec, opts::DocxPrintOptions)
                     style.merged_column_label
 
                 cell = DocxCell(
-                    runs,
-                    table_cell.alignment,
-                    :bottom,
-                    cell_style;
-                    gridspan = span
+                    runs, table_cell.alignment, :bottom, cell_style; gridspan = span
                 )
 
                 table_format.horizontal_line_at_merged_column_labels &&
@@ -292,9 +288,8 @@ function _docx__render_table_core(pspec::PrintingSpec, opts::DocxPrintOptions)
                 if last_merged_col == num_printed_data_cols
                     # If we do not have a continuation column, we are in the last column.
                     # The right border in this case is drawn at the end.
-                    (
-                        table_format.vertical_line_after_data_columns && has_cont_column
-                    ) && (cell.right = borders.middle_line)
+                    (table_format.vertical_line_after_data_columns && has_cont_column) &&
+                        (cell.right = borders.middle_line)
 
                 elseif last_merged_col ∈ vertical_lines_at_data_columns
                     cell.right = borders.middle_line
@@ -372,7 +367,8 @@ function _docx__render_table_core(pspec::PrintingSpec, opts::DocxPrintOptions)
                     max_col_length[jr], _docx__cell_width(cell, cell_padding)
                 )
 
-                if (action == :column_label) || (action == :row_number_label) ||
+                if (action == :column_label) ||
+                    (action == :row_number_label) ||
                     (action == :stubhead_label)
                     (
                         (ps.i < length(table_data.column_labels)) &&
@@ -466,8 +462,7 @@ function _docx__render_table_core(pspec::PrintingSpec, opts::DocxPrintOptions)
             data_column_widths,
             minimum_data_column_widths,
             maximum_data_column_widths,
-        )
-        for col in 1:num_printed_cols
+        ) for col in 1:num_printed_cols
     ]
 
     return _docx__table(rows, table_format.cell_margins, column_widths, fixed_layout)

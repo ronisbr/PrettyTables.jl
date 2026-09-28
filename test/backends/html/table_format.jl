@@ -221,7 +221,7 @@ end
         )
         @test occursin(
             "<tr class = \"columnLabelRow\" style = \"border-bottom: 2px solid black;\">",
-            output
+            output,
         )
 
         # The backend-agnostic format must produce the same look as the other back ends:
@@ -238,7 +238,7 @@ end
         )
         @test occursin(
             "<tr class = \"summaryRow\" style = \"border-bottom: 3px solid black;\">",
-            output
+            output,
         )
     end
 
@@ -269,7 +269,11 @@ end
     end
 
     @testset "Horizontal Lines Around the Row Group Label" begin
-        on  = _render_lines("rowGroupLabel"; horizontal_line_before_row_group_label = true, horizontal_line_after_row_group_label  = true)
+        on = _render_lines(
+            "rowGroupLabel";
+            horizontal_line_before_row_group_label = true,
+            horizontal_line_after_row_group_label = true,
+        )
         off = _render_lines("rowGroupLabel")
         @test occursin("border-top: 1px solid black", first(on))
         @test occursin("border-bottom: 1px solid black", first(on))
@@ -280,7 +284,11 @@ end
     @testset "Horizontal Lines Around the Summary Rows" begin
         # The line after the summary rows ends the ruled area, so it uses the bottom line
         # style.
-        on  = _render_lines("summaryRow"; horizontal_line_before_summary_rows = true, horizontal_line_after_summary_rows  = true)
+        on = _render_lines(
+            "summaryRow";
+            horizontal_line_before_summary_rows = true,
+            horizontal_line_after_summary_rows = true,
+        )
         off = _render_lines("summaryRow")
         @test occursin("border-top: 1px solid black", first(on))
         @test occursin("border-bottom: 2px solid black", first(on))
@@ -317,7 +325,9 @@ end
         cols = filter(l -> occursin("<col ", l), split(output, '\n'))
 
         @test length(cols) == 4
-        @test occursin("border-left: 2px solid black; border-right: 1px solid black;", cols[1])
+        @test occursin(
+            "border-left: 2px solid black; border-right: 1px solid black;", cols[1]
+        )
         @test occursin("style = \"border-right: 1px solid black;\"", cols[2])
         @test occursin("style = \"border-right: 1px solid black;\"", cols[3])
         @test occursin("style = \"border-right: 2px solid black;\"", cols[4])
@@ -353,10 +363,10 @@ end
                 middle_line = "1px dashed blue",
                 bottom_line = "4px double red",
             ),
-            horizontal_line_at_beginning        = true,
+            horizontal_line_at_beginning = true,
             horizontal_line_after_column_labels = true,
-            horizontal_lines_at_data_rows       = [1],
-            horizontal_line_at_end              = true,
+            horizontal_lines_at_data_rows = [1],
+            horizontal_line_at_end = true,
         ),
     )
 
@@ -420,8 +430,12 @@ end
     # The line after the data rows is a border of the `<tr>` element, whereas the border
     # of the highlighter is a border of the cell, which has precedence when the table
     # borders are collapsed.
-    @test occursin("<tr class = \"dataRow\" style = \"border-bottom: 2px solid black;\">", output)
-    @test occursin("<td style = \"border-bottom: 3px solid red; text-align: right;\">3</td>", output)
+    @test occursin(
+        "<tr class = \"dataRow\" style = \"border-bottom: 2px solid black;\">", output
+    )
+    @test occursin(
+        "<td style = \"border-bottom: 3px solid red; text-align: right;\">3</td>", output
+    )
 
     # The user table style must override the borders of the `<table>` element.
     output = pretty_table(
@@ -560,7 +574,7 @@ end
 
         @test occursin(
             "<tr class = \"dataRow\" style = \"border-bottom: 2px solid black;\">\n      <td style = \"text-align: right;\">3</td>",
-            output
+            output,
         )
         @test !occursin("border-bottom", first(split(output, '\n')))
         @test !occursin("<tr class = \"footnote\" style", output)
@@ -580,7 +594,7 @@ end
 
         @test occursin(
             "<tr style = \"border-bottom: 2px solid black;\">\n      <td style = \"text-align: right;\">&vellip;</td>",
-            output
+            output,
         )
         @test count("border-bottom", output) == 1
 
@@ -597,7 +611,7 @@ end
 
         @test occursin(
             "<tr class = \"dataRow\" style = \"border-bottom: 2px solid black;\">\n      <td style = \"text-align: right;\">10</td>",
-            output
+            output,
         )
         @test count("border-bottom", output) == 1
     end
@@ -614,7 +628,7 @@ end
 
         @test occursin(
             "<tr class = \"columnLabelRow\" style = \"border-bottom: 2px solid black;\">",
-            output
+            output,
         )
         @test count("border-bottom", output) == 1
     end
@@ -643,7 +657,7 @@ end
 
         @test occursin(
             "<td colspan = \"2\" style = \"border-left: hidden; font-size: small; text-align: left;\">",
-            output
+            output,
         )
         @test !occursin("border-right: hidden", output)
 
@@ -654,12 +668,14 @@ end
             backend = :html,
             maximum_number_of_columns = 3,
             source_notes = "Source note",
-            table_format = HtmlTableFormat(; vertical_line_after_continuation_column = true),
+            table_format = HtmlTableFormat(;
+                vertical_line_after_continuation_column = true
+            ),
         )
 
         @test occursin(
             "<td colspan = \"4\" style = \"border-right: hidden; color: gray; font-size: small; font-style: italic; text-align: left;\">",
-            output
+            output,
         )
         @test !occursin("border-left: hidden", output)
     end
@@ -673,8 +689,7 @@ end
         [1 2; 3 4];
         backend = :html,
         table_format = HtmlTableFormat(;
-            horizontal_lines_at_data_rows  = Int[],
-            vertical_lines_at_data_columns = Int[],
+            horizontal_lines_at_data_rows = Int[], vertical_lines_at_data_columns = Int[]
         ),
     )
 

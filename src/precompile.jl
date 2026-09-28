@@ -88,10 +88,10 @@ PrecompileTools.@setup_workload begin
     # `IOContext{IOBuffer}` so that the first real print is not fully cold.
     io_buf = IOContext(
         IOBuffer(),
-        :color        => true,
-        :compact      => true,
-        :limit        => true,
-        :displaysize  => (25, 80),
+        :color       => true,
+        :compact     => true,
+        :limit       => true,
+        :displaysize => (25, 80),
     )
 
     try
@@ -119,7 +119,7 @@ PrecompileTools.@setup_workload begin
 
             pretty_table(
                 matrix;
-                highlighters = [TextHighlighter((data, i, j) -> i == 1, crayon"bold")]
+                highlighters = [TextHighlighter((data, i, j) -> i == 1, crayon"bold")],
             )
 
             pretty_table(
@@ -128,12 +128,14 @@ PrecompileTools.@setup_workload begin
                     TextHighlighter((data, i, j) -> i == 1, Face(; weight = :bold)),
                     TextHighlighter((data, i, j) -> i == 2; bold = true, foreground = :red),
                     Highlighter((data, i, j) -> i == 3, Face(; foreground = :red)),
-                ]
+                ],
             )
 
             pretty_table(
                 matrix;
-                highlighters = [Highlighter((data, i, j) -> i == 1, Face(; foreground = :red))]
+                highlighters = [
+                    Highlighter((data, i, j) -> i == 1, Face(; foreground = :red))
+                ],
             )
 
             pretty_table(types)
@@ -188,7 +190,7 @@ PrecompileTools.@setup_workload begin
                         up_intersection = '╤',
                         row             = '═',
                     ),
-                    center_line                   = '┃',
+                    center_line = '┃',
                     horizontal_lines_at_data_rows = :all,
                 ),
                 style = TextTableStyle(;
@@ -211,7 +213,8 @@ PrecompileTools.@setup_workload begin
                 vertical_line_after_row_number_column = true,
             )
 
-            hl = TextHighlighter((data, i, j) -> false, Crayon(; foreground = :dark_gray))
+            hl  = TextHighlighter((data, i, j) -> false, Crayon(; foreground = :dark_gray))
+            fmt = (v, i, j) -> ismissing(v) ? "missing" : v
 
             pretty_table(
                 table;
@@ -224,9 +227,7 @@ PrecompileTools.@setup_workload begin
                 display_size                      = (15, 33),
                 fit_table_in_display_horizontally = true,
                 fit_table_in_display_vertically   = true,
-                formatters                        = [
-                    (v, i, j) -> ismissing(v) ? "missing" : v
-                ],
+                formatters                        = [fmt],
                 highlighters                      = [hl],
                 maximum_data_column_widths        = [20, 20, 20],
                 new_line_at_end                   = false,
@@ -262,7 +263,9 @@ PrecompileTools.@setup_workload begin
                 html_buf,
                 matrix;
                 backend = :html,
-                highlighters = [Highlighter((data, i, j) -> i == 1, Face(; weight = :bold))],
+                highlighters = [
+                    Highlighter((data, i, j) -> i == 1, Face(; weight = :bold))
+                ],
                 style = HtmlTableStyle(; title = Face(; weight = :bold)),
             )
 
@@ -313,8 +316,7 @@ PrecompileTools.@setup_workload begin
                 matrix;
                 backend = :html,
                 table_format = HtmlTableFormat(;
-                    @html__all_horizontal_lines,
-                    @html__all_vertical_lines,
+                    @html__all_horizontal_lines, @html__all_vertical_lines
                 ),
             )
 
@@ -341,7 +343,9 @@ PrecompileTools.@setup_workload begin
             pretty_table(
                 matrix;
                 backend = :latex,
-                highlighters = [Highlighter((data, i, j) -> i == 1, Face(; weight = :bold))],
+                highlighters = [
+                    Highlighter((data, i, j) -> i == 1, Face(; weight = :bold))
+                ],
                 style = LatexTableStyle(; title = Face(; weight = :bold)),
             )
 
@@ -382,14 +386,16 @@ PrecompileTools.@setup_workload begin
                 highlighters = [
                     MarkdownHighlighter(
                         (data, i, j) -> i == 1, MarkdownStyle(; bold = true)
-                    )
+                    ),
                 ],
             )
 
             pretty_table(
                 matrix;
                 backend = :markdown,
-                highlighters = [Highlighter((data, i, j) -> i == 1, Face(; weight = :bold))],
+                highlighters = [
+                    Highlighter((data, i, j) -> i == 1, Face(; weight = :bold))
+                ],
                 style = MarkdownTableStyle(; row_label = Face(; weight = :bold)),
             )
 
@@ -418,9 +424,7 @@ PrecompileTools.@setup_workload begin
                 backend = :markdown,
                 style = MarkdownTableStyle(;
                     first_line_column_label = [MarkdownStyle(; bold = true) for i in 1:10],
-                    column_label            = [
-                        MarkdownStyle(; italic = true) for i in 1:10
-                    ],
+                    column_label = [MarkdownStyle(; italic = true) for i in 1:10],
                 ),
             )
 
@@ -439,7 +443,9 @@ PrecompileTools.@setup_workload begin
             pretty_table(
                 matrix;
                 backend = :typst,
-                highlighters = [Highlighter((data, i, j) -> i == 1, Face(; weight = :bold))],
+                highlighters = [
+                    Highlighter((data, i, j) -> i == 1, Face(; weight = :bold))
+                ],
                 style = TypstTableStyle(; title = Face(; weight = :bold)),
             )
 
@@ -463,9 +469,7 @@ PrecompileTools.@setup_workload begin
             pretty_table(matrix; style = TextTableStyle())
 
             pretty_table(
-                matrix;
-                table_format = generic_table_format,
-                style = generic_table_style,
+                matrix; table_format = generic_table_format, style = generic_table_style
             )
 
             pretty_table(

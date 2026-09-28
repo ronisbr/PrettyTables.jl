@@ -41,7 +41,7 @@
     # == Horizontal Cropping ===============================================================
 
     @testset "Horizontal Cropping" verbose = true begin
-        data  = reshape(1:16, 4, 4)
+        data = reshape(1:16, 4, 4)
         table = pretty_table(
             W.Table, data; maximum_number_of_columns = 2, maximum_number_of_rows = 2
         )
@@ -78,7 +78,9 @@
         table = pretty_table(
             W.Table,
             data;
-            table_format = DocxTableFormat(; vertical_line_after_continuation_column = false),
+            table_format = DocxTableFormat(;
+                vertical_line_after_continuation_column = false
+            ),
         )
 
         @test docx_border_size(docx_cell(table, 2, 4), :stop) == 16

@@ -128,7 +128,9 @@ This conversion is performed once per printed table. Hence, the face of a highli
 the default decoration function is converted to the native decoration only once, and the
 printing loop only sees native highlighters.
 """
-function _native_highlighters(convert::F, highlighters::Vector{AbstractHighlighter}) where F
+function _native_highlighters(
+    convert::F, highlighters::Vector{AbstractHighlighter}
+) where {F}
     any(h -> h isa Highlighter, highlighters) || return highlighters
     return AbstractHighlighter[h isa Highlighter ? convert(h) : h for h in highlighters]
 end
@@ -171,10 +173,7 @@ native highlighter calls the decoration function of `h` and converts the returne
 with `dynamic_decoration`.
 """
 function _native_highlighter(
-    ::Type{T},
-    decoration::F1,
-    dynamic_decoration::F2,
-    h::Highlighter
+    ::Type{T}, decoration::F1, dynamic_decoration::F2, h::Highlighter
 ) where {T <: AbstractHighlighter, F1, F2}
     _has_default_fd(h) && return T(h.f, decoration(h._decoration))
     return T(h.f, (_, data, i, j) -> dynamic_decoration(h.fd(h, data, i, j)))

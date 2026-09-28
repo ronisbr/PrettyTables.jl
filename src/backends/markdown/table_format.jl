@@ -8,10 +8,7 @@
 # subtitle are rendered as Markdown headings, and the merged column label cells have no
 # dedicated decoration.
 const _MARKDOWN__UNSUPPORTED_STYLE_FIELDS = (
-    :title,
-    :subtitle,
-    :first_line_merged_column_label,
-    :merged_column_label,
+    :title, :subtitle, :first_line_merged_column_label, :merged_column_label
 )
 
 # The native objects of this back end select it when `backend = :auto`.
@@ -29,10 +26,10 @@ Markdown table style does not have them.
 _markdown__table_style(style::MarkdownTableStyle) = style
 
 function _markdown__table_style(style::Any)
-    throw(
+    return throw(
         ArgumentError(
-            "The Markdown back end does not support a style of type `$(typeof(style))`. Use `MarkdownTableStyle` or the backend-agnostic `TableStyle`."
-        )
+            "The Markdown back end does not support a style of type `$(typeof(style))`. Use `MarkdownTableStyle` or the backend-agnostic `TableStyle`.",
+        ),
     )
 end
 
@@ -53,10 +50,10 @@ returned unchanged. For a backend-agnostic [`TableFormat`](@ref), only
 _markdown__table_format(table_format::MarkdownTableFormat) = table_format
 
 function _markdown__table_format(table_format::Any)
-    throw(
+    return throw(
         ArgumentError(
-            "The Markdown back end does not support a table format of type `$(typeof(table_format))`. Use `MarkdownTableFormat` or the backend-agnostic `TableFormat`."
-        )
+            "The Markdown back end does not support a table format of type `$(typeof(table_format))`. Use `MarkdownTableFormat` or the backend-agnostic `TableFormat`.",
+        ),
     )
 end
 
@@ -66,6 +63,6 @@ function _markdown__table_format(table_format::TableFormat)
     return MarkdownTableFormat(;
         line_before_summary_rows = _table_format_field(
             table_format.horizontal_line_before_summary_rows, def.line_before_summary_rows
-        )
+        ),
     )
 end

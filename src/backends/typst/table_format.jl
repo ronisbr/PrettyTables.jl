@@ -18,10 +18,10 @@ _typst__table_style(style::TypstTableStyle) = style
 _typst__table_style(style::TableStyle) = TypstTableStyle(; _table_style_kwargs(style)...)
 
 function _typst__table_style(style::Any)
-    throw(
+    return throw(
         ArgumentError(
-            "The Typst back end does not support a style of type `$(typeof(style))`. Use `TypstTableStyle` or the backend-agnostic `TableStyle`."
-        )
+            "The Typst back end does not support a style of type `$(typeof(style))`. Use `TypstTableStyle` or the backend-agnostic `TableStyle`.",
+        ),
     )
 end
 
@@ -75,8 +75,8 @@ function typst_line_style(line_style::LineStyle; default::String = "1pt")
 
     components = String[]
     isnothing(thickness) || push!(components, "thickness: " * thickness)
-    isnothing(color)     || push!(components, "paint: rgb(\"#" * color * "\")")
-    isnothing(dash)      || push!(components, "dash: \"" * dash * "\"")
+    isnothing(color) || push!(components, "paint: rgb(\"#" * color * "\")")
+    isnothing(dash) || push!(components, "dash: \"" * dash * "\"")
 
     # If nothing can be expressed (for example, only an unresolvable color was set), we
     # fall back to the default stroke.
@@ -95,10 +95,10 @@ of the default Typst table format.
 _typst__table_format(table_format::TypstTableFormat) = table_format
 
 function _typst__table_format(table_format::Any)
-    throw(
+    return throw(
         ArgumentError(
-            "The Typst back end does not support a table format of type `$(typeof(table_format))`. Use `TypstTableFormat` or the backend-agnostic `TableFormat`."
-        )
+            "The Typst back end does not support a table format of type `$(typeof(table_format))`. Use `TypstTableFormat` or the backend-agnostic `TableFormat`.",
+        ),
     )
 end
 
@@ -107,6 +107,6 @@ function _typst__table_format(table_format::TableFormat)
 
     return TypstTableFormat(;
         borders = _table_format_borders(table_format, def.borders, typst_line_style),
-        _table_format_presence_fields(table_format, def)...
+        _table_format_presence_fields(table_format, def)...,
     )
 end

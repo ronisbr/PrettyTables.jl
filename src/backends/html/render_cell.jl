@@ -44,7 +44,6 @@ function _html__render_cell(
     return _html__escape_str(cell_str, replace_newline, !allow_html_in_cells)
 end
 
-
 function _html__render_cell(
     cell::HTML,
     context::RenderContext,

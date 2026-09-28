@@ -18,10 +18,10 @@ _docx__table_style(style::DocxTableStyle) = style
 _docx__table_style(style::TableStyle) = DocxTableStyle(; _table_style_kwargs(style)...)
 
 function _docx__table_style(style::Any)
-    throw(
+    return throw(
         ArgumentError(
-            "The Word back end does not support a style of type `$(typeof(style))`. Use `DocxTableStyle` or the backend-agnostic `TableStyle`."
-        )
+            "The Word back end does not support a style of type `$(typeof(style))`. Use `DocxTableStyle` or the backend-agnostic `TableStyle`.",
+        ),
     )
 end
 
@@ -50,7 +50,7 @@ function docx_line_style(
     line_style::LineStyle;
     default::Vector{DocxPair} = DocxPair[
         "style" => "single", "size" => "4", "color" => "000000"
-    ]
+    ],
 )
     default_style = something(_docx__pair_value(default, "style"), "single")
     default_size  = something(_docx__pair_value(default, "size"), "4")
@@ -109,10 +109,10 @@ of the default Word table format. The Word-only fields
 _docx__table_format(table_format::DocxTableFormat) = table_format
 
 function _docx__table_format(table_format::Any)
-    throw(
+    return throw(
         ArgumentError(
-            "The Word back end does not support a table format of type `$(typeof(table_format))`. Use `DocxTableFormat` or the backend-agnostic `TableFormat`."
-        )
+            "The Word back end does not support a table format of type `$(typeof(table_format))`. Use `DocxTableFormat` or the backend-agnostic `TableFormat`.",
+        ),
     )
 end
 
@@ -121,6 +121,6 @@ function _docx__table_format(table_format::TableFormat)
 
     return DocxTableFormat(;
         borders = _table_format_borders(table_format, def.borders, docx_line_style),
-        _table_format_presence_fields(table_format, def)...
+        _table_format_presence_fields(table_format, def)...,
     )
 end

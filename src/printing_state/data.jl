@@ -227,13 +227,8 @@ footnote index is converted to a string by `convert` and the results are joined 
 `delim`, or an empty string if there are no matches.
 """
 function _current_cell_footnote_marks(
-    convert::F,
-    table_data::TableData,
-    cell_type::Symbol,
-    i::Int,
-    j::Int,
-    delim::String
-) where F
+    convert::F, table_data::TableData, cell_type::Symbol, i::Int, j::Int, delim::String
+) where {F}
     footnotes = _current_cell_footnotes(table_data, cell_type, i, j)
     isnothing(footnotes) && return ""
     return join((convert(f) for f in footnotes), delim)

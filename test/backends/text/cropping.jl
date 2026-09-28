@@ -1420,7 +1420,9 @@ end
             reshape(1:100, 50, 2);
             column_labels = [[MultiColumn(2, "AB")], ["a", "b"]],
             display_size = (12, 80),
-            table_format = TextTableFormat(; horizontal_line_at_merged_column_labels = true),
+            table_format = TextTableFormat(;
+                horizontal_line_at_merged_column_labels = true
+            ),
         )
 
         @test num_lines(result) <= 10
@@ -1476,7 +1478,9 @@ end
             display_size = (13, 80),
             line_breaks = true,
             row_group_labels = [3 => "G2"],
-            table_format = TextTableFormat(; horizontal_line_before_row_group_label = false),
+            table_format = TextTableFormat(;
+                horizontal_line_before_row_group_label = false
+            ),
         )
 
         @test num_lines(result) <= 11

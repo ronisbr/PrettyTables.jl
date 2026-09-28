@@ -63,8 +63,7 @@ function _text__render_table(
     # Notice that we must not allocate the label vectors with `undef` because the printing
     # iterator does not fill them if the table has no printed columns, leading to undefined
     # references when computing the column widths.
-    row_labels =
-        _has_row_labels(table_data) ? fill("", num_printed_data_rows) : nothing
+    row_labels = _has_row_labels(table_data) ? fill("", num_printed_data_rows) : nothing
 
     table_str = Matrix{String}(undef, num_printed_data_rows, num_printed_data_columns)
 
@@ -191,6 +190,13 @@ function _text__render_table(
         end
     end
 
-    return row_labels, column_labels, table_str, summary_rows, summary_row_labels,
-        footnotes, custom_cells
+    return (
+        row_labels,
+        column_labels,
+        table_str,
+        summary_rows,
+        summary_row_labels,
+        footnotes,
+        custom_cells,
+    )
 end

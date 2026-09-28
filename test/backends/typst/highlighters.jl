@@ -99,8 +99,7 @@
         seen = []
 
         h = TypstHighlighter(
-            (d, i, j) -> (push!(seen, typeof(d)); false),
-            ["text-fill" => "red"],
+            (d, i, j) -> (push!(seen, typeof(d)); false), ["text-fill" => "red"]
         )
 
         pretty_table(String, data; backend = :typst, highlighters = [h])

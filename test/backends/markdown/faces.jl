@@ -78,7 +78,8 @@
         h = Highlighter(f, Face(; weight = :bold, foreground = "#ff0000"))
         @test pretty_table(String, matrix; backend = :markdown, highlighters = [h]) ==
             expected
-        @test PrettyTables._markdown__native_highlighter(h)._decoration == MarkdownStyle(; bold = true)
+        @test PrettyTables._markdown__native_highlighter(h)._decoration ==
+            MarkdownStyle(; bold = true)
         @test pretty_table(String, matrix; backend = :markdown, highlighters = [h]) ==
             expected
 

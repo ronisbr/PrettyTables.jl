@@ -124,7 +124,7 @@ function PrettyTables._excel__print(
             sh = xf[1]
             sheet == sh.name || XLSX.renamesheet!(sh, sheet)
 
-            _excel__write_table!(sh, pspec, opts)
+            return _excel__write_table!(sh, pspec, opts)
         end
 
         return filename

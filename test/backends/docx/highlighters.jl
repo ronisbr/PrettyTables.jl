@@ -40,8 +40,7 @@ end
         ),
         highlighters = [
             DocxHighlighter(
-                (data, i, j) -> true,
-                ["color" => "FF0000", "background" => "EEEEEE"],
+                (data, i, j) -> true, ["color" => "FF0000", "background" => "EEEEEE"]
             ),
         ],
     )
@@ -79,6 +78,6 @@ end
     @test_throws "does not support highlighters of type" pretty_table(
         W.Table,
         [1 2; 3 4];
-        highlighters = [TextHighlighter((data, i, j) -> true, Face(; foreground = :red))]
+        highlighters = [TextHighlighter((data, i, j) -> true, Face(; foreground = :red))],
     )
 end

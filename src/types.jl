@@ -74,14 +74,15 @@ function _normalize_alignment(alignment::Symbol)
     alignment === :R && return :r
     alignment === :N && return :n
 
-    throw(
+    return throw(
         ArgumentError(
-            "Invalid alignment `:$alignment`. The valid alignments are `:l`, `:c`, `:r`, and `:n`."
-        )
+            "Invalid alignment `:$alignment`. The valid alignments are `:l`, `:c`, `:r`, and `:n`.",
+        ),
     )
 end
 
-_normalize_alignment(alignment::AbstractVector{Symbol}) = map(_normalize_alignment, alignment)
+_normalize_alignment(alignment::AbstractVector{Symbol}) =
+    map(_normalize_alignment, alignment)
 _normalize_alignment(::Nothing) = nothing
 
 """
@@ -129,9 +130,7 @@ end
     data::Any
     alignment::Symbol = :c
 
-    function MergeCells(
-        i::Int, j::Int, column_span::Int, data::Any, alignment::Symbol = :c
-    )
+    function MergeCells(i::Int, j::Int, column_span::Int, data::Any, alignment::Symbol = :c)
         return new(i, j, column_span, data, _normalize_alignment(alignment))
     end
 end
@@ -244,27 +243,76 @@ end
     # NOTE: The arguments whose types depend on the user input are not specialized.
     # Otherwise, e.g., each new type of formatter would compile this constructor again.
     Base.@nospecializeinfer function TableData(
-        @nospecialize(data), title, subtitle, stubhead_label, show_row_number_column,
-        row_number_column_label, @nospecialize(column_labels), show_column_labels,
-        @nospecialize(row_labels), row_group_labels, @nospecialize(summary_rows),
-        @nospecialize(summary_row_labels), merge_column_label_cells, footnotes,
-        source_notes, title_alignment, subtitle_alignment, @nospecialize(cell_alignment),
-        column_label_alignment, continuation_row_alignment, data_alignment,
-        row_number_column_alignment, row_label_column_alignment, row_group_label_alignment,
-        footnote_alignment, source_note_alignment, @nospecialize(formatters), num_rows,
-        num_columns, first_row_index, first_column_index, maximum_number_of_columns,
-        maximum_number_of_rows, vertical_crop_mode,
+        @nospecialize(data),
+        title,
+        subtitle,
+        stubhead_label,
+        show_row_number_column,
+        row_number_column_label,
+        @nospecialize(column_labels),
+        show_column_labels,
+        @nospecialize(row_labels),
+        row_group_labels,
+        @nospecialize(summary_rows),
+        @nospecialize(summary_row_labels),
+        merge_column_label_cells,
+        footnotes,
+        source_notes,
+        title_alignment,
+        subtitle_alignment,
+        @nospecialize(cell_alignment),
+        column_label_alignment,
+        continuation_row_alignment,
+        data_alignment,
+        row_number_column_alignment,
+        row_label_column_alignment,
+        row_group_label_alignment,
+        footnote_alignment,
+        source_note_alignment,
+        @nospecialize(formatters),
+        num_rows,
+        num_columns,
+        first_row_index,
+        first_column_index,
+        maximum_number_of_columns,
+        maximum_number_of_rows,
+        vertical_crop_mode,
     )
         return new(
-            data, title, subtitle, stubhead_label, show_row_number_column,
-            row_number_column_label, column_labels, show_column_labels, row_labels,
-            row_group_labels, summary_rows, summary_row_labels, merge_column_label_cells,
-            footnotes, source_notes, title_alignment, subtitle_alignment, cell_alignment,
-            column_label_alignment, continuation_row_alignment, data_alignment,
-            row_number_column_alignment, row_label_column_alignment,
-            row_group_label_alignment, footnote_alignment, source_note_alignment,
-            formatters, num_rows, num_columns, first_row_index, first_column_index,
-            maximum_number_of_columns, maximum_number_of_rows, vertical_crop_mode,
+            data,
+            title,
+            subtitle,
+            stubhead_label,
+            show_row_number_column,
+            row_number_column_label,
+            column_labels,
+            show_column_labels,
+            row_labels,
+            row_group_labels,
+            summary_rows,
+            summary_row_labels,
+            merge_column_label_cells,
+            footnotes,
+            source_notes,
+            title_alignment,
+            subtitle_alignment,
+            cell_alignment,
+            column_label_alignment,
+            continuation_row_alignment,
+            data_alignment,
+            row_number_column_alignment,
+            row_label_column_alignment,
+            row_group_label_alignment,
+            footnote_alignment,
+            source_note_alignment,
+            formatters,
+            num_rows,
+            num_columns,
+            first_row_index,
+            first_column_index,
+            maximum_number_of_columns,
+            maximum_number_of_rows,
+            vertical_crop_mode,
         )
     end
 end

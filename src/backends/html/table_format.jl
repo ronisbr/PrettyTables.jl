@@ -18,10 +18,10 @@ _html__table_style(style::HtmlTableStyle) = style
 _html__table_style(style::TableStyle) = HtmlTableStyle(; _table_style_kwargs(style)...)
 
 function _html__table_style(style::Any)
-    throw(
+    return throw(
         ArgumentError(
-            "The HTML back end does not support a style of type `$(typeof(style))`. Use `HtmlTableStyle` or the backend-agnostic `TableStyle`."
-        )
+            "The HTML back end does not support a style of type `$(typeof(style))`. Use `HtmlTableStyle` or the backend-agnostic `TableStyle`.",
+        ),
     )
 end
 
@@ -72,10 +72,10 @@ of the default HTML table format.
 _html__table_format(table_format::HtmlTableFormat) = table_format
 
 function _html__table_format(table_format::Any)
-    throw(
+    return throw(
         ArgumentError(
-            "The HTML back end does not support a table format of type `$(typeof(table_format))`. Use `HtmlTableFormat` or the backend-agnostic `TableFormat`."
-        )
+            "The HTML back end does not support a table format of type `$(typeof(table_format))`. Use `HtmlTableFormat` or the backend-agnostic `TableFormat`.",
+        ),
     )
 end
 
@@ -89,17 +89,16 @@ function _html__table_format(table_format::TableFormat)
         # not returned by `_table_format_presence_fields` and must be merged here.
         horizontal_line_before_column_labels = _table_format_field(
             table_format.horizontal_line_before_column_labels,
-            def.horizontal_line_before_column_labels
+            def.horizontal_line_before_column_labels,
         ),
-        horizontal_line_after_footnotes      = _table_format_field(
+        horizontal_line_after_footnotes = _table_format_field(
             table_format.horizontal_line_after_footnotes,
-            def.horizontal_line_after_footnotes
+            def.horizontal_line_after_footnotes,
         ),
-        horizontal_line_at_end               = _table_format_field(
-            table_format.horizontal_line_at_end,
-            def.horizontal_line_at_end
+        horizontal_line_at_end = _table_format_field(
+            table_format.horizontal_line_at_end, def.horizontal_line_at_end
         ),
 
-        _table_format_presence_fields(table_format, def)...
+        _table_format_presence_fields(table_format, def)...,
     )
 end

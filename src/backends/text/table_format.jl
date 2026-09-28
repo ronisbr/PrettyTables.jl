@@ -15,10 +15,10 @@ _text__table_style(style::TextTableStyle) = style
 _text__table_style(style::TableStyle) = TextTableStyle(; _table_style_kwargs(style)...)
 
 function _text__table_style(style::Any)
-    throw(
+    return throw(
         ArgumentError(
-            "The text back end does not support a style of type `$(typeof(style))`. Use `TextTableStyle` or the backend-agnostic `TableStyle`."
-        )
+            "The text back end does not support a style of type `$(typeof(style))`. Use `TextTableStyle` or the backend-agnostic `TableStyle`.",
+        ),
     )
 end
 
@@ -46,10 +46,10 @@ set, which has the highest precedence.
 _text__table_format(table_format::TextTableFormat) = table_format
 
 function _text__table_format(table_format::Any)
-    throw(
+    return throw(
         ArgumentError(
-            "The text back end does not support a table format of type `$(typeof(table_format))`. Use `TextTableFormat` or the backend-agnostic `TableFormat`."
-        )
+            "The text back end does not support a table format of type `$(typeof(table_format))`. Use `TextTableFormat` or the backend-agnostic `TableFormat`.",
+        ),
     )
 end
 
@@ -66,28 +66,28 @@ function _text__table_format(table_format::TableFormat)
     right_design  = _text__line_design(table_format.right_line)
 
     return TextTableFormat(;
-        top_line                = _text__horizontal_table_line(
+        top_line = _text__horizontal_table_line(
             top_design, left_design, center_design, right_design
         ),
-        header_line             = _text__horizontal_table_line(
+        header_line = _text__horizontal_table_line(
             header_design, left_design, center_design, right_design
         ),
         merged_header_cell_line = _text__horizontal_table_line(
             merged_design, left_design, center_design, right_design
         ),
-        middle_line             = _text__horizontal_table_line(
+        middle_line = _text__horizontal_table_line(
             middle_design, left_design, center_design, right_design
         ),
-        bottom_line             = _text__horizontal_table_line(
+        bottom_line = _text__horizontal_table_line(
             bottom_design, left_design, center_design, right_design
         ),
-        left_line               = isnothing(left_design) ?
-            nothing : _text__vertical_line_char(left_design),
-        center_line             = isnothing(center_design) ?
-            nothing : _text__vertical_line_char(center_design),
-        right_line              = isnothing(right_design) ?
-            nothing : _text__vertical_line_char(right_design),
-        _table_format_presence_fields(table_format, def)...
+        left_line = isnothing(left_design) ? nothing :
+                    _text__vertical_line_char(left_design),
+        center_line = isnothing(center_design) ? nothing :
+                      _text__vertical_line_char(center_design),
+        right_line = isnothing(right_design) ? nothing :
+                     _text__vertical_line_char(right_design),
+        _table_format_presence_fields(table_format, def)...,
     )
 end
 
@@ -111,8 +111,14 @@ function _text__merge_line_style_colors(nt::NamedTuple, table_format::TableForma
     right  = _text__line_style_face(table_format.right_line)
 
     if (
-        isnothing(top) && isnothing(header) && isnothing(merged) && isnothing(middle) &&
-        isnothing(bottom) && isnothing(left) && isnothing(center) && isnothing(right)
+        isnothing(top) &&
+        isnothing(header) &&
+        isnothing(merged) &&
+        isnothing(middle) &&
+        isnothing(bottom) &&
+        isnothing(left) &&
+        isnothing(center) &&
+        isnothing(right)
     )
         return nt
     end

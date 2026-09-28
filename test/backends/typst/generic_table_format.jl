@@ -14,9 +14,8 @@
         matrix;
         backend = :typst,
         table_format = TypstTableFormat(;
-            horizontal_lines_at_data_rows  = :all,
-            vertical_lines_at_data_columns = :none,
-        )
+            horizontal_lines_at_data_rows = :all, vertical_lines_at_data_columns = :none
+        ),
     )
 
     result = pretty_table(
@@ -24,9 +23,8 @@
         matrix;
         backend = :typst,
         table_format = TableFormat(;
-            horizontal_lines_at_data_rows  = :all,
-            vertical_lines_at_data_columns = :none,
-        )
+            horizontal_lines_at_data_rows = :all, vertical_lines_at_data_columns = :none
+        ),
     )
 
     @test result == expected
@@ -38,8 +36,8 @@
         matrix;
         backend = :typst,
         table_format = TableFormat(;
-            header_line = LineStyle(; style = :dashed, width = :thick, color = :red),
-        )
+            header_line = LineStyle(; style = :dashed, width = :thick, color = :red)
+        ),
     )
 
     @test occursin("(thickness: 1.5pt, paint: rgb(\"#a51c2c\"), dash: \"dashed\")", result)
@@ -52,16 +50,12 @@
         String,
         matrix;
         backend = :typst,
-        style = TypstTableStyle(; first_line_column_label = Face(; slant = :italic))
+        style = TypstTableStyle(; first_line_column_label = Face(; slant = :italic)),
     )
 
     # == Empty Generic Table Format and Style ==============================================
 
     @test pretty_table(
-        String,
-        matrix;
-        backend = :typst,
-        style = TableStyle(),
-        table_format = TableFormat()
+        String, matrix; backend = :typst, style = TableStyle(), table_format = TableFormat()
     ) == pretty_table(String, matrix; backend = :typst)
 end

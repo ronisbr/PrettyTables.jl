@@ -46,7 +46,9 @@ end
     # This is asserted through the allocation count, which is deterministic, instead of
     # through the elapsed time.
     function allocations_for(n)
-        io = IOContext(IOBuffer(), :displaysize => (25, 80), :color => false, :limit => true)
+        io = IOContext(
+            IOBuffer(), :displaysize => (25, 80), :color => false, :limit => true
+        )
 
         # Warm up so that compilation is not measured.
         pretty_table(io, 1:n)

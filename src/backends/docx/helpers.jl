@@ -59,11 +59,11 @@ table_format = DocxTableFormat(; @docx__all_vertical_lines, vertical_line_after_
 macro docx__all_vertical_lines()
     return :(
         (
-            vertical_line_at_beginning            = true,
-            vertical_line_after_row_number_column = true,
-            vertical_line_after_row_label_column  = true,
-            vertical_lines_at_data_columns        = :all,
-            vertical_line_after_data_columns      = true,
+            vertical_line_at_beginning              = true,
+            vertical_line_after_row_number_column   = true,
+            vertical_line_after_row_label_column    = true,
+            vertical_lines_at_data_columns          = :all,
+            vertical_line_after_data_columns        = true,
             vertical_line_after_continuation_column = true,
         )...
     )
@@ -121,11 +121,11 @@ table_format = DocxTableFormat(; @docx__no_vertical_lines, vertical_line_at_begi
 macro docx__no_vertical_lines()
     return :(
         (
-            vertical_line_at_beginning            = false,
-            vertical_line_after_row_number_column = false,
-            vertical_line_after_row_label_column  = false,
-            vertical_lines_at_data_columns        = :none,
-            vertical_line_after_data_columns      = false,
+            vertical_line_at_beginning              = false,
+            vertical_line_after_row_number_column   = false,
+            vertical_line_after_row_label_column    = false,
+            vertical_lines_at_data_columns          = :none,
+            vertical_line_after_data_columns        = false,
             vertical_line_after_continuation_column = false,
         )...
     )

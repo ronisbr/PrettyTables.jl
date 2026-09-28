@@ -8,6 +8,11 @@
 const _DEFAULT_MARKDOWN_TABLE_STYLE  = MarkdownTableStyle()
 const _DEFAULT_MARKDOWN_TABLE_FORMAT = MarkdownTableFormat()
 
+# Actions related to the table cells, which are rendered before computing the column widths.
+const _MARKDOWN__CELL_ACTIONS = (
+    :column_label, :data, :summary_row_cell, :row_label, :summary_row_label
+)
+
 ############################################################################################
 #                                      Print Options                                       #
 ############################################################################################
@@ -65,8 +70,8 @@ function _markdown__print_core(pspec::PrintingSpec, opts::MarkdownPrintOptions)
     # NOTE: `Val(pspec.renderer)` infers to the abstract `Val` because
     # `pspec.renderer` is a `Symbol`. Branching here keeps the renderer concrete, so the
     # per-cell rendering calls are statically dispatched.
-    renderer   = pspec.renderer === :show ? Val(:show) : Val(:print)
-    tf         = table_format
+    renderer = pspec.renderer === :show ? Val(:show) : Val(:print)
+    tf       = table_format
 
     ps     = PrintingTableState()
     buf_io = IOBuffer()
@@ -146,8 +151,7 @@ function _markdown__print_core(pspec::PrintingSpec, opts::MarkdownPrintOptions)
         ir, jr = _update_data_cell_indices(action, rs, ps, ir, jr)
 
         # Here, we only want actions related to table cells.
-        action ∉ (:column_label, :data, :summary_row_cell, :row_label, :summary_row_label) &&
-            continue
+        action ∉ _MARKDOWN__CELL_ACTIONS && continue
 
         cell = _current_cell(action, ps, table_data)
 
@@ -155,12 +159,12 @@ function _markdown__print_core(pspec::PrintingSpec, opts::MarkdownPrintOptions)
         # special rendering of, e.g., Markdown and styled strings would be lost.
         (cell isa MergeCells) && (cell = cell.data)
 
-        rendered_cell = if cell !== _IGNORE_CELL
-            _markdown__render_cell(
+        rendered_cell = ""
+
+        if cell !== _IGNORE_CELL
+            rendered_cell = _markdown__render_cell(
                 cell, rctx, renderer; allow_markdown_in_cells, line_breaks
             )
-        else
-            ""
         end
 
         # Check for footnotes. Notice that the references must be placed after the style,
@@ -257,7 +261,9 @@ function _markdown__print_core(pspec::PrintingSpec, opts::MarkdownPrintOptions)
 
     decorated_stubhead_label = _markdown__apply_style(
         style.stubhead_label,
-        _markdown__escape_str(table_data.stubhead_label, line_breaks, !allow_markdown_in_cells),
+        _markdown__escape_str(
+            table_data.stubhead_label, line_breaks, !allow_markdown_in_cells
+        ),
     )
 
     # == Compute the Column Width ==========================================================
@@ -398,7 +404,9 @@ function _markdown__print_core(pspec::PrintingSpec, opts::MarkdownPrintOptions)
                     _current_cell(action, ps, table_data), line_breaks, true
                 )
 
-                println(buf, rendered_cell, _markdown__footnote_marks(table_data, action, 1, 0))
+                println(
+                    buf, rendered_cell, _markdown__footnote_marks(table_data, action, 1, 0)
+                )
                 println(buf)
             end
 
@@ -499,7 +507,6 @@ function _markdown__print_core(pspec::PrintingSpec, opts::MarkdownPrintOptions)
                     row_label_column_width,
                     printed_data_column_widths,
                 )
-
             end
 
             # We reach this point only once because the Markdown table ends here. Thus, we
@@ -518,7 +525,9 @@ function _markdown__print_core(pspec::PrintingSpec, opts::MarkdownPrintOptions)
         elseif action == :row_group_label
             row_group_label = _markdown__apply_style(
                 style.row_group_label,
-                _markdown__row_group_label(_current_cell(action, ps, table_data), line_breaks),
+                _markdown__row_group_label(
+                    _current_cell(action, ps, table_data), line_breaks
+                ),
             )
 
             # In this case, we write the row group to the first cell and fill the entire
@@ -573,11 +582,12 @@ function _markdown__print_core(pspec::PrintingSpec, opts::MarkdownPrintOptions)
                 end
 
             elseif action == :row_number
-                cell          = _current_cell(action, ps, table_data)
-                cell_width    = row_number_column_width
-                rendered_cell = _markdown__apply_style(
-                    style.row_number, _markdown__render_cell(cell, rctx, renderer)
-                ) * _markdown__footnote_marks(table_data, action, ps.i, ps.j)
+                cell = _current_cell(action, ps, table_data)
+                cell_width = row_number_column_width
+                rendered_cell =
+                    _markdown__apply_style(
+                        style.row_number, _markdown__render_cell(cell, rctx, renderer)
+                    ) * _markdown__footnote_marks(table_data, action, ps.i, ps.j)
 
             elseif action == :data
                 cell_width    = printed_data_column_widths[jr]

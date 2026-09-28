@@ -9,7 +9,9 @@
 
 Guess the column label associated with `data` in case the user did not pass a default value.
 """
-Base.@nospecializeinfer function _guess_column_labels(@nospecialize(data::Union{ColumnTable, RowTable}))
+Base.@nospecializeinfer function _guess_column_labels(
+    @nospecialize(data::Union{ColumnTable, RowTable})
+)
     column_labels = [string.(data.column_names)]
     sch           = Tables.schema(_get_data(data))
 
@@ -74,7 +76,7 @@ vectors of functions, avoiding the compilation of `convert` for each new type.
 Base.@nospecializeinfer function _vector_any(@nospecialize(v::AbstractVector))
     # The most common vectors are converted directly. Otherwise, each element would require
     # a dynamic dispatch, which is expensive compared to the time to print a small table.
-    v isa Vector{Any}    && return copy(v)
+    v isa Vector{Any} && return copy(v)
     v isa Vector{String} && return Vector{Any}(v)
     v isa Vector{Symbol} && return Vector{Any}(v)
 
@@ -106,7 +108,9 @@ Base.@nospecializeinfer function _preprocess_data(@nospecialize(data::AbstractVe
 end
 
 function _preprocess_data(@nospecialize(data::AbstractArray))
-    throw(ArgumentError("`pretty_table` does not support data with more than 2 dimensions."))
+    return throw(
+        ArgumentError("`pretty_table` does not support data with more than 2 dimensions.")
+    )
 end
 
 function _preprocess_data(dict::AbstractDict)
@@ -317,14 +321,15 @@ function _check_column_label_styles(
     num_columns::Int,
 )
     for (name, s) in (
-        ("first_line_column_label", first_line_column_label),
-        ("column_label", column_label),
+        ("first_line_column_label", first_line_column_label), ("column_label", column_label)
     )
-        (s isa per_column) && (length(s) != num_columns) && throw(
-            ArgumentError(
-                "The length of `$name` in `style` must be equal to the number of columns ($num_columns).",
-            ),
-        )
+        (s isa per_column) &&
+            (length(s) != num_columns) &&
+            throw(
+                ArgumentError(
+                    "The length of `$name` in `style` must be equal to the number of columns ($num_columns).",
+                ),
+            )
     end
 
     return nothing

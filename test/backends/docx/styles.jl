@@ -154,29 +154,25 @@ end
     @test docx_hex(only(docx_runs(docx_cell(table, 1, 1))).properties.color) == "00FF00"
 
     @test_throws "is not a valid Word style attribute" pretty_table(
-        W.Table,
-        [1 2; 3 4];
-        style = DocxTableStyle(; data_cell = ["shadow" => "true"])
+        W.Table, [1 2; 3 4]; style = DocxTableStyle(; data_cell = ["shadow" => "true"])
     )
 
     @test_throws "is not a valid Word underline pattern" pretty_table(
         W.Table,
         [1 2; 3 4];
-        style = DocxTableStyle(; data_cell = ["underline" => "squiggly"])
+        style = DocxTableStyle(; data_cell = ["underline" => "squiggly"]),
     )
 
     @test_throws "is neither a 6-digit hexadecimal string nor a known color name" begin
         pretty_table(
             W.Table,
             [1 2; 3 4];
-            style = DocxTableStyle(; data_cell = ["color" => "burgundy"])
+            style = DocxTableStyle(; data_cell = ["color" => "burgundy"]),
         )
     end
 
     @test_throws "must be either \"true\" or \"false\"" pretty_table(
-        W.Table,
-        [1 2; 3 4];
-        style = DocxTableStyle(; data_cell = ["bold" => "yes"])
+        W.Table, [1 2; 3 4]; style = DocxTableStyle(; data_cell = ["bold" => "yes"])
     )
 
     @test_throws "is not a valid Word border style" pretty_table(
@@ -184,15 +180,13 @@ end
         [1 2; 3 4];
         table_format = DocxTableFormat(;
             borders = DocxTableBorders(; top_line = ["style" => "wiggly"])
-        )
+        ),
     )
 
     # Names defined in the enum module that are not enum values, like the enum type `T`,
     # must also be rejected.
     @test_throws ArgumentError pretty_table(
-        W.Table,
-        [1 2; 3 4];
-        style = DocxTableStyle(; data_cell = ["underline" => "T"])
+        W.Table, [1 2; 3 4]; style = DocxTableStyle(; data_cell = ["underline" => "T"])
     )
 
     @test_throws ArgumentError pretty_table(
@@ -200,6 +194,6 @@ end
         [1 2; 3 4];
         table_format = DocxTableFormat(;
             borders = DocxTableBorders(; top_line = ["style" => "T"])
-        )
+        ),
     )
 end

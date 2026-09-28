@@ -26,9 +26,7 @@ function _docx__render_cell(cell::Any, context::RenderContext, renderer::_DOCX__
 end
 
 function _docx__render_cell(
-    cell::MergeCells,
-    context::RenderContext,
-    renderer::_DOCX__RENDERER,
+    cell::MergeCells, context::RenderContext, renderer::_DOCX__RENDERER
 )
     return _docx__render_cell(cell.data, context, renderer)
 end
@@ -53,9 +51,7 @@ end
 
 @static if VERSION >= v"1.11"
     # Each face region of a styled string becomes a run with its own properties.
-    function _docx__render_cell(
-        cell::_StyledString, ::RenderContext, ::_DOCX__RENDERER
-    )
+    function _docx__render_cell(cell::_StyledString, ::RenderContext, ::_DOCX__RENDERER)
         runs = DocxRun[]
 
         for (text, face) in _face_regions(cell)

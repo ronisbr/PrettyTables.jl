@@ -359,10 +359,7 @@
         # The `<tfoot>` section must be closed with `</tfoot>`, and `</tbody>` must be
         # emitted exactly once.
         result = pretty_table(
-            String,
-            [1 2];
-            backend = :html,
-            footnotes = [(:column_label, 1, 1) => "note A"],
+            String, [1 2]; backend = :html, footnotes = [(:column_label, 1, 1) => "note A"]
         )
 
         @test occursin("</tfoot>", result)

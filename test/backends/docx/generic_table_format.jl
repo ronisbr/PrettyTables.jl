@@ -13,8 +13,8 @@
         W.Table,
         matrix;
         table_format = TableFormat(;
-            header_line = LineStyle(; style = :dashed, color = 0xff0000),
-        )
+            header_line = LineStyle(; style = :dashed, color = 0xff0000)
+        ),
     )
 
     # The header line is the bottom border of the column label row. The unset width keeps
@@ -45,9 +45,7 @@
     # == Line Presence =====================================================================
 
     table = pretty_table(
-        W.Table,
-        matrix;
-        table_format = TableFormat(; horizontal_line_at_beginning = false)
+        W.Table, matrix; table_format = TableFormat(; horizontal_line_at_beginning = false)
     )
 
     @test docx_border(docx_cell(table, 1, 1), :top) === nothing
@@ -57,7 +55,7 @@
     table = pretty_table(
         W.Table,
         matrix;
-        table_format = DocxTableFormat(; horizontal_line_at_beginning = false)
+        table_format = DocxTableFormat(; horizontal_line_at_beginning = false),
     )
 
     @test docx_border(docx_cell(table, 1, 1), :top) === nothing
@@ -68,8 +66,8 @@
         W.Table,
         matrix;
         style = TableStyle(;
-            first_line_column_label = Face(; slant = :italic, foreground = 0xff0000),
-        )
+            first_line_column_label = Face(; slant = :italic, foreground = 0xff0000)
+        ),
     )
 
     properties = only(docx_runs(docx_cell(table, 1, 1))).properties

@@ -83,7 +83,8 @@
 
         h = Highlighter(f, Face(; weight = :bold, foreground = "#ff0000"))
         @test pretty_table(String, matrix; backend = :latex, highlighters = [h]) == expected
-        @test PrettyTables._latex__native_highlighter(h)._environments == ["textbf", "textcolor[HTML]{FF0000}"]
+        @test PrettyTables._latex__native_highlighter(h)._environments ==
+            ["textbf", "textcolor[HTML]{FF0000}"]
         @test pretty_table(String, matrix; backend = :latex, highlighters = [h]) == expected
 
         # The function `fd` can return a face or the native decoration.

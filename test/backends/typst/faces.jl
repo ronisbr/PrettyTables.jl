@@ -81,7 +81,8 @@
 
         @test occursin("[#text(weight: \"bold\", fill: rgb(\"#ff0000\"),)[1]]", expected)
         @test pretty_table(String, matrix; backend = :typst, highlighters = [h]) == expected
-        @test PrettyTables._typst__native_highlighter(h)._decoration == ["text-weight" => "bold", "text-fill" => "rgb(\"#ff0000\")"]
+        @test PrettyTables._typst__native_highlighter(h)._decoration ==
+            ["text-weight" => "bold", "text-fill" => "rgb(\"#ff0000\")"]
         @test pretty_table(String, matrix; backend = :typst, highlighters = [h]) == expected
 
         # A background is a cell property.

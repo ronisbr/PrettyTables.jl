@@ -89,7 +89,7 @@ end
 @testset "Non-Printable Characters" begin
     # Typst has no `\xNN` escape sequence, and its Unicode escape requires braces. Hence,
     # the non-printable characters must be emitted as `\u{...}`.
-    result = pretty_table(String, ["a\x01b​c" ;;]; backend = :typst)
+    result = pretty_table(String, ["a\x01b​c";;]; backend = :typst)
 
     @test occursin("[a\\u{1}b\\u{200b}c],", result)
 end
@@ -182,7 +182,9 @@ end
     @test occursin("[#super[2]\\(f)]", result)
 
     @static if VERSION >= v"1.11"
-        result = pretty_table(String, [styled"{bold:x}.y" styled"{bold:a}(b)"]; backend = :typst)
+        result = pretty_table(
+            String, [styled"{bold:x}.y" styled"{bold:a}(b)"]; backend = :typst
+        )
 
         @test occursin("[#text(weight: \"bold\",)[x]\\.y]", result)
         @test occursin("[#text(weight: \"bold\",)[a]\\(b)]", result)

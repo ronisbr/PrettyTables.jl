@@ -93,7 +93,7 @@ end
         XLSX.XLSXFile,
         [1 2; 3 4];
         highlighters = [
-            ExcelHighlighter((data, i, j) -> data[i, j] > 2, ["color" => "red"]),
+            ExcelHighlighter((data, i, j) -> data[i, j] > 2, ["color" => "red"])
         ],
         style = ExcelTableStyle(; data_cell = ["italic" => "true"]),
     )

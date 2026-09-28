@@ -173,7 +173,7 @@
     @testset "Sentinels Are Not Escaped" begin
         # `#` must not be escaped, otherwise the sentinels this package emits would be
         # corrupted.
-        v    = Vector{Any}(undef, 1)
+        v = Vector{Any}(undef, 1)
         result = pretty_table(String, v; backend = :markdown)
 
         @test occursin("#undef", result)
@@ -197,10 +197,7 @@ end
 @testset "Merged Column Labels With Special Cells" begin
     # The content of a merged column label must be rendered like any other cell.
     result = pretty_table(
-        String,
-        [1 2];
-        backend = :markdown,
-        column_labels = [[MultiColumn(2, md"*x*")]],
+        String, [1 2]; backend = :markdown, column_labels = [[MultiColumn(2, md"*x*")]]
     )
 
     @test occursin("*x*", result)

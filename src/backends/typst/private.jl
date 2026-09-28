@@ -468,8 +468,9 @@ end
 # inside a Typst content block (`[...]`), meaning that an unbalanced `[` or `]` silently
 # breaks the entire document. The slash must be escaped because `//` and `/*` start a
 # comment and `/ ` starts a term list.
-const _TYPST__ESCAPED_CHARACTERS =
-    ('\\', '#', '[', ']', '*', '_', '$', '<', '>', '@', '`', '~', '/')
+const _TYPST__ESCAPED_CHARACTERS = (
+    '\\', '#', '[', ']', '*', '_', '$', '<', '>', '@', '`', '~', '/'
+)
 
 """
     _typst__line_start_markup_index(s::Union{String, SubString{String}}) -> Int
@@ -548,13 +549,19 @@ function _typst__escape_str(io::IO, s::_PlainString, line_breaks::Bool = false)
             # characters must be emitted using the `\u{...}` escape sequence. The semicolon
             # after the line break ends the function call, so that the next characters are
             # not parsed as its arguments.
-            (c == '\n') ? print(io, line_breaks ? "#linebreak();" : "\\\\n") :
-            (
+            if (c == '\n')
+                print(io, line_breaks ? "#linebreak();" : "\\\\n")
+            elseif (
                 (c ∈ _TYPST__ESCAPED_CHARACTERS) ||
                 (i == markup_index) ||
                 (((c == '-') || (c == '.')) && _typst__next_char_is(s, i, c))
-            ) ? print(io, '\\', c) :
-            isprint(c) ? print(io, c) : print(io, "\\u{", string(UInt32(c); base = 16), "}")
+            )
+                print(io, '\\', c)
+            elseif isprint(c)
+                print(io, c)
+            else
+                print(io, "\\u{", string(UInt32(c); base = 16), "}")
+            end
 
         elseif !Base.isoverlong(c) && !Base.ismalformed(c)
             isprint(c) ? print(io, c) : print(io, "\\u{", string(UInt32(c); base = 16), "}")

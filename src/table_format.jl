@@ -45,15 +45,15 @@ struct LineStyle
         (isnothing(style) || style ∈ _LINE_STYLE_STYLES) || throw(
             ArgumentError(
                 "The line style `:$style` is not supported. Valid values are `:solid`, " *
-                "`:dashed`, `:dotted`, and `:double`."
-            )
+                "`:dashed`, `:dotted`, and `:double`.",
+            ),
         )
 
         (isnothing(width) || width ∈ _LINE_STYLE_WIDTHS) || throw(
             ArgumentError(
                 "The line width `:$width` is not supported. Valid values are `:thin`, " *
-                "`:medium`, and `:thick`."
-            )
+                "`:medium`, and `:thick`.",
+            ),
         )
 
         return new(style, width, _line_style_color(color))
@@ -107,9 +107,8 @@ function _line_style_color(color::Symbol)
 end
 
 function _line_style_color(color::UInt32)
-    color > 0xffffff && throw(
-        ArgumentError("The color `$(repr(color))` is not a 24-bit color.")
-    )
+    color > 0xffffff &&
+        throw(ArgumentError("The color `$(repr(color))` is not a 24-bit color."))
 
     return SimpleColor(color)
 end
@@ -118,7 +117,7 @@ function _line_style_color(color::NTuple{3, Integer})
     all(c -> 0 <= c <= 255, color) || throw(
         ArgumentError(
             "The components of the color `$color` must be integers between 0 and 255."
-        )
+        ),
     )
 
     return SimpleColor(color...)
@@ -127,18 +126,17 @@ end
 function _line_style_color(color::AbstractString)
     c = tryparse(SimpleColor, String(color))
 
-    isnothing(c) && throw(
-        ArgumentError("The string \"$color\" cannot be converted to a color.")
-    )
+    isnothing(c) &&
+        throw(ArgumentError("The string \"$color\" cannot be converted to a color."))
 
     return c
 end
 
 function _line_style_color(color::Any)
-    throw(
+    return throw(
         ArgumentError(
             "A line color cannot be created from an object of type `$(typeof(color))`."
-        )
+        ),
     )
 end
 
@@ -150,8 +148,8 @@ line design must be kept.
 """
 function _line_style_is_empty(line_style::LineStyle)
     return isnothing(line_style.style) &&
-        isnothing(line_style.width) &&
-        isnothing(line_style.color)
+           isnothing(line_style.width) &&
+           isnothing(line_style.color)
 end
 
 ############################################################################################
@@ -278,24 +276,24 @@ Each field below describes the design of one line role using a [`LineStyle`](@re
 
     # == Line Presence =====================================================================
 
-    horizontal_line_at_beginning::Union{Nothing, Bool}                 = nothing
-    horizontal_line_before_column_labels::Union{Nothing, Bool}         = nothing
-    horizontal_line_after_column_labels::Union{Nothing, Bool}          = nothing
-    horizontal_line_at_merged_column_labels::Union{Nothing, Bool}      = nothing
-    horizontal_lines_at_data_rows::Union{Nothing, Symbol, Vector{Int}} = nothing
-    horizontal_line_before_row_group_label::Union{Nothing, Bool}       = nothing
-    horizontal_line_after_row_group_label::Union{Nothing, Bool}        = nothing
-    horizontal_line_after_data_rows::Union{Nothing, Bool}              = nothing
-    horizontal_line_before_summary_rows::Union{Nothing, Bool}          = nothing
-    horizontal_line_after_summary_rows::Union{Nothing, Bool}           = nothing
-    horizontal_line_after_footnotes::Union{Nothing, Bool}              = nothing
-    horizontal_line_at_end::Union{Nothing, Bool}                       = nothing
-    vertical_line_at_beginning::Union{Nothing, Bool}                   = nothing
-    vertical_line_after_row_number_column::Union{Nothing, Bool}        = nothing
-    vertical_line_after_row_label_column::Union{Nothing, Bool}         = nothing
+    horizontal_line_at_beginning::Union{Nothing, Bool}                  = nothing
+    horizontal_line_before_column_labels::Union{Nothing, Bool}          = nothing
+    horizontal_line_after_column_labels::Union{Nothing, Bool}           = nothing
+    horizontal_line_at_merged_column_labels::Union{Nothing, Bool}       = nothing
+    horizontal_lines_at_data_rows::Union{Nothing, Symbol, Vector{Int}}  = nothing
+    horizontal_line_before_row_group_label::Union{Nothing, Bool}        = nothing
+    horizontal_line_after_row_group_label::Union{Nothing, Bool}         = nothing
+    horizontal_line_after_data_rows::Union{Nothing, Bool}               = nothing
+    horizontal_line_before_summary_rows::Union{Nothing, Bool}           = nothing
+    horizontal_line_after_summary_rows::Union{Nothing, Bool}            = nothing
+    horizontal_line_after_footnotes::Union{Nothing, Bool}               = nothing
+    horizontal_line_at_end::Union{Nothing, Bool}                        = nothing
+    vertical_line_at_beginning::Union{Nothing, Bool}                    = nothing
+    vertical_line_after_row_number_column::Union{Nothing, Bool}         = nothing
+    vertical_line_after_row_label_column::Union{Nothing, Bool}          = nothing
     vertical_lines_at_data_columns::Union{Nothing, Symbol, Vector{Int}} = nothing
-    vertical_line_after_data_columns::Union{Nothing, Bool}             = nothing
-    vertical_line_after_continuation_column::Union{Nothing, Bool}      = nothing
+    vertical_line_after_data_columns::Union{Nothing, Bool}              = nothing
+    vertical_line_after_continuation_column::Union{Nothing, Bool}       = nothing
 end
 
 """
@@ -315,9 +313,7 @@ Convert `line_style` to the back end native line design using `converter`, retur
 `line_style` keep the default line design.
 """
 function _table_format_border(
-    line_style::Union{Nothing, LineStyle},
-    converter::Function,
-    default::Any
+    line_style::Union{Nothing, LineStyle}, converter::Function, default::Any
 )
     (isnothing(line_style) || _line_style_is_empty(line_style)) && return default
     return converter(line_style; default)
@@ -355,8 +351,8 @@ the returned tuple and must be merged by the HTML converter.
 function _table_format_presence_fields(tf::TableFormat, def::Any)
     return NamedTuple{_TABLE_FORMAT_PRESENCE_FIELDS}(
         map(_TABLE_FORMAT_PRESENCE_FIELDS) do f
-            _table_format_field(getfield(tf, f), getfield(def, f))
-        end
+            return _table_format_field(getfield(tf, f), getfield(def, f))
+        end,
     )
 end
 
@@ -370,11 +366,8 @@ as `nothing` in `tf`, or whose field name is in `skip`, keeps the default border
 (see `_table_format_border`).
 """
 function _table_format_borders(
-    tf::TableFormat,
-    def::B,
-    converter::Function;
-    skip::Tuple = ()
-) where B
+    tf::TableFormat, def::B, converter::Function; skip::Tuple = ()
+) where {B}
     return B(
         map(fieldnames(B)) do f
             (f ∈ skip) && return getfield(def, f)

@@ -58,7 +58,7 @@
             [1 2];
             backend = :markdown,
             style = MarkdownTableStyle(;
-                first_line_column_label = MarkdownStyle(; bold = true, code = true),
+                first_line_column_label = MarkdownStyle(; bold = true, code = true)
             ),
         )
 

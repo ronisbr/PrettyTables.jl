@@ -82,8 +82,7 @@ function _text__is_printing_horizontally_limited(
     num_remaining_columns = display_width - table_width_wo_cont_col
 
     return (num_remaining_columns < 0) || (
-        (num_remaining_columns == 0) &&
-        (num_printed_data_columns != table_data.num_columns)
+        (num_remaining_columns == 0) && (num_printed_data_columns != table_data.num_columns)
     )
 end
 
@@ -366,8 +365,9 @@ function _text__number_of_required_lines(
     num_rows = table_data.num_rows
 
     # The horizontal line after the last data row is not counted here.
-    num_non_data_lines =
-        _text__count_horizontal_lines(horizontal_lines_at_data_rows, num_rows - 1)
+    num_non_data_lines = _text__count_horizontal_lines(
+        horizontal_lines_at_data_rows, num_rows - 1
+    )
 
     if _has_row_group_labels(table_data)
         row_group_labels = table_data.row_group_labels
@@ -476,17 +476,15 @@ function _text__design_vertical_cropping(
     # omitted.
     total_table_lines += show_omitted_row_summary && omitted_columns
 
-    (max_rows == num_rows) && (total_table_lines <= display_number_of_rows) &&
+    (max_rows == num_rows) &&
+        (total_table_lines <= display_number_of_rows) &&
         return num_rows, false, false
 
     # We need one additional line to show the omitted row summary, if required, and one line
     # for the continuation row, since we must crop the table here.
     available_lines =
-        display_number_of_rows -
-        num_lines_before_data -
-        num_lines_after_data -
-        show_omitted_row_summary -
-        1
+        display_number_of_rows - num_lines_before_data - num_lines_after_data -
+        show_omitted_row_summary - 1
 
     num_printed_lines = 0
 
@@ -611,22 +609,25 @@ function _text__middle_cropped_table_lines(
     last_column       = clamp(last_printed_column_index, 0, size(table_str, 2))
 
     # The continuation row and the omitted cell summary are always printed.
-    num_lines =
-        num_lines_before_data + num_lines_after_data + show_omitted_row_summary + 1
+    num_lines = num_lines_before_data + num_lines_after_data + show_omitted_row_summary + 1
 
     for r in 1:num_rendered_rows
         row_lines = _text__row_lines(table_str, r, last_column)
 
         num_lines += if r <= num_top_rows
-            first(_text__data_row_lines(
-                table_data, tf, horizontal_lines_at_data_rows, r, row_lines
-            ))
+            first(
+                _text__data_row_lines(
+                    table_data, tf, horizontal_lines_at_data_rows, r, row_lines
+                ),
+            )
         else
             i = table_data.num_rows - num_rendered_rows + r
 
-            first(_text__bottom_data_row_lines(
-                table_data, tf, horizontal_lines_at_data_rows, i, row_lines
-            ))
+            first(
+                _text__bottom_data_row_lines(
+                    table_data, tf, horizontal_lines_at_data_rows, i, row_lines
+                ),
+            )
         end
     end
 
@@ -729,18 +730,15 @@ function _text__design_vertical_cropping_with_line_breaks(
     # We need one additional line to show the omitted row summary, if required, and one line
     # for the continuation row, since we must crop the table here.
     available_lines =
-        display_number_of_rows -
-        num_lines_before_data -
-        num_lines_after_data -
-        show_omitted_row_summary -
-        1
+        display_number_of_rows - num_lines_before_data - num_lines_after_data -
+        show_omitted_row_summary - 1
 
     num_printed_lines = 0
     last_row_cropped  = false
 
     for i in 1:num_rendered_rows
         row_lines = _text__row_lines(table_str, i, last_column)
-        Δ, hline  = _text__data_row_lines(
+        Δ, hline = _text__data_row_lines(
             table_data, tf, horizontal_lines_at_data_rows, i, row_lines
         )
 

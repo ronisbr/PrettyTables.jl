@@ -141,10 +141,7 @@ end
 """
 
         result = pretty_table(
-            String,
-            matrix;
-            maximum_number_of_rows = 0,
-            show_column_labels = false,
+            String, matrix; maximum_number_of_rows = 0, show_column_labels = false
         )
 
         @test result == expected
@@ -194,19 +191,15 @@ end
 
     @test pretty_table(String, matrix; maximum_number_of_columns = 0) == expected
 
-    @test occursin("{|c|}", pretty_table(
-        String,
-        matrix;
-        backend = :latex,
-        maximum_number_of_columns = 0,
-    ))
+    @test occursin(
+        "{|c|}",
+        pretty_table(String, matrix; backend = :latex, maximum_number_of_columns = 0),
+    )
 
-    @test occursin("columns: (auto,),", pretty_table(
-        String,
-        matrix;
-        backend = :typst,
-        maximum_number_of_columns = 0,
-    ))
+    @test occursin(
+        "columns: (auto,),",
+        pretty_table(String, matrix; backend = :typst, maximum_number_of_columns = 0),
+    )
 end
 
 @testset "Width Keyword Validation" verbose = true begin
@@ -219,9 +212,7 @@ end
             :maximum_data_column_widths,
         )
             @test_throws ArgumentError pretty_table(
-                String,
-                matrix;
-                NamedTuple{(name,)}(([5],))...,
+                String, matrix; NamedTuple{(name,)}(([5],))...
             )
         end
     end
@@ -233,10 +224,7 @@ end
     # per cell.
     matrix = [1 2]
 
-    footnotes = [
-        (:data, 1, 1) => "one",
-        (:data, 1, 1) => "two",
-    ]
+    footnotes = [(:data, 1, 1) => "one", (:data, 1, 1) => "two"]
 
     @testset "Text" begin
         result = pretty_table(String, matrix; footnotes)

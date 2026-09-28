@@ -172,8 +172,7 @@ end
             String,
             matrix;
             table_format = TextTableFormat(;
-                horizontal_lines_at_data_rows  = [1],
-                vertical_lines_at_data_columns = [1],
+                horizontal_lines_at_data_rows = [1], vertical_lines_at_data_columns = [1]
             ),
         )
 
@@ -195,8 +194,7 @@ end
             String,
             matrix;
             table_format = TextTableFormat(;
-                horizontal_lines_at_data_rows  = :all,
-                vertical_lines_at_data_columns = :all,
+                horizontal_lines_at_data_rows = :all, vertical_lines_at_data_columns = :all
             ),
         )
 
@@ -225,10 +223,7 @@ end
     result = pretty_table(
         String,
         matrix;
-        column_labels = [
-            [MultiColumn(2, "X"), MultiColumn(2, "Y")],
-            ["a", "b", "c", "d"],
-        ],
+        column_labels = [[MultiColumn(2, "X"), MultiColumn(2, "Y")], ["a", "b", "c", "d"]],
         table_format = TextTableFormat(; horizontal_line_at_merged_column_labels = true),
         show_row_number_column = true,
         row_labels = ["r1", "r2"],

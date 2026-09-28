@@ -15,6 +15,9 @@ const _FACE_LIGHT_WEIGHTS = (:semilight, :light, :extralight, :thin)
 # Slants of a face that are rendered in italics.
 const _FACE_ITALIC_SLANTS = (:italic, :oblique)
 
+# Types of the objects stored in the field `underline` of a face, except `nothing`.
+const _FaceUnderline = Union{Bool, SimpleColor, Tuple{Union{Nothing, SimpleColor}, Symbol}}
+
 # Names of the 16 terminal colors in StyledStrings.jl, indexed by the color number.
 const _FACE_16_COLOR_NAMES = (
     :black,
@@ -169,8 +172,7 @@ which are converted to their names.
 """
 function _face_from_crayon(crayon::Crayon)
     weight = _face_weight_from_bold_faint(
-        _face_state_from_crayon(crayon.bold),
-        _face_state_from_crayon(crayon.faint),
+        _face_state_from_crayon(crayon.bold), _face_state_from_crayon(crayon.faint)
     )
 
     italics = _face_state_from_crayon(crayon.italics)
@@ -247,23 +249,23 @@ Create a face from the keyword `pairs` (see `_face_from_kwargs`).
     # are type-asserted instead of converted. Otherwise, the values of type `Any` would be
     # converted, and the conversion is invalidated by methods defined by other packages,
     # such as `convert(::Type{String}, ::T)`.
-    bold::Union{Nothing, Bool}                   = nothing
-    faint::Union{Nothing, Bool}                  = nothing
-    font::Union{Nothing, String}                 = nothing
-    height::Union{Nothing, Float64, Int}         = nothing
-    weight::Union{Nothing, Symbol}               = nothing
-    slant::Union{Nothing, Symbol}                = nothing
-    foreground::Union{Nothing, SimpleColor}      = nothing
-    background::Union{Nothing, SimpleColor}      = nothing
-    underline::Union{Nothing, Bool, SimpleColor, Tuple{Union{Nothing, SimpleColor}, Symbol}} =
-        nothing
-    strikethrough::Union{Nothing, Bool}          = nothing
-    inverse::Union{Nothing, Bool}                = nothing
-    inherit::Vector{Symbol}                      = Symbol[]
+    bold::Union{Nothing, Bool}                = nothing
+    faint::Union{Nothing, Bool}               = nothing
+    font::Union{Nothing, String}              = nothing
+    height::Union{Nothing, Float64, Int}      = nothing
+    weight::Union{Nothing, Symbol}            = nothing
+    slant::Union{Nothing, Symbol}             = nothing
+    foreground::Union{Nothing, SimpleColor}   = nothing
+    background::Union{Nothing, SimpleColor}   = nothing
+    underline::Union{Nothing, _FaceUnderline} = nothing
+    strikethrough::Union{Nothing, Bool}       = nothing
+    inverse::Union{Nothing, Bool}             = nothing
+    inherit::Vector{Symbol}                   = Symbol[]
 
     for (k, v) in pairs
         isnothing(v) && continue
 
+        # The keyword constructor of `Face` ignores the unknown keywords. We do the same.
         if k === :bold
             bold = v::Bool
 
@@ -301,10 +303,7 @@ Create a face from the keyword `pairs` (see `_face_from_kwargs`).
             slant = v::Symbol
 
         elseif k === :underline
-            underline =
-                _face_underline(v)::Union{
-                    Bool, SimpleColor, Tuple{Union{Nothing, SimpleColor}, Symbol}
-                }
+            underline = _face_underline(v)::_FaceUnderline
 
         elseif k === :strikethrough
             strikethrough = v::Bool
@@ -314,8 +313,6 @@ Create a face from the keyword `pairs` (see `_face_from_kwargs`).
 
         elseif k === :inherit
             inherit = v isa Symbol ? Symbol[v] : v::Vector{Symbol}
-
-        # The keyword constructor of `Face` ignores the unknown keywords. We do the same.
         end
     end
 
@@ -346,10 +343,10 @@ end
 Convert `color` to the object stored in the color fields of `Face`, mirroring the conversion
 performed by the keyword constructor of `Face`.
 """
-_face_simple_color(::Nothing)                = nothing
-_face_simple_color(color::SimpleColor)       = color
-_face_simple_color(color::AbstractString)    = parse(SimpleColor, color)
-_face_simple_color(color::Any)               = convert(SimpleColor, color)
+_face_simple_color(::Nothing) = nothing
+_face_simple_color(color::SimpleColor) = color
+_face_simple_color(color::AbstractString) = parse(SimpleColor, color)
+_face_simple_color(color::Any) = convert(SimpleColor, color)
 
 """
     _face_underline(underline::Any) -> Any
@@ -480,15 +477,15 @@ macro _define_decoration_converters(backend, name, converter, native, element)
     error_msg    = "The $name back end does not support highlighters of type `"
 
     return quote
-        $(esc(decoration))(decoration::$(esc(native)))      = decoration
-        $(esc(decoration))(decoration::AbstractVector)      = convert($(esc(native)), decoration)
-        $(esc(decoration))(face::Face)                      = $(esc(converter))(face)
-        $(esc(decoration))(crayon::Crayon)                  = $(esc(converter))(_face_from_crayon(crayon))
+        $(esc(decoration))(decoration::$(esc(native))) = decoration
+        $(esc(decoration))(decoration::AbstractVector) = convert($(esc(native)), decoration)
+        $(esc(decoration))(face::Face) = $(esc(converter))(face)
+        $(esc(decoration))(crayon::Crayon) = $(esc(converter))(_face_from_crayon(crayon))
 
-        $(esc(column_label))(decoration::$(esc(native)))           = decoration
-        $(esc(column_label))(decorations::Vector{$(esc(native))})  = decorations
-        $(esc(column_label))(face::Face)                           = $(esc(converter))(face)
-        $(esc(column_label))(crayon::Crayon)                       = $(esc(converter))(_face_from_crayon(crayon))
+        $(esc(column_label))(decoration::$(esc(native))) = decoration
+        $(esc(column_label))(decorations::Vector{$(esc(native))}) = decorations
+        $(esc(column_label))(face::Face) = $(esc(converter))(face)
+        $(esc(column_label))(crayon::Crayon) = $(esc(converter))(_face_from_crayon(crayon))
 
         function $(esc(column_label))(decorations::AbstractVector)
             (isempty(decorations) || all(d -> d isa $(esc(element)), decorations)) &&
@@ -571,7 +568,7 @@ end
     strings returned by `render_region(text, face)`, where `face` is `nothing` for the
     regions without a face.
     """
-    function _render_face_regions(render_region::F, str::_StyledString) where F
+    function _render_face_regions(render_region::F, str::_StyledString) where {F}
         buf = IOBuffer()
 
         for (text, face) in _face_regions(str)

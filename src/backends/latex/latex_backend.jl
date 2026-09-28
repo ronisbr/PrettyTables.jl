@@ -61,8 +61,8 @@ function _latex__print_core(pspec::PrintingSpec, opts::LatexPrintOptions)
     # NOTE: `Val(pspec.renderer)` infers to the abstract `Val` because
     # `pspec.renderer` is a `Symbol`. Branching here keeps the renderer concrete, so the
     # per-cell rendering calls are statically dispatched.
-    renderer   = pspec.renderer === :show ? Val(:show) : Val(:print)
-    tf         = table_format
+    renderer = pspec.renderer === :show ? Val(:show) : Val(:print)
+    tf       = table_format
 
     ps     = PrintingTableState()
     buf_io = IOBuffer()
@@ -72,12 +72,14 @@ function _latex__print_core(pspec::PrintingSpec, opts::LatexPrintOptions)
     rctx = RenderContext(context)
 
     # Process the horizontal lines at data rows.
-    horizontal_lines_at_data_rows =
-        _line_spec_indices(tf.horizontal_lines_at_data_rows, table_data.num_rows)
+    horizontal_lines_at_data_rows = _line_spec_indices(
+        tf.horizontal_lines_at_data_rows, table_data.num_rows
+    )
 
     # Process the vertical lines at data columns.
-    vertical_lines_at_data_columns =
-        _line_spec_indices(tf.vertical_lines_at_data_columns, table_data.num_columns)
+    vertical_lines_at_data_columns = _line_spec_indices(
+        tf.vertical_lines_at_data_columns, table_data.num_columns
+    )
 
     # Check the style variables.
     _check_column_label_styles(
@@ -192,12 +194,12 @@ function _latex__print_core(pspec::PrintingSpec, opts::LatexPrintOptions)
             end
 
         elseif action == :row_group_label
-            cell          = _current_cell(action, ps, table_data)
-            alignment     = _latex__alignment_to_str(
+            cell = _current_cell(action, ps, table_data)
+            alignment = _latex__alignment_to_str(
                 _current_cell_alignment(action, ps, table_data)
             )
             rendered_cell = _latex__render_cell(cell, rctx, renderer)
-            cs            = _number_of_printed_columns(table_data)
+            cs = _number_of_printed_columns(table_data)
 
             # Check for vertical lines.
             vline_before = tf.vertical_line_at_beginning
@@ -297,13 +299,13 @@ function _latex__print_core(pspec::PrintingSpec, opts::LatexPrintOptions)
                     # Merge the cells.
                     rendered_cell = "\\multicolumn{$cs}{@{}$alignment@{}}{$rendered_cell}"
 
-                    # Check if we must merge the cell to render the footnotes or source
-                    # notes.
                 elseif (action == :footnote)
+                    # The footnotes and the source notes are rendered in cells merged across
+                    # the entire table.
                     alignment     = _latex__alignment_to_str(table_data.footnote_alignment)
                     cs            = _number_of_printed_columns(table_data)
-                    rendered_cell =
-                        "\$^{$(ps.i)}\$" * _latex__render_cell(cell, rctx, renderer)
+                    rendered_cell = _latex__render_cell(cell, rctx, renderer)
+                    rendered_cell = "\$^{$(ps.i)}\$" * rendered_cell
                     rendered_cell = _latex__add_environments(rendered_cell, style.footnote)
                     rendered_cell = "\\multicolumn{$cs}{@{}$alignment@{}}{$rendered_cell}"
 
@@ -358,12 +360,11 @@ function _latex__print_core(pspec::PrintingSpec, opts::LatexPrintOptions)
                     elseif action == :summary_row_cell
                         envs = style.summary_row_cell
 
-                    # Notice that `:footnote` and `:source_notes` cannot reach this point
-                    # because they are fully consumed by the dedicated `\multicolumn`
-                    # branches above.
                     else
-                        # Here we have a data cell. Hence, apply the highlighters in
-                        # order, stopping at the first match.
+                        # Here we have a data cell. Hence, apply the highlighters in order,
+                        # stopping at the first match. Notice that `:footnote` and
+                        # `:source_notes` cannot reach this point because they are fully
+                        # consumed by the dedicated `\multicolumn` branches above.
                         di, dj = _data_indices(table_data, ps.i, ps.j)
 
                         for h in highlighters
@@ -384,9 +385,8 @@ function _latex__print_core(pspec::PrintingSpec, opts::LatexPrintOptions)
 
                     if (
                         action == :data &&
-                        alignment_str != _latex__alignment_to_str(
-                            _data_column_alignment(table_data, ps.j)
-                        )
+                        alignment_str !=
+                        _latex__alignment_to_str(_data_column_alignment(table_data, ps.j))
                     )
                         # The `\multicolumn` command overrides the column descriptor in the
                         # preamble, including the vertical line after the cell. Hence, we
@@ -399,10 +399,11 @@ function _latex__print_core(pspec::PrintingSpec, opts::LatexPrintOptions)
                             !table_data.show_row_number_column &&
                             tf.vertical_line_at_beginning
 
-                        vline_after = (ps.j ∈ vertical_lines_at_data_columns) || (
-                            (ps.j == _number_of_printed_data_columns(table_data)) &&
-                            tf.vertical_line_after_data_columns
-                        )
+                        vline_after =
+                            (ps.j ∈ vertical_lines_at_data_columns) || (
+                                (ps.j == _number_of_printed_data_columns(table_data)) &&
+                                tf.vertical_line_after_data_columns
+                            )
 
                         border₀ = vline_before ? "|" : ""
                         border₁ = vline_after ? "|" : ""

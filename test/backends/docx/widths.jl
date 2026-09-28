@@ -31,7 +31,7 @@ docx_cell_width(cell::W.TableCell) = convert(W.Point, cell.properties.width.valu
             W.Table,
             ["abcd";;];
             column_labels = ["A"],
-            table_format = DocxTableFormat(; cell_margins = (0.0, 1.0, 0.0, 2.0))
+            table_format = DocxTableFormat(; cell_margins = (0.0, 1.0, 0.0, 2.0)),
         )
         @test docx_grid(table) ≈ [0.55 * 4 * 10 + 3]
 
@@ -131,12 +131,8 @@ docx_cell_width(cell::W.TableCell) = convert(W.Point, cell.properties.width.valu
         # The row number, row label, and continuation columns are not limited by the data
         # column widths. Notice that the continuation column must not use the width of the
         # first hidden data column.
-        @test docx_grid(table) ≈ [
-            0.55 * 3 * 10 + 10,
-            0.55 * 16 * 10 + 10,
-            30,
-            0.55 * 10 + 10,
-        ]
+        @test docx_grid(table) ≈
+            [0.55 * 3 * 10 + 10, 0.55 * 16 * 10 + 10, 30, 0.55 * 10 + 10]
     end
 
     @testset "Merged Cells" verbose = true begin
@@ -167,15 +163,10 @@ docx_cell_width(cell::W.TableCell) = convert(W.Point, cell.properties.width.valu
     end
 
     @testset "Errors" verbose = true begin
-        for kw in (
-            :data_column_widths,
-            :minimum_data_column_widths,
-            :maximum_data_column_widths,
-        )
+        for kw in
+            (:data_column_widths, :minimum_data_column_widths, :maximum_data_column_widths)
             @test_throws "The length of `$kw` (1) must be equal to the number of columns (2)." pretty_table(
-                W.Table,
-                [1 2];
-                (kw => [1.0],)...
+                W.Table, [1 2]; (kw => [1.0],)...
             )
         end
     end

@@ -64,11 +64,7 @@ end
 @testset "Stand Alone Tables With Table Div" begin
     # The div that wraps the table must be closed before the end of the document.
     result = pretty_table(
-        String,
-        [1 2];
-        backend = :html,
-        stand_alone = true,
-        wrap_table_in_div = true,
+        String, [1 2]; backend = :html, stand_alone = true, wrap_table_in_div = true
     )
 
     @test occursin("</div>\n</body>\n</html>", result)

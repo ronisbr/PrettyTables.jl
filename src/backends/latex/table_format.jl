@@ -18,10 +18,10 @@ _latex__table_style(style::LatexTableStyle) = style
 _latex__table_style(style::TableStyle) = LatexTableStyle(; _table_style_kwargs(style)...)
 
 function _latex__table_style(style::Any)
-    throw(
+    return throw(
         ArgumentError(
-            "The LaTeX back end does not support a style of type `$(typeof(style))`. Use `LatexTableStyle` or the backend-agnostic `TableStyle`."
-        )
+            "The LaTeX back end does not support a style of type `$(typeof(style))`. Use `LatexTableStyle` or the backend-agnostic `TableStyle`.",
+        ),
     )
 end
 
@@ -62,10 +62,10 @@ with the column specification of the table environment.
 _latex__table_format(table_format::LatexTableFormat) = table_format
 
 function _latex__table_format(table_format::Any)
-    throw(
+    return throw(
         ArgumentError(
-            "The LaTeX back end does not support a table format of type `$(typeof(table_format))`. Use `LatexTableFormat` or the backend-agnostic `TableFormat`."
-        )
+            "The LaTeX back end does not support a table format of type `$(typeof(table_format))`. Use `LatexTableFormat` or the backend-agnostic `TableFormat`.",
+        ),
     )
 end
 
@@ -73,7 +73,9 @@ function _latex__table_format(table_format::TableFormat)
     def = _DEFAULT_LATEX_TABLE_FORMAT
 
     return LatexTableFormat(;
-        borders = _table_format_borders(table_format, def.borders, latex_line_style; skip = (:merged_header_cell_line,)),
-        _table_format_presence_fields(table_format, def)...
+        borders = _table_format_borders(
+            table_format, def.borders, latex_line_style; skip = (:merged_header_cell_line,)
+        ),
+        _table_format_presence_fields(table_format, def)...,
     )
 end
