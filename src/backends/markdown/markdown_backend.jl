@@ -329,10 +329,11 @@ function _markdown__print_core(pspec::PrintingSpec, opts::MarkdownPrintOptions)
 
             if num_printed_data_rows > 0
                 m = max(maximum(textwidth, table_str[:, j]), m)
+            end
 
-                if _has_summary_rows(table_data)
-                    m = max(maximum(textwidth, summary_rows[:, j]), m)
-                end
+            # Notice that the summary rows are printed even if the table has no data rows.
+            if _has_summary_rows(table_data)
+                m = max(maximum(textwidth, summary_rows[:, j]), m)
             end
 
             printed_data_column_widths[j] = m

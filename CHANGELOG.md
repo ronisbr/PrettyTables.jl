@@ -193,6 +193,8 @@ Version 3.5.0
   label added a column to the table.
 - ![Bugfix][badge-bugfix] Escape the stubhead label and the row number column label in the
   Markdown back end, as the column labels.
+- ![Bugfix][badge-bugfix] Consider the summary rows in the column widths of the Markdown
+  back end when the table has no data rows.
 - ![Bugfix][badge-bugfix] Print the header separator of the Markdown back end before the
   first row of the table body when the column labels are hidden. It was missing if the
   table began with the continuation row or the summary rows and printed after the first row

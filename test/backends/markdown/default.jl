@@ -113,3 +113,22 @@ end
 
     @test startswith(result, "|---")
 end
+
+@testset "Summary Rows Without Data Rows" begin
+    # The summary rows must be considered when computing the column widths even if the
+    # table has no data rows.
+    expected = """
+|               |      **Col. 1** |      **Col. 2** |
+|--------------:|----------------:|----------------:|
+| **Summary 1** | 123456789012345 | 123456789012345 |
+"""
+
+    result = pretty_table(
+        String,
+        zeros(Int, 0, 2);
+        backend = :markdown,
+        summary_rows = [(data, j) -> 123456789012345],
+    )
+
+    @test result == expected
+end
