@@ -25,6 +25,8 @@
 - Preserve exact backend output, including whitespace, delimiters, escaping, and ANSI sequences. Keep `Crayons.force_color(true)` in test setup so ANSI expectations remain deterministic in CI and non-TTY sessions.
 - Review `src/precompile.jl` when changing common public rendering paths. Keep its representative `pretty_table` workloads current and preserve its redirected-output handling and stdout restoration.
 - Follow `COMMITS.md` when creating commits: keep commits incremental and functional, use an imperative summary under 50 characters without a trailing period, and separate any punctuated body with a blank line.
+- Never change more than one backend in a single commit; split work that spans backends into one commit per backend.
+- Start the summary of a commit that touches only one backend with the backend tag right after the emoji, for example `:bug: [Text] Fix the width of row group labels`. Use `[Text]`, `[HTML]`, `[LaTeX]`, `[Markdown]`, `[Typst]`, `[Excel]`, or `[Word]`. Its source, tests, documentation pages, and extension (`PrettyTablesExcelExt` for Excel, `PrettyTablesTypstryExt` for Typst, `PrettyTablesWriteDocxExt` for Word) all belong to that backend. The tag counts toward the 50-character limit, so drop words it makes redundant, such as "text" in "text columns".
 
 ## Behavioral Constraints
 
