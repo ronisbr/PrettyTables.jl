@@ -438,7 +438,7 @@ Return the escape sequence of every face in `faces`.
 _text__face_sgr(faces::Vector{Face}) = String[_text__face_sgr(f) for f in faces]
 
 """
-    struct TextTableStyle
+    mutable struct TextTableStyle
 
 Define the style of the tables printed with the text back end.
 
@@ -494,39 +494,61 @@ Create a style in which each field can be passed as a keyword. Every keyword acc
 `Face` or a `Crayon`, which is converted to the equivalent face. The keywords
 `first_line_column_label` and `column_label` also accept a vector of faces or crayons.
 """
-struct TextTableStyle{
+mutable struct TextTableStyle{
     TFCL <: Union{Face, Vector{Face}},
     TCL <: Union{Face, Vector{Face}},
 }
-    title::Face
-    subtitle::Face
-    row_number_label::Face
-    row_number::Face
-    stubhead_label::Face
-    row_label::Face
-    row_group_label::Face
-    first_line_column_label::TFCL
-    column_label::TCL
-    first_line_merged_column_label::Face
-    merged_column_label::Face
-    summary_row_cell::Face
-    summary_row_label::Face
-    footnote::Face
-    source_note::Face
-    omitted_cell_summary::Face
-    table_border::Face
-    top_line::Union{Nothing, Face}
-    header_line::Union{Nothing, Face}
-    merged_header_cell_line::Union{Nothing, Face}
-    middle_line::Union{Nothing, Face}
-    bottom_line::Union{Nothing, Face}
-    left_line::Union{Nothing, Face}
-    center_line::Union{Nothing, Face}
-    right_line::Union{Nothing, Face}
+    const title::Face
+    const subtitle::Face
+    const row_number_label::Face
+    const row_number::Face
+    const stubhead_label::Face
+    const row_label::Face
+    const row_group_label::Face
+    const first_line_column_label::TFCL
+    const column_label::TCL
+    const first_line_merged_column_label::Face
+    const merged_column_label::Face
+    const summary_row_cell::Face
+    const summary_row_label::Face
+    const footnote::Face
+    const source_note::Face
+    const omitted_cell_summary::Face
+    const table_border::Face
+    const top_line::Union{Nothing, Face}
+    const header_line::Union{Nothing, Face}
+    const merged_header_cell_line::Union{Nothing, Face}
+    const middle_line::Union{Nothing, Face}
+    const bottom_line::Union{Nothing, Face}
+    const left_line::Union{Nothing, Face}
+    const center_line::Union{Nothing, Face}
+    const right_line::Union{Nothing, Face}
 
     # == Private Fields ====================================================================
 
-    _rendered::TextRenderedStyle
+    const _rendered::TextRenderedStyle
+end
+
+# The structure is mutable, with constant fields, because it is large (it has 25 faces).
+# Hence, passing it through the keyword arguments of `pretty_table` would copy it several
+# times and compiling the calls that pass it by value would be expensive. However, the
+# equality and the hash must consider the fields, as for an immutable structure.
+function Base.:(==)(a::TextTableStyle, b::TextTableStyle)
+    for f in _TEXT__STYLE_FIELDS
+        (getfield(a, f) == getfield(b, f)) || return false
+    end
+
+    return true
+end
+
+function Base.hash(style::TextTableStyle, h::UInt)
+    h = hash(TextTableStyle, h)
+
+    for f in _TEXT__STYLE_FIELDS
+        h = hash(getfield(style, f), h)
+    end
+
+    return h
 end
 
 function TextTableStyle(;

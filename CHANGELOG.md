@@ -119,6 +119,9 @@ Version 3.5.0
   the style fields its style type does not have, and the LaTeX back end ignores the line
   width and color. With `backend = :auto`, a `TableFormat` does not select a back end and
   the text back end is used.
+- ![Enhancement][badge-enhancement] `TextTableStyle` is now a mutable structure with constant
+  fields, reducing the time to print the first table with a custom text style from about
+  160 ms to about 40 ms. The equality and the hash still consider its fields.
 - ![Enhancement][badge-enhancement] Avoid the invalidation of the compiled code of the
   package when other packages define new string types or conversions to `String`, which
   forced the text back end to be compiled again. For example, the time to print the first
