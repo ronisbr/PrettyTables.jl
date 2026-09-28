@@ -114,14 +114,7 @@ struct MultiColumn
     data::Any
     alignment::Symbol
 
-    function MultiColumn(column_span::Int, data::Any)
-        column_span < 2 && throw(
-            ArgumentError("The `column_span` of `MultiColumn` must be greater than 1.")
-        )
-        return new(column_span, data, :c)
-    end
-
-    function MultiColumn(column_span::Int, data::Any, alignment::Symbol)
+    function MultiColumn(column_span::Int, data::Any, alignment::Symbol = :c)
         column_span < 2 && throw(
             ArgumentError("The `column_span` of `MultiColumn` must be greater than 1.")
         )
@@ -136,11 +129,9 @@ end
     data::Any
     alignment::Symbol = :c
 
-    function MergeCells(i::Int, j::Int, column_span::Int, data::Any)
-        return new(i, j, column_span, data, :c)
-    end
-
-    function MergeCells(i::Int, j::Int, column_span::Int, data::Any, alignment::Symbol)
+    function MergeCells(
+        i::Int, j::Int, column_span::Int, data::Any, alignment::Symbol = :c
+    )
         return new(i, j, column_span, data, _normalize_alignment(alignment))
     end
 end
