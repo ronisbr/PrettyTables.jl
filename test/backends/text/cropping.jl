@@ -1312,3 +1312,70 @@ end
 
     @test result == expected
 end
+
+@testset "Horizontal Lines in the Middle Cropping" begin
+    # The data indices, not the rendered indices, must be used to check the horizontal
+    # lines at data rows and the row group labels after the continuation row.
+    expected = """
+┌────────┐
+│ Col. 1 │
+├────────┤
+│      1 │
+│      2 │
+│      3 │
+│      4 │
+│      ⋮ │
+│     17 │
+│     18 │
+├────────┤
+│     19 │
+│     20 │
+└────────┘
+12 rows omitted
+"""
+
+    result = pretty_table(
+        String,
+        collect(1:20);
+        maximum_number_of_rows = 8,
+        row_group_labels = [7 => "X"],
+        table_format = TextTableFormat(; horizontal_lines_at_data_rows = [18]),
+        vertical_crop_mode = :middle,
+    )
+
+    @test result == expected
+
+    expected = """
+┌────────┐
+│ Col. 1 │
+├────────┤
+│      1 │
+│      2 │
+│      3 │
+│      4 │
+├────────┤
+│      ⋮ │
+│ G2     │
+├────────┤
+│     17 │
+│     18 │
+│     19 │
+│     20 │
+└────────┘
+12 rows omitted
+"""
+
+    result = pretty_table(
+        String,
+        collect(1:20);
+        maximum_number_of_rows = 8,
+        row_group_labels = [17 => "G2"],
+        table_format = TextTableFormat(;
+            horizontal_line_before_row_group_label = false,
+            horizontal_lines_at_data_rows = [4],
+        ),
+        vertical_crop_mode = :middle,
+    )
+
+    @test result == expected
+end

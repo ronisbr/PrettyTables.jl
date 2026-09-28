@@ -196,6 +196,9 @@ Version 3.5.0
   label added a column to the table.
 - ![Bugfix][badge-bugfix] Escape the stubhead label and the row number column label in the
   Markdown back end, as the column labels.
+- ![Bugfix][badge-bugfix] Use the data row indices to draw the horizontal lines around the
+  row group labels in the middle cropping of the text back end. The lines were drawn after
+  the wrong rows.
 - ![Bugfix][badge-bugfix] Fix the line after the continuation row in the middle cropping of
   the text back end. The line after the data rows was drawn before the data rows printed
   after the continuation row, and a row group label after the continuation row was preceded

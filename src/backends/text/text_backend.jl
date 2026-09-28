@@ -835,10 +835,12 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
             if rs == :row_group_label
                 # We must draw the horizontal line here if the user requested, if the last
                 # row has a horizontal line due to the intersections, or if the last row was
-                # a column label and the user wants a line after it.
+                # a column label and the user wants a line after it. Notice that `ps.i` is
+                # the data index of the row after the label, which differs from the rendered
+                # index `ir` in the middle cropping.
                 if tf.horizontal_line_before_row_group_label ||
-                    (ir - 1 ∈ horizontal_lines_at_data_rows) ||
-                    (ir == 1 && tf.horizontal_line_after_column_labels)
+                    (ps.i - 1 ∈ horizontal_lines_at_data_rows) ||
+                    (ps.i == 1 && tf.horizontal_line_after_column_labels)
                     _text__print_horizontal_line(
                         display,
                         tf,
@@ -1025,11 +1027,12 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
             elseif (rs == :data) && (ps.i ∈ horizontal_lines_at_data_rows)
                 # We should only print this line if the next state is not the continuation
                 # row or if we do not need to suppress the line before the continuation row.
-                # We also skip it if the next row is a row group label, which draws its own
-                # line.
+                # We also skip it if the next data row has a row group label, which draws its
+                # own line. Notice that the vertical cropping design relies on this rule even
+                # if the next data row is omitted.
                 if !(
                     (next_rs == :continuation_row) && suppress_hline_before_continuation_row
-                ) && !_print_row_group_label(table_data, ir + 1)
+                ) && !_print_row_group_label(table_data, ps.i + 1)
                     hline      = rl.middle
                     count_line = true
                 end
