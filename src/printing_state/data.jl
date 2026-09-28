@@ -10,10 +10,11 @@
 Return the normalized data cell at `(i, j)`, or `_UNDEFINED_CELL` if it is unassigned.
 """
 function _get_data_cell(data::AbstractVecOrMat, i::Int, j::Int)
-    # An array with an `isbits` element type can never hold an undefined reference. Hence,
-    # we can skip `isassigned`, which for a generic `AbstractArray` is implemented as a
+    # An array whose elements are stored inline, such as `isbits` types and their unions
+    # (e.g., `Union{Missing, Float64}`), can never hold an undefined reference. Hence, we can
+    # skip `isassigned`, which for a generic `AbstractArray` is implemented as a
     # try-`getindex`-catch, doubling the number of accesses to the user data.
-    isbitstype(eltype(data)) && return getindex(data, i, j)
+    Base.allocatedinline(eltype(data)) && return getindex(data, i, j)
     return isassigned(data, i, j) ? getindex(data, i, j) : _UNDEFINED_CELL
 end
 
@@ -33,6 +34,9 @@ function _get_data_cell(data::ColumnTable, i::Int, j::Int)
     # Notice that `i` is the position of the row, which must be converted to an index of the
     # column because it can have arbitrary axes.
     ind = firstindex(col) + i - 1
+
+    # A column whose elements are stored inline can never hold an undefined reference.
+    Base.allocatedinline(eltype(col)) && return col[ind]
 
     return isassigned(col, ind) ? col[ind] : _UNDEFINED_CELL
 end
