@@ -292,7 +292,8 @@ Define the table borders that will be used to form the Excel table.
     column headers. The default is `true`, whereas the text back end defaults to `false`.
 - `horizontal_lines_at_data_rows::Union{Symbol, Vector{Int}}`: Controls which data rows get
     an underline. `:all` draws a line after every data row; `:none` draws none; a
-    `Vector{Int}` draws a line only after the listed row indices.
+    `Vector{Int}` draws a line only after the listed row indices. The line after the last
+    data row is only drawn if `horizontal_line_after_data_rows` is `true`.
 - `horizontal_line_after_data_rows::Bool`: Whether to draw a line under the data table
     section.
 - `horizontal_line_before_row_group_label::Bool`: Whether to draw a line above each row

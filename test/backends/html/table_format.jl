@@ -189,15 +189,28 @@ end
         @test count("border-bottom: 1px solid black", output) == 1
         @test !occursin("border-bottom: 2px solid black", output)
 
-        # The lines at data rows are always internal, even at the last data row.
+        # The lines at data rows are always internal. As in the other back ends, the line
+        # after the last data row is only controlled by `horizontal_line_after_data_rows`.
         output = pretty_table(
             String,
             matrix;
             backend = :html,
             table_format = HtmlTableFormat(; horizontal_lines_at_data_rows = :all),
         )
-        @test count("border-bottom: 1px solid black", output) == 3
+        @test count("border-bottom: 1px solid black", output) == 2
         @test !occursin("border-bottom: 2px solid black", output)
+
+        output = pretty_table(
+            String,
+            matrix;
+            backend = :html,
+            table_format = HtmlTableFormat(;
+                horizontal_line_after_data_rows = true,
+                horizontal_lines_at_data_rows   = :all,
+            ),
+        )
+        @test count("border-bottom: 1px solid black", output) == 2
+        @test count("border-bottom: 2px solid black", output) == 1
 
         # If the table has no rows, the line after the column labels ends the ruled area.
         output = pretty_table(

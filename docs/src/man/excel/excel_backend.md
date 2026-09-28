@@ -162,7 +162,8 @@ contains the following fields:
 - `horizontal_line_at_merged_column_labels::Bool`: Draw a line under merged column headers.
 - `horizontal_lines_at_data_rows::Union{Symbol, Vector{Int}}`: Draw underlines after data
     rows. `:all` draws after every row, `:none` draws none, a `Vector{Int}` draws only after
-    the specified row indices (e.g., `[1, 3]` draws after rows 1 and 3).
+    the specified row indices (e.g., `[1, 3]` draws after rows 1 and 3). The line after the
+    last data row is only drawn if `horizontal_line_after_data_rows` is `true`.
 - `horizontal_line_after_data_rows::Bool`: Draw a line under the data table section.
 - `horizontal_line_before_row_group_label::Bool`: Draw a line above each row group divider.
 - `horizontal_line_after_row_group_label::Bool`: Draw a line below each row group divider.

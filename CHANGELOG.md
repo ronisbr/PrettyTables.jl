@@ -186,6 +186,9 @@ Version 3.5.0
   the lines around the row group labels. The LaTeX back end used `header_line` for the line
   after the title and after the row group labels, and the HTML back end used it for the
   line before the column labels.
+- ![Bugfix][badge-bugfix] The HTML back end no longer draws the line after the last data row
+  when `horizontal_lines_at_data_rows` contains it. As in the other back ends, this line is
+  only drawn if `horizontal_line_after_data_rows` is `true`.
 - ![Bugfix][badge-bugfix] Emit the HTML, LaTeX, or Typst representation of a cell unchanged
   when the renderer is `:show`, instead of escaping it.
 - ![Bugfix][badge-bugfix] Validate the length of the vectors with one column label style

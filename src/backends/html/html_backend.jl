@@ -417,11 +417,14 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
 
             elseif rs ∈ (:data, :continuation_row)
                 # The line after the data rows is emitted at the last row of the data
-                # section, which can be the continuation row if the table is cropped.
-                if tf.horizontal_line_after_data_rows &&
-                    _html__is_last_data_section_row(rs, ps, table_data)
-                    row_border_bottom = last_ruled_row ?
-                        tf.borders.bottom_line : tf.borders.middle_line
+                # section, which can be the continuation row if the table is cropped. As in
+                # the other back ends, only `horizontal_line_after_data_rows` controls this
+                # line, even if `horizontal_lines_at_data_rows` contains the last row.
+                if _html__is_last_data_section_row(rs, ps, table_data)
+                    tf.horizontal_line_after_data_rows && (
+                        row_border_bottom = last_ruled_row ?
+                            tf.borders.bottom_line : tf.borders.middle_line
+                    )
 
                 elseif (rs == :data) && (ps.i ∈ horizontal_lines_at_data_rows)
                     row_border_bottom = tf.borders.middle_line

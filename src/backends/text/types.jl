@@ -163,7 +163,8 @@ Define the format of the tables printed with the text back end.
 - `horizontal_lines_at_data_rows::Union{Symbol, Vector{Int}}`: A horizontal line will be
     drawn after each data row index listed in this vector. If the symbol `:all` is passed, a
     horizontal line will be drawn after every data row. If the symbol `:none` is passed,
-    no horizontal lines will be drawn.
+    no horizontal lines will be drawn. The line after the last data row is only drawn
+    if `horizontal_line_after_data_rows` is `true`.
 - `horizontal_line_before_row_group_label::Bool`: If `true`, a horizontal line will be
     drawn before the row group label.
 - `horizontal_line_after_row_group_label::Bool`: If `true`, a horizontal line will be
