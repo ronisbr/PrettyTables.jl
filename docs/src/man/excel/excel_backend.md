@@ -34,7 +34,7 @@ The Excel backend return depends on the following combination of keywords:
     behavior depends on `mode`.
     (**Default**: `nothing`)
 - `highlighters::Vector{<:AbstractHighlighter}`: Highlighters to apply to the table. For
-    more information, see the section [Excel Highlighters](@ref).
+    more information, see the section [Excel Highlighters](@ref excel-highlighters).
 - `maximum_data_column_widths::Union{Real, AbstractVector{<:Real}}`: Maximum width for each
     data column in Excel units. A scalar applies to all columns; a vector sets per-column
     maximums.
@@ -53,11 +53,11 @@ The Excel backend return depends on the following combination of keywords:
     worksheet is updated in place and `nothing` is returned.
     (**Default**: `"prettytable"`)
 - `style::Union{TableStyle, ExcelTableStyle}`: Style of the table. For more information, see
-    the section [Excel Table Style](@ref).
+    the section [Excel Table Style](@ref excel-table-style).
 - `table_format::Union{TableFormat, ExcelTableFormat}`: Excel table format used to render
     the table. For more information, see the section [Excel Table Format](@ref).
 
-## Excel Highlighters
+## [Excel Highlighters](@id excel-highlighters)
 
 A set of highlighters can be passed as a vector of `AbstractHighlighter` to the
 `highlighters` keyword. A highlighter can be an instance of the structure
@@ -259,7 +259,7 @@ table_format = ExcelTableFormat(;
 When more than one preset is applied, they take effect in order, with the later ones taking
 precedence. Any keyword argument provided after them takes precedence over all of them.
 
-## Excel Table Style
+## [Excel Table Style](@id excel-table-style)
 
 The Excel table style is defined using an object of type [`ExcelTableStyle`](@ref) that
 contains the following fields:

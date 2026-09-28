@@ -10,7 +10,7 @@ configure the output.
   code.
   (**Default**: `false`)
 - `highlighters::Vector{<:AbstractHighlighter}`: Highlighters to apply to the table. For more
-  information, see the section [Markdown Highlighters](@ref).
+  information, see the section [Markdown Highlighters](@ref markdown-highlighters).
 - `line_breaks::Bool`: If `true`, line breaks in the content of the cells (`\\n`) are
   replaced by `<br>`.
   (**Default**: `false`)
@@ -19,7 +19,7 @@ configure the output.
 - `table_format::Union{TableFormat, MarkdownTableFormat}`: Markdown table format used to render the table. For
   more information, see the section [Markdown Table Format](@ref).
 
-## Markdown Highlighters
+## [Markdown Highlighters](@id markdown-highlighters)
 
 A set of highlighters can be passed as a vector of `AbstractHighlighter` to the
 `highlighters` keyword. A highlighter can be an instance of the structure

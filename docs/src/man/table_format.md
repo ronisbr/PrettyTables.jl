@@ -157,14 +157,14 @@ latex_line_style(LineStyle(; style = :double))
 
 ## Table Style
 
-A [`TableStyle`](@ref) describes the decoration of each table section with a
-[`Face`](@ref), exactly like the keyword constructors of the native table styles (see
-[Faces](@ref)). The available fields are the ones shared by the back end style types:
-`title`, `subtitle`, `row_number_label`, `row_number`, `stubhead_label`, `row_label`,
-`row_group_label`, `first_line_column_label`, `column_label`,
-`first_line_merged_column_label`, `merged_column_label`, `summary_row_label`,
-`summary_row_cell`, `footnote`, and `source_note`. The fields `first_line_column_label` and
-`column_label` also accept a vector with one face per column.
+A [`TableStyle`](@ref) describes the decoration of each table section with a `Face`, exactly
+like the keyword constructors of the native table styles (see [Faces](@ref)). The available
+fields are the ones shared by the back end style types: `title`, `subtitle`,
+`row_number_label`, `row_number`, `stubhead_label`, `row_label`, `row_group_label`,
+`first_line_column_label`, `column_label`, `first_line_merged_column_label`,
+`merged_column_label`, `summary_row_label`, `summary_row_cell`, `footnote`, and
+`source_note`. The fields `first_line_column_label` and `column_label` also accept a vector
+with one face per column.
 
 ```@repl table_format
 style = TableStyle(; first_line_column_label = Face(; slant = :italic, foreground = :blue));
