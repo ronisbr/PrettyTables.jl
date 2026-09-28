@@ -165,36 +165,20 @@ end
 
 # == PrettyTable Structure =================================================================
 
-function pretty_table(pt::PrettyTable; kwargs...)
-    io = stdout isa Base.TTY ? IOContext(stdout, :limit => true) : stdout
-    return pretty_table(io, pt; kwargs...)
-end
+# The configurations stored in the table are passed as keywords. Notice that the keywords
+# passed to the function have precedence over them. The method without the IO is not
+# required because the generic one already dispatches to the method with the IO.
 
 function pretty_table(@nospecialize(io::IO), pt::PrettyTable; kwargs...)
-    # Get the named tuple with the configurations.
-    dictkeys = (collect(keys(pt.configurations))...,)
-    dictvals = (collect(values(pt.configurations))...,)
-    nt = NamedTuple{dictkeys}(dictvals)
-
-    return pretty_table(io, pt.data; merge(nt, kwargs)...)
+    return pretty_table(io, pt.data; pt.configurations..., kwargs...)
 end
 
 function pretty_table(::Type{String}, pt::PrettyTable; color::Bool = false, kwargs...)
-    # Get the named tuple with the configurations.
-    dictkeys = (collect(keys(pt.configurations))...,)
-    dictvals = (collect(values(pt.configurations))...,)
-    nt = NamedTuple{dictkeys}(dictvals)
-
-    return pretty_table(String, pt.data; color = color, merge(nt, kwargs)...)
+    return pretty_table(String, pt.data; color, pt.configurations..., kwargs...)
 end
 
 function pretty_table(::Type{HTML}, pt::PrettyTable; kwargs...)
-    # Get the named tuple with the configurations.
-    dictkeys = (collect(keys(pt.configurations))...,)
-    dictvals = (collect(values(pt.configurations))...,)
-    nt = NamedTuple{dictkeys}(dictvals)
-
-    return pretty_table(HTML, pt.data; merge(nt, kwargs)...)
+    return pretty_table(HTML, pt.data; pt.configurations..., kwargs...)
 end
 
 function show(io::IO, pt::PrettyTable)
