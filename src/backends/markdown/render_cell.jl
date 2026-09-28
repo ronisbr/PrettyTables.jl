@@ -43,7 +43,10 @@ function _markdown__render_cell(
     return _markdown__escape_str(cell_str, replace_newline, !allow_markdown_in_cells)
 end
 
-# For Markdown cells, we just output the string.
+# For Markdown cells, we just output the string. A table cell cannot contain line breaks.
+# Hence, each line break is replaced by `<br>` if `line_breaks` is `true`. Otherwise, each
+# line break and its surrounding spaces are replaced by a single space, keeping the words
+# of different lines apart.
 function _markdown__render_cell(
     cell::Markdown.MD,
     context::RenderContext,
@@ -51,7 +54,8 @@ function _markdown__render_cell(
     allow_markdown_in_cells::Bool = false,
     line_breaks::Bool = false,
 )
-    return replace(sprint(show, MIME("text/markdown"), cell), "\n" => "")
+    str = strip(sprint(show, MIME("text/markdown"), cell))
+    return line_breaks ? replace(str, "\n" => "<br>") : replace(str, r"\s*\n\s*" => " ")
 end
 
 @static if VERSION >= v"1.11"

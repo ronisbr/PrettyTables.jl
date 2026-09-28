@@ -87,6 +87,20 @@
         @test result == expected
     end
 
+    @testset "Markdown With Multiple Blocks" begin
+        # A cell cannot contain a paragraph break. Hence, the line breaks must become
+        # spaces, keeping the words of different lines apart.
+        cell = md"""
+            First **paragraph**.
+
+            Second paragraph.
+            """
+
+        result = pretty_table(String, [cell;;]; backend = :latex)
+
+        @test occursin("  First \\textbf{paragraph}. Second paragraph. \\\\\n", result)
+    end
+
     @testset "Escaping of LaTeX Metacharacters" begin
         # `^` must be escaped as `\textasciicircum{}`. Notice that `\^` is the circumflex
         # *accent* command, which takes the next character as its argument. Hence, `a\^b`

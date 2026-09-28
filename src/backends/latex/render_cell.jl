@@ -41,10 +41,12 @@ function _latex__render_cell(
 end
 
 # For Markdown cells, we must render always using `show` to obtain the correct decoration.
+# A cell cannot contain a paragraph break. Hence, each line break and its surrounding
+# spaces are replaced by a single space, keeping the words of different lines apart.
 function _latex__render_cell(
     cell::Markdown.MD, context::RenderContext, renderer::Union{Val{:print}, Val{:show}}
 )
-    return replace(sprint(show, MIME("text/latex"), cell), "\n" => "")
+    return replace(strip(sprint(show, MIME("text/latex"), cell)), r"\s*\n\s*" => " ")
 end
 
 @static if VERSION >= v"1.11"

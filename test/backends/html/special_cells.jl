@@ -233,6 +233,27 @@
         result = pretty_table(String, matrix; backend = :html, renderer = :show)
         @test result == expected
     end
+
+    @testset "Markdown With Multiple Blocks" begin
+        # The line breaks inside the code blocks are part of the content and must be kept.
+        cell = md"""
+            First **paragraph**.
+
+            Second paragraph.
+
+            ```
+            x
+              y
+            ```
+            """
+
+        result = pretty_table(String, [cell;;]; backend = :html)
+
+        @test occursin(
+            "<td style = \"text-align: right;\"><div class=\"markdown\"><p>First <strong>paragraph</strong>.</p><p>Second paragraph.</p><pre><code>x\n  y</code></pre></div></td>",
+            result,
+        )
+    end
 end
 
 @static if VERSION >= v"1.11"

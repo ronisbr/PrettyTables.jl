@@ -189,6 +189,10 @@ Version 3.5.0
 - ![Bugfix][badge-bugfix] The HTML back end no longer draws the line after the last data row
   when `horizontal_lines_at_data_rows` contains it. As in the other back ends, this line is
   only drawn if `horizontal_line_after_data_rows` is `true`.
+- ![Bugfix][badge-bugfix] Keep the line breaks of `Markdown.MD` cells in the HTML back end,
+  preserving the content of code blocks, and replace them with spaces in the LaTeX and
+  Markdown back ends (or with `<br>` if `line_breaks` is `true` in the Markdown back end).
+  They were removed, joining the words of different lines.
 - ![Bugfix][badge-bugfix] Apply only the style of the merged cells to the merged column
   labels in the HTML and Typst back ends, as in the other back ends. The style of the column
   labels was also applied, overriding it. The default style of the merged cells is now bold

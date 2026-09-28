@@ -58,6 +58,8 @@ function _html__render_cell(
 end
 
 # For Markdown cells, we must render always using `show` to obtain the correct decoration.
+# Notice that only the line breaks between two tags can be removed because the others are
+# part of the content of, e.g., code blocks, in which `<` and `>` are always escaped.
 function _html__render_cell(
     cell::Markdown.MD,
     context::RenderContext,
@@ -65,7 +67,7 @@ function _html__render_cell(
     allow_html_in_cells::Bool = false,
     line_breaks::Bool = false,
 )
-    return replace(sprint(show, MIME("text/html"), cell), "\n" => "")
+    return replace(sprint(show, MIME("text/html"), cell), ">\n<" => "><")
 end
 
 @static if VERSION >= v"1.11"

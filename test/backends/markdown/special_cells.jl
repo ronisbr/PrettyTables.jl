@@ -45,6 +45,22 @@
         @test result == expected
     end
 
+    @testset "Markdown Cells With Multiple Blocks" begin
+        # A table cell cannot contain line breaks. Hence, they must become spaces, keeping
+        # the words of different lines apart, or `<br>` if `line_breaks` is `true`.
+        cell = md"""
+            First **paragraph**.
+
+            Second paragraph.
+            """
+
+        result = pretty_table(String, [cell;;]; backend = :markdown)
+        @test occursin("| First **paragraph**. Second paragraph. |", result)
+
+        result = pretty_table(String, [cell;;]; backend = :markdown, line_breaks = true)
+        @test occursin("| First **paragraph**.<br><br>Second paragraph. |", result)
+    end
+
     @testset "Allow Markdown in Cells" begin
         matrix = ["**Bold**", "~~Strike~~", md"`Code`"]
 
