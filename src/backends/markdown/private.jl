@@ -357,12 +357,58 @@ function _markdown__apply_style(s::MarkdownStyle, str::String)
     # NOTE: `code` must be applied innermost because a Markdown code span renders its
     # content verbatim. Otherwise, the `bold`, `italic`, and `strikethrough` markers would
     # be shown literally to the user.
-    s.code && (str = "`" * str * "`")
+    s.code && (str = _markdown__code_span(str))
     s.bold && (str = "**" * str * "**")
     s.italic && (str = "*" * str * "*")
     s.strikethrough && (str = "~~" * str * "~~")
 
     return str
+end
+
+"""
+    _markdown__code_span(str::String) -> String
+
+Wrap `str`, which was escaped with `_markdown__escape_str`, in a Markdown code span. Since a
+code span renders its content verbatim, the escape sequences of the Markdown characters are
+removed. However, `\\|` is kept because the pipe must always be escaped inside a table,
+even in code spans. The code span is delimited by a sequence of backticks longer than the
+longest one in `str`, which is padded with spaces if it begins or ends with a backtick.
+"""
+function _markdown__code_span(str::String)
+    buf = IOBuffer(; sizehint = ncodeunits(str) + 2)
+
+    # Longest sequence of backticks in the content.
+    max_ticks = 0
+    ticks     = 0
+    escaped   = false
+
+    for c in str
+        if escaped
+            # Remove only the escape sequences of the Markdown characters, except the one of
+            # the pipe. The other sequences, such as `\\n`, represent special characters.
+            ((c == '|') || ((c ∉ _MARKDOWN__ESCAPED_CHARACTERS) && (c != '\\'))) &&
+                print(buf, '\\')
+            print(buf, c)
+            escaped = false
+        elseif (c == '\\')
+            escaped = true
+            continue
+        else
+            print(buf, c)
+        end
+
+        ticks     = (c == '`') ? ticks + 1 : 0
+        max_ticks = max(max_ticks, ticks)
+    end
+
+    # A backslash at the end of the string does not escape anything.
+    escaped && print(buf, '\\')
+
+    content = String(take!(buf))
+    fence   = "`"^(max_ticks + 1)
+    pad     = (startswith(content, '`') || endswith(content, '`')) ? " " : ""
+
+    return fence * pad * content * pad * fence
 end
 
 """

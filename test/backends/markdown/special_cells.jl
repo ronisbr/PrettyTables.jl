@@ -282,3 +282,26 @@ end
 
     @test result == expected
 end
+
+@testset "Code Spans" begin
+    # A code span renders its content verbatim. Hence, the Markdown characters must not be
+    # escaped inside it, except the pipe, and the delimiter must be longer than any
+    # sequence of backticks in the content.
+    expected = """
+| **A**<br>`x_1*`[^1] | **B**<br>`a\\|b` | **C**<br>```c`d``e``` | **D**<br>`` `x\\\\ `` |
+|--------------------:|----------------:|----------------------:|--------------------:|
+|                   1 |               2 |                     3 |                   4 |
+
+[^1]: F
+"""
+
+    result = pretty_table(
+        String,
+        [1 2 3 4];
+        backend = :markdown,
+        column_labels = [["A", "B", "C", "D"], ["x_1*", "a|b", "c`d``e", "`x\\\\"]],
+        footnotes = [(:column_label, 2, 1) => "F"],
+    )
+
+    @test result == expected
+end
