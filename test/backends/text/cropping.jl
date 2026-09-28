@@ -1610,3 +1610,16 @@ end
         )
     end
 end
+
+@testset "Display Size Equal to Zero" begin
+    # A non-positive display size means that the display has no limit.
+    expected = """
+┌────────┬────────┐
+│ Col. 1 │ Col. 2 │
+├────────┼────────┤
+│      1 │      2 │
+└────────┴────────┘
+"""
+
+    @test pretty_table(String, [1 2]; display_size = (0, 0)) == expected
+end

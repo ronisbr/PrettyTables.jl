@@ -624,15 +624,15 @@ end
 
 Print to `display` the horizontal line `intersection` if we have enough space. Otherwise,
 print `row`. The argument `final_intersection` indicates that we are printing the final
-intersection of the table. In that case, we print `intersection` if we have at least two
-remaining spaces.
+intersection of the table. In that case, we print `intersection` if we have at least one
+remaining space.
 """
 function _text__horizontal_line_intersection(
     display::Display, intersection::Char, row::Char, final_intersection::Bool
 )
-    # If the display size is negative, it means we do not have a limit. Hence, just print
-    # the intersection.
-    if display.size[2] < 0
+    # If the display width is not positive, it means we do not have a limit. Hence, just
+    # print the intersection.
+    if display.size[2] <= 0
         _text__print(display, intersection)
         return nothing
     end

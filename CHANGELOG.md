@@ -196,6 +196,9 @@ Version 3.5.0
   label added a column to the table.
 - ![Bugfix][badge-bugfix] Escape the stubhead label and the row number column label in the
   Markdown back end, as the column labels.
+- ![Bugfix][badge-bugfix] Treat a display width equal to 0 as unlimited when drawing the
+  intersections of the horizontal lines in the text back end, as documented. The
+  intersections were replaced by the line character.
 - ![Bugfix][badge-bugfix] Give `fixed_data_column_widths` precedence over
   `maximum_data_column_widths` in the text back end, as documented. The cells of a column
   with a fixed width were still cropped to its maximum width.
