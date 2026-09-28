@@ -119,6 +119,10 @@ Version 3.5.0
   the style fields its style type does not have, and the LaTeX back end ignores the line
   width and color. With `backend = :auto`, a `TableFormat` does not select a back end and
   the text back end is used.
+- ![Enhancement][badge-enhancement] Compile the keyword method of `pretty_table` only once
+  for each set of keywords, regardless of the IO and of the data. For example, the time to
+  print the first matrix of `Float64` to an `IOBuffer` was reduced from about 27 ms to
+  about 22 ms.
 - ![Enhancement][badge-enhancement] Compile the text back end only once for all the
   specifications of the lines at the column labels, data rows, and data columns (`:all`,
   `:none`, or a vector of indices) and for all the combinations of optional sections. For

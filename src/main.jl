@@ -45,9 +45,14 @@ end
 # function where all those keywords are arguments. In this case, we can use `@nospecialize`
 # in the first two arguments. The other option would be to wrap the keywords inside a
 # `kwargs...`. However, in the latter, we will not have keyword completion in REPL.
+#
+# NOTE: This method is compiled for each set of keywords and their types. Hence, it must not
+# be specialized on the IO or on the data. Otherwise, it would be compiled for every
+# combination of them, and the sets compiled in the precompilation workload, which prints to
+# a redirected `stdout`, would not be reused when printing to another IO.
 function pretty_table(
-    io::IO,
-    data::Any;
+    @nospecialize(io::IO),
+    @nospecialize(data::Any);
     backend::Symbol = :auto,
 
     # == Arguments for the IOContext =======================================================
