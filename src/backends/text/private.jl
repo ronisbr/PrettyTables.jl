@@ -51,12 +51,15 @@ end
         fit_table_in_display_horizontally::Bool,
         display_width::Int,
         num_printed_data_columns::Int,
-        table_width_wo_cont_col::Int,
-        vertical_line_after_continuation_column::Bool
+        table_width_wo_cont_col::Int
     ) -> Bool
 
 Return `true` if the table printing is horizontally limited by the display, meaning that it
 will be cropped.
+
+The table is limited by the display if its width without the continuation column,
+`table_width_wo_cont_col`, exceeds the `display_width`, or if it fills the display but some
+data columns are not printed, meaning that the continuation column does not fit.
 
 # Arguments
 
@@ -66,8 +69,6 @@ will be cropped.
 - `display_width::Int`: Display width.
 - `num_printed_data_columns::Int`: Number of printed data columns.
 - `table_width_wo_cont_col::Int`: Width of the table without the continuation column.
-- `vertical_line_after_continuation_column::Bool`: If `true`, there is a vertical line
-    after the continuation column.
 """
 function _text__is_printing_horizontally_limited(
     table_data::TableData,
@@ -75,37 +76,15 @@ function _text__is_printing_horizontally_limited(
     display_width::Int,
     num_printed_data_columns::Int,
     table_width_wo_cont_col::Int,
-    vertical_line_after_continuation_column::Bool,
 )
-    horizontally_limited_by_display = false
+    (fit_table_in_display_horizontally && (display_width > 0)) || return false
 
-    if fit_table_in_display_horizontally && (display_width > 0)
-        # Here we have four possibilities:
-        #
-        #   1. We can show the entire table. If not, we will have a continuation column.
-        #   2. We cannot show the table continuation column, meaning that the table is
-        #      horizontally limited by the display.
-        #   3. We can partially show the continuation column, meaning that the table is
-        #      horizontally limited by the display but there is a continuation column.
-        #   4. We can show the continuation column, meaning that the table is horizontally
-        #      cropped by the user specification.
+    num_remaining_columns = display_width - table_width_wo_cont_col
 
-        num_remaining_columns = display_width - table_width_wo_cont_col
-
-        horizontally_limited_by_display =
-            if (
-                (num_remaining_columns > 0) || (
-                    (num_remaining_columns == 0) &&
-                    (num_printed_data_columns == table_data.num_columns)
-                )
-            )
-                false
-            else
-                num_remaining_columns < (3 + vertical_line_after_continuation_column)
-            end
-    end
-
-    return horizontally_limited_by_display
+    return (num_remaining_columns < 0) || (
+        (num_remaining_columns == 0) &&
+        (num_printed_data_columns != table_data.num_columns)
+    )
 end
 
 """

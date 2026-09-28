@@ -503,7 +503,6 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
         display.size[2],
         num_printed_data_columns,
         table_width_wo_cont_col,
-        tf.vertical_line_after_continuation_column,
     )
 
     # If we are limited by the display, we need to update the number of printed columns and
@@ -604,7 +603,6 @@ function _text__print_table_core(pspec::PrintingSpec, opts::TextPrintOptions)
             display.size[2],
             num_printed_data_columns,
             table_width_wo_cont_col,
-            tf.vertical_line_after_continuation_column,
         )
     end
 
