@@ -196,6 +196,9 @@ Version 3.5.0
   label added a column to the table.
 - ![Bugfix][badge-bugfix] Escape the stubhead label and the row number column label in the
   Markdown back end, as the column labels.
+- ![Bugfix][badge-bugfix] Keep at least one display line when `reserved_display_lines` is
+  equal to or larger than the display height in the text back end. The reserved lines were
+  ignored in this case, printing a taller table than when reserving fewer lines.
 - ![Bugfix][badge-bugfix] Equalize the widths of the text data columns before cropping the
   cells to the fixed widths. The cells of the columns widened by `equal_data_column_widths`
   remained cropped to their fixed widths.

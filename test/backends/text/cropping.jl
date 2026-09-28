@@ -1623,3 +1623,16 @@ end
 
     @test pretty_table(String, [1 2]; display_size = (0, 0)) == expected
 end
+
+@testset "Reserved Display Lines Larger Than the Display" begin
+    # Reserving more lines than the display has must not print a taller table.
+    num_lines(r) = count(
+        ==('\n'),
+        pretty_table(
+            String, collect(1:20); display_size = (12, 80), reserved_display_lines = r
+        ),
+    )
+
+    @test num_lines(11) == num_lines(12) == num_lines(20)
+    @test num_lines(0) >= num_lines(5) >= num_lines(11)
+end

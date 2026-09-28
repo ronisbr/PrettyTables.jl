@@ -145,8 +145,10 @@ function _text__print_table_core(
     end
 
     # If the user wants to reserve some display lines, remove them from the display size.
-    if (reserved_display_lines > 0) && (display_size[1] > reserved_display_lines)
-        display_size = (display_size[1] - reserved_display_lines, display_size[2])
+    # Notice that the display must keep at least one line. Otherwise, the display height
+    # would become unlimited.
+    if (reserved_display_lines > 0) && (display_size[1] > 0)
+        display_size = (max(display_size[1] - reserved_display_lines, 1), display_size[2])
     end
 
     # Create the structure that holds the display information.
