@@ -526,23 +526,29 @@ function _typst__next_char_is(s::AbstractString, i::Int, c::Char)
 end
 
 """
-    _typst__escape_str(io::IO, s::AbstractString) -> Nothing
-    _typst__escape_str(s::AbstractString) -> String
+    _typst__escape_str(io::IO, s::AbstractString, line_breaks::Bool = false) -> Nothing
+    _typst__escape_str(s::AbstractString, line_breaks::Bool = false) -> String
 
 Print the string `s` in `io` escaping the characters for the Typst backend. If `io` is
 omitted, the escaped string is returned.
+
+If `line_breaks` is `true`, `\\n` is replaced with a Typst line break. Otherwise, it is
+escaped, leading to `\\n`, as in the other back ends.
 
 Besides the characters with a special meaning, a `-` or `.` followed by the same character
 is escaped because Typst converts the sequences `--`, `---`, and `...` into dashes and an
 ellipsis.
 """
-function _typst__escape_str(io::IO, s::AbstractString)
+function _typst__escape_str(io::IO, s::AbstractString, line_breaks::Bool = false)
     markup_index = _typst__line_start_markup_index(s)
 
     for (i, c) in pairs(s)
         if Base.isascii(c)
             # Notice that Typst has no `\xNN` escape sequence. Hence, the non-printable
-            # characters must be emitted using the `\u{...}` escape sequence.
+            # characters must be emitted using the `\u{...}` escape sequence. The semicolon
+            # after the line break ends the function call, so that the next characters are
+            # not parsed as its arguments.
+            (c == '\n') ? print(io, line_breaks ? "#linebreak();" : "\\\\n") :
             (
                 (c ∈ _TYPST__ESCAPED_CHARACTERS) ||
                 (i == markup_index) ||
@@ -565,8 +571,8 @@ function _typst__escape_str(io::IO, s::AbstractString)
     end
 end
 
-function _typst__escape_str(s::AbstractString)
-    return sprint(_typst__escape_str, s; sizehint = 2 * lastindex(s))
+function _typst__escape_str(s::AbstractString, line_breaks::Bool = false)
+    return sprint(_typst__escape_str, s, line_breaks; sizehint = 2 * lastindex(s))
 end
 
 """

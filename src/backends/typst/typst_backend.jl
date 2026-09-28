@@ -32,6 +32,7 @@ already compiled.
     data_column_widths::Union{Nothing, String, Vector{String}, Vector{Pair{Int, String}}} = nothing
     highlighters::Vector{AbstractHighlighter}                                             = _NO_HIGHLIGHTERS
     is_stdout::Bool                                                                       = false
+    line_breaks::Bool                                                                     = false
     minify::Bool                                                                          = false
     style::TypstTableStyle                                                                = _DEFAULT_TYPST_TABLE_STYLE
     table_format::TypstTableFormat                                                        = _DEFAULT_TYPST_TABLE_FORMAT
@@ -64,6 +65,7 @@ function _typst__print_core(pspec::PrintingSpec, opts::TypstPrintOptions)
     data_column_widths = opts.data_column_widths
     highlighters       = _typst__native_highlighters(opts.highlighters)
     is_stdout          = opts.is_stdout
+    line_breaks        = opts.line_breaks
     minify             = opts.minify
     style              = opts.style
     table_format       = opts.table_format
@@ -443,7 +445,7 @@ function _typst__print_core(pspec::PrintingSpec, opts::TypstPrintOptions)
                 push!(merged_column_labels, (ps.j, ps.j + cs - 1))
 
                 push!(vproperties, "colspan" => string(cs))
-                rendered_cell = _typst__render_cell(cell.data, rctx, renderer)
+                rendered_cell = _typst__render_cell(cell.data, rctx, renderer, line_breaks)
 
                 alignment = cell.alignment
 
@@ -464,7 +466,7 @@ function _typst__print_core(pspec::PrintingSpec, opts::TypstPrintOptions)
                 )
 
             else
-                rendered_cell = _typst__render_cell(cell, rctx, renderer)
+                rendered_cell = _typst__render_cell(cell, rctx, renderer, line_breaks)
 
                 alignment = _current_cell_alignment(action, ps, table_data)
             end

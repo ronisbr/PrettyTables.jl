@@ -8,24 +8,33 @@
     _typst__render_cell(
         cell::Any,
         context::RenderContext,
-        renderer::Union{Val{:print}, Val{:show}}
+        renderer::Union{Val{:print}, Val{:show}},
+        line_breaks::Bool = false
     ) -> String
 
-Render the `cell` in Typst back end using a specific `context` and `renderer`.
+Render the `cell` in Typst back end using a specific `context` and `renderer`. If
+`line_breaks` is `true`, the line breaks in the cell content are rendered as Typst line
+breaks. Otherwise, they are escaped.
 """
 function _typst__render_cell(
-    cell::Any, context::RenderContext, renderer::Union{Val{:print}, Val{:show}}
+    cell::Any,
+    context::RenderContext,
+    renderer::Union{Val{:print}, Val{:show}},
+    line_breaks::Bool = false,
 )
     cell_str, is_typst = _cell_to_str(cell, context, renderer, MIME("text/typst"))
 
     # If the cell was rendered using its Typst representation, we must emit it unchanged.
     # Otherwise, the content must be escaped, since it is emitted inside a Typst content
     # block.
-    return is_typst ? cell_str : _typst__escape_str(cell_str)
+    return is_typst ? cell_str : _typst__escape_str(cell_str, line_breaks)
 end
 
-function PrettyTables._typst__render_cell(
-    cell::Markdown.MD, context::RenderContext, renderer::Union{Val{:print}, Val{:show}}
+function _typst__render_cell(
+    cell::Markdown.MD,
+    context::RenderContext,
+    renderer::Union{Val{:print}, Val{:show}},
+    line_breaks::Bool = false,
 )
     # We will always render Markdown cells using `#raw` until we can obtain a good way to
     # convert Markdown to Typst. Notice that each line is emitted inside a Typst string
@@ -49,9 +58,10 @@ end
         cell::_StyledString,
         context::RenderContext,
         renderer::Union{Val{:print}, Val{:show}},
+        line_breaks::Bool = false,
     )
         return _render_face_regions(cell) do text, face
-            escaped = _typst__escape_str(text)
+            escaped = _typst__escape_str(text, line_breaks)
 
             # The region without a face can follow a `#text` component of a styled region.
             isnothing(face) && return _typst__escape_after_component(escaped)

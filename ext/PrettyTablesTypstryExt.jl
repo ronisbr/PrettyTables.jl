@@ -17,11 +17,13 @@ function PrettyTables.pretty_table(::Type{Typst}, @nospecialize(data::Any); kwar
     return Typst(TypstText(str))
 end
 
-# Render cells with Typst commands.
+# Render cells with Typst commands. Notice that the content is emitted unchanged. Hence,
+# the line breaks are not processed.
 function PrettyTables._typst__render_cell(
     cell::TypstString,
     context::PrettyTables.RenderContext,
     renderer::Union{Val{:print}, Val{:show}},
+    line_breaks::Bool = false,
 )
     return sprint(show, MIME("text/typst"), cell)
 end

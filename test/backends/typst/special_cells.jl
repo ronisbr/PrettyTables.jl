@@ -197,3 +197,18 @@ end
         @test occursin(escaped, result)
     end
 end
+
+@testset "Line Breaks" begin
+    # The line breaks are escaped unless `line_breaks` is `true`.
+    result = pretty_table(String, ["a\nb";;]; backend = :typst, title = "T\nU")
+
+    @test occursin("[a\\\\nb]", result)
+    @test occursin("[T\\\\nU]", result)
+
+    result = pretty_table(
+        String, ["a\n- b";;]; backend = :typst, line_breaks = true, title = "T\nU"
+    )
+
+    @test occursin("[a#linebreak();- b]", result)
+    @test occursin("[T#linebreak();U]", result)
+end

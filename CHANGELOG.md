@@ -20,6 +20,9 @@ Version 3.5.0
   `@docx__all_horizontal_lines`, `@docx__all_vertical_lines`,
   `@docx__no_horizontal_lines`, and `@docx__no_vertical_lines`, and the function
   `pretty_table_docx_backend` are exported.
+- ![Feature][badge-feature] Add the keyword `line_breaks` to the Typst back end. If `true`,
+  the line breaks in the cells are rendered as Typst line breaks. Otherwise, they are
+  escaped as in the other back ends, whereas they were emitted as raw line break characters.
 - ![Feature][badge-feature] Add support for `StyledStrings.Face` as the decoration of the
   text back end. Every field of `TextTableStyle` and the decoration of `TextHighlighter` are
   now faces, and crayons are still accepted and converted to the equivalent faces. The

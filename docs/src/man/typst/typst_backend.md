@@ -22,6 +22,9 @@ the output:
 - `highlighters::Vector{<:AbstractHighlighter}`: Highlighters to apply to the table. For more
   information, see the section [Typst Highlighters]@(ref).
   (**Default** = `TypstHighlighter[]`)
+- `line_breaks::Bool`: If `true`, line breaks in the content of the cells (`\n`) are
+  rendered as Typst line breaks. Otherwise, they are escaped.
+  (**Default** = `false`)
 - `minify::Bool`: If `true`, the generated Typst code will be minified by ignoring
   `wrap_column` and printing the table columns in the same line.
   (**Default** = `false`)
