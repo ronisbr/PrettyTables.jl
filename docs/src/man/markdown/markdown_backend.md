@@ -14,22 +14,28 @@ configure the output.
 - `line_breaks::Bool`: If `true`, line breaks in the content of the cells (`\\n`) are
   replaced by `<br>`.
   (**Default**: `false`)
-- `style::Union{TableStyle, MarkdownTableStyle}`: Style of the table. For more information, see the section
+- `style::Union{TableStyle, MarkdownTableStyle}`: Style of the table. The fields of the
+  backend-agnostic [`TableStyle`](@ref) override the ones of the default Markdown table
+  style, except for `title`, `subtitle`, `first_line_merged_column_label`, and
+  `merged_column_label`, which are ignored. For more information, see the section
   [Markdown Table Style](@ref).
-- `table_format::Union{TableFormat, MarkdownTableFormat}`: Markdown table format used to render the table. For
-  more information, see the section [Markdown Table Format](@ref).
+- `table_format::Union{TableFormat, MarkdownTableFormat}`: Markdown table format used to
+  render the table. From the backend-agnostic [`TableFormat`](@ref), only
+  `horizontal_line_before_summary_rows` is honored because Markdown tables cannot express
+  the other lines. For more information, see the section [Markdown Table Format](@ref).
 
 ## [Markdown Highlighters](@id markdown-highlighters)
 
 A set of highlighters can be passed as a vector of `AbstractHighlighter` to the
-`highlighters` keyword. A highlighter can be an instance of the structure
-[`MarkdownHighlighter`](@ref), specific to this back end, or of the general
+`highlighters` keyword. A highlighter can be an instance of the general
 [`Highlighter`](@ref), which is defined by a `Face` and works with every back end (see
-[Faces](@ref)). The face is converted with [`markdown_decoration`](@ref). The structure [`MarkdownHighlighter`](@ref)
-contains the following two public fields:
+[Highlighters](@ref highlighters)), or of the structure [`MarkdownHighlighter`](@ref),
+specific to this back end. The face of a general highlighter is converted with
+[`markdown_decoration`](@ref), which only keeps the bold and italic attributes. The
+structure [`MarkdownHighlighter`](@ref) contains the following two public fields:
 
-- `f::Function`: Function with the signature `f(data, i, j)` in which should return `true`
-  if the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
+- `f::Function`: Function with the signature `f(data, i, j)` which should return `true` if
+  the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
 - `fd::Function`: Function with the signature `fd(h, data, i, j)` in which `h` is the
   highlighter. This function must return the [`MarkdownStyle`](@ref) to be applied to the
   cell that must be highlighted.
@@ -48,7 +54,7 @@ If the function `f` returns true, the function `fd(h, data, i, j)` will be calle
 return an element of type [`MarkdownStyle`](@ref) that contains the decoration to be
 applied to the cell.
 
-A markdown highlighter can be constructed using two helpers:
+A markdown highlighter can be constructed using the following helpers:
 
 ```julia
 MarkdownHighlighter(f::Function, decoration::MarkdownStyle)
@@ -56,9 +62,16 @@ MarkdownHighlighter(f::Function, decoration::MarkdownStyle)
 MarkdownHighlighter(f::Function, fd::Function)
 ```
 
-The first will apply a fixed decoration to the highlighted cell specified in `decoration`
-whereas the second let the user select the desired decoration by specifying the function
-`fd`.
+The first will apply a fixed decoration to the highlighted cell specified in `decoration`,
+whereas the second lets the user select the desired decoration by specifying the function
+`fd`. The decoration can also be created from a `Face`, which is converted with
+[`markdown_decoration`](@ref), or from the keywords of `Face`:
+
+```julia
+MarkdownHighlighter(f::Function, face::Face)
+
+MarkdownHighlighter(f::Function; kwargs...)
+```
 
 !!! note
 
@@ -108,7 +121,7 @@ that contains the following fields:
 Each field is an instance of the structure [`MarkdownStyle`](@ref) describing the style to
 be applied to the corresponding element.
 
-For example, if we want that the stubhead label is bold and italic, we must define:
+For example, if we want the stubhead label to be bold and italic, we must define:
 
 ```julia
 style = MarkdownTableStyle(
@@ -117,4 +130,11 @@ style = MarkdownTableStyle(
 ```
 
 Every keyword of the constructor of [`MarkdownTableStyle`](@ref) also accepts a `Face`, which is
-converted to `MarkdownStyle` with [`markdown_decoration`](@ref) (see [Faces](@ref)).
+converted to `MarkdownStyle` with [`markdown_decoration`](@ref) (see [Faces](@ref)). Hence,
+the previous style can also be defined as:
+
+```julia
+style = MarkdownTableStyle(
+    stubhead_label = Face(; weight = :bold, slant = :italic)
+)
+```

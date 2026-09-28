@@ -8,17 +8,18 @@
 [![License](https://img.shields.io/github/license/ronisbr/PrettyTables.jl?style=flat-square&logo=readme&logoColor=white&labelColor=475569&color=0284C7)](https://github.com/ronisbr/PrettyTables.jl/blob/master/LICENSE.txt)
 [![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.10015722-DB2777?style=flat-square&logo=doi&logoColor=white&labelColor=475569)](https://zenodo.org/doi/10.5281/zenodo.10015722)
 
-This package has the purpose to print data in matrices using different backends. It was
-orizinally inspired in the functionality provided by
+**PrettyTables.jl** prints data in formatted tables using different back ends: text,
+HTML, LaTeX, Markdown, Typst, Excel (with XLSX.jl), and Word (with WriteDocx.jl). It was
+originally inspired by the functionality provided by
 [ASCII Tables](https://ozh.github.io/ascii-tables/).
 
-**PrettyTables.jl** allows to print the data together with some table sections. They can be
+**PrettyTables.jl** allows printing the data together with some table sections, which can be
 modified by the user to obtain the desired output. The sections currently available are:
 
 ![Table Design](./docs/src/assets/table_design.png)
 
-This design is heavily inspired by the R's package [gt](https://github.com/rstudio/gt/) but
-the API is highly different due to the differences between the R and Julia languages.
+This design is heavily inspired by the R package [gt](https://github.com/rstudio/gt/), but
+the API is quite different due to the differences between the R and Julia languages.
 
 ## Installation
 

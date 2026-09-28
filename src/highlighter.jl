@@ -18,8 +18,8 @@ Highlighter defined by a `Face` of StyledStrings.jl, which can be used with ever
 - `fd::Function`: Function with the signature `fd(h, data, i, j)` in which `h` is the
     highlighter. This function must return the `Face` to be applied to the cell that must be
     highlighted. It can also return the native decoration of the back end that is printing
-    the table (a `Crayon` for the text back end, CSS properties for the HTML back end, and
-    so on).
+    the table (CSS properties for the HTML back end, LaTeX environments for the LaTeX back
+    end, and so on).
 - `_decoration::Face`: The `Face` to be applied to the highlighted cell if the default `fd`
     is used.
 
@@ -32,28 +32,28 @@ axes (e.g., an `OffsetArray`).
 This structure can be constructed using the following helpers:
 
 ```julia
+Highlighter(f::Function, face::Face)
+```
+
+where it will apply the `face` to the highlighted cell,
+
+```julia
 Highlighter(f::Function; kwargs...)
 ```
 
-where it will construct a `Face` using the keywords in `kwargs` and apply it to the
-highlighted cell. The keywords can be the ones of `Face` (`weight`, `slant`, `foreground`,
-`background`, `underline`, `strikethrough`, `inverse`, ...) or the ones of `Crayon` (`bold`,
-`faint`, `italics`, `negative`, `foreground`, `background`, `underline`, `strikethrough`),
-which are translated to the equivalent face attributes,
-
-```julia
-Highlighter(f::Function, face::Face)
-Highlighter(f::Function, crayon::Crayon)
-```
-
-where it will apply the `face` (or the `crayon`, converted to a face) to the highlighted
-cell, and
+where it will construct a `Face` using the keywords in `kwargs` (`weight`, `slant`,
+`foreground`, `background`, `underline`, `strikethrough`, `inverse`, ...) and apply it to
+the highlighted cell, and
 
 ```julia
 Highlighter(f::Function, fd::Function)
 ```
 
 where it will apply the decoration returned by the function `fd` to the highlighted cell.
+
+For backward compatibility, a `Crayon` is also accepted wherever a `Face` is, and the
+keyword constructor also accepts the keywords of `Crayon` (`bold`, `faint`, `italics`,
+`negative`, ...). They are converted to the equivalent face.
 
 Each back end converts this highlighter to its native highlighter once per printed table,
 converting the face with [`html_decoration`](@ref), [`latex_decoration`](@ref),

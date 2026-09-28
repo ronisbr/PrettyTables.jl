@@ -103,21 +103,20 @@ the output.
 
 # Extended Help
 
-## Text highlighters
+## Text Highlighters
 
 A set of highlighters can be passed as a vector of `AbstractHighlighter` to the
-`highlighters` keyword. A highlighter is an instance of the structure
-[`TextHighlighter`](@ref), specific to this back end, or of the general
-[`Highlighter`](@ref), which works with every back end (see [Faces](@ref)). A
-`TextHighlighter` contains the following fields:
+`highlighters` keyword. A highlighter can be an instance of the general
+[`Highlighter`](@ref), which works with every back end, or of the structure
+[`TextHighlighter`](@ref), specific to this back end. Both are defined by a `Face` of
+StyledStrings.jl, which is rendered using its escape sequence. A `TextHighlighter` contains
+the following public fields:
 
 - `f::Function`: Function with the signature `f(data, i, j)` which should return `true`
     if the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
 - `fd::Function`: Function with the signature `fd(h, data, i, j)` in which `h` is the
-    highlighter. This function must return the `Face` (or `Crayon`) to be applied to the
-    cell that must be highlighted.
-- `_decoration::Face`: The `Face` to be applied to the highlighted cell if the default
-    `fd` is used.
+    highlighter. This function must return the `Face` to be applied to the cell that must
+    be highlighted.
 
 The function `f` has the following signature:
 
@@ -130,34 +129,29 @@ element coordinates that are being tested. If this function returns `true`, the 
 `(i, j)` will be highlighted.
 
 If the function `f` returns true, the function `fd(h, data, i, j)` will be called and must
-return a `Face` (or a `Crayon`, converted to a face) that will be applied to the cell.
+return a `Face` that will be applied to the cell.
 
 A highlighter can be constructed using the following helpers:
+
+```julia
+TextHighlighter(f::Function, face::Face)
+```
+
+where it will apply the `face` to the highlighted cell,
 
 ```julia
 TextHighlighter(f::Function; kwargs...)
 ```
 
-where it will construct a `Face` using the keywords in `kwargs` and apply it to the
-highlighted cell. The keywords can be the ones of `Face` (`weight`, `slant`, `foreground`,
-`background`, `underline`, `strikethrough`, `inverse`, ...) or the ones of `Crayon` (`bold`,
-`faint`, `italics`, `negative`, `foreground`, `background`, `underline`, `strikethrough`),
-which are translated to the equivalent face attributes,
-
-```julia
-TextHighlighter(f::Function, face::Face)
-TextHighlighter(f::Function, crayon::Crayon)
-```
-
-where it will apply the `face` (or the `crayon`, converted to a face) to the highlighted
-cell, and
+where it will construct a `Face` using the keywords in `kwargs` (`weight`, `slant`,
+`foreground`, `background`, `underline`, `strikethrough`, `inverse`, ...) and apply it to
+the highlighted cell, and
 
 ```julia
 TextHighlighter(f::Function, fd::Function)
 ```
 
-where it will apply the `Face` (or `Crayon`) returned by the function `fd` to the
-highlighted cell.
+where it will apply the `Face` returned by the function `fd` to the highlighted cell.
 
 !!! note
 
@@ -170,19 +164,16 @@ highlighted cell.
     **will not** affect the parameter `data` passed to the highlighter function `f`. It will
     always receive the original, unformatted value.
 
-For example, if we want to highlight the cells with value greater than 5 in red, and
+For example, if we want to highlight the cells with value greater than 5 in bold red, and
 all the cells with value less than 5 in blue, we can define:
 
 ```julia
 hl_gt5 = TextHighlighter(
     (data, i, j) -> data[i, j] > 5,
-    Face(; foreground = :red)
+    Face(; weight = :bold, foreground = :red)
 )
 
-hl_lt5 = TextHighlighter(
-    (data, i, j) -> data[i, j] < 5,
-    crayon"blue"
-)
+hl_lt5 = TextHighlighter((data, i, j) -> data[i, j] < 5; foreground = :blue)
 
 highlighters = [hl_gt5, hl_lt5]
 ```
@@ -307,28 +298,21 @@ contains the following fields:
 - `right_line::Union{Nothing, Face}`: Face with the style for the vertical line at the
     right of the table.
 
-Each field is a `Face` describing the style for the corresponding element in the table.
-The keyword constructor also accepts a `Crayon` (or a vector of crayons) in every field,
-which is converted to the equivalent face (see [Faces](@ref)).
+Each field is a `Face` of StyledStrings.jl describing the style for the corresponding
+element in the table.
 
 The line faces default to `nothing`, meaning that the corresponding line is rendered with
 the face in `table_border`. When printing with the backend-agnostic [`TableFormat`](@ref),
 the color of each line design is converted to the corresponding line face, unless the line
 face is explicitly set, which has the highest precedence.
 
-For example, if we want that the stubhead label is bold and red, we must define:
+For example, if we want the stubhead label to be bold and red, and the table border to
+be gray, we must define:
 
 ```julia
-style = TextTableStyle(
-    stubhead_label = Face(; weight = :bold, foreground = :red)
-)
-```
-
-or, equivalently, using a crayon:
-
-```julia
-style = TextTableStyle(
-    stubhead_label = crayon"bold red"
+style = TextTableStyle(;
+    stubhead_label = Face(; weight = :bold, foreground = :red),
+    table_border   = Face(; foreground = :bright_black),
 )
 ```
 """

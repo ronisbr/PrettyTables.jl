@@ -238,6 +238,27 @@ text back end).
     Some backends do not support all the alignment options. For example, it is impossible
     to define cell-specific alignment in the markdown backend.
 
+### Styling Arguments
+
+The following keywords configure the decoration of the table and are available in all
+backends. They accept the backend-agnostic objects, which allow switching backends without
+rewriting the configuration, or the native objects of the selected backend, which expose all
+its options.
+
+- `highlighters::Vector{<:AbstractHighlighter}`: Highlighters used to decorate the data
+    cells that satisfy a condition. It accepts the general [`Highlighter`](@ref), which
+    works with every backend, and the native highlighters of the selected backend.
+    (**Default**: `AbstractHighlighter[]`)
+- `style::Union{TableStyle, <native style>}`: Decoration of each table section. The fields
+    of the backend-agnostic [`TableStyle`](@ref) override the corresponding fields of the
+    default style of the selected backend.
+    (**Default**: default style of the selected backend)
+- `table_format::Union{TableFormat, <native format>}`: Format of the table, which selects,
+    for example, the lines that are drawn and their design. The fields of the
+    backend-agnostic [`TableFormat`](@ref) override the corresponding fields of the default
+    format of the selected backend.
+    (**Default**: default format of the selected backend)
+
 ### Other Arguments
 
 - `formatters::Union{Nothing, Vector{Function}}`: Formatters used to modify the rendered

@@ -63,7 +63,7 @@ create_text_example(table, "text_example_01.svg")
 ---
 
 ```julia-repl
-julia> pretty_table(A; style = TextTableStyle(; table_border = crayon"yellow"))
+julia> pretty_table(A; style = TextTableStyle(; table_border = Face(; foreground = :yellow)))
 ```
 
 ```@setup text_examples
@@ -71,7 +71,7 @@ table = pretty_table(
   String,
   A;
   color = true,
-  style = TextTableStyle(; table_border = crayon"yellow")
+  style = TextTableStyle(; table_border = Face(; foreground = :yellow))
 )
 
 create_text_example(table, "text_example_02.svg")
@@ -111,9 +111,9 @@ julia> pretty_table(
     row_labels,
     stubhead_label = "Effect",
     style = TextTableStyle(;
-        first_line_merged_column_label = crayon"bold yellow",
-        stubhead_label = crayon"bold yellow",
-        summary_row_label = crayon"bold cyan"
+        first_line_merged_column_label = Face(; weight = :bold, foreground = :yellow),
+        stubhead_label = Face(; weight = :bold, foreground = :yellow),
+        summary_row_label = Face(; weight = :bold, foreground = :cyan)
     ),
     summary_row_labels = ["Total"],
     summary_rows = [(data, i) -> sum(data[:, i])],
@@ -155,9 +155,9 @@ table = pretty_table(
     row_labels,
     stubhead_label = "Effect",
     style = TextTableStyle(;
-        first_line_merged_column_label = crayon"bold yellow",
-        stubhead_label = crayon"bold yellow",
-        summary_row_label = crayon"bold cyan"
+        first_line_merged_column_label = Face(; weight = :bold, foreground = :yellow),
+        stubhead_label = Face(; weight = :bold, foreground = :yellow),
+        summary_row_label = Face(; weight = :bold, foreground = :cyan)
     ),
     summary_row_labels = ["Total"],
     summary_rows = [(data, i) -> sum(data[:, i])],
@@ -188,12 +188,12 @@ julia> column_labels = [
 
 julia> hl_p = TextHighlighter(
     (data, i, j) -> (j == 4) && (data[i, j] > 9),
-    crayon"bold blue"
+    Face(; weight = :bold, foreground = :blue)
 )
 
 julia> hl_v = TextHighlighter(
     (data, i, j) -> (j == 3) && (data[i, j] > 9),
-    crayon"bold red"
+    Face(; weight = :bold, foreground = :red)
 )
 
 julia> pretty_table(
@@ -201,7 +201,7 @@ julia> pretty_table(
     column_labels = column_labels,
     highlighters  = [hl_p, hl_v],
     style = TextTableStyle(;
-        first_line_column_label = crayon"bold yellow",
+        first_line_column_label = Face(; weight = :bold, foreground = :yellow),
     )
 )
 ```
@@ -218,12 +218,12 @@ column_labels = [
 
 hl_p = TextHighlighter(
     (data, i, j) -> (j == 4) && (data[i, j] > 9),
-    crayon"bold blue"
+    Face(; weight = :bold, foreground = :blue)
 )
 
 hl_v = TextHighlighter(
     (data, i, j) -> (j == 3) && (data[i, j] > 9),
-    crayon"bold red"
+    Face(; weight = :bold, foreground = :red)
 )
 
 table = pretty_table(
@@ -233,7 +233,7 @@ table = pretty_table(
     column_labels = column_labels,
     highlighters  = [hl_p, hl_v],
     style = TextTableStyle(;
-        first_line_column_label = crayon"bold yellow",
+        first_line_column_label = Face(; weight = :bold, foreground = :yellow),
     )
 )
 
@@ -242,4 +242,53 @@ create_text_example(table, "text_example_04.svg")
 
 ```@raw html
 <img src="../text_example_04.svg" alt="Text Example 04">
+```
+
+---
+
+This example uses options that are specific to the text back end: the predefined rounded
+borders and the faces of the table border and of the line after the column labels.
+
+```julia-repl
+julia> pretty_table(
+    A;
+    column_labels = ["Integer", "Bool", "Float", "Hex"],
+    show_row_number_column = true,
+    style = TextTableStyle(;
+        first_line_column_label = Face(; weight = :bold, foreground = :cyan),
+        header_line             = Face(; foreground = :cyan),
+        row_number              = Face(; foreground = :bright_black),
+        table_border            = Face(; foreground = :bright_black),
+    ),
+    table_format = TextTableFormat(;
+        borders = text_table_borders__unicode_rounded,
+        vertical_lines_at_data_columns = :none,
+    ),
+)
+```
+
+```@setup text_examples
+table = pretty_table(
+    String,
+    A;
+    color = true,
+    column_labels = ["Integer", "Bool", "Float", "Hex"],
+    show_row_number_column = true,
+    style = TextTableStyle(;
+        first_line_column_label = Face(; weight = :bold, foreground = :cyan),
+        header_line             = Face(; foreground = :cyan),
+        row_number              = Face(; foreground = :bright_black),
+        table_border            = Face(; foreground = :bright_black),
+    ),
+    table_format = TextTableFormat(;
+        borders = text_table_borders__unicode_rounded,
+        vertical_lines_at_data_columns = :none,
+    ),
+)
+
+create_text_example(table, "text_example_05.svg")
+```
+
+```@raw html
+<img src="../text_example_05.svg" alt="Text Example 05">
 ```

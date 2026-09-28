@@ -4,7 +4,7 @@ The Word back end can be selected by passing the keyword `backend = :docx` to th
 [`pretty_table`](@ref). It renders the table as a Word (`.docx`) table, either written to a
 file or returned as a `WriteDocx.Table` that can be embedded in a larger document.
 
-The back end return depends on the keyword `filename`:
+The back end's return value depends on the keyword `filename`:
 
 - `String` (the filename) when `filename` is a `String`.
 - `WriteDocx.Table` when `filename` is `nothing`.
@@ -69,11 +69,13 @@ wrapped in a document with a single section.
 - `overwrite::Bool`: Allow overwriting an existing file. If it is `false` and the file
     `filename` already exists, an error is thrown.
     (**Default**: `false`)
-- `style::Union{TableStyle, DocxTableStyle}`: Style of the table. For more information, see
-    the section [Word Table Style](@ref docx-table-style).
+- `style::Union{TableStyle, DocxTableStyle}`: Style of the table. The fields of the
+    backend-agnostic [`TableStyle`](@ref) override the ones of the default Word table style.
+    For more information, see the section [Word Table Style](@ref docx-table-style).
 - `table_format::Union{TableFormat, DocxTableFormat}`: Word table format used to render the
-    table. For more information, see the section
-    [Word Table Format](@ref docx-table-format).
+    table. The backend-agnostic [`TableFormat`](@ref) is fully supported: its line presence
+    and design fields override the ones of the default Word table format. For more
+    information, see the section [Word Table Format](@ref docx-table-format).
 
 ## Table Sections
 
@@ -101,15 +103,16 @@ over the ones of the regions.
 ## [Word Highlighters](@id docx-highlighters)
 
 A set of highlighters can be passed as a vector of `AbstractHighlighter` to the
-`highlighters` keyword. A highlighter can be an instance of the structure
-[`DocxHighlighter`](@ref), specific to this back end, or of the general
+`highlighters` keyword. A highlighter can be an instance of the general
 [`Highlighter`](@ref), which is defined by a `Face` and works with every back end (see
-[Faces](@ref)). The face is converted with [`docx_decoration`](@ref). The structure
-[`DocxHighlighter`](@ref) contains the following two public fields:
+[Highlighters](@ref highlighters)), or of the structure [`DocxHighlighter`](@ref), specific
+to this back end. The face of a general highlighter is converted with
+[`docx_decoration`](@ref). The structure [`DocxHighlighter`](@ref) contains the following
+two public fields:
 
 - `f::Function`: Function with the signature `f(data, i, j)`, which should return `true` if
   the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
-- `fd::Function`: Function with the signature `f(h, data, i, j)` in which `h` is the
+- `fd::Function`: Function with the signature `fd(h, data, i, j)` in which `h` is the
   highlighter. This function must return a `Vector{DocxPair}` with the styling attributes to
   apply to the highlighted cell.
 
@@ -122,7 +125,13 @@ DocxHighlighter(f::Function, fd::Function)
 ```
 
 The decoration uses the same `Vector{DocxPair}` format as the [`DocxTableStyle`](@ref)
-fields. Border attributes are not supported.
+fields. Border attributes are not supported. The decoration can also be created from a
+`Face`, which is converted with [`docx_decoration`](@ref), or from the keywords of `Face`:
+
+```julia
+DocxHighlighter(f::Function, face::Face)
+DocxHighlighter(f::Function; kwargs...)
+```
 
 !!! note
 
@@ -304,7 +313,9 @@ Each field corresponds to a table element and should be a vector of `DocxPair`, 
 | `"size"`       | Font size in points, *e.g.* `"14"` or `"10.5"`.                |
 
 The colors accept a 6-digit hexadecimal string (with or without the leading `#`) or one of
-the color names supported by Crayons.jl.
+the named colors of StyledStrings.jl (for example, `"red"`, `"bright_blue"`, or `"gray"`).
+For backward compatibility, the color names of Crayons.jl (for example, `"light_blue"`) are
+also accepted.
 
 It is only necessary to define those fields for which the default style needs to be
 overwritten. For example:

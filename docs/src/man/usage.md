@@ -34,6 +34,31 @@ function create_latex_example(table, filename)
 end
 ```
 
+The tables are printed using the function [`pretty_table`](@ref):
+
+```julia
+pretty_table(table; kwargs...) -> Nothing
+pretty_table(io::IO, table; kwargs...) -> Nothing
+pretty_table(String, table; kwargs...) -> String
+pretty_table(HTML, table; kwargs...) -> HTML
+```
+
+The first method prints the table to `stdout`. If the first argument is of type `IO`, the
+table is printed to it. If it is `String`, the function returns a `String` with the printed
+table, and if it is `HTML`, the function returns an `HTML` object with the table.
+
+When printing, the function verifies if `table` complies with the **Tables.jl** API. If it
+is compliant, this interface is used to print the table. Otherwise, only the following types
+are supported:
+
+1. `AbstractVector`: any vector can be printed.
+2. `AbstractMatrix`: any matrix can be printed.
+3. `AbstractDict`: the keys and the values are printed in two columns. Notice that a
+   dictionary that complies with the Tables.jl API (e.g., a dictionary of column vectors
+   with `Symbol` or `String` keys) is printed as a table instead.
+
+Data with more than two dimensions is not supported.
+
 ## Table Sections
 
 **PrettyTables.jl** considers the following table sections when printing a table:
@@ -75,14 +100,15 @@ All those sections can be configured using keyword arguments as described below.
 
 ## General Keywords
 
-The following keywords are related to table configuration and are available in all backends:
+The following keywords are related to table configuration and are available in all back
+ends:
 
-- `backend::Symbol`: Backend used to print the table. The available options are `:text`,
+- `backend::Symbol`: Back end used to print the table. The available options are `:text`,
   `:markdown`, `:html`, `:latex`, `:typst`, `:excel`, and `:docx`. If it is `:auto`, the
-  backend is obtained from the type of the keyword `table_format` or, if the latter does
-  not select a backend, from the type of the keyword `style`, falling back to `:text` if
+  back end is obtained from the type of the keyword `table_format` or, if the latter does
+  not select a back end, from the type of the keyword `style`, falling back to `:text` if
   none of them is present or if they are the backend-agnostic [`TableFormat`](@ref) and
-  [`TableStyle`](@ref), which do not select a backend.
+  [`TableStyle`](@ref), which do not select a back end.
   (**Default**: `:auto`)
 
 ### IOContext Arguments
@@ -119,11 +145,11 @@ The following keywords are related to table configuration and are available in a
   (**Default**: `nothing`)
 - `row_group_labels::Union{Nothing, Vector{Pair{Int, String}}}`: Row group labels. If it is
   `nothing`, no row group label is printed. For more information on how to specify the row
-  group labels, see the section **Row Group Labels**.
+  group labels, see the section [Row Group Labels](@ref).
   (**Default**: `nothing`)
 - `column_labels::Union{Nothing, AbstractVector}`: Column labels. If it is `nothing`, the
   function uses a default value for the column labels. For more information on how to
-  specify the column labels, see the section **Column Labels**.
+  specify the column labels, see the section [Column Labels](@ref).
   (**Default**: `nothing`)
 - `show_column_labels::Bool`: If `true`, the column labels will be printed.
   (**Default**: `true`)
@@ -144,7 +170,11 @@ The following keywords are related to table configuration and are available in a
 ### Alignment Arguments
 
 The following keyword arguments define the alignment of the table sections. The alignment
-can be specified using a symbol: `:l` for left, `:c` for center, or `:r` for right.
+can be specified using a symbol: `:l` for left, `:c` for center, `:r` for right, or `:n` for
+no alignment information, or their uppercase versions. Any other symbol, including the ones
+returned by the functions in `cell_alignment`, throws an `ArgumentError`. The back ends that
+cannot omit the alignment information render `:n` as their default alignment (left in the
+text back end).
 
 - `alignment::Union{Symbol, Vector{Symbol}}`: Alignment of the table data. It can be a
   `Symbol`, which will be used for all columns, or a vector of `Symbol`s, one for each
@@ -171,19 +201,43 @@ can be specified using a symbol: `:l` for left, `:c` for center, or `:r` for rig
   (**Default**: `:c`)
 - `title_alignment::Symbol`: Alignment of the title.
   (**Default**: `:c`)
-- `cell_alignment::Union{Nothing, Vector{Pair{NTuple{2, Int}, Symbol}, Vector{Function}}`: A
-  vector of functions with the signature `f(data, i, j)` that overrides the alignment of the
-  cell `(i, j)` to the value returned by `f`. The function must return a valid alignment
-  symbol or `nothing`. In the latter, the cell alignment will not be modified. If the
-  function returns an invalid data, it will be discarded. For convenience, it can also be a
-  vector of `Pair{NTuple{2, Int}, Symbol}`, *i.e.* `(i::Int, j::Int) => a::Symbol`, that
-  overrides the alignment of the cell `(i, j)` to `a`.
+- `cell_alignment::Union{Nothing, Vector{<:Function}, Vector{Pair{NTuple{2, Int}, Symbol}}}`:
+  Either `nothing`, a vector of functions, or a vector of coordinate/alignment pairs. Each
+  function must have the signature `f(data, i, j)` and return a valid alignment symbol or
+  `nothing` for the cell `(i, j)`. Returning `nothing` leaves the cell alignment unchanged.
+  Each pair must have the form `(i::Int, j::Int) => a::Symbol` and sets the alignment of
+  cell `(i, j)` to `a`. In both cases, `i` and `j` are the indices of the cell in `data`,
+  which can have arbitrary axes (e.g., an `OffsetArray`).
   (**Default** = `nothing`)
 
 !!! warning
 
-    Some backends do not support all the alignment options. For example, it is impossible
-    to define cell-specific alignment in the markdown backend.
+    Some back ends do not support all the alignment options. For example, it is impossible
+    to define cell-specific alignment in the Markdown back end.
+
+### Styling Arguments
+
+The following keywords configure the decoration of the table and are available in all back
+ends. They accept the backend-agnostic objects, which allow switching back ends without
+rewriting the configuration, or the native objects of the selected back end, which expose
+all its options.
+
+- `highlighters::Vector{<:AbstractHighlighter}`: Highlighters used to decorate the data
+  cells that satisfy a condition. It accepts the general [`Highlighter`](@ref), which works
+  with every back end, and the native highlighters of the selected back end. For more
+  information, see the section [Highlighters](@ref highlighters).
+  (**Default**: `AbstractHighlighter[]`)
+- `style::Union{TableStyle, <native style>}`: Decoration of each table section. The fields
+  of the backend-agnostic [`TableStyle`](@ref) override the corresponding fields of the
+  default style of the selected back end. For more information, see
+  [Table Format and Style](@ref).
+  (**Default**: default style of the selected back end)
+- `table_format::Union{TableFormat, <native format>}`: Format of the table, which selects,
+  for example, the lines that are drawn and their design. The fields of the
+  backend-agnostic [`TableFormat`](@ref) override the corresponding fields of the default
+  format of the selected back end. For more information, see
+  [Table Format and Style](@ref).
+  (**Default**: default format of the selected back end)
 
 ### Other Arguments
 
@@ -201,7 +255,8 @@ can be specified using a symbol: `:l` for left, `:c` for center, or `:r` for rig
 - `merge_column_label_cells::Union{Symbol, Vector{MergeCells}}`: Merged cells in the column
   labels. For more information, see the section [Column Labels](@ref).
   (**Default**: `:auto`)
-- `new_line_at_end::Bool`: If `true`, a new line will be added at the end of the table.
+- `new_line_at_end::Bool`: If `true`, a new line will be printed at the end of the table.
+  (**Default**: `true`)
 - `show_first_column_label_only::Bool`: If `true`, only the first row of the column labels
   will be printed.
   (**Default**: `false`)
@@ -214,7 +269,16 @@ can be specified using a symbol: `:l` for left, `:c` for center, or `:r` for rig
 
 ## Backend-Specific Keywords
 
-Please, see the backend sections for the keywords specific to each one.
+Each back end has additional keywords and native objects to configure the output. For more
+information, see the corresponding pages:
+
+- [Text Backend](@ref)
+- [HTML Backend](@ref)
+- [LaTeX Backend](@ref)
+- [Markdown Backend](@ref)
+- [Typst Backend](@ref)
+- [Excel Backend](@ref)
+- [Word Backend](@ref)
 
 ## Specification of Table Sections
 
@@ -245,10 +309,10 @@ Adjacent column labels can be merged using the keyword `merge_column_label_cells
 contain a vector of `MergeCells` objects. Each object defines a new merged cell. The
 `MergeCells` object has the following fields:
 
-- `row::Int`: Row index of the merged cell.
-- `column::Int`: Column index of the merged cell.
+- `i::Int`: Row index of the merged cell.
+- `j::Int`: Column index of the merged cell.
 - `column_span::Int`: Number of columns spanned by the merged cell.
-- `data::String`: Data of the merged cell.
+- `data::Any`: Data of the merged cell.
 - `alignment::Symbol`: Alignment of the merged cell. The available options are `:l` for
   left, `:c` for center, and `:r` for right.
   (**Default**: `:c`)
@@ -263,14 +327,17 @@ merge_column_label_cells = [
 ```
 
 We can pass the helpers `MultiColumn` and `EmptyCells` to `column_labels` to create merged
-columns more easily. In this case, `MultiColumn` specify a set of columns that will be
-merged, and `EmptyCells` specify a set of empty columns. However, notice that in this case
-we must set `merge_column_label_cells` to `:auto`.
+columns more easily. In this case, `MultiColumn` specifies a set of columns that will be
+merged, and `EmptyCells` specifies a set of empty columns. However, notice that in this
+case `merge_column_label_cells` must be `:auto`, which is the default.
 
 `MultiColumn` has the following fields:
 
 - `column_span::Int`: Number of columns spanned by the merged cell.
-- `data::String`: Data of the merged cell.
+- `data::Any`: Data of the merged cell.
+- `alignment::Symbol`: Alignment of the merged cell. The available options are `:l` for
+  left, `:c` for center, and `:r` for right.
+  (**Default**: `:c`)
 
 `EmptyCells` has the following field:
 
@@ -278,26 +345,18 @@ we must set `merge_column_label_cells` to `:auto`.
 
 For example, we can create the following column labels:
 
-```
-┌───────────────────────────────────┬─────────────────┐
-│              Group #1             │     Group #2    │
-├─────────────────┬─────────────────┼────────┬────────┤
-│    Group #1.1   │    Group #1.2   │        │        │
-├────────┬────────┼────────┬────────┼────────┼────────┤
-│ Test 1 │ Test 2 │ Test 3 │ Test 4 │ Test 5 │ Test 6 │
-└────────┴────────┴────────┴────────┴────────┴────────┘
-```
-
-by passing these arguments:
-
-```julia
+```@repl usage
 column_labels = [
     [MultiColumn(4, "Group #1"), MultiColumn(2, "Group #2")],
     [MultiColumn(2, "Group #1.1"), MultiColumn(2, "Group #1.2"), EmptyCells(2)],
     ["Test 1", "Test 2", "Test 3", "Test 4", "Test 5", "Test 6"]
-]
+];
 
-merge_column_label_cells = :auto
+pretty_table(
+    reshape(1:12, 2, 6);
+    column_labels,
+    table_format = TableFormat(; horizontal_line_at_merged_column_labels = true)
+)
 ```
 
 ### Row Group Labels
@@ -310,7 +369,7 @@ row 3, we have the row group label named "Row Group #1".
 ### Summary Rows
 
 The summary rows can be specified by a vector of `Function`s. Each element defines a summary
-row and the function must have one the following signature:
+row and the function must have one of the following signatures:
 
 ```
 f(col)
@@ -350,8 +409,8 @@ summary_rows = [sum, mean]
 !!! note
 
     If both signatures are available, the algorithm will prioritize the first one. To force
-    the usage of the second, we can create an anonymous functions as follows: `(data, i) ->
-    f(data, i)`. This ensures that only the second method is available.
+    the usage of the second, we can create an anonymous function as follows:
+    `(data, i) -> f(data, i)`. This ensures that only the second method is available.
 
 ### Footnotes
 
@@ -373,7 +432,7 @@ section or a cell outside its section.
 
 The second element of the `Pair` is the footnote text.
 
-Hence, if we want to apply a foot note to a column label, a data cell, and a summary cell,
+Hence, if we want to apply a footnote to a column label, a data cell, and a summary cell,
 we can define:
 
 ```julia
@@ -393,9 +452,12 @@ It must be a `Vector{Function}` in which each function has the following signatu
 f(v, i, j)
 ```
 
-where `v` is the value in the cell, `i` is the row number, and `j` is the column number.
-It must return the formatted value of the cell `(i, j)` that has the value `v`. Notice
-that the returned value will be converted to string after using the function `sprint`.
+where `v` is the value in the cell, and `i` and `j` are the row and column indices of the
+cell in the data. It must return the formatted value of the cell `(i, j)` that has the value
+`v`. Notice that `i` and `j` are the indices in the object passed to `pretty_table`, which
+can differ from the position of the cell in the printed table if the data has arbitrary axes
+(e.g., an `OffsetArray`). The returned value will be converted to string using the function
+`sprint`.
 
 This keyword can also be `nothing`, meaning that no formatter will be used.
 
@@ -479,7 +541,7 @@ converted to the LaTeX format. The number of digits in the mantissa can be selec
 argument `m_digits`.
 
 The formatted number will be wrapped in the object `LatexCell`. Hence, this formatter only
-makes sense if the selected backend is `:latex`.
+makes sense if the selected back end is `:latex`.
 
 !!! info
 
@@ -508,6 +570,72 @@ create_latex_example(table, "fmt__latex_sn.png")
 
 ![fmt__latex_sn](./fmt__latex_sn.png)
 
+---
+
+The Excel back end also provides the predefined formatter [`fmt__excel_stringify`](@ref),
+which converts the values that XLSX.jl cannot handle into strings (see
+[Excel Backend](@ref)).
+
+## [Highlighters](@id highlighters)
+
+The keyword `highlighters` changes the decoration of the data cells that satisfy a
+condition. It must be a vector of highlighters. If multiple highlighters match the cell
+`(i, j)`, the decoration of the first one in the vector is applied.
+
+The general [`Highlighter`](@ref) works with every back end. It is defined by a function
+with the signature `f(data, i, j)`, which returns `true` if the cell `(i, j)` must be
+highlighted, and by a `Face` with the decoration (see [Faces](@ref)):
+
+```@repl usage
+hl = Highlighter((data, i, j) -> data[i, j] > 5, Face(; weight = :bold, foreground = :red));
+
+pretty_table([1 10; 3 7]; highlighters = [hl])
+
+pretty_table([1 10; 3 7]; backend = :markdown, highlighters = [hl])
+
+pretty_table([1 10; 3 7]; backend = :latex, highlighters = [hl])
+```
+
+The same highlighter also decorates the cells in the HTML back end:
+
+```@example usage
+pretty_table(HTML, [1 10; 3 7]; highlighters = [hl])
+```
+
+Notice that `i` and `j` are the indices of the cell in `data`, which is the object passed to
+`pretty_table`. Hence, `data[i, j]` is always the cell value, even if `data` has arbitrary
+axes (e.g., an `OffsetArray`).
+
+A highlighter can also be created from the keywords of `Face`:
+
+```julia
+Highlighter((data, i, j) -> data[i, j] > 5; weight = :bold, foreground = :red)
+```
+
+or from a function with the signature `fd(h, data, i, j)` that returns the face of each
+highlighted cell, where `h` is the highlighter:
+
+```@repl usage
+hl = Highlighter(
+    (data, i, j) -> true,
+    (h, data, i, j) -> Face(; foreground = data[i, j] > 5 ? :red : :blue),
+);
+
+pretty_table([1 10; 3 7]; highlighters = [hl])
+```
+
+!!! note
+
+    If the highlighters are used together with [Formatters](@ref), the change in the format
+    **will not** affect the parameter `data` passed to the highlighter function `f`. It will
+    always receive the original, unformatted value.
+
+Each back end also has a native highlighter (for example, [`TextHighlighter`](@ref) and
+[`HtmlHighlighter`](@ref)), whose decoration can also be described using the native
+objects of the back end. Highlighters of different types can be mixed in the keyword
+`highlighters`. The face of a general highlighter is converted to the native decoration of
+the selected back end once per printed table.
+
 ## PrettyTable Object
 
 The structure `PrettyTable` stores the data and configuration options required to print a
@@ -524,7 +652,7 @@ matrix = [(i, j) for i in 1:4, j in 1:4]
 
 pt = PrettyTable(matrix)
 
-pt.table_format = TextTableFormat(; @text__no_vertical_lines)
+pt.table_format = TableFormat(; @no_vertical_lines);
 
 pt
 

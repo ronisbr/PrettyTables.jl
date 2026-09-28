@@ -87,8 +87,8 @@ DocxRow(content::Bool) = DocxRow(DocxCell[], content, false)
     _docx__hex_color(value::String) -> W.HexColor
 
 Convert the color `value` of a [`DocxPair`](@ref) to a `WriteDocx.HexColor`. Besides the
-6-digit hexadecimal string, with or without the leading `#`, the color names supported by
-Crayons.jl are also accepted.
+6-digit hexadecimal string, with or without the leading `#`, the named colors of
+StyledStrings.jl and the color names of Crayons.jl are also accepted.
 """
 function _docx__hex_color(value::String)
     hex = startswith(value, '#') ? value[2:end] : value

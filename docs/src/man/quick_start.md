@@ -8,7 +8,40 @@ CurrentModule = PrettyTables
 using PrettyTables
 ```
 
-The following command prints the table in `matrix` using the text backend with all the
+## Printing a Table
+
+The function [`pretty_table`](@ref) prints vectors, matrices, dictionaries, and any object
+that complies with the [Tables.jl](https://github.com/JuliaData/Tables.jl) API:
+
+```@repl quick_start
+data = Any[1 true 1.0; 2 false 2.0; 3 true 3.0];
+
+pretty_table(data)
+
+pretty_table(data; column_labels = ["Index", "Flag", "Value"])
+```
+
+If the data is a Tables.jl source, the column names and types are used as the column
+labels:
+
+```@repl quick_start
+table = (Index = 1:3, Flag = [true, false, true], Value = [1.0, 2.0, 3.0]);
+
+pretty_table(table)
+```
+
+If the first argument is `String`, the table is returned as a string instead of being
+printed:
+
+```@repl quick_start
+str = pretty_table(String, data; column_labels = ["Index", "Flag", "Value"]);
+
+print(str)
+```
+
+## Table Sections
+
+The following command prints the table in `matrix` using the text back end with all the
 available sections:
 
 ```julia-repl
@@ -58,3 +91,75 @@ run(`rm tmp`)
 ```
 
 ![Quick start](./quick_start.svg)
+
+For more information about how to specify each section, see [Usage](@ref).
+
+## Formatting and Styling
+
+The formatters change how the values are converted to strings, whereas the highlighters,
+the table style, and the table format change how the table is decorated. The following
+objects are backend-agnostic, meaning that they work with every back end:
+
+- [`Highlighter`](@ref): decorates the data cells that satisfy a condition.
+- [`TableStyle`](@ref): decorates each table section.
+- [`TableFormat`](@ref): selects which lines are drawn and their design.
+
+The decorations are described by the `Face` objects of StyledStrings.jl (see
+[Faces](@ref)). Each back end renders the attributes it supports. For example, the Markdown
+back end renders the bold text but ignores the colors.
+
+```@repl quick_start
+data = [f(a) for a in 0:30:90, f in (sind, cosd, tand)];
+
+highlighter = Highlighter(
+    (data, i, j) -> data[i, j] > 1,
+    Face(; weight = :bold, foreground = :red)
+);
+
+style = TableStyle(; first_line_column_label = Face(; weight = :bold, foreground = :blue));
+
+table_format = TableFormat(; @no_vertical_lines);
+
+pretty_table(
+    data;
+    column_labels = ["sin", "cos", "tan"],
+    formatters    = [fmt__printf("%5.3f")],
+    highlighters  = [highlighter],
+    row_labels    = ["$(a)°" for a in 0:30:90],
+    style,
+    table_format,
+)
+```
+
+## Changing the Back End
+
+The keyword `backend` selects the back end. Since the objects in the previous example are
+backend-agnostic, the same configuration renders the table in any back end:
+
+```@repl quick_start
+pretty_table(
+    data;
+    backend       = :markdown,
+    column_labels = ["sin", "cos", "tan"],
+    formatters    = [fmt__printf("%5.3f")],
+    highlighters  = [highlighter],
+    row_labels    = ["$(a)°" for a in 0:30:90],
+    style,
+    table_format,
+)
+
+pretty_table(
+    data;
+    backend       = :latex,
+    column_labels = ["sin", "cos", "tan"],
+    formatters    = [fmt__printf("%5.3f")],
+    highlighters  = [highlighter],
+    row_labels    = ["$(a)°" for a in 0:30:90],
+    style,
+    table_format,
+)
+```
+
+Each back end also has native objects (for example, [`TextTableFormat`](@ref) and
+[`HtmlTableStyle`](@ref)), which expose all its options. For more information, see the pages
+in **Back Ends**.

@@ -4,7 +4,7 @@ The Excel backend can be selected by passing the keyword `backend = :excel` to t
 [`pretty_table`](@ref). This will allow you to create a pretty table in a newly created
 Excel file or to add a pretty table to a new or existing sheet in an existing Excel file.
 
-The Excel backend return depends on the following combination of keywords:
+The Excel backend's return value depends on the following combination of keywords:
 
 - `nothing` when `sheet` is an `XLSX.Worksheet` (the worksheet is updated in place).
 - `XLSX.XLSXFile` when `filename` is `nothing` and `sheet` is a `String`.
@@ -52,23 +52,28 @@ The Excel backend return depends on the following combination of keywords:
     If no sheet with that name exists it will be created. When an `XLSX.Worksheet`, that
     worksheet is updated in place and `nothing` is returned.
     (**Default**: `"prettytable"`)
-- `style::Union{TableStyle, ExcelTableStyle}`: Style of the table. For more information, see
-    the section [Excel Table Style](@ref excel-table-style).
+- `style::Union{TableStyle, ExcelTableStyle}`: Style of the table. The fields of the
+    backend-agnostic [`TableStyle`](@ref) override the ones of the default Excel table
+    style. For more information, see the section
+    [Excel Table Style](@ref excel-table-style).
 - `table_format::Union{TableFormat, ExcelTableFormat}`: Excel table format used to render
-    the table. For more information, see the section [Excel Table Format](@ref).
+    the table. The backend-agnostic [`TableFormat`](@ref) is fully supported: its line
+    presence and design fields override the ones of the default Excel table format. For
+    more information, see the section [Excel Table Format](@ref).
 
 ## [Excel Highlighters](@id excel-highlighters)
 
 A set of highlighters can be passed as a vector of `AbstractHighlighter` to the
-`highlighters` keyword. A highlighter can be an instance of the structure
-[`ExcelHighlighter`](@ref), specific to this back end, or of the general
+`highlighters` keyword. A highlighter can be an instance of the general
 [`Highlighter`](@ref), which is defined by a `Face` and works with every back end (see
-[Faces](@ref)). The face is converted with [`excel_decoration`](@ref). The structure
-[`ExcelHighlighter`](@ref) contains the following two public fields:
+[Highlighters](@ref highlighters)), or of the structure [`ExcelHighlighter`](@ref), specific
+to this back end. The face of a general highlighter is converted with
+[`excel_decoration`](@ref). The structure [`ExcelHighlighter`](@ref) contains the following
+two public fields:
 
 - `f::Function`: Function with the signature `f(data, i, j)`, which should return `true`
   if the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
-- `fd::Function`: Function with the signature `f(h, data, i, j)` in which `h` is the
+- `fd::Function`: Function with the signature `fd(h, data, i, j)` in which `h` is the
   highlighter. This function must return a `Vector{ExcelPair}` with the styling attributes
   to apply to the highlighted cell.
 
@@ -82,7 +87,14 @@ ExcelHighlighter(f::Function, fd::Function)
 
 The decoration uses the same `Vector{ExcelPair}` format as `ExcelTableStyle` fields.
 Font attributes are specified directly; fill attributes use the `"cell_fill_"` key prefix
-(stripped before calling `XLSX.setFill`). Border attributes are not supported.
+(stripped before calling `XLSX.setFill`). Border attributes are not supported. The
+decoration can also be created from a `Face`, which is converted with
+[`excel_decoration`](@ref), or from the keywords of `Face`:
+
+```julia
+ExcelHighlighter(f::Function, face::Face)
+ExcelHighlighter(f::Function; kwargs...)
+```
 
 !!! note
 

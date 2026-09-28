@@ -8,13 +8,19 @@ CurrentModule = PrettyTables
 using PrettyTables
 ```
 
-PrettyTables.jl accepts a `Face` of
-[StyledStrings.jl](https://github.com/JuliaLang/StyledStrings.jl) everywhere a decoration
-can be passed: in the fields of every table style (`TextTableStyle`, `HtmlTableStyle`,
-`LatexTableStyle`, `MarkdownTableStyle`, `TypstTableStyle`, `ExcelTableStyle`, and
-`DocxTableStyle`) and in the general highlighter [`Highlighter`](@ref), which works with
-every back end. StyledStrings.jl is re-exported by PrettyTables.jl, and `Face` and
-`SimpleColor` are exported.
+PrettyTables.jl describes the decorations using the `Face` objects of
+[StyledStrings.jl](https://github.com/JuliaLang/StyledStrings.jl). A face can be passed:
+
+- to the fields of the backend-agnostic [`TableStyle`](@ref) (see
+  [Table Format and Style](@ref));
+- to the general [`Highlighter`](@ref) (see [Highlighters](@ref highlighters));
+- to the fields of every native table style ([`TextTableStyle`](@ref),
+  [`HtmlTableStyle`](@ref), [`LatexTableStyle`](@ref), [`MarkdownTableStyle`](@ref),
+  [`TypstTableStyle`](@ref), [`ExcelTableStyle`](@ref), and [`DocxTableStyle`](@ref)) and
+  to the constructors of every native highlighter.
+
+StyledStrings.jl is re-exported by PrettyTables.jl, and `Face` and `SimpleColor` are
+exported. Hence, no additional package must be loaded to style the tables.
 
 A face describes the attributes of a text:
 
@@ -33,50 +39,41 @@ Face(;
 ```
 
 Each back end converts the face into its own decoration, ignoring the attributes it cannot
-represent.
-
-## General Highlighter
-
-The general [`Highlighter`](@ref) is defined by a function `f(data, i, j)`, which returns
-`true` if the cell `(i, j)` must be highlighted, and by a `Face`:
-
-```@repl faces
-hl = Highlighter((data, i, j) -> data[i, j] > 5, Face(; weight = :bold, foreground = :red));
-
-pretty_table([1 10; 3 7]; highlighters = [hl])
-
-pretty_table([1 10; 3 7]; backend = :html, highlighters = [hl])
-
-pretty_table([1 10; 3 7]; backend = :markdown, highlighters = [hl])
-```
-
-It can also be created from the keywords of `Face` or from a `Crayon`:
-
-```julia
-Highlighter((data, i, j) -> data[i, j] > 5; weight = :bold, foreground = :red)
-Highlighter((data, i, j) -> data[i, j] > 5, crayon"bold red")
-```
-
-or from a function `fd(h, data, i, j)` that returns the face (or the native decoration of
-the back end) of each highlighted cell:
-
-```julia
-Highlighter(
-    (data, i, j) -> true,
-    (h, data, i, j) -> Face(; foreground = data[i, j] > 5 ? :red : :blue),
-)
-```
-
-Highlighters of different types can be mixed in the keyword `highlighters`, and the first
-match is applied. The decoration of a general highlighter is converted the first time it is
-used with a back end and cached.
+represent. For example, the Markdown back end only renders the bold and italic text.
 
 ## Faces in Table Styles
 
-Every keyword of the constructors of the table styles accepts a `Face`, which is converted
-to the decoration of the back end at construction:
+The recommended way to decorate the table sections is the backend-agnostic
+[`TableStyle`](@ref), whose fields are faces. Each field that is set overrides the
+corresponding field of the default style of the selected back end:
 
 ```@repl faces
+style = TableStyle(;
+    title = Face(; weight = :bold, foreground = :magenta),
+    first_line_column_label = Face(; weight = :bold, foreground = :blue),
+);
+
+pretty_table([1 2; 3 4]; style, title = "Title")
+
+pretty_table([1 2; 3 4]; backend = :latex, style, title = "Title")
+```
+
+The same style in the HTML back end:
+
+```@example faces
+pretty_table(HTML, [1 2; 3 4]; style, title = "Title")
+```
+
+Every keyword of the constructors of the native table styles also accepts a `Face`, which
+is converted to the decoration of the back end at construction. This is useful to set the
+fields that only exist in a specific back end, such as the `table_border` of
+[`TextTableStyle`](@ref):
+
+```@repl faces
+style = TextTableStyle(; table_border = Face(; foreground = :yellow));
+
+pretty_table([1 2; 3 4]; style)
+
 style = HtmlTableStyle(; title = Face(; weight = :bold, foreground = :red));
 
 style.title
@@ -85,10 +82,26 @@ style.title
 The keywords `first_line_column_label` and `column_label` also accept a vector with one
 decoration per column, mixing faces and native decorations.
 
+## Faces in Highlighters
+
+The general [`Highlighter`](@ref) is defined by a function `f(data, i, j)`, which returns
+`true` if the cell `(i, j)` must be highlighted, and by a `Face`. It works with every back
+end:
+
+```@repl faces
+hl = Highlighter((data, i, j) -> data[i, j] > 5, Face(; weight = :bold, foreground = :red));
+
+pretty_table([1 10; 3 7]; highlighters = [hl])
+
+pretty_table([1 10; 3 7]; backend = :latex, highlighters = [hl])
+```
+
+For more information, see the section [Highlighters](@ref highlighters).
+
 ## Conversion of Faces
 
 The following functions convert a face into the decoration of each back end. They are
-exported, so that they can be used, for example, in the function `fd` of a back end
+exported, so that they can be used, for example, in the function `fd` of a native
 highlighter.
 
 | Back End | Function                        | Result                          |
@@ -132,34 +145,40 @@ A cell (or a column label, row label, and so on) can be a styled string of Style
 (Julia 1.11 or newer). Every back end renders the regions of the string with their faces,
 converted with the functions above: the text back end writes the escape sequences, the
 HTML back end wraps each region in a `span`, the LaTeX back end in the environments, the
-Markdown back end in the markers, and the Typst back end in a `text` component. The Excel
-back end converts the regions to Excel's rich text format (`XLSX.RichTextString`), where
-each region becomes a run with the font attributes of its face. Backgrounds are dropped
-because Excel does not support per-run fills, and a string whose regions carry no font
-attributes is written as plain text. Notice that XLSX.jl writes a rich text string with a
-single run as plain text with a cell-level font, and that a table style or highlighter
-applied to the cell takes precedence over the run attributes it sets. The Word back end
-converts each region to a text run with the attributes of its face. Backgrounds are dropped
-because Word shades the entire cell, and, as in the Excel back end, the attributes of the
-table style or highlighter applied to the cell take precedence over the ones of the
-regions.
+Markdown back end in the markers, and the Typst back end in a `text` component.
 
 ```@repl faces
 matrix = [styled"{bold:Bold} and {red:red}" styled"{(fg=blue),italic:Blue italics}"];
+
+pretty_table(matrix)
 
 pretty_table(matrix; backend = :markdown)
 
 pretty_table(matrix; backend = :latex)
 ```
 
+The Excel back end converts the regions to Excel's rich text format
+(`XLSX.RichTextString`), where each region becomes a run with the font attributes of its
+face. Backgrounds are dropped because Excel does not support per-run fills, and a string
+whose regions carry no font attributes is written as plain text. Notice that XLSX.jl writes
+a rich text string with a single run as plain text with a cell-level font, and that a table
+style or highlighter applied to the cell takes precedence over the run attributes it sets.
+
+The Word back end converts each region to a text run with the attributes of its face.
+Backgrounds are dropped because Word shades the entire cell, and, as in the Excel back end,
+the attributes of the table style or highlighter applied to the cell take precedence over
+the ones of the regions.
+
 ## Compatibility with Crayons.jl
 
-Every place that accepts a `Face` also accepts a `Crayon` of
-[Crayons.jl](https://github.com/KristofferC/Crayons.jl), which is converted to the
-equivalent face: the table styles of every back end, `TableStyle`, and the highlighters.
-The keyword constructors of the highlighters also accept the keywords of `Crayon` (`bold`,
-`faint`, `italics`, `negative`, `foreground`, `background`, `underline`, and
-`strikethrough`), translated to the equivalent attributes.
+Before the support for faces, the decorations of the text back end were described using the
+`Crayon` objects of [Crayons.jl](https://github.com/KristofferC/Crayons.jl). For backward
+compatibility, every place that accepts a `Face` also accepts a `Crayon`, which is
+converted to the equivalent face: the table styles of every back end, `TableStyle`, and the
+highlighters. The keyword constructors of the highlighters also accept the keywords of
+`Crayon` (`bold`, `faint`, `italics`, `negative`, `foreground`, `background`, `underline`,
+and `strikethrough`), translated to the equivalent attributes. However, new code should
+use faces.
 
 The conversion is lossy: the attributes `blink`, `conceal`, and `reset` have no counterpart
 in a face and they are dropped with a warning, shown once per session; the attributes
@@ -170,3 +189,16 @@ converted to their 24-bit values (except the 16 system colors, which are convert
 names), which requires a terminal with 24-bit color support. The color names of Crayons.jl
 are translated to the ones of StyledStrings.jl (for example, `:dark_gray` becomes
 `:bright_black` and `:light_red` becomes `:bright_red`).
+
+The following table shows the equivalent faces of some common crayons:
+
+| Crayon                  | Face                                                    |
+|:------------------------|:--------------------------------------------------------|
+| `crayon"bold"`          | `Face(; weight = :bold)`                                |
+| `crayon"italics"`       | `Face(; slant = :italic)`                               |
+| `crayon"red"`           | `Face(; foreground = :red)`                             |
+| `crayon"bg:blue"`       | `Face(; background = :blue)`                            |
+| `crayon"dark_gray"`     | `Face(; foreground = :bright_black)`                    |
+| `crayon"light_gray"`    | `Face(; foreground = :white)`                           |
+| `crayon"white"`         | `Face(; foreground = :bright_white)`                    |
+| `crayon"bold yellow"`   | `Face(; weight = :bold, foreground = :yellow)`          |

@@ -8,40 +8,54 @@ the output.
 
 - `highlighters::Vector{<:AbstractHighlighter}`: Highlighters to apply to the table. For more
     information, see the section [LaTeX Highlighters](@ref).
-- `style::Union{TableStyle, LatexTableStyle}`: Style of the table. For more information, see the section
-    [LaTeX Table Style](@ref).
-- `table_format::Union{TableFormat, LatexTableFormat}`: LaTeX table format used to render the table. For more
-    information, see the section [LaTeX Table Format](@ref).
+- `style::Union{TableStyle, LatexTableStyle}`: Style of the table. The fields of the
+    backend-agnostic [`TableStyle`](@ref) override the ones of the default LaTeX table
+    style. For more information, see the section [LaTeX Table Style](@ref).
+- `table_format::Union{TableFormat, LatexTableFormat}`: LaTeX table format used to render
+    the table. The line presence fields of the backend-agnostic [`TableFormat`](@ref) are
+    fully supported, and the line design is converted by [`latex_line_style`](@ref) (best
+    effort: `width` and `color` are ignored, and the vertical line designs cannot be
+    changed). For more information, see the section [LaTeX Table Format](@ref).
 
 ## LaTeX Highlighters
 
 A set of highlighters can be passed as a vector of `AbstractHighlighter` to the
-`highlighters` keyword. A highlighter can be an instance of the structure
-[`LatexHighlighter`](@ref), specific to this back end, or of the general
+`highlighters` keyword. A highlighter can be an instance of the general
 [`Highlighter`](@ref), which is defined by a `Face` and works with every back end (see
-[Faces](@ref)). The face is converted with [`latex_decoration`](@ref). The structure [`LatexHighlighter`](@ref)
-contains the following two public fields:
+[Highlighters](@ref highlighters)), or of the structure [`LatexHighlighter`](@ref), specific
+to this back end. The face of a general highlighter is converted with
+[`latex_decoration`](@ref). The structure [`LatexHighlighter`](@ref) contains the following
+two public fields:
 
-- `f::Function`: Function with the signature `f(data, i, j)` in which should return `true`
-    if the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
-- `fd::Function`: Function with the signature `f(h, data, i, j)` in which `h` is the
+- `f::Function`: Function with the signature `f(data, i, j)` which should return `true` if
+    the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
+- `fd::Function`: Function with the signature `fd(h, data, i, j)` in which `h` is the
     highlighter. This function must return a `Vector{String}` with the LaTeX environments to
     be applied to the cell.
 
-A LaTeX highlighter can be constructed using two helpers:
+A LaTeX highlighter can be constructed using the following helpers:
 
 ```julia
 LatexHighlighter(f::Function, envs::Vector{String})
 ```
 
 where it will apply recursively all the LaTeX environments in `envs` to the highlighted
-text, and
+text. The environments are applied in order, meaning that the **last** one in the vector
+ends up being the outermost.
 
 ```julia
 LatexHighlighter(f::Function, fd::Function)
 ```
 
-where the user select the desired decoration by specifying the function `fd`.
+where the user selects the desired decoration by specifying the function `fd`.
+
+```julia
+LatexHighlighter(f::Function, face::Face)
+LatexHighlighter(f::Function; kwargs...)
+```
+
+where the environments are created from a `Face`, or from the keywords of `Face`, using
+[`latex_decoration`](@ref).
 
 !!! note
 
@@ -170,7 +184,17 @@ style = LatexTableStyle(
 ```
 
 Every keyword of the constructor of [`LatexTableStyle`](@ref) also accepts a `Face`, which is
-converted to LaTeX environments with [`latex_decoration`](@ref) (see [Faces](@ref)).
+converted to LaTeX environments with [`latex_decoration`](@ref) (see [Faces](@ref)). Hence,
+the previous style can also be defined as:
+
+```julia
+style = LatexTableStyle(
+    stubhead_label = Face(; weight = :bold, foreground = :red)
+)
+```
+
+If only the fields shared by all the back ends are needed, the backend-agnostic
+[`TableStyle`](@ref) can be used instead (see [Table Format and Style](@ref)).
 
 !!! note
 

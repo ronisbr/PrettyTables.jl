@@ -490,9 +490,21 @@ face is explicitly set, which has the highest precedence.
 
     TextTableStyle(; kwargs...)
 
-Create a style in which each field can be passed as a keyword. Every keyword accepts a
-`Face` or a `Crayon`, which is converted to the equivalent face. The keywords
-`first_line_column_label` and `column_label` also accept a vector of faces or crayons.
+Create a style in which each field can be passed as a keyword with a `Face`. The keywords
+`first_line_column_label` and `column_label` also accept a vector of faces. For backward
+compatibility, every keyword also accepts a `Crayon` (or a vector of crayons), which is
+converted to the equivalent face.
+
+# Examples
+
+```julia
+julia> style = TextTableStyle(;
+           stubhead_label = Face(; weight = :bold, foreground = :red),
+           table_border   = Face(; foreground = :bright_black),
+       );
+
+julia> pretty_table([1 2; 3 4]; row_labels = ["A", "B"], stubhead_label = "Label", style)
+```
 """
 mutable struct TextTableStyle{
     TFCL <: Union{Face, Vector{Face}},
@@ -873,37 +885,46 @@ Defines the default highlighter of a table when using the text backend.
 - `f::Function`: Function with the signature `f(data, i, j)` which should return `true`
     if the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
 - `fd::Function`: Function with the signature `fd(h, data, i, j)` in which `h` is the
-    highlighter. This function must return the `Face` (or `Crayon`) to be applied to the
-    cell that must be highlighted.
+    highlighter. This function must return the `Face` to be applied to the cell that must be
+    highlighted.
 
 # Remarks
 
 This structure can be constructed using the following helpers:
 
 ```julia
+TextHighlighter(f::Function, face::Face)
+```
+
+where it will apply the `face` to the highlighted cell,
+
+```julia
 TextHighlighter(f::Function; kwargs...)
 ```
 
-where it will construct a `Face` using the keywords in `kwargs` and apply it to the
-highlighted cell. The keywords can be the ones of `Face` (`weight`, `slant`, `foreground`,
-`background`, `underline`, `strikethrough`, `inverse`, ...) or the ones of `Crayon` (`bold`,
-`faint`, `italics`, `negative`, `foreground`, `background`, `underline`, `strikethrough`),
-which are translated to the equivalent face attributes,
-
-```julia
-TextHighlighter(f::Function, face::Face)
-TextHighlighter(f::Function, crayon::Crayon)
-```
-
-where it will apply the `face` (or the `crayon`, converted to a face) to the highlighted
-cell, and
+where it will construct a `Face` using the keywords in `kwargs` (`weight`, `slant`,
+`foreground`, `background`, `underline`, `strikethrough`, `inverse`, ...) and apply it to
+the highlighted cell, and
 
 ```julia
 TextHighlighter(f::Function, fd::Function)
 ```
 
-where it will apply the `Face` (or `Crayon`) returned by the function `fd` to the
-highlighted cell.
+where it will apply the `Face` returned by the function `fd` to the highlighted cell.
+
+For backward compatibility, a `Crayon` is also accepted wherever a `Face` is, and the
+keyword constructor also accepts the keywords of `Crayon` (`bold`, `faint`, `italics`,
+`negative`, ...). They are converted to the equivalent face.
+
+The general [`Highlighter`](@ref) has the same constructors and works with every back end.
+
+# Examples
+
+```julia
+julia> hl = TextHighlighter((data, i, j) -> data[i, j] > 5, Face(; weight = :bold, foreground = :red));
+
+julia> pretty_table([1 10; 3 7]; highlighters = [hl])
+```
 """
 struct TextHighlighter <: AbstractHighlighter
     f::Function

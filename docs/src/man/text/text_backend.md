@@ -1,33 +1,38 @@
 # Text Backend
 
+```@meta
+CurrentModule = PrettyTables
+```
+
 ```@setup text_backend
 using PrettyTables
 ```
 
 The text backend can be selected by passing the keyword `backend = :text` to the function
-[`pretty_table`](@ref). In this case, we have the following additional keywords to configure
-the output.
+[`pretty_table`](@ref). It is also the default back end when `backend = :auto` and neither
+`table_format` nor `style` selects another one. In this case, we have the following
+additional keywords to configure the output.
 
 ## Keywords
 
 - `alignment_anchor_fallback::Symbol`: This keyword controls the line alignment when using
   the regex alignment anchors if a match is not found. If it is `:l`, the left of the line
   will be aligned with the anchor. If it is `:c`, the line center will be aligned with the
-    anchor. Otherwise, the end of the line will be aligned with the anchor.
+  anchor. Otherwise, the end of the line will be aligned with the anchor.
   (**Default** = `:l`)
 - `alignment_anchor_regex::Union{Vector{Regex}, Vector{Pair{Int, Vector{Regex}}}}`: This
-  This keyword can be used to provide regexes to align the data values in the table columns. If
+  keyword can be used to provide regexes to align the data values in the table columns. If
   it is `Vector{Regex}`, the regexes will be used to align all the columns. If it is
   `Vector{Pair{Int, Vector{Regex}}}`, the `Int` element specifies the column to which the
   regexes in `Vector{Regex}` will be applied. The regex match is searched in the same order
   as the regexes appear on the vector. The regex matching is applied after the cell
   conversion to string, which includes the formatters. If no match is found for a specific
-  line, the alignment of this line depends on the options `alignment_anchor_fallback`.
-  Example: `[2 => [r"\\."]]` aligns the decimal point of the cells in the second column.
+  line, the alignment of this line depends on the option `alignment_anchor_fallback`.
+  Example: `[2 => [r"\."]]` aligns the decimal point of the cells in the second column.
   (**Default** = `Regex[]`)
 - `apply_alignment_regex_to_summary_rows::Bool`: If `true`, the alignment regexes in
-    `alignment_anchor_regex` will also be applied to the summary rows.
-    (**Default** = `false`)
+  `alignment_anchor_regex` will also be applied to the summary rows.
+  (**Default** = `false`)
 - `auto_wrap::Bool`: If `true`, the text will be wrapped on spaces to fit the column. Notice
   that this option automatically enables `line_breaks` and the column must have a fixed
   size (see `fixed_data_column_widths`).
@@ -51,9 +56,9 @@ the output.
   display vertically.
   (**Default** = `true`)
 - `fixed_data_column_widths::Union{Int, Vector{Int}}`: If it is a `Vector{Int}`, this vector
-  specifies the width of each column. If it is a `Int`, this number will be used as the
-  width of all columns. If the width is equal or lower than 0, it will be automatically
-  computed to fit the large cell in the column.
+  specifies the width of each column. If it is an `Int`, this number will be used as the
+  width of all columns. If the width is equal to or lower than 0, it will be automatically
+  computed to fit the largest cell in the column.
   (**Default** = 0)
 - `highlighters::Vector{<:AbstractHighlighter}`: Highlighters to apply to the table. For more
   information, see the section [Text Highlighters](@ref).
@@ -62,15 +67,15 @@ the output.
   bottom even if `vertical_crop_mode` is `:middle`.
   (**Default** = `false`)
 - `maximum_data_column_widths::Union{Int, Vector{Int}}`: If it is a `Vector{Int}`, this
-  vector specifies the maximum width of each column. If it is a `Int`, this number will be
-  used as the maximum width of all columns. If the maximum width is equal or lower than 0,
-  it will be ignored. Notice that the parameter `fixed_data_column_widths` has precedence
+  vector specifies the maximum width of each column. If it is an `Int`, this number will be
+  used as the maximum width of all columns. If the maximum width is equal to or lower than
+  0, it will be ignored. Notice that the parameter `fixed_data_column_widths` has precedence
   over this one.
   (**Default** = 0)
 - `minimum_data_column_widths::Union{Int, Vector{Int}}`: If it is a `Vector{Int}`, this
   vector specifies the minimum width of each column. If it is an `Int`, this number will
-  be used as the minimum width of all columns. If the minimum width is equal or lower than
-  0, it will be ignored. Notice that the parameter `fixed_data_column_widths` has
+  be used as the minimum width of all columns. If the minimum width is equal to or lower
+  than 0, it will be ignored. Notice that the parameter `fixed_data_column_widths` has
   precedence over this one.
   (**Default** = 0)
 - `overwrite_display::Bool`: If `true`, the same number of lines in the printed table will
@@ -88,26 +93,30 @@ the output.
   shrunk to fit the table in the display. If it is `0` or negative, no column will be
   shrinkable.
   (**Default** = 0)
-- `style::Union{TableStyle, TextTableStyle}`: Style of the table. For more information, see the section
-  [Text Table Style](@ref).
-- `table_format::Union{TableFormat, TextTableFormat}`: Text table format used to render the table. For more
-    information, see the section [Text Table Format](@ref).
+- `style::Union{TableStyle, TextTableStyle}`: Style of the table. The fields of the
+  backend-agnostic [`TableStyle`](@ref) override the ones of the default text table style.
+  For more information, see the section [Text Table Style](@ref).
+- `table_format::Union{TableFormat, TextTableFormat}`: Text table format used to render the
+  table. The line presence and line design fields of the backend-agnostic
+  [`TableFormat`](@ref) are fully supported, where the line designs are mapped to
+  box-drawing characters. For more information, see the section
+  [Text Table Format](@ref).
 
 ## Text Highlighters
 
 A set of highlighters can be passed as a vector of `AbstractHighlighter` to the
-`highlighters` keyword. A highlighter is an instance of the structure
-[`TextHighlighter`](@ref), specific to this back end, or of the general
-[`Highlighter`](@ref), which works with every back end (see [Faces](@ref)). A
-`TextHighlighter` contains the following fields:
+`highlighters` keyword. A highlighter can be an instance of the general
+[`Highlighter`](@ref), which works with every back end (see
+[Highlighters](@ref highlighters)), or of the structure [`TextHighlighter`](@ref), specific
+to this back end. Both are defined by a `Face` of StyledStrings.jl (see [Faces](@ref)), which
+is rendered using its escape sequence. A `TextHighlighter` contains the following public
+fields:
 
-- `f::Function`: Function with the signature `f(data, i, j)` in which should return `true`
-  if the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
-- `fd::Function`: Function with the signature `f(h, data, i, j)` in which `h` is the
-  highlighter. This function must return the `Face` (or `Crayon`) to be applied to the cell
-  that must be highlighted.
-- `_decoration::Face`: The `Face` to be applied to the highlighted cell if the default
-  `fd` is used.
+- `f::Function`: Function with the signature `f(data, i, j)` which should return `true` if
+  the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
+- `fd::Function`: Function with the signature `fd(h, data, i, j)` in which `h` is the
+  highlighter. This function must return the `Face` to be applied to the cell that must be
+  highlighted.
 
 The function `f` has the following signature:
 
@@ -120,34 +129,29 @@ element coordinates that are being tested. If this function returns `true`, the 
 `(i, j)` will be highlighted.
 
 If the function `f` returns true, the function `fd(h, data, i, j)` will be called and must
-return a `Face` (or a `Crayon`, converted to a face) that will be applied to the cell.
+return a `Face` that will be applied to the cell.
 
 A highlighter can be constructed using the following helpers:
+
+```julia
+TextHighlighter(f::Function, face::Face)
+```
+
+where it will apply the `face` to the highlighted cell,
 
 ```julia
 TextHighlighter(f::Function; kwargs...)
 ```
 
-where it will construct a `Face` using the keywords in `kwargs` and apply it to the
-highlighted cell. The keywords can be the ones of `Face` (`weight`, `slant`, `foreground`,
-`background`, `underline`, `strikethrough`, `inverse`, ...) or the ones of `Crayon` (`bold`,
-`faint`, `italics`, `negative`, `foreground`, `background`, `underline`, `strikethrough`),
-which are translated to the equivalent face attributes,
-
-```julia
-TextHighlighter(f::Function, face::Face)
-TextHighlighter(f::Function, crayon::Crayon)
-```
-
-where it will apply the `face` (or the `crayon`, converted to a face) to the highlighted
-cell, and
+where it will construct a `Face` using the keywords in `kwargs` (`weight`, `slant`,
+`foreground`, `background`, `underline`, `strikethrough`, `inverse`, ...) and apply it to
+the highlighted cell, and
 
 ```julia
 TextHighlighter(f::Function, fd::Function)
 ```
 
-where it will apply the `Face` (or `Crayon`) returned by the function `fd` to the
-highlighted cell.
+where it will apply the `Face` returned by the function `fd` to the highlighted cell.
 
 !!! note
 
@@ -160,21 +164,18 @@ highlighted cell.
     **will not** affect the parameter `data` passed to the highlighter function `f`. It will
     always receive the original, unformatted value.
 
-  For example, if we want to highlight the cells with value greater than 5 in red, and all the
-cells with value less than 5 in blue, we can define:
+For example, if we want to highlight the cells with value greater than 5 in bold red, and
+all the cells with value less than 5 in blue, we can define:
 
-```julia
+```@repl text_backend
 hl_gt5 = TextHighlighter(
     (data, i, j) -> data[i, j] > 5,
-    Face(; foreground = :red)
-)
+    Face(; weight = :bold, foreground = :red)
+);
 
-hl_lt5 = TextHighlighter(
-    (data, i, j) -> data[i, j] < 5,
-    crayon"blue"
-)
+hl_lt5 = TextHighlighter((data, i, j) -> data[i, j] < 5; foreground = :blue);
 
-highlighters = [hl_gt5, hl_lt5]
+pretty_table([1 10; 5 7]; highlighters = [hl_gt5, hl_lt5])
 ```
 
 ## Text Table Format
@@ -197,13 +198,13 @@ contains the following fields:
   table.
 - `horizontal_line_at_beginning::Bool`: If `true`, a horizontal line will be drawn at the
   beginning of the table.
-- `horizontal_lines_at_column_labels::Union{Symbol, Vector{Int}}`: A horizontal line will be
-    drawn after each column label row index listed in this vector. If the symbol `:all` is
-    passed, a horizontal line will be drawn after every column label. If the symbol `:none`
-    is passed, no horizontal lines will be drawn.
+- `horizontal_lines_at_column_labels::Union{Symbol, Vector{Int}}`: A horizontal line will
+  be drawn after each column label row index listed in this vector. If the symbol `:all` is
+  passed, a horizontal line will be drawn after every column label. If the symbol `:none`
+  is passed, no horizontal lines will be drawn.
 - `horizontal_line_at_merged_column_labels::Bool`: If `true`, a horizontal line will be
-    drawn at the merged column labels. Notice that the horizontal line drawn using the
-    option `horizontal_lines_at_column_labels` has precedence over this one.
+  drawn at the merged column labels. Notice that the horizontal line drawn using the option
+  `horizontal_lines_at_column_labels` has precedence over this one.
 - `horizontal_line_after_column_labels::Bool`: If `true`, a horizontal line will be drawn
   after the column labels.
 - `horizontal_lines_at_data_rows::Union{Symbol, Vector{Int}}`: A horizontal line will be
@@ -218,9 +219,9 @@ contains the following fields:
 - `horizontal_line_after_data_rows::Bool`: If `true`, a horizontal line will be drawn after
   the data rows.
 - `horizontal_line_before_summary_rows::Bool`: If `true`, a horizontal line will be drawn
-    before the summary rows. Notice that this line is the same as the one drawn if
-    `horizontal_line_after_data_rows` is `true`. However, in this case, the line is omitted
-    if there are no summary rows.
+  before the summary rows. Notice that this line is the same as the one drawn if
+  `horizontal_line_after_data_rows` is `true`. However, in this case, the line is omitted
+  if there are no summary rows.
 - `horizontal_line_after_summary_rows::Bool`: If `true`, a horizontal line will be drawn
   after the summary rows.
 - `vertical_line_at_beginning::Bool`: If `true`, a vertical line will be drawn at the
@@ -237,6 +238,8 @@ contains the following fields:
   the data columns.
 - `vertical_line_after_continuation_column::Bool`: If `true`, a vertical line will be drawn
   after the continuation column.
+- `suppress_vertical_lines_at_column_labels::Bool`: If `true`, the vertical lines inside
+  the column label rows will be suppressed.
 - `ellipsis_line_skip::Integer`: Number of lines to skip when printing an ellipsis.
 
 We provide a few helpers to configure the table format. For more information, see the
@@ -246,6 +249,14 @@ documentation of the following macros:
 - [`@text__all_vertical_lines`](@ref).
 - [`@text__no_horizontal_lines`](@ref).
 - [`@text__no_vertical_lines`](@ref).
+
+!!! tip
+
+    If only the line presence and design fields are needed, prefer the backend-agnostic
+    [`TableFormat`](@ref), which works with every back end (see
+    [Table Format and Style](@ref)). The native `TextTableFormat` is required only for the
+    fields specific to the text back end, such as `borders`,
+    `horizontal_lines_at_column_labels`, and `ellipsis_line_skip`.
 
 ### Line Characters
 
@@ -290,16 +301,16 @@ contains the following fields:
 - `stubhead_label::Face`: Face with the style for the stubhead label.
 - `row_label::Face`: Face with the style for the row labels.
 - `row_group_label::Face`: Face with the style for the row group label.
-- `first_line_column_label::Union{Face, Vector{Face}}`: Face or faces with the style
-    for the first column label lines. If a vector of faces is passed, it must have the
-    same length as the number columns in the table.
-- `column_label::Union{Face, Vector{Face}}`: Face or faces with the style for the
-    rest of the column labels. If a vector of faces is passed, it must have the same
-    length as the number of columns in the table.
-- `first_line_merged_column_label::Face`: Face with the style for the merged cells at
-  the first column label line.
-- `merged_column_label::Face`: Face with the style for the merged cells at the rest of
-  the column labels.
+- `first_line_column_label::Union{Face, Vector{Face}}`: Face or faces with the style for
+  the first column label lines. If a vector of faces is passed, it must have the same
+  length as the number of columns in the table.
+- `column_label::Union{Face, Vector{Face}}`: Face or faces with the style for the rest of
+  the column labels. If a vector of faces is passed, it must have the same length as the
+  number of columns in the table.
+- `first_line_merged_column_label::Face`: Face with the style for the merged cells at the
+  first column label line.
+- `merged_column_label::Face`: Face with the style for the merged cells at the rest of the
+  column labels.
 - `summary_row_cell::Face`: Face with the style for the summary row cell.
 - `summary_row_label::Face`: Face with the style for the summary row label.
 - `footnote::Face`: Face with the style for the footnotes.
@@ -320,27 +331,30 @@ contains the following fields:
 - `right_line::Union{Nothing, Face}`: Face with the style for the vertical line at the
   right of the table.
 
-Each field is a `Face` describing the style for the corresponding element in the table.
-The keyword constructor also accepts a `Crayon` (or a vector of crayons) in every field,
-which is converted to the equivalent face (see [Faces](@ref)).
+Each field is a `Face` of StyledStrings.jl describing the style for the corresponding
+element in the table (see [Faces](@ref)).
 
 The line faces default to `nothing`, meaning that the corresponding line is rendered with
 the face in `table_border`. When printing with the backend-agnostic [`TableFormat`](@ref),
 the color of each line design is converted to the corresponding line face, unless the line
 face is explicitly set, which has the highest precedence.
 
-For example, if we want the stubhead label to be bold and red, we must define:
+For example, if we want the stubhead label to be bold and red, and the table border to be
+gray, we must define:
 
-```julia
-style = TextTableStyle(
-    stubhead_label = Face(; weight = :bold, foreground = :red)
-)
+```@repl text_backend
+style = TextTableStyle(;
+    stubhead_label = Face(; weight = :bold, foreground = :red),
+    table_border   = Face(; foreground = :bright_black),
+);
+
+pretty_table([1 2; 3 4]; row_labels = ["A", "B"], stubhead_label = "Label", style)
 ```
 
-or, equivalently, using a crayon:
+!!! tip
 
-```julia
-style = TextTableStyle(
-    stubhead_label = crayon"bold red"
-)
-```
+    If only the decorations of the table sections are needed, prefer the backend-agnostic
+    [`TableStyle`](@ref), which works with every back end (see
+    [Table Format and Style](@ref)). The native `TextTableStyle` is required only for the
+    fields specific to the text back end, such as `table_border`, `omitted_cell_summary`,
+    and the line faces.

@@ -320,7 +320,9 @@ Each field corresponds to a table element and should be a vector of [`DocxPair`]
 | `"size"`       | Font size in points, *e.g.* `"14"` or `"10.5"`.                |
 
 The colors accept a 6-digit hexadecimal string (with or without the leading `#`) or one of
-the color names supported by Crayons.jl.
+the named colors of StyledStrings.jl (for example, `"red"`, `"bright_blue"`, or `"gray"`).
+For backward compatibility, the color names of Crayons.jl (for example, `"light_blue"`) are
+also accepted.
 
 It is only necessary to define those fields for which the default style needs to be
 overwritten. For example:

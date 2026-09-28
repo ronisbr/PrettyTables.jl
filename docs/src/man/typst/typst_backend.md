@@ -28,11 +28,15 @@ the output:
 - `minify::Bool`: If `true`, the generated Typst code will be minified by ignoring
   `wrap_column` and printing the table columns in the same line.
   (**Default** = `false`)
-- `style::Union{TableStyle, TypstTableStyle}`: Style of the table. For more information, see the section
-  [Typst Table Style](@ref).
+- `style::Union{TableStyle, TypstTableStyle}`: Style of the table. The fields of the
+  backend-agnostic [`TableStyle`](@ref) override the ones of the default Typst table style.
+  For more information, see the section [Typst Table Style](@ref).
   (**Default** = `TypstTableStyle()`)
-- `table_format::Union{TableFormat, TypstTableFormat}`: Typst table format used to render the table. For more
-    information, see the section [Typst Table Format](@ref).
+- `table_format::Union{TableFormat, TypstTableFormat}`: Typst table format used to render
+  the table. The backend-agnostic [`TableFormat`](@ref) is fully supported: its line
+  presence fields override the ones of the default Typst table format, and the line design
+  is converted to strokes by [`typst_line_style`](@ref). For more information, see the
+  section [Typst Table Format](@ref).
 - `wrap_column::Integer`: Indicates the column where the output will be wrapped.
   (**Default** = `92`)
 
@@ -45,31 +49,39 @@ the output:
 ## Typst Highlighters
 
 A set of highlighters can be passed as a vector of `AbstractHighlighter` to the
-`highlighters` keyword. A highlighter can be an instance of the structure
-[`TypstHighlighter`](@ref), specific to this back end, or of the general
+`highlighters` keyword. A highlighter can be an instance of the general
 [`Highlighter`](@ref), which is defined by a `Face` and works with every back end (see
-[Faces](@ref)). The face is converted with [`typst_decoration`](@ref). The structure [`TypstHighlighter`](@ref)
-contains the following two public fields:
+[Highlighters](@ref highlighters)), or of the structure [`TypstHighlighter`](@ref), specific
+to this back end. The face of a general highlighter is converted with
+[`typst_decoration`](@ref). The structure [`TypstHighlighter`](@ref) contains the following
+two public fields:
 
 - `f::Function`: Function with the signature `f(data, i, j)`, which should return `true`
   if the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
-- `fd::Function`: Function with the signature `f(h, data, i, j)`, where `h` is the
+- `fd::Function`: Function with the signature `fd(h, data, i, j)`, where `h` is the
   highlighter. This function must return a `Vector{Pair{String, String}}` with properties
   compatible with the `style` field that will be applied to the highlighted cell.
 
-A Typst highlighter can be constructed using three helpers:
+A Typst highlighter can be constructed using the following helpers:
 
 ```julia
-TypstHighlighter(f::Function, decoration::Vector{Pair{String, String}})
+TypstHighlighter(f::Function, decoration::TypstPair)
 
-TypstHighlighter(f::Function, decorations::NTuple{N, Pair{String, String}})
+TypstHighlighter(f::Function, decoration::Vector{TypstPair})
 
 TypstHighlighter(f::Function, fd::Function)
 ```
 
-The first applies a fixed decoration to the highlighted cell specified in `decoration`, the
-second allows specifying decorations as a `Tuple`, and the third lets the user select the
-desired decoration by specifying the function `fd`.
+The first two apply a fixed decoration to the highlighted cell, whereas the third lets the
+user select the desired decoration by specifying the function `fd`. The decoration can
+also be created from a `Face`, which is converted with [`typst_decoration`](@ref), or from
+the keywords of `Face`:
+
+```julia
+TypstHighlighter(f::Function, face::Face)
+
+TypstHighlighter(f::Function; kwargs...)
+```
 
 !!! note
 
@@ -125,7 +137,7 @@ contains the following fields:
 - `horizontal_line_at_beginning::Bool`: If `true`, a horizontal line will be drawn at the
     beginning of the table.
 - `horizontal_line_at_merged_column_labels::Bool`: If `true`, a horizontal line will be
-    drawn on bottom of the merged column labels using `\\cline`.
+    drawn at the bottom of the merged column labels using `table.hline`.
 - `horizontal_line_after_column_labels::Bool`: If `true`, a horizontal line will be drawn
     after the column labels.
 - `horizontal_lines_at_data_rows::Union{Symbol, Vector{Int}}`: A horizontal line will be
@@ -142,7 +154,7 @@ contains the following fields:
 - `horizontal_line_before_summary_rows::Bool`: If `true`, a horizontal line will be drawn
     before the summary rows. Notice that this line is the same as the one drawn if
     `horizontal_line_after_data_rows` is `true`. However, in this case, the line is omitted
-    if there is no summary rows.
+    if there are no summary rows.
 - `horizontal_line_after_summary_rows::Bool`: If `true`, a horizontal line will be drawn
     after the summary rows.
 - `vertical_line_at_beginning::Bool`: If `true`, a vertical line will be drawn at the
@@ -194,7 +206,8 @@ contains the following fields:
 - `summary_row_cell::Vector{TypstPair}`: Style for the summary row cell.
 - `summary_row_label::Vector{TypstPair}`: Style for the summary row label.
 - `footnote::Vector{TypstPair}`: Style for the footnote.
-- `source_notes::Vector{TypstPair}`: Style for the source notes.
+- `omitted_cell_summary::Vector{TypstPair}`: Style for the omitted cell summary.
+- `source_note::Vector{TypstPair}`: Style for the source notes.
 
 Each field is a vector of [`TypstPair`](@ref), *i.e.* `Pair{String, String}`, describing
 properties and values compatible with the Typst style attribute.
@@ -203,7 +216,7 @@ For example, if we want the stubhead label to be bold and red, we must define:
 
 ```julia
 style = TypstTableStyle(
-    stubhead_label = ["text-weight" => "bold", "fill" => "red", "text-fill" => "white"]
+    stubhead_label = ["text-weight" => "bold", "text-fill" => "red"]
 )
 ```
 
@@ -212,4 +225,14 @@ The user can pass any property compatible with the Typst style attribute. If the
 applied to the cell itself.
 
 Every keyword of the constructor of [`TypstTableStyle`](@ref) also accepts a `Face`, which is
-converted to Typst properties with [`typst_decoration`](@ref) (see [Faces](@ref)).
+converted to Typst properties with [`typst_decoration`](@ref) (see [Faces](@ref)). Hence,
+the previous style can also be defined as:
+
+```julia
+style = TypstTableStyle(
+    stubhead_label = Face(; weight = :bold, foreground = :red)
+)
+```
+
+If only the fields shared by all the back ends are needed, the backend-agnostic
+[`TableStyle`](@ref) can be used instead (see [Table Format and Style](@ref)).

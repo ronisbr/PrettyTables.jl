@@ -28,15 +28,18 @@ the output.
   (**Default**: `false`)
 - `stand_alone::Bool`: If `true`, the output HTML code is a complete HTML document.
   (**Default**: `false`)
-- `style::Union{TableStyle, HtmlTableStyle}`: Style of the table. For more information, see the section
-  [HTML Table Style](@ref).
+- `style::Union{TableStyle, HtmlTableStyle}`: Style of the table. The fields of the
+  backend-agnostic [`TableStyle`](@ref) override the ones of the default HTML table style.
+  For more information, see the section [HTML Table Style](@ref).
 - `table_class::String`: Class for the table.
   (**Default**: "")
 - `table_div_class::String`: Class for the div containing the table. It is only used if
   `wrap_table_in_div` is `true`.
   (**Default**: "")
-- `table_format::Union{TableFormat, HtmlTableFormat}`: HTML table format used to render the table. For more
-  information, see the section [HTML Table Format](@ref).
+- `table_format::Union{TableFormat, HtmlTableFormat}`: HTML table format used to render the
+  table. The fields of the backend-agnostic [`TableFormat`](@ref) override the ones of the
+  default HTML table format. For more information, see the section
+  [HTML Table Format](@ref).
 - `top_left_string::String`: String to put in the top left corner div.
   (**Default**: "")
 - `top_right_string::String`: String to put in the top right corner div. Notice that this
@@ -48,31 +51,39 @@ the output.
 ## HTML Highlighters
 
 A set of highlighters can be passed as a vector of `AbstractHighlighter` to the
-`highlighters` keyword. A highlighter can be an instance of the structure
-[`HtmlHighlighter`](@ref), specific to this back end, or of the general
+`highlighters` keyword. A highlighter can be an instance of the general
 [`Highlighter`](@ref), which is defined by a `Face` and works with every back end (see
-[Faces](@ref)). The face is converted with [`html_decoration`](@ref). The structure [`HtmlHighlighter`](@ref)
-contains the following two public fields:
+[Highlighters](@ref highlighters)), or of the structure [`HtmlHighlighter`](@ref), specific
+to this back end. The face of a general highlighter is converted with
+[`html_decoration`](@ref). The structure [`HtmlHighlighter`](@ref) contains the following
+two public fields:
 
-- `f::Function`: Function with the signature `f(data, i, j)` in which should return `true`
-  if the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
-- `fd::Function`: Function with the signature `f(h, data, i, j)` in which `h` is the
+- `f::Function`: Function with the signature `f(data, i, j)` which should return `true` if
+  the element `(i, j)` in `data` must be highlighted, or `false` otherwise.
+- `fd::Function`: Function with the signature `fd(h, data, i, j)` in which `h` is the
   highlighter. This function must return a `Vector{Pair{String, String}}` with properties
   compatible with the `style` field that will be applied to the highlighted cell.
 
-A HTML highlighter can be constructed using three helpers:
+An HTML highlighter can be constructed using the following helpers:
 
 ```julia
-HtmlHighlighter(f::Function, decoration::Vector{Pair{String, String}})
+HtmlHighlighter(f::Function, decoration::HtmlPair)
 
-HtmlHighlighter(f::Function, decorations::NTuple{N, Pair{String, String})
+HtmlHighlighter(f::Function, decoration::Vector{HtmlPair})
 
 HtmlHighlighter(f::Function, fd::Function)
 ```
 
-The first will apply a fixed decoration to the highlighted cell specified in `decoration`,
-whereas the second lets the user select the desired decoration by specifying the function
-`fd`.
+The first two apply a fixed decoration to the highlighted cell, whereas the third lets the
+user select the desired decoration by specifying the function `fd`. The decoration can
+also be created from a `Face`, which is converted with [`html_decoration`](@ref), or from
+the keywords of `Face`:
+
+```julia
+HtmlHighlighter(f::Function, face::Face)
+
+HtmlHighlighter(f::Function; kwargs...)
+```
 
 !!! note
 
@@ -189,10 +200,10 @@ contains the following fields:
 - `row_label::Vector{HtmlPair}`: Style for the row label.
 - `row_group_label::Vector{HtmlPair}`: Style for the row group label.
 - `first_line_column_label::Union{Vector{HtmlPair}, Vector{Vector{HtmlPair}}}`: Style for
-  the first line of the column labels. If a vector of `Vector{HtmlPair}}` is provided, each
+  the first line of the column labels. If a vector of `Vector{HtmlPair}` is provided, each
   column label in the first line will use the corresponding style.
 - `column_label::Union{Vector{HtmlPair}, Vector{Vector{HtmlPair}}}`: Style for the rest of
-  the column labels. If a vector of `Vector{HtmlPair}}` is provided, each column label will
+  the column labels. If a vector of `Vector{HtmlPair}` is provided, each column label will
   use the corresponding style.
 - `first_line_merged_column_label::Vector{HtmlPair}`: Style for the merged cells at the
   first column label line.
@@ -201,14 +212,13 @@ contains the following fields:
 - `summary_row_cell::Vector{HtmlPair}`: Style for the summary row cell.
 - `summary_row_label::Vector{HtmlPair}`: Style for the summary row label.
 - `footnote::Vector{HtmlPair}`: Style for the footnote.
-- `source_notes::Vector{HtmlPair}`: Style for the source notes.
-- `first_line_of_column_labels::Vector{HtmlPair}`: Style for the first line of the column
-  labels.
+- `source_note::Vector{HtmlPair}`: Style for the source notes.
 
 Each field is a vector of [`HtmlPair`](@ref), *i.e.* `Pair{String, String}`, describing
 properties and values compatible with the HTML style attribute.
 
 For example, if we want the stubhead label to be bold and red, we must define:
+
 ```julia
 style = HtmlTableStyle(
     stubhead_label = ["font-weight" => "bold", "color" => "red"]
@@ -216,4 +226,14 @@ style = HtmlTableStyle(
 ```
 
 Every keyword of the constructor of [`HtmlTableStyle`](@ref) also accepts a `Face`, which is
-converted to CSS properties with [`html_decoration`](@ref) (see [Faces](@ref)).
+converted to CSS properties with [`html_decoration`](@ref) (see [Faces](@ref)). Hence, the
+previous style can also be defined as:
+
+```julia
+style = HtmlTableStyle(
+    stubhead_label = Face(; weight = :bold, foreground = :red)
+)
+```
+
+If only the fields shared by all the back ends are needed, the backend-agnostic
+[`TableStyle`](@ref) can be used instead (see [Table Format and Style](@ref)).

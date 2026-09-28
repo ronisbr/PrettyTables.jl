@@ -88,7 +88,7 @@ hl_10 = DocxHighlighter(
 );
 
 # The general highlighter defined by a face also works with the Word back end.
-hl_0 = Highlighter((data, i, j) -> data[i, j] == 0; foreground = :blue, italics = true);
+hl_0 = Highlighter((data, i, j) -> data[i, j] == 0; foreground = :blue, slant = :italic);
 
 pretty_table(
     data;

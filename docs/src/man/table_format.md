@@ -19,23 +19,30 @@ To avoid this, the keywords `table_format` and `style` of [`pretty_table`](@ref)
 accept the backend-agnostic objects [`TableFormat`](@ref) and [`TableStyle`](@ref), which
 describe the table lines and decorations once for every back end:
 
-```julia
+```@repl table_format
+matrix = [1 2 3; 4 5 6; 7 8 9];
+
 table_format = TableFormat(;
     horizontal_lines_at_data_rows = :all,
     vertical_lines_at_data_columns = :none,
-    header_line = LineStyle(; style = :dashed),
-)
+    header_line = LineStyle(; style = :double),
+);
 
 style = TableStyle(;
     title = Face(; weight = :bold, foreground = :magenta),
     first_line_column_label = Face(; slant = :italic, foreground = :blue),
-)
+);
 
-pretty_table(matrix; table_format = table_format, style = style)
-pretty_table(matrix; backend = :latex, table_format = table_format, style = style)
-pretty_table(matrix; backend = :typst, table_format = table_format, style = style)
-pretty_table(matrix; backend = :excel, table_format = table_format, style = style)
+pretty_table(matrix; style, table_format, title = "Title")
+
+pretty_table(matrix; backend = :latex, style, table_format, title = "Title")
+
+pretty_table(matrix; backend = :typst, style, table_format, title = "Title")
 ```
+
+The same objects can also be used with the Excel and Word back ends (for example,
+`pretty_table(matrix; backend = :excel, style, table_format)`), which require loading
+XLSX.jl and WriteDocx.jl, respectively.
 
 !!! note
 
@@ -140,6 +147,25 @@ The line roles follow the border fields of the Typst, Excel, and Word table form
 - `top_line`, `header_line`, `merged_header_cell_line`, `middle_line`, and `bottom_line`
   for the horizontal lines.
 - `left_line`, `center_line`, and `right_line` for the vertical lines.
+
+For example, the following format draws heavy lines at the top and bottom of the table, a
+double line after the column labels, and dashed lines between the data rows, where the
+line after the column labels is blue:
+
+```@repl table_format
+table_format = TableFormat(;
+    @no_vertical_lines,
+    horizontal_lines_at_data_rows = :all,
+    top_line    = LineStyle(; width = :thick),
+    header_line = LineStyle(; style = :double, color = :blue),
+    middle_line = LineStyle(; style = :dashed),
+    bottom_line = LineStyle(; width = :thick),
+);
+
+pretty_table(matrix; table_format)
+
+pretty_table(matrix; backend = :typst, table_format)
+```
 
 The conversion functions can also be called directly:
 

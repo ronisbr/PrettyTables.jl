@@ -106,8 +106,9 @@ The alignment of each column can be specified by passing a vector of symbols to 
 - `:l`: Left alignment
 - `:c`: Center alignment
 - `:r`: Right alignment
+- `:n`: No alignment information
 
-The default alignment is left alignment (`:l`).
+The default alignment is right alignment (`:r`).
 
 !!! details "Example code"
     ```@example markdown_examples
@@ -116,7 +117,7 @@ The default alignment is left alignment (`:l`).
         A;
         backend = :markdown,
         column_labels = ["Left", "Center", "Right", "Default"],
-        alignment = [:l, :c, :r, :l]
+        alignment = [:l, :c, :r, :r]
     )
 
     print(table) # hide

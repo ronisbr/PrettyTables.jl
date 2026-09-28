@@ -99,7 +99,7 @@ julia> column_labels = [
         latex_cell"\textbf{Torque} [10$^{-5}$ Nm]",
         latex_cell"\textbf{Angular Momentum} [10$^{-3}$ Nms]"
     ]
-],
+]
 
 julia> pretty_table(
     data;
@@ -221,5 +221,5 @@ create_latex_example(table, "latex_example_03.png")
 ```
 
 ```@raw html
-<img src="../latex_example_03.png" alt="LaTeX Example 01" width="70%">
+<img src="../latex_example_03.png" alt="LaTeX Example 03" width="70%">
 ```
