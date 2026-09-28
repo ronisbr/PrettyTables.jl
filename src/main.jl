@@ -9,35 +9,36 @@ export pretty_table
 # Back ends that can be selected using the keyword `backend`.
 const _AVAILABLE_BACKENDS = (:text, :markdown, :html, :latex, :typst, :excel, :docx)
 
+# NOTE: The wrappers of `pretty_table` call it through `Base.inferencebarrier`. Otherwise, the
+# compilation of each wrapper would infer the entire chain of keyword methods again for each
+# set of keywords, which is compiled anyway when the call is performed.
+
 function pretty_table(@nospecialize(data::Any); kwargs...)
     io = stdout isa Base.TTY ? IOContext(stdout, :limit => true) : stdout
-    return pretty_table(io, data; kwargs...)
+    return Base.inferencebarrier(pretty_table)(io, data; kwargs...)
 end
 
 function pretty_table(
     ::Type{String}, @nospecialize(data::Any); color::Bool = false, kwargs...
 )
     io = IOContext(IOBuffer(), :color => color, :displaysize => (-1, -1))
-    pretty_table(io, data; kwargs...)
+    Base.inferencebarrier(pretty_table)(io, data; kwargs...)
     return String(take!(io.io))
 end
 
 function pretty_table(::Type{HTML}, @nospecialize(data::Any); kwargs...)
+    f = Base.inferencebarrier(pretty_table)
+
     # If the keywords do not set the back end, or set it to `:auto`, resolve it from the table
     # format, using the HTML back end by default. Notice that a backend-agnostic
     # `TableFormat` does not select a back end.
     str = if get(kwargs, :backend, :auto) == :auto
-        pretty_table(
-            String,
-            data;
-            kwargs...,
-            backend = _resolve_printing_backend(kwargs; default = :html),
-        )
+        f(String, data; kwargs..., backend = _resolve_printing_backend(kwargs; default = :html))
     else
-        pretty_table(String, data; kwargs...)
+        f(String, data; kwargs...)
     end
 
-    return HTML(str)
+    return HTML(str::String)
 end
 
 # We declare this function with all the common keywords and after we call an internal

@@ -6,14 +6,18 @@ using Markdown
 using Typstry
 
 function PrettyTables.pretty_table(::Type{Typst}, @nospecialize(data::Any); kwargs...)
-    # If the keywords do not set the back end, use the Typst back end by default.
+    # If the keywords do not set the back end, use the Typst back end by default. Notice that
+    # the call is performed through `Base.inferencebarrier` to avoid inferring the entire
+    # chain of keyword methods when compiling this wrapper.
+    f = Base.inferencebarrier(pretty_table)
+
     str = if !haskey(kwargs, :backend)
-        pretty_table(String, data; backend = :typst, kwargs...)
+        f(String, data; backend = :typst, kwargs...)
     else
-        pretty_table(String, data; kwargs...)
+        f(String, data; kwargs...)
     end
 
-    return Typst(TypstText(str))
+    return Typst(TypstText(str::String))
 end
 
 # Render cells with Typst commands. Notice that the content is emitted unchanged. Hence,
