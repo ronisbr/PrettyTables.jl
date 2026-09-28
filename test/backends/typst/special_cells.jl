@@ -145,3 +145,24 @@ end
         @test occursin(escaped, result)
     end
 end
+
+@testset "Markdown Cells With Quotes and Backslashes" begin
+    # Each line of a Markdown cell is emitted inside a Typst string literal. Hence, the
+    # double quotes and backslashes must be escaped.
+    cell = md"""
+        Say "hi" with `a\b`.
+
+        Next
+        """
+
+    result = pretty_table(String, [cell;;]; annotate = false, backend = :typst)
+
+    @test occursin(
+        """
+              "Say \\"hi\\" with `a\\\\b`.\\n" + 
+              "\\n" + 
+              "Next",
+        """,
+        result,
+    )
+end

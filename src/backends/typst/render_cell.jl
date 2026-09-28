@@ -28,8 +28,10 @@ function PrettyTables._typst__render_cell(
     cell::Markdown.MD, context::RenderContext, renderer::Union{Val{:print}, Val{:show}}
 )
     # We will always render Markdown cells using `#raw` until we can obtain a good way to
-    # convert Markdown to Typst.
-    str = "\"" * replace(chomp(string(cell)), "\n" => "\\n\" + \n  \"") * "\""
+    # convert Markdown to Typst. Notice that each line is emitted inside a Typst string
+    # literal. Hence, the backslashes and the double quotes must be escaped.
+    lines = split(chomp(string(cell)), '\n')
+    str   = "\"" * join(map(_typst__escape_string_literal, lines), "\\n\" + \n  \"") * "\""
 
     return """
         #raw(

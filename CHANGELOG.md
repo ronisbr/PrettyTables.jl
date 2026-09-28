@@ -193,6 +193,8 @@ Version 3.5.0
   label added a column to the table.
 - ![Bugfix][badge-bugfix] Escape the stubhead label and the row number column label in the
   Markdown back end, as the column labels.
+- ![Bugfix][badge-bugfix] Escape the double quotes and backslashes of the `Markdown.MD`
+  cells in the Typst back end, which are emitted inside string literals.
 - ![Bugfix][badge-bugfix] Escape the slashes in the Typst back end, since `//` and `/*`
   started a comment that broke the document, and the markups that Typst recognizes at the
   beginning of a cell (headings, lists, and term lists).
