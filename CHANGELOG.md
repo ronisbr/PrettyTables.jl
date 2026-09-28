@@ -196,6 +196,9 @@ Version 3.5.0
   label added a column to the table.
 - ![Bugfix][badge-bugfix] Escape the stubhead label and the row number column label in the
   Markdown back end, as the column labels.
+- ![Bugfix][badge-bugfix] Give `fixed_data_column_widths` precedence over
+  `maximum_data_column_widths` in the text back end, as documented. The cells of a column
+  with a fixed width were still cropped to its maximum width.
 - ![Bugfix][badge-bugfix] Handle the merged column labels when
   `column_label_width_based_on_first_line_only` is `true` in the text back end. The merged
   labels after the first line widened the columns and were cropped to the width of a single

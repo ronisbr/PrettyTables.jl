@@ -292,3 +292,22 @@ end
 
     @test result == expected
 end
+
+@testset "Fixed Width Has Precedence Over the Maximum Width" begin
+    expected = """
+┌────────────┐
+│     Col. 1 │
+├────────────┤
+│ abcdefghi… │
+└────────────┘
+"""
+
+    result = pretty_table(
+        String,
+        ["abcdefghijklmnop"];
+        fixed_data_column_widths = 10,
+        maximum_data_column_widths = 5,
+    )
+
+    @test result == expected
+end

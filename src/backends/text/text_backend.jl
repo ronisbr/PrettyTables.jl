@@ -208,6 +208,12 @@ function _text__print_table_core(
         collect(Int, fixed_data_column_widths)
     end
 
+    # The fixed width of a column has precedence over its maximum width. Otherwise, the
+    # cells would be cropped to the maximum width before being fitted in the fixed width.
+    for j in eachindex(fix_data_column_widths)
+        (fix_data_column_widths[j] > 0) && (max_data_column_widths[j] = 0)
+    end
+
     if alignment_anchor_regex isa Vector{Pair{Int, Vector{Regex}}}
         for (j, _) in alignment_anchor_regex
             (j <= 0) && throw(
