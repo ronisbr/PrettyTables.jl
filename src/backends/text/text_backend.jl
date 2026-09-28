@@ -1072,9 +1072,9 @@ function _text__print_table_core(
                 )
             end
 
-            _text__print(display, " ")
-            _text__print_aligned(display, "⋮", cell_width, alignment)
-            _text__print(display, " ")
+            _text__print_aligned(
+                display, "⋮", cell_width, alignment; left_margin = 1, right_margin = 1
+            )
             vline && _text__styled_print(display, vl)
 
             continue
