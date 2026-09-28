@@ -206,3 +206,24 @@ end
     @test occursin("*x*", result)
     @test !occursin("\\*", result)
 end
+
+@testset "Escaping of the Row Group Labels" begin
+    # The row group labels must always be escaped. Otherwise, a `|` would add a column.
+    expected = """
+|  **Col. 1** | **Col. 2** |
+|------------:|-----------:|
+|           1 |          2 |
+| **G\\|H\\_1** | ────────── |
+|           3 |          4 |
+"""
+
+    result = pretty_table(
+        String,
+        [1 2; 3 4];
+        allow_markdown_in_cells = true,
+        backend = :markdown,
+        row_group_labels = [2 => "G|H_1"],
+    )
+
+    @test result == expected
+end

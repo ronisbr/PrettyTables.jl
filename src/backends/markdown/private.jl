@@ -333,6 +333,18 @@ function _markdown__escape_str(
     )
 end
 
+"""
+    _markdown__row_group_label(label::Any, line_breaks::Bool) -> String
+
+Return the row group `label` converted to string and escaped for the Markdown back end. The
+line breaks are replaced with `<br>` if `line_breaks` is `true`. Notice that, as the title
+and the footnotes, the row group labels are always escaped because they are not table
+cells.
+"""
+function _markdown__row_group_label(label::Any, line_breaks::Bool)
+    return _markdown__escape_str(string(label), line_breaks, true)
+end
+
 # == Style =================================================================================
 
 """

@@ -319,8 +319,10 @@ function _markdown__print_core(pspec::PrintingSpec, opts::MarkdownPrintOptions)
         # accordingly.
         if _has_row_group_labels(table_data)
             m =
-                maximum(x -> textwidth(last(x)), table_data.row_group_labels) +
-                _markdown__style_textwidth(style.row_group_label)
+                maximum(
+                    x -> textwidth(_markdown__row_group_label(last(x), line_breaks)),
+                    table_data.row_group_labels,
+                ) + _markdown__style_textwidth(style.row_group_label)
 
             if table_data.show_row_number_column
                 row_number_column_width = max(row_number_column_width, m)
@@ -488,7 +490,8 @@ function _markdown__print_core(pspec::PrintingSpec, opts::MarkdownPrintOptions)
 
         elseif action == :row_group_label
             row_group_label = _markdown__apply_style(
-                style.row_group_label, _current_cell(action, ps, table_data)
+                style.row_group_label,
+                _markdown__row_group_label(_current_cell(action, ps, table_data), line_breaks),
             )
 
             # In this case, we write the row group to the first cell and fill the entire
