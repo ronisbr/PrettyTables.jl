@@ -163,8 +163,9 @@ function _markdown__print_core(pspec::PrintingSpec, opts::MarkdownPrintOptions)
             ""
         end
 
-        # Check for footnotes.
-        rendered_cell *= _markdown__footnote_marks(table_data, action, ps.i, ps.j)
+        # Check for footnotes. Notice that the references must be placed after the style,
+        # as in the row numbers. Otherwise, they would not work inside a code span.
+        marks = _markdown__footnote_marks(table_data, action, ps.i, ps.j)
 
         if table_data.show_column_labels && (action == :column_label)
             # Apply the style to the column label.
@@ -185,7 +186,7 @@ function _markdown__print_core(pspec::PrintingSpec, opts::MarkdownPrintOptions)
                 rendered_cell,
             )
 
-            column_labels[ir, jr]        = rendered_cell
+            column_labels[ir, jr]        = rendered_cell * marks
             hidden_column_labels[ir, jr] = cell === _IGNORE_CELL
 
         elseif action == :data
@@ -202,22 +203,22 @@ function _markdown__print_core(pspec::PrintingSpec, opts::MarkdownPrintOptions)
                 end
             end
 
-            table_str[ir, jr] = rendered_cell
+            table_str[ir, jr] = rendered_cell * marks
 
         elseif !isnothing(summary_rows) && (action == :summary_row_cell)
             rendered_cell = _markdown__apply_style(style.summary_row_cell, rendered_cell)
 
-            summary_rows[ir, jr] = rendered_cell
+            summary_rows[ir, jr] = rendered_cell * marks
 
         elseif !isnothing(row_labels) && (action == :row_label)
             rendered_cell = _markdown__apply_style(style.row_label, rendered_cell)
 
-            row_labels[ir] = rendered_cell
+            row_labels[ir] = rendered_cell * marks
 
         elseif !isnothing(summary_row_labels) && (action == :summary_row_label)
             rendered_cell = _markdown__apply_style(style.summary_row_label, rendered_cell)
 
-            summary_row_labels[ir] = rendered_cell
+            summary_row_labels[ir] = rendered_cell * marks
         end
     end
 

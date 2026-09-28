@@ -13,7 +13,7 @@
 
 ## Table Subtitle
 
-| **Row** | **Rows** | **Col. 1**<br>`1` | **Merged Column[^1]**<br>`2` | ───<br>`3` | **Col. 4**<br>`4` |
+| **Row** | **Rows** | **Col. 1**<br>`1` | **Merged Column**[^1]<br>`2` | ───<br>`3` | **Col. 4**<br>`4` |
 |--:|--:|--:|--:|--:|--:|
 | **1** | **Row 1** | (1, 1) | (1, 2) | (1, 3) | (1, 4) |
 | **Row Group** | ─ | ─ | ─ | ─ | ─ |
@@ -58,7 +58,7 @@ Source Notes
 
 ## Table Subtitle
 
-| **Rows** | **Col. 1**<br>`1` | **Merged Column[^1]**<br>`2` | ───<br>`3` | **Col. 4**<br>`4` |
+| **Rows** | **Col. 1**<br>`1` | **Merged Column**[^1]<br>`2` | ───<br>`3` | **Col. 4**<br>`4` |
 |--:|--:|--:|--:|--:|
 | **Row 1** | (1, 1) | (1, 2) | (1, 3) | (1, 4) |
 | **Row Group** | ─ | ─ | ─ | ─ |
@@ -105,7 +105,7 @@ Source Notes
 
 ## Table Subtitle
 
-| **Row** | **Rows** | **Col. 1** | **Merged Column[^1]** | ⋯ |
+| **Row** | **Rows** | **Col. 1** | **Merged Column**[^1] | ⋯ |
 |--:|--:|--:|--:|---|
 | **1** | **Row 1** | (1, 1) | (1, 2) | ⋯ |
 | **Row Group** | ─ | ─ | ─ | ⋯ |
@@ -154,7 +154,7 @@ Source Notes
 
 ## Table Subtitle
 
-| **Row** | **Rows** | **Col. 1** | **Merged Column[^1]** | ⋯ |
+| **Row** | **Rows** | **Col. 1** | **Merged Column**[^1] | ⋯ |
 |--:|--:|--:|--:|---|
 | **1** | **Row 1** | (1, 1) | (1, 2) | ⋯ |
 | ⋮ | ⋮ | ⋮ | ⋮ | ⋱ |
