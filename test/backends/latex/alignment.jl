@@ -145,4 +145,30 @@
 
         @test result == expected
     end
+
+    @testset "Footnote and Source Note Alignments" begin
+        expected = """
+\\begin{tabular}{|r|}
+  \\hline
+  \\textbf{Col. 1} \\\\
+  \\hline
+  1\$^{1}\$ \\\\
+  \\hline
+  \\multicolumn{1}{@{}c@{}}{\\small{\$^{1}\$F}} \\\\
+  \\multicolumn{1}{@{}r@{}}{\\textit{\\small{S}}} \\\\
+\\end{tabular}
+"""
+
+        result = pretty_table(
+            String,
+            [1;;];
+            backend               = :latex,
+            footnote_alignment    = :c,
+            footnotes             = [(:data, 1, 1) => "F"],
+            source_note_alignment = :r,
+            source_notes          = "S",
+        )
+
+        @test result == expected
+    end
 end

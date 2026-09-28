@@ -308,7 +308,7 @@ function _latex__print_core(pspec::PrintingSpec, opts::LatexPrintOptions)
                     rendered_cell = "\\multicolumn{$cs}{@{}$alignment@{}}{$rendered_cell}"
 
                 elseif (action == :source_notes)
-                    alignment     = _latex__alignment_to_str(table_data.footnote_alignment)
+                    alignment     = _latex__alignment_to_str(table_data.source_note_alignment)
                     cs            = _number_of_printed_columns(table_data)
                     rendered_cell = _latex__render_cell(cell, rctx, renderer)
                     rendered_cell = _latex__add_environments(rendered_cell, style.source_note)
