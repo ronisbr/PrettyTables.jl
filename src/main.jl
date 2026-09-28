@@ -571,17 +571,12 @@ Base.@constprop :none Base.@nospecializeinfer function _pretty_table(
     !isnothing(ptd) && push!(ptd, data)
 
     try
-        # Call the printing backend.
-        if backend ∈ (:excel, :docx)
-            return _printing_backend(Val(backend), pspec; is_stdout, kwargs...)
-        else
-            _printing_backend(Val(backend), pspec; is_stdout, kwargs...)
-        end
+        # Call the printing backend. Notice that only the Excel and Word back ends return an
+        # object. The other ones return `nothing`.
+        return _printing_backend(Val(backend), pspec; is_stdout, kwargs...)
     finally
         !isnothing(ptd) && pop!(ptd)
     end
-
-    return nothing
 end
 
 """
