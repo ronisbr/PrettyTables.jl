@@ -567,7 +567,7 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
                 ) && push!(vstyle, "border-bottom" => tf.borders.merged_header_cell_line)
 
                 rendered_cell = _html__render_cell(
-                    cell.data, rctx, renderer; allow_html_in_cells, line_breaks
+                    cell.data, rctx, renderer, allow_html_in_cells, line_breaks
                 )
 
                 alignment = cell.alignment
@@ -579,11 +579,7 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
                     action ∈ (:title, :subtitle, :row_group_label, :footnote, :source_notes)
 
                 rendered_cell = _html__render_cell(
-                    cell,
-                    rctx,
-                    renderer;
-                    allow_html_in_cells = allow_html_in_cells && !spans_table,
-                    line_breaks,
+                    cell, rctx, renderer, allow_html_in_cells && !spans_table, line_breaks
                 )
 
                 alignment = _current_cell_alignment(action, ps, table_data)

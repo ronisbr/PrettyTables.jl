@@ -13,24 +13,22 @@
     _html__render_cell(
         cell::Any,
         context::RenderContext,
-        renderer::Union{Val{:print}, Val{:show}};
-        kwargs...
+        renderer::Union{Val{:print}, Val{:show}},
+        allow_html_in_cells::Bool = false,
+        line_breaks::Bool = false
     ) -> String
 
-Render the `cell` in HTML back end using a specific `context` and `renderer`.
+Render the `cell` in HTML back end using a specific `context` and `renderer`. If
+`allow_html_in_cells` is `true`, the HTML sequences in the rendered string are not escaped.
+If `line_breaks` is `true`, `\\n` is replaced with `<br>`.
 
-# Keywords
-
-- `allow_html_in_cells::Bool`: If `true`, we will not escape HTML sequences in the rendered
-    string.
-    (**Default**: `false`)
-- `line_breaks::Bool`: If `true`, we will replace `\\n` with `<br>`.
-    (**Default**: `false`)
+Notice that the flags are positional arguments because this function is called for every
+cell. A keyword call would require compiling a keyword sorter for each cell type.
 """
 function _html__render_cell(
     cell::Any,
     context::RenderContext,
-    renderer::Union{Val{:print}, Val{:show}};
+    renderer::Union{Val{:print}, Val{:show}},
     allow_html_in_cells::Bool = false,
     line_breaks::Bool = false,
 )
@@ -50,7 +48,7 @@ end
 function _html__render_cell(
     cell::HTML,
     context::RenderContext,
-    renderer::Union{Val{:print}, Val{:show}};
+    renderer::Union{Val{:print}, Val{:show}},
     allow_html_in_cells::Bool = false,
     line_breaks::Bool = false,
 )
@@ -63,7 +61,7 @@ end
 function _html__render_cell(
     cell::Markdown.MD,
     context::RenderContext,
-    renderer::Union{Val{:print}, Val{:show}};
+    renderer::Union{Val{:print}, Val{:show}},
     allow_html_in_cells::Bool = false,
     line_breaks::Bool = false,
 )
@@ -76,7 +74,7 @@ end
     function _html__render_cell(
         cell::_StyledString,
         context::RenderContext,
-        renderer::Union{Val{:print}, Val{:show}};
+        renderer::Union{Val{:print}, Val{:show}},
         allow_html_in_cells::Bool = false,
         line_breaks::Bool = false,
     )
