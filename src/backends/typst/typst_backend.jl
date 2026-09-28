@@ -260,7 +260,10 @@ function _typst__print_core(pspec::PrintingSpec, opts::TypstPrintOptions)
                 first_table_line = false
             end
 
-            if (ps.i == 1) && (rs ∈ (:table_header, :column_labels)) && !head_opened
+            # The table header is closed at the end of its last row (see the `:end_row`
+            # branch). Hence, here we only need to open it or to start the table body if the
+            # table has no header.
+            if (rs ∈ (:table_header, :column_labels)) && !head_opened && !body_opened
                 annotate && _aprintln_section_annotation(
                     buf_tc, "// == Table Header", il, ns, wrap_column, '='
                 )
@@ -269,15 +272,7 @@ function _typst__print_core(pspec::PrintingSpec, opts::TypstPrintOptions)
                 il += 1
                 head_opened = true
 
-            elseif !body_opened && (
-                ((ps.i == 1) && (rs ∈ (:data, :summary_row))) || (rs == :row_group_label)
-            )
-                if head_opened
-                    il -= 1
-                    _aprintln(buf_tc, "),", il, ns)
-                    head_opened = false
-                end
-
+            elseif (rs ∉ (:table_header, :column_labels)) && !body_opened
                 annotate && _aprintln_section_annotation(
                     buf_tc, "// == Table Body", il, ns, wrap_column, '='
                 )
@@ -319,6 +314,22 @@ function _typst__print_core(pspec::PrintingSpec, opts::TypstPrintOptions)
             if rs ∈
                 (:column_labels, :data, :row_group_label, :continuation_row, :summary_row)
                 table_lines += 1
+            end
+
+            # The table header must be closed at the end of its last row. Otherwise, the
+            # omitted cell summary, which is printed at the end of the last row before the
+            # table footer, and the rows of the next sections would be placed inside it
+            # when the table has no data rows.
+            if head_opened && (next_rs ∉ (:table_header, :column_labels))
+                il -= 1
+                _aprintln(buf_tc, "),", il, ns)
+                head_opened = false
+
+                annotate && (next_rs != :end_printing) && _aprintln_section_annotation(
+                    buf_tc, "// == Table Body", il, ns, wrap_column, '='
+                )
+
+                body_opened = true
             end
 
             # == Handle the Horizontal Lines ===============================================
@@ -596,12 +607,6 @@ function _typst__print_core(pspec::PrintingSpec, opts::TypstPrintOptions)
             _typst__print_cell(buf_tc, cell_str, first_column, il, ns, minify)
             first_column = false
         end
-    end
-
-    # Close the section that was left opened.
-    if head_opened
-        il -= 1
-        _aprintln(buf_tc, "),", il, ns)
     end
 
     # Join the horizontal and vertical lines with the table content.

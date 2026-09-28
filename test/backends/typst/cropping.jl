@@ -185,4 +185,53 @@
 
         @test result == expected
     end
+
+    @testset "Table Header Without Data Rows" begin
+        # The table header must only contain the column labels. The continuation row, the
+        # omitted cell summary, and the table footer must be placed after it.
+        expected = """
+#{
+  table(
+    align: (right, right,),
+    columns: (auto, auto,),
+    stroke: none,
+    table.hline(y: 0, stroke: 1.5pt,),
+    table.hline(y: 1, stroke: 0.8pt,),
+    table.hline(y: 2, stroke: 1.5pt,),
+    table.vline(x: 0, end: 2, stroke: 1.5pt),
+    table.vline(x: 1, end: 2, stroke: 0.8pt),
+    table.vline(x: 2, end: 2, stroke: 1.5pt),
+    table.header(
+      [#text(weight: "bold",)[Col. 1]],
+      [#text(weight: "bold",)[Col. 2]],
+    ),
+    [⋮],
+    [⋮],
+    table.cell(align: right, colspan: 2, inset: (right: 0pt), stroke: none,)[
+      #text(fill: gray, size: 0.9em, style: "italic",)[2 rows omitted]
+    ],
+    table.cell(align: left, colspan: 2, inset: (left: 0pt), stroke: none,)[
+      #text(fill: gray, size: 0.9em, style: "italic",)[S]
+    ],
+  )
+}
+"""
+
+        result = pretty_table(
+            String,
+            [1 2; 3 4];
+            annotate = false,
+            backend = :typst,
+            maximum_number_of_rows = 0,
+            source_notes = "S",
+        )
+
+        @test result == expected
+
+        result = pretty_table(
+            String, zeros(0, 2); annotate = false, backend = :typst, source_notes = "S"
+        )
+
+        @test occursin("    ),\n    table.cell(align: left, colspan: 2,", result)
+    end
 end

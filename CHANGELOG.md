@@ -191,6 +191,9 @@ Version 3.5.0
   only drawn if `horizontal_line_after_data_rows` is `true`.
 - ![Bugfix][badge-bugfix] Place the continuation row in the table body of the HTML back end
   when no data row is printed. It was placed in the table head.
+- ![Bugfix][badge-bugfix] Close the table header of the Typst back end after the column
+  labels. When no data row was printed, the continuation row, the omitted cell summary, and
+  the table footer were placed inside it.
 - ![Bugfix][badge-bugfix] Keep the insertion order of the CSS properties of the same family
   (e.g., `border` and `border-bottom`) in the HTML back end, so that a shorthand property in
   the user style overrides the longhand properties set by the back end. The properties were
