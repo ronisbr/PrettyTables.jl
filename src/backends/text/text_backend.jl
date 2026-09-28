@@ -182,33 +182,21 @@ function _text__print_table_core(
         )
     end
 
-    # Normalize the width keywords into locals of a single concrete type. Notice that the
-    # previous scalar-to-vector broadcast produced a `StepRangeLen`, not a `Vector{Int}`, so
-    # these variables kept a `Union` for the rest of the function. Since they are indexed
-    # inside the per-cell loop and passed to functions declaring `AbstractVector{Int}`, that
-    # forced a runtime union resolution per access and a second specialization of those
-    # functions.
-    min_data_column_widths::Vector{Int} = if minimum_data_column_widths isa Number
-        fill(minimum_data_column_widths, table_data.num_columns)
-    else
-        collect(Int, minimum_data_column_widths)
-    end
+    # Normalize the width keywords into locals of a single concrete type, which are indexed
+    # inside the per-cell loop.
+    min_data_column_widths = _text__column_widths(
+        minimum_data_column_widths, table_data.num_columns
+    )
 
-    max_data_column_widths::Vector{Int} = if maximum_data_column_widths isa Number
-        fill(maximum_data_column_widths, table_data.num_columns)
-    else
-        collect(Int, maximum_data_column_widths)
-    end
+    max_data_column_widths = _text__column_widths(
+        maximum_data_column_widths, table_data.num_columns
+    )
 
-    has_fixed_data_column_widths = false
+    fix_data_column_widths = _text__column_widths(
+        fixed_data_column_widths, table_data.num_columns
+    )
 
-    fix_data_column_widths::Vector{Int} = if fixed_data_column_widths isa Number
-        has_fixed_data_column_widths = fixed_data_column_widths > 0
-        fill(fixed_data_column_widths, table_data.num_columns)
-    else
-        has_fixed_data_column_widths = true
-        collect(Int, fixed_data_column_widths)
-    end
+    has_fixed_data_column_widths = any(>(0), fix_data_column_widths)
 
     # The fixed width of a column has precedence over its maximum width. Otherwise, the
     # cells would be cropped to the maximum width before being fitted in the fixed width.

@@ -112,6 +112,16 @@ function _text__fix_data_column_widths!(
 end
 
 """
+    _text__column_widths(widths::Union{Int, Vector{Int}}, num_columns::Int) -> Vector{Int}
+
+Convert the width specification `widths` of the data columns, which can be the same width
+for all the `num_columns` columns or one width for each column, to a new vector.
+"""
+function _text__column_widths(widths::Union{Int, Vector{Int}}, num_columns::Int)
+    return widths isa Int ? fill(widths, num_columns) : copy(widths)
+end
+
+"""
     _text__span_width(
         widths::AbstractVector{Int},
         j₀::Int,
