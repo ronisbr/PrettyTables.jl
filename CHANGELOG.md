@@ -126,10 +126,6 @@ Version 3.5.0
   about 24 ms, with a title from about 42 ms to about 27 ms, and with
   `pretty_table(HTML, data)` from about 55 ms to about 29 ms. The time to load the package
   increased by about 2 ms.
-- ![Enhancement][badge-enhancement] Compile the handling of the keywords of `pretty_table`
-  only once, regardless of the keywords, of the IO, and of the data. For example, the time
-  to print the first matrix of `Float64` to an `IOBuffer` was reduced from about 27 ms to
-  about 22 ms.
 - ![Enhancement][badge-enhancement] Compile the text back end only once for all the
   specifications of the lines at the column labels, data rows, and data columns (`:all`,
   `:none`, or a vector of indices) and for all the combinations of optional sections. For
