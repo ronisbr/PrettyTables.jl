@@ -10,16 +10,17 @@ Version 3.5.0
   replaced if `overwrite = true`) and otherwise returns the `WriteDocx.Table`, so that the
   table can be embedded in a larger document, also available with
   `pretty_table(WriteDocx.Table, data; kwargs...)` and
-  `pretty_table(WriteDocx.Document, data; kwargs...)`. The back end supports the sections,
-  the highlighters (`DocxHighlighter`), the table format (`DocxTableFormat` and
-  `DocxTableBorders`), the table style (`DocxTableStyle`), and the column widths
-  (`data_column_widths`, `minimum_data_column_widths`, and `maximum_data_column_widths`), as
-  well as the backend-agnostic `TableFormat` and `TableStyle`. Footnote markers become
-  superscript text runs and each region of a styled string becomes a text run with the
-  attributes of its face. The functions `docx_decoration` and `docx_line_style`, the macros
-  `@docx__all_horizontal_lines`, `@docx__all_vertical_lines`,
-  `@docx__no_horizontal_lines`, and `@docx__no_vertical_lines`, and the function
-  `pretty_table_docx_backend` are exported.
+  `pretty_table(WriteDocx.Document, data; kwargs...)`. The documents created by the back end
+  use Calibri as the default font, which can be changed with the keyword `default_font`. The
+  back end supports the sections, the highlighters (`DocxHighlighter`), the table format
+  (`DocxTableFormat` and `DocxTableBorders`), the table style (`DocxTableStyle`), and the
+  column widths (`data_column_widths`, `minimum_data_column_widths`, and
+  `maximum_data_column_widths`), as well as the backend-agnostic `TableFormat` and
+  `TableStyle`. Footnote markers become superscript text runs and each region of a styled
+  string becomes a text run with the attributes of its face. The functions `docx_decoration`
+  and `docx_line_style`, the macros `@docx__all_horizontal_lines`,
+  `@docx__all_vertical_lines`, `@docx__no_horizontal_lines`, and `@docx__no_vertical_lines`,
+  and the function `pretty_table_docx_backend` are exported.
 - ![Feature][badge-feature] Add the keyword `line_breaks` to the Typst back end. If `true`,
   the line breaks in the cells are rendered as Typst line breaks. Otherwise, they are
   escaped as in the other back ends, whereas they were emitted as raw line break characters.

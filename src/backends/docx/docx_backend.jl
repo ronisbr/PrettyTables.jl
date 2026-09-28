@@ -17,8 +17,8 @@ const _DEFAULT_DOCX_TABLE_FORMAT = DocxTableFormat()
 
 Options of the Word back end, with one field per keyword of `pretty_table` that is specific
 to the rendered table. The meaning and the default of each field are documented in the Word
-back end section of `pretty_table`. The keywords related to the file (`filename` and
-`overwrite`) are handled by `_docx__print`.
+back end section of `pretty_table`. The keywords related to the file and the document
+(`default_font`, `filename`, and `overwrite`) are handled by `_docx__print`.
 
 The keywords are gathered in this structure so that the rendering body has a single
 positional signature. Otherwise, each distinct set of keywords passed by the user would
@@ -47,6 +47,10 @@ gathered in a [`DocxPrintOptions`](@ref) and passed to `_docx__render_table`.
 
 # Keywords
 
+- `default_font::Union{Nothing, String}`: Default font of the document written to
+    `filename`. If it is `nothing`, Calibri is used. Since the font is a property of the
+    document, an `ArgumentError` is thrown if it is passed when no file is written.
+    (**Default**: `nothing`)
 - `filename::Union{Nothing, String}`: Path of the Word file to write, which must end in
     `.docx`. When `nothing`, no file is created and the `WriteDocx.Table` is returned
     instead, allowing it to be embedded in a larger document.

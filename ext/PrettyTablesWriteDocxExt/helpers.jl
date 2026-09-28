@@ -11,6 +11,10 @@ const _DOCX__NO_BORDER = DocxPair[]
 # is only used to estimate the column widths.
 const _DOCX__DEFAULT_FONT_SIZE = 10.0
 
+# Default font of the documents created by the back end if the user does not select one.
+# Otherwise, Word would use Times New Roman because the document defines no font.
+const _DOCX__DEFAULT_FONT = "Calibri"
+
 """
     struct DocxRun
 
@@ -568,10 +572,29 @@ function _docx__get_col_width(
 end
 
 """
-    _docx__document(table::W.Table) -> W.Document
+    _docx__default_font(default_font::Union{Nothing, String}) -> String
 
-Return a Word document with a single section containing `table`.
+Return the default font of the document created by the back end given the keyword
+`default_font`, which falls back to `_DOCX__DEFAULT_FONT` if it is `nothing`. An empty font
+name throws an `ArgumentError`.
 """
-function _docx__document(table::W.Table)
-    return W.Document(W.Body([W.Section([table])]))
+function _docx__default_font(default_font::Union{Nothing, String})
+    isnothing(default_font) && return _DOCX__DEFAULT_FONT
+
+    isempty(default_font) &&
+        throw(ArgumentError("The keyword `default_font` must not be an empty string."))
+
+    return default_font
+end
+
+"""
+    _docx__document(table::W.Table, default_font::String) -> W.Document
+
+Return a Word document with a single section containing `table`, whose default font is
+`default_font`. The font is written to the document defaults instead of each text run.
+Hence, the fonts selected by the table style and highlighters take precedence over it.
+"""
+function _docx__document(table::W.Table, default_font::String)
+    styles = W.Styles(W.Style[]; run = W.RunProperties(; fonts = W.Fonts(default_font)))
+    return W.Document(W.Body([W.Section([table])]); styles)
 end

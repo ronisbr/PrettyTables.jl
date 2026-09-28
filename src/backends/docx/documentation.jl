@@ -28,6 +28,15 @@ The back end's return value depends on the keyword `filename`:
     vector sets per-column widths. When set (> 0), `minimum_data_column_widths` and
     `maximum_data_column_widths` are ignored for that column.
     (**Default**: `0.0`)
+- `default_font::Union{Nothing, String}`: Default font of the document created by the back
+    end, used by the text whose style does not select a font (see the attribute `"font"` of
+    [`DocxTableStyle`](@ref)). It is only applied when the back end creates the document,
+    i.e., when `filename` is set or when calling
+    `pretty_table(WriteDocx.Document, data; kwargs...)`. If it is `nothing`, Calibri is
+    used. Since the document that contains a returned `WriteDocx.Table` defines its default
+    font, passing this keyword when the `WriteDocx.Table` is returned throws an
+    `ArgumentError`.
+    (**Default**: `nothing`)
 - `filename::Union{Nothing, String}`: Path of the Word file to write, which must end in
     `.docx`. When `nothing`, the `WriteDocx.Table` is returned instead of being written to a
     document.
@@ -83,6 +92,16 @@ julia> doc = W.Document(
        )
 
 julia> W.save("report.docx", doc)
+```
+
+The document created in this example defines no default font. Hence, Word renders the text
+whose style does not select a font using Times New Roman. The default font can be defined
+in the styles of the document:
+
+```julia
+julia> styles = W.Styles(W.Style[]; run = W.RunProperties(; fonts = W.Fonts("Calibri")))
+
+julia> doc = W.Document(W.Body([W.Section([table])]); styles)
 ```
 
 # Extended Help

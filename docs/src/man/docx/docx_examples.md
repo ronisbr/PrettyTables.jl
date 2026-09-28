@@ -12,7 +12,9 @@ import WriteDocx as W
 ## Writing a File
 
 The keyword `filename` writes a document with a single section containing the table. An
-existing file is only replaced if `overwrite = true`.
+existing file is only replaced if `overwrite = true`. The default font of the document is
+Calibri, which can be changed with the keyword `default_font`. The fonts selected by the
+table style and highlighters take precedence over it.
 
 ```julia
 data = [
@@ -25,6 +27,7 @@ pretty_table(
     data;
     backend = :docx,
     column_labels = ["Effect", "Torque [10⁻⁶ Nm]", "Angular Momentum [10⁻³ Nms]"],
+    default_font = "Arial",
     filename = "output.docx",
     overwrite = true,
     title = "Table 1. Disturbances acting on the satellite.",
@@ -35,7 +38,9 @@ pretty_table(
 
 When `filename` is omitted, the back end returns a `WriteDocx.Table`, which can be placed
 in a larger document together with other content. The method
-`pretty_table(WriteDocx.Table, data; kwargs...)` always returns the table object.
+`pretty_table(WriteDocx.Table, data; kwargs...)` always returns the table object. In this
+case, the default font is defined by the styles of the document. Otherwise, Word uses Times
+New Roman.
 
 ```julia
 data = [
@@ -46,6 +51,8 @@ data = [
 table_1 = pretty_table(W.Table, data; title = "Table 1. First results.");
 table_2 = pretty_table(W.Table, 2 .* data[:, 1:2]; title = "Table 2. Second results.");
 
+styles = W.Styles(W.Style[]; run = W.RunProperties(; fonts = W.Fonts("Calibri")));
+
 doc = W.Document(
     W.Body([
         W.Section([
@@ -54,7 +61,8 @@ doc = W.Document(
             W.Paragraph([W.Run([W.Text("The second results are:")])]),
             table_2,
         ]),
-    ]),
+    ]);
+    styles,
 );
 
 W.save("output.docx", doc)

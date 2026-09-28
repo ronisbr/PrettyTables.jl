@@ -45,6 +45,11 @@ gathered in a `DocxPrintOptions` and passed to `_docx__render_table`.
 
 # Keywords
 
+- `default_font::Union{Nothing, String}`: Default font of the document written to
+    `filename`. If it is `nothing`, `_DOCX__DEFAULT_FONT` is used. Since the font is a
+    property of the document, an `ArgumentError` is thrown if it is passed when no file is
+    written.
+    (**Default**: `nothing`)
 - `filename::Union{Nothing, String}`: Path of the Word file to write, which must end in
     `.docx`. When `nothing`, no file is created and the `WriteDocx.Table` is returned
     instead, allowing it to be embedded in a larger document.
@@ -59,13 +64,25 @@ gathered in a `DocxPrintOptions` and passed to `_docx__render_table`.
 """
 function PrettyTables._docx__print(
     pspec::PrintingSpec;
+    default_font::Union{Nothing, String} = nothing,
     filename::Union{Nothing, String} = nothing,
     overwrite::Bool = false,
     kwargs...,
 )
-    # Check the file before rendering the table to fail as soon as possible.
-    (!isnothing(filename) && !overwrite && isfile(filename)) &&
-        error("File \"$filename\" already exists and `overwrite = false`.")
+    # Check the file and the document options before rendering the table to fail as soon as
+    # possible.
+    if isnothing(filename)
+        !isnothing(default_font) && throw(
+            ArgumentError(
+                "The keyword `default_font` is only applied to the documents created by the Word back end, i.e., when `filename` is set or when calling `pretty_table(WriteDocx.Document, data; kwargs...)`. The default font of a returned `WriteDocx.Table` is defined by the styles of the document that contains it."
+            )
+        )
+    else
+        (!overwrite && isfile(filename)) &&
+            error("File \"$filename\" already exists and `overwrite = false`.")
+    end
+
+    font = _docx__default_font(default_font)
 
     _check_backend_keywords(DocxPrintOptions, kwargs, "Word")
     opts  = DocxPrintOptions(; kwargs...)
@@ -73,7 +90,7 @@ function PrettyTables._docx__print(
 
     isnothing(filename) && return table
 
-    W.save(filename, _docx__document(table))
+    W.save(filename, _docx__document(table, font))
 
     return filename
 end
@@ -84,7 +101,10 @@ end
 
 Render `data` as a pretty table and return the `WriteDocx.Table` object, or a
 `WriteDocx.Document` with a single section containing it. All keyword arguments are
-forwarded to `pretty_table`.
+forwarded to `pretty_table`, except `default_font`, which selects the default font of the
+returned `WriteDocx.Document` (Calibri if it is `nothing`). The default font of a returned
+`WriteDocx.Table` is defined by the styles of the document that contains it. Hence, passing
+`default_font` when the `WriteDocx.Table` is returned throws an `ArgumentError`.
 
 # Examples
 
@@ -107,8 +127,14 @@ function pretty_table(::Type{W.Table}, @nospecialize(data::Any); kwargs...)
     return pretty_table(data; kw..., backend = :docx, filename = nothing)
 end
 
-function pretty_table(::Type{W.Document}, @nospecialize(data::Any); kwargs...)
-    return _docx__document(pretty_table(W.Table, data; kwargs...))
+function pretty_table(
+    ::Type{W.Document},
+    @nospecialize(data::Any);
+    default_font::Union{Nothing, String} = nothing,
+    kwargs...
+)
+    font = _docx__default_font(default_font)
+    return _docx__document(pretty_table(W.Table, data; kwargs...), font)
 end
 
 ############################################################################################

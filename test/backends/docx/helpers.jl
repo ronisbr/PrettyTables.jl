@@ -43,3 +43,15 @@ docx_border_size(cell::W.TableCell, side::Symbol) =
 docx_hex(color::W.AutomaticDefault{W.HexColor}) = color.value.hex
 
 docx_shading(cell::W.TableCell) = cell.properties.shading
+
+# Return the content of the styles part of the Word file `filename`.
+function docx_file_styles(filename::String)
+    reader = W.ZipFile.Reader(filename)
+
+    try
+        file = only(f for f in reader.files if f.name == "word/styles.xml")
+        return read(file, String)
+    finally
+        close(reader)
+    end
+end

@@ -46,3 +46,91 @@
     @test document isa W.Document
     @test only(only(document.body.sections).children) isa W.Table
 end
+
+@testset "Default Font" verbose = true begin
+    matrix = [1 2; 3 4]
+
+    @testset "Documents" begin
+        fonts = pretty_table(W.Document, matrix).styles.doc_defaults.run.fonts
+        @test fonts.ascii == "Calibri"
+        @test fonts.high_ansi == "Calibri"
+
+        document = pretty_table(W.Document, matrix; default_font = "Arial")
+        fonts    = document.styles.doc_defaults.run.fonts
+        @test fonts.ascii == "Arial"
+        @test fonts.high_ansi == "Arial"
+    end
+
+    @testset "Files" begin
+        mktempdir() do dir
+            filename = joinpath(dir, "table.docx")
+
+            pretty_table(matrix; backend = :docx, filename)
+            @test occursin(
+                "<w:rFonts w:ascii=\"Calibri\" w:hAnsi=\"Calibri\"/>",
+                docx_file_styles(filename)
+            )
+
+            pretty_table(
+                matrix;
+                backend = :docx,
+                default_font = "Arial",
+                filename,
+                overwrite = true
+            )
+            @test occursin(
+                "<w:rFonts w:ascii=\"Arial\" w:hAnsi=\"Arial\"/>",
+                docx_file_styles(filename)
+            )
+        end
+    end
+
+    @testset "Fonts of the Table Style Take Precedence" begin
+        # The default font is written to the document defaults, whereas the font selected by
+        # the table style is written to the text runs.
+        document = pretty_table(
+            W.Document,
+            matrix;
+            default_font = "Arial",
+            style = DocxTableStyle(; data_cell = ["font" => "Courier New"])
+        )
+
+        table = only(only(document.body.sections).children)
+        fonts = only(docx_runs(docx_cell(table, 2, 1))).properties.fonts
+
+        @test fonts.ascii == "Courier New"
+        @test document.styles.doc_defaults.run.fonts.ascii == "Arial"
+
+        # The column labels do not select a font. Hence, they use the default font.
+        @test isnothing(only(docx_runs(docx_cell(table, 1, 1))).properties.fonts)
+    end
+
+    @testset "Errors" begin
+        # The default font of a returned table is defined by the document that contains it.
+        @test_throws ArgumentError pretty_table(W.Table, matrix; default_font = "Arial")
+        @test_throws "only applied to the documents created by the Word back end" pretty_table(
+            matrix;
+            backend = :docx,
+            default_font = "Arial"
+        )
+
+        @test_throws "must not be an empty string" pretty_table(
+            W.Document,
+            matrix;
+            default_font = ""
+        )
+
+        mktempdir() do dir
+            filename = joinpath(dir, "table.docx")
+
+            @test_throws "must not be an empty string" pretty_table(
+                matrix;
+                backend = :docx,
+                default_font = "",
+                filename
+            )
+
+            @test !isfile(filename)
+        end
+    end
+end
