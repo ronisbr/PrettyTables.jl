@@ -364,7 +364,8 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
                 head_opened = true
 
             elseif !body_opened && (
-                ((ps.i == 1) && (rs ∈ (:data, :summary_row))) || (rs == :row_group_label)
+                ((ps.i == 1) && (rs ∈ (:data, :summary_row))) ||
+                (rs ∈ (:row_group_label, :continuation_row))
             )
                 if head_opened
                     il -= 1

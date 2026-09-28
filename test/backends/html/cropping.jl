@@ -155,4 +155,34 @@
 
         @test result == expected
     end
+
+    @testset "Continuation Row Without Data Rows" begin
+        # The continuation row belongs to the table body even if no data row is printed.
+        expected = """
+<table>
+  <thead>
+    <tr class = "columnLabelRow">
+      <th style = "font-weight: bold; text-align: right;">Col. 1</th>
+      <th style = "font-weight: bold; text-align: right;">Col. 2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style = "text-align: right;">&vellip;</td>
+      <td style = "text-align: right;">&vellip;</td>
+    </tr>
+  </tbody>
+</table>
+"""
+
+        result = pretty_table(
+            String,
+            [1 2; 3 4];
+            backend = :html,
+            maximum_number_of_rows = 0,
+            show_omitted_cell_summary = false,
+        )
+
+        @test result == expected
+    end
 end
