@@ -33,7 +33,7 @@ end
 
 _latex__add_environments(s::String, ::Nothing) = s
 
-raw"""
+@doc raw"""
     _latex__escape_str(io::IO, s::AbstractString) -> Nothing
     _latex__escape_str(s::AbstractString) -> String
 

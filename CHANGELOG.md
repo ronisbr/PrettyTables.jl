@@ -211,6 +211,9 @@ Version 3.5.0
   Invalid symbols were silently accepted, misaligning the cells in the text back end. The
   uppercase symbols now work in every back end, and the text back end renders `:n` as left
   alignment.
+- ![Bugfix][badge-bugfix] Document the macro `@latex_cell_str` and the function
+  `printable_cell_text` of the custom text cell API, whose docstrings were written as raw
+  strings without `@doc` and, hence, were not registered.
 - ![Bugfix][badge-bugfix] Escape the plain text of every cell in the HTML back end when the
   renderer is `:print`. A string whose type can be shown as HTML, such as a view into a
   styled string, was emitted without escaping, allowing the injection of HTML code.

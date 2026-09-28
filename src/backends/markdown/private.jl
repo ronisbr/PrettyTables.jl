@@ -270,7 +270,7 @@ end
 # when immediately followed by `[`, which is already escaped.
 const _MARKDOWN__ESCAPED_CHARACTERS = ('*', '_', '~', '`', '|', '[', ']', '<', '>')
 
-raw"""
+@doc raw"""
     _markdown__escape_str(
         @nospecialize(io::IO),
         s::Union{String, SubString{String}},

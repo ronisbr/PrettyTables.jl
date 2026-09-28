@@ -346,7 +346,7 @@ struct LatexCell{T}
     data::T
 end
 
-raw"""
+@doc raw"""
     @latex_cell_str(str)
 
 Create a table cell with LaTeX code.

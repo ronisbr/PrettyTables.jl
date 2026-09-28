@@ -544,3 +544,18 @@ end
     pt = PrettyTable([1 2]; backend = :auto)
     @test startswith(pretty_table(HTML, pt).content, "<table>")
 end
+
+@testset "Docstrings Written as Raw Strings" verbose = true begin
+    # A raw string before a definition is not a docstring unless it is passed to `@doc`.
+    # Hence, these functions and macros used to have no documentation at all.
+    for (mod, name) in (
+        (PrettyTables, Symbol("@latex_cell_str")),
+        (PrettyTables, :_html__escape_str),
+        (PrettyTables, :_latex__escape_str),
+        (PrettyTables, :_markdown__escape_str),
+        (PrettyTables.CustomTextCell, :printable_cell_text),
+    )
+        binding = Base.Docs.Binding(mod, name)
+        @test haskey(Base.Docs.meta(mod), binding)
+    end
+end

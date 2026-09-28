@@ -110,7 +110,7 @@ function rendered_cell_line(cell::AbstractCustomTextCell, line::Int)::String
     return rendered_cell(cell)
 end
 
-raw"""
+@doc raw"""
     printable_cell_text(cell::AbstractCustomTextCell) -> String
 
 Render only the printable characters in `cell`. Here, we must not consider the

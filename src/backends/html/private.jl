@@ -6,7 +6,7 @@
 
 # == Strings ===============================================================================
 
-raw"""
+@doc raw"""
     _html__escape_str(
         @nospecialize(io::IO),
         s::AbstractString,
