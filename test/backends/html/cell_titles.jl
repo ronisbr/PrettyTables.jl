@@ -60,6 +60,22 @@
         @test result == expected
     end
 
+    @testset "Escaping of the Titles" begin
+        # The titles are attribute values. Hence, only the HTML characters must be escaped,
+        # keeping the backslashes. The line breaks become character references.
+        output = pretty_table(
+            String,
+            [1;;];
+            backend             = :html,
+            column_label_titles = [["C:\\dir \"x\" <a> & 'b'\nnext"]],
+        )
+
+        @test occursin(
+            "<th title = \"C:\\dir &quot;x&quot; &lt;a&gt; &amp; &apos;b&apos;&#10;next\" style",
+            output,
+        )
+    end
+
     @testset "Errors" verbose = true begin
         matrix        = [(i, j) for i in 1:2, j in 1:4]
         column_labels = [[(i, j) for j in 1:4] for i in 1:3]

@@ -82,11 +82,13 @@ end
     _html__escape_attribute(io::IO, s::AbstractString) -> Nothing
 
 Print the string `s` in `io` escaping the characters that cannot appear verbatim in a
-double-quoted HTML attribute value: `&`, `<`, `>`, `"`, and `'`. The other characters are
-kept unchanged because the attribute value is not Julia code.
+double-quoted HTML attribute value: `&`, `<`, `>`, `"`, and `'`. The line breaks are
+replaced by character references because the output lines are indented. The other
+characters are kept unchanged because the attribute value is not Julia code.
 """
 function _html__escape_attribute(io::IO, s::AbstractString)
     for c in s
+        c == '\n' ? print(io, "&#10;")  :
         c == '&'  ? print(io, "&amp;")  :
         c == '<'  ? print(io, "&lt;")   :
         c == '>'  ? print(io, "&gt;")   :
@@ -397,7 +399,7 @@ function _html__write_open_tag(
                 print(buf, ' ')
                 print(buf, k)
                 print(buf, " = \"")
-                _html__escape_str(buf, v)
+                _html__escape_attribute(buf, v)
                 print(buf, '"')
             end
         end
