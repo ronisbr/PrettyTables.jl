@@ -273,8 +273,9 @@
 
         result = pretty_table(String, [cell;;]; backend = :html)
 
+        # Julia 1.14 keeps the line break at the end of the code block content.
         @test occursin(
-            "<td style = \"text-align: right;\"><div class=\"markdown\"><p>First <strong>paragraph</strong>.</p><p>Second paragraph.</p><pre><code>x\n  y</code></pre></div></td>",
+            r"<td style = \"text-align: right;\"><div class=\"markdown\"><p>First <strong>paragraph</strong>\.</p><p>Second paragraph\.</p><pre><code>x\n  y\n?</code></pre></div></td>",
             result,
         )
     end
