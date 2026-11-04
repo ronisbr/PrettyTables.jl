@@ -1,6 +1,12 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 3.5.1
+-------------
+
+- ![Enhancement][badge-enhancement] Add support for XLSX.jl v0.13. (PRs [#325][gh-pr-325],
+  [#326][gh-pr-326])
+
 Version 3.5.0
 -------------
 
@@ -1592,3 +1598,5 @@ Version 0.1.0
 [gh-pr-310]: https://github.com/ronisbr/PrettyTables.jl/pull/310
 [gh-pr-311]: https://github.com/ronisbr/PrettyTables.jl/pull/311
 [gh-pr-314]: https://github.com/ronisbr/PrettyTables.jl/pull/314
+[gh-pr-325]: https://github.com/ronisbr/PrettyTables.jl/pull/325
+[gh-pr-326]: https://github.com/ronisbr/PrettyTables.jl/pull/326
