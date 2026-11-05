@@ -458,3 +458,84 @@ end
 
     @test result == expected
 end
+
+@testset "Line Before the Summary Rows" begin
+    # The intersections of the line before the summary rows must not consider the column
+    # labels, even if their vertical lines are suppressed or if the last column label row has
+    # merged cells.
+    expected = """
+┌───────────┬─────────────────┐
+│           │ Col. 1   Col. 2 │
+├───────────┼────────┬────────┤
+│           │      1 │      2 │
+│           │      3 │      4 │
+├───────────┼────────┼────────┤
+│ Summary 1 │      4 │      6 │
+└───────────┴────────┴────────┘
+"""
+
+    result = pretty_table(
+        String,
+        [1 2; 3 4];
+        summary_rows = [(data, j) -> sum(data[:, j])],
+        table_format = TextTableFormat(;
+            horizontal_line_after_data_rows = false,
+            horizontal_line_before_summary_rows = true,
+            suppress_vertical_lines_at_column_labels = true,
+        ),
+    )
+
+    @test result == expected
+
+    expected = """
+┌───────────┬───────┐
+│           │  AB   │
+├───────────┼───┬───┤
+│           │ 1 │ 2 │
+│           │ 3 │ 4 │
+├───────────┼───┼───┤
+│ Summary 1 │ 4 │ 6 │
+└───────────┴───┴───┘
+"""
+
+    result = pretty_table(
+        String,
+        [1 2; 3 4];
+        column_labels = [[MultiColumn(2, "AB")]],
+        summary_rows = [(data, j) -> sum(data[:, j])],
+        table_format = TextTableFormat(;
+            horizontal_line_after_data_rows = false,
+            horizontal_line_before_summary_rows = true,
+        ),
+    )
+
+    @test result == expected
+
+    # The same applies to the line after the continuation row.
+    expected = """
+┌───────────┬─────────────────┐
+│           │ Col. 1   Col. 2 │
+├───────────┼────────┬────────┤
+│           │      1 │      1 │
+│           │      2 │      2 │
+│         ⋮ │      ⋮ │      ⋮ │
+├───────────┼────────┼────────┤
+│ Summary 1 │     55 │     55 │
+└───────────┴────────┴────────┘
+                 8 rows omitted
+"""
+
+    result = pretty_table(
+        String,
+        [i for i in 1:10, j in 1:2];
+        maximum_number_of_rows = 2,
+        summary_rows = [(data, j) -> sum(data[:, j])],
+        table_format = TextTableFormat(;
+            horizontal_line_after_data_rows = false,
+            horizontal_line_before_summary_rows = true,
+            suppress_vertical_lines_at_column_labels = true,
+        ),
+    )
+
+    @test result == expected
+end

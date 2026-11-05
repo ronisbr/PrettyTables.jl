@@ -422,10 +422,12 @@
     end
 
     @testset "Summary Rows and Row Group Labels" begin
+        # The line between the column labels and the row group label at the first data row
+        # is the line after the column labels. Hence, it uses the header line design.
         expected = """
 ┌───────────┬────────┬────────┒
 │           │ Col. 1 │ Col. 2 ┃
-├╌╌╌╌╌╌╌╌╌╌╌┴╌╌╌╌╌╌╌╌┴╌╌╌╌╌╌╌╌┨
+├───────────┴────────┴────────┨
 │ Group                       ┃
 ├╌╌╌╌╌╌╌╌╌╌╌┬╌╌╌╌╌╌╌╌┬╌╌╌╌╌╌╌╌┨
 │           │      1 │      2 ┃

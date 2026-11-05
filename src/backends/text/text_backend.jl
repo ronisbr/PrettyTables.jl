@@ -163,10 +163,10 @@ function _text__print_table_core(
     # references the characters in `tf.borders` and the escape sequence of `table_border`.
     rl = _text__resolve_table_lines(tf, style)
 
-    # Process the vertical lines at data columns.
-    vertical_lines_at_data_columns = _line_spec_indices(
-        tf.vertical_lines_at_data_columns, table_data.num_columns
-    )
+    # Resolve the lines of the table. Notice that the vertical lines at the data columns are
+    # also required to compute the column widths.
+    lines = TableLines(tf, table_data)
+    vertical_lines_at_data_columns = lines.vertical_lines_at_data_columns
 
     # The width keywords are indexed inside the per-cell loop. Hence, we must check their
     # length here to raise a meaningful error instead of a `BoundsError` deep in the back
@@ -230,19 +230,6 @@ function _text__print_table_core(
 
     # == Table Fitting in the Display ======================================================
 
-    # Process the horizontal lines at column labels. Notice that a line after the last column
-    # label row is drawn by the option `horizontal_line_after_column_labels`. Hence, we must
-    # neglect it here. Otherwise, we would reserve a display line for a horizontal line that
-    # is never drawn.
-    horizontal_lines_at_column_labels = _line_spec_indices(
-        tf.horizontal_lines_at_column_labels, length(table_data.column_labels) - 1
-    )
-
-    # Process the horizontal lines at data rows.
-    horizontal_lines_at_data_rows = _line_spec_indices(
-        tf.horizontal_lines_at_data_rows, table_data.num_rows
-    )
-
     # Limit the number of rendered columns given the display size if the user wants. Notice
     # that this is only an upper bound, since the number of printed columns is computed
     # after the column widths. Hence, we assume the minimum width of each column, which is
@@ -294,9 +281,7 @@ function _text__print_table_core(
 
         design = _text__design_vertical_cropping(
             table_data,
-            tf,
-            horizontal_lines_at_column_labels,
-            horizontal_lines_at_data_rows,
+            lines,
             pspec.show_omitted_cell_summary,
             display.size[1],
             pspec.new_line_at_end,
@@ -317,9 +302,7 @@ function _text__print_table_core(
 
             design = _text__design_vertical_cropping(
                 table_data,
-                tf,
-                horizontal_lines_at_column_labels,
-                horizontal_lines_at_data_rows,
+                lines,
                 pspec.show_omitted_cell_summary,
                 display.size[1],
                 pspec.new_line_at_end,
@@ -481,12 +464,12 @@ function _text__print_table_core(
         available_width =
             _text__table_width_wo_cont_column(
                 table_data,
-                tf,
-                vertical_lines_at_data_columns,
+                lines,
                 row_number_column_width,
                 row_label_column_width,
                 printed_data_column_widths,
-            ) - tf.vertical_line_at_beginning - tf.vertical_line_after_data_columns - 2
+            ) - lines.vertical_line_at_beginning - lines.vertical_line_after_data_columns -
+            2
 
         Δw = _text__row_group_labels_width(table_data, rctx, renderer) - available_width
 
@@ -518,8 +501,7 @@ function _text__print_table_core(
     # the continuation column.
     table_width_wo_cont_col = _text__table_width_wo_cont_column(
         table_data,
-        tf,
-        vertical_lines_at_data_columns,
+        lines,
         row_number_column_width,
         row_label_column_width,
         printed_data_column_widths,
@@ -546,7 +528,7 @@ function _text__print_table_core(
             Δc = table_width_wo_cont_col - display_size[2]
 
             _is_horizontally_cropped(table_data) &&
-                (Δc += 3 + tf.vertical_line_after_continuation_column)
+                (Δc += 3 + lines.vertical_line_after_continuation_column)
 
             # Compute the new column width.
             cw = max(
@@ -603,8 +585,7 @@ function _text__print_table_core(
         num_printed_data_columns = _text__number_of_printed_data_columns(
             display.size[2],
             table_data,
-            tf,
-            vertical_lines_at_data_columns,
+            lines,
             row_number_column_width,
             row_label_column_width,
             printed_data_column_widths,
@@ -652,9 +633,7 @@ function _text__print_table_core(
 
         new_design = _text__design_vertical_cropping(
             table_data,
-            tf,
-            horizontal_lines_at_column_labels,
-            horizontal_lines_at_data_rows,
+            lines,
             pspec.show_omitted_cell_summary,
             display.size[1],
             pspec.new_line_at_end,
@@ -691,7 +670,7 @@ function _text__print_table_core(
     printed_table_width = table_width_wo_cont_col
 
     if _is_horizontally_cropped(table_data)
-        printed_table_width += 3 + tf.vertical_line_after_continuation_column
+        printed_table_width += 3 + lines.vertical_line_after_continuation_column
     end
 
     if horizontally_limited_by_display
@@ -716,9 +695,7 @@ function _text__print_table_core(
             middle_cropped_table_lines = _text__middle_cropped_table_lines(
                 table_data,
                 table_str,
-                tf,
-                horizontal_lines_at_column_labels,
-                horizontal_lines_at_data_rows,
+                lines,
                 pspec.show_omitted_cell_summary,
                 pspec.new_line_at_end,
                 last_printed_column_index,
@@ -749,9 +726,7 @@ function _text__print_table_core(
         mr, lrc, suppress_hline_before_continuation_row = _text__design_vertical_cropping_with_line_breaks(
             table_data,
             @view(table_str[1:num_design_rows, :]),
-            tf,
-            horizontal_lines_at_column_labels,
-            horizontal_lines_at_data_rows,
+            lines,
             pspec.show_omitted_cell_summary,
             display.size[1],
             pspec.new_line_at_end,
@@ -779,23 +754,21 @@ function _text__print_table_core(
 
     # == Print the Table ===================================================================
 
-    # If the table has a continuation column, the vertical line after the data columns is
-    # not at the right edge of the table. We compute this information here to select the
-    # correct vertical line character inside the loop.
-    table_continuation_column = _is_horizontally_cropped(table_data)
-
     # The row group labels span the entire table. Hence, the vertical line after them is the
     # one at the right edge of the table, which is not printed if the display crops the
     # table. Notice that the width of the label must not include the vertical lines at the
     # edges of the table and the margins.
     row_group_label_vline =
-        !horizontally_limited_by_display && (
-            table_continuation_column ? tf.vertical_line_after_continuation_column :
-            tf.vertical_line_after_data_columns
-        )
+        !horizontally_limited_by_display &&
+        (_vertical_line_after_column(lines, table_data, :last) != :none)
 
     row_group_label_width =
-        printed_table_width - tf.vertical_line_at_beginning - row_group_label_vline - 2
+        printed_table_width - lines.vertical_line_at_beginning - row_group_label_vline - 2
+
+    # Row section before the first row of the ruled area, required to select the line at the
+    # beginning of the table.
+    header_rs =
+        (isempty(table_data.title) && isempty(table_data.subtitle)) ? :none : :table_header
 
     ps     = PrintingTableState()
     action = :initialize
@@ -819,11 +792,7 @@ function _text__print_table_core(
     # makes sense if the display is limiting the table.
     num_available_data_section_lines = if vertically_limited_by_display
         _, num_lines_before_data, num_lines_after_data = _text__number_of_required_lines(
-            table_data,
-            tf,
-            horizontal_lines_at_column_labels,
-            horizontal_lines_at_data_rows,
-            pspec.new_line_at_end,
+            table_data, lines, pspec.new_line_at_end
         )
 
         (
@@ -941,63 +910,33 @@ function _text__print_table_core(
         # == New Row =======================================================================
 
         if action == :new_row
-
-            # If the table begins with a row group label, which happens when the column
-            # labels are hidden, there is nothing above it to separate. Hence, the line
-            # before it is not drawn, and the top line, if any, has no intersections.
-            first_row_group_label =
-                (rs == :row_group_label) && (ps.i == 1) && !table_data.show_column_labels
-
-            # If this is the very first row, we must check if a horizontal line must be
-            # printed.
-            if tf.horizontal_line_at_beginning && !top_line_printed
-                _text__print_horizontal_line(
-                    display,
-                    tf,
-                    rl.top,
-                    table_data,
-                    vertical_lines_at_data_columns,
-                    row_number_column_width,
-                    row_label_column_width,
-                    printed_data_column_widths;
-                    top = true,
-                    column_label_row = first_row_group_label ? nothing : ir - 1,
-                    top_row_group_label = first_row_group_label,
-                )
-
-                _text__flush_line(display, false)
-
+            # If this is the very first row of the ruled area, we must check if a horizontal
+            # line must be printed before it.
+            if !top_line_printed
                 top_line_printed = true
-            end
 
-            if (rs == :row_group_label) && !first_row_group_label
-                # We must draw the horizontal line here if the user requested, if the last
-                # row has a horizontal line due to the intersections, or if the last row was
-                # a column label and the user wants a line after it. Notice that `ps.i` is
-                # the data index of the row after the label, which differs from the rendered
-                # index `ir` in the middle cropping.
-                if tf.horizontal_line_before_row_group_label ||
-                    (ps.i - 1 ∈ horizontal_lines_at_data_rows) ||
-                    (
-                        (ps.i == 1) &&
-                        table_data.show_column_labels &&
-                        tf.horizontal_line_after_column_labels
-                    )
+                role = _horizontal_line_after_row(lines, table_data, header_rs, rs, 0)
+
+                if role != :none
+                    # If the table begins with a row group label, which happens when the
+                    # column labels are hidden, the label spans the entire table. Hence, the
+                    # top line has no intersections.
+                    first_row_group_label = rs == :row_group_label
+
                     _text__print_horizontal_line(
                         display,
-                        tf,
-                        rl.middle,
+                        lines,
+                        _text__horizontal_line(rl, role),
                         table_data,
-                        vertical_lines_at_data_columns,
                         row_number_column_width,
                         row_label_column_width,
                         printed_data_column_widths;
                         top = true,
-                        row_group_label = true,
+                        column_label_row = first_row_group_label ? nothing : ir - 1,
+                        top_row_group_label = first_row_group_label,
                     )
 
                     _text__flush_line(display, false)
-                    num_printed_data_section_lines += 1
                 end
             end
 
@@ -1020,54 +959,46 @@ function _text__print_table_core(
                 end
             end
 
-            tf.vertical_line_at_beginning && _text__styled_print(display, rl.left)
+            lines.vertical_line_at_beginning && _text__styled_print(display, rl.left)
 
             continue
         end
 
         # == Continuation Row ==============================================================
 
-        if action == :diagonal_continuation_cell
-            _text__print(display, " ⋱ ")
-            tf.vertical_line_after_continuation_column &&
-                _text__styled_print(display, rl.right)
-            continue
+        if action ∈ (:diagonal_continuation_cell, :horizontal_continuation_cell)
+            _text__print(display, action == :diagonal_continuation_cell ? " ⋱ " : " ⋯ ")
 
-        elseif action == :horizontal_continuation_cell
-            _text__print(display, " ⋯ ")
-            tf.vertical_line_after_continuation_column &&
-                _text__styled_print(display, rl.right)
+            role = _vertical_line_after_column(lines, table_data, :continuation)
+            (role != :none) && _text__styled_print(display, _text__vertical_line(rl, role))
+
             continue
 
         elseif action ∈ _VERTICAL_CONTINUATION_CELL_ACTIONS
             alignment = _current_cell_alignment(action, ps, table_data)
-            vl        = rl.center
 
-            if action == :row_number_vertical_continuation_cell
-                cell_width = row_number_column_width
-                vline      = tf.vertical_line_after_row_number_column
-
+            cell_width, role = if action == :row_number_vertical_continuation_cell
+                (
+                    row_number_column_width,
+                    _vertical_line_after_column(lines, table_data, :row_number),
+                )
             elseif action == :row_label_vertical_continuation_cell
-                cell_width = row_label_column_width
-                vline      = tf.vertical_line_after_row_label_column
-
+                (
+                    row_label_column_width,
+                    _vertical_line_after_column(lines, table_data, :row_label),
+                )
             else
-                cell_width = printed_data_column_widths[jr]
-                vline, vl = _text__vertical_line_after_data_column(
-                    tf,
-                    rl,
-                    jr,
-                    ps.j,
-                    last_printed_column_index,
-                    vertical_lines_at_data_columns,
-                    table_continuation_column,
+                (
+                    printed_data_column_widths[jr],
+                    _vertical_line_after_column(lines, table_data, :data, jr),
                 )
             end
 
             _text__print_aligned(
                 display, "⋮", cell_width, alignment; left_margin = 1, right_margin = 1
             )
-            vline && _text__styled_print(display, vl)
+
+            (role != :none) && _text__styled_print(display, _text__vertical_line(rl, role))
 
             continue
         end
@@ -1121,130 +1052,78 @@ function _text__print_table_core(
 
             # == Handle the Horizontal Lines ===============================================
 
-            # Line to draw after the current row, if any, and its options.
-            hline            = nothing
-            bottom           = false
-            row_group_label  = false
-            column_label_row = nothing
-            count_line       = false
+            role = _horizontal_line_after_row(lines, table_data, rs, next_rs, ps.i)
 
-            if (rs == :column_labels) && (next_rs == :column_labels)
-                if (ps.i ∈ horizontal_lines_at_column_labels)
-                    hline            = rl.header
-                    column_label_row = ps.i
-
-                elseif tf.horizontal_line_at_merged_column_labels &&
-                    _has_merged_cells(table_data, ps.i)
-                    _text__print_column_label_horizontal_line_only_at_merged_labels(
-                        display,
-                        tf,
-                        rl,
-                        table_data,
-                        ps.i,
-                        vertical_lines_at_data_columns,
-                        row_number_column_width,
-                        row_label_column_width,
-                        printed_data_column_widths,
-                    )
-                    _text__flush_line(display, false)
-                end
-
-            elseif (rs == :column_labels) &&
-                (next_rs != :column_labels) &&
-                tf.horizontal_line_after_column_labels
-
-                # Print the horizontal line after the column labels. We should skip this
-                # line if we have a row group label at the first column.
-                if next_rs != :row_group_label
-                    # We must handle that case where there are no data rows. In this case,
-                    # the next section after the column labels will be the table footer or
-                    # the end of printing.
-                    bottom           = next_rs ∈ (:table_footer, :end_printing)
-                    hline            = bottom ? rl.bottom : rl.header
-                    column_label_row = length(table_data.column_labels)
-                end
-
-            elseif (rs == :data) && (ps.i ∈ horizontal_lines_at_data_rows)
-                # Check if we must print a horizontal line after the current data row. We
-                # should only print this line if the next state is not the continuation row
-                # or if we do not need to suppress the line before the continuation row. We
-                # also skip it if the next data row has a row group label, which draws its
-                # own line. Notice that the vertical cropping design relies on this rule
-                # even if the next data row is omitted.
-                if !(
-                    (next_rs == :continuation_row) && suppress_hline_before_continuation_row
-                ) && !_print_row_group_label(table_data, ps.i + 1)
-                    hline      = rl.middle
-                    count_line = true
-                end
-
-            elseif (rs == :data) &&
-                (next_rs ∈ (:summary_row, :table_footer, :end_printing)) &&
-                tf.horizontal_line_after_data_rows
-                bottom     = next_rs ∈ (:table_footer, :end_printing)
-                hline      = bottom ? rl.bottom : rl.middle
-                count_line = true
-
-            elseif (rs ∈ (:data, :continuation_row)) &&
-                (next_rs == :summary_row) &&
-                tf.horizontal_line_before_summary_rows
-                hline            = rl.middle
-                column_label_row = length(table_data.column_labels)
-
-            elseif rs == :continuation_row
-                # Check if we must print a horizontal line after the continuation row.
-                bottom = next_rs ∈ (:table_footer, :end_printing)
-
-                # In the middle cropping, `ps.i` is the data row before the first row printed
-                # after the continuation row. Notice that a row group label draws its own
-                # line, that only this line can be suppressed to fit the table in the
-                # display, and that the line after the data rows is only drawn if the data
-                # section ends here.
-                if (
-                    (ps.i ∈ horizontal_lines_at_data_rows) &&
-                    (next_rs == :data) &&
-                    !suppress_hline_after_continuation_row
-                ) || (
-                    (next_rs ∈ (:summary_row, :table_footer, :end_printing)) &&
-                    tf.horizontal_line_after_data_rows
-                )
-                    hline = bottom ? rl.bottom : rl.middle
-                end
-
-            elseif (rs == :row_group_label)
-                if tf.horizontal_line_after_row_group_label
-                    hline           = rl.middle
-                    bottom          = true
-                    row_group_label = true
-                    count_line      = true
-                end
-
-            elseif (rs == :summary_row) && (next_rs != :summary_row)
-                # Check if we must print the horizontal line at the end of the table. If the
-                # next section is the table footer, we must draw the last table line.
-                if tf.horizontal_line_after_summary_rows
-                    hline  = rl.bottom
-                    bottom = true
-                end
+            # The lines around the continuation row can be suppressed to fit the table in
+            # the display. Notice that only the lines inside the data section can be
+            # suppressed, which are the lines after a data row before the continuation row
+            # and before the first data row after it in the middle cropping.
+            if (
+                (rs == :data) &&
+                (next_rs == :continuation_row) &&
+                suppress_hline_before_continuation_row
+            ) || (
+                (rs == :continuation_row) &&
+                (next_rs == :data) &&
+                suppress_hline_after_continuation_row
+            )
+                role = :none
             end
 
-            if !isnothing(hline)
+            if role != :none
+                # The lines before and after a row group label have the intersections of a
+                # cell that spans the entire table, selected by the keyword `top`. The lines
+                # after a column label row consider the merged column labels around them,
+                # unless the row below is a row group label, which has no cells.
+                row_group_label = (rs == :row_group_label) || (next_rs == :row_group_label)
+
+                column_label_row = if (rs != :column_labels) || row_group_label
+                    nothing
+                elseif next_rs == :column_labels
+                    ps.i
+                else
+                    length(table_data.column_labels)
+                end
+
                 _text__print_horizontal_line(
                     display,
-                    tf,
-                    hline,
+                    lines,
+                    _text__horizontal_line(rl, role),
                     table_data,
-                    vertical_lines_at_data_columns,
                     row_number_column_width,
                     row_label_column_width,
                     printed_data_column_widths;
-                    bottom,
+                    top = next_rs == :row_group_label,
+                    bottom = role == :bottom_line,
                     row_group_label,
                     column_label_row,
                 )
 
                 _text__flush_line(display, false)
-                count_line && (num_printed_data_section_lines += 1)
+
+                # Count the lines printed inside the data section, which are used to fit the
+                # table with line breaks in the display.
+                ((rs ∈ (:data, :row_group_label)) || (next_rs == :row_group_label)) &&
+                    (num_printed_data_section_lines += 1)
+
+            elseif (rs == :column_labels) &&
+                (next_rs == :column_labels) &&
+                lines.horizontal_line_at_merged_column_labels &&
+                _has_merged_cells(table_data, ps.i)
+                # If no line is drawn after this column label row, we must check if the user
+                # wants lines under the merged column labels.
+                _text__print_column_label_horizontal_line_only_at_merged_labels(
+                    display,
+                    lines,
+                    rl,
+                    table_data,
+                    ps.i,
+                    row_number_column_width,
+                    row_label_column_width,
+                    printed_data_column_widths,
+                )
+
+                _text__flush_line(display, false)
             end
 
             # == Omitted Cell Summary ======================================================
@@ -1282,8 +1161,10 @@ function _text__print_table_core(
         # here. The union is concrete and small, and it avoids one string copy per line
         # when a cell line is a `SubString`.
         rendered_cell::Union{String, SubString{String}} = ""
-        vline = false
-        vl = rl.center
+
+        # Vertical line drawn after the cell, if any.
+        vline_role = :none
+        vl         = rl.center
 
         mc_last_index = 0
         merged_cell   = false
@@ -1494,51 +1375,36 @@ function _text__print_table_core(
         # -- Vertical Line After the Cell --------------------------------------------------
 
         if action ∈ (:row_number_label, :row_number, :summary_row_number)
-            tf.vertical_line_after_row_number_column && (vline = true)
+            vline_role = _vertical_line_after_column(lines, table_data, :row_number)
 
         elseif action ∈ (:stubhead_label, :row_label, :summary_row_label)
-            tf.vertical_line_after_row_label_column && (vline = true)
+            vline_role = _vertical_line_after_column(lines, table_data, :row_label)
 
         elseif action == :column_label
             # A merged cell ends at its last column.
             last_jr = merged_cell ? mc_last_index : jr
 
-            vline, vl = _text__vertical_line_after_data_column(
-                tf,
-                rl,
-                last_jr,
-                ps.j,
-                last_printed_column_index,
-                vertical_lines_at_data_columns,
-                table_continuation_column,
-            )
+            vline_role = _vertical_line_after_column(lines, table_data, :data, last_jr)
+
+        elseif action ∈ (:data, :summary_row_cell)
+            # NOTE: `:column_label` is fully consumed by the branch above, which uses the
+            # merged-cell-aware last column index. Hence, it must not be listed here.
+            vline_role = _vertical_line_after_column(lines, table_data, :data, jr)
+
+        elseif action == :row_group_label
+            row_group_label_vline && (vline_role = :right_line)
+        end
+
+        if vline_role != :none
+            vl = _text__vertical_line(rl, vline_role)
 
             # The suppressed vertical lines inside the column labels must keep the default
             # border style so that a line design or face never modifies the blank space.
-            if vline &&
-                tf.suppress_vertical_lines_at_column_labels &&
-                (last_jr != last_printed_column_index)
+            # Notice that the line after the last printed column is never suppressed.
+            if (action == :column_label) &&
+                lines.suppress_vertical_lines_at_column_labels &&
+                ((merged_cell ? mc_last_index : jr) != last_printed_column_index)
                 vl = TextVerticalLine(' ', rstyle.table_border)
-            end
-
-        elseif action ∈ (:data, :summary_row_cell)
-            # NOTE: `:column_label` is fully consumed by the branch above, which is also the
-            # one that honors `suppress_vertical_lines_at_column_labels`, and which uses the
-            # merged-cell-aware last column index. Hence, it must not be listed here.
-            vline, vl = _text__vertical_line_after_data_column(
-                tf,
-                rl,
-                jr,
-                ps.j,
-                last_printed_column_index,
-                vertical_lines_at_data_columns,
-                table_continuation_column,
-            )
-
-        elseif action == :row_group_label
-            if row_group_label_vline
-                vline = true
-                vl    = rl.right
             end
         end
 
@@ -1553,7 +1419,7 @@ function _text__print_table_core(
             right_margin = 1,
         )
 
-        vline && _text__styled_print(display, vl)
+        (vline_role != :none) && _text__styled_print(display, vl)
     end
 
     # == Print the Buffer Into the IO ======================================================

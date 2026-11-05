@@ -233,10 +233,9 @@ end
 """
     _text__print_horizontal_line(
         display::Display,
-        tf::TextTableFormat,
+        lines::TableLines,
         line::TextHorizontalLine,
         table_data::TableData,
-        vertical_lines_at_data_columns::_LineIndices,
         row_number_column_width::Int,
         row_label_column_width::Int,
         printed_data_column_widths::Vector{Int};
@@ -248,12 +247,10 @@ Print a horizontal line to `display`.
 # Arguments
 
 - `display::Display`: Display where the horizontal line will be printed.
-- `tf::TextTableFormat`: Table format.
+- `lines::TableLines`: Table lines, used to select the intersections with the vertical lines.
 - `line::TextHorizontalLine`: Characters and escape sequence used to draw the horizontal
     line, resolved for the line being printed (see [`TextResolvedTableLines`](@ref)).
 - `table_data::TableData`: Table data.
-- `vertical_lines_at_data_columns::_LineIndices`: List of columns where a vertical
-    line must be drawn after the cell.
 - `row_number_column_width::Int`: Row number column width.
 - `row_label_column_width::Int`: Row label column width.
 - `printed_data_column_widths::Vector{Int}`: Printed data column widths.
@@ -282,10 +279,9 @@ Print a horizontal line to `display`.
 """
 function _text__print_horizontal_line(
     display::Display,
-    tf::TextTableFormat,
+    lines::TableLines,
     line::TextHorizontalLine,
     table_data::TableData,
-    vertical_lines_at_data_columns::_LineIndices,
     row_number_column_width::Int,
     row_label_column_width::Int,
     printed_data_column_widths::Vector{Int};
@@ -340,21 +336,19 @@ function _text__print_horizontal_line(
         ri = tb.right_intersection
     end
 
-    table_continuation_column = _is_horizontally_cropped(table_data)
-
     # == Print the Horizontal Line =========================================================
 
     _text__begin_styled_line(display, sgr)
 
     # -- Left Intersection -----------------------------------------------------------------
 
-    tf.vertical_line_at_beginning && _text__print(display, li)
+    lines.vertical_line_at_beginning && _text__print(display, li)
 
     # -- Row Number Column -----------------------------------------------------------------
 
     if table_data.show_row_number_column
         _text__print(display, row, row_number_column_width + 2)
-        tf.vertical_line_after_row_number_column &&
+        (_vertical_line_after_column(lines, table_data, :row_number) != :none) &&
             _text__horizontal_line_intersection(display, mi, row, false)
     end
 
@@ -362,7 +356,7 @@ function _text__print_horizontal_line(
 
     if _has_row_labels(table_data)
         _text__print(display, row, row_label_column_width + 2)
-        tf.vertical_line_after_row_label_column &&
+        (_vertical_line_after_column(lines, table_data, :row_label) != :none) &&
             _text__horizontal_line_intersection(display, mi, row, false)
     end
 
@@ -372,19 +366,21 @@ function _text__print_horizontal_line(
         cw = printed_data_column_widths[j]
         _text__print(display, row, cw + 2)
 
-        if (j == last(eachindex(printed_data_column_widths)))
-            tf.vertical_line_after_data_columns && _text__horizontal_line_intersection(
-                display,
-                table_continuation_column ? mi : ri,
-                row,
-                !table_continuation_column,
-            )
-        elseif j ∈ vertical_lines_at_data_columns
+        role = _vertical_line_after_column(lines, table_data, :data, j)
+        role == :none && continue
+
+        if j == last(eachindex(printed_data_column_widths))
+            # The line after the data columns is the final intersection of the table unless
+            # the continuation column follows it.
+            final = role == :right_line
+            _text__horizontal_line_intersection(display, final ? ri : mi, row, final)
+
+        else
             intersection = if isnothing(column_label_row)
                 mi
             else
                 _text__column_label_intersection(
-                    table_data, tf, tb, column_label_row, j, top, mi
+                    table_data, lines, tb, column_label_row, j, top, mi
                 )
             end
 
@@ -394,9 +390,9 @@ function _text__print_horizontal_line(
 
     # -- Table Continuation Column ---------------------------------------------------------
 
-    if table_continuation_column
+    if _is_horizontally_cropped(table_data)
         _text__print(display, row, 3)
-        tf.vertical_line_after_continuation_column &&
+        (_vertical_line_after_column(lines, table_data, :continuation) != :none) &&
             _text__horizontal_line_intersection(display, ri, row, true)
     end
 
@@ -408,7 +404,7 @@ end
 """
     _text__column_label_intersection(
         table_data::TableData,
-        tf::TextTableFormat,
+        lines::TableLines,
         tb::TextTableBorders,
         row_number::Int,
         j::Int,
@@ -424,7 +420,7 @@ the column labels above and below the line are not merged.
 """
 function _text__column_label_intersection(
     table_data::TableData,
-    tf::TextTableFormat,
+    lines::TableLines,
     tb::TextTableBorders,
     row_number::Int,
     j::Int,
@@ -440,7 +436,7 @@ function _text__column_label_intersection(
     tcm = (top_j₀ != top_j₁) && (j + 1 != top_j₀) || top
     bcm = (bottom_j₀ != bottom_j₁) && (j + 1 != bottom_j₀)
 
-    if tf.suppress_vertical_lines_at_column_labels
+    if lines.suppress_vertical_lines_at_column_labels
         bcm = tcm = true
 
         # We must have a special treatment if this is the last column label since we must
@@ -457,11 +453,10 @@ end
 """
     _text__print_column_label_horizontal_line_only_at_merged_labels(
         display::Display,
-        tf::TextTableFormat,
+        lines::TableLines,
         rl::TextResolvedTableLines,
         table_data::TableData,
         row_number::Int,
-        vertical_lines_at_data_columns::_LineIndices,
         row_number_column_width::Int,
         row_label_column_width::Int,
         printed_data_column_widths::Vector{Int}
@@ -473,25 +468,22 @@ column labels.
 # Arguments
 
 - `display::Display`: Display where the horizontal line will be printed.
-- `tf::TextTableFormat`: Table format.
+- `lines::TableLines`: Table lines, used to select the vertical lines.
 - `rl::TextResolvedTableLines`: Resolved table lines. The horizontal line sections use the
     characters and escape sequence of the lines under the merged column labels, whereas the
     vertical line sections use the resolved vertical line characters.
 - `table_data::TableData`: Table data.
 - `row_number::Int`: Column label row number before the horizontal line.
-- `vertical_lines_at_data_columns::_LineIndices`: List of columns where a vertical
-    line must be drawn after the cell.
 - `row_number_column_width::Int`: Row number column width.
 - `row_label_column_width::Int`: Row label column width.
 - `printed_data_column_widths::Vector{Int}`: Printed data column widths.
 """
 function _text__print_column_label_horizontal_line_only_at_merged_labels(
     display::Display,
-    tf::TextTableFormat,
+    lines::TableLines,
     rl::TextResolvedTableLines,
     table_data::TableData,
     row_number::Int,
-    vertical_lines_at_data_columns::_LineIndices,
     row_number_column_width::Int,
     row_label_column_width::Int,
     printed_data_column_widths::Vector{Int},
@@ -505,7 +497,7 @@ function _text__print_column_label_horizontal_line_only_at_merged_labels(
     col = rl.center.char
     row = tb.row
 
-    table_continuation_column = _is_horizontally_cropped(table_data)
+    suppress_vertical_lines = lines.suppress_vertical_lines_at_column_labels
 
     # == Print the Horizontal Line =========================================================
 
@@ -513,20 +505,22 @@ function _text__print_column_label_horizontal_line_only_at_merged_labels(
 
     # -- Left Intersection -----------------------------------------------------------------
 
-    tf.vertical_line_at_beginning && _text__print(display, rl.left.char)
+    lines.vertical_line_at_beginning && _text__print(display, rl.left.char)
 
     # -- Row Number Column -----------------------------------------------------------------
 
     if table_data.show_row_number_column
         _text__print(display, ' ', row_number_column_width + 2)
-        tf.vertical_line_after_row_number_column && _text__print(display, col)
+        (_vertical_line_after_column(lines, table_data, :row_number) != :none) &&
+            _text__print(display, col)
     end
 
     # -- Row Label Column ------------------------------------------------------------------
 
     if _has_row_labels(table_data)
         _text__print(display, ' ', row_label_column_width + 2)
-        tf.vertical_line_after_row_label_column && _text__print(display, col)
+        (_vertical_line_after_column(lines, table_data, :row_label) != :none) &&
+            _text__print(display, col)
     end
 
     # -- Data ------------------------------------------------------------------------------
@@ -545,11 +539,15 @@ function _text__print_column_label_horizontal_line_only_at_merged_labels(
             _text__print(display, j == j₁ ? " " : row)
         end
 
-        if (j == last(eachindex(printed_data_column_widths)))
-            tf.vertical_line_after_data_columns &&
-                _text__print(display, table_continuation_column ? col : rl.right.char)
+        role = _vertical_line_after_column(lines, table_data, :data, j)
+        role == :none && continue
 
-        elseif j ∈ vertical_lines_at_data_columns
+        # The line after the last printed data column is never suppressed because it must
+        # connect with the vertical lines of the table.
+        if j == last(eachindex(printed_data_column_widths))
+            _text__print(display, role == :right_line ? rl.right.char : col)
+
+        else
             # Check if we are in the middle of a merged column label.
             if (j₀ != j₁) && (j₁ != j)
                 # Check if the next column label is merged so that we can print the correct
@@ -557,22 +555,20 @@ function _text__print_column_label_horizontal_line_only_at_merged_labels(
                 bottom_j₀, bottom_j₁ = _column_label_limits(table_data, row_number + 1, j)
                 ci = (bottom_j₀ != bottom_j₁) && (j != bottom_j₁) ? row : ti
 
-                _text__print(
-                    display, tf.suppress_vertical_lines_at_column_labels ? row : ci
-                )
+                _text__print(display, suppress_vertical_lines ? row : ci)
 
                 continue
             end
 
-            _text__print(display, tf.suppress_vertical_lines_at_column_labels ? " " : col)
+            _text__print(display, suppress_vertical_lines ? " " : col)
         end
     end
 
     # -- Table Continuation Column ---------------------------------------------------------
 
-    if table_continuation_column
+    if _is_horizontally_cropped(table_data)
         _text__print(display, row, 3)
-        tf.vertical_line_after_continuation_column &&
+        (_vertical_line_after_column(lines, table_data, :continuation) != :none) &&
             _text__horizontal_line_intersection(display, ri, row, true)
     end
 
@@ -582,36 +578,30 @@ function _text__print_column_label_horizontal_line_only_at_merged_labels(
 end
 
 """
-    _text__vertical_line_after_data_column(
-        tf::TextTableFormat,
-        rl::TextResolvedTableLines,
-        jr::Int,
-        j::Int,
-        last_printed_column_index::Int,
-        vertical_lines_at_data_columns::_LineIndices,
-        table_continuation_column::Bool
-    ) -> Tuple{Bool, TextVerticalLine}
+    _text__horizontal_line(rl::TextResolvedTableLines, role::Symbol) -> TextHorizontalLine
 
-Return whether a vertical line must be drawn after the printed data column `jr` (data
-column `j`) and the line to draw. The line after the last printed column
-(`last_printed_column_index`) is the right line of the table, unless the table has a
-continuation column (`table_continuation_column`), in which case it is a center line.
+Return the resolved horizontal line in `rl` with the `role` returned by
+`_horizontal_line_after_row` (`:top_line`, `:header_line`, `:middle_line`, or
+`:bottom_line`).
 """
-function _text__vertical_line_after_data_column(
-    tf::TextTableFormat,
-    rl::TextResolvedTableLines,
-    jr::Int,
-    j::Int,
-    last_printed_column_index::Int,
-    vertical_lines_at_data_columns::_LineIndices,
-    table_continuation_column::Bool,
-)
-    if jr == last_printed_column_index
-        tf.vertical_line_after_data_columns || return (false, rl.center)
-        return (true, table_continuation_column ? rl.center : rl.right)
-    end
+function _text__horizontal_line(rl::TextResolvedTableLines, role::Symbol)
+    role == :top_line && return rl.top
+    role == :header_line && return rl.header
+    role == :bottom_line && return rl.bottom
+    return rl.middle
+end
 
-    return (j ∈ vertical_lines_at_data_columns, rl.center)
+"""
+    _text__vertical_line(rl::TextResolvedTableLines, role::Symbol) -> TextVerticalLine
+
+Return the resolved vertical line in `rl` with the `role` returned by
+`_vertical_line_after_column` (`:left_line`, `:center_line`, or `:right_line`). The center
+line is returned for `:none`, which must be checked before drawing the line.
+"""
+function _text__vertical_line(rl::TextResolvedTableLines, role::Symbol)
+    role == :right_line && return rl.right
+    role == :left_line && return rl.left
+    return rl.center
 end
 
 """
