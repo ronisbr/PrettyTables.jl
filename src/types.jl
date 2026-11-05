@@ -620,3 +620,59 @@ end
 function Base.in(i::Integer, lines::_LineIndices)
     return lines.all ? (1 <= i <= lines.n) : (i ∈ lines.indices)
 end
+
+# == Table Lines ===========================================================================
+
+"""
+    struct TableLines
+
+Presence of the table lines resolved from a back end table format. The back ends must not
+analyze the line presence fields of their table formats directly. Instead, they must create
+this object and query it with [`_horizontal_line_after_row`](@ref) and
+[`_vertical_line_after_column`](@ref), which return the field of the back end borders with
+the line to draw, so that every back end draws the lines at the same places.
+
+The fields have the same names as the line presence fields of the table formats. The fields
+that exist only in some back ends are set to their neutral value when the table format does
+not have them. Hence, the queries can be shared by all the back ends:
+
+- `horizontal_line_before_column_labels` is the line between the table header (title and
+    subtitle) and the first row of the ruled area. It is the field of the HTML table format,
+    which renders the title inside the ruled area, and `horizontal_line_at_beginning`
+    otherwise.
+- `horizontal_lines_at_column_labels` are the column label rows after which a line is drawn,
+    excluding the last one, whose line is `horizontal_line_after_column_labels`. It is the
+    field of the text table format, the field `horizontal_line_between_column_labels` of the
+    Excel and Word table formats (`:all` if `true`), and `:none` otherwise.
+- `horizontal_line_after_footnotes` and `horizontal_line_at_end` are the fields of the HTML
+    table format and `false` otherwise.
+- `suppress_vertical_lines_at_column_labels` is the field of the text table format and
+    `false` otherwise.
+"""
+struct TableLines
+    # == Horizontal Lines ==================================================================
+
+    horizontal_line_at_beginning::Bool
+    horizontal_line_before_column_labels::Bool
+    horizontal_lines_at_column_labels::_LineIndices
+    horizontal_line_at_merged_column_labels::Bool
+    horizontal_line_after_column_labels::Bool
+    horizontal_lines_at_data_rows::_LineIndices
+    horizontal_line_before_row_group_label::Bool
+    horizontal_line_after_row_group_label::Bool
+    horizontal_line_after_data_rows::Bool
+    horizontal_line_before_summary_rows::Bool
+    horizontal_line_after_summary_rows::Bool
+    horizontal_line_after_footnotes::Bool
+    horizontal_line_at_end::Bool
+
+    # == Vertical Lines ====================================================================
+
+    vertical_line_at_beginning::Bool
+    vertical_line_after_row_number_column::Bool
+    vertical_line_after_row_label_column::Bool
+    vertical_lines_at_data_columns::_LineIndices
+    vertical_line_after_data_columns::Bool
+    vertical_line_after_continuation_column::Bool
+    suppress_vertical_lines_at_column_labels::Bool
+end

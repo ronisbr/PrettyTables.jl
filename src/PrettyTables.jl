@@ -124,6 +124,7 @@ include("./printing_state/alignment.jl")
 include("./printing_state/data.jl")
 include("./printing_state/information.jl")
 include("./printing_state/iterator.jl")
+include("./printing_state/lines.jl")
 
 ############################################################################################
 #                                      Precompilation                                      #
