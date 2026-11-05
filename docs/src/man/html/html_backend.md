@@ -135,8 +135,9 @@ any rendering mode, including when the table is embedded in another document (Ju
 Pluto, Documenter, etc.).
 
 Compared to the other back ends, `HtmlTableFormat` has three additional line presence
-fields: `horizontal_line_before_column_labels`, because the HTML back end places the title
-inside the ruled area; `horizontal_line_after_footnotes`, which draws a line between the
+fields: `horizontal_line_before_column_labels`, which draws a line between the title or
+subtitle and the first row of the ruled area because the HTML back end places the title
+inside it; `horizontal_line_after_footnotes`, which draws a line between the
 footnotes and the source notes; and `horizontal_line_at_end`, which forces the line at the
 end of the table (after the last summary or data row) even when the lines after the data
 and summary rows are disabled. As in the text back end, the footnotes and source notes are

@@ -201,7 +201,8 @@ Define the format of the tables printed with the HTML back end.
 - `horizontal_line_at_beginning::Bool`: If `true`, a horizontal line will be drawn at the
     beginning of the table.
 - `horizontal_line_before_column_labels::Bool`: If `true`, a horizontal line will be drawn
-    before the column labels when the table has a title or subtitle. (HTML back end only)
+    between the title or subtitle and the first row of the ruled area, which is normally the
+    column labels. (HTML back end only)
 - `horizontal_line_after_column_labels::Bool`: If `true`, a horizontal line will be drawn
     after the column labels.
 - `horizontal_line_at_merged_column_labels::Bool`: If `true`, a horizontal line will be
