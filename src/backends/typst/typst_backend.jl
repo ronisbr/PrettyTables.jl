@@ -128,15 +128,13 @@ function _typst__print_core(pspec::PrintingSpec, opts::TypstPrintOptions)
         wrap_column = -1
     end
 
-    # Process the horizontal lines at data rows.
-    horizontal_lines_at_data_rows = _line_spec_indices(
-        tf.horizontal_lines_at_data_rows, table_data.num_rows
-    )
+    # Resolve the lines of the table.
+    lines = TableLines(tf, table_data)
 
-    # Process the vertical lines at data columns.
-    vertical_lines_at_data_columns = _line_spec_indices(
-        tf.vertical_lines_at_data_columns, table_data.num_columns
-    )
+    # Row section before the first row of the ruled area, required to select the line at the
+    # beginning of the table.
+    header_rs =
+        (isempty(table_data.title) && isempty(table_data.subtitle)) ? :none : :table_header
 
     # Create dictionaries to store properties to decrease the number of allocations.
     vproperties = Pair{String, String}[]
@@ -222,9 +220,9 @@ function _typst__print_core(pspec::PrintingSpec, opts::TypstPrintOptions)
     il_table  = il
     hline_pad = " "^max(il_table * ns, 0)
 
-    # This variable is used to check if we are printing the first line of the table. It is
-    # used to check if we need to print the horizontal line at the beginning of the table.
-    first_table_line = true
+    # This variable is used to check if we are printing the first row of the ruled area,
+    # before which the line at the beginning of the table can be drawn.
+    top_line_printed = false
 
     # The highlighters must receive the object the user passed to `pretty_table`, not the
     # internal table wrapper. Notice that this is loop invariant.
@@ -248,21 +246,24 @@ function _typst__print_core(pspec::PrintingSpec, opts::TypstPrintOptions)
             empty!(merged_column_labels)
             first_column = true
 
-            # If we are in the very first row after the title section, we need to check if
-            # the user wants a horizontal line before the table.
-            if (rs != :table_header) && first_table_line && tf.horizontal_line_at_beginning
+            # If this is the very first row of the ruled area, we must check if a horizontal
+            # line must be printed before it.
+            if (rs != :table_header) && !top_line_printed
+                top_line_printed = true
+
+                role = _horizontal_line_after_row(lines, table_data, header_rs, rs, 0)
+
                 # Using only one argument in `print` to avoid intermediate string
                 # allocations.
-                @_println(
+                (role != :none) && @_println(
                     buf_hlines,
                     hline_pad,
                     "table.hline(y: ",
                     current_typst_line - 1,
                     ", stroke: ",
-                    tf.borders.top_line,
+                    getfield(tf.borders, role),
                     ",),"
                 )
-                first_table_line = false
             end
 
             # The table header is closed at the end of its last row (see the `:end_row`
@@ -341,11 +342,28 @@ function _typst__print_core(pspec::PrintingSpec, opts::TypstPrintOptions)
 
             # == Handle the Horizontal Lines ===============================================
 
-            if (rs == :column_labels) && (next_rs == :column_labels)
-                if tf.horizontal_line_at_merged_column_labels
-                    # The specification in `merged_column_labels` refers to the data
-                    # columns. Hence, we need to add the offset regarding the previous
-                    # columns if they exist.
+            # The line before the first row of the ruled area is drawn when that row begins.
+            if rs != :table_header
+                role = _horizontal_line_after_row(lines, table_data, rs, next_rs, ps.i)
+
+                if role != :none
+                    @_println(
+                        buf_hlines,
+                        hline_pad,
+                        "table.hline(y: ",
+                        current_typst_line,
+                        ", stroke: ",
+                        getfield(tf.borders, role),
+                        ",),"
+                    )
+
+                elseif (rs == :column_labels) &&
+                    (next_rs == :column_labels) &&
+                    lines.horizontal_line_at_merged_column_labels
+                    # If no line is drawn after this column label row, we must check if the
+                    # user wants lines under the merged column labels. The specification in
+                    # `merged_column_labels` refers to the data columns. Hence, we need to
+                    # add the offset regarding the previous columns if they exist.
                     Δc = table_data.show_row_number_column + _has_row_labels(table_data)
 
                     # Each merged cell needs its own line, exactly like the LaTeX back end
@@ -368,24 +386,6 @@ function _typst__print_core(pspec::PrintingSpec, opts::TypstPrintOptions)
                             ",),"
                         )
                     end
-                end
-            else
-                role = _horizontal_line_after_row(
-                    tf, rs, next_rs, ps.i, horizontal_lines_at_data_rows
-                )
-
-                if role != :none
-                    first_table_line = false
-
-                    @_println(
-                        buf_hlines,
-                        hline_pad,
-                        "table.hline(y: ",
-                        current_typst_line,
-                        ", stroke: ",
-                        getfield(tf.borders, role),
-                        ",),"
-                    )
                 end
             end
 
@@ -632,9 +632,7 @@ function _typst__print_core(pspec::PrintingSpec, opts::TypstPrintOptions)
         buf, "// == Vertical Lines", il_table, ns, wrap_column, '='
     )
 
-    _typst__vertical_lines!(
-        buf, table_data, tf, table_lines, vertical_lines_at_data_columns, il_table, ns
-    )
+    _typst__vertical_lines!(buf, table_data, tf, lines, table_lines, il_table, ns)
 
     write(buf, take!(buf_tc))
 

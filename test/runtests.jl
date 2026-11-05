@@ -161,6 +161,7 @@ end
     include("./backends/typst/offset_arrays.jl")
     include("./backends/typst/renderers.jl")
     include("./backends/typst/special_cells.jl")
+    include("./backends/typst/vertical_lines.jl")
     include("./ext/pretty_tables_typstry_ext.jl")
 end
 

@@ -96,3 +96,72 @@ end
         "    table.hline(y: 6, stroke: 4pt,),",
     ]
 end
+
+@testset "Shared Line Rules" verbose = true begin
+    @testset "Line Before the Row Group Label at the First Row" begin
+        # The line before a row group label at the first data row is drawn even if the line
+        # after the column labels is disabled.
+        result = pretty_table(
+            String,
+            [1 2; 3 4];
+            annotate = false,
+            backend = :typst,
+            row_group_labels = [1 => "Group"],
+            table_format = TypstTableFormat(;
+                horizontal_line_after_column_labels = false,
+                horizontal_line_before_row_group_label = true,
+            ),
+        )
+
+        hlines = filter(l -> occursin("table.hline", l), split(result, '\n'))
+
+        @test hlines == [
+            "    table.hline(y: 0, stroke: 1.5pt,),",
+            "    table.hline(y: 1, stroke: 0.5pt,),",
+            "    table.hline(y: 2, stroke: 0.5pt,),",
+            "    table.hline(y: 4, stroke: 1.5pt,),",
+        ]
+    end
+
+    @testset "Line After the Continuation Row in the Middle Cropping" begin
+        # The line above the first row printed after the continuation row is the line after
+        # the data row before it.
+        result = pretty_table(
+            String,
+            [i for i in 1:10, j in 1:2];
+            annotate = false,
+            backend = :typst,
+            maximum_number_of_rows = 4,
+            vertical_crop_mode = :middle,
+            table_format = TypstTableFormat(; horizontal_lines_at_data_rows = :all),
+        )
+
+        hlines = filter(l -> occursin("table.hline", l), split(result, '\n'))
+
+        @test hlines == [
+            "    table.hline(y: 0, stroke: 1.5pt,),",
+            "    table.hline(y: 1, stroke: 0.8pt,),",
+            "    table.hline(y: 2, stroke: 0.5pt,),",
+            "    table.hline(y: 3, stroke: 0.5pt,),",
+            "    table.hline(y: 4, stroke: 0.5pt,),",
+            "    table.hline(y: 5, stroke: 0.5pt,),",
+            "    table.hline(y: 6, stroke: 1.5pt,),",
+        ]
+
+        result = pretty_table(
+            String,
+            [i for i in 1:10, j in 1:2];
+            annotate = false,
+            backend = :typst,
+            maximum_number_of_rows = 4,
+            vertical_crop_mode = :middle,
+            table_format = TypstTableFormat(;
+                @typst__no_horizontal_lines, horizontal_lines_at_data_rows = [8]
+            ),
+        )
+
+        hlines = filter(l -> occursin("table.hline", l), split(result, '\n'))
+
+        @test hlines == ["    table.hline(y: 4, stroke: 0.5pt,),"]
+    end
+end

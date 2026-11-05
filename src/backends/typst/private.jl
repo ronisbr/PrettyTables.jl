@@ -340,30 +340,27 @@ end
         buf::IO,
         td::TableData,
         tf::TypstTableFormat,
+        lines::TableLines,
         total_inner_table_lines::Int,
-        vertical_lines_at_data_columns::_LineIndices,
         il::Int,
         ns::Int
     ) -> Nothing
 
-Print to `buf` the Typst vertical lines configurations considering the table data `td` and
-table format `tf`. `total_inner_table_lines` is the total number of rows in the inner table
-(excluding title, subtitle, footnote, and source note rows).
-`vertical_lines_at_data_columns` contains the indices of data columns that require a
-vertical line on their right side. `il` and `ns` are the indentation level and number of
-spaces per indentation level, respectively.
+Print to `buf` the Typst vertical lines of the table `td` selected by `lines`, using the
+borders of the table format `tf`. `total_inner_table_lines` must be the number of rows of
+the ruled area, which excludes the title, the subtitle, and the table footer. `il` and `ns`
+are the indentation level and the number of spaces per level.
 """
 function _typst__vertical_lines!(
     buf::IO,
     td::TableData,
     tf::TypstTableFormat,
+    lines::TableLines,
     total_inner_table_lines::Int,
-    vertical_lines_at_data_columns::_LineIndices,
     il::Int,
     ns::Int,
 )
-    num_columns = td.num_columns
-    borders     = tf.borders
+    borders = tf.borders
 
     current_typst_column = 0
 
@@ -411,51 +408,43 @@ function _typst__vertical_lines!(
         return nothing
     end
 
+    # Print the vertical line after `column` if the lines select it.
+    _vline_after_column(column, j = 0) = begin
+        role = _vertical_line_after_column(lines, td, column, j)
+        (role != :none) && _vline(current_typst_column, getfield(borders, role))
+        return nothing
+    end
+
     # == Table Beginning ===================================================================
 
-    tf.vertical_line_at_beginning && _vline(current_typst_column, borders.left_line)
+    lines.vertical_line_at_beginning && _vline(current_typst_column, borders.left_line)
 
     # == Row Number Column =================================================================
 
     if td.show_row_number_column
         current_typst_column += 1
-        tf.vertical_line_after_row_number_column &&
-            _vline(current_typst_column, borders.center_line)
+        _vline_after_column(:row_number)
     end
 
     # == Row Labels ========================================================================
 
     if _has_row_labels(td)
         current_typst_column += 1
-        tf.vertical_line_after_row_label_column &&
-            _vline(current_typst_column, borders.center_line)
+        _vline_after_column(:row_label)
     end
 
     # == Data Columns ======================================================================
 
-    nc = _number_of_printed_data_columns(td)
-
-    for i in 1:nc
+    for j in 1:_number_of_printed_data_columns(td)
         current_typst_column += 1
-
-        format = borders.center_line
-        vline  = i in vertical_lines_at_data_columns
-
-        if ((i == nc) && tf.vertical_line_after_data_columns)
-            # If we have the continuation line, we must use the middle line here.
-            format = nc < num_columns ? borders.center_line : borders.right_line
-            vline = true
-        end
-
-        vline && _vline(current_typst_column, format)
+        _vline_after_column(:data, j)
     end
 
     # == Continuation Column ===============================================================
 
-    if nc < num_columns
+    if _is_horizontally_cropped(td)
         current_typst_column += 1
-        tf.vertical_line_after_continuation_column &&
-            _vline(current_typst_column, borders.right_line)
+        _vline_after_column(:continuation)
     end
 
     return nothing
