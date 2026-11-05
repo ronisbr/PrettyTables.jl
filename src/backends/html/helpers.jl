@@ -28,21 +28,8 @@ tf = HtmlTableFormat(; @html__all_horizontal_lines, horizontal_line_at_beginning
 ```
 """
 macro html__all_horizontal_lines()
-    return :(
-        (
-            horizontal_line_at_beginning            = true,
-            horizontal_line_before_column_labels    = true,
-            horizontal_line_at_merged_column_labels = true,
-            horizontal_line_after_column_labels     = true,
-            horizontal_lines_at_data_rows           = :all,
-            horizontal_line_before_row_group_label  = true,
-            horizontal_line_after_row_group_label   = true,
-            horizontal_line_after_data_rows         = true,
-            horizontal_line_before_summary_rows     = true,
-            horizontal_line_after_summary_rows      = true,
-            horizontal_line_after_footnotes         = true,
-            horizontal_line_at_end                  = true,
-        )...
+    return _line_presence_keywords(
+        true, _HORIZONTAL_LINE_PRESENCE_FIELDS..., _HTML_HORIZONTAL_LINE_PRESENCE_FIELDS...
     )
 end
 
@@ -67,16 +54,7 @@ tf = HtmlTableFormat(; @html__all_vertical_lines, vertical_line_at_beginning = f
 ```
 """
 macro html__all_vertical_lines()
-    return :(
-        (
-            vertical_line_after_continuation_column = true,
-            vertical_lines_at_data_columns          = :all,
-            vertical_line_after_data_columns        = true,
-            vertical_line_after_row_label_column    = true,
-            vertical_line_after_row_number_column   = true,
-            vertical_line_at_beginning              = true,
-        )...
-    )
+    return _line_presence_keywords(true, _VERTICAL_LINE_PRESENCE_FIELDS...)
 end
 
 """
@@ -100,21 +78,8 @@ tf = HtmlTableFormat(; @html__no_horizontal_lines, horizontal_line_at_beginning 
 ```
 """
 macro html__no_horizontal_lines()
-    return :(
-        (
-            horizontal_line_at_beginning            = false,
-            horizontal_line_before_column_labels    = false,
-            horizontal_line_at_merged_column_labels = false,
-            horizontal_line_after_column_labels     = false,
-            horizontal_lines_at_data_rows           = :none,
-            horizontal_line_before_row_group_label  = false,
-            horizontal_line_after_row_group_label   = false,
-            horizontal_line_after_data_rows         = false,
-            horizontal_line_before_summary_rows     = false,
-            horizontal_line_after_summary_rows      = false,
-            horizontal_line_after_footnotes         = false,
-            horizontal_line_at_end                  = false,
-        )...
+    return _line_presence_keywords(
+        false, _HORIZONTAL_LINE_PRESENCE_FIELDS..., _HTML_HORIZONTAL_LINE_PRESENCE_FIELDS...
     )
 end
 
@@ -139,14 +104,5 @@ tf = HtmlTableFormat(; @html__no_vertical_lines, vertical_line_at_beginning = tr
 ```
 """
 macro html__no_vertical_lines()
-    return :(
-        (
-            vertical_line_after_continuation_column = false,
-            vertical_lines_at_data_columns          = :none,
-            vertical_line_after_data_columns        = false,
-            vertical_line_after_row_label_column    = false,
-            vertical_line_after_row_number_column   = false,
-            vertical_line_at_beginning              = false,
-        )...
-    )
+    return _line_presence_keywords(false, _VERTICAL_LINE_PRESENCE_FIELDS...)
 end
