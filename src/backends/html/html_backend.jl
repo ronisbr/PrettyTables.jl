@@ -137,6 +137,9 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
         table_data.num_columns,
     )
 
+    # Resolve the lines of the table.
+    lines = TableLines(tf, table_data)
+
     # == Variables to Store Information About Indentation ==================================
 
     il = 0 # ..................................................... Current indentation level
@@ -259,10 +262,10 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
     # the last row of the ruled area.
     empty!(vstyle)
 
-    if _html__has_any_table_line(tf)
+    if _has_any_table_line(lines)
         push!(vstyle, "border-collapse" => "collapse")
 
-        tf.horizontal_line_at_beginning &&
+        lines.horizontal_line_at_beginning &&
             push!(vstyle, "border-top" => tf.borders.top_line)
     end
 
@@ -280,22 +283,7 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
 
     # == Table Borders =====================================================================
 
-    # Process the horizontal lines at data rows.
-    horizontal_lines_at_data_rows = _line_spec_indices(
-        tf.horizontal_lines_at_data_rows, table_data.num_rows
-    )
-
-    # Process the vertical lines at data columns.
-    vertical_lines_at_data_columns = _line_spec_indices(
-        tf.vertical_lines_at_data_columns, table_data.num_columns
-    )
-
-    num_printed_data_columns = _number_of_printed_data_columns(table_data)
-    num_printed_columns      = _number_of_printed_columns(table_data)
-    colspan_all              = string(num_printed_columns)
-    horizontally_cropped     = _is_horizontally_cropped(table_data)
-    num_summary_rows         = isnothing(table_data.summary_rows) ? 0 : length(table_data.summary_rows)
-    num_footnotes            = isnothing(table_data.footnotes) ? 0 : length(table_data.footnotes)
+    colspan_all = string(_number_of_printed_columns(table_data))
 
     # == Column Borders ====================================================================
 
@@ -303,15 +291,9 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
     # to the edges of every cell in the column when the table borders are collapsed. Hence,
     # the cells do not carry the vertical borders, reducing the output size considerably.
     # The first column also carries the border at the left of the table.
-    column_borders = _html__column_borders(
-        tf,
-        table_data,
-        vertical_lines_at_data_columns,
-        num_printed_data_columns,
-        horizontally_cropped,
-    )
+    column_borders = _html__column_borders(tf, lines, table_data)
 
-    left_border = tf.vertical_line_at_beginning ? tf.borders.left_line : ""
+    left_border = lines.vertical_line_at_beginning ? tf.borders.left_line : ""
 
     # The vertical lines at the edges of the table must be hidden in the footer cells,
     # which are outside the ruled area (see the table footer cells below).
@@ -339,8 +321,7 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
     row_border_top    = ""
     row_border_bottom = ""
 
-    # Row section of the previous row, required to check if the column labels are preceded
-    # by a title or subtitle.
+    # Row section of the previous row, required to select the line above the current row.
     prev_rs = :none
 
     action = :initialize
@@ -397,80 +378,50 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
 
             # == Row Borders ===============================================================
 
+            # The borders of a row are emitted in the `<tr>` element and applied to every
+            # cell of the row when the table borders are collapsed. Each line between two
+            # rows is emitted only once: as the top border of the row below if this row owns
+            # the line (see `_html__row_owns_line_above`), or as the bottom border of the row
+            # above otherwise. Notice that the line at the beginning of the table is emitted
+            # in the `<table>` element, and that the lines between the table header rows are
+            # never drawn.
             row_border_top    = ""
             row_border_bottom = ""
 
-            # As in the other back ends, the line drawn after the last row of the ruled
-            # area (the last summary row, the last row of the data section if the table has
-            # no summary rows, or the column labels if the table has no rows) uses the
-            # bottom line style instead of the header or middle one. Notice that the lines
-            # selected by `horizontal_lines_at_data_rows` are internal and never use it.
-            last_ruled_row = _html__is_last_ruled_row(
-                rs, ps, table_data, num_column_label_rows
-            )
-
-            if rs == :column_labels
-                # The line before the column labels is only emitted when the table has a
-                # title or subtitle. Otherwise, this line coincides with the top border of
-                # the table. As in the other back ends, the line before the first row after
-                # the title and subtitle uses the top line style.
-                (
-                    tf.horizontal_line_before_column_labels &&
-                    (ps.i == 1) &&
-                    (prev_rs == :table_header)
-                ) && (row_border_top = tf.borders.top_line)
-
-                if tf.horizontal_line_after_column_labels && (ps.i == num_column_label_rows)
-                    row_border_bottom =
-                        last_ruled_row ? tf.borders.bottom_line : tf.borders.header_line
-                end
-
-            elseif rs ∈ (:data, :continuation_row)
-                # The line after the data rows is emitted at the last row of the data
-                # section, which can be the continuation row if the table is cropped. As in
-                # the other back ends, only `horizontal_line_after_data_rows` controls this
-                # line, even if `horizontal_lines_at_data_rows` contains the last row.
-                if _html__is_last_data_section_row(rs, ps, table_data)
-                    if tf.horizontal_line_after_data_rows
-                        row_border_bottom =
-                            last_ruled_row ? tf.borders.bottom_line : tf.borders.middle_line
-                    end
-
-                elseif (rs == :data) && (ps.i ∈ horizontal_lines_at_data_rows)
-                    row_border_bottom = tf.borders.middle_line
-                end
-
-            elseif rs == :row_group_label
-                tf.horizontal_line_before_row_group_label &&
-                    (row_border_top = tf.borders.middle_line)
-
-                tf.horizontal_line_after_row_group_label &&
-                    (row_border_bottom = tf.borders.middle_line)
-
-            elseif rs == :summary_row
-                (tf.horizontal_line_before_summary_rows && (ps.i == 1)) &&
-                    (row_border_top = tf.borders.middle_line)
-
-                # The last summary row is always the last row of the ruled area.
-                (tf.horizontal_line_after_summary_rows && (ps.i == num_summary_rows)) &&
-                    (row_border_bottom = tf.borders.bottom_line)
-
-            elseif rs == :table_footer
+            if rs == :table_footer
+                # The only line inside the table footer is the line after the footnotes,
+                # which does not depend on the next row. Notice that the printing state
+                # resets the row index before the source notes. Hence, we must pass 0 for
+                # them so that the line is only drawn after the last footnote.
+                #
                 # NOTE: This condition must mirror the one the printing state iterator uses
                 # to decide whether it is emitting a footnote row or a source note row.
-                (
-                    tf.horizontal_line_after_footnotes &&
-                    (ps.state < _FOOTNOTES) &&
-                    !isnothing(table_data.footnotes) &&
-                    (ps.i == num_footnotes)
-                ) && (row_border_bottom = tf.borders.middle_line)
-            end
+                footnote_row = (ps.state < _FOOTNOTES) && !isnothing(table_data.footnotes)
 
-            # The line at the end of the table is drawn at the bottom of the last row of
-            # the ruled area, which precedes the footnotes and source notes as in the text
-            # back end, even if the options above do not draw a line there.
-            (tf.horizontal_line_at_end && last_ruled_row) &&
-                (row_border_bottom = tf.borders.bottom_line)
+                role = _horizontal_line_after_row(
+                    lines, table_data, rs, rs, footnote_row ? ps.i : 0
+                )
+
+                (role != :none) && (row_border_bottom = getfield(tf.borders, role))
+
+            elseif rs != :table_header
+                if _html__row_owns_line_above(prev_rs, rs)
+                    # `i` is only used if the row above is a data row, in which case it is
+                    # the row before this one.
+                    role = _horizontal_line_after_row(
+                        lines, table_data, prev_rs, rs, ps.i - 1
+                    )
+
+                    (role != :none) && (row_border_top = getfield(tf.borders, role))
+                end
+
+                next_rs = _next_row_section(table_data, rs, ps.i)
+
+                if !_html__row_owns_line_above(rs, next_rs)
+                    role = _horizontal_line_after_row(lines, table_data, rs, next_rs, ps.i)
+                    (role != :none) && (row_border_bottom = getfield(tf.borders, role))
+                end
+            end
 
             prev_rs = rs
 
@@ -575,7 +526,7 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
                 # not need to push it. This border must be pushed before any other
                 # decoration so that the latter can override it.
                 (
-                    tf.horizontal_line_at_merged_column_labels &&
+                    lines.horizontal_line_at_merged_column_labels &&
                     (tf.borders.merged_header_cell_line != row_border_bottom)
                 ) && push!(vstyle, "border-bottom" => tf.borders.merged_header_cell_line)
 

@@ -178,7 +178,8 @@ end
         @test count("border-bottom: 2px solid black", output) == 1
         @test !occursin("border-bottom: 1px solid black", output)
 
-        # With summary rows, the line after the data rows is an internal line.
+        # With summary rows, the line after the data rows is an internal line. Notice that
+        # it is emitted as the top border of the first summary row, which owns it.
         output = pretty_table(
             String,
             matrix;
@@ -186,8 +187,8 @@ end
             summary_rows = [(data, i) -> sum(data[:, i])],
             table_format = HtmlTableFormat(; horizontal_line_after_data_rows = true),
         )
-        @test count("border-bottom: 1px solid black", output) == 1
-        @test !occursin("border-bottom: 2px solid black", output)
+        @test count("border-top: 1px solid black", output) == 1
+        @test !occursin("border-bottom", output)
 
         # The lines at data rows are always internal. As in the other back ends, the line
         # after the last data row is only controlled by `horizontal_line_after_data_rows`.
@@ -259,13 +260,24 @@ end
     end
 
     @testset "Horizontal Lines at Data Rows" begin
-        on  = _render_lines("dataRow"; horizontal_lines_at_data_rows = [1])
+        on  = _render_lines("dataRow"; horizontal_lines_at_data_rows = [2])
         off = _render_lines("dataRow")
-        @test occursin("border-bottom: 1px solid black", first(on))
         @test all(l -> !occursin("border-bottom", l), off)
+
+        # The first data row is followed by the row group label, which owns the line between
+        # them. Hence, the line after the second data row is emitted as its bottom border.
+        @test !occursin("border", first(on))
+        on = _render_lines("dataRow\" style"; horizontal_lines_at_data_rows = [2])
+        @test occursin("border-bottom: 1px solid black", first(on))
 
         # The cells never carry the horizontal lines of the row.
         @test all(l -> !occursin("border-", l), on[2:(end - 1)])
+
+        # The line after the first data row is emitted as the top border of the row group
+        # label.
+        on = _render_lines("rowGroupLabel"; horizontal_lines_at_data_rows = [1])
+        @test occursin("border-top: 1px solid black", first(on))
+        @test !occursin("border-bottom", first(on))
     end
 
     @testset "Horizontal Lines Around the Row Group Label" begin
@@ -523,7 +535,7 @@ end
       <td style = "text-align: right;">1<sup>1</sup></td>
       <td style = "text-align: right;">2</td>
     </tr>
-    <tr class = "dataRow" style = "border-bottom: 1px solid black;">
+    <tr class = "dataRow">
       <td class = "rowLabel" style = "font-weight: bold; text-align: right;"></td>
       <td style = "text-align: right;">3</td>
       <td style = "text-align: right;">4</td>
@@ -695,4 +707,107 @@ end
 
     @test occursin("<table>", output)
     @test !occursin("border", output)
+end
+
+@testset "Shared Line Rules" verbose = true begin
+    @testset "Line Before the Ruled Area With Hidden Column Labels" begin
+        # The line before the column labels is the line between the table header and the
+        # ruled area. Hence, it is drawn before the first data row if the column labels are
+        # hidden.
+        output = pretty_table(
+            String,
+            [1 2; 3 4];
+            backend = :html,
+            title = "Title",
+            show_column_labels = false,
+            table_format = HtmlTableFormat(; horizontal_line_before_column_labels = true),
+        )
+
+        lines = split(output, '\n')
+        i = findfirst(l -> occursin("dataRow", l), lines)
+        @test occursin("border-top: 2px solid black", lines[i])
+        @test count("border-top", output) == 1
+    end
+
+    @testset "Line After the Last Printed Data Column" begin
+        # The line after the last printed data column is only controlled by
+        # `vertical_line_after_data_columns`, even if the table is horizontally cropped.
+        output = pretty_table(
+            String,
+            [1 2 3; 4 5 6];
+            backend = :html,
+            maximum_number_of_columns = 2,
+            table_format = HtmlTableFormat(;
+                vertical_lines_at_data_columns = :all,
+                vertical_line_after_data_columns = false,
+            ),
+        )
+
+        @test occursin(
+            """
+              <colgroup>
+                <col style = "border-right: 1px solid black;">
+                <col>
+                <col>
+              </colgroup>
+            """,
+            output,
+        )
+
+        output = pretty_table(
+            String,
+            [1 2 3; 4 5 6];
+            backend = :html,
+            maximum_number_of_columns = 2,
+            table_format = HtmlTableFormat(;
+                vertical_lines_at_data_columns = :none,
+                vertical_line_after_data_columns = true,
+            ),
+        )
+
+        @test occursin(
+            """
+              <colgroup>
+                <col>
+                <col style = "border-right: 1px solid black;">
+                <col>
+              </colgroup>
+            """,
+            output,
+        )
+    end
+
+    @testset "Line After the Continuation Row in the Middle Cropping" begin
+        # The line above the first row printed after the continuation row is the line after
+        # the data row before it, which is emitted as the top border of that row.
+        output = pretty_table(
+            String,
+            [i for i in 1:10, j in 1:2];
+            backend = :html,
+            maximum_number_of_rows = 4,
+            vertical_crop_mode = :middle,
+            table_format = HtmlTableFormat(; horizontal_lines_at_data_rows = :all),
+        )
+
+        lines = split(output, '\n')
+        i = findfirst(l -> occursin("&vellip;", l), lines) - 1
+        @test lines[i] == "    <tr>"
+        @test occursin(
+            "<tr class = \"dataRow\" style = \"border-top: 1px solid black; border-bottom: 1px solid black;\">",
+            lines[i + 4],
+        )
+
+        output = pretty_table(
+            String,
+            [i for i in 1:10, j in 1:2];
+            backend = :html,
+            maximum_number_of_rows = 4,
+            vertical_crop_mode = :middle,
+            table_format = HtmlTableFormat(; horizontal_lines_at_data_rows = [2]),
+        )
+
+        # Only the line after the second data row, before the continuation row, is drawn.
+        @test count("border-bottom", output) == 1
+        @test !occursin("border-top", output)
+    end
 end

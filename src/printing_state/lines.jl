@@ -173,7 +173,8 @@ row below), but each line must be emitted only once.
     is `:continuation_row` and `next_rs` is `:data`, which happens in the middle cropping,
     since the line above the first row printed after the continuation row is the line after
     that data row;
-- the footnote index if `rs` is `:table_footer`.
+- the footnote index if `rs` is `:table_footer` and the row is a footnote, or 0 if it is
+    the source notes.
 
 It is ignored otherwise. Notice that the index in the printing state after the `:end_row`
 action of a row has these values.

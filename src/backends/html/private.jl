@@ -222,170 +222,56 @@ end
 # == Table Borders =========================================================================
 
 """
-    _html__has_any_table_line(tf::HtmlTableFormat) -> Bool
+    _html__row_owns_line_above(prev_rs::Symbol, rs::Symbol) -> Bool
 
-Return whether the table format `tf` draws at least one horizontal or vertical line. If it
-does not, the table must be emitted without any border decoration, including the
-`border-collapse` style in the `<table>` element.
+Return whether the row of section `rs` owns the horizontal line between it and the previous
+row, whose section is `prev_rs`, meaning that the line is emitted as its top border. The
+line is owned by the row below if it is a row group label, the first summary row, the first
+row of the ruled area after the table header (title and subtitle), or a data row after the
+continuation row. Otherwise, the line is emitted as the bottom border of the row above.
+The rows of the table header and footer never own the line above them.
+
+The line above a data row after the continuation row must be owned by that row because, in
+the middle cropping, it is the line after the data row before it, which is only known when
+that row is reached.
 """
-function _html__has_any_table_line(tf::HtmlTableFormat)
-    return tf.horizontal_line_at_beginning ||
-           tf.horizontal_line_before_column_labels ||
-           tf.horizontal_line_after_column_labels ||
-           tf.horizontal_line_at_merged_column_labels ||
-           _html__has_lines(tf.horizontal_lines_at_data_rows) ||
-           tf.horizontal_line_before_row_group_label ||
-           tf.horizontal_line_after_row_group_label ||
-           tf.horizontal_line_after_data_rows ||
-           tf.horizontal_line_before_summary_rows ||
-           tf.horizontal_line_after_summary_rows ||
-           tf.horizontal_line_after_footnotes ||
-           tf.horizontal_line_at_end ||
-           tf.vertical_line_at_beginning ||
-           tf.vertical_line_after_row_number_column ||
-           tf.vertical_line_after_row_label_column ||
-           _html__has_lines(tf.vertical_lines_at_data_columns) ||
-           tf.vertical_line_after_data_columns ||
-           tf.vertical_line_after_continuation_column
-end
+function _html__row_owns_line_above(prev_rs::Symbol, rs::Symbol)
+    (rs ∈ (:table_header, :table_footer)) && return false
 
-# Return whether the field `lines` (`horizontal_lines_at_data_rows` or
-# `vertical_lines_at_data_columns`) selects at least one line. Notice that any symbol other
-# than `:all` selects no lines, and neither does an empty vector.
-_html__has_lines(lines::Symbol) = lines == :all
-_html__has_lines(lines::Vector{Int}) = !isempty(lines)
-
-"""
-    _html__is_last_data_section_row(rs::Symbol, ps::PrintingTableState, table_data::TableData) -> Bool
-
-Return whether the row of section `rs` (`:data` or `:continuation_row`) being opened in the
-printing state `ps` is the last row of the data section. It is the last data row, or the
-continuation row if the table is bottom cropped. A middle-cropped table with at most one
-printed data row also ends with the continuation row.
-
-!!! note
-
-    These conditions must mirror the ones the printing state iterator uses to leave the
-    data section.
-"""
-function _html__is_last_data_section_row(
-    rs::Symbol, ps::PrintingTableState, table_data::TableData
-)
-    if rs == :data
-        return ps.i == table_data.num_rows
-    elseif rs == :continuation_row
-        return (table_data.vertical_crop_mode == :bottom) ||
-               (table_data.maximum_number_of_rows <= 1)
-    end
-
-    return false
+    return (rs == :row_group_label) ||
+           ((rs == :summary_row) && (prev_rs != :summary_row)) ||
+           (prev_rs == :table_header) ||
+           ((prev_rs == :continuation_row) && (rs == :data))
 end
 
 """
-    _html__is_last_ruled_row(rs::Symbol, ps::PrintingTableState, table_data::TableData, num_column_label_rows::Int) -> Bool
-
-Return whether the row of section `rs` being opened in the printing state `ps` is the last
-row of the ruled area, i.e. the last row before the footnotes and source notes. It is the
-last summary row, the last row of the data section if the table has no summary rows (see
-`_html__is_last_data_section_row`), or the last column label row if the table has
-neither data nor summary rows.
-
-!!! note
-
-    These conditions must mirror the ones the printing state iterator uses to move to the
-    table footer.
-"""
-function _html__is_last_ruled_row(
-    rs::Symbol, ps::PrintingTableState, table_data::TableData, num_column_label_rows::Int
-)
-    if _has_summary_rows(table_data)
-        return (rs == :summary_row) && (ps.i == length(table_data.summary_rows))
-    elseif rs ∈ (:data, :continuation_row)
-        return _html__is_last_data_section_row(rs, ps, table_data)
-    elseif rs == :column_labels
-        return (ps.i == num_column_label_rows) && (table_data.num_rows == 0)
-    end
-
-    return false
-end
-
-"""
-    _html__column_borders(
-        tf::HtmlTableFormat,
-        table_data::TableData,
-        vertical_lines_at_data_columns::_LineIndices,
-        num_printed_data_columns::Int,
-        horizontally_cropped::Bool
-    ) -> Vector{String}
+    _html__column_borders(tf::HtmlTableFormat, lines::TableLines, table_data::TableData) -> Vector{String}
 
 Return the border at the right of each printed column (the row number column, the row label
 column, the data columns, and the continuation column, in this order), or an empty string
-for the columns without a vertical line after them. `vertical_lines_at_data_columns` must
-be the processed version of the homonym field of `tf`.
+for the columns without a vertical line after them.
 """
 function _html__column_borders(
-    tf::HtmlTableFormat,
-    table_data::TableData,
-    vertical_lines_at_data_columns::_LineIndices,
-    num_printed_data_columns::Int,
-    horizontally_cropped::Bool,
+    tf::HtmlTableFormat, lines::TableLines, table_data::TableData
 )
     borders = String[]
 
-    table_data.show_row_number_column && push!(
-        borders, tf.vertical_line_after_row_number_column ? tf.borders.center_line : ""
-    )
-
-    _has_row_labels(table_data) && push!(
-        borders, tf.vertical_line_after_row_label_column ? tf.borders.center_line : ""
-    )
-
-    for j in 1:num_printed_data_columns
-        push!(
-            borders,
-            _html__vertical_line_after_data_column(
-                tf,
-                j,
-                vertical_lines_at_data_columns,
-                num_printed_data_columns,
-                horizontally_cropped,
-            ),
-        )
+    _border(column, j = 0) = begin
+        role = _vertical_line_after_column(lines, table_data, column, j)
+        return role == :none ? "" : getfield(tf.borders, role)::String
     end
 
-    horizontally_cropped && push!(
-        borders, tf.vertical_line_after_continuation_column ? tf.borders.right_line : ""
-    )
+    table_data.show_row_number_column && push!(borders, _border(:row_number))
+
+    _has_row_labels(table_data) && push!(borders, _border(:row_label))
+
+    for j in 1:_number_of_printed_data_columns(table_data)
+        push!(borders, _border(:data, j))
+    end
+
+    _is_horizontally_cropped(table_data) && push!(borders, _border(:continuation))
 
     return borders
-end
-
-"""
-    _html__vertical_line_after_data_column(tf::HtmlTableFormat, j::Int, vertical_lines_at_data_columns::_LineIndices, num_printed_data_columns::Int, horizontally_cropped::Bool) -> String
-
-Return the border at the right of the data column `j`, or an empty string if the table
-format `tf` defines no vertical line at this position. `vertical_lines_at_data_columns`
-must be the processed version of the homonym field of `tf`.
-"""
-function _html__vertical_line_after_data_column(
-    tf::HtmlTableFormat,
-    j::Int,
-    vertical_lines_at_data_columns::_LineIndices,
-    num_printed_data_columns::Int,
-    horizontally_cropped::Bool,
-)
-    if j < num_printed_data_columns
-        (j ∈ vertical_lines_at_data_columns) && return tf.borders.center_line
-    elseif horizontally_cropped
-        # If the table is horizontally cropped, the continuation column is at the right of
-        # the last printed data column. Hence, the line here is an internal one.
-        (tf.vertical_line_after_data_columns || (j ∈ vertical_lines_at_data_columns)) &&
-            return tf.borders.center_line
-    elseif tf.vertical_line_after_data_columns
-        return tf.borders.right_line
-    end
-
-    return ""
 end
 
 # == Tags ==================================================================================
