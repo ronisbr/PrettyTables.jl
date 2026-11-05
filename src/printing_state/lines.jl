@@ -7,6 +7,19 @@
 ############################################################################################
 
 """
+    _line_spec_indices(spec::Union{Symbol, Vector{Int}}, n::Int) -> _LineIndices
+
+Convert the specification `spec` of the lines at the column label rows, data rows, or data
+columns in a table format, which can be `:all`, `:none`, or a vector with the indices, to
+the indices of the rows or columns after which a line must be drawn, considering that there
+are `n` of them.
+"""
+function _line_spec_indices(spec::Union{Symbol, Vector{Int}}, n::Int)
+    spec isa Vector{Int} && return _LineIndices(false, n, spec)
+    return _LineIndices(spec == :all, n, Int[])
+end
+
+"""
     TableLines(tf, table_data::TableData) -> TableLines
 
 Resolve the line presence of the back end table format `tf` for `table_data`. `tf` must
