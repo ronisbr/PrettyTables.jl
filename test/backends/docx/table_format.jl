@@ -142,12 +142,14 @@ end
     @test all(c -> docx_border_size(c, :top) == 2, docx_cells(table, 3))
     @test all(c -> docx_border_size(c, :bottom) == 3, docx_cells(table, 3))
 
-    # Vertical lines in every content row that is not a row group label.
+    # Vertical lines in every content row that is not a row group label. Notice that the
+    # lines after the data columns use the center line design, like the line after the row
+    # label column.
     for row in (3, 4, 5, 7, 8)
         @test docx_border_size(docx_cell(table, row, 1), :start) == 9
         @test docx_border_size(docx_cell(table, row, 1), :stop) == 10
-        @test docx_border_size(docx_cell(table, row, 2), :stop) == 6
-        @test docx_border_size(docx_cell(table, row, 3), :stop) == 6
+        @test docx_border_size(docx_cell(table, row, 2), :stop) == 10
+        @test docx_border_size(docx_cell(table, row, 3), :stop) == 10
         @test docx_border_size(docx_cell(table, row, 4), :stop) == 11
     end
 
@@ -287,7 +289,8 @@ end
     @test docx_border(docx_cell(table, 3, 1), :top) === nothing
     @test docx_border(docx_cell(table, 3, 1), :bottom) === nothing
 
-    # The lines after the data rows are still drawn before the row group label.
+    # The lines after the data rows are still drawn before the row group label. Notice that
+    # the line before a row group label is always its top border.
     table = pretty_table(
         W.Table,
         matrix;
@@ -298,7 +301,59 @@ end
         ),
     )
 
-    @test docx_border_size(docx_cell(table, 2, 1), :bottom) == 4
+    @test docx_border(docx_cell(table, 2, 1), :bottom) === nothing
+    @test docx_border_size(docx_cell(table, 3, 1), :top) == 4
+end
+
+@testset "Shared Line Rules" verbose = true begin
+    @testset "Line After the Last Printed Data Column" begin
+        # The line after the last printed data column is only controlled by
+        # `vertical_line_after_data_columns`, even if the table is horizontally cropped.
+        table = pretty_table(
+            W.Table,
+            [1 2 3; 4 5 6];
+            maximum_number_of_columns = 2,
+            table_format = DocxTableFormat(;
+                vertical_lines_at_data_columns = :all,
+                vertical_line_after_data_columns = false,
+                borders = DocxTableBorders(;
+                    center_line = ["size" => "5"], right_line = ["size" => "7"]
+                ),
+            ),
+        )
+
+        @test docx_border_size(docx_cell(table, 2, 1), :stop) == 5
+        @test docx_border(docx_cell(table, 2, 2), :stop) === nothing
+        @test docx_border_size(docx_cell(table, 2, 3), :stop) == 7
+    end
+
+    @testset "Table Without Data Rows" begin
+        # The line after the column labels ends the ruled area. Hence, it uses the bottom
+        # line design and it does not depend on `horizontal_line_after_data_rows`.
+        borders = DocxTableBorders(;
+            header_line = ["size" => "3"], bottom_line = ["size" => "7"]
+        )
+
+        table = pretty_table(
+            W.Table,
+            Matrix{Int}(undef, 0, 2);
+            table_format = DocxTableFormat(;
+                horizontal_line_after_data_rows = false, borders
+            ),
+        )
+
+        @test docx_border_size(docx_cell(table, 1, 1), :bottom) == 7
+
+        table = pretty_table(
+            W.Table,
+            Matrix{Int}(undef, 0, 2);
+            table_format = DocxTableFormat(;
+                horizontal_line_after_column_labels = false, borders
+            ),
+        )
+
+        @test docx_border(docx_cell(table, 1, 1), :bottom) === nothing
+    end
 end
 
 @testset "Backend-Agnostic Table Format" verbose = true begin

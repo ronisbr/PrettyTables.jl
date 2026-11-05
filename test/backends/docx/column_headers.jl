@@ -127,8 +127,9 @@
     @testset "Between-Header Borders on Row-Number and Stubhead Columns" verbose = true begin
         # When `horizontal_line_between_column_labels` is enabled and the header spans three
         # or more rows, the row-number column and the row-label column (a stubhead when row
-        # labels are also requested) must each receive a thin bottom border on every row
-        # except the last header row, mirroring the behavior of the column-label cells.
+        # labels are also requested) must each receive a bottom border with the header line
+        # design on every row except the last header row, mirroring the behavior of the
+        # column-label cells.
         column_labels = [["A", "B", "C", "D"], ["a", "b", "c", "d"], ["x", "y", "z", "w"]]
         table_format  = DocxTableFormat(; horizontal_line_between_column_labels = true)
 
@@ -137,7 +138,7 @@
         )
 
         for row in 1:2, col in 1:5
-            @test docx_border_size(docx_cell(table, row, col), :bottom) == 4
+            @test docx_border_size(docx_cell(table, row, col), :bottom) == 8
         end
 
         @test docx_border_size(docx_cell(table, 3, 1), :bottom) == 8
@@ -147,7 +148,7 @@
         )
 
         for row in 1:2
-            @test docx_border_size(docx_cell(table, row, 1), :bottom) == 4
+            @test docx_border_size(docx_cell(table, row, 1), :bottom) == 8
         end
 
         @test docx_border_size(docx_cell(table, 3, 1), :bottom) == 8

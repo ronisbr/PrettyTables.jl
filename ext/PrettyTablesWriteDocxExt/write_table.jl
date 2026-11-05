@@ -115,17 +115,18 @@ function _docx__render_table_core(pspec::PrintingSpec, opts::DocxPrintOptions)
 
     # == Iterator Setup ====================================================================
 
-    # Preprocess the `Union{Symbol, Vector{Int}}` fields into concrete index iterables.
-    horizontal_lines_at_data_rows = _line_spec_indices(
-        table_format.horizontal_lines_at_data_rows, table_data.num_rows
-    )
-
-    vertical_lines_at_data_columns = _line_spec_indices(
-        table_format.vertical_lines_at_data_columns, table_data.num_columns
-    )
+    # Resolve the lines of the table.
+    lines = TableLines(table_format, table_data)
 
     ps     = PrintingTableState()
     action = :initialize
+
+    # Row section of the previous row, required to select the line above the first row of
+    # the ruled area and above a row group label.
+    prev_rs = :none
+
+    # Line drawn after the unmerged cells of the current column label row, if any.
+    column_label_row_line = :none
 
     rows = DocxRow[]
 
@@ -144,7 +145,7 @@ function _docx__render_table_core(pspec::PrintingSpec, opts::DocxPrintOptions)
         action == :end_printing && break
 
         if action == :new_row
-            row = DocxRow(rs ∉ (:table_header, :table_footer))
+            row = DocxRow()
 
             # Word repeats the header rows after every page break. Notice that they must
             # form an uninterrupted run from the first row of the table. Hence, the
@@ -152,6 +153,15 @@ function _docx__render_table_core(pspec::PrintingSpec, opts::DocxPrintOptions)
             row.header =
                 table_format.repeat_header_rows_at_page_breaks &&
                 rs ∈ (:table_header, :column_labels)
+
+            # The line between two column label rows is drawn as the bottom border of each
+            # unmerged cell, since the merged cells have their own line.
+            column_label_row_line =
+                if (rs == :column_labels) && (ps.i < length(table_data.column_labels))
+                    _horizontal_line_after_row(lines, table_data, rs, rs, ps.i)
+                else
+                    :none
+                end
 
             push!(rows, row)
             jr = 0
@@ -166,39 +176,42 @@ function _docx__render_table_core(pspec::PrintingSpec, opts::DocxPrintOptions)
             # a full run of the printing state iterator and only this branch consumes it.
             _, next_rs, _ = _next(ps, table_data)
 
-            if rs == :column_labels
-                (next_rs != :column_labels) &&
-                    table_format.horizontal_line_after_column_labels &&
-                    _docx__set_bottom!(row, borders.header_line)
+            # The lines are only drawn in the ruled area, which excludes the title, the
+            # subtitle, the footnotes, and the source notes.
+            if (rs ∉ (:table_header, :table_footer)) && !isempty(row.cells)
+                # The line above the row is its top border if it is the first row of the
+                # ruled area or a row group label, since the label does not end the data
+                # section. Otherwise, the line above the row is the bottom border of the row
+                # above it. Notice that the row index is only used if the row above is a data
+                # row, in which case it is the row before this one.
+                if (prev_rs ∈ (:none, :table_header)) || (rs == :row_group_label)
+                    role = _horizontal_line_after_row(
+                        lines, table_data, prev_rs, rs, ps.i - 1
+                    )
 
-            elseif rs ∈ (:data, :continuation_row)
-                # Notice that a row group label does not end the data section. Hence, the
-                # line before it is controlled only by `horizontal_lines_at_data_rows` and
-                # `horizontal_line_before_row_group_label`, as in the text back end.
-                if next_rs ∉ (:data, :continuation_row, :row_group_label)
-                    (
-                        table_format.horizontal_line_after_data_rows || (
-                            (next_rs == :summary_row) &&
-                            table_format.horizontal_line_before_summary_rows
-                        )
-                    ) && _docx__set_bottom!(row, borders.middle_line)
-
-                elseif ps.i ∈ horizontal_lines_at_data_rows
-                    _docx__set_bottom!(row, borders.middle_line)
+                    (role != :none) && _docx__set_top!(row, getfield(borders, role))
                 end
 
-            elseif rs == :summary_row
-                (next_rs != :summary_row) &&
-                    table_format.horizontal_line_after_summary_rows &&
-                    _docx__set_bottom!(row, borders.bottom_line)
+                # The line after the row is its bottom border, unless the next row is a row
+                # group label.
+                if next_rs != :row_group_label
+                    role = _horizontal_line_after_row(lines, table_data, rs, next_rs, ps.i)
+                    (role != :none) && _docx__set_bottom!(row, getfield(borders, role))
+                end
 
-            elseif rs == :row_group_label
-                table_format.horizontal_line_before_row_group_label &&
-                    _docx__set_top!(row, borders.middle_line)
+                # The vertical line at the left edge of the table. Notice that the one at the
+                # right edge is the right border of the last cell of the row, which was set
+                # when the cell was created, except for the row group labels.
+                lines.vertical_line_at_beginning &&
+                    (first(row.cells).left = borders.left_line)
 
-                table_format.horizontal_line_after_row_group_label &&
-                    _docx__set_bottom!(row, borders.middle_line)
+                if rs == :row_group_label
+                    role = _vertical_line_after_column(lines, table_data, :last)
+                    (role != :none) && (last(row.cells).right = getfield(borders, role))
+                end
             end
+
+            prev_rs = rs
 
             continue
         end
@@ -276,24 +289,17 @@ function _docx__render_table_core(pspec::PrintingSpec, opts::DocxPrintOptions)
                     runs, table_cell.alignment, :bottom, cell_style; gridspan = span
                 )
 
-                table_format.horizontal_line_at_merged_column_labels &&
+                lines.horizontal_line_at_merged_column_labels &&
                     (cell.bottom = borders.merged_header_cell_line)
 
                 push!(row.cells, cell)
 
                 # We draw the vertical line here because we have access to the actual span
                 # of the merged cell.
-                last_merged_col = ps.j + span - 1
-
-                if last_merged_col == num_printed_data_cols
-                    # If we do not have a continuation column, we are in the last column.
-                    # The right border in this case is drawn at the end.
-                    (table_format.vertical_line_after_data_columns && has_cont_column) &&
-                        (cell.right = borders.middle_line)
-
-                elseif last_merged_col ∈ vertical_lines_at_data_columns
-                    cell.right = borders.middle_line
-                end
+                role = _vertical_line_after_column(
+                    lines, table_data, :data, ps.j + span - 1
+                )
+                (role != :none) && (cell.right = getfield(borders, role))
 
                 continue
 
@@ -367,91 +373,52 @@ function _docx__render_table_core(pspec::PrintingSpec, opts::DocxPrintOptions)
                     max_col_length[jr], _docx__cell_width(cell, cell_padding)
                 )
 
-                if (action == :column_label) ||
-                    (action == :row_number_label) ||
-                    (action == :stubhead_label)
-                    (
-                        (ps.i < length(table_data.column_labels)) &&
-                        table_format.horizontal_line_between_column_labels
-                    ) && (cell.bottom = borders.middle_line)
-                end
+                (
+                    (column_label_row_line != :none) &&
+                    (action ∈ (:column_label, :row_number_label, :stubhead_label))
+                ) && (cell.bottom = getfield(borders, column_label_row_line))
             end
         end
 
         # == Vertical Lines ================================================================
 
+        # The vertical line after a cell is its right border. Notice that the merged column
+        # labels were handled above because their span is required, and that the row group
+        # labels are handled at the end of the row.
         cell = last(row.cells)
 
-        if action ∈ (
-            :row_number_label,
-            :row_number,
-            :row_number_vertical_continuation_cell,
-            :summary_row_number,
-        )
-            table_format.vertical_line_after_row_number_column &&
-                (cell.right = borders.center_line)
+        vline_role =
+            if action ∈ (
+                :row_number_label,
+                :row_number,
+                :row_number_vertical_continuation_cell,
+                :summary_row_number,
+            )
+                _vertical_line_after_column(lines, table_data, :row_number)
 
-        elseif action ∈ (
-            :stubhead_label,
-            :row_label,
-            :row_label_vertical_continuation_cell,
-            :summary_row_label,
-        )
-            table_format.vertical_line_after_row_label_column &&
-                (cell.right = borders.center_line)
+            elseif action ∈ (
+                :stubhead_label,
+                :row_label,
+                :row_label_vertical_continuation_cell,
+                :summary_row_label,
+            )
+                _vertical_line_after_column(lines, table_data, :row_label)
 
-        elseif action ∈
-            (:column_label, :data, :summary_row_cell, :vertical_continuation_cell)
-            if ps.j == num_printed_data_cols
-                # If we do not have a continuation column, we are in the last column. The
-                # right border in this case is drawn at the end.
-                (table_format.vertical_line_after_data_columns && has_cont_column) &&
-                    (cell.right = borders.middle_line)
+            elseif action ∈
+                (:column_label, :data, :summary_row_cell, :vertical_continuation_cell)
+                _vertical_line_after_column(lines, table_data, :data, ps.j)
 
-            elseif ps.j ∈ vertical_lines_at_data_columns
-                cell.right = borders.middle_line
+            elseif action ∈ (:horizontal_continuation_cell, :diagonal_continuation_cell)
+                _vertical_line_after_column(lines, table_data, :continuation)
+
+            else
+                :none
             end
-        end
+
+        (vline_role != :none) && (cell.right = getfield(borders, vline_role))
     end
 
     # == Post-Loop Operations ==============================================================
-
-    # The outer borders span only the content area, excluding the title, the subtitle, the
-    # footnotes, and the source notes.
-    content = findall(r -> r.content && !isempty(r.cells), rows)
-
-    if !isempty(content)
-        first_row = rows[first(content)]
-        last_row  = rows[last(content)]
-
-        table_format.horizontal_line_at_beginning &&
-            _docx__set_top!(first_row, borders.top_line)
-
-        # NOTE: The bottom rule must be an independent decision from the line at the
-        # beginning. It follows the flag of the last section that is actually printed.
-        draw_bottom_line = if _has_summary_rows(table_data)
-            table_format.horizontal_line_after_summary_rows
-        else
-            table_format.horizontal_line_after_data_rows
-        end
-
-        draw_bottom_line && _docx__set_bottom!(last_row, borders.bottom_line)
-
-        draw_right_line = if has_cont_column
-            table_format.vertical_line_after_continuation_column
-        else
-            table_format.vertical_line_after_data_columns
-        end
-
-        for i in content
-            cells = rows[i].cells
-
-            table_format.vertical_line_at_beginning &&
-                (first(cells).left = borders.left_line)
-
-            draw_right_line && (last(cells).right = borders.right_line)
-        end
-    end
 
     column_widths = Float64[
         _docx__get_col_width(

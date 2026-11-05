@@ -71,17 +71,15 @@ end
 """
     mutable struct DocxRow
 
-Row of the Word table being built. `content` is `false` for the rows of the table header and
-footer (title, subtitle, footnotes, and source notes), which are not enclosed by the outer
-borders of the table.
+Row of the Word table being built. `header` is `true` for the rows repeated after every page
+break.
 """
 mutable struct DocxRow
     cells::Vector{DocxCell}
-    content::Bool
     header::Bool
 end
 
-DocxRow(content::Bool) = DocxRow(DocxCell[], content, false)
+DocxRow() = DocxRow(DocxCell[], false)
 
 ############################################################################################
 #                                   Conversion Helpers                                     #
