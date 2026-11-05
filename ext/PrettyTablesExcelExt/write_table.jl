@@ -125,24 +125,19 @@ function _excel__write_table_core!(
 
     # == Iterator Setup ====================================================================
 
-    # Preprocess Union{Symbol,Vector{Int}} fields into concrete index iterables,
-    # mirroring the Typst backend's handling.
-    horizontal_lines_at_data_rows = _line_spec_indices(
-        table_format.horizontal_lines_at_data_rows, table_data.num_rows
-    )
-
-    vertical_lines_at_data_columns = _line_spec_indices(
-        table_format.vertical_lines_at_data_columns, table_data.num_columns
-    )
+    # Resolve the lines of the table.
+    lines   = TableLines(table_format, table_data)
+    borders = table_format.borders
 
     ps     = PrintingTableState()
     action = :initialize
 
-    has_cont_column = _is_horizontally_cropped(table_data)
+    # Row section of the previous row, required to select the line above the first row of
+    # the ruled area and above a row group label.
+    prev_rs = :none
 
-    # Tracking variables used for post-loop operations and section transitions.
-    first_content_row = 0 # .. Absolute sheet row of 1st row outside the title/subtitle sec.
-    last_written_row  = 0 # .................... Absolute sheet row of last data/summary row
+    # Line drawn after the unmerged cells of the current column label row, if any.
+    column_label_row_line = :none
 
     all_cols = (1 + anchor_col_offset):(num_printed_cols + anchor_col_offset)
 
@@ -173,11 +168,35 @@ function _excel__write_table_core!(
             # Ensure all cells in the row are non-empty before any merges.
             _excel__unempty_row!(sheet, ir + anchor_row_offset, all_cols)
 
-            # Track the first row outside the title/subtitle section so the post-loop
-            # outer-border logic can clamp the top of the content area accordingly.
-            if first_content_row == 0 && rs != :table_header
-                first_content_row = ir + anchor_row_offset
+            # The line at the beginning of the table and the vertical line at its left edge
+            # are only drawn in the ruled area, which excludes the title, the subtitle, the
+            # footnotes, and the source notes.
+            if rs ∉ (:table_header, :table_footer)
+                row_abs = ir + anchor_row_offset
+
+                # If this is the very first row of the ruled area, we must check if a
+                # horizontal line must be drawn before it.
+                if prev_rs ∈ (:none, :table_header)
+                    role = _horizontal_line_after_row(lines, table_data, prev_rs, rs, 0)
+
+                    (role != :none) && XLSX.setBorder(
+                        sheet, row_abs, all_cols; top = getfield(borders, role)
+                    )
+                end
+
+                lines.vertical_line_at_beginning && XLSX.setBorder(
+                    sheet, row_abs, first(all_cols); left = borders.left_line
+                )
             end
+
+            # The line between two column label rows is drawn as the bottom border of each
+            # unmerged cell, since the merged cells have their own line.
+            column_label_row_line =
+                if (rs == :column_labels) && (ps.i < length(table_data.column_labels))
+                    _horizontal_line_after_row(lines, table_data, rs, rs, ps.i)
+                else
+                    :none
+                end
 
         elseif action ∈ (
             :horizontal_continuation_cell,
@@ -213,86 +232,38 @@ function _excel__write_table_core!(
             # a full run of the printing state iterator and only this branch consumes it.
             _, next_rs, _ = _next(ps, table_data)
 
-            # Track the last row inside the content area so the post-loop outer-border
-            # logic works even when the table has no data rows at all. Notice that the
-            # footnotes and the source notes are outside the content area.
-            if rs ∉ (:table_header, :table_footer)
-                last_written_row = ir + anchor_row_offset
-            end
-
             # NOTE: The row height is set once for every row in the post-loop block, which
             # already has the final value. Setting it here as well doubled the work.
 
-            if rs == :column_labels && next_rs != :column_labels
-                if table_format.horizontal_line_after_column_labels
-                    XLSX.setBorder(
-                        sheet,
-                        ir + anchor_row_offset,
-                        all_cols;
-                        bottom = table_format.borders.header_line,
+            # == Horizontal Lines ==========================================================
+
+            if rs ∉ (:table_header, :table_footer)
+                row_abs = ir + anchor_row_offset
+
+                # The line before a row group label is its top border, since the label does
+                # not end the data section.
+                if rs == :row_group_label
+                    role = _horizontal_line_after_row(
+                        lines, table_data, prev_rs, rs, ps.i - 1
+                    )
+
+                    (role != :none) && XLSX.setBorder(
+                        sheet, row_abs, all_cols; top = getfield(borders, role)
                     )
                 end
 
-            elseif rs ∈ (:data, :continuation_row)
-                # Notice that a row group label does not end the data section. Hence, the
-                # line before it is controlled only by `horizontal_lines_at_data_rows` and
-                # `horizontal_line_before_row_group_label`, as in the text back end.
-                if next_rs ∉ (:data, :continuation_row, :row_group_label)
-                    table_format.horizontal_line_after_data_rows && XLSX.setBorder(
-                        sheet,
-                        ir + anchor_row_offset,
-                        all_cols;
-                        bottom = table_format.borders.middle_line,
-                    )
+                # The line after the row is its bottom border, unless the next row is a row
+                # group label.
+                if next_rs != :row_group_label
+                    role = _horizontal_line_after_row(lines, table_data, rs, next_rs, ps.i)
 
-                    (
-                        (next_rs == :summary_row) &&
-                        table_format.horizontal_line_before_summary_rows
-                    ) && XLSX.setBorder(
-                        sheet,
-                        ir + anchor_row_offset,
-                        all_cols;
-                        bottom = table_format.borders.middle_line,
-                    )
-
-                elseif (ps.i ∈ horizontal_lines_at_data_rows)
-                    XLSX.setBorder(
-                        sheet,
-                        ir + anchor_row_offset,
-                        all_cols;
-                        bottom = table_format.borders.middle_line,
-                    )
-                end
-
-            elseif rs == :summary_row
-                if next_rs != :summary_row
-                    table_format.horizontal_line_after_summary_rows && XLSX.setBorder(
-                        sheet,
-                        ir + anchor_row_offset,
-                        all_cols;
-                        bottom = table_format.borders.bottom_line,
-                    )
-                end
-
-            elseif rs == :row_group_label
-                if table_format.horizontal_line_before_row_group_label
-                    XLSX.setBorder(
-                        sheet,
-                        ir + anchor_row_offset,
-                        all_cols;
-                        top = table_format.borders.middle_line,
-                    )
-                end
-
-                if table_format.horizontal_line_after_row_group_label
-                    XLSX.setBorder(
-                        sheet,
-                        ir + anchor_row_offset,
-                        all_cols;
-                        bottom = table_format.borders.middle_line,
+                    (role != :none) && XLSX.setBorder(
+                        sheet, row_abs, all_cols; bottom = getfield(borders, role)
                     )
                 end
             end
+
+            prev_rs = rs
 
         else
             # == Cell Actions ==============================================================
@@ -376,38 +347,25 @@ function _excel__write_table_core!(
 
                 max_row_height[ir] = max(max_row_height[ir], row_height)
 
-                if table_format.horizontal_line_at_merged_column_labels
-                    XLSX.setBorder(
-                        sheet,
-                        sheet_row,
-                        sheet_col:(sheet_col + span - 1);
-                        bottom = table_format.borders.merged_header_cell_line,
-                    )
-                end
+                lines.horizontal_line_at_merged_column_labels && XLSX.setBorder(
+                    sheet,
+                    sheet_row,
+                    sheet_col:(sheet_col + span - 1);
+                    bottom = borders.merged_header_cell_line,
+                )
 
                 # We draw the vertical line here because we have access to the actual span
                 # of the merged cell.
-                last_merged_col = ps.j + span - 1
-                if (last_merged_col == num_printed_data_cols)
-                    # If we do not have a continuation column, we are in the last column.
-                    # The right border in this case is drawn at the end.
-                    table_format.vertical_line_after_data_columns &&
-                        has_cont_column &&
-                        XLSX.setBorder(
-                            sheet,
-                            sheet_row,
-                            sheet_col + span - 1;
-                            right = table_format.borders.middle_line,
-                        )
+                role = _vertical_line_after_column(
+                    lines, table_data, :data, ps.j + span - 1
+                )
 
-                elseif (last_merged_col ∈ vertical_lines_at_data_columns)
-                    XLSX.setBorder(
-                        sheet,
-                        sheet_row,
-                        sheet_col + span - 1;
-                        right = table_format.borders.middle_line,
-                    )
-                end
+                (role != :none) && XLSX.setBorder(
+                    sheet,
+                    sheet_row,
+                    sheet_col + span - 1;
+                    right = getfield(borders, role),
+                )
 
             else
                 # -- Other Cells -----------------------------------------------------------
@@ -433,30 +391,24 @@ function _excel__write_table_core!(
                     vertical_alignment = "bottom"
                     wrap = true
 
-                    if ps.i < length(table_data.column_labels) &&
-                        table_format.horizontal_line_between_column_labels
-                        XLSX.setBorder(
-                            sheet,
-                            sheet_row,
-                            sheet_col;
-                            bottom = table_format.borders.middle_line,
-                        )
-                    end
+                    (column_label_row_line != :none) && XLSX.setBorder(
+                        sheet,
+                        sheet_row,
+                        sheet_col;
+                        bottom = getfield(borders, column_label_row_line),
+                    )
 
                 elseif action == :row_number_label
                     cell_style = ps.i == 1 ? style.row_number_label : _EXCEL__NO_DECORATION
                     vertical_alignment = "bottom"
                     wrap = true
 
-                    if (ps.i < length(table_data.column_labels)) &&
-                        table_format.horizontal_line_between_column_labels
-                        XLSX.setBorder(
-                            sheet,
-                            sheet_row,
-                            sheet_col;
-                            bottom = table_format.borders.middle_line,
-                        )
-                    end
+                    (column_label_row_line != :none) && XLSX.setBorder(
+                        sheet,
+                        sheet_row,
+                        sheet_col;
+                        bottom = getfield(borders, column_label_row_line),
+                    )
 
                 elseif action ∈ (:row_number, :summary_row_number)
                     cell_style = style.row_number
@@ -468,15 +420,12 @@ function _excel__write_table_core!(
                     vertical_alignment = "bottom"
                     wrap = true
 
-                    if (ps.i < length(table_data.column_labels)) &&
-                        table_format.horizontal_line_between_column_labels
-                        XLSX.setBorder(
-                            sheet,
-                            sheet_row,
-                            sheet_col;
-                            bottom = table_format.borders.middle_line,
-                        )
-                    end
+                    (column_label_row_line != :none) && XLSX.setBorder(
+                        sheet,
+                        sheet_row,
+                        sheet_col;
+                        bottom = getfield(borders, column_label_row_line),
+                    )
 
                 elseif action == :row_label
                     cell_style = style.row_label
@@ -490,9 +439,9 @@ function _excel__write_table_core!(
 
                 elseif action == :data
                     cell_style = style.data_cell
-                    lines = _excel__text_lines(rendered_cell)
+                    text_lines = _excel__text_lines(rendered_cell)
                     vertical_alignment = "top"
-                    wrap = lines > 1
+                    wrap = text_lines > 1
 
                     for formatter in excel_formatters
                         # `:data` formatters match the data row index.
@@ -579,95 +528,53 @@ function _excel__write_table_core!(
 
         # == Vertical Lines ================================================================
 
-        if action ∈ (
-            :row_number_label,
-            :row_number,
-            :row_number_vertical_continuation_cell,
-            :summary_row_number,
-        )
-            table_format.vertical_line_after_row_number_column && XLSX.setBorder(
-                sheet, sheet_row, sheet_col; right = table_format.borders.center_line
+        # The vertical line after a cell is its right border. Notice that the merged column
+        # labels were handled above because their span is required, and that the cells of the
+        # table header and footer have no borders.
+        vline_role =
+            if action ∈ (
+                :row_number_label,
+                :row_number,
+                :row_number_vertical_continuation_cell,
+                :summary_row_number,
             )
+                _vertical_line_after_column(lines, table_data, :row_number)
 
-        elseif action ∈ (
-            :stubhead_label,
-            :row_label,
-            :row_label_vertical_continuation_cell,
-            :summary_row_label,
-        )
-            table_format.vertical_line_after_row_label_column && XLSX.setBorder(
-                sheet, sheet_row, sheet_col; right = table_format.borders.center_line
+            elseif action ∈ (
+                :stubhead_label,
+                :row_label,
+                :row_label_vertical_continuation_cell,
+                :summary_row_label,
             )
+                _vertical_line_after_column(lines, table_data, :row_label)
 
-        elseif action ∈
-            (:column_label, :data, :summary_row_cell, :vertical_continuation_cell)
-            if !(action == :column_label && cell isa MergeCells)
-                if (ps.j == num_printed_data_cols)
-                    # If we do not have a continuation column, we are in the last column.
-                    # The right border in this case is drawn at the end.
-                    table_format.vertical_line_after_data_columns &&
-                        has_cont_column &&
-                        XLSX.setBorder(
-                            sheet,
-                            sheet_row,
-                            sheet_col;
-                            right = table_format.borders.middle_line,
-                        )
+            elseif (
+                action ∈
+                (:column_label, :data, :summary_row_cell, :vertical_continuation_cell)
+            ) && !((action == :column_label) && (cell isa MergeCells))
+                _vertical_line_after_column(lines, table_data, :data, ps.j)
 
-                elseif (ps.j ∈ vertical_lines_at_data_columns)
-                    XLSX.setBorder(
-                        sheet,
-                        sheet_row,
-                        sheet_col;
-                        right = table_format.borders.middle_line,
-                    )
-                end
+            elseif action ∈ (:horizontal_continuation_cell, :diagonal_continuation_cell)
+                _vertical_line_after_column(lines, table_data, :continuation)
+
+            elseif action == :row_group_label
+                # The row group label spans the entire table. Hence, its right border is the
+                # line at the right edge of the table, drawn at the last column.
+                _vertical_line_after_column(lines, table_data, :last)
+
+            else
+                :none
             end
+
+        if vline_role != :none
+            vline_col = action == :row_group_label ? last(all_cols) : sheet_col
+            XLSX.setBorder(
+                sheet, sheet_row, vline_col; right = getfield(borders, vline_role)
+            )
         end
     end
 
     # == Post-Loop Operations ==============================================================
-
-    # Outer borders span only the content area (excludes title/subtitle and footnotes).
-    content_start = first_content_row > 0 ? first_content_row : 1 + anchor_row_offset
-    content_end = last_written_row > 0 ? last_written_row : ir + anchor_row_offset - 1
-    all_rows = content_start:content_end
-
-    # If the table has no content rows at all, we must not draw the outer borders.
-    has_content = content_end >= content_start
-
-    b = table_format.borders
-
-    if has_content && table_format.horizontal_line_at_beginning
-        XLSX.setBorder(sheet, content_start, all_cols; top = b.top_line)
-    end
-
-    # NOTE: The bottom rule must be an independent decision. It used to sit inside the block
-    # above, so turning off the line at the *beginning* of the table silently removed the
-    # line at its *end*. It follows the flag of the last section that is actually printed.
-    draw_bottom_line = if _has_summary_rows(table_data)
-        table_format.horizontal_line_after_summary_rows
-    else
-        table_format.horizontal_line_after_data_rows
-    end
-
-    if has_content && draw_bottom_line
-        XLSX.setBorder(sheet, content_end, all_cols; bottom = b.bottom_line)
-    end
-
-    if has_content && table_format.vertical_line_at_beginning
-        XLSX.setBorder(sheet, all_rows, first(all_cols); left = b.left_line)
-    end
-
-    if has_content
-        if _is_horizontally_cropped(table_data)
-            table_format.vertical_line_after_continuation_column &&
-                XLSX.setBorder(sheet, all_rows, last(all_cols); right = b.right_line)
-        else
-            table_format.vertical_line_after_data_columns &&
-                XLSX.setBorder(sheet, all_rows, last(all_cols); right = b.right_line)
-        end
-    end
 
     # Set column widths based on accumulated content lengths.
     for i in 1:num_printed_cols

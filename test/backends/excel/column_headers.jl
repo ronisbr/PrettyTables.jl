@@ -117,9 +117,9 @@
     @testset "Between-header borders on row-number and stubhead columns" verbose = true begin
         # When `horizontal_line_between_column_labels` is enabled and the header spans
         # three or more rows, the row-number column (shown here) and the row-label column
-        # (a stubhead when row labels are also requested) must each receive a \"thin\" bottom
-        # border on every row except the last header row, mirroring the behaviour of the
-        # column-label cells.
+        # (a stubhead when row labels are also requested) must each receive a bottom border
+        # with the header line design on every row except the last header row, mirroring
+        # the behaviour of the column-label cells.
         column_labels = [["A", "B", "C", "D"], ["a", "b", "c", "d"], ["x", "y", "z", "w"]]
 
         # With `show_row_number_column = true`, column A holds the row-number-label cells.
@@ -132,12 +132,13 @@
             table_format = ExcelTableFormat(; horizontal_line_between_column_labels = true),
         )
 
-        # A1 (first header row) and A2 (middle header row) must both carry a thin border
-        # underneath; A3 (last header row) gets the medium header-line border instead.
+        # A1 (first header row) and A2 (middle header row) must both carry a header-line
+        # border underneath, like A3 (last header row), which has the line after the column
+        # labels.
         for cell in ("A1", "A2")
             border = XLSX.getBorder(f[1], cell).border
             @test get(border, "bottom", nothing) ==
-                Dict("style" => "thin", "rgb" => "FF000000")
+                Dict("style" => "medium", "rgb" => "FF000000")
         end
         @test XLSX.getBorder(f[1], "A3").border["bottom"] ==
             Dict("style" => "medium", "rgb" => "FF000000")
@@ -145,7 +146,7 @@
         # not silently drawing the divider for the row-number column only.
         for cell in ("B2", "C2")
             @test XLSX.getBorder(f[1], cell).border["bottom"] ==
-                Dict("style" => "thin", "rgb" => "FF000000")
+                Dict("style" => "medium", "rgb" => "FF000000")
         end
 
         # With row labels, column A holds the stubhead-label cells instead. Same expectation.
@@ -159,7 +160,7 @@
         for cell in ("A1", "A2")
             border = XLSX.getBorder(g[1], cell).border
             @test get(border, "bottom", nothing) ==
-                Dict("style" => "thin", "rgb" => "FF000000")
+                Dict("style" => "medium", "rgb" => "FF000000")
         end
         @test XLSX.getBorder(g[1], "A3").border["bottom"] ==
             Dict("style" => "medium", "rgb" => "FF000000")

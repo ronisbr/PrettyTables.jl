@@ -199,7 +199,8 @@
         @test border_side("A3", "top") === nothing
         @test border_side("A3", "bottom") === nothing
 
-        # The lines after the selected data rows are still drawn.
+        # The lines after the selected data rows are still drawn. Notice that the line
+        # before a row group label is always its top border.
         result = pretty_table(
             XLSX.XLSXFile,
             [1 2; 3 4; 5 6];
@@ -210,7 +211,8 @@
             ),
         )
 
-        @test XLSX.getBorder(result[1], "A2").border["bottom"] ==
+        @test XLSX.getBorder(result[1], "A2").border["bottom"] === nothing
+        @test XLSX.getBorder(result[1], "A3").border["top"] ==
             Dict("style" => "thin", "rgb" => "FF000000")
     end
 
@@ -287,6 +289,81 @@
 
             @test XLSX.getBorder(r, "A1").border["right"] === nothing
             @test XLSX.getBorder(r, "B1").border["right"] === nothing
+        end
+    end
+
+    # == Shared Line Rules =================================================================
+
+    @testset "Shared Line Rules" verbose = true begin
+        @testset "Design of the Vertical Lines" begin
+            # The vertical lines after the data columns use the center line design, like the
+            # lines after the row number and row label columns.
+            result = pretty_table(
+                XLSX.XLSXFile,
+                [1 2 3; 4 5 6];
+                show_row_number_column = true,
+                table_format = ExcelTableFormat(;
+                    borders = ExcelTableBorders(;
+                        center_line = ["style" => "dashed", "color" => "red"],
+                        middle_line = ["style" => "dotted", "color" => "blue"],
+                    ),
+                ),
+            )
+
+            r = result[1]
+
+            for cell in ("A2", "B2", "C2")
+                @test XLSX.getBorder(r, cell).border["right"] ==
+                    Dict("style" => "dashed", "rgb" => "FFFF0000")
+            end
+
+            @test XLSX.getBorder(r, "D2").border["right"] ==
+                Dict("style" => "thick", "rgb" => "FF000000")
+        end
+
+        @testset "Line After the Last Printed Data Column" begin
+            # The line after the last printed data column is only controlled by
+            # `vertical_line_after_data_columns`, even if the table is horizontally cropped.
+            result = pretty_table(
+                XLSX.XLSXFile,
+                [1 2 3; 4 5 6];
+                maximum_number_of_columns = 2,
+                table_format = ExcelTableFormat(;
+                    vertical_lines_at_data_columns = :all,
+                    vertical_line_after_data_columns = false,
+                ),
+            )
+
+            r = result[1]
+
+            @test XLSX.getBorder(r, "A2").border["right"] ==
+                Dict("style" => "thin", "rgb" => "FF000000")
+            @test XLSX.getBorder(r, "B2").border["right"] === nothing
+            @test XLSX.getBorder(r, "C2").border["right"] ==
+                Dict("style" => "thick", "rgb" => "FF000000")
+        end
+
+        @testset "Table Without Data Rows" begin
+            # The line after the column labels ends the ruled area. Hence, it uses the bottom
+            # line design and it does not depend on `horizontal_line_after_data_rows`.
+            result = pretty_table(
+                XLSX.XLSXFile,
+                Matrix{Int}(undef, 0, 2);
+                table_format = ExcelTableFormat(; horizontal_line_after_data_rows = false),
+            )
+
+            @test XLSX.getBorder(result[1], "A1").border["bottom"] ==
+                Dict("style" => "thick", "rgb" => "FF000000")
+
+            result = pretty_table(
+                XLSX.XLSXFile,
+                Matrix{Int}(undef, 0, 2);
+                table_format = ExcelTableFormat(;
+                    horizontal_line_after_column_labels = false
+                ),
+            )
+
+            @test XLSX.getBorder(result[1], "A1").border["bottom"] === nothing
         end
     end
 end
