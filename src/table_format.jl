@@ -206,9 +206,9 @@ Each field below describes the design of one line role using a [`LineStyle`](@re
     at the beginning of the table.
     (**Default**: `nothing`)
 - `horizontal_line_before_column_labels::Union{Nothing, Bool}`: Whether to draw a
-    horizontal line before the column labels when the table has a title or subtitle. This
-    field is only honored by the HTML back end, which places the title inside the ruled
-    area.
+    horizontal line between the title or subtitle and the first row of the ruled area, which
+    is normally the column labels. This field is only honored by the HTML back end, which
+    places the title inside the ruled area.
     (**Default**: `nothing`)
 - `horizontal_line_after_column_labels::Union{Nothing, Bool}`: Whether to draw a horizontal
     line after the column labels.

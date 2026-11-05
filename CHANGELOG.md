@@ -1,6 +1,51 @@
 PrettyTables.jl Changelog
 =========================
 
+Version 3.6.0
+-------------
+
+- ![Enhancement][badge-enhancement] The table lines are now selected by a system shared by
+  all the back ends, which resolves the line presence fields of any table format once per
+  table and selects the line that must be drawn between two rows or after a column. Hence,
+  every back end draws the lines at the same places, and the following differences between
+  the back ends were fixed.
+- ![Bugfix][badge-bugfix] The line after the last printed data column is only controlled by
+  `vertical_line_after_data_columns` in every back end. The LaTeX and Typst back ends also
+  drew it when the column was in `vertical_lines_at_data_columns`, and the HTML back end did
+  the same when the table was horizontally cropped.
+- ![Bugfix][badge-bugfix] The Excel and Word back ends use the design `center_line` for the
+  vertical lines between the data columns, like the other back ends and like the lines after
+  the row number and row label columns. They used `middle_line`, which is the design of the
+  horizontal lines inside the table.
+- ![Bugfix][badge-bugfix] The lines between the column label rows, selected by
+  `horizontal_lines_at_column_labels` in the text back end and by
+  `horizontal_line_between_column_labels` in the Excel and Word back ends, use the design
+  `header_line` in every back end. The Excel and Word back ends used `middle_line`.
+- ![Bugfix][badge-bugfix] The line between the column labels and a row group label at the
+  first data row is the line after the column labels. Hence, the text back end draws it with
+  the design `header_line` instead of `middle_line`, like the other back ends. Moreover, the
+  LaTeX and Typst back ends draw it when `horizontal_line_after_column_labels` is `false`
+  and `horizontal_line_before_row_group_label` is `true`, like the other back ends.
+- ![Bugfix][badge-bugfix] In the middle cropping, the HTML, LaTeX, and Typst back ends draw
+  the line above the first row printed after the continuation row if the data row before it
+  is in `horizontal_lines_at_data_rows`, like the text, Excel, and Word back ends.
+- ![Bugfix][badge-bugfix] The bottom line of a table without data rows follows
+  `horizontal_line_after_column_labels` and uses the design `bottom_line` in the Excel and
+  Word back ends, like the other back ends. They followed `horizontal_line_after_data_rows`.
+- ![Bugfix][badge-bugfix] The text back end drew wrong intersections in the line before the
+  summary rows when `suppress_vertical_lines_at_column_labels` was `true` or when the last
+  column label row had merged cells.
+- ![Bugfix][badge-bugfix] The HTML back end draws the line selected by
+  `horizontal_line_before_column_labels` between the title or subtitle and the first row of
+  the ruled area even if the column labels are hidden.
+- ![Info][badge-info] The HTML back end emits each line between two rows only once: as the
+  top border of the row below if it is a row group label, the first summary row, or the
+  first row after the title and subtitle, and as the bottom border of the row above
+  otherwise. The rendered tables are unchanged because the collapsed borders merged the
+  borders that were emitted twice. Similarly, the Excel and Word back ends set the line
+  before a row group label as the top border of the label even if it is selected by
+  `horizontal_lines_at_data_rows`.
+
 Version 3.5.1
 -------------
 
