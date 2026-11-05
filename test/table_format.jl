@@ -587,3 +587,106 @@ end
     @test tf.horizontal_lines_at_column_labels == :none
     @test !tf.horizontal_line_at_merged_column_labels
 end
+
+# The line macros expand to a splatted named tuple built from the shared presence fields. We
+# check the exact keyword set of every macro, ignoring the order, so that a field cannot
+# silently disappear from a back end.
+@testset "Line Macro Keywords" begin
+    _kw(nt::NamedTuple) = Dict(pairs(nt))
+
+    horizontal_all = Dict(
+        :horizontal_line_at_beginning            => true,
+        :horizontal_line_after_column_labels     => true,
+        :horizontal_line_at_merged_column_labels => true,
+        :horizontal_lines_at_data_rows           => :all,
+        :horizontal_line_before_row_group_label  => true,
+        :horizontal_line_after_row_group_label   => true,
+        :horizontal_line_after_data_rows         => true,
+        :horizontal_line_before_summary_rows     => true,
+        :horizontal_line_after_summary_rows      => true,
+    )
+
+    horizontal_none = Dict(k => (v == :all ? :none : false) for (k, v) in horizontal_all)
+
+    vertical_all = Dict(
+        :vertical_line_at_beginning              => true,
+        :vertical_line_after_row_number_column   => true,
+        :vertical_line_after_row_label_column    => true,
+        :vertical_lines_at_data_columns          => :all,
+        :vertical_line_after_data_columns        => true,
+        :vertical_line_after_continuation_column => true,
+    )
+
+    vertical_none = Dict(k => (v == :all ? :none : false) for (k, v) in vertical_all)
+
+    html_all = Dict(
+        :horizontal_line_before_column_labels => true,
+        :horizontal_line_after_footnotes      => true,
+        :horizontal_line_at_end               => true,
+    )
+
+    html_none = Dict(k => false for k in keys(html_all))
+
+    # == Generic ===========================================================================
+
+    @test _kw((; @all_horizontal_lines)) == merge(horizontal_all, html_all)
+    @test _kw((; @no_horizontal_lines)) == merge(horizontal_none, html_none)
+    @test _kw((; @all_vertical_lines)) == vertical_all
+    @test _kw((; @no_vertical_lines)) == vertical_none
+
+    # == Text ==============================================================================
+
+    @test _kw((; @text__all_horizontal_lines)) ==
+        merge(horizontal_all, Dict(:horizontal_lines_at_column_labels => :all))
+    @test _kw((; @text__no_horizontal_lines)) ==
+        merge(horizontal_none, Dict(:horizontal_lines_at_column_labels => :none))
+    @test _kw((; @text__all_vertical_lines)) ==
+        merge(vertical_all, Dict(:suppress_vertical_lines_at_column_labels => false))
+    @test _kw((; @text__no_vertical_lines)) ==
+        merge(vertical_none, Dict(:suppress_vertical_lines_at_column_labels => true))
+
+    # == HTML ==============================================================================
+
+    @test _kw((; @html__all_horizontal_lines)) == merge(horizontal_all, html_all)
+    @test _kw((; @html__no_horizontal_lines)) == merge(horizontal_none, html_none)
+    @test _kw((; @html__all_vertical_lines)) == vertical_all
+    @test _kw((; @html__no_vertical_lines)) == vertical_none
+
+    # == LaTeX =============================================================================
+
+    @test _kw((; @latex__all_horizontal_lines)) == horizontal_all
+    @test _kw((; @latex__no_horizontal_lines)) == horizontal_none
+    @test _kw((; @latex__all_vertical_lines)) == vertical_all
+    @test _kw((; @latex__no_vertical_lines)) == vertical_none
+
+    # == Typst =============================================================================
+
+    @test _kw((; @typst__all_horizontal_lines)) == horizontal_all
+    @test _kw((; @typst__no_horizontal_lines)) == horizontal_none
+    @test _kw((; @typst__all_vertical_lines)) == vertical_all
+    @test _kw((; @typst__no_vertical_lines)) == vertical_none
+
+    # == Excel =============================================================================
+
+    @test _kw((; @excel__all_horizontal_lines)) ==
+        merge(horizontal_all, Dict(:horizontal_line_between_column_labels => true))
+    @test _kw((; @excel__no_horizontal_lines)) ==
+        merge(horizontal_none, Dict(:horizontal_line_between_column_labels => false))
+    @test _kw((; @excel__all_vertical_lines)) == vertical_all
+    @test _kw((; @excel__no_vertical_lines)) == vertical_none
+
+    # == Word ==============================================================================
+
+    @test _kw((; @docx__all_horizontal_lines)) ==
+        merge(horizontal_all, Dict(:horizontal_line_between_column_labels => true))
+    @test _kw((; @docx__no_horizontal_lines)) ==
+        merge(horizontal_none, Dict(:horizontal_line_between_column_labels => false))
+    @test _kw((; @docx__all_vertical_lines)) == vertical_all
+    @test _kw((; @docx__no_vertical_lines)) == vertical_none
+
+    # The keywords can be overridden by the ones that follow the macro.
+    tf = TextTableFormat(; @text__no_vertical_lines, vertical_line_at_beginning = true)
+    @test tf.vertical_line_at_beginning
+    @test tf.suppress_vertical_lines_at_column_labels
+    @test tf.vertical_lines_at_data_columns == :none
+end

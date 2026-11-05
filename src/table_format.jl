@@ -320,7 +320,8 @@ function _table_format_border(
 end
 
 # Line presence fields shared by every back end table format.
-const _TABLE_FORMAT_PRESENCE_FIELDS = (
+# Horizontal line presence fields shared by every back end table format.
+const _HORIZONTAL_LINE_PRESENCE_FIELDS = (
     :horizontal_line_at_beginning,
     :horizontal_line_after_column_labels,
     :horizontal_line_at_merged_column_labels,
@@ -330,12 +331,27 @@ const _TABLE_FORMAT_PRESENCE_FIELDS = (
     :horizontal_line_after_data_rows,
     :horizontal_line_before_summary_rows,
     :horizontal_line_after_summary_rows,
+)
+
+# Vertical line presence fields shared by every back end table format.
+const _VERTICAL_LINE_PRESENCE_FIELDS = (
     :vertical_line_at_beginning,
     :vertical_line_after_row_number_column,
     :vertical_line_after_row_label_column,
     :vertical_lines_at_data_columns,
     :vertical_line_after_data_columns,
     :vertical_line_after_continuation_column,
+)
+
+# Horizontal line presence fields that exist only in `TableFormat` and `HtmlTableFormat`.
+const _HTML_HORIZONTAL_LINE_PRESENCE_FIELDS = (
+    :horizontal_line_before_column_labels,
+    :horizontal_line_after_footnotes,
+    :horizontal_line_at_end,
+)
+
+const _TABLE_FORMAT_PRESENCE_FIELDS = (
+    _HORIZONTAL_LINE_PRESENCE_FIELDS..., _VERTICAL_LINE_PRESENCE_FIELDS...
 )
 
 """
