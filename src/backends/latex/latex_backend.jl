@@ -71,15 +71,13 @@ function _latex__print_core(pspec::PrintingSpec, opts::LatexPrintOptions)
     # Reusable render buffer: one allocation per table instead of three per cell.
     rctx = RenderContext(context)
 
-    # Process the horizontal lines at data rows.
-    horizontal_lines_at_data_rows = _line_spec_indices(
-        tf.horizontal_lines_at_data_rows, table_data.num_rows
-    )
+    # Resolve the lines of the table.
+    lines = TableLines(tf, table_data)
 
-    # Process the vertical lines at data columns.
-    vertical_lines_at_data_columns = _line_spec_indices(
-        tf.vertical_lines_at_data_columns, table_data.num_columns
-    )
+    # Row section before the first row of the ruled area, required to select the line at the
+    # beginning of the table.
+    header_rs =
+        (isempty(table_data.title) && isempty(table_data.subtitle)) ? :none : :table_header
 
     # Check the style variables.
     _check_column_label_styles(
@@ -97,7 +95,7 @@ function _latex__print_core(pspec::PrintingSpec, opts::LatexPrintOptions)
     # == Print LaTeX Header ================================================================
 
     # Create the table header description for the current table.
-    desc = _latex__table_header_description(table_data, tf, vertical_lines_at_data_columns)
+    desc = _latex__table_header_description(table_data, lines)
 
     _aprintln(buf, "\\begin{tabular}{$desc}", il, ns)
     il += 1
@@ -110,7 +108,7 @@ function _latex__print_core(pspec::PrintingSpec, opts::LatexPrintOptions)
 
     action = :initialize
 
-    first_table_line = true
+    top_line_printed     = false
     first_element_in_row = true
 
     # This variable stores where a merged column label begins and ends. Hence, we are able
@@ -130,11 +128,13 @@ function _latex__print_core(pspec::PrintingSpec, opts::LatexPrintOptions)
             empty!(merged_column_labels)
             first_element_in_row = true
 
-            # If we are in the very first row after the title section, we need to check if
-            # the user wants a horizontal line before the table.
-            if (rs != :table_header) && first_table_line && tf.horizontal_line_at_beginning
-                _aprintln(buf, tf.borders.top_line, il, ns)
-                first_table_line = false
+            # If this is the very first row of the ruled area, we must check if a horizontal
+            # line must be printed before it.
+            if (rs != :table_header) && !top_line_printed
+                top_line_printed = true
+
+                role = _horizontal_line_after_row(lines, table_data, header_rs, rs, 0)
+                (role != :none) && _aprintln(buf, getfield(tf.borders, role), il, ns)
             end
 
             # Here, we just need to apply the indentation.
@@ -152,26 +152,27 @@ function _latex__print_core(pspec::PrintingSpec, opts::LatexPrintOptions)
 
             hline_str = ""
 
-            if (rs == :column_labels) && (next_rs == :column_labels)
-                if tf.horizontal_line_at_merged_column_labels
-                    # The specification in `merged_column_labels` refers to the data
-                    # columns. Hence, we need to add the offset regarding the previous
-                    # columns if they exist.
+            # The line before the first row of the ruled area is drawn when that row begins.
+            if rs != :table_header
+                role = _horizontal_line_after_row(lines, table_data, rs, next_rs, ps.i)
+
+                if role != :none
+                    hline_str = getfield(tf.borders, role)
+
+                elseif (rs == :column_labels) &&
+                    (next_rs == :column_labels) &&
+                    lines.horizontal_line_at_merged_column_labels
+                    # If no line is drawn after this column label row, we must check if the
+                    # user wants lines under the merged column labels. The specification in
+                    # `merged_column_labels` refers to the data columns. Hence, we need to
+                    # add the offset regarding the previous columns if they exist.
                     Δc = table_data.show_row_number_column + _has_row_labels(table_data)
+
                     for m in merged_column_labels
                         c₀ = Δc + m[1]
                         c₁ = Δc + m[2]
                         hline_str *= "$(tf.borders.merged_header_cell_line){$c₀-$c₁}"
                     end
-                end
-            else
-                role = _horizontal_line_after_row(
-                    tf, rs, next_rs, ps.i, horizontal_lines_at_data_rows
-                )
-
-                if role != :none
-                    hline_str = getfield(tf.borders, role)
-                    first_table_line = false
                 end
             end
 
@@ -202,12 +203,8 @@ function _latex__print_core(pspec::PrintingSpec, opts::LatexPrintOptions)
             cs = _number_of_printed_columns(table_data)
 
             # Check for vertical lines.
-            vline_before = tf.vertical_line_at_beginning
-            vline_after  = if _is_horizontally_cropped(table_data)
-                tf.vertical_line_after_continuation_column
-            else
-                tf.vertical_line_after_data_columns
-            end
+            vline_before = lines.vertical_line_at_beginning
+            vline_after  = _vertical_line_after_column(lines, table_data, :last) != :none
 
             border₀ = vline_before ? "|" : ""
             border₁ = vline_after ? "|" : ""
@@ -257,8 +254,7 @@ function _latex__print_core(pspec::PrintingSpec, opts::LatexPrintOptions)
                     rendered_cell = "\\multicolumn{$cs}{@{}$alignment@{}}{$rendered_cell}"
 
                 elseif (action == :column_label) && (cell isa MergeCells)
-                    num_data_columns = _number_of_printed_data_columns(table_data)
-                    cs               = _merged_cell_span(table_data, cell, ps.j)
+                    cs = _merged_cell_span(table_data, cell, ps.j)
 
                     push!(merged_column_labels, (ps.j, ps.j + cs - 1))
 
@@ -266,10 +262,9 @@ function _latex__print_core(pspec::PrintingSpec, opts::LatexPrintOptions)
 
                     # We must check if we have a vertical line after the cell merge.
                     vline =
-                        (ps.j + cs - 1 ∈ vertical_lines_at_data_columns) || (
-                            (ps.j + cs - 1 == num_data_columns) &&
-                            tf.vertical_line_after_data_columns
-                        )
+                        _vertical_line_after_column(
+                            lines, table_data, :data, ps.j + cs - 1
+                        ) != :none
 
                     if vline
                         alignment *= "|"
@@ -282,7 +277,7 @@ function _latex__print_core(pspec::PrintingSpec, opts::LatexPrintOptions)
                         (ps.j == 1) &&
                         !_has_row_labels(table_data) &&
                         !table_data.show_row_number_column &&
-                        tf.vertical_line_at_beginning
+                        lines.vertical_line_at_beginning
                     )
                         alignment = "|" * alignment
                     end
@@ -397,13 +392,11 @@ function _latex__print_core(pspec::PrintingSpec, opts::LatexPrintOptions)
                             (ps.j == 1) &&
                             !_has_row_labels(table_data) &&
                             !table_data.show_row_number_column &&
-                            tf.vertical_line_at_beginning
+                            lines.vertical_line_at_beginning
 
                         vline_after =
-                            (ps.j ∈ vertical_lines_at_data_columns) || (
-                                (ps.j == _number_of_printed_data_columns(table_data)) &&
-                                tf.vertical_line_after_data_columns
-                            )
+                            _vertical_line_after_column(lines, table_data, :data, ps.j) !=
+                            :none
 
                         border₀ = vline_before ? "|" : ""
                         border₁ = vline_after ? "|" : ""

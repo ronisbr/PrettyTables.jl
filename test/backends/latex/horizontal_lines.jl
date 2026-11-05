@@ -143,3 +143,69 @@ end
 
     @test result == expected
 end
+
+@testset "Shared Line Rules" verbose = true begin
+    @testset "Line Before the Row Group Label at the First Row" begin
+        # The line before a row group label at the first data row is drawn even if the line
+        # after the column labels is disabled.
+        expected = """
+\\begin{tabular}{|r|r|}
+  \\hline
+  \\textbf{Col. 1} & \\textbf{Col. 2} \\\\
+  \\hline
+  \\multicolumn{2}{|l|}{\\textbf{Group}} \\\\
+  \\hline
+  1 & 2 \\\\
+  3 & 4 \\\\
+  \\hline
+\\end{tabular}
+"""
+
+        result = pretty_table(
+            String,
+            [1 2; 3 4];
+            backend = :latex,
+            row_group_labels = [1 => "Group"],
+            table_format = LatexTableFormat(;
+                horizontal_line_after_column_labels = false,
+                horizontal_line_before_row_group_label = true,
+            ),
+        )
+
+        @test result == expected
+    end
+
+    @testset "Line After the Continuation Row in the Middle Cropping" begin
+        # The line above the first row printed after the continuation row is the line after
+        # the data row before it.
+        expected = """
+\\begin{tabular}{|r|r|}
+  \\hline
+  \\textbf{Col. 1} & \\textbf{Col. 2} \\\\
+  \\hline
+  1 & 1 \\\\
+  \\hline
+  2 & 2 \\\\
+  \\hline
+  \$\\vdots\$ & \$\\vdots\$ \\\\
+  \\hline
+  9 & 9 \\\\
+  \\hline
+  10 & 10 \\\\
+  \\hline
+  \\multicolumn{2}{r@{}}{\\textit{\\small{6 rows omitted}}}
+\\end{tabular}
+"""
+
+        result = pretty_table(
+            String,
+            [i for i in 1:10, j in 1:2];
+            backend = :latex,
+            maximum_number_of_rows = 4,
+            vertical_crop_mode = :middle,
+            table_format = LatexTableFormat(; horizontal_lines_at_data_rows = :all),
+        )
+
+        @test result == expected
+    end
+end

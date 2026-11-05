@@ -128,65 +128,48 @@ end
 # == Table =================================================================================
 
 """
-    _latex__table_header_description(
-        td::TableData,
-        tf::LatexTableFormat,
-        vertical_lines_at_data_columns::_LineIndices
-    ) -> String
+    _latex__table_header_description(td::TableData, lines::TableLines) -> String
 
-Create the LaTeX table header description with the column alignments and vertical lines
-considering the table data `td`, table format `tf`, and the processed information about
-vertical lines at data columns `vertical_lines_at_data_columns`.
+Create the LaTeX table header description (column descriptors and vertical lines) for the
+table `td` with the lines `lines`.
 """
-function _latex__table_header_description(
-    td::TableData, tf::LatexTableFormat, vertical_lines_at_data_columns::_LineIndices
-)
-    num_columns = td.num_columns
+function _latex__table_header_description(td::TableData, lines::TableLines)
+    desc = IOBuffer(; sizehint = 2td.num_columns + 3)
 
-    desc = IOBuffer(; sizehint = 2num_columns + 3)
+    # Print the vertical line after `column` if the lines select it.
+    _vline(column, j = 0) =
+        (_vertical_line_after_column(lines, td, column, j) != :none) && print(desc, '|')
 
     # == Table Beginning ===================================================================
 
-    tf.vertical_line_at_beginning && print(desc, '|')
+    lines.vertical_line_at_beginning && print(desc, '|')
 
     # == Row Number Column =================================================================
 
     if td.show_row_number_column
         print(desc, _row_number_column_alignment(td) |> _latex__alignment_to_str)
-
-        if tf.vertical_line_after_row_number_column
-            print(desc, '|')
-        end
+        _vline(:row_number)
     end
 
     # == Row Labels ========================================================================
 
     if _has_row_labels(td)
         print(desc, _row_label_column_alignment(td) |> _latex__alignment_to_str)
-        tf.vertical_line_after_row_label_column && print(desc, '|')
+        _vline(:row_label)
     end
 
     # == Data Columns ======================================================================
 
-    nc = _number_of_printed_data_columns(td)
-
-    for i in 1:nc
-        print(desc, _data_column_alignment(td, i) |> _latex__alignment_to_str)
-
-        vline = i in vertical_lines_at_data_columns
-
-        if (i == nc) && tf.vertical_line_after_data_columns
-            vline = true
-        end
-
-        vline && print(desc, '|')
+    for j in 1:_number_of_printed_data_columns(td)
+        print(desc, _data_column_alignment(td, j) |> _latex__alignment_to_str)
+        _vline(:data, j)
     end
 
     # == Continuation Column ===============================================================
 
-    if nc < num_columns
+    if _is_horizontally_cropped(td)
         print(desc, 'c')
-        tf.vertical_line_after_continuation_column && print(desc, '|')
+        _vline(:continuation)
     end
 
     return String(take!(desc))

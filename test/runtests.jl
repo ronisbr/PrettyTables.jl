@@ -101,6 +101,7 @@ end
     include("./backends/latex/offset_arrays.jl")
     include("./backends/latex/renderers.jl")
     include("./backends/latex/special_cells.jl")
+    include("./backends/latex/vertical_lines.jl")
 end
 
 @testset "Markdown Back End Tests" verbose = true begin
