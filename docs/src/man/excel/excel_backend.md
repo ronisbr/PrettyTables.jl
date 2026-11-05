@@ -170,7 +170,8 @@ contains the following fields:
     the title/subtitle section (i.e., the top of the column labels or the first data row).
     Title and subtitle rows are never bordered.
 - `horizontal_line_after_column_labels::Bool`: Draw a line under the column header section.
-- `horizontal_line_between_column_labels::Bool`: Draw a line between column header rows.
+- `horizontal_line_between_column_labels::Bool`: Draw a line between column header rows
+    using the design of `header_line`.
 - `horizontal_line_at_merged_column_labels::Bool`: Draw a line under merged column headers.
 - `horizontal_lines_at_data_rows::Union{Symbol, Vector{Int}}`: Draw underlines after data
     rows. `:all` draws after every row, `:none` draws none, a `Vector{Int}` draws only after
@@ -215,8 +216,7 @@ Border styles are specified using an [`ExcelTableBorders`](@ref) object with the
 - `merged_header_cell_line`: Line below merged header cells
     (**Default**: thin black).
 - `middle_line`: All other internal horizontal lines — data row underlines, lines around
-    row groups, lines around summary rows, between-header lines — and vertical lines
-    between data columns.
+    row groups, and lines around summary rows.
     (**Default**: thin black).
 - `bottom_line`: Bottom of the outside border
     (**Default**: thick black).
@@ -225,7 +225,8 @@ Border styles are specified using an [`ExcelTableBorders`](@ref) object with the
 
 - `left_line`: Left of the outside border.
     (**Default**: thick black).
-- `center_line`: Structural vertical lines — after row numbers and after row labels.
+- `center_line`: Internal vertical lines — after row numbers, after row labels, and between
+    data columns.
     (**Default**: thin black).
 - `right_line`: Right of the outside border.
     (**Default**: thick black).

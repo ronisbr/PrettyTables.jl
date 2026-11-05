@@ -236,8 +236,7 @@ end. All fields are `Vector{ExcelPair}` compatible with the `XLSX.setBorder` fun
     cells.
     (**Default**: `["style" => "thin", "color" => "Black"]`)
 - `middle_line::Vector{ExcelPair}`: Style for all other internal horizontal lines (data
-    row underlines, lines around row groups, lines around summary rows) and for vertical
-    lines between data columns.
+    row underlines, lines around row groups, and lines around summary rows).
     (**Default**: `["style" => "thin", "color" => "Black"]`)
 - `bottom_line::Vector{ExcelPair}`: Style for the bottom border of the table.
     (**Default**: `["style" => "thick", "color" => "Black"]`)
@@ -246,8 +245,8 @@ end. All fields are `Vector{ExcelPair}` compatible with the `XLSX.setBorder` fun
 
 - `left_line::Vector{ExcelPair}`: Style for the left border of the table.
     (**Default**: `["style" => "thick", "color" => "Black"]`)
-- `center_line::Vector{ExcelPair}`: Style for structural vertical lines (after the row
-    number column and after the row label column).
+- `center_line::Vector{ExcelPair}`: Style for the internal vertical lines (after the row
+    number column, after the row label column, and between the data columns).
     (**Default**: `["style" => "thin", "color" => "Black"]`)
 - `right_line::Vector{ExcelPair}`: Style for the right border of the table.
     (**Default**: `["style" => "thick", "color" => "Black"]`)
@@ -287,7 +286,7 @@ Define the table borders that will be used to form the Excel table.
 - `horizontal_line_after_column_labels::Bool`: Whether to draw a line under the column
     header section.
 - `horizontal_line_between_column_labels::Bool`: Whether to draw a line between (unmerged)
-    column header rows.
+    column header rows, using the design of `header_line`.
 - `horizontal_line_at_merged_column_labels::Bool`: Whether to draw a line under merged
     column headers. The default is `true`, whereas the text back end defaults to `false`.
 - `horizontal_lines_at_data_rows::Union{Symbol, Vector{Int}}`: Controls which data rows get
