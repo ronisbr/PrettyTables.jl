@@ -145,8 +145,7 @@ end. All fields are `Vector{DocxPair}` with the keys `"style"`, `"size"`, and `"
     cells.
     (**Default**: `["style" => "single", "size" => "4", "color" => "000000"]`)
 - `middle_line::Vector{DocxPair}`: Style for all other internal horizontal lines (data row
-    underlines, lines around row groups, lines around summary rows) and for vertical lines
-    between data columns.
+    underlines, lines around row groups, and lines around summary rows).
     (**Default**: `["style" => "single", "size" => "4", "color" => "000000"]`)
 - `bottom_line::Vector{DocxPair}`: Style for the bottom border of the table.
     (**Default**: `["style" => "single", "size" => "16", "color" => "000000"]`)
@@ -155,8 +154,8 @@ end. All fields are `Vector{DocxPair}` with the keys `"style"`, `"size"`, and `"
 
 - `left_line::Vector{DocxPair}`: Style for the left border of the table.
     (**Default**: `["style" => "single", "size" => "16", "color" => "000000"]`)
-- `center_line::Vector{DocxPair}`: Style for structural vertical lines (after the row
-    number column and after the row label column).
+- `center_line::Vector{DocxPair}`: Style for the internal vertical lines (after the row
+    number column, after the row label column, and between the data columns).
     (**Default**: `["style" => "single", "size" => "4", "color" => "000000"]`)
 - `right_line::Vector{DocxPair}`: Style for the right border of the table.
     (**Default**: `["style" => "single", "size" => "16", "color" => "000000"]`)
@@ -196,7 +195,7 @@ Define the table borders that will be used to form the Word table.
 - `horizontal_line_after_column_labels::Bool`: Whether to draw a line under the column
     header section.
 - `horizontal_line_between_column_labels::Bool`: Whether to draw a line between (unmerged)
-    column header rows.
+    column header rows, using the design of `header_line`.
 - `horizontal_line_at_merged_column_labels::Bool`: Whether to draw a line under merged
     column headers.
 - `horizontal_lines_at_data_rows::Union{Symbol, Vector{Int}}`: Controls which data rows get
