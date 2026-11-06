@@ -131,11 +131,6 @@ function _typst__print_core(pspec::PrintingSpec, opts::TypstPrintOptions)
     # Resolve the lines of the table.
     lines = TableLines(tf, table_data)
 
-    # Row section before the first row of the ruled area, required to select the line at the
-    # beginning of the table.
-    header_rs =
-        (isempty(table_data.title) && isempty(table_data.subtitle)) ? :none : :table_header
-
     # Create dictionaries to store properties to decrease the number of allocations.
     vproperties = Pair{String, String}[]
 
@@ -251,7 +246,7 @@ function _typst__print_core(pspec::PrintingSpec, opts::TypstPrintOptions)
             if (rs != :table_header) && !top_line_printed
                 top_line_printed = true
 
-                role = _horizontal_line_after_row(lines, table_data, header_rs, rs, 0)
+                role = _horizontal_line_after_row(lines, table_data, :table_header, rs, 0)
 
                 # Using only one argument in `print` to avoid intermediate string
                 # allocations.
