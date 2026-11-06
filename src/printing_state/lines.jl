@@ -111,33 +111,23 @@ end
 Return whether at least one table line is drawn according to `lines`.
 """
 function _has_any_table_line(lines::TableLines)
-    return lines.horizontal_line_at_beginning ||
-           lines.horizontal_line_before_column_labels ||
-           _has_lines(lines.horizontal_lines_at_column_labels) ||
-           lines.horizontal_line_at_merged_column_labels ||
-           lines.horizontal_line_after_column_labels ||
-           _has_lines(lines.horizontal_lines_at_data_rows) ||
-           lines.horizontal_line_before_row_group_label ||
-           lines.horizontal_line_after_row_group_label ||
-           lines.horizontal_line_after_data_rows ||
-           lines.horizontal_line_before_summary_rows ||
-           lines.horizontal_line_after_summary_rows ||
-           lines.horizontal_line_after_footnotes ||
-           lines.horizontal_line_at_end ||
-           lines.vertical_line_at_beginning ||
-           lines.vertical_line_after_row_number_column ||
-           lines.vertical_line_after_row_label_column ||
-           _has_lines(lines.vertical_lines_at_data_columns) ||
-           lines.vertical_line_after_data_columns ||
-           lines.vertical_line_after_continuation_column
+    for f in fieldnames(TableLines)
+        # Suppressing the vertical lines at the column labels does not draw a line.
+        (f == :suppress_vertical_lines_at_column_labels) && continue
+        _has_lines(getfield(lines, f)) && return true
+    end
+
+    return false
 end
 
 """
-    _has_lines(lines::_LineIndices) -> Bool
+    _has_lines(lines::Union{Bool, _LineIndices}) -> Bool
 
-Return whether the specification `lines` selects rows or columns, which is `true` for `:all`
-even if the table has no rows or columns.
+Return whether the line presence field `lines` of [`TableLines`](@ref) draws at least one
+line. A specification of rows or columns draws a line if it selects at least one of them,
+which is the case for `:all` even if the table has no rows or columns.
 """
+_has_lines(lines::Bool) = lines
 _has_lines(lines::_LineIndices) = lines.all || !isempty(lines.indices)
 
 """
@@ -192,11 +182,14 @@ row below), but each line must be emitted only once.
 It is ignored otherwise. Notice that the index in the printing state after the `:end_row`
 action of a row has these values.
 
-`rs` can also be `:table_header`, in which case the line is the one between the table header
-(title and subtitle) and the first row of the ruled area, or `:none`, in which case the line
-is the one before the first row of a table without a header. The lines under the merged
-column labels, which are drawn after every column label row but the last one, are not
-handled here because each back end draws them differently.
+`rs` can also be `:table_header`, in which case the line is the one before the first row of
+the ruled area: the line between the table header (title and subtitle) and the ruled area if
+the table has a header, or the line at the beginning of the table otherwise. Hence, the back
+ends pass `:table_header` for the first row of the ruled area without checking whether the
+table has a header. `rs` can also be `:none`, which is equivalent to `:table_header` for a
+table without a header. The lines under the merged column labels, which are drawn after
+every column label row but the last one, are not handled here because each back end draws
+them differently.
 
 The line after the last row of the ruled area, which precedes the table footer, uses the
 bottom line design.
@@ -225,10 +218,17 @@ function _horizontal_line_after_row(
 
     # == Lines at the Beginning of the Ruled Area ==========================================
 
-    if rs == :none
-        return lines.horizontal_line_at_beginning ? :top_line : :none
-    elseif rs == :table_header
-        return lines.horizontal_line_before_column_labels ? :top_line : :none
+    if rs ∈ (:none, :table_header)
+        # The line before the first row of the ruled area is the line between the table
+        # header and the ruled area if the table has a header, which the HTML back end
+        # renders inside the ruled area, or the line at the beginning of the table otherwise.
+        hline = if (rs == :table_header) && _has_table_header(table_data)
+            lines.horizontal_line_before_column_labels
+        else
+            lines.horizontal_line_at_beginning
+        end
+
+        return hline ? :top_line : :none
     end
 
     # == Lines Inside the Ruled Area =======================================================
@@ -297,6 +297,22 @@ function _horizontal_line_after_row(
 end
 
 """
+    _line_between_column_label_rows(lines::TableLines, table_data::TableData, rs::Symbol, i::Int) -> Symbol
+
+Return the field of the back end borders with the horizontal line that must be drawn after
+the row `i` of the section `rs` if it is a column label row followed by another one, or
+`:none` otherwise (see [`_horizontal_line_after_row`](@ref)). The back ends that draw this
+line as the bottom border of each unmerged cell of the row, since the merged column labels
+have their own line, call this function when the row begins.
+"""
+function _line_between_column_label_rows(
+    lines::TableLines, table_data::TableData, rs::Symbol, i::Int
+)
+    ((rs == :column_labels) && (i < length(table_data.column_labels))) || return :none
+    return _horizontal_line_after_row(lines, table_data, rs, rs, i)
+end
+
+"""
     _vertical_line_after_column(lines::TableLines, table_data::TableData, column::Symbol, j::Int = 0) -> Symbol
 
 Return the field of the back end borders (`:center_line` or `:right_line`) with the vertical
@@ -350,4 +366,57 @@ function _vertical_line_after_column(
     # If the table has a continuation column, the line after the data columns is not at the
     # right edge of the table.
     return _is_horizontally_cropped(table_data) ? :center_line : :right_line
+end
+
+# Actions of the printing state iterator that emit a cell in each printed column (see
+# `_vertical_line_after_cell`).
+const _ROW_NUMBER_COLUMN_CELL_ACTIONS = (
+    :row_number_label,
+    :row_number,
+    :row_number_vertical_continuation_cell,
+    :summary_row_number,
+)
+
+const _ROW_LABEL_COLUMN_CELL_ACTIONS = (
+    :stubhead_label, :row_label, :row_label_vertical_continuation_cell, :summary_row_label
+)
+
+const _DATA_COLUMN_CELL_ACTIONS = (
+    :column_label, :data, :vertical_continuation_cell, :summary_row_cell
+)
+
+const _CONTINUATION_COLUMN_CELL_ACTIONS = (
+    :horizontal_continuation_cell, :diagonal_continuation_cell
+)
+
+"""
+    _vertical_line_after_cell(lines::TableLines, table_data::TableData, action::Symbol, j::Int) -> Symbol
+
+Return the field of the back end borders with the vertical line that must be drawn after the
+cell emitted by the `action` of the printing state iterator, or `:none` if no line must be
+drawn there or if `action` does not emit a cell (see [`_vertical_line_after_column`](@ref)).
+`j` must be the index of the printed data column of the cell if it is in a data column,
+which is the last spanned column for a merged column label. It is ignored otherwise.
+
+The row group labels span the entire table. Hence, the line after them is the line at the
+right edge of the table.
+"""
+function _vertical_line_after_cell(
+    lines::TableLines, table_data::TableData, action::Symbol, j::Int
+)
+    column = if action ∈ _ROW_NUMBER_COLUMN_CELL_ACTIONS
+        :row_number
+    elseif action ∈ _ROW_LABEL_COLUMN_CELL_ACTIONS
+        :row_label
+    elseif action ∈ _DATA_COLUMN_CELL_ACTIONS
+        :data
+    elseif action ∈ _CONTINUATION_COLUMN_CELL_ACTIONS
+        :continuation
+    elseif action == :row_group_label
+        :last
+    else
+        return :none
+    end
+
+    return _vertical_line_after_column(lines, table_data, column, j)
 end

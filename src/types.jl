@@ -628,9 +628,10 @@ end
 
 Presence of the table lines resolved from a back end table format. The back ends must not
 analyze the line presence fields of their table formats directly. Instead, they must create
-this object and query it with [`_horizontal_line_after_row`](@ref) and
-[`_vertical_line_after_column`](@ref), which return the field of the back end borders with
-the line to draw, so that every back end draws the lines at the same places.
+this object and query it with [`_horizontal_line_after_row`](@ref),
+[`_vertical_line_after_column`](@ref), and [`_vertical_line_after_cell`](@ref), which return
+the field of the back end borders with the line to draw, so that every back end draws the
+lines at the same places.
 
 The fields have the same names as the line presence fields of the table formats. The fields
 that exist only in some back ends are set to their neutral value when the table format does

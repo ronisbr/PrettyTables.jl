@@ -74,6 +74,15 @@ function _has_footnotes(table_data::TableData)
 end
 
 """
+    _has_table_header(table_data::TableData) -> Bool
+
+Return whether `table_data` has a table header, i.e., a title or a subtitle.
+"""
+function _has_table_header(table_data::TableData)
+    return !isempty(table_data.title) || !isempty(table_data.subtitle)
+end
+
+"""
     _has_merged_cells(table_data::TableData, i::Int) -> Bool
 
 Return whether `table_data` has merged cells in line `i`.

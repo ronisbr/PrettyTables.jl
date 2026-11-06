@@ -161,6 +161,18 @@ end
         @test PrettyTables._has_any_table_line(
             PrettyTables.TableLines(HtmlTableFormat(; horizontal_line_at_end = true), td)
         )
+
+        # Suppressing the vertical lines at the column labels does not draw a line.
+        @test !PrettyTables._has_any_table_line(
+            PrettyTables.TableLines(
+                TextTableFormat(;
+                    @text__no_horizontal_lines,
+                    @text__no_vertical_lines,
+                    suppress_vertical_lines_at_column_labels = true,
+                ),
+                td,
+            ),
+        )
     end
 
     @testset "Next Row Section" begin
@@ -235,9 +247,11 @@ end
     end
 
     @testset "Horizontal Lines" verbose = true begin
-        td = _test_lines_table_data()
-        hline(tf, rs, next_rs, i = 0) = PrettyTables._horizontal_line_after_row(
-            PrettyTables.TableLines(tf, td), td, rs, next_rs, i
+        td           = _test_lines_table_data()
+        td_no_header = _test_lines_table_data(; title = "", subtitle = "")
+
+        hline(tf, rs, next_rs, i = 0; data = td) = PrettyTables._horizontal_line_after_row(
+            PrettyTables.TableLines(tf, data), data, rs, next_rs, i
         )
 
         @testset "All Lines" begin
@@ -257,6 +271,9 @@ end
             @test hline(tf, :table_header, :column_labels) == :top_line
             @test hline(tf, :table_header, :data) == :top_line
             @test hline(tf, :table_header, :summary_row) == :top_line
+            @test hline(tf, :table_header, :column_labels; data = td_no_header) == :top_line
+            @test hline(tf, :table_header, :row_group_label; data = td_no_header) ==
+                :top_line
 
             # Column labels.
             @test hline(tf, :column_labels, :column_labels, 1) == :header_line
@@ -424,6 +441,10 @@ end
             @test hline(tf, :none, :column_labels) == :none
             @test hline(tf, :table_header, :column_labels) == :top_line
             @test hline(tf, :table_header, :data) == :top_line
+
+            # The line before the first row of a table without a header is the line at the
+            # beginning of the table.
+            @test hline(tf, :table_header, :column_labels; data = td_no_header) == :none
             @test hline(tf, :data, :summary_row) == :none
             @test hline(tf, :data, :table_footer) == :bottom_line
             @test hline(tf, :continuation_row, :table_footer) == :bottom_line
@@ -441,6 +462,33 @@ end
 
             @test hline(tf, :none, :column_labels) == :top_line
             @test hline(tf, :table_header, :column_labels) == :none
+            @test hline(tf, :table_header, :column_labels; data = td_no_header) == :top_line
+            @test hline(tf, :table_header, :table_footer; data = td_no_header) == :none
+        end
+
+        @testset "Lines Between the Column Label Rows" begin
+            lline(tf, rs, i) = PrettyTables._line_between_column_label_rows(
+                PrettyTables.TableLines(tf, td), td, rs, i
+            )
+
+            tf = TextTableFormat(; @text__all_horizontal_lines)
+
+            @test lline(tf, :column_labels, 1) == :header_line
+            @test lline(tf, :column_labels, 2) == :none
+            @test lline(tf, :data, 1) == :none
+
+            tf = TextTableFormat(; horizontal_lines_at_column_labels = :none)
+
+            @test lline(tf, :column_labels, 1) == :none
+
+            tf = ExcelTableFormat(; horizontal_line_between_column_labels = true)
+
+            @test lline(tf, :column_labels, 1) == :header_line
+            @test lline(tf, :column_labels, 2) == :none
+
+            tf = DocxTableFormat(; horizontal_line_between_column_labels = false)
+
+            @test lline(tf, :column_labels, 1) == :none
         end
     end
 
@@ -546,6 +594,60 @@ end
                 @test vline(tf, td, :data, 1) == :center_line
                 @test vline(tf, td, :data, 4) == :right_line
             end
+        end
+
+        @testset "Lines After the Cells" begin
+            vcell(tf, td, action, j = 0) = PrettyTables._vertical_line_after_cell(
+                PrettyTables.TableLines(tf, td), td, action, j
+            )
+
+            tf = TextTableFormat(; @text__all_vertical_lines)
+            td = _test_lines_table_data()
+
+            for action in (
+                :row_number_label,
+                :row_number,
+                :row_number_vertical_continuation_cell,
+                :summary_row_number,
+                :stubhead_label,
+                :row_label,
+                :row_label_vertical_continuation_cell,
+                :summary_row_label,
+            )
+                @test vcell(tf, td, action) == :center_line
+            end
+
+            for action in
+                (:column_label, :data, :vertical_continuation_cell, :summary_row_cell)
+                @test vcell(tf, td, action, 1) == :center_line
+                @test vcell(tf, td, action, 4) == :right_line
+            end
+
+            @test vcell(tf, td, :row_group_label) == :right_line
+
+            # Actions that do not emit a cell in a column.
+            @test vcell(tf, td, :title) == :none
+            @test vcell(tf, td, :footnote) == :none
+            @test vcell(tf, td, :end_row) == :none
+
+            # Horizontally cropped table.
+            td = _test_lines_table_data(; maximum_number_of_columns = 2)
+
+            @test vcell(tf, td, :data, 2) == :center_line
+            @test vcell(tf, td, :horizontal_continuation_cell) == :right_line
+            @test vcell(tf, td, :diagonal_continuation_cell) == :right_line
+            @test vcell(tf, td, :row_group_label) == :right_line
+
+            tf = TextTableFormat(;
+                vertical_line_after_row_number_column = false,
+                vertical_line_after_row_label_column = false,
+                vertical_line_after_continuation_column = false,
+            )
+
+            @test vcell(tf, td, :row_number) == :none
+            @test vcell(tf, td, :row_label) == :none
+            @test vcell(tf, td, :horizontal_continuation_cell) == :none
+            @test vcell(tf, td, :row_group_label) == :none
         end
     end
 end
