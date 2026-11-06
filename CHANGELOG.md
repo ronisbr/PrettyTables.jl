@@ -41,7 +41,9 @@ Version 3.6.0
 - ![Info][badge-info] The HTML back end emits each line between two rows only once: as the
   top border of the row below if it is a row group label, the first summary row, or the
   first row after the title and subtitle, and as the bottom border of the row above
-  otherwise. The rendered tables are unchanged because the collapsed borders merged the
+  otherwise. Moreover, the line at the beginning of a table without title and subtitle is
+  emitted only in the `<table>` element, even if the first row is a row group label or a
+  summary row. The rendered tables are unchanged because the collapsed borders merged the
   borders that were emitted twice. Similarly, the Excel and Word back ends set the line
   before a row group label as the top border of the label even if it is selected by
   `horizontal_lines_at_data_rows`.

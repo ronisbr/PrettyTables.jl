@@ -322,6 +322,7 @@ function _html__print_core(pspec::PrintingSpec, opts::HtmlPrintOptions)
     row_border_bottom = ""
 
     # Row section of the previous row, required to select the line above the current row.
+    # It is `:none` before the first row of the table.
     prev_rs = :none
 
     action = :initialize

@@ -84,21 +84,6 @@ function _html__table_format(table_format::TableFormat)
 
     return HtmlTableFormat(;
         borders = _table_format_borders(table_format, def.borders, html_line_style),
-
-        # The following presence fields only exist in the HTML back end. Hence, they are
-        # not returned by `_table_format_presence_fields` and must be merged here.
-        horizontal_line_before_column_labels = _table_format_field(
-            table_format.horizontal_line_before_column_labels,
-            def.horizontal_line_before_column_labels,
-        ),
-        horizontal_line_after_footnotes = _table_format_field(
-            table_format.horizontal_line_after_footnotes,
-            def.horizontal_line_after_footnotes,
-        ),
-        horizontal_line_at_end = _table_format_field(
-            table_format.horizontal_line_at_end, def.horizontal_line_at_end
-        ),
-
         _table_format_presence_fields(table_format, def)...,
     )
 end

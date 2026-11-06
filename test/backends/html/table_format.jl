@@ -729,6 +729,39 @@ end
         @test count("border-top", output) == 1
     end
 
+    @testset "Line at the Beginning of a Table Without a Header" begin
+        # The line at the beginning of the table is emitted in the `<table>` element. Hence,
+        # the first row of the ruled area must not carry it, even if it is a row group label
+        # or a summary row, which own the line above them otherwise.
+        tf = HtmlTableFormat(; horizontal_line_at_beginning = true)
+
+        output = pretty_table(
+            String,
+            [1 2; 3 4];
+            backend = :html,
+            show_column_labels = false,
+            row_group_labels = [1 => "Group"],
+            table_format = tf,
+        )
+
+        lines = split(output, '\n')
+        @test occursin("border-top: 2px solid black", lines[1])
+        @test count("border-top", output) == 1
+
+        output = pretty_table(
+            String,
+            zeros(Int, 0, 2);
+            backend = :html,
+            show_column_labels = false,
+            summary_rows = [(data, j) -> 0],
+            table_format = tf,
+        )
+
+        lines = split(output, '\n')
+        @test occursin("border-top: 2px solid black", lines[1])
+        @test count("border-top", output) == 1
+    end
+
     @testset "Line After the Last Printed Data Column" begin
         # The line after the last printed data column is only controlled by
         # `vertical_line_after_data_columns`, even if the table is horizontally cropped.

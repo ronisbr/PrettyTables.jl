@@ -229,14 +229,16 @@ row, whose section is `prev_rs`, meaning that the line is emitted as its top bor
 line is owned by the row below if it is a row group label, the first summary row, the first
 row of the ruled area after the table header (title and subtitle), or a data row after the
 continuation row. Otherwise, the line is emitted as the bottom border of the row above.
-The rows of the table header and footer never own the line above them.
+The rows of the table header and footer never own the line above them, and neither does the
+first row of a table without a header (`prev_rs` is `:none`), since the line at the
+beginning of the table is emitted in the `<table>` element.
 
 The line above a data row after the continuation row must be owned by that row because, in
 the middle cropping, it is the line after the data row before it, which is only known when
 that row is reached.
 """
 function _html__row_owns_line_above(prev_rs::Symbol, rs::Symbol)
-    (rs ∈ (:table_header, :table_footer)) && return false
+    ((rs ∈ (:table_header, :table_footer)) || (prev_rs == :none)) && return false
 
     return (rs == :row_group_label) ||
            ((rs == :summary_row) && (prev_rs != :summary_row)) ||
