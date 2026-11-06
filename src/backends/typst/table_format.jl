@@ -110,3 +110,11 @@ function _typst__table_format(table_format::TableFormat)
         _table_format_presence_fields(table_format, def)...,
     )
 end
+
+"""
+    TableLines(tf::TypstTableFormat, table_data::TableData) -> TableLines
+
+Resolve the line presence of the Typst table format `tf` for `table_data` (see
+[`TableLines`](@ref)).
+"""
+TableLines(tf::TypstTableFormat, table_data::TableData) = _table_lines(tf, table_data)
