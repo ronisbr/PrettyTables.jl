@@ -124,3 +124,16 @@ function _docx__table_format(table_format::TableFormat)
         _table_format_presence_fields(table_format, def)...,
     )
 end
+
+"""
+    TableLines(tf::DocxTableFormat, table_data::TableData) -> TableLines
+
+Resolve the line presence of the Word table format `tf` for `table_data` (see
+[`TableLines`](@ref)). The lines between the column label rows are either all drawn or none.
+"""
+function TableLines(tf::DocxTableFormat, table_data::TableData)
+    horizontal_lines_at_column_labels =
+        tf.horizontal_line_between_column_labels ? :all : :none
+
+    return _table_lines(tf, table_data; horizontal_lines_at_column_labels)
+end
