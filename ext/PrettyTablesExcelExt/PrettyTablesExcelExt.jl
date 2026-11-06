@@ -17,6 +17,7 @@ import PrettyTables: _number_of_printed_columns, _number_of_printed_data_columns
 import PrettyTables: _check_backend_keywords, _data_indices, _get_data, _has_summary_rows
 import PrettyTables: _check_column_label_styles, _merged_cell_span
 import PrettyTables: TableLines, _horizontal_line_after_row, _vertical_line_after_column
+import PrettyTables: _vertical_line_after_cell, _line_between_column_label_rows
 import PrettyTables: _IGNORE_CELL, _EXCEL__NO_DECORATION, _sprint_with_context
 import PrettyTables: _excel__highlighter_decoration, _excel__native_highlighters
 import PrettyTables: _alignment_name, excel_decoration

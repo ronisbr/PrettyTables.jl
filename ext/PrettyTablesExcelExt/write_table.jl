@@ -133,8 +133,9 @@ function _excel__write_table_core!(
     action = :initialize
 
     # Row section of the previous row, required to select the line above the first row of
-    # the ruled area and above a row group label.
-    prev_rs = :none
+    # the ruled area and above a row group label. The table header is the section before the
+    # first row even if the table has no title and no subtitle.
+    prev_rs = :table_header
 
     # Line drawn after the unmerged cells of the current column label row, if any.
     column_label_row_line = :none
@@ -168,35 +169,11 @@ function _excel__write_table_core!(
             # Ensure all cells in the row are non-empty before any merges.
             _excel__unempty_row!(sheet, ir + anchor_row_offset, all_cols)
 
-            # The line at the beginning of the table and the vertical line at its left edge
-            # are only drawn in the ruled area, which excludes the title, the subtitle, the
-            # footnotes, and the source notes.
-            if rs ∉ (:table_header, :table_footer)
-                row_abs = ir + anchor_row_offset
-
-                # If this is the very first row of the ruled area, we must check if a
-                # horizontal line must be drawn before it.
-                if prev_rs ∈ (:none, :table_header)
-                    role = _horizontal_line_after_row(lines, table_data, prev_rs, rs, 0)
-
-                    (role != :none) && XLSX.setBorder(
-                        sheet, row_abs, all_cols; top = getfield(borders, role)
-                    )
-                end
-
-                lines.vertical_line_at_beginning && XLSX.setBorder(
-                    sheet, row_abs, first(all_cols); left = borders.left_line
-                )
-            end
-
             # The line between two column label rows is drawn as the bottom border of each
             # unmerged cell, since the merged cells have their own line.
-            column_label_row_line =
-                if (rs == :column_labels) && (ps.i < length(table_data.column_labels))
-                    _horizontal_line_after_row(lines, table_data, rs, rs, ps.i)
-                else
-                    :none
-                end
+            column_label_row_line = _line_between_column_label_rows(
+                lines, table_data, rs, ps.i
+            )
 
         elseif action ∈ (
             :horizontal_continuation_cell,
@@ -235,14 +212,19 @@ function _excel__write_table_core!(
             # NOTE: The row height is set once for every row in the post-loop block, which
             # already has the final value. Setting it here as well doubled the work.
 
-            # == Horizontal Lines ==========================================================
+            # == Table Lines ===============================================================
 
+            # The lines are only drawn in the ruled area, which excludes the title, the
+            # subtitle, the footnotes, and the source notes.
             if rs ∉ (:table_header, :table_footer)
                 row_abs = ir + anchor_row_offset
 
-                # The line before a row group label is its top border, since the label does
-                # not end the data section.
-                if rs == :row_group_label
+                # The line above the row is its top border if it is the first row of the
+                # ruled area or a row group label, since the label does not end the data
+                # section. Otherwise, the line above the row is the bottom border of the row
+                # above it. Notice that the row index is only used if the row above is a data
+                # row, in which case it is the row before this one.
+                if (prev_rs == :table_header) || (rs == :row_group_label)
                     role = _horizontal_line_after_row(
                         lines, table_data, prev_rs, rs, ps.i - 1
                     )
@@ -261,6 +243,13 @@ function _excel__write_table_core!(
                         sheet, row_abs, all_cols; bottom = getfield(borders, role)
                     )
                 end
+
+                # The vertical line at the left edge of the table. Notice that the one at the
+                # right edge is the right border of the last cell of the row, which was set
+                # when the cell was created.
+                lines.vertical_line_at_beginning && XLSX.setBorder(
+                    sheet, row_abs, first(all_cols); left = borders.left_line
+                )
             end
 
             prev_rs = rs
@@ -531,42 +520,15 @@ function _excel__write_table_core!(
         # The vertical line after a cell is its right border. Notice that the merged column
         # labels were handled above because their span is required, and that the cells of the
         # table header and footer have no borders.
-        vline_role =
-            if action ∈ (
-                :row_number_label,
-                :row_number,
-                :row_number_vertical_continuation_cell,
-                :summary_row_number,
-            )
-                _vertical_line_after_column(lines, table_data, :row_number)
-
-            elseif action ∈ (
-                :stubhead_label,
-                :row_label,
-                :row_label_vertical_continuation_cell,
-                :summary_row_label,
-            )
-                _vertical_line_after_column(lines, table_data, :row_label)
-
-            elseif (
-                action ∈
-                (:column_label, :data, :summary_row_cell, :vertical_continuation_cell)
-            ) && !((action == :column_label) && (cell isa MergeCells))
-                _vertical_line_after_column(lines, table_data, :data, ps.j)
-
-            elseif action ∈ (:horizontal_continuation_cell, :diagonal_continuation_cell)
-                _vertical_line_after_column(lines, table_data, :continuation)
-
-            elseif action == :row_group_label
-                # The row group label spans the entire table. Hence, its right border is the
-                # line at the right edge of the table, drawn at the last column.
-                _vertical_line_after_column(lines, table_data, :last)
-
-            else
-                :none
-            end
+        vline_role = if (action == :column_label) && (cell isa MergeCells)
+            :none
+        else
+            _vertical_line_after_cell(lines, table_data, action, ps.j)
+        end
 
         if vline_role != :none
+            # The row group label spans the entire table. Hence, its right border is the line
+            # at the right edge of the table, drawn at the last column.
             vline_col = action == :row_group_label ? last(all_cols) : sheet_col
             XLSX.setBorder(
                 sheet, sheet_row, vline_col; right = getfield(borders, vline_role)
