@@ -122,8 +122,9 @@ function _docx__render_table_core(pspec::PrintingSpec, opts::DocxPrintOptions)
     action = :initialize
 
     # Row section of the previous row, required to select the line above the first row of
-    # the ruled area and above a row group label.
-    prev_rs = :none
+    # the ruled area and above a row group label. The table header is the section before the
+    # first row even if the table has no title and no subtitle.
+    prev_rs = :table_header
 
     # Line drawn after the unmerged cells of the current column label row, if any.
     column_label_row_line = :none
@@ -156,12 +157,9 @@ function _docx__render_table_core(pspec::PrintingSpec, opts::DocxPrintOptions)
 
             # The line between two column label rows is drawn as the bottom border of each
             # unmerged cell, since the merged cells have their own line.
-            column_label_row_line =
-                if (rs == :column_labels) && (ps.i < length(table_data.column_labels))
-                    _horizontal_line_after_row(lines, table_data, rs, rs, ps.i)
-                else
-                    :none
-                end
+            column_label_row_line = _line_between_column_label_rows(
+                lines, table_data, rs, ps.i
+            )
 
             push!(rows, row)
             jr = 0
@@ -184,7 +182,7 @@ function _docx__render_table_core(pspec::PrintingSpec, opts::DocxPrintOptions)
                 # section. Otherwise, the line above the row is the bottom border of the row
                 # above it. Notice that the row index is only used if the row above is a data
                 # row, in which case it is the row before this one.
-                if (prev_rs ∈ (:none, :table_header)) || (rs == :row_group_label)
+                if (prev_rs == :table_header) || (rs == :row_group_label)
                     role = _horizontal_line_after_row(
                         lines, table_data, prev_rs, rs, ps.i - 1
                     )
@@ -387,34 +385,7 @@ function _docx__render_table_core(pspec::PrintingSpec, opts::DocxPrintOptions)
         # labels are handled at the end of the row.
         cell = last(row.cells)
 
-        vline_role =
-            if action ∈ (
-                :row_number_label,
-                :row_number,
-                :row_number_vertical_continuation_cell,
-                :summary_row_number,
-            )
-                _vertical_line_after_column(lines, table_data, :row_number)
-
-            elseif action ∈ (
-                :stubhead_label,
-                :row_label,
-                :row_label_vertical_continuation_cell,
-                :summary_row_label,
-            )
-                _vertical_line_after_column(lines, table_data, :row_label)
-
-            elseif action ∈
-                (:column_label, :data, :summary_row_cell, :vertical_continuation_cell)
-                _vertical_line_after_column(lines, table_data, :data, ps.j)
-
-            elseif action ∈ (:horizontal_continuation_cell, :diagonal_continuation_cell)
-                _vertical_line_after_column(lines, table_data, :continuation)
-
-            else
-                :none
-            end
-
+        vline_role = _vertical_line_after_cell(lines, table_data, action, ps.j)
         (vline_role != :none) && (cell.right = getfield(borders, vline_role))
     end
 
