@@ -12,7 +12,7 @@
         table_str::Matrix{String},
         summary_rows::Union{Nothing, Matrix{String}},
         fixed_data_column_widths::AbstractVector{Int},
-        vertical_lines_at_data_columns::_LineIndices,
+        lines::TableLines,
         auto_wrap::Bool,
         line_breaks::Bool,
         equal_data_column_widths::Bool
@@ -29,9 +29,8 @@ at the data columns to fit the fixed width.
 - `table_str::Matrix{String}`: Rendered data cells.
 - `summary_rows::Union{Nothing, Matrix{String}}`: Summary rows.
 - `fixed_data_column_widths::AbstractVector{Int}`: Fixed data column widths.
-- `vertical_lines_at_data_columns::_LineIndices`: List of columns where a vertical
-    line must be drawn after the cell. It is required to compute the available width of
-    merged column labels.
+- `lines::TableLines`: Table lines, required to compute the available width of the merged
+    column labels.
 - `auto_wrap::Bool`: If `true`, the strings will be auto wrapped at each column with a fixed
     width.
 - `line_breaks::Bool`: If `true`, the cells will be split into multiple lines if needed.
@@ -48,7 +47,7 @@ function _text__fix_data_column_widths!(
     table_str::Matrix{String},
     @nospecialize(summary_rows::Union{Nothing, Matrix{String}}),
     fixed_data_column_widths::AbstractVector{Int},
-    vertical_lines_at_data_columns::_LineIndices,
+    lines::TableLines,
     auto_wrap::Bool,
     line_breaks::Bool,
     equal_data_column_widths::Bool,
@@ -107,9 +106,7 @@ function _text__fix_data_column_widths!(
             # Only the labels spanning a column with a fixed width can be cropped.
             any(k -> fixed_data_column_widths[k - 1 + begin] > 0, j₀:j₁) || continue
 
-            cw = _text__span_width(
-                printed_data_column_widths, j₀, j₁, vertical_lines_at_data_columns
-            )
+            cw = _text__span_width(printed_data_column_widths, j₀, j₁, lines)
 
             column_labels[i, j] = _text__fit_cell_in_maximum_cell_width(
                 column_labels[i, j], cw, line_breaks
@@ -131,28 +128,18 @@ function _text__column_widths(widths::Union{Int, Vector{Int}}, num_columns::Int)
 end
 
 """
-    _text__span_width(
-        widths::AbstractVector{Int},
-        j₀::Int,
-        j₁::Int,
-        vertical_lines_at_data_columns::_LineIndices
-    ) -> Int
+    _text__span_width(widths::AbstractVector{Int}, j₀::Int, j₁::Int, lines::TableLines) -> Int
 
 Return the width available for the content of a cell that spans the data columns `j₀:j₁`,
 whose widths are `widths`. It includes the margins and the vertical lines between the
-spanned columns.
+spanned columns, selected by `lines`.
 """
-function _text__span_width(
-    widths::AbstractVector{Int},
-    j₀::Int,
-    j₁::Int,
-    vertical_lines_at_data_columns::_LineIndices,
-)
+function _text__span_width(widths::AbstractVector{Int}, j₀::Int, j₁::Int, lines::TableLines)
     w = 0
 
     for j in j₀:j₁
         w += widths[j]
-        (j != j₁) && (w += 2 + (j ∈ vertical_lines_at_data_columns))
+        (j != j₁) && (w += 2 + (j ∈ lines.vertical_lines_at_data_columns))
     end
 
     return w
@@ -246,7 +233,7 @@ end
         summary_rows,
         summary_row_labels,
         table_str,
-        vertical_lines_at_data_columns,
+        lines,
         column_label_width_based_on_first_line_only,
         line_breaks,
         minimum_data_column_widths
@@ -262,8 +249,7 @@ Compute the printed column widths.
 - `summary_rows::Union{Nothing, Matrix{String}}`: Rendered summary rows.
 - `summary_row_labels::Union{Nothing, Vector{String}}`: Rendered summary row labels.
 - `table_str::Matrix{String}`: Rendered data cells.
-- `vertical_lines_at_data_columns::_LineIndices`: List of columns where a vertical
-    line must be drawn after the cell.
+- `lines::TableLines`: Table lines.
 - `column_label_width_based_on_first_line_only::Bool`: If `true`, the column label width
     will be computed based on the first line only.
 - `line_breaks::Bool`: If `true`, the cells will be split into multiple lines if needed.
@@ -285,7 +271,7 @@ function _text__printed_column_widths(
     @nospecialize(summary_rows::Union{Nothing, Matrix{String}}),
     @nospecialize(summary_row_labels::Union{Nothing, Vector{String}}),
     table_str::Matrix{String},
-    vertical_lines_at_data_columns::_LineIndices,
+    lines::TableLines,
     column_label_width_based_on_first_line_only::Bool,
     line_breaks::Bool,
     minimum_data_column_widths::AbstractVector{Int},
@@ -402,9 +388,7 @@ function _text__printed_column_widths(
             j₀ = mc.j
             j₁ = min(mc.j + mc.column_span - 1, num_printed_data_columns)
 
-            total_width = _text__span_width(
-                printed_data_column_widths, j₀, j₁, vertical_lines_at_data_columns
-            )
+            total_width = _text__span_width(printed_data_column_widths, j₀, j₁, lines)
 
             mctw = printable_textwidth(column_labels[mc.i, mc.j])
 

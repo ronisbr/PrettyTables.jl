@@ -490,11 +490,11 @@ function _text__print_column_label_horizontal_line_only_at_merged_labels(
 )
     # == Auxiliary Variables ===============================================================
 
-    tb  = rl.merged_header.chars
-    sgr = rl.merged_header.sgr
+    tb  = rl.merged_header_cell_line.chars
+    sgr = rl.merged_header_cell_line.sgr
     ti  = tb.up_intersection
     ri  = tb.right_intersection
-    col = rl.center.char
+    col = rl.center_line.char
     row = tb.row
 
     suppress_vertical_lines = lines.suppress_vertical_lines_at_column_labels
@@ -505,7 +505,7 @@ function _text__print_column_label_horizontal_line_only_at_merged_labels(
 
     # -- Left Intersection -----------------------------------------------------------------
 
-    lines.vertical_line_at_beginning && _text__print(display, rl.left.char)
+    lines.vertical_line_at_beginning && _text__print(display, rl.left_line.char)
 
     # -- Row Number Column -----------------------------------------------------------------
 
@@ -545,7 +545,7 @@ function _text__print_column_label_horizontal_line_only_at_merged_labels(
         # The line after the last printed data column is never suppressed because it must
         # connect with the vertical lines of the table.
         if j == last(eachindex(printed_data_column_widths))
-            _text__print(display, role == :right_line ? rl.right.char : col)
+            _text__print(display, role == :right_line ? rl.right_line.char : col)
 
         else
             # Check if we are in the middle of a merged column label.
@@ -575,33 +575,6 @@ function _text__print_column_label_horizontal_line_only_at_merged_labels(
     _text__end_styled_line(display, sgr)
 
     return nothing
-end
-
-"""
-    _text__horizontal_line(rl::TextResolvedTableLines, role::Symbol) -> TextHorizontalLine
-
-Return the resolved horizontal line in `rl` with the `role` returned by
-`_horizontal_line_after_row` (`:top_line`, `:header_line`, `:middle_line`, or
-`:bottom_line`).
-"""
-function _text__horizontal_line(rl::TextResolvedTableLines, role::Symbol)
-    role == :top_line && return rl.top
-    role == :header_line && return rl.header
-    role == :bottom_line && return rl.bottom
-    return rl.middle
-end
-
-"""
-    _text__vertical_line(rl::TextResolvedTableLines, role::Symbol) -> TextVerticalLine
-
-Return the resolved vertical line in `rl` with the `role` returned by
-`_vertical_line_after_column` (`:left_line`, `:center_line`, or `:right_line`). The center
-line is returned for `:none`, which must be checked before drawing the line.
-"""
-function _text__vertical_line(rl::TextResolvedTableLines, role::Symbol)
-    role == :right_line && return rl.right
-    role == :left_line && return rl.left
-    return rl.center
 end
 
 """

@@ -11,7 +11,7 @@
         renderer::Union{Val{:print}, Val{:show}},
         line_breaks::Bool,
         maximum_data_column_widths::AbstractVector{Int},
-        vertical_lines_at_data_columns::_LineIndices
+        lines::TableLines
     )
 
 Render the table using the specification in `table_data`. When the cells are converted to
@@ -21,9 +21,8 @@ If `line_breaks` is `true`, we split each cell into multiple lines at every occu
 `\\n`.
 
 `maximum_data_column_widths` must contain the user specification for the maximum data column
-widths, whereas `vertical_lines_at_data_columns` must contain the list of columns where a
-vertical line is drawn after the cell. The latter is required to compute the available width
-of merged column labels.
+widths, whereas `lines` must contain the table lines, which are required to compute the
+available width of merged column labels.
 
 # Returns
 
@@ -45,7 +44,7 @@ function _text__render_table(
     @nospecialize(renderer::Union{Val{:print}, Val{:show}}),
     line_breaks::Bool,
     maximum_data_column_widths::AbstractVector{Int},
-    vertical_lines_at_data_columns::_LineIndices,
+    lines::TableLines,
 )
     num_column_label_lines   = length(table_data.column_labels)
     num_printed_data_columns = _number_of_printed_data_columns(table_data)
@@ -134,9 +133,7 @@ function _text__render_table(
             mw = if any(j -> maximum_data_column_widths[j] <= 0, j₀:j₁)
                 -1
             else
-                _text__span_width(
-                    maximum_data_column_widths, j₀, j₁, vertical_lines_at_data_columns
-                )
+                _text__span_width(maximum_data_column_widths, j₀, j₁, lines)
             end
         end
 

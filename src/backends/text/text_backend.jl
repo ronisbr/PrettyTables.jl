@@ -163,10 +163,8 @@ function _text__print_table_core(
     # references the characters in `tf.borders` and the escape sequence of `table_border`.
     rl = _text__resolve_table_lines(tf, style)
 
-    # Resolve the lines of the table. Notice that the vertical lines at the data columns are
-    # also required to compute the column widths.
+    # Resolve the lines of the table.
     lines = TableLines(tf, table_data)
-    vertical_lines_at_data_columns = lines.vertical_lines_at_data_columns
 
     # The width keywords are indexed inside the per-cell loop. Hence, we must check their
     # length here to raise a meaningful error instead of a `BoundsError` deep in the back
@@ -328,12 +326,7 @@ function _text__print_table_core(
     # account the required column width.
 
     rendered_table = _text__render_table(
-        table_data,
-        rctx,
-        renderer,
-        line_breaks,
-        max_data_column_widths,
-        vertical_lines_at_data_columns,
+        table_data, rctx, renderer, line_breaks, max_data_column_widths, lines
     )
 
     row_labels, column_labels, table_str, summary_rows = rendered_table
@@ -401,7 +394,7 @@ function _text__print_table_core(
         summary_rows,
         summary_row_labels,
         table_str,
-        vertical_lines_at_data_columns,
+        lines,
         column_label_width_based_on_first_line_only,
         line_breaks,
         min_data_column_widths,
@@ -416,10 +409,7 @@ function _text__print_table_core(
             j != j₀ && continue
 
             cw = _text__span_width(
-                printed_data_column_widths,
-                j₀,
-                min(j₁, num_printed_data_columns),
-                vertical_lines_at_data_columns,
+                printed_data_column_widths, j₀, min(j₁, num_printed_data_columns), lines
             )
 
             column_labels[i, j] = _text__fit_cell_in_maximum_cell_width(
@@ -440,7 +430,7 @@ function _text__print_table_core(
             table_str,
             summary_rows,
             fix_data_column_widths,
-            vertical_lines_at_data_columns,
+            lines,
             auto_wrap,
             line_breaks,
             equal_data_column_widths,
@@ -549,7 +539,7 @@ function _text__print_table_core(
                     # column out of the bounds.
                     j₁ = min(j₁, num_printed_data_columns)
                     cell_width = _text__span_width(
-                        printed_data_column_widths, j₀, j₁, vertical_lines_at_data_columns
+                        printed_data_column_widths, j₀, j₁, lines
                     )
 
                     # We need to modify the first field of this column label to take into
@@ -765,11 +755,6 @@ function _text__print_table_core(
     row_group_label_width =
         printed_table_width - lines.vertical_line_at_beginning - row_group_label_vline - 2
 
-    # Row section before the first row of the ruled area, required to select the line at the
-    # beginning of the table.
-    header_rs =
-        (isempty(table_data.title) && isempty(table_data.subtitle)) ? :none : :table_header
-
     ps     = PrintingTableState()
     action = :initialize
 
@@ -915,7 +900,7 @@ function _text__print_table_core(
             if !top_line_printed
                 top_line_printed = true
 
-                role = _horizontal_line_after_row(lines, table_data, header_rs, rs, 0)
+                role = _horizontal_line_after_row(lines, table_data, :table_header, rs, 0)
 
                 if role != :none
                     # If the table begins with a row group label, which happens when the
@@ -926,7 +911,7 @@ function _text__print_table_core(
                     _text__print_horizontal_line(
                         display,
                         lines,
-                        _text__horizontal_line(rl, role),
+                        getfield(rl, role),
                         table_data,
                         row_number_column_width,
                         row_label_column_width,
@@ -959,7 +944,7 @@ function _text__print_table_core(
                 end
             end
 
-            lines.vertical_line_at_beginning && _text__styled_print(display, rl.left)
+            lines.vertical_line_at_beginning && _text__styled_print(display, rl.left_line)
 
             continue
         end
@@ -969,36 +954,28 @@ function _text__print_table_core(
         if action ∈ (:diagonal_continuation_cell, :horizontal_continuation_cell)
             _text__print(display, action == :diagonal_continuation_cell ? " ⋱ " : " ⋯ ")
 
-            role = _vertical_line_after_column(lines, table_data, :continuation)
-            (role != :none) && _text__styled_print(display, _text__vertical_line(rl, role))
+            role = _vertical_line_after_cell(lines, table_data, action, jr)
+            (role != :none) && _text__styled_print(display, getfield(rl, role))
 
             continue
 
         elseif action ∈ _VERTICAL_CONTINUATION_CELL_ACTIONS
             alignment = _current_cell_alignment(action, ps, table_data)
 
-            cell_width, role = if action == :row_number_vertical_continuation_cell
-                (
-                    row_number_column_width,
-                    _vertical_line_after_column(lines, table_data, :row_number),
-                )
+            cell_width = if action == :row_number_vertical_continuation_cell
+                row_number_column_width
             elseif action == :row_label_vertical_continuation_cell
-                (
-                    row_label_column_width,
-                    _vertical_line_after_column(lines, table_data, :row_label),
-                )
+                row_label_column_width
             else
-                (
-                    printed_data_column_widths[jr],
-                    _vertical_line_after_column(lines, table_data, :data, jr),
-                )
+                printed_data_column_widths[jr]
             end
 
             _text__print_aligned(
                 display, "⋮", cell_width, alignment; left_margin = 1, right_margin = 1
             )
 
-            (role != :none) && _text__styled_print(display, _text__vertical_line(rl, role))
+            role = _vertical_line_after_cell(lines, table_data, action, jr)
+            (role != :none) && _text__styled_print(display, getfield(rl, role))
 
             continue
         end
@@ -1088,7 +1065,7 @@ function _text__print_table_core(
                 _text__print_horizontal_line(
                     display,
                     lines,
-                    _text__horizontal_line(rl, role),
+                    getfield(rl, role),
                     table_data,
                     row_number_column_width,
                     row_label_column_width,
@@ -1164,7 +1141,7 @@ function _text__print_table_core(
 
         # Vertical line drawn after the cell, if any.
         vline_role = :none
-        vl         = rl.center
+        vl         = rl.center_line
 
         mc_last_index = 0
         merged_cell   = false
@@ -1224,9 +1201,7 @@ function _text__print_table_core(
                 j₀ = jr
                 j₁ = min(jr + cell.column_span - 1, last_printed_column_index)
 
-                cell_width = _text__span_width(
-                    printed_data_column_widths, j₀, j₁, vertical_lines_at_data_columns
-                )
+                cell_width = _text__span_width(printed_data_column_widths, j₀, j₁, lines)
 
                 # We must store that this is a merged cell and also what is the last column
                 # index of it. It is necessary when drawing the vertical lines. The user
@@ -1374,36 +1349,24 @@ function _text__print_table_core(
 
         # -- Vertical Line After the Cell --------------------------------------------------
 
-        if action ∈ (:row_number_label, :row_number, :summary_row_number)
-            vline_role = _vertical_line_after_column(lines, table_data, :row_number)
+        # A merged column label ends at its last column.
+        last_jr = merged_cell ? mc_last_index : jr
 
-        elseif action ∈ (:stubhead_label, :row_label, :summary_row_label)
-            vline_role = _vertical_line_after_column(lines, table_data, :row_label)
-
-        elseif action == :column_label
-            # A merged cell ends at its last column.
-            last_jr = merged_cell ? mc_last_index : jr
-
-            vline_role = _vertical_line_after_column(lines, table_data, :data, last_jr)
-
-        elseif action ∈ (:data, :summary_row_cell)
-            # NOTE: `:column_label` is fully consumed by the branch above, which uses the
-            # merged-cell-aware last column index. Hence, it must not be listed here.
-            vline_role = _vertical_line_after_column(lines, table_data, :data, jr)
-
-        elseif action == :row_group_label
-            row_group_label_vline && (vline_role = :right_line)
+        # The line after a row group label is the one at the right edge of the table, which
+        # is not printed if the display crops the table (see `row_group_label_vline`).
+        if (action != :row_group_label) || row_group_label_vline
+            vline_role = _vertical_line_after_cell(lines, table_data, action, last_jr)
         end
 
         if vline_role != :none
-            vl = _text__vertical_line(rl, vline_role)
+            vl = getfield(rl, vline_role)
 
             # The suppressed vertical lines inside the column labels must keep the default
             # border style so that a line design or face never modifies the blank space.
             # Notice that the line after the last printed column is never suppressed.
             if (action == :column_label) &&
                 lines.suppress_vertical_lines_at_column_labels &&
-                ((merged_cell ? mc_last_index : jr) != last_printed_column_index)
+                (last_jr != last_printed_column_index)
                 vl = TextVerticalLine(' ', rstyle.table_border)
             end
         end

@@ -356,26 +356,30 @@ Store the lines used to draw the table, resolved once per printed table from the
 characters in [`TextTableFormat`](@ref) and the line faces in [`TextTableStyle`](@ref).
 Hence, the printing loop only reads characters and strings.
 
+The fields have the names of the line designs in [`TextTableFormat`](@ref), which are also
+the roles returned by the shared line queries (see [`TableLines`](@ref)). Hence,
+`getfield(rl, role)` is the resolved line that must be drawn for a role.
+
 # Fields
 
-- `top::TextHorizontalLine`: Top line.
-- `header::TextHorizontalLine`: Lines at the column labels.
-- `merged_header::TextHorizontalLine`: Lines under the merged column labels.
-- `middle::TextHorizontalLine`: Lines inside the table.
-- `bottom::TextHorizontalLine`: Bottom line.
-- `left::TextVerticalLine`: Vertical line at the left of the table.
-- `center::TextVerticalLine`: Vertical lines inside the table.
-- `right::TextVerticalLine`: Vertical line at the right of the table.
+- `top_line::TextHorizontalLine`: Top line.
+- `header_line::TextHorizontalLine`: Lines at the column labels.
+- `merged_header_cell_line::TextHorizontalLine`: Lines under the merged column labels.
+- `middle_line::TextHorizontalLine`: Lines inside the table.
+- `bottom_line::TextHorizontalLine`: Bottom line.
+- `left_line::TextVerticalLine`: Vertical line at the left of the table.
+- `center_line::TextVerticalLine`: Vertical lines inside the table.
+- `right_line::TextVerticalLine`: Vertical line at the right of the table.
 """
 struct TextResolvedTableLines
-    top::TextHorizontalLine
-    header::TextHorizontalLine
-    merged_header::TextHorizontalLine
-    middle::TextHorizontalLine
-    bottom::TextHorizontalLine
-    left::TextVerticalLine
-    center::TextVerticalLine
-    right::TextVerticalLine
+    top_line::TextHorizontalLine
+    header_line::TextHorizontalLine
+    merged_header_cell_line::TextHorizontalLine
+    middle_line::TextHorizontalLine
+    bottom_line::TextHorizontalLine
+    left_line::TextVerticalLine
+    center_line::TextVerticalLine
+    right_line::TextVerticalLine
 end
 
 """
@@ -670,7 +674,7 @@ Base.@nospecializeinfer Base.@constprop :none @noinline function _text__build_ta
     @nospecialize(bottom_line),
     @nospecialize(left_line),
     @nospecialize(center_line),
-    @nospecialize(right_line),
+    @nospecialize(right_line)
 )
     return _text__build_table_style_core(
         title,
@@ -732,7 +736,7 @@ Base.@nospecializeinfer Base.@constprop :none @noinline function _text__build_ta
     @nospecialize(bottom_line),
     @nospecialize(left_line),
     @nospecialize(center_line),
-    @nospecialize(right_line),
+    @nospecialize(right_line)
 )
     title                          = _text__to_face(title)
     subtitle                       = _text__to_face(subtitle)
