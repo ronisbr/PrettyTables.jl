@@ -87,3 +87,20 @@ function _html__table_format(table_format::TableFormat)
         _table_format_presence_fields(table_format, def)...,
     )
 end
+
+"""
+    TableLines(tf::HtmlTableFormat, table_data::TableData) -> TableLines
+
+Resolve the line presence of the HTML table format `tf` for `table_data` (see
+[`TableLines`](@ref)). The HTML back end renders the title and the subtitle inside the ruled
+area. Hence, the line between them and the first row has a dedicated field.
+"""
+function TableLines(tf::HtmlTableFormat, table_data::TableData)
+    return _table_lines(
+        tf,
+        table_data;
+        horizontal_line_before_column_labels = tf.horizontal_line_before_column_labels,
+        horizontal_line_after_footnotes      = tf.horizontal_line_after_footnotes,
+        horizontal_line_at_end               = tf.horizontal_line_at_end,
+    )
+end
