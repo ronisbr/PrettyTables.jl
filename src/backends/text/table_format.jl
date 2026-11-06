@@ -140,3 +140,18 @@ function _text__merge_line_style_colors(nt::NamedTuple, table_format::TableForma
 
     return merge(nt, (style = new_style,))
 end
+
+"""
+    TableLines(tf::TextTableFormat, table_data::TableData) -> TableLines
+
+Resolve the line presence of the text table format `tf` for `table_data` (see
+[`TableLines`](@ref)).
+"""
+function TableLines(tf::TextTableFormat, table_data::TableData)
+    return _table_lines(
+        tf,
+        table_data;
+        horizontal_lines_at_column_labels        = tf.horizontal_lines_at_column_labels,
+        suppress_vertical_lines_at_column_labels = tf.suppress_vertical_lines_at_column_labels,
+    )
+end
