@@ -77,9 +77,7 @@ tf = TableFormat(; @all_horizontal_lines, horizontal_line_at_beginning = false)
 ```
 """
 macro all_horizontal_lines()
-    return _line_presence_keywords(
-        true, _HORIZONTAL_LINE_PRESENCE_FIELDS..., _HTML_HORIZONTAL_LINE_PRESENCE_FIELDS...
-    )
+    return _line_presence_keywords(true, _TABLE_FORMAT_HORIZONTAL_LINE_PRESENCE_FIELDS...)
 end
 
 """
@@ -127,9 +125,7 @@ tf = TableFormat(; @no_horizontal_lines, horizontal_line_at_beginning = true)
 ```
 """
 macro no_horizontal_lines()
-    return _line_presence_keywords(
-        false, _HORIZONTAL_LINE_PRESENCE_FIELDS..., _HTML_HORIZONTAL_LINE_PRESENCE_FIELDS...
-    )
+    return _line_presence_keywords(false, _TABLE_FORMAT_HORIZONTAL_LINE_PRESENCE_FIELDS...)
 end
 
 """

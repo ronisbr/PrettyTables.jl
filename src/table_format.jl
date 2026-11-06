@@ -343,8 +343,10 @@ const _VERTICAL_LINE_PRESENCE_FIELDS = (
     :vertical_line_after_continuation_column,
 )
 
-# Horizontal line presence fields that exist only in `TableFormat` and `HtmlTableFormat`.
-const _HTML_HORIZONTAL_LINE_PRESENCE_FIELDS = (
+# Every horizontal line presence field of `TableFormat`, i.e., the shared ones and those that
+# not every back end table format has.
+const _TABLE_FORMAT_HORIZONTAL_LINE_PRESENCE_FIELDS = (
+    _HORIZONTAL_LINE_PRESENCE_FIELDS...,
     :horizontal_line_before_column_labels,
     :horizontal_line_after_footnotes,
     :horizontal_line_at_end,
