@@ -74,11 +74,6 @@ function _latex__print_core(pspec::PrintingSpec, opts::LatexPrintOptions)
     # Resolve the lines of the table.
     lines = TableLines(tf, table_data)
 
-    # Row section before the first row of the ruled area, required to select the line at the
-    # beginning of the table.
-    header_rs =
-        (isempty(table_data.title) && isempty(table_data.subtitle)) ? :none : :table_header
-
     # Check the style variables.
     _check_column_label_styles(
         style.first_line_column_label,
@@ -133,7 +128,7 @@ function _latex__print_core(pspec::PrintingSpec, opts::LatexPrintOptions)
             if (rs != :table_header) && !top_line_printed
                 top_line_printed = true
 
-                role = _horizontal_line_after_row(lines, table_data, header_rs, rs, 0)
+                role = _horizontal_line_after_row(lines, table_data, :table_header, rs, 0)
                 (role != :none) && _aprintln(buf, getfield(tf.borders, role), il, ns)
             end
 
