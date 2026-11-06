@@ -20,58 +20,6 @@ function _line_spec_indices(spec::Union{Symbol, Vector{Int}}, n::Int)
 end
 
 """
-    TableLines(tf, table_data::TableData) -> TableLines
-
-Resolve the line presence of the back end table format `tf` for `table_data`. Each back end
-table format adds a method to this function that calls [`_table_lines`](@ref) with the line
-presence fields that exist only in that back end. This generic method covers the back end
-table formats without a dedicated method and reads those fields if `tf` has them.
-
-The line specifications `:all`, `:none`, or a vector of indices are converted to
-`_LineIndices` here. Hence, the back ends must call this function once per table and pass
-the result to the functions that need the lines.
-"""
-function TableLines(tf, table_data::TableData)
-    T = typeof(tf)
-
-    horizontal_line_before_column_labels =
-        if hasfield(T, :horizontal_line_before_column_labels)
-            tf.horizontal_line_before_column_labels
-        else
-            tf.horizontal_line_at_beginning
-        end
-
-    horizontal_lines_at_column_labels = if hasfield(T, :horizontal_lines_at_column_labels)
-        tf.horizontal_lines_at_column_labels
-    elseif hasfield(T, :horizontal_line_between_column_labels)
-        tf.horizontal_line_between_column_labels ? :all : :none
-    else
-        :none
-    end
-
-    horizontal_line_after_footnotes =
-        hasfield(T, :horizontal_line_after_footnotes) ? tf.horizontal_line_after_footnotes :
-        false
-
-    horizontal_line_at_end =
-        hasfield(T, :horizontal_line_at_end) ? tf.horizontal_line_at_end : false
-
-    suppress_vertical_lines_at_column_labels =
-        hasfield(T, :suppress_vertical_lines_at_column_labels) ?
-        tf.suppress_vertical_lines_at_column_labels : false
-
-    return _table_lines(
-        tf,
-        table_data;
-        horizontal_line_before_column_labels,
-        horizontal_lines_at_column_labels,
-        horizontal_line_after_footnotes,
-        horizontal_line_at_end,
-        suppress_vertical_lines_at_column_labels,
-    )
-end
-
-"""
     _table_lines(tf, table_data::TableData; kwargs...) -> TableLines
 
 Build the [`TableLines`](@ref) of the back end table format `tf` for `table_data`. The line
@@ -89,6 +37,10 @@ neutral value otherwise:
 - `horizontal_line_after_footnotes::Bool`: The default is `false`.
 - `horizontal_line_at_end::Bool`: The default is `false`.
 - `suppress_vertical_lines_at_column_labels::Bool`: The default is `false`.
+
+The line specifications `:all`, `:none`, or a vector of indices are converted to
+`_LineIndices` here. Hence, the back ends must create the [`TableLines`](@ref) once per table
+and pass it to the functions that need the lines.
 """
 function _table_lines(
     tf,

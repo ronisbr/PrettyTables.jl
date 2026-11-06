@@ -628,27 +628,16 @@ end
 
 Presence of the table lines resolved from a back end table format. The back ends must not
 analyze the line presence fields of their table formats directly. Instead, they must create
-this object and query it with [`_horizontal_line_after_row`](@ref),
-[`_vertical_line_after_column`](@ref), and [`_vertical_line_after_cell`](@ref), which return
-the field of the back end borders with the line to draw, so that every back end draws the
-lines at the same places.
+this object once per table with `TableLines(tf, table_data)` and query it with
+[`_horizontal_line_after_row`](@ref), [`_vertical_line_after_column`](@ref), and
+[`_vertical_line_after_cell`](@ref), which return the field of the back end borders with the
+line to draw, so that every back end draws the lines at the same places.
 
-The fields have the same names as the line presence fields of the table formats. The fields
-that exist only in some back ends are set to their neutral value when the table format does
-not have them. Hence, the queries can be shared by all the back ends:
-
-- `horizontal_line_before_column_labels` is the line between the table header (title and
-    subtitle) and the first row of the ruled area. It is the field of the HTML table format,
-    which renders the title inside the ruled area, and `horizontal_line_at_beginning`
-    otherwise.
-- `horizontal_lines_at_column_labels` are the column label rows after which a line is drawn,
-    excluding the last one, whose line is `horizontal_line_after_column_labels`. It is the
-    field of the text table format, the field `horizontal_line_between_column_labels` of the
-    Excel and Word table formats (`:all` if `true`), and `:none` otherwise.
-- `horizontal_line_after_footnotes` and `horizontal_line_at_end` are the fields of the HTML
-    table format and `false` otherwise.
-- `suppress_vertical_lines_at_column_labels` is the field of the text table format and
-    `false` otherwise.
+Each back end table format adds a method to `TableLines(tf, table_data)` that calls
+[`_table_lines`](@ref) with the line presence fields that exist only in that back end. The
+fields of this structure have the same names as the line presence fields of the table
+formats, and the ones a back end does not have are set to their neutral value (see
+[`_table_lines`](@ref)). Hence, the queries can be shared by all the back ends.
 """
 struct TableLines
     # == Horizontal Lines ==================================================================

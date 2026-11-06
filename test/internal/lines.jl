@@ -127,6 +127,10 @@ end
             @test 2 ∈ lines.horizontal_lines_at_column_labels
             @test !(3 ∈ lines.horizontal_lines_at_column_labels)
         end
+
+        # == Table Formats Without Lines ===================================================
+
+        @test_throws MethodError PrettyTables.TableLines(MarkdownTableFormat(), td)
     end
 
     @testset "Presence of Lines" begin
