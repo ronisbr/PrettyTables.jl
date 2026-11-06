@@ -258,20 +258,17 @@ end
             tf = TextTableFormat(; @text__all_horizontal_lines)
 
             # Lines outside the ruled area.
-            @test hline(tf, :none, :table_header) == :none
             @test hline(tf, :table_header, :table_header) == :none
             @test hline(tf, :table_footer, :table_footer, 1) == :none
             @test hline(tf, :table_footer, :table_footer, 2) == :none
             @test hline(tf, :table_footer, :end_printing, 2) == :none
 
             # Lines at the beginning of the ruled area.
-            @test hline(tf, :none, :column_labels) == :top_line
-            @test hline(tf, :none, :data) == :top_line
-            @test hline(tf, :none, :row_group_label) == :top_line
             @test hline(tf, :table_header, :column_labels) == :top_line
             @test hline(tf, :table_header, :data) == :top_line
             @test hline(tf, :table_header, :summary_row) == :top_line
             @test hline(tf, :table_header, :column_labels; data = td_no_header) == :top_line
+            @test hline(tf, :table_header, :data; data = td_no_header) == :top_line
             @test hline(tf, :table_header, :row_group_label; data = td_no_header) ==
                 :top_line
 
@@ -306,7 +303,6 @@ end
             tf = TextTableFormat(; @text__no_horizontal_lines)
 
             for (rs, next_rs) in (
-                (:none, :column_labels),
                 (:table_header, :column_labels),
                 (:column_labels, :column_labels),
                 (:column_labels, :data),
@@ -438,7 +434,6 @@ end
                 horizontal_line_at_end = true,
             )
 
-            @test hline(tf, :none, :column_labels) == :none
             @test hline(tf, :table_header, :column_labels) == :top_line
             @test hline(tf, :table_header, :data) == :top_line
 
@@ -456,11 +451,9 @@ end
 
             # The line at the end of the table requires a ruled area.
             @test hline(tf, :table_header, :table_footer) == :none
-            @test hline(tf, :none, :table_footer) == :none
 
             tf = HtmlTableFormat(; horizontal_line_at_beginning = true)
 
-            @test hline(tf, :none, :column_labels) == :top_line
             @test hline(tf, :table_header, :column_labels) == :none
             @test hline(tf, :table_header, :column_labels; data = td_no_header) == :top_line
             @test hline(tf, :table_header, :table_footer; data = td_no_header) == :none

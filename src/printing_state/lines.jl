@@ -186,10 +186,9 @@ action of a row has these values.
 the ruled area: the line between the table header (title and subtitle) and the ruled area if
 the table has a header, or the line at the beginning of the table otherwise. Hence, the back
 ends pass `:table_header` for the first row of the ruled area without checking whether the
-table has a header. `rs` can also be `:none`, which is equivalent to `:table_header` for a
-table without a header. The lines under the merged column labels, which are drawn after
-every column label row but the last one, are not handled here because each back end draws
-them differently.
+table has a header. The lines under the merged column labels, which are drawn after every
+column label row but the last one, are not handled here because each back end draws them
+differently.
 
 The line after the last row of the ruled area, which precedes the table footer, uses the
 bottom line design.
@@ -212,17 +211,15 @@ function _horizontal_line_after_row(
     end
 
     # The ruled area is empty if the table has no rows at all.
-    (next_rs ∈ (:table_footer, :end_printing)) &&
-        (rs ∈ (:none, :table_header)) &&
-        return :none
+    (next_rs ∈ (:table_footer, :end_printing)) && (rs == :table_header) && return :none
 
     # == Lines at the Beginning of the Ruled Area ==========================================
 
-    if rs ∈ (:none, :table_header)
+    if rs == :table_header
         # The line before the first row of the ruled area is the line between the table
         # header and the ruled area if the table has a header, which the HTML back end
         # renders inside the ruled area, or the line at the beginning of the table otherwise.
-        hline = if (rs == :table_header) && _has_table_header(table_data)
+        hline = if _has_table_header(table_data)
             lines.horizontal_line_before_column_labels
         else
             lines.horizontal_line_at_beginning
