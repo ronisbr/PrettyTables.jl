@@ -319,7 +319,6 @@ function _table_format_border(
     return converter(line_style; default)
 end
 
-# Line presence fields shared by every back end table format.
 # Horizontal line presence fields shared by every back end table format.
 const _HORIZONTAL_LINE_PRESENCE_FIELDS = (
     :horizontal_line_at_beginning,
@@ -352,8 +351,9 @@ const _TABLE_FORMAT_HORIZONTAL_LINE_PRESENCE_FIELDS = (
     :horizontal_line_at_end,
 )
 
+# Every line presence field of `TableFormat`.
 const _TABLE_FORMAT_PRESENCE_FIELDS = (
-    _HORIZONTAL_LINE_PRESENCE_FIELDS..., _VERTICAL_LINE_PRESENCE_FIELDS...
+    _TABLE_FORMAT_HORIZONTAL_LINE_PRESENCE_FIELDS..., _VERTICAL_LINE_PRESENCE_FIELDS...
 )
 
 """
@@ -361,14 +361,16 @@ const _TABLE_FORMAT_PRESENCE_FIELDS = (
 
 Merge the line presence fields of `tf` over the ones of the back end default table format
 `def`, returning a named tuple that can be splatted into the keyword constructor of the
-back end table format. `def` must have every line presence field shared by all back ends
-(see `_TABLE_FORMAT_PRESENCE_FIELDS`), which is the case for the table formats of the text,
-HTML, LaTeX, Typst, Excel, and Word back ends. The HTML-only presence fields are not part of
-the returned tuple and must be merged by the HTML converter.
+back end table format. Only the line presence fields of [`TableFormat`](@ref) that `def` has
+are returned (see `_TABLE_FORMAT_PRESENCE_FIELDS`). Hence, the fields that exist only in
+some back ends, such as `horizontal_line_at_end` of the HTML back end, are merged when `def`
+has them and ignored otherwise.
 """
-function _table_format_presence_fields(tf::TableFormat, def::Any)
-    return NamedTuple{_TABLE_FORMAT_PRESENCE_FIELDS}(
-        map(_TABLE_FORMAT_PRESENCE_FIELDS) do f
+function _table_format_presence_fields(tf::TableFormat, def::T) where {T}
+    fields = filter(f -> hasfield(T, f), _TABLE_FORMAT_PRESENCE_FIELDS)
+
+    return NamedTuple{fields}(
+        map(fields) do f
             return _table_format_field(getfield(tf, f), getfield(def, f))
         end,
     )
