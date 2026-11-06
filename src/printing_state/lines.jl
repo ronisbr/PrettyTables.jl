@@ -22,10 +22,10 @@ end
 """
     TableLines(tf, table_data::TableData) -> TableLines
 
-Resolve the line presence of the back end table format `tf` for `table_data`. `tf` must
-have the line presence fields shared by all the back end table formats (see
-`_TABLE_FORMAT_PRESENCE_FIELDS`). The fields that exist only in some back ends are read if
-`tf` has them and set to their neutral value otherwise (see [`TableLines`](@ref)).
+Resolve the line presence of the back end table format `tf` for `table_data`. Each back end
+table format adds a method to this function that calls [`_table_lines`](@ref) with the line
+presence fields that exist only in that back end. This generic method covers the back end
+table formats without a dedicated method and reads those fields if `tf` has them.
 
 The line specifications `:all`, `:none`, or a vector of indices are converted to
 `_LineIndices` here. Hence, the back ends must call this function once per table and pass
@@ -34,73 +34,93 @@ the result to the functions that need the lines.
 function TableLines(tf, table_data::TableData)
     T = typeof(tf)
 
-    # The line between the table header and the ruled area is the line at the beginning of
-    # the table in the back ends that render the title and the subtitle outside the ruled
-    # area. The HTML back end renders them inside it and has a dedicated field.
     horizontal_line_before_column_labels =
         if hasfield(T, :horizontal_line_before_column_labels)
-            tf.horizontal_line_before_column_labels::Bool
+            tf.horizontal_line_before_column_labels
         else
-            tf.horizontal_line_at_beginning::Bool
+            tf.horizontal_line_at_beginning
         end
 
-    # The line after the last column label row is controlled by
-    # `horizontal_line_after_column_labels`. Hence, the specification at the column labels
-    # only covers the rows before it. Otherwise, the text back end would reserve a display
-    # line for a horizontal line that is never drawn.
-    horizontal_lines_at_column_labels_spec =
-        if hasfield(T, :horizontal_lines_at_column_labels)
-            tf.horizontal_lines_at_column_labels::Union{Symbol, Vector{Int}}
-        elseif hasfield(T, :horizontal_line_between_column_labels)
-            tf.horizontal_line_between_column_labels::Bool ? :all : :none
-        else
-            :none
-        end
-
-    horizontal_lines_at_column_labels = _line_spec_indices(
-        horizontal_lines_at_column_labels_spec, length(table_data.column_labels) - 1
-    )
-
-    horizontal_lines_at_data_rows = _line_spec_indices(
-        tf.horizontal_lines_at_data_rows::Union{Symbol, Vector{Int}}, table_data.num_rows
-    )
-
-    vertical_lines_at_data_columns = _line_spec_indices(
-        tf.vertical_lines_at_data_columns::Union{Symbol, Vector{Int}},
-        table_data.num_columns,
-    )
+    horizontal_lines_at_column_labels = if hasfield(T, :horizontal_lines_at_column_labels)
+        tf.horizontal_lines_at_column_labels
+    elseif hasfield(T, :horizontal_line_between_column_labels)
+        tf.horizontal_line_between_column_labels ? :all : :none
+    else
+        :none
+    end
 
     horizontal_line_after_footnotes =
-        hasfield(T, :horizontal_line_after_footnotes) ?
-        tf.horizontal_line_after_footnotes::Bool : false
+        hasfield(T, :horizontal_line_after_footnotes) ? tf.horizontal_line_after_footnotes :
+        false
 
     horizontal_line_at_end =
-        hasfield(T, :horizontal_line_at_end) ? tf.horizontal_line_at_end::Bool : false
+        hasfield(T, :horizontal_line_at_end) ? tf.horizontal_line_at_end : false
 
     suppress_vertical_lines_at_column_labels =
         hasfield(T, :suppress_vertical_lines_at_column_labels) ?
-        tf.suppress_vertical_lines_at_column_labels::Bool : false
+        tf.suppress_vertical_lines_at_column_labels : false
 
-    return TableLines(
-        tf.horizontal_line_at_beginning::Bool,
+    return _table_lines(
+        tf,
+        table_data;
         horizontal_line_before_column_labels,
         horizontal_lines_at_column_labels,
-        tf.horizontal_line_at_merged_column_labels::Bool,
-        tf.horizontal_line_after_column_labels::Bool,
-        horizontal_lines_at_data_rows,
-        tf.horizontal_line_before_row_group_label::Bool,
-        tf.horizontal_line_after_row_group_label::Bool,
-        tf.horizontal_line_after_data_rows::Bool,
-        tf.horizontal_line_before_summary_rows::Bool,
-        tf.horizontal_line_after_summary_rows::Bool,
         horizontal_line_after_footnotes,
         horizontal_line_at_end,
-        tf.vertical_line_at_beginning::Bool,
-        tf.vertical_line_after_row_number_column::Bool,
-        tf.vertical_line_after_row_label_column::Bool,
-        vertical_lines_at_data_columns,
-        tf.vertical_line_after_data_columns::Bool,
-        tf.vertical_line_after_continuation_column::Bool,
+        suppress_vertical_lines_at_column_labels,
+    )
+end
+
+"""
+    _table_lines(tf, table_data::TableData; kwargs...) -> TableLines
+
+Build the [`TableLines`](@ref) of the back end table format `tf` for `table_data`. The line
+presence fields shared by every back end table format are read from `tf`, whereas the
+fields that exist only in some back ends are passed as keyword arguments and have their
+neutral value otherwise:
+
+- `horizontal_line_before_column_labels::Bool`: Line between the table header (title and
+    subtitle) and the first row of the ruled area. The default is
+    `tf.horizontal_line_at_beginning`, which is the line at this place in the back ends that
+    render the table header outside the ruled area.
+- `horizontal_lines_at_column_labels::Union{Symbol, Vector{Int}}`: Column label rows after
+    which a line is drawn, excluding the last one, whose line is
+    `horizontal_line_after_column_labels`. The default is `:none`.
+- `horizontal_line_after_footnotes::Bool`: The default is `false`.
+- `horizontal_line_at_end::Bool`: The default is `false`.
+- `suppress_vertical_lines_at_column_labels::Bool`: The default is `false`.
+"""
+function _table_lines(
+    tf,
+    table_data::TableData;
+    horizontal_line_before_column_labels::Bool = tf.horizontal_line_at_beginning,
+    horizontal_lines_at_column_labels::Union{Symbol, Vector{Int}} = :none,
+    horizontal_line_after_footnotes::Bool = false,
+    horizontal_line_at_end::Bool = false,
+    suppress_vertical_lines_at_column_labels::Bool = false,
+)
+    return TableLines(
+        tf.horizontal_line_at_beginning,
+        horizontal_line_before_column_labels,
+        _line_spec_indices(
+            horizontal_lines_at_column_labels, length(table_data.column_labels) - 1
+        ),
+        tf.horizontal_line_at_merged_column_labels,
+        tf.horizontal_line_after_column_labels,
+        _line_spec_indices(tf.horizontal_lines_at_data_rows, table_data.num_rows),
+        tf.horizontal_line_before_row_group_label,
+        tf.horizontal_line_after_row_group_label,
+        tf.horizontal_line_after_data_rows,
+        tf.horizontal_line_before_summary_rows,
+        tf.horizontal_line_after_summary_rows,
+        horizontal_line_after_footnotes,
+        horizontal_line_at_end,
+        tf.vertical_line_at_beginning,
+        tf.vertical_line_after_row_number_column,
+        tf.vertical_line_after_row_label_column,
+        _line_spec_indices(tf.vertical_lines_at_data_columns, table_data.num_columns),
+        tf.vertical_line_after_data_columns,
+        tf.vertical_line_after_continuation_column,
         suppress_vertical_lines_at_column_labels,
     )
 end
