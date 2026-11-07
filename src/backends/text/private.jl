@@ -151,7 +151,7 @@ end
 #     above it instead of the line after it.
 
 """
-    _text__count_horizontal_lines(horizontal_lines::_LineIndices, last_row::Int) -> Int
+    _text__count_horizontal_lines(horizontal_lines::LineIndices, last_row::Int) -> Int
 
 Return how many of the rows in `1:last_row` have a horizontal line drawn after them
 according to `horizontal_lines`. Notice that a row is counted only once, even if it appears
@@ -160,7 +160,7 @@ more than once in the indices.
 This function must be `O(number of indices)`, never `O(last_row)`, because `last_row` can
 be the number of rows of a very large table that is only shown cropped.
 """
-function _text__count_horizontal_lines(horizontal_lines::_LineIndices, last_row::Int)
+function _text__count_horizontal_lines(horizontal_lines::LineIndices, last_row::Int)
     (last_row < 1) && return 0
     horizontal_lines.all && return min(horizontal_lines.n, last_row)
     return count(i -> 1 <= i <= last_row, unique(horizontal_lines.indices))

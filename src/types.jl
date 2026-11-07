@@ -599,7 +599,7 @@ end
 # == Line Indices ==========================================================================
 
 """
-    struct _LineIndices
+    struct LineIndices
 
 Indices of the rows or columns after which a line must be drawn, which are all the `n` rows
 or columns if `all` is `true`, or the elements of `indices` otherwise. Only the membership of
@@ -611,13 +611,13 @@ receive them would be compiled for each combination of specifications. Moreover,
 allocate a vector with every index when the specification is `:all`, which would be
 `O(n)` for tables with a large number of rows.
 """
-struct _LineIndices
+struct LineIndices
     all::Bool
     n::Int
     indices::Vector{Int}
 end
 
-function Base.in(i::Integer, lines::_LineIndices)
+function Base.in(i::Integer, lines::LineIndices)
     return lines.all ? (1 <= i <= lines.n) : (i ∈ lines.indices)
 end
 
@@ -644,10 +644,10 @@ struct TableLines
 
     horizontal_line_at_beginning::Bool
     horizontal_line_before_column_labels::Bool
-    horizontal_lines_at_column_labels::_LineIndices
+    horizontal_lines_at_column_labels::LineIndices
     horizontal_line_at_merged_column_labels::Bool
     horizontal_line_after_column_labels::Bool
-    horizontal_lines_at_data_rows::_LineIndices
+    horizontal_lines_at_data_rows::LineIndices
     horizontal_line_before_row_group_label::Bool
     horizontal_line_after_row_group_label::Bool
     horizontal_line_after_data_rows::Bool
@@ -661,7 +661,7 @@ struct TableLines
     vertical_line_at_beginning::Bool
     vertical_line_after_row_number_column::Bool
     vertical_line_after_row_label_column::Bool
-    vertical_lines_at_data_columns::_LineIndices
+    vertical_lines_at_data_columns::LineIndices
     vertical_line_after_data_columns::Bool
     vertical_line_after_continuation_column::Bool
     suppress_vertical_lines_at_column_labels::Bool

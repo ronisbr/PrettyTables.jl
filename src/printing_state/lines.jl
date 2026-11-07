@@ -7,7 +7,7 @@
 ############################################################################################
 
 """
-    _line_spec_indices(spec::Union{Symbol, Vector{Int}}, n::Int) -> _LineIndices
+    _line_spec_indices(spec::Union{Symbol, Vector{Int}}, n::Int) -> LineIndices
 
 Convert the specification `spec` of the lines at the column label rows, data rows, or data
 columns in a table format, which can be `:all`, `:none`, or a vector with the indices, to
@@ -15,8 +15,8 @@ the indices of the rows or columns after which a line must be drawn, considering
 are `n` of them.
 """
 function _line_spec_indices(spec::Union{Symbol, Vector{Int}}, n::Int)
-    spec isa Vector{Int} && return _LineIndices(false, n, spec)
-    return _LineIndices(spec == :all, n, Int[])
+    spec isa Vector{Int} && return LineIndices(false, n, spec)
+    return LineIndices(spec == :all, n, Int[])
 end
 
 """
@@ -39,7 +39,7 @@ neutral value otherwise:
 - `suppress_vertical_lines_at_column_labels::Bool`: The default is `false`.
 
 The line specifications `:all`, `:none`, or a vector of indices are converted to
-`_LineIndices` here. Hence, the back ends must create the [`TableLines`](@ref) once per table
+`LineIndices` here. Hence, the back ends must create the [`TableLines`](@ref) once per table
 and pass it to the functions that need the lines.
 """
 function _table_lines(
@@ -93,14 +93,14 @@ function _has_any_table_line(lines::TableLines)
 end
 
 """
-    _has_lines(lines::Union{Bool, _LineIndices}) -> Bool
+    _has_lines(lines::Union{Bool, LineIndices}) -> Bool
 
 Return whether the line presence field `lines` of [`TableLines`](@ref) draws at least one
 line. A specification of rows or columns draws a line if it selects at least one of them,
 which is the case for `:all` even if the table has no rows or columns.
 """
 _has_lines(lines::Bool) = lines
-_has_lines(lines::_LineIndices) = lines.all || !isempty(lines.indices)
+_has_lines(lines::LineIndices) = lines.all || !isempty(lines.indices)
 
 """
     _next_row_section(table_data::TableData, rs::Symbol, i::Int) -> Symbol
